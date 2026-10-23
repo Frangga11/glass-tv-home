@@ -92,7 +92,7 @@ Sangat mudah dan intuitif! Anda hanya perlukan butang arah pada remote TV anda:
 
 | Butang Remote | Tindakan / Fungsi |
 | :--- | :--- |
-| **Tekan Dua Kali HOME (Double-Press)** | **Buka Pengurus Recent Apps & RAM Cleaner**: Papar senarai aplikasi berjalan, semak RAM, tutup aplikasi individu (tekan ▲), atau tutup semua aplikasi (Close All). |
+| **Tekan Dua Kali HOME (Double-Press)** | • **Di Luar**: Buka Pengurus Recent Apps & RAM Cleaner.<br>• **Di Dalam Recent Apps**: Terus jalankan **Close All** untuk tutup semua aplikasi & cuci RAM serta-merta! |
 | **Butang HOME (Sekali Tekan)** | Kembali ke skrin utama dari mana-mana aplikasi. Jika di skrin utama, buka screensaver StandBy. |
 | **Butang ATAS (▲)** | Naik ke atas untuk pilih **Kapsul Cuaca & Jerebu** atau menu Wi-Fi / Tetapan. |
 | **Butang TENGAH (OK)** | • Tekan pada aplikasi untuk buka aplikasi tersebut.<br>• Tekan pada kapsul cuaca untuk buka **Dashboard Cuaca & Kualiti Udara penuh**.<br>• **Tekan & Tahan (Long-press)** pada aplikasi untuk susun atau pindahkan ikon ke dalam/luar dock. |
@@ -128,9 +128,11 @@ Sangat mudah dan intuitif! Anda hanya perlukan butang arah pada remote TV anda:
 ### E. Pengurus Recent Apps & Pembersih RAM (Tekan 2 Kali Butang Home) ⚡
 Ciri pintar seumpama tvOS / Android TV premium untuk melihat dan membersihkan aplikasi latar belakang:
 * **Cara Buka**: Tekan butang **HOME dua kali berturut-turut** di mana-mana skrin atau aplikasi (atau butang App Switch pada remote tertentu).
-* **Kapsul Status RAM**: Di sudut atas kanan, memaparkan bacaan RAM masa nyata (contoh: `RAM 1.2 GB used of 1.9 GB`) dengan bar kemajuan.
+* **Tekan Home 2 Kali untuk 'Close All'**: Semasa berada di dalam skrin Recent Apps, **tekan butang HOME dua kali lagi** untuk terus menutup semua aplikasi dan membebaskan RAM serta-merta tanpa perlu menekan butang lain!
+* **Penamatan Sebenar (Genuine Force-Stop)**: Sistem kami dilengkapi integrasi pintar perkhidmatan Accessibility yang secara automatik menamatkan aplikasi latar mahupun aplikasi penstriman video degil (seperti Nuvio, YouTube, Stremio) hingga ke akar umbi, bukan sekadar membuang kad dari paparan.
+* **Kapsul Status RAM**: Di sudut atas kanan, memaparkan bacaan RAM masa nyata (contoh: `RAM 1.8 GB used of 2.3 GB`) dengan bar kemajuan.
 * **Tutup Aplikasi Individu**: Pada mana-mana kad aplikasi yang dipilih, **tekan butang ATAS (▲)** pada remote untuk menutup proses aplikasi tersebut dan membebaskan RAM serta-merta.
-* **Butang 'Close All' (Ikon Tong Sampah 🗑️)**: Gerakkan fokus ke hujung kanan senarai dan tekan butang bulat **Close All** untuk menutup semua aplikasi latar belakang secara serentak dalam 1 klik!
+* **Butang 'Close All' (Ikon Tong Sampah 🗑️)**: Gerakkan fokus ke hujung kanan senarai dan tekan butang bulat **Close All** untuk menutup semua aplikasi serentak dalam 1 klik!
 
 ---
 

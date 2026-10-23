@@ -2,30 +2,58 @@ package com.gathin.tvhome;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 public class RecentAppsActivity extends Activity implements RecentAppsAdapter.OnRecentAppInteractionListener {
+    private static RecentAppsActivity sForegroundInstance = null;
+
+    public static final String ACTION_CLOSE_ALL = "com.gathin.tvhome.ACTION_CLOSE_ALL";
+
+    public static boolean isForeground() {
+        return sForegroundInstance != null;
+    }
+
+    public static void triggerCloseAllFromGlobal() {
+        if (sForegroundInstance != null) {
+            sForegroundInstance.onCloseAllClicked();
+        }
+    }
+
+    public static void dismissFromGlobal() {
+        if (sForegroundInstance != null) {
+            sForegroundInstance.finish();
+        }
+    }
+
     private TextView tvRamText;
     private ProgressBar pbRam;
     private RecyclerView rvRecentApps;
     private TextView tvEmptyRecents;
     private TextView tvBottomHint;
     private RecentAppsAdapter adapter;
+    private long lastHomePressTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         setContentView(R.layout.activity_recent_apps);
 
         tvRamText = findViewById(R.id.tvRamText);
@@ -37,11 +65,72 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rvRecentApps.setLayoutManager(layoutManager);
 
+        // Add 3D card deck overlapping decoration (-120dp overlap for CoverFlow stack)
+        float density = getResources().getDisplayMetrics().density;
+        final int overlapPx = Math.round(120 * density);
+        final int closeAllGapPx = Math.round(32 * density);
+
+        rvRecentApps.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                int pos = parent.getChildAdapterPosition(view);
+                int total = state.getItemCount();
+                if (pos > 0) {
+                    if (pos == total - 1 && adapter != null && !adapter.isEmpty() && adapter.getItems().get(pos).isCloseAll) {
+                        outRect.left = closeAllGapPx;
+                    } else {
+                        outRect.left = -overlapPx;
+                    }
+                } else {
+                    outRect.left = 0;
+                }
+            }
+        });
+
         adapter = new RecentAppsAdapter(this);
         rvRecentApps.setAdapter(adapter);
 
         updateRamStats();
         loadRecentApps();
+        if (getIntent() != null && ACTION_CLOSE_ALL.equals(getIntent().getAction())) {
+            rvRecentApps.post(this::onCloseAllClicked);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sForegroundInstance = this;
+        updateRamStats();
+        loadRecentApps();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (intent != null && ACTION_CLOSE_ALL.equals(intent.getAction())) {
+            onCloseAllClicked();
+            return;
+        }
+        updateRamStats();
+        loadRecentApps();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (sForegroundInstance == this) {
+            sForegroundInstance = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (sForegroundInstance == this) {
+            sForegroundInstance = null;
+        }
     }
 
     private void updateRamStats() {
@@ -84,7 +173,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
         if (item.launchIntent != null) {
             SoundEffects.playSelect();
             try {
-                item.launchIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+                item.launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(item.launchIntent);
                 finish();
             } catch (ActivityNotFoundException e) {
@@ -97,7 +186,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
     public void onAppClosed(RecentAppItem item, int position, View itemView) {
         SoundEffects.playSelect();
         itemView.animate()
-                .translationY(-320f)
+                .translationY(-380f)
                 .alpha(0f)
                 .setDuration(220)
                 .withEndAction(() -> {
@@ -108,6 +197,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
                     updateRamStats();
                     if (adapter.isEmpty()) {
                         showEmptyState();
+                        new Handler(Looper.getMainLooper()).postDelayed(this::finish, 600);
                     }
                 })
                 .start();
@@ -117,7 +207,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
     public void onCloseAllClicked() {
         SoundEffects.playSelect();
         rvRecentApps.animate()
-                .translationY(-260f)
+                .translationY(-320f)
                 .alpha(0f)
                 .setDuration(260)
                 .withEndAction(() -> {
@@ -125,9 +215,31 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
                     adapter.clearAll();
                     updateRamStats();
                     showEmptyState();
-                    Toast.makeText(this, "RAM cleared!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "RAM cleared! All apps closed", Toast.LENGTH_SHORT).show();
+                    new Handler(Looper.getMainLooper()).postDelayed(this::finish, 650);
                 })
                 .start();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int code = event.getKeyCode();
+        if (code == KeyEvent.KEYCODE_HOME || code == KeyEvent.KEYCODE_ALL_APPS) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                long now = SystemClock.uptimeMillis();
+                if (now - lastHomePressTime < 450) {
+                    // Double press Home in Recent Apps -> Trigger Close All!
+                    lastHomePressTime = 0;
+                    onCloseAllClicked();
+                    return true;
+                } else {
+                    lastHomePressTime = now;
+                    return true;
+                }
+            }
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override

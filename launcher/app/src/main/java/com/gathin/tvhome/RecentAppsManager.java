@@ -26,31 +26,26 @@ import java.util.Locale;
 import java.util.Set;
 
 public class RecentAppsManager {
-    private static final String TAG = "RecentAppsManager";
-    private static final String PREFS_NAME = "recent_apps_history";
-    private static final String KEY_HISTORY = "recent_packages";
+    private static final String TAG = "TvHome.RecentApps";
+    private static final String PREFS_NAME = "recent_apps_prefs";
+    private static final String KEY_HISTORY = "recent_history";
+    private static final int MAX_RECENTS = 12;
 
     private static final Set<String> SYSTEM_PACKAGES_FILTER = new HashSet<>(Arrays.asList(
-            "android",
             "com.android.systemui",
-            "com.android.keychain",
-            "com.android.shell",
-            "com.android.networkstack.process",
-            "com.android.se",
-            "com.google.android.inputmethod.latin",
-            "com.google.android.tts",
-            "com.google.android.katniss",
-            "com.google.android.ext.services",
-            "com.google.android.permissioncontroller",
-            "com.google.android.gms",
-            "com.google.android.gms.unstable",
-            "com.mi.bluetooth",
-            "com.droidlogic",
-            "com.dolby.android.audio.service",
-            "com.android.providers.media",
-            "com.android.providers.calendar",
+            "com.android.tv.frameworkpackagestubs",
             "com.android.providers.tv",
-            "com.android.externalstorage"
+            "com.android.providers.settings",
+            "com.google.android.inputmethod.latin",
+            "com.google.android.katniss",
+            "com.google.android.speech.pumpkin",
+            "com.google.android.apps.assistant",
+            "com.xiaomi.mitv.setupwizard",
+            "com.xiaomi.mitv.tvsettings",
+            "com.xiaomi.mitv.services",
+            "com.xiaomi.mitv.mediaexplorer",
+            "com.xiaomi.mitv.livetv",
+            "com.google.android.tv.remote.service"
     ));
 
     public static class MemoryStats {
@@ -60,34 +55,30 @@ public class RecentAppsManager {
         public final int percentUsed;
         public final String formattedText;
 
-        public MemoryStats(long total, long used, long avail, int percent, String formatted) {
-            this.totalBytes = total;
-            this.usedBytes = used;
-            this.availBytes = avail;
-            this.percentUsed = percent;
-            this.formattedText = formatted;
+        public MemoryStats(long totalBytes, long availBytes) {
+            this.totalBytes = totalBytes;
+            this.availBytes = availBytes;
+            this.usedBytes = Math.max(0, totalBytes - availBytes);
+            this.percentUsed = totalBytes > 0 ? (int) ((usedBytes * 100) / totalBytes) : 0;
+
+            double usedGb = usedBytes / (1024.0 * 1024.0 * 1024.0);
+            double totalGb = totalBytes / (1024.0 * 1024.0 * 1024.0);
+            this.formattedText = String.format(Locale.US, "RAM %.1f GB used of %.1f GB", usedGb, totalGb);
         }
     }
 
     public static MemoryStats getMemoryStats(Context context) {
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        if (am == null) {
-            return new MemoryStats(0, 0, 0, 0, "RAM info unavailable");
-        }
         ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
-        am.getMemoryInfo(mi);
-        long total = mi.totalMem;
-        long avail = mi.availMem;
-        long used = total - avail;
-        int percent = total > 0 ? (int) ((used * 100) / total) : 0;
-        double usedGb = used / (1024.0 * 1024.0 * 1024.0);
-        double totalGb = total / (1024.0 * 1024.0 * 1024.0);
-        String text = String.format(Locale.US, "RAM %.1f GB used of %.1f GB", usedGb, totalGb);
-        return new MemoryStats(total, used, avail, percent, text);
+        if (am != null) {
+            am.getMemoryInfo(mi);
+            return new MemoryStats(mi.totalMem, mi.availMem);
+        }
+        return new MemoryStats(2L * 1024 * 1024 * 1024, 500L * 1024 * 1024);
     }
 
     public static void recordAppLaunch(Context context, String packageName) {
-        if (packageName == null || packageName.equals(context.getPackageName())) return;
+        if (packageName == null || packageName.isEmpty() || packageName.equals(context.getPackageName())) return;
         try {
             SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             String saved = sp.getString(KEY_HISTORY, "");
@@ -96,7 +87,7 @@ public class RecentAppsManager {
             if (!saved.isEmpty()) {
                 String[] parts = saved.split(",");
                 for (String p : parts) {
-                    if (!p.isEmpty() && !p.equals(packageName) && list.size() < 25) {
+                    if (!p.equals(packageName) && !p.isEmpty() && list.size() < MAX_RECENTS) {
                         list.add(p);
                     }
                 }
@@ -238,11 +229,8 @@ public class RecentAppsManager {
     public static void killApp(Context context, String packageName) {
         if (packageName == null || packageName.isEmpty()) return;
         try {
-            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-            if (am != null) {
-                am.killBackgroundProcesses(packageName);
-                Log.i(TAG, "Killed background processes for: " + packageName);
-            }
+            HomeKeyService.forceStopApp(context, packageName);
+
             SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             String saved = sp.getString(KEY_HISTORY, "");
             if (!saved.isEmpty()) {
@@ -262,16 +250,36 @@ public class RecentAppsManager {
     }
 
     public static void closeAll(Context context, List<RecentAppItem> items) {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        if (items != null && am != null) {
+        LinkedHashSet<String> pkgs = new LinkedHashSet<>();
+        if (items != null) {
             for (RecentAppItem item : items) {
                 if (!item.isCloseAll && !item.packageName.isEmpty()) {
-                    try {
-                        am.killBackgroundProcesses(item.packageName);
-                    } catch (Exception ignored) {}
+                    pkgs.add(item.packageName);
                 }
             }
         }
+
+        // Add any active running processes
+        try {
+            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            if (am != null) {
+                List<ActivityManager.RunningAppProcessInfo> running = am.getRunningAppProcesses();
+                if (running != null) {
+                    for (ActivityManager.RunningAppProcessInfo pi : running) {
+                        if (pi.pkgList != null) {
+                            for (String p : pi.pkgList) {
+                                if (isValidUserApp(p, context.getPackageName())) {
+                                    pkgs.add(p);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+
+        HomeKeyService.forceStopAll(context, new ArrayList<>(pkgs));
+
         try {
             context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                     .edit()

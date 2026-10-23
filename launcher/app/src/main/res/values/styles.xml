@@ -12,8 +12,8 @@
 
     <style name="Theme.TvHome.Translucent" parent="android:Theme.Material.NoActionBar.Fullscreen">
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">#E60C1017</item>
-        <item name="android:colorBackground">#E60C1017</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackground">@android:color/transparent</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:windowDisablePreview">true</item>
     </style>

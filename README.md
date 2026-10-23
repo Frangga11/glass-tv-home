@@ -26,11 +26,13 @@ every week.
 
 ## What you get
 
-- **Recent Apps & RAM Manager (Double-Press Home).** A native tvOS-style app switcher and memory optimizer:
-  - **Double-Press Home Button**: Double-pressing the remote's Home button anywhere on the TV brings up the frosted glass Recent Apps switcher.
-  - **Live RAM Gauge**: Real-time memory consumption display (`RAM 1.2 GB used of 1.9 GB`) with a sleek progress bar.
-  - **Individual App Dismissal**: Press `▲ (Up)` on any app card to slide it away, terminate its background process, and immediately reclaim RAM.
-  - **Close All Button**: Click the circular `Close All` button (`🗑️`) at the end of the carousel to kill all running background tasks and clear memory in one tap.
+- **Recent Apps & RAM Manager (Double-Press Home).** A native tvOS-style 3D CoverFlow app switcher and memory optimizer:
+  - **Double-Press Home Button**: Double-pressing the remote's Home button from anywhere on the TV brings up the frosted glass Recent Apps deck.
+  - **Double-Press Home to Close All**: Double-pressing Home again while inside the Recent Apps screen triggers `Close All` immediately—killing all background tasks and clearing memory in one step!
+  - **Genuine Force-Stop Automation**: Integrates Accessibility automated force-stop to cleanly and completely terminate even stubborn foreground media apps (e.g. video players, streaming apps) that resist standard background process termination.
+  - **Live RAM Gauge**: Real-time memory consumption display (`RAM 1.8 GB used of 2.3 GB`) with a sleek recessed progress bar.
+  - **Individual App Dismissal**: Press `▲ (Up)` on any app card to slide it away, force-stop its process, and immediately reclaim RAM.
+  - **Close All Button**: Click the circular `Close All` button (`🗑️`) at the end of the carousel to kill all running apps at once.
 - **Weather & Air Quality Engine.** A full-screen Leanback weather hub (`WeatherActivity`) accessible directly from the under-clock pill:
   - Current condition, apparent temperature, humidity, wind velocity, UV index, sunrise and sunset times.
   - Air Quality Index (AQI / API / IPU) from Malaysia's Jabatan Alam Sekitar (APIMS) with a multi-color spectrum gauge, station comparisons, PM2.5 / PM10 readings, and health advisories.

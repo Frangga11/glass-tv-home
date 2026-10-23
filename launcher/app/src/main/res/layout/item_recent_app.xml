@@ -3,7 +3,6 @@
     android:id="@+id/itemRoot"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="28dp"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:clipChildren="false"
@@ -14,8 +13,8 @@
         android:id="@+id/topPill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_app_pill"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_app_pill_unfocused"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -34,28 +33,42 @@
             android:ellipsize="end"
             android:fontFamily="@font/outfit"
             android:maxLines="1"
-            android:maxWidth="200dp"
+            android:maxWidth="260dp"
             android:textColor="#FFFFFFFF"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Main App Card -->
+    <!-- Main App Card with realistic deep drop shadow -->
     <FrameLayout
         android:id="@+id/cardContainer"
-        android:layout_width="280dp"
-        android:layout_height="170dp"
+        android:layout_width="420dp"
+        android:layout_height="250dp"
         android:background="@drawable/bg_recent_card"
         android:clickable="true"
+        android:elevation="28dp"
         android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:focusableInTouchMode="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
-        <ImageView
-            android:id="@+id/ivCardIcon"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+        <!-- Centered Squircle Tile -->
+        <FrameLayout
+            android:id="@+id/squircleContainer"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
             android:layout_gravity="center"
-            android:contentDescription="@null"
-            android:scaleType="fitCenter" />
+            android:background="@drawable/bg_app_squircle"
+            android:elevation="6dp">
+
+            <ImageView
+                android:id="@+id/ivCardIcon"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter" />
+        </FrameLayout>
 
     </FrameLayout>
 

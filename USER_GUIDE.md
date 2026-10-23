@@ -92,7 +92,7 @@ Glass TV Home is designed around standard TV remotes:
 
 | Remote Button | Action / Function |
 | :--- | :--- |
-| **DOUBLE-PRESS HOME** | **Recent Apps & RAM Manager**: Open running apps switcher, check live RAM, dismiss individual apps (press ▲), or Close All. |
+| **DOUBLE-PRESS HOME** | • **Outside**: Opens Recent Apps & RAM Manager.<br>• **Inside Recent Apps**: Triggers **Close All** immediately to terminate all background apps & clear RAM! |
 | **HOME Button (Single Press)** | Return to home dock from any third-party app. If on home, engages ambient screensaver. |
 | **UP Button (▲)** | Navigates to the top shelf to highlight the **Weather & AQI Pill** or Wi-Fi/Settings menus. |
 | **OK / Center Button** | • Press on an app to launch it.<br>• Press on the weather pill to open the **Full-Screen Weather & Air Quality Dashboard**.<br>• **Long-Press** on an app to pick it up and rearrange/pin it to the dock. |
@@ -125,8 +125,10 @@ Glass TV Home is designed around standard TV remotes:
 ### D. Recent Apps & RAM Cleaner (Double-Press Home) ⚡
 A native tvOS-style app switcher and memory flusher:
 * **How to Open**: Press the remote **HOME button twice rapidly** from any app or home screen (or press the App Switch button on supported remotes).
-* **Live RAM Gauge Pill**: In the top right corner, view real-time memory stats (e.g., `RAM 1.2 GB used of 1.9 GB`) with a responsive progress bar.
-* **Dismiss Individual Apps**: On any focused app card, press **UP (▲)** on your remote to terminate its background process, animate the card away, and instantly free up RAM.
+* **Double-Press Home to Close All**: While viewing the Recent Apps screen, press the **HOME button twice rapidly** again to immediately execute **Close All** and clean RAM without touching any other key!
+* **Genuine Force-Stop Automation**: Integrates background accessibility automation to cleanly terminate stubborn media players, video streams, and background tasks (such as Nuvio, YouTube, Stremio) from system memory, rather than merely dismissing their card visually.
+* **Live RAM Gauge Pill**: In the top right corner, view real-time memory stats (e.g., `RAM 1.8 GB used of 2.3 GB`) with a responsive recessed progress bar.
+* **Dismiss Individual Apps**: On any focused app card, press **UP (▲)** on your remote to terminate its process, animate the card away, and instantly free up RAM.
 * **'Close All' Button (Trash Icon 🗑️)**: Navigate to the far right of the carousel and click the circular **Close All** button to terminate all running background apps and flush RAM in 1 tap!
 
 ---

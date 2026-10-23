@@ -25,4 +25,8 @@ public class RecentAppItem {
         this.launchIntent = null;
         this.isCloseAll = isCloseAll;
     }
+
+    public static RecentAppItem createCloseAll() {
+        return new RecentAppItem(true);
+    }
 }
