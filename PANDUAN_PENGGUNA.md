@@ -7,7 +7,7 @@ Selamat datang ke **Glass TV Home**! Panduan ini khas untuk pengguna baru (*begi
 ## 🌟 1. Apa Itu Glass TV Home?
 
 Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Google TV (seperti Xiaomi Mi Box S, Mi TV Stick, Android TV Sharp, Sony, TCL, Philips, Mecool dsb):
-* 🚀 **Tiada Iklan & Sangat Ringan**: Hanya bersaiz ~422 KB, lancar dan tidak membebankan TV (menjimatkan lebih 400 MB RAM berbanding skrin asal).
+* 🚀 **Tiada Iklan & Sangat Ringan**: Hanya bersaiz ~453 KB, lancar dan tidak membebankan TV (menjimatkan lebih 400 MB RAM berbanding skrin asal).
 * 🪟 **Gaya Kaca Frosted (tvOS)**: Rekaan moden seperti Apple TV dengan bayang kaca terapung dan susunan aplikasi yang kemas.
 * 🕌 **Waktu Solat & Ayat Harian**: Jadual 6 waktu solat Malaysia secara automatik dengan ayat al-Quran pilihan harian.
 * ⛅ **Dashboard Cuaca & Jerebu (API)**: Semakan suhu semasa, ramalan 12 jam, 7 hari, serta indeks pencemaran udara rasmi (APIMS Jabatan Alam Sekitar).
@@ -15,11 +15,26 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 
 ---
 
-## 🤖 2. Cara Paling Mudah: Arahkan AI Buat Semua Automatik! (Noob-Friendly)
+## 📦 Muat Turun Fail APK Terus (Direct Download)
 
-Anda **tidak perlu tahu koding** atau menaip perintah teknikal yang rumit. Anda boleh mengarahkan pembantu AI (*AI Coding Assistant*) untuk menyambung ke TV melalui Wi-Fi, membuang iklan pengeluar, menyekat penjejak data (*tracking*), mengoptimumkan TV agar laju, dan memasang Glass TV Home terus ke TV anda.
+Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
+* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (453 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
+* ⚡ **Versi**: Terkini (Dilengkapi sokongan Dropdown Tetapan, Kategori Wallpaper 4K, APIMS Jerebu, & Waktu Solat JAKIM)
 
-### 💡 Pilihan AI Yang Boleh Digunakan:
+---
+
+## 🤖 2. Cara Paling Mudah: Bantuan AI (Hanya 1 Baris Prompt!)
+
+Anda **tidak perlu tahu koding** atau menaip arahan teknikal yang panjang. Selepas menghidupkan mod pembangun di TV, anda hanya perlu tampal **satu baris prompt** ini sahaja kepada mana-mana pembantu AI (*AI Coding Assistant* seperti Google Antigravity percuma atau Claude Code):
+
+```text
+install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+```
+
+AI akan menguruskan **SEMUANYA** secara automatik dari mula hingga selesai!
+
+### 💡 Pilihan Pembantu AI:
 1. **Google Antigravity (Percuma / Free)** ⭐ *Paling Disyorkan*:
    - AI agent rasmi daripada Google DeepMind dengan akses terminal shell penuh, alatan automasi, dan keupayaan menjalankan skrip secara percuma.
 2. **Claude Code (Berbayar / Subscription Anthropic)**:
@@ -29,47 +44,51 @@ Anda **tidak perlu tahu koding** atau menaip perintah teknikal yang rumit. Anda 
 
 ---
 
-### 📋 Langkah 1: Hidupkan Developer Mode & Debugging di TV Anda
-Sebelum AI boleh menyambung ke TV melalui Wi-Fi, aktifkan mod pembangun pada Android TV anda:
+### 📋 Langkah 1: Hidupkan Developer Mode & Wireless Debugging di TV Anda
+Sebelum AI boleh menyambung ke TV melalui Wi-Fi, lakukan 2 tetapan ringkas ini pada TV menggunakan remote:
 1. Pada remote TV anda, buka **Settings (Tetapan / ikon gear ⚙️)**.
 2. Pilih **Device Preferences** (atau **System** pada Google TV baru).
-3. Pilih **About (Mengenai)**.
-4. Skrol ke bawah hingga jumpa baris bertulis **Build** (atau **Android TV OS Build**).
-5. **Tekan butang OK pada remote sebanyak 7 kali berturut-turut** sehingga muncul mesej: *"You are now a developer!"*.
-6. Tekan butang *Back* sekali. Anda akan nampak menu baharu iaitu **Developer options (Pilihan pembangun)**.
-7. Masuk ke dalam *Developer options*, cari dan **HIDUPKAN**:
+3. Pilih **About (Mengenai)** $\rightarrow$ Skrol ke baris bertulis **Build** (atau *Android TV OS Build*).
+4. **Tekan butang OK pada remote sebanyak 7 kali berturut-turut** sehingga muncul mesej: *"You are now a developer!"*.
+5. Tekan butang *Back* sekali. Masuk ke menu baharu iaitu **Developer options (Pilihan pembangun)**.
+6. Cari dan **HIDUPKAN**:
    - ✅ **USB debugging** (Tukar kepada ON/Aktif).
-   - ✅ **Network debugging / Wireless debugging** (jika ada pada model TV anda).
-8. Dapatkan alamat IP TV anda di menu **Settings $\rightarrow$ Network & Internet** (contoh: `192.168.68.102` atau `192.168.1.50`).
+   - ✅ **Wireless debugging / Network debugging** (Tukar kepada ON/Aktif).
+7. Pastikan TV dan komputer/telefon anda bersambung pada **rangkaian Wi-Fi yang sama**.
 
 ---
 
-### 📋 Langkah 2: Berikan Arahan (Prompt) Ini Kepada AI
-Buka **Google Antigravity**, **Claude Code**, atau **Cursor** di laptop/komputer anda yang bersambung pada **rangkaian Wi-Fi yang sama dengan TV anda**. Salin dan hantarkan arahan di bawah kepada AI:
+### 📋 Langkah 2: Tampal Prompt 1 Baris Ini Kepada AI
+Buka **Google Antigravity**, **Claude Code**, atau **Cursor** di laptop/komputer anda. Salin dan tampal satu baris ini sahaja:
 
 ```text
-Tolong pasangkan Glass TV dari repo https://github.com/aqmangge/glass-tv-home pada Android TV saya.
-Model TV saya: [Masukkan jenama & model TV anda, contoh: Xiaomi Mi Box S]
-Alamat IP TV: [Masukkan IP TV anda, contoh: 192.168.68.102]
+install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+```
 
-Tolong laksanakan perkara berikut secara automatik:
-1. Sambung ke TV saya melalui Wi-Fi menggunakan ADB (port 5555).
-2. Buat salinan sandaran (backup) senarai app dan tetapan asal TV ke folder backup terlebih dahulu.
-3. Optimumkan & Buang Iklan/Tracking (Debloat):
-   - Matikan servis bloatware pengeluar, iklan promosi tajaan (seperti Xiaomi PatchWall/promosi Google), dan servis tracking telemetri latar belakang menggunakan perintah 'pm disable-user --user 0'.
-   - Jangan padam sistem asas yang penting (seperti HDMI, Bluetooth remote, Google Play Store, audio, dan Wi-Fi).
-4. Aktifkan AdGuard Private DNS (dns.adguard-dns.com) untuk menyekat iklan dan penjejak data sistem secara automatik.
-5. Compile/build fail APK Glass TV Home dan pasang sebagai skrin utama (default home launcher).
-6. Aktifkan HomeKeyService untuk membolehkan butang Home kembali ke launcher dan fungsi auto-sleep 2 jam berfungsi.
-7. Ambil screenshot dari TV dan tunjukkan kepada saya untuk mengesahkan semuanya berjaya dan lancar.
+> **Apa yang AI akan lakukan secara automatik selepas anda hantar prompt ini?**
+> 1. AI akan bertanya alamat IP TV anda (atau mengesan IP TV di rangkaian Wi-Fi anda secara automatik).
+> 2. AI akan bertanya di mana lokasi anda di Malaysia (cth: Putrajaya, KL, Cheras, Melaka, JB, Penang, Kuantan, dsb) untuk melaraskan stesen jerebu JAS APIMS dan jadual waktu solat JAKIM.
+> 3. AI menyambung ke TV anda melalui Wi-Fi via ADB (`adb connect <ip>:5555`).
+> 4. AI membuat salinan sandaran (*backup*) sistem asal TV.
+> 5. AI mematikan aplikasi bloatware pengeluar yang melambatkan TV, mematikan iklan tajaan, dan mengaktifkan AdGuard Private DNS untuk menyekat penjejak sistem.
+> 6. AI memasang fail APK Glass TV Home yang sangat ringan (~453 KB) sebagai skrin utama.
+> 7. AI mengambil gambar tangkap layar (*screenshot*) TV anda yang kini laju dan bersih untuk pengesahan anda!
+
+*(Nota: Jika anda ingin memberikan maklumat penuh terus dalam satu mesej tanpa AI bertanya semula, anda juga boleh gunakan format terperinci ini:)*
+```text
+install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+Model TV: [cth: Xiaomi Mi Box S]
+IP TV: [cth: 192.168.68.102]
+Lokasi Saya: [cth: Putrajaya / Cheras / Shah Alam / Johor Bahru / Penang]
 ```
 
 > [!IMPORTANT]
 > **🚨 Pesanan Khas Untuk Pembantu AI (AI Assistant Rule)**:
-> Semasa membantu pengguna memasang Glass TV Home, AI **WAJIB** bertanya kepada pengguna:
-> *"Di manakah lokasi anda di Malaysia (contoh: Putrajaya, Cheras, Shah Alam, Melaka, Johor Bahru, Pulau Pinang, Kuantan, Kuching, Kota Kinabalu, dll.) supaya data jerebu/IPU rasmi Jabatan Alam Sekitar (JAS) dan jadual waktu solat JAKIM dapat diselaraskan secara automatik?"*
+> Apabila pengguna memberikan prompt `install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home`, AI **WAJIB** bertanya kepada pengguna:
+> 1. *"Apakah alamat IP TV anda di menu Settings -> Network & Internet (atau jenama TV anda)?"* (jika belum dapat dikesan secara automatik)
+> 2. *"Di manakah lokasi anda di Malaysia (contoh: Putrajaya, Cheras, Shah Alam, Melaka, Johor Bahru, Pulau Pinang, Kuantan, Kuching, Kota Kinabalu, dll.) supaya data jerebu/IPU rasmi Jabatan Alam Sekitar (JAS) dan jadual waktu solat JAKIM dapat diselaraskan secara automatik?"*
 > 
-> Setelah pengguna memberikan lokasinya, AI jalankan arahan ADB ini terus ke TV:
+> Selepas bersambung ke TV, AI boleh pasang terus APK rasmi sedia ada dari `release/glass-tv-home.apk` atau compile APK baharu, jalankan debloat, dan tetapkan lokasi pengguna via:
 > ```bash
 > adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<NAMA_LOKASI>"
 > ```
@@ -257,11 +276,11 @@ Jika anda ingin membuang aplikasi bawaan pengeluar (seperti Xiaomi PatchWall) se
 ## 🛠️ 6. Cara Pasang Manual Guna Pendrive (Alternatif)
 
 Jika anda lebih suka menggunakan pendrive USB:
-1. Muat turun fail `app-release.apk` (dalam folder `launcher/app/build/outputs/apk/release/`).
-2. Salin fail APK tersebut ke dalam pendrive USB.
+1. Muat turun fail [**glass-tv-home.apk**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (terdapat dalam folder [`release/`](release/glass-tv-home.apk)).
+2. Salin fail `glass-tv-home.apk` tersebut ke dalam pendrive USB.
 3. Cucuk pendrive pada Android TV atau Xiaomi Mi Box anda.
 4. Buka aplikasi pengurus fail di TV (cth: *File Commander* atau *FX File Explorer* dari Google Play Store TV).
-5. Klik pada `app-release.apk` dan tekan **Install**.
+5. Klik pada `glass-tv-home.apk` dan tekan **Install**.
    *(Jika TV meminta izin "Install unknown apps", pilih **Allow/Benarkan**)*.
 6. Selepas siap dipasang, tekan butang **Home** pada remote TV dan pilih **Glass TV Home** sebagai *Always / Sentiasa*.
 

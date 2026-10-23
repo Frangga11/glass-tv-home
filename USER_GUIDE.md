@@ -8,7 +8,7 @@ Welcome to **Glass TV Home**! This guide is crafted specifically for everyday us
 
 Glass TV Home is a modern, lightweight home launcher replacement for Android TV and Google TV (compatible with Xiaomi Mi Box S, Mi TV Stick, Sony Bravia, TCL, Sharp, Philips, Mecool, Chromecast with Google TV, and more):
 
-* 🚀 **Zero Ads & Ultralight**: Only ~422 KB in size. Saves over 400 MB of RAM compared to sluggish stock manufacturer launchers.
+* 🚀 **Zero Ads & Ultralight**: Only ~453 KB in size. Saves over 400 MB of RAM compared to sluggish stock manufacturer launchers.
 * 🪟 **Frosted Glass Aesthetic (tvOS Style)**: Modern Apple TV-inspired interface with fluid focus animations and a floating glass dock.
 * 🕌 **Islamic Prayer Timetable & Daily Ayat**: Accurate 6-phase prayer timetable (Subuh, Syuruk, Zohor, Asar, Maghrib, Isyak) with active prayer emerald highlighting and daily Quranic verses.
 * ⛅ **Weather & Air Quality (API / AQI) Dashboard**: Live ambient temperature, "feels like", humidity, UV index, wind speed, sunrise/sunset, 12-hour forecast, 7-day outlook, and official Air Quality Index readings (APIMS).
@@ -16,9 +16,26 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 
 ---
 
-## 🤖 2. The Easiest Way: Let AI Do Everything Automatically! (Noob-Friendly)
+## 📦 Direct APK Download
 
-You **do not need any coding skills** or technical terminal knowledge. You can simply ask an AI Coding Assistant to connect to your TV over Wi-Fi, remove manufacturer bloatware, block background telemetry and ads, optimize performance, and install Glass TV Home automatically.
+For users who want to download and install the pre-compiled APK directly:
+* 📥 **Official Release APK**: [**glass-tv-home.apk** (453 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
+* ⚡ **Version**: Latest with Frosted Glass Settings Dropdown, 4K Wallpaper Switcher, APIMS Haze, & JAKIM Prayer Times.
+
+---
+
+## 🤖 2. The Easiest Way: Let AI Do Everything Automatically! (1-Line Prompt)
+
+You **do not need any coding skills** or technical terminal knowledge. After enabling developer mode on your TV, simply paste this **single prompt** into any AI coding assistant (such as Google Antigravity [Free] or Claude Code):
+
+```text
+install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+```
+
+*(English alias: `install this on my home tv: https://github.com/aqmangge/glass-tv-home`)*
+
+The AI will handle **EVERYTHING** automatically from start to finish!
 
 ### 💡 Supported AI Assistants:
 1. **Google Antigravity (Free / Zero Setup)** ⭐ *Highly Recommended*:
@@ -31,46 +48,50 @@ You **do not need any coding skills** or technical terminal knowledge. You can s
 ---
 
 ### 📋 Step 1: Turn On Developer Mode & Debugging on Your TV
-Before AI can reach your TV over Wi-Fi, enable developer options on your Android TV:
+Before AI can reach your TV over Wi-Fi, perform these two simple remote actions:
 1. On your TV remote, open **Settings ⚙️**.
 2. Select **Device Preferences** (or **System** on newer Google TVs).
-3. Select **About**.
-4. Scroll down until you find **Build** (or **Android TV OS Build**).
-5. **Press the OK button on your remote 7 times rapidly** until a toast notification appears: *"You are now a developer!"*.
-6. Press the *Back* button once. You will now see a new menu: **Developer options**.
-7. Open *Developer options*, locate and **ENABLE**:
+3. Select **About** $\rightarrow$ Scroll down to **Build** (or *Android TV OS Build*).
+4. **Press the OK button on your remote 7 times rapidly** until a toast notification appears: *"You are now a developer!"*.
+5. Press the *Back* button once. Open the new menu: **Developer options**.
+6. Locate and **ENABLE**:
    - ✅ **USB debugging** (Turn ON).
-   - ✅ **Network debugging / Wireless debugging** (if available on your TV model).
-8. Find your TV's local IP address under **Settings $\rightarrow$ Network & Internet** (e.g. `192.168.68.102` or `192.168.1.50`).
+   - ✅ **Wireless debugging / Network debugging** (Turn ON).
+7. Ensure both your computer/phone and TV are connected to the **same Wi-Fi network**.
 
 ---
 
-### 📋 Step 2: Give This Prompt to Your AI Assistant
-Open **Google Antigravity**, **Claude Code**, or **Cursor** on your computer/laptop connected to the **same home Wi-Fi network as your TV**. Copy and paste the prompt below:
+### 📋 Step 2: Paste This 1-Line Prompt to Your AI Assistant
+Open **Google Antigravity**, **Claude Code**, or **Cursor** on your laptop/computer. Copy and paste this single prompt:
 
 ```text
-Please install Glass TV from repository https://github.com/aqmangge/glass-tv-home on my Android TV.
-My TV model: [Insert your TV brand & model, e.g., Xiaomi Mi Box S]
-My TV IP address: [Insert your TV IP, e.g., 192.168.68.102]
+install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+```
 
-Please execute the following tasks automatically:
-1. Connect to my TV over Wi-Fi using ADB (port 5555).
-2. Create a backup of my TV's current app list and settings into the backup folder.
-3. Optimize & Debloat (Remove Ads & Telemetry):
-   - Disable manufacturer bloatware, sponsored promotional ads (such as Xiaomi PatchWall or Google TV launcher ads), and background analytics services using 'pm disable-user --user 0'.
-   - Do NOT disable critical system services (keep HDMI, Bluetooth remote, Google Play Store, audio, and Wi-Fi intact).
-4. Configure AdGuard Private DNS (dns.adguard-dns.com) to block ads and trackers at the system DNS level.
-5. Compile/build the Glass TV Home APK and install it as the default home launcher.
-6. Enable HomeKeyService so the remote Home button returns to Glass TV and the 2-hour sleep standby timer functions.
-7. Capture a live screenshot from the TV and display it to confirm everything succeeded smoothly.
+> **What the AI will do automatically after you send this prompt:**
+> 1. The AI will ask for your TV IP address (or probe your home Wi-Fi subnet to find the TV automatically).
+> 2. The AI will ask for your location in Malaysia (e.g. Putrajaya, Cheras, Shah Alam, Melaka, JB, Penang, Kuantan, etc.) to calibrate APIMS haze and JAKIM prayer zones.
+> 3. Connects to your TV over Wi-Fi via ADB (`adb connect <ip>:5555`).
+> 4. Creates a safety backup of your TV's factory package configuration.
+> 5. Strips away sluggish manufacturer bloatware, suppresses promotional ads, and activates AdGuard Private DNS to block background analytics.
+> 6. Installs the ultralight (~453 KB) Glass TV Home APK as your primary home launcher.
+> 7. Pulls a live screenshot from your TV to confirm everything is running smoothly!
+
+*(Optional: If you want to supply all info at once in a single message without back-and-forth:)*
+```text
+install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+TV Model: [e.g. Xiaomi Mi Box S]
+TV IP: [e.g. 192.168.68.102]
+My Location: [e.g. Putrajaya / Cheras / Shah Alam / Johor Bahru / Penang]
 ```
 
 > [!IMPORTANT]
 > **🚨 Mandatory Instruction For AI Assistants (AI Assistant Rule)**:
-> When assisting a user in deploying Glass TV Home, the AI **MUST** ask the user:
-> *"What is your location in Malaysia (e.g. Putrajaya, Cheras, Shah Alam, Melaka, Johor Bahru, Penang, Kuantan, Kuching, Kota Kinabalu, etc.) so that official Jabatan Alam Sekitar (DOE / APIMS) haze / IPU readings and JAKIM prayer times can be configured automatically?"*
+> When a user gives you the prompt `install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home`, the AI **MUST** ask the user:
+> 1. *"What is your TV's IP address under Settings -> Network & Internet (or your TV brand)?"* (if not auto-discovered)
+> 2. *"Where are you located in Malaysia (e.g. Putrajaya, Cheras, Shah Alam, Melaka, Johor Bahru, Penang, Kuantan, Kuching, Kota Kinabalu, etc.) so that official Jabatan Alam Sekitar (DOE / APIMS) haze / IPU readings and JAKIM prayer times can be configured automatically?"*
 > 
-> Once the user answers, the AI issues this ADB command directly to the TV:
+> The AI can immediately install the prebuilt APK from `release/glass-tv-home.apk` or build it, run debloat, and set the user location via:
 > ```bash
 > adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<USER_LOCATION>"
 > ```
@@ -219,7 +240,7 @@ To disable deep manufacturer system packages (e.g., Xiaomi PatchWall), it is rec
 ## 🛠️ 6. Alternative: Manual Installation via USB Flash Drive
 
 If you prefer using a physical USB drive:
-1. Download `app-release.apk` onto your USB drive.
+1. Download [**glass-tv-home.apk**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (also in [`release/glass-tv-home.apk`](release/glass-tv-home.apk)) onto your USB drive.
 2. Plug the USB flash drive into your Android TV or Xiaomi Mi Box.
 3. Open any file explorer app on the TV (e.g., *File Commander* or *FX File Explorer* from Google Play Store).
 4. Click `app-release.apk` and select **Install** (allow *"Install unknown apps"* if prompted).

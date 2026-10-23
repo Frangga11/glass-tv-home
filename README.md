@@ -7,10 +7,18 @@ and come home to just your apps, with a new place to visit behind them every wee
   <img src="docs/screenshots/glass_tv_os_showcase_poster.jpg" width="100%" alt="Glass TV OS Presentation Poster">
 </p>
 
+<p align="center">
+  <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk">
+    <img src="https://img.shields.io/badge/Download_APK-glass--tv--home.apk_(453_KB)-success?style=for-the-badge&logo=android" alt="Download APK">
+  </a>
+</p>
+
+> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (~453 KB) ready to install on any Android TV or Google TV!
+>
 > 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
 >
 > 📖 **User Guides / Panduan Pengguna**:
-> - 🇬🇧 **English User Guide**: Complete beginner-friendly walkthrough, remote navigation, phone setup & FAQ in [USER_GUIDE.md](USER_GUIDE.md).
+> - 🇬🇧 **English User Guide**: Complete beginner walkthrough, 1-line AI setup, remote navigation, phone setup & FAQ in [USER_GUIDE.md](USER_GUIDE.md).
 > - 🇲🇾 **Panduan Bahasa Melayu**: Panduan lengkap langkah demi langkah untuk pengguna baru di [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md).
 
 Glass TV debloats any Android TV or Google TV over Wi-Fi, with no root and nothing that can't be undone, then
@@ -93,14 +101,22 @@ while you are inside an app.
 
 ## Setting it up (Auto with AI or Manual)
 
-**Using an AI coding agent** (Google Antigravity [Free], Claude Code [Paid], Cursor, Codex...)? Point it at this repository and ask it to debloat your TV, block ad tracking, and install Glass TV automatically! [AGENTS.md](AGENTS.md) and [PROMPT.md](PROMPT.md) guide any AI assistant safely step-by-step.
+### 🤖 1-Line AI Setup (Easiest & Automatic)
+Using an AI assistant (**Google Antigravity** [Free], **Claude Code** [Paid], **Cursor**)?
+1. On your TV remote, go to **Settings ⚙️ $\rightarrow$ About $\rightarrow$ click Build 7 times** to enable Developer Options, then turn ON **USB debugging** & **Wireless/Network debugging**.
+2. Paste this single line to your AI assistant:
+   ```text
+   install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+   ```
+   *(Or in English: `install this on my home tv: https://github.com/aqmangge/glass-tv-home`)*
+3. The AI will automatically ask for your TV IP & location in Malaysia, connect over Wi-Fi, backup, debloat ads & tracking, and install Glass TV Home! See [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md) and [USER_GUIDE.md](USER_GUIDE.md).
 
 > 🚨 **AI Assistant Rule / Arahan Khas AI**:
 > When installing for a user, the AI **must ask the user for their location in Malaysia** (e.g. Putrajaya, Cheras, Shah Alam, Melaka, JB, Penang, Kuantan, Kuching, KK) to configure live JAS haze/IPU data and JAKIM prayer times via:
 > ```bash
 > adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<LOCATION>"
 > ```
-> If installed manually without AI, users can change the station at any time directly on the TV using the remote control under **Weather Dashboard $\rightarrow$ 📍 Tukar Stesen / Change**.
+> If installed manually without AI, users can change the station at any time directly on the TV using the remote control under **Settings (⚙️) $\rightarrow$ Location API Haze** or **Weather Dashboard $\rightarrow$ 📍 Tukar Stesen / Change**.
 
 > 📖 **Read the Beginner User Guides**:
 > - 🇬🇧 **[USER_GUIDE.md](USER_GUIDE.md)**: Full English step-by-step guide (Developer Mode, AI prompts, manual station selector, iPhone & Android setups, FAQ).
