@@ -125,11 +125,64 @@ Sangat mudah dan intuitif! Anda hanya perlukan butang arah pada remote TV anda:
 
 ---
 
-## 🛠️ 5. Cara Pasang Manual (Tanpa Komputer / Guna Pendrive)
+## 📱 5. Cara Buat Guna Telefon Pintar (Tanpa Komputer / Laptop Langsung!)
 
-Jika anda tidak mahu menggunakan AI dan hanya mahu memasang fail APK secara manual:
+**Boleh sangat!** Jika anda tiada komputer atau laptop, anda boleh gunakan telefon pintar Android anda untuk pasang, lajukan TV, dan buang iklan.
 
-### Kaedah A: Guna Pendrive / USB:
+---
+
+### Kaedah 1: Guna Aplikasi 'Bugjaeger' (Paling Berkuasa - Pasang APK + Buang Iklan dari Telefon)
+Aplikasi **Bugjaeger Mobile ADB** (percuma di Google Play Store telefon) membolehkan telefon anda bertindak seperti komputer untuk mengawal dan mengoptimumkan TV.
+
+1. **Sambung Wi-Fi**: Pastikan telefon dan TV berada di atas Wi-Fi yang sama.
+2. **Pasang Bugjaeger**: Muat turun aplikasi **Bugjaeger** di telefon anda dari Play Store.
+3. **Sambung ke TV**:
+   - Buka Bugjaeger, tekan ikon palam (**Connect 🔌**).
+   - Masukkan Alamat IP TV anda (cth: `192.168.68.102`) dan port `5555`.
+   - Tekan **Connect**.
+   - Pada skrin TV, tekan **Allow** apabila keluar tetingkap *"Allow USB debugging"*.
+4. **Pasang Glass TV Terus dari Telefon**:
+   - Masuk tab **Packages (ikon kotak 📦)** di Bugjaeger.
+   - Tekan butang tambah (**+**) di atas, pilih fail `app-release.apk` yang telah dimuat turun ke telefon anda.
+   - Bugjaeger akan memasang Glass TV terus ke TV dalam beberapa saat!
+5. **Buang Iklan & Sekat Tracking dari Telefon**:
+   - Masuk tab **Commands (ikon terminal ⚡)** di Bugjaeger.
+   - Salin dan tampal perintah ini untuk sekat iklan sistem:
+     ```bash
+     settings put global private_dns_specifier dns.adguard-dns.com
+     settings put global private_dns_mode hostname
+     ```
+   - Masukkan perintah untuk matikan iklan pengeluar (cth Xiaomi PatchWall):
+     ```bash
+     pm disable-user --user 0 com.mitv.tvhome
+     pm disable-user --user 0 com.xiaomi.mitv.advertise
+     ```
+   - Selesai! TV anda kini bebas iklan dan sangat laju.
+
+---
+
+### Kaedah 2: Paling Ringkas (Hanya Pasang APK Guna 'Send Files to TV')
+Jika anda hanya mahu pasang Glass TV Home tanpa buat debloat teknikal:
+1. Pasang aplikasi percuma **Send Files to TV** di telefon pintar dan di Android TV anda (dari Google Play Store).
+2. Muat turun `app-release.apk` ke telefon anda (dari pautan fail GitHub).
+3. Buka aplikasi pada kedua-dua peranti, hantar APK dari telefon ke TV melalui Wi-Fi.
+4. Di TV anda, buka aplikasi pengurus fail (seperti *File Commander* atau *FX File Explorer*), klik pada fail APK dan pilih **Install**.
+5. Tekan butang **Home** pada remote TV dan pilih **Glass TV Home** sebagai *Always / Sentiasa*.
+
+---
+
+### 🤖 Bolehkah Tanya AI dari Telefon?
+Boleh! Anda boleh buka aplikasi AI di telefon (seperti Claude, ChatGPT, atau pelayar web):
+1. Beritahu AI jenama TV anda:
+   > *"Saya guna telefon dan app Bugjaeger. TV saya model Xiaomi Mi Box S. Berikan saya senarai arahan debloat untuk matikan iklan dan tracking."*
+2. AI akan berikan senarai perintah `pm disable-user`.
+3. Anda hanya perlu salin dan tampal perintah tersebut ke dalam aplikasi **Bugjaeger** di telefon anda!
+
+---
+
+## 🛠️ 6. Cara Pasang Manual Guna Pendrive (Alternatif)
+
+Jika anda lebih suka menggunakan pendrive USB:
 1. Muat turun fail `app-release.apk` (dalam folder `launcher/app/build/outputs/apk/release/`).
 2. Salin fail APK tersebut ke dalam pendrive USB.
 3. Cucuk pendrive pada Android TV atau Xiaomi Mi Box anda.
@@ -137,12 +190,6 @@ Jika anda tidak mahu menggunakan AI dan hanya mahu memasang fail APK secara manu
 5. Klik pada `app-release.apk` dan tekan **Install**.
    *(Jika TV meminta izin "Install unknown apps", pilih **Allow/Benarkan**)*.
 6. Selepas siap dipasang, tekan butang **Home** pada remote TV dan pilih **Glass TV Home** sebagai *Always / Sentiasa*.
-
-### Kaedah B: Tanpa Wayar (Guna Telefon & Aplikasi 'Send Files to TV'):
-1. Pasang aplikasi percuma **Send Files to TV** di telefon pintar dan di Android TV anda (dari Google Play Store).
-2. Muat turun `app-release.apk` ke telefon anda.
-3. Buka aplikasi pada kedua-dua peranti, hantar APK dari telefon ke TV melalui Wi-Fi.
-4. Buka dan pasang fail APK di TV anda. Selesai!
 
 ---
 
