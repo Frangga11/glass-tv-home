@@ -222,6 +222,35 @@ Jika anda lebih suka menggunakan pendrive USB:
 
 ---
 
+## ❓ 7. Soalan Lazim (FAQ) Mengenai AI, Telefon & Remote TV
+
+### S1: Bolehkah jalankan Claude Code di telefon (iOS / Android) dan adakah masalah iOS Sandbox menghalang capaian network?
+* **Realiti Claude Code di Telefon:** Claude Code ialah perisian Terminal/CLI (`@anthropic-ai/claude-code`) yang memerlukan enjin **Node.js 18+**. Di iPhone (iOS), sistem keselamatan Sandbox Apple tidak membenarkan pelaksanaan enjin Node.js atau shell secara terus di dalam telefon.
+* **Isu Capaian Rangkaian (Cloud vs Local Network):** Claude Code (atau mana-mana AI awan seperti Claude.ai / ChatGPT) berjalan di server awan. Server awan di internet **TIDAK BOLEH menembusi Wi-Fi rumah anda** untuk mencapai IP peribadi TV (`192.168.x.x`) kerana disekat oleh *firewall router* rumah anda.
+* **Penyelesaian:** Arahan ADB mesti dilancarkan dari peranti yang berada di dalam rangkaian Wi-Fi rumah yang sama:
+  - **Paling senang:** Guna laptop / komputer (Google Antigravity percuma atau Claude Code di terminal laptop).
+  - **Guna telefon pintar:** Pengguna Android boleh guna aplikasi tempatan seperti **Bugjaeger Mobile ADB**.
+
+---
+
+### S2: Adakah AI yang boleh pasang dan buat semua tugasan secara terus tanpa pengguna perlu pasang APK sendiri?
+* **YA, jika menggunakan Komputer / Laptop (Google Antigravity / Claude Code / Cursor):**
+  AI pada komputer boleh bersambung terus ke TV melalui Wi-Fi rumah (`adb connect 192.168.x.x`). AI akan membina APK $\rightarrow$ menghantar ke TV $\rightarrow$ memasang APK $\rightarrow$ memadam iklan pengeluar $\rightarrow$ dan menguji skrin secara automatik 100%. Anda tidak perlu muat turun atau sentuh fail APK langsung!
+* **Jika Hanya Menggunakan Telefon:** Anda perlu bantuan aplikasi perantara tempatan (Android guna *Bugjaeger*, iPhone hantar fail melalui *LocalSend*).
+
+---
+
+### S3: Jika pengguna hanya pasang fail APK, adakah boleh akses penuh menggunakan remote TV atau perlukan akses AI juga?
+* **100% BOLEH GUNA REMOTE SAHAJA, TIDAK PERLUKAN AI LAGI!**
+* Glass TV Home dibina sebagai aplikasi Android TV asli (*Native Android TV app*).
+* Sebaik sahaja fail APK terpasang pada TV:
+  - **Remote TV berfungsi sepenuhnya**: Butang D-Pad (Atas/Bawah/Kiri/Kanan/OK) untuk kawal aplikasi dan cuaca, serta butang Home/Back berfungsi seperti biasa.
+  - **Semua ciri automatik berjalan sendiri**: Jam, jadual waktu solat, cuaca & kualiti udara (APIMS), mod screensaver 10 minit, dan auto-sleep 2 jam dijana sepenuhnya oleh cip pemproses TV tanpa bergantung kepada mana-mana AI atau internet luar.
+  - Ahli keluarga dan pengguna biasa boleh menikmati TV dengan lancar hanya menggunakan remote TV biasa.
+* **Peranan AI hanyalah seperti "jurutera"** yang membantu memasang dan mencuci bloatware pada peringkat permulaan sahaja.
+
+---
+
 ## 📄 Lesen & Penghargaan
 * Dibina berasaskan [CleanYourTV](https://github.com/Gathin23/cleanyourtv) © Gathin (Lesen MIT).
 * Fon Outfit oleh SIL Open Font License.

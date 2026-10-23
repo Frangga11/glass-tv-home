@@ -9,7 +9,9 @@ and come home to just your apps, with a new place to visit behind them every wee
 
 > 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
 >
-> 🇲🇾 **Panduan Pengguna (Bahasa Melayu)**: Panduan lengkap langkah demi langkah untuk pengguna baru boleh dibaca di [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md).
+> 📖 **User Guides / Panduan Pengguna**:
+> - 🇬🇧 **English User Guide**: Complete beginner-friendly walkthrough, remote navigation, phone setup & FAQ in [USER_GUIDE.md](USER_GUIDE.md).
+> - 🇲🇾 **Panduan Bahasa Melayu**: Panduan lengkap langkah demi langkah untuk pengguna baru di [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md).
 
 Glass TV debloats any Android TV or Google TV over Wi-Fi, with no root and nothing that can't be undone, then
 swaps the ad-filled home screen for a light one in frosted glass, with a new set of places behind your apps
@@ -80,7 +82,9 @@ while you are inside an app.
 
 **Using an AI coding agent** (Google Antigravity [Free], Claude Code [Paid], Cursor, Codex...)? Point it at this repository and ask it to debloat your TV, block ad tracking, and install Glass TV automatically! [AGENTS.md](AGENTS.md) and [PROMPT.md](PROMPT.md) guide any AI assistant safely step-by-step.
 
-> 🇲🇾 **Panduan Penuh Bahasa Melayu (Langkah Demi Langkah Untuk Beginner)**: Lihat [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md) untuk panduan daripada cara hidupkan Developer Mode di TV sehingga siap pasang automatik menggunakan AI.
+> 📖 **Read the Beginner User Guides**:
+> - 🇬🇧 **[USER_GUIDE.md](USER_GUIDE.md)**: Full English step-by-step guide (Developer Mode, AI prompts, iPhone & Android setups, FAQ).
+> - 🇲🇾 **[PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md)**: Panduan penuh Bahasa Melayu untuk pengguna baru (aktifkan Developer Mode, arahan AI, telefon pintar & FAQ).
 
 The full step-by-step guide for debloating and installing is in
 [docs/CLEANYOURTV-README.md](docs/CLEANYOURTV-README.md), and [PROMPT.md](PROMPT.md) lets a coding assistant do
