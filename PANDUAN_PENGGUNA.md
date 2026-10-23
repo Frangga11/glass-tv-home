@@ -180,6 +180,35 @@ Boleh! Anda boleh buka aplikasi AI di telefon (seperti Claude, ChatGPT, atau pel
 
 ---
 
+### 🍏 Khusus untuk Pengguna iPhone (iOS): Boleh Ke Guna iPhone?
+
+**Jawapan jujur: Boleh untuk pasang APK & sekat iklan, tetapi ada sedikit perbezaan berbanding Android.**
+
+Kerana polisi Apple (iOS) yang ketat, Apple tidak membenarkan aplikasi seperti *Bugjaeger / ADB* berada di App Store. Walau bagaimanapun, pengguna iPhone tetap boleh melakukannya dengan sangat mudah:
+
+#### 1. Cara Hantar & Pasang APK dari iPhone ke TV (Guna 'LocalSend'):
+* Muat turun aplikasi percuma **LocalSend** di App Store iPhone dan di Google Play Store TV anda.
+* Muat turun fail `app-release.apk` di iPhone anda dari pautan GitHub ini.
+* Buka LocalSend pada iPhone dan TV (pastikan kedua-duanya bersambung pada Wi-Fi yang sama).
+* Hantar APK dari iPhone ke TV dengan 1 klik sahaja!
+* Di TV, klik fail APK tersebut dan tekan **Install**.
+
+#### 2. Cara Sekat Iklan & Tracking Jika Guna iPhone (Tanpa Perlu ADB):
+Anda tidak perlukan aplikasi ADB pun untuk sekat iklan. Anda boleh lakukannya terus melalui remote TV:
+1. Pada remote TV, pergi ke **Settings ⚙️** $\rightarrow$ **Network & Internet**.
+2. Pilih **Private DNS** (tukar daripada *Off/Automatic* kepada *Private DNS provider hostname*).
+3. Masukkan alamat ini menggunakan papan kekunci di TV:
+   ```text
+   dns.adguard-dns.com
+   ```
+4. Tekan **Save / Simpan**.
+5. Serta-merta semua iklan sepanduk, penjejak data pengeluar, dan analitik disekat di peringkat sistem TV anda secara automatik!
+
+#### 3. Ingin Buang Bloatware Pengeluar Secara Penuh?
+Jika anda ingin membuang aplikasi bawaan pengeluar (seperti Xiaomi PatchWall) sehingga 100% bersih, anda disyorkan menggunakan **laptop/komputer** (atau meminjam telefon Android kawan sekali sahaja selama 2 minit). Selepas dipadam sekali, ia akan kekal bersih selamanya pada TV anda!
+
+---
+
 ## 🛠️ 6. Cara Pasang Manual Guna Pendrive (Alternatif)
 
 Jika anda lebih suka menggunakan pendrive USB:
