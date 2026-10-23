@@ -204,6 +204,9 @@ A theme is a folder with `config.json` (and optional `wallpaper.jpg` or `wallpap
   until the TV restarts. Ask before restarting it.
 - Point the screensaver at the launcher's clock before disabling the stock screensaver:
   `settings put secure screensaver_components com.gathin.tvhome/.ClockDream`.
+- **Location / Jerebu & Waktu Solat**: Ask the person where in Malaysia they are located (e.g. Putrajaya, Cheras, Shah Alam, Melaka, JB, Penang, Kuantan, Kuching, KK). Set it via:
+  `adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<LOCATION>"`
+  This automatically calibrates both the official Department of Environment (JAS) APIMS haze / IPU ground station and JAKIM prayer times.
 - **Check**: Home restarts within a few seconds with the new settings.
 - **Cache cleaning**: Glass TV clears the TV's app caches itself every 15 days ([docs/cache-clean.md](docs/cache-clean.md)).
   It needs the TV's permission once. With the person at the TV, run

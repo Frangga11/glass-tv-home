@@ -64,6 +64,17 @@ Tolong laksanakan perkara berikut secara automatik:
 7. Ambil screenshot dari TV dan tunjukkan kepada saya untuk mengesahkan semuanya berjaya dan lancar.
 ```
 
+> [!IMPORTANT]
+> **🚨 Pesanan Khas Untuk Pembantu AI (AI Assistant Rule)**:
+> Semasa membantu pengguna memasang Glass TV Home, AI **WAJIB** bertanya kepada pengguna:
+> *"Di manakah lokasi anda di Malaysia (contoh: Putrajaya, Cheras, Shah Alam, Melaka, Johor Bahru, Pulau Pinang, Kuantan, Kuching, Kota Kinabalu, dll.) supaya data jerebu/IPU rasmi Jabatan Alam Sekitar (JAS) dan jadual waktu solat JAKIM dapat diselaraskan secara automatik?"*
+> 
+> Setelah pengguna memberikan lokasinya, AI jalankan arahan ADB ini terus ke TV:
+> ```bash
+> adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<NAMA_LOKASI>"
+> ```
+> *(Jika pengguna tidak menyatakan lokasi, sistem akan menggunakan lokasi lalai: **Putrajaya** / Stesen CA17W).*
+
 ---
 
 ### 📋 Langkah 3: Tekan "Allow" Pada Skrin TV
@@ -105,12 +116,21 @@ Sangat mudah dan intuitif! Anda hanya perlukan butang arah pada remote TV anda:
 ## 📱 4. Penerangan Ciri-Ciri Utama
 
 ### A. Kapsul Cuaca & Indeks Jerebu (Bawah Jam)
-* Terletak betul-betul di bawah jam utama (contoh: `☁ 28° Overcast  •  API 151 Unhealthy`).
+* Terletak betul-betul di bawah jam utama (contoh: `☁ 27° Overcast  •  API 106 Unhealthy`).
 * **Tekan butang Atas (▲) lalu tekan OK** untuk membuka skrin cuaca penuh:
   1. **Suhu Semasa & Angin**: Suhu, suhu rasa (*feels like*), kelembapan, kelajuan angin, indeks UV, waktu matahari terbit & terbenam.
-  2. **Kualiti Udara (API / IPU)**: Menggunakan bacaan Jabatan Alam Sekitar (APIMS) dengan bar warna pelangi dinamik, penunjuk nilai, stesen perbandingan, dan nasihat kesihatan rasmi.
+  2. **Kualiti Udara Rasmi (JAS APIMS / IPU)**: Menggunakan data rasmi stesen Jabatan Alam Sekitar Malaysia (MyEQMS/APIMS) dengan bar warna piawaian rasmi Malaysia (Baik: Hijau, Sederhana: Biru Langit, Tidak Sihat: Jingga, Sangat Tidak Sihat: Merah, Berbahaya: Maroon) dan nasihat kesihatan mengikut tahap IPU semasa.
   3. **Ramalan 12 Jam**: Barisan kad jam demi jam dengan suhu dan peratus kebarangkalian hujan (`↑ %`).
   4. **Ramalan 7 Hari**: Pandangan cuaca sepanjang minggu dengan suhu maksimum/minimum.
+
+📍 **Cara Tukar Lokasi Stesen Jerebu & Waktu Solat Secara Manual Guna Remote TV (Jika Pasang APK Sendiri):**
+Pengguna yang memasang fail APK secara manual atau berpindah rumah **TIDAK PERLUKAN KOMPUTER ATAU AI** untuk menukar lokasi:
+1. Pada skrin utama, tekan butang **Atas (▲)** dan tekan **OK** pada kapsul cuaca untuk buka Dashboard Cuaca.
+2. Tekan butang **Atas (▲)** sekali lagi ke butang **📍 Tukar Stesen / Change** (terletak bersebelahan nama bandar).
+3. Tekan **OK**. Menu pilihan senarai stesen rasmi JAS Malaysia akan muncul:
+   - *Putrajaya, Cheras (KL), Batu Muda (KL), Petaling Jaya, Shah Alam, Klang, Banting, Bandaraya Melaka, Alor Gajah, Bukit Rambai, Seremban, Nilai, Port Dickson, Larkin (JB), Pasir Gudang, Batu Pahat, Kluang, Tangkak, Seberang Jaya (Penang), Minden (USM), Balik Pulau, Ipoh, Taiping, Seri Manjung, Alor Setar, Sungai Petani, Langkawi, Kangar, Kuantan, Temerloh, Kuala Terengganu, Kemaman, Kota Bharu, Kota Kinabalu, Sandakan, Tawau, Kuching, Miri, Bintulu, Sibu, Labuan*.
+4. Gunakan butang **Atas / Bawah** remote untuk memilih stesen anda, lalu tekan **OK**.
+5. Serta-merta bacaan Indeks Pencemaran Udara (JAS IPU) dan zon waktu solat (JAKIM) akan dikemaskini mengikut bandar pilihan anda!
 
 ### B. Waktu Solat & Ayat Al-Quran Harian
 * **Jadual Solat 6 Waktu**: Subuh, Syuruk, Zohor, Asar, Maghrib, Isyak mengikut zon waktu Malaysia secara tepat.

@@ -74,6 +74,12 @@ import java.util.Set;
  */
 public class MainActivity extends Activity implements AppAdapter.TileListener {
 
+    private static java.lang.ref.WeakReference<MainActivity> sInstance;
+
+    public static MainActivity getInstance() {
+        return sInstance != null ? sInstance.get() : null;
+    }
+
     /** Tiles per row and dock slots (res/values/config.xml, columns). Set in onCreate. */
     static int COLUMNS = 4;
     private static final long MINUTE_MS = 60_000L;
@@ -267,6 +273,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sInstance = new java.lang.ref.WeakReference<>(this);
         SoundEffects.init(this);
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
@@ -973,6 +980,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (sInstance != null && sInstance.get() == this) {
+            sInstance = null;
+        }
         SoundEffects.release();
         wallDecoder.shutdownNow();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
@@ -982,6 +992,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             cm.unregisterNetworkCallback(networkCallback);
             cm.unregisterNetworkCallback(vpnCallback);
         }
+    }
+
+    public void refreshLocationDependentData() {
+        updateWeatherAqi();
+        updatePrayerTimes();
+        WeatherAirQuality.sync(this, this::updateWeatherAqi);
+        PrayerTimes.sync(this, this::updatePrayerTimes);
     }
 
     @Override

@@ -46,18 +46,30 @@ final class PrayerTimes {
     private PrayerTimes() {
     }
 
+    /** Forces an immediate background sync for the active location/zone. */
+    static void sync(Context context, Runnable onUpdated) {
+        syncInternal(context, onUpdated, true);
+    }
+
     /** Refresh timetable in background if needed (once a month / day). */
     static void syncIfDue(Context context, Runnable onUpdated) {
+        syncInternal(context, onUpdated, false);
+    }
+
+    private static void syncInternal(Context context, Runnable onUpdated, boolean force) {
         new Thread(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
                 Calendar now = Calendar.getInstance();
                 int currentMonth = now.get(Calendar.YEAR) * 100 + (now.get(Calendar.MONTH) + 1);
-                if (prefs.getInt(KEY_MONTH, 0) == currentMonth && prefs.contains(KEY_JSON)) {
+                String zone = getJakimZone(context);
+                String cachedZone = prefs.getString("cached_zone", "");
+
+                if (!force && zone.equals(cachedZone) && prefs.getInt(KEY_MONTH, 0) == currentMonth && prefs.contains(KEY_JSON)) {
                     return; // already have this month's takwim
                 }
 
-                URL url = new URL("https://api.waktusolat.app/v2/solat/WLY01");
+                URL url = new URL("https://api.waktusolat.app/v2/solat/" + zone);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(8000);
                 conn.setReadTimeout(8000);
@@ -73,17 +85,55 @@ final class PrayerTimes {
                     prefs.edit()
                             .putString(KEY_JSON, sb.toString())
                             .putInt(KEY_MONTH, currentMonth)
+                            .putString("cached_zone", zone)
                             .apply();
 
                     if (onUpdated != null) {
                         new Handler(Looper.getMainLooper()).post(onUpdated);
                     }
-                    Log.i(TAG, "Synced Putrajaya prayer times successfully");
+                    Log.i(TAG, "Synced prayer times for zone " + zone + " successfully");
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Prayer sync offline/failed: " + e.getMessage());
             }
         }, "prayer-sync").start();
+    }
+
+    private static String getJakimZone(Context context) {
+        String loc = AppLocationManager.getLocationName(context).toLowerCase(Locale.ROOT);
+        String stationId = AppLocationManager.getStationId(context).toUpperCase(Locale.ROOT);
+
+        if (loc.contains("putrajaya") || stationId.equals("CA17W")) return "WLY01";
+        if (loc.contains("kuala lumpur") || loc.contains("cheras") || loc.contains("batu muda")) return "WLY01";
+        if (loc.contains("labuan")) return "WLY02";
+        if (loc.contains("melaka") || loc.contains("alor gajah") || loc.contains("rambai")) return "MLK01";
+        if (loc.contains("petaling") || loc.contains("shah alam")) return "SGR01";
+        if (loc.contains("klang") || loc.contains("banting")) return "SGR03";
+        if (loc.contains("seremban") || loc.contains("nilai") || loc.contains("port dickson")) return "NGS02";
+        if (loc.contains("johor") || loc.contains("larkin") || loc.contains("pasir gudang")) return "JHR02";
+        if (loc.contains("batu pahat")) return "JHR03";
+        if (loc.contains("kluang")) return "JHR04";
+        if (loc.contains("tangkak")) return "JHR01";
+        if (loc.contains("pinang") || loc.contains("seberang") || loc.contains("minden")) return "PNG01";
+        if (loc.contains("ipoh") || loc.contains("tasek") || loc.contains("taiping")) return "PRK02";
+        if (loc.contains("manjung")) return "PRK01";
+        if (loc.contains("alor setar")) return "KDH01";
+        if (loc.contains("sungai petani")) return "KDH02";
+        if (loc.contains("langkawi")) return "KDH07";
+        if (loc.contains("perlis") || loc.contains("kangar")) return "PLS01";
+        if (loc.contains("kuantan")) return "PHG02";
+        if (loc.contains("temerloh")) return "PHG04";
+        if (loc.contains("terengganu") || loc.contains("kemaman")) return "TRG01";
+        if (loc.contains("kota bharu") || loc.contains("kelantan")) return "KTN01";
+        if (loc.contains("kota kinabalu")) return "SBH07";
+        if (loc.contains("sandakan")) return "SBH05";
+        if (loc.contains("tawau")) return "SBH03";
+        if (loc.contains("kuching")) return "SWK08";
+        if (loc.contains("miri")) return "SWK04";
+        if (loc.contains("bintulu")) return "SWK06";
+        if (loc.contains("sibu")) return "SWK05";
+
+        return "WLY01"; // Default Putrajaya
     }
 
     static class PrayerItem {
@@ -106,7 +156,7 @@ final class PrayerTimes {
         int day = now.get(Calendar.DAY_OF_MONTH);
         long[] times = getTimesForToday(context, day);
         if (times == null || times.length < 6) {
-            times = calculateFallback(now);
+            times = calculateFallback(context, now);
         }
         long nowMs = now.getTimeInMillis();
         int nextIdx = -1;
@@ -139,7 +189,7 @@ final class PrayerTimes {
         long[] times = getTimesForToday(context, day);
 
         if (times == null || times.length < 6) {
-            times = calculateFallback(now);
+            times = calculateFallback(context, now);
         }
 
         long nowMs = now.getTimeInMillis();
@@ -223,8 +273,11 @@ final class PrayerTimes {
         return null;
     }
 
-    /** Astronomical calculation fallback for Putrajaya. */
-    private static long[] calculateFallback(Calendar cal) {
+    /** Astronomical calculation fallback based on user's active Malaysian location. */
+    private static long[] calculateFallback(Context context, Calendar cal) {
+        double latitude = AppLocationManager.getLatitude(context);
+        double longitude = AppLocationManager.getLongitude(context);
+
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -242,15 +295,15 @@ final class PrayerTimes {
         double alpha = Math.toDegrees(Math.atan2(Math.cos(Math.toRadians(epsilon)) * Math.sin(Math.toRadians(lambda)), Math.cos(Math.toRadians(lambda)))) / 15.0;
         double delta = Math.toDegrees(Math.asin(Math.sin(Math.toRadians(epsilon)) * Math.sin(Math.toRadians(lambda))));
 
-        double noon = 12.0 + TIMEZONE - (LONGITUDE / 15.0) - (L / 15.0 - alpha);
+        double noon = 12.0 + TIMEZONE - (longitude / 15.0) - (L / 15.0 - alpha);
         if (noon < 0) noon += 24.0;
         if (noon >= 24) noon -= 24.0;
 
-        double fajrHour = noon - sunAngleHour(-20.0, LATITUDE, delta);
-        double sunriseHour = noon - sunAngleHour(-0.833, LATITUDE, delta);
-        double asrHour = noon + asrHour(1, LATITUDE, delta);
-        double sunsetHour = noon + sunAngleHour(-0.833, LATITUDE, delta);
-        double ishaHour = noon + sunAngleHour(-18.0, LATITUDE, delta);
+        double fajrHour = noon - sunAngleHour(-20.0, latitude, delta);
+        double sunriseHour = noon - sunAngleHour(-0.833, latitude, delta);
+        double asrHour = noon + asrHour(1, latitude, delta);
+        double sunsetHour = noon + sunAngleHour(-0.833, latitude, delta);
+        double ishaHour = noon + sunAngleHour(-18.0, latitude, delta);
 
         // Malaysia standard rounding & +2 min ihtiyat
         double[] hours = {fajrHour + 0.05, sunriseHour, noon + 0.04, asrHour + 0.04, sunsetHour + 0.05, ishaHour + 0.05};
@@ -302,7 +355,7 @@ final class PrayerTimes {
         java.util.List<ScheduleItem> list = new java.util.ArrayList<>();
         Calendar now = Calendar.getInstance();
         long[] times = getTimesForToday(context, now.get(Calendar.DAY_OF_MONTH));
-        if (times == null || times.length < 6) times = calculateFallback(now);
+        if (times == null || times.length < 6) times = calculateFallback(context, now);
 
         long nowMs = now.getTimeInMillis();
         int nextIdx = -1;
@@ -327,7 +380,7 @@ final class PrayerTimes {
     static String getNextPrayerSummary(Context context) {
         Calendar now = Calendar.getInstance();
         long[] times = getTimesForToday(context, now.get(Calendar.DAY_OF_MONTH));
-        if (times == null || times.length < 6) times = calculateFallback(now);
+        if (times == null || times.length < 6) times = calculateFallback(context, now);
 
         long nowMs = now.getTimeInMillis();
         int nextIdx = 0;

@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -8,7 +9,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.List;
 import java.util.Locale;
 
 public class WeatherActivity extends Activity {
@@ -33,6 +36,7 @@ public class WeatherActivity extends Activity {
     private LinearLayout hourlyContainer;
     private LinearLayout dailyContainer;
     private TextView weatherFooter;
+    private View btnChangeLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,7 @@ public class WeatherActivity extends Activity {
         setContentView(R.layout.activity_weather);
 
         weatherLocation = findViewById(R.id.weatherLocation);
+        btnChangeLocation = findViewById(R.id.btnChangeLocation);
         weatherMainIcon = findViewById(R.id.weatherMainIcon);
         weatherMainTemp = findViewById(R.id.weatherMainTemp);
         weatherMainCondition = findViewById(R.id.weatherMainCondition);
@@ -60,34 +65,77 @@ public class WeatherActivity extends Activity {
         dailyContainer = findViewById(R.id.dailyContainer);
         weatherFooter = findViewById(R.id.weatherFooter);
 
+        if (btnChangeLocation != null) {
+            btnChangeLocation.setOnClickListener(v -> showLocationPickerDialog());
+            setupFocusAnimation(btnChangeLocation);
+        }
+
         populateUi();
 
         // Background sync to ensure freshest data
         WeatherAirQuality.syncIfDue(this, this::populateUi);
     }
 
+    private void showLocationPickerDialog() {
+        final List<AppLocationManager.Station> stations = AppLocationManager.getPresetStations();
+        String currentId = AppLocationManager.getStationId(this);
+        int selectedIndex = 0;
+        CharSequence[] items = new CharSequence[stations.size()];
+        for (int i = 0; i < stations.size(); i++) {
+            AppLocationManager.Station s = stations.get(i);
+            items[i] = s.getDisplayName() + "\n" + s.place;
+            if (s.id.equalsIgnoreCase(currentId)) {
+                selectedIndex = i;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("📍 Pilih Stesen Jerebu JAS / Location");
+        builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
+            AppLocationManager.Station chosen = stations.get(which);
+            AppLocationManager.setStation(WeatherActivity.this, chosen);
+            dialog.dismiss();
+            Toast.makeText(WeatherActivity.this, "Stesen ditukar kepada: " + chosen.name, Toast.LENGTH_SHORT).show();
+            populateUi();
+            // Sync in background to update readings immediately
+            WeatherAirQuality.sync(WeatherActivity.this, () -> runOnUiThread(WeatherActivity.this::populateUi));
+        });
+        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void populateUi() {
         WeatherAirQuality.FullWeather w = WeatherAirQuality.getFullWeather(this);
         if (w == null) return;
 
+        boolean isMalay = Locale.getDefault().getLanguage().startsWith("ms");
+
         weatherLocation.setText(w.location);
         weatherMainTemp.setText(w.temp + "°");
         weatherMainCondition.setText(w.condition);
-        weatherMainSub.setText(String.format(Locale.ROOT, "Feels like %d°  •  H %d° L %d°",
+        weatherMainSub.setText(String.format(Locale.ROOT, "%s %d°  •  H %d° L %d°",
+                isMalay ? "Terasa seperti" : "Feels like",
                 w.apparentTemp, w.highTemp, w.lowTemp));
         weatherMainIcon.setImageResource(getIconDrawable(w.icon));
 
-        weatherDetail1.setText(String.format(Locale.ROOT, "Humidity %d%%  •  Wind %d km/h  •  UV %d",
-                w.humidity, w.windSpeed, w.uvIndex));
-        weatherDetail2.setText(String.format(Locale.ROOT, "Rain chance today %d%%  •  Sunrise %s  •  Sunset %s",
-                w.rainChanceToday, w.sunrise, w.sunset));
+        weatherDetail1.setText(String.format(Locale.ROOT, "%s %d%%  •  %s %d km/h  •  UV %d",
+                isMalay ? "Kelembapan" : "Humidity", w.humidity,
+                isMalay ? "Angin" : "Wind", w.windSpeed, w.uvIndex));
+        weatherDetail2.setText(String.format(Locale.ROOT, "%s %d%%  •  %s %s  •  %s %s",
+                isMalay ? "Kebarangkalian hujan" : "Rain chance today", w.rainChanceToday,
+                isMalay ? "Terbit" : "Sunrise", w.sunrise,
+                isMalay ? "Terbenam" : "Sunset", w.sunset));
 
         // Air Quality
         aqiValue.setText(String.valueOf(w.aqi));
         aqiValue.setTextColor(w.aqiColor);
         aqiStatus.setText(w.aqiStatus);
         aqiStatus.setTextColor(w.aqiColor);
-        aqiStation.setText("API  •  " + w.location + "  •  PM2.5");
+
+        String param = (w.aqiParam != null && !w.aqiParam.isEmpty()) ? w.aqiParam : "PM2.5";
+        String place = (w.stationPlace != null && !w.stationPlace.isEmpty()) ? w.stationPlace : w.location;
+        aqiStation.setText("JAS IPU  •  " + place + "  •  " + param);
 
         // Scale bar indicator position
         aqiBar.post(() -> {
@@ -100,25 +148,38 @@ public class WeatherActivity extends Activity {
             }
         });
 
-        // Nearby reference stations
-        if (w.location.contains("MELAKA")) {
-            aqiStationsSub.setText("Alor Gajah 97  •  Bukit Rambai 110");
-        } else {
-            aqiStationsSub.setText("Putrajaya " + w.aqi + "  •  Petaling Jaya 65  •  Cheras 58");
-        }
+        // Current station info
+        aqiStationsSub.setText(String.format(Locale.ROOT, "%s: %s  •  ID: %s",
+                isMalay ? "Stesen Pemantauan" : "Monitoring Station", place, w.stationId));
 
-        aqiModelSub.setText(String.format(Locale.ROOT, "Model US AQI %d  •  PM2.5 %.1f  •  PM10 %.1f µg/m³",
-                w.aqi, w.pm25, w.pm10));
+        if (w.isJasSource) {
+            aqiModelSub.setText("Sumber Rasmi: Jabatan Alam Sekitar Malaysia (APIMS/MyEQMS)");
+        } else {
+            aqiModelSub.setText(String.format(Locale.ROOT, "Model Open-Meteo Air Quality  •  PM2.5 %.1f  •  PM10 %.1f µg/m³",
+                    w.pm25, w.pm10));
+        }
 
         // Health advisory based on AQI
         if (w.aqi <= 50) {
-            aqiAdvisory.setText("Air quality is satisfactory. Normal outdoor activities can be enjoyed.");
+            aqiAdvisory.setText(isMalay
+                    ? "Kualiti udara baik. Aktiviti riadah luar boleh dijalankan seperti biasa."
+                    : "Air quality is satisfactory. Normal outdoor activities can be enjoyed.");
         } else if (w.aqi <= 100) {
-            aqiAdvisory.setText("Normal activities. People with heart or lung conditions should limit long outdoor exertion.");
-        } else if (w.aqi <= 150) {
-            aqiAdvisory.setText("Sensitive groups should reduce prolonged or heavy outdoor exertion.");
+            aqiAdvisory.setText(isMalay
+                    ? "Kualiti udara sederhana. Tiada sekatan aktiviti bagi kebanyakan orang."
+                    : "Normal activities. People with heart or lung conditions should limit long outdoor exertion.");
+        } else if (w.aqi <= 200) {
+            aqiAdvisory.setText(isMalay
+                    ? "Kualiti udara TIDAK SIHAT. Golongan berisiko (asma, kanak-kanak, warga emas) kurangkan aktiviti luar."
+                    : "Unhealthy. Sensitive groups should reduce prolonged or heavy outdoor exertion.");
+        } else if (w.aqi <= 300) {
+            aqiAdvisory.setText(isMalay
+                    ? "Kualiti udara SANGAT TIDAK SIHAT. Elakkan sebarang aktiviti luar. Tutup tingkap."
+                    : "Very Unhealthy. Everyone should avoid outdoor exertion. Keep windows closed.");
         } else {
-            aqiAdvisory.setText("Everyone should reduce prolonged outdoor exertion. Keep windows closed.");
+            aqiAdvisory.setText(isMalay
+                    ? "BERBAHAYA! Kekal di dalam rumah. Patuhi amaran pihak berkuasa."
+                    : "Hazardous! Avoid all physical activity outdoors. Remain indoors.");
         }
 
         // Hourly row (Next 12 Hours)

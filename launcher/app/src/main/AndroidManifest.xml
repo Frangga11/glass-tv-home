@@ -100,6 +100,14 @@
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.NoDisplay" />
+
+        <receiver
+            android:name=".LocationBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.gathin.tvhome.SET_LOCATION" />
+            </intent-filter>
+        </receiver>
         <!-- Home button for remotes that send KEYCODE_ALL_APPS (Xiaomi). Opt-in: HOME_KEY_SERVICE=1
              build-and-install.sh; see HomeKeyService. -->
         <service

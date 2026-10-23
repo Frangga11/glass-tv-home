@@ -65,6 +65,17 @@ Please execute the following tasks automatically:
 7. Capture a live screenshot from the TV and display it to confirm everything succeeded smoothly.
 ```
 
+> [!IMPORTANT]
+> **🚨 Mandatory Instruction For AI Assistants (AI Assistant Rule)**:
+> When assisting a user in deploying Glass TV Home, the AI **MUST** ask the user:
+> *"What is your location in Malaysia (e.g. Putrajaya, Cheras, Shah Alam, Melaka, Johor Bahru, Penang, Kuantan, Kuching, Kota Kinabalu, etc.) so that official Jabatan Alam Sekitar (DOE / APIMS) haze / IPU readings and JAKIM prayer times can be configured automatically?"*
+> 
+> Once the user answers, the AI issues this ADB command directly to the TV:
+> ```bash
+> adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<USER_LOCATION>"
+> ```
+> *(If the user does not specify a location, the default preset is **Putrajaya** / Station CA17W).*
+
 ---
 
 ### 📋 Step 3: Click "Allow" on Your TV Screen
@@ -105,12 +116,21 @@ Glass TV Home is designed around standard TV remotes:
 ## 📱 4. Key Feature Walkthrough
 
 ### A. Weather & Air Quality (AQI) Hub
-* Located under the digital clock (e.g., `☁ 28° Overcast  •  API 151 Unhealthy`).
+* Located under the digital clock (e.g., `☁ 27° Overcast  •  API 106 Unhealthy`).
 * **Press UP (▲) then press OK** to launch the full Leanback weather interface:
   1. **Current Conditions**: Temperature, "Feels Like", humidity, wind velocity, UV index, sunrise and sunset times.
-  2. **Air Quality Index (APIMS)**: Visual rainbow gradient gauge with official health advisories and comparative monitoring stations.
+  2. **Official Air Quality Index (JAS Malaysia APIMS / IPU)**: Real-time ground data directly from the Department of Environment (JAS) APIMS portal with official Malaysian scale colors (Good: Green, Moderate: Sky Blue, Unhealthy: Orange, Very Unhealthy: Red, Hazardous: Maroon) and official health guidance.
   3. **12-Hour Hourly Forecast**: Hourly forecast cards with precipitation chance percentages.
   4. **7-Day Outlook**: Daily weather forecast across the upcoming week.
+
+📍 **Manual Location Setup Directly on TV Remote (For Standalone APK Installs):**
+Users who install the APK manually or relocate **DO NOT NEED A COMPUTER OR AI** to configure their station:
+1. On the home screen, press **UP (▲)** and press **OK** on the weather pill to open the Weather Dashboard.
+2. Press **UP (▲)** again to highlight the **📍 Tukar Stesen / Change** button next to the location name.
+3. Press **OK**. A dialog modal will appear with 30+ official Malaysian DOE stations across all states:
+   - *Putrajaya, Cheras (KL), Batu Muda (KL), Petaling Jaya, Shah Alam, Klang, Banting, Bandaraya Melaka, Alor Gajah, Bukit Rambai, Seremban, Nilai, Port Dickson, Larkin (JB), Pasir Gudang, Batu Pahat, Kluang, Tangkak, Seberang Jaya (Penang), Minden (USM), Balik Pulau, Ipoh, Taiping, Seri Manjung, Alor Setar, Sungai Petani, Langkawi, Kangar, Kuantan, Temerloh, Kuala Terengganu, Kemaman, Kota Bharu, Kota Kinabalu, Sandakan, Tawau, Kuching, Miri, Bintulu, Sibu, Labuan*.
+4. Scroll with the remote **UP / DOWN** arrows to select your station and press **OK**.
+5. Both the official JAS IPU readings and the JAKIM prayer timetable immediately calibrate to your chosen city!
 
 ### B. Islamic Prayer Timetable & Daily Ayat
 * **6-Phase Prayer Timetable**: Subuh, Syuruk, Zohor, Asar, Maghrib, and Isyak synchronized with your local time zone.

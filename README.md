@@ -90,9 +90,16 @@ while you are inside an app.
 
 **Using an AI coding agent** (Google Antigravity [Free], Claude Code [Paid], Cursor, Codex...)? Point it at this repository and ask it to debloat your TV, block ad tracking, and install Glass TV automatically! [AGENTS.md](AGENTS.md) and [PROMPT.md](PROMPT.md) guide any AI assistant safely step-by-step.
 
+> 🚨 **AI Assistant Rule / Arahan Khas AI**:
+> When installing for a user, the AI **must ask the user for their location in Malaysia** (e.g. Putrajaya, Cheras, Shah Alam, Melaka, JB, Penang, Kuantan, Kuching, KK) to configure live JAS haze/IPU data and JAKIM prayer times via:
+> ```bash
+> adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<LOCATION>"
+> ```
+> If installed manually without AI, users can change the station at any time directly on the TV using the remote control under **Weather Dashboard $\rightarrow$ 📍 Tukar Stesen / Change**.
+
 > 📖 **Read the Beginner User Guides**:
-> - 🇬🇧 **[USER_GUIDE.md](USER_GUIDE.md)**: Full English step-by-step guide (Developer Mode, AI prompts, iPhone & Android setups, FAQ).
-> - 🇲🇾 **[PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md)**: Panduan penuh Bahasa Melayu untuk pengguna baru (aktifkan Developer Mode, arahan AI, telefon pintar & FAQ).
+> - 🇬🇧 **[USER_GUIDE.md](USER_GUIDE.md)**: Full English step-by-step guide (Developer Mode, AI prompts, manual station selector, iPhone & Android setups, FAQ).
+> - 🇲🇾 **[PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md)**: Panduan penuh Bahasa Melayu untuk pengguna baru (aktifkan Developer Mode, arahan AI, tukar stesen manual remote TV, telefon pintar & FAQ).
 
 The full step-by-step guide for debloating and installing is in
 [docs/CLEANYOURTV-README.md](docs/CLEANYOURTV-README.md), and [PROMPT.md](PROMPT.md) lets a coding assistant do
