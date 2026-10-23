@@ -105,11 +105,11 @@ Sangat mudah dan intuitif! Anda hanya perlukan butang arah pada remote TV anda:
 | :--- | :--- |
 | **Tekan Dua Kali HOME (Double-Press)** | • **Di Luar**: Buka Pengurus Recent Apps & RAM Cleaner.<br>• **Di Dalam Recent Apps**: Terus jalankan **Close All** untuk tutup semua aplikasi & cuci RAM serta-merta! |
 | **Butang HOME (Sekali Tekan)** | Kembali ke skrin utama dari mana-mana aplikasi. Jika di skrin utama, buka screensaver StandBy. |
-| **Butang ATAS (▲)** | Naik ke atas untuk pilih **Kapsul Cuaca & Jerebu** atau menu Wi-Fi / Tetapan. |
-| **Butang TENGAH (OK)** | • Tekan pada aplikasi untuk buka aplikasi tersebut.<br>• Tekan pada kapsul cuaca untuk buka **Dashboard Cuaca & Kualiti Udara penuh**.<br>• **Tekan & Tahan (Long-press)** pada aplikasi untuk susun atau pindahkan ikon ke dalam/luar dock. |
+| **Butang ATAS (▲)** | Naik ke atas untuk pilih **Kapsul Cuaca & Jerebu**, menu Inputs, Wi-Fi, atau **Butang Tetapan (⚙️ Settings)**. |
+| **Butang TENGAH (OK)** | • Tekan pada aplikasi untuk buka aplikasi tersebut.<br>• Tekan pada kapsul cuaca untuk buka **Dashboard Cuaca & Kualiti Udara penuh**.<br>• Tekan pada butang **Settings (⚙️)** untuk buka **Menu Dropdown Kaca** (Wallpaper, Jerebu, Waktu Solat, Android Settings).<br>• **Tekan & Tahan (Long-press)** pada aplikasi untuk susun atau pindahkan ikon ke dalam/luar dock. |
 | **Butang BAWAH (▼)** | Turun semula ke barisan aplikasi utama (*Dock*). |
 | **Butang KIRI / KANAN (◀ / ▶)** | Bergerak antara aplikasi atau beralih antara menu atas. |
-| **Butang BACK (↩)** | Keluar dari Dashboard Cuaca atau Screensaver dan kembali ke skrin utama. |
+| **Butang BACK (↩)** | Keluar dari Dashboard Cuaca, Dialog Pilihan, Recent Apps, atau Screensaver dan kembali ke skrin utama. |
 
 ---
 
@@ -137,8 +137,14 @@ Pengguna yang memasang fail APK secara manual atau berpindah rumah **TIDAK PERLU
 * **Warna Hijau Zamrud**: Waktu solat yang sedang berlangsung akan automatik bertukar warna hijau terang supaya anda sentiasa peka waktu ibadah.
 * **Ayat Al-Quran Pilihan**: Ayat al-Quran harian berserta teks Arab yang indah dan terjemahan maksud.
 
-### C. Gambar Latar Belakang Alam Semula Jadi (Bing Nature)
-* Gambar landskap definisi tinggi bertukar secara automatik dengan cerita tempat menarik (nama lokasi, negeri/negara, dan penerangan ringkas).
+### C. Gambar Latar Belakang & Pilihan Kategori Wallpaper (4K Dynamic)
+* **Koleksi Tema Pelbagai**: Kini anda boleh memilih kategori tema wallpaper kegemaran anda secara langsung dari skrin utama melalui menu Tetapan (ikon ⚙️):
+  - 🌿 **Natural (Lalai / Bing Places)**: Landskap alam semula jadi bertaraf 4K dengan info nama lokasi, negara, dan penerangan ringkas setiap minggu.
+  - 🏙️ **Skyscraper (Pencakar Langit)**: Pemandangan menara ikonik dunia (Menara Berkembar Petronas KLCC, New York Manhattan, Chicago River, Dubai Marina, Hong Kong Cityscape).
+  - 🌌 **Deep Space (Angkasa Lepas)**: Galaksi, nebula dan bintang angkasa yang menakjubkan.
+  - 🌊 **Ocean & Coastal (Lautan)**: Keindahan pantai pasir putih, ombak dan terumbu karang.
+  - 🔲 **Minimalist Dark**: Latar belakang gelap bertekstur elegan, sangat jimat tenaga dan mesra panel OLED.
+* **Tukar Gambar Serta-Merta**: Pilih **🔀 Next Wallpaper** untuk beralih ke gambar seterusnya pada bila-bila masa.
 
 ### D. Screensaver StandBy & Auto-Off 2 Jam (Jimat Elektrik)
 * **10 Minit Dibiarkan Tanpa Butang**: TV akan automatik masuk mod *StandBy Screensaver* berlatar hitam pekat (selamat untuk mengelakkan *screen burn-in* pada TV OLED/LED), memaparkan jam besar 110sp, tarikh Hijriah (cth: `🌙 12 Jamadilawal 1448H`), dan solat seterusnya.
@@ -153,6 +159,14 @@ Ciri pintar seumpama tvOS / Android TV premium untuk melihat dan membersihkan ap
 * **Kapsul Status RAM**: Di sudut atas kanan, memaparkan bacaan RAM masa nyata (contoh: `RAM 1.8 GB used of 2.3 GB`) dengan bar kemajuan.
 * **Tutup Aplikasi Individu**: Pada mana-mana kad aplikasi yang dipilih, **tekan butang ATAS (▲)** pada remote untuk menutup proses aplikasi tersebut dan membebaskan RAM serta-merta.
 * **Butang 'Close All' (Ikon Tong Sampah 🗑️)**: Gerakkan fokus ke hujung kanan senarai dan tekan butang bulat **Close All** untuk menutup semua aplikasi serentak dalam 1 klik!
+
+### F. Menu Tetapan Frosted Glass (Settings Dropdown Menu) ⚙️
+Di bar atas skrin utama, tekan butang **Settings (ikon gear ⚙️)** untuk memaparkan menu terapung gaya kaca Apple tvOS:
+* 🖼️ **Wallpaper**: Membuka tetingkap pilihan kategori wallpaper (*Natural, Skyscraper, Deep Space, Ocean, Minimalist Dark, Next Wallpaper*). Pilihan anda disimpan secara kekal walaupun TV dimatikan.
+* 📍 **Location API Haze**: Membuka senarai 30+ stesen jerebu rasmi JAS APIMS untuk menukar stesen pemantauan udara di seluruh negeri.
+* 🕌 **Location Waktu Solat**: Membuka senarai 35+ zon rasmi JAKIM untuk menyelaraskan jadual solat secara tepat mengikut daerah anda.
+* ⚙️ **All Settings**: Membuka menu tetapan penuh Android TV OS.
+*(Pintasan: Menekan lama butang Settings pada remote juga akan membuka tetapan Android secara langsung).*
 
 ---
 

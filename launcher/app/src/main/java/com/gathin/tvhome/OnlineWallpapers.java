@@ -122,7 +122,17 @@ final class OnlineWallpapers {
             new WallpaperItem("https://images.unsplash.com/photo-1498084393753-b411b2d26b34?auto=format&fit=crop&w=3840&h=2160&q=80",
                     "Dark Rainy Asphalt", "Glittering light streaks bouncing off wet night streets", "Urban"),
             new WallpaperItem("https://images.unsplash.com/photo-1516214104703-d870798883c5?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Dark Foggy Pines", "Serene evergreen trees veiled in thick atmospheric fog", "Forest")
+                    "Dark Foggy Pines", "Serene evergreen trees veiled in thick atmospheric fog", "Forest"),
+            new WallpaperItem("https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Petronas Twin Towers Night", "Illuminated skyscraper spires soaring into the Kuala Lumpur night sky", "Skyscraper"),
+            new WallpaperItem("https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Manhattan Skyline Twilight", "New York City highrise towers lit against the deep evening dusk", "Skyscraper"),
+            new WallpaperItem("https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Chicago River Skyscrapers", "Glass canyon of modern corporate architecture and night bridges", "Skyscraper"),
+            new WallpaperItem("https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Dubai Marina Highrises", "Futuristic illuminated towers mirrored in the marina waters", "Skyscraper"),
+            new WallpaperItem("https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Hong Kong Cityscape Night", "Dazzling neon metropolis framed by Victoria Harbour", "Skyscraper")
     };
 
     private OnlineWallpapers() {
@@ -149,6 +159,98 @@ final class OnlineWallpapers {
         }
         Collections.sort(out);
         return out;
+    }
+
+    public static boolean matchesCategory(String itemCat, String selectedCat) {
+        if (selectedCat == null || selectedCat.isEmpty() || "All".equalsIgnoreCase(selectedCat)) return true;
+        if (itemCat == null) return false;
+        String ic = itemCat.toLowerCase(Locale.ROOT);
+        String sc = selectedCat.toLowerCase(Locale.ROOT);
+        if (sc.contains("sky") || sc.contains("arch") || sc.contains("city")) {
+            return ic.contains("sky") || ic.contains("arch") || ic.contains("city") || ic.contains("urban");
+        }
+        if (sc.contains("nat") || sc.contains("land")) {
+            return ic.contains("nat") || ic.contains("land") || ic.contains("mount") || ic.contains("forest") || ic.contains("desert");
+        }
+        if (sc.contains("space") || sc.contains("cosmo") || sc.contains("astro")) {
+            return ic.contains("space") || ic.contains("astro") || ic.contains("cosmo");
+        }
+        if (sc.contains("ocean") || sc.contains("water") || sc.contains("coast")) {
+            return ic.contains("ocean") || ic.contains("underwater") || ic.contains("coast");
+        }
+        if (sc.contains("minim")) {
+            return ic.contains("minim") || ic.contains("atmos") || ic.contains("weather");
+        }
+        return ic.contains(sc);
+    }
+
+    static List<File> listByCategory(Context ctx, String category) {
+        List<File> all = list(ctx);
+        if (category == null || category.equalsIgnoreCase("All")) return all;
+        List<File> filtered = new ArrayList<>();
+        for (File f : all) {
+            String[] desc = describe(f);
+            if (desc != null && desc.length >= 3) {
+                if (matchesCategory(desc[2], category)) {
+                    filtered.add(f);
+                }
+            }
+        }
+        return filtered;
+    }
+
+    static boolean syncCategory(Context ctx, String category) {
+        File d = dir(ctx);
+        if (d == null) return false;
+        if (!d.exists() && !d.mkdirs()) return false;
+
+        List<WallpaperItem> candidates = new ArrayList<>();
+        for (WallpaperItem item : CURATED_CATALOG) {
+            if (matchesCategory(item.category, category)) {
+                candidates.add(item);
+            }
+        }
+        if (candidates.isEmpty()) return false;
+        Collections.shuffle(candidates);
+
+        boolean anyDownloaded = false;
+        int targetNew = 3;
+        int count = 0;
+
+        for (WallpaperItem item : candidates) {
+            if (count >= targetNew) break;
+            String fileName = hashFilename(item.url) + ".jpg";
+            File targetFile = new File(d, fileName);
+            if (targetFile.exists() && targetFile.length() > 50_000) {
+                continue;
+            }
+
+            File tempFile = new File(d, fileName + ".tmp");
+            File tempTxt = new File(d, fileName.replace(".jpg", ".txt") + ".tmp");
+            try {
+                if (downloadUrlToFile(item.url, tempFile)) {
+                    String meta = (item.title != null ? item.title : "4K Wallpaper") + "\n"
+                            + (item.description != null ? item.description : "") + "\n"
+                            + (item.category != null ? item.category : category);
+                    try (OutputStream os = new FileOutputStream(tempTxt)) {
+                        os.write(meta.getBytes(StandardCharsets.UTF_8));
+                    }
+                    File finalTxt = new File(d, fileName.replace(".jpg", ".txt"));
+                    if (tempFile.renameTo(targetFile)) {
+                        tempTxt.renameTo(finalTxt);
+                        anyDownloaded = true;
+                        count++;
+                        Log.i(TAG, "Saved category wallpaper [" + category + "]: " + item.title);
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed downloading " + item.url + ": " + e);
+            } finally {
+                if (tempFile.exists()) tempFile.delete();
+                if (tempTxt.exists()) tempTxt.delete();
+            }
+        }
+        return anyDownloaded;
     }
 
     /** Returns true if sync is needed (empty local pool or refresh interval elapsed). */

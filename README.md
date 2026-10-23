@@ -43,6 +43,11 @@ every week.
 - **StandBy Ambient Mode & Smart Energy Lifecycle.**
   - **10 Minutes Idle**: Automatically engages an ambient StandBy screensaver with large 110sp numerals, Islamic Hijri calendar, next prayer capsule, and a late-night red monochrome wind-down mode.
   - **2 Hours Later**: Automatically turns off the TV display into deep sleep standby via Android's Accessibility Service (`GLOBAL_ACTION_LOCK_SCREEN`).
+- **Frosted Glass Settings Dropdown & 4K Wallpaper Categories.**
+  - **Floating Glass Dropdown**: Clicking the top Settings icon (`⚙️`) opens a native Apple tvOS-style glass menu under the button.
+  - **Dynamic 4K Wallpaper Switcher**: Switch themes on the fly between *Natural*, *Skyscraper* (KLCC, Manhattan, Chicago, Dubai, HK), *Deep Space*, *Ocean & Coastal*, *Minimalist Dark*, or trigger *Next Wallpaper*.
+  - **Built-in Haze & Prayer Zone Selectors**: Select from 30+ Malaysian DOE (JAS APIMS) air quality stations and 35+ official JAKIM prayer zones without needing a computer or AI.
+  - **All Settings Shortcut**: Access standard Android TV settings in one click (or by long-pressing Settings).
 
 - **Keeps itself clean.** Every 15 days, while Home sits idle, the TV clears its app caches, where the Play
   Store leaves gigabytes of download leftovers that can make apps open to a blank screen. No computer needed,

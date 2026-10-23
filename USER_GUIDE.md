@@ -105,11 +105,11 @@ Glass TV Home is designed around standard TV remotes:
 | :--- | :--- |
 | **DOUBLE-PRESS HOME** | • **Outside**: Opens Recent Apps & RAM Manager.<br>• **Inside Recent Apps**: Triggers **Close All** immediately to terminate all background apps & clear RAM! |
 | **HOME Button (Single Press)** | Return to home dock from any third-party app. If on home, engages ambient screensaver. |
-| **UP Button (▲)** | Navigates to the top shelf to highlight the **Weather & AQI Pill** or Wi-Fi/Settings menus. |
-| **OK / Center Button** | • Press on an app to launch it.<br>• Press on the weather pill to open the **Full-Screen Weather & Air Quality Dashboard**.<br>• **Long-Press** on an app to pick it up and rearrange/pin it to the dock. |
+| **UP Button (▲)** | Navigates to the top shelf to highlight the **Weather & AQI Pill**, Inputs, Wi-Fi, or **Settings Button (⚙️)**. |
+| **OK / Center Button** | • Press on an app to launch it.<br>• Press on the weather pill to open the **Full-Screen Weather & Air Quality Dashboard**.<br>• Press on **Settings (⚙️)** to open the **Frosted Glass Dropdown Menu** (Wallpaper, Haze Location, Prayer Zone, Android Settings).<br>• **Long-Press** on an app to pick it up and rearrange/pin it to the dock. |
 | **DOWN Button (▼)** | Returns focus down to the main application dock. |
 | **LEFT / RIGHT (◀ / ▶)** | Move smoothly between dock apps or top pills with fluid glass glow transitions. |
-| **BACK Button (↩)** | Closes the Weather Dashboard, Recent Apps, or screensaver and returns to the home dock. |
+| **BACK Button (↩)** | Closes the Weather Dashboard, Recent Apps, Dialogs, or screensaver and returns to the home dock. |
 
 ---
 
@@ -137,12 +137,21 @@ Users who install the APK manually or relocate **DO NOT NEED A COMPUTER OR AI** 
 * **Active Window Glow**: The current active prayer window illuminates in emerald green.
 * **Daily Quranic Verse**: Rotating daily ayat with Arabic calligraphy and translations.
 
-### C. StandBy Ambient Mode & Smart Power Saving
+### C. Dynamic 4K Wallpapers & Category Switcher
+* **Curated Themes**: Switch your home background between curated 4K categories directly from the remote:
+  - 🌿 **Natural (Default / Bing Places)**: World landmarks, mountains, lakes, and nature landscapes with informative location stories updated weekly.
+  - 🏙️ **Skyscraper**: Famous modern architecture and skylines (Petronas Twin Towers KLCC, Manhattan NYC, Chicago River, Dubai Marina, Hong Kong Cityscape).
+  - 🌌 **Deep Space**: Vibrant nebulae, starfields, and cosmic vistas.
+  - 🌊 **Ocean & Coastal**: Pristine coastal horizons, waves, and azure seas.
+  - 🔲 **Minimalist Dark**: Refined deep textured aesthetic, power-efficient and OLED-safe.
+* **Instant Shift**: Select **🔀 Next Wallpaper** anytime to immediately cycle to the next photo in your active category.
+
+### D. StandBy Ambient Mode & Smart Power Saving
 * **10 Minutes Idle**: Enters an ambient OLED-safe black StandBy screensaver displaying large 110sp numerals, Islamic Hijri date, and the upcoming prayer window.
 * **2 Hours Later**: If left untouched, the TV display enters sleep standby (`GLOBAL_ACTION_LOCK_SCREEN`) to save power.
 * **Wake Up**: Press any button on the TV remote to wake the TV immediately.
 
-### D. Recent Apps & RAM Cleaner (Double-Press Home) ⚡
+### E. Recent Apps & RAM Cleaner (Double-Press Home) ⚡
 A native tvOS-style app switcher and memory flusher:
 * **How to Open**: Press the remote **HOME button twice rapidly** from any app or home screen (or press the App Switch button on supported remotes).
 * **Double-Press Home to Close All**: While viewing the Recent Apps screen, press the **HOME button twice rapidly** again to immediately execute **Close All** and clean RAM without touching any other key!
@@ -150,6 +159,14 @@ A native tvOS-style app switcher and memory flusher:
 * **Live RAM Gauge Pill**: In the top right corner, view real-time memory stats (e.g., `RAM 1.8 GB used of 2.3 GB`) with a responsive recessed progress bar.
 * **Dismiss Individual Apps**: On any focused app card, press **UP (▲)** on your remote to terminate its process, animate the card away, and instantly free up RAM.
 * **'Close All' Button (Trash Icon 🗑️)**: Navigate to the far right of the carousel and click the circular **Close All** button to terminate all running background apps and flush RAM in 1 tap!
+
+### F. Frosted Glass Settings Dropdown Menu ⚙️
+Clicking the **Settings (gear icon ⚙️)** on the top bar reveals an Apple tvOS-style floating glass menu:
+* 🖼️ **Wallpaper**: Launches the category selector dialog (*Natural, Skyscraper, Deep Space, Ocean, Minimalist Dark, Next Wallpaper*). Preferences persist across reboots.
+* 📍 **Location API Haze**: Opens a selector for 30+ official Malaysian DOE (JAS APIMS) air quality monitoring stations.
+* 🕌 **Location Waktu Solat**: Opens a selector for 35+ official JAKIM prayer zones across all Malaysian states.
+* ⚙️ **All Settings**: Opens standard Android TV system preferences.
+*(Shortcut: Long-pressing the Settings button on your remote directly launches standard Android settings).*
 
 ---
 

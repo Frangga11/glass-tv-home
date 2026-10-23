@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -300,10 +301,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         wallpapers = cfg.wallpapers;
         wallpaperIntervalMs = cfg.wallpaperIntervalMs;
         placesMode = cfg.places;
-        // Places only, when they are on: never the theme's own pictures, even before the first
-        // week's places have arrived.
-        if (placesMode) wallpapers = PlaceWallpapers.list(this);
-        else if (cfg.wallpaperOnline && wallpapers.isEmpty()) wallpapers = OnlineWallpapers.list(this);
+        String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+        if (!"Natural".equalsIgnoreCase(activeCat)) {
+            placesMode = false;
+            List<File> catFiles = OnlineWallpapers.listByCategory(this, activeCat);
+            if (!catFiles.isEmpty()) wallpapers = catFiles;
+            else if (cfg.wallpaperOnline && wallpapers.isEmpty()) wallpapers = OnlineWallpapers.list(this);
+        } else if (placesMode) {
+            wallpapers = PlaceWallpapers.list(this);
+        } else if (cfg.wallpaperOnline && wallpapers.isEmpty()) {
+            wallpapers = OnlineWallpapers.list(this);
+        }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
         else if (cfg.wallpaper != null && !placesMode) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
         mainContent = findViewById(R.id.mainContent);
@@ -548,10 +556,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
             return true;
         });
-        btnSettings.setOnClickListener(v -> open(systemIntent(Settings.ACTION_SETTINGS)));
+        btnSettings.setOnClickListener(v -> showSettingsPopup());
         btnSettings.setOnLongClickListener(v -> {
-            if (!moduleCards) return false;   // off: a long press does nothing, as before the feature
-            showModuleCards();
+            if (moduleCards) {
+                showModuleCards();
+                return true;
+            }
+            open(systemIntent(Settings.ACTION_SETTINGS));
             return true;
         });
 
@@ -2022,6 +2033,183 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         width = Math.max(width, panel.getMeasuredWidth());
 
         showMenu(panel, rows, anchor, width, false);
+    }
+
+    /** Shows an Apple TV-style frosted glass Settings dropdown menu. */
+    private void showSettingsPopup() {
+        if (openMenu != null) return;
+        SoundEffects.playSelect();
+        View anchor = findViewById(R.id.btnSettings);
+        if (anchor == null) return;
+        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        Runnable close = () -> closeMenu(false);
+
+        // Row 1: Wallpaper
+        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper", -1, () -> {
+            SoundEffects.playSelect();
+            showWallpaperDialog();
+        });
+
+        // Row 2: Location API Haze
+        addInputRow(rows, close, R.drawable.ic_location, "Location API Haze", -1, () -> {
+            SoundEffects.playSelect();
+            showHazeLocationDialog();
+        });
+
+        // Row 3: Location Waktu Solat
+        addInputRow(rows, close, R.drawable.ic_mosque, "Location Waktu Solat", -1, () -> {
+            SoundEffects.playSelect();
+            showPrayerZoneDialog();
+        });
+
+        addSeparator(rows);
+
+        // Row 4: All Settings (Android Settings)
+        addInputRow(rows, close, R.drawable.ic_settings, "All Settings", -1, () -> {
+            SoundEffects.playSelect();
+            open(systemIntent(Settings.ACTION_SETTINGS));
+        });
+
+        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int width = Math.max((int) (220 * density), panel.getMeasuredWidth());
+
+        showMenu(panel, rows, anchor, width, false);
+    }
+
+    private void showWallpaperDialog() {
+        final String[] categories = new String[]{
+                "🌿 Natural / Alam Semula Jadi",
+                "🏙️ Skyscraper / Pencakar Langit & Bandar",
+                "🌌 Deep Space / Angkasa & Kosmos",
+                "🌊 Ocean & Coastal / Lautan & Pantai",
+                "🔲 Minimalist Dark / Minimalis Gelap",
+                "🔀 Tukar Gambar Seterusnya (Next)"
+        };
+        final String[] keys = new String[]{
+                "Natural",
+                "Skyscraper",
+                "Space",
+                "Ocean",
+                "Minimalist",
+                "NEXT"
+        };
+
+        String currentKey = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+        int selectedIndex = 0;
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i].equalsIgnoreCase(currentKey)) {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("🖼️ Pilih Koleksi Wallpaper");
+        builder.setSingleChoiceItems(categories, selectedIndex, (dialog, which) -> {
+            dialog.dismiss();
+            if ("NEXT".equals(keys[which])) {
+                if (wallpapers != null && !wallpapers.isEmpty()) {
+                    showNextWallpaper(true);
+                    Toast.makeText(MainActivity.this, "Menukar ke gambar seterusnya...", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                switchWallpaperCategory(keys[which]);
+            }
+        });
+        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void switchWallpaperCategory(String category) {
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
+        Toast.makeText(this, "Kategori: " + category, Toast.LENGTH_SHORT).show();
+
+        if ("Natural".equalsIgnoreCase(category)) {
+            placesMode = true;
+            List<File> places = PlaceWallpapers.list(this);
+            if (!places.isEmpty()) {
+                wallpapers = places;
+                showNextWallpaper(true);
+                return;
+            }
+        } else {
+            placesMode = false;
+        }
+
+        List<File> matching = OnlineWallpapers.listByCategory(this, category);
+        if (!matching.isEmpty()) {
+            wallpapers = matching;
+            showNextWallpaper(true);
+        } else {
+            Toast.makeText(this, "Memuat turun 4K Wallpaper " + category + "...", Toast.LENGTH_SHORT).show();
+            new Thread(() -> {
+                boolean downloaded = OnlineWallpapers.syncCategory(getApplicationContext(), category);
+                handler.post(() -> {
+                    if (isDestroyed()) return;
+                    List<File> fresh = OnlineWallpapers.listByCategory(MainActivity.this, category);
+                    if (!fresh.isEmpty()) {
+                        wallpapers = fresh;
+                        showNextWallpaper(true);
+                    }
+                });
+            }, "wall-cat-sync").start();
+        }
+    }
+
+    private void showHazeLocationDialog() {
+        final List<AppLocationManager.Station> stations = AppLocationManager.getPresetStations();
+        String currentId = AppLocationManager.getStationId(this);
+        int selectedIndex = 0;
+        CharSequence[] items = new CharSequence[stations.size()];
+        for (int i = 0; i < stations.size(); i++) {
+            AppLocationManager.Station s = stations.get(i);
+            items[i] = s.getDisplayName() + "\n" + s.place;
+            if (s.id.equalsIgnoreCase(currentId)) {
+                selectedIndex = i;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("📍 Pilih Stesen Jerebu JAS / APIMS");
+        builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
+            AppLocationManager.Station chosen = stations.get(which);
+            AppLocationManager.setStation(MainActivity.this, chosen);
+            dialog.dismiss();
+            Toast.makeText(MainActivity.this, "Stesen Jerebu: " + chosen.name, Toast.LENGTH_SHORT).show();
+            refreshLocationDependentData();
+        });
+        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showPrayerZoneDialog() {
+        final List<PrayerTimes.PrayerZone> zones = PrayerTimes.getPresetZones();
+        String activeZone = PrayerTimes.getActiveZone(this);
+        int selectedIndex = 0;
+        CharSequence[] items = new CharSequence[zones.size()];
+        for (int i = 0; i < zones.size(); i++) {
+            PrayerTimes.PrayerZone z = zones.get(i);
+            items[i] = z.getDisplayName();
+            if (z.code.equalsIgnoreCase(activeZone)) {
+                selectedIndex = i;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("🕌 Pilih Zon Waktu Solat JAKIM");
+        builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
+            PrayerTimes.PrayerZone chosen = zones.get(which);
+            PrayerTimes.setPrayerZone(MainActivity.this, chosen);
+            dialog.dismiss();
+            Toast.makeText(MainActivity.this, "Zon Solat: " + chosen.name, Toast.LENGTH_SHORT).show();
+            refreshLocationDependentData();
+        });
+        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /** Shows an Apple TV-style frosted glass Putrajaya prayer timetable popup. */

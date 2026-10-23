@@ -20,8 +20,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -99,7 +102,130 @@ final class PrayerTimes {
         }, "prayer-sync").start();
     }
 
+    public static class PrayerZone {
+        public final String code;
+        public final String state;
+        public final String name;
+        public final double lat;
+        public final double lon;
+
+        public PrayerZone(String code, String state, String name, double lat, double lon) {
+            this.code = code;
+            this.state = state;
+            this.name = name;
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        public String getDisplayName() {
+            return name + " (" + state + " • " + code + ")";
+        }
+    }
+
+    private static final List<PrayerZone> PRESET_ZONES = new ArrayList<>();
+
+    static {
+        // W.P. & Putrajaya
+        PRESET_ZONES.add(new PrayerZone("WLY01", "W.P.", "Putrajaya & Kuala Lumpur", 2.9158, 101.6909));
+        PRESET_ZONES.add(new PrayerZone("WLY02", "W.P.", "Labuan", 5.3347, 115.2289));
+
+        // Selangor
+        PRESET_ZONES.add(new PrayerZone("SGR01", "Selangor", "Shah Alam, Petaling, Gombak, Sepang", 3.0683, 101.5058));
+        PRESET_ZONES.add(new PrayerZone("SGR02", "Selangor", "Kuala Selangor, Sabak Bernam", 3.3500, 101.2500));
+        PRESET_ZONES.add(new PrayerZone("SGR03", "Selangor", "Klang, Kuala Langat, Banting", 3.0108, 101.4081));
+
+        // Melaka
+        PRESET_ZONES.add(new PrayerZone("MLK01", "Melaka", "Bandaraya Melaka, Alor Gajah, Jasin", 2.1909, 102.2571));
+
+        // Negeri Sembilan
+        PRESET_ZONES.add(new PrayerZone("NGS02", "Negeri Sembilan", "Seremban, Port Dickson, Nilai", 2.6953, 101.9056));
+        PRESET_ZONES.add(new PrayerZone("NGS01", "Negeri Sembilan", "Tampin, Jempol", 2.4700, 102.2300));
+
+        // Johor
+        PRESET_ZONES.add(new PrayerZone("JHR02", "Johor", "Johor Bahru, Pasir Gudang, Kulai", 1.4947, 103.7419));
+        PRESET_ZONES.add(new PrayerZone("JHR03", "Johor", "Batu Pahat, Muar, Tangkak, Segamat", 1.9191, 102.8658));
+        PRESET_ZONES.add(new PrayerZone("JHR04", "Johor", "Kluang, Mersing", 2.0306, 103.3214));
+
+        // Pulau Pinang
+        PRESET_ZONES.add(new PrayerZone("PNG01", "Pulau Pinang", "Seluruh Negeri Pulau Pinang", 5.3942, 100.3983));
+
+        // Perak
+        PRESET_ZONES.add(new PrayerZone("PRK02", "Perak", "Ipoh, Batu Gajah, Kampar", 4.6397, 101.1083));
+        PRESET_ZONES.add(new PrayerZone("PRK03", "Perak", "Taiping, Bagan Serai, Parit Buntar", 4.8569, 100.7417));
+        PRESET_ZONES.add(new PrayerZone("PRK04", "Perak", "Lumut, Manjung, Pangkor, Sitiawan", 4.1953, 100.6728));
+        PRESET_ZONES.add(new PrayerZone("PRK01", "Perak", "Tapah, Slim River, Tanjung Malim", 3.6800, 101.5200));
+
+        // Kedah & Perlis
+        PRESET_ZONES.add(new PrayerZone("KDH01", "Kedah", "Kota Setar, Pokok Sena, Kubang Pasu", 6.1371, 100.3469));
+        PRESET_ZONES.add(new PrayerZone("KDH02", "Kedah", "Kuala Muda, Yan, Pendang, Sungai Petani", 5.6297, 100.4677));
+        PRESET_ZONES.add(new PrayerZone("KDH07", "Kedah", "Pulau Langkawi", 6.3316, 99.8585));
+        PRESET_ZONES.add(new PrayerZone("PLS01", "Perlis", "Kangar, Padang Besar, Arau", 6.4299, 100.2109));
+
+        // Pahang
+        PRESET_ZONES.add(new PrayerZone("PHG02", "Pahang", "Kuantan, Pekan, Muadzam Shah", 3.8192, 103.2966));
+        PRESET_ZONES.add(new PrayerZone("PHG03", "Pahang", "Jerantut, Temerloh, Maran, Bera", 3.4478, 102.4178));
+        PRESET_ZONES.add(new PrayerZone("PHG04", "Pahang", "Bentong, Raub, Lipis", 3.5200, 101.9000));
+        PRESET_ZONES.add(new PrayerZone("PHG06", "Pahang", "Cameron Highlands", 4.4700, 101.3800));
+
+        // Terengganu & Kelantan
+        PRESET_ZONES.add(new PrayerZone("TRG01", "Terengganu", "Kuala Terengganu, Marang, Kuala Nerus", 5.3117, 103.1325));
+        PRESET_ZONES.add(new PrayerZone("TRG04", "Terengganu", "Kemaman, Dungun", 4.2622, 103.4258));
+        PRESET_ZONES.add(new PrayerZone("KTN01", "Kelantan", "Kota Bharu, Bachok, Pasir Puteh, Tumpat", 6.1256, 102.2386));
+        PRESET_ZONES.add(new PrayerZone("KTN02", "Kelantan", "Machang, Pasir Mas, Tanah Merah", 5.7600, 102.2100));
+
+        // Sabah
+        PRESET_ZONES.add(new PrayerZone("SBH07", "Sabah", "Kota Kinabalu, Penampang, Tuaran, Papar", 6.0971, 116.1665));
+        PRESET_ZONES.add(new PrayerZone("SBH03", "Sabah", "Tawau, Balung, Merotai, Kalabakan", 4.2564, 117.8931));
+        PRESET_ZONES.add(new PrayerZone("SBH05", "Sabah", "Kudat, Kota Marudu, Pitas, Sandakan", 5.8456, 118.0678));
+
+        // Sarawak
+        PRESET_ZONES.add(new PrayerZone("SWK08", "Sarawak", "Kuching, Bau, Lundu, Samarahan, Serian", 1.5622, 110.3889));
+        PRESET_ZONES.add(new PrayerZone("SWK04", "Sarawak", "Bintulu, Tatau, Sebauh", 3.1772, 113.0412));
+        PRESET_ZONES.add(new PrayerZone("SWK02", "Sarawak", "Miri, Niah, Bekenu, Sibuti", 4.4947, 114.0434));
+        PRESET_ZONES.add(new PrayerZone("SWK05", "Sarawak", "Sibu, Mukah, Kanowit, Song", 2.2981, 111.8344));
+    }
+
+    public static List<PrayerZone> getPresetZones() {
+        return Collections.unmodifiableList(PRESET_ZONES);
+    }
+
+    public static String getActiveZone(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (prefs.contains("manual_prayer_zone")) {
+            return prefs.getString("manual_prayer_zone", "WLY01");
+        }
+        return getJakimZone(context);
+    }
+
+    public static String getActiveZoneName(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (prefs.contains("manual_prayer_zone_name")) {
+            return prefs.getString("manual_prayer_zone_name", "Putrajaya & Kuala Lumpur");
+        }
+        String zone = getActiveZone(context);
+        for (PrayerZone pz : PRESET_ZONES) {
+            if (pz.code.equalsIgnoreCase(zone)) return pz.name;
+        }
+        return AppLocationManager.getLocationName(context);
+    }
+
+    public static void setPrayerZone(Context context, PrayerZone zone) {
+        if (zone == null) return;
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit()
+                .putString("manual_prayer_zone", zone.code)
+                .putString("manual_prayer_zone_name", zone.name)
+                .putString("manual_lat", String.valueOf(zone.lat))
+                .putString("manual_lon", String.valueOf(zone.lon))
+                .apply();
+        sync(context, null);
+    }
+
     private static String getJakimZone(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (prefs.contains("manual_prayer_zone")) {
+            return prefs.getString("manual_prayer_zone", "WLY01");
+        }
         String loc = AppLocationManager.getLocationName(context).toLowerCase(Locale.ROOT);
         String stationId = AppLocationManager.getStationId(context).toUpperCase(Locale.ROOT);
 
@@ -275,8 +401,13 @@ final class PrayerTimes {
 
     /** Astronomical calculation fallback based on user's active Malaysian location. */
     private static long[] calculateFallback(Context context, Calendar cal) {
-        double latitude = AppLocationManager.getLatitude(context);
-        double longitude = AppLocationManager.getLongitude(context);
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        double latitude = prefs.contains("manual_lat")
+                ? Double.parseDouble(prefs.getString("manual_lat", String.valueOf(AppLocationManager.getLatitude(context))))
+                : AppLocationManager.getLatitude(context);
+        double longitude = prefs.contains("manual_lon")
+                ? Double.parseDouble(prefs.getString("manual_lon", String.valueOf(AppLocationManager.getLongitude(context))))
+                : AppLocationManager.getLongitude(context);
 
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
