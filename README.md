@@ -18,13 +18,19 @@ swaps the ad-filled home screen for a light one in frosted glass, with a new set
 every week.
 
 <p>
-  <img src="docs/screenshots/home-live.png" width="32%" alt="Live Home Screen with Islamic Prayer timetable, weather pill, and frosted glass dock">
-  <img src="docs/screenshots/weather-live.png" width="32%" alt="Weather & Air Quality Dashboard with 12h forecast pills and 7-day cards">
-  <img src="docs/screenshots/screensaver-live.png" width="32%" alt="StandBy Nightstand Screensaver with Hijri date and next prayer capsule">
+  <img src="docs/screenshots/home-live.png" width="24%" alt="Live Home Screen">
+  <img src="docs/screenshots/weather-live.png" width="24%" alt="Weather & Air Quality Dashboard">
+  <img src="docs/screenshots/screensaver-live.png" width="24%" alt="StandBy Nightstand Screensaver">
+  <img src="docs/screenshots/recent-apps-live.png" width="24%" alt="Recent Apps & RAM Manager">
 </p>
 
 ## What you get
 
+- **Recent Apps & RAM Manager (Double-Press Home).** A native tvOS-style app switcher and memory optimizer:
+  - **Double-Press Home Button**: Double-pressing the remote's Home button anywhere on the TV brings up the frosted glass Recent Apps switcher.
+  - **Live RAM Gauge**: Real-time memory consumption display (`RAM 1.2 GB used of 1.9 GB`) with a sleek progress bar.
+  - **Individual App Dismissal**: Press `▲ (Up)` on any app card to slide it away, terminate its background process, and immediately reclaim RAM.
+  - **Close All Button**: Click the circular `Close All` button (`🗑️`) at the end of the carousel to kill all running background tasks and clear memory in one tap.
 - **Weather & Air Quality Engine.** A full-screen Leanback weather hub (`WeatherActivity`) accessible directly from the under-clock pill:
   - Current condition, apparent temperature, humidity, wind velocity, UV index, sunrise and sunset times.
   - Air Quality Index (AQI / API / IPU) from Malaysia's Jabatan Alam Sekitar (APIMS) with a multi-color spectrum gauge, station comparisons, PM2.5 / PM10 readings, and health advisories.

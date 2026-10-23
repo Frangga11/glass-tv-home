@@ -92,12 +92,13 @@ Glass TV Home is designed around standard TV remotes:
 
 | Remote Button | Action / Function |
 | :--- | :--- |
+| **DOUBLE-PRESS HOME** | **Recent Apps & RAM Manager**: Open running apps switcher, check live RAM, dismiss individual apps (press ▲), or Close All. |
+| **HOME Button (Single Press)** | Return to home dock from any third-party app. If on home, engages ambient screensaver. |
 | **UP Button (▲)** | Navigates to the top shelf to highlight the **Weather & AQI Pill** or Wi-Fi/Settings menus. |
 | **OK / Center Button** | • Press on an app to launch it.<br>• Press on the weather pill to open the **Full-Screen Weather & Air Quality Dashboard**.<br>• **Long-Press** on an app to pick it up and rearrange/pin it to the dock. |
 | **DOWN Button (▼)** | Returns focus down to the main application dock. |
 | **LEFT / RIGHT (◀ / ▶)** | Move smoothly between dock apps or top pills with fluid glass glow transitions. |
-| **BACK Button (↩)** | Closes the Weather Dashboard or screensaver and returns to the home dock. |
-| **HOME Button** | Immediately returns to Glass TV Home from any third-party app. |
+| **BACK Button (↩)** | Closes the Weather Dashboard, Recent Apps, or screensaver and returns to the home dock. |
 
 ---
 
@@ -120,6 +121,13 @@ Glass TV Home is designed around standard TV remotes:
 * **10 Minutes Idle**: Enters an ambient OLED-safe black StandBy screensaver displaying large 110sp numerals, Islamic Hijri date, and the upcoming prayer window.
 * **2 Hours Later**: If left untouched, the TV display enters sleep standby (`GLOBAL_ACTION_LOCK_SCREEN`) to save power.
 * **Wake Up**: Press any button on the TV remote to wake the TV immediately.
+
+### D. Recent Apps & RAM Cleaner (Double-Press Home) ⚡
+A native tvOS-style app switcher and memory flusher:
+* **How to Open**: Press the remote **HOME button twice rapidly** from any app or home screen (or press the App Switch button on supported remotes).
+* **Live RAM Gauge Pill**: In the top right corner, view real-time memory stats (e.g., `RAM 1.2 GB used of 1.9 GB`) with a responsive progress bar.
+* **Dismiss Individual Apps**: On any focused app card, press **UP (▲)** on your remote to terminate its background process, animate the card away, and instantly free up RAM.
+* **'Close All' Button (Trash Icon 🗑️)**: Navigate to the far right of the carousel and click the circular **Close All** button to terminate all running background apps and flush RAM in 1 tap!
 
 ---
 

@@ -198,6 +198,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static final long DOUBLE_BACK_DELAY_MS = 350L;
     private Runnable singleBackRunnable = null;
     private boolean doubleBackPending = false;
+    private static final long DOUBLE_HOME_INTERVAL_MS = 400L;
+    private long lastHomePressTime = 0;
+    private Runnable singleHomeRunnable = null;
     /** Refreshes the network pill when the connection changes: at boot Wi-Fi often connects after Home is shown. */
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
@@ -795,11 +798,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dismissScreensaver();
             return;
         }
-        if (cardPrompt != null) cardPrompt.dismiss();
-        if (openPopup != null) openPopup.dismiss();
-        closeMenu(false);
-        if (movingPos >= 0) finishMove();
-        showNightstandScreensaver();
+        long now = android.os.SystemClock.uptimeMillis();
+        if (now - lastHomePressTime < DOUBLE_HOME_INTERVAL_MS) {
+            lastHomePressTime = 0;
+            if (singleHomeRunnable != null) {
+                handler.removeCallbacks(singleHomeRunnable);
+                singleHomeRunnable = null;
+            }
+            startActivity(new Intent(this, RecentAppsActivity.class));
+            return;
+        } else {
+            lastHomePressTime = now;
+            singleHomeRunnable = () -> {
+                singleHomeRunnable = null;
+                if (screensaverActive) {
+                    dismissScreensaver();
+                } else {
+                    if (cardPrompt != null) cardPrompt.dismiss();
+                    if (openPopup != null) openPopup.dismiss();
+                    closeMenu(false);
+                    if (movingPos >= 0) finishMove();
+                    showNightstandScreensaver();
+                }
+            };
+            handler.postDelayed(singleHomeRunnable, DOUBLE_HOME_INTERVAL_MS);
+        }
     }
 
     /**
@@ -1666,16 +1689,43 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             swallowRelease = -1;
             return true;
         }
+        if (code == KeyEvent.KEYCODE_APP_SWITCH) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                startActivity(new Intent(this, RecentAppsActivity.class));
+            }
+            return true;
+        }
         if (code == KeyEvent.KEYCODE_HOME || code == KeyEvent.KEYCODE_ALL_APPS) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 if (screensaverActive) {
                     dismissScreensaver();
+                    return true;
+                }
+                long now = android.os.SystemClock.uptimeMillis();
+                if (now - lastHomePressTime < DOUBLE_HOME_INTERVAL_MS) {
+                    lastHomePressTime = 0;
+                    if (singleHomeRunnable != null) {
+                        handler.removeCallbacks(singleHomeRunnable);
+                        singleHomeRunnable = null;
+                    }
+                    startActivity(new Intent(this, RecentAppsActivity.class));
+                    return true;
                 } else {
-                    if (cardPrompt != null) cardPrompt.dismiss();
-                    if (openPopup != null) openPopup.dismiss();
-                    closeMenu(false);
-                    if (movingPos >= 0) finishMove();
-                    showNightstandScreensaver();
+                    lastHomePressTime = now;
+                    singleHomeRunnable = () -> {
+                        singleHomeRunnable = null;
+                        if (screensaverActive) {
+                            dismissScreensaver();
+                        } else {
+                            if (cardPrompt != null) cardPrompt.dismiss();
+                            if (openPopup != null) openPopup.dismiss();
+                            closeMenu(false);
+                            if (movingPos >= 0) finishMove();
+                            showNightstandScreensaver();
+                        }
+                    };
+                    handler.postDelayed(singleHomeRunnable, DOUBLE_HOME_INTERVAL_MS);
+                    return true;
                 }
             }
             return true;

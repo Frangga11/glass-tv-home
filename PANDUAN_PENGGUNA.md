@@ -92,6 +92,8 @@ Sangat mudah dan intuitif! Anda hanya perlukan butang arah pada remote TV anda:
 
 | Butang Remote | Tindakan / Fungsi |
 | :--- | :--- |
+| **Tekan Dua Kali HOME (Double-Press)** | **Buka Pengurus Recent Apps & RAM Cleaner**: Papar senarai aplikasi berjalan, semak RAM, tutup aplikasi individu (tekan ▲), atau tutup semua aplikasi (Close All). |
+| **Butang HOME (Sekali Tekan)** | Kembali ke skrin utama dari mana-mana aplikasi. Jika di skrin utama, buka screensaver StandBy. |
 | **Butang ATAS (▲)** | Naik ke atas untuk pilih **Kapsul Cuaca & Jerebu** atau menu Wi-Fi / Tetapan. |
 | **Butang TENGAH (OK)** | • Tekan pada aplikasi untuk buka aplikasi tersebut.<br>• Tekan pada kapsul cuaca untuk buka **Dashboard Cuaca & Kualiti Udara penuh**.<br>• **Tekan & Tahan (Long-press)** pada aplikasi untuk susun atau pindahkan ikon ke dalam/luar dock. |
 | **Butang BAWAH (▼)** | Turun semula ke barisan aplikasi utama (*Dock*). |
@@ -122,6 +124,13 @@ Sangat mudah dan intuitif! Anda hanya perlukan butang arah pada remote TV anda:
 * **10 Minit Dibiarkan Tanpa Butang**: TV akan automatik masuk mod *StandBy Screensaver* berlatar hitam pekat (selamat untuk mengelakkan *screen burn-in* pada TV OLED/LED), memaparkan jam besar 110sp, tarikh Hijriah (cth: `🌙 12 Jamadilawal 1448H`), dan solat seterusnya.
 * **2 Jam Selepas Itu**: Jika TV terus tidak disentuh, sistem akan mematikan paparan TV (*sleep standby*) secara automatik.
 * **Untuk Hidupkan Semula**: Tekan mana-mana butang pada remote untuk bangunkan TV.
+
+### E. Pengurus Recent Apps & Pembersih RAM (Tekan 2 Kali Butang Home) ⚡
+Ciri pintar seumpama tvOS / Android TV premium untuk melihat dan membersihkan aplikasi latar belakang:
+* **Cara Buka**: Tekan butang **HOME dua kali berturut-turut** di mana-mana skrin atau aplikasi (atau butang App Switch pada remote tertentu).
+* **Kapsul Status RAM**: Di sudut atas kanan, memaparkan bacaan RAM masa nyata (contoh: `RAM 1.2 GB used of 1.9 GB`) dengan bar kemajuan.
+* **Tutup Aplikasi Individu**: Pada mana-mana kad aplikasi yang dipilih, **tekan butang ATAS (▲)** pada remote untuk menutup proses aplikasi tersebut dan membebaskan RAM serta-merta.
+* **Butang 'Close All' (Ikon Tong Sampah 🗑️)**: Gerakkan fokus ke hujung kanan senarai dan tekan butang bulat **Close All** untuk menutup semua aplikasi latar belakang secara serentak dalam 1 klik!
 
 ---
 
