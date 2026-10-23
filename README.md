@@ -8,6 +8,8 @@ and come home to just your apps, with a new place to visit behind them every wee
 </p>
 
 > 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
+>
+> 🇲🇾 **Panduan Pengguna (Bahasa Melayu)**: Panduan lengkap langkah demi langkah untuk pengguna baru boleh dibaca di [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md).
 
 Glass TV debloats any Android TV or Google TV over Wi-Fi, with no root and nothing that can't be undone, then
 swaps the ad-filled home screen for a light one in frosted glass, with a new set of places behind your apps
