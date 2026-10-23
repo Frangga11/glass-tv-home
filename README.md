@@ -76,13 +76,11 @@ Still light: on a Xiaomi Mi TV with 1.8 GB of RAM the launcher uses about 80–1
 of use, one wallpaper is in memory at a time, the week's places take about 2 MB of storage, and nothing runs
 while you are inside an app.
 
-## Setting it up
+## Setting it up (Auto with AI or Manual)
 
-**Using an AI coding agent** (Claude Code, Codex, Cursor, Copilot…)? Point it at this repository and ask it to
-set up your TV. [AGENTS.md](AGENTS.md) tells any agent, even a small model, how to do it safely on any Android TV or Google
-TV: it first works out which Glass TV your TV can run (the Android launcher, the LG webOS app, or neither on
-Samsung and Roku), then
-asks before each change, backs up first, never uninstalls, and checks each step with you as it goes.
+**Using an AI coding agent** (Google Antigravity [Free], Claude Code [Paid], Cursor, Codex...)? Point it at this repository and ask it to debloat your TV, block ad tracking, and install Glass TV automatically! [AGENTS.md](AGENTS.md) and [PROMPT.md](PROMPT.md) guide any AI assistant safely step-by-step.
+
+> 🇲🇾 **Panduan Penuh Bahasa Melayu (Langkah Demi Langkah Untuk Beginner)**: Lihat [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md) untuk panduan daripada cara hidupkan Developer Mode di TV sehingga siap pasang automatik menggunakan AI.
 
 The full step-by-step guide for debloating and installing is in
 [docs/CLEANYOURTV-README.md](docs/CLEANYOURTV-README.md), and [PROMPT.md](PROMPT.md) lets a coding assistant do
