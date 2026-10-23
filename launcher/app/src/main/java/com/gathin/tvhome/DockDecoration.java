@@ -18,6 +18,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final int dockSize;
     private final float density;
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint trayShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final GlassRim edge;
     private Glider glider;
     private final int[] at = new int[2], gliderAt = new int[2];
@@ -32,6 +33,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         this.density = density;
         // Same glass as the top-bar pills (GlassDrawable): an even veil and a shining edge.
         band.setColor(0x12FFFFFF);
+        trayShadowPaint.setColor(0x38000000);
+        trayShadowPaint.setMaskFilter(new android.graphics.BlurMaskFilter(14f * density, android.graphics.BlurMaskFilter.Blur.NORMAL));
         edge = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, 0.5f);
     }
 
@@ -75,6 +78,11 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         rect.inset(-pad, -pad);
         area.set(rect);
         float radius = 26 * density;
+        // Soft drop shadow under the glass dock tray
+        RectF trayShadow = new RectF(rect);
+        trayShadow.offset(0, 4f * density);
+        c.drawRoundRect(trayShadow, radius, radius, trayShadowPaint);
+
         blur.draw(c, parent, rect, radius, 1f);
         c.drawRoundRect(rect, radius, radius, band);
         // The focus frame of a dock tile sits on the tray's glass and under the tiles; the rest of
@@ -83,7 +91,10 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             parent.getLocationInWindow(at);
             glider.getLocationInWindow(gliderAt);
             c.save();
-            c.clipRect(rect);
+            RectF clipArea = new RectF(rect);
+            float shadowBleed = 36f * density;
+            clipArea.inset(-shadowBleed, -shadowBleed);
+            c.clipRect(clipArea);
             glider.drawShape(c, gliderAt[0] - at[0], gliderAt[1] - at[1], parent);
             c.restore();
         }

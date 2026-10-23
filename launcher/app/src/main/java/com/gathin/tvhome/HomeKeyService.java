@@ -3,6 +3,7 @@ package com.gathin.tvhome;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -17,13 +18,33 @@ import android.view.accessibility.AccessibilityEvent;
  */
 public class HomeKeyService extends AccessibilityService {
 
+    private static final String TAG = "TvHome.HomeKey";
+    private static HomeKeyService instance;
+
     /** Scancodes of remote buttons that should open Settings (config.xml, settings_key_scancodes). */
     private int[] settingsScancodes = new int[0];
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        instance = this;
         settingsScancodes = getResources().getIntArray(R.array.settings_key_scancodes);
+        Log.i(TAG, "HomeKeyService connected");
+    }
+
+    @Override
+    public void onDestroy() {
+        if (instance == this) instance = null;
+        super.onDestroy();
+    }
+
+    /** Put the TV display into sleep standby mode. */
+    public static boolean sleepScreen() {
+        if (instance != null) {
+            Log.i(TAG, "Executing GLOBAL_ACTION_LOCK_SCREEN to turn off TV display");
+            return instance.performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN);
+        }
+        return false;
     }
 
     private boolean isSettingsKey(KeyEvent event) {

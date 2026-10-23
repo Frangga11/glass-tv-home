@@ -102,7 +102,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static final float HERO_NAME_WIDTH_SHARE = 0.60f;
     private static final float HERO_TITLE_MAX_SP = 40f;
     /** The breathing room between the shelf's last line and the top of the app container. */
-    private static final float HERO_GAP_DP = 67f;
+    private static final float HERO_GAP_DP = 36f;
     private static final float HERO_TITLE_MIN_SP = 26f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
@@ -127,7 +127,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private float heroBottom;
     private View btnInputs;
     private TextView btnWifi;
+    private TextView ampmView, dateView;
     private TextView shamsiDate;
+    private TextView prayerTimesView;
+    private TextView weatherAirQualityView;
+    private View islamicShelf;
+    private TextView ayatRef, ayatArabic, ayatTranslation, prayerHeader;
+    private TextView lblSubuh, lblSyuruk, lblZohor, lblAsar, lblMaghrib, lblIsyak;
+    private TextView timeSubuh, timeSyuruk, timeZohor, timeAsar, timeMaghrib, timeIsyak;
     private boolean shamsi;
     private String vpnApp;
     private SpringAnimation springX, springY;
@@ -181,6 +188,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Pictures of places are on (see PlaceWallpapers); they are dimmed behind the tiles. */
     private boolean placesMode;
     private volatile boolean placesRefreshRunning;
+    private static final long SCREENSAVER_TIMEOUT_MS = 10L * 60 * 1000L; // 10 minutes idle -> screensaver
+    private static final long TV_SLEEP_TIMEOUT_MS = SCREENSAVER_TIMEOUT_MS + (2L * 60 * 60 * 1000L); // 2 hours later -> TV off
+    private long lastUserInteraction = android.os.SystemClock.elapsedRealtime();
+    private boolean screensaverActive = false;
+    private View screensaverView;
+    private boolean wallpaperFullscreen = false;
+    private View mainContent;
+    private static final long DOUBLE_BACK_DELAY_MS = 350L;
+    private Runnable singleBackRunnable = null;
+    private boolean doubleBackPending = false;
     /** Refreshes the network pill when the connection changes: at boot Wi-Fi often connects after Home is shown. */
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
@@ -231,8 +248,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         @Override
         public void run() {
             updateShamsiDate();
+            updatePrayerTimes();
+            updateDateAndPeriod();
             updateWifiLabel();
+            updateWeatherAqi();
+            WeatherAirQuality.syncIfDue(MainActivity.this, MainActivity.this::updateWeatherAqi);
+            updateIslamicShelf();
             refreshPlacesIfDue();
+            refreshOnlineWallpapersIfDue();
+            checkInactivity();
             handler.postDelayed(this, MINUTE_MS);
         }
     };
@@ -240,6 +264,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SoundEffects.init(this);
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
@@ -259,6 +284,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         android.content.SharedPreferences launch = getSharedPreferences("launch", MODE_PRIVATE);
         if (Math.abs(launch.getLong("boot_at", 0) - bootAt) < 60_000) tilesAnimatedOnce = true;
         else launch.edit().putLong("boot_at", bootAt).apply();
+        ensureSystemScreensaverAndSleepSettings();
         root.setBackgroundColor(cfg.backgroundColor);
         config = cfg;
         wallpapers = cfg.wallpapers;
@@ -267,8 +293,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Places only, when they are on: never the theme's own pictures, even before the first
         // week's places have arrived.
         if (placesMode) wallpapers = PlaceWallpapers.list(this);
+        else if (cfg.wallpaperOnline && wallpapers.isEmpty()) wallpapers = OnlineWallpapers.list(this);
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
         else if (cfg.wallpaper != null && !placesMode) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        mainContent = findViewById(R.id.mainContent);
         glass = findViewById(R.id.glass);
         ambient = findViewById(R.id.ambient);
         Backdrop.setWorker(wallDecoder, handler);
@@ -289,6 +317,66 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroShelf.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, orr, ob) -> {
             if (heroBottom > 0) v.setY(heroBottom - v.getHeight());
         });
+        ampmView = findViewById(R.id.ampm);
+        dateView = findViewById(R.id.date);
+        updateDateAndPeriod();
+        weatherAirQualityView = findViewById(R.id.weatherAirQuality);
+        if (weatherAirQualityView != null) {
+            weatherAirQualityView.setOnClickListener(v -> {
+                startActivity(new Intent(this, WeatherActivity.class));
+            });
+            weatherAirQualityView.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    focusTile(0);
+                    return true;
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    View target = (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) ? btnInputs
+                            : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) ? btnWifi
+                            : findViewById(R.id.btnSettings);
+                    if (target != null) {
+                        target.requestFocus();
+                        return true;
+                    }
+                }
+                return false;
+            });
+            weatherAirQualityView.setOnFocusChangeListener((v, hasFocus) -> {
+                float scale = hasFocus ? 1.05f : 1.0f;
+                v.animate().scaleX(scale).scaleY(scale).setDuration(150).start();
+            });
+        }
+        updateWeatherAqi();
+        WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
+
+        islamicShelf = findViewById(R.id.islamicShelf);
+        if (islamicShelf != null) {
+            ayatRef = findViewById(R.id.ayatRef);
+            ayatArabic = findViewById(R.id.ayatArabic);
+            ayatTranslation = findViewById(R.id.ayatTranslation);
+            prayerHeader = findViewById(R.id.prayerHeader);
+
+            lblSubuh = findViewById(R.id.lblSubuh);
+            lblSyuruk = findViewById(R.id.lblSyuruk);
+            lblZohor = findViewById(R.id.lblZohor);
+            lblAsar = findViewById(R.id.lblAsar);
+            lblMaghrib = findViewById(R.id.lblMaghrib);
+            lblIsyak = findViewById(R.id.lblIsyak);
+
+            timeSubuh = findViewById(R.id.timeSubuh);
+            timeSyuruk = findViewById(R.id.timeSyuruk);
+            timeZohor = findViewById(R.id.timeZohor);
+            timeAsar = findViewById(R.id.timeAsar);
+            timeMaghrib = findViewById(R.id.timeMaghrib);
+            timeIsyak = findViewById(R.id.timeIsyak);
+
+            islamicShelf.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, orr, ob) -> {
+                if (heroBottom > 0) v.setY(heroBottom - v.getHeight());
+            });
+            updateIslamicShelf();
+        }
+
         btnWifi = findViewById(R.id.btnWifi);
         if (!cfg.showNetworkPill) btnWifi.setVisibility(View.GONE);
         shamsiDate = findViewById(R.id.shamsiDate);
@@ -299,20 +387,34 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             date.setTextSize(11f);
             date.setPadding(0, (int) (4 * density), 0, 0);
         }
-        // Beside the clock, the date sits on the digits' baseline, and AM/PM rests halfway between
-        // the top of the digits and the top of the date, its letters' foot on that line.
-        TextView clock = findViewById(R.id.clock), amPm = findViewById(R.id.ampm), dateLine = findViewById(R.id.date);
-        View dateBlock = findViewById(R.id.dateBlock);
-        dateBlock.setTranslationY(dateLine.getPaint().getFontMetrics().descent - clock.getPaint().getFontMetrics().descent);
-        // Placed once the whole column is laid out, AM/PM and the date both.
-        ((View) dateBlock.getParent()).addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-            android.graphics.Rect cap = new android.graphics.Rect();
-            dateLine.getPaint().getTextBounds("O", 0, 1, cap);
-            float capsAtTop = ClockDream.capInset(clock, "0") - ClockDream.capInset(amPm, "AM");
-            float foot = amPm.getTop() + capsAtTop + amPm.getBaseline();
-            float dateTop = dateBlock.getTop() + dateBlock.getTranslationY() + dateLine.getTop() + dateLine.getBaseline() + cap.top;
-            amPm.setTranslationY(Math.round(capsAtTop + (foot + dateTop) / 2f - foot));
-        });
+        prayerTimesView = findViewById(R.id.prayerTimes);
+        if (prayerTimesView != null) {
+            prayerTimesView.setOnClickListener(v -> showPrayerPopup());
+            prayerTimesView.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    View inputs = findViewById(R.id.btnInputs);
+                    View wifi = findViewById(R.id.btnWifi);
+                    View settings = findViewById(R.id.btnSettings);
+                    if (inputs != null && inputs.getVisibility() == View.VISIBLE) inputs.requestFocus();
+                    else if (wifi != null && wifi.getVisibility() == View.VISIBLE) wifi.requestFocus();
+                    else if (settings != null) settings.requestFocus();
+                    return true;
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    focusTile(lastFocused % COLUMNS);
+                    return true;
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
+                    showPrayerPopup();
+                    return true;
+                }
+                return false;
+            });
+        }
+        updatePrayerTimes();
+        PrayerTimes.syncIfDue(this, this::updatePrayerTimes);
         vpnApp = cfg.vpnApp;
         moduleCards = cfg.moduleCards;
         hiddenApps = new HashSet<>(cfg.hiddenApps);
@@ -348,11 +450,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         glider.addCompanion(grid, tray.area);
         for (int id : new int[]{R.id.btnInputs, R.id.btnWifi, R.id.btnSettings}) {
             View pill = findViewById(id);
-            pill.setBackground(new GlassDrawable(pill, 21 * density, density, glider));
+            if (pill == null) continue;
+            float radius = 21f * density;
+            pill.setBackground(new GlassDrawable(pill, radius, density, glider));
             glider.addCompanion(pill);
             Backdrop.watch(pill);
             pill.setOnFocusChangeListener((v, has) -> {
                 if (has) moveTopHighlight(v);
+            });
+        }
+        if (prayerTimesView != null) {
+            prayerTimesView.setOnFocusChangeListener((v, has) -> {
+                if (has) {
+                    SoundEffects.playNav();
+                    glider.hide();
+                }
             });
         }
         // The apps rise into place on the first launch after the TV starts, and only then. Setting
@@ -421,7 +533,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs = findViewById(R.id.btnInputs);
         View btnSettings = findViewById(R.id.btnSettings);
         btnInputs.setOnClickListener(v -> showInputs());
-        btnWifi.setOnClickListener(v -> openNetworkPill());
+        btnWifi.setOnClickListener(v -> showWifiPopup());
         btnWifi.setOnLongClickListener(v -> {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
             return true;
@@ -444,6 +556,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (v.getId() == R.id.btnInputs || (v.getId() == R.id.btnWifi && (btnInputs == null || btnInputs.getVisibility() != View.VISIBLE))) {
+                    if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
+                        weatherAirQualityView.requestFocus();
+                        return true;
+                    }
+                }
+                if (v.getId() == R.id.btnInputs && prayerTimesView != null && prayerTimesView.getVisibility() == View.VISIBLE) {
+                    prayerTimesView.requestFocus();
+                    return true;
+                }
                 // The left end is Inputs, or Wi-Fi on a box without inputs, or Settings when both are gone.
                 return v.getId() == R.id.btnInputs
                         || (v.getId() == R.id.btnWifi && btnInputs.getVisibility() != View.VISIBLE)
@@ -490,11 +612,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             android.graphics.BitmapFactory.Options opts = new android.graphics.BitmapFactory.Options();
             opts.inJustDecodeBounds = true;
             android.graphics.BitmapFactory.decodeFile(file.getPath(), opts);
+            int targetW = Math.max(dm.widthPixels, 3840);
+            int targetH = Math.max(dm.heightPixels, 2160);
             int sample = 1;
-            while (opts.outWidth / (sample * 2) >= dm.widthPixels && opts.outHeight / (sample * 2) >= dm.heightPixels) sample *= 2;
+            while (opts.outWidth / (sample * 2) >= targetW && opts.outHeight / (sample * 2) >= targetH) sample *= 2;
             opts.inJustDecodeBounds = false;
             opts.inSampleSize = sample;
-            opts.inPreferredConfig = android.graphics.Bitmap.Config.RGB_565;   // no alpha needed, half the memory
+            opts.inPreferredConfig = android.graphics.Bitmap.Config.ARGB_8888;
             return android.graphics.BitmapFactory.decodeFile(file.getPath(), opts);
         } catch (Exception | OutOfMemoryError e) {
             // A bad or huge picture must never take the home screen down; the plain colour stays.
@@ -610,6 +734,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }, "place-wallpapers").start();
     }
 
+    private boolean onlineRefreshRunning;
+
+    /** Fetches fresh 4K online wallpapers in the background when due. */
+    private void refreshOnlineWallpapersIfDue() {
+        if (config == null || !config.wallpaperOnline || onlineRefreshRunning || !OnlineWallpapers.due(this)) return;
+        onlineRefreshRunning = true;
+        new Thread(() -> {
+            boolean changed = OnlineWallpapers.sync(getApplicationContext(), config.wallpaperFeed);
+            handler.post(() -> {
+                onlineRefreshRunning = false;
+                if (!changed || isDestroyed()) return;
+                List<File> fresh = OnlineWallpapers.list(this);
+                if (fresh.isEmpty()) return;
+                List<File> combined = new ArrayList<>(config.wallpapers);
+                for (File f : fresh) {
+                    if (!combined.contains(f)) combined.add(f);
+                }
+                wallpapers = combined;
+                if (wallBitmap == null) showNextWallpaper(false);
+                if (!isFinishing() && hasWindowFocus()) startWallpaperRotation();
+            });
+        }, "online-wallpapers").start();
+    }
+
     /** Clears the TV's app caches when due, once Home has sat idle on screen for a while. */
     private final Runnable cacheClean = () -> {
         if (hasWindowFocus() && config != null) CacheCleaner.maybeRun(this, config.cacheCleanDays);
@@ -618,6 +766,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Whenever Home comes back: picks the rotation up where the interval left it. */
     private void startWallpaperRotation() {
         refreshPlacesIfDue();
+        refreshOnlineWallpapersIfDue();
         handler.removeCallbacks(wallTick);
         if (wallpapers.size() < 2 || wallpaperIntervalMs <= 0) return;
         long waited = android.os.SystemClock.elapsedRealtime() - wallShownAt;
@@ -634,13 +783,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (intent != null && intent.getBooleanExtra("screensaver", false)) {
+            showNightstandScreensaver();
+            return;
+        }
         if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) return;
-        // Home pressed on Home goes back to the first app. Home pressed in another app comes back to
-        // the app you left from: resetting then made the selection run from it to the first app.
+        // Home pressed on Home goes to screensaver sleep mode. Home pressed in another app comes back to
+        // the launcher without launching screensaver.
         if (hiddenSinceResume) return;
-        grid.scrollToPosition(0);
-        lastFocused = 0;
-        lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
+        if (screensaverActive) {
+            dismissScreensaver();
+            return;
+        }
+        if (cardPrompt != null) cardPrompt.dismiss();
+        if (openPopup != null) openPopup.dismiss();
+        closeMenu(false);
+        if (movingPos >= 0) finishMove();
+        showNightstandScreensaver();
     }
 
     /**
@@ -669,7 +828,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         resuming = true;
         reloadApps(true);
         updateShamsiDate();
+        updatePrayerTimes();
+        updateDateAndPeriod();
         updateWifiLabel();
+        updateWeatherAqi();
+        WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
+        updateIslamicShelf();
         updateInputsButton();
         startWallpaperRotation();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -786,6 +950,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SoundEffects.release();
         wallDecoder.shutdownNow();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -798,7 +963,73 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onBackPressed() {
-        // Home screen: Back goes nowhere.
+        handleBackPress();
+    }
+
+    private void handleBackPress() {
+        if (openMenu != null) {
+            closeMenu(true);
+            return;
+        }
+        if (screensaverActive) {
+            dismissScreensaver();
+            return;
+        }
+        if (wallpaperFullscreen) {
+            setWallpaperFullscreen(false);
+            return;
+        }
+
+        if (doubleBackPending) {
+            if (singleBackRunnable != null) {
+                handler.removeCallbacks(singleBackRunnable);
+                singleBackRunnable = null;
+            }
+            doubleBackPending = false;
+            showNightstandScreensaver();
+        } else {
+            doubleBackPending = true;
+            singleBackRunnable = () -> {
+                doubleBackPending = false;
+                singleBackRunnable = null;
+                setWallpaperFullscreen(true);
+            };
+            handler.postDelayed(singleBackRunnable, DOUBLE_BACK_DELAY_MS);
+        }
+    }
+
+    private void setWallpaperFullscreen(boolean fullscreen) {
+        if (wallpaperFullscreen == fullscreen) return;
+        wallpaperFullscreen = fullscreen;
+        float alpha = fullscreen ? 0f : 1f;
+        int duration = reducedMotion ? 120 : 300;
+
+        if (mainContent != null) {
+            mainContent.animate().alpha(alpha).setDuration(duration).start();
+        }
+        if (heroShelf != null) {
+            heroShelf.animate().alpha(alpha).setDuration(duration).start();
+        }
+        if (islamicShelf != null) {
+            islamicShelf.animate().alpha(alpha).setDuration(duration).start();
+        }
+        if (glass != null) {
+            glass.animate().alpha(alpha).setDuration(duration).start();
+        }
+        if (glider != null) {
+            glider.animate().alpha(alpha).setDuration(duration).start();
+        }
+        if (ambient != null && fullscreen) {
+            ambient.animate().alpha(0f).setDuration(duration).start();
+        }
+
+        if (wallView != null && placesMode) {
+            if (fullscreen) {
+                wallView.clearColorFilter();
+            } else {
+                wallView.setColorFilter(0xFF7A7A7A, android.graphics.PorterDuff.Mode.MULTIPLY);
+            }
+        }
     }
 
     // ---- glass highlight -------------------------------------------------------------------------
@@ -808,6 +1039,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onTileFocused(int position, View card) {
+        if (!resuming && hasWindowFocus()) SoundEffects.playNav();
         lastFocused = position;
         lastFocusedKey = adapter.keyAt(position);
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
@@ -892,9 +1124,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             heroShelf.setY(y);
             heroShelf.setTranslationX(0f);
             heroShelf.setAlpha(1f);
+            if (islamicShelf != null) {
+                islamicShelf.setY(heroBottom - islamicShelf.getHeight());
+                islamicShelf.setAlpha(1f);
+            }
             showAmbient(color);
             heroShown = true;
             return;
+        }
+
+        if (islamicShelf != null) {
+            float iy = heroBottom - islamicShelf.getHeight();
+            islamicShelf.setY(iy);
+            if (!heroShown) {
+                islamicShelf.animate().cancel();
+                if (firstFrameHeld || resuming) islamicShelf.setAlpha(1f);
+                else islamicShelf.animate().alpha(1f).setDuration(260).start();
+            } else {
+                islamicShelf.setAlpha(1f);
+            }
         }
 
         if (!heroShown) {
@@ -972,6 +1220,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
     private void moveTopHighlight(View pill) {
         if (resuming) return;
+        SoundEffects.playNav();
         pill.getLocationInWindow(pillAt);
         glider.getLocationInWindow(rootAt);
         float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
@@ -1042,10 +1291,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * changes, so the words and the picture never disagree.
      */
     private void setPlace(File picture) {
-        String[] about = placesMode ? PlaceWallpapers.describe(picture) : null;
+        String[] about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
         String title = about != null ? titleCase(about[0]) : null;
         String overview = about != null ? about[1] : "";
         String country = about != null && about.length > 2 ? about[2] : "";
+        if (country != null) {
+            country = country.replaceAll("(?i)\\bunsplash\\s*•?\\s*", "").trim();
+        }
+        if (title != null) {
+            title = title.replaceAll("(?i)\\bunsplash\\s*•?\\s*", "").trim();
+        }
         if (title == null ? placeName == null : title.equals(placeName)) return;
         placeName = title;
         placeText = overview;
@@ -1055,9 +1310,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // the last one's picture while it faded. The layout listener puts the shelf back where it
         // belongs once the new lines have been measured.
         if (heroShown && title != null) {
+            final String t = title;
+            final String c = country;
+            final String o = overview;
             heroShelf.animate().cancel();
             heroShelf.animate().alpha(0f).setDuration(reducedMotion ? 100 : 250).withEndAction(() -> {
-                setHeroText(title, country, overview);
+                setHeroText(t, c, o);
                 if (heroShown) heroShelf.animate().alpha(1f).setDuration(reducedMotion ? 120 : 400).start();
             }).start();
         }
@@ -1115,7 +1373,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void holdFirstFrame() {
         final long start = android.os.SystemClock.uptimeMillis();
         firstFrameHeld = true;
-        final boolean expectsWallpaper = !wallpapers.isEmpty() || (config.wallpaper != null && !placesMode);
+        final boolean expectsWallpaper = !wallpapers.isEmpty() || (config.wallpaper != null && !placesMode) || config.wallpaperOnline;
         root.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -1224,6 +1482,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!heroShown) return;
         heroShown = false;
         heroShelf.animate().alpha(0f).setDuration(reducedMotion ? 100 : 160).start();
+        if (islamicShelf != null) islamicShelf.animate().alpha(0f).setDuration(reducedMotion ? 100 : 160).start();
     }
 
     /**
@@ -1367,13 +1626,69 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
+    }
+
+    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
+        if (screensaverActive) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                dismissScreensaver();
+            }
+            return true;
+        }
         int code = event.getKeyCode();
+        if (wallpaperFullscreen) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                setWallpaperFullscreen(false);
+                if (code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) {
+                    doubleBackPending = true;
+                    singleBackRunnable = () -> {
+                        doubleBackPending = false;
+                        singleBackRunnable = null;
+                    };
+                    handler.postDelayed(singleBackRunnable, DOUBLE_BACK_DELAY_MS);
+                }
+            }
+            return true;
+        }
+        if (doubleBackPending && code != KeyEvent.KEYCODE_BACK && code != KeyEvent.KEYCODE_ESCAPE) {
+            if (singleBackRunnable != null) {
+                handler.removeCallbacks(singleBackRunnable);
+                singleBackRunnable = null;
+            }
+            doubleBackPending = false;
+        }
         if (code == swallowRelease && event.getAction() == KeyEvent.ACTION_UP) {
             swallowRelease = -1;
             return true;
         }
-        if (movingPos < 0) return super.dispatchKeyEvent(event);
+        if (code == KeyEvent.KEYCODE_HOME || code == KeyEvent.KEYCODE_ALL_APPS) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                if (screensaverActive) {
+                    dismissScreensaver();
+                } else {
+                    if (cardPrompt != null) cardPrompt.dismiss();
+                    if (openPopup != null) openPopup.dismiss();
+                    closeMenu(false);
+                    if (movingPos >= 0) finishMove();
+                    showNightstandScreensaver();
+                }
+            }
+            return true;
+        }
+        if (movingPos < 0) {
+            if (code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    handleBackPress();
+                }
+                return true;
+            }
+            return super.dispatchKeyEvent(event);
+        }
         boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
         switch (code) {
             case KeyEvent.KEYCODE_DPAD_LEFT:
@@ -1410,7 +1725,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return position % COLUMNS == COLUMNS - 1 || position == count - 1;
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) return false;          // dock row: let focus move to the top bar
+            if (position < COLUMNS) {
+                if (position <= 1 && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
+                    weatherAirQualityView.requestFocus();
+                    return true;
+                }
+                return false;          // dock row: let focus move to the top bar
+            }
             target = position - COLUMNS;
         } else {
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
@@ -1462,6 +1783,70 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (shamsi) shamsiDate.setText(Shamsi.today());
     }
 
+    private void updatePrayerTimes() {
+        if (prayerTimesView != null) {
+            prayerTimesView.setText(PrayerTimes.getFormatted(this));
+        }
+        updateIslamicShelf();
+    }
+
+    private void updateWeatherAqi() {
+        if (weatherAirQualityView != null) {
+            weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));
+        }
+    }
+
+    private void updateIslamicShelf() {
+        if (islamicShelf == null) return;
+        DailyAyat.Ayat ayat = DailyAyat.getToday();
+        if (ayatRef != null) ayatRef.setText(ayat.reference);
+        if (ayatArabic != null) ayatArabic.setText(ayat.arabic);
+        if (ayatTranslation != null) ayatTranslation.setText(ayat.translation);
+
+        if (prayerHeader != null) {
+            prayerHeader.setText("WAKTU SOLAT  •  " + PrayerTimes.getHijriDate().toUpperCase(Locale.ROOT));
+        }
+
+        PrayerTimes.PrayerItem[] items = PrayerTimes.getPrayerItems(this);
+        if (items != null && items.length >= 6) {
+            TextView[] labels = {lblSubuh, lblSyuruk, lblZohor, lblAsar, lblMaghrib, lblIsyak};
+            TextView[] times = {timeSubuh, timeSyuruk, timeZohor, timeAsar, timeMaghrib, timeIsyak};
+
+            for (int i = 0; i < 6; i++) {
+                if (times[i] != null) times[i].setText(items[i].timeStr);
+                if (labels[i] != null) {
+                    labels[i].setText(items[i].name);
+                    if (items[i].isNext) {
+                        labels[i].setTextColor(0xFF4ADE80);
+                        if (times[i] != null) times[i].setTextColor(0xFF4ADE80);
+                    } else {
+                        labels[i].setTextColor(0xB3FFFFFF);
+                        if (times[i] != null) times[i].setTextColor(0xFFFFFFFF);
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateDateAndPeriod() {
+        Calendar cal = Calendar.getInstance();
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        String period;
+        if (hour >= 1 && hour < 12) period = "PG";
+        else if (hour >= 12 && hour < 19) period = "PTG";
+        else period = "MLM";
+
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+        String[] malayMonths = {"JAN", "FEB", "MAC", "APR", "MEI", "JUN", "JUL", "OGO", "SEP", "OKT", "NOV", "DIS"};
+        String mStr = (month >= 0 && month < 12) ? malayMonths[month] : "";
+        String dateStr = day + " " + mStr + " " + year;
+
+        if (ampmView != null) ampmView.setText(period);
+        if (dateView != null) dateView.setText(dateStr);
+    }
+
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */
     private void updateWifiLabel() {
         if (btnWifi.getVisibility() == View.GONE) return;   // show_network_pill off
@@ -1501,33 +1886,263 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         } catch (Exception ignored) {
         }
-        // With a VPN app configured, a VPN that is down matters too: show a red "VPN off" capsule then.
-        boolean vpnDown = !vpn && online && !vpnApp.isEmpty();
-        if (vpn || vpnDown) {
-            // Network name, then the green lock-and-VPN (or red "VPN off") capsule drawn in place of the word.
-            String badge = getString(vpn ? R.string.vpn : R.string.vpn_off);
-            VpnBadge span = new VpnBadge(vpn ? getDrawable(R.drawable.ic_lock) : null, density);
-            // The pill has a maximum width and ellipsizes at the end, which would cut the badge off after
-            // a long network name, so shorten the name to whatever room the badge leaves. The total paddings
-            // include the Wi-Fi icon.
-            TextPaint paint = btnWifi.getPaint();
-            float room = btnWifi.getMaxWidth() - btnWifi.getTotalPaddingStart() - btnWifi.getTotalPaddingEnd()
-                    - span.getSize(paint, badge, 0, badge.length(), null) - paint.measureText(" ") - 2 * density;
-            text = TextUtils.ellipsize(text, paint, Math.max(0, room), TextUtils.TruncateAt.END).toString();
-            SpannableString label = new SpannableString(text + " " + badge);
-            label.setSpan(span, text.length() + 1, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            btnWifi.setText(label);
-        } else {
-            btnWifi.setText(text);
-        }
+        btnWifi.setText(text);
         btnWifi.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, 0, 0, 0);
     }
 
-    /** The network pill opens the VPN app when one is configured and installed, otherwise Wi-Fi settings. */
-    private void openNetworkPill() {
-        Intent i = vpnApp.isEmpty() ? null : getPackageManager().getLeanbackLaunchIntentForPackage(vpnApp);
-        if (i == null && !vpnApp.isEmpty()) i = getPackageManager().getLaunchIntentForPackage(vpnApp);
-        open(i != null ? i : systemIntent(Settings.ACTION_WIFI_SETTINGS));
+    /** Shows an Apple TV-style frosted glass Wi-Fi control center popup. */
+    private void showWifiPopup() {
+        if (openMenu != null) return;
+        SoundEffects.playSelect();
+        View anchor = btnWifi;
+        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        Runnable close = () -> closeMenu(false);
+
+        String ssid = getString(R.string.wifi);
+        String ip = "";
+        boolean isConnected = false;
+        try {
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            Network activeNet = cm != null ? cm.getActiveNetwork() : null;
+            if (activeNet != null) {
+                NetworkCapabilities caps = cm.getNetworkCapabilities(activeNet);
+                if (caps != null && (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))) {
+                    isConnected = true;
+                }
+            }
+            WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (wm != null && wm.isWifiEnabled()) {
+                WifiInfo info = wm.getConnectionInfo();
+                if (info != null && info.getNetworkId() != -1) {
+                    String s = info.getSSID();
+                    if (s != null && !s.equals("<unknown ssid>") && !s.isEmpty()) {
+                        ssid = s.replaceAll("^\"|\"$", "");
+                    }
+                    int ipVal = info.getIpAddress();
+                    if (ipVal != 0) {
+                        ip = String.format(Locale.getDefault(), "%d.%d.%d.%d",
+                                (ipVal & 0xff), (ipVal >> 8 & 0xff), (ipVal >> 16 & 0xff), (ipVal >> 24 & 0xff));
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        int width = (int) (240 * density);
+
+        // Row 1: Current Wi-Fi status & SSID
+        addInputRow(rows, close, R.drawable.ic_wifi, ssid, isConnected ? TvInputManager.INPUT_STATE_CONNECTED : TvInputManager.INPUT_STATE_DISCONNECTED, () -> {
+            SoundEffects.playSelect();
+            open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
+        });
+
+        addSeparator(rows);
+
+        // Row 2: Tetapan Wi-Fi
+        addInputRow(rows, close, R.drawable.ic_settings, "Tetapan Wi-Fi", -1, () -> {
+            SoundEffects.playSelect();
+            open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
+        });
+
+        // Row 3: Tutup
+        addInputRow(rows, close, R.drawable.ic_move, "Tutup", -1, () -> {
+            SoundEffects.playSelect();
+            closeMenu(true);
+        });
+
+        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        width = Math.max(width, panel.getMeasuredWidth());
+
+        showMenu(panel, rows, anchor, width, false);
+    }
+
+    /** Shows an Apple TV-style frosted glass Putrajaya prayer timetable popup. */
+    private void showPrayerPopup() {
+        if (openMenu != null) return;
+        SoundEffects.playSelect();
+        View anchor = prayerTimesView != null ? prayerTimesView : findViewById(R.id.leftBlock);
+        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        Runnable close = () -> closeMenu(false);
+
+        // Header: Putrajaya Zone WLY01
+        addInputRow(rows, close, R.drawable.ic_settings, "Waktu Solat Putrajaya", TvInputManager.INPUT_STATE_CONNECTED, () -> {});
+
+        // Date row: Islamic Hijri
+        addInputRow(rows, close, R.drawable.ic_input, PrayerTimes.getHijriDate(), -1, () -> {});
+
+        addSeparator(rows);
+
+        // Prayer times list
+        java.util.List<PrayerTimes.ScheduleItem> schedule = PrayerTimes.getFullSchedule(this);
+        for (PrayerTimes.ScheduleItem item : schedule) {
+            addPrayerRow(rows, close, item.name, item.timeFormatted, item.isNext);
+        }
+
+        addSeparator(rows);
+
+        // Tutup
+        addInputRow(rows, close, R.drawable.ic_move, "Tutup", -1, () -> {
+            SoundEffects.playSelect();
+            closeMenu(true);
+        });
+
+        int width = (int) (270 * density);
+        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        width = Math.max(width, panel.getMeasuredWidth());
+
+        showMenu(panel, rows, anchor, width, false);
+    }
+
+    private void addPrayerRow(LinearLayout rows, Runnable close, String name, String time, boolean isNext) {
+        View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
+        ((ImageView) row.findViewById(R.id.icon)).setImageResource(R.drawable.ic_input);
+        TextView title = row.findViewById(R.id.title);
+        title.setText(name + (isNext ? " (Seterusnya)" : ""));
+        TextView status = row.findViewById(R.id.status);
+        View dot = row.findViewById(R.id.dot);
+        status.setText(time);
+        status.setVisibility(View.VISIBLE);
+        if (isNext) {
+            dot.setVisibility(View.VISIBLE);
+            title.setTypeface(null, android.graphics.Typeface.BOLD);
+            status.setTypeface(null, android.graphics.Typeface.BOLD);
+        } else {
+            dot.setVisibility(View.GONE);
+        }
+        row.setOnClickListener(v -> {
+            SoundEffects.playSelect();
+            close.run();
+        });
+        rows.addView(row);
+    }
+
+    private void checkInactivity() {
+        if (!hasWindowFocus() || isFinishing() || isDestroyed()) return;
+        long idleMs = android.os.SystemClock.elapsedRealtime() - lastUserInteraction;
+        if (idleMs >= TV_SLEEP_TIMEOUT_MS) {
+            turnOffTv();
+        } else if (idleMs >= SCREENSAVER_TIMEOUT_MS && !screensaverActive) {
+            showNightstandScreensaver();
+        } else if (screensaverActive && screensaverView != null) {
+            updateNightstandScreensaver();
+        }
+    }
+
+    private void showNightstandScreensaver() {
+        if (screensaverActive || isFinishing() || isDestroyed()) return;
+        if (wallpaperFullscreen) {
+            setWallpaperFullscreen(false);
+        }
+        screensaverActive = true;
+        if (screensaverView == null) {
+            screensaverView = getLayoutInflater().inflate(R.layout.view_nightstand, root, false);
+            screensaverView.setOnClickListener(v -> dismissScreensaver());
+            root.addView(screensaverView, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+
+        updateNightstandScreensaver();
+
+        screensaverView.setVisibility(View.VISIBLE);
+        screensaverView.setAlpha(0f);
+        screensaverView.animate().alpha(1f).setDuration(500).start();
+        android.util.Log.i("TvHome", "Nightstand screensaver activated");
+    }
+
+    private void updateNightstandScreensaver() {
+        if (screensaverView == null) return;
+        TextView hijri = screensaverView.findViewById(R.id.nightstandHijri);
+        if (hijri != null) hijri.setText("🌙 " + PrayerTimes.getHijriDate());
+
+        TextView prayer = screensaverView.findViewById(R.id.nightstandPrayer);
+        if (prayer != null) prayer.setText("🕌 " + PrayerTimes.getNextPrayerSummary(this));
+
+        // Center locked strictly with no movement
+        View content = screensaverView.findViewById(R.id.nightstandContent);
+        if (content != null) {
+            content.animate().cancel();
+            content.setTranslationX(0f);
+            content.setTranslationY(0f);
+        }
+
+        // iPhone StandBy Wind Down Mode: 10:00 PM (22:00) to 6:00 AM (06:00) -> Red Monochrome
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        int hour = cal.get(java.util.Calendar.HOUR_OF_DAY);
+        boolean isNightMode = (hour >= 22 || hour < 6);
+
+        TextView clock = screensaverView.findViewById(R.id.nightstandClock);
+        TextView ampm = screensaverView.findViewById(R.id.nightstandAmPm);
+        TextView date = screensaverView.findViewById(R.id.nightstandDate);
+        TextView hint = screensaverView.findViewById(R.id.nightstandHint);
+
+        if (isNightMode) {
+            int red = 0xFFFF453A;
+            if (clock != null) clock.setTextColor(red);
+            if (ampm != null) ampm.setTextColor(0xCCFF453A);
+            if (date != null) date.setTextColor(0xE6FF453A);
+            if (hijri != null) hijri.setTextColor(0xE6FF453A);
+            if (prayer != null) {
+                prayer.setTextColor(red);
+                android.graphics.drawable.GradientDrawable redPill = new android.graphics.drawable.GradientDrawable();
+                redPill.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+                redPill.setColor(0x26FF453A);
+                redPill.setStroke((int) (1 * density), 0x59FF453A);
+                redPill.setCornerRadius(21 * density);
+                prayer.setBackground(redPill);
+            }
+            if (hint != null) hint.setTextColor(0x55FF453A);
+        } else {
+            if (clock != null) clock.setTextColor(0xFFFFFFFF);
+            if (ampm != null) ampm.setTextColor(0xB3FFFFFF);
+            if (date != null) date.setTextColor(0xE6FFFFFF);
+            if (hijri != null) hijri.setTextColor(0xD9E6E0D2);
+            if (prayer != null) {
+                prayer.setTextColor(0xFFFFFFFF);
+                prayer.setBackgroundResource(R.drawable.pill_bg);
+            }
+            if (hint != null) hint.setTextColor(0x4DFFFFFF);
+        }
+    }
+
+    private void dismissScreensaver() {
+        if (!screensaverActive || screensaverView == null) return;
+        screensaverActive = false;
+        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
+        screensaverView.animate().alpha(0f).setDuration(350).withEndAction(() -> {
+            if (!screensaverActive && screensaverView != null) {
+                screensaverView.setVisibility(View.GONE);
+            }
+        }).start();
+        android.util.Log.i("TvHome", "Nightstand screensaver dismissed");
+    }
+
+    private void turnOffTv() {
+        android.util.Log.i("TvHome", "TV idle: 10m screensaver + 2h timeout reached, putting TV to sleep");
+        boolean ok = HomeKeyService.sleepScreen();
+        if (!ok) {
+            try {
+                Runtime.getRuntime().exec("input keyevent 223");
+            } catch (Exception e) {
+                android.util.Log.w("TvHome", "Failed to send sleep keyevent: " + e);
+            }
+        }
+    }
+
+    private void ensureSystemScreensaverAndSleepSettings() {
+        new Thread(() -> {
+            try {
+                android.content.ContentResolver cr = getContentResolver();
+                // 10 minutes idle -> screensaver (600,000 ms)
+                android.provider.Settings.System.putInt(cr, "screen_off_timeout", 600000);
+                // 2 hours after screensaver -> TV off (10m + 2h = 7,800,000 ms)
+                android.provider.Settings.Secure.putInt(cr, "sleep_timeout", 7800000);
+                android.provider.Settings.Secure.putInt(cr, "screensaver_enabled", 1);
+                android.provider.Settings.Secure.putString(cr, "screensaver_components", "com.gathin.tvhome/.ClockDream");
+            } catch (Exception ignored) {
+            }
+        }, "system-timeout-sync").start();
     }
 
 
@@ -1582,6 +2197,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private void open(Intent i) {
+        SoundEffects.playSelect();
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             startActivity(i);
@@ -1623,6 +2239,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     private void showInputs() {
         if (openMenu != null) return;
+        SoundEffects.playSelect();
         View anchor = btnInputs;
         FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
@@ -1792,6 +2409,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * laid out, so then it waits for the layout.
      */
     private void glideToMenuRow(View panel, View rows, View row) {
+        SoundEffects.playNav();
         if (!panel.isLaidOut() || row.getHeight() == 0) {
             panel.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                 @Override
@@ -1817,6 +2435,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void closeMenu(boolean toAnchor) {
         View panel = openMenu;
         if (panel == null) return;
+        SoundEffects.playNav();
         openMenu = null;
         if (toAnchor && menuAnchor != null) menuAnchor.requestFocus();
         menuAnchor = null;

@@ -62,6 +62,9 @@ final class Config {
     final long wallpaperIntervalMs;
     /** Pictures of places to visit, renewed weekly (see PlaceWallpapers); "places": false keeps them off. */
     final boolean places;
+    /** Dynamic online wallpaper fetching (Unsplash 4K or custom web server feed). */
+    final boolean wallpaperOnline;
+    final String wallpaperFeed;
     /** Days between clearing the TV's app caches (see CacheCleaner); 0 never does. */
     final int cacheCleanDays;
     /** Whether the overlay file was present and parsed. */
@@ -74,7 +77,8 @@ final class Config {
                    boolean showHomeSettingsShortcut, boolean showNetworkPill, boolean showLiveTv,
                    int backgroundColor,
                    File wallpaper, List<File> wallpapers, long wallpaperIntervalMs,
-                   boolean places, int cacheCleanDays, boolean overlayApplied) {
+                   boolean places, boolean wallpaperOnline, String wallpaperFeed,
+                   int cacheCleanDays, boolean overlayApplied) {
         this.dockApps = Collections.unmodifiableList(dockApps);
         this.hiddenApps = Collections.unmodifiableList(hiddenApps);
         this.liveTvPackage = liveTvPackage;
@@ -96,6 +100,8 @@ final class Config {
         this.wallpapers = Collections.unmodifiableList(wallpapers);
         this.wallpaperIntervalMs = wallpaperIntervalMs;
         this.places = places;
+        this.wallpaperOnline = wallpaperOnline;
+        this.wallpaperFeed = wallpaperFeed != null ? wallpaperFeed : "";
         this.cacheCleanDays = cacheCleanDays;
         this.overlayApplied = overlayApplied;
     }
@@ -168,13 +174,28 @@ final class Config {
         long wallpaperIntervalMs = wallpaperSeconds > 0 ? wallpaperSeconds * 1000L : wallpaperMinutes * 60_000L;
         // On unless a theme says otherwise: a fresh install shows places with nothing to set up.
         boolean places = wallpaperOn && (json == null || bool(json, "places", true));
+        String wallpaperFeed = json != null ? string(json, "wallpaper_feed", "") : "";
+        boolean wallpaperOnline = wallpaperOn && json != null && (bool(json, "wallpaper_online", false) || !wallpaperFeed.isEmpty());
+        if (dir != null && wallpaperOnline) {
+            File onlineDir = OnlineWallpapers.dir(ctx);
+            File[] onlinePics = onlineDir != null ? onlineDir.listFiles() : null;
+            if (onlinePics != null) {
+                for (File f : onlinePics) {
+                    String n = f.getName().toLowerCase(java.util.Locale.ROOT);
+                    if (f.isFile() && f.length() > 0 && (n.endsWith(".jpg") || n.endsWith(".jpeg") || n.endsWith(".png"))) {
+                        if (!wallpapers.contains(f)) wallpapers.add(f);
+                    }
+                }
+                Collections.sort(wallpapers);
+            }
+        }
         int cacheCleanDays = json != null ? integer(json, "cache_clean_days", CacheCleaner.DEFAULT_DAYS, 0, 90)
                 : CacheCleaner.DEFAULT_DAYS;
 
         return new Config(dock, hidden, liveTv, liveTvAction, panelService, panelAction, inputAction,
                 Math.max(1, columns), Math.max(0, rowsBelow), shamsi, moduleCards, reducedMotion,
                 vpn, homeSettings, networkPill, liveTvRow, background, wallpaper, wallpapers, wallpaperIntervalMs,
-                places, cacheCleanDays, applied);
+                places, wallpaperOnline, wallpaperFeed, cacheCleanDays, applied);
     }
 
     /** Reads and parses the overlay; any problem means "no overlay", never a crash on the home screen. */

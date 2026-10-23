@@ -12,3 +12,11 @@ backup/
 # App banners for the webOS simulator preview only: other companies' logos, kept out of the repository.
 webos/samples/
 *.ipk
+
+# Scratch files
+screenshot_*.png
+crop_*.png
+crop_*.jpg
+*_crop.png
+test_*.png
+restore_my_box.sh

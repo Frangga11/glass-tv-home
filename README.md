@@ -3,17 +3,34 @@
 **Make your Android TV or Google TV fast and ad-free again: strip out the bloat and ads, free up memory,
 and come home to just your apps, with a new place to visit behind them every week.**
 
+<p align="center">
+  <img src="docs/screenshots/glass_tv_os_showcase_poster.jpg" width="100%" alt="Glass TV OS Presentation Poster">
+</p>
+
+> 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
+
 Glass TV debloats any Android TV or Google TV over Wi-Fi, with no root and nothing that can't be undone, then
 swaps the ad-filled home screen for a light one in frosted glass, with a new set of places behind your apps
 every week.
 
 <p>
-  <img src="docs/screenshots/promo-1-home.jpg" width="32%" alt="Your TV, fast and ad-free again: the TV behind on the left, the app grid behind on the right, Home over Mount Sneffels in front">
-  <img src="docs/screenshots/promo-2-features.jpg" width="32%" alt="Looks like Apple, runs on Android: glass, Inputs, a place a week, your own app order, no ads">
-  <img src="docs/screenshots/promo-3-clock.jpg" width="32%" alt="Ads off, time on: the clock screensaver">
+  <img src="docs/screenshots/home-live.png" width="32%" alt="Live Home Screen with Islamic Prayer timetable, weather pill, and frosted glass dock">
+  <img src="docs/screenshots/weather-live.png" width="32%" alt="Weather & Air Quality Dashboard with 12h forecast pills and 7-day cards">
+  <img src="docs/screenshots/screensaver-live.png" width="32%" alt="StandBy Nightstand Screensaver with Hijri date and next prayer capsule">
 </p>
 
 ## What you get
+
+- **Weather & Air Quality Engine.** A full-screen Leanback weather hub (`WeatherActivity`) accessible directly from the under-clock pill:
+  - Current condition, apparent temperature, humidity, wind velocity, UV index, sunrise and sunset times.
+  - Air Quality Index (AQI / API / IPU) from Malaysia's Jabatan Alam Sekitar (APIMS) with a multi-color spectrum gauge, station comparisons, PM2.5 / PM10 readings, and health advisories.
+  - Next 12 Hours hourly forecast pills and 7-day daily forecast cards with precipitation probabilities.
+- **Islamic Prayer Timetable & Daily Ayat.** A mindful cultural shelf:
+  - 6-phase timetable (Subuh, Syuruk, Zohor, Asar, Maghrib, Isyak) with emerald highlighting for the active prayer window.
+  - Daily Quranic Ayat of the Day with Arabic calligraphy and translations.
+- **StandBy Ambient Mode & Smart Energy Lifecycle.**
+  - **10 Minutes Idle**: Automatically engages an ambient StandBy screensaver with large 110sp numerals, Islamic Hijri calendar, next prayer capsule, and a late-night red monochrome wind-down mode.
+  - **2 Hours Later**: Automatically turns off the TV display into deep sleep standby via Android's Accessibility Service (`GLOBAL_ACTION_LOCK_SCREEN`).
 
 - **Keeps itself clean.** Every 15 days, while Home sits idle, the TV clears its app caches, where the Play
   Store leaves gigabytes of download leftovers that can make apps open to a blank screen. No computer needed,

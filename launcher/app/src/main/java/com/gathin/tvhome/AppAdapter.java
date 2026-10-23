@@ -103,7 +103,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         int design = Math.round(DESIGN_W_DP * density);
         if (innerWidthPx <= 0 || columns <= 0) return design;
         int cell = innerWidthPx / columns;
-        int fit = (int) ((cell - 12 * density) / FOCUS_SCALE);
+        int fit = (int) ((cell - 18 * density) / FOCUS_SCALE);
         return Math.max(Math.round(80 * density), Math.min(design, fit));
     }
 
@@ -390,6 +390,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
     private void launch(Entry e) {
+        SoundEffects.playSelect();
         if (e.kind == Entry.HOME_SETTINGS) {
             ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
