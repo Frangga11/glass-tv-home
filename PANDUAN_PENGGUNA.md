@@ -18,9 +18,9 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 ## 📦 Muat Turun Fail APK Terus (Direct Download)
 
 Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
-* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (486 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (498 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Versi**: **v2.5.0** (Terkini: 🇲🇾 Wallpaper 14 Negeri Malaysia, Sub-Dropdown Pemilih Negeri, Muat Naik QR, Kunci 1 Gambar, & Unifi Box Verified)
+* ⚡ **Versi**: **v2.6.0** (Terkini: 🎮 Pilihan Sound Effect Konsol PS5, Nintendo Switch, Xbox & Toggle Bisu, 🇲🇾 Wallpaper 14 Negeri Malaysia, Phone QR Upload, Photo Manager)
 
 > [!NOTE]
 > ### 🇲🇾 Pengguna Unifi TV Box (TM Unifi Plus Box): Adakah Boleh Guna & Adakah Batal Waranti?
@@ -218,8 +218,18 @@ Di bar atas skrin utama, tekan butang **Settings (ikon gear ⚙️)** untuk mema
 * 🖼️ **Wallpaper**: Membuka tetingkap pilihan kategori wallpaper (*Natural, Skyscraper, Deep Space, Ocean, Minimalist Dark, Next Wallpaper*). Pilihan anda disimpan secara kekal walaupun TV dimatikan.
 * 📍 **Location API Haze**: Membuka senarai 30+ stesen jerebu rasmi JAS APIMS untuk menukar stesen pemantauan udara di seluruh negeri.
 * 🕌 **Location Waktu Solat**: Membuka senarai 35+ zon rasmi JAKIM untuk menyelaraskan jadual solat secara tepat mengikut daerah anda.
+* 🔊 **Sound Effect**: Memaparkan tema bunyi aktif (cth: `Sound: PlayStation 5`) dan membuka dialog pilihan tema audio konsol (PS5, Nintendo Switch, Xbox Series X/S, atau Bisu/Off) dengan pratonton nada serta-merta.
 * ⚙️ **All Settings**: Membuka menu tetapan penuh Android TV OS.
 *(Pintasan: Menekan lama butang Settings pada remote juga akan membuka tetapan Android secara langsung).*
+
+### G. Pilihan Bunyi Konsol & Suis Bisu (Sound Effects) 🎮🔊
+Kini anda boleh memilih tema kesan bunyi navigasi ala konsol permainan kegemaran anda atau mematikannya sepenuhnya:
+* **PlayStation 5 (Default)**: Bunyi pergerakan dan klik ikonik konsol PS5 generasi terkini yang moden, lembut, dan kemas.
+* **Nintendo Switch**: Bunyi klik mekanikal tactile dan 'snap' ceria yang sangat responsif setiap kali butang ditekan.
+* **Xbox Series X/S**: Bunyi 'blip' elektronik akustik lembut dengan nada dwi-harmonik moden yang tenang.
+* **Muted / Off (Bisu)**: Matikan semua kesan bunyi navigasi jika anda lebih gemar suasana senyap sunyi di waktu malam.
+* **Pratonton Bunyi Segera**: Setiap kali anda klik pilihan di dalam dialog, sistem akan memainkan bunyi pilihan tersebut serta-merta sebagai sampel.
+* **Kekal Tersimpan**: Pilihan anda disimpan secara kekal dalam memori TV dan tidak hilang walaupun TV ditutup atau dihidupkan semula.
 
 ---
 

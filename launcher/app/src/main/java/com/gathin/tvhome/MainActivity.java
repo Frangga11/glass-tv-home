@@ -2146,9 +2146,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             showPrayerZoneDialog();
         });
 
+        // Row 4: Sound Effects
+        String currentSoundTheme = SoundEffects.getActiveTheme(this);
+        String soundLabel = "Sound: " + SoundEffects.getThemeDisplayName(currentSoundTheme);
+        addInputRow(rows, close, R.drawable.ic_sound, soundLabel, -1, () -> {
+            SoundEffects.playSelect();
+            showSoundEffectsDialog();
+        });
+
         addSeparator(rows);
 
-        // Row 4: All Settings (Android Settings)
+        // Row 5: All Settings (Android Settings)
         addInputRow(rows, close, R.drawable.ic_settings, "All Settings", -1, () -> {
             SoundEffects.playSelect();
             open(systemIntent(Settings.ACTION_SETTINGS));
@@ -2158,6 +2166,51 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int width = Math.max((int) (220 * density), panel.getMeasuredWidth());
 
         showMenu(panel, rows, anchor, width, false);
+    }
+
+    private void showSoundEffectsDialog() {
+        final String[] soundOptions = new String[]{
+                "🎮 PlayStation 5 (Lalai / Default Chime)",
+                "🕹️ Nintendo Switch (Click & Snap Pop)",
+                "🟩 Xbox Series X/S (Warm Harmonic Chime)",
+                "🔇 Matikan Bunyi (Off / Muted)"
+        };
+
+        final String[] soundKeys = new String[]{
+                SoundEffects.THEME_PS5,
+                SoundEffects.THEME_SWITCH,
+                SoundEffects.THEME_XBOX,
+                SoundEffects.THEME_OFF
+        };
+
+        String currentTheme = SoundEffects.getActiveTheme(this);
+        int selectedIndex = 0;
+        for (int i = 0; i < soundKeys.length; i++) {
+            if (soundKeys[i].equalsIgnoreCase(currentTheme)) {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("🔊 Pilih Kesan Bunyi (Sound Effects)");
+        builder.setSingleChoiceItems(soundOptions, selectedIndex, (dialog, which) -> {
+            dialog.dismiss();
+            String chosenKey = soundKeys[which];
+            SoundEffects.setTheme(MainActivity.this, chosenKey);
+            String displayName = SoundEffects.getThemeDisplayName(chosenKey);
+
+            if (SoundEffects.THEME_OFF.equalsIgnoreCase(chosenKey)) {
+                Toast.makeText(MainActivity.this, "🔇 Kesan Bunyi Dimatikan", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "🔊 Kesan Bunyi: " + displayName, Toast.LENGTH_SHORT).show();
+                // Play sample of the selected theme
+                handler.postDelayed(() -> SoundEffects.playSelect(), 120);
+            }
+        });
+        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private Dialog qrUploadDialog;

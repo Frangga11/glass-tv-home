@@ -9,11 +9,11 @@ and come home to just your apps, with a new place to visit behind them every wee
 
 <p align="center">
   <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk">
-    <img src="https://img.shields.io/badge/Download_APK_v2.5.0-glass--tv--home.apk_(486_KB)-success?style=for-the-badge&logo=android" alt="Download APK v2.5.0">
+    <img src="https://img.shields.io/badge/Download_APK_v2.6.0-glass--tv--home.apk_(498_KB)-success?style=for-the-badge&logo=android" alt="Download APK v2.6.0">
   </a>
 </p>
 
-> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v2.5.0** • ~486 KB) ready to install on any Android TV or Google TV!
+> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v2.6.0** • ~498 KB) ready to install on any Android TV or Google TV!
 >
 > 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
 >
@@ -61,6 +61,14 @@ every week.
   - **Instant QR Code Wi-Fi Upload**: Scan the QR code on TV with any phone to open a frosted glass web uploader. Send personal high-res wallpapers straight to TV with zero third-party cloud apps.
   - **Full Mobile & TV Photo Manager**: Manage uploaded wallpapers directly on mobile or TV with remote D-pad. Lock a single picture as permanent wallpaper (`📌 Single Mode`), switch back to rotating slideshow (`🔄 Putar Semua`), or delete unwanted pictures (`🗑️`).
   - **Clean View for Custom Wallpapers**: Description/hero text shelf is automatically hidden (`View.GONE`) for custom wallpapers so personal photos remain 100% unobstructed.
+- **Console Sound Effects & Mute Toggle (PS5, Nintendo Switch, Xbox).**
+  - **3 Iconic Console Profiles**: Choose your favorite sound profile from the Settings menu (`⚙️`):
+    - **PlayStation 5**: Futuristic soft swooshes and acoustic tactile clicks.
+    - **Nintendo Switch**: Crisp mechanical snap and bright affirmative chime.
+    - **Xbox Series X/S**: Resonant warm mid-bass navigation blips and two-tone modern rising chime.
+  - **Mute / Silent Mode (`Off`)**: Toggle sound effects completely off for a whisper-quiet late-night browsing experience.
+  - **Live Audition**: Plays instant sound previews upon selecting an option in the dialog.
+  - **Persistent Memory**: Saved across reboots and app launches via TV shared preferences.
 
 - **Keeps itself clean.** Every 15 days, while Home sits idle, the TV clears its app caches, where the Play
   Store leaves gigabytes of download leftovers that can make apps open to a blank screen. No computer needed,

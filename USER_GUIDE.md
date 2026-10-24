@@ -19,9 +19,9 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 ## 📦 Direct APK Download
 
 For users who want to download and install the pre-compiled APK directly:
-* 📥 **Official Release APK**: [**glass-tv-home.apk** (486 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Official Release APK**: [**glass-tv-home.apk** (498 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Version**: **v2.5.0** (Latest with 🇲🇾 14 Malaysian States Wallpapers, State Picker Sub-Dropdown, Phone QR Upload & Unifi Box Verified).
+* ⚡ **Version**: **v2.6.0** (Latest with 🎮 Console Sound Profiles: PS5, Nintendo Switch, Xbox & Mute Mode, 🇲🇾 14 Malaysian States Wallpapers, Phone QR Upload & Unifi Box Verified).
 
 > [!NOTE]
 > ### 🇲🇾 Unifi TV Box (TM Unifi Plus Box) Users: Compatibility & Warranty Safety
@@ -220,8 +220,18 @@ Clicking the **Settings (gear icon ⚙️)** on the top bar reveals an Apple tvO
 * 🖼️ **Wallpaper**: Launches the category selector dialog (*Natural, Skyscraper, Deep Space, Ocean, Minimalist Dark, Next Wallpaper*). Preferences persist across reboots.
 * 📍 **Location API Haze**: Opens a selector for 30+ official Malaysian DOE (JAS APIMS) air quality monitoring stations.
 * 🕌 **Location Waktu Solat**: Opens a selector for 35+ official JAKIM prayer zones across all Malaysian states.
+* 🔊 **Sound Effect**: Displays current audio theme (e.g. `Sound: PlayStation 5`) and launches the console sound profile selector with live previews.
 * ⚙️ **All Settings**: Opens standard Android TV system preferences.
 *(Shortcut: Long-pressing the Settings button on your remote directly launches standard Android settings).*
+
+### G. Console Sound Effects & Mute Mode (PS5, Switch, Xbox) 🎮🔊
+Customize your TV navigation audio with iconic gaming console profiles or mute all sounds entirely:
+* **PlayStation 5 (Default)**: Sleek, high-definition acoustic whooshes and tactile clicks.
+* **Nintendo Switch**: Sharp mechanical tactile clicks and cheerful confirmation snaps.
+* **Xbox Series X/S**: Resonant warm mid-bass navigation pulses and two-tone rising chime.
+* **Muted / Off**: Complete silence for whisper-quiet late night movie sessions.
+* **Instant Audio Audition**: Tapping any theme inside the dialog immediately plays its signature chime.
+* **Persistent Preferences**: Settings remain saved across TV restarts via SharedPreferences.
 
 ---
 

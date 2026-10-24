@@ -4,12 +4,12 @@ Fail pemasangan rasmi (*Official Release APK*) untuk **Glass TV Home**.
 
 ## ⬇️ Muat Turun / Download
 * **Fail APK**: [`glass-tv-home.apk`](glass-tv-home.apk)
-* **Versi / Version**: `v2.5.0` (🇲🇾 Koleksi 14 Negeri Malaysia, Sub-Dropdown Pemilih Negeri, Phone QR Upload, Photo Manager)
+* **Versi / Version**: `v2.6.0` (🎮 Pilihan Sound Effect Konsol: PS5, Nintendo Switch, Xbox & Toggle Bisu/Mute, 🇲🇾 Koleksi 14 Negeri Malaysia, Phone QR Upload, Photo Manager)
 * **Pautan Muat Turun Terus (Direct Download Link)**:  
   [https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
-* **Saiz Fail**: ~486 KB (Sangat ringan, pantas dimuat turun & jimat memori TV)
+* **Saiz Fail**: ~498 KB (Sangat ringan, pantas dimuat turun & jimat memori TV)
 * **Keserasian**: Android TV & Google TV (Android 8.0 Oreo ke atas, API 26+)
-* **SHA-256 Checksum**: `03aeaa4f85c57e22a8819fc37ebae248b93c647f63cfa9d7ad2c034424604f61`
+* **SHA-256 Checksum**: `360de02eaf415683c7a1af6add0a3198a8c4efa70cbe13120550cdb1d2473a74`
 
 ---
 
