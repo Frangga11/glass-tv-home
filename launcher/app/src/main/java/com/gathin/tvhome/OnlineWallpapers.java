@@ -132,7 +132,25 @@ final class OnlineWallpapers {
             new WallpaperItem("https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=3840&h=2160&q=80",
                     "Dubai Marina Highrises", "Futuristic illuminated towers mirrored in the marina waters", "Skyscraper"),
             new WallpaperItem("https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Hong Kong Cityscape Night", "Dazzling neon metropolis framed by Victoria Harbour", "Skyscraper")
+                    "Hong Kong Cityscape Night", "Dazzling neon metropolis framed by Victoria Harbour", "Skyscraper"),
+
+            // 🇲🇾 Koleksi Malaysia - Tempat Menarik & Bersejarah
+            new WallpaperItem("https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Petronas Twin Towers & KLCC", "Menara ikonik berkembar kebanggaan Malaysia di tengah pusat bandar raya Kuala Lumpur", "Malaysia"),
+            new WallpaperItem("https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Gunung Kinabalu, Sabah", "Puncak tertinggi di Malaysia dan Asia Tenggara dengan lautan awan memukau", "Malaysia"),
+            new WallpaperItem("https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Ladang Teh Cameron Highlands", "Hamparan ladang teh hijau subur dan pemandangan nyaman di tanah tinggi Pahang", "Malaysia"),
+            new WallpaperItem("https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Pulau Langkawi, Kedah", "Permata kepulauan tropika dengan keindahan pantai dan laut zamrud", "Malaysia"),
+            new WallpaperItem("https://images.unsplash.com/photo-1584824486509-112e4181ff6b?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Batu Caves, Selangor", "Tangga warna-warni ikonik berlatarbelakangkan bukit batu kapur purba dan patung Dewa Murugan", "Malaysia"),
+            new WallpaperItem("https://images.unsplash.com/photo-1582298538104-fe2e74c27f59?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Georgetown, Pulau Pinang", "Bandar warisan dunia UNESCO dengan lorong bersejarah dan seni bina kolonial unik", "Malaysia"),
+            new WallpaperItem("https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Pulau Perhentian, Terengganu", "Syurga marin dengan pasir pantai putih bersih dan terumbu karang hidupan laut", "Malaysia"),
+            new WallpaperItem("https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Bandaraya Bersejarah Melaka", "Keunikan warisan sejarah Kesultanan Melayu dan peninggalan era penjajah di tepi Sungai Melaka", "Malaysia")
     };
 
     private OnlineWallpapers() {
@@ -180,6 +198,9 @@ final class OnlineWallpapers {
         }
         if (sc.contains("minim")) {
             return ic.contains("minim") || ic.contains("atmos") || ic.contains("weather");
+        }
+        if (sc.contains("malay")) {
+            return ic.contains("malay");
         }
         return ic.contains(sc);
     }

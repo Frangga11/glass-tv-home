@@ -9,11 +9,11 @@ and come home to just your apps, with a new place to visit behind them every wee
 
 <p align="center">
   <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk">
-    <img src="https://img.shields.io/badge/Download_APK_v2.3.1-glass--tv--home.apk_(453_KB)-success?style=for-the-badge&logo=android" alt="Download APK v2.3.1">
+    <img src="https://img.shields.io/badge/Download_APK_v2.4.0-glass--tv--home.apk_(471_KB)-success?style=for-the-badge&logo=android" alt="Download APK v2.4.0">
   </a>
 </p>
 
-> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v2.3.1** • ~453 KB) ready to install on any Android TV or Google TV!
+> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v2.4.0** • ~471 KB) ready to install on any Android TV or Google TV!
 >
 > 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
 >
@@ -53,9 +53,14 @@ every week.
   - **2 Hours Later**: Automatically turns off the TV display into deep sleep standby via Android's Accessibility Service (`GLOBAL_ACTION_LOCK_SCREEN`).
 - **Frosted Glass Settings Dropdown & 4K Wallpaper Categories.**
   - **Floating Glass Dropdown**: Clicking the top Settings icon (`⚙️`) opens a native Apple tvOS-style glass menu under the button.
-  - **Dynamic 4K Wallpaper Switcher**: Switch themes on the fly between *Natural*, *Skyscraper* (KLCC, Manhattan, Chicago, Dubai, HK), *Deep Space*, *Ocean & Coastal*, *Minimalist Dark*, or trigger *Next Wallpaper*.
+  - **Dynamic 4K Wallpaper Switcher**: Switch themes on the fly between *Natural*, *🇲🇾 Malaysia (Tempat Menarik & Bersejarah)*, *Skyscraper* (KLCC, Manhattan, Chicago, Dubai, HK), *Deep Space*, *Ocean & Coastal*, *Minimalist Dark*, or trigger *Next Wallpaper*.
   - **Built-in Haze & Prayer Zone Selectors**: Select from 30+ Malaysian DOE (JAS APIMS) air quality stations and 35+ official JAKIM prayer zones without needing a computer or AI.
   - **All Settings Shortcut**: Access standard Android TV settings in one click (or by long-pressing Settings).
+- **Phone QR Wallpaper Upload & Gallery Manager (Phone-to-TV).**
+  - **Instant QR Code Wi-Fi Upload**: Scan the QR code on TV with any phone to open a frosted glass web uploader. Send personal high-res wallpapers straight to TV with zero third-party cloud apps.
+  - **Full Mobile & TV Photo Manager**: Manage uploaded wallpapers directly on mobile or TV with remote D-pad. Lock a single picture as permanent wallpaper (`📌 Single Mode`), switch back to rotating slideshow (`🔄 Putar Semua`), or delete unwanted pictures (`🗑️`).
+  - **Clean View for Custom Wallpapers**: Description/hero text shelf is automatically hidden (`View.GONE`) for custom wallpapers so personal photos remain 100% unobstructed.
+  - **Curated 4K Malaysia Collection**: 8 iconic Malaysian landmarks (Petronas Twin Towers, Gunung Kinabalu, Cameron Highlands tea plantations, Langkawi, Batu Caves, Georgetown UNESCO, Perhentian, and Melaka).
 
 - **Keeps itself clean.** Every 15 days, while Home sits idle, the TV clears its app caches, where the Play
   Store leaves gigabytes of download leftovers that can make apps open to a blank screen. No computer needed,

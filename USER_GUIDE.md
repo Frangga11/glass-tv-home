@@ -19,9 +19,9 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 ## 📦 Direct APK Download
 
 For users who want to download and install the pre-compiled APK directly:
-* 📥 **Official Release APK**: [**glass-tv-home.apk** (453 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Official Release APK**: [**glass-tv-home.apk** (471 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Version**: **v2.3.1** (Latest with Frosted Glass Settings Dropdown, 4K Wallpaper Switcher, APIMS Haze, Dynamic JAKIM Prayer Times & Fix Issue #1).
+* ⚡ **Version**: **v2.4.0** (Latest with Phone QR Wallpaper Upload, Mobile & TV Photo Manager, Single Wallpaper Lock, Clean Custom View & 🇲🇾 Curated 4K Malaysia Landmarks).
 
 ---
 
@@ -161,10 +161,21 @@ Users who install the APK manually or relocate **DO NOT NEED A COMPUTER OR AI** 
 ### C. Dynamic 4K Wallpapers & Category Switcher
 * **Curated Themes**: Switch your home background between curated 4K categories directly from the remote:
   - 🌿 **Natural (Default / Bing Places)**: World landmarks, mountains, lakes, and nature landscapes with informative location stories updated weekly.
-  - 🏙️ **Skyscraper**: Famous modern architecture and skylines (Petronas Twin Towers KLCC, Manhattan NYC, Chicago River, Dubai Marina, Hong Kong Cityscape).
+  - 🇲🇾 **Malaysia (Iconic Landscapes & Landmarks)**: 8 iconic 4K Malaysian scenes (Petronas Twin Towers KLCC, Mount Kinabalu Sabah, Cameron Highlands Tea Plantation, Langkawi Island, Batu Caves Selangor, Georgetown Penang, Perhentian Islands Terengganu, and Melaka Historic City).
+  - 🏙️ **Skyscraper**: Famous modern architecture and skylines (Manhattan NYC, Chicago River, Dubai Marina, Hong Kong Cityscape).
   - 🌌 **Deep Space**: Vibrant nebulae, starfields, and cosmic vistas.
   - 🌊 **Ocean & Coastal**: Pristine coastal horizons, waves, and azure seas.
   - 🔲 **Minimalist Dark**: Refined deep textured aesthetic, power-efficient and OLED-safe.
+* **📲 Phone QR Code Wallpaper Upload**:
+  - Select **`📲 Upload Wallpaper via Phone (QR Code)`** from the wallpaper options to display a clean QR code and local web link.
+  - Scan with any smartphone on the same Wi-Fi network to upload custom family photos, vacation snapshots, or artwork directly to your TV without cloud accounts or third-party apps.
+* **📱 On-TV Photo Manager & Single Wallpaper Lock**:
+  - After uploading photos, easily manage them right from your phone browser or through the TV D-pad menu: **`🗑️ Urus Gambar Dimuat Naik (Pilih / Padam)`**.
+  - **Lock Single Wallpaper**: Choose **`📌 Set as Single Wallpaper`** to lock a single photo permanently as your background without rotating.
+  - **Rotate All Photos**: Choose **`🔄 Rotate All Uploaded Photos`** to cycle through all custom photos in slideshow mode.
+  - **Delete Specific / Clear All**: Delete individual uploaded photos or wipe all custom images with one click.
+* **🖼️ Clean View for Custom Wallpapers**:
+  - When personal custom wallpapers are active, the left-hand text shelf / description is completely hidden (`View.GONE`) so your personal photos are displayed edge-to-edge without being obscured by location captions.
 * **Instant Shift**: Select **🔀 Next Wallpaper** anytime to immediately cycle to the next photo in your active category.
 
 ### D. StandBy Ambient Mode & Smart Power Saving

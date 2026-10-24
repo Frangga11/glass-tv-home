@@ -17,6 +17,7 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.media.tv.TvContract;
@@ -47,11 +48,13 @@ import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.FrameLayout;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.dynamicanimation.animation.DynamicAnimation;
@@ -61,10 +64,15 @@ import androidx.dynamicanimation.animation.SpringForce;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gathin.tvhome.qrcode.QrBitmapUtil;
+
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -301,8 +309,42 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         wallpapers = cfg.wallpapers;
         wallpaperIntervalMs = cfg.wallpaperIntervalMs;
         placesMode = cfg.places;
+        mainContent = findViewById(R.id.mainContent);
+        glass = findViewById(R.id.glass);
+        ambient = findViewById(R.id.ambient);
+        Backdrop.setWorker(wallDecoder, handler);
+        heroShelf = findViewById(R.id.heroShelf);
+        heroName = findViewById(R.id.heroName);
+        heroDesc = findViewById(R.id.heroDesc);
+        heroWhere = findViewById(R.id.heroWhere);
+        int usable = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
+        heroMaxWidth = Math.round(usable * HERO_WIDTH_SHARE);
+        heroNameMaxWidth = Math.round(usable * HERO_NAME_WIDTH_SHARE);
+        if (heroName != null) heroName.setMaxWidth(heroNameMaxWidth);
+        if (heroDesc != null) heroDesc.setMaxWidth(heroMaxWidth);
+
         String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
-        if (!"Natural".equalsIgnoreCase(activeCat)) {
+        if ("Custom".equalsIgnoreCase(activeCat)) {
+            placesMode = false;
+            File customDir = new File(getFilesDir(), "custom_wallpapers");
+            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            boolean singleMode = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("custom_single_mode", false);
+            String singleFile = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("custom_single_file", null);
+            if (singleMode && singleFile != null) {
+                File sf = new File(customDir, singleFile);
+                if (sf.exists() && sf.length() > 0) {
+                    wallpapers = Collections.singletonList(sf);
+                } else if (files != null && files.length > 0) {
+                    Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                    wallpapers = new ArrayList<>(Arrays.asList(files));
+                }
+            } else if (files != null && files.length > 0) {
+                Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                wallpapers = new ArrayList<>(Arrays.asList(files));
+            } else if (cfg.wallpaperOnline && wallpapers.isEmpty()) {
+                wallpapers = OnlineWallpapers.list(this);
+            }
+        } else if (!"Natural".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             List<File> catFiles = OnlineWallpapers.listByCategory(this, activeCat);
             if (!catFiles.isEmpty()) wallpapers = catFiles;
@@ -314,21 +356,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
         else if (cfg.wallpaper != null && !placesMode) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
-        mainContent = findViewById(R.id.mainContent);
-        glass = findViewById(R.id.glass);
-        ambient = findViewById(R.id.ambient);
-        Backdrop.setWorker(wallDecoder, handler);
-        heroShelf = findViewById(R.id.heroShelf);
-        heroName = findViewById(R.id.heroName);
-        heroDesc = findViewById(R.id.heroDesc);
-        heroWhere = findViewById(R.id.heroWhere);
-        // A share of the space between the side paddings, so the description wraps into a column
-        // rather than running the width of the screen. The name is one line, allowed a wider share.
-        int usable = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
-        heroMaxWidth = Math.round(usable * HERO_WIDTH_SHARE);
-        heroNameMaxWidth = Math.round(usable * HERO_NAME_WIDTH_SHARE);
-        heroName.setMaxWidth(heroNameMaxWidth);
-        heroDesc.setMaxWidth(heroMaxWidth);
         // The shelf grows and shrinks with the name and the description, so it hangs from its
         // bottom edge: every time it is measured, its top is worked out again. Positioning it by
         // the height it happened to have beforehand is what let a tall block run into the dock.
@@ -633,13 +660,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             android.graphics.BitmapFactory.Options opts = new android.graphics.BitmapFactory.Options();
             opts.inJustDecodeBounds = true;
             android.graphics.BitmapFactory.decodeFile(file.getPath(), opts);
-            int targetW = Math.max(dm.widthPixels, 3840);
-            int targetH = Math.max(dm.heightPixels, 2160);
             int sample = 1;
-            while (opts.outWidth / (sample * 2) >= targetW && opts.outHeight / (sample * 2) >= targetH) sample *= 2;
+            while (opts.outWidth / (sample * 2) >= dm.widthPixels && opts.outHeight / (sample * 2) >= dm.heightPixels) sample *= 2;
             opts.inJustDecodeBounds = false;
             opts.inSampleSize = sample;
-            opts.inPreferredConfig = android.graphics.Bitmap.Config.ARGB_8888;
+            opts.inPreferredConfig = android.graphics.Bitmap.Config.RGB_565;
             return android.graphics.BitmapFactory.decodeFile(file.getPath(), opts);
         } catch (Exception | OutOfMemoryError e) {
             // A bad or huge picture must never take the home screen down; the plain colour stays.
@@ -994,6 +1019,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (sInstance != null && sInstance.get() == this) {
             sInstance = null;
         }
+        if (uploadServer != null) {
+            uploadServer.stop();
+            uploadServer = null;
+        }
         SoundEffects.release();
         wallDecoder.shutdownNow();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
@@ -1156,33 +1185,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     // ---- top shelf -------------------------------------------------------------------------------
 
+    private boolean isCustomWallpaper() {
+        String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+        if ("Custom".equalsIgnoreCase(activeCat)) return true;
+        if (wallpapers != null && !wallpapers.isEmpty()) {
+            int idx = getSharedPreferences("wallpaper", MODE_PRIVATE).getInt("index", 0);
+            if (idx >= 0 && idx < wallpapers.size()) {
+                File f = wallpapers.get(idx);
+                if (f != null && f.getAbsolutePath().contains("custom_wallpapers")) return true;
+            }
+        }
+        return false;
+    }
+
     private void showHero(int position, float dockTopInRoot) {
-        // The place the picture is of, when there is one; the app's own name is the fallback for
-        // the user's own wallpapers, which carry no title.
-        final String label = placeName != null ? placeName : adapter.labelAt(position);
-        final String desc = placeName != null ? placeText : "";
-        final String where = placeName != null ? placeCountry : "";
         int color = adapter.ambientColorAt(position);
         heroBottom = dockTopInRoot - HERO_GAP_DP * density;
-        float y = heroBottom - heroShelf.getHeight();
-        boolean changed = !label.contentEquals(heroName.getText());
-
-        if (reducedMotion) {
-            // Snap the shelf instead of sliding and fading it: each of those frames repaints the
-            // full-screen panel, and this switch exists for the GPUs that cannot afford it.
-            heroShelf.animate().cancel();
-            setHeroText(label, where, desc);
-            heroShelf.setY(y);
-            heroShelf.setTranslationX(0f);
-            heroShelf.setAlpha(1f);
-            if (islamicShelf != null) {
-                islamicShelf.setY(heroBottom - islamicShelf.getHeight());
-                islamicShelf.setAlpha(1f);
-            }
-            showAmbient(color);
-            heroShown = true;
-            return;
-        }
 
         if (islamicShelf != null) {
             float iy = heroBottom - islamicShelf.getHeight();
@@ -1194,6 +1212,43 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             } else {
                 islamicShelf.setAlpha(1f);
             }
+        }
+
+        // When using custom wallpaper, disable the description part completely
+        if (isCustomWallpaper()) {
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.setAlpha(0f);
+                heroShelf.setVisibility(View.GONE);
+            }
+            showAmbient(color);
+            heroShown = true;
+            return;
+        }
+
+        if (heroShelf != null) {
+            heroShelf.setVisibility(View.VISIBLE);
+        }
+
+        // The place the picture is of, when there is one; the app's own name is the fallback for
+        // the user's own wallpapers, which carry no title.
+        final String label = placeName != null ? placeName : adapter.labelAt(position);
+        final String desc = placeName != null ? placeText : "";
+        final String where = placeName != null ? placeCountry : "";
+        float y = heroBottom - heroShelf.getHeight();
+        boolean changed = !label.contentEquals(heroName.getText());
+
+        if (reducedMotion) {
+            // Snap the shelf instead of sliding and fading it: each of those frames repaints the
+            // full-screen panel, and this switch exists for the GPUs that cannot afford it.
+            heroShelf.animate().cancel();
+            setHeroText(label, where, desc);
+            heroShelf.setY(y);
+            heroShelf.setTranslationX(0f);
+            heroShelf.setAlpha(1f);
+            showAmbient(color);
+            heroShown = true;
+            return;
         }
 
         if (!heroShown) {
@@ -1285,19 +1340,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** The shelf's two lines. An empty description takes no room, so the title keeps its place. */
     private void setHeroText(String title, String where, String desc) {
+        if (heroName == null || heroWhere == null || heroDesc == null) return;
         heroName.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, titleSizeSp(title));
         heroName.setText(title);
         heroWhere.setText(where);
-        heroWhere.setVisibility(where.isEmpty() ? View.GONE : View.VISIBLE);
+        heroWhere.setVisibility(where == null || where.isEmpty() ? View.GONE : View.VISIBLE);
         // The description sits further down under a country line; with none, close under the name.
         ViewGroup.MarginLayoutParams descLp = (ViewGroup.MarginLayoutParams) heroDesc.getLayoutParams();
-        int top = Math.round((where.isEmpty() ? 6f : 9.5f) * density);
-        if (descLp.topMargin != top) {
-            descLp.topMargin = top;
-            heroDesc.setLayoutParams(descLp);
+        if (descLp != null) {
+            int top = Math.round(((where == null || where.isEmpty()) ? 6f : 9.5f) * density);
+            if (descLp.topMargin != top) {
+                descLp.topMargin = top;
+                heroDesc.setLayoutParams(descLp);
+            }
         }
         heroDesc.setText(desc);
-        heroDesc.setVisibility(desc.isEmpty() ? View.GONE : View.VISIBLE);
+        heroDesc.setVisibility(desc == null || desc.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     /**
@@ -1342,6 +1400,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * changes, so the words and the picture never disagree.
      */
     private void setPlace(File picture) {
+        if (picture != null && picture.getAbsolutePath().contains("custom_wallpapers")) {
+            placeName = null;
+            placeText = "";
+            placeCountry = "";
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.animate().alpha(0f).setDuration(reducedMotion ? 100 : 250).withEndAction(() -> {
+                    if (heroShelf != null) heroShelf.setVisibility(View.GONE);
+                }).start();
+            }
+            return;
+        }
+        if (heroShelf != null) {
+            heroShelf.setVisibility(View.VISIBLE);
+        }
         String[] about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
         String title = about != null ? titleCase(about[0]) : null;
         String overview = about != null ? about[1] : "";
@@ -2080,23 +2153,58 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         showMenu(panel, rows, anchor, width, false);
     }
 
+    private Dialog qrUploadDialog;
+    private WallpaperUploadServer uploadServer;
+    private ImageView qrImageView;
+    private TextView qrStatusText;
+    private TextView qrUrlText;
+
     private void showWallpaperDialog() {
-        final String[] categories = new String[]{
-                "🌿 Natural / Alam Semula Jadi",
-                "🏙️ Skyscraper / Pencakar Langit & Bandar",
-                "🌌 Deep Space / Angkasa & Kosmos",
-                "🌊 Ocean & Coastal / Lautan & Pantai",
-                "🔲 Minimalist Dark / Minimalis Gelap",
-                "🔀 Tukar Gambar Seterusnya (Next)"
-        };
-        final String[] keys = new String[]{
-                "Natural",
-                "Skyscraper",
-                "Space",
-                "Ocean",
-                "Minimalist",
-                "NEXT"
-        };
+        File customDir = new File(getFilesDir(), "custom_wallpapers");
+        File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+        boolean hasCustom = customFiles != null && customFiles.length > 0;
+
+        List<String> catList = new ArrayList<>();
+        List<String> keyList = new ArrayList<>();
+
+        catList.add("🌿 Natural / Alam Semula Jadi");
+        keyList.add("Natural");
+
+        catList.add("🇲🇾 Malaysia / Tempat Menarik & Bersejarah");
+        keyList.add("Malaysia");
+
+        catList.add("🏙️ Skyscraper / Pencakar Langit & Bandar");
+        keyList.add("Skyscraper");
+
+        catList.add("🌌 Deep Space / Angkasa & Kosmos");
+        keyList.add("Space");
+
+        catList.add("🌊 Ocean & Coastal / Lautan & Pantai");
+        keyList.add("Ocean");
+
+        catList.add("🔲 Minimalist Dark / Minimalis Gelap");
+        keyList.add("Minimalist");
+
+        if (hasCustom) {
+            boolean isSingle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("custom_single_mode", false);
+            String customLabel = isSingle
+                    ? "📱 Custom / 1 Gambar Kekal (" + customFiles.length + " foto)"
+                    : "📱 Custom / Putar Semua Gambar (" + customFiles.length + " foto)";
+            catList.add(customLabel);
+            keyList.add("Custom");
+
+            catList.add("🗑️ Urus Gambar Dimuat Naik (Pilih / Padam)");
+            keyList.add("MANAGE_CUSTOM");
+        }
+
+        catList.add("📲 Upload Wallpaper via Phone (QR Code)");
+        keyList.add("UPLOAD_QR");
+
+        catList.add("🔀 Tukar Gambar Seterusnya (Next)");
+        keyList.add("NEXT");
+
+        final String[] categories = catList.toArray(new String[0]);
+        final String[] keys = keyList.toArray(new String[0]);
 
         String currentKey = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
         int selectedIndex = 0;
@@ -2111,13 +2219,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setTitle("🖼️ Pilih Koleksi Wallpaper");
         builder.setSingleChoiceItems(categories, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
-            if ("NEXT".equals(keys[which])) {
+            String chosenKey = keys[which];
+            if ("NEXT".equals(chosenKey)) {
                 if (wallpapers != null && !wallpapers.isEmpty()) {
                     showNextWallpaper(true);
                     Toast.makeText(MainActivity.this, "Menukar ke gambar seterusnya...", Toast.LENGTH_SHORT).show();
                 }
+            } else if ("UPLOAD_QR".equals(chosenKey)) {
+                showWallpaperUploadQrDialog();
+            } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
+                showCustomWallpaperManagerDialog();
             } else {
-                switchWallpaperCategory(keys[which]);
+                switchWallpaperCategory(chosenKey);
             }
         });
         builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
@@ -2137,8 +2250,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 showNextWallpaper(true);
                 return;
             }
+        } else if ("Custom".equalsIgnoreCase(category)) {
+            placesMode = false;
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.setAlpha(0f);
+                heroShelf.setVisibility(View.GONE);
+            }
+            File customDir = new File(getFilesDir(), "custom_wallpapers");
+            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            boolean singleMode = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("custom_single_mode", false);
+            String singleFile = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("custom_single_file", null);
+            if (singleMode && singleFile != null) {
+                File sf = new File(customDir, singleFile);
+                if (sf.exists() && sf.length() > 0) {
+                    wallpapers = Collections.singletonList(sf);
+                    getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                    showNextWallpaper(true);
+                    return;
+                }
+            }
+            if (files != null && files.length > 0) {
+                Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                wallpapers = new ArrayList<>(Arrays.asList(files));
+                getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                showNextWallpaper(true);
+                return;
+            }
         } else {
             placesMode = false;
+            if (heroShelf != null) {
+                heroShelf.setVisibility(View.VISIBLE);
+            }
         }
 
         List<File> matching = OnlineWallpapers.listByCategory(this, category);
@@ -2159,6 +2302,415 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 });
             }, "wall-cat-sync").start();
         }
+    }
+
+    private void showWallpaperUploadQrDialog() {
+        if (uploadServer != null) {
+            uploadServer.stop();
+            uploadServer = null;
+        }
+
+        String localIp = WallpaperUploadServer.getLocalIpAddress();
+        int port = 8080;
+        WallpaperUploadServer.UploadListener listener = createUploadListener();
+        uploadServer = new WallpaperUploadServer(this, port, listener);
+        boolean started = uploadServer.start();
+        if (!started) {
+            port = 8888;
+            uploadServer = new WallpaperUploadServer(this, port, listener);
+            started = uploadServer.start();
+        }
+
+        if (!started) {
+            Toast.makeText(this, "Ralat: Tidak dapat memulakan pelayan muat naik tempatan.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String uploadUrl = "http://" + localIp + ":" + port;
+        Bitmap qrBmp = QrBitmapUtil.createQrBitmap(uploadUrl, Math.round(260 * density));
+
+        LinearLayout rootLayout = new LinearLayout(this);
+        rootLayout.setOrientation(LinearLayout.VERTICAL);
+        rootLayout.setGravity(Gravity.CENTER_HORIZONTAL);
+        int padH = Math.round(36 * density);
+        int padV = Math.round(28 * density);
+        rootLayout.setPadding(padH, padV, padH, padV);
+        rootLayout.setBackgroundColor(0xF0131722); // Elegant dark slate
+
+        // Title
+        TextView title = new TextView(this);
+        title.setText("📲 Muat Naik Wallpaper Dari Telefon");
+        title.setTextColor(0xFFFFFFFF);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        title.setGravity(Gravity.CENTER);
+        rootLayout.addView(title);
+
+        // Subtitle instructions
+        TextView sub = new TextView(this);
+        sub.setText("Sambungkan telefon pada Wi-Fi yang sama, kemudian imbas kod QR di bawah:");
+        sub.setTextColor(0xFF94A3B8);
+        sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        sub.setGravity(Gravity.CENTER);
+        sub.setPadding(0, Math.round(6 * density), 0, Math.round(18 * density));
+        rootLayout.addView(sub);
+
+        // QR Code Container (Crisp White Card with subtle margin)
+        FrameLayout qrContainer = new FrameLayout(this);
+        qrContainer.setBackgroundColor(0xFFFFFFFF);
+        int qrPad = Math.round(12 * density);
+        qrContainer.setPadding(qrPad, qrPad, qrPad, qrPad);
+        LinearLayout.LayoutParams qrLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        qrLp.gravity = Gravity.CENTER_HORIZONTAL;
+        qrContainer.setLayoutParams(qrLp);
+
+        qrImageView = new ImageView(this);
+        if (qrBmp != null) {
+            qrImageView.setImageBitmap(qrBmp);
+        }
+        int qrDim = Math.round(220 * density);
+        FrameLayout.LayoutParams imgLp = new FrameLayout.LayoutParams(qrDim, qrDim);
+        imgLp.gravity = Gravity.CENTER;
+        qrImageView.setLayoutParams(imgLp);
+        qrContainer.addView(qrImageView);
+        rootLayout.addView(qrContainer);
+
+        // Web URL pill
+        qrUrlText = new TextView(this);
+        qrUrlText.setText("🌐 " + uploadUrl);
+        qrUrlText.setTextColor(0xFF38BDF8);
+        qrUrlText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        qrUrlText.setTypeface(Typeface.DEFAULT_BOLD);
+        qrUrlText.setGravity(Gravity.CENTER);
+        qrUrlText.setPadding(0, Math.round(14 * density), 0, Math.round(4 * density));
+        rootLayout.addView(qrUrlText);
+
+        // Status text
+        qrStatusText = new TextView(this);
+        qrStatusText.setText("📡 Menunggu imbasan kamera atau fail dari telefon...");
+        qrStatusText.setTextColor(0xFFCBD5E1);
+        qrStatusText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        qrStatusText.setGravity(Gravity.CENTER);
+        qrStatusText.setPadding(0, 0, 0, Math.round(18 * density));
+        rootLayout.addView(qrStatusText);
+
+        // Close button
+        Button btnClose = new Button(this);
+        btnClose.setText("Tutup / Cancel");
+        btnClose.setTextColor(0xFFFFFFFF);
+        btnClose.setBackgroundResource(R.drawable.pill_bg);
+        btnClose.setFocusable(true);
+        btnClose.setFocusableInTouchMode(true);
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(
+                Math.round(180 * density), Math.round(42 * density));
+        btnLp.gravity = Gravity.CENTER_HORIZONTAL;
+        btnClose.setLayoutParams(btnLp);
+        rootLayout.addView(btnClose);
+
+        // Watermark credit
+        TextView credit = new TextView(this);
+        credit.setText("✨ Powered by @imsomangge");
+        credit.setTextColor(0xFF94A3B8);
+        credit.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        credit.setTypeface(Typeface.DEFAULT_BOLD);
+        credit.setGravity(Gravity.CENTER);
+        credit.setPadding(0, Math.round(14 * density), 0, 0);
+        rootLayout.addView(credit);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setView(rootLayout);
+        qrUploadDialog = builder.create();
+
+        btnClose.setOnClickListener(v -> qrUploadDialog.dismiss());
+
+        qrUploadDialog.setOnDismissListener(dialog -> {
+            if (uploadServer != null) {
+                uploadServer.stop();
+                uploadServer = null;
+            }
+            qrUploadDialog = null;
+        });
+
+        qrUploadDialog.show();
+        btnClose.requestFocus();
+    }
+
+    private WallpaperUploadServer.UploadListener createUploadListener() {
+        return new WallpaperUploadServer.UploadListener() {
+            @Override
+            public void onUploaded(File imageFile) {
+                onCustomWallpaperUploaded(imageFile);
+            }
+
+            @Override
+            public void onDeleted(File file) {
+                onCustomWallpaperDeleted(file);
+            }
+
+            @Override
+            public void onSelected(File file) {
+                onCustomWallpaperSelected(file);
+            }
+
+            @Override
+            public void onSlideshowMode() {
+                onCustomWallpaperSlideshow();
+            }
+
+            @Override
+            public void onCleared() {
+                onCustomWallpaperCleared();
+            }
+        };
+    }
+
+    private void onCustomWallpaperUploaded(File file) {
+        runOnUiThread(() -> {
+            SoundEffects.playSelect();
+            Toast.makeText(this, "✅ Wallpaper berjaya dimuat naik dari telefon!", Toast.LENGTH_LONG).show();
+
+            getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                    .putString("active_category", "Custom")
+                    .putBoolean("custom_single_mode", false)
+                    .remove("custom_single_file")
+                    .apply();
+
+            placesMode = false;
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.setAlpha(0f);
+                heroShelf.setVisibility(View.GONE);
+            }
+            File customDir = new File(getFilesDir(), "custom_wallpapers");
+            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            if (files != null && files.length > 0) {
+                Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                wallpapers = new ArrayList<>(Arrays.asList(files));
+            } else {
+                wallpapers = Collections.singletonList(file);
+            }
+
+            getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+            showNextWallpaper(true);
+
+            if (qrStatusText != null) {
+                qrStatusText.setText("🎉 Berjaya Diterima & Dipaparkan di TV!");
+                qrStatusText.setTextColor(0xFF4ADE80);
+            }
+            if (qrUrlText != null) {
+                qrUrlText.setText("✅ Wallpaper Aktif: " + file.getName());
+                qrUrlText.setTextColor(0xFF4ADE80);
+            }
+            if (qrImageView != null) {
+                try {
+                    Bitmap thumb = decodeWallpaper(file);
+                    if (thumb != null) {
+                        qrImageView.setImageBitmap(thumb);
+                        qrImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    }
+                } catch (Exception ignored) {}
+            }
+
+            handler.postDelayed(() -> {
+                if (qrUploadDialog != null && qrUploadDialog.isShowing()) {
+                    qrUploadDialog.dismiss();
+                }
+            }, 3000);
+        });
+    }
+
+    private void onCustomWallpaperSelected(File file) {
+        runOnUiThread(() -> {
+            SoundEffects.playSelect();
+            getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                    .putString("active_category", "Custom")
+                    .putBoolean("custom_single_mode", true)
+                    .putString("custom_single_file", file.getName())
+                    .apply();
+
+            placesMode = false;
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.setAlpha(0f);
+                heroShelf.setVisibility(View.GONE);
+            }
+            wallpapers = Collections.singletonList(file);
+            getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+            showNextWallpaper(true);
+            Toast.makeText(this, "📌 Kunci 1 Wallpaper: " + file.getName(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void onCustomWallpaperSlideshow() {
+        runOnUiThread(() -> {
+            SoundEffects.playSelect();
+            getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                    .putString("active_category", "Custom")
+                    .putBoolean("custom_single_mode", false)
+                    .remove("custom_single_file")
+                    .apply();
+
+            placesMode = false;
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.setAlpha(0f);
+                heroShelf.setVisibility(View.GONE);
+            }
+
+            File customDir = new File(getFilesDir(), "custom_wallpapers");
+            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            if (files != null && files.length > 0) {
+                Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                wallpapers = new ArrayList<>(Arrays.asList(files));
+                getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                showNextWallpaper(true);
+                Toast.makeText(this, "🔄 Mod Putar Semua Wallpaper Aktif (" + files.length + " foto)", Toast.LENGTH_SHORT).show();
+            } else {
+                switchWallpaperCategory("Natural");
+            }
+        });
+    }
+
+    private void onCustomWallpaperDeleted(File file) {
+        runOnUiThread(() -> {
+            String singleFile = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("custom_single_file", null);
+            if (singleFile != null && singleFile.equals(file.getName())) {
+                getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                        .putBoolean("custom_single_mode", false)
+                        .remove("custom_single_file")
+                        .apply();
+            }
+
+            File customDir = new File(getFilesDir(), "custom_wallpapers");
+            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+
+            if ("Custom".equalsIgnoreCase(activeCat)) {
+                if (files != null && files.length > 0) {
+                    Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                    wallpapers = new ArrayList<>(Arrays.asList(files));
+                    getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                    showNextWallpaper(true);
+                    Toast.makeText(this, "🗑️ Gambar dipadam. Tinggal " + files.length + " foto.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Semua gambar telah dipadam. Beralih ke Natural.", Toast.LENGTH_SHORT).show();
+                    switchWallpaperCategory("Natural");
+                }
+            } else {
+                Toast.makeText(this, "🗑️ Gambar dipadam dari simpanan.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void onCustomWallpaperCleared() {
+        runOnUiThread(() -> {
+            getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                    .putBoolean("custom_single_mode", false)
+                    .remove("custom_single_file")
+                    .apply();
+
+            String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+            if ("Custom".equalsIgnoreCase(activeCat)) {
+                switchWallpaperCategory("Natural");
+            }
+            Toast.makeText(this, "🧹 Semua gambar muat naik telah dibersihkan.", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void showCustomWallpaperManagerDialog() {
+        File customDir = new File(getFilesDir(), "custom_wallpapers");
+        File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+        if (files == null || files.length == 0) {
+            Toast.makeText(this, "Tiada gambar dimuat naik dijumpai.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+
+        boolean isSingleMode = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("custom_single_mode", false);
+        String singleFile = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("custom_single_file", "");
+
+        List<String> items = new ArrayList<>();
+        List<Runnable> actions = new ArrayList<>();
+
+        // Quick Mode Actions at top
+        items.add("🔄 Putar Semua Gambar (Slideshow Mod)");
+        actions.add(this::onCustomWallpaperSlideshow);
+
+        items.add("🗑️ Padam Semua Gambar (Kosongkan)");
+        actions.add(() -> {
+            new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                    .setTitle("⚠️ Padam Semua Gambar?")
+                    .setMessage("Adakah anda pasti ingin memadam semua " + files.length + " gambar yang dimuat naik?")
+                    .setPositiveButton("Ya, Padam Semua", (d, w) -> {
+                        for (File f : files) f.delete();
+                        onCustomWallpaperCleared();
+                    })
+                    .setNegativeButton("Batal", null)
+                    .show();
+        });
+
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM, HH:mm", Locale.getDefault());
+        for (File f : files) {
+            double kb = f.length() / 1024.0;
+            String sizeStr = kb > 1024 ? String.format(Locale.ROOT, "%.1f MB", kb / 1024.0) : String.format(Locale.ROOT, "%.0f KB", kb);
+            boolean isCurrent = isSingleMode && f.getName().equals(singleFile);
+            String prefix = isCurrent ? "📌 [Kekal] " : "🖼️ ";
+            items.add(prefix + f.getName() + " (" + sizeStr + " • " + sdf.format(new Date(f.lastModified())) + ")");
+            actions.add(() -> showSingleCustomActionDialog(f));
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("📱 Pengurus Gambar TV (" + files.length + " Foto)");
+        builder.setItems(items.toArray(new String[0]), (dialog, which) -> {
+            if (which >= 0 && which < actions.size()) {
+                actions.get(which).run();
+            }
+        });
+        builder.setNegativeButton("Tutup", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+    private void showSingleCustomActionDialog(File file) {
+        String[] actions = {
+                "📌 Jadikan Wallpaper Tunggal (Kunci Gambar Ini)",
+                "🗑️ Padam Gambar Ini",
+                "🧹 Simpan Gambar Ini Sahaja & Padam Yang Lain",
+                "⬅️ Kembali"
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("🖼️ " + file.getName());
+        builder.setItems(actions, (dialog, which) -> {
+            switch (which) {
+                case 0: // Lock single
+                    onCustomWallpaperSelected(file);
+                    break;
+                case 1: // Delete this
+                    file.delete();
+                    onCustomWallpaperDeleted(file);
+                    break;
+                case 2: // Keep this, delete others
+                    File customDir = new File(getFilesDir(), "custom_wallpapers");
+                    File[] allFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+                    if (allFiles != null) {
+                        for (File f : allFiles) {
+                            if (!f.getName().equals(file.getName())) {
+                                f.delete();
+                            }
+                        }
+                    }
+                    onCustomWallpaperSelected(file);
+                    Toast.makeText(this, "🧹 Gambar lain dipadam. Gambar ini dikekalkan.", Toast.LENGTH_SHORT).show();
+                    break;
+                case 3: // Back
+                    showCustomWallpaperManagerDialog();
+                    break;
+            }
+        });
+        builder.setNegativeButton("Batal", null);
+        builder.show();
     }
 
     private void showHazeLocationDialog() {

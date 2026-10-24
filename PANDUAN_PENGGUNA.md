@@ -18,9 +18,9 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 ## 📦 Muat Turun Fail APK Terus (Direct Download)
 
 Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
-* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (453 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (471 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Versi**: **v2.3.1** (Terkini: Dropdown Tetapan, Kategori Wallpaper 4K, APIMS Jerebu, Waktu Solat JAKIM Dinamik & Fix Issue #1)
+* ⚡ **Versi**: **v2.4.0** (Terkini: Muat Naik Gambar via Kod QR, Pengurus Gambar TV, Kunci 1 Gambar Kekal, Paparan Bersih, & 🇲🇾 Koleksi Malaysia 4K)
 
 ---
 
@@ -159,10 +159,21 @@ Pengguna yang memasang fail APK secara manual atau berpindah rumah **TIDAK PERLU
 ### C. Gambar Latar Belakang & Pilihan Kategori Wallpaper (4K Dynamic)
 * **Koleksi Tema Pelbagai**: Kini anda boleh memilih kategori tema wallpaper kegemaran anda secara langsung dari skrin utama melalui menu Tetapan (ikon ⚙️):
   - 🌿 **Natural (Lalai / Bing Places)**: Landskap alam semula jadi bertaraf 4K dengan info nama lokasi, negara, dan penerangan ringkas setiap minggu.
-  - 🏙️ **Skyscraper (Pencakar Langit)**: Pemandangan menara ikonik dunia (Menara Berkembar Petronas KLCC, New York Manhattan, Chicago River, Dubai Marina, Hong Kong Cityscape).
+  - 🇲🇾 **Malaysia (Tempat Menarik & Bersejarah)**: 8 lokasi pemandangan 4K ikonik Malaysia (Menara Berkembar Petronas KLCC, Gunung Kinabalu Sabah, Ladang Teh Cameron Highlands, Pulau Langkawi, Batu Caves Selangor, Georgetown Pulau Pinang, Pulau Perhentian Terengganu, dan Bandaraya Bersejarah Melaka).
+  - 🏙️ **Skyscraper (Pencakar Langit)**: Pemandangan menara ikonik dunia (New York Manhattan, Chicago River, Dubai Marina, Hong Kong Cityscape).
   - 🌌 **Deep Space (Angkasa Lepas)**: Galaksi, nebula dan bintang angkasa yang menakjubkan.
   - 🌊 **Ocean & Coastal (Lautan)**: Keindahan pantai pasir putih, ombak dan terumbu karang.
   - 🔲 **Minimalist Dark**: Latar belakang gelap bertekstur elegan, sangat jimat tenaga dan mesra panel OLED.
+* **📲 Muat Naik Gambar dari Telefon (Imbas Kod QR)**:
+  - Pilih **`📲 Upload Wallpaper via Phone (QR Code)`** pada menu wallpaper untuk memaparkan kod QR dan pautan web tempatan.
+  - Imbas dengan telefon pintar anda (pada Wi-Fi yang sama) untuk memuat naik mana-mana foto keluarga, haiwan peliharaan, atau gambar kegemaran anda terus ke TV tanpa memerlukan sebarang aplikasi pihak ketiga atau akaun awan.
+* **📱 Pengurus Gambar TV & Mod 1 Gambar Kekal (Single Mode)**:
+  - Selepas memuat naik gambar, anda boleh mengurus gambar sama ada melalui telefon atau terus di TV melalui menu **`🗑️ Urus Gambar Dimuat Naik (Pilih / Padam)`**.
+  - **Kunci 1 Gambar Sahaja**: Pilih **`📌 Jadikan Wallpaper Tunggal`** jika anda ingin menetapkan hanya 1 gambar kekal tanpa berputar.
+  - **Putar Semua Gambar**: Pilih **`🔄 Putar Semua Gambar`** untuk memutar semua foto muat naik secara automatik.
+  - **Padam Foto**: Padam foto tertentu atau kosongkan semua gambar sekali gus.
+* **🖼️ Paparan Bersih (Clean View)**:
+  - Apabila menggunakan wallpaper sendiri (*custom*), rak teks deskripsi di sebelah kiri skrin dimatikan sepenuhnya (`View.GONE`) supaya gambar anda dipaparkan dengan jelas tanpa terlindung.
 * **Tukar Gambar Serta-Merta**: Pilih **🔀 Next Wallpaper** untuk beralih ke gambar seterusnya pada bila-bila masa.
 
 ### D. Screensaver StandBy & Auto-Off 2 Jam (Jimat Elektrik)
