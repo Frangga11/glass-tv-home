@@ -22,6 +22,11 @@ Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
 * 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
 * ⚡ **Versi**: **v2.4.0** (Terkini: Muat Naik Gambar via Kod QR, Pengurus Gambar TV, Kunci 1 Gambar Kekal, Paparan Bersih, & 🇲🇾 Koleksi Malaysia 4K)
 
+> [!NOTE]
+> ### 🇲🇾 Pengguna Unifi TV Box (TM Unifi Plus Box): Adakah Boleh Guna & Adakah Batal Waranti?
+> * **Boleh guna ke? YA, 100% BOLEH!** Unifi Plus Box (model Skyworth HP40A3, ZTE B866V2K, dan kotak Android TV baharu TM) menggunakan sistem operasi Android TV yang sah (*certified Android TV*). Aplikasi rasmi **unifi TV** (siaran langsung & saluran langganan anda) tetap ada dalam senarai aplikasi dan boleh ditonton seperti biasa.
+> * **Adakah membatalkan waranti (void warranty)? TIDAK SAMA SEKALI!** Glass TV Home dipasang sebagai aplikasi biasa (*user-space APK*). Ia **TIDAK me-root (no root)** kotak TV anda, **TIDAK membuka bootloader**, dan **TIDAK mengubah sistem perisian dalaman TM (firmware)**. Anda boleh *uninstall* pada bila-bila masa melalui menu Tetapan TV untuk kembali kepada paparan asal TM tanpa sebarang kesan.
+
 ---
 
 ## 🤖 2. Cara Paling Mudah: Bantuan AI (Hanya 1 Baris Prompt!)
@@ -323,6 +328,20 @@ Jika anda lebih suka menggunakan pendrive USB:
   - **Semua ciri automatik berjalan sendiri**: Jam, jadual waktu solat, cuaca & kualiti udara (APIMS), mod screensaver 10 minit, dan auto-sleep 2 jam dijana sepenuhnya oleh cip pemproses TV tanpa bergantung kepada mana-mana AI atau internet luar.
   - Ahli keluarga dan pengguna biasa boleh menikmati TV dengan lancar hanya menggunakan remote TV biasa.
 * **Peranan AI hanyalah seperti "jurutera"** yang membantu memasang dan mencuci bloatware pada peringkat permulaan sahaja.
+
+---
+
+### S4: Saya guna Unifi TV Box (TM Unifi Plus Box), bolehkah saya guna launcher ini dan adakah ia akan membatalkan waranti (void warranty)?
+* **1. Bolehkah dipasang pada Unifi TV Box?**
+  - **YA, BOLEH SANGAT!** Kotak TM Unifi Plus Box (sama ada model putih Skyworth HP40A3 mahupun model hitam ZTE) beroperasi di atas sistem Android TV rasmi Google.
+  - Anda boleh memasang fail APK Glass TV Home sama ada melalui pemacu USB (pendrive), aplikasi *Downloader / Send Files to TV*, atau arahan Wi-Fi ADB.
+  - **Aplikasi unifi TV tetap berfungsi sepenuhnya:** Anda tidak akan kehilangan siaran TV secara langsung (*Live TV*), sukan, atau rancangan kegemaran kerana aplikasi **unifi TV** akan tersenarai secara automatik di skrin utama Glass TV dan boleh diletakkan pada dok hadapan (*favorites*).
+* **2. Adakah ia membatalkan waranti TM (Void Warranty)?**
+  - **TIDAK, WARANTI ANDA 100% KEKAL SELAMAT.**
+  - **Tanpa Root (Zero Root / No Modding):** Glass TV Home hanyalah sebuah aplikasi *launcher* biasa (sama seperti memasang Netflix, YouTube, atau Spotify dari Play Store). Ia tidak mengubah fail sistem induk (*firmware / vendor partition*).
+  - **Boleh Dibuang Bila-Bila Masa (Reversible):** Jika anda perlu memulangkan kotak kepada TM atau menuntut waranti sekiranya rosak, anda hanya perlu pergi ke:
+    `Settings (Tetapan) -> Apps (Aplikasi) -> Glass TV Home -> Uninstall (Nyahpasang)`
+    atau lakukan *Factory Reset*. Kotak Unifi TV akan kembali 100% kepada keadaan asal kilang tanpa meninggalkan sebarang kesan pengubahsuaian.
 
 ---
 

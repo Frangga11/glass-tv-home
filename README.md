@@ -149,6 +149,10 @@ Android TV and Google TV, Android 8 or newer, on the TV or on a box plugged into
 [docs/DEVICES.md](docs/DEVICES.md) lists every tested model and how far each was tested: end to end with
 Glass TV, with the original launcher, or debloat only, plus what is expected to work and what cannot.
 
+### 🇲🇾 Unifi TV Box (TM Unifi Plus Box) Compatibility & Warranty
+- **Can I use it on Unifi TV Box?** **Yes!** Unifi Plus Box (Skyworth HP40A3, ZTE B866V2K, and newer TM Android TV boxes) runs certified Android TV. You can install Glass TV Home via APK sideloading or wireless ADB. The official **unifi TV** app remains fully operational so you never lose live TV channels or subscriptions.
+- **Will it void the warranty?** **No, it will NOT void your warranty.** Glass TV Home is a standard user-space Android APK. It does **not** root the box, unlock the bootloader, or modify system firmware. You can uninstall it at any time from *Settings > Apps > Glass TV Home > Uninstall* or factory reset the box to return it 100% to its original TM factory state.
+
 ## LG and Samsung TVs
 
 LG TVs run webOS and Samsung TVs run Tizen; neither can run Android apps, and neither lets any app replace its

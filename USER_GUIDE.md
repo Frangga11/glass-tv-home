@@ -23,6 +23,11 @@ For users who want to download and install the pre-compiled APK directly:
 * 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
 * ⚡ **Version**: **v2.4.0** (Latest with Phone QR Wallpaper Upload, Mobile & TV Photo Manager, Single Wallpaper Lock, Clean Custom View & 🇲🇾 Curated 4K Malaysia Landmarks).
 
+> [!NOTE]
+> ### 🇲🇾 Unifi TV Box (TM Unifi Plus Box) Users: Compatibility & Warranty Safety
+> * **Can I use Glass TV Home on my Unifi TV Box? YES, 100%!** Unifi Plus Box (Skyworth HP40A3, ZTE B866V2K, and other TM Android TV boxes) runs certified Android TV. The official **unifi TV** app (for your live channels and TV subscription) remains fully functional and appears right in your app dock.
+> * **Will it void my TM warranty? NO, ABSOLUTELY NOT!** Glass TV Home is installed as a standard user-space APK. It **does NOT require root**, **does NOT unlock the bootloader**, and **does NOT modify system firmware**. It can be uninstalled at any time through standard TV Settings or wiped with a simple Factory Reset, returning the box to 100% stock TM condition.
+
 ---
 
 ## 🤖 2. The Easiest Way: Let AI Do Everything Automatically! (1-Line Prompt)
@@ -283,6 +288,20 @@ If you prefer using a physical USB drive:
   - **All smart features run locally**: Clock, Hijri dates, prayer timetable, weather & AQI (APIMS), 10-minute screensaver, and 2-hour auto sleep operate entirely inside the TV without requiring an AI agent, computer, or active subscription.
   - Family members and non-technical users can use the TV just like a standard commercial smart TV.
 * **The AI's role is purely as a "mechanic/technician"** during the initial setup to automate installation and debloating. Once installed, Glass TV Home is 100% independent.
+
+---
+
+### Q4: Can I use this on a Unifi TV Box (TM Unifi Plus Box), and will it void my warranty?
+* **1. Can it be installed on a Unifi TV Box?**
+  - **YES, ABSOLUTELY!** TM Unifi Plus Boxes (both the white Skyworth HP40A3 and black ZTE models) run official Android TV.
+  - You can install the Glass TV Home APK via USB flash drive, Downloader app, Send Files to TV, or wireless ADB.
+  - **The official unifi TV app works normally:** You won't lose access to TM's live channels, sports, or on-demand shows because the **unifi TV** app will automatically show up in your apps list and can be pinned to your favorite dock row.
+* **2. Will it void TM's warranty?**
+  - **NO, YOUR WARRANTY REMAINS 100% SAFE AND INTACT.**
+  - **No Rooting / Zero Firmware Modification:** Glass TV Home operates as a standard Android user-space application (just like installing Netflix or YouTube). It does not alter system firmware partitions or tamper with hardware.
+  - **100% Reversible:** If you ever need technical support from TM or want to return the box, simply go to:
+    `Settings -> Apps -> Glass TV Home -> Uninstall`
+    or perform a standard Factory Reset. The box instantly reverts to the original TM factory launcher with zero traces left behind.
 
 ---
 

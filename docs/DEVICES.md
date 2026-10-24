@@ -99,7 +99,7 @@ Android TV or Google TV 8 or newer, so nothing stands in the way, but no one has
 | Device | System | Notes |
 |---|---|---|
 | Google TV Streamer, Xiaomi TV Stick 4K, onn. and other Google TV sticks and boxes | Google TV 10+ | Google's setup app can take Home after the install; the install script handles it |
-| unifi Plus Box (TM, Malaysia; Skyworth HP40A3) | Android TV 9 | TM may lock developer options; keep TM's unifi TV apps or live channels stop |
+| unifi Plus Box (TM, Malaysia; Skyworth HP40A3, ZTE B866V2K) | Android TV 9+ | Certified Android TV. Runs standard APK without root; does NOT void TM warranty. Keep TM's unifi TV app to retain live channels. 100% reversible via standard uninstall. |
 | Other Sony, TCL, Philips, Hisense (Android models), Sharp, Toshiba (Android models) TVs | Android TV / Google TV 8+ | Use the nearest example list as a starting point, never as is |
 
 ## 5. Not supported
