@@ -648,6 +648,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
                     .build(), vpnCallback);
         }
+
+        // Silent background update check after 5 seconds on launch
+        handler.postDelayed(() -> AppUpdateManager.checkForUpdates(this, false), 5000);
     }
 
     /**
@@ -2154,9 +2157,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             showSoundEffectsDialog();
         });
 
+        // Row 5: Check for Updates (OTA)
+        addInputRow(rows, close, R.drawable.ic_update, "Check for Updates", -1, () -> {
+            SoundEffects.playSelect();
+            AppUpdateManager.checkForUpdates(MainActivity.this, true);
+        });
+
         addSeparator(rows);
 
-        // Row 5: All Settings (Android Settings)
+        // Row 6: All Settings (Android Settings)
         addInputRow(rows, close, R.drawable.ic_settings, "All Settings", -1, () -> {
             SoundEffects.playSelect();
             open(systemIntent(Settings.ACTION_SETTINGS));

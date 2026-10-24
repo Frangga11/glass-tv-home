@@ -9,11 +9,11 @@ and come home to just your apps, with a new place to visit behind them every wee
 
 <p align="center">
   <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk">
-    <img src="https://img.shields.io/badge/Download_APK_v2.6.0-glass--tv--home.apk_(498_KB)-success?style=for-the-badge&logo=android" alt="Download APK v2.6.0">
+    <img src="https://img.shields.io/badge/Download_APK_v2.6.0-glass--tv--home.apk_(504_KB)-success?style=for-the-badge&logo=android" alt="Download APK v2.6.0">
   </a>
 </p>
 
-> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v2.6.0** • ~498 KB) ready to install on any Android TV or Google TV!
+> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v2.6.0** • ~504 KB) ready to install on any Android TV or Google TV!
 >
 > 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
 >
@@ -69,6 +69,10 @@ every week.
   - **Mute / Silent Mode (`Off`)**: Toggle sound effects completely off for a whisper-quiet late-night browsing experience.
   - **Live Audition**: Plays instant sound previews upon selecting an option in the dialog.
   - **Persistent Memory**: Saved across reboots and app launches via TV shared preferences.
+- **OTA In-App Auto Update & 1-Line AI Patching.**
+  - **In-App OTA Check (`⚙️ Check for Updates`)**: Check, download, and install latest APK patches directly on the TV without a PC.
+  - **Background Launch Check**: Glass TV silently checks for new releases on startup and prompts when a new update is ready to install.
+  - **1-Line AI Update Prompt**: Paste `update patch latest glass tv dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home` to any AI coding assistant to upgrade via ADB in 5 seconds without touching existing user data.
 
 - **Keeps itself clean.** Every 15 days, while Home sits idle, the TV clears its app caches, where the Play
   Store leaves gigabytes of download leftovers that can make apps open to a blank screen. No computer needed,
@@ -123,6 +127,20 @@ Using an AI assistant (**Google Antigravity** [Free], **Claude Code** [Paid], **
    ```
    *(Or in English: `install this on my home tv: https://github.com/aqmangge/glass-tv-home`)*
 3. The AI will automatically ask for your TV IP & location in Malaysia, connect over Wi-Fi, backup, debloat ads & tracking, and install Glass TV Home! See [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md) and [USER_GUIDE.md](USER_GUIDE.md).
+
+### 🔄 1-Line AI Update / Patch Prompt (For Existing Users)
+Already have Glass TV installed and want to update to the latest release or patch? Paste this single line to your AI:
+```text
+update patch latest glass tv dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+```
+*(Or in English: `update glass tv to the latest patch on my tv: https://github.com/aqmangge/glass-tv-home`)*
+
+> 🚨 **AI Update Rule / Arahan Khas AI Kemas Kini**:
+> When a user requests to update/patch Glass TV:
+> 1. Connect to the TV over Wi-Fi (`adb connect <TV_IP>:5555`).
+> 2. Install the latest prebuilt APK without wiping user data (`adb install -r release/glass-tv-home.apk`).
+> 3. Relaunch the launcher (`adb shell am start -n com.gathin.tvhome/.MainActivity`).
+> 4. All personal wallpapers, dock orders, and settings are 100% retained!
 
 > 🚨 **AI Assistant Rule / Arahan Khas AI**:
 > When installing for a user, the AI **must ask the user for their location in Malaysia** (e.g. Putrajaya, Cheras, Shah Alam, Melaka, JB, Penang, Kuantan, Kuching, KK) to configure live JAS haze/IPU data and JAKIM prayer times via:

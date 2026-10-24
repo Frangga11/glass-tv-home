@@ -19,9 +19,9 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 ## 📦 Direct APK Download
 
 For users who want to download and install the pre-compiled APK directly:
-* 📥 **Official Release APK**: [**glass-tv-home.apk** (498 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Official Release APK**: [**glass-tv-home.apk** (504 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Version**: **v2.6.0** (Latest with 🎮 Console Sound Profiles: PS5, Nintendo Switch, Xbox & Mute Mode, 🇲🇾 14 Malaysian States Wallpapers, Phone QR Upload & Unifi Box Verified).
+* ⚡ **Version**: **v2.6.0** (Latest with 🎮 Console Sound Profiles: PS5, Nintendo Switch, Xbox & Mute Mode, 🔄 OTA In-App Auto Updates & 1-Line AI Patching, 🇲🇾 14 Malaysian States Wallpapers, Phone QR Upload & Unifi Box Verified).
 
 > [!NOTE]
 > ### 🇲🇾 Unifi TV Box (TM Unifi Plus Box) Users: Compatibility & Warranty Safety
@@ -41,6 +41,15 @@ install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
 *(English alias: `install this on my home tv: https://github.com/aqmangge/glass-tv-home`)*
 
 The AI will handle **EVERYTHING** automatically from start to finish!
+
+### 🔄 Updating Existing Installations (1-Line AI Patching)
+Already running Glass TV Home and want to update to the latest patch or version? Simply send this single line to your AI assistant:
+```text
+update patch latest glass tv dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+```
+*(English: `update glass tv to the latest patch on my tv: https://github.com/aqmangge/glass-tv-home`)*
+
+The AI connects via Wi-Fi ADB, updates the APK in 5 seconds (`adb install -r`), and relaunches the home screen. **Your customized dock apps, wallpapers, and prayer/sound settings are 100% retained!**
 
 ### 💡 Supported AI Assistants:
 1. **Google Antigravity (Free / Zero Setup)** ⭐ *Highly Recommended*:
@@ -221,6 +230,7 @@ Clicking the **Settings (gear icon ⚙️)** on the top bar reveals an Apple tvO
 * 📍 **Location API Haze**: Opens a selector for 30+ official Malaysian DOE (JAS APIMS) air quality monitoring stations.
 * 🕌 **Location Waktu Solat**: Opens a selector for 35+ official JAKIM prayer zones across all Malaysian states.
 * 🔊 **Sound Effect**: Displays current audio theme (e.g. `Sound: PlayStation 5`) and launches the console sound profile selector with live previews.
+* 🔄 **Check for Updates**: Checks GitHub directly for newer releases or patches without requiring a PC.
 * ⚙️ **All Settings**: Opens standard Android TV system preferences.
 *(Shortcut: Long-pressing the Settings button on your remote directly launches standard Android settings).*
 
@@ -232,6 +242,13 @@ Customize your TV navigation audio with iconic gaming console profiles or mute a
 * **Muted / Off**: Complete silence for whisper-quiet late night movie sessions.
 * **Instant Audio Audition**: Tapping any theme inside the dialog immediately plays its signature chime.
 * **Persistent Preferences**: Settings remain saved across TV restarts via SharedPreferences.
+
+### H. On-TV OTA Updates & Auto-Patch Checker 🔄🚀
+Glass TV Home features a built-in OTA update system so you can update directly on your TV without a computer:
+* **Manual Check**: Navigate to **Settings (⚙️) $\rightarrow$ Check for Updates**. The app contacts the GitHub release manifest and notifies you if a new version is available.
+* **Silent Startup Check**: The launcher quietly checks for new versions in the background when booted. If a new patch is found, a changelog dialog is presented.
+* **1-Click Download & Install**: Clicking **Muat Turun & Pasang** downloads the update file locally and launches Android TV's native package installer.
+* **Data Preserved**: Updating preserves all apps, dock layout, and custom configurations.
 
 ---
 

@@ -18,9 +18,9 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 ## 📦 Muat Turun Fail APK Terus (Direct Download)
 
 Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
-* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (498 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (504 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Versi**: **v2.6.0** (Terkini: 🎮 Pilihan Sound Effect Konsol PS5, Nintendo Switch, Xbox & Toggle Bisu, 🇲🇾 Wallpaper 14 Negeri Malaysia, Phone QR Upload, Photo Manager)
+* ⚡ **Versi**: **v2.6.0** (Terkini: 🎮 Pilihan Sound Effect Konsol, 🔄 OTA In-App Auto Update & Prompt AI Update Patch, 🇲🇾 Wallpaper 14 Negeri Malaysia, Phone QR Upload, Photo Manager)
 
 > [!NOTE]
 > ### 🇲🇾 Pengguna Unifi TV Box (TM Unifi Plus Box): Adakah Boleh Guna & Adakah Batal Waranti?
@@ -38,6 +38,15 @@ install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
 ```
 
 AI akan menguruskan **SEMUANYA** secara automatik dari mula hingga selesai!
+
+### 🔄 Bagi Pengguna Sedia Ada: Prompt Kemas Kini Patch Terkini (Update Patch)
+Jika anda sudah memasang Glass TV Home dan ingin mengemas kini ke versi atau patch terkini tanpa perlu pening kepala:
+```text
+update patch latest glass tv dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+```
+*(Atau: `kemaskini glass tv dekat tv saya: https://github.com/aqmangge/glass-tv-home`)*
+
+AI akan menyambung ke TV melalui Wi-Fi, memasang kemas kini (`adb install -r`), dan membuka semula aplikasi dalam masa 5 saat. **Semua gambar wallpaper, susunan aplikasi di dock, dan pilihan zon solat/bunyi anda akan 100% kekal!**
 
 ### 💡 Pilihan Pembantu AI:
 1. **Google Antigravity (Percuma / Free)** ⭐ *Paling Disyorkan*:
@@ -219,6 +228,7 @@ Di bar atas skrin utama, tekan butang **Settings (ikon gear ⚙️)** untuk mema
 * 📍 **Location API Haze**: Membuka senarai 30+ stesen jerebu rasmi JAS APIMS untuk menukar stesen pemantauan udara di seluruh negeri.
 * 🕌 **Location Waktu Solat**: Membuka senarai 35+ zon rasmi JAKIM untuk menyelaraskan jadual solat secara tepat mengikut daerah anda.
 * 🔊 **Sound Effect**: Memaparkan tema bunyi aktif (cth: `Sound: PlayStation 5`) dan membuka dialog pilihan tema audio konsol (PS5, Nintendo Switch, Xbox Series X/S, atau Bisu/Off) dengan pratonton nada serta-merta.
+* 🔄 **Check for Updates**: Menyemak patch atau versi kemas kini baharu secara terus dari GitHub tanpa memerlukan komputer.
 * ⚙️ **All Settings**: Membuka menu tetapan penuh Android TV OS.
 *(Pintasan: Menekan lama butang Settings pada remote juga akan membuka tetapan Android secara langsung).*
 
@@ -230,6 +240,13 @@ Kini anda boleh memilih tema kesan bunyi navigasi ala konsol permainan kegemaran
 * **Muted / Off (Bisu)**: Matikan semua kesan bunyi navigasi jika anda lebih gemar suasana senyap sunyi di waktu malam.
 * **Pratonton Bunyi Segera**: Setiap kali anda klik pilihan di dalam dialog, sistem akan memainkan bunyi pilihan tersebut serta-merta sebagai sampel.
 * **Kekal Tersimpan**: Pilihan anda disimpan secara kekal dalam memori TV dan tidak hilang walaupun TV ditutup atau dihidupkan semula.
+
+### H. Semakan & Auto-Update Terus Dari TV (In-App OTA Updater) 🔄🚀
+Glass TV Home dilengkapi dengan enjin kemas kini pintar tanpa perlu komputer atau bantuan luaran:
+* **Semakan Manual**: Tekan **Settings (⚙️) $\rightarrow$ Check for Updates**. Sistem akan terus berhubung dengan pelayan GitHub untuk memeriksa sama ada terdapat versi terkini.
+* **Semakan Automatik Latar Belakang**: Setiap kali aplikasi Glass TV dibuka, ia akan memeriksa secara senyap di latar belakang. Jika versi baharu ditemui, dialog kemas kini dengan senarai pembaharuan (*changelog*) akan dipaparkan.
+* **Muat Turun & Pasang 1-Klik**: Klik butang **Muat Turun & Pasang**, TV akan memuat turun fail APK terus ke peranti dan membuka pemasang rasmi Android TV untuk anda sahkan dengan remote.
+* **Selamat & Kekal**: Proses kemas kini tidak memadamkan fail data, susunan aplikasi, atau tetapan peribadi anda.
 
 ---
 
