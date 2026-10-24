@@ -1866,6 +1866,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             prayerTimesView.setText(PrayerTimes.getFormatted(this));
         }
         updateIslamicShelf();
+        if (screensaverActive) {
+            updateNightstandScreensaver();
+        }
     }
 
     private void updateWeatherAqi() {
@@ -2221,8 +2224,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         LinearLayout rows = panel.findViewById(R.id.rows);
         Runnable close = () -> closeMenu(false);
 
-        // Header: Putrajaya Zone WLY01
-        addInputRow(rows, close, R.drawable.ic_settings, "Waktu Solat Putrajaya", TvInputManager.INPUT_STATE_CONNECTED, () -> {});
+        // Header: Active Prayer Zone
+        addInputRow(rows, close, R.drawable.ic_settings, "Waktu Solat " + PrayerTimes.getShortZoneName(this), TvInputManager.INPUT_STATE_CONNECTED, () -> {});
 
         // Date row: Islamic Hijri
         addInputRow(rows, close, R.drawable.ic_input, PrayerTimes.getHijriDate(), -1, () -> {});

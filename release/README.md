@@ -8,7 +8,7 @@ Fail pemasangan rasmi (*Official Release APK*) untuk **Glass TV Home**.
   [https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * **Saiz Fail**: ~453 KB (Sangat ringan, pantas dimuat turun & jimat memori TV)
 * **Keserasian**: Android TV & Google TV (Android 8.0 Oreo ke atas, API 26+)
-* **SHA-256 Checksum**: `d634eb16e3a9d7499a4e1ec1a5681a47a08c10b076e2d059a2b772f57fbfc7d8`
+* **SHA-256 Checksum**: `3f67f82fcdcf5100a81283c70428bfb5569c498c1a48546143d96d3c3b0f5a45`
 
 ---
 

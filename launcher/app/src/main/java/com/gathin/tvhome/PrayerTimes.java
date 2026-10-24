@@ -209,6 +209,29 @@ final class PrayerTimes {
         return AppLocationManager.getLocationName(context);
     }
 
+    public static String getShortZoneName(Context context) {
+        String name = getActiveZoneName(context);
+        if (name == null || name.trim().isEmpty()) return "Putrajaya";
+        int cut = name.indexOf(',');
+        if (cut > 0) name = name.substring(0, cut);
+        cut = name.indexOf('&');
+        if (cut > 0) name = name.substring(0, cut);
+        cut = name.indexOf('(');
+        if (cut > 0) name = name.substring(0, cut);
+        name = name.trim();
+        return name.isEmpty() ? "Putrajaya" : name;
+    }
+
+    public static void clearManualZone(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit()
+                .remove("manual_prayer_zone")
+                .remove("manual_prayer_zone_name")
+                .remove("manual_lat")
+                .remove("manual_lon")
+                .apply();
+    }
+
     public static void setPrayerZone(Context context, PrayerZone zone) {
         if (zone == null) return;
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -335,12 +358,21 @@ final class PrayerTimes {
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
 
-        // LINE 1: PUTRAJAYA  •  SETERUSNYA: ASAR 16:18
+        // LINE 1: LOCATION  •  SETERUSNYA: ASAR 16:18
         String nextName = PRAYER_NAMES[nextIdx].toUpperCase(Locale.ROOT);
-        String nextTime = timeFmt.format(new Date(times[nextIdx]));
+        long displayTimeMs = times[nextIdx];
+        if (nextIdx == 0 && times[0] < nowMs) {
+            Calendar tomorrow = (Calendar) now.clone();
+            tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+            long[] tomTimes = getTimesForToday(context, tomorrow.get(Calendar.DAY_OF_MONTH));
+            if (tomTimes == null || tomTimes.length < 6) tomTimes = calculateFallback(context, tomorrow);
+            if (tomTimes != null && tomTimes.length > 0) displayTimeMs = tomTimes[0];
+        }
+        String nextTime = timeFmt.format(new Date(displayTimeMs));
 
         int l1Start = sb.length();
-        sb.append("PUTRAJAYA  •  SETERUSNYA: ").append(nextName).append(" ").append(nextTime);
+        String zoneHeader = getShortZoneName(context).toUpperCase(Locale.ROOT);
+        sb.append(zoneHeader).append("  •  SETERUSNYA: ").append(nextName).append(" ").append(nextTime);
         int l1End = sb.length();
         sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), l1Start, l1End, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new StyleSpan(Typeface.BOLD), l1Start, l1End, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -491,6 +523,7 @@ final class PrayerTimes {
         long nowMs = now.getTimeInMillis();
         int nextIdx = -1;
         for (int i = 0; i < times.length; i++) {
+            if (i == 1) continue; // Skip Syuruk (sunrise)
             if (times[i] > nowMs) {
                 nextIdx = i;
                 break;
@@ -514,15 +547,35 @@ final class PrayerTimes {
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
         long nowMs = now.getTimeInMillis();
-        int nextIdx = 0;
+        int nextIdx = -1;
         for (int i = 0; i < times.length; i++) {
+            if (i == 1) continue; // Skip Syuruk (sunrise)
             if (times[i] > nowMs) {
                 nextIdx = i;
                 break;
             }
         }
+
+        long nextTimeMs;
+        String prayerName;
+        if (nextIdx != -1) {
+            prayerName = PRAYER_NAMES[nextIdx];
+            nextTimeMs = times[nextIdx];
+        } else {
+            // All prayers today have passed (after Isyak) -> Next is tomorrow's Subuh
+            prayerName = PRAYER_NAMES[0];
+            Calendar tomorrow = (Calendar) now.clone();
+            tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+            long[] tomTimes = getTimesForToday(context, tomorrow.get(Calendar.DAY_OF_MONTH));
+            if (tomTimes == null || tomTimes.length < 6) {
+                tomTimes = calculateFallback(context, tomorrow);
+            }
+            nextTimeMs = (tomTimes != null && tomTimes.length > 0) ? tomTimes[0] : (times[0] + 86400000L);
+        }
+
         SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
-        return PRAYER_NAMES[nextIdx] + " • " + sdf.format(new Date(times[nextIdx])) + " (Putrajaya)";
+        String zone = getShortZoneName(context);
+        return prayerName + " • " + sdf.format(new Date(nextTimeMs)) + " (" + zone + ")";
     }
 
     /** Returns Islamic Hijrah date (e.g. "11 Jamadilawal 1448H"). */

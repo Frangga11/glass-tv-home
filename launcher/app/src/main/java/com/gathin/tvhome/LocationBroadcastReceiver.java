@@ -50,12 +50,14 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
         }
 
         if (matched != null) {
+            PrayerTimes.clearManualZone(context);
             AppLocationManager.setStation(context, matched);
             final String name = matched.getDisplayName();
             new Handler(Looper.getMainLooper()).post(() -> {
                 Toast.makeText(context, "📍 Lokasi TV: " + name, Toast.LENGTH_LONG).show();
             });
         } else if (lat != 0.0 && lon != 0.0) {
+            PrayerTimes.clearManualZone(context);
             String customName = query != null ? query : "Lokasi Tersuai";
             AppLocationManager.setCustomLocation(context, "CUSTOM", customName, customName, lat, lon);
             new Handler(Looper.getMainLooper()).post(() -> {
