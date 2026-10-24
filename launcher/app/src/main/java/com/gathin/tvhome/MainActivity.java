@@ -1421,6 +1421,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String country = about != null && about.length > 2 ? about[2] : "";
         if (country != null) {
             country = country.replaceAll("(?i)\\bunsplash\\s*•?\\s*", "").trim();
+            if (country.startsWith("Malaysia_")) {
+                String st = country.substring("Malaysia_".length());
+                if ("WP".equalsIgnoreCase(st)) st = "Wilayah Persekutuan";
+                else if ("NegeriSembilan".equalsIgnoreCase(st)) st = "Negeri Sembilan";
+                else if ("PulauPinang".equalsIgnoreCase(st)) st = "Pulau Pinang";
+                country = st + ", Malaysia";
+            }
         }
         if (title != null) {
             title = title.replaceAll("(?i)\\bunsplash\\s*•?\\s*", "").trim();
@@ -2164,14 +2171,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
         boolean hasCustom = customFiles != null && customFiles.length > 0;
 
+        String currentKey = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+
         List<String> catList = new ArrayList<>();
         List<String> keyList = new ArrayList<>();
 
         catList.add("🌿 Natural / Alam Semula Jadi");
         keyList.add("Natural");
 
-        catList.add("🇲🇾 Malaysia / Tempat Menarik & Bersejarah");
-        keyList.add("Malaysia");
+        String malaysiaLabel;
+        if (currentKey.startsWith("Malaysia_")) {
+            malaysiaLabel = "🇲🇾 Malaysia: " + getStateDisplayName(currentKey) + " (Tukar Negeri ▶)";
+        } else if ("Malaysia".equalsIgnoreCase(currentKey)) {
+            malaysiaLabel = "🇲🇾 Malaysia: Semua Negeri (Tukar Negeri ▶)";
+        } else {
+            malaysiaLabel = "🇲🇾 Malaysia / Mengikut Negeri (Pilih Negeri ▶)";
+        }
+        catList.add(malaysiaLabel);
+        keyList.add("MALAYSIA_PICKER");
 
         catList.add("🏙️ Skyscraper / Pencakar Langit & Bandar");
         keyList.add("Skyscraper");
@@ -2206,10 +2223,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final String[] categories = catList.toArray(new String[0]);
         final String[] keys = keyList.toArray(new String[0]);
 
-        String currentKey = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
         int selectedIndex = 0;
         for (int i = 0; i < keys.length; i++) {
-            if (keys[i].equalsIgnoreCase(currentKey)) {
+            if (keys[i].equalsIgnoreCase(currentKey) || ("MALAYSIA_PICKER".equals(keys[i]) && currentKey.startsWith("Malaysia"))) {
                 selectedIndex = i;
                 break;
             }
@@ -2225,6 +2241,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     showNextWallpaper(true);
                     Toast.makeText(MainActivity.this, "Menukar ke gambar seterusnya...", Toast.LENGTH_SHORT).show();
                 }
+            } else if ("MALAYSIA_PICKER".equals(chosenKey)) {
+                showMalaysiaStateSelectorDialog();
             } else if ("UPLOAD_QR".equals(chosenKey)) {
                 showWallpaperUploadQrDialog();
             } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
@@ -2238,9 +2256,90 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.show();
     }
 
+    private String getStateDisplayName(String key) {
+        if (key == null) return "Semua Negeri";
+        if (key.equalsIgnoreCase("Malaysia_Johor")) return "Johor";
+        if (key.equalsIgnoreCase("Malaysia_Kedah")) return "Kedah";
+        if (key.equalsIgnoreCase("Malaysia_Kelantan")) return "Kelantan";
+        if (key.equalsIgnoreCase("Malaysia_Melaka")) return "Melaka";
+        if (key.equalsIgnoreCase("Malaysia_NegeriSembilan")) return "Negeri Sembilan";
+        if (key.equalsIgnoreCase("Malaysia_Pahang")) return "Pahang";
+        if (key.equalsIgnoreCase("Malaysia_Perak")) return "Perak";
+        if (key.equalsIgnoreCase("Malaysia_Perlis")) return "Perlis";
+        if (key.equalsIgnoreCase("Malaysia_PulauPinang")) return "Pulau Pinang";
+        if (key.equalsIgnoreCase("Malaysia_Sabah")) return "Sabah";
+        if (key.equalsIgnoreCase("Malaysia_Sarawak")) return "Sarawak";
+        if (key.equalsIgnoreCase("Malaysia_Selangor")) return "Selangor";
+        if (key.equalsIgnoreCase("Malaysia_Terengganu")) return "Terengganu";
+        if (key.equalsIgnoreCase("Malaysia_WP")) return "Wilayah Persekutuan";
+        return "Semua Negeri";
+    }
+
+    private void showMalaysiaStateSelectorDialog() {
+        final String[] stateLabels = new String[]{
+                "🇲🇾 Semua Negeri di Malaysia (Putar Keseluruhan)",
+                "📍 Johor — Pulau Rawa & Pesisir Pantai",
+                "📍 Kedah — Langkawi Sky Bridge & Sawah Padi",
+                "📍 Kelantan — Pantai Cahaya Bulan & Senok",
+                "📍 Melaka — Bandaraya Bersejarah & Sungai Melaka",
+                "📍 Negeri Sembilan — Pantai Port Dickson & Teluk Kemang",
+                "📍 Pahang — Ladang Teh Cameron Highlands",
+                "📍 Perak — Pekan Warisan Ipoh & Kellie's Castle",
+                "📍 Perlis — Gua Kelam & Banjaran Nakawan",
+                "📍 Pulau Pinang — Georgetown UNESCO & Kek Lok Si",
+                "📍 Sabah — Puncak Gunung Kinabalu",
+                "📍 Sarawak — Pinnacles Mulu & Kuching Waterfront",
+                "📍 Selangor — Batu Caves & Masjid Negeri Shah Alam",
+                "📍 Terengganu — Pulau Perhentian & Masjid Kristal",
+                "📍 Wilayah Persekutuan — Menara Berkembar KLCC"
+        };
+
+        final String[] stateKeys = new String[]{
+                "Malaysia",
+                "Malaysia_Johor",
+                "Malaysia_Kedah",
+                "Malaysia_Kelantan",
+                "Malaysia_Melaka",
+                "Malaysia_NegeriSembilan",
+                "Malaysia_Pahang",
+                "Malaysia_Perak",
+                "Malaysia_Perlis",
+                "Malaysia_PulauPinang",
+                "Malaysia_Sabah",
+                "Malaysia_Sarawak",
+                "Malaysia_Selangor",
+                "Malaysia_Terengganu",
+                "Malaysia_WP"
+        };
+
+        String currentCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+        int selectedIndex = 0;
+        for (int i = 0; i < stateKeys.length; i++) {
+            if (stateKeys[i].equalsIgnoreCase(currentCat)) {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("🇲🇾 Koleksi Malaysia — Pilih Negeri");
+        builder.setSingleChoiceItems(stateLabels, selectedIndex, (dialog, which) -> {
+            dialog.dismiss();
+            String chosenKey = stateKeys[which];
+            switchWallpaperCategory(chosenKey);
+        });
+        builder.setNegativeButton("Kembali / Back", (dialog, which) -> {
+            dialog.dismiss();
+            showWallpaperDialog();
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void switchWallpaperCategory(String category) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
-        Toast.makeText(this, "Kategori: " + category, Toast.LENGTH_SHORT).show();
+        String displayLabel = category.startsWith("Malaysia_") ? ("Malaysia (" + getStateDisplayName(category) + ")") : category;
+        Toast.makeText(this, "Kategori: " + displayLabel, Toast.LENGTH_SHORT).show();
 
         if ("Natural".equalsIgnoreCase(category)) {
             placesMode = true;
@@ -2289,7 +2388,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             wallpapers = matching;
             showNextWallpaper(true);
         } else {
-            Toast.makeText(this, "Memuat turun 4K Wallpaper " + category + "...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Memuat turun 4K Wallpaper " + displayLabel + "...", Toast.LENGTH_SHORT).show();
             new Thread(() -> {
                 boolean downloaded = OnlineWallpapers.syncCategory(getApplicationContext(), category);
                 handler.post(() -> {

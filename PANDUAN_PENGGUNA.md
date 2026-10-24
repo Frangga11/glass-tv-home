@@ -18,9 +18,9 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 ## 📦 Muat Turun Fail APK Terus (Direct Download)
 
 Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
-* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (471 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (486 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Versi**: **v2.4.0** (Terkini: Muat Naik Gambar via Kod QR, Pengurus Gambar TV, Kunci 1 Gambar Kekal, Paparan Bersih, & 🇲🇾 Koleksi Malaysia 4K)
+* ⚡ **Versi**: **v2.5.0** (Terkini: 🇲🇾 Wallpaper 14 Negeri Malaysia, Sub-Dropdown Pemilih Negeri, Muat Naik QR, Kunci 1 Gambar, & Unifi Box Verified)
 
 > [!NOTE]
 > ### 🇲🇾 Pengguna Unifi TV Box (TM Unifi Plus Box): Adakah Boleh Guna & Adakah Batal Waranti?
@@ -164,11 +164,29 @@ Pengguna yang memasang fail APK secara manual atau berpindah rumah **TIDAK PERLU
 ### C. Gambar Latar Belakang & Pilihan Kategori Wallpaper (4K Dynamic)
 * **Koleksi Tema Pelbagai**: Kini anda boleh memilih kategori tema wallpaper kegemaran anda secara langsung dari skrin utama melalui menu Tetapan (ikon ⚙️):
   - 🌿 **Natural (Lalai / Bing Places)**: Landskap alam semula jadi bertaraf 4K dengan info nama lokasi, negara, dan penerangan ringkas setiap minggu.
-  - 🇲🇾 **Malaysia (Tempat Menarik & Bersejarah)**: 8 lokasi pemandangan 4K ikonik Malaysia (Menara Berkembar Petronas KLCC, Gunung Kinabalu Sabah, Ladang Teh Cameron Highlands, Pulau Langkawi, Batu Caves Selangor, Georgetown Pulau Pinang, Pulau Perhentian Terengganu, dan Bandaraya Bersejarah Melaka).
+  - 🇲🇾 **Malaysia (Koleksi Mengikut Setiap Negeri)**: Pilih koleksi mengikut mana-mana 14 negeri di Malaysia atau putar semua sekali gus melalui sub-dialog khas:
+    - 📍 **Johor**: Pulau Rawa Mersing & Pesisir Pantai Tropika.
+    - 📍 **Kedah**: Langkawi Sky Bridge Gunung Mat Cincang & Pulau Langkawi.
+    - 📍 **Kelantan**: Pantai Cahaya Bulan & Deretan Rhu Pantai Senok Kota Bharu.
+    - 📍 **Melaka**: Bandaraya Bersejarah UNESCO & Persiaran Sungai Melaka Malam.
+    - 📍 **Negeri Sembilan**: Pantai Cahaya Negeri & Peranginan Teluk Kemang Port Dickson.
+    - 📍 **Pahang**: Hamparan Ladang Teh Cameron Highlands & Lembah Teh Bharat.
+    - 📍 **Perak**: Pekan Warisan Kolonial Ipoh, Istana Kellie's Castle Batu Gajah & Gua Kek Lok Tong.
+    - 📍 **Perlis**: Gua Kelam Kaki Bukit & Banjaran Batu Kapur Nakawan.
+    - 📍 **Pulau Pinang**: Lorong Warisan UNESCO Georgetown & Kuil Kek Lok Si Air Itam.
+    - 📍 **Sabah**: Puncak Gunung Kinabalu & South Peak Kundasang Negeri Di Bawah Bayu.
+    - 📍 **Sarawak**: Pinnacles Batu Kapur Mulu UNESCO, Tebingan Kuching Waterfront & Pantai Miri.
+    - 📍 **Selangor**: Tangga Batu Caves Sri Subramaniar & Masjid Sultan Salahuddin Abdul Aziz Shah Alam.
+    - 📍 **Terengganu**: Pulau Perhentian Syurga Marin & Masjid Kristal Muara Sungai Terengganu.
+    - 📍 **Wilayah Persekutuan**: Menara Berkembar Petronas KLCC & Horizon Malam Bandaraya Kuala Lumpur.
   - 🏙️ **Skyscraper (Pencakar Langit)**: Pemandangan menara ikonik dunia (New York Manhattan, Chicago River, Dubai Marina, Hong Kong Cityscape).
   - 🌌 **Deep Space (Angkasa Lepas)**: Galaksi, nebula dan bintang angkasa yang menakjubkan.
   - 🌊 **Ocean & Coastal (Lautan)**: Keindahan pantai pasir putih, ombak dan terumbu karang.
   - 🔲 **Minimalist Dark**: Latar belakang gelap bertekstur elegan, sangat jimat tenaga dan mesra panel OLED.
+* **📂 Sub-Dropdown Pemilih Negeri (UI Kemas)**:
+  - Tekan **`🇲🇾 Malaysia (Pilih Negeri ▶)`** pada menu wallpaper untuk membuka senarai negeri kemas bertaraf Leanback TV.
+  - Pilihan anda dipaparkan terus pada menu utama (contoh: `🇲🇾 Malaysia: Johor (Tukar Negeri ▶)`).
+  - Di sudut kiri skrin, nama lokasi, negeri, dan sejarah tempat tersebut dipaparkan secara automatik!
 * **📲 Muat Naik Gambar dari Telefon (Imbas Kod QR)**:
   - Pilih **`📲 Upload Wallpaper via Phone (QR Code)`** pada menu wallpaper untuk memaparkan kod QR dan pautan web tempatan.
   - Imbas dengan telefon pintar anda (pada Wi-Fi yang sama) untuk memuat naik mana-mana foto keluarga, haiwan peliharaan, atau gambar kegemaran anda terus ke TV tanpa memerlukan sebarang aplikasi pihak ketiga atau akaun awan.

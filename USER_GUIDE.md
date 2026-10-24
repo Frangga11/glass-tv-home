@@ -19,9 +19,9 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 ## 📦 Direct APK Download
 
 For users who want to download and install the pre-compiled APK directly:
-* 📥 **Official Release APK**: [**glass-tv-home.apk** (471 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Official Release APK**: [**glass-tv-home.apk** (486 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Version**: **v2.4.0** (Latest with Phone QR Wallpaper Upload, Mobile & TV Photo Manager, Single Wallpaper Lock, Clean Custom View & 🇲🇾 Curated 4K Malaysia Landmarks).
+* ⚡ **Version**: **v2.5.0** (Latest with 🇲🇾 14 Malaysian States Wallpapers, State Picker Sub-Dropdown, Phone QR Upload & Unifi Box Verified).
 
 > [!NOTE]
 > ### 🇲🇾 Unifi TV Box (TM Unifi Plus Box) Users: Compatibility & Warranty Safety
@@ -166,11 +166,29 @@ Users who install the APK manually or relocate **DO NOT NEED A COMPUTER OR AI** 
 ### C. Dynamic 4K Wallpapers & Category Switcher
 * **Curated Themes**: Switch your home background between curated 4K categories directly from the remote:
   - 🌿 **Natural (Default / Bing Places)**: World landmarks, mountains, lakes, and nature landscapes with informative location stories updated weekly.
-  - 🇲🇾 **Malaysia (Iconic Landscapes & Landmarks)**: 8 iconic 4K Malaysian scenes (Petronas Twin Towers KLCC, Mount Kinabalu Sabah, Cameron Highlands Tea Plantation, Langkawi Island, Batu Caves Selangor, Georgetown Penang, Perhentian Islands Terengganu, and Melaka Historic City).
+  - 🇲🇾 **Malaysia (Curated 14 States & Federal Territories)**: Pick wallpapers specifically for any of Malaysia's 14 states or rotate all states together via a dedicated sub-dialog:
+    - 📍 **Johor**: Pulau Rawa Mersing & Tropical Coastline.
+    - 📍 **Kedah**: Langkawi Sky Bridge Mount Mat Cincang & Emerald Seas.
+    - 📍 **Kelantan**: Pantai Cahaya Bulan & Pine Groves of Pantai Senok Kota Bharu.
+    - 📍 **Melaka**: UNESCO Historic City & Melaka River Night Promenade.
+    - 📍 **Negeri Sembilan**: Pantai Cahaya Negeri & Teluk Kemang Port Dickson.
+    - 📍 **Pahang**: Cameron Highlands Rolling Tea Plantations & Bharat Tea Valley.
+    - 📍 **Perak**: Ipoh Colonial Heritage Town, Kellie's Castle & Kek Lok Tong Limestone Cave.
+    - 📍 **Perlis**: Gua Kelam Limestone Cavern & Nakawan Range Foothills.
+    - 📍 **Pulau Pinang**: Georgetown UNESCO Heritage Streets & Kek Lok Si Temple.
+    - 📍 **Sabah**: Mount Kinabalu Peak & South Peak Kundasang.
+    - 📍 **Sarawak**: UNESCO Mulu Pinnacles, Kuching Waterfront & Miri Coastline.
+    - 📍 **Selangor**: Batu Caves Sri Subramaniar & Shah Alam Blue Mosque.
+    - 📍 **Terengganu**: Pulau Perhentian Marine Haven & Kuala Terengganu Crystal Mosque.
+    - 📍 **Wilayah Persekutuan**: Petronas Twin Towers KLCC & Kuala Lumpur City Nightscape.
   - 🏙️ **Skyscraper**: Famous modern architecture and skylines (Manhattan NYC, Chicago River, Dubai Marina, Hong Kong Cityscape).
   - 🌌 **Deep Space**: Vibrant nebulae, starfields, and cosmic vistas.
   - 🌊 **Ocean & Coastal**: Pristine coastal horizons, waves, and azure seas.
   - 🔲 **Minimalist Dark**: Refined deep textured aesthetic, power-efficient and OLED-safe.
+* **📂 State Picker Sub-Dropdown (Clean TV UI)**:
+  - Click **`🇲🇾 Malaysia (Pilih Negeri ▶)`** on the wallpaper menu to open a leanback dialog listing all 14 Malaysian states.
+  - Your active selection is displayed right on the main menu (e.g. `🇲🇾 Malaysia: Johor (Tukar Negeri ▶)`).
+  - The TV shelf automatically highlights the location, state name, and historical story of each Malaysian landmark!
 * **📲 Phone QR Code Wallpaper Upload**:
   - Select **`📲 Upload Wallpaper via Phone (QR Code)`** from the wallpaper options to display a clean QR code and local web link.
   - Scan with any smartphone on the same Wi-Fi network to upload custom family photos, vacation snapshots, or artwork directly to your TV without cloud accounts or third-party apps.
