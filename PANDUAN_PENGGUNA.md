@@ -20,7 +20,7 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
 * 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (453 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Versi**: Terkini (Dilengkapi sokongan Dropdown Tetapan, Kategori Wallpaper 4K, APIMS Jerebu, & Waktu Solat JAKIM)
+* ⚡ **Versi**: **v2.3.1** (Terkini: Dropdown Tetapan, Kategori Wallpaper 4K, APIMS Jerebu, Waktu Solat JAKIM Dinamik & Fix Issue #1)
 
 ---
 

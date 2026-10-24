@@ -21,7 +21,7 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 For users who want to download and install the pre-compiled APK directly:
 * 📥 **Official Release APK**: [**glass-tv-home.apk** (453 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Version**: Latest with Frosted Glass Settings Dropdown, 4K Wallpaper Switcher, APIMS Haze, & JAKIM Prayer Times.
+* ⚡ **Version**: **v2.3.1** (Latest with Frosted Glass Settings Dropdown, 4K Wallpaper Switcher, APIMS Haze, Dynamic JAKIM Prayer Times & Fix Issue #1).
 
 ---
 
