@@ -676,6 +676,12 @@
                     android:drawableStart="@drawable/ic_wifi" />
 
                 <TextView
+                    android:id="@+id/btnGemini"
+                    style="@style/TopMenuButton"
+                    android:text="Gemini"
+                    android:drawableStart="@drawable/ic_gemini" />
+
+                <TextView
                     android:id="@+id/btnSettings"
                     style="@style/TopMenuButton"
                     android:layout_width="42dp"

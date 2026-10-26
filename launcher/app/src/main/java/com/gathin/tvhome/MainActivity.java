@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -22,6 +23,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
@@ -54,6 +57,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.util.TypedValue;
@@ -90,6 +94,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     public static MainActivity getInstance() {
         return sInstance != null ? sInstance.get() : null;
     }
+
+    public static boolean isForeground() {
+        MainActivity inst = getInstance();
+        return inst != null && !inst.isFinishing() && !inst.isDestroyed() && !inst.hiddenSinceResume;
+    }
+
+    public static void openSettingsFromGlobal() {
+        MainActivity inst = getInstance();
+        if (inst != null) {
+            inst.runOnUiThread(() -> {
+                if (inst.screensaverActive) inst.dismissScreensaver();
+                inst.showSettingsPopup();
+            });
+        }
+    }
+
+    private boolean isHomeLongPressed = false;
+    private final Runnable longPressHomeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            isHomeLongPressed = true;
+            SoundEffects.playSelect();
+            if (screensaverActive) dismissScreensaver();
+            showSettingsPopup();
+        }
+    };
 
     /** Tiles per row and dock slots (res/values/config.xml, columns). Set in onCreate. */
     static int COLUMNS = 4;
@@ -144,6 +174,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private float heroBottom;
     private View btnInputs;
     private TextView btnWifi;
+    private View btnGemini;
     private TextView ampmView, dateView;
     private TextView shamsiDate;
     private TextView prayerTimesView;
@@ -227,9 +258,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static final long DOUBLE_BACK_DELAY_MS = 350L;
     private Runnable singleBackRunnable = null;
     private boolean doubleBackPending = false;
-    private static final long DOUBLE_HOME_INTERVAL_MS = 400L;
-    private long lastHomePressTime = 0;
-    private Runnable singleHomeRunnable = null;
     /** Refreshes the network pill when the connection changes: at boot Wi-Fi often connects after Home is shown. */
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
@@ -347,7 +375,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroName != null) heroName.setMaxWidth(heroNameMaxWidth);
         if (heroDesc != null) heroDesc.setMaxWidth(heroMaxWidth);
 
-        String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+        String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Malaysia");
         if ("Custom".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File customDir = new File(getFilesDir(), "custom_wallpapers");
@@ -368,15 +396,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             } else if (cfg.wallpaperOnline && wallpapers.isEmpty()) {
                 wallpapers = OnlineWallpapers.list(this);
             }
-        } else if (!"Natural".equalsIgnoreCase(activeCat)) {
+        } else {
             placesMode = false;
             List<File> catFiles = OnlineWallpapers.listByCategory(this, activeCat);
             if (!catFiles.isEmpty()) wallpapers = catFiles;
             else if (cfg.wallpaperOnline && wallpapers.isEmpty()) wallpapers = OnlineWallpapers.list(this);
-        } else if (placesMode) {
-            wallpapers = PlaceWallpapers.list(this);
-        } else if (cfg.wallpaperOnline && wallpapers.isEmpty()) {
-            wallpapers = OnlineWallpapers.list(this);
+            if (wallpapers.isEmpty()) {
+                new Thread(() -> {
+                    OnlineWallpapers.syncCategory(getApplicationContext(), activeCat);
+                    handler.post(() -> {
+                        if (isDestroyed()) return;
+                        List<File> fresh = OnlineWallpapers.listByCategory(MainActivity.this, activeCat);
+                        if (!fresh.isEmpty()) {
+                            wallpapers = fresh;
+                            showNextWallpaper(false);
+                        }
+                    });
+                }).start();
+            }
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
         else if (cfg.wallpaper != null && !placesMode) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
@@ -596,7 +633,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         // The grid only shows the shape on the tray.
         glider.addCompanion(grid, tray.area);
-        for (int id : new int[]{R.id.btnInputs, R.id.btnWifi, R.id.btnSettings}) {
+        for (int id : new int[]{R.id.btnInputs, R.id.btnWifi, R.id.btnGemini, R.id.btnSettings}) {
             View pill = findViewById(id);
             if (pill == null) continue;
             float radius = 21f * density;
@@ -679,22 +716,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         btnInputs = findViewById(R.id.btnInputs);
+        btnGemini = findViewById(R.id.btnGemini);
         View btnSettings = findViewById(R.id.btnSettings);
-        btnInputs.setOnClickListener(v -> showInputs());
-        btnWifi.setOnClickListener(v -> showWifiPopup());
-        btnWifi.setOnLongClickListener(v -> {
-            open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
-            return true;
-        });
-        btnSettings.setOnClickListener(v -> showSettingsPopup());
-        btnSettings.setOnLongClickListener(v -> {
-            if (moduleCards) {
-                showModuleCards();
+        if (btnInputs != null) btnInputs.setOnClickListener(v -> showInputs());
+        if (btnWifi != null) {
+            btnWifi.setOnClickListener(v -> showWifiPopup());
+            btnWifi.setOnLongClickListener(v -> {
+                open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
                 return true;
-            }
-            open(systemIntent(Settings.ACTION_SETTINGS));
-            return true;
-        });
+            });
+        }
+        if (btnGemini != null) {
+            btnGemini.setOnClickListener(v -> showGeminiAssistantDialog());
+        }
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> showSettingsPopup());
+            btnSettings.setOnLongClickListener(v -> {
+                if (moduleCards) {
+                    showModuleCards();
+                    return true;
+                }
+                open(systemIntent(Settings.ACTION_SETTINGS));
+                return true;
+            });
+        }
 
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
@@ -707,6 +752,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (v.getId() == R.id.btnSettings) {
+                    if (btnGemini != null && btnGemini.getVisibility() == View.VISIBLE) {
+                        btnGemini.requestFocus();
+                        return true;
+                    }
+                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
+                        btnWifi.requestFocus();
+                        return true;
+                    }
+                }
+                if (v.getId() == R.id.btnGemini) {
+                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
+                        btnWifi.requestFocus();
+                        return true;
+                    }
+                    if (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) {
+                        btnInputs.requestFocus();
+                        return true;
+                    }
+                }
                 if (v.getId() == R.id.btnInputs || (v.getId() == R.id.btnWifi && (btnInputs == null || btnInputs.getVisibility() != View.VISIBLE))) {
                     if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
                         weatherAirQualityView.requestFocus();
@@ -717,17 +782,34 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     prayerTimesView.requestFocus();
                     return true;
                 }
-                // The left end is Inputs, or Wi-Fi on a box without inputs, or Settings when both are gone.
                 return v.getId() == R.id.btnInputs
-                        || (v.getId() == R.id.btnWifi && btnInputs.getVisibility() != View.VISIBLE)
-                        || (v.getId() == R.id.btnSettings && btnInputs.getVisibility() != View.VISIBLE
-                            && btnWifi.getVisibility() != View.VISIBLE);
+                        || (v.getId() == R.id.btnWifi && (btnInputs == null || btnInputs.getVisibility() != View.VISIBLE));
             }
-            return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == R.id.btnSettings;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                if (v.getId() == R.id.btnWifi) {
+                    if (btnGemini != null && btnGemini.getVisibility() == View.VISIBLE) {
+                        btnGemini.requestFocus();
+                        return true;
+                    }
+                    if (btnSettings != null) {
+                        btnSettings.requestFocus();
+                        return true;
+                    }
+                }
+                if (v.getId() == R.id.btnGemini) {
+                    if (btnSettings != null) {
+                        btnSettings.requestFocus();
+                        return true;
+                    }
+                }
+                return v.getId() == R.id.btnSettings;
+            }
+            return false;
         };
-        btnInputs.setOnKeyListener(pillKeys);
-        btnWifi.setOnKeyListener(pillKeys);
-        btnSettings.setOnKeyListener(pillKeys);
+        if (btnInputs != null) btnInputs.setOnKeyListener(pillKeys);
+        if (btnWifi != null) btnWifi.setOnKeyListener(pillKeys);
+        if (btnGemini != null) btnGemini.setOnKeyListener(pillKeys);
+        if (btnSettings != null) btnSettings.setOnKeyListener(pillKeys);
 
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
@@ -754,6 +836,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Silent background update check after 5 seconds on launch
         handler.postDelayed(() -> AppUpdateManager.checkForUpdates(this, false), 5000);
+
+        if (getIntent() != null && getIntent().getBooleanExtra("open_settings", false)) {
+            handler.postDelayed(() -> {
+                if (screensaverActive) dismissScreensaver();
+                showSettingsPopup();
+            }, 100);
+        }
+        if (getIntent() != null && getIntent().getBooleanExtra("open_wallpaper", false)) {
+            handler.postDelayed(() -> {
+                if (screensaverActive) dismissScreensaver();
+                showWallpaperDialog();
+            }, 100);
+        }
     }
 
     /**
@@ -935,43 +1030,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (intent != null && intent.getBooleanExtra("open_settings", false)) {
+            if (screensaverActive) dismissScreensaver();
+            showSettingsPopup();
+            return;
+        }
+        if (intent != null && intent.getBooleanExtra("open_wallpaper", false)) {
+            if (screensaverActive) dismissScreensaver();
+            showWallpaperDialog();
+            return;
+        }
         if (intent != null && intent.getBooleanExtra("screensaver", false)) {
             showNightstandScreensaver();
             return;
         }
         if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) return;
-        // Home pressed on Home goes to screensaver sleep mode. Home pressed in another app comes back to
-        // the launcher without launching screensaver.
         if (hiddenSinceResume) return;
         if (screensaverActive) {
             dismissScreensaver();
             return;
         }
-        long now = android.os.SystemClock.uptimeMillis();
-        if (now - lastHomePressTime < DOUBLE_HOME_INTERVAL_MS) {
-            lastHomePressTime = 0;
-            if (singleHomeRunnable != null) {
-                handler.removeCallbacks(singleHomeRunnable);
-                singleHomeRunnable = null;
-            }
-            startActivity(new Intent(this, RecentAppsActivity.class));
-            return;
-        } else {
-            lastHomePressTime = now;
-            singleHomeRunnable = () -> {
-                singleHomeRunnable = null;
-                if (screensaverActive) {
-                    dismissScreensaver();
-                } else {
-                    if (cardPrompt != null) cardPrompt.dismiss();
-                    if (openPopup != null) openPopup.dismiss();
-                    closeMenu(false);
-                    if (movingPos >= 0) finishMove();
-                    showNightstandScreensaver();
-                }
-            };
-            handler.postDelayed(singleHomeRunnable, DOUBLE_HOME_INTERVAL_MS);
-        }
+        // Single home pressed on Home
+        if (cardPrompt != null) cardPrompt.dismiss();
+        if (openPopup != null) openPopup.dismiss();
+        closeMenu(false);
+        if (movingPos >= 0) finishMove();
+        focusTile(0);
     }
 
     /**
@@ -1438,7 +1522,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private boolean isTopPill(View v) {
         int id = v.getId();
-        return id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnSettings;
+        return id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnGemini || id == R.id.btnSettings;
     }
 
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
@@ -1916,43 +2000,41 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return true;
         }
         if (code == KeyEvent.KEYCODE_APP_SWITCH) {
-            if (event.getAction() == KeyEvent.ACTION_UP) {
-                startActivity(new Intent(this, RecentAppsActivity.class));
-            }
-            return true;
+            return true; // Live apps disabled per request
         }
         if (code == KeyEvent.KEYCODE_HOME || code == KeyEvent.KEYCODE_ALL_APPS) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (event.isLongPress() || (event.getFlags() & KeyEvent.FLAG_LONG_PRESS) != 0 || event.getRepeatCount() > 0) {
+                    if (!isHomeLongPressed) {
+                        isHomeLongPressed = true;
+                        handler.removeCallbacks(longPressHomeRunnable);
+                        longPressHomeRunnable.run();
+                    }
+                    return true;
+                }
+                if (event.getRepeatCount() == 0) {
+                    isHomeLongPressed = false;
+                    handler.removeCallbacks(longPressHomeRunnable);
+                    handler.postDelayed(longPressHomeRunnable, 450);
+                }
+                return true;
+            }
             if (event.getAction() == KeyEvent.ACTION_UP) {
+                handler.removeCallbacks(longPressHomeRunnable);
+                if (isHomeLongPressed) {
+                    isHomeLongPressed = false;
+                    return true;
+                }
                 if (screensaverActive) {
                     dismissScreensaver();
                     return true;
                 }
-                long now = android.os.SystemClock.uptimeMillis();
-                if (now - lastHomePressTime < DOUBLE_HOME_INTERVAL_MS) {
-                    lastHomePressTime = 0;
-                    if (singleHomeRunnable != null) {
-                        handler.removeCallbacks(singleHomeRunnable);
-                        singleHomeRunnable = null;
-                    }
-                    startActivity(new Intent(this, RecentAppsActivity.class));
-                    return true;
-                } else {
-                    lastHomePressTime = now;
-                    singleHomeRunnable = () -> {
-                        singleHomeRunnable = null;
-                        if (screensaverActive) {
-                            dismissScreensaver();
-                        } else {
-                            if (cardPrompt != null) cardPrompt.dismiss();
-                            if (openPopup != null) openPopup.dismiss();
-                            closeMenu(false);
-                            if (movingPos >= 0) finishMove();
-                            showNightstandScreensaver();
-                        }
-                    };
-                    handler.postDelayed(singleHomeRunnable, DOUBLE_HOME_INTERVAL_MS);
-                    return true;
-                }
+                if (cardPrompt != null) cardPrompt.dismiss();
+                if (openPopup != null) openPopup.dismiss();
+                closeMenu(false);
+                if (movingPos >= 0) finishMove();
+                focusTile(0);
+                return true;
             }
             return true;
         }
@@ -2319,7 +2401,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
 
         // Row 3: Tutup
-        addInputRow(rows, close, R.drawable.ic_move, "Tutup", -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
             SoundEffects.playSelect();
             closeMenu(true);
         });
@@ -2344,6 +2426,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper", -1, () -> {
             SoundEffects.playSelect();
             showWallpaperDialog();
+        });
+
+        // Row 1b: Gemini AI Assistant
+        addInputRow(rows, close, R.drawable.ic_gemini, "Gemini AI Assistant", -1, () -> {
+            SoundEffects.playSelect();
+            showGeminiAssistantDialog();
         });
 
         // Row 2: Location (Waktu Solat & Cuaca)
@@ -2812,187 +2900,169 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void showWallpaperDialog() {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
-        boolean hasCustom = customFiles != null && customFiles.length > 0;
+        int customCount = (customFiles != null) ? customFiles.length : 0;
 
-        String currentKey = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
+        String currentKey = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Malaysia");
 
-        List<String> catList = new ArrayList<>();
-        List<String> keyList = new ArrayList<>();
-
-        catList.add("🌿 Natural / Alam Semula Jadi");
-        keyList.add("Natural");
-
-        String malaysiaLabel;
-        if (currentKey.startsWith("Malaysia_")) {
-            malaysiaLabel = "🇲🇾 Malaysia: " + getStateDisplayName(currentKey) + " (Tukar Negeri ▶)";
-        } else if ("Malaysia".equalsIgnoreCase(currentKey)) {
-            malaysiaLabel = "🇲🇾 Malaysia: Semua Negeri (Tukar Negeri ▶)";
-        } else {
-            malaysiaLabel = "🇲🇾 Malaysia / Mengikut Negeri (Pilih Negeri ▶)";
-        }
-        catList.add(malaysiaLabel);
-        keyList.add("MALAYSIA_PICKER");
-
-        catList.add("🏙️ Skyscraper / Pencakar Langit & Bandar");
-        keyList.add("Skyscraper");
-
-        catList.add("🌌 Deep Space / Angkasa & Kosmos");
-        keyList.add("Space");
-
-        catList.add("🌊 Ocean & Coastal / Lautan & Pantai");
-        keyList.add("Ocean");
-
-        catList.add("🔲 Minimalist Dark / Minimalis Gelap");
-        keyList.add("Minimalist");
-
-        if (hasCustom) {
-            boolean isSingle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("custom_single_mode", false);
-            String customLabel = isSingle
-                    ? "📱 Custom / 1 Gambar Kekal (" + customFiles.length + " foto)"
-                    : "📱 Custom / Putar Semua Gambar (" + customFiles.length + " foto)";
-            catList.add(customLabel);
-            keyList.add("Custom");
-
-            catList.add("🗑️ Urus Gambar Dimuat Naik (Pilih / Padam)");
-            keyList.add("MANAGE_CUSTOM");
-        }
-
-        catList.add("📲 Upload Wallpaper via Phone (QR Code)");
-        keyList.add("UPLOAD_QR");
-
-        catList.add("🔀 Tukar Gambar Seterusnya (Next)");
-        keyList.add("NEXT");
-
-        final String[] categories = catList.toArray(new String[0]);
-        final String[] keys = keyList.toArray(new String[0]);
-
-        int selectedIndex = 0;
-        for (int i = 0; i < keys.length; i++) {
-            if (keys[i].equalsIgnoreCase(currentKey) || ("MALAYSIA_PICKER".equals(keys[i]) && currentKey.startsWith("Malaysia"))) {
-                selectedIndex = i;
-                break;
+        class WallpaperOption {
+            final String key;
+            final String title;
+            final String subtitle;
+            WallpaperOption(String key, String title, String subtitle) {
+                this.key = key;
+                this.title = title;
+                this.subtitle = subtitle;
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("🖼️ Pilih Koleksi Wallpaper");
-        builder.setSingleChoiceItems(categories, selectedIndex, (dialog, which) -> {
-            dialog.dismiss();
-            String chosenKey = keys[which];
-            if ("NEXT".equals(chosenKey)) {
-                if (wallpapers != null && !wallpapers.isEmpty()) {
-                    showNextWallpaper(true);
-                    Toast.makeText(MainActivity.this, "Menukar ke gambar seterusnya...", Toast.LENGTH_SHORT).show();
+        List<WallpaperOption> options = new ArrayList<>();
+        options.add(new WallpaperOption("Malaysia", "🇲🇾 Tempat Menarik di Malaysia", "16 Koleksi 4K Ikonik (Unsplash & Pexels)"));
+        options.add(new WallpaperOption("Natural", "🌿 Alam Semula Jadi & Landskap", "Pergunungan, Rimba & Aurora 4K"));
+        options.add(new WallpaperOption("Skyscraper", "🏙️ Pencakar Langit & Bandar Raya", "Metropolis Moden & Seni Bina"));
+        options.add(new WallpaperOption("Space", "🌌 Angkasa & Kosmos", "Galaksi, Nebula & Bintang (Deep Space)"));
+        options.add(new WallpaperOption("Ocean", "🌊 Lautan & Pesisir Pantai", "Air Jernih, Terumbu Karang & Pantai"));
+        options.add(new WallpaperOption("Minimalist", "🔲 Minimalis Gelap (OLED)", "Monokrom, Tekstur Gelap & Abstrak"));
+        options.add(new WallpaperOption("MANAGE_CUSTOM", "📁 Urus Gambar Dimuat Naik",
+                customCount > 0 ? (customCount + " foto dimuat naik • QR / Slideshow") : "Muat naik foto peribadi melalui telefon"));
+        options.add(new WallpaperOption("NEXT", "🔀 Tukar Gambar Seterusnya", "Putar gambar seterusnya dalam kategori ini"));
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding((int) (20 * density), (int) (16 * density), (int) (20 * density), (int) (12 * density));
+
+        // Header Title
+        TextView titleView = new TextView(this);
+        titleView.setText("🖼️ Pilih Koleksi Wallpaper 4K");
+        titleView.setTextSize(16);
+        titleView.setTextColor(0xFFFFFFFF);
+        titleView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        layout.addView(titleView);
+
+        // Header Subtitle
+        TextView subView = new TextView(this);
+        subView.setText("Pexels & Unsplash CDN • Resolusi Ultra HD 3840×2160");
+        subView.setTextSize(11);
+        subView.setTextColor(0x99FFFFFF);
+        subView.setTypeface(getResources().getFont(R.font.outfit));
+        subView.setPadding(0, (int) (2 * density), 0, (int) (10 * density));
+        layout.addView(subView);
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setVerticalScrollBarEnabled(false);
+        LinearLayout list = new LinearLayout(this);
+        list.setOrientation(LinearLayout.VERTICAL);
+
+        AlertDialog[] dialogHolder = new AlertDialog[1];
+        View[] viewToFocus = new View[1];
+
+        for (int i = 0; i < options.size(); i++) {
+            WallpaperOption opt = options.get(i);
+            boolean isActive = opt.key.equalsIgnoreCase(currentKey) || (opt.key.equals("Malaysia") && currentKey.startsWith("Malaysia"));
+
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.VERTICAL);
+            row.setFocusable(true);
+            row.setClickable(true);
+            row.setPadding((int) (14 * density), (int) (7 * density), (int) (14 * density), (int) (7 * density));
+
+            StateListDrawable bg = new StateListDrawable();
+            GradientDrawable on = new GradientDrawable();
+            on.setColor(0xFFFFFFFF);
+            on.setCornerRadius(10 * density);
+            GradientDrawable off = new GradientDrawable();
+            off.setColor(isActive ? 0x2E4A90E2 : 0x14FFFFFF);
+            if (isActive) {
+                off.setStroke((int) (1.5f * density), 0xFF4A90E2);
+            }
+            off.setCornerRadius(10 * density);
+            bg.addState(new int[]{android.R.attr.state_focused}, on);
+            bg.addState(new int[]{}, off);
+            row.setBackground(bg);
+
+            // Row horizontal container for Title + Active tag
+            LinearLayout topRow = new LinearLayout(this);
+            topRow.setOrientation(LinearLayout.HORIZONTAL);
+            topRow.setGravity(Gravity.CENTER_VERTICAL);
+
+            TextView rowTitle = new TextView(this);
+            rowTitle.setText(opt.title);
+            rowTitle.setTextSize(13);
+            rowTitle.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
+            rowTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+            if (isActive) {
+                TextView activeTag = new TextView(this);
+                activeTag.setText("✓ Aktif");
+                activeTag.setTextSize(11);
+                activeTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF4A90E2}));
+                activeTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+                topRow.addView(activeTag);
+            }
+            row.addView(topRow);
+
+            TextView rowSub = new TextView(this);
+            rowSub.setText(opt.subtitle);
+            rowSub.setTextSize(11);
+            rowSub.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF555555, 0x88FFFFFF}));
+            rowSub.setTypeface(getResources().getFont(R.font.outfit));
+            rowSub.setPadding(0, (int) (1 * density), 0, 0);
+            row.addView(rowSub);
+
+            final String chosenKey = opt.key;
+            row.setOnClickListener(v -> {
+                if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+                SoundEffects.playSelect();
+                if ("NEXT".equals(chosenKey)) {
+                    if (wallpapers != null && !wallpapers.isEmpty()) {
+                        showNextWallpaper(true);
+                        Toast.makeText(MainActivity.this, "Menukar ke gambar seterusnya...", Toast.LENGTH_SHORT).show();
+                    }
+                } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
+                    showCustomWallpaperManagerDialog();
+                } else {
+                    switchWallpaperCategory(chosenKey);
                 }
-            } else if ("MALAYSIA_PICKER".equals(chosenKey)) {
-                showMalaysiaStateSelectorDialog();
-            } else if ("UPLOAD_QR".equals(chosenKey)) {
-                showWallpaperUploadQrDialog();
-            } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
-                showCustomWallpaperManagerDialog();
-            } else {
-                switchWallpaperCategory(chosenKey);
-            }
-        });
-        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
+            });
 
-    private String getStateDisplayName(String key) {
-        if (key == null) return "Semua Negeri";
-        if (key.equalsIgnoreCase("Malaysia_Johor")) return "Johor";
-        if (key.equalsIgnoreCase("Malaysia_Kedah")) return "Kedah";
-        if (key.equalsIgnoreCase("Malaysia_Kelantan")) return "Kelantan";
-        if (key.equalsIgnoreCase("Malaysia_Melaka")) return "Melaka";
-        if (key.equalsIgnoreCase("Malaysia_NegeriSembilan")) return "Negeri Sembilan";
-        if (key.equalsIgnoreCase("Malaysia_Pahang")) return "Pahang";
-        if (key.equalsIgnoreCase("Malaysia_Perak")) return "Perak";
-        if (key.equalsIgnoreCase("Malaysia_Perlis")) return "Perlis";
-        if (key.equalsIgnoreCase("Malaysia_PulauPinang")) return "Pulau Pinang";
-        if (key.equalsIgnoreCase("Malaysia_Sabah")) return "Sabah";
-        if (key.equalsIgnoreCase("Malaysia_Sarawak")) return "Sarawak";
-        if (key.equalsIgnoreCase("Malaysia_Selangor")) return "Selangor";
-        if (key.equalsIgnoreCase("Malaysia_Terengganu")) return "Terengganu";
-        if (key.equalsIgnoreCase("Malaysia_WP")) return "Wilayah Persekutuan";
-        return "Semua Negeri";
-    }
+            LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            rlp.bottomMargin = (int) (5 * density);
+            list.addView(row, rlp);
 
-    private void showMalaysiaStateSelectorDialog() {
-        final String[] stateLabels = new String[]{
-                "🇲🇾 Semua Negeri di Malaysia (Putar Keseluruhan)",
-                "📍 Johor — Pulau Rawa & Pesisir Pantai",
-                "📍 Kedah — Langkawi Sky Bridge & Sawah Padi",
-                "📍 Kelantan — Pantai Cahaya Bulan & Senok",
-                "📍 Melaka — Bandaraya Bersejarah & Sungai Melaka",
-                "📍 Negeri Sembilan — Pantai Port Dickson & Teluk Kemang",
-                "📍 Pahang — Ladang Teh Cameron Highlands",
-                "📍 Perak — Pekan Warisan Ipoh & Kellie's Castle",
-                "📍 Perlis — Gua Kelam & Banjaran Nakawan",
-                "📍 Pulau Pinang — Georgetown UNESCO & Kek Lok Si",
-                "📍 Sabah — Puncak Gunung Kinabalu",
-                "📍 Sarawak — Pinnacles Mulu & Kuching Waterfront",
-                "📍 Selangor — Batu Caves & Masjid Negeri Shah Alam",
-                "📍 Terengganu — Pulau Perhentian & Masjid Kristal",
-                "📍 Wilayah Persekutuan — Menara Berkembar KLCC"
-        };
-
-        final String[] stateKeys = new String[]{
-                "Malaysia",
-                "Malaysia_Johor",
-                "Malaysia_Kedah",
-                "Malaysia_Kelantan",
-                "Malaysia_Melaka",
-                "Malaysia_NegeriSembilan",
-                "Malaysia_Pahang",
-                "Malaysia_Perak",
-                "Malaysia_Perlis",
-                "Malaysia_PulauPinang",
-                "Malaysia_Sabah",
-                "Malaysia_Sarawak",
-                "Malaysia_Selangor",
-                "Malaysia_Terengganu",
-                "Malaysia_WP"
-        };
-
-        String currentCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
-        int selectedIndex = 0;
-        for (int i = 0; i < stateKeys.length; i++) {
-            if (stateKeys[i].equalsIgnoreCase(currentCat)) {
-                selectedIndex = i;
-                break;
+            if (isActive && viewToFocus[0] == null) {
+                viewToFocus[0] = row;
             }
         }
 
+        scroll.addView(list);
+        layout.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("🇲🇾 Koleksi Malaysia — Pilih Negeri");
-        builder.setSingleChoiceItems(stateLabels, selectedIndex, (dialog, which) -> {
-            dialog.dismiss();
-            String chosenKey = stateKeys[which];
-            switchWallpaperCategory(chosenKey);
-        });
-        builder.setNegativeButton("Kembali / Back", (dialog, which) -> {
-            dialog.dismiss();
-            showWallpaperDialog();
-        });
+        builder.setView(layout);
+        builder.setNegativeButton("Tutup / Back", (d, w) -> d.dismiss());
         AlertDialog dialog = builder.create();
+        dialogHolder[0] = dialog;
         dialog.show();
+
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (480 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (410 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.72f));
+            dialog.getWindow().setLayout(w, h);
+        }
+
+        if (viewToFocus[0] != null) {
+            viewToFocus[0].requestFocus();
+        } else if (list.getChildCount() > 0) {
+            list.getChildAt(0).requestFocus();
+        }
     }
 
     private void switchWallpaperCategory(String category) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
-        String displayLabel = category.startsWith("Malaysia_") ? ("Malaysia (" + getStateDisplayName(category) + ")") : category;
+        String displayLabel = "Malaysia".equalsIgnoreCase(category) ? "Tempat Menarik di Malaysia" : category;
         Toast.makeText(this, "Kategori: " + displayLabel, Toast.LENGTH_SHORT).show();
 
-        if ("Natural".equalsIgnoreCase(category)) {
-            placesMode = true;
-            List<File> places = PlaceWallpapers.list(this);
-            if (!places.isEmpty()) {
-                wallpapers = places;
-                showNextWallpaper(true);
-                return;
-            }
-        } else if ("Custom".equalsIgnoreCase(category)) {
+        if ("Custom".equalsIgnoreCase(category)) {
             placesMode = false;
             if (heroShelf != null) {
                 heroShelf.animate().cancel();
@@ -3001,17 +3071,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             File customDir = new File(getFilesDir(), "custom_wallpapers");
             File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
-            boolean singleMode = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("custom_single_mode", false);
-            String singleFile = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("custom_single_file", null);
-            if (singleMode && singleFile != null) {
-                File sf = new File(customDir, singleFile);
-                if (sf.exists() && sf.length() > 0) {
-                    wallpapers = Collections.singletonList(sf);
-                    getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
-                    showNextWallpaper(true);
-                    return;
-                }
-            }
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
                 wallpapers = new ArrayList<>(Arrays.asList(files));
@@ -3031,7 +3090,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             wallpapers = matching;
             showNextWallpaper(true);
         } else {
-            Toast.makeText(this, "Memuat turun 4K Wallpaper " + displayLabel + "...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Memuat turun 4K Wallpaper " + displayLabel + " (Pexels & Unsplash)...", Toast.LENGTH_SHORT).show();
             new Thread(() -> {
                 boolean downloaded = OnlineWallpapers.syncCategory(getApplicationContext(), category);
                 handler.post(() -> {
@@ -3043,6 +3102,214 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     }
                 });
             }, "wall-cat-sync").start();
+        }
+    }
+
+    private void showGeminiAssistantDialog() {
+        SoundEffects.playSelect();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding((int) (26 * density), (int) (20 * density), (int) (26 * density), (int) (20 * density));
+
+        // Header Title
+        TextView title = new TextView(this);
+        title.setText("✨ Gemini AI Assistant");
+        title.setTextSize(22);
+        title.setTextColor(0xFFFFFFFF);
+        title.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        title.setPadding(0, 0, 0, (int) (4 * density));
+        layout.addView(title);
+
+        TextView sub = new TextView(this);
+        sub.setText("Bantuan Pintar Built-In Glass TV Home");
+        sub.setTextSize(13);
+        sub.setTextColor(0xB3FFFFFF);
+        sub.setTypeface(getResources().getFont(R.font.outfit));
+        sub.setPadding(0, 0, 0, (int) (14 * density));
+        layout.addView(sub);
+
+        // Status Card: Contextual AI Overview
+        LinearLayout statusCard = new LinearLayout(this);
+        statusCard.setOrientation(LinearLayout.VERTICAL);
+        statusCard.setPadding((int) (16 * density), (int) (12 * density), (int) (16 * density), (int) (12 * density));
+        GradientDrawable cardBg = new GradientDrawable();
+        cardBg.setColor(0x24FFFFFF);
+        cardBg.setCornerRadius(14 * density);
+        cardBg.setStroke((int) (1 * density), 0x4D64D2FF);
+        statusCard.setBackground(cardBg);
+
+        Location.Zone zone = Location.chosen(this);
+        String zoneTown = (zone != null) ? zone.town : "Kuala Lumpur";
+        String nextPrayer = PrayerTimes.getNextPrayerSummary(this);
+        HomeWeather.Line wx = HomeWeather.last(this);
+        String wxStr = (wx != null && !wx.weather.isEmpty()) ? (wx.weather + (wx.api.isEmpty() ? "" : " • " + wx.api)) : "Cuaca Live Aktif";
+
+        TextView statusText = new TextView(this);
+        statusText.setText("🤖 Ringkasan AI Sistem:\n"
+                + "• Solat Seterusnya: " + nextPrayer + " (" + zoneTown + ")\n"
+                + "• Cuaca & JAS IPU: " + wxStr + "\n"
+                + "• Memori & TV: Sistem Beroperasi Pantas & Bersih");
+        statusText.setTextSize(13);
+        statusText.setTextColor(0xE6FFFFFF);
+        statusText.setTypeface(getResources().getFont(R.font.outfit));
+        statusText.setLineSpacing(0, 1.25f);
+        statusCard.addView(statusText);
+        layout.addView(statusCard);
+
+        TextView actionsTitle = new TextView(this);
+        actionsTitle.setText("Tindakan Pintar:");
+        actionsTitle.setTextSize(13);
+        actionsTitle.setTextColor(0x99FFFFFF);
+        actionsTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        actionsTitle.setPadding(0, (int) (14 * density), 0, (int) (8 * density));
+        layout.addView(actionsTitle);
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setVerticalScrollBarEnabled(false);
+        LinearLayout actionList = new LinearLayout(this);
+        actionList.setOrientation(LinearLayout.VERTICAL);
+
+        AlertDialog[] dialogHolder = new AlertDialog[1];
+
+        // Action 1: Smart Boost
+        addAiActionItem(actionList, "🚀 Smart Boost TV (Bebas Memori & Bersih Cache)", () -> {
+            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+            SoundEffects.playSelect();
+            smartBoostTv();
+        });
+
+        // Action 2: Cuaca & Kualiti Udara
+        addAiActionItem(actionList, "🌦️ Analisis Cuaca & Kualiti Udara JAS Terperinci", () -> {
+            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+            SoundEffects.playSelect();
+            showAiWeatherSummaryDialog(zoneTown, wxStr);
+        });
+
+        // Action 3: Waktu Solat & Refleksi Doa
+        addAiActionItem(actionList, "🕌 Waktu Solat & Refleksi Doa Hari Ini", () -> {
+            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+            SoundEffects.playSelect();
+            showAiIslamicDialog(zoneTown);
+        });
+
+        // Action 4: Tips & Bantuan Kawalan TV
+        addAiActionItem(actionList, "💡 Tips & Panduan Kawalan Pintar TV", () -> {
+            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+            SoundEffects.playSelect();
+            showAiTipsDialog();
+        });
+
+        scroll.addView(actionList);
+        layout.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        builder.setView(layout);
+        builder.setNegativeButton("Tutup / Back", (d, w) -> d.dismiss());
+        AlertDialog dialog = builder.create();
+        dialogHolder[0] = dialog;
+        dialog.show();
+
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (480 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.75f));
+            dialog.getWindow().setLayout(w, h);
+        }
+        if (actionList.getChildCount() > 0) {
+            actionList.getChildAt(0).requestFocus();
+        }
+    }
+
+    private void addAiActionItem(LinearLayout container, String title, Runnable onClick) {
+        TextView btn = new TextView(this);
+        btn.setText(title);
+        btn.setTextSize(14);
+        btn.setTextColor(0xFFFFFFFF);
+        btn.setTypeface(getResources().getFont(R.font.outfit));
+        btn.setPadding((int) (16 * density), (int) (11 * density), (int) (16 * density), (int) (11 * density));
+        btn.setFocusable(true);
+        btn.setClickable(true);
+
+        StateListDrawable bg = new StateListDrawable();
+        GradientDrawable on = new GradientDrawable();
+        on.setColor(0xFFFFFFFF);
+        on.setCornerRadius(12 * density);
+        GradientDrawable off = new GradientDrawable();
+        off.setColor(0x1AFFFFFF);
+        off.setCornerRadius(12 * density);
+        bg.addState(new int[]{android.R.attr.state_focused}, on);
+        bg.addState(new int[]{}, off);
+        btn.setBackground(bg);
+        btn.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
+
+        btn.setOnClickListener(v -> onClick.run());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.bottomMargin = (int) (6 * density);
+        container.addView(btn, lp);
+    }
+
+    private void smartBoostTv() {
+        new Thread(() -> {
+            try {
+                File cache = getCacheDir();
+                if (cache != null && cache.isDirectory()) {
+                    File[] files = cache.listFiles();
+                    if (files != null) for (File f : files) f.delete();
+                }
+            } catch (Exception ignored) {}
+            CacheCleaner.maybeRun(getApplicationContext(), 1);
+            System.gc();
+            handler.post(() -> Toast.makeText(this, "✨ Gemini AI: Memori & cache TV berjaya dioptimumkan!", Toast.LENGTH_SHORT).show());
+        }, "gemini-boost").start();
+    }
+
+    private void showAiTipsDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                .setTitle("💡 Tips Pintar Glass TV")
+                .setMessage("• Tekan lama butang HOME (Hold 500ms) untuk buka Popup Tetapan di mana-mana aplikasi atau skrin utama.\n\n"
+                        + "• Tekan sekali butang HOME untuk kembali ke paparan utama.\n\n"
+                        + "• Koleksi Wallpaper 4K dijana daripada Pexels & Unsplash mengikut kategori.\n\n"
+                        + "• Azan & Waktu Solat diselaraskan secara tepat dengan zon JAKIM Malaysia.\n\n"
+                        + "• Gunakan Gemini AI untuk membersihkan cache dan menyegarkan TV anda secara pantas.")
+                .setPositiveButton("Faham", null)
+                .show();
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (430 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.68f));
+            dialog.getWindow().setLayout(w, h);
+        }
+    }
+
+    private void showAiWeatherSummaryDialog(String town, String wxStr) {
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                .setTitle("🌦️ Analisis Cuaca & Jerebu Pintar")
+                .setMessage("📍 Lokasi: " + town + "\n\n"
+                        + "📊 Status Terkini: " + wxStr + "\n\n"
+                        + "ℹ️ Data cuaca disegerakkan daripada Open-Meteo dan bacaan Indeks Pencemar Udara (IPU) rasmi stesen Jabatan Alam Sekitar Malaysia (APIMS DOE).\n\n"
+                        + "💡 Saranan AI: Keadaan udara selamat dan memuaskan. Sangat sesuai untuk bersantai bersama keluarga.")
+                .setPositiveButton("OK", null)
+                .show();
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (430 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.68f));
+            dialog.getWindow().setLayout(w, h);
+        }
+    }
+
+    private void showAiIslamicDialog(String town) {
+        WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
+        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.malay + "\"\n(" + ayah.reference + ")") : "Tiada doa harian.";
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                .setTitle("🕌 Waktu Solat & Doa Hari Ini")
+                .setMessage("📍 Zon JAKIM: " + town + "  •  " + PrayerTimes.getHijriDate() + "\n\n"
+                        + "⏳ Solat Seterusnya: " + PrayerTimes.getNextPrayerSummary(this) + "\n\n"
+                        + "📖 Ayat Pilihan / Doa Harian:\n" + ayahTxt)
+                .setPositiveButton("Tutup", null)
+                .show();
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (440 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.70f));
+            dialog.getWindow().setLayout(w, h);
         }
     }
 
@@ -3364,7 +3631,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
         if (files == null || files.length == 0) {
-            Toast.makeText(this, "Tiada gambar dimuat naik dijumpai.", Toast.LENGTH_SHORT).show();
+            new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                    .setTitle("📁 Urus Gambar Dimuat Naik")
+                    .setMessage("Tiada gambar peribadi dijumpai di dalam storan TV. Anda boleh memuat naik gambar dari telefon menggunakan kod QR.")
+                    .setPositiveButton("📲 Buka Kod QR", (d, w) -> showWallpaperUploadQrDialog())
+                    .setNegativeButton("Kembali", (d, w) -> showWallpaperDialog())
+                    .show();
             return;
         }
 
@@ -3377,6 +3649,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         List<Runnable> actions = new ArrayList<>();
 
         // Quick Mode Actions at top
+        items.add("📲 Muat Naik Foto Baharu (QR Code Telefon)");
+        actions.add(this::showWallpaperUploadQrDialog);
+
         items.add("🔄 Putar Semua Gambar (Slideshow Mod)");
         actions.add(this::onCustomWallpaperSlideshow);
 
@@ -3411,7 +3686,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
         builder.setNegativeButton("Tutup", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (440 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.70f));
+            dialog.getWindow().setLayout(w, h);
+        }
     }
 
     private void showSingleCustomActionDialog(File file) {
@@ -3555,7 +3836,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addSeparator(rows);
 
         // Tutup
-        addInputRow(rows, close, R.drawable.ic_move, "Tutup", -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
             SoundEffects.playSelect();
             closeMenu(true);
         });

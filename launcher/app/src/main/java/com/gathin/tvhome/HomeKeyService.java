@@ -25,10 +25,6 @@ public class HomeKeyService extends AccessibilityService {
 
     private static final String TAG = "TvHome.HomeKey";
     private static HomeKeyService instance;
-    private static final long DOUBLE_HOME_INTERVAL_MS = 400;
-
-    private long lastHomePressTime = 0;
-    private Runnable singleHomeRunnable = null;
     private final Handler homeHandler = new Handler(Looper.getMainLooper());
 
     private String targetForceStopPackage = null;
@@ -288,6 +284,32 @@ public class HomeKeyService extends AccessibilityService {
         }
     }
 
+    private boolean isHomeLongPressed = false;
+    private final Runnable longPressHomeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            isHomeLongPressed = true;
+            Log.i(TAG, "Hold Home button detected -> Opening Settings Popup globally");
+            openSettingsPopupGlobal();
+        }
+    };
+
+    public static void openSettingsPopupGlobal() {
+        if (instance == null) return;
+        if (MainActivity.isForeground()) {
+            MainActivity.openSettingsFromGlobal();
+        } else {
+            Intent intent = new Intent(instance, MainActivity.class)
+                    .putExtra("open_settings", true)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            try {
+                instance.startActivity(intent);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to launch MainActivity for settings", e);
+            }
+        }
+    }
+
     private boolean isSettingsKey(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;
         for (int code : settingsScancodes) if (event.getScanCode() == code) return true;
@@ -305,58 +327,47 @@ public class HomeKeyService extends AccessibilityService {
 
         int keyCode = event.getKeyCode();
         if (keyCode == KeyEvent.KEYCODE_APP_SWITCH) {
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                Intent recent = new Intent(this, RecentAppsActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(recent);
+            return true; // Live apps disabled per request
+        }
+
+        if (keyCode != KeyEvent.KEYCODE_ALL_APPS && keyCode != KeyEvent.KEYCODE_HOME) return false;
+
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (event.isLongPress() || (event.getFlags() & KeyEvent.FLAG_LONG_PRESS) != 0 || event.getRepeatCount() > 0) {
+                if (!isHomeLongPressed) {
+                    isHomeLongPressed = true;
+                    homeHandler.removeCallbacks(longPressHomeRunnable);
+                    openSettingsPopupGlobal();
+                }
+                return true;
+            }
+            if (event.getRepeatCount() == 0) {
+                isHomeLongPressed = false;
+                homeHandler.removeCallbacks(longPressHomeRunnable);
+                homeHandler.postDelayed(longPressHomeRunnable, 450);
             }
             return true;
         }
 
-        if (keyCode != KeyEvent.KEYCODE_ALL_APPS && keyCode != KeyEvent.KEYCODE_HOME) return false;
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-            long now = SystemClock.uptimeMillis();
-            if (now - lastHomePressTime < DOUBLE_HOME_INTERVAL_MS) {
-                // Double press detected!
-                lastHomePressTime = 0;
-                if (singleHomeRunnable != null) {
-                    homeHandler.removeCallbacks(singleHomeRunnable);
-                    singleHomeRunnable = null;
-                }
-
-                if (RecentAppsActivity.isForeground()) {
-                    // Double press Home while in Recent Apps -> Close All!
-                    Log.i(TAG, "Double press Home in Recent Apps -> Trigger Close All");
-                    RecentAppsActivity.triggerCloseAllFromGlobal();
-                } else {
-                    // Double press Home on Home Screen -> Open Recent Apps!
-                    Log.i(TAG, "Double press Home on Home Screen -> Open Recent Apps");
-                    Intent recent = new Intent(this, RecentAppsActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(recent);
-                }
-                return true;
-            } else {
-                lastHomePressTime = now;
-                singleHomeRunnable = () -> {
-                    singleHomeRunnable = null;
-                    if (RecentAppsActivity.isForeground()) {
-                        // Single Home in Recent Apps -> Dismiss and return to Home
-                        RecentAppsActivity.dismissFromGlobal();
-                    } else {
-                        // Single Home outside -> Go to Home
-                        Intent home = new Intent(Intent.ACTION_MAIN)
-                                .addCategory(Intent.CATEGORY_HOME)
-                                .setPackage(getPackageName())
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                        try {
-                            startActivity(home);
-                        } catch (Exception ignored) {}
-                    }
-                };
-                homeHandler.postDelayed(singleHomeRunnable, DOUBLE_HOME_INTERVAL_MS);
+            homeHandler.removeCallbacks(longPressHomeRunnable);
+            if (isHomeLongPressed) {
+                isHomeLongPressed = false;
                 return true;
             }
+            // Single Home press: return to Home
+            if (RecentAppsActivity.isForeground()) {
+                RecentAppsActivity.dismissFromGlobal();
+            } else {
+                Intent home = new Intent(Intent.ACTION_MAIN)
+                        .addCategory(Intent.CATEGORY_HOME)
+                        .setPackage(getPackageName())
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                try {
+                    startActivity(home);
+                } catch (Exception ignored) {}
+            }
+            return true;
         }
         return true;
     }
