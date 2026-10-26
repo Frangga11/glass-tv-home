@@ -77,7 +77,57 @@ public class WeatherActivity extends Activity {
     }
 
     private void showLocationPickerDialog() {
-        final List<AppLocationManager.Station> stations = AppLocationManager.getPresetStations();
+        String activeRegion = AppLocationManager.getActiveRegion(this);
+        CharSequence[] topOptions = new CharSequence[]{
+                "📍 Pilih Bandar / Stesen (" + activeRegion + ")",
+                "🌏 Tukar Negara / Region Asia (Default: Malaysia)"
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("🌏 Lokasi & Cuaca Asia");
+        builder.setItems(topOptions, (dialog, which) -> {
+            dialog.dismiss();
+            if (which == 0) {
+                showStationListDialog(activeRegion);
+            } else {
+                showAsiaCountryDialog();
+            }
+        });
+        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
+    }
+
+    private void showAsiaCountryDialog() {
+        final List<String> regions = AppLocationManager.getAvailableRegions();
+        String activeRegion = AppLocationManager.getActiveRegion(this);
+        int selectedIndex = 0;
+        CharSequence[] items = new CharSequence[regions.size()];
+        for (int i = 0; i < regions.size(); i++) {
+            String r = regions.get(i);
+            items[i] = r;
+            if (r.equalsIgnoreCase(activeRegion)) {
+                selectedIndex = i;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        builder.setTitle("🌏 Pilih Negara / Region Asia");
+        builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
+            dialog.dismiss();
+            String chosenRegion = regions.get(which);
+            AppLocationManager.setActiveRegion(WeatherActivity.this, chosenRegion);
+            Toast.makeText(WeatherActivity.this, "Region dipilih: " + chosenRegion, Toast.LENGTH_SHORT).show();
+            showStationListDialog(chosenRegion);
+        });
+        builder.setNegativeButton("Kembali", (dialog, which) -> {
+            dialog.dismiss();
+            showLocationPickerDialog();
+        });
+        builder.create().show();
+    }
+
+    private void showStationListDialog(String region) {
+        final List<AppLocationManager.Station> stations = AppLocationManager.getStationsForRegion(region);
         String currentId = AppLocationManager.getStationId(this);
         int selectedIndex = 0;
         CharSequence[] items = new CharSequence[stations.size()];
@@ -90,19 +140,21 @@ public class WeatherActivity extends Activity {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("📍 Pilih Stesen Jerebu JAS / Location");
+        builder.setTitle("📍 Pilih Bandar / Stesen (" + region + ")");
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             AppLocationManager.Station chosen = stations.get(which);
             AppLocationManager.setStation(WeatherActivity.this, chosen);
             dialog.dismiss();
-            Toast.makeText(WeatherActivity.this, "Stesen ditukar kepada: " + chosen.name, Toast.LENGTH_SHORT).show();
+            Toast.makeText(WeatherActivity.this, "Lokasi: " + chosen.name + " (" + chosen.country + ")", Toast.LENGTH_SHORT).show();
             populateUi();
             // Sync in background to update readings immediately
             WeatherAirQuality.sync(WeatherActivity.this, () -> runOnUiThread(WeatherActivity.this::populateUi));
         });
-        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        builder.setNegativeButton("Kembali", (dialog, which) -> {
+            dialog.dismiss();
+            showLocationPickerDialog();
+        });
+        builder.create().show();
     }
 
     private void populateUi() {

@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_glass_dialog"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp"
+    android:paddingTop="24dp"
+    android:paddingBottom="24dp"
+    android:elevation="18dp">
+
+    <!-- Top Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/headerIcon"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/ic_music"
+            android:tint="#1DB954" />
+
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:text="NOW PLAYING"
+            android:textColor="#FFFFFFFF"
+            android:textSize="15sp"
+            android:fontFamily="@font/outfit"
+            android:fontVariationSettings="'wght' 600"
+            android:letterSpacing="0.06" />
+
+        <TextView
+            android:id="@+id/badgeSource"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:background="@drawable/bg_dialog_btn"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:gravity="center"
+            android:text="SPOTIFY"
+            android:textColor="#1DB954"
+            android:textSize="12sp"
+            android:fontFamily="@font/outfit"
+            android:fontVariationSettings="'wght' 600"
+            android:letterSpacing="0.04" />
+    </LinearLayout>
+
+    <!-- Active Media Card (Frosted Glass Inset) -->
+    <LinearLayout
+        android:id="@+id/cardNowPlaying"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:background="@drawable/glass_panel"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <FrameLayout
+            android:layout_width="84dp"
+            android:layout_height="84dp">
+
+            <ImageView
+                android:id="@+id/imgAlbumArt"
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:background="@drawable/bg_media_app_pill"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_music"
+                android:padding="12dp" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="18dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtTrackTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tiada Lagu Dimainkan"
+                android:textColor="#FFFFFFFF"
+                android:textSize="20sp"
+                android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 600"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever" />
+
+            <TextView
+                android:id="@+id/txtTrackArtist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Buka Spotify atau YouTube Music untuk mula mendengar"
+                android:textColor="#B3FFFFFF"
+                android:textSize="14sp"
+                android:fontFamily="@font/outfit"
+                android:singleLine="true"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/txtPlaybackStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="⏸ Pause"
+                android:textColor="#FFC107"
+                android:textSize="12sp"
+                android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 500" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Playback Control Actions Row -->
+    <LinearLayout
+        android:id="@+id/layoutActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/btnPlayPause"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            android:background="@drawable/bg_dialog_btn"
+            android:textColor="@drawable/dialog_btn_text"
+            android:drawableTint="@drawable/dialog_btn_text"
+            android:drawableStart="@drawable/ic_pause"
+            android:drawablePadding="8dp"
+            android:textSize="15sp"
+            android:fontFamily="@font/outfit"
+            android:fontVariationSettings="'wght' 500"
+            android:focusable="true"
+            android:clickable="true"
+            android:text="Pause"
+            android:nextFocusLeft="@+id/btnPlayPause"
+            android:nextFocusRight="@+id/btnOpenApp"
+            android:nextFocusDown="@+id/tileSpotify" />
+
+        <TextView
+            android:id="@+id/btnOpenApp"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginStart="10dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            android:background="@drawable/bg_dialog_btn"
+            android:textColor="@drawable/dialog_btn_text"
+            android:drawableTint="@drawable/dialog_btn_text"
+            android:textSize="15sp"
+            android:fontFamily="@font/outfit"
+            android:fontVariationSettings="'wght' 500"
+            android:focusable="true"
+            android:clickable="true"
+            android:text="Buka Spotify"
+            android:nextFocusLeft="@+id/btnPlayPause"
+            android:nextFocusRight="@+id/btnCloseDialog"
+            android:nextFocusDown="@+id/tileSpotify" />
+
+        <TextView
+            android:id="@+id/btnCloseDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginStart="10dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center"
+            android:background="@drawable/bg_dialog_btn"
+            android:textColor="@drawable/dialog_btn_text"
+            android:drawableTint="@drawable/dialog_btn_text"
+            android:textSize="15sp"
+            android:fontFamily="@font/outfit"
+            android:fontVariationSettings="'wght' 500"
+            android:focusable="true"
+            android:clickable="true"
+            android:text="Tutup"
+            android:nextFocusLeft="@+id/btnOpenApp"
+            android:nextFocusRight="@+id/btnCloseDialog"
+            android:nextFocusDown="@+id/tileSpotify" />
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="12dp"
+        android:background="#24FFFFFF" />
+
+    <!-- Apps Header -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="APLIKASI MUZIK &amp; MEDIA"
+        android:textColor="#80FFFFFF"
+        android:textSize="11sp"
+        android:fontFamily="@font/outfit"
+        android:fontVariationSettings="'wght' 600"
+        android:letterSpacing="0.06" />
+
+    <!-- Quick Media Apps Grid Row -->
+    <LinearLayout
+        android:id="@+id/quickAppsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- Spotify -->
+        <LinearLayout
+            android:id="@+id/tileSpotify"
+            android:layout_width="0dp"
+            android:layout_height="76dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_media_app_pill"
+            android:focusable="true"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:nextFocusUp="@+id/btnPlayPause"
+            android:nextFocusLeft="@+id/tileSpotify"
+            android:nextFocusRight="@+id/tileYoutube">
+
+            <ImageView
+                android:id="@+id/iconSpotify"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/ic_music" />
+
+            <TextView
+                android:id="@+id/lblSpotify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Spotify"
+                android:textColor="@drawable/dialog_btn_text"
+                android:textSize="11sp"
+                android:fontFamily="@font/outfit"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- YouTube -->
+        <LinearLayout
+            android:id="@+id/tileYoutube"
+            android:layout_width="0dp"
+            android:layout_height="76dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_media_app_pill"
+            android:focusable="true"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:nextFocusUp="@+id/btnPlayPause"
+            android:nextFocusLeft="@+id/tileSpotify"
+            android:nextFocusRight="@+id/tileNuvio">
+
+            <ImageView
+                android:id="@+id/iconYoutube"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/ic_play" />
+
+            <TextView
+                android:id="@+id/lblYoutube"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="YouTube"
+                android:textColor="@drawable/dialog_btn_text"
+                android:textSize="11sp"
+                android:fontFamily="@font/outfit"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- Nuvio -->
+        <LinearLayout
+            android:id="@+id/tileNuvio"
+            android:layout_width="0dp"
+            android:layout_height="76dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_media_app_pill"
+            android:focusable="true"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:nextFocusUp="@+id/btnOpenApp"
+            android:nextFocusLeft="@+id/tileYoutube"
+            android:nextFocusRight="@+id/tileReezn">
+
+            <ImageView
+                android:id="@+id/iconNuvio"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/ic_livetv" />
+
+            <TextView
+                android:id="@+id/lblNuvio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Nuvio"
+                android:textColor="@drawable/dialog_btn_text"
+                android:textSize="11sp"
+                android:fontFamily="@font/outfit"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- Reezn -->
+        <LinearLayout
+            android:id="@+id/tileReezn"
+            android:layout_width="0dp"
+            android:layout_height="76dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_media_app_pill"
+            android:focusable="true"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:nextFocusUp="@+id/btnOpenApp"
+            android:nextFocusLeft="@+id/tileNuvio"
+            android:nextFocusRight="@+id/tilePptv">
+
+            <ImageView
+                android:id="@+id/iconReezn"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/ic_play" />
+
+            <TextView
+                android:id="@+id/lblReezn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Reezn"
+                android:textColor="@drawable/dialog_btn_text"
+                android:textSize="11sp"
+                android:fontFamily="@font/outfit"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- Perfect TV -->
+        <LinearLayout
+            android:id="@+id/tilePptv"
+            android:layout_width="0dp"
+            android:layout_height="76dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_media_app_pill"
+            android:focusable="true"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:nextFocusUp="@+id/btnCloseDialog"
+            android:nextFocusLeft="@+id/tileReezn"
+            android:nextFocusRight="@+id/tileVlc">
+
+            <ImageView
+                android:id="@+id/iconPptv"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/ic_livetv" />
+
+            <TextView
+                android:id="@+id/lblPptv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Perfect TV"
+                android:textColor="@drawable/dialog_btn_text"
+                android:textSize="11sp"
+                android:fontFamily="@font/outfit"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- VLC -->
+        <LinearLayout
+            android:id="@+id/tileVlc"
+            android:layout_width="0dp"
+            android:layout_height="76dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_media_app_pill"
+            android:focusable="true"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:nextFocusUp="@+id/btnCloseDialog"
+            android:nextFocusLeft="@+id/tilePptv"
+            android:nextFocusRight="@+id/tileVlc">
+
+            <ImageView
+                android:id="@+id/iconVlc"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/ic_play" />
+
+            <TextView
+                android:id="@+id/lblVlc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="VLC"
+                android:textColor="@drawable/dialog_btn_text"
+                android:textSize="11sp"
+                android:fontFamily="@font/outfit"
+                android:singleLine="true" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
