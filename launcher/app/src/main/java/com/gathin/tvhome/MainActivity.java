@@ -175,6 +175,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private View btnInputs;
     private TextView btnWifi;
     private View btnGemini;
+    private View btnCandyBox;
     private TextView ampmView, dateView;
     private TextView shamsiDate;
     private TextView prayerTimesView;
@@ -633,7 +634,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         // The grid only shows the shape on the tray.
         glider.addCompanion(grid, tray.area);
-        for (int id : new int[]{R.id.btnInputs, R.id.btnWifi, R.id.btnGemini, R.id.btnSettings}) {
+        for (int id : new int[]{R.id.btnInputs, R.id.btnWifi, R.id.btnGemini, R.id.btnCandyBox, R.id.btnSettings}) {
             View pill = findViewById(id);
             if (pill == null) continue;
             float radius = 21f * density;
@@ -717,6 +718,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         btnInputs = findViewById(R.id.btnInputs);
         btnGemini = findViewById(R.id.btnGemini);
+        btnCandyBox = findViewById(R.id.btnCandyBox);
         View btnSettings = findViewById(R.id.btnSettings);
         if (btnInputs != null) btnInputs.setOnClickListener(v -> showInputs());
         if (btnWifi != null) {
@@ -728,6 +730,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (btnGemini != null) {
             btnGemini.setOnClickListener(v -> showGeminiAssistantDialog());
+        }
+        if (btnCandyBox != null) {
+            btnCandyBox.setOnClickListener(v -> showCandyBoxPopup());
         }
         if (btnSettings != null) {
             btnSettings.setOnClickListener(v -> showSettingsPopup());
@@ -753,12 +758,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (v.getId() == R.id.btnSettings) {
+                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
+                        btnCandyBox.requestFocus();
+                        return true;
+                    }
                     if (btnGemini != null && btnGemini.getVisibility() == View.VISIBLE) {
                         btnGemini.requestFocus();
                         return true;
                     }
                     if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
                         btnWifi.requestFocus();
+                        return true;
+                    }
+                }
+                if (v.getId() == R.id.btnCandyBox) {
+                    if (btnGemini != null && btnGemini.getVisibility() == View.VISIBLE) {
+                        btnGemini.requestFocus();
+                        return true;
+                    }
+                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
+                        btnWifi.requestFocus();
+                        return true;
+                    }
+                    if (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) {
+                        btnInputs.requestFocus();
                         return true;
                     }
                 }
@@ -791,12 +814,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         btnGemini.requestFocus();
                         return true;
                     }
+                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
+                        btnCandyBox.requestFocus();
+                        return true;
+                    }
                     if (btnSettings != null) {
                         btnSettings.requestFocus();
                         return true;
                     }
                 }
                 if (v.getId() == R.id.btnGemini) {
+                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
+                        btnCandyBox.requestFocus();
+                        return true;
+                    }
+                    if (btnSettings != null) {
+                        btnSettings.requestFocus();
+                        return true;
+                    }
+                }
+                if (v.getId() == R.id.btnCandyBox) {
                     if (btnSettings != null) {
                         btnSettings.requestFocus();
                         return true;
@@ -809,6 +846,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (btnInputs != null) btnInputs.setOnKeyListener(pillKeys);
         if (btnWifi != null) btnWifi.setOnKeyListener(pillKeys);
         if (btnGemini != null) btnGemini.setOnKeyListener(pillKeys);
+        if (btnCandyBox != null) btnCandyBox.setOnKeyListener(pillKeys);
         if (btnSettings != null) btnSettings.setOnKeyListener(pillKeys);
 
         // Hide the glass when focus leaves the tiles.
@@ -841,6 +879,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             handler.postDelayed(() -> {
                 if (screensaverActive) dismissScreensaver();
                 showSettingsPopup();
+            }, 100);
+        }
+        if (getIntent() != null && getIntent().getBooleanExtra("open_candy_box", false)) {
+            handler.postDelayed(() -> {
+                if (screensaverActive) dismissScreensaver();
+                showCandyBoxPopup();
             }, 100);
         }
         if (getIntent() != null && getIntent().getBooleanExtra("open_wallpaper", false)) {
@@ -1033,6 +1077,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (intent != null && intent.getBooleanExtra("open_settings", false)) {
             if (screensaverActive) dismissScreensaver();
             showSettingsPopup();
+            return;
+        }
+        if (intent != null && intent.getBooleanExtra("open_candy_box", false)) {
+            if (screensaverActive) dismissScreensaver();
+            showCandyBoxPopup();
             return;
         }
         if (intent != null && intent.getBooleanExtra("open_wallpaper", false)) {
@@ -1522,7 +1571,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private boolean isTopPill(View v) {
         int id = v.getId();
-        return id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnGemini || id == R.id.btnSettings;
+        return id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnGemini || id == R.id.btnCandyBox || id == R.id.btnSettings;
     }
 
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
@@ -2412,7 +2461,96 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         showMenu(panel, rows, anchor, width, false);
     }
 
-    /** Shows an Apple TV-style frosted glass Settings dropdown menu. */
+    /** Shows an Apple TV-style frosted glass Candy Box dropdown menu containing all launcher customizations & tools. */
+    private void showCandyBoxPopup() {
+        if (openMenu != null) return;
+        SoundEffects.playSelect();
+        View anchor = btnCandyBox != null ? btnCandyBox : findViewById(R.id.btnSettings);
+        if (anchor == null) return;
+        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        Runnable close = () -> closeMenu(false);
+
+        // Row 1: Wallpaper
+        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper 4K", -1, () -> {
+            SoundEffects.playSelect();
+            showWallpaperDialog();
+        });
+
+        // Row 2: Gemini AI Assistant
+        addInputRow(rows, close, R.drawable.ic_gemini, "Gemini AI Assistant", -1, () -> {
+            SoundEffects.playSelect();
+            showGeminiAssistantDialog();
+        });
+
+        // Row 3: Location (Waktu Solat & Cuaca)
+        Location.Zone chosenZone = Location.chosen(this);
+        String zoneName = (chosenZone != null) ? (chosenZone.state + " - " + chosenZone.town) : "W.P. Kuala Lumpur";
+        addInputRow(rows, close, R.drawable.ic_location, "Location: " + zoneName, -1, () -> {
+            SoundEffects.playSelect();
+            startActivity(new Intent(this, LocationActivity.class));
+        });
+
+        // Row 4: Popup Azan UI Test
+        addInputRow(rows, close, R.drawable.ic_azan, "🔔 Uji Popup Azan", -1, () -> {
+            SoundEffects.playSelect();
+            Intent azanIntent = new Intent(this, AzanActivity.class);
+            azanIntent.putExtra("prayer", 4);
+            startActivity(azanIntent);
+        });
+
+        // Row 5: Doa Harian / Ayat Pilihan
+        boolean ayahShown = WeeklyAyah.shown(this);
+        addInputRow(rows, close, R.drawable.ic_doa, "Doa Harian: " + (ayahShown ? "ON" : "OFF"), -1, () -> {
+            SoundEffects.playSelect();
+            WeeklyAyah.setShown(this, !ayahShown);
+            showAyah(WeeklyAyah.last(this));
+            if (!ayahShown) updateAyah();
+        });
+
+        // Row 6: Sound Effects
+        String currentSoundTheme = SoundEffects.getActiveTheme(this);
+        String soundLabel = "Sound: " + SoundEffects.getThemeDisplayName(currentSoundTheme);
+        addInputRow(rows, close, R.drawable.ic_sound, soundLabel, -1, () -> {
+            SoundEffects.playSelect();
+            showSoundEffectsDialog();
+        });
+
+        // Row 7: Auto-Update (OTA)
+        boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
+        String updateLabel = "Auto-Update: " + (isAuto ? "ON (" + AppUpdateManager.getAutoUpdateTime(this) + ")" : "OFF");
+        addInputRow(rows, close, R.drawable.ic_update, updateLabel, -1, () -> {
+            SoundEffects.playSelect();
+            showAutoUpdateDialog();
+        });
+
+        // Row 8: Nightstand / Screensaver
+        addInputRow(rows, close, R.drawable.ic_weather_sun, "Nightstand Screensaver", -1, () -> {
+            SoundEffects.playSelect();
+            showNightstandScreensaver();
+        });
+
+        // Row 9: Smart Boost TV / Bersih Cache
+        addInputRow(rows, close, R.drawable.ic_trash, "Bersihkan Cache TV", -1, () -> {
+            SoundEffects.playSelect();
+            smartBoostTv();
+        });
+
+        addSeparator(rows);
+
+        // Row 10: Tutup
+        addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
+            SoundEffects.playSelect();
+            closeMenu(true);
+        });
+
+        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int width = Math.max((int) (230 * density), panel.getMeasuredWidth());
+
+        showMenu(panel, rows, anchor, width, false);
+    }
+
+    /** Shows an Apple TV-style frosted glass Settings dropdown menu (Restart, Turn Off, All Settings). */
     private void showSettingsPopup() {
         if (openMenu != null) return;
         SoundEffects.playSelect();
@@ -2422,68 +2560,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         LinearLayout rows = panel.findViewById(R.id.rows);
         Runnable close = () -> closeMenu(false);
 
-        // Row 1: Wallpaper
-        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper", -1, () -> {
-            SoundEffects.playSelect();
-            showWallpaperDialog();
-        });
-
-        // Row 1b: Gemini AI Assistant
-        addInputRow(rows, close, R.drawable.ic_gemini, "Gemini AI Assistant", -1, () -> {
-            SoundEffects.playSelect();
-            showGeminiAssistantDialog();
-        });
-
-        // Row 2: Location (Waktu Solat & Cuaca)
-        Location.Zone chosenZone = Location.chosen(this);
-        String zoneName = (chosenZone != null) ? (chosenZone.state + " - " + chosenZone.town) : "W.P. Kuala Lumpur";
-        addInputRow(rows, close, R.drawable.ic_location, "Location: " + zoneName, -1, () -> {
-            SoundEffects.playSelect();
-            startActivity(new Intent(this, LocationActivity.class));
-        });
-
-        // Row 3: Popup Azan UI Test
-        addInputRow(rows, close, R.drawable.ic_azan, "🔔 Uji Popup Azan Sekarang", -1, () -> {
-            SoundEffects.playSelect();
-            Intent azanIntent = new Intent(this, AzanActivity.class);
-            azanIntent.putExtra("prayer", 4);
-            startActivity(azanIntent);
-        });
-
-        // Row 4: Doa Harian / Ayat Pilihan
-        boolean ayahShown = WeeklyAyah.shown(this);
-        addInputRow(rows, close, R.drawable.ic_doa, "Doa Harian: " + (ayahShown ? "ON" : "OFF"), -1, () -> {
-            SoundEffects.playSelect();
-            WeeklyAyah.setShown(this, !ayahShown);
-            showAyah(WeeklyAyah.last(this));
-            if (!ayahShown) updateAyah();
-        });
-
-        // Row 5: Sound Effects
-        String currentSoundTheme = SoundEffects.getActiveTheme(this);
-        String soundLabel = "Sound: " + SoundEffects.getThemeDisplayName(currentSoundTheme);
-        addInputRow(rows, close, R.drawable.ic_sound, soundLabel, -1, () -> {
-            SoundEffects.playSelect();
-            showSoundEffectsDialog();
-        });
-
-        // Row 6: Auto-Update (OTA)
-        boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
-        String updateLabel = "Auto-Update: " + (isAuto ? "ON (" + AppUpdateManager.getAutoUpdateTime(this) + ")" : "OFF");
-        addInputRow(rows, close, R.drawable.ic_update, updateLabel, -1, () -> {
-            SoundEffects.playSelect();
-            showAutoUpdateDialog();
-        });
-
-        addSeparator(rows);
-
-        // Row 6: Restart TV
+        // Row 1: Restart TV
         addInputRow(rows, close, R.drawable.ic_restart, "Restart TV", -1, () -> {
             SoundEffects.playSelect();
             showRestartDialog();
         });
 
-        // Row 7: Turn Off TV
+        // Row 2: Turn Off TV
         addInputRow(rows, close, R.drawable.ic_power, "Turn Off TV", -1, () -> {
             SoundEffects.playSelect();
             showTurnOffDialog();
@@ -2491,14 +2574,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         addSeparator(rows);
 
-        // Row 8: All Settings (Android Settings)
+        // Row 3: All Settings (Android Settings)
         addInputRow(rows, close, R.drawable.ic_settings, "All Settings", -1, () -> {
             SoundEffects.playSelect();
             open(systemIntent(Settings.ACTION_SETTINGS));
         });
 
+        // Row 4: Tutup
+        addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
+            SoundEffects.playSelect();
+            closeMenu(true);
+        });
+
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int width = Math.max((int) (220 * density), panel.getMeasuredWidth());
+        int width = Math.max((int) (200 * density), panel.getMeasuredWidth());
 
         showMenu(panel, rows, anchor, width, false);
     }

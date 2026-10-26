@@ -682,6 +682,12 @@
                     android:drawableStart="@drawable/ic_gemini" />
 
                 <TextView
+                    android:id="@+id/btnCandyBox"
+                    style="@style/TopMenuButton"
+                    android:text="Candy Box"
+                    android:drawableStart="@drawable/ic_candy_box" />
+
+                <TextView
                     android:id="@+id/btnSettings"
                     style="@style/TopMenuButton"
                     android:layout_width="42dp"
