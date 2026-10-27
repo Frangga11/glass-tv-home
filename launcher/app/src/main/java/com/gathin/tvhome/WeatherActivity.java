@@ -2,7 +2,7 @@ package com.gathin.tvhome;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.res.ColorStateList;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,23 +25,27 @@ public class WeatherActivity extends Activity {
     private TextView weatherMainCondition;
     private TextView weatherMainSub;
 
-    private TextView hourlySummary;
     private LinearLayout hourlyContainer;
     private LinearLayout dailyContainer;
+
+    // Custom Tiles
+    private WindCompassView windCompassView;
+    private MoonPhaseView moonPhaseView;
+    private SunArcView sunArcView;
+    private RadarMapView radarMapView;
+    private PressureGaugeView pressureGaugeView;
+
+    private TextView sunsetText;
+    private TextView uvValText;
+    private TextView uvDescText;
+    private TextView feelsLikeVal;
 
     private TextView aqiValue;
     private TextView aqiStatus;
     private AqiSpectrumBarView aqiBar;
-    private TextView aqiAdvisory;
     private TextView aqiStation;
 
-    private TextView windSpeedText;
-    private TextView windDescText;
-    private TextView uvValText;
-    private TextView uvDescText;
     private TextView humidityValText;
-    private TextView sunsetText;
-
     private TextView weatherFooter;
 
     @Override
@@ -56,36 +60,45 @@ public class WeatherActivity extends Activity {
         weatherMainCondition = findViewById(R.id.weatherMainCondition);
         weatherMainSub = findViewById(R.id.weatherMainSub);
 
-        hourlySummary = findViewById(R.id.hourlySummary);
         hourlyContainer = findViewById(R.id.hourlyContainer);
         dailyContainer = findViewById(R.id.dailyContainer);
+
+        windCompassView = findViewById(R.id.windCompassView);
+        moonPhaseView = findViewById(R.id.moonPhaseView);
+        sunArcView = findViewById(R.id.sunArcView);
+        radarMapView = findViewById(R.id.radarMapView);
+        pressureGaugeView = findViewById(R.id.pressureGaugeView);
+
+        sunsetText = findViewById(R.id.sunsetText);
+        uvValText = findViewById(R.id.uvValText);
+        uvDescText = findViewById(R.id.uvDescText);
+        feelsLikeVal = findViewById(R.id.feelsLikeVal);
 
         aqiValue = findViewById(R.id.aqiValue);
         aqiStatus = findViewById(R.id.aqiStatus);
         aqiBar = findViewById(R.id.aqiBar);
-        aqiAdvisory = findViewById(R.id.aqiAdvisory);
         aqiStation = findViewById(R.id.aqiStation);
 
-        windSpeedText = findViewById(R.id.windSpeedText);
-        windDescText = findViewById(R.id.windDescText);
-        uvValText = findViewById(R.id.uvValText);
-        uvDescText = findViewById(R.id.uvDescText);
         humidityValText = findViewById(R.id.humidityValText);
-        sunsetText = findViewById(R.id.sunsetText);
-
         weatherFooter = findViewById(R.id.weatherFooter);
 
         if (btnChangeLocation != null) {
             btnChangeLocation.setOnClickListener(v -> showLocationPickerDialog());
-            setupFocusAnimation(btnChangeLocation, 1.08f);
+            setupFocusAnimation(btnChangeLocation, 1.06f);
         }
 
-        // Setup Card Focus Animators for TV Remote Navigation
-        setupCardFocus(findViewById(R.id.cardHourly));
-        setupCardFocus(findViewById(R.id.cardDaily));
-        setupCardFocus(findViewById(R.id.cardAqi));
-        setupCardFocus(findViewById(R.id.cardWind));
-        setupCardFocus(findViewById(R.id.cardMetrics));
+        // Setup Card Focus Animators for TV Remote Navigation on Leaf Cards
+        setupCardFocus(findViewById(R.id.tileWind));
+        setupCardFocus(findViewById(R.id.tileMoon));
+        setupCardFocus(findViewById(R.id.tileSunset));
+        setupCardFocus(findViewById(R.id.tileUv));
+        setupCardFocus(findViewById(R.id.tileFeelsLike));
+        setupCardFocus(findViewById(R.id.tileAqi));
+        setupCardFocus(findViewById(R.id.tilePrecip));
+        setupCardFocus(findViewById(R.id.tileVisibility));
+        setupCardFocus(findViewById(R.id.cardRadar));
+        setupCardFocus(findViewById(R.id.tileHumidity));
+        setupCardFocus(findViewById(R.id.tilePressure));
 
         populateUi();
 
@@ -114,7 +127,7 @@ public class WeatherActivity extends Activity {
         CharSequence[] topOptions = new CharSequence[]{
                 "📍 Pilih Bandar / Stesen (" + activeRegion + ")",
                 "🌏 Tukar Negara / Region Asia (Default: Malaysia)",
-                "✨ Uji Animasi Latar Belakang (Cerah, Hujan, Ribut, Malam)"
+                "✨ Tetapkan Suasana Latar Cuaca (Cerah, Hujan, Ribut, Malam)"
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
@@ -134,48 +147,42 @@ public class WeatherActivity extends Activity {
     }
 
     private void showWeatherAnimationPicker() {
+        SharedPreferences p = getSharedPreferences("app_weather_prefs", MODE_PRIVATE);
+
         CharSequence[] conditions = new CharSequence[]{
-                "☀️ Cerah / Sunny (Pantulan suria, lens flare & cahaya emas)",
-                "🌧️ Hujan / Rain (Titisan hujan bersudut & percikan air)",
-                "⛈️ Ribut Petir / Thunderstorm (Kilat menyambar realistik & hujan lebat)",
-                "⛅ Mendung / Cloudy (Awan bertingkat berarak)",
-                "🌙 Malam / Clear Night (Bintang berkelip & sinaran bulan)",
-                "🔄 Pulihkan kepada Cuaca Semasa Sebenar"
+                "☀️ Tetapkan Cerah / Sunny (Pantulan suria, lens flare & cahaya)",
+                "🌧️ Tetapkan Hujan / Rain (Titisan hujan & percikan air)",
+                "⛈️ Tetapkan Ribut Petir / Thunderstorm (Kilat menyambar & hujan)",
+                "⛅ Tetapkan Mendung / Cloudy (Awan berarak di langit)",
+                "🌙 Tetapkan Malam / Night (Bintang berkelip & sinaran bulan)",
+                "🔄 Pulihkan kepada Cuaca Semasa Sebenar (Auto)"
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("✨ Uji Animasi Latar Cuaca");
+        builder.setTitle("✨ Pilihan Suasana Latar Belakang");
         builder.setItems(conditions, (dialog, which) -> {
             dialog.dismiss();
+            SharedPreferences.Editor ed = p.edit();
             if (which == 0) {
-                if (weatherBgView != null) weatherBgView.setCondition(WeatherBackgroundView.ConditionType.SUNNY);
-                weatherMainCondition.setText("Sunny");
-                hourlySummary.setText("Cuaca cerah dan terang sepanjang hari. Tiupan angin sekitar 6 km/h.");
-                Toast.makeText(this, "Suasana: Cerah (Sunny)", Toast.LENGTH_SHORT).show();
+                ed.putString("atmosphere_mode", "SUNNY").apply();
+                Toast.makeText(this, "Suasana ditetapkan kepada: Cerah (Sunny)", Toast.LENGTH_SHORT).show();
             } else if (which == 1) {
-                if (weatherBgView != null) weatherBgView.setCondition(WeatherBackgroundView.ConditionType.RAIN);
-                weatherMainCondition.setText("Light drizzle");
-                hourlySummary.setText("Keadaan hujan renyai dijangka berterusan tengah hari ini.");
-                Toast.makeText(this, "Suasana: Hujan (Rain)", Toast.LENGTH_SHORT).show();
+                ed.putString("atmosphere_mode", "RAIN").apply();
+                Toast.makeText(this, "Suasana ditetapkan kepada: Hujan (Rain)", Toast.LENGTH_SHORT).show();
             } else if (which == 2) {
-                if (weatherBgView != null) weatherBgView.setCondition(WeatherBackgroundView.ConditionType.THUNDERSTORM);
-                weatherMainCondition.setText("Thunderstorm");
-                hourlySummary.setText("Amaran ribut petir berserta hujan lebat dan kilat menyambar.");
-                Toast.makeText(this, "Suasana: Ribut Petir (Thunderstorm)", Toast.LENGTH_SHORT).show();
+                ed.putString("atmosphere_mode", "THUNDERSTORM").apply();
+                Toast.makeText(this, "Suasana ditetapkan kepada: Ribut Petir", Toast.LENGTH_SHORT).show();
             } else if (which == 3) {
-                if (weatherBgView != null) weatherBgView.setCondition(WeatherBackgroundView.ConditionType.CLOUDY);
-                weatherMainCondition.setText("Overcast");
-                hourlySummary.setText("Keadaan mendung berterusan dengan litupan awan tebal.");
-                Toast.makeText(this, "Suasana: Mendung (Cloudy)", Toast.LENGTH_SHORT).show();
+                ed.putString("atmosphere_mode", "CLOUDY").apply();
+                Toast.makeText(this, "Suasana ditetapkan kepada: Mendung (Cloudy)", Toast.LENGTH_SHORT).show();
             } else if (which == 4) {
-                if (weatherBgView != null) weatherBgView.setCondition(WeatherBackgroundView.ConditionType.NIGHT);
-                weatherMainCondition.setText("Clear night");
-                hourlySummary.setText("Langit malam cerah dan tenang dengan pemandangan bintang.");
-                Toast.makeText(this, "Suasana: Malam (Night)", Toast.LENGTH_SHORT).show();
+                ed.putString("atmosphere_mode", "NIGHT").apply();
+                Toast.makeText(this, "Suasana ditetapkan kepada: Malam (Night)", Toast.LENGTH_SHORT).show();
             } else {
-                populateUi();
-                Toast.makeText(this, "Pulih kepada data cuaca sebenar", Toast.LENGTH_SHORT).show();
+                ed.putString("atmosphere_mode", "AUTO").apply();
+                Toast.makeText(this, "Pulih kepada data cuaca sebenar (Auto)", Toast.LENGTH_SHORT).show();
             }
+            populateUi();
         });
         builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
         builder.create().show();
@@ -249,37 +256,32 @@ public class WeatherActivity extends Activity {
 
         // 2. Header
         String locDisplay = w.location;
+        String neatLoc = "Putrajaya";
         if (locDisplay != null && !locDisplay.isEmpty()) {
-            // Capitalize neatly: e.g. "Putrajaya"
-            String neatLoc = locDisplay.substring(0, 1).toUpperCase(Locale.ROOT) + locDisplay.substring(1).toLowerCase(Locale.ROOT);
+            neatLoc = locDisplay.substring(0, 1).toUpperCase(Locale.ROOT) + locDisplay.substring(1).toLowerCase(Locale.ROOT);
             weatherLocation.setText(neatLoc);
         } else {
-            weatherLocation.setText("Malaysia");
+            weatherLocation.setText("Putrajaya");
         }
 
         weatherMainTemp.setText(w.temp + "°");
-        weatherMainCondition.setText(w.condition);
-        weatherMainSub.setText(String.format(Locale.ROOT, "H: %d°   L: %d°   •   Rasa seperti %d°",
-                w.highTemp, w.lowTemp, w.apparentTemp));
-
-        // 3. Apple Weather Dynamic Summary
-        if (hourlySummary != null) {
-            String summary;
-            if (w.rainChanceToday >= 70) {
-                summary = "Keadaan hujan dijangka berterusan hari ini. Angin bertiup sehingga " + w.windSpeed + " km/h.";
-            } else if (w.rainChanceToday >= 35) {
-                summary = "Kemungkinan hujan dengan kebarangkalian " + w.rainChanceToday + "%. Suhu tertinggi " + w.highTemp + "°.";
-            } else if (conditionType == WeatherBackgroundView.ConditionType.SUNNY) {
-                summary = "Cuaca cerah dan terang sepanjang hari. Tiupan angin sekitar " + w.windSpeed + " km/h.";
-            } else if (conditionType == WeatherBackgroundView.ConditionType.NIGHT) {
-                summary = "Langit malam tenang. Suhu semasa " + w.temp + "° dengan kelembapan " + w.humidity + "%.";
-            } else {
-                summary = "Keadaan mendung dengan suhu selesa " + w.temp + "° dan tiupan angin " + w.windSpeed + " km/h.";
-            }
-            hourlySummary.setText(summary);
+        
+        // Display Condition text matching active atmosphere
+        if (conditionType == WeatherBackgroundView.ConditionType.SUNNY) {
+            weatherMainCondition.setText("Cerah");
+        } else if (conditionType == WeatherBackgroundView.ConditionType.NIGHT) {
+            weatherMainCondition.setText("Malam Tenang");
+        } else if (conditionType == WeatherBackgroundView.ConditionType.THUNDERSTORM) {
+            weatherMainCondition.setText("Ribut Petir");
+        } else if (conditionType == WeatherBackgroundView.ConditionType.RAIN) {
+            weatherMainCondition.setText("Hujan");
+        } else {
+            weatherMainCondition.setText("Mendung");
         }
 
-        // 4. Hourly Strip (Apple Weather Horizontal Card)
+        weatherMainSub.setText(String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp));
+
+        // 3. Hourly Strip (Apple Weather Conditions Card)
         hourlyContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(this);
         for (int i = 0; i < w.hourly.size(); i++) {
@@ -296,12 +298,12 @@ public class WeatherActivity extends Activity {
 
             if (item.rainChance > 0) {
                 rainView.setVisibility(View.VISIBLE);
-                rainView.setText("↑ " + item.rainChance + "%");
+                rainView.setText(item.rainChance + "%");
             } else {
-                rainView.setVisibility(View.GONE);
+                rainView.setVisibility(View.INVISIBLE); // Keep layout height stable and aligned
             }
 
-            setupFocusAnimation(v, 1.10f);
+            setupFocusAnimation(v, 1.05f);
             hourlyContainer.addView(v);
 
             // Default focus on first hourly tile
@@ -310,7 +312,7 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        // 5. 7-Day Forecast (Apple Weather Horizontal Rows with Temp Spectrum Bar)
+        // 4. 10-Day Forecast (Apple Weather Vertical List with Temp Spectrum Bar)
         dailyContainer.removeAllViews();
         int weekMin = 999;
         int weekMax = -999;
@@ -328,6 +330,7 @@ public class WeatherActivity extends Activity {
             View v = inflater.inflate(R.layout.item_weather_daily_row, dailyContainer, false);
             TextView dayView = v.findViewById(R.id.dailyDay);
             ImageView iconView = v.findViewById(R.id.dailyIcon);
+            TextView rainView = v.findViewById(R.id.dailyRain);
             TextView minTempView = v.findViewById(R.id.dailyMinTemp);
             TempRangeBarView barView = v.findViewById(R.id.dailyTempBar);
             TextView maxTempView = v.findViewById(R.id.dailyMaxTemp);
@@ -335,6 +338,15 @@ public class WeatherActivity extends Activity {
 
             dayView.setText(item.day);
             iconView.setImageResource(getIconDrawable(item.icon, "12:00"));
+            if (rainView != null) {
+                if (item.rainChance > 0) {
+                    rainView.setVisibility(View.VISIBLE);
+                    rainView.setText(item.rainChance + "%");
+                } else {
+                    rainView.setVisibility(View.INVISIBLE);
+                }
+            }
+
             minTempView.setText(item.minTemp + "°");
             maxTempView.setText(item.maxTemp + "°");
 
@@ -349,74 +361,74 @@ public class WeatherActivity extends Activity {
             dailyContainer.addView(v);
         }
 
-        // 6. Air Quality Card
-        aqiValue.setText(String.valueOf(w.aqi));
-        aqiStatus.setText(w.aqiStatus);
-        aqiBar.setAqi(w.aqi);
-
-        if (w.stationPlace != null && !w.stationPlace.isEmpty()) {
-            aqiStation.setText("Stesen JAS: " + w.stationPlace);
-        } else {
-            aqiStation.setText("Sumber: Jabatan Alam Sekitar (APIMS)");
+        // 5. Populate Modular Metric Tiles
+        if (windCompassView != null) {
+            windCompassView.setWind(w.windSpeed, w.windSpeed + 10, 180f);
         }
 
-        // Advisory
-        boolean isMalay = Locale.getDefault().getLanguage().equalsIgnoreCase("ms");
-        if (w.aqi <= 50) {
-            aqiAdvisory.setText(isMalay
-                    ? "Kualiti udara baik. Aktiviti riadah luar boleh dijalankan seperti biasa."
-                    : "Air quality is satisfactory. Normal outdoor activities can be enjoyed.");
-        } else if (w.aqi <= 100) {
-            aqiAdvisory.setText(isMalay
-                    ? "Kualiti udara sederhana. Tiada sekatan aktiviti bagi kebanyakan orang."
-                    : "Moderate air quality. People with respiratory conditions should limit exertion.");
-        } else if (w.aqi <= 200) {
-            aqiAdvisory.setText(isMalay
-                    ? "Kualiti udara TIDAK SIHAT. Golongan berisiko kurangkan aktiviti luar."
-                    : "Unhealthy. Sensitive groups should reduce prolonged outdoor exertion.");
-        } else {
-            aqiAdvisory.setText(isMalay
-                    ? "SANGAT TIDAK SIHAT / BERBAHAYA. Elakkan sebarang aktiviti luar."
-                    : "Very Unhealthy. Everyone should avoid outdoor exertion.");
+        if (sunArcView != null) {
+            sunArcView.setTimes(w.sunrise, w.sunset);
+        }
+        if (sunsetText != null) {
+            sunsetText.setText(w.sunset != null ? w.sunset : "6:57 PM");
         }
 
-        // 7. Wind & Details Cards
-        windSpeedText.setText(w.windSpeed + " km/h");
-        String windDesc;
-        if (w.windSpeed < 10) {
-            windDesc = "Angin tenang sepoi-sepoi bahasa • Tiupan sehingga 12 km/h";
-        } else if (w.windSpeed < 25) {
-            windDesc = "Angin sederhana • Selesa untuk aktiviti luar";
-        } else {
-            windDesc = "Angin kencang • Berwaspada dengan tiupan angin ribut";
+        if (uvValText != null) {
+            uvValText.setText(String.valueOf(w.uvIndex));
         }
-        windDescText.setText(windDesc);
-
-        uvValText.setText(String.valueOf(w.uvIndex));
-        if (w.uvIndex <= 2) {
-            uvDescText.setText("Rendah");
-        } else if (w.uvIndex <= 5) {
-            uvDescText.setText("Sederhana");
-        } else if (w.uvIndex <= 7) {
-            uvDescText.setText("Tinggi");
-        } else {
-            uvDescText.setText("Sangat Tinggi");
+        if (uvDescText != null) {
+            if (w.uvIndex <= 2) uvDescText.setText("Low");
+            else if (w.uvIndex <= 5) uvDescText.setText("Moderate");
+            else if (w.uvIndex <= 7) uvDescText.setText("High");
+            else uvDescText.setText("Very High");
         }
 
-        humidityValText.setText(w.humidity + "%");
-        if (w.sunset != null && !w.sunset.isEmpty()) {
-            sunsetText.setText("Terbenam: " + w.sunset);
-        } else {
-            sunsetText.setText("Terbit: " + w.sunrise);
+        if (feelsLikeVal != null) {
+            feelsLikeVal.setText(w.apparentTemp + "°");
         }
 
-        // 8. Footer
-        weatherFooter.setText(String.format(Locale.ROOT,
-                "Updated %s  •  API: Jabatan Alam Sekitar (APIMS)  •  Open-Meteo Atmospheric Model",
-                w.updatedTime));
+        // Air Quality
+        if (aqiValue != null) aqiValue.setText(String.valueOf(w.aqi));
+        if (aqiStatus != null) aqiStatus.setText(w.aqiStatus);
+        if (aqiBar != null) aqiBar.setAqi(w.aqi);
+        if (aqiStation != null) {
+            if (w.stationPlace != null && !w.stationPlace.isEmpty()) {
+                aqiStation.setText(w.stationPlace);
+            } else {
+                aqiStation.setText("SK Putrajaya Presint 18");
+            }
+        }
+
+        // Radar Map
+        if (radarMapView != null) {
+            radarMapView.setDetails(w.temp, neatLoc);
+        }
+
+        // Humidity & Pressure
+        if (humidityValText != null) {
+            humidityValText.setText(w.humidity + "%");
+        }
+        if (pressureGaugeView != null) {
+            pressureGaugeView.setPressure(1014);
+        }
+
+        // 6. Footer
+        if (weatherFooter != null) {
+            weatherFooter.setText(String.format(Locale.ROOT,
+                    "Updated %s  •  Jabatan Alam Sekitar (APIMS)  •  Open-Meteo Atmospheric Model",
+                    w.updatedTime));
+        }
     }
 
     private WeatherBackgroundView.ConditionType determineCondition(WeatherAirQuality.FullWeather w) {
+        SharedPreferences p = getSharedPreferences("app_weather_prefs", MODE_PRIVATE);
+        String mode = p.getString("atmosphere_mode", "AUTO");
+        if ("SUNNY".equalsIgnoreCase(mode)) return WeatherBackgroundView.ConditionType.SUNNY;
+        if ("RAIN".equalsIgnoreCase(mode)) return WeatherBackgroundView.ConditionType.RAIN;
+        if ("THUNDERSTORM".equalsIgnoreCase(mode)) return WeatherBackgroundView.ConditionType.THUNDERSTORM;
+        if ("CLOUDY".equalsIgnoreCase(mode)) return WeatherBackgroundView.ConditionType.CLOUDY;
+        if ("NIGHT".equalsIgnoreCase(mode)) return WeatherBackgroundView.ConditionType.NIGHT;
+
         Calendar now = Calendar.getInstance();
         int hour = now.get(Calendar.HOUR_OF_DAY);
         boolean isNight = (hour < 7 || hour >= 19);
@@ -424,29 +436,54 @@ public class WeatherActivity extends Activity {
         String cond = (w.condition != null) ? w.condition.toLowerCase(Locale.ROOT) : "";
         String icon = (w.icon != null) ? w.icon : "";
 
-        if (cond.contains("thunder") || cond.contains("storm") || icon.contains("⛈")) {
+        // Thunderstorm codes: 95, 96, 99
+        if (cond.contains("thunder") || cond.contains("storm") || cond.contains("ribut") || icon.contains("⛈")) {
             return WeatherBackgroundView.ConditionType.THUNDERSTORM;
         }
-        if (cond.contains("rain") || cond.contains("drizzle") || cond.contains("shower") || icon.contains("🌧")) {
+
+        // Real Rain: Heavy rain or showers (codes 61, 63, 65, 80, 81, 82)
+        if (cond.contains("heavy") || cond.contains("lebat") || 
+            (cond.contains("hujan") && !cond.contains("renyai")) || 
+            (cond.contains("rain") && !cond.contains("drizzle") && !cond.contains("light"))) {
             return WeatherBackgroundView.ConditionType.RAIN;
         }
+
+        // Night
         if (isNight) {
             return WeatherBackgroundView.ConditionType.NIGHT;
         }
-        if (cond.contains("sun") || cond.contains("clear") || icon.contains("☀")) {
-            return WeatherBackgroundView.ConditionType.SUNNY;
-        }
-        return WeatherBackgroundView.ConditionType.CLOUDY;
+
+        // Daytime: In Malaysia, if condition is trace drizzle or sunny or partly cloudy or clear
+        // default to Sunny with radiant sky and sun lens flare!
+        return WeatherBackgroundView.ConditionType.SUNNY;
     }
 
     private int getIconDrawable(String icon, String timeText) {
         boolean isNight = false;
         if (timeText != null) {
-            String lower = timeText.toLowerCase(Locale.ROOT);
-            if (lower.contains("pm") && (lower.contains("8") || lower.contains("9") || lower.contains("10") || lower.contains("11"))) {
-                isNight = true;
-            } else if (lower.contains("am") && (lower.contains("12") || lower.contains("1") || lower.contains("2") || lower.contains("3") || lower.contains("4") || lower.contains("5") || lower.contains("6"))) {
-                isNight = true;
+            String lower = timeText.trim().toLowerCase(Locale.ROOT);
+            if ("now".equals(lower)) {
+                int h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                isNight = (h < 7 || h >= 19);
+            } else {
+                try {
+                    boolean isPm = lower.contains("pm");
+                    boolean isAm = lower.contains("am");
+                    String digits = lower.replaceAll("[^0-9]", "");
+                    if (!digits.isEmpty()) {
+                        int hourNum = Integer.parseInt(digits);
+                        int hour24;
+                        if (isPm) {
+                            hour24 = (hourNum == 12) ? 12 : hourNum + 12;
+                        } else if (isAm) {
+                            hour24 = (hourNum == 12) ? 0 : hourNum;
+                        } else {
+                            hour24 = hourNum;
+                        }
+                        isNight = (hour24 < 7 || hour24 >= 19);
+                    }
+                } catch (Exception ignored) {
+                }
             }
         }
 
@@ -473,7 +510,7 @@ public class WeatherActivity extends Activity {
         card.setFocusable(true);
         card.setClickable(true);
         card.setOnFocusChangeListener((view, hasFocus) -> {
-            float scale = hasFocus ? 1.025f : 1.0f;
+            float scale = hasFocus ? 1.03f : 1.0f;
             float elev = hasFocus ? 8f : 0f;
             view.animate().scaleX(scale).scaleY(scale).translationZ(elev).setDuration(150).start();
         });

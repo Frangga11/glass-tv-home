@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="66dp"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="2dp"
-    android:layout_marginEnd="2dp"
+    android:layout_width="62dp"
+    android:layout_height="80dp"
+    android:layout_marginStart="3dp"
+    android:layout_marginEnd="3dp"
     android:orientation="vertical"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:background="@drawable/weather_pill_bg"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:paddingStart="4dp"
-    android:paddingEnd="4dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:paddingStart="3dp"
+    android:paddingEnd="3dp"
     android:focusable="true"
     android:clickable="true">
 
@@ -18,38 +18,41 @@
         android:id="@+id/hourlyTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#CBD5E1"
-        android:textSize="12sp"
+        android:textColor="#E2E8F0"
+        android:textSize="11sp"
         android:fontFamily="@font/outfit"
         android:fontVariationSettings="'wght' 600"
+        android:gravity="center"
         android:singleLine="true" />
 
     <ImageView
         android:id="@+id/hourlyIcon"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="4dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="1dp"
         android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/hourlyRain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="13dp"
         android:textColor="#38BDF8"
-        android:textSize="10.5sp"
+        android:textSize="9.5sp"
         android:fontFamily="@font/outfit"
         android:fontVariationSettings="'wght' 700"
+        android:gravity="center"
         android:singleLine="true" />
 
     <TextView
         android:id="@+id/hourlyTemp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:textColor="#FFFFFFFF"
-        android:textSize="15sp"
+        android:layout_marginTop="1dp"
+        android:textColor="#FFFFFF"
+        android:textSize="13.5sp"
         android:fontFamily="@font/outfit"
         android:fontVariationSettings="'wght' 700"
+        android:gravity="center"
         android:singleLine="true" />
 </LinearLayout>

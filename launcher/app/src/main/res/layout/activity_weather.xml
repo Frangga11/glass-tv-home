@@ -11,26 +11,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Layer 1: Apple Weather Frosted Glass UI -->
+    <!-- Layer 1: Apple Weather Widescreen Frosted Glass UI -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:scrollbars="none"
-        android:overScrollMode="never"
         android:clipChildren="false"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="44dp"
-            android:paddingEnd="44dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="24dp"
             android:clipChildren="false"
-            android:clipToPadding="false">
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:paddingStart="28dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="28dp"
+            android:paddingBottom="10dp">
 
             <!-- Top Header: Apple Weather Center Header -->
             <LinearLayout
@@ -39,51 +39,27 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/weatherSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/weatherSubtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 600"
-                        android:letterSpacing="0.12"
-                        android:singleLine="true"
-                        android:text="LOKASI SAYA"
-                        android:textAllCaps="true"
-                        android:textColor="#C8DCF8"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/btnChangeLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:background="@drawable/bg_location_pill"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 600"
-                        android:paddingStart="12dp"
-                        android:paddingTop="4dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="4dp"
-                        android:text="📍 Tukar Stesen / Region"
-                        android:textColor="#E2E8F0"
-                        android:textSize="11sp" />
-                </LinearLayout>
+                    android:fontFamily="@font/outfit"
+                    android:fontVariationSettings="'wght' 600"
+                    android:gravity="center"
+                    android:letterSpacing="0.12"
+                    android:singleLine="true"
+                    android:text="MY LOCATION"
+                    android:textAllCaps="true"
+                    android:textColor="#C8DCF8"
+                    android:textSize="10.5sp" />
 
                 <TextView
                     android:id="@+id/weatherLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
                     android:fontFamily="@font/outfit"
                     android:fontVariationSettings="'wght' 700"
+                    android:gravity="center"
                     android:shadowColor="#99000000"
                     android:shadowDx="0"
                     android:shadowDy="2"
@@ -91,7 +67,7 @@
                     android:singleLine="true"
                     android:text="Putrajaya"
                     android:textColor="#FFFFFF"
-                    android:textSize="32sp" />
+                    android:textSize="22sp" />
 
                 <TextView
                     android:id="@+id/weatherMainTemp"
@@ -99,15 +75,16 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/outfit"
                     android:fontVariationSettings="'wght' 700"
+                    android:gravity="center"
                     android:includeFontPadding="false"
                     android:shadowColor="#80000000"
                     android:shadowDx="0"
                     android:shadowDy="3"
                     android:shadowRadius="10"
                     android:singleLine="true"
-                    android:text="26°"
+                    android:text="29°"
                     android:textColor="#FFFFFF"
-                    android:textSize="68sp" />
+                    android:textSize="44sp" />
 
                 <TextView
                     android:id="@+id/weatherMainCondition"
@@ -115,336 +92,203 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/outfit"
                     android:fontVariationSettings="'wght' 600"
+                    android:gravity="center"
                     android:shadowColor="#80000000"
                     android:shadowDx="0"
                     android:shadowDy="2"
                     android:shadowRadius="5"
                     android:singleLine="true"
-                    android:text="Light drizzle"
+                    android:text="Drizzle"
                     android:textColor="#F1F5F9"
-                    android:textSize="17sp" />
+                    android:textSize="13.5sp" />
 
                 <TextView
                     android:id="@+id/weatherMainSub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="1dp"
                     android:fontFamily="@font/outfit"
                     android:fontVariationSettings="'wght' 500"
+                    android:gravity="center"
                     android:shadowColor="#80000000"
                     android:shadowDx="0"
                     android:shadowDy="1"
                     android:shadowRadius="4"
                     android:singleLine="true"
-                    android:text="H: 29°  L: 24°  •  Rasa seperti 31°"
+                    android:text="H:30°  L:24°"
                     android:textColor="#CBD5E1"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <!-- Hourly Forecast Obsidian Card (Apple Weather Signature) -->
-            <LinearLayout
-                android:id="@+id/cardHourly"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/weather_card_bg"
-                android:orientation="vertical"
-                android:paddingStart="16dp"
-                android:paddingTop="12dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="12dp">
+                    android:textSize="11.5sp" />
 
                 <TextView
-                    android:id="@+id/hourlySummary"
-                    android:layout_width="match_parent"
+                    android:id="@+id/btnChangeLocation"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_location_pill"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:fontFamily="@font/outfit"
-                    android:fontVariationSettings="'wght' 500"
-                    android:singleLine="true"
-                    android:text="Keadaan mendung dan hujan dijangka berterusan hari ini. Angin bertiup 5 km/h."
-                    android:textColor="#E2E8F0"
-                    android:textSize="12.5sp" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="#18FFFFFF" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipChildren="false"
-                    android:clipToPadding="false"
-                    android:fillViewport="true"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:id="@+id/hourlyContainer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clipChildren="false"
-                        android:clipToPadding="false"
-                        android:orientation="horizontal" />
-                </HorizontalScrollView>
+                    android:fontVariationSettings="'wght' 600"
+                    android:gravity="center"
+                    android:paddingStart="12dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="3dp"
+                    android:text="📍 Tukar Stesen / Suasana"
+                    android:textColor="@color/selector_pill_text"
+                    android:textSize="10.5sp" />
             </LinearLayout>
 
-            <!-- Bottom Modular Grid (7-Day Forecast, Air Quality, Wind & Metrics) -->
+            <!-- Main Widescreen Body: Left Metric Tiles (2 columns) & Right Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="8dp"
                 android:baselineAligned="false"
                 android:clipChildren="false"
                 android:orientation="horizontal">
 
-                <!-- Column 1: 7-DAY FORECAST Card -->
-                <LinearLayout
-                    android:id="@+id/cardDaily"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1.25"
-                    android:background="@drawable/weather_card_bg"
-                    android:orientation="vertical"
-                    android:paddingStart="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="12dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/outfit"
-                            android:fontVariationSettings="'wght' 700"
-                            android:letterSpacing="0.08"
-                            android:singleLine="true"
-                            android:text="📅  7-DAY FORECAST"
-                            android:textColor="#94A3B8"
-                            android:textSize="11.5sp" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="4dp"
-                        android:background="#15FFFFFF" />
-
-                    <LinearLayout
-                        android:id="@+id/dailyContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </LinearLayout>
-
-                <!-- Column 2: AIR QUALITY Card -->
-                <LinearLayout
-                    android:id="@+id/cardAqi"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1.0"
-                    android:background="@drawable/weather_card_bg"
-                    android:orientation="vertical"
-                    android:paddingStart="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 700"
-                        android:letterSpacing="0.08"
-                        android:singleLine="true"
-                        android:text="🍃  AIR QUALITY"
-                        android:textColor="#94A3B8"
-                        android:textSize="11.5sp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="10dp"
-                        android:background="#15FFFFFF" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/aqiValue"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/outfit"
-                            android:fontVariationSettings="'wght' 700"
-                            android:includeFontPadding="false"
-                            android:text="55"
-                            android:textColor="#38BDF8"
-                            android:textSize="32sp" />
-
-                        <TextView
-                            android:id="@+id/aqiStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:fontFamily="@font/outfit"
-                            android:fontVariationSettings="'wght' 600"
-                            android:singleLine="true"
-                            android:text="Moderate"
-                            android:textColor="#FFFFFF"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-                    <com.gathin.tvhome.AqiSpectrumBarView
-                        android:id="@+id/aqiBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="16dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp" />
-
-                    <TextView
-                        android:id="@+id/aqiAdvisory"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 400"
-                        android:lineSpacingExtra="2dp"
-                        android:maxLines="3"
-                        android:text="Kualiti udara memuaskan. Aktiviti luar boleh dijalankan seperti biasa."
-                        android:textColor="#CBD5E1"
-                        android:textSize="11.5sp" />
-
-                    <TextView
-                        android:id="@+id/aqiStation"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 500"
-                        android:singleLine="true"
-                        android:text="Stesen: SK Putrajaya Presint 18 (2)"
-                        android:textColor="#94A3B8"
-                        android:textSize="11sp" />
-                </LinearLayout>
-
-                <!-- Column 3: DETAILS (WIND + UV & SUNSET) -->
+                <!-- LEFT SECTION: 2x4 Metric Grid Tiles -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.0"
                     android:orientation="vertical">
 
-                    <!-- Tile 3A: WIND -->
+                    <!-- Row 1: WIND & MOON PHASE -->
                     <LinearLayout
-                        android:id="@+id/cardWind"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/weather_card_bg"
-                        android:orientation="vertical"
-                        android:paddingStart="16dp"
-                        android:paddingTop="12dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="12dp">
+                        android:layout_height="76dp"
+                        android:layout_marginBottom="6dp"
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/outfit"
-                            android:fontVariationSettings="'wght' 700"
-                            android:letterSpacing="0.08"
-                            android:singleLine="true"
-                            android:text="💨  WIND"
-                            android:textColor="#94A3B8"
-                            android:textSize="11.5sp" />
+                        <!-- Tile 1A: WIND -->
+                        <LinearLayout
+                            android:id="@+id/tileWind"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="6dp"
-                            android:layout_marginBottom="8dp"
-                            android:background="#15FFFFFF" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="💨  WIND"
+                                android:textColor="#94A3B8"
+                                android:textSize="9sp" />
 
-                        <TextView
-                            android:id="@+id/windSpeedText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/outfit"
-                            android:fontVariationSettings="'wght' 700"
-                            android:text="5 km/h"
-                            android:textColor="#FFFFFF"
-                            android:textSize="24sp" />
+                            <com.gathin.tvhome.WindCompassView
+                                android:id="@+id/windCompassView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/windDescText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="3dp"
-                            android:ellipsize="end"
-                            android:fontFamily="@font/outfit"
-                            android:fontVariationSettings="'wght' 400"
-                            android:singleLine="true"
-                            android:text="Angin tenang • Tiupan sehingga 12 km/h"
-                            android:textColor="#CBD5E1"
-                            android:textSize="11.5sp" />
+                        <!-- Tile 1B: MOON PHASE -->
+                        <LinearLayout
+                            android:id="@+id/tileMoon"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="🌕  WANING GIBBOUS"
+                                android:textColor="#94A3B8"
+                                android:textSize="9sp" />
+
+                            <com.gathin.tvhome.MoonPhaseView
+                                android:id="@+id/moonPhaseView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Tile 3B: UV INDEX & SUNSET -->
+                    <!-- Row 2: SUNSET & UV INDEX -->
                     <LinearLayout
-                        android:id="@+id/cardMetrics"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/weather_card_bg"
-                        android:orientation="vertical"
-                        android:paddingStart="16dp"
-                        android:paddingTop="12dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="12dp">
+                        android:layout_height="76dp"
+                        android:layout_marginBottom="6dp"
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/outfit"
-                            android:fontVariationSettings="'wght' 700"
-                            android:letterSpacing="0.08"
-                            android:singleLine="true"
-                            android:text="☀️  UV &amp; SUNSET"
-                            android:textColor="#94A3B8"
-                            android:textSize="11.5sp" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="6dp"
-                            android:layout_marginBottom="8dp"
-                            android:background="#15FFFFFF" />
-
+                        <!-- Tile 2A: SUNSET -->
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:id="@+id/tileSunset"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
 
-                            <!-- Left: UV -->
-                            <LinearLayout
-                                android:layout_width="0dp"
+                            <TextView
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="🌅  SUNSET"
+                                android:textColor="#94A3B8"
+                                android:textSize="9sp" />
+
+                            <TextView
+                                android:id="@+id/sunsetText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:text="6:57 PM"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp" />
+
+                            <com.gathin.tvhome.SunArcView
+                                android:id="@+id/sunArcView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </LinearLayout>
+
+                        <!-- Tile 2B: UV INDEX -->
+                        <LinearLayout
+                            android:id="@+id/tileUv"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="☀️  UV INDEX"
+                                android:textColor="#94A3B8"
+                                android:textSize="9sp" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="bottom"
+                                android:orientation="horizontal">
 
                                 <TextView
                                     android:id="@+id/uvValText"
@@ -452,68 +296,549 @@
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/outfit"
                                     android:fontVariationSettings="'wght' 700"
-                                    android:text="9"
-                                    android:textColor="#F59E0B"
-                                    android:textSize="20sp" />
+                                    android:text="6"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="16sp" />
 
                                 <TextView
                                     android:id="@+id/uvDescText"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginStart="5dp"
                                     android:fontFamily="@font/outfit"
-                                    android:fontVariationSettings="'wght' 500"
-                                    android:singleLine="true"
-                                    android:text="Sangat Tinggi"
-                                    android:textColor="#CBD5E1"
-                                    android:textSize="11sp" />
+                                    android:fontVariationSettings="'wght' 600"
+                                    android:text="High"
+                                    android:textColor="#F59E0B"
+                                    android:textSize="10sp" />
                             </LinearLayout>
 
-                            <!-- Right: Sunset / Humidity -->
-                            <LinearLayout
-                                android:layout_width="0dp"
+                            <com.gathin.tvhome.AqiSpectrumBarView
+                                android:layout_width="match_parent"
+                                android:layout_height="6dp"
+                                android:layout_marginTop="2dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:layout_marginTop="2dp"
+                                android:ellipsize="end"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 400"
+                                android:singleLine="true"
+                                android:text="Use sun protection until 5PM."
+                                android:textColor="#CBD5E1"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Row 3: FEELS LIKE & AIR QUALITY -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="74dp"
+                        android:layout_marginBottom="6dp"
+                        android:orientation="horizontal">
+
+                        <!-- Tile 3A: FEELS LIKE -->
+                        <LinearLayout
+                            android:id="@+id/tileFeelsLike"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="🌡️  FEELS LIKE"
+                                android:textColor="#94A3B8"
+                                android:textSize="9sp" />
+
+                            <TextView
+                                android:id="@+id/feelsLikeVal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:text="30°"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:ellipsize="end"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 400"
+                                android:maxLines="2"
+                                android:text="It feels warmer than actual temperature."
+                                android:textColor="#CBD5E1"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+
+                        <!-- Tile 3B: AIR QUALITY -->
+                        <LinearLayout
+                            android:id="@+id/tileAqi"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="🍃  AIR QUALITY"
+                                android:textColor="#94A3B8"
+                                android:textSize="9sp" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="bottom"
+                                android:orientation="horizontal">
 
                                 <TextView
-                                    android:id="@+id/humidityValText"
+                                    android:id="@+id/aqiValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/outfit"
                                     android:fontVariationSettings="'wght' 700"
-                                    android:text="90%"
+                                    android:text="56"
                                     android:textColor="#38BDF8"
-                                    android:textSize="20sp" />
+                                    android:textSize="16sp" />
 
                                 <TextView
-                                    android:id="@+id/sunsetText"
+                                    android:id="@+id/aqiStatus"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="5dp"
+                                    android:fontFamily="@font/outfit"
+                                    android:fontVariationSettings="'wght' 600"
+                                    android:text="Moderate"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+
+                            <com.gathin.tvhome.AqiSpectrumBarView
+                                android:id="@+id/aqiBar"
+                                android:layout_width="match_parent"
+                                android:layout_height="6dp"
+                                android:layout_marginTop="2dp" />
+
+                            <TextView
+                                android:id="@+id/aqiStation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:ellipsize="end"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 400"
+                                android:singleLine="true"
+                                android:text="SK Putrajaya Presint 18"
+                                android:textColor="#94A3B8"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Row 4: PRECIPITATION & VISIBILITY -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="74dp"
+                        android:orientation="horizontal">
+
+                        <!-- Tile 4A: PRECIPITATION -->
+                        <LinearLayout
+                            android:id="@+id/tilePrecip"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="💧  PRECIPITATION"
+                                android:textColor="#94A3B8"
+                                android:textSize="9sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:text="13 mm"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:ellipsize="end"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 400"
+                                android:singleLine="true"
+                                android:text="in last 24h • 21 mm expected"
+                                android:textColor="#CBD5E1"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+
+                        <!-- Tile 4B: VISIBILITY -->
+                        <LinearLayout
+                            android:id="@+id/tileVisibility"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="👁️  VISIBILITY"
+                                android:textColor="#94A3B8"
+                                android:textSize="9sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:text="12 km"
+                                android:textColor="#FFFFFF"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:ellipsize="end"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 400"
+                                android:singleLine="true"
+                                android:text="Clear view."
+                                android:textColor="#CBD5E1"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- RIGHT SECTION: Hourly (Top) + 10-Day & Radar (Bottom) -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1.88"
+                    android:orientation="vertical">
+
+                    <!-- Top Card: Hourly Conditions -->
+                    <LinearLayout
+                        android:id="@+id/cardHourly"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/weather_card_bg"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:orientation="vertical"
+                        android:paddingStart="12dp"
+                        android:paddingTop="7dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="7dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:text="Conditions"
+                                android:textColor="#FFFFFF"
+                                android:textSize="12.5sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 500"
+                                android:text="Temperature (°C)"
+                                android:textColor="#94A3B8"
+                                android:textSize="10sp" />
+
+                            <!-- Apple Weather 3-tab Toolbar Toggles -->
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="1" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:background="@drawable/bg_weather_tab_active"
+                                    android:padding="3.5dp"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/wx_cloud" />
+
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:layout_marginStart="5dp"
+                                    android:padding="4dp"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/ic_wx_droplet" />
+
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:layout_marginStart="5dp"
+                                    android:padding="4dp"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/ic_wx_wind" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="#12FFFFFF" />
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipChildren="false"
+                            android:clipToPadding="false"
+                            android:fillViewport="true"
+                            android:scrollbars="none">
+
+                            <LinearLayout
+                                android:id="@+id/hourlyContainer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:clipChildren="false"
+                                android:clipToPadding="false"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+                    </LinearLayout>
+
+                    <!-- Bottom Row: 10-Day Forecast & Radar / Metrics -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
+
+                        <!-- Left: 10-DAY FORECAST -->
+                        <LinearLayout
+                            android:id="@+id/cardDaily"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1.0"
+                            android:background="@drawable/weather_card_bg"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:orientation="vertical"
+                            android:paddingStart="10dp"
+                            android:paddingTop="7dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit"
+                                android:fontVariationSettings="'wght' 700"
+                                android:letterSpacing="0.08"
+                                android:singleLine="true"
+                                android:text="📅  10-DAY FORECAST"
+                                android:textColor="#94A3B8"
+                                android:textSize="10sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginBottom="2dp"
+                                android:background="#12FFFFFF" />
+
+                            <LinearLayout
+                                android:id="@+id/dailyContainer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical" />
+                        </LinearLayout>
+
+                        <!-- Right: PRECIPITATION RADAR MAP & HUMIDITY / PRESSURE -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.08"
+                            android:orientation="vertical">
+
+                            <!-- Radar Card -->
+                            <LinearLayout
+                                android:id="@+id/cardRadar"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/weather_card_bg"
+                                android:orientation="vertical"
+                                android:padding="8dp">
+
+                                <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/outfit"
-                                    android:fontVariationSettings="'wght' 500"
+                                    android:fontVariationSettings="'wght' 700"
+                                    android:letterSpacing="0.08"
                                     android:singleLine="true"
-                                    android:text="Terbenam: 6:57 PM"
-                                    android:textColor="#CBD5E1"
-                                    android:textSize="11sp" />
+                                    android:text="☂  PRECIPITATION"
+                                    android:textColor="#94A3B8"
+                                    android:textSize="10sp" />
+
+                                <com.gathin.tvhome.RadarMapView
+                                    android:id="@+id/radarMapView"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="116dp"
+                                    android:layout_marginTop="4dp" />
+                            </LinearLayout>
+
+                            <!-- Bottom Row below Radar: HUMIDITY & PRESSURE -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="72dp"
+                                android:layout_marginTop="6dp"
+                                android:orientation="horizontal">
+
+                                <!-- HUMIDITY -->
+                                <LinearLayout
+                                    android:id="@+id/tileHumidity"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginEnd="6dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/weather_card_bg"
+                                    android:orientation="vertical"
+                                    android:padding="7dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/outfit"
+                                        android:fontVariationSettings="'wght' 700"
+                                        android:letterSpacing="0.08"
+                                        android:singleLine="true"
+                                        android:text="💧  HUMIDITY"
+                                        android:textColor="#94A3B8"
+                                        android:textSize="9sp" />
+
+                                    <TextView
+                                        android:id="@+id/humidityValText"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/outfit"
+                                        android:fontVariationSettings="'wght' 700"
+                                        android:text="79%"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="16sp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="1dp"
+                                        android:ellipsize="end"
+                                        android:fontFamily="@font/outfit"
+                                        android:fontVariationSettings="'wght' 400"
+                                        android:singleLine="true"
+                                        android:text="The dew point is 25° right now."
+                                        android:textColor="#CBD5E1"
+                                        android:textSize="8sp" />
+                                </LinearLayout>
+
+                                <!-- PRESSURE -->
+                                <LinearLayout
+                                    android:id="@+id/tilePressure"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/weather_card_bg"
+                                    android:orientation="vertical"
+                                    android:padding="7dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/outfit"
+                                        android:fontVariationSettings="'wght' 700"
+                                        android:letterSpacing="0.08"
+                                        android:singleLine="true"
+                                        android:text="⏱️  PRESSURE"
+                                        android:textColor="#94A3B8"
+                                        android:textSize="9sp" />
+
+                                    <com.gathin.tvhome.PressureGaugeView
+                                        android:id="@+id/pressureGaugeView"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent" />
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Footer: Source and Timestamp -->
+            <!-- Bottom Disclaimer Footer -->
             <TextView
                 android:id="@+id/weatherFooter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/outfit"
                 android:fontVariationSettings="'wght' 400"
                 android:gravity="center"
+                android:letterSpacing="0.04"
                 android:singleLine="true"
-                android:text="Updated 10:38 AM  •  Jabatan Alam Sekitar (APIMS)  •  Open-Meteo"
-                android:textColor="#94A3B8"
-                android:textSize="10.5sp" />
+                android:text="Jabatan Alam Sekitar (APIMS)  •  Open-Meteo Atmospheric Model"
+                android:textColor="#40FFFFFF"
+                android:textSize="9sp" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
