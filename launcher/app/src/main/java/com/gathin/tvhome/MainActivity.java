@@ -190,6 +190,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private ImageView btnInlinePrev;
     private ImageView btnInlinePlayPause;
     private ImageView btnInlineNext;
+    private ImageView btnInlineClose;
+    private boolean nowPlayingDisabledByUser = false;
+    private String lastPlayedTrackKey = "";
     private NowPlayingManager.Listener nowPlayingListener;
     private View islamicShelf;
     private View ayahBlock;
@@ -474,6 +477,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             btnInlinePrev = findViewById(R.id.btnInlinePrev);
             btnInlinePlayPause = findViewById(R.id.btnInlinePlayPause);
             btnInlineNext = findViewById(R.id.btnInlineNext);
+            btnInlineClose = findViewById(R.id.btnInlineClose);
 
             View.OnClickListener openDialogClick = v -> {
                 SoundEffects.playSelect();
@@ -503,6 +507,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     handler.postDelayed(() -> NowPlayingManager.updateCurrentMedia(MainActivity.this), 300);
                 });
             }
+            if (btnInlineClose != null) {
+                btnInlineClose.setOnClickListener(v -> {
+                    SoundEffects.playSelect();
+                    disableNowPlaying();
+                });
+            }
 
             View.OnFocusChangeListener inlineFocus = (v, hasFocus) -> {
                 if (hasFocus) SoundEffects.playNav();
@@ -512,6 +522,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (btnInlinePrev != null) btnInlinePrev.setOnFocusChangeListener(inlineFocus);
             if (btnInlinePlayPause != null) btnInlinePlayPause.setOnFocusChangeListener(inlineFocus);
             if (btnInlineNext != null) btnInlineNext.setOnFocusChangeListener(inlineFocus);
+            if (btnInlineClose != null) btnInlineClose.setOnFocusChangeListener(inlineFocus);
 
             View.OnKeyListener inlineKey = (v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
@@ -532,6 +543,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (btnInlinePrev != null) btnInlinePrev.setOnKeyListener(inlineKey);
             if (btnInlinePlayPause != null) btnInlinePlayPause.setOnKeyListener(inlineKey);
             if (btnInlineNext != null) btnInlineNext.setOnKeyListener(inlineKey);
+            if (btnInlineClose != null) btnInlineClose.setOnKeyListener(inlineKey);
         }
         NowPlayingManager.init(this);
         nowPlayingListener = this::updateNowPlayingUi;
@@ -905,6 +917,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 showWallpaperDialog();
             }, 100);
         }
+        if (getIntent() != null && getIntent().getBooleanExtra("open_now_playing", false)) {
+            handler.postDelayed(() -> {
+                if (screensaverActive) dismissScreensaver();
+                showNowPlayingDialog();
+            }, 100);
+        }
     }
 
     /**
@@ -1104,6 +1122,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (intent != null && intent.getBooleanExtra("open_wallpaper", false)) {
             if (screensaverActive) dismissScreensaver();
             showWallpaperDialog();
+            return;
+        }
+        if (intent != null && intent.getBooleanExtra("open_now_playing", false)) {
+            if (screensaverActive) dismissScreensaver();
+            showNowPlayingDialog();
             return;
         }
         if (intent != null && intent.getBooleanExtra("screensaver", false)) {
@@ -3178,31 +3201,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         boolean hasActiveMusic = info != null && info.hasMusic();
 
         if (!hasActiveMusic) {
-            if (nowPlayingCard.getVisibility() != View.GONE) {
-                nowPlayingCard.animate()
-                        .alpha(0f)
-                        .scaleX(0.9f)
-                        .scaleY(0.9f)
-                        .setDuration(180)
-                        .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                        .withLayer()
-                        .withEndAction(() -> {
-                            nowPlayingCard.setVisibility(View.GONE);
-                            nowPlayingCard.setEnabled(false);
-                            if (weatherAirQualityView != null) {
-                                weatherAirQualityView.setNextFocusDownId(View.NO_ID);
-                            }
-                            showAyah(WeeklyAyah.stored(MainActivity.this) != null ? WeeklyAyah.stored(MainActivity.this) : WeeklyAyah.last(MainActivity.this));
-                        })
-                        .start();
-            } else {
-                nowPlayingCard.setVisibility(View.GONE);
-                nowPlayingCard.setEnabled(false);
-                if (weatherAirQualityView != null) {
-                    weatherAirQualityView.setNextFocusDownId(View.NO_ID);
-                }
-                showAyah(WeeklyAyah.stored(this) != null ? WeeklyAyah.stored(this) : WeeklyAyah.last(this));
-            }
+            hideNowPlayingCard();
+            nowPlayingDisabledByUser = false;
+            lastPlayedTrackKey = "";
+            return;
+        }
+
+        String currentTrackKey = info.packageName + ":" + info.title;
+        if (!currentTrackKey.equals(lastPlayedTrackKey)) {
+            lastPlayedTrackKey = currentTrackKey;
+            nowPlayingDisabledByUser = false; // New song started playing -> show
+        }
+
+        if (nowPlayingDisabledByUser) {
+            hideNowPlayingCard();
             return;
         }
 
@@ -3253,6 +3265,41 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    private void disableNowPlaying() {
+        nowPlayingDisabledByUser = true;
+        NowPlayingManager.pausePlayback();
+        hideNowPlayingCard();
+    }
+
+    private void hideNowPlayingCard() {
+        if (nowPlayingCard == null) return;
+        if (nowPlayingCard.getVisibility() != View.GONE) {
+            nowPlayingCard.animate()
+                    .alpha(0f)
+                    .scaleX(0.9f)
+                    .scaleY(0.9f)
+                    .setDuration(180)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                    .withLayer()
+                    .withEndAction(() -> {
+                        nowPlayingCard.setVisibility(View.GONE);
+                        nowPlayingCard.setEnabled(false);
+                        if (weatherAirQualityView != null) {
+                            weatherAirQualityView.setNextFocusDownId(View.NO_ID);
+                        }
+                        showAyah(WeeklyAyah.stored(MainActivity.this) != null ? WeeklyAyah.stored(MainActivity.this) : WeeklyAyah.last(MainActivity.this));
+                    })
+                    .start();
+        } else {
+            nowPlayingCard.setVisibility(View.GONE);
+            nowPlayingCard.setEnabled(false);
+            if (weatherAirQualityView != null) {
+                weatherAirQualityView.setNextFocusDownId(View.NO_ID);
+            }
+            showAyah(WeeklyAyah.stored(this) != null ? WeeklyAyah.stored(this) : WeeklyAyah.last(this));
+        }
+    }
+
     private void showNowPlayingDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -3263,148 +3310,72 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Window w = dialog.getWindow();
         if (w != null) {
             w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            w.setLayout((int) (580 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+            w.setLayout((int) (480 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
             w.setDimAmount(0.65f);
             w.setFlags(android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
 
-        ImageView headerIcon = panel.findViewById(R.id.headerIcon);
-        TextView badgeSource = panel.findViewById(R.id.badgeSource);
-        ImageView imgAlbumArt = panel.findViewById(R.id.imgAlbumArt);
-        TextView txtTrackTitle = panel.findViewById(R.id.txtTrackTitle);
-        TextView txtTrackArtist = panel.findViewById(R.id.txtTrackArtist);
-        TextView txtPlaybackStatus = panel.findViewById(R.id.txtPlaybackStatus);
-
-        TextView btnPlayPause = panel.findViewById(R.id.btnPlayPause);
+        ImageView btnPopupPrev = panel.findViewById(R.id.btnPopupPrev);
+        ImageView btnPlayPause = panel.findViewById(R.id.btnPlayPause);
+        ImageView btnPopupNext = panel.findViewById(R.id.btnPopupNext);
         TextView btnOpenApp = panel.findViewById(R.id.btnOpenApp);
         TextView btnCloseDialog = panel.findViewById(R.id.btnCloseDialog);
 
-        NowPlayingManager.MediaInfo info = NowPlayingManager.getCurrentInfo();
-        boolean hasMedia = info != null && info.hasMusic();
+        updatePopupMediaInfo(panel, dialog);
 
-        if (hasMedia) {
-            txtTrackTitle.setText(info.title.isEmpty() ? "Lagu Dimainkan" : info.title);
-            txtTrackTitle.setSelected(true);
-            txtTrackArtist.setText(info.artist.isEmpty() ? (info.appName.isEmpty() ? "Muzik" : info.appName) : info.artist);
-            txtPlaybackStatus.setText(info.isPlaying ? "▶ Sedang Dimainkan" : "⏸ Pause");
-            txtPlaybackStatus.setTextColor(info.isPlaying ? Color.parseColor("#00E676") : Color.parseColor("#FFC107"));
+        if (btnPopupPrev != null) {
+            btnPopupPrev.setOnClickListener(v -> {
+                SoundEffects.playSelect();
+                NowPlayingManager.skipToPrevious();
+                handler.postDelayed(() -> {
+                    NowPlayingManager.updateCurrentMedia(MainActivity.this);
+                    updatePopupMediaInfo(panel, dialog);
+                }, 300);
+            });
+        }
 
-            if (info.albumArt != null) {
-                imgAlbumArt.setImageBitmap(info.albumArt);
-                imgAlbumArt.setPadding(0, 0, 0, 0);
-            } else if (!info.packageName.isEmpty()) {
-                try {
-                    Drawable appIcon = getPackageManager().getApplicationIcon(info.packageName);
-                    imgAlbumArt.setImageDrawable(appIcon);
-                    imgAlbumArt.setPadding(8, 8, 8, 8);
-                } catch (Exception e) {
-                    imgAlbumArt.setImageResource(info.isPlaying ? R.drawable.ic_play : R.drawable.ic_music);
-                    imgAlbumArt.setPadding(12, 12, 12, 12);
-                }
-            } else {
-                imgAlbumArt.setImageResource(info.isPlaying ? R.drawable.ic_play : R.drawable.ic_music);
-                imgAlbumArt.setPadding(12, 12, 12, 12);
-            }
-
-            badgeSource.setText(info.appName.isEmpty() ? "SPOTIFY" : info.appName.toUpperCase(Locale.ROOT));
-            if (info.packageName.contains("spotify")) {
-                badgeSource.setTextColor(Color.parseColor("#1DB954"));
-                headerIcon.setColorFilter(Color.parseColor("#1DB954"));
-            } else {
-                badgeSource.setTextColor(Color.parseColor("#FF0033"));
-                headerIcon.setColorFilter(Color.parseColor("#FF0033"));
-            }
-
-            btnPlayPause.setText(info.isPlaying ? "Pause" : "Play");
-            btnPlayPause.setCompoundDrawablesWithIntrinsicBounds(info.isPlaying ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
-            btnOpenApp.setText("Buka " + (info.appName.isEmpty() ? "Aplikasi" : info.appName));
-
+        if (btnPlayPause != null) {
             btnPlayPause.setOnClickListener(v -> {
+                SoundEffects.playSelect();
                 NowPlayingManager.togglePlayPause();
                 handler.postDelayed(() -> {
                     NowPlayingManager.updateCurrentMedia(MainActivity.this);
-                    NowPlayingManager.MediaInfo updated = NowPlayingManager.getCurrentInfo();
-                    if (updated != null) {
-                        btnPlayPause.setText(updated.isPlaying ? "Pause" : "Play");
-                        btnPlayPause.setCompoundDrawablesWithIntrinsicBounds(updated.isPlaying ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
-                        txtPlaybackStatus.setText(updated.isPlaying ? "▶ Sedang Dimainkan" : "⏸ Pause");
-                        txtPlaybackStatus.setTextColor(updated.isPlaying ? Color.parseColor("#00E676") : Color.parseColor("#FFC107"));
-                    }
-                }, 250);
+                    updatePopupMediaInfo(panel, dialog);
+                }, 300);
             });
+        }
 
+        if (btnPopupNext != null) {
+            btnPopupNext.setOnClickListener(v -> {
+                SoundEffects.playSelect();
+                NowPlayingManager.skipToNext();
+                handler.postDelayed(() -> {
+                    NowPlayingManager.updateCurrentMedia(MainActivity.this);
+                    updatePopupMediaInfo(panel, dialog);
+                }, 300);
+            });
+        }
+
+        if (btnOpenApp != null) {
             btnOpenApp.setOnClickListener(v -> {
+                SoundEffects.playSelect();
                 dialog.dismiss();
                 NowPlayingManager.openMediaApp(MainActivity.this);
             });
-        } else {
-            txtTrackTitle.setText("Tiada Lagu Dimainkan");
-            txtTrackArtist.setText("Buka Spotify atau YouTube Music untuk mula mendengar");
-            txtPlaybackStatus.setText("⏸ Pause");
-            txtPlaybackStatus.setTextColor(Color.parseColor("#80FFFFFF"));
-            badgeSource.setText("SPOTIFY");
-            btnPlayPause.setVisibility(View.GONE);
-            btnOpenApp.setVisibility(View.GONE);
         }
 
-        btnCloseDialog.setOnClickListener(v -> dialog.dismiss());
-
-        // Quick App Tiles Setup with 60fps hardware accelerated focus animation
-        int[] tileIds = new int[]{R.id.tileSpotify, R.id.tileYoutube, R.id.tileNuvio, R.id.tileReezn, R.id.tilePptv, R.id.tileVlc};
-        int[] iconIds = new int[]{R.id.iconSpotify, R.id.iconYoutube, R.id.iconNuvio, R.id.iconReezn, R.id.iconPptv, R.id.iconVlc};
-        String[] appPkgs = new String[]{
-                "com.spotify.tv.android",
-                "com.google.android.youtube.tv",
-                "tv.nuvio.app",
-                "com.reezn.tv",
-                "com.niklabs.pptv",
-                "org.videolan.vlc"
-        };
-        String[] appNames = new String[]{"Spotify", "YouTube", "Nuvio", "Reezn", "Perfect TV", "VLC"};
-
-        PackageManager pm = getPackageManager();
-        for (int i = 0; i < tileIds.length; i++) {
-            LinearLayout tile = panel.findViewById(tileIds[i]);
-            ImageView iconView = panel.findViewById(iconIds[i]);
-            final String pkg = appPkgs[i];
-            final String name = appNames[i];
-
-            if (tile == null) continue;
-
-            try {
-                Drawable appIcon = pm.getApplicationIcon(pkg);
-                if (iconView != null && appIcon != null) {
-                    iconView.setImageDrawable(appIcon);
-                }
-            } catch (Exception ignored) {}
-
-            tile.setOnFocusChangeListener((v, hasFocus) -> {
-                float scale = hasFocus ? 1.08f : 1.0f;
-                v.animate()
-                        .scaleX(scale)
-                        .scaleY(scale)
-                        .setDuration(150)
-                        .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                        .withLayer()
-                        .start();
-            });
-
-            tile.setOnClickListener(v -> {
+        if (btnCloseDialog != null) {
+            btnCloseDialog.setOnClickListener(v -> {
+                SoundEffects.playSelect();
                 dialog.dismiss();
-                Intent launchIntent = pm.getLeanbackLaunchIntentForPackage(pkg);
-                if (launchIntent == null) launchIntent = pm.getLaunchIntentForPackage(pkg);
-                if (launchIntent != null) {
-                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(launchIntent);
-                } else {
-                    Toast.makeText(MainActivity.this, name + " belum dipasang di TV ini.", Toast.LENGTH_SHORT).show();
-                }
+                disableNowPlaying();
             });
         }
 
         View.OnFocusChangeListener btnFocus = (v, hasFocus) -> {
-            float scale = hasFocus ? 1.06f : 1.0f;
+            if (hasFocus) SoundEffects.playNav();
+            float scale = hasFocus ? 1.08f : 1.0f;
             v.animate()
                     .scaleX(scale)
                     .scaleY(scale)
@@ -3413,15 +3384,90 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .withLayer()
                     .start();
         };
-        btnPlayPause.setOnFocusChangeListener(btnFocus);
-        btnOpenApp.setOnFocusChangeListener(btnFocus);
-        btnCloseDialog.setOnFocusChangeListener(btnFocus);
+
+        if (btnPopupPrev != null) btnPopupPrev.setOnFocusChangeListener(btnFocus);
+        if (btnPlayPause != null) btnPlayPause.setOnFocusChangeListener(btnFocus);
+        if (btnPopupNext != null) btnPopupNext.setOnFocusChangeListener(btnFocus);
+        if (btnOpenApp != null) btnOpenApp.setOnFocusChangeListener(btnFocus);
+        if (btnCloseDialog != null) btnCloseDialog.setOnFocusChangeListener(btnFocus);
 
         dialog.show();
-        if (hasMedia) {
+        if (btnPlayPause != null) {
             btnPlayPause.requestFocus();
+        }
+    }
+
+    private void updatePopupMediaInfo(View panel, Dialog dialog) {
+        if (panel == null || (dialog != null && !dialog.isShowing())) return;
+        NowPlayingManager.MediaInfo info = NowPlayingManager.getCurrentInfo();
+        boolean hasMedia = info != null && info.hasMusic();
+
+        ImageView headerIcon = panel.findViewById(R.id.headerIcon);
+        TextView badgeSource = panel.findViewById(R.id.badgeSource);
+        ImageView imgAlbumArt = panel.findViewById(R.id.imgAlbumArt);
+        TextView txtTrackTitle = panel.findViewById(R.id.txtTrackTitle);
+        TextView txtTrackArtist = panel.findViewById(R.id.txtTrackArtist);
+        TextView txtPlaybackStatus = panel.findViewById(R.id.txtPlaybackStatus);
+        ImageView btnPlayPause = panel.findViewById(R.id.btnPlayPause);
+        TextView btnOpenApp = panel.findViewById(R.id.btnOpenApp);
+
+        if (hasMedia) {
+            if (txtTrackTitle != null) {
+                txtTrackTitle.setText(info.title.isEmpty() ? "Lagu Dimainkan" : info.title);
+                txtTrackTitle.setSelected(true);
+            }
+            if (txtTrackArtist != null) {
+                txtTrackArtist.setText(info.artist.isEmpty() ? (info.appName.isEmpty() ? "Muzik" : info.appName) : info.artist);
+            }
+            if (txtPlaybackStatus != null) {
+                txtPlaybackStatus.setText(info.isPlaying ? "▶ Sedang Dimainkan" : "⏸ Pause");
+                txtPlaybackStatus.setTextColor(info.isPlaying ? Color.parseColor("#1DB954") : Color.parseColor("#FFC107"));
+            }
+
+            if (imgAlbumArt != null) {
+                if (info.albumArt != null) {
+                    imgAlbumArt.setImageBitmap(info.albumArt);
+                    imgAlbumArt.setPadding(0, 0, 0, 0);
+                } else if (!info.packageName.isEmpty()) {
+                    try {
+                        Drawable appIcon = getPackageManager().getApplicationIcon(info.packageName);
+                        imgAlbumArt.setImageDrawable(appIcon);
+                        imgAlbumArt.setPadding(16, 16, 16, 16);
+                    } catch (Exception e) {
+                        imgAlbumArt.setImageResource(R.drawable.ic_music);
+                        imgAlbumArt.setPadding(18, 18, 18, 18);
+                    }
+                }
+            }
+
+            if (badgeSource != null) {
+                badgeSource.setText(info.appName.isEmpty() ? "SPOTIFY" : info.appName.toUpperCase(Locale.ROOT));
+                if (info.packageName.contains("spotify")) {
+                    badgeSource.setTextColor(Color.parseColor("#1DB954"));
+                    if (headerIcon != null) headerIcon.setColorFilter(Color.parseColor("#1DB954"));
+                } else {
+                    badgeSource.setTextColor(Color.parseColor("#FF0033"));
+                    if (headerIcon != null) headerIcon.setColorFilter(Color.parseColor("#FF0033"));
+                }
+            }
+
+            if (btnPlayPause != null) {
+                btnPlayPause.setImageResource(info.isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
+            }
+
+            if (btnOpenApp != null) {
+                btnOpenApp.setText("Buka " + (info.appName.isEmpty() ? "Aplikasi" : info.appName));
+            }
         } else {
-            panel.findViewById(R.id.tileSpotify).requestFocus();
+            if (txtTrackTitle != null) txtTrackTitle.setText("Tiada Lagu Dimainkan");
+            if (txtTrackArtist != null) txtTrackArtist.setText("Buka Spotify atau YouTube Music untuk mula mendengar");
+            if (txtPlaybackStatus != null) {
+                txtPlaybackStatus.setText("⏸ Tiada Mainan");
+                txtPlaybackStatus.setTextColor(Color.parseColor("#80FFFFFF"));
+            }
+            if (btnPlayPause != null) {
+                btnPlayPause.setImageResource(R.drawable.ic_play);
+            }
         }
     }
 

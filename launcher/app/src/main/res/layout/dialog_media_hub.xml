@@ -6,9 +6,10 @@
     android:background="@drawable/bg_glass_dialog"
     android:paddingStart="28dp"
     android:paddingEnd="28dp"
-    android:paddingTop="24dp"
-    android:paddingBottom="24dp"
-    android:elevation="18dp">
+    android:paddingTop="26dp"
+    android:paddingBottom="26dp"
+    android:gravity="center_horizontal"
+    android:elevation="20dp">
 
     <!-- Top Header -->
     <LinearLayout
@@ -19,8 +20,8 @@
 
         <ImageView
             android:id="@+id/headerIcon"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/ic_music"
             android:tint="#1DB954" />
 
@@ -32,15 +33,11 @@
             android:layout_marginStart="10dp"
             android:text="NOW PLAYING"
             android:textColor="#FFFFFFFF"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:fontFamily="@font/outfit"
             android:fontVariationSettings="'wght' 700"
             android:textStyle="bold"
-            android:shadowColor="#CC000000"
-            android:shadowDx="0"
-            android:shadowDy="1"
-            android:shadowRadius="3"
-            android:letterSpacing="0.06" />
+            android:letterSpacing="0.08" />
 
         <TextView
             android:id="@+id/badgeSource"
@@ -52,424 +49,170 @@
             android:gravity="center"
             android:text="SPOTIFY"
             android:textColor="#1DB954"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:fontFamily="@font/outfit"
             android:fontVariationSettings="'wght' 700"
             android:textStyle="bold"
             android:letterSpacing="0.04" />
     </LinearLayout>
 
-    <!-- Active Media Card (Frosted Glass Inset) -->
-    <LinearLayout
-        android:id="@+id/cardNowPlaying"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        android:background="@drawable/glass_panel"
-        android:padding="16dp"
-        android:gravity="center_vertical">
-
-        <FrameLayout
-            android:layout_width="84dp"
-            android:layout_height="84dp">
-
-            <ImageView
-                android:id="@+id/imgAlbumArt"
-                android:layout_width="84dp"
-                android:layout_height="84dp"
-                android:background="@drawable/bg_media_app_pill"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_music"
-                android:padding="12dp" />
-        </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="18dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/txtTrackTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Tiada Lagu Dimainkan"
-                android:textColor="#FFFFFFFF"
-                android:textSize="21sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 700"
-                android:textStyle="bold"
-                android:shadowColor="#DD000000"
-                android:shadowDx="0"
-                android:shadowDy="1"
-                android:shadowRadius="4"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit="marquee_forever" />
-
-            <TextView
-                android:id="@+id/txtTrackArtist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Buka Spotify atau YouTube Music untuk mula mendengar"
-                android:textColor="#F0FFFFFF"
-                android:textSize="15sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 600"
-                android:textStyle="bold"
-                android:shadowColor="#B3000000"
-                android:shadowDx="0"
-                android:shadowDy="1"
-                android:shadowRadius="3"
-                android:singleLine="true"
-                android:ellipsize="end" />
-
-            <TextView
-                android:id="@+id/txtPlaybackStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="⏸ Pause"
-                android:textColor="#FFC107"
-                android:textSize="13.5sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 650"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Playback Control Actions Row -->
-    <LinearLayout
-        android:id="@+id/layoutActions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        android:gravity="end">
-
-        <TextView
-            android:id="@+id/btnPlayPause"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="center"
-            android:background="@drawable/bg_dialog_btn"
-            android:textColor="@drawable/dialog_btn_text"
-            android:drawableTint="@drawable/dialog_btn_text"
-            android:drawableStart="@drawable/ic_pause"
-            android:drawablePadding="8dp"
-            android:textSize="15.5sp"
-            android:fontFamily="@font/outfit"
-            android:fontVariationSettings="'wght' 700"
-            android:textStyle="bold"
-            android:focusable="true"
-            android:clickable="true"
-            android:text="Pause"
-            android:nextFocusLeft="@+id/btnPlayPause"
-            android:nextFocusRight="@+id/btnOpenApp"
-            android:nextFocusDown="@+id/tileSpotify" />
-
-        <TextView
-            android:id="@+id/btnOpenApp"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_marginStart="10dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="center"
-            android:background="@drawable/bg_dialog_btn"
-            android:textColor="@drawable/dialog_btn_text"
-            android:drawableTint="@drawable/dialog_btn_text"
-            android:textSize="15.5sp"
-            android:fontFamily="@font/outfit"
-            android:fontVariationSettings="'wght' 700"
-            android:textStyle="bold"
-            android:focusable="true"
-            android:clickable="true"
-            android:text="Buka Spotify"
-            android:nextFocusLeft="@+id/btnPlayPause"
-            android:nextFocusRight="@+id/btnCloseDialog"
-            android:nextFocusDown="@+id/tileSpotify" />
-
-        <TextView
-            android:id="@+id/btnCloseDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_marginStart="10dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="center"
-            android:background="@drawable/bg_dialog_btn"
-            android:textColor="@drawable/dialog_btn_text"
-            android:drawableTint="@drawable/dialog_btn_text"
-            android:textSize="15.5sp"
-            android:fontFamily="@font/outfit"
-            android:fontVariationSettings="'wght' 700"
-            android:textStyle="bold"
-            android:focusable="true"
-            android:clickable="true"
-            android:text="Tutup"
-            android:nextFocusLeft="@+id/btnOpenApp"
-            android:nextFocusRight="@+id/btnCloseDialog"
-            android:nextFocusDown="@+id/tileSpotify" />
-    </LinearLayout>
-
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
+    <!-- Hero Album Art -->
+    <FrameLayout
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="12dp"
-        android:background="#24FFFFFF" />
+        android:layout_marginBottom="16dp">
 
-    <!-- Apps Header -->
+        <ImageView
+            android:id="@+id/imgAlbumArt"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:background="@drawable/bg_media_app_pill"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_music"
+            android:padding="0dp" />
+    </FrameLayout>
+
+    <!-- Track Title -->
     <TextView
+        android:id="@+id/txtTrackTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="APLIKASI MUZIK &amp; MEDIA"
-        android:textColor="#CCFFFFFF"
-        android:textSize="13sp"
+        android:gravity="center"
+        android:text="Lagu Dimainkan"
+        android:textColor="#FFFFFFFF"
+        android:textSize="20sp"
         android:fontFamily="@font/outfit"
         android:fontVariationSettings="'wght' 700"
         android:textStyle="bold"
-        android:shadowColor="#AA000000"
-        android:shadowDx="0"
-        android:shadowDy="1"
-        android:shadowRadius="2"
-        android:letterSpacing="0.06" />
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever" />
 
-    <!-- Quick Media Apps Grid Row -->
-    <LinearLayout
-        android:id="@+id/quickAppsRow"
+    <!-- Artist -->
+    <TextView
+        android:id="@+id/txtTrackArtist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:text="Artis"
+        android:textColor="#B3FFFFFF"
+        android:textSize="14sp"
+        android:fontFamily="@font/outfit"
+        android:fontVariationSettings="'wght' 500"
+        android:singleLine="true" />
+
+    <!-- Playback Status Capsule -->
+    <TextView
+        android:id="@+id/txtPlaybackStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="▶ Sedang Dimainkan"
+        android:textColor="#1DB954"
+        android:textSize="12sp"
+        android:fontFamily="@font/outfit"
+        android:fontVariationSettings="'wght' 600"
+        android:letterSpacing="0.04" />
+
+    <!-- Frosted Glass Player Controls: Prev, Play/Pause, Next -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/btnPopupPrev"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_skip_previous"
+            android:tint="@color/ic_np_tint"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@drawable/bg_np_round_btn"
+            android:nextFocusRight="@+id/btnPlayPause"
+            android:nextFocusDown="@+id/btnOpenApp" />
+
+        <ImageView
+            android:id="@+id/btnPlayPause"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:padding="13dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_pause"
+            android:tint="@color/ic_np_tint"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@drawable/bg_np_round_btn"
+            android:nextFocusLeft="@+id/btnPopupPrev"
+            android:nextFocusRight="@+id/btnPopupNext"
+            android:nextFocusDown="@+id/btnOpenApp" />
+
+        <ImageView
+            android:id="@+id/btnPopupNext"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_skip_next"
+            android:tint="@color/ic_np_tint"
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@drawable/bg_np_round_btn"
+            android:nextFocusLeft="@+id/btnPlayPause"
+            android:nextFocusDown="@+id/btnCloseDialog" />
+    </LinearLayout>
+
+    <!-- Bottom Action Buttons: Open App & Close/Disable -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:orientation="horizontal"
         android:gravity="center">
 
-        <!-- Spotify -->
-        <LinearLayout
-            android:id="@+id/tileSpotify"
+        <TextView
+            android:id="@+id/btnOpenApp"
             android:layout_width="0dp"
-            android:layout_height="76dp"
+            android:layout_height="42dp"
             android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_media_app_pill"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_dialog_btn"
+            android:textColor="@drawable/dialog_btn_text"
+            android:textSize="13sp"
+            android:fontFamily="@font/outfit"
+            android:fontVariationSettings="'wght' 600"
+            android:gravity="center"
             android:focusable="true"
             android:clickable="true"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="6dp"
+            android:text="Buka Spotify"
             android:nextFocusUp="@+id/btnPlayPause"
-            android:nextFocusLeft="@+id/tileSpotify"
-            android:nextFocusRight="@+id/tileYoutube">
+            android:nextFocusRight="@+id/btnCloseDialog" />
 
-            <ImageView
-                android:id="@+id/iconSpotify"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:src="@drawable/ic_music" />
-
-            <TextView
-                android:id="@+id/lblSpotify"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Spotify"
-                android:textColor="@drawable/dialog_btn_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 650"
-                android:textStyle="bold"
-                android:singleLine="true" />
-        </LinearLayout>
-
-        <!-- YouTube -->
-        <LinearLayout
-            android:id="@+id/tileYoutube"
+        <TextView
+            android:id="@+id/btnCloseDialog"
             android:layout_width="0dp"
-            android:layout_height="76dp"
+            android:layout_height="42dp"
             android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_media_app_pill"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/bg_dialog_btn"
+            android:textColor="@drawable/dialog_btn_text"
+            android:textSize="13sp"
+            android:fontFamily="@font/outfit"
+            android:fontVariationSettings="'wght' 600"
+            android:gravity="center"
             android:focusable="true"
             android:clickable="true"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="6dp"
+            android:text="Tutup &amp; Hentikan"
             android:nextFocusUp="@+id/btnPlayPause"
-            android:nextFocusLeft="@+id/tileSpotify"
-            android:nextFocusRight="@+id/tileNuvio">
-
-            <ImageView
-                android:id="@+id/iconYoutube"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:src="@drawable/ic_play" />
-
-            <TextView
-                android:id="@+id/lblYoutube"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="YouTube"
-                android:textColor="@drawable/dialog_btn_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 650"
-                android:textStyle="bold"
-                android:singleLine="true" />
-        </LinearLayout>
-
-        <!-- Nuvio -->
-        <LinearLayout
-            android:id="@+id/tileNuvio"
-            android:layout_width="0dp"
-            android:layout_height="76dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_media_app_pill"
-            android:focusable="true"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="6dp"
-            android:nextFocusUp="@+id/btnOpenApp"
-            android:nextFocusLeft="@+id/tileYoutube"
-            android:nextFocusRight="@+id/tileReezn">
-
-            <ImageView
-                android:id="@+id/iconNuvio"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:src="@drawable/ic_livetv" />
-
-            <TextView
-                android:id="@+id/lblNuvio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Nuvio"
-                android:textColor="@drawable/dialog_btn_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 650"
-                android:textStyle="bold"
-                android:singleLine="true" />
-        </LinearLayout>
-
-        <!-- Reezn -->
-        <LinearLayout
-            android:id="@+id/tileReezn"
-            android:layout_width="0dp"
-            android:layout_height="76dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_media_app_pill"
-            android:focusable="true"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="6dp"
-            android:nextFocusUp="@+id/btnOpenApp"
-            android:nextFocusLeft="@+id/tileNuvio"
-            android:nextFocusRight="@+id/tilePptv">
-
-            <ImageView
-                android:id="@+id/iconReezn"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:src="@drawable/ic_play" />
-
-            <TextView
-                android:id="@+id/lblReezn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Reezn"
-                android:textColor="@drawable/dialog_btn_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 650"
-                android:textStyle="bold"
-                android:singleLine="true" />
-        </LinearLayout>
-
-        <!-- Perfect TV -->
-        <LinearLayout
-            android:id="@+id/tilePptv"
-            android:layout_width="0dp"
-            android:layout_height="76dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:background="@drawable/bg_media_app_pill"
-            android:focusable="true"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="6dp"
-            android:nextFocusUp="@+id/btnCloseDialog"
-            android:nextFocusLeft="@+id/tileReezn"
-            android:nextFocusRight="@+id/tileVlc">
-
-            <ImageView
-                android:id="@+id/iconPptv"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:src="@drawable/ic_livetv" />
-
-            <TextView
-                android:id="@+id/lblPptv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Perfect TV"
-                android:textColor="@drawable/dialog_btn_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 650"
-                android:textStyle="bold"
-                android:singleLine="true" />
-        </LinearLayout>
-
-        <!-- VLC -->
-        <LinearLayout
-            android:id="@+id/tileVlc"
-            android:layout_width="0dp"
-            android:layout_height="76dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_media_app_pill"
-            android:focusable="true"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="6dp"
-            android:nextFocusUp="@+id/btnCloseDialog"
-            android:nextFocusLeft="@+id/tilePptv"
-            android:nextFocusRight="@+id/tileVlc">
-
-            <ImageView
-                android:id="@+id/iconVlc"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:src="@drawable/ic_play" />
-
-            <TextView
-                android:id="@+id/lblVlc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="VLC"
-                android:textColor="@drawable/dialog_btn_text"
-                android:textSize="13sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 650"
-                android:textStyle="bold"
-                android:singleLine="true" />
-        </LinearLayout>
+            android:nextFocusLeft="@+id/btnOpenApp" />
     </LinearLayout>
 </LinearLayout>

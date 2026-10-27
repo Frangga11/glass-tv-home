@@ -39,9 +39,7 @@ public final class NowPlayingManager {
         return pkg.equals("com.spotify.tv.android")
                 || pkg.equals("com.spotify.music")
                 || pkg.equals("com.google.android.apps.youtube.music")
-                || pkg.equals("com.google.android.youtube.tvmusic")
-                || pkg.equals("com.google.android.youtube.tv")
-                || pkg.equals("com.google.android.youtube");
+                || pkg.equals("com.google.android.youtube.tvmusic");
     }
 
     public static class MediaInfo {
@@ -64,7 +62,7 @@ public final class NowPlayingManager {
         }
 
         public boolean hasMusic() {
-            return (isPlaying || !title.isEmpty()) && isAllowedMusicApp(packageName);
+            return isPlaying && isAllowedMusicApp(packageName);
         }
 
         public String getDisplayText() {
@@ -408,6 +406,26 @@ public final class NowPlayingManager {
                 if (am != null) {
                     am.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE));
                     am.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE));
+                }
+            } catch (Exception ignored) {}
+        }
+    }
+
+    public static void pausePlayback() {
+        if (currentInfo != null && currentInfo.controller != null) {
+            try {
+                currentInfo.controller.getTransportControls().pause();
+                return;
+            } catch (Exception e) {
+                Log.e(TAG, "Error pausing via controller: " + e.getMessage());
+            }
+        }
+        if (appContext != null) {
+            try {
+                AudioManager am = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
+                if (am != null) {
+                    am.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
+                    am.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
                 }
             } catch (Exception ignored) {}
         }

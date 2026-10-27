@@ -645,7 +645,22 @@
                         android:focusable="true"
                         android:clickable="true"
                         android:background="@drawable/bg_np_round_btn"
-                        android:nextFocusLeft="@+id/btnInlinePlayPause" />
+                        android:nextFocusLeft="@+id/btnInlinePlayPause"
+                        android:nextFocusRight="@+id/btnInlineClose" />
+
+                    <ImageView
+                        android:id="@+id/btnInlineClose"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:padding="9dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_close"
+                        android:tint="@color/ic_np_tint"
+                        android:focusable="true"
+                        android:clickable="true"
+                        android:background="@drawable/bg_np_round_btn"
+                        android:nextFocusLeft="@+id/btnInlineNext" />
                 </LinearLayout>
             </LinearLayout>
 
