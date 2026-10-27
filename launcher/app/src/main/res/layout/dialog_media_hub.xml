@@ -32,9 +32,14 @@
             android:layout_marginStart="10dp"
             android:text="NOW PLAYING"
             android:textColor="#FFFFFFFF"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:fontFamily="@font/outfit"
-            android:fontVariationSettings="'wght' 600"
+            android:fontVariationSettings="'wght' 700"
+            android:textStyle="bold"
+            android:shadowColor="#CC000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="3"
             android:letterSpacing="0.06" />
 
         <TextView
@@ -47,9 +52,10 @@
             android:gravity="center"
             android:text="SPOTIFY"
             android:textColor="#1DB954"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:fontFamily="@font/outfit"
-            android:fontVariationSettings="'wght' 600"
+            android:fontVariationSettings="'wght' 700"
+            android:textStyle="bold"
             android:letterSpacing="0.04" />
     </LinearLayout>
 
@@ -91,9 +97,14 @@
                 android:layout_height="wrap_content"
                 android:text="Tiada Lagu Dimainkan"
                 android:textColor="#FFFFFFFF"
-                android:textSize="20sp"
+                android:textSize="21sp"
                 android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 600"
+                android:fontVariationSettings="'wght' 700"
+                android:textStyle="bold"
+                android:shadowColor="#DD000000"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="4"
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever" />
@@ -104,9 +115,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Buka Spotify atau YouTube Music untuk mula mendengar"
-                android:textColor="#B3FFFFFF"
-                android:textSize="14sp"
+                android:textColor="#F0FFFFFF"
+                android:textSize="15sp"
                 android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 600"
+                android:textStyle="bold"
+                android:shadowColor="#B3000000"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="3"
                 android:singleLine="true"
                 android:ellipsize="end" />
 
@@ -117,9 +134,10 @@
                 android:layout_marginTop="6dp"
                 android:text="⏸ Pause"
                 android:textColor="#FFC107"
-                android:textSize="12sp"
+                android:textSize="13.5sp"
                 android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 500" />
+                android:fontVariationSettings="'wght' 650"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 
@@ -144,9 +162,10 @@
             android:drawableTint="@drawable/dialog_btn_text"
             android:drawableStart="@drawable/ic_pause"
             android:drawablePadding="8dp"
-            android:textSize="15sp"
+            android:textSize="15.5sp"
             android:fontFamily="@font/outfit"
-            android:fontVariationSettings="'wght' 500"
+            android:fontVariationSettings="'wght' 700"
+            android:textStyle="bold"
             android:focusable="true"
             android:clickable="true"
             android:text="Pause"
@@ -165,9 +184,10 @@
             android:background="@drawable/bg_dialog_btn"
             android:textColor="@drawable/dialog_btn_text"
             android:drawableTint="@drawable/dialog_btn_text"
-            android:textSize="15sp"
+            android:textSize="15.5sp"
             android:fontFamily="@font/outfit"
-            android:fontVariationSettings="'wght' 500"
+            android:fontVariationSettings="'wght' 700"
+            android:textStyle="bold"
             android:focusable="true"
             android:clickable="true"
             android:text="Buka Spotify"
@@ -186,9 +206,10 @@
             android:background="@drawable/bg_dialog_btn"
             android:textColor="@drawable/dialog_btn_text"
             android:drawableTint="@drawable/dialog_btn_text"
-            android:textSize="15sp"
+            android:textSize="15.5sp"
             android:fontFamily="@font/outfit"
-            android:fontVariationSettings="'wght' 500"
+            android:fontVariationSettings="'wght' 700"
+            android:textStyle="bold"
             android:focusable="true"
             android:clickable="true"
             android:text="Tutup"
@@ -210,10 +231,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="APLIKASI MUZIK &amp; MEDIA"
-        android:textColor="#80FFFFFF"
-        android:textSize="11sp"
+        android:textColor="#CCFFFFFF"
+        android:textSize="13sp"
         android:fontFamily="@font/outfit"
-        android:fontVariationSettings="'wght' 600"
+        android:fontVariationSettings="'wght' 700"
+        android:textStyle="bold"
+        android:shadowColor="#AA000000"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="2"
         android:letterSpacing="0.06" />
 
     <!-- Quick Media Apps Grid Row -->
@@ -255,8 +281,10 @@
                 android:layout_marginTop="4dp"
                 android:text="Spotify"
                 android:textColor="@drawable/dialog_btn_text"
-                android:textSize="11sp"
+                android:textSize="13sp"
                 android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 650"
+                android:textStyle="bold"
                 android:singleLine="true" />
         </LinearLayout>
 
@@ -290,8 +318,10 @@
                 android:layout_marginTop="4dp"
                 android:text="YouTube"
                 android:textColor="@drawable/dialog_btn_text"
-                android:textSize="11sp"
+                android:textSize="13sp"
                 android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 650"
+                android:textStyle="bold"
                 android:singleLine="true" />
         </LinearLayout>
 
@@ -325,8 +355,10 @@
                 android:layout_marginTop="4dp"
                 android:text="Nuvio"
                 android:textColor="@drawable/dialog_btn_text"
-                android:textSize="11sp"
+                android:textSize="13sp"
                 android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 650"
+                android:textStyle="bold"
                 android:singleLine="true" />
         </LinearLayout>
 
@@ -360,8 +392,10 @@
                 android:layout_marginTop="4dp"
                 android:text="Reezn"
                 android:textColor="@drawable/dialog_btn_text"
-                android:textSize="11sp"
+                android:textSize="13sp"
                 android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 650"
+                android:textStyle="bold"
                 android:singleLine="true" />
         </LinearLayout>
 
@@ -395,8 +429,10 @@
                 android:layout_marginTop="4dp"
                 android:text="Perfect TV"
                 android:textColor="@drawable/dialog_btn_text"
-                android:textSize="11sp"
+                android:textSize="13sp"
                 android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 650"
+                android:textStyle="bold"
                 android:singleLine="true" />
         </LinearLayout>
 
@@ -429,8 +465,10 @@
                 android:layout_marginTop="4dp"
                 android:text="VLC"
                 android:textColor="@drawable/dialog_btn_text"
-                android:textSize="11sp"
+                android:textSize="13sp"
                 android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 650"
+                android:textStyle="bold"
                 android:singleLine="true" />
         </LinearLayout>
     </LinearLayout>
