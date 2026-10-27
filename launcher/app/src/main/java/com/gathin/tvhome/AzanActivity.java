@@ -110,30 +110,66 @@ public class AzanActivity extends Activity {
         time.setPadding(dp(14), 0, 0, dp(3));
         nameRow.addView(time);
         words.addView(nameRow);
-        hint = text("Back: stop the azan", outfit, 12, 0x99FFFFFF, 400);
+        hint = text("Tekan Back / OK untuk tutup", outfit, 12, 0x99FFFFFF, 400);
         hint.setGravity(Gravity.START);
         words.addView(hint);
         card.addView(words);
+        card.setFocusable(true);
+        card.setClickable(true);
+        card.setOnClickListener(v -> finish());
         setContentView(card);
 
-        File file = Azan.recording(this);
-        if (file == null) {
-            // Not fetched yet (no internet so far): say so briefly, and fetch it for next time.
-            hint.setText("The azan recording is not on the TV yet. It will be ready next time.");
-            Azan.fetch(this);
-            handler.postDelayed(this::finish, 8000);
-            return;
+        String soundChoice = Azan.getSoundChoice(this);
+        if (Azan.SOUND_SILENT.equals(soundChoice)) {
+            hint.setText("Mod Senyap • Tekan Back untuk tutup");
+            handler.postDelayed(this::finish, 15_000);
+        } else if (Azan.SOUND_CHIME.equals(soundChoice)) {
+            hint.setText("Nada Peringatan Ringkas • Tekan Back untuk tutup");
+            playChime();
+        } else {
+            File file = Azan.recording(this, soundChoice);
+            if (file == null) {
+                hint.setText("Memuat turun audio " + Azan.soundLabel(soundChoice) + "...");
+                Azan.fetch(this, soundChoice);
+                playChime();
+                handler.postDelayed(this::finish, 8000);
+                return;
+            }
+            play(file, soundChoice);
         }
-        play(file);
     }
 
-    private void play(File file) {
+    private void playChime() {
+        audio = getSystemService(AudioManager.class);
+        AudioAttributes attrs = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        focus = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                .setAudioAttributes(attrs)
+                .setOnAudioFocusChangeListener(change -> { })
+                .build();
+        audio.requestAudioFocus(focus);
+        try {
+            player = MediaPlayer.create(this, R.raw.ps5_select);
+            if (player != null) {
+                player.setOnCompletionListener(mp -> handler.postDelayed(this::finish, 5000));
+                player.start();
+            } else {
+                handler.postDelayed(this::finish, 8000);
+            }
+        } catch (Exception e) {
+            handler.postDelayed(this::finish, 8000);
+        }
+    }
+
+    private void play(File file, String soundChoice) {
         audio = getSystemService(AudioManager.class);
         AudioAttributes attrs = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                 .build();
-        // Transient focus: Spotify and the like pause now and carry on when the azan is over.
+        // Transient focus: Spotify and video players pause now and carry on when the azan is over.
         focus = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
                 .setAudioAttributes(attrs)
                 .setOnAudioFocusChangeListener(change -> { })
@@ -149,8 +185,9 @@ public class AzanActivity extends Activity {
                 return true;
             });
             player.prepare();
-            // The KLCC recording opens with 12 seconds of birds and the park before the azan itself.
-            if (file.getName().equals("azan-klcc.mp3")) player.seekTo(Azan.KLCC_START_MS);
+            if (Azan.SOUND_KLCC.equals(soundChoice) && file.getName().contains("klcc")) {
+                player.seekTo(Azan.KLCC_START_MS);
+            }
             player.start();
         } catch (Exception e) {
             finish();
@@ -159,7 +196,8 @@ public class AzanActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE
+                || keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
             finish();
             return true;
         }

@@ -893,6 +893,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 showCandyBoxPopup();
             }, 100);
         }
+        if (getIntent() != null && getIntent().getBooleanExtra("open_azan_settings", false)) {
+            handler.postDelayed(() -> {
+                if (screensaverActive) dismissScreensaver();
+                showAzanSettingsDialog();
+            }, 100);
+        }
         if (getIntent() != null && getIntent().getBooleanExtra("open_wallpaper", false)) {
             handler.postDelayed(() -> {
                 if (screensaverActive) dismissScreensaver();
@@ -1088,6 +1094,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (intent != null && intent.getBooleanExtra("open_candy_box", false)) {
             if (screensaverActive) dismissScreensaver();
             showCandyBoxPopup();
+            return;
+        }
+        if (intent != null && intent.getBooleanExtra("open_azan_settings", false)) {
+            if (screensaverActive) dismissScreensaver();
+            showAzanSettingsDialog();
             return;
         }
         if (intent != null && intent.getBooleanExtra("open_wallpaper", false)) {
@@ -2497,12 +2508,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             startActivity(new Intent(this, LocationActivity.class));
         });
 
-        // Row 4: Popup Azan UI Test
-        addInputRow(rows, close, R.drawable.ic_azan, "🔔 Uji Popup Azan", -1, () -> {
+        // Row 4: Tetapan & Pilihan Azan
+        boolean masterAzan = Azan.isMasterEnabled(this);
+        addInputRow(rows, close, R.drawable.ic_azan, "Tetapan Azan: " + (masterAzan ? "ON" : "OFF"), -1, () -> {
             SoundEffects.playSelect();
-            Intent azanIntent = new Intent(this, AzanActivity.class);
-            azanIntent.putExtra("prayer", 4);
-            startActivity(azanIntent);
+            closeMenu(false);
+            showAzanSettingsDialog();
         });
 
         // Row 5: Doa Harian / Ayat Pilihan
@@ -2642,6 +2653,312 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
+    }
+
+    private void showAzanSettingsDialog() {
+        SoundEffects.playSelect();
+        Location.Zone chosenPlace = Location.chosen(this);
+        String zoneCode = (chosenPlace != null) ? chosenPlace.code : "WLY01";
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        PrayerTimes.Day todayTimes = PrayerTimes.day(this, zoneCode, cal);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+
+        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+        scroll.setVerticalScrollBarEnabled(false);
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding((int) (22 * density), (int) (18 * density), (int) (22 * density), (int) (16 * density));
+
+        // Header Title
+        TextView titleView = new TextView(this);
+        titleView.setText("🕌 Tetapan & Pilihan Azan");
+        titleView.setTextSize(20);
+        titleView.setTextColor(0xFFFFFFFF);
+        titleView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        titleView.setFontVariationSettings("'wght' 700");
+        titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
+        layout.addView(titleView);
+
+        // Header Subtitle
+        TextView subView = new TextView(this);
+        subView.setText("Notifikasi popup kad kaca terapung di atas semua aplikasi & tetapan audio azan");
+        subView.setTextSize(13);
+        subView.setTextColor(0xD9FFFFFF);
+        subView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        subView.setFontVariationSettings("'wght' 600");
+        subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+        subView.setPadding(0, (int) (3 * density), 0, (int) (14 * density));
+        layout.addView(subView);
+
+        AlertDialog[] dialogHolder = new AlertDialog[1];
+
+        // --- BAHAGIAN A: SUIS UTAMA (MASTER ON/OFF) ---
+        layout.addView(createDialogSectionHeader("A. STATUS UTAMA POPUP AZAN"));
+
+        final TextView masterStatusTag = new TextView(this);
+        LinearLayout masterRow = createDialogRow(
+                "🔔 Notifikasi Popup Azan TV",
+                "Papar kad waktu solat terapung di atas Netflix, YouTube, Perfect TV & semua app",
+                masterStatusTag,
+                null,
+                () -> {
+                    boolean nowOn = !Azan.isMasterEnabled(MainActivity.this);
+                    Azan.setMasterEnabled(MainActivity.this, nowOn);
+                    Azan.schedule(MainActivity.this, zoneCode);
+                    SoundEffects.playSelect();
+                    updateMasterTag(masterStatusTag, nowOn);
+                    Toast.makeText(MainActivity.this, nowOn ? "✅ Popup Azan TV Diaktifkan" : "⭕ Popup Azan TV Dimatikan", Toast.LENGTH_SHORT).show();
+                }
+        );
+        updateMasterTag(masterStatusTag, Azan.isMasterEnabled(this));
+        layout.addView(masterRow);
+
+        // --- BAHAGIAN B: TETAPAN WAKTU SOLAT ---
+        layout.addView(createDialogSectionHeader("B. PILIHAN WAKTU SOLAT (ON / OFF)"));
+
+        int[] prayers = {0, 2, 3, 4, 5};
+        String[] prayerLabels = {"🌅 Subuh", "☀️ Zohor", "🌤️ Asar", "🌇 Maghrib", "🌙 Isyak"};
+
+        for (int i = 0; i < prayers.length; i++) {
+            final int pIdx = prayers[i];
+            String pName = prayerLabels[i];
+            String pTimeStr = "";
+            if (todayTimes != null && pIdx < todayTimes.minutes.length) {
+                int min = todayTimes.minutes[pIdx];
+                pTimeStr = String.format(Locale.ROOT, " • %02d:%02d", min / 60, min % 60);
+            }
+
+            final TextView prayerTag = new TextView(this);
+            LinearLayout prayerRow = createDialogRow(
+                    pName + pTimeStr,
+                    "Peringatan masuk waktu " + PrayerTimes.NAMES[pIdx],
+                    prayerTag,
+                    null,
+                    () -> {
+                        boolean current = Azan.on(MainActivity.this, pIdx);
+                        Azan.set(MainActivity.this, pIdx, !current);
+                        Azan.schedule(MainActivity.this, zoneCode);
+                        SoundEffects.playSelect();
+                        updatePrayerTag(prayerTag, !current);
+                    }
+            );
+            updatePrayerTag(prayerTag, Azan.on(this, pIdx));
+            layout.addView(prayerRow);
+        }
+
+        // --- BAHAGIAN C: PILIHAN BUNYI AZAN ---
+        layout.addView(createDialogSectionHeader("C. PILIHAN BUNYI AZAN"));
+
+        final TextView soundTag = new TextView(this);
+        final TextView[] soundSubHolder = new TextView[1];
+        LinearLayout soundRow = createDialogRow(
+                "🔊 Bunyi Azan Semasa",
+                Azan.soundLabel(Azan.getSoundChoice(this)),
+                soundTag,
+                soundSubHolder,
+                () -> {
+                    SoundEffects.playSelect();
+                    showAzanSoundChoiceSubDialog(() -> {
+                        if (soundSubHolder[0] != null) {
+                            soundSubHolder[0].setText(Azan.soundLabel(Azan.getSoundChoice(MainActivity.this)));
+                        }
+                    });
+                }
+        );
+        soundTag.setText("TUKAR ❯");
+        soundTag.setTextSize(12.5f);
+        soundTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        soundTag.setFontVariationSettings("'wght' 700");
+        soundTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
+        layout.addView(soundRow);
+
+        // --- BAHAGIAN D: BUTANG UJI AZAN ---
+        layout.addView(createDialogSectionHeader("D. UJI POPUP AZAN"));
+
+        final TextView testTag = new TextView(this);
+        LinearLayout testRow = createDialogRow(
+                "▶️ Uji Popup Azan Sekarang",
+                "Mencetuskan kad terapung dan memainkan audio pilihan sekarang",
+                testTag,
+                null,
+                () -> {
+                    SoundEffects.playSelect();
+                    if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+                    Intent azanIntent = new Intent(MainActivity.this, AzanActivity.class);
+                    azanIntent.putExtra("prayer", 4);
+                    startActivity(azanIntent);
+                }
+        );
+        testTag.setText("UJI ▶");
+        testTag.setTextSize(13);
+        testTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        testTag.setFontVariationSettings("'wght' 700");
+        testTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
+        layout.addView(testRow);
+
+        scroll.addView(layout);
+        builder.setView(scroll);
+        builder.setNegativeButton("Tutup / Kembali", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialogHolder[0] = dialog;
+        dialog.show();
+        styleGlassDialog(dialog);
+    }
+
+    private void showAzanSoundChoiceSubDialog(Runnable onUpdated) {
+        final String[] soundKeys = new String[]{
+                Azan.SOUND_MAKKAH,
+                Azan.SOUND_MADINAH,
+                Azan.SOUND_KLCC,
+                Azan.SOUND_CHIME,
+                Azan.SOUND_SILENT
+        };
+
+        final String[] soundOptions = new String[]{
+                "🕋 Azan Masjidil Haram Makkah (Penuh)",
+                "🕌 Azan Masjid Nabawi Madinah (Penuh)",
+                "🇲🇾 Azan Masjid As-Syakirin KLCC",
+                "🔔 Nada Chime Lembut (Ringkas ~5 saat)",
+                "🔕 Mod Senyap (Visual Sahaja Tanpa Audio)"
+        };
+
+        String currentSound = Azan.getSoundChoice(this);
+        int selectedIndex = 0;
+        for (int i = 0; i < soundKeys.length; i++) {
+            if (soundKeys[i].equalsIgnoreCase(currentSound)) {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+        builder.setTitle("🔊 Pilih Audio Azan");
+        builder.setSingleChoiceItems(soundOptions, selectedIndex, (dialog, which) -> {
+            dialog.dismiss();
+            String chosen = soundKeys[which];
+            Azan.setSoundChoice(MainActivity.this, chosen);
+            SoundEffects.playSelect();
+            Azan.fetch(MainActivity.this, chosen);
+            Toast.makeText(MainActivity.this, "Audio Dipilih: " + Azan.soundLabel(chosen), Toast.LENGTH_SHORT).show();
+            if (onUpdated != null) onUpdated.run();
+        });
+        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
+        AlertDialog d = builder.create();
+        d.show();
+        styleGlassDialog(d);
+    }
+
+    private void updateMasterTag(TextView tag, boolean on) {
+        tag.setText(on ? "✓ AKTIF" : "✕ MATI");
+        tag.setTextSize(13);
+        tag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        tag.setFontVariationSettings("'wght' 700");
+        int color = on ? 0xFF38BDF8 : 0x88FFFFFF;
+        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, color}));
+    }
+
+    private void updatePrayerTag(TextView tag, boolean on) {
+        tag.setText(on ? "ON" : "OFF");
+        tag.setTextSize(13);
+        tag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        tag.setFontVariationSettings("'wght' 700");
+        int color = on ? 0xFF38BDF8 : 0x88FFFFFF;
+        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, color}));
+    }
+
+    private TextView createDialogSectionHeader(String title) {
+        TextView tv = new TextView(this);
+        tv.setText(title);
+        tv.setTextSize(11.5f);
+        tv.setTextColor(0xFF38BDF8);
+        tv.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        tv.setFontVariationSettings("'wght' 700");
+        tv.setLetterSpacing(0.08f);
+        tv.setPadding(0, (int) (12 * density), 0, (int) (4 * density));
+        return tv;
+    }
+
+    private LinearLayout createDialogRow(String title, String subtitle, TextView tagView, TextView[] subHolderOut, Runnable onClick) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setFocusable(true);
+        row.setClickable(true);
+        row.setPadding((int) (14 * density), (int) (8 * density), (int) (14 * density), (int) (8 * density));
+
+        StateListDrawable bg = new StateListDrawable();
+        GradientDrawable on = new GradientDrawable();
+        on.setColor(0xFFFFFFFF);
+        on.setCornerRadius(9 * density);
+        GradientDrawable off = new GradientDrawable();
+        off.setColor(0x1AFFFFFF);
+        off.setCornerRadius(9 * density);
+        bg.addState(new int[]{android.R.attr.state_focused}, on);
+        bg.addState(new int[]{}, off);
+        row.setBackground(bg);
+
+        LinearLayout topRow = new LinearLayout(this);
+        topRow.setOrientation(LinearLayout.HORIZONTAL);
+        topRow.setGravity(Gravity.CENTER_VERTICAL);
+        topRow.setDuplicateParentStateEnabled(true);
+
+        TextView rowTitle = new TextView(this);
+        rowTitle.setText(title);
+        rowTitle.setTextSize(15);
+        rowTitle.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
+        rowTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        rowTitle.setFontVariationSettings("'wght' 700");
+        rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+        rowTitle.setDuplicateParentStateEnabled(true);
+        topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        if (tagView != null) {
+            tagView.setDuplicateParentStateEnabled(true);
+            topRow.addView(tagView);
+        }
+        row.addView(topRow);
+
+        final TextView finalRowSub;
+        if (subtitle != null && !subtitle.isEmpty()) {
+            TextView rowSub = new TextView(this);
+            rowSub.setText(subtitle);
+            rowSub.setTextSize(12.5f);
+            rowSub.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF1E293B, 0xD9FFFFFF}));
+            rowSub.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            rowSub.setFontVariationSettings("'wght' 600");
+            rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+            rowSub.setPadding(0, (int) (2 * density), 0, 0);
+            rowSub.setDuplicateParentStateEnabled(true);
+            row.addView(rowSub);
+            finalRowSub = rowSub;
+            if (subHolderOut != null) {
+                subHolderOut[0] = rowSub;
+            }
+        } else {
+            finalRowSub = null;
+        }
+
+        row.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                rowTitle.setShadowLayer(0, 0, 0, 0);
+                if (finalRowSub != null) finalRowSub.setShadowLayer(0, 0, 0, 0);
+            } else {
+                rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+                if (finalRowSub != null) finalRowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+            }
+        });
+
+        row.setOnClickListener(v -> {
+            if (onClick != null) onClick.run();
+        });
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.bottomMargin = (int) (5 * density);
+        row.setLayoutParams(lp);
+
+        return row;
     }
 
     private void showRestartDialog() {
@@ -4106,6 +4423,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         addSeparator(rows);
 
+        // Tetapan Azan shortcut
+        addInputRow(rows, close, R.drawable.ic_azan, "Tetapan & Pilihan Azan ▶", -1, () -> {
+            SoundEffects.playSelect();
+            closeMenu(false);
+            showAzanSettingsDialog();
+        });
+
         // Tutup
         addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
             SoundEffects.playSelect();
@@ -4551,7 +4875,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             rows.setTranslationY(slide * (1f - f));
         });
         in.start();
-        if (top != null) top.requestFocus();
+        if (top != null) {
+            top.requestFocus();
+            panel.post(() -> {
+                if (openMenu == panel && top != null) {
+                    top.requestFocus();
+                }
+            });
+        }
     }
 
     /**

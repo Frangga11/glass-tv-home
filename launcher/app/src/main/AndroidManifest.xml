@@ -14,6 +14,8 @@
     <!-- The azan at prayer time: one exact alarm for the next prayer that is switched on. -->
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Needed on Android 10 to read the Wi-Fi network name; granted over adb at install time. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" tools:ignore="ProtectedPermissions" />
@@ -125,6 +127,8 @@
             android:excludeFromRecents="true"
             android:taskAffinity=""
             android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
             android:theme="@style/Theme.TvHome.AzanCard" />
 
         <!-- Where the TV is: JAKIM zone for Waktu Solat & Open-Meteo town for weather -->

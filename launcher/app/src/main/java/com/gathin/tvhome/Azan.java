@@ -28,7 +28,17 @@ final class Azan {
     /** The prayers that can call the azan: indexes into PrayerTimes.NAMES (Syuruk is not a prayer). */
     static final int[] PRAYERS = {0, 2, 3, 4, 5};
     private static final int MAGHRIB = 4;
-    private static final String SOURCE = "https://archive.org/download/AzanZhurMasjidKlcc/CallToPrayer.mp3";
+
+    static final String SOUND_MAKKAH = "makkah";
+    static final String SOUND_MADINAH = "madinah";
+    static final String SOUND_KLCC = "klcc";
+    static final String SOUND_CHIME = "chime";
+    static final String SOUND_SILENT = "silent";
+
+    private static final String SOURCE_MAKKAH = "https://archive.org/download/full-madinah.mp3/full-makkah.mp3.mp3";
+    private static final String SOURCE_MADINAH = "https://archive.org/download/full-madinah.mp3/full-madinah.mp3.mp3";
+    private static final String SOURCE_KLCC = "https://archive.org/download/AzanZhurMasjidKlcc/CallToPrayer.mp3";
+
     /** An alarm delivered this late (the TV was asleep) is let go rather than played out of time. */
     static final long LATE_MS = 2 * 60 * 1000L;
     /** Where the azan itself begins in the KLCC recording (before it: birds and the park). */
@@ -37,12 +47,36 @@ final class Azan {
     private Azan() {
     }
 
+    static boolean isMasterEnabled(Context ctx) {
+        return prefs(ctx).getBoolean("master_enabled", true);
+    }
+
+    static void setMasterEnabled(Context ctx, boolean enabled) {
+        prefs(ctx).edit().putBoolean("master_enabled", enabled).apply();
+    }
+
     static boolean on(Context ctx, int prayer) {
-        return prefs(ctx).getBoolean("on_" + prayer, prayer == MAGHRIB);
+        return prefs(ctx).getBoolean("on_" + prayer, true);
     }
 
     static void set(Context ctx, int prayer, boolean on) {
         prefs(ctx).edit().putBoolean("on_" + prayer, on).apply();
+    }
+
+    static String getSoundChoice(Context ctx) {
+        return prefs(ctx).getString("sound_choice", SOUND_MAKKAH);
+    }
+
+    static void setSoundChoice(Context ctx, String choice) {
+        prefs(ctx).edit().putString("sound_choice", choice).apply();
+    }
+
+    static String soundLabel(String choice) {
+        if (SOUND_MADINAH.equals(choice)) return "🕌 Azan Masjid Nabawi Madinah";
+        if (SOUND_KLCC.equals(choice)) return "🇲🇾 Azan Masjid As-Syakirin KLCC";
+        if (SOUND_CHIME.equals(choice)) return "🔔 Nada Chime Lembut (Ringkas)";
+        if (SOUND_SILENT.equals(choice)) return "🔕 Mod Senyap (Visual Sahaja)";
+        return "🕋 Azan Masjidil Haram Makkah";
     }
 
     /** Sets the alarm for the next prayer that is on, today or tomorrow; clears it when none is. */
@@ -50,6 +84,10 @@ final class Azan {
         AlarmManager am = ctx.getSystemService(AlarmManager.class);
         PendingIntent old = pending(ctx, -1, 0, PendingIntent.FLAG_NO_CREATE);
         if (old != null) am.cancel(old);
+        if (!isMasterEnabled(ctx)) {
+            note(ctx, "azan disabled (master off)");
+            return;
+        }
         if (zone == null || zone.isEmpty()) return;
         prefs(ctx).edit().putString("zone", zone).apply();
         long now = System.currentTimeMillis();
@@ -98,35 +136,70 @@ final class Azan {
         return PendingIntent.getBroadcast(ctx, 0, i, flags | PendingIntent.FLAG_IMMUTABLE);
     }
 
-    /** The recording to play: the theme's azan.mp3, else the KLCC one once fetched; null when neither is there. */
-    static File recording(Context ctx) {
+    /** The recording to play for the chosen sound. */
+    static File recording(Context ctx, String soundKey) {
+        String targetName = "azan-makkah.mp3";
+        if (SOUND_MADINAH.equals(soundKey)) targetName = "azan-madinah.mp3";
+        else if (SOUND_KLCC.equals(soundKey)) targetName = "azan-klcc.mp3";
+
         File dir = Config.dir(ctx);
         if (dir != null) {
-            File theme = new File(dir, "azan.mp3");
-            if (theme.isFile() && theme.length() > 0) return theme;
+            File match = new File(dir, targetName);
+            if (match.isFile() && match.length() > 50_000) return match;
+            File generic = new File(dir, "azan.mp3");
+            if (generic.isFile() && generic.length() > 50_000) return generic;
         }
-        File kept = new File(ctx.getFilesDir(), "azan-klcc.mp3");
-        return kept.isFile() && kept.length() > 0 ? kept : null;
+        File kept = new File(ctx.getFilesDir(), targetName);
+        if (kept.isFile() && kept.length() > 50_000) return kept;
+
+        // Fallback to any existing azan file
+        if (dir != null) {
+            File[] files = dir.listFiles((d, n) -> n.startsWith("azan-") && n.endsWith(".mp3"));
+            if (files != null) {
+                for (File f : files) {
+                    if (f.length() > 50_000) return f;
+                }
+            }
+        }
+        File klcc = new File(ctx.getFilesDir(), "azan-klcc.mp3");
+        return (klcc.isFile() && klcc.length() > 50_000) ? klcc : null;
     }
 
-    /** Fetches the KLCC recording once (1.8 MB), so the first azan does not wait on the network. */
-    static void fetch(Context ctx) {
-        if (recording(ctx) != null) return;
+    /** Legacy helper. */
+    static File recording(Context ctx) {
+        return recording(ctx, getSoundChoice(ctx));
+    }
+
+    /** Fetches the recording once in the background. */
+    static void fetch(Context ctx, String soundKey) {
+        if (SOUND_CHIME.equals(soundKey) || SOUND_SILENT.equals(soundKey)) return;
         final Context app = ctx.getApplicationContext();
         new Thread(() -> {
-            File part = new File(app.getFilesDir(), "azan-klcc.mp3.part");
+            String url = SOURCE_MAKKAH;
+            String fileName = "azan-makkah.mp3";
+            if (SOUND_MADINAH.equals(soundKey)) {
+                url = SOURCE_MADINAH;
+                fileName = "azan-madinah.mp3";
+            } else if (SOUND_KLCC.equals(soundKey)) {
+                url = SOURCE_KLCC;
+                fileName = "azan-klcc.mp3";
+            }
+            File dest = new File(app.getFilesDir(), fileName);
+            if (dest.exists() && dest.length() > 100_000) return;
+            File part = new File(app.getFilesDir(), fileName + ".part");
             HttpURLConnection c = null;
             try {
-                c = (HttpURLConnection) new URL(SOURCE).openConnection();
+                c = (HttpURLConnection) new URL(url).openConnection();
                 c.setConnectTimeout(15000);
                 c.setReadTimeout(30000);
+                c.setRequestProperty("User-Agent", "Mozilla/5.0 (GlassTV; Android)");
                 try (InputStream in = c.getInputStream(); FileOutputStream out = new FileOutputStream(part)) {
                     byte[] buf = new byte[16 * 1024];
                     int r;
                     while ((r = in.read(buf)) > 0) out.write(buf, 0, r);
                 }
-                if (part.length() > 100_000 && part.renameTo(new File(app.getFilesDir(), "azan-klcc.mp3"))) {
-                    Log.i(TAG, "azan recording kept");
+                if (part.length() > 100_000 && part.renameTo(dest)) {
+                    Log.i(TAG, "azan recording kept: " + fileName);
                 }
             } catch (Exception e) {
                 Log.w(TAG, "azan recording not fetched: " + e.getMessage());
@@ -135,6 +208,48 @@ final class Azan {
                 part.delete();
             }
         }, "azan-fetch").start();
+    }
+
+    static void fetch(Context ctx) {
+        fetch(ctx, getSoundChoice(ctx));
+    }
+
+    /** Displays FullScreenIntent notification so system guarantees overlay on all Android versions. */
+    static void showFullScreenNotification(Context ctx, int prayer, Intent azanIntent) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) return;
+        try {
+            android.app.NotificationManager nm = ctx.getSystemService(android.app.NotificationManager.class);
+            if (nm == null) return;
+            String channelId = "azan_alarm_channel";
+            android.app.NotificationChannel channel = new android.app.NotificationChannel(
+                    channelId,
+                    "Waktu Solat & Azan TV",
+                    android.app.NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Notifikasi dan popup waktu solat / azan terapung");
+            channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
+            channel.setBypassDnd(true);
+            nm.createNotificationChannel(channel);
+
+            PendingIntent pi = PendingIntent.getActivity(
+                    ctx,
+                    101,
+                    azanIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+            );
+            String prayerName = (prayer >= 0 && prayer < PrayerTimes.NAMES.length) ? PrayerTimes.NAMES[prayer] : "Solat";
+            android.app.Notification.Builder builder = new android.app.Notification.Builder(ctx, channelId)
+                    .setSmallIcon(R.drawable.ic_azan)
+                    .setContentTitle("🕌 Masuk Waktu " + prayerName)
+                    .setContentText("Peringatan Waktu Solat")
+                    .setCategory(android.app.Notification.CATEGORY_ALARM)
+                    .setVisibility(android.app.Notification.VISIBILITY_PUBLIC)
+                    .setFullScreenIntent(pi, true)
+                    .setAutoCancel(true);
+            nm.notify(9999, builder.build());
+        } catch (Exception e) {
+            Log.w(TAG, "Notification error: " + e.getMessage());
+        }
     }
 
     /**
