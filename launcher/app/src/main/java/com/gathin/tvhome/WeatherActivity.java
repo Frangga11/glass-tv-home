@@ -84,7 +84,7 @@ public class WeatherActivity extends Activity {
 
         if (btnChangeLocation != null) {
             btnChangeLocation.setOnClickListener(v -> showLocationPickerDialog());
-            setupFocusAnimation(btnChangeLocation, 1.06f);
+            setupFocusAnimation(btnChangeLocation, 1.03f);
         }
 
         // Setup Card Focus Animators for TV Remote Navigation on Leaf Cards
@@ -303,7 +303,7 @@ public class WeatherActivity extends Activity {
                 rainView.setVisibility(View.INVISIBLE); // Keep layout height stable and aligned
             }
 
-            setupFocusAnimation(v, 1.05f);
+            setupFocusAnimation(v, 1.0f);
             hourlyContainer.addView(v);
 
             // Default focus on first hourly tile
@@ -357,7 +357,7 @@ public class WeatherActivity extends Activity {
                 divider.setVisibility(View.GONE);
             }
 
-            setupFocusAnimation(v, 1.02f);
+            setupFocusAnimation(v, 1.0f);
             dailyContainer.addView(v);
         }
 
@@ -510,9 +510,8 @@ public class WeatherActivity extends Activity {
         card.setFocusable(true);
         card.setClickable(true);
         card.setOnFocusChangeListener((view, hasFocus) -> {
-            float scale = hasFocus ? 1.03f : 1.0f;
-            float elev = hasFocus ? 8f : 0f;
-            view.animate().scaleX(scale).scaleY(scale).translationZ(elev).setDuration(150).start();
+            float elev = hasFocus ? 6f : 0f;
+            view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
         });
     }
 
