@@ -30,7 +30,7 @@ every week.
   <img src="docs/screenshots/weather-live.png" width="19%" alt="Apple Weather Bento Dashboard">
   <img src="docs/screenshots/azan-popup-live.png" width="19%" alt="16:9 Azan Floating Settings">
   <img src="docs/screenshots/screensaver-live.png" width="19%" alt="StandBy Screensaver">
-  <img src="docs/screenshots/recent-apps-live.png" width="19%" alt="Recent Apps CoverFlow">
+  <img src="docs/screenshots/wallpaper-dialog-live.png" width="19%" alt="4K Wallpapers & Phone QR Upload">
 </p>
 
 ## What you get

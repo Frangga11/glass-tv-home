@@ -111,12 +111,12 @@ def main():
     glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(120))
     img.alpha_composite(glow_layer)
     
-    # Load Project Screenshots
+    # Load Project Screenshots (100% strictly from this project)
     img_home = Image.open(f"{assets_dir}/home-live.png").convert("RGBA")
     img_weather = Image.open(f"{assets_dir}/weather-live.png").convert("RGBA")
     img_azan = Image.open(f"{assets_dir}/azan-popup-live.png").convert("RGBA")
     img_screensaver = Image.open(f"{assets_dir}/screensaver-live.png").convert("RGBA")
-    img_recent = Image.open(f"{assets_dir}/recent-apps-live.png").convert("RGBA")
+    img_wallpaper = Image.open(f"{assets_dir}/wallpaper-dialog-live.png").convert("RGBA")
     
     # --- HEADER SECTION ---
     # Top Pill Badge
@@ -137,7 +137,7 @@ def main():
     
     # Right Header Metric Chips
     chips = [
-        ("643 KB", "Ultralight Footprint", (52, 211, 153)),
+        ("644 KB", "Ultralight Footprint", (52, 211, 153)),
         ("100% Leanback", "D-Pad Remote Ergonomics", (56, 189, 248)),
         ("E-Solat & JAKIM", "Sub-Second Sync", (251, 191, 36))
     ]
@@ -227,22 +227,22 @@ def main():
         accent_color=(147, 197, 253)
     )
     
-    # 5. Bottom-Right Card: Recent Apps 3D Deck
+    # 5. Bottom-Right Card: 4K Wallpapers & Phone QR Code Upload
     draw_bezel_window(
         base_img=img,
-        screen_img=img_recent,
+        screen_img=img_wallpaper,
         pos=(1490, 640),
         size=(360, 202),
         radius=12,
-        border_color=(192, 132, 252, 90),
+        border_color=(251, 146, 60, 110),
         border_width=2,
         shadow_offset=14,
         shadow_blur=20,
         shadow_alpha=160,
-        badge_text="Recent Apps CoverFlow",
+        badge_text="Koleksi Wallpaper 4K & Phone QR",
         badge_pos="bottom_right",
         badge_font=font_pill,
-        accent_color=(192, 132, 252)
+        accent_color=(251, 146, 60)
     )
     
     # --- FOOTER FEATURE BAR (Bottom 915 to 1010) ---
@@ -253,7 +253,7 @@ def main():
     features = [
         ("WEATHER ENGINE 3.0", "Open-Meteo live sync, APIMS JAS Air Quality, interactive rain radar, hourly pills, dynamic animated skies."),
         ("ISLAMIC LIVING ROOM", "E-Solat Malaysia JAKIM auto zone, 6-phase timetable, 16:9 floating settings dialog with individual prayer toggle."),
-        ("CLEAN TV ECOSYSTEM", "10-min idle StandBy OLED clock, 2-hour auto deep-sleep power-off, zero-background bloat, 100% remote D-Pad.")
+        ("4K MALAYSIA & PHONE QR", "Curated 14 Malaysian states, Pexels UHD collections, phone QR photo upload server without external cloud.")
     ]
     
     fx = 32
