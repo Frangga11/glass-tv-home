@@ -365,7 +365,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         root.setBackgroundColor(cfg.backgroundColor);
         config = cfg;
         wallpapers = cfg.wallpapers;
-        wallpaperIntervalMs = cfg.wallpaperIntervalMs;
+        wallpaperIntervalMs = getWallpaperIntervalMs();
         placesMode = cfg.places;
         mainContent = findViewById(R.id.mainContent);
         glass = findViewById(R.id.glass);
@@ -423,6 +423,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
         else if (cfg.wallpaper != null && !placesMode) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        if (!isWallpaperDescEnabled() && heroShelf != null) {
+            heroShelf.setVisibility(View.GONE);
+            heroShelf.setAlpha(0f);
+        }
         // The shelf grows and shrinks with the name and the description, so it hangs from its
         // bottom edge: every time it is measured, its top is worked out again. Positioning it by
         // the height it happened to have beforehand is what let a tall block run into the dock.
@@ -911,6 +915,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 showAzanSettingsDialog();
             }, 100);
         }
+        if (getIntent() != null && getIntent().getBooleanExtra("open_clean_cache", false)) {
+            handler.postDelayed(() -> {
+                if (screensaverActive) dismissScreensaver();
+                showCleanTvCacheDialog();
+            }, 100);
+        }
         if (getIntent() != null && getIntent().getBooleanExtra("open_wallpaper", false)) {
             handler.postDelayed(() -> {
                 if (screensaverActive) dismissScreensaver();
@@ -998,10 +1008,46 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Backdrop.update(bmp, dm.widthPixels, dm.heightPixels, placesMode ? 0xFF7A7A7A : 0, wallDecoder, handler);
     }
 
+    private int getWallpaperIntervalMinutes() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getInt("wallpaper_interval_minutes", 5);
+    }
+
+    private String getWallpaperIntervalSummary() {
+        int min = getWallpaperIntervalMinutes();
+        if (min == 0) return "Manual";
+        if (min == 60) return "1 Jam";
+        return min + " Min";
+    }
+
+    private long getWallpaperIntervalMs() {
+        int min = getWallpaperIntervalMinutes();
+        if (min <= 0) return 0;
+        return min * 60_000L;
+    }
+
+    private boolean isWallpaperDescEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("show_wallpaper_desc", true);
+    }
+
+    private void setWallpaperDescEnabled(boolean enabled) {
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("show_wallpaper_desc", enabled).apply();
+    }
+
     /** Shows the next picture from the wallpapers folder; the position survives restarts. */
     private void showNextWallpaper(boolean fade) {
+        if (wallpapers == null || wallpapers.isEmpty()) return;
         android.content.SharedPreferences prefs = getSharedPreferences("wallpaper", MODE_PRIVATE);
-        int next = (prefs.getInt("index", -1) + 1) % wallpapers.size();
+        int last = prefs.getInt("index", -1);
+        boolean shuffle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
+        int next;
+        if (shuffle && wallpapers.size() > 1) {
+            java.util.Random rnd = new java.util.Random();
+            do {
+                next = rnd.nextInt(wallpapers.size());
+            } while (next == last && wallpapers.size() > 1);
+        } else {
+            next = (last + 1) % wallpapers.size();
+        }
         prefs.edit().putInt("index", next).apply();
         wallShownAt = android.os.SystemClock.elapsedRealtime();
         final File file = wallpapers.get(next);
@@ -1030,8 +1076,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private final Runnable wallTick = new Runnable() {
         @Override
         public void run() {
-            if (wallpapers.size() >= 2) showNextWallpaper(true);
-            handler.postDelayed(this, wallpaperIntervalMs);
+            if (wallpapers != null && wallpapers.size() >= 2 && wallpaperIntervalMs > 0) {
+                showNextWallpaper(true);
+            }
+            if (wallpaperIntervalMs > 0) {
+                handler.postDelayed(this, wallpaperIntervalMs);
+            }
         }
     };
 
@@ -1089,7 +1139,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         refreshPlacesIfDue();
         refreshOnlineWallpapersIfDue();
         handler.removeCallbacks(wallTick);
-        if (wallpapers.size() < 2 || wallpaperIntervalMs <= 0) return;
+        wallpaperIntervalMs = getWallpaperIntervalMs();
+        if (wallpapers == null || wallpapers.size() < 2 || wallpaperIntervalMs <= 0) return;
         long waited = android.os.SystemClock.elapsedRealtime() - wallShownAt;
         // A picture that fell due while you were in an app waits a few seconds: decoding, blurring
         // and fading it the moment you come back competed with Home for the TV's slow CPU.
@@ -1117,6 +1168,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (intent != null && intent.getBooleanExtra("open_azan_settings", false)) {
             if (screensaverActive) dismissScreensaver();
             showAzanSettingsDialog();
+            return;
+        }
+        if (intent != null && intent.getBooleanExtra("open_clean_cache", false)) {
+            if (screensaverActive) dismissScreensaver();
+            showCleanTvCacheDialog();
             return;
         }
         if (intent != null && intent.getBooleanExtra("open_wallpaper", false)) {
@@ -1505,8 +1561,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
 
-        // When using custom wallpaper, disable the description part completely
-        if (isCustomWallpaper()) {
+        // When using custom wallpaper or when description is turned off, disable the description part
+        if (isCustomWallpaper() || !isWallpaperDescEnabled()) {
             if (heroShelf != null) {
                 heroShelf.animate().cancel();
                 heroShelf.setAlpha(0f);
@@ -1691,7 +1747,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * changes, so the words and the picture never disagree.
      */
     private void setPlace(File picture) {
-        if (picture != null && picture.getAbsolutePath().contains("custom_wallpapers")) {
+        if ((picture != null && picture.getAbsolutePath().contains("custom_wallpapers")) || !isWallpaperDescEnabled()) {
             placeName = null;
             placeText = "";
             placeCountry = "";
@@ -1703,7 +1759,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             return;
         }
-        if (heroShelf != null) {
+        if (heroShelf != null && isWallpaperDescEnabled()) {
             heroShelf.setVisibility(View.VISIBLE);
         }
         String[] about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
@@ -2570,15 +2626,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             showNightstandScreensaver();
         });
 
-        // Row 9: Smart Boost TV / Bersih Cache
-        addInputRow(rows, close, R.drawable.ic_trash, "Bersihkan Cache TV", -1, () -> {
-            SoundEffects.playSelect();
-            smartBoostTv();
-        });
-
         addSeparator(rows);
 
-        // Row 10: Tutup
+        // Row 9: Tutup
         addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
             SoundEffects.playSelect();
             closeMenu(true);
@@ -2614,13 +2664,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         addSeparator(rows);
 
-        // Row 3: All Settings (Android Settings)
+        // Row 3: Bersihkan Cache TV
+        addInputRow(rows, close, R.drawable.ic_clean, "Bersihkan Cache TV", -1, () -> {
+            SoundEffects.playSelect();
+            closeMenu(false);
+            showCleanTvCacheDialog();
+        });
+
+        // Row 4: Wallpaper 4K
+        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper 4K (" + getWallpaperIntervalSummary() + ")", -1, () -> {
+            SoundEffects.playSelect();
+            closeMenu(false);
+            showWallpaperDialog();
+        });
+
+        // Row 4: All Settings (Android Settings)
         addInputRow(rows, close, R.drawable.ic_settings, "All Settings", -1, () -> {
             SoundEffects.playSelect();
             open(systemIntent(Settings.ACTION_SETTINGS));
         });
 
-        // Row 4: Tutup
+        // Row 5: Tutup
         addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
             SoundEffects.playSelect();
             closeMenu(true);
@@ -3126,6 +3190,56 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         styleGlassDialog(dialog);
     }
 
+    private void showCleanTvCacheDialog() {
+        SoundEffects.playSelect();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+        builder.setTitle("🧹 Bersihkan Cache TV");
+
+        long freeBytes = CacheCleaner.getFreeStorageBytes();
+        long totalBytes = CacheCleaner.getTotalStorageBytes();
+        int usedPct = CacheCleaner.usedPercent();
+        String freeStr = android.text.format.Formatter.formatFileSize(this, freeBytes);
+        String totalStr = android.text.format.Formatter.formatFileSize(this, totalBytes);
+
+        String msg = "Kosongkan fail cache aplikasi, serpihan muat turun sementara, dan segarkan memori TV.\n\n"
+                + "📊 Status Storan TV:\n"
+                + "• Ruang Bebas: " + freeStr + " daripada " + totalStr + " (" + (100 - usedPct) + "% bebas)\n"
+                + "• Penggunaan: " + usedPct + "%";
+        builder.setMessage(msg);
+
+        builder.setPositiveButton("🧹 Mula Bersihkan", (dialog, which) -> {
+            dialog.dismiss();
+            Toast.makeText(MainActivity.this, "Sedang membersihkan cache TV...", Toast.LENGTH_SHORT).show();
+
+            CacheCleaner.cleanNow(MainActivity.this, (bytesFreed, percentBefore, percentAfter, systemTrimmed) -> {
+                SoundEffects.playSelect();
+                String freedStr = android.text.format.Formatter.formatFileSize(MainActivity.this, bytesFreed);
+                String resultMsg;
+                if (bytesFreed > 0) {
+                    resultMsg = "✅ Berjaya membersihkan " + freedStr + " fail cache!\nStoran TV kini lebih ringan dan lancar.";
+                } else {
+                    resultMsg = "✅ Cache TV telah dibersihkan sepenuhnya.\nStoran dan memori TV berada pada tahap optimum.";
+                }
+
+                AlertDialog resDialog = new AlertDialog.Builder(MainActivity.this, R.style.Theme_TvHome_GlassDialog)
+                        .setTitle("✨ Pembersihan Selesai")
+                        .setMessage(resultMsg + "\n\n📊 Penggunaan Storan: " + percentBefore + "% → " + percentAfter + "%")
+                        .setPositiveButton("Selesai", (d, w) -> d.dismiss())
+                        .create();
+                resDialog.show();
+                styleGlassDialog(resDialog);
+                Button btnOk = resDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                if (btnOk != null) btnOk.requestFocus();
+            });
+        });
+        builder.setNegativeButton("Batal", (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        styleGlassDialog(dialog);
+        Button btnPos = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (btnPos != null) btnPos.requestFocus();
+    }
+
     private void showAutoUpdateDialog() {
         boolean isAutoEnabled = AppUpdateManager.isAutoUpdateEnabled(this);
         String schedTime = AppUpdateManager.getAutoUpdateTime(this);
@@ -3501,10 +3615,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         options.add(new WallpaperOption("Skyscraper", "🏙️ Pencakar Langit & Bandar Raya", "Metropolis Moden & Seni Bina"));
         options.add(new WallpaperOption("Space", "🌌 Angkasa & Kosmos", "Galaksi, Nebula & Bintang (Deep Space)"));
         options.add(new WallpaperOption("Ocean", "🌊 Lautan & Pesisir Pantai", "Air Jernih, Terumbu Karang & Pantai"));
-        options.add(new WallpaperOption("Minimalist", "🔲 Minimalis Gelap (OLED)", "Monokrom, Tekstur Gelap & Abstrak"));
+        options.add(new WallpaperOption("Minimalist", "🔲 Minimalis Gelap (OLED)", "16 Koleksi Unsplash Dark Wallpaper • Khas Skrin OLED"));
         options.add(new WallpaperOption("MANAGE_CUSTOM", "📁 Urus Gambar Dimuat Naik",
                 customCount > 0 ? (customCount + " foto dimuat naik • QR / Slideshow") : "Muat naik foto peribadi melalui telefon"));
-        options.add(new WallpaperOption("NEXT", "🔀 Tukar Gambar Seterusnya", "Putar gambar seterusnya dalam kategori ini"));
+
+        int curInterval = getWallpaperIntervalMinutes();
+        String intervalText;
+        if (curInterval == 1) intervalText = "Setiap 1 Minit";
+        else if (curInterval == 5) intervalText = "Setiap 5 Minit (Disyorkan)";
+        else if (curInterval == 10) intervalText = "Setiap 10 Minit (Disyorkan)";
+        else if (curInterval == 15) intervalText = "Setiap 15 Minit";
+        else if (curInterval == 30) intervalText = "Setiap 30 Minit";
+        else if (curInterval == 60) intervalText = "Setiap 1 Jam";
+        else if (curInterval == 0) intervalText = "Manual Sahaja (Mati)";
+        else intervalText = "Setiap " + curInterval + " Minit";
+
+        boolean isShuffle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
+        boolean isDescOn = isWallpaperDescEnabled();
+
+        options.add(new WallpaperOption("INTERVAL", "⏱️ Selang Masa Shuffle: " + intervalText, "Pilih kekerapan pertukaran wallpaper (5 min, 10 min, dll)"));
+        options.add(new WallpaperOption("TOGGLE_SHUFFLE", "🔀 Mod Susunan: " + (isShuffle ? "Rawak (Shuffle ON)" : "Berurutan (Sequential)"),
+                isShuffle ? "Gambar dipilih secara rawak tanpa mengulang" : "Gambar bertukar mengikut urutan katalog"));
+        options.add(new WallpaperOption("TOGGLE_DESC", "🏷️ Info & Deskripsi Gambar: " + (isDescOn ? "Dihidupkan (ON)" : "Dimatikan (OFF)"),
+                isDescOn ? "Paparkan tajuk dan penerangan gambar di skrin utama" : "Sembunyikan teks untuk paparan skrin bersih (Clean Look)"));
+        options.add(new WallpaperOption("NEXT", "⏭️ Tukar Gambar Sekarang", "Putar dan paparkan gambar seterusnya serta-merta"));
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -3571,17 +3705,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TextView rowTitle = new TextView(this);
             rowTitle.setText(opt.title);
             rowTitle.setTextSize(16);
-            rowTitle.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
+            rowTitle.setTextColor(0xFFFFFFFF);
             rowTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
             rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
             topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
+            TextView activeTag = null;
             if (isActive) {
-                TextView activeTag = new TextView(this);
+                activeTag = new TextView(this);
                 activeTag.setText("✓ Aktif");
                 activeTag.setTextSize(13);
-                activeTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
+                activeTag.setTextColor(0xFF38BDF8);
                 activeTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
                 activeTag.setFontVariationSettings("'wght' 700");
                 topRow.addView(activeTag);
@@ -3591,12 +3726,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TextView rowSub = new TextView(this);
             rowSub.setText(opt.subtitle);
             rowSub.setTextSize(13);
-            rowSub.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF222222, 0xD9FFFFFF}));
+            rowSub.setTextColor(0xD9FFFFFF);
             rowSub.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
             rowSub.setFontVariationSettings("'wght' 600");
             rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
             rowSub.setPadding(0, (int) (2 * density), 0, 0);
             row.addView(rowSub);
+
+            final TextView finalRowTitle = rowTitle;
+            final TextView finalRowSub = rowSub;
+            final TextView finalActiveTag = activeTag;
+            row.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    finalRowTitle.setTextColor(0xFF0F172A);
+                    finalRowTitle.setShadowLayer(0, 0, 0, 0);
+                    finalRowSub.setTextColor(0xFF334155);
+                    finalRowSub.setShadowLayer(0, 0, 0, 0);
+                    if (finalActiveTag != null) {
+                        finalActiveTag.setTextColor(0xFF0284C7);
+                        finalActiveTag.setShadowLayer(0, 0, 0, 0);
+                    }
+                } else {
+                    finalRowTitle.setTextColor(0xFFFFFFFF);
+                    finalRowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+                    finalRowSub.setTextColor(0xD9FFFFFF);
+                    finalRowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+                    if (finalActiveTag != null) {
+                        finalActiveTag.setTextColor(0xFF38BDF8);
+                        finalActiveTag.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+                    }
+                }
+            });
 
             final String chosenKey = opt.key;
             row.setOnClickListener(v -> {
@@ -3605,8 +3765,45 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if ("NEXT".equals(chosenKey)) {
                     if (wallpapers != null && !wallpapers.isEmpty()) {
                         showNextWallpaper(true);
+                        if (wallpaperIntervalMs > 0 && wallpapers.size() >= 2) {
+                            handler.removeCallbacks(wallTick);
+                            handler.postDelayed(wallTick, wallpaperIntervalMs);
+                        }
                         Toast.makeText(MainActivity.this, "Menukar ke gambar seterusnya...", Toast.LENGTH_SHORT).show();
                     }
+                } else if ("INTERVAL".equals(chosenKey)) {
+                    showWallpaperIntervalDialog();
+                } else if ("TOGGLE_SHUFFLE".equals(chosenKey)) {
+                    boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
+                    boolean newMode = !current;
+                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("shuffle_mode", newMode).apply();
+                    Toast.makeText(MainActivity.this, newMode ? "🔀 Mod Rawak: Gambar Dipilih Secara Rawak" : "➡️ Mod Berurutan: Gambar Dipilih Ikut Urutan", Toast.LENGTH_SHORT).show();
+                    showWallpaperDialog();
+                } else if ("TOGGLE_DESC".equals(chosenKey)) {
+                    boolean current = isWallpaperDescEnabled();
+                    boolean newMode = !current;
+                    setWallpaperDescEnabled(newMode);
+                    if (!newMode) {
+                        if (heroShelf != null) {
+                            heroShelf.animate().cancel();
+                            heroShelf.setAlpha(0f);
+                            heroShelf.setVisibility(View.GONE);
+                        }
+                        Toast.makeText(MainActivity.this, "Deskripsi Wallpaper Dimatikan (Clean Look)", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (heroShelf != null && !isCustomWallpaper()) {
+                            heroShelf.setVisibility(View.VISIBLE);
+                            heroShelf.setAlpha(1f);
+                            if (wallpapers != null && !wallpapers.isEmpty()) {
+                                int curIdx = getSharedPreferences("wallpaper", MODE_PRIVATE).getInt("index", 0);
+                                if (curIdx >= 0 && curIdx < wallpapers.size()) {
+                                    setPlace(wallpapers.get(curIdx));
+                                }
+                            }
+                        }
+                        Toast.makeText(MainActivity.this, "Deskripsi Wallpaper Dihidupkan (ON)", Toast.LENGTH_SHORT).show();
+                    }
+                    showWallpaperDialog();
                 } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
                     showCustomWallpaperManagerDialog();
                 } else {
@@ -3620,6 +3817,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             if (isActive && viewToFocus[0] == null) {
                 viewToFocus[0] = row;
+                rowTitle.setTextColor(0xFF0F172A);
+                rowTitle.setShadowLayer(0, 0, 0, 0);
+                rowSub.setTextColor(0xFF334155);
+                rowSub.setShadowLayer(0, 0, 0, 0);
+                if (activeTag != null) {
+                    activeTag.setTextColor(0xFF0284C7);
+                    activeTag.setShadowLayer(0, 0, 0, 0);
+                }
             }
         }
 
@@ -3636,7 +3841,212 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         if (dialog.getWindow() != null) {
             int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (430 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.75f));
+            int h = Math.min((int) (470 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.85f));
+            dialog.getWindow().setLayout(w, h);
+        }
+
+        if (viewToFocus[0] != null) {
+            viewToFocus[0].requestFocus();
+        } else if (list.getChildCount() > 0) {
+            list.getChildAt(0).requestFocus();
+        }
+    }
+
+    private void showWallpaperIntervalDialog() {
+        SoundEffects.playSelect();
+        class IntervalOption {
+            final int minutes;
+            final String title;
+            final String subtitle;
+            IntervalOption(int minutes, String title, String subtitle) {
+                this.minutes = minutes;
+                this.title = title;
+                this.subtitle = subtitle;
+            }
+        }
+
+        List<IntervalOption> options = new ArrayList<>();
+        options.add(new IntervalOption(1, "⚡ 1 Minit", "Pantas • Sesuai untuk demonstrasi & ujian"));
+        options.add(new IntervalOption(5, "⭐ 5 Minit (Disyorkan)", "Paparan dinamik, bertukar segar setiap 5 minit"));
+        options.add(new IntervalOption(10, "⭐ 10 Minit (Disyorkan)", "Keseimbangan sempurna untuk tontonan santai"));
+        options.add(new IntervalOption(15, "⏱️ 15 Minit", "Pertukaran santai suku jam"));
+        options.add(new IntervalOption(30, "⏱️ 30 Minit", "Pertukaran perlahan setengah jam"));
+        options.add(new IntervalOption(60, "⏱️ 1 Jam (60 Minit)", "Satu gambar bagi setiap jam"));
+        options.add(new IntervalOption(0, "⏸️ Manual Sahaja (Matikan Shuffle)", "Kekalkan gambar semasa • Tiada pertukaran automatik"));
+
+        int currentMin = getWallpaperIntervalMinutes();
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding((int) (20 * density), (int) (16 * density), (int) (20 * density), (int) (12 * density));
+
+        // Header Title
+        TextView titleView = new TextView(this);
+        titleView.setText("⏱️ Selang Masa Shuffle Wallpaper");
+        titleView.setTextSize(19);
+        titleView.setTextColor(0xFFFFFFFF);
+        titleView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        titleView.setFontVariationSettings("'wght' 700");
+        titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
+        layout.addView(titleView);
+
+        // Header Subtitle
+        TextView subView = new TextView(this);
+        subView.setText("Pilih kekerapan wallpaper bertukar secara automatik");
+        subView.setTextSize(13.5f);
+        subView.setTextColor(0xE6FFFFFF);
+        subView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        subView.setFontVariationSettings("'wght' 600");
+        subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+        subView.setPadding(0, (int) (3 * density), 0, (int) (12 * density));
+        layout.addView(subView);
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setVerticalScrollBarEnabled(false);
+        LinearLayout list = new LinearLayout(this);
+        list.setOrientation(LinearLayout.VERTICAL);
+
+        AlertDialog[] dialogHolder = new AlertDialog[1];
+        View[] viewToFocus = new View[1];
+
+        for (int i = 0; i < options.size(); i++) {
+            IntervalOption opt = options.get(i);
+            boolean isActive = (opt.minutes == currentMin);
+
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.VERTICAL);
+            row.setFocusable(true);
+            row.setClickable(true);
+            row.setPadding((int) (16 * density), (int) (9 * density), (int) (16 * density), (int) (9 * density));
+
+            StateListDrawable bg = new StateListDrawable();
+            GradientDrawable on = new GradientDrawable();
+            on.setColor(0xFFFFFFFF);
+            on.setCornerRadius(10 * density);
+            GradientDrawable off = new GradientDrawable();
+            off.setColor(isActive ? 0x334A90E2 : 0x1AFFFFFF);
+            if (isActive) {
+                off.setStroke((int) (1.8f * density), 0xFF38BDF8);
+            }
+            off.setCornerRadius(10 * density);
+            bg.addState(new int[]{android.R.attr.state_focused}, on);
+            bg.addState(new int[]{}, off);
+            row.setBackground(bg);
+
+            LinearLayout topRow = new LinearLayout(this);
+            topRow.setOrientation(LinearLayout.HORIZONTAL);
+            topRow.setGravity(Gravity.CENTER_VERTICAL);
+
+            TextView rowTitle = new TextView(this);
+            rowTitle.setText(opt.title);
+            rowTitle.setTextSize(16);
+            rowTitle.setTextColor(0xFFFFFFFF);
+            rowTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            rowTitle.setFontVariationSettings("'wght' 700");
+            rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+            topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+            TextView activeTag = null;
+            if (isActive) {
+                activeTag = new TextView(this);
+                activeTag.setText("✓ Aktif");
+                activeTag.setTextSize(13);
+                activeTag.setTextColor(0xFF38BDF8);
+                activeTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+                activeTag.setFontVariationSettings("'wght' 700");
+                topRow.addView(activeTag);
+            }
+            row.addView(topRow);
+
+            TextView rowSub = new TextView(this);
+            rowSub.setText(opt.subtitle);
+            rowSub.setTextSize(13);
+            rowSub.setTextColor(0xD9FFFFFF);
+            rowSub.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            rowSub.setFontVariationSettings("'wght' 600");
+            rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+            rowSub.setPadding(0, (int) (2 * density), 0, 0);
+            row.addView(rowSub);
+
+            final TextView finalRowTitle = rowTitle;
+            final TextView finalRowSub = rowSub;
+            final TextView finalActiveTag = activeTag;
+            row.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus) {
+                    finalRowTitle.setTextColor(0xFF0F172A);
+                    finalRowTitle.setShadowLayer(0, 0, 0, 0);
+                    finalRowSub.setTextColor(0xFF334155);
+                    finalRowSub.setShadowLayer(0, 0, 0, 0);
+                    if (finalActiveTag != null) {
+                        finalActiveTag.setTextColor(0xFF0284C7);
+                        finalActiveTag.setShadowLayer(0, 0, 0, 0);
+                    }
+                } else {
+                    finalRowTitle.setTextColor(0xFFFFFFFF);
+                    finalRowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+                    finalRowSub.setTextColor(0xD9FFFFFF);
+                    finalRowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+                    if (finalActiveTag != null) {
+                        finalActiveTag.setTextColor(0xFF38BDF8);
+                        finalActiveTag.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+                    }
+                }
+            });
+
+            final int chosenMin = opt.minutes;
+            row.setOnClickListener(v -> {
+                if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+                SoundEffects.playSelect();
+                getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                        .putInt("wallpaper_interval_minutes", chosenMin)
+                        .apply();
+                wallpaperIntervalMs = getWallpaperIntervalMs();
+                handler.removeCallbacks(wallTick);
+                if (wallpaperIntervalMs > 0 && wallpapers != null && wallpapers.size() >= 2) {
+                    wallShownAt = android.os.SystemClock.elapsedRealtime();
+                    handler.postDelayed(wallTick, wallpaperIntervalMs);
+                }
+                String msg = (chosenMin == 0)
+                        ? "⏸️ Pertukaran automatik dimatikan (Tukar manual)"
+                        : "✅ Wallpaper akan bertukar setiap " + (chosenMin == 60 ? "1 jam" : chosenMin + " minit");
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                showWallpaperDialog();
+            });
+
+            LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            rlp.bottomMargin = (int) (5 * density);
+            list.addView(row, rlp);
+
+            if (isActive && viewToFocus[0] == null) {
+                viewToFocus[0] = row;
+                rowTitle.setTextColor(0xFF0F172A);
+                rowTitle.setShadowLayer(0, 0, 0, 0);
+                rowSub.setTextColor(0xFF334155);
+                rowSub.setShadowLayer(0, 0, 0, 0);
+                if (activeTag != null) {
+                    activeTag.setTextColor(0xFF0284C7);
+                    activeTag.setShadowLayer(0, 0, 0, 0);
+                }
+            }
+        }
+
+        scroll.addView(list);
+        layout.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+        builder.setView(layout);
+        builder.setNegativeButton("Kembali", (d, w) -> {
+            d.dismiss();
+            showWallpaperDialog();
+        });
+        AlertDialog dialog = builder.create();
+        dialogHolder[0] = dialog;
+        dialog.show();
+        styleGlassDialog(dialog);
+
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (470 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.85f));
             dialog.getWindow().setLayout(w, h);
         }
 
@@ -3769,7 +4179,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void switchWallpaperCategory(String category) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
-        String displayLabel = "Malaysia".equalsIgnoreCase(category) ? "Tempat Menarik di Malaysia" : category;
+        String displayLabel;
+        if ("Malaysia".equalsIgnoreCase(category)) {
+            displayLabel = "Tempat Menarik di Malaysia";
+        } else if ("Minimalist".equalsIgnoreCase(category)) {
+            displayLabel = "Minimalis Gelap (OLED)";
+        } else {
+            displayLabel = category;
+        }
         Toast.makeText(this, "Kategori: " + displayLabel, Toast.LENGTH_SHORT).show();
 
         if ("Custom".equalsIgnoreCase(category)) {
@@ -3786,12 +4203,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 wallpapers = new ArrayList<>(Arrays.asList(files));
                 getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
                 showNextWallpaper(true);
+                startWallpaperRotation();
                 return;
             }
         } else {
             placesMode = false;
             if (heroShelf != null) {
-                heroShelf.setVisibility(View.VISIBLE);
+                if (isWallpaperDescEnabled()) {
+                    heroShelf.setVisibility(View.VISIBLE);
+                } else {
+                    heroShelf.setVisibility(View.GONE);
+                    heroShelf.setAlpha(0f);
+                }
             }
         }
 
@@ -3799,6 +4222,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!matching.isEmpty()) {
             wallpapers = matching;
             showNextWallpaper(true);
+            startWallpaperRotation();
         } else {
             Toast.makeText(this, "Memuat turun 4K Wallpaper " + displayLabel + " (Pexels & Unsplash)...", Toast.LENGTH_SHORT).show();
             new Thread(() -> {
@@ -3809,6 +4233,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     if (!fresh.isEmpty()) {
                         wallpapers = fresh;
                         showNextWallpaper(true);
+                        startWallpaperRotation();
                     }
                 });
             }, "wall-cat-sync").start();
@@ -4312,6 +4737,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 wallpapers = new ArrayList<>(Arrays.asList(files));
                 getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
                 showNextWallpaper(true);
+                startWallpaperRotation();
                 Toast.makeText(this, "🔄 Mod Putar Semua Wallpaper Aktif (" + files.length + " foto)", Toast.LENGTH_SHORT).show();
             } else {
                 switchWallpaperCategory("Natural");

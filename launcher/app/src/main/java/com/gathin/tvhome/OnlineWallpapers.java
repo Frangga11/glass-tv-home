@@ -36,7 +36,7 @@ final class OnlineWallpapers {
     private static final String PREFS_NAME = "online_wallpapers";
     private static final String PREF_LAST_SYNC = "last_sync_time";
     private static final long REFRESH_INTERVAL_MS = 6L * 60 * 60 * 1000; // 6 hours
-    private static final int MAX_CACHE_FILES = 50;
+    private static final int MAX_CACHE_FILES = 150;
     private static final int MAX_IMAGE_BYTES = 25 * 1024 * 1024; // 25 MB limit per 4K/8K image
 
     static class WallpaperItem {
@@ -149,13 +149,49 @@ final class OnlineWallpapers {
             new WallpaperItem("https://images.pexels.com/photos/1295138/pexels-photo-1295138.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
                     "Dramatic Sea Cliffs", "Dark oceanic cliffs meeting moody breaking waves", "Coast"),
 
-            // Minimalist & Atmospheric (Minimalis Gelap - Unsplash & Pexels 4K)
-            new WallpaperItem("https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Rainy Window Twilight", "Water droplets cascading down glass against city dusk", "Atmospheric"),
-            new WallpaperItem("https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Starry Desert Camp", "Distant campfire underneath an endless starlit dome", "Nature"),
+            // Minimalist & Atmospheric (Minimalis Gelap OLED - Unsplash 4K Curated from https://unsplash.com/s/photos/dark-wallpaper)
+            new WallpaperItem("https://images.unsplash.com/photo-1484950763426-56b5bf172dbb?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Siluet Kenderaan 4x4", "Siluet kenderaan pacuan 4 roda di bawah hamparan bintang malam sepi", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1533134486753-c833f0ed4866?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Gelombang Pasir Kelabu", "Lengkung pasir kelabu berkabus di pesisiran pantai Karekare New Zealand", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1762417108293-91614140073a?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Tekstur Silinder Hitam OLED", "Seni bina permukaan silinder hitam 3D bertekstur gelap minimalis", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1507752533523-5186b0bc4c43?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Pencakar Langit Senja Emas", "Panorama bandar raya metropolitan Montreal disinari biasan cahaya senja keemasan", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Malam Bintang Membiru", "Keindahan galaksi dan gugusan bintang malam membiru di balik jurang batu", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1509023464722-18d996393ca8?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Gunung Fuji & Tasik Senyap", "Siluet Gunung Fuji di keheningan malam tasik Jepun berlatarkan langit gelap pekat", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1491466424936-e304919aada7?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Gelombang Pasir Hitam OLED", "Lengkungan bukit pasir hitam minimalis dengan kontras bayang sempurna", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1622737133809-d95047b9e673?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Geometri Poligon Gelap", "Seni bina geometri 3D monokrom berdimensi tinggi untuk skrin OLED", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Aliran Cecair Hitam Sutera", "Gelombang cecair hitam berkilat mengalir anggun dalam kegelapan mutlak", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Grid Gelap Minimalis", "Struktur garisan perspektif moden berlatarbelakangkan hitam pekat", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1507499739999-097706ad8914?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Gerbang Monolit Malam", "Seni bina konkrit minimalis tersergam di bawah kepekatan malam sepi", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Kabut Pergunungan Monokrom", "Banjaran gunung berkabus tebal dalam rona hitam putih dramatik", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Litar Sibernetik Gelap", "Papan litar teknologi canggih dalam pencahayaan gelap minimalis", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Hamburan Pigmen Gelap", "Letupan zarah habuk hitam arang bertekstur tinggi dan halus", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Kanvas Arang Klasik", "Tekstur seni lukisan minyak gelap berona arang monokrom", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Bumi Malam & Orbit Hitam", "Ufuk biru Bumi di tengah kekosongan kosmos hitam pekat", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Siluet Dedaun Monstera", "Dedaun tropika gelap berlatarbelakangkan bayang hitam misteri", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Prisma Cahaya Gelap", "Pancarona spektrum cahaya neon halus di ruang kegelapan mutlak", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Tekstur Hitam Tulen OLED", "Latar permukaan hitam arang minimalis khas untuk menjimatkan piksel OLED", "Minimalist_OLED"),
+            new WallpaperItem("https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=3840&h=2160&q=80",
+                    "Gurun Basalt Hitam", "Bumi hitam gunung berapi dengan garisan ufuk tenang dan redup", "Minimalist_OLED"),
             new WallpaperItem("https://images.unsplash.com/photo-1491557345352-5929e343eb89?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Moody Black Mountains", "Dramatic jagged peaks cutting through dark storm clouds", "Mountains")
+                    "Puncak Gunung Obsidian", "Puncak batu gunung tajam meredah awan ribut hitam dramatik", "Minimalist_OLED")
     };
 
     private OnlineWallpapers() {
@@ -208,8 +244,8 @@ final class OnlineWallpapers {
         if (sc.contains("ocean") || sc.contains("water") || sc.contains("coast")) {
             return ic.contains("ocean") || ic.contains("underwater") || ic.contains("coast");
         }
-        if (sc.contains("minim")) {
-            return ic.contains("minim") || ic.contains("atmos") || ic.contains("weather");
+        if (sc.contains("minim") || sc.contains("oled") || sc.contains("dark")) {
+            return ic.contains("minim") || ic.contains("oled") || ic.contains("dark") || ic.contains("atmos") || ic.contains("weather");
         }
         if (sc.contains("malay")) {
             return ic.contains("malay");
