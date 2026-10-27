@@ -143,26 +143,26 @@
                     android:textSize="10sp" />
             </LinearLayout>
 
-            <!-- Main Widescreen Body: Bento Grid (Fixed Height 380dp for absolute alignment) -->
+            <!-- Main Widescreen Body: Bento Grid (Exact Height: 385dp) -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="380dp"
+                android:layout_height="385dp"
                 android:layout_marginTop="7dp"
                 android:baselineAligned="false"
                 android:clipChildren="false"
                 android:orientation="horizontal">
 
-                <!-- LEFT SECTION: 2x4 Metric Grid Tiles (Total Height: 380dp) -->
+                <!-- LEFT SECTION: 2x4 Metric Grid Tiles (Total Height: 385dp) -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1.0"
                     android:orientation="vertical">
 
-                    <!-- Row 1: WIND & MOON PHASE (91dp) -->
+                    <!-- Row 1: WIND & MOON PHASE (92dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="91dp"
+                        android:layout_height="92dp"
                         android:layout_marginBottom="6dp"
                         android:orientation="horizontal">
 
@@ -224,10 +224,10 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Row 2: SUNSET & UV INDEX (90dp) -->
+                    <!-- Row 2: SUNSET & UV INDEX (91dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="90dp"
+                        android:layout_height="91dp"
                         android:layout_marginBottom="6dp"
                         android:orientation="horizontal">
 
@@ -343,10 +343,10 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Row 3: FEELS LIKE & AIR QUALITY (91dp) -->
+                    <!-- Row 3: FEELS LIKE & AIR QUALITY (92dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="91dp"
+                        android:layout_height="92dp"
                         android:layout_marginBottom="6dp"
                         android:orientation="horizontal">
 
@@ -472,10 +472,10 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Row 4: PRECIPITATION & VISIBILITY (90dp) -->
+                    <!-- Row 4: PRECIPITATION & VISIBILITY (92dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="90dp"
+                        android:layout_height="92dp"
                         android:orientation="horizontal">
 
                         <!-- Tile 4A: PRECIPITATION -->
@@ -573,7 +573,7 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- RIGHT SECTION: Hourly (Top: 118dp) + 10-Day & Radar (Bottom: 256dp) (Total Height: 380dp) -->
+                <!-- RIGHT SECTION: Hourly (Top: 127dp) + 10-Day & Radar (Bottom: 252dp) (Total Height: 385dp) -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -581,11 +581,11 @@
                     android:layout_weight="1.88"
                     android:orientation="vertical">
 
-                    <!-- Top Card: Hourly Conditions (118dp) -->
+                    <!-- Top Card: Hourly Conditions (127dp) -->
                     <LinearLayout
                         android:id="@+id/cardHourly"
                         android:layout_width="match_parent"
-                        android:layout_height="118dp"
+                        android:layout_height="127dp"
                         android:background="@drawable/weather_card_bg"
                         android:clickable="false"
                         android:focusable="false"
@@ -663,13 +663,15 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="4dp"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginBottom="3dp"
                             android:background="#12FFFFFF" />
 
                         <HorizontalScrollView
                             android:layout_width="match_parent"
-                            android:layout_height="79dp"
+                            android:layout_height="90dp"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="4dp"
                             android:clipChildren="false"
                             android:clipToPadding="false"
                             android:fillViewport="true"
@@ -686,15 +688,15 @@
                         </HorizontalScrollView>
                     </LinearLayout>
 
-                    <!-- Bottom Row: 10-Day Forecast & Radar / Metrics (256dp) -->
+                    <!-- Bottom Row: 10-Day Forecast & Radar / Metrics (252dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="256dp"
+                        android:layout_height="252dp"
                         android:layout_marginTop="6dp"
                         android:baselineAligned="false"
                         android:orientation="horizontal">
 
-                        <!-- Left: 10-DAY FORECAST (256dp) -->
+                        <!-- Left: 10-DAY FORECAST (252dp) -->
                         <LinearLayout
                             android:id="@+id/cardDaily"
                             android:layout_width="0dp"
@@ -706,9 +708,9 @@
                             android:focusable="false"
                             android:orientation="vertical"
                             android:paddingStart="8dp"
-                            android:paddingTop="6dp"
+                            android:paddingTop="5dp"
                             android:paddingEnd="8dp"
-                            android:paddingBottom="6dp">
+                            android:paddingBottom="5dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -736,18 +738,18 @@
                                 android:orientation="vertical" />
                         </LinearLayout>
 
-                        <!-- Right: PRECIPITATION RADAR MAP & HUMIDITY / PRESSURE (256dp) -->
+                        <!-- Right: PRECIPITATION RADAR MAP & HUMIDITY / PRESSURE (252dp) -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1.08"
                             android:orientation="vertical">
 
-                            <!-- Radar Card (172dp) -->
+                            <!-- Radar Card (170dp) -->
                             <LinearLayout
                                 android:id="@+id/cardRadar"
                                 android:layout_width="match_parent"
-                                android:layout_height="172dp"
+                                android:layout_height="170dp"
                                 android:background="@drawable/weather_card_bg"
                                 android:orientation="vertical"
                                 android:padding="6dp">
@@ -771,10 +773,10 @@
                                     android:layout_marginTop="3dp" />
                             </LinearLayout>
 
-                            <!-- Bottom Row below Radar: HUMIDITY & PRESSURE (78dp) -->
+                            <!-- Bottom Row below Radar: HUMIDITY & PRESSURE (76dp) -->
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="78dp"
+                                android:layout_height="76dp"
                                 android:layout_marginTop="6dp"
                                 android:orientation="horizontal">
 
