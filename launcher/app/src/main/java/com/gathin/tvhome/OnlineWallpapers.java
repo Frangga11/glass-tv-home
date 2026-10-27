@@ -19,8 +19,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Dynamic 4K dark desktop wallpaper manager.
@@ -53,39 +55,39 @@ final class OnlineWallpapers {
 
     // Built-in curated catalog of dark, moody, atmospheric 4K desktop wallpapers (Unsplash)
     private static final WallpaperItem[] CURATED_CATALOG = new WallpaperItem[]{
-            // Malaysia: Tempat Menarik di Malaysia (Pexels & Unsplash 4K)
-            new WallpaperItem("https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Menara Berkembar Petronas KLCC", "Menara ikonik berkembar kebanggaan Malaysia di tengah pusat bandar raya Kuala Lumpur", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/302820/pexels-photo-302820.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Petronas Twin Towers Megastructure", "Struktur megah berkembar KLCC tersergam megah menyinari langit malam", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/1538177/pexels-photo-1538177.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Kuala Lumpur City Lights", "Panorama malam metropolis ibu negara bergemerlapan lampu pencakar langit", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Tangga Berwarna-warni Batu Caves", "Gua batu kapur bersejarah dengan anak tangga berwarna-warni dan patung emas Lord Murugan", "Malaysia"),
-            new WallpaperItem("https://images.unsplash.com/photo-1571401835393-8c5f35328320?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Puncak Gunung Kinabalu", "Puncak tertinggi Malaysia di Sabah meredah lautan awan pada waktu fajar menyingsing", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Pantai Tropika Langkawi", "Air laut membiru dan ketenangan pesisir pulau peranginan permata Kedah", "Malaysia"),
-            new WallpaperItem("https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Ladang Teh Cameron Highlands", "Hamparan bukit teh hijau beralun segar di tanah tinggi banjaran Titiwangsa Pahang", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/1632790/pexels-photo-1632790.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Lembah Bharat Cameron Highlands", "Kabut pagi menyelimuti lereng pergunungan teh hijau subur yang nyaman", "Malaysia"),
-            new WallpaperItem("https://images.unsplash.com/photo-1582298538104-fe2e74c27f59?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Georgetown Warisan UNESCO", "Lorong seni bina warisan kolonial dunia yang kaya sejarah di George Town Pulau Pinang", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/2225439/pexels-photo-2225439.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Pekan Bersejarah George Town", "Pesona bandar warisan era lama di Pulau Mutiara dengan budaya unik", "Malaysia"),
-            new WallpaperItem("https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Masjid Selat Melaka", "Keindahan masjid terapung di pesisiran Selat Melaka membiaskan cahaya senja keemasan", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/2440009/pexels-photo-2440009.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Persiaran Malam Sungai Melaka", "Limpahan lampu neon mempesona di sepanjang persiaran bandar bersejarah Sungai Melaka", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/2275221/pexels-photo-2275221.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Jambatan Seri Wawasan Putrajaya", "Seni bina moden jambatan gantung bercahaya di pusat pentadbiran Putrajaya", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/189349/pexels-photo-189349.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Pulau Perhentian & Terumbu Karang", "Perairan jernih membiru dan keindahan terumbu karang tropika di pantai Terengganu", "Malaysia"),
-            new WallpaperItem("https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Hutan Hujan Tropika Borneo", "Kanopi rimba dara tertua dunia yang kaya flora dan fauna semula jadi di Sarawak", "Malaysia"),
-            new WallpaperItem("https://images.unsplash.com/photo-1744525329284-3ffe4bcdf256?auto=format&fit=crop&w=3840&h=2160&q=80",
-                    "Tebingan Kuching Waterfront", "Pemandangan indah Sungai Sarawak dan Jambatan Darul Hana di Kuching", "Malaysia"),
+            // Malaysia: Tempat Menarik di Malaysia (16 Koleksi Pexels 4K Ultra HD)
+            new WallpaperItem("https://images.pexels.com/photos/40168956/pexels-photo-40168956.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Orangutan Rimba Borneo", "Spesies ikonik hidupan liar di kanopi hutan hujan tropika Borneo, khazanah alam semula jadi", "Malaysia_Sabah"),
+            new WallpaperItem("https://images.pexels.com/photos/36767161/pexels-photo-36767161.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Siluet Senja Kuala Lumpur", "Garis langit metropolis ibu negara berlatarkan kilauan warna merah saga dan jingga waktu senja", "Malaysia_WP"),
+            new WallpaperItem("https://images.pexels.com/photos/338416/pexels-photo-338416.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Masjid Putra & Tasik Putrajaya", "Keindahan seni bina kubah merah jambu Masjid Putra membiaskan pantulan anggun di permukaan tasik tenang", "Malaysia_Putrajaya"),
+            new WallpaperItem("https://images.pexels.com/photos/33676568/pexels-photo-33676568.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Puncak Menara Berkembar KLCC", "Menara Berkembar Petronas tersergam megah meredah lautan awan keemasan di ufuk Kuala Lumpur", "Malaysia_WP"),
+            new WallpaperItem("https://images.pexels.com/photos/39690291/pexels-photo-39690291.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Masjid Selat Melaka", "Masjid terapung tersohor di pesisir Selat Melaka disinari gemerlap lampu malam dan langit tembaga", "Malaysia_Melaka"),
+            new WallpaperItem("https://images.pexels.com/photos/33708542/pexels-photo-33708542.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Calet Pergunungan Kundasang", "Kediaman unik di lereng bukit menghijau berlatarbelakangkan udara nyaman banjaran tanah tinggi Sabah", "Malaysia_Sabah"),
+            new WallpaperItem("https://images.pexels.com/photos/14776919/pexels-photo-14776919.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Jalan Berliku Banjaran Titiwangsa", "Laluan berliku meredah rabung pergunungan hijau yang diselimuti kabut tebal waktu fajar", "Malaysia_Pahang"),
+            new WallpaperItem("https://images.pexels.com/photos/5224545/pexels-photo-5224545.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Fajar Lembah Sungai Pahang", "Limpahan cahaya emas mentari pagi menyinari aliran sungai permai dan perkampungan pesisir bukit", "Malaysia_Pahang"),
+            new WallpaperItem("https://images.pexels.com/photos/11643318/pexels-photo-11643318.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Senja Merah Lembah Sungai", "Panorama matahari terbenam membiaskan rona jingga tembaga di sepanjang liku sungai dan bukit bukau", "Malaysia_Pahang"),
+            new WallpaperItem("https://images.pexels.com/photos/28727775/pexels-photo-28727775.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Pesisiran Pantai Tanjung Balau", "Kejernihan air laut membiru dan keunikan tanjung berbatu di Desaru menghadap Laut China Selatan", "Malaysia_Johor"),
+            new WallpaperItem("https://images.pexels.com/photos/38188372/pexels-photo-38188372.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Jambatan Angkat Terengganu", "Seni bina jambatan angkat ikonik Kuala Terengganu bermandikan biasan sinaran matahari terbenam", "Malaysia_Terengganu"),
+            new WallpaperItem("https://images.pexels.com/photos/13890758/pexels-photo-13890758.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Pekan Diraja Kuala Kangsar", "Pemandangan udara bandar warisan permai di tebingan Sungai Perak diapit kehijauan alam tropika", "Malaysia_Perak"),
+            new WallpaperItem("https://images.pexels.com/photos/139974/pexels-photo-139974.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Perahu Nelayan Jalur Gemilang", "Bot nelayan tradisional berlabuh tenang di muara sungai ketika langit senja berona merah jambu", "Malaysia_Terengganu"),
+            new WallpaperItem("https://images.pexels.com/photos/5649468/pexels-photo-5649468.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Masjid Negeri Shah Alam", "Kubah biru tersergam indah dan empat menara bercahaya Masjid Sultan Salahuddin Abdul Aziz Shah pada waktu malam", "Malaysia_Selangor"),
+            new WallpaperItem("https://images.pexels.com/photos/130576/pexels-photo-130576.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Ladang Teh Cameron Highlands", "Hamparan bukit teh hijau beralun segar di bawah langit biru cerah tanah tinggi banjaran Pahang", "Malaysia_Pahang"),
+            new WallpaperItem("https://images.pexels.com/photos/35905094/pexels-photo-35905094.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
+                    "Beca Berhias Warisan Melaka", "Keunikan beca pelancongan berhias bunga dan lagu ceria menelusuri lorong warisan bersejarah bandar raya Melaka", "Malaysia_Melaka"),
 
             // Nature & Landscapes (Alam Semula Jadi - Pexels & Unsplash 4K)
             new WallpaperItem("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=3840&h=2160&q=80",
@@ -215,7 +217,35 @@ final class OnlineWallpapers {
         return ic.contains(sc);
     }
 
+    static void cleanOutdatedCategoryWallpapers(File d, String category) {
+        if (d == null || !d.exists()) return;
+        Set<String> validHashes = new HashSet<>();
+        for (WallpaperItem item : CURATED_CATALOG) {
+            if (matchesCategory(item.category, category)) {
+                validHashes.add(hashFilename(item.url));
+            }
+        }
+        File[] files = d.listFiles((dir, name) -> name.endsWith(".jpg"));
+        if (files == null) return;
+        for (File f : files) {
+            String base = f.getName().replace(".jpg", "");
+            if (!validHashes.contains(base)) {
+                String[] desc = describe(f);
+                if (desc != null && desc.length >= 3 && matchesCategory(desc[2], category)) {
+                    f.delete();
+                    File txt = new File(d, base + ".txt");
+                    if (txt.exists()) txt.delete();
+                    Log.i(TAG, "Removed outdated " + category + " wallpaper: " + f.getName());
+                }
+            }
+        }
+    }
+
     static List<File> listByCategory(Context ctx, String category) {
+        File d = dir(ctx);
+        if (d != null && d.exists()) {
+            cleanOutdatedCategoryWallpapers(d, category);
+        }
         List<File> all = list(ctx);
         if (category == null || category.equalsIgnoreCase("All")) return all;
         List<File> filtered = new ArrayList<>();
@@ -235,6 +265,8 @@ final class OnlineWallpapers {
         if (d == null) return false;
         if (!d.exists() && !d.mkdirs()) return false;
 
+        cleanOutdatedCategoryWallpapers(d, category);
+
         List<WallpaperItem> candidates = new ArrayList<>();
         for (WallpaperItem item : CURATED_CATALOG) {
             if (matchesCategory(item.category, category)) {
@@ -242,10 +274,9 @@ final class OnlineWallpapers {
             }
         }
         if (candidates.isEmpty()) return false;
-        Collections.shuffle(candidates);
 
         boolean anyDownloaded = false;
-        int targetNew = 3;
+        int targetNew = candidates.size();
         int count = 0;
 
         for (WallpaperItem item : candidates) {
