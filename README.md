@@ -108,9 +108,9 @@ every week.
 
 | | |
 |---|---|
-| ![Home with Mount Sneffels behind the apps, its name, country and story above the glass dock](docs/screenshots/home.jpg) | ![The app grid scrolled down over the Chauvet cave, rows feathering out under the top bar](docs/screenshots/grid.jpg) |
+| ![Home with Masjid Negeri Shah Alam, Selangor, story caption and glass dock](docs/screenshots/home.jpg) | ![The app grid scrolled down over the wallpaper, rows feathering out under the top bar](docs/screenshots/grid.jpg) |
 | *Home, with this week's place* | *Every app, feathering out under the top bar* |
-| ![The glass Inputs menu with HDMI 1 selected](docs/screenshots/inputs.jpg) | ![The StandBy clock screensaver with large 110sp digits, Hijri date, and prayer countdown](docs/screenshots/screensaver-live.png) |
+| ![The glass menu and quick controls over Jambatan Angkat Terengganu](docs/screenshots/inputs.jpg) | ![The StandBy clock screensaver with large 110sp digits, Hijri date, and prayer countdown](docs/screenshots/clock.jpg) |
 | *Inputs, in glass* | *The StandBy clock screensaver* |
 
 Still light: on a Xiaomi Mi TV with 1.8 GB of RAM the launcher uses about 80–100 MB and stays there over hours
