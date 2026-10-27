@@ -98,8 +98,8 @@ every week.
 - **Comes back as you left it.** Back from an app, the app you left is still selected; pressing Home on Home
   goes to the first app. When Android has closed Home to free memory, it comes back whole in one frame,
   with no black screen and no half-built dock.
-- **A clock screensaver.** A grey analog dial with a yellow-orange second hand that ticks, the time and
-  date beneath, drifting a little each minute so nothing burns in.
+- **A StandBy clock screensaver.** A sleek, high-contrast OLED digital nightstand clock with 110sp digits,
+  Islamic Hijri calendar, next prayer countdown capsule, and gentle minute-by-minute drift to prevent burn-in.
 - **Rows feather out under the top bar** instead of being cut off when you scroll, and the Wi-Fi / Ethernet
   button can be hidden (`show_network_pill`).
 - **Rotating wallpapers of your own** instead, with `"places": false`: put pictures in a theme's `wallpapers/`
@@ -110,8 +110,8 @@ every week.
 |---|---|
 | ![Home with Mount Sneffels behind the apps, its name, country and story above the glass dock](docs/screenshots/home.jpg) | ![The app grid scrolled down over the Chauvet cave, rows feathering out under the top bar](docs/screenshots/grid.jpg) |
 | *Home, with this week's place* | *Every app, feathering out under the top bar* |
-| ![The glass Inputs menu with HDMI 1 selected](docs/screenshots/inputs.jpg) | ![The clock screensaver: a grey analog dial, the time and the date](docs/screenshots/clock.jpg) |
-| *Inputs, in glass* | *The clock screensaver* |
+| ![The glass Inputs menu with HDMI 1 selected](docs/screenshots/inputs.jpg) | ![The StandBy clock screensaver with large 110sp digits, Hijri date, and prayer countdown](docs/screenshots/screensaver-live.png) |
+| *Inputs, in glass* | *The StandBy clock screensaver* |
 
 Still light: on a Xiaomi Mi TV with 1.8 GB of RAM the launcher uses about 80–100 MB and stays there over hours
 of use, one wallpaper is in memory at a time, the week's places take about 2 MB of storage, and nothing runs
