@@ -19,9 +19,9 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 ## 📦 Direct APK Download
 
 For users who want to download and install the pre-compiled APK directly:
-* 📥 **Official Release APK**: [**glass-tv-home.apk** (504 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Official Release APK**: [**glass-tv-home.apk** (644 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Version**: **v2.6.0** (Latest with 🎮 Console Sound Profiles: PS5, Nintendo Switch, Xbox & Mute Mode, 🔄 OTA In-App Auto Updates & 1-Line AI Patching, 🇲🇾 14 Malaysian States Wallpapers, Phone QR Upload & Unifi Box Verified).
+* ⚡ **Version**: **v3.0.0** (Major Release: 🍏 macOS Apple Weather Bento Grid Dashboard, 🌧️ Hardware-Accelerated Atmospheric Canvas with Sunny/Rain/Thunder/Cloud/Night modes, 📡 Doppler Precipitation Radar Map, 🧭 Wind Compass Dial, 🌙 3D Moon Phase, 🕌 16:9 Floating Glass Azan Notification & Audio Settings, 🎮 Console Sound Profiles: PS5, Nintendo Switch, Xbox & Mute Mode, 🔄 OTA In-App Auto Updates).
 
 > [!NOTE]
 > ### 🇲🇾 Unifi TV Box (TM Unifi Plus Box) Users: Compatibility & Warranty Safety

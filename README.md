@@ -9,11 +9,11 @@ and come home to just your apps, with a new place to visit behind them every wee
 
 <p align="center">
   <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk">
-    <img src="https://img.shields.io/badge/Download_APK_v2.6.0-glass--tv--home.apk_(504_KB)-success?style=for-the-badge&logo=android" alt="Download APK v2.6.0">
+    <img src="https://img.shields.io/badge/Download_APK_v3.0.0-glass--tv--home.apk_(644_KB)-success?style=for-the-badge&logo=android" alt="Download APK v3.0.0">
   </a>
 </p>
 
-> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v2.6.0** • ~504 KB) ready to install on any Android TV or Google TV!
+> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v3.0.0** • ~644 KB) ready to install on any Android TV or Google TV!
 >
 > 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
 >
@@ -25,11 +25,12 @@ Glass TV debloats any Android TV or Google TV over Wi-Fi, with no root and nothi
 swaps the ad-filled home screen for a light one in frosted glass, with a new set of places behind your apps
 every week.
 
-<p>
-  <img src="docs/screenshots/home-live.png" width="24%" alt="Live Home Screen">
-  <img src="docs/screenshots/weather-live.png" width="24%" alt="Weather & Air Quality Dashboard">
-  <img src="docs/screenshots/screensaver-live.png" width="24%" alt="StandBy Nightstand Screensaver">
-  <img src="docs/screenshots/recent-apps-live.png" width="24%" alt="Recent Apps & RAM Manager">
+<p align="center">
+  <img src="docs/screenshots/home-live.png" width="19%" alt="Live Home Screen">
+  <img src="docs/screenshots/weather-live.png" width="19%" alt="Apple Weather Bento Dashboard">
+  <img src="docs/screenshots/azan-popup-live.png" width="19%" alt="16:9 Azan Floating Settings">
+  <img src="docs/screenshots/screensaver-live.png" width="19%" alt="StandBy Screensaver">
+  <img src="docs/screenshots/recent-apps-live.png" width="19%" alt="Recent Apps CoverFlow">
 </p>
 
 ## What you get

@@ -18,9 +18,9 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 ## 📦 Muat Turun Fail APK Terus (Direct Download)
 
 Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
-* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (504 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
+* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (644 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
 * 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Versi**: **v2.6.0** (Terkini: 🎮 Pilihan Sound Effect Konsol, 🔄 OTA In-App Auto Update & Prompt AI Update Patch, 🇲🇾 Wallpaper 14 Negeri Malaysia, Phone QR Upload, Photo Manager)
+* ⚡ **Versi**: **v3.0.0** (Keluaran Utama: 🍏 Dashboard Cuaca Apple Weather Widescreen Bento Grid, 🌧️ Latar Belakang Cuaca Dinamik 60fps dengan Mod Cerah/Hujan/Ribut/Mendung/Malam, 📡 Peta Radar Kerpasan Doppler, 🧭 Kompas Angin Berpusing, 🌙 Fasa Bulan 3D Kawah Realistik, 🕌 Notifikasi Popup Azan 16:9 Terapung & Tetapan Audio Azan Pelbagai Pilihan, 🎮 Profil Bunyi Konsol: PS5, Switch, Xbox & Mod Senyap, 🔄 Kemas Kini Automatik In-App OTA).
 
 > [!NOTE]
 > ### 🇲🇾 Pengguna Unifi TV Box (TM Unifi Plus Box): Adakah Boleh Guna & Adakah Batal Waranti?
