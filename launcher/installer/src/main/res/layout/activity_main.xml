@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0C0E14"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:maxWidth="640dp"
+        android:layout_gravity="center_horizontal">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="20dp">
+
+            <ImageView
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@drawable/ic_update"
+                android:tint="#FFFFFFFF"
+                android:layout_marginEnd="14dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Glass TV Installer"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="22sp"
+                    android:fontFamily="@font/outfit"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pemasang Mudah Android TV dari Telefon / Tablet"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/outfit" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_btn_glass"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="v3.1.4"
+                android:textColor="#FF90B8"
+                android:textSize="12sp"
+                android:fontFamily="@font/outfit"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Card 1: Sambungan TV -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_glass"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📡 Sambungan Android TV (Wi-Fi)"
+                android:textColor="#FFFFFFFF"
+                android:textSize="15sp"
+                android:fontFamily="@font/outfit"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tvLocalIp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IP Telefon Anda: Menyemak..."
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="@font/outfit"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <EditText
+                    android:id="@+id/etTvIp"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input_field"
+                    android:hint="IP TV (cth: 192.168.68.110)"
+                    android:textColorHint="#66FFFFFF"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/outfit"
+                    android:paddingHorizontal="14dp"
+                    android:inputType="textUri"
+                    android:layout_marginEnd="8dp" />
+
+                <EditText
+                    android:id="@+id/etTvPort"
+                    android:layout_width="75dp"
+                    android:layout_height="46dp"
+                    android:background="@drawable/bg_input_field"
+                    android:text="5555"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/outfit"
+                    android:gravity="center"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnScan"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_btn_glass"
+                android:text="🔍 Imbas Android TV di Rangkaian Wi-Fi"
+                android:textColor="#FFFFFFFF"
+                android:textSize="13sp"
+                android:fontFamily="@font/outfit"
+                android:textStyle="bold"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+        <!-- Card 2: Tindakan Pemasangan -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_glass"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🚀 Pasang Glass TV Home"
+                android:textColor="#FFFFFFFF"
+                android:textSize="15sp"
+                android:fontFamily="@font/outfit"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnInstall"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_btn_accent"
+                android:text="Pasang ke TV Sekarang"
+                android:textColor="#0C0E14"
+                android:textSize="15sp"
+                android:fontFamily="@font/outfit"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:max="100"
+                android:progress="0"
+                android:visibility="gone"
+                android:progressTint="#FF90B8"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Status: Masukkan IP TV atau tekan 'Imbas' untuk memulakan."
+                android:textColor="#B3FFFFFF"
+                android:textSize="12.5sp"
+                android:fontFamily="@font/outfit"
+                android:layout_marginBottom="14dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnLaunch"
+                    android:layout_width="0dp"
+                    android:layout_height="42dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_btn_glass"
+                    android:text="▶️ Buka di TV"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="12.5sp"
+                    android:fontFamily="@font/outfit"
+                    android:textAllCaps="false"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnWebServer"
+                    android:layout_width="0dp"
+                    android:layout_height="42dp"
+                    android:layout_weight="1.2"
+                    android:background="@drawable/bg_btn_glass"
+                    android:text="🌐 Pelayan Web TV"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="12.5sp"
+                    android:fontFamily="@font/outfit"
+                    android:textAllCaps="false" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvWebUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FF90B8"
+                android:textSize="12sp"
+                android:fontFamily="@font/outfit"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- Card 3: Panduan 3 Langkah -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_glass"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📖 Cara Sediakan TV Anda (Sekali Sahaja)"
+                android:textColor="#FFFFFFFF"
+                android:textSize="14sp"
+                android:fontFamily="@font/outfit"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1️⃣ Pada TV, pergi ke Settings > Device Preferences > About > tekan 'Android TV OS build' 7 kali berturut-turut untuk aktifkan Developer Options.\n\n2️⃣ Kembali ke Settings > Developer Options > aktifkan 'USB Debugging' dan 'Wireless Debugging' (jika ada).\n\n3️⃣ Pastikan telefon dan TV bersambung pada Wi-Fi yang sama, kemudian tekan 'Pasang Sekarang'."
+                android:textColor="#99FFFFFF"
+                android:textSize="12.5sp"
+                android:fontFamily="@font/outfit"
+                android:lineSpacingExtra="3dp" />
+        </LinearLayout>
+
+        <!-- Card 4: Belanja Kopi & Cadangan -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/bg_card_glass"
+            android:padding="20dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="4dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_coffee"
+                    android:tint="#FFFFFFFF"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Belanja Kopi"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/outfit"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" @imsomangge"
+                    android:textColor="#FF90B8"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/outfit"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DuitNow QR • GXBank"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="@font/outfit"
+                android:layout_marginBottom="12dp" />
+
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="200dp"
+                android:src="@drawable/qr_coffee"
+                android:scaleType="fitCenter"
+                android:layout_marginBottom="10dp"
+                android:contentDescription="DuitNow QR @imsomangge" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Imbas guna kamera fon / perbankan untuk sokong pembangunan launcher."
+                android:textColor="#99FFFFFF"
+                android:textSize="11.5sp"
+                android:fontFamily="@font/outfit"
+                android:gravity="center"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📧 Cadangan &amp; Maklum Balas: ahmad.anammat@me.com"
+                android:textColor="#CCFFFFFF"
+                android:textSize="12.5sp"
+                android:fontFamily="@font/outfit"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

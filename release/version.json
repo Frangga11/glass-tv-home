@@ -1,7 +1,7 @@
 {
-  "versionCode": 13,
-  "versionName": "3.1.3",
+  "versionCode": 14,
+  "versionName": "3.1.4",
   "apkUrl": "https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk",
-  "changelog": "✨ Kemaskini Ikon Baru: Nightstand Screensaver, Cuaca Dinamik & Doa Harian\n🖼️ Kemaskini Label Teks Menu Wallpaper\n⛅ Penalaan Estetik & Prestasi 60fps",
+  "changelog": "☕ Tambah Kad Belanja Kopi DuitNow QR (@imsomangge) dalam Popup Kemas Kini OTA\n🔄 Label Butang Candy Box Memaparkan Versi Patch Terkini (v3.1.4)\n🍎 Rekaan Dialog Apple TV-Style Minimal & Kemas",
   "releaseDate": "2026-10-28"
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Installer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#FFFFFF</item>
+        <item name="colorPrimaryDark">#0C0E14</item>
+        <item name="colorAccent">#FF90B8</item>
+        <item name="android:windowBackground">#0C0E14</item>
+        <item name="android:statusBarColor">#0C0E14</item>
+        <item name="android:navigationBarColor">#0C0E14</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:fontFamily">@font/outfit</item>
+    </style>
+</resources>

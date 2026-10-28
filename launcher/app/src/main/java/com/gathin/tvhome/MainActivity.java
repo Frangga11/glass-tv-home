@@ -2708,7 +2708,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Row 7: Auto-Update (OTA)
         boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
-        String updateLabel = "Auto-Update: " + (isAuto ? "ON (" + AppUpdateManager.getAutoUpdateTime(this) + ")" : "OFF");
+        String updateLabel = "Auto-Update: " + (isAuto ? "ON (v" + getAppVersionName() + ")" : "OFF (v" + getAppVersionName() + ")");
         addInputRow(rows, close, R.drawable.ic_update, updateLabel, -1, () -> {
             SoundEffects.playSelect();
             showAutoUpdateDialog();
@@ -3334,35 +3334,122 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (btnPos != null) btnPos.requestFocus();
     }
 
-    private void showAutoUpdateDialog() {
-        boolean isAutoEnabled = AppUpdateManager.isAutoUpdateEnabled(this);
-        String schedTime = AppUpdateManager.getAutoUpdateTime(this);
+    private String getAppVersionName() {
+        try {
+            return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception e) {
+            return "3.1.4";
+        }
+    }
 
-        final String[] options = new String[]{
-                "🔄 Semak Kemas Kini Sekarang (Check Now)",
-                (isAutoEnabled ? "✅ Auto-Update: Aktif (" + schedTime + ")" : "⭕ Auto-Update: Dimatikan"),
-                "⏱️ Tukar Waktu Auto-Update (Cadangan: 03:30 AM)",
-                (isAutoEnabled ? "❌ Matikan Auto-Update" : "⚡ Hidupkan Auto-Update (Default)")
+    private void showAutoUpdateDialog() {
+        SoundEffects.playSelect();
+        View view = getLayoutInflater().inflate(R.layout.dialog_ota_coffee, null);
+
+        TextView tvVersionSubtitle = view.findViewById(R.id.tvVersionSubtitle);
+        TextView tvAutoStatus = view.findViewById(R.id.tvAutoStatus);
+        TextView btnCheckNow = view.findViewById(R.id.btnCheckNow);
+        TextView btnChangeTime = view.findViewById(R.id.btnChangeTime);
+        TextView btnToggleAuto = view.findViewById(R.id.btnToggleAuto);
+        TextView btnClose = view.findViewById(R.id.btnClose);
+        ImageView imgQrCoffee = view.findViewById(R.id.imgQrCoffee);
+
+        if (tvVersionSubtitle != null) {
+            tvVersionSubtitle.setText("Glass TV Home v" + getAppVersionName() + " • Enjin Auto-Update (OTA)");
+        }
+
+        Runnable updateStatusUi = () -> {
+            boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
+            String sched = AppUpdateManager.getAutoUpdateTime(this);
+            if (tvAutoStatus != null) {
+                tvAutoStatus.setText(isAuto ? "✅ Auto-Update: Aktif (" + sched + ")" : "⭕ Auto-Update: Dimatikan");
+            }
+            if (btnToggleAuto != null) {
+                btnToggleAuto.setText(isAuto ? "❌ Matikan Auto-Update" : "⚡ Hidupkan Auto-Update");
+            }
         };
+        updateStatusUi.run();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("🔄 Tetapan Auto-Update (OTA)");
-        builder.setItems(options, (dialog, which) -> {
-            dialog.dismiss();
-            if (which == 0) {
-                AppUpdateManager.checkForUpdates(MainActivity.this, true);
-            } else if (which == 1 || which == 3) {
-                boolean newState = !isAutoEnabled;
-                AppUpdateManager.setAutoUpdateEnabled(MainActivity.this, newState);
-                Toast.makeText(MainActivity.this, newState ? "✅ Auto-Update Dihidupkan (" + schedTime + ")" : "⭕ Auto-Update Dimatikan", Toast.LENGTH_SHORT).show();
-            } else if (which == 2) {
-                showUpdateTimePickerDialog();
-            }
-        });
-        builder.setNegativeButton("Tutup", (dialog, which) -> dialog.dismiss());
+        builder.setView(view);
         AlertDialog dialog = builder.create();
+
+        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+            if (v instanceof TextView) {
+                ((TextView) v).setTextColor(hasFocus ? 0xFF000000 : 0xFFFFFFFF);
+            }
+            if (hasFocus) SoundEffects.playNav();
+        };
+        if (btnCheckNow != null) {
+            btnCheckNow.setTextColor(0xFF000000);
+            btnCheckNow.setOnFocusChangeListener(focusListener);
+        }
+        if (btnChangeTime != null) {
+            btnChangeTime.setTextColor(0xFFFFFFFF);
+            btnChangeTime.setOnFocusChangeListener(focusListener);
+        }
+        if (btnToggleAuto != null) {
+            btnToggleAuto.setTextColor(0xFFFFFFFF);
+            btnToggleAuto.setOnFocusChangeListener(focusListener);
+        }
+        if (btnClose != null) {
+            btnClose.setTextColor(0xFFFFFFFF);
+            btnClose.setOnFocusChangeListener(focusListener);
+        }
+
+        if (btnCheckNow != null) {
+            btnCheckNow.setOnClickListener(v -> {
+                SoundEffects.playSelect();
+                dialog.dismiss();
+                AppUpdateManager.checkForUpdates(MainActivity.this, true);
+            });
+        }
+
+        if (btnChangeTime != null) {
+            btnChangeTime.setOnClickListener(v -> {
+                SoundEffects.playSelect();
+                dialog.dismiss();
+                showUpdateTimePickerDialog();
+            });
+        }
+
+        if (btnToggleAuto != null) {
+            btnToggleAuto.setOnClickListener(v -> {
+                SoundEffects.playSelect();
+                boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
+                boolean newMode = !isAuto;
+                AppUpdateManager.setAutoUpdateEnabled(this, newMode);
+                updateStatusUi.run();
+                Toast.makeText(this, newMode ? "✅ Auto-Update Dihidupkan (" + AppUpdateManager.getAutoUpdateTime(this) + ")" : "⭕ Auto-Update Dimatikan", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> {
+                SoundEffects.playSelect();
+                dialog.dismiss();
+            });
+        }
+
+        if (imgQrCoffee != null) {
+            imgQrCoffee.setOnClickListener(v -> {
+                SoundEffects.playSelect();
+                Toast.makeText(this, "☕ Terima kasih atas sokongan belanja kopi! (@imsomangge)", Toast.LENGTH_SHORT).show();
+            });
+        }
+
         dialog.show();
         styleGlassDialog(dialog);
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            int width = Math.min((int) (680 * density), (int) (getResources().getDisplayMetrics().widthPixels * 0.85f));
+            window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER);
+        }
+
+        if (btnCheckNow != null) btnCheckNow.requestFocus();
     }
 
     private void showUpdateTimePickerDialog() {
@@ -3393,6 +3480,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             AppUpdateManager.setAutoUpdateTime(MainActivity.this, chosen);
             AppUpdateManager.setAutoUpdateEnabled(MainActivity.this, true);
             Toast.makeText(MainActivity.this, "Waktu Auto-Update ditetapkan ke: " + chosen, Toast.LENGTH_SHORT).show();
+            showAutoUpdateDialog();
         });
         builder.setNegativeButton("Kembali", (dialog, which) -> {
             dialog.dismiss();
