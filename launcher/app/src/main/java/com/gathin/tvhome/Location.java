@@ -90,7 +90,8 @@ final class Location {
         {"TRG02", "Terengganu", "Besut", "Besut, Setiu", "5.7336", "102.4897"},
         {"TRG03", "Terengganu", "Hulu Terengganu", "Hulu Terengganu", "5.0734", "103.0114"},
         {"TRG04", "Terengganu", "Dungun", "Dungun, Kemaman", "4.775", "103.4162"},
-        {"WLY01", "Wilayah Persekutuan", "Kuala Lumpur", "Kuala Lumpur, Putrajaya", "3.1412", "101.6865"},
+        {"WLY01", "Wilayah Persekutuan", "Kuala Lumpur", "Pusat Bandaraya Kuala Lumpur", "3.1412", "101.6865"},
+        {"WLY01_PJ", "Wilayah Persekutuan", "Putrajaya", "Pusat Pentadbiran Kerajaan Persekutuan", "2.9158", "101.6909"},
         {"WLY02", "Wilayah Persekutuan", "Labuan", "Labuan", "5.2803", "115.2475"},
     };
 

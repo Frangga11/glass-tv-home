@@ -17,11 +17,28 @@ import android.widget.Toast;
 public class LocationBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "TvHome.LocationReceiver";
     public static final String ACTION_SET_LOCATION = "com.gathin.tvhome.SET_LOCATION";
+    public static final String ACTION_SET_WEATHER = "com.gathin.tvhome.SET_WEATHER";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent == null) return;
         String action = intent.getAction();
+
+        if (ACTION_SET_WEATHER.equals(action)) {
+            String cond = intent.getStringExtra("condition");
+            if (cond == null) cond = intent.getStringExtra("weather");
+            Log.i(TAG, "Received SET_WEATHER: condition=" + cond);
+            MainActivity main = MainActivity.getInstance();
+            if (main != null) {
+                final String finalCond = cond;
+                main.runOnUiThread(() -> {
+                    main.setTestWeatherOverride(finalCond);
+                    Toast.makeText(context, "🌧️ Weather Input: " + (finalCond != null ? finalCond : "Auto"), Toast.LENGTH_SHORT).show();
+                });
+            }
+            return;
+        }
+
         if (!ACTION_SET_LOCATION.equals(action)) return;
 
         String query = intent.getStringExtra("query");

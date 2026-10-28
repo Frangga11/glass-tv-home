@@ -133,6 +133,12 @@ public class LocationActivity extends Activity {
                 Location.choose(this, z);
                 Location.publish(this, z.code, z.town, z.state, z.lat, z.lon);
                 PrayerTimes.setZone(this, z.code);
+                AppLocationManager.Station matched = AppLocationManager.findNearestStation(z.lat, z.lon);
+                if (matched != null) {
+                    AppLocationManager.setStation(this, matched);
+                } else {
+                    AppLocationManager.setCustomLocation(this, "CUSTOM", z.town, z.state, z.town, z.lat, z.lon);
+                }
                 HomeWeather.forget(this);
                 Azan.schedule(this, z.code);
                 setResult(RESULT_OK);

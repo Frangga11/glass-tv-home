@@ -134,6 +134,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private AppAdapter adapter;
     private RecyclerView grid;
+    private DockDecoration tray;
     private FrameLayout root;
     private GlassView glass;
     private View ambient;
@@ -249,6 +250,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long wallShownAt;
     private android.widget.ImageView wallView;
     private android.graphics.Bitmap wallBitmap;
+    /** Dynamic atmospheric weather canvas particle overlay over the wallpaper */
+    private WeatherBackgroundView weatherOverlayView;
+    private String testWeatherOverride = null;
     /** Settings kept for the places refresh, which runs after onCreate. */
     private Config config;
     /** Pictures of places are on (see PlaceWallpapers); they are dimmed behind the tiles. */
@@ -636,7 +640,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         grid.setHasFixedSize(true);
         grid.setItemAnimator(null);
-        DockDecoration tray = new DockDecoration(COLUMNS, density);
+        tray = new DockDecoration(COLUMNS, density);
         grid.addItemDecoration(tray);
         // The top-right buttons line up with the dock, which is only known once the tiles are laid out.
         grid.getViewTreeObserver().addOnGlobalLayoutListener(this::alignTopButtons);
@@ -971,6 +975,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // Photos are bright: dim them so the clock, names and tiles stay readable.
             if (placesMode) wallView.setColorFilter(0xFF7A7A7A, android.graphics.PorterDuff.Mode.MULTIPLY);
             root.addView(wallView, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            ensureWeatherOverlayView();
         }
         android.graphics.Bitmap old = wallBitmap;
         wallBitmap = bmp;
@@ -1248,6 +1253,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.postDelayed(nowPlayingPoll, 2000);
         handler.removeCallbacks(cacheClean);
         handler.postDelayed(cacheClean, CacheCleaner.IDLE_MS);
+        if (weatherOverlayView != null && weatherOverlayView.getVisibility() == View.VISIBLE) {
+            weatherOverlayView.startAnimation();
+        }
         hiddenSinceResume = false;
     }
 
@@ -1334,6 +1342,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.removeCallbacks(minuteTick);
         handler.removeCallbacks(wallTick);
         handler.removeCallbacks(nowPlayingPoll);
+        if (weatherOverlayView != null) {
+            weatherOverlayView.stopAnimation();
+        }
         // Nothing of ours stays on screen over another app; an undecided prompt simply returns next time.
         if (cardPrompt != null) cardPrompt.dismiss();
         if (openPopup != null) openPopup.dismiss();
@@ -2343,6 +2354,76 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             weatherAirQualityView.setCompoundDrawables(null, null, null, null);
         }
+        updateWeatherOverlay(line);
+    }
+
+    public void ensureWeatherOverlayView() {
+        if (weatherOverlayView == null && root != null) {
+            weatherOverlayView = new WeatherBackgroundView(this);
+            weatherOverlayView.setOverlayMode(true);
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                if (am != null) {
+                    am.getMemoryInfo(mi);
+                    if (mi.totalMem <= 1610612736L) {
+                        weatherOverlayView.setLowSpecMode(true);
+                    }
+                }
+            } catch (Exception ignored) {}
+
+            int idx = (wallView != null) ? root.indexOfChild(wallView) + 1 : 0;
+            root.addView(weatherOverlayView, idx, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            weatherOverlayView.setVisibility(View.GONE);
+        }
+    }
+
+    public void updateWeatherOverlay(HomeWeather.Line line) {
+        ensureWeatherOverlayView();
+        if (weatherOverlayView == null) return;
+
+        boolean enabled = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
+        if (!enabled) {
+            weatherOverlayView.setCondition(WeatherBackgroundView.ConditionType.NONE);
+            weatherOverlayView.stopAnimation();
+            weatherOverlayView.setVisibility(View.GONE);
+            return;
+        }
+
+        String wText = "";
+        if (testWeatherOverride != null && !testWeatherOverride.isEmpty()) {
+            wText = testWeatherOverride.toLowerCase(Locale.ROOT);
+        } else if (line != null && line.weather != null) {
+            wText = line.weather.toLowerCase(Locale.ROOT);
+        }
+
+        WeatherBackgroundView.ConditionType cond = WeatherBackgroundView.ConditionType.NONE;
+        if (wText.contains("thunder") || wText.contains("storm") || wText.contains("ribut") || wText.contains("petir")) {
+            cond = WeatherBackgroundView.ConditionType.THUNDERSTORM;
+        } else if (wText.contains("heavy rain") || wText.contains("lebat") || wText.contains("showers")) {
+            cond = WeatherBackgroundView.ConditionType.RAIN;
+        } else if (wText.contains("rain") || wText.contains("drizzle") || wText.contains("hujan") || wText.contains("renyai")) {
+            cond = WeatherBackgroundView.ConditionType.DRIZZLE;
+        }
+
+        if (cond == WeatherBackgroundView.ConditionType.NONE) {
+            weatherOverlayView.setCondition(WeatherBackgroundView.ConditionType.NONE);
+            weatherOverlayView.stopAnimation();
+            weatherOverlayView.setVisibility(View.GONE);
+        } else {
+            weatherOverlayView.setVisibility(View.VISIBLE);
+            weatherOverlayView.setCondition(cond);
+            weatherOverlayView.startAnimation();
+        }
+    }
+
+    public void setTestWeatherOverride(String condition) {
+        if ("reset".equalsIgnoreCase(condition) || "clear".equalsIgnoreCase(condition) || "none".equalsIgnoreCase(condition)) {
+            this.testWeatherOverride = null;
+        } else {
+            this.testWeatherOverride = condition;
+        }
+        updateWeatherOverlay(HomeWeather.last(this));
     }
 
     private void updateIslamicShelf() {
@@ -2568,7 +2649,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Runnable close = () -> closeMenu(false);
 
         // Row 1: Wallpaper
-        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper 4K", -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper", -1, () -> {
             SoundEffects.playSelect();
             showWallpaperDialog();
         });
@@ -2582,9 +2663,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Row 3: Location (Waktu Solat & Cuaca)
         Location.Zone chosenZone = Location.chosen(this);
         String zoneName = (chosenZone != null) ? (chosenZone.state + " - " + chosenZone.town) : "W.P. Kuala Lumpur";
-        addInputRow(rows, close, R.drawable.ic_location, "Location: " + zoneName, -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_location, "📍 Lokasi (Cuaca & Solat): " + zoneName, -1, () -> {
             SoundEffects.playSelect();
             startActivity(new Intent(this, LocationActivity.class));
+        });
+
+        // Row 4: Cuaca Dinamik (ON / OFF)
+        boolean isWeatherFx = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
+        addInputRow(rows, close, R.drawable.ic_cloudy_day, "Cuaca Dinamik: " + (isWeatherFx ? "ON" : "OFF"), -1, () -> {
+            SoundEffects.playSelect();
+            boolean newMode = !isWeatherFx;
+            getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", newMode).apply();
+            testWeatherOverride = null;
+            updateWeatherOverlay(HomeWeather.last(this));
+            Toast.makeText(this, newMode ? "🌧️ Cuaca Dinamik Dihidupkan (ON)" : "⛅ Cuaca Dinamik Dimatikan (OFF)", Toast.LENGTH_SHORT).show();
+            closeMenu(false);
+            showCandyBoxPopup();
         });
 
         // Row 4: Tetapan & Pilihan Azan
@@ -2597,7 +2691,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Row 5: Doa Harian / Ayat Pilihan
         boolean ayahShown = WeeklyAyah.shown(this);
-        addInputRow(rows, close, R.drawable.ic_doa, "Doa Harian: " + (ayahShown ? "ON" : "OFF"), -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_salat, "Doa Harian: " + (ayahShown ? "ON" : "OFF"), -1, () -> {
             SoundEffects.playSelect();
             WeeklyAyah.setShown(this, !ayahShown);
             showAyah(WeeklyAyah.last(this));
@@ -2621,7 +2715,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
 
         // Row 8: Nightstand / Screensaver
-        addInputRow(rows, close, R.drawable.ic_weather_sun, "Nightstand Screensaver", -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_sleep, "Nightstand Screensaver", -1, () -> {
             SoundEffects.playSelect();
             showNightstandScreensaver();
         });
@@ -2671,8 +2765,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             showCleanTvCacheDialog();
         });
 
-        // Row 4: Wallpaper 4K
-        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper 4K (" + getWallpaperIntervalSummary() + ")", -1, () -> {
+        // Row 4: Wallpaper
+        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper (" + getWallpaperIntervalSummary() + ")", -1, () -> {
             SoundEffects.playSelect();
             closeMenu(false);
             showWallpaperDialog();
@@ -3632,12 +3726,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         boolean isShuffle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
         boolean isDescOn = isWallpaperDescEnabled();
+        boolean isWeatherFxOn = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
 
         options.add(new WallpaperOption("INTERVAL", "⏱️ Selang Masa Shuffle: " + intervalText, "Pilih kekerapan pertukaran wallpaper (5 min, 10 min, dll)"));
         options.add(new WallpaperOption("TOGGLE_SHUFFLE", "🔀 Mod Susunan: " + (isShuffle ? "Rawak (Shuffle ON)" : "Berurutan (Sequential)"),
                 isShuffle ? "Gambar dipilih secara rawak tanpa mengulang" : "Gambar bertukar mengikut urutan katalog"));
         options.add(new WallpaperOption("TOGGLE_DESC", "🏷️ Info & Deskripsi Gambar: " + (isDescOn ? "Dihidupkan (ON)" : "Dimatikan (OFF)"),
                 isDescOn ? "Paparkan tajuk dan penerangan gambar di skrin utama" : "Sembunyikan teks untuk paparan skrin bersih (Clean Look)"));
+        options.add(new WallpaperOption("TOGGLE_WEATHER_OVERLAY", "🌧️ Dynamic Weather: " + (isWeatherFxOn ? "Dihidupkan (ON)" : "Dimatikan (OFF)"),
+                isWeatherFxOn ? "Animasi rintik hujan & kilat di atas wallpaper bila cuaca hujan" : "Hanya wallpaper pegun tanpa animasi cuaca"));
         options.add(new WallpaperOption("NEXT", "⏭️ Tukar Gambar Sekarang", "Putar dan paparkan gambar seterusnya serta-merta"));
 
         LinearLayout layout = new LinearLayout(this);
@@ -3803,6 +3900,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         }
                         Toast.makeText(MainActivity.this, "Deskripsi Wallpaper Dihidupkan (ON)", Toast.LENGTH_SHORT).show();
                     }
+                    showWallpaperDialog();
+                } else if ("TOGGLE_WEATHER_OVERLAY".equals(chosenKey)) {
+                    boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
+                    boolean newMode = !current;
+                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", newMode).apply();
+                    Toast.makeText(MainActivity.this, newMode ? "🌧️ Dynamic Weather Overlay Dihidupkan (ON)" : "⛅ Dynamic Weather Overlay Dimatikan (OFF)", Toast.LENGTH_SHORT).show();
+                    updateWeatherOverlay(HomeWeather.last(MainActivity.this));
                     showWallpaperDialog();
                 } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
                     showCustomWallpaperManagerDialog();

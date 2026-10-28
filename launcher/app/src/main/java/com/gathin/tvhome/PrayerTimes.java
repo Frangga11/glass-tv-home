@@ -108,7 +108,8 @@ final class PrayerTimes {
                     return; // already have this month's takwim
                 }
 
-                URL url = new URL("https://api.waktusolat.app/v2/solat/" + zone);
+                String apiZone = (zone != null && zone.contains("_")) ? zone.split("_")[0] : zone;
+                URL url = new URL("https://api.waktusolat.app/v2/solat/" + apiZone);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(8000);
                 conn.setReadTimeout(8000);
@@ -161,8 +162,9 @@ final class PrayerTimes {
     private static final List<PrayerZone> PRESET_ZONES = new ArrayList<>();
 
     static {
-        // W.P. & Putrajaya
-        PRESET_ZONES.add(new PrayerZone("WLY01", "W.P.", "Putrajaya & Kuala Lumpur", 2.9158, 101.6909));
+        // W.P. Kuala Lumpur & Putrajaya (Separated)
+        PRESET_ZONES.add(new PrayerZone("WLY01", "W.P. Kuala Lumpur", "Kuala Lumpur", 3.1412, 101.6865));
+        PRESET_ZONES.add(new PrayerZone("WLY01_PJ", "W.P. Putrajaya", "Putrajaya", 2.9158, 101.6909));
         PRESET_ZONES.add(new PrayerZone("WLY02", "W.P.", "Labuan", 5.3347, 115.2289));
 
         // Selangor
@@ -298,7 +300,7 @@ final class PrayerTimes {
         String loc = AppLocationManager.getLocationName(context).toLowerCase(Locale.ROOT);
         String stationId = AppLocationManager.getStationId(context).toUpperCase(Locale.ROOT);
 
-        if (loc.contains("putrajaya") || stationId.equals("CA17W")) return "WLY01";
+        if (loc.contains("putrajaya") || stationId.equals("CA17W")) return "WLY01_PJ";
         if (loc.contains("kuala lumpur") || loc.contains("cheras") || loc.contains("batu muda")) return "WLY01";
         if (loc.contains("labuan")) return "WLY02";
         if (loc.contains("melaka") || loc.contains("alor gajah") || loc.contains("rambai")) return "MLK01";

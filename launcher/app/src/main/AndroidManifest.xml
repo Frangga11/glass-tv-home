@@ -114,6 +114,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="com.gathin.tvhome.SET_LOCATION" />
+                <action android:name="com.gathin.tvhome.SET_WEATHER" />
             </intent-filter>
         </receiver>
 

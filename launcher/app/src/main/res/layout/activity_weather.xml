@@ -127,20 +127,7 @@
                     android:id="@+id/btnChangeLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:background="@drawable/bg_location_pill"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:fontFamily="@font/outfit"
-                    android:fontVariationSettings="'wght' 600"
-                    android:gravity="center"
-                    android:paddingStart="12dp"
-                    android:paddingTop="2.5dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="2.5dp"
-                    android:text="📍 Tukar Stesen / Suasana"
-                    android:textColor="@color/selector_pill_text"
-                    android:textSize="10sp" />
+                    android:visibility="gone" />
             </LinearLayout>
 
             <!-- Main Widescreen Body: Bento Grid (Exact Height: 385dp) -->

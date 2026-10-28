@@ -83,8 +83,7 @@ public class WeatherActivity extends Activity {
         weatherFooter = findViewById(R.id.weatherFooter);
 
         if (btnChangeLocation != null) {
-            btnChangeLocation.setOnClickListener(v -> showLocationPickerDialog());
-            setupFocusAnimation(btnChangeLocation, 1.03f);
+            btnChangeLocation.setVisibility(View.GONE);
         }
 
         // Setup Card Focus Animators for TV Remote Navigation on Leaf Cards
@@ -255,14 +254,11 @@ public class WeatherActivity extends Activity {
         }
 
         // 2. Header
-        String locDisplay = w.location;
-        String neatLoc = "Putrajaya";
-        if (locDisplay != null && !locDisplay.isEmpty()) {
-            neatLoc = locDisplay.substring(0, 1).toUpperCase(Locale.ROOT) + locDisplay.substring(1).toLowerCase(Locale.ROOT);
-            weatherLocation.setText(neatLoc);
-        } else {
-            weatherLocation.setText("Putrajaya");
-        }
+        Location.Zone chosen = Location.chosen(this);
+        String neatLoc = (chosen != null) ? chosen.town : w.location;
+        if (neatLoc == null || neatLoc.isEmpty()) neatLoc = "Kuala Lumpur";
+        neatLoc = neatLoc.substring(0, 1).toUpperCase(Locale.ROOT) + neatLoc.substring(1);
+        weatherLocation.setText(neatLoc);
 
         weatherMainTemp.setText(w.temp + "°");
         

@@ -7,6 +7,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RadialGradient;
+import android.graphics.RectF;
 import android.graphics.Shader;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -24,8 +25,10 @@ import java.util.Random;
 public class WeatherBackgroundView extends View {
 
     public enum ConditionType {
+        NONE,
         SUNNY,
         CLOUDY,
+        DRIZZLE,
         RAIN,
         THUNDERSTORM,
         NIGHT
@@ -132,6 +135,31 @@ public class WeatherBackgroundView extends View {
         }
     }
 
+    public ConditionType getCondition() {
+        return currentCondition;
+    }
+
+    private boolean overlayMode = false;
+    private boolean lowSpecMode = false;
+
+    public void setOverlayMode(boolean overlayMode) {
+        this.overlayMode = overlayMode;
+        invalidate();
+    }
+
+    public boolean isOverlayMode() {
+        return overlayMode;
+    }
+
+    public void setLowSpecMode(boolean lowSpecMode) {
+        this.lowSpecMode = lowSpecMode;
+        rebuildGradientsAndParticles();
+    }
+
+    public boolean isLowSpecMode() {
+        return lowSpecMode;
+    }
+
     public void startAnimation() {
         if (!isAnimating) {
             isAnimating = true;
@@ -218,17 +246,31 @@ public class WeatherBackgroundView extends View {
         }
         bgPaint.setShader(bgGradient);
 
-        // 2. Initialize Rain drops if raining or storm
+        // 2. Initialize Rain drops if drizzle, rain or storm
         rainDrops.clear();
         ripples.clear();
-        if (currentCondition == ConditionType.RAIN || currentCondition == ConditionType.THUNDERSTORM) {
-            int count = (currentCondition == ConditionType.THUNDERSTORM) ? 140 : 100;
+        if (currentCondition == ConditionType.DRIZZLE || currentCondition == ConditionType.RAIN || currentCondition == ConditionType.THUNDERSTORM) {
+            int count;
+            if (currentCondition == ConditionType.THUNDERSTORM) {
+                count = lowSpecMode ? 70 : 140;
+            } else if (currentCondition == ConditionType.RAIN) {
+                count = lowSpecMode ? 50 : 100;
+            } else { // DRIZZLE
+                count = lowSpecMode ? 25 : 50;
+            }
+
             for (int i = 0; i < count; i++) {
                 RainDrop drop = new RainDrop();
                 drop.x = random.nextFloat() * cachedW * 1.2f - (cachedW * 0.1f);
                 drop.y = random.nextFloat() * cachedH;
                 drop.layer = random.nextInt(3);
-                if (drop.layer == 0) {
+                if (currentCondition == ConditionType.DRIZZLE) {
+                    // Delicate translucent rintik hujan
+                    drop.length = 8f + random.nextFloat() * 8f;
+                    drop.speed = 10f + random.nextFloat() * 6f;
+                    drop.width = 1.1f;
+                    drop.alpha = 40 + random.nextInt(45);
+                } else if (drop.layer == 0) {
                     // Background drizzle
                     drop.length = 12f + random.nextFloat() * 10f;
                     drop.speed = 14f + random.nextFloat() * 6f;
@@ -292,34 +334,40 @@ public class WeatherBackgroundView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (cachedW <= 0 || cachedH <= 0) return;
+        if (cachedW <= 0 || cachedH <= 0 || currentCondition == ConditionType.NONE) return;
 
         long now = SystemClock.uptimeMillis();
         float dt = (lastFrameTime > 0) ? Math.min((now - lastFrameTime) / 1000f, 0.05f) : 0.016f;
         lastFrameTime = now;
 
-        // 1. Draw base sky gradient
-        canvas.drawRect(0, 0, cachedW, cachedH, bgPaint);
+        // 1. Draw base sky gradient (only when not in transparent wallpaper overlay mode)
+        if (!overlayMode) {
+            canvas.drawRect(0, 0, cachedW, cachedH, bgPaint);
+        }
 
         // 2. Weather Specific Layers
         switch (currentCondition) {
             case SUNNY:
-                drawSunnyAtmosphere(canvas, dt);
+                if (!overlayMode) drawSunnyAtmosphere(canvas, dt);
                 break;
             case CLOUDY:
-                drawClouds(canvas, dt);
+                if (!overlayMode) drawClouds(canvas, dt);
+                break;
+            case DRIZZLE:
+                if (!overlayMode) drawClouds(canvas, dt);
+                drawRainAndRipples(canvas, dt, false);
                 break;
             case RAIN:
-                drawClouds(canvas, dt);
+                if (!overlayMode) drawClouds(canvas, dt);
                 drawRainAndRipples(canvas, dt, false);
                 break;
             case THUNDERSTORM:
-                drawClouds(canvas, dt);
+                if (!overlayMode) drawClouds(canvas, dt);
                 drawRainAndRipples(canvas, dt, true);
                 drawLightning(canvas, now, dt);
                 break;
             case NIGHT:
-                drawNightSky(canvas, dt);
+                if (!overlayMode) drawNightSky(canvas, dt);
                 break;
         }
 
@@ -426,9 +474,9 @@ public class WeatherBackgroundView extends View {
                     rainPaint
             );
 
-            // Check if drop hit bottom
+            // Check if drop hit bottom of screen
             if (drop.y > cachedH) {
-                // Occasional splash ripple
+                // Occasional splash ripple on screen bottom floor
                 if (ripples.size() < 16 && random.nextFloat() < 0.25f) {
                     SplashRipple r = new SplashRipple();
                     r.x = drop.x;
@@ -439,7 +487,7 @@ public class WeatherBackgroundView extends View {
                     ripples.add(r);
                 }
 
-                // Reset drop to top
+                // Reset drop to top of sky
                 drop.y = -drop.length - random.nextFloat() * 40f;
                 drop.x = random.nextFloat() * cachedW * 1.2f - (cachedW * 0.1f);
             }
