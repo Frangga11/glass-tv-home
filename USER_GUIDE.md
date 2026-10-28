@@ -16,12 +16,13 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 
 ---
 
-## 📦 Direct APK Download
+## 📦 Official APK Downloads
 
-For users who want to download and install the pre-compiled APK directly:
-* 📥 **Official Release APK**: [**glass-tv-home.apk** (644 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
-* 📁 **Repository Location**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Version**: **v3.0.0** (Major Release: 🍏 macOS Apple Weather Bento Grid Dashboard, 🌧️ Hardware-Accelerated Atmospheric Canvas with Sunny/Rain/Thunder/Cloud/Night modes, 📡 Doppler Precipitation Radar Map, 🧭 Wind Compass Dial, 🌙 3D Moon Phase, 🕌 16:9 Floating Glass Azan Notification & Audio Settings, 🎮 Console Sound Profiles: PS5, Nintendo Switch, Xbox & Mute Mode, 🔄 OTA In-App Auto Updates).
+Download the official release APKs based on your setup:
+* 📱 **For Android Phones & Tablets (Companion Installer App)**:  
+  [**`glass-tv-installer.apk`** (5.2 MB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) — **Primary Recommendation!** Install directly to your TV over Wi-Fi without needing a PC or cables.
+* 📺 **For Android TV & Google TV (Main Launcher)**:  
+  [**`glass-tv-home.apk`** (730 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) — Current stable release `v3.1.4` (Leanback weather bento grid, auto prayer schedule, 2-click RAM optimizer, DuitNow support).
 
 > [!NOTE]
 > ### 🇲🇾 Unifi TV Box (TM Unifi Plus Box) Users: Compatibility & Warranty Safety
@@ -30,74 +31,92 @@ For users who want to download and install the pre-compiled APK directly:
 
 ---
 
-## 🤖 2. The Easiest Way: Let AI Do Everything Automatically! (1-Line Prompt)
+## 🚀 2. Installation Guide by Device Priority
 
-You **do not need any coding skills** or technical terminal knowledge. After enabling developer mode on your TV, simply paste this **single prompt** into any AI coding assistant (such as Google Antigravity [Free] or Claude Code):
+Follow the guide based on what device you have, prioritized for simplicity:
 
-```text
-install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
-```
+### ⭐ Priority 1: Android Phone Users (Primary Focus — Easiest & 100% Wireless)
 
-*(English alias: `install this on my home tv: https://github.com/aqmangge/glass-tv-home`)*
+If you have an Android smartphone or tablet, this is the **easiest, fastest, and most convenient** method without needing any computer or cables!
 
-The AI will handle **EVERYTHING** automatically from start to finish!
+1. **Install Companion APK on Your Android Phone**:
+   - Download [**`glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) (~5.2 MB) directly onto your Android device and install it.
+2. **Quick TV Setup (One-Time)**:
+   - On your TV remote: Open **Settings ⚙️** $\rightarrow$ **About** $\rightarrow$ Scroll to **Build (Android TV OS Build)**.
+   - Click the **OK button 7 times rapidly** until *"You are now a developer!"* pops up.
+   - Go to **Developer options** and turn ON:
+     - ✅ **USB debugging**.
+     - *(Also turn ON Network / Wireless debugging if available)*.
+   - Ensure your Android phone and TV are connected to the **same Wi-Fi network**.
+3. **1-Click Install from Phone**:
+   - Open **Glass TV Installer** on your Android phone.
+   - Tap **`🔍 Imbas Android TV di Rangkaian Wi-Fi`** — the app will discover your TV automatically!
+   - Tap the blue button **`🚀 Pasang Terus ke Android TV`**.
+   - On your TV screen, accept the *"Allow USB debugging?"* prompt (check ☑ **Always allow from this computer** and press **OK / Allow**).
+   - The app streams and installs Glass TV Home directly to your TV in seconds!
+4. **Launch**:
+   - Tap **`📺 Buka Glass TV Home di Skrin TV`** on your phone or press the Home button on your TV remote. Done!
 
-### 🔄 Updating Existing Installations (1-Line AI Patching)
-Already running Glass TV Home and want to update to the latest patch or version? Simply send this single line to your AI assistant:
+> 💡 **Local Web Server Option (If TV Lacks Debugging)**:  
+> If your TV cannot enable debugging, tap **`🌐 Pelayan Web TV`** inside the phone app, then open **Downloader** or a web browser on your TV and type the local URL displayed (e.g. `http://192.168.x.x:8080`) to download and install directly.
+
+---
+
+### 💻 Priority 2: If No Android Phone — Use Laptop or PC (Windows / Mac / Linux)
+
+If you **do not have an Android smartphone** (e.g., you only have a laptop or computer), use your PC with AI assistance or terminal:
+
+1. **TV Preparation**: Turn on **USB debugging** on your TV and ensure your PC and TV are on the same Wi-Fi.
+2. **Automatic AI Assistance (1-Line Prompt - Zero Coding)**:
+   Open your AI assistant (**Google Antigravity** [Free / Recommended], **Claude Code**, or **Cursor**). Paste this single prompt:
+   ```text
+   install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+   ```
+   *(English: `install this on my home tv: https://github.com/aqmangge/glass-tv-home`)*
+   - The AI connects over Wi-Fi (`adb connect <ip>:5555`), creates a backup, removes sluggish bloatware, enables AdGuard DNS, and installs Glass TV Home automatically!
+   - Press **Allow** on your TV screen when prompted.
+3. **Manual Terminal Setup (Developer Alternative)**:
+   ```bash
+   adb connect <TV_IP_ADDRESS>:5555
+   adb install -r release/glass-tv-home.apk
+   adb shell am start -n com.gathin.tvhome/.MainActivity
+   ```
+
+---
+
+### 🍏 Priority 3: If No Android & No PC (iPhone Users) — Use iPhone & Muse.ai Assistance
+
+If you **do not have an Android phone and do not have a computer** (only an iPhone or iPad):
+
+1. **Use AI Guidance via Muse.ai**:
+   - Open Safari on your iPhone and visit [**muse.ai**](https://muse.ai) (or your preferred web AI assistant).
+   - Prompt Muse.ai with your TV setup:
+     ```text
+     I am using an iPhone and have an Android TV (Model: [insert TV model, e.g. Xiaomi Mi Box S / TCL / Sony]). I want to install this lightweight launcher: https://github.com/aqmangge/glass-tv-home
+     Please guide me step-by-step on how to install this APK from iPhone to TV, and provide a list of useless manufacturer apps (bloatware) safe to disable or remove on my TV model to make it fast and ad-free.
+     ```
+2. **Transfer & Install APK (AI-Guided Steps)**:
+   - **Method A (Downloader App on TV)**: On your Android TV, open Google Play Store and install **Downloader by AFTVnews**. Enter the direct APK URL:  
+     `https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk`  
+     Your TV will download and install Glass TV Home directly without extra hardware.
+   - **Method B (LocalSend from iPhone)**: Install the free **LocalSend** app on both your iPhone (App Store) and TV (Play Store). Download `glass-tv-home.apk` on iPhone Safari, send it to TV over Wi-Fi, and click **Install**.
+3. **Remove Unwanted Apps (Debloat) & Block Ads**:
+   - Ask Muse.ai for the specific package names to disable for your TV brand.
+   - On TV remote: Navigate to **Settings ⚙️** $\rightarrow$ **Apps** $\rightarrow$ **See all apps**, select the unwanted manufacturer apps identified by Muse.ai, and click **Disable**.
+   - **Block Ads Without a PC**: In TV **Settings ⚙️** $\rightarrow$ **Network & Internet** $\rightarrow$ **Private DNS**, enter:
+     ```text
+     dns.adguard-dns.com
+     ```
+     This permanently blocks all home screen sponsored ads and manufacturer tracking telemetry!
+
+---
+
+### 🔄 For Existing Users: 1-Line AI Patching Prompt
+Already running Glass TV Home and want to update to the latest patch or version? Send this single line to your AI assistant:
 ```text
 update patch latest glass tv dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
 ```
 *(English: `update glass tv to the latest patch on my tv: https://github.com/aqmangge/glass-tv-home`)*
-
-The AI connects via Wi-Fi ADB, updates the APK in 5 seconds (`adb install -r`), and relaunches the home screen. **Your customized dock apps, wallpapers, and prayer/sound settings are 100% retained!**
-
-### 💡 Supported AI Assistants:
-1. **Google Antigravity (Free / Zero Setup)** ⭐ *Highly Recommended*:
-   - Official AI coding agent from Google DeepMind with full terminal shell capabilities, automation tools, and script execution for free.
-2. **Claude Code (Anthropic Paid Subscription)**:
-   - Powerful CLI coding agent by Anthropic that runs inside your terminal.
-3. **Cursor / Windsurf IDE (Freemium / Paid)**:
-   - AI code editor with an integrated terminal shell.
-
----
-
-### 📋 Step 1: Turn On Developer Mode & Debugging on Your TV
-Before AI can reach your TV over Wi-Fi, perform these two simple remote actions:
-1. On your TV remote, open **Settings ⚙️**.
-2. Select **Device Preferences** (or **System** on newer Google TVs).
-3. Select **About** $\rightarrow$ Scroll down to **Build** (or *Android TV OS Build*).
-4. **Press the OK button on your remote 7 times rapidly** until a toast notification appears: *"You are now a developer!"*.
-5. Press the *Back* button once. Open the new menu: **Developer options**.
-6. Locate and **ENABLE**:
-   - ✅ **USB debugging** (Turn ON).
-   - ✅ **Wireless debugging / Network debugging** (Turn ON).
-7. Ensure both your computer/phone and TV are connected to the **same Wi-Fi network**.
-
----
-
-### 📋 Step 2: Paste This 1-Line Prompt to Your AI Assistant
-Open **Google Antigravity**, **Claude Code**, or **Cursor** on your laptop/computer. Copy and paste this single prompt:
-
-```text
-install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
-```
-
-> **What the AI will do automatically after you send this prompt:**
-> 1. The AI will ask for your TV IP address (or probe your home Wi-Fi subnet to find the TV automatically).
-> 2. The AI will ask for your location in Malaysia (e.g. Putrajaya, Cheras, Shah Alam, Melaka, JB, Penang, Kuantan, etc.) to calibrate APIMS haze and JAKIM prayer zones.
-> 3. Connects to your TV over Wi-Fi via ADB (`adb connect <ip>:5555`).
-> 4. Creates a safety backup of your TV's factory package configuration.
-> 5. Strips away sluggish manufacturer bloatware, suppresses promotional ads, and activates AdGuard Private DNS to block background analytics.
-> 6. Installs the ultralight (~453 KB) Glass TV Home APK as your primary home launcher.
-> 7. Pulls a live screenshot from your TV to confirm everything is running smoothly!
-
-*(Optional: If you want to supply all info at once in a single message without back-and-forth:)*
-```text
-install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
-TV Model: [e.g. Xiaomi Mi Box S]
-TV IP: [e.g. 192.168.68.102]
-My Location: [e.g. Putrajaya / Cheras / Shah Alam / Johor Bahru / Penang]
-```
 
 > [!IMPORTANT]
 > **🚨 Mandatory Instruction For AI Assistants (AI Assistant Rule)**:
@@ -295,28 +314,29 @@ The **Bugjaeger Mobile ADB** app (free on Google Play Store) allows your phone t
 
 ---
 
-### Method 2: iPhone (iOS) Users: Can You Use an iPhone?
-**Yes! You can easily install the APK and block ads on your TV using an iPhone.**
+### Method 3: iPhone (iOS) Users via Muse.ai Assistance
+**Yes! iPhone users can easily install the APK and remove unwanted TV apps with AI assistance from Muse.ai.**
 
-Due to Apple App Store sandbox security policies, Apple does not allow direct low-level ADB tools like Bugjaeger on iOS. However, iPhone users can achieve a clean setup quickly:
+Because Apple App Store sandbox policies do not permit direct ADB shell apps on iOS, iPhone users can simply open Safari and visit [**muse.ai**](https://muse.ai) (or your preferred web AI assistant) for step-by-step guidance:
 
-#### 1. Transfer & Install the APK using 'LocalSend':
-* Download the free **LocalSend** app on your iPhone (App Store) and on your Android TV (Play Store).
-* Download `app-release.apk` on your iPhone Safari from this GitHub repository.
-* Open LocalSend on both devices (on the same Wi-Fi) and send the APK to your TV in 1 tap.
-* On your TV, click the received APK file and select **Install**.
+#### 1. Ask Muse.ai in iPhone Safari:
+Prompt Muse.ai:
+> *"I use an iPhone and have an Android TV [insert TV model, e.g. Xiaomi / TCL / Sony]. Give me the easiest instructions to install https://github.com/aqmangge/glass-tv-home on my TV, and tell me which bloatware apps are safe to disable so my TV runs fast and ad-free."*
 
-#### 2. Block Ads & Telemetry Directly from Your TV Remote (No ADB Needed):
-1. On your TV, navigate to **Settings ⚙️** $\rightarrow$ **Network & Internet**.
-2. Select **Private DNS** (switch from *Automatic* to *Private DNS provider hostname*).
-3. Type:
-   ```text
-   dns.adguard-dns.com
-   ```
-4. Click **Save**. All system-wide banner ads, manufacturer analytics, and tracking domains will be blocked immediately!
+#### 2. Install APK to TV:
+* **Option A (Downloader on TV)**: Install **Downloader by AFTVnews** from your TV's Play Store and type the direct APK link:  
+  `https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk`
+* **Option B (LocalSend from iPhone)**: Use **LocalSend** (free on iOS App Store & Android TV Play Store) to beam `glass-tv-home.apk` over Wi-Fi and install.
 
-#### 3. Deep Debloat Note for iPhone Users:
-To disable deep manufacturer system packages (e.g., Xiaomi PatchWall), it is recommended to run the ADB command once from a computer, or borrow an Android phone for 2 minutes. Once disabled, the bloatware remains gone permanently.
+#### 3. Debloat Unwanted Apps & Block Ads:
+* **Disable Manufacturer Bloatware**: In TV **Settings ⚙️** $\rightarrow$ **Apps** $\rightarrow$ **See all apps**, select the unnecessary manufacturer apps identified by Muse.ai and select **Disable**.
+* **Block Ads Without a PC (AdGuard Private DNS)**:
+  1. On TV remote: **Settings ⚙️** $\rightarrow$ **Network & Internet** $\rightarrow$ **Private DNS**.
+  2. Choose *Private DNS provider hostname* and enter:
+     ```text
+     dns.adguard-dns.com
+     ```
+  3. Click **Save**. All intrusive home screen ads and tracking domains are instantly blocked!
 
 ---
 

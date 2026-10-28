@@ -15,12 +15,13 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 
 ---
 
-## 📦 Muat Turun Fail APK Terus (Direct Download)
+## 📦 Muat Turun Fail APK Rasmi (Official Direct Downloads)
 
-Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
-* 📥 **Muat Turun Fail APK Rasmi**: [**glass-tv-home.apk** (644 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk)
-* 📁 **Lokasi Dalam Repositori**: [`release/glass-tv-home.apk`](release/glass-tv-home.apk)
-* ⚡ **Versi**: **v3.0.0** (Keluaran Utama: 🍏 Dashboard Cuaca Apple Weather Widescreen Bento Grid, 🌧️ Latar Belakang Cuaca Dinamik 60fps dengan Mod Cerah/Hujan/Ribut/Mendung/Malam, 📡 Peta Radar Kerpasan Doppler, 🧭 Kompas Angin Berpusing, 🌙 Fasa Bulan 3D Kawah Realistik, 🕌 Notifikasi Popup Azan 16:9 Terapung & Tetapan Audio Azan Pelbagai Pilihan, 🎮 Profil Bunyi Konsol: PS5, Switch, Xbox & Mod Senyap, 🔄 Kemas Kini Automatik In-App OTA).
+Sila muat turun fail pemasangan rasmi mengikut peranti anda:
+* 📱 **Untuk Telefon / Tablet Android (Aplikasi Pembantu Pemasangan)**:  
+  [**`glass-tv-installer.apk`** (5.2 MB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) — **Pilihan Utama!** Pasang terus ke TV melalui Wi-Fi tanpa perlukan komputer (PC) atau kabel.
+* 📺 **Untuk Android TV / Google TV (Launcher Utama)**:  
+  [**`glass-tv-home.apk`** (730 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) — Versi terkini `v3.1.4` (Keluaran stabil, cuaca bento APIMS, waktu solat automatik, RAM cleaner 2-klik, DuitNow Belanja Kopi).
 
 > [!NOTE]
 > ### 🇲🇾 Pengguna Unifi TV Box (TM Unifi Plus Box): Adakah Boleh Guna & Adakah Batal Waranti?
@@ -29,15 +30,86 @@ Bagi pengguna yang ingin memuat turun fail APK siap pasang secara langsung:
 
 ---
 
-## 🤖 2. Cara Paling Mudah: Bantuan AI (Hanya 1 Baris Prompt!)
+## 🚀 2. Panduan Pemasangan Mengikut Keutamaan Peranti Anda
 
-Anda **tidak perlu tahu koding** atau menaip arahan teknikal yang panjang. Selepas menghidupkan mod pembangun di TV, anda hanya perlu tampal **satu baris prompt** ini sahaja kepada mana-mana pembantu AI (*AI Coding Assistant* seperti Google Antigravity percuma atau Claude Code):
+Ikuti panduan mengikut peranti yang anda miliki dengan susunan keutamaan berikut:
 
-```text
-install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
-```
+### ⭐ Keutamaan 1: Pengguna Telefon Pintar Android (Fokus Utama — Paling Mudah & Disyorkan)
 
-AI akan menguruskan **SEMUANYA** secara automatik dari mula hingga selesai!
+Jika anda mempunyai telefon pintar atau tablet Android, ini adalah kaedah **paling mudah, pantas, dan 100% automatik** tanpa memerlukan komputer atau sebarang kabel USB!
+
+1. **Muat Turun & Pasang APK Pembantu di Telefon Android Anda**:
+   - Muat turun [**`glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) (~5.2 MB) terus ke telefon pintar anda dan pasang (*install*).
+2. **Persediaan Ringkas di TV (Sekali Sahaja)**:
+   - Pada remote TV: Buka **Settings (Tetapan ⚙️)** $\rightarrow$ **System / Device Preferences** $\rightarrow$ **About (Mengenai)** $\rightarrow$ Skrol ke **Build (Android TV OS Build)**.
+   - Tekan butang **OK remote sebanyak 7 kali berturut-turut** sehingga muncul *"You are now a developer!"*.
+   - Tekan *Back*, masuk ke menu baharu **Developer options**, dan aktifkan:
+     - ✅ **USB debugging** (Tukar kepada ON).
+     - *(Jika ada Network/Wireless debugging, hidupkan juga)*.
+   - Pastikan telefon Android dan TV anda bersambung pada **Wi-Fi yang sama**.
+3. **1-Klik Pasang dari Telefon**:
+   - Buka aplikasi **Glass TV Installer** di telefon anda.
+   - Tekan butang **`🔍 Imbas Android TV di Rangkaian Wi-Fi`** — aplikasi akan mencari TV anda secara automatik!
+   - Tekan butang biru **`🚀 Pasang Terus ke Android TV`**.
+   - Pada skrin TV anda, tetingkap *"Allow USB debugging?"* akan muncul. Tandakan kotak ☑ **Always allow from this computer** dan tekan **OK / Allow** menggunakan remote TV.
+   - Aplikasi di telefon akan menghantar dan memasang Glass TV Home terus ke TV dalam beberapa saat!
+4. **Lancarkan Paparan Baharu**:
+   - Tekan butang **`📺 Buka Glass TV Home di Skrin TV`** di telefon atau tekan butang Home pada remote TV.
+   - Selesai! TV anda kini mempunyai paparan kaca moden yang sangat pantas.
+
+> 💡 **Pilihan Pelayan Web Tempatan (Jika TV Tiada Debugging)**:  
+> Jika TV anda sukar menghidupkan mod debugging, buka aplikasi di telefon dan tekan butang **`🌐 Pelayan Web TV`**. Kemudian buka aplikasi **Downloader** atau pelayar web di TV dan masukkan alamat IP tempatan yang tertera (cth: `http://192.168.x.x:8080`) untuk muat turun terus ke TV.
+
+---
+
+### 💻 Keutamaan 2: Jika Tiada Telefon Android — Guna Laptop atau PC (Windows / Mac / Linux)
+
+Jika anda **tidak mempunyai telefon pintar Android** (contohnya hanya ada laptop atau komputer di rumah), gunakan komputer anda dengan bantuan AI atau terminal:
+
+1. **Persediaan TV**: Hidupkan **USB debugging** di TV (langkah sama seperti di atas) dan sambungkan komputer ke Wi-Fi rumah yang sama.
+2. **Bantuan AI Automatik (1 Baris Prompt - Sangat Mudah)**:
+   Buka pembantu AI di komputer anda (**Google Antigravity** [Percuma / Disyorkan], **Claude Code**, atau **Cursor**). Salin dan tampal satu baris ini sahaja:
+   ```text
+   install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
+   ```
+   - AI akan menyambung ke TV melalui Wi-Fi (`adb connect <ip>:5555`).
+   - AI membuat sandaran (*backup*), mematikan aplikasi bloatware pengeluar yang melambatkan TV, mengaktifkan penyekat iklan, dan memasang Glass TV Home secara automatik!
+   - Tekan **Allow** pada skrin TV apabila tetingkap kebenaran debugging dipaparkan.
+3. **Pemasangan Manual Terminal (Alternatif Developer)**:
+   ```bash
+   adb connect <ALAMAT_IP_TV>:5555
+   adb install -r release/glass-tv-home.apk
+   adb shell am start -n com.gathin.tvhome/.MainActivity
+   ```
+
+---
+
+### 🍏 Keutamaan 3: Jika Tiada Android & Tiada Komputer (Hanya Ada iPhone) — Guna iPhone & Bantuan Muse.ai
+
+Jika anda **tiada telefon Android dan tiada komputer** (hanya mempunyai iPhone atau iPad):
+
+1. **Gunakan Bantuan AI Melalui Muse.ai**:
+   - Buka pelayar Safari di iPhone anda dan layari [**muse.ai**](https://muse.ai) (atau platform pembantu web AI pintar anda).
+   - Berikan prompt bantuan AI ini kepada Muse.ai:
+     ```text
+     Saya menggunakan iPhone dan ada Android TV model [masukkan jenama TV anda, cth: Xiaomi Mi Box S / TCL / Sharp]. Saya ingin pasang launcher ringan ini: https://github.com/aqmangge/glass-tv-home
+     Bantu saya langkah demi langkah cara pasang fail APK ini dari iPhone ke TV, dan berikan senarai aplikasi bawaan pengeluar (bloatware) yang tidak berguna pada model TV saya untuk dibuang atau dinyahaktifkan supaya TV laju tanpa iklan.
+     ```
+2. **Langkah Pemasangan APK dari iPhone ke TV (Panduan AI)**:
+   - **Kaedah A (Aplikasi Downloader di TV)**: Di TV anda, buka Google Play Store dan pasang aplikasi percuma **Downloader by AFTVnews**. Buka Downloader dan masukkan pautan pendek fail APK:  
+     `https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk`  
+     TV akan memuat turun dan memasang Glass TV Home terus!
+   - **Kaedah B (Guna LocalSend di iPhone & TV)**: Muat turun aplikasi percuma **LocalSend** di iPhone (App Store) dan di Android TV (Play Store). Muat turun fail `glass-tv-home.apk` di iPhone, kemudian hantar fail tersebut ke TV melalui LocalSend pada Wi-Fi yang sama dan tekan **Install**.
+3. **Membuang Aplikasi Tidak Berguna & Iklan (Debloat & AdBlock)**:
+   - Minta Muse.ai menyenaraikan nama-nama aplikasi pengeluar yang selamat dimatikan mengikut jenama TV anda.
+   - Pada remote TV: Masuk ke **Settings ⚙️** $\rightarrow$ **Apps** $\rightarrow$ **See all apps**, pilih aplikasi bawaan pengeluar yang tidak berguna mengikut cadangan Muse.ai dan pilih **Disable / Nyahaktif**.
+   - **Sekat Iklan Tanpa Komputer**: Pada remote TV, pergi ke **Settings ⚙️** $\rightarrow$ **Network & Internet** $\rightarrow$ **Private DNS**, pilih *Private DNS provider hostname* dan taip:
+     ```text
+     dns.adguard-dns.com
+     ```
+     Serta-merta semua iklan tajaan skrin utama, penjejak data pengeluar, dan analitik sistem disekat sepenuhnya!
+
+---
 
 ### 🔄 Bagi Pengguna Sedia Ada: Prompt Kemas Kini Patch Terkini (Update Patch)
 Jika anda sudah memasang Glass TV Home dan ingin mengemas kini ke versi atau patch terkini tanpa perlu pening kepala:
@@ -47,54 +119,6 @@ update patch latest glass tv dekat tv rumah saya: https://github.com/aqmangge/gl
 *(Atau: `kemaskini glass tv dekat tv saya: https://github.com/aqmangge/glass-tv-home`)*
 
 AI akan menyambung ke TV melalui Wi-Fi, memasang kemas kini (`adb install -r`), dan membuka semula aplikasi dalam masa 5 saat. **Semua gambar wallpaper, susunan aplikasi di dock, dan pilihan zon solat/bunyi anda akan 100% kekal!**
-
-### 💡 Pilihan Pembantu AI:
-1. **Google Antigravity (Percuma / Free)** ⭐ *Paling Disyorkan*:
-   - AI agent rasmi daripada Google DeepMind dengan akses terminal shell penuh, alatan automasi, dan keupayaan menjalankan skrip secara percuma.
-2. **Claude Code (Berbayar / Subscription Anthropic)**:
-   - CLI coding agent berkuasa daripada Anthropic yang berjalan terus dalam terminal komputer anda.
-3. **Cursor / Windsurf IDE (Freemium / Berbayar)**:
-   - Editor kod pintar berasaskan AI yang mempunyai terminal shell bersepadu.
-
----
-
-### 📋 Langkah 1: Hidupkan Developer Mode & Wireless Debugging di TV Anda
-Sebelum AI boleh menyambung ke TV melalui Wi-Fi, lakukan 2 tetapan ringkas ini pada TV menggunakan remote:
-1. Pada remote TV anda, buka **Settings (Tetapan / ikon gear ⚙️)**.
-2. Pilih **Device Preferences** (atau **System** pada Google TV baru).
-3. Pilih **About (Mengenai)** $\rightarrow$ Skrol ke baris bertulis **Build** (atau *Android TV OS Build*).
-4. **Tekan butang OK pada remote sebanyak 7 kali berturut-turut** sehingga muncul mesej: *"You are now a developer!"*.
-5. Tekan butang *Back* sekali. Masuk ke menu baharu iaitu **Developer options (Pilihan pembangun)**.
-6. Cari dan **HIDUPKAN**:
-   - ✅ **USB debugging** (Tukar kepada ON/Aktif).
-   - ✅ **Wireless debugging / Network debugging** (Tukar kepada ON/Aktif).
-7. Pastikan TV dan komputer/telefon anda bersambung pada **rangkaian Wi-Fi yang sama**.
-
----
-
-### 📋 Langkah 2: Tampal Prompt 1 Baris Ini Kepada AI
-Buka **Google Antigravity**, **Claude Code**, atau **Cursor** di laptop/komputer anda. Salin dan tampal satu baris ini sahaja:
-
-```text
-install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
-```
-
-> **Apa yang AI akan lakukan secara automatik selepas anda hantar prompt ini?**
-> 1. AI akan bertanya alamat IP TV anda (atau mengesan IP TV di rangkaian Wi-Fi anda secara automatik).
-> 2. AI akan bertanya di mana lokasi anda di Malaysia (cth: Putrajaya, KL, Cheras, Melaka, JB, Penang, Kuantan, dsb) untuk melaraskan stesen jerebu JAS APIMS dan jadual waktu solat JAKIM.
-> 3. AI menyambung ke TV anda melalui Wi-Fi via ADB (`adb connect <ip>:5555`).
-> 4. AI membuat salinan sandaran (*backup*) sistem asal TV.
-> 5. AI mematikan aplikasi bloatware pengeluar yang melambatkan TV, mematikan iklan tajaan, dan mengaktifkan AdGuard Private DNS untuk menyekat penjejak sistem.
-> 6. AI memasang fail APK Glass TV Home yang sangat ringan (~453 KB) sebagai skrin utama.
-> 7. AI mengambil gambar tangkap layar (*screenshot*) TV anda yang kini laju dan bersih untuk pengesahan anda!
-
-*(Nota: Jika anda ingin memberikan maklumat penuh terus dalam satu mesej tanpa AI bertanya semula, anda juga boleh gunakan format terperinci ini:)*
-```text
-install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
-Model TV: [cth: Xiaomi Mi Box S]
-IP TV: [cth: 192.168.68.102]
-Lokasi Saya: [cth: Putrajaya / Cheras / Shah Alam / Johor Bahru / Penang]
-```
 
 > [!IMPORTANT]
 > **🚨 Pesanan Khas Untuk Pembantu AI (AI Assistant Rule)**:
@@ -330,29 +354,35 @@ Boleh! Anda boleh buka aplikasi AI di telefon (seperti Claude, ChatGPT, atau pel
 
 ---
 
-### 🍏 Khusus untuk Pengguna iPhone (iOS): Boleh Ke Guna iPhone?
+### 🍏 Khusus untuk Pengguna iPhone (iOS): Guna iPhone & Bantuan Muse.ai
 
-**Jawapan jujur: Boleh untuk pasang APK & sekat iklan, tetapi ada sedikit perbezaan berbanding Android.**
+**Bagi pengguna iPhone (iOS): Anda boleh memasang APK dan membersihkan TV dengan bantuan pembantu AI pintar Muse.ai!**
 
-Kerana polisi Apple (iOS) yang ketat, Apple tidak membenarkan aplikasi seperti *Bugjaeger / ADB* berada di App Store. Walau bagaimanapun, pengguna iPhone tetap boleh melakukannya dengan sangat mudah:
+Kerana polisi Apple (iOS) tidak membenarkan aplikasi kawalan terus ADB di App Store, cara terbaik dan paling bijak untuk pengguna iPhone adalah menggunakan pelayar Safari dan layari [**muse.ai**](https://muse.ai) (atau platform web AI) untuk membimbing proses pemasangan dan debloat:
 
-#### 1. Cara Hantar & Pasang APK dari iPhone ke TV (Guna 'LocalSend'):
-* Muat turun aplikasi percuma **LocalSend** di App Store iPhone dan di Google Play Store TV anda.
-* Muat turun fail `app-release.apk` di iPhone anda dari pautan GitHub ini.
-* Buka LocalSend pada iPhone dan TV (pastikan kedua-duanya bersambung pada Wi-Fi yang sama).
-* Hantar APK dari iPhone ke TV dengan 1 klik sahaja!
-* Di TV, klik fail APK tersebut dan tekan **Install**.
+#### 1. Tanya Muse.ai di Safari iPhone Anda:
+Buka Safari di iPhone, pergi ke **muse.ai** dan berikan soalan ini:
+> *"Saya guna iPhone dan ada Android TV [jenama TV anda, cth: Xiaomi / TCL / Sony]. Berikan saya langkah paling mudah untuk pasang APK dari https://github.com/aqmangge/glass-tv-home dan senaraikan aplikasi bawaan kilang yang tidak berguna (bloatware) untuk dimatikan pada TV saya."*
 
-#### 2. Cara Sekat Iklan & Tracking Jika Guna iPhone (Tanpa Perlu ADB):
-Anda tidak perlukan aplikasi ADB pun untuk sekat iklan. Anda boleh lakukannya terus melalui remote TV:
-1. Pada remote TV, pergi ke **Settings ⚙️** $\rightarrow$ **Network & Internet**.
-2. Pilih **Private DNS** (tukar daripada *Off/Automatic* kepada *Private DNS provider hostname*).
-3. Masukkan alamat ini menggunakan papan kekunci di TV:
-   ```text
-   dns.adguard-dns.com
-   ```
-4. Tekan **Save / Simpan**.
-5. Serta-merta semua iklan sepanduk, penjejak data pengeluar, dan analitik disekat di peringkat sistem TV anda secara automatik!
+Muse.ai akan memberikan panduan langkah demi langkah yang disesuaikan khas untuk model TV anda!
+
+#### 2. Cara Hantar & Pasang APK dari iPhone ke TV:
+* **Guna Downloader (Paling Cepat di TV)**: Buka aplikasi **Downloader by AFTVnews** di TV dan masukkan pautan fail APK:  
+  `https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk`  
+  TV akan memuat turun dan memasang Glass TV Home terus tanpa perlukan sebarang kabel atau peranti lain.
+* **Guna LocalSend (Hantar dari iPhone)**: Muat turun aplikasi percuma **LocalSend** di iPhone (App Store) dan di Android TV (Play Store). Muat turun fail `glass-tv-home.apk` di iPhone, kemudian hantar fail tersebut ke TV melalui LocalSend pada Wi-Fi yang sama dan tekan **Install**.
+
+#### 3. Buang Aplikasi Bawaan Tidak Berguna (Debloat) & Sekat Iklan:
+* **Nyahaktifkan Aplikasi Mengikut Senarai Muse.ai**: Masuk ke **Settings ⚙️** $\rightarrow$ **Apps** $\rightarrow$ **See all apps**, cari aplikasi bawaan kilang yang tidak berguna seperti yang dikenal pasti oleh Muse.ai, dan tekan **Disable / Nyahaktif**.
+* **Sekat Iklan & Penjejak Sistem (AdGuard Private DNS)**:
+  1. Pada remote TV, pergi ke **Settings ⚙️** $\rightarrow$ **Network & Internet**.
+  2. Pilih **Private DNS** (tukar daripada *Off/Automatic* kepada *Private DNS provider hostname*).
+  3. Masukkan alamat ini menggunakan papan kekunci di TV:
+     ```text
+     dns.adguard-dns.com
+     ```
+  4. Tekan **Save / Simpan**.
+  5. Serta-merta semua iklan tajaan skrin utama dan penjejak pengeluar disekat di peringkat sistem TV anda secara kekal!
 
 #### 3. Ingin Buang Bloatware Pengeluar Secara Penuh?
 Jika anda ingin membuang aplikasi bawaan pengeluar (seperti Xiaomi PatchWall) sehingga 100% bersih, anda disyorkan menggunakan **laptop/komputer** (atau meminjam telefon Android kawan sekali sahaja selama 2 minit). Selepas dipadam sekali, ia akan kekal bersih selamanya pada TV anda!

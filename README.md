@@ -123,17 +123,33 @@ Still light: on a Xiaomi Mi TV with 1.8 GB of RAM the launcher uses about 80–1
 of use, one wallpaper is in memory at a time, the week's places take about 2 MB of storage, and nothing runs
 while you are inside an app.
 
-## Setting it up (Auto with AI or Manual)
+## Setting it up (By Device Priority)
 
-### 🤖 1-Line AI Setup (Easiest & Automatic)
-Using an AI assistant (**Google Antigravity** [Free], **Claude Code** [Paid], **Cursor**)?
-1. On your TV remote, go to **Settings ⚙️ $\rightarrow$ About $\rightarrow$ click Build 7 times** to enable Developer Options, then turn ON **USB debugging** & **Wireless/Network debugging**.
+Choose the setup method based on your available devices:
+
+### ⭐ Priority 1: Android Phone (Primary Focus — 1-Click Wireless & Zero PC)
+Install directly from your Android phone or tablet without any computer or cables:
+1. Turn ON **USB debugging** on TV (*Settings ⚙️ $\rightarrow$ About $\rightarrow$ click Build 7 times $\rightarrow$ Developer options*).
+2. Install [**`release/glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) on your Android phone.
+3. Open the app, tap **`🔍 Imbas Android TV di Rangkaian Wi-Fi`**, then tap **`🚀 Pasang Terus ke Android TV`** and press **Allow** on your TV screen!
+
+### 💻 Priority 2: If No Android Phone — Use Laptop or PC (1-Line AI Setup)
+Using a computer with an AI assistant (**Google Antigravity** [Free], **Claude Code** [Paid], **Cursor**)?
+1. Enable **USB debugging** on your TV and connect to the same Wi-Fi.
 2. Paste this single line to your AI assistant:
    ```text
    install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
    ```
    *(Or in English: `install this on my home tv: https://github.com/aqmangge/glass-tv-home`)*
-3. The AI will automatically ask for your TV IP & location in Malaysia, connect over Wi-Fi, backup, debloat ads & tracking, and install Glass TV Home! See [PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md) and [USER_GUIDE.md](USER_GUIDE.md).
+3. The AI connects over Wi-Fi, creates a backup, removes sluggish ads & bloatware, and installs Glass TV Home automatically!
+
+### 🍏 Priority 3: If No Android & No PC (iPhone Users) — Use iPhone & Muse.ai Assistance
+Only have an iPhone/iPad?
+1. Open Safari on iPhone and visit [**muse.ai**](https://muse.ai) for interactive AI assistance:
+   > *"I have an iPhone and an Android TV [model]. Guide me step-by-step to install https://github.com/aqmangge/glass-tv-home and give me a debloat list of useless apps to disable on my TV."*
+2. Install the APK via TV's **Downloader** app or **LocalSend**, then disable manufacturer bloatware from TV Settings following Muse.ai's recommendations.
+
+---
 
 ### 🔄 1-Line AI Update / Patch Prompt (For Existing Users)
 Already have Glass TV installed and want to update to the latest release or patch? Paste this single line to your AI:
