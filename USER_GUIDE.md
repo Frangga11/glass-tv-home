@@ -256,7 +256,29 @@ Glass TV Home features a built-in OTA update system so you can update directly o
 
 You do **not** need a computer to install Glass TV Home.
 
-### Method 1: Android Phone via 'Bugjaeger' (Install APK + Debloat Directly)
+### Method 1: Official 'Glass TV Installer' App (Zero-Config & Easiest) 🌟
+We built a dedicated companion installer app for Android phones and tablets that embeds the launcher and installs it over Wi-Fi:
+
+* **Download Companion App**: [**`glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) (~5.2 MB)
+
+1. **Enable Debugging on TV**:
+   - Go to TV **Settings ⚙️** $\rightarrow$ **About** $\rightarrow$ Click **Android TV OS Build** 7 times.
+   - Go to **Developer options** $\rightarrow$ Enable **USB debugging**.
+2. **Same Wi-Fi**: Connect your phone and TV to the same Wi-Fi network.
+3. **Open Glass TV Installer on Phone**:
+   - Tap **`🔍 Imbas Android TV di Rangkaian Wi-Fi`** to discover your TV automatically (or type the TV IP).
+4. **1-Click Install**:
+   - Tap **`🚀 Pasang Terus ke Android TV`**.
+   - On the TV screen, accept the *"Allow USB debugging"* prompt.
+   - The app streams and installs Glass TV Home directly to your TV.
+5. **Launch**:
+   - Tap **`📺 Buka Glass TV Home di Skrin TV`**!
+
+> 💡 **Local Web Server Option**: If debugging is unavailable on your TV, tap **`🌐 Pelayan Web TV`** on your phone, then open **Downloader** or a web browser on your TV and navigate to the displayed local IP URL to download and install.
+
+---
+
+### Method 2: Android Phone via 'Bugjaeger' (For Advanced Debloating)
 The **Bugjaeger Mobile ADB** app (free on Google Play Store) allows your phone to act as an ADB controller over Wi-Fi:
 
 1. Connect both phone and TV to the **same Wi-Fi**.

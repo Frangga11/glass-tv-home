@@ -252,12 +252,37 @@ Glass TV Home dilengkapi dengan enjin kemas kini pintar tanpa perlu komputer ata
 
 ## 📱 5. Cara Buat Guna Telefon Pintar (Tanpa Komputer / Laptop Langsung!)
 
-**Boleh sangat!** Jika anda tiada komputer atau laptop, anda boleh gunakan telefon pintar Android anda untuk pasang, lajukan TV, dan buang iklan.
+**Boleh sangat!** Jika anda tiada komputer atau laptop, anda boleh gunakan telefon pintar Android anda untuk pasang Glass TV ke Android TV secara automatik tanpa sebarang kabel.
 
 ---
 
-### Kaedah 1: Guna Aplikasi 'Bugjaeger' (Paling Berkuasa - Pasang APK + Buang Iklan dari Telefon)
-Aplikasi **Bugjaeger Mobile ADB** (percuma di Google Play Store telefon) membolehkan telefon anda bertindak seperti komputer untuk mengawal dan mengoptimumkan TV.
+### Kaedah 1: Aplikasi Rasmi 'Glass TV Installer' (Paling Mudah & 100% Automatik) 🌟
+
+Kini anda tidak perlu aplikasi pihak ketiga yang rumit! Kami telah membina aplikasi rasmi **Glass TV Installer** khas untuk telefon dan tablet Android:
+
+* **Muat Turun APK Pembantu**: [**`glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) (~5.2 MB)
+
+#### Langkah Pemasangan:
+1. **Persediaan TV**:
+   - Di Android TV: Buka **Settings ⚙️** $\rightarrow$ **About** $\rightarrow$ Tekan **Android TV OS Build** sebanyak **7 kali** sehingga bergelar developer.
+   - Buka **Developer options** $\rightarrow$ Hidupkan **USB debugging**.
+2. **Sambung Wi-Fi**: Pastikan telefon dan TV bersambung ke rangkaian Wi-Fi yang sama.
+3. **Buka Aplikasi di Telefon**:
+   - Tekan **`🔍 Imbas Android TV di Rangkaian Wi-Fi`** — aplikasi akan mencari TV anda secara automatik!
+   - Atau masukkan IP TV anda secara manual jika imbasan automatik disekat oleh router.
+4. **Pasang 1-Klik**:
+   - Tekan **`🚀 Pasang Terus ke Android TV`**.
+   - Pada skrin TV, tekan **Allow** pada popup *"Allow USB debugging"*.
+   - Aplikasi akan menghantar dan memasang Glass TV Home terus ke TV!
+5. **Lancarkan**:
+   - Tekan **`📺 Buka Glass TV Home di Skrin TV`** untuk menikmati paparan baharu serta-merta.
+
+> 💡 **Pilihan Pelayan Web Tempatan**: Jika TV anda tiada mod debugging, aktifkan **`🌐 Pelayan Web TV`** dalam aplikasi telefon, kemudian buka aplikasi **Downloader** di TV dan masukkan URL yang dipaparkan untuk muat turun terus.
+
+---
+
+### Kaedah 2: Guna Aplikasi 'Bugjaeger' (Untuk Pengguna Lanjutan / Buang Iklan Manual)
+Aplikasi **Bugjaeger Mobile ADB** (percuma di Google Play Store telefon) membolehkan telefon anda bertindak seperti terminal komputer:
 
 1. **Sambung Wi-Fi**: Pastikan telefon dan TV berada di atas Wi-Fi yang sama.
 2. **Pasang Bugjaeger**: Muat turun aplikasi **Bugjaeger** di telefon anda dari Play Store.

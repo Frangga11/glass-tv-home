@@ -9,11 +9,17 @@ and come home to just your apps, with a new place to visit behind them every wee
 
 <p align="center">
   <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk">
-    <img src="https://img.shields.io/badge/Download_APK_v3.0.0-glass--tv--home.apk_(644_KB)-success?style=for-the-badge&logo=android" alt="Download APK v3.0.0">
+    <img src="https://img.shields.io/badge/Download_TV_Launcher-glass--tv--home.apk_(730_KB)-success?style=for-the-badge&logo=android" alt="Download Glass TV Home">
+  </a>
+  &nbsp;
+  <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk">
+    <img src="https://img.shields.io/badge/Download_Phone_Installer-glass--tv--installer.apk_(5.2_MB)-007ACC?style=for-the-badge&logo=android" alt="Download Glass TV Installer">
   </a>
 </p>
 
-> 📦 **Direct APK Download**: Get the latest prebuilt [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v3.0.0** • ~644 KB) ready to install on any Android TV or Google TV!
+> 📦 **Official APK Downloads**:
+> - 📺 **Android TV / Google TV Launcher**: [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v3.1.4** • ~730 KB)
+> - 📱 **Phone / Tablet Companion Installer**: [**`release/glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) (**v1.0.0** • ~5.2 MB) — Install directly to your TV over Wi-Fi without any PC!
 >
 > 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
 >
