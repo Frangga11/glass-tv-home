@@ -1,7 +1,7 @@
 {
-  "versionCode": 16,
-  "versionName": "3.2.1",
+  "versionCode": 17,
+  "versionName": "3.2.2",
   "apkUrl": "https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk",
-  "changelog": "✨ Pelarasan Doa Harian kepada 1 baris kemas tanpa gangguan pada bar atas\n📐 Penyelarasan jarak selamat antara Doa Harian dan Deskripsi Wallpaper\n⏬ Kedudukan Doa Harian, Waktu Solat dan Dock direndahkan sedikit dengan ruang bernafas seimbang",
+  "changelog": "📐 Jarak breathing space rak Doa Harian & Waktu Solat dilaraskan ke 50dp di atas dock untuk keseimbangan visual optimum",
   "releaseDate": "2026-10-29"
 }

@@ -151,8 +151,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** The name is one line, and may run wider than the description, up to this share (capped to avoid overlapping Islamic shelf). */
     private static final float HERO_NAME_WIDTH_SHARE = 0.45f;
     private static final float HERO_TITLE_MAX_SP = 40f;
-    /** The breathing room between the shelf's last line and the top of the app container (28dp gives sleek, balanced spacing). */
-    private static final float HERO_GAP_DP = 28f;
+    /** The breathing room between the shelf's last line and the top of the app container (50dp gives airy, balanced spacing). */
+    private static final float HERO_GAP_DP = 50f;
     private static final float HERO_TITLE_MIN_SP = 26f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
