@@ -1,7 +1,7 @@
 {
-  "versionCode": 17,
-  "versionName": "3.2.2",
+  "versionCode": 18,
+  "versionName": "3.3.0",
   "apkUrl": "https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk",
-  "changelog": "📐 Jarak breathing space rak Doa Harian & Waktu Solat dilaraskan ke 50dp di atas dock untuk keseimbangan visual optimum",
+  "changelog": "🌐 Sokongan 3 Bahasa (BM 🇲🇾, EN 🇬🇧, ID 🇮🇩), 📍 Tambah zon Singapura 🇸🇬 & Indonesia 🇮🇩, 📺 Pengoptimuman resolusi 1080p / 4K untuk Doa Harian & Waktu Solat",
   "releaseDate": "2026-10-29"
 }

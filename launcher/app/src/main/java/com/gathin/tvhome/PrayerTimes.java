@@ -104,6 +104,14 @@ final class PrayerTimes {
                 String zone = getJakimZone(context);
                 String cachedZone = prefs.getString("cached_zone", "");
 
+                if (zone != null && (zone.startsWith("SGP") || zone.startsWith("ID_"))) {
+                    // Singapore and Indonesia use accurate solar calculation directly
+                    if (onUpdated != null) {
+                        new Handler(Looper.getMainLooper()).post(onUpdated);
+                    }
+                    return;
+                }
+
                 if (!force && zone.equals(cachedZone) && prefs.getInt(KEY_MONTH, 0) == currentMonth && prefs.contains(KEY_JSON)) {
                     return; // already have this month's takwim
                 }
@@ -270,14 +278,28 @@ final class PrayerTimes {
                 .apply();
     }
 
-    public static void setZone(Context context, String zoneCode) {
+    public static void setZone(Context context, String zoneCode, String name, double lat, double lon) {
         if (zoneCode == null) return;
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         prefs.edit()
                 .putString("manual_prayer_zone", zoneCode)
-                .putString("manual_prayer_zone_name", zoneCode)
+                .putString("manual_prayer_zone_name", name != null ? name : zoneCode)
+                .putString("manual_lat", String.valueOf(lat))
+                .putString("manual_lon", String.valueOf(lon))
+                .remove(KEY_JSON)
+                .remove("cached_zone")
                 .apply();
         sync(context, null);
+    }
+
+    public static void setZone(Context context, String zoneCode) {
+        if (zoneCode == null) return;
+        Location.Zone z = Location.byCode(zoneCode);
+        if (z != null) {
+            setZone(context, z.code, z.town, z.lat, z.lon);
+        } else {
+            setZone(context, zoneCode, zoneCode, 0, 0);
+        }
     }
 
     public static void setPrayerZone(Context context, PrayerZone zone) {
@@ -367,10 +389,11 @@ final class PrayerTimes {
         if (nextIdx == -1) nextIdx = 0;
 
         SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String[] prayerNames = AppLanguage.getPrayerNames(context);
         PrayerItem[] items = new PrayerItem[6];
         for (int i = 0; i < 6; i++) {
             items[i] = new PrayerItem(
-                    PRAYER_NAMES[i],
+                    prayerNames[i],
                     timeFmt.format(new Date(times[i])),
                     i == nextIdx,
                     times[i] < nowMs
@@ -403,11 +426,13 @@ final class PrayerTimes {
         if (nextIdx == -1) nextIdx = 0; // After Isyak -> Subuh next morning
 
         SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String[] prayerNames = AppLanguage.getPrayerNames(context);
+        String nextWord = AppLanguage.getNextPrayerPrefix(context);
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
 
-        // LINE 1: LOCATION  •  SETERUSNYA: ASAR 16:18
-        String nextName = PRAYER_NAMES[nextIdx].toUpperCase(Locale.ROOT);
+        // LINE 1: LOCATION  •  NEXT / SETERUSNYA: ASAR 16:18
+        String nextName = prayerNames[nextIdx].toUpperCase(Locale.ROOT);
         long displayTimeMs = times[nextIdx];
         if (nextIdx == 0 && times[0] < nowMs) {
             Calendar tomorrow = (Calendar) now.clone();
@@ -420,7 +445,7 @@ final class PrayerTimes {
 
         int l1Start = sb.length();
         String zoneHeader = getShortZoneName(context).toUpperCase(Locale.ROOT);
-        sb.append(zoneHeader).append("  •  SETERUSNYA: ").append(nextName).append(" ").append(nextTime);
+        sb.append(zoneHeader).append("  •  ").append(nextWord).append(": ").append(nextName).append(" ").append(nextTime);
         int l1End = sb.length();
         sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), l1Start, l1End, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new StyleSpan(Typeface.BOLD), l1Start, l1End, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -434,7 +459,7 @@ final class PrayerTimes {
             boolean isNext = (idx == nextIdx);
             int start = sb.length();
 
-            String name = PRAYER_NAMES[idx].toUpperCase(Locale.ROOT);
+            String name = prayerNames[idx].toUpperCase(Locale.ROOT);
             String timeStr = timeFmt.format(new Date(times[idx]));
 
             sb.append(name).append(" ").append(timeStr);
@@ -479,7 +504,7 @@ final class PrayerTimes {
         return null;
     }
 
-    /** Astronomical calculation fallback based on user's active Malaysian location. */
+    /** Astronomical calculation fallback based on user's active Malaysian, Singapore, or Indonesian location. */
     private static long[] calculateFallback(Context context, Calendar cal) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         double latitude = prefs.contains("manual_lat")
@@ -488,6 +513,21 @@ final class PrayerTimes {
         double longitude = prefs.contains("manual_lon")
                 ? Double.parseDouble(prefs.getString("manual_lon", String.valueOf(AppLocationManager.getLongitude(context))))
                 : AppLocationManager.getLongitude(context);
+
+        String zone = getActiveZone(context);
+        double tz = 8.0;
+        if (zone != null && zone.startsWith("ID_")) {
+            // Indonesia timezones: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9)
+            if (longitude < 114.0) {
+                tz = 7.0; // WIB
+            } else if (longitude < 125.0) {
+                tz = 8.0; // WITA
+            } else {
+                tz = 9.0; // WIT
+            }
+        } else {
+            tz = 8.0; // Malaysia & Singapore (UTC+8)
+        }
 
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
@@ -506,7 +546,7 @@ final class PrayerTimes {
         double alpha = Math.toDegrees(Math.atan2(Math.cos(Math.toRadians(epsilon)) * Math.sin(Math.toRadians(lambda)), Math.cos(Math.toRadians(lambda)))) / 15.0;
         double delta = Math.toDegrees(Math.asin(Math.sin(Math.toRadians(epsilon)) * Math.sin(Math.toRadians(lambda))));
 
-        double noon = 12.0 + TIMEZONE - (longitude / 15.0) - (L / 15.0 - alpha);
+        double noon = 12.0 + tz - (longitude / 15.0) - (L / 15.0 - alpha);
         if (noon < 0) noon += 24.0;
         if (noon >= 24) noon -= 24.0;
 
@@ -580,10 +620,11 @@ final class PrayerTimes {
         if (nextIdx == -1) nextIdx = 0;
 
         SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        String[] prayerNames = AppLanguage.getPrayerNames(context);
         for (int i = 0; i < times.length; i++) {
             boolean isNext = (i == nextIdx);
             boolean isPast = (times[i] < nowMs);
-            list.add(new ScheduleItem(PRAYER_NAMES[i], sdf.format(new Date(times[i])), isNext, isPast));
+            list.add(new ScheduleItem(prayerNames[i], sdf.format(new Date(times[i])), isNext, isPast));
         }
         return list;
     }
@@ -604,14 +645,15 @@ final class PrayerTimes {
             }
         }
 
+        String[] prayerNames = AppLanguage.getPrayerNames(context);
         long nextTimeMs;
         String prayerName;
         if (nextIdx != -1) {
-            prayerName = PRAYER_NAMES[nextIdx];
+            prayerName = prayerNames[nextIdx];
             nextTimeMs = times[nextIdx];
         } else {
             // All prayers today have passed (after Isyak) -> Next is tomorrow's Subuh
-            prayerName = PRAYER_NAMES[0];
+            prayerName = prayerNames[0];
             Calendar tomorrow = (Calendar) now.clone();
             tomorrow.add(Calendar.DAY_OF_MONTH, 1);
             long[] tomTimes = getTimesForToday(context, tomorrow.get(Calendar.DAY_OF_MONTH));
@@ -626,22 +668,47 @@ final class PrayerTimes {
         return prayerName + " • " + sdf.format(new Date(nextTimeMs)) + " (" + zone + ")";
     }
 
-    /** Returns Islamic Hijrah date (e.g. "11 Jamadilawal 1448H"). */
-    static String getHijriDate() {
+    /** Returns Islamic Hijrah date localized according to active language (e.g. "11 Jamadilawal 1448H"). */
+    static String getHijriDate(Context context) {
         try {
             java.time.chrono.HijrahDate h = java.time.chrono.HijrahDate.now();
             int day = h.get(java.time.temporal.ChronoField.DAY_OF_MONTH);
             int month = h.get(java.time.temporal.ChronoField.MONTH_OF_YEAR);
             int year = h.get(java.time.temporal.ChronoField.YEAR);
-            String[] months = {
-                "Muharram", "Safar", "Rabiulawal", "Rabiulakhir",
-                "Jamadilawal", "Jamadilakhir", "Rejab", "Syaaban",
-                "Ramadan", "Syawal", "Zulkaedah", "Zulhijjah"
-            };
+            String lang = context != null ? AppLanguage.getLanguage(context) : AppLanguage.LANG_MS;
+            String[] months;
+            switch (lang) {
+                case AppLanguage.LANG_EN:
+                    months = new String[]{
+                        "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani",
+                        "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban",
+                        "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
+                    };
+                    break;
+                case AppLanguage.LANG_ID:
+                    months = new String[]{
+                        "Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir",
+                        "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban",
+                        "Ramadhan", "Syawal", "Zulkaidah", "Zulhijjah"
+                    };
+                    break;
+                case AppLanguage.LANG_MS:
+                default:
+                    months = new String[]{
+                        "Muharram", "Safar", "Rabiulawal", "Rabiulakhir",
+                        "Jamadilawal", "Jamadilakhir", "Rejab", "Syaaban",
+                        "Ramadan", "Syawal", "Zulkaedah", "Zulhijjah"
+                    };
+                    break;
+            }
             String monthName = (month >= 1 && month <= 12) ? months[month - 1] : "Hijrah";
             return day + " " + monthName + " " + year + "H";
         } catch (Exception e) {
             return "";
         }
+    }
+
+    static String getHijriDate() {
+        return getHijriDate(null);
     }
 }

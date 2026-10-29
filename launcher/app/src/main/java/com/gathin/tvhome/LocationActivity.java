@@ -44,9 +44,28 @@ public class LocationActivity extends Activity {
         page.setOrientation(LinearLayout.VERTICAL);
         page.setPadding(dp(64), dp(40), dp(64), dp(28));
         page.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{0xFF1E2A3A, 0xFF0A0E14}));
-        page.addView(text("Location", 34, 0xFFFFFFFF, 500));
-        TextView sub = text("Where is this TV? Waktu Solat follows JAKIM's zone, and the weather follows its main town.",
-                15, 0xA6FFFFFF, 400);
+        String lang = AppLanguage.getLanguage(this);
+        String title = AppLanguage.strLocation(this);
+        String subtitle;
+        String hintText;
+        switch (lang) {
+            case AppLanguage.LANG_EN:
+                subtitle = "Where is this TV? Prayer times follow your zone, and the weather follows its main town.";
+                hintText = "OK: choose  ·  Back: leave it as it is";
+                break;
+            case AppLanguage.LANG_ID:
+                subtitle = "Di mana posisi TV ini? Waktu sholat mengikuti zona, dan cuaca mengikuti kota utama.";
+                hintText = "OK: pilih  ·  Kembali: batalkan";
+                break;
+            case AppLanguage.LANG_MS:
+            default:
+                subtitle = "Di manakah lokasi TV ini? Waktu Solat mengikut zon, dan cuaca mengikut bandar utama.";
+                hintText = "OK: pilih  ·  Kembali: kekalkan tetapan";
+                break;
+        }
+
+        page.addView(text(title, 34, 0xFFFFFFFF, 500));
+        TextView sub = text(subtitle, 15, 0xA6FFFFFF, 400);
         sub.setPadding(0, dp(4), 0, dp(20));
         page.addView(sub);
 
@@ -68,7 +87,7 @@ public class LocationActivity extends Activity {
         columns.addView(zoneScroll, zlp);
         page.addView(columns, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
-        hint = text("OK: choose  ·  Back: leave it as it is", 13, 0x80FFFFFF, 400);
+        hint = text(hintText, 13, 0x80FFFFFF, 400);
         hint.setPadding(0, dp(14), 0, 0);
         page.addView(hint);
         setContentView(page);
@@ -120,7 +139,8 @@ public class LocationActivity extends Activity {
             TextView town = text(z.town, 18, 0xFFFFFFFF, 500);
             top.addView(town, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             boolean isNow = z.code.equals(current);
-            TextView code = text(isNow ? "Now  ·  " + z.code : z.code, 13, isNow ? 0xFF30D158 : 0x99FFFFFF, 600);
+            String nowPrefix = AppLanguage.strNowBadge(this);
+            TextView code = text(isNow ? nowPrefix + "  ·  " + z.code : z.code, 13, isNow ? 0xFF30D158 : 0x99FFFFFF, 600);
             top.addView(code);
             row.addView(top);
             TextView districts = text(z.districts, 13, 0x99FFFFFF, 400);
@@ -132,7 +152,7 @@ public class LocationActivity extends Activity {
             row.setOnClickListener(v -> {
                 Location.choose(this, z);
                 Location.publish(this, z.code, z.town, z.state, z.lat, z.lon);
-                PrayerTimes.setZone(this, z.code);
+                PrayerTimes.setZone(this, z.code, z.town, z.lat, z.lon);
                 AppLocationManager.Station matched = AppLocationManager.findNearestStation(z.lat, z.lon);
                 if (matched != null) {
                     AppLocationManager.setStation(this, matched);

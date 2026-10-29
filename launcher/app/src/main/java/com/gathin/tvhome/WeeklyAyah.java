@@ -31,18 +31,32 @@ final class WeeklyAyah {
             "49:10", "50:16", "51:56", "55:13", "73:9", "76:9", "87:14", "93:3", "94:8", "96:1",
             "103:2", "108:1", "110:3", "112:1", "2:155", "3:92", "28:24", "31:18", "35:34", "42:19",
             "67:2", "9:129"};
-    /** Abdullah Muhammad Basmeih (Malay) and Saheeh International (English), as in the Quran app. */
-    private static final int MALAY = 39, ENGLISH = 20;
+    /** Abdullah Muhammad Basmeih (Malay), Saheeh International (English), Kemenag (Indonesian). */
+    private static final int MALAY = 39, ENGLISH = 20, INDONESIAN = 33;
 
-    /** The day's verse: Arabic, both translations, and "Al-Baqarah 2:152". */
+    /** The day's verse: Arabic, translations, and "Al-Baqarah 2:152". */
     static final class Ayah {
-        final String arabic, malay, english, reference;
+        final String arabic, malay, english, indonesian, reference;
 
-        Ayah(String arabic, String malay, String english, String reference) {
+        Ayah(String arabic, String malay, String english, String indonesian, String reference) {
             this.arabic = arabic;
             this.malay = malay;
             this.english = english;
+            this.indonesian = indonesian != null ? indonesian : "";
             this.reference = reference;
+        }
+
+        Ayah(String arabic, String malay, String english, String reference) {
+            this(arabic, malay, english, "", reference);
+        }
+
+        String translation(String lang) {
+            if (AppLanguage.LANG_EN.equals(lang)) {
+                return (english != null && !english.isEmpty()) ? english : malay;
+            } else if (AppLanguage.LANG_ID.equals(lang)) {
+                return (indonesian != null && !indonesian.isEmpty()) ? indonesian : malay;
+            }
+            return (malay != null && !malay.isEmpty()) ? malay : english;
         }
 
         String translation(boolean inEnglish) {
@@ -86,9 +100,18 @@ final class WeeklyAyah {
     /** Today's verse from storage, or null when it has not been fetched yet. */
     static Ayah stored(Context ctx) {
         SharedPreferences p = prefs(ctx);
-        // A verse kept before English was added lacks it: fetch again, once.
-        if (!keyFor(day()).equals(p.getString("key", null)) || !p.contains("text_english")) return null;
+        // A verse kept before English or Indonesian was added lacks it: fetch again, once.
+        if (!keyFor(day()).equals(p.getString("key", null))
+                || !p.contains("text_english")
+                || !p.contains("text_indonesian")
+                || p.getString("text_indonesian", "").isEmpty()) {
+            return null;
+        }
         return read(p);
+    }
+
+    static void clearCache(Context ctx) {
+        prefs(ctx).edit().remove("key").remove("text_indonesian").apply();
     }
 
     /** The last verse kept, whatever day it was for: shown while today's is on its way. */
@@ -101,13 +124,14 @@ final class WeeklyAyah {
                 "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ",
                 "Oleh itu ingatlah kamu kepada-Ku, supaya Aku membalas ingat kepada kamu; dan bersyukurlah kamu kepada-Ku dan janganlah kamu kufur.",
                 "So remember Me; I will remember you. And be grateful to Me and do not deny Me.",
+                "Maka ingatlah kepada-Ku, niscaya Aku ingat kepadamu. Bersyukurlah kepada-Ku, dan janganlah kamu ingkar kepada-Ku.",
                 "Al-Baqarah 2:152"
         );
     }
 
     private static Ayah read(SharedPreferences p) {
         return new Ayah(p.getString("arabic", ""), p.getString("translation", ""), p.getString("text_english", ""),
-                p.getString("reference", ""));
+                p.getString("text_indonesian", ""), p.getString("reference", ""));
     }
 
     /** Fetches today's verse. Network; never on the UI thread. */
@@ -115,20 +139,22 @@ final class WeeklyAyah {
         String key = keyFor(day());
         try {
             JSONObject v = new JSONObject(get(API + "verses/by_key/" + key + "?fields=text_uthmani&translations="
-                    + MALAY + "," + ENGLISH)).getJSONObject("verse");
+                    + MALAY + "," + ENGLISH + "," + INDONESIAN)).getJSONObject("verse");
             JSONArray trs = v.optJSONArray("translations");
-            String malay = "", english = "";
+            String malay = "", english = "", indonesian = "";
             for (int i = 0; trs != null && i < trs.length(); i++) {
                 JSONObject t = trs.getJSONObject(i);
                 String text = t.optString("text").replaceAll("<sup[^>]*>.*?</sup>", "").replaceAll("<[^>]+>", "").trim();
                 if (t.optInt("resource_id") == MALAY) malay = text;
                 else if (t.optInt("resource_id") == ENGLISH) english = text;
+                else if (t.optInt("resource_id") == INDONESIAN) indonesian = text;
             }
             String chapter = key.substring(0, key.indexOf(':'));
             String name = new JSONObject(get(API + "chapters/" + chapter + "?language=ms")).getJSONObject("chapter").optString("name_simple");
-            Ayah a = new Ayah(v.optString("text_uthmani"), malay, english, name + " " + key);
+            Ayah a = new Ayah(v.optString("text_uthmani"), malay, english, indonesian, name + " " + key);
             prefs(ctx).edit().putString("key", key).putString("arabic", a.arabic).putString("translation", a.malay)
-                    .putString("text_english", a.english).putString("reference", a.reference).apply();
+                    .putString("text_english", a.english).putString("text_indonesian", a.indonesian)
+                    .putString("reference", a.reference).apply();
             return a;
         } catch (Exception e) {
             Log.w(TAG, "verse " + key + ": " + e.getMessage());

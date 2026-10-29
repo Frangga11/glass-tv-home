@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glass TV OS — Live Web UI Preview (v3.2.0)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background-color: #05070c;
+      color: #ffffff;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* Fixed 16:9 1080p TV Frame */
+    .tv-viewport {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      background: url('wallpaper_aurora.jpg') center/cover no-repeat;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+      transform-origin: center center;
+      transition: background-image 0.4s ease;
+    }
+
+    /* Subtle TV screen vignetting */
+    .tv-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 65%, rgba(0,0,0,0.5) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* --- TOP BAR --- */
+    .top-bar {
+      position: absolute;
+      top: 48px;
+      left: 64px;
+      right: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      z-index: 10;
+    }
+
+    .clock-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .time-row {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .time-text {
+      font-size: 72px;
+      font-weight: 700;
+      letter-spacing: -2px;
+      line-height: 1;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.6);
+    }
+
+    .date-column {
+      display: flex;
+      flex-direction: column;
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.5px;
+      line-height: 1.25;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .weather-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .weather-pill:hover, .weather-pill.focused {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: scale(1.03);
+    }
+
+    .weather-pill .aqi-tag {
+      color: #34D399;
+      font-weight: 700;
+    }
+
+    /* Action pills on top right */
+    .action-pills {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .action-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 52px;
+      padding: 0 22px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255,255,255,0.9);
+      font-size: 16px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-pill.icon-only {
+      width: 52px;
+      padding: 0;
+    }
+
+    .action-pill:hover, .action-pill.focused {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.06);
+    }
+
+    /* --- CULTURAL SHELF (MIDDLE RIGHT) --- */
+    .cultural-shelf {
+      position: absolute;
+      top: 240px;
+      right: 64px;
+      width: 600px;
+      text-align: right;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .shelf-header {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+    }
+
+    .arabic-ayah {
+      font-family: 'Amiri', serif;
+      font-size: 26px;
+      color: #FBBF24;
+      line-height: 1.6;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+      direction: rtl;
+    }
+
+    .ayah-translation {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.45;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    .prayer-times-bar {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .prayer-header {
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+    }
+
+    .prayer-grid {
+      display: flex;
+      justify-content: flex-end;
+      gap: 18px;
+    }
+
+    .prayer-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .prayer-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .prayer-time {
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .prayer-slot.active .prayer-name,
+    .prayer-slot.active .prayer-time {
+      color: #FBBF24;
+      text-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+    }
+
+    /* --- HOME SCREEN APPS GRID --- */
+    .apps-container {
+      position: absolute;
+      bottom: 64px;
+      left: 64px;
+      right: 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      z-index: 10;
+    }
+
+    /* Frosted Dock Pill */
+    .dock-pill {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1.5px solid rgba(255, 255, 255, 0.16);
+      border-radius: 36px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      width: fit-content;
+    }
+
+    .app-card {
+      position: relative;
+      width: 200px;
+      height: 120px;
+      border-radius: 24px;
+      background: #11151c;
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+      overflow: hidden;
+    }
+
+    .app-card:hover, .app-card.focused {
+      transform: scale(1.08) translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 3px rgba(255, 255, 255, 0.4);
+      z-index: 20;
+    }
+
+    .app-label {
+      position: absolute;
+      bottom: -28px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .app-card:hover .app-label, .app-card.focused .app-label {
+      opacity: 1;
+    }
+
+    /* Distinct Brand Cards */
+    .brand-nuvio { background: linear-gradient(135deg, #1b1633, #0c081e); color: #C084FC; font-weight: 800; font-size: 26px; }
+    .brand-reezn { background: #000000; color: #EF4444; font-weight: 900; font-size: 28px; letter-spacing: -1px; }
+    .brand-nott { background: #182236; border: 2px solid #38BDF8; color: #FFFFFF; font-weight: 800; font-size: 24px; }
+    .brand-perfecttv { background: #000000; color: #D1D5DB; font-weight: 800; font-style: italic; font-size: 24px; }
+    .brand-spotify { background: #121212; color: #1ED760; font-weight: 800; font-size: 26px; }
+    .brand-idlix { background: #1e1e1e; color: #EF4444; font-weight: 900; font-size: 28px; }
+    .brand-disney { background: linear-gradient(135deg, #032541, #001222); color: #FFFFFF; font-weight: 700; font-size: 26px; }
+    .brand-viu { background: #F59E0B; color: #FFFFFF; font-weight: 900; font-size: 30px; }
+    .brand-netflix { background: #FFFFFF; color: #E50914; font-weight: 900; font-size: 30px; letter-spacing: -1px; }
+
+    /* Apple TV Folder Preview Card */
+    .app-card.folder-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .folder-grid-preview {
+      display: grid;
+      grid-template-columns: repeat(2, 42px);
+      grid-template-rows: repeat(2, 42px);
+      gap: 8px;
+    }
+
+    .folder-mini-squircle {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      border: 0.75px solid rgba(255,255,255,0.25);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    /* --- FULLSCREEN APPLE TV FOLDER OVERLAY --- */
+    .folder-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 14, 23, 0.82);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .folder-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .folder-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 50px;
+    }
+
+    .folder-title-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 9999px;
+      padding: 14px 40px;
+      font-size: 36px;
+      font-weight: 700;
+      color: #ffffff;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .folder-title-pill:hover, .folder-title-pill.focused {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.04);
+    }
+
+    .folder-subtitle {
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 0.5px;
+    }
+
+    .folder-apps-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .folder-apps-row .app-card {
+      width: 220px;
+      height: 132px;
+      border-radius: 26px;
+    }
+
+    /* Floating control buttons for preview demonstration */
+    .preview-hud {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 1000;
+      font-size: 13px;
+      font-weight: 600;
+      color: #94A3B8;
+    }
+
+    .hud-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .hud-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating HUD for Interactive Preview -->
+  <div class="preview-hud" id="previewHud">
+    <span>📺 Glass TV v3.2.0 • Playwright Live Preview</span>
+    <button class="hud-btn" onclick="toggleFolderOverlay()">📂 Toggle Apple TV Folder</button>
+    <button class="hud-btn" onclick="switchWallpaper()">🌄 Tukar Wallpaper</button>
+    <button class="hud-btn" onclick="focusNextCard()">🎯 D-pad Focus</button>
+    <span style="color: #64748B;">[Navigasi: ⬆️⬇️⬅️➡️ & Enter / Esc]</span>
+  </div>
+
+  <!-- 16:9 TV Canvas -->
+  <div class="tv-viewport" id="tvViewport">
+    <div class="tv-vignette"></div>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="clock-group">
+        <div class="time-row">
+          <span class="time-text" id="liveTime">12:14</span>
+          <div class="date-column">
+            <span>PTG</span>
+            <span>28 OKT 2026</span>
+          </div>
+        </div>
+        <div class="weather-pill" tabindex="0">
+          <span>☁️ 29° Cloudy</span>
+          <span>•</span>
+          <span class="aqi-tag">API 57 Moderate</span>
+        </div>
+      </div>
+
+      <div class="action-pills">
+        <div class="action-pill" tabindex="0">
+          <span>📶 Momo</span>
+        </div>
+        <div class="action-pill icon-only" tabindex="0">
+          <span>🎙️</span>
+        </div>
+        <div class="action-pill icon-only" tabindex="0">
+          <span>▦</span>
+        </div>
+        <div class="action-pill icon-only" tabindex="0">
+          <span>⚙️</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Cultural Shelf (Ayat Harian & Waktu Solat) -->
+    <aside class="cultural-shelf">
+      <div class="shelf-header">DOA HARIAN • ALI 'IMRAN 3:8</div>
+      <div class="arabic-ayah">رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ الْوَهَّابُ</div>
+      <div class="ayah-translation">(Mereka berdoa dengan berkata): "Wahai Tuhan kami! Janganlah Engkau memesongkan hati kami sesudah Engkau beri petunjuk kepada kami, dan kurniakanlah kepada kami limpah rahmat dari sisiMu; sesungguhnya Engkau jualah Tuhan Yang melimpah-limpah pemberianNya.</div>
+
+      <div class="prayer-times-bar">
+        <div class="prayer-header">WAKTU SOLAT PUTRAJAYA • 17 JAMADILAWAL 1448H</div>
+        <div class="prayer-grid">
+          <div class="prayer-slot">
+            <span class="prayer-name">Subuh</span>
+            <span class="prayer-time">05:48</span>
+          </div>
+          <div class="prayer-slot">
+            <span class="prayer-name">Syuruk</span>
+            <span class="prayer-time">06:56</span>
+          </div>
+          <div class="prayer-slot active">
+            <span class="prayer-name">Zohor</span>
+            <span class="prayer-time">13:00</span>
+          </div>
+          <div class="prayer-slot">
+            <span class="prayer-name">Asar</span>
+            <span class="prayer-time">16:19</span>
+          </div>
+          <div class="prayer-slot">
+            <span class="prayer-name">Maghrib</span>
+            <span class="prayer-time">18:59</span>
+          </div>
+          <div class="prayer-slot">
+            <span class="prayer-name">Isyak</span>
+            <span class="prayer-time">20:09</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Bottom Apps Container -->
+    <main class="apps-container">
+      <!-- Upper Grid Row: Streaming & Folders -->
+      <div style="display: flex; gap: 20px; align-items: center;">
+        <div class="app-card brand-idlix" tabindex="0">
+          <span>IDLIX<sup>TV</sup></span>
+          <span class="app-label">IDLIX TV</span>
+        </div>
+        <div class="app-card brand-disney" tabindex="0">
+          <span>Disney+</span>
+          <span class="app-label">Disney+</span>
+        </div>
+        <div class="app-card brand-viu" tabindex="0">
+          <span>viu</span>
+          <span class="app-label">Viu</span>
+        </div>
+        <div class="app-card brand-netflix" tabindex="0">
+          <span>NETFLIX</span>
+          <span class="app-label">Netflix</span>
+        </div>
+        <!-- Apple TV Folder Tile with 2x2 Squircle Preview -->
+        <div class="app-card folder-card focused" id="folderCard" tabindex="0" onclick="toggleFolderOverlay()">
+          <div class="folder-grid-preview">
+            <div class="folder-mini-squircle brand-idlix" style="font-size: 8px;">IDLIX</div>
+            <div class="folder-mini-squircle brand-disney" style="font-size: 8px;">D+</div>
+            <div class="folder-mini-squircle brand-viu" style="font-size: 8px;">VIU</div>
+            <div class="folder-mini-squircle brand-netflix" style="font-size: 7px;">NFLX</div>
+          </div>
+          <span class="app-label" style="opacity: 1;">Hiburan</span>
+        </div>
+      </div>
+
+      <!-- Dock Pill Container -->
+      <div class="dock-pill">
+        <div class="app-card brand-nuvio" tabindex="0">
+          <span>nuvio</span>
+          <span class="app-label">Nuvio</span>
+        </div>
+        <div class="app-card brand-reezn" tabindex="0">
+          <span>Reezn</span>
+          <span class="app-label">Reezn</span>
+        </div>
+        <div class="app-card brand-nott" tabindex="0">
+          <span>N OTT</span>
+          <span class="app-label">N OTT</span>
+        </div>
+        <div class="app-card brand-perfecttv" tabindex="0">
+          <span>PERFECT TV</span>
+          <span class="app-label">Perfect TV</span>
+        </div>
+        <div class="app-card brand-spotify" tabindex="0">
+          <span>Spotify</span>
+          <span class="app-label">Spotify</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Apple TV Fullscreen Frosted Glass Folder Overlay -->
+    <div class="folder-overlay" id="folderOverlay">
+      <div class="folder-header">
+        <div class="folder-title-pill focused" tabindex="0">
+          <span>Hiburan</span>
+          <span style="font-size: 24px; opacity: 0.8;">✏️</span>
+        </div>
+        <div class="folder-subtitle">Tekan OK pada nama untuk tukar nama • BACK untuk keluar</div>
+      </div>
+
+      <div class="folder-apps-row">
+        <div class="app-card brand-idlix" tabindex="0">
+          <span>IDLIX<sup>TV</sup></span>
+          <span class="app-label" style="opacity: 1;">IDLIX TV</span>
+        </div>
+        <div class="app-card brand-disney" tabindex="0">
+          <span>Disney+</span>
+          <span class="app-label" style="opacity: 1;">Disney+</span>
+        </div>
+        <div class="app-card brand-viu" tabindex="0">
+          <span>viu</span>
+          <span class="app-label" style="opacity: 1;">Viu</span>
+        </div>
+        <div class="app-card brand-netflix" tabindex="0">
+          <span>NETFLIX</span>
+          <span class="app-label" style="opacity: 1;">Netflix</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const wallpapers = ['wallpaper_aurora.jpg', 'wallpaper_yosemite.jpg'];
+    let currentWpIdx = 0;
+
+    function switchWallpaper() {
+      currentWpIdx = (currentWpIdx + 1) % wallpapers.length;
+      document.getElementById('tvViewport').style.backgroundImage = `url('${wallpapers[currentWpIdx]}')`;
+    }
+
+    // Responsive scale to fit browser window while maintaining 16:9 ratio
+    function fitViewport() {
+      const vp = document.getElementById('tvViewport');
+      const scaleX = window.innerWidth / 1920;
+      const scaleY = window.innerHeight / 1080;
+      const scale = Math.min(scaleX, scaleY);
+      vp.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', fitViewport);
+    fitViewport();
+
+    // Toggle Apple TV Folder Overlay
+    function toggleFolderOverlay() {
+      const overlay = document.getElementById('folderOverlay');
+      overlay.classList.toggle('active');
+    }
+
+    // D-pad Navigation simulation
+    let focusable = [];
+    let currentFocusIdx = 4; // Start on folder
+
+    function updateFocusList() {
+      const overlay = document.getElementById('folderOverlay');
+      if (overlay.classList.contains('active')) {
+        focusable = Array.from(overlay.querySelectorAll('[tabindex="0"]'));
+      } else {
+        focusable = Array.from(document.querySelectorAll('.tv-viewport > *:not(.folder-overlay) [tabindex="0"], .apps-container [tabindex="0"]'));
+      }
+    }
+
+    function focusNextCard() {
+      updateFocusList();
+      if (focusable.length === 0) return;
+      focusable.forEach(el => el.classList.remove('focused'));
+      currentFocusIdx = (currentFocusIdx + 1) % focusable.length;
+      focusable[currentFocusIdx].classList.add('focused');
+      focusable[currentFocusIdx].focus();
+    }
+
+    // URL parameter parsing for Playwright automated captures
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('overlay') === 'folder' || window.location.hash === '#folder') {
+      document.getElementById('folderOverlay').classList.add('active');
+    }
+    if (params.get('bg') === 'yosemite') {
+      currentWpIdx = 1;
+      document.getElementById('tvViewport').style.backgroundImage = `url('wallpaper_yosemite.jpg')`;
+    }
+    if (params.get('hud') === '0' || params.get('clean') === '1') {
+      document.getElementById('previewHud').style.display = 'none';
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const overlay = document.getElementById('folderOverlay');
+      if (e.key === 'Escape' || e.key === 'Backspace') {
+        if (overlay.classList.contains('active')) {
+          overlay.classList.remove('active');
+          e.preventDefault();
+        }
+      } else if (e.key === 'Enter') {
+        const focused = document.querySelector('.focused');
+        if (focused && focused.id === 'folderCard') {
+          toggleFolderOverlay();
+        }
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        focusNextCard();
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
