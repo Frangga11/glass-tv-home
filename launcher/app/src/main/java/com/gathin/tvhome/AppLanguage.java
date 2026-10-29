@@ -684,4 +684,45 @@ final class AppLanguage {
             return LANG_EN.equals(lang) ? "Every " + curInterval + " Minutes" : (LANG_ID.equals(lang) ? "Setiap " + curInterval + " Menit" : "Setiap " + curInterval + " Minit");
         }
     }
+
+    // --- Azan Popup Card Strings ---
+    public static String strAzanPopupTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "ADHAN";
+            case LANG_ID: return "ADZAN";
+            case LANG_MS: default: return "AZAN";
+        }
+    }
+
+    public static String strAzanPopupHint(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Press Back / OK to dismiss";
+            case LANG_ID: return "Tekan Kembali / OK untuk menutup";
+            case LANG_MS: default: return "Tekan Back / OK untuk tutup";
+        }
+    }
+
+    public static String strAzanPopupSilentHint(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Silent Mode • Press Back to dismiss";
+            case LANG_ID: return "Mode Hening • Tekan Kembali untuk menutup";
+            case LANG_MS: default: return "Mod Senyap • Tekan Back untuk tutup";
+        }
+    }
+
+    public static String strAzanPopupChimeHint(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Short Chime Tone • Press Back to dismiss";
+            case LANG_ID: return "Nada Dering Singkat • Tekan Kembali untuk menutup";
+            case LANG_MS: default: return "Nada Peringatan Ringkas • Tekan Back untuk tutup";
+        }
+    }
+
+    public static String strAzanPopupDownloadingHint(Context ctx, String soundLabel) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Downloading audio " + soundLabel + "...";
+            case LANG_ID: return "Mengunduh audio " + soundLabel + "...";
+            case LANG_MS: default: return "Memuat turun audio " + soundLabel + "...";
+        }
+    }
 }

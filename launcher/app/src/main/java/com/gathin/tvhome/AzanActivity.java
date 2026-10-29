@@ -57,24 +57,14 @@ public class AzanActivity extends Activity {
         WindowManager.LayoutParams lp = w.getAttributes();
         lp.y = dp(40);
         w.setAttributes(lp);
-        boolean blur = false;
-        if (Build.VERSION.SDK_INT >= 31) {
-            WindowManager wm = getSystemService(WindowManager.class);
-            if (wm != null && wm.isCrossWindowBlurEnabled()) {
-                // Frosted glass: what is behind the card shows through it, blurred.
-                w.setBackgroundBlurRadius(dp(30));
-                blur = true;
-            }
-        }
 
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setPadding(dp(30), dp(20), dp(34), dp(20));
         GradientDrawable glass = new GradientDrawable();
-        // Tinted enough to read over a bright film even where the TV does not blur (this BRAVIA reports
-        // blur on but draws the background sharp).
-        glass.setColor(blur ? 0xB3101826 : 0xE0141C2C);
+        // Safe default dark glass background tint: readable over bright content even without window blur
+        glass.setColor(0xE0141C2C);
         glass.setCornerRadius(dp(28));
         glass.setStroke(Math.max(1, dp(1.5f)), 0x59FFFFFF);
         card.setBackground(glass);
@@ -93,7 +83,8 @@ public class AzanActivity extends Activity {
         LinearLayout words = new LinearLayout(this);
         words.setOrientation(LinearLayout.VERTICAL);
         String town = Location.prefs(this).getString("now_town", "");
-        TextView label = text(town.isEmpty() ? "AZAN" : "AZAN  ·  " + town.toUpperCase(java.util.Locale.ROOT), outfit, 12, 0xB3FFFFFF, 600);
+        String azanWord = AppLanguage.strAzanPopupTitle(this);
+        TextView label = text(town.isEmpty() ? azanWord : azanWord + "  ·  " + town.toUpperCase(java.util.Locale.ROOT), outfit, 12, 0xB3FFFFFF, 600);
         label.setLetterSpacing(0.22f);
         label.setGravity(Gravity.START);
         words.addView(label);
@@ -102,7 +93,10 @@ public class AzanActivity extends Activity {
         nameRow.setOrientation(LinearLayout.HORIZONTAL);
         nameRow.setGravity(Gravity.BOTTOM);
         nameRow.setPadding(0, dp(2), 0, dp(2));
-        TextView name = text(PrayerTimes.NAMES[Math.max(0, Math.min(prayer, PrayerTimes.NAMES.length - 1))], outfit, 28, 0xFFFFFFFF, 500);
+
+        String[] pNames = AppLanguage.getPrayerNames(this);
+        int validPrayerIdx = Math.max(0, Math.min(prayer, pNames.length - 1));
+        TextView name = text(pNames[validPrayerIdx], outfit, 28, 0xFFFFFFFF, 500);
         name.setSingleLine(true);
         nameRow.addView(name);
         TextView time = text(when, outfit, 20, 0xCCFFFFFF, 300);
@@ -110,26 +104,44 @@ public class AzanActivity extends Activity {
         time.setPadding(dp(14), 0, 0, dp(3));
         nameRow.addView(time);
         words.addView(nameRow);
-        hint = text("Tekan Back / OK untuk tutup", outfit, 12, 0x99FFFFFF, 400);
+        hint = text(AppLanguage.strAzanPopupHint(this), outfit, 12, 0x99FFFFFF, 400);
         hint.setGravity(Gravity.START);
         words.addView(hint);
         card.addView(words);
         card.setFocusable(true);
         card.setClickable(true);
         card.setOnClickListener(v -> finish());
+
+        // CRITICAL FIX FOR ISSUE #5:
+        // Must call setContentView(card) FIRST so the Window creates and attaches its DecorView.
+        // On Android 14 (Chromecast Sabrina, etc.), calling setBackgroundBlurRadius before
+        // setContentView dereferences a null DecorView inside PhoneWindow and throws NullPointerException.
         setContentView(card);
+
+        if (Build.VERSION.SDK_INT >= 31) {
+            try {
+                WindowManager wm = getSystemService(WindowManager.class);
+                if (wm != null && wm.isCrossWindowBlurEnabled() && w.getDecorView() != null) {
+                    w.setBackgroundBlurRadius(dp(30));
+                    glass.setColor(0xB3101826);
+                }
+            } catch (Throwable t) {
+                // Graceful fallback: keep solid frosted glass tint without crashing
+                android.util.Log.w("TvHome.Azan", "Window blur unavailable or failed: " + t.getMessage());
+            }
+        }
 
         String soundChoice = Azan.getSoundChoice(this);
         if (Azan.SOUND_SILENT.equals(soundChoice)) {
-            hint.setText("Mod Senyap • Tekan Back untuk tutup");
+            hint.setText(AppLanguage.strAzanPopupSilentHint(this));
             handler.postDelayed(this::finish, 15_000);
         } else if (Azan.SOUND_CHIME.equals(soundChoice)) {
-            hint.setText("Nada Peringatan Ringkas • Tekan Back untuk tutup");
+            hint.setText(AppLanguage.strAzanPopupChimeHint(this));
             playChime();
         } else {
             File file = Azan.recording(this, soundChoice);
             if (file == null) {
-                hint.setText("Memuat turun audio " + Azan.soundLabel(soundChoice) + "...");
+                hint.setText(AppLanguage.strAzanPopupDownloadingHint(this, Azan.soundLabel(soundChoice)));
                 Azan.fetch(this, soundChoice);
                 playChime();
                 handler.postDelayed(this::finish, 8000);
