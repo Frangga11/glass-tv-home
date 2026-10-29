@@ -1,7 +1,7 @@
 {
-  "versionCode": 14,
-  "versionName": "3.1.4",
+  "versionCode": 16,
+  "versionName": "3.2.1",
   "apkUrl": "https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk",
-  "changelog": "☕ Tambah Kad Belanja Kopi DuitNow QR (@imsomangge) dalam Popup Kemas Kini OTA\n🔄 Label Butang Candy Box Memaparkan Versi Patch Terkini (v3.1.4)\n🍎 Rekaan Dialog Apple TV-Style Minimal & Kemas",
-  "releaseDate": "2026-10-28"
+  "changelog": "✨ Pelarasan Doa Harian kepada 1 baris kemas tanpa gangguan pada bar atas\n📐 Penyelarasan jarak selamat antara Doa Harian dan Deskripsi Wallpaper\n⏬ Kedudukan Doa Harian, Waktu Solat dan Dock direndahkan sedikit dengan ruang bernafas seimbang",
+  "releaseDate": "2026-10-29"
 }
