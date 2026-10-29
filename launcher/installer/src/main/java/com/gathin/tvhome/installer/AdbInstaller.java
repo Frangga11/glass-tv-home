@@ -77,9 +77,9 @@ public final class AdbInstaller {
                 // 2. Handle Authentication
                 if (resp.cmd == A_AUTH && resp.arg0 == 1) { // Token
                     postProgress(callback, 15, "Menentusahkan kunci keselamatan ADB...");
-                    PrivateKey privKey = loadPrivateKey(context);
+                    PrivateKey privKey = AdbCrypto.getPrivateKey(context);
                     if (privKey == null) {
-                        throw new IOException("Fail kunci RSA 'adbkey' tidak dijumpai.");
+                        throw new IOException("Gagal menjana kunci keselamatan RSA peranti.");
                     }
 
                     byte[] asn1Token = new byte[35];
@@ -97,9 +97,9 @@ public final class AdbInstaller {
                     if (resp.cmd != A_CNXN) {
                         // Send Public key to prompt TV
                         postProgress(callback, 20, "Sila tekan 'Allow' pada skrin TV anda...");
-                        String pubKey = loadPublicKey(context);
+                        String pubKey = AdbCrypto.getPublicKeyAdbString(context);
                         if (pubKey != null) {
-                            sendMessage(out, A_AUTH, 3, 0, (pubKey + " glass-installer\0").getBytes("UTF-8"));
+                            sendMessage(out, A_AUTH, 3, 0, (pubKey + "\0").getBytes("UTF-8"));
                             resp = readMessage(in);
                         }
                     }
@@ -201,18 +201,20 @@ public final class AdbInstaller {
                 Message resp = readMessage(in);
 
                 if (resp.cmd == A_AUTH && resp.arg0 == 1) {
-                    PrivateKey privKey = loadPrivateKey(context);
-                    byte[] asn1Token = new byte[35];
-                    byte[] prefix = new byte[]{0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e, 0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14};
-                    System.arraycopy(prefix, 0, asn1Token, 0, prefix.length);
-                    System.arraycopy(resp.data, 0, asn1Token, prefix.length, 20);
+                    PrivateKey privKey = AdbCrypto.getPrivateKey(context);
+                    if (privKey != null) {
+                        byte[] asn1Token = new byte[35];
+                        byte[] prefix = new byte[]{0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e, 0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14};
+                        System.arraycopy(prefix, 0, asn1Token, 0, prefix.length);
+                        System.arraycopy(resp.data, 0, asn1Token, prefix.length, 20);
 
-                    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-                    cipher.init(Cipher.ENCRYPT_MODE, privKey);
-                    byte[] signature = cipher.doFinal(asn1Token);
+                        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                        cipher.init(Cipher.ENCRYPT_MODE, privKey);
+                        byte[] signature = cipher.doFinal(asn1Token);
 
-                    sendMessage(out, A_AUTH, 2, 0, signature);
-                    resp = readMessage(in);
+                        sendMessage(out, A_AUTH, 2, 0, signature);
+                        resp = readMessage(in);
+                    }
                 }
 
                 if (resp.cmd != A_CNXN) {
@@ -296,35 +298,7 @@ public final class AdbInstaller {
         return new Message(cmd, arg0, arg1, data);
     }
 
-    private static PrivateKey loadPrivateKey(Context context) {
-        try {
-            InputStream is = context.getAssets().open("adbkey");
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.contains("BEGIN") || line.contains("END")) continue;
-                sb.append(line.trim());
-            }
-            br.close();
-            byte[] keyBytes = Base64.getDecoder().decode(sb.toString());
-            return KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
-    private static String loadPublicKey(Context context) {
-        try {
-            InputStream is = context.getAssets().open("adbkey.pub");
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line = br.readLine();
-            br.close();
-            return line != null ? line.trim() : null;
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     private static void postProgress(InstallCallback callback, int percent, String msg) {
         mainHandler.post(() -> {

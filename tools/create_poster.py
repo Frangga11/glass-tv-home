@@ -76,8 +76,9 @@ def draw_bezel_window(base_img, screen_img, pos, size, radius=16, border_color=(
         base_img.alpha_composite(pill, (px, py))
 
 def main():
-    assets_dir = "/Users/ahmad/.gemini/antigravity/scratch/glass-tv/docs/screenshots"
-    font_path = "/Users/ahmad/.gemini/antigravity/scratch/glass-tv/launcher/app/src/main/res/font/outfit.ttf"
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    assets_dir = os.path.join(repo_root, "docs", "screenshots")
+    font_path = os.path.join(repo_root, "launcher", "app", "src", "main", "res", "font", "outfit.ttf")
     
     # Load fonts
     font_title = ImageFont.truetype(font_path, 42)
