@@ -7,6 +7,9 @@ import android.os.Looper;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,6 +42,20 @@ public final class AdbInstaller {
         void onProgress(int percent, String message);
         void onSuccess(String message);
         void onError(String error);
+    }
+
+    public static File getOrExtractApk(Context context) throws IOException {
+        File cacheFile = new File(context.getCacheDir(), "glass-tv-home.apk");
+        try (InputStream in = context.getAssets().open("glass-tv-home.apk");
+             FileOutputStream out = new FileOutputStream(cacheFile)) {
+            byte[] buf = new byte[32 * 1024];
+            int r;
+            while ((r = in.read(buf)) != -1) {
+                out.write(buf, 0, r);
+            }
+            out.flush();
+        }
+        return cacheFile;
     }
 
     public static void install(Context context, String ip, int port, InstallCallback callback) {
@@ -94,9 +111,10 @@ public final class AdbInstaller {
 
                 postProgress(callback, 30, "Sambungan TV disahkan! Membuka aliran pemasangan...");
 
-                // Read bundled APK from assets
-                InputStream apkStream = context.getAssets().open("glass-tv-home.apk");
-                long apkSize = context.getAssets().openFd("glass-tv-home.apk").getLength();
+                // Read bundled APK from extracted cache file (safe from asset compression limits)
+                File apkFile = getOrExtractApk(context);
+                long apkSize = apkFile.length();
+                InputStream apkStream = new FileInputStream(apkFile);
 
                 // Open install stream: exec:pm install -r -d -S <size>
                 int localId = 1;

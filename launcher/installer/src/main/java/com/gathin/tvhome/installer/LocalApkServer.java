@@ -3,6 +3,8 @@ package com.gathin.tvhome.installer;
 import android.content.Context;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -67,8 +69,9 @@ public final class LocalApkServer {
             OutputStream out = client.getOutputStream();
 
             if (line.contains("GET /glass-tv.apk")) {
-                InputStream is = context.getAssets().open("glass-tv-home.apk");
-                long size = context.getAssets().openFd("glass-tv-home.apk").getLength();
+                File apkFile = AdbInstaller.getOrExtractApk(context);
+                long size = apkFile.length();
+                InputStream is = new FileInputStream(apkFile);
 
                 String header = "HTTP/1.1 200 OK\r\n"
                         + "Content-Type: application/vnd.android.package-archive\r\n"
