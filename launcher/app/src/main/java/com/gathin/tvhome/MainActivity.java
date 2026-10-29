@@ -148,11 +148,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private final Rect alignCard = new Rect(), alignButton = new Rect();
     /** How much of the space between the side paddings the top shelf may use. */
     private static final float HERO_WIDTH_SHARE = 0.40f;
-    /** The name is one line, and may run wider than the description, up to this share. */
-    private static final float HERO_NAME_WIDTH_SHARE = 0.60f;
+    /** The name is one line, and may run wider than the description, up to this share (capped to avoid overlapping Islamic shelf). */
+    private static final float HERO_NAME_WIDTH_SHARE = 0.45f;
     private static final float HERO_TITLE_MAX_SP = 40f;
-    /** The breathing room between the shelf's last line and the top of the app container. */
-    private static final float HERO_GAP_DP = 70f;
+    /** The breathing room between the shelf's last line and the top of the app container (28dp gives sleek, balanced spacing). */
+    private static final float HERO_GAP_DP = 28f;
     private static final float HERO_TITLE_MIN_SP = 26f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
@@ -1846,7 +1846,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int inner = grid.getWidth() - grid.getPaddingLeft() - grid.getPaddingRight();
         int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(AppAdapter.tileWidthPx(inner, COLUMNS, density)), density);
         int dockRow = itemH + (int) ((6 + 12) * density);   // item height plus DockDecoration offsets
-        int want = Math.max(0, h - dockRow - itemH * rowsBelowDockSetting - (int) (30 * density));
+        int want = Math.max(0, h - dockRow - itemH * rowsBelowDockSetting - (int) (16 * density));
         if (grid.getPaddingTop() == want) return true;
         grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
         return false;
@@ -2499,12 +2499,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ayahLabel.setText(a.reference != null && !a.reference.isEmpty() ? ("DOA HARIAN  •  " + a.reference.toUpperCase(Locale.ROOT)) : "DOA HARIAN  •  AYAT PILIHAN");
         }
         if (ayahArabic != null) {
-            ayahArabic.setText(a.arabic);
+            ayahArabic.setText(a.arabic != null ? a.arabic.trim() : "");
         }
         if (ayahText != null) {
             String tr = a.translation(WeeklyAyah.english(this));
-            ayahText.setText(tr != null ? tr : "");
-            ayahText.setVisibility(tr != null && !tr.isEmpty() ? View.VISIBLE : View.GONE);
+            ayahText.setText(tr != null ? tr.trim() : "");
+            ayahText.setVisibility(tr != null && !tr.trim().isEmpty() ? View.VISIBLE : View.GONE);
         }
         ayahBlock.setVisibility(View.VISIBLE);
     }
