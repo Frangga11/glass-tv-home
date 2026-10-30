@@ -179,6 +179,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView btnWifi;
     private View btnAssistant;
     private View btnCandyBox;
+    private View badgeSettingsUpdate;
     private TextView ampmView, dateView;
     private TextView shamsiDate;
     private TextView prayerTimesView;
@@ -252,7 +253,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private android.graphics.Bitmap wallBitmap;
     /** Dynamic atmospheric weather canvas particle overlay over the wallpaper */
     private WeatherBackgroundView weatherOverlayView;
-    private String testWeatherOverride = null;
+    String testWeatherOverride = null;
     /** Settings kept for the places refresh, which runs after onCreate. */
     private Config config;
     /** Pictures of places are on (see PlaceWallpapers); they are dimmed behind the tiles. */
@@ -340,6 +341,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
     };
+
+    public boolean isWeatherWidgetEnabled() {
+        return getSharedPreferences("theme_prefs", MODE_PRIVATE).getBoolean("weather_widget_enabled", true);
+    }
+
+    public void setWeatherWidgetEnabled(boolean enabled) {
+        getSharedPreferences("theme_prefs", MODE_PRIVATE).edit().putBoolean("weather_widget_enabled", enabled).apply();
+        if (weatherAirQualityView != null) {
+            weatherAirQualityView.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -442,6 +454,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         updateDateAndPeriod();
         weatherAirQualityView = findViewById(R.id.weatherAirQuality);
         if (weatherAirQualityView != null) {
+            weatherAirQualityView.setVisibility(isWeatherWidgetEnabled() ? View.VISIBLE : View.GONE);
             weatherAirQualityView.setOnClickListener(v -> {
                 startActivity(new Intent(this, WeatherActivity.class));
             });
@@ -747,6 +760,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnAssistant = findViewById(R.id.btnAssistant);
         btnCandyBox = findViewById(R.id.btnCandyBox);
         View btnSettings = findViewById(R.id.btnSettings);
+        badgeSettingsUpdate = findViewById(R.id.badgeSettingsUpdate);
+        updateSettingsBadge();
         if (btnInputs != null) btnInputs.setOnClickListener(v -> showInputs());
         if (btnWifi != null) {
             btnWifi.setOnClickListener(v -> showWifiPopup());
@@ -760,6 +775,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (btnCandyBox != null) {
             btnCandyBox.setOnClickListener(v -> showCandyBoxPopup());
+            updateTopBarUserIcon();
         }
         if (btnSettings != null) {
             btnSettings.setOnClickListener(v -> showSettingsPopup());
@@ -1247,6 +1263,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
         updateIslamicShelf();
         updateInputsButton();
+        updateTopBarUserIcon();
+        updateSettingsBadge();
+        handler.postDelayed(() -> AppUpdateManager.checkForUpdates(this, false), 1500);
         Location.Zone chosenPlace = Location.chosen(this);
         String zoneCode = (chosenPlace != null) ? chosenPlace.code : "WLY01";
         Azan.schedule(this, zoneCode);
@@ -1310,7 +1329,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * Every step into the card code runs under CardFeature: if it fails, the tiles are the ordinary
      * ones and cards stay off for this process.
      */
-    private boolean reloadTiles() {
+    boolean reloadTiles() {
+        updateTopBarUserIcon();
+        if (adapter != null) adapter.invalidateCache();
         // Read these before reload(): rebinding can move focus to the first tile and overwrite them.
         final String returnKey = lastFocusedKey;
         final int returnSlot = lastFocused;
@@ -2431,8 +2452,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         updateWeatherOverlay(HomeWeather.last(this));
     }
 
-    private void updateIslamicShelf() {
+    public boolean isIslamicShelfEnabled() {
+        return getSharedPreferences("theme_prefs", MODE_PRIVATE).getBoolean("islamic_shelf_enabled", true);
+    }
+
+    public void setIslamicShelfEnabled(boolean enabled) {
+        getSharedPreferences("theme_prefs", MODE_PRIVATE).edit().putBoolean("islamic_shelf_enabled", enabled).apply();
+        if (islamicShelf != null) {
+            islamicShelf.setVisibility(enabled ? View.VISIBLE : View.GONE);
+            if (enabled) updateIslamicShelf();
+        }
+    }
+
+    void updateIslamicShelf() {
         if (islamicShelf == null) return;
+        if (!isIslamicShelfEnabled()) {
+            islamicShelf.setVisibility(View.GONE);
+            return;
+        }
 
         if (WeeklyAyah.shown(this)) {
             WeeklyAyah.Ayah a = WeeklyAyah.stored(this);
@@ -2479,7 +2516,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void updateAyah() {
+    void updateAyah() {
         if (ayahBlock == null || ayahRunning || !WeeklyAyah.shown(this) || WeeklyAyah.stored(this) != null) return;
         ayahRunning = true;
         new Thread(() -> {
@@ -2491,7 +2528,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }, "weekly-ayah").start();
     }
 
-    private void showAyah(WeeklyAyah.Ayah a) {
+    void showAyah(WeeklyAyah.Ayah a) {
         if (ayahBlock == null) return;
         if (!WeeklyAyah.shown(this) || (nowPlayingCard != null && nowPlayingCard.getVisibility() == View.VISIBLE)) {
             ayahBlock.setVisibility(View.GONE);
@@ -2683,171 +2720,51 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         showMenu(panel, rows, anchor, width, false);
     }
 
-    /** Shows an Apple TV-style frosted glass Candy Box dropdown menu containing all launcher customizations & tools. */
-    private void showCandyBoxPopup() {
-        if (openMenu != null) return;
+    /** Shows the User Profile & Child Mode quick dialog (formerly Candy Box). */
+    public void showCandyBoxPopup() {
+        if (openMenu != null) {
+            closeMenu(false);
+        }
         SoundEffects.playSelect();
-        View anchor = btnCandyBox != null ? btnCandyBox : findViewById(R.id.btnSettings);
-        if (anchor == null) return;
-        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
-        LinearLayout rows = panel.findViewById(R.id.rows);
-        Runnable close = () -> closeMenu(false);
-
-        // Row 1: Wallpaper
-        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper", -1, () -> {
-            SoundEffects.playSelect();
-            showWallpaperDialog();
-        });
-
-        // Row 2: Gemini AI Assistant
-        addInputRow(rows, close, R.drawable.ic_gemini, "Gemini AI Assistant", -1, () -> {
-            SoundEffects.playSelect();
-            showGeminiAssistantDialog();
-        });
-
-        // Row 3: Location (Waktu Solat & Cuaca)
-        Location.Zone chosenZone = Location.chosen(this);
-        String zoneName = (chosenZone != null) ? (chosenZone.state + " - " + chosenZone.town) : "W.P. Kuala Lumpur";
-        addInputRow(rows, close, R.drawable.ic_location, AppLanguage.strLocationRow(this, zoneName), -1, () -> {
-            SoundEffects.playSelect();
-            startActivity(new Intent(this, LocationActivity.class));
-        });
-
-        // Row 4: Cuaca Dinamik (ON / OFF)
-        boolean isWeatherFx = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
-        addInputRow(rows, close, R.drawable.ic_cloudy_day, AppLanguage.strDynamicWeather(this, isWeatherFx), -1, () -> {
-            SoundEffects.playSelect();
-            boolean newMode = !isWeatherFx;
-            getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", newMode).apply();
-            testWeatherOverride = null;
-            updateWeatherOverlay(HomeWeather.last(this));
-            Toast.makeText(this, newMode ? "🌧️ Cuaca Dinamik Dihidupkan (ON)" : "⛅ Cuaca Dinamik Dimatikan (OFF)", Toast.LENGTH_SHORT).show();
-            closeMenu(false);
-            showCandyBoxPopup();
-        });
-
-        // Row 4: Tetapan & Pilihan Azan
-        boolean masterAzan = Azan.isMasterEnabled(this);
-        addInputRow(rows, close, R.drawable.ic_azan, AppLanguage.strAzanRow(this, masterAzan), -1, () -> {
-            SoundEffects.playSelect();
-            closeMenu(false);
-            showAzanSettingsDialog();
-        });
-
-        // Row 5: Doa Harian / Ayat Pilihan
-        boolean ayahShown = WeeklyAyah.shown(this);
-        addInputRow(rows, close, R.drawable.ic_salat, AppLanguage.strDailyDoaRow(this, ayahShown), -1, () -> {
-            SoundEffects.playSelect();
-            WeeklyAyah.setShown(this, !ayahShown);
-            showAyah(WeeklyAyah.last(this));
-            if (!ayahShown) updateAyah();
-        });
-
-        // Row 6: Sound Effects
-        String currentSoundTheme = SoundEffects.getActiveTheme(this);
-        addInputRow(rows, close, R.drawable.ic_sound, AppLanguage.strSoundRow(this, SoundEffects.getThemeDisplayName(currentSoundTheme)), -1, () -> {
-            SoundEffects.playSelect();
-            showSoundEffectsDialog();
-        });
-
-        // Row 7: Auto-Update (OTA)
-        boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
-        addInputRow(rows, close, R.drawable.ic_update, AppLanguage.strAutoUpdateRow(this, isAuto, getAppVersionName()), -1, () -> {
-            SoundEffects.playSelect();
-            showAutoUpdateDialog();
-        });
-
-        // Row 8: Pilihan Bahasa / Language
-        addInputRow(rows, close, R.drawable.ic_language, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, () -> {
-            SoundEffects.playSelect();
-            closeMenu(false);
-            showLanguageDialog();
-        });
-
-        // Row 9: Nightstand / Screensaver
-        addInputRow(rows, close, R.drawable.ic_sleep, AppLanguage.strScreensaver(this), -1, () -> {
-            SoundEffects.playSelect();
-            showNightstandScreensaver();
-        });
-
-        addSeparator(rows);
-
-        // Row 10: Tutup
-        addInputRow(rows, close, R.drawable.ic_close, AppLanguage.strClose(this), -1, () -> {
-            SoundEffects.playSelect();
-            closeMenu(true);
-        });
-
-        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int width = Math.max((int) (230 * density), panel.getMeasuredWidth());
-
-        showMenu(panel, rows, anchor, width, false);
+        UserSwitchDialog.show(this);
     }
 
-    /** Shows an Apple TV-style frosted glass Settings dropdown menu (Restart, Turn Off, All Settings). */
-    private void showSettingsPopup() {
-        if (openMenu != null) return;
-        SoundEffects.playSelect();
-        View anchor = findViewById(R.id.btnSettings);
-        if (anchor == null) return;
-        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
-        LinearLayout rows = panel.findViewById(R.id.rows);
-        Runnable close = () -> closeMenu(false);
-
-        // Row 1: Restart TV
-        addInputRow(rows, close, R.drawable.ic_restart, AppLanguage.strRestart(this), -1, () -> {
-            SoundEffects.playSelect();
-            showRestartDialog();
-        });
-
-        // Row 2: Turn Off TV
-        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strTurnOff(this), -1, () -> {
-            SoundEffects.playSelect();
-            showTurnOffDialog();
-        });
-
-        addSeparator(rows);
-
-        // Row 3: Bersihkan Cache TV
-        addInputRow(rows, close, R.drawable.ic_clean, AppLanguage.strCleanCache(this), -1, () -> {
-            SoundEffects.playSelect();
-            closeMenu(false);
-            showCleanTvCacheDialog();
-        });
-
-        // Row 4: Wallpaper
-        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, () -> {
-            SoundEffects.playSelect();
-            closeMenu(false);
-            showWallpaperDialog();
-        });
-
-        // Row 5: Pilihan Bahasa / Language Selection
-        addInputRow(rows, close, R.drawable.ic_language, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, () -> {
-            SoundEffects.playSelect();
-            closeMenu(false);
-            showLanguageDialog();
-        });
-
-        // Row 6: All Settings (Android Settings)
-        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strAllSettings(this), -1, () -> {
-            SoundEffects.playSelect();
-            open(systemIntent(Settings.ACTION_SETTINGS));
-        });
-
-        // Row 7: Tutup
-        addInputRow(rows, close, R.drawable.ic_close, AppLanguage.strClose(this), -1, () -> {
-            SoundEffects.playSelect();
-            closeMenu(true);
-        });
-
-        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int width = Math.max((int) (200 * density), panel.getMeasuredWidth());
-
-        showMenu(panel, rows, anchor, width, false);
+    void updateTopBarUserIcon() {
+        if (btnCandyBox instanceof TextView) {
+            TextView tv = (TextView) btnCandyBox;
+            ProfileManager.UserProfile active = ProfileManager.getActiveProfile(this);
+            boolean isChild = ChildModeManager.isChildModeEnabled(this);
+            int size = Math.round(26 * density);
+            android.graphics.drawable.Drawable avDrawable = ProfileManager.getCircularAvatarDrawable(this, active.avatarIndex, size, isChild);
+            if (avDrawable != null) {
+                tv.setCompoundDrawablesWithIntrinsicBounds(avDrawable, null, null, null);
+                tv.setCompoundDrawableTintList(null);
+            } else {
+                tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_shield_child, 0, 0, 0);
+                tv.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(isChild ? 0xFFF59E0B : 0xFFFFFFFF));
+            }
+            tv.setContentDescription("Pengguna Semasa: " + active.name + (isChild ? " (Mod Kanak-kanak)" : ""));
+        }
     }
 
-    private void showSoundEffectsDialog() {
+    public void updateSettingsBadge() {
+        runOnUiThread(() -> {
+            if (badgeSettingsUpdate != null) {
+                boolean hasUpdate = AppUpdateManager.isUpdateAvailable(this);
+                badgeSettingsUpdate.setVisibility(hasUpdate ? View.VISIBLE : View.GONE);
+            }
+        });
+    }
+
+    /** Shows the modern floating 2-column Settings modal (Profile, Avatars, Child Mode, Home, etc.). */
+    public void showSettingsPopup() {
+        if (openMenu != null) {
+            closeMenu(false);
+        }
+        ModernSettingsDialog.show(this);
+    }
+
+    void showSoundEffectsDialog() {
         final String[] soundOptions = new String[]{
                 "🎮 PlayStation 5 (Lalai / Default Chime)",
                 "🕹️ Nintendo Switch (Click & Snap Pop)",
@@ -2893,7 +2810,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         styleGlassDialog(dialog);
     }
 
-    private void showLanguageDialog() {
+    void showLanguageDialog() {
         SoundEffects.playSelect();
         final String[] langOptions = new String[]{
                 "🇲🇾 Bahasa Melayu (Standard)",
@@ -2933,7 +2850,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         styleGlassDialog(dialog);
     }
 
-    private void showAzanSettingsDialog() {
+    void showAzanSettingsDialog() {
         SoundEffects.playSelect();
         Location.Zone chosenPlace = Location.chosen(this);
         String zoneCode = (chosenPlace != null) ? chosenPlace.code : "WLY01";
@@ -2959,7 +2876,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         titleView.setText(AppLanguage.strAzanSettingsHeaderTitle(this));
         titleView.setTextSize(19);
         titleView.setTextColor(0xFFFFFFFF);
-        titleView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        titleView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         titleView.setFontVariationSettings("'wght' 700");
         titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
         titleCol.addView(titleView);
@@ -2968,7 +2885,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         subView.setText(AppLanguage.strAzanSettingsHeaderSub(this));
         subView.setTextSize(12.5f);
         subView.setTextColor(0xD9FFFFFF);
-        subView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        subView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         subView.setFontVariationSettings("'wght' 600");
         subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         subView.setPadding(0, (int) (2 * density), 0, 0);
@@ -3088,7 +3005,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         );
         soundTag.setText(AppLanguage.strAzanAudioChangeBtn(this));
         soundTag.setTextSize(12.5f);
-        soundTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        soundTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         soundTag.setFontVariationSettings("'wght' 700");
         soundTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
         rightCol.addView(soundRow);
@@ -3112,7 +3029,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         );
         testTag.setText(AppLanguage.strAzanTestBtn(this));
         testTag.setTextSize(13);
-        testTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        testTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         testTag.setFontVariationSettings("'wght' 700");
         testTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
         rightCol.addView(testRow);
@@ -3131,7 +3048,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         infoText.setText(AppLanguage.strAzanInfoText(this));
         infoText.setTextSize(11f);
         infoText.setTextColor(0xB3FFFFFF);
-        infoText.setTypeface(getResources().getFont(R.font.outfit), Typeface.NORMAL);
+        infoText.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         infoText.setFontVariationSettings("'wght' 500");
         infoText.setLineSpacing(0, 1.25f);
         infoCard.addView(infoText);
@@ -3156,7 +3073,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         );
         closeTag.setText(AppLanguage.strClose(this).toUpperCase(Locale.ROOT));
         closeTag.setTextSize(12.5f);
-        closeTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        closeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         closeTag.setFontVariationSettings("'wght' 700");
         closeTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0x88FFFFFF}));
         rightCol.addView(closeRow);
@@ -3238,7 +3155,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void updateMasterTag(TextView tag, boolean on) {
         tag.setText(on ? "ON" : "OFF");
         tag.setTextSize(13);
-        tag.setTypeface(getResources().getFont(R.font.outfit), Typeface.NORMAL);
+        tag.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         tag.setFontVariationSettings(on ? "'wght' 700" : "'wght' 600");
         int color = on ? 0xFF38BDF8 : 0x99FFFFFF;
         tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, color}));
@@ -3247,7 +3164,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void updatePrayerTag(TextView tag, boolean on) {
         tag.setText(on ? "ON" : "OFF");
         tag.setTextSize(13);
-        tag.setTypeface(getResources().getFont(R.font.outfit), Typeface.NORMAL);
+        tag.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         tag.setFontVariationSettings(on ? "'wght' 700" : "'wght' 600");
         int color = on ? 0xFF38BDF8 : 0x99FFFFFF;
         tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, color}));
@@ -3258,7 +3175,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         tv.setText(title);
         tv.setTextSize(11.5f);
         tv.setTextColor(0xFF38BDF8);
-        tv.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        tv.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         tv.setFontVariationSettings("'wght' 700");
         tv.setLetterSpacing(0.08f);
         tv.setPadding(0, (int) (6 * density), 0, (int) (3 * density));
@@ -3294,7 +3211,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rowTitle.setText(title);
         rowTitle.setTextSize(15);
         rowTitle.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
-        rowTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         rowTitle.setFontVariationSettings("'wght' 700");
         rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         rowTitle.setDuplicateParentStateEnabled(true);
@@ -3312,7 +3229,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             rowSub.setText(subtitle);
             rowSub.setTextSize(12.5f);
             rowSub.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF1E293B, 0xD9FFFFFF}));
-            rowSub.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowSub.setFontVariationSettings("'wght' 600");
             rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
             rowSub.setPadding(0, (int) (2 * density), 0, 0);
@@ -3347,7 +3264,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return row;
     }
 
-    private void showRestartDialog() {
+    void showRestartDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(AppLanguage.strRestartTitle(this));
         builder.setMessage(AppLanguage.strRestartMsg(this));
@@ -3362,7 +3279,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         styleGlassDialog(dialog);
     }
 
-    private void showTurnOffDialog() {
+    void showTurnOffDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(AppLanguage.strTurnOffTitle(this));
         builder.setMessage(AppLanguage.strTurnOffMsg(this));
@@ -3376,7 +3293,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         styleGlassDialog(dialog);
     }
 
-    private void showCleanTvCacheDialog() {
+    void showCleanTvCacheDialog() {
         SoundEffects.playSelect();
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(AppLanguage.strCleanCacheTitle(this));
@@ -3418,15 +3335,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (btnPos != null) btnPos.requestFocus();
     }
 
-    private String getAppVersionName() {
+    String getAppVersionName() {
         try {
             return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (Exception e) {
-            return "3.1.4";
+            return "4.0.0";
         }
     }
 
-    private void showAutoUpdateDialog() {
+    void showAutoUpdateDialog() {
         SoundEffects.playSelect();
         View view = getLayoutInflater().inflate(R.layout.dialog_ota_coffee, null);
 
@@ -3857,7 +3774,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView qrStatusText;
     private TextView qrUrlText;
 
-    private void showWallpaperDialog() {
+    void showWallpaperDialog() {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
         int customCount = (customFiles != null) ? customFiles.length : 0;
@@ -3957,7 +3874,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         titleView.setText(AppLanguage.strWallpaperDialogTitle(this));
         titleView.setTextSize(19);
         titleView.setTextColor(0xFFFFFFFF);
-        titleView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        titleView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         titleView.setFontVariationSettings("'wght' 700");
         titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
         layout.addView(titleView);
@@ -3967,7 +3884,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         subView.setText(AppLanguage.strWallpaperDialogSub(this));
         subView.setTextSize(13.5f);
         subView.setTextColor(0xE6FFFFFF);
-        subView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        subView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         subView.setFontVariationSettings("'wght' 600");
         subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         subView.setPadding(0, (int) (3 * density), 0, (int) (12 * density));
@@ -4014,7 +3931,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             rowTitle.setText(opt.title);
             rowTitle.setTextSize(16);
             rowTitle.setTextColor(0xFFFFFFFF);
-            rowTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
             rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
             topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -4025,7 +3942,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 activeTag.setText("✓ " + AppLanguage.strNowBadge(this));
                 activeTag.setTextSize(13);
                 activeTag.setTextColor(0xFF38BDF8);
-                activeTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+                activeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
                 activeTag.setFontVariationSettings("'wght' 700");
                 topRow.addView(activeTag);
             }
@@ -4035,7 +3952,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             rowSub.setText(opt.subtitle);
             rowSub.setTextSize(13);
             rowSub.setTextColor(0xD9FFFFFF);
-            rowSub.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowSub.setFontVariationSettings("'wght' 600");
             rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
             rowSub.setPadding(0, (int) (2 * density), 0, 0);
@@ -4167,7 +4084,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void showWallpaperIntervalDialog() {
+    void showWallpaperIntervalDialog() {
         SoundEffects.playSelect();
         class IntervalOption {
             final int minutes;
@@ -4215,7 +4132,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         titleView.setText(AppLanguage.strWallpaperIntervalTitle(this));
         titleView.setTextSize(19);
         titleView.setTextColor(0xFFFFFFFF);
-        titleView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        titleView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         titleView.setFontVariationSettings("'wght' 700");
         titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
         layout.addView(titleView);
@@ -4225,7 +4142,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         subView.setText(AppLanguage.strWallpaperIntervalSub(this));
         subView.setTextSize(13.5f);
         subView.setTextColor(0xE6FFFFFF);
-        subView.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        subView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         subView.setFontVariationSettings("'wght' 600");
         subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         subView.setPadding(0, (int) (3 * density), 0, (int) (12 * density));
@@ -4271,7 +4188,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             rowTitle.setText(opt.title);
             rowTitle.setTextSize(16);
             rowTitle.setTextColor(0xFFFFFFFF);
-            rowTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
             rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
             topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -4282,7 +4199,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 activeTag.setText("✓ " + AppLanguage.strNowBadge(this));
                 activeTag.setTextSize(13);
                 activeTag.setTextColor(0xFF38BDF8);
-                activeTag.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+                activeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
                 activeTag.setFontVariationSettings("'wght' 700");
                 topRow.addView(activeTag);
             }
@@ -4292,7 +4209,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             rowSub.setText(opt.subtitle);
             rowSub.setTextSize(13);
             rowSub.setTextColor(0xD9FFFFFF);
-            rowSub.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+            rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowSub.setFontVariationSettings("'wght' 600");
             rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
             rowSub.setPadding(0, (int) (2 * density), 0, 0);
@@ -4442,10 +4359,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void styleGlassDialog(AlertDialog dialog) {
+    void styleGlassDialog(AlertDialog dialog) {
         if (dialog == null) return;
         try {
-            Typeface outfit = getResources().getFont(R.font.outfit);
+            Typeface outfit = getResources().getFont(R.font.inter);
             TextView titleView = dialog.findViewById(android.R.id.title);
             if (titleView != null) {
                 titleView.setTypeface(outfit, Typeface.BOLD);
@@ -4570,7 +4487,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void showGeminiAssistantDialog() {
+    void showGeminiAssistantDialog() {
         SoundEffects.playSelect();
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
 
@@ -4583,7 +4500,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         title.setText("✨ Gemini AI Assistant");
         title.setTextSize(22);
         title.setTextColor(0xFFFFFFFF);
-        title.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         title.setFontVariationSettings("'wght' 700");
         title.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
         title.setPadding(0, 0, 0, (int) (4 * density));
@@ -4593,7 +4510,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sub.setText("Bantuan Pintar Built-In Glass TV Home");
         sub.setTextSize(14f);
         sub.setTextColor(0xE6FFFFFF);
-        sub.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        sub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         sub.setFontVariationSettings("'wght' 600");
         sub.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         sub.setPadding(0, 0, 0, (int) (14 * density));
@@ -4622,7 +4539,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 + "• Memori & TV: Sistem Beroperasi Pantas & Bersih");
         statusText.setTextSize(14.5f);
         statusText.setTextColor(0xFFFFFFFF);
-        statusText.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        statusText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         statusText.setFontVariationSettings("'wght' 600");
         statusText.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         statusText.setLineSpacing(0, 1.3f);
@@ -4633,7 +4550,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         actionsTitle.setText("Tindakan Pintar:");
         actionsTitle.setTextSize(14.5f);
         actionsTitle.setTextColor(0xE6FFFFFF);
-        actionsTitle.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        actionsTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         actionsTitle.setFontVariationSettings("'wght' 700");
         actionsTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         actionsTitle.setPadding(0, (int) (14 * density), 0, (int) (8 * density));
@@ -4699,7 +4616,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btn.setText(title);
         btn.setTextSize(15.5f);
         btn.setTextColor(0xFFFFFFFF);
-        btn.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        btn.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         btn.setFontVariationSettings("'wght' 650");
         btn.setShadowLayer(3 * density, 0, 1 * density, 0xAA000000);
         btn.setPadding((int) (16 * density), (int) (12 * density), (int) (16 * density), (int) (12 * density));
@@ -4792,28 +4709,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void showWallpaperUploadQrDialog() {
+    void showWallpaperUploadQrDialog() {
         if (uploadServer != null) {
             uploadServer.stop();
             uploadServer = null;
         }
 
         String localIp = WallpaperUploadServer.getLocalIpAddress();
-        int port = 8080;
         WallpaperUploadServer.UploadListener listener = createUploadListener();
-        uploadServer = new WallpaperUploadServer(this, port, listener);
+        uploadServer = new WallpaperUploadServer(this, 8080, listener);
         boolean started = uploadServer.start();
-        if (!started) {
-            port = 8888;
-            uploadServer = new WallpaperUploadServer(this, port, listener);
-            started = uploadServer.start();
-        }
 
         if (!started) {
             Toast.makeText(this, "Ralat: Tidak dapat memulakan pelayan muat naik tempatan.", Toast.LENGTH_LONG).show();
             return;
         }
 
+        int port = uploadServer.getPort();
         String uploadUrl = "http://" + localIp + ":" + port;
         Bitmap qrBmp = QrBitmapUtil.createQrBitmap(uploadUrl, Math.round(260 * density));
 
@@ -4829,7 +4741,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TextView title = new TextView(this);
         title.setText("📲 Muat Naik Wallpaper Dari Telefon");
         title.setTextColor(0xFFFFFFFF);
-        title.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         title.setFontVariationSettings("'wght' 700");
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
         title.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
@@ -4840,7 +4752,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TextView sub = new TextView(this);
         sub.setText("Sambungkan telefon pada Wi-Fi yang sama, kemudian imbas kod QR di bawah:");
         sub.setTextColor(0xFFE2E8F0);
-        sub.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        sub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         sub.setFontVariationSettings("'wght' 600");
         sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14.5f);
         sub.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
@@ -4873,7 +4785,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         qrUrlText = new TextView(this);
         qrUrlText.setText("🌐 " + uploadUrl);
         qrUrlText.setTextColor(0xFF38BDF8);
-        qrUrlText.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        qrUrlText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         qrUrlText.setFontVariationSettings("'wght' 700");
         qrUrlText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         qrUrlText.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
@@ -4885,7 +4797,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         qrStatusText = new TextView(this);
         qrStatusText.setText("📡 Menunggu imbasan kamera atau fail dari telefon...");
         qrStatusText.setTextColor(0xFFF1F5F9);
-        qrStatusText.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        qrStatusText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         qrStatusText.setFontVariationSettings("'wght' 600");
         qrStatusText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         qrStatusText.setShadowLayer(3 * density, 0, 1 * density, 0xAA000000);
@@ -4898,7 +4810,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnClose.setText("Tutup / Cancel");
         btnClose.setTextColor(0xFFFFFFFF);
         btnClose.setBackgroundResource(R.drawable.pill_bg);
-        btnClose.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        btnClose.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         btnClose.setFontVariationSettings("'wght' 700");
         btnClose.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         btnClose.setFocusable(true);
@@ -4913,7 +4825,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TextView credit = new TextView(this);
         credit.setText("✨ Powered by @imsomangge");
         credit.setTextColor(0xFFCBD5E1);
-        credit.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        credit.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         credit.setFontVariationSettings("'wght' 600");
         credit.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         credit.setGravity(Gravity.CENTER);
@@ -5121,7 +5033,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
     }
 
-    private void showCustomWallpaperManagerDialog() {
+    void showCustomWallpaperManagerDialog() {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
         if (files == null || files.length == 0) {
@@ -5363,7 +5275,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ((ImageView) row.findViewById(R.id.icon)).setImageResource(R.drawable.ic_input);
         TextView title = row.findViewById(R.id.title);
         title.setText(name + (isNext ? " (Seterusnya)" : ""));
-        title.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         title.setFontVariationSettings(isNext ? "'wght' 700" : "'wght' 650");
         title.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
 
@@ -5371,7 +5283,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View dot = row.findViewById(R.id.dot);
         status.setText(time);
         status.setVisibility(View.VISIBLE);
-        status.setTypeface(getResources().getFont(R.font.outfit), Typeface.BOLD);
+        status.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         status.setFontVariationSettings(isNext ? "'wght' 700" : "'wght' 600");
         status.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
 
@@ -5399,7 +5311,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void showNightstandScreensaver() {
+    void showNightstandScreensaver() {
         if (screensaverActive || isFinishing() || isDestroyed()) return;
         if (wallpaperFullscreen) {
             setWallpaperFullscreen(false);

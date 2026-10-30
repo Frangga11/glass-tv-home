@@ -172,6 +172,24 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
     public void onAppClicked(RecentAppItem item) {
         if (item.launchIntent != null) {
             SoundEffects.playSelect();
+            if (ChildModeManager.isAppLocked(this, item.packageName)) {
+                ChildModeManager.promptPin(this, "Aplikasi Dikunci", "Masukkan PIN 4-digit untuk membuka " + item.label, new ChildModeManager.PinCallback() {
+                    @Override
+                    public void onSuccess() {
+                        try {
+                            item.launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(item.launchIntent);
+                            finish();
+                        } catch (ActivityNotFoundException e) {
+                            Toast.makeText(RecentAppsActivity.this, "Cannot open app", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled() {}
+                });
+                return;
+            }
             try {
                 item.launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(item.launchIntent);

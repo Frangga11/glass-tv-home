@@ -198,6 +198,123 @@ final class AppLanguage {
         }
     }
 
+    // --- Modern Settings UI Strings ---
+    public static String strSettingsSearch(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Search";
+            case LANG_ID: return "Cari";
+            case LANG_MS: default: return "Cari";
+        }
+    }
+
+    public static String strProfileTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Profile";
+            case LANG_ID: return "Profil";
+            case LANG_MS: default: return "Profil";
+        }
+    }
+
+    public static String strProfileSubtitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "User Profiles";
+            case LANG_ID: return "Profil Pengguna";
+            case LANG_MS: default: return "Profil Pengguna";
+        }
+    }
+
+    public static String strAvatars(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Avatars";
+            case LANG_ID: return "Avatar";
+            case LANG_MS: default: return "Avatar";
+        }
+    }
+
+    public static String strYourPhotos(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Your Photos";
+            case LANG_ID: return "Foto Anda";
+            case LANG_MS: default: return "Gambar Anda";
+        }
+    }
+
+    public static String strYourPhotosDesc(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Add photos to the TV's Pictures or Download folder.";
+            case LANG_ID: return "Tambahkan foto ke folder Gambar atau Unduhan TV.";
+            case LANG_MS: default: return "Tambah gambar ke folder Pictures atau Download di TV.";
+        }
+    }
+
+    public static String strEditName(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Edit Name";
+            case LANG_ID: return "Ubah Nama";
+            case LANG_MS: default: return "Tukar Nama";
+        }
+    }
+
+    public static String strHomeScreen(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Home Screen";
+            case LANG_ID: return "Layar Utama";
+            case LANG_MS: default: return "Skrin Utama";
+        }
+    }
+
+    public static String strAppearance(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Appearance";
+            case LANG_ID: return "Tampilan";
+            case LANG_MS: default: return "Penampilan";
+        }
+    }
+
+    public static String strStatusBarWeather(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Status Bar & Weather";
+            case LANG_ID: return "Bilah Status & Cuaca";
+            case LANG_MS: default: return "Bar Status & Cuaca";
+        }
+    }
+
+    public static String strStandByMode(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "StandBy Mode";
+            case LANG_ID: return "Mode StandBy";
+            case LANG_MS: default: return "Mod StandBy";
+        }
+    }
+
+    public static String strRemoteAccessibility(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Remote & Accessibility";
+            case LANG_ID: return "Remote & Aksesibilitas";
+            case LANG_MS: default: return "Alat Kawalan & Aksesibiliti";
+        }
+    }
+
+    public static String strChildMode(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Child Mode";
+            case LANG_ID: return "Mode Anak";
+            case LANG_MS: default: return "Mod Kanak-kanak";
+        }
+    }
+
+    public static String strGeneral(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "General";
+            case LANG_ID: return "Umum";
+            case LANG_MS: default: return "Umum";
+        }
+    }
+
+    public static String strTv(Context ctx) {
+        return "TV";
+    }
+
     public static String strBack(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Back";

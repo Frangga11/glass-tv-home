@@ -1,4 +1,11 @@
-# The Prompt / Arahan AI
+# The Prompt / Arahan AI (v4.0)
+
+> 💡 **PENTING / CRITICAL**:
+> Jangan pasang atau benarkan pengguna memuat turun APK secara sideload biasa tanpa persediaan! Pada Android TV / Google TV, pemasangan biasa menyebabkan sistem menganggap Glass TV sebagai aplikasi biasa—apabila pengguna menekan butang **HOME** pada remote, skrin tetap akan kembali ke pelancar asal pengeluar.
+> 
+> Gunakan arahan khusus di bawah supaya AI mengkaji TV secara mendalam (OS, 1080p vs 4K, DPI, IP Wi-Fi, & Pelancar Asal) dan mengunci butang Home secara rasmi.
+
+---
 
 ### ⚡ 1-Line Quick Prompt (Paling Ringkas)
 Users can simply paste this single prompt into any AI coding agent (Google Antigravity, Claude Code, Cursor):
@@ -8,12 +15,23 @@ install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home
 ```
 *(English alias: `install this on my home tv: https://github.com/aqmangge/glass-tv-home`)*
 
-When an AI assistant receives this prompt:
-1. Ask the user for their TV IP address (or scan the local Wi-Fi subnet with `adb connect <ip>:5555`).
-2. Ask the user for their location in Malaysia (e.g. Putrajaya, Cheras, Shah Alam, Melaka, JB, Penang, Kuantan, Kuching, KK).
-3. Connect over Wi-Fi, create a system backup, debloat telemetry & ads, configure AdGuard DNS, and install the official APK from `release/glass-tv-home.apk` (or build with `./gradlew assembleRelease`).
-4. Set the user's location via `adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<LOCATION>"`.
-5. Take a screenshot from the TV and verify everything is working.
+When an AI assistant receives this prompt, it **MUST** perform the following 4-Phase Protocol:
+1. **Fasa 1: Kaji TV Terperinci (Pre-Install Environment Audit)**:
+   - Siasat OS Android & API: `adb shell getprop ro.build.version.release` & `ro.build.version.sdk`.
+   - Siasat Resolusi & DPI: `adb shell dumpsys display | grep -E "mBaseDisplayInfo|mode"` & `adb shell wm size` & `adb shell wm density` (Kaji sama ada panel adalah 1080p atau fizikal 4K UHD).
+   - Siasat Rangkaian LAN/Wi-Fi: `adb shell ip -f inet addr show wlan0` (Sahkan IP dalam subnet sama untuk muat naik wallpaper telefon QR tanpa masalah).
+   - Kenal pasti Pelancar Asal: `adb shell cmd package resolve-activity -c android.intent.category.HOME -a android.intent.action.MAIN`.
+2. **Fasa 2: Penyesuaian Kendiri APK (Self-Adapting Capabilities)**:
+   - APK v4.0 menyesuaikan diri secara automatik: dp-scaling bebas herotan pada 720p/1080p/4K, downsampling memori selamat (inSampleSize & RGB_565) untuk foto 48MP/8K, failover port HTTP automatik (8080 -> 8888 -> dynamic port 0), serta fon moden Inter di seluruh UI.
+3. **Fasa 3: Pemasangan & Kunci Butang Home**:
+   - Sandarkan pakej: `adb shell pm list packages -f > backup_packages.txt`.
+   - Pasang APK: `adb install -r release/glass-tv-home.apk`.
+   - Kunci butang Home remote: `adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity`.
+   - Jika pelancar asal masih memintas butang Home: `adb shell pm disable-user --user 0 <stock_launcher_pkg>`.
+   - Tetapkan lokasi Malaysia (JAS IPU & JAKIM solat): `adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<LOCATION>"`.
+4. **Fasa 4: Pengesahan Skrin TV (Visual Verification)**:
+   - Ambil screenshot (`adb shell screencap -p /sdcard/tv.png && adb pull /sdcard/tv.png`).
+   - Sahkan fon Inter aktif, ikon avatar pengguna bulat terpapar di bar atas, dan butang Home remote berfungsi 100%.
 
 ---
 
@@ -31,16 +49,18 @@ USB speaker or drive plugged into it goes dead until you switch debugging off ag
 
 ---
 
-I want to debloat my Android TV and replace its launcher with a clean Apple TV style home screen.
+I want to debloat my Android TV and replace its launcher with a clean Apple TV style home screen (Glass TV v4.0).
 My TV model is: <MODEL NAME HERE>. Work on the real device, step by step, and verify everything you
 do with screenshots pulled from the TV. Ask me before anything that depends on my preferences.
 
-Check the model first
+Check the model first & Audit Environment
 - Before connecting or downloading anything, check my model: does it run Android TV or Google TV, Android 8
   or newer? If it runs Samsung Tizen, LG webOS, Hisense VIDAA, Roku, Vizio, Fire OS or anything else that
   isn't Android TV, tell me first, plainly, that the launcher can't be installed on it (Fire TV: debloat
   only), suggest a Google TV stick in its HDMI port instead, and stop until I decide.
 - Look up where developer settings are on my exact model before telling me what to press.
+- Audit display resolution (1080p vs 4K display modes with `dumpsys display` and `wm size`) and verify local LAN IP.
+- Identify the active stock launcher package (`cmd package resolve-activity -c android.intent.category.HOME -a android.intent.action.MAIN`).
 
 Connect
 - Find the TV on my network (hostname, ARP table, or ask me for the IP) and connect over ADB on port 5555.

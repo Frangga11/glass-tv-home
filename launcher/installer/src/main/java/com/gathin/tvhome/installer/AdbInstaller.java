@@ -166,8 +166,29 @@ public final class AdbInstaller {
 
                 String res = pmOutput.toString().trim();
                 if (res.contains("Success")) {
+                    postProgress(callback, 95, "Menetapkan butang Home remote kepada Glass TV...");
+                    // Set default home launcher activity so remote Home button opens Glass TV directly
+                    try {
+                        int localIdHome = localId + 1;
+                        String cmdHome = "exec:cmd package set-home-activity com.gathin.tvhome/.MainActivity\0";
+                        sendMessage(out, A_OPEN, localIdHome, 0, cmdHome.getBytes("UTF-8"));
+                        Message ackHome = readMessage(in);
+                        if (ackHome.cmd == A_OKAY) {
+                            int rIdHome = ackHome.arg0;
+                            while (true) {
+                                Message mh = readMessage(in);
+                                if (mh.cmd == A_WRTE) {
+                                    sendMessage(out, A_OKAY, localIdHome, rIdHome, null);
+                                } else if (mh.cmd == A_CLSE) {
+                                    sendMessage(out, A_CLSE, localIdHome, rIdHome, null);
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Exception ignored) {}
+
                     postProgress(callback, 100, "Pemasangan Berjaya!");
-                    postSuccess(callback, "✅ Glass TV Home berjaya dipasang ke TV (" + ip + ")!");
+                    postSuccess(callback, "✅ Glass TV Home berjaya dipasang & butang Home remote ditetapkan ke Glass TV (" + ip + ")!");
                 } else {
                     throw new IOException("TV PM Ralat: " + (res.isEmpty() ? "Tidak diketahui" : res));
                 }
@@ -242,6 +263,78 @@ public final class AdbInstaller {
                 postSuccess(callback, "🚀 Glass TV Home berjaya dibuka pada skrin TV!");
             } catch (Exception e) {
                 postError(callback, "Gagal melancarkan launcher: " + e.getMessage());
+            } finally {
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public static void setDefaultHomeLauncher(Context context, String ip, int port, InstallCallback callback) {
+        new Thread(() -> {
+            Socket socket = null;
+            try {
+                postProgress(callback, 15, "Menyambung ke TV (" + ip + ":" + port + ")...");
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(ip, port), 5000);
+                socket.setSoTimeout(12000);
+
+                InputStream in = socket.getInputStream();
+                OutputStream out = socket.getOutputStream();
+
+                sendMessage(out, A_CNXN, 0x01000000, 256 * 1024, "host::glass-tv-installer\0".getBytes("UTF-8"));
+                Message resp = readMessage(in);
+
+                if (resp.cmd == A_AUTH && resp.arg0 == 1) {
+                    PrivateKey privKey = AdbCrypto.getPrivateKey(context);
+                    if (privKey != null) {
+                        byte[] asn1Token = new byte[35];
+                        byte[] prefix = new byte[]{0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e, 0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14};
+                        System.arraycopy(prefix, 0, asn1Token, 0, prefix.length);
+                        System.arraycopy(resp.data, 0, asn1Token, prefix.length, 20);
+
+                        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                        cipher.init(Cipher.ENCRYPT_MODE, privKey);
+                        byte[] signature = cipher.doFinal(asn1Token);
+
+                        sendMessage(out, A_AUTH, 2, 0, signature);
+                        resp = readMessage(in);
+                    }
+                }
+
+                if (resp.cmd != A_CNXN) {
+                    throw new IOException("Kebenaran ADB ditolak oleh TV.");
+                }
+
+                postProgress(callback, 60, "Menetapkan butang Home remote ke Glass TV Home...");
+
+                // Execute: cmd package set-home-activity com.gathin.tvhome/.MainActivity
+                int localId = 3;
+                String cmd = "exec:cmd package set-home-activity com.gathin.tvhome/.MainActivity\0";
+                sendMessage(out, A_OPEN, localId, 0, cmd.getBytes("UTF-8"));
+
+                Message ack = readMessage(in);
+                if (ack.cmd == A_OKAY) {
+                    int remoteId = ack.arg0;
+                    while (true) {
+                        Message m = readMessage(in);
+                        if (m.cmd == A_WRTE) {
+                            sendMessage(out, A_OKAY, localId, remoteId, null);
+                        } else if (m.cmd == A_CLSE) {
+                            sendMessage(out, A_CLSE, localId, remoteId, null);
+                            break;
+                        }
+                    }
+                }
+
+                postProgress(callback, 100, "Selesai!");
+                postSuccess(callback, "🏠 Berjaya! Butang Home pada remote TV kini ditetapkan kepada Glass TV Home.");
+            } catch (Exception e) {
+                postError(callback, "Gagal menetapkan default launcher: " + e.getMessage());
             } finally {
                 if (socket != null) {
                     try {

@@ -202,6 +202,7 @@ public class RecentAppsManager {
 
         // 6. Resolve labels, icons, and intents
         for (String pkg : candidatePackages) {
+            if (ChildModeManager.isAppHidden(context, pkg)) continue;
             try {
                 Intent launchIntent = pm.getLeanbackLaunchIntentForPackage(pkg);
                 if (launchIntent == null) {

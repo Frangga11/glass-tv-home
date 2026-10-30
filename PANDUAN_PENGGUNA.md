@@ -18,10 +18,17 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 ## 📦 Muat Turun Fail APK Rasmi (Official Direct Downloads)
 
 Sila muat turun fail pemasangan rasmi mengikut peranti anda:
-* 📱 **Untuk Telefon / Tablet Android (Aplikasi Pembantu Pemasangan)**:  
-  [**`glass-tv-installer.apk`** (5.2 MB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) — **Pilihan Utama!** Pasang terus ke TV melalui Wi-Fi tanpa perlukan komputer (PC) atau kabel.
-* 📺 **Untuk Android TV / Google TV (Launcher Utama)**:  
-  [**`glass-tv-home.apk`** (730 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) — Versi terkini `v3.1.4` (Keluaran stabil, cuaca bento APIMS, waktu solat automatik, RAM cleaner 2-klik, DuitNow Belanja Kopi).
+* 📱 **Untuk Telefon / Tablet Android (Aplikasi Pembantu Pemasangan — Disyorkan)**:  
+  [**`glass-tv-installer.apk`** (5.2 MB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) — **Pilihan Utama!** Pasang terus ke TV dan kunci butang Home melalui Wi-Fi tanpa perlukan komputer (PC) atau kabel.
+* 📺 **Untuk Android TV / Google TV (Launcher Utama v4.0)**:  
+  [**`glass-tv-home.apk`** (800 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) — Versi terkini `v4.0.0` (Tipografi universal Inter, ikon avatar profil aktif di bar atas, enjin adaptasi kendiri 1080p/4K, pelayan muat naik wallpaper fail-safe).
+
+> [!CAUTION]
+> ### ⚠️ JANGAN PASANG APK SECARA SIDELOAD BIASA TANPA INSTALLER / AI!
+> Ramai pengguna baru memuat turun fail APK terus menggunakan pendrive atau *Downloader* di TV. Ini menyebabkan masalah:
+> 1. **Butang Home Tidak Berfungsi**: Android TV / Google TV melayan Glass TV sebagai aplikasi sampingan biasa. Bila anda tekan butang **HOME** pada remote TV, skrin tetap akan kembali ke pelancar lama pengeluar.
+> 2. **Menu Tetapan Disorok**: Google TV sengaja menyembunyikan pilihan untuk menukar default launcher daripada pengguna.
+> 3. **Penyelesaian Paling Praktikal**: Gunakan **Aplikasi Telefon Pintar (`glass-tv-installer.apk`)** atau **Prompt AI 1-Baris** melalui komputer. Kedua-dua cara ini mengunci butang Home secara rasmi melalui arahan sistem (`cmd package set-home-activity`).
 
 > [!NOTE]
 > ### 🇲🇾 Pengguna Unifi TV Box (TM Unifi Plus Box): Adakah Boleh Guna & Adakah Batal Waranti?

@@ -19,10 +19,17 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 ## 📦 Official APK Downloads
 
 Download the official release APKs based on your setup:
-* 📱 **For Android Phones & Tablets (Companion Installer App)**:  
-  [**`glass-tv-installer.apk`** (5.2 MB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) — **Primary Recommendation!** Install directly to your TV over Wi-Fi without needing a PC or cables.
-* 📺 **For Android TV & Google TV (Main Launcher)**:  
-  [**`glass-tv-home.apk`** (730 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) — Current stable release `v3.1.4` (Leanback weather bento grid, auto prayer schedule, 2-click RAM optimizer, DuitNow support).
+* 📱 **For Android Phones & Tablets (Companion Installer App — Recommended)**:  
+  [**`glass-tv-installer.apk`** (5.2 MB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) — **Primary Recommendation!** Install directly to your TV and permanently lock the remote HOME button over Wi-Fi without needing a PC or cables.
+* 📺 **For Android TV & Google TV (Main Launcher v4.0)**:  
+  [**`glass-tv-home.apk`** (800 KB)](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) — Latest release `v4.0.0` (Universal Inter typography, dynamic top-bar user animal avatar, self-adapting 1080p/4K engine, fail-safe wallpaper HTTP uploader).
+
+> [!CAUTION]
+> ### ⚠️ DO NOT RAW-SIDELOAD THE APK WITHOUT PROPER LAUNCHER SETUP!
+> Many users mistakenly download the APK directly via USB drive or the TV's *Downloader* app:
+> 1. **HOME Button Lockout**: Android TV and Google TV will classify Glass TV as an ordinary secondary app. Pressing the remote's **HOME** button will still fling you back into the sluggish, ad-bloated stock launcher!
+> 2. **Hidden Launcher Settings**: Google TV deliberately hides the "Default Home app" option in system preferences.
+> 3. **The Practical Solution**: Always use either the **Android Companion App (`glass-tv-installer.apk`)** or an **AI Assistant 1-Line Prompt** over Wi-Fi. Both methods officially bind the hardware HOME button via system commands (`cmd package set-home-activity`).
 
 > [!NOTE]
 > ### 🇲🇾 Unifi TV Box (TM Unifi Plus Box) Users: Compatibility & Warranty Safety

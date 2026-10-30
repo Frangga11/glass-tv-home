@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvStatus;
     private Button btnLaunch;
     private Button btnWebServer;
+    private Button btnSetHome;
     private TextView tvWebUrl;
 
     @Override
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         tvStatus = findViewById(R.id.tvStatus);
         btnLaunch = findViewById(R.id.btnLaunch);
         btnWebServer = findViewById(R.id.btnWebServer);
+        btnSetHome = findViewById(R.id.btnSetHome);
         tvWebUrl = findViewById(R.id.tvWebUrl);
 
         // Load local IP
@@ -72,6 +74,48 @@ public class MainActivity extends AppCompatActivity {
 
         // 4. Web Server Button
         btnWebServer.setOnClickListener(v -> toggleWebServer());
+
+        // 5. Set Default Home Button
+        btnSetHome.setOnClickListener(v -> setHomeOnTv());
+    }
+
+    private void setHomeOnTv() {
+        String ip = etTvIp.getText().toString().trim();
+        String portStr = etTvPort.getText().toString().trim();
+        int port = 5555;
+        try {
+            port = Integer.parseInt(portStr);
+        } catch (Exception ignored) {
+        }
+
+        if (ip.isEmpty()) {
+            Toast.makeText(this, "Sila masukkan IP Android TV anda", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        btnSetHome.setEnabled(false);
+        tvStatus.setText("Status: Menetapkan butang Home remote kepada Glass TV...");
+
+        AdbInstaller.setDefaultHomeLauncher(this, ip, port, new AdbInstaller.InstallCallback() {
+            @Override
+            public void onProgress(int percent, String message) {
+                tvStatus.setText("Status: " + message);
+            }
+
+            @Override
+            public void onSuccess(String message) {
+                btnSetHome.setEnabled(true);
+                tvStatus.setText(message);
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError(String error) {
+                btnSetHome.setEnabled(true);
+                tvStatus.setText(error);
+                Toast.makeText(MainActivity.this, error, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void scanNetwork() {

@@ -47,7 +47,7 @@ public class AzanActivity extends Activity {
         setTurnScreenOn(true);
         density = getResources().getDisplayMetrics().density;
         int prayer = getIntent().getIntExtra("prayer", 4);
-        Typeface outfit = getResources().getFont(R.font.outfit);
+        Typeface outfit = getResources().getFont(R.font.inter);
         Typeface amiri = getResources().getFont(R.font.amiri_quran);
 
         // A floating card at the top of the screen; the app or Home behind it stays in view.

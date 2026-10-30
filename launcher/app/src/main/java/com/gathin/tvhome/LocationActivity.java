@@ -35,7 +35,7 @@ public class LocationActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         density = getResources().getDisplayMetrics().density;
-        outfit = getResources().getFont(R.font.outfit);
+        outfit = getResources().getFont(R.font.inter);
         Location.Zone now = Location.chosen(this);
         if (now == null) now = Location.byCode(getIntent().getStringExtra("zone"));
         current = now == null ? null : now.code;

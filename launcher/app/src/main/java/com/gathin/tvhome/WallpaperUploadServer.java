@@ -41,7 +41,7 @@ public class WallpaperUploadServer {
     public interface OnWallpaperUploadedListener extends UploadListener {}
 
     private final Context context;
-    private final int port;
+    private int port;
     private final UploadListener listener;
     private ServerSocket serverSocket;
     private volatile boolean running = false;
@@ -81,17 +81,41 @@ public class WallpaperUploadServer {
         return "127.0.0.1";
     }
 
+    public int getPort() {
+        if (serverSocket != null && serverSocket.isBound()) {
+            return serverSocket.getLocalPort();
+        }
+        return port;
+    }
+
     public synchronized boolean start() {
         if (running) return true;
-        try {
-            serverSocket = new ServerSocket();
-            serverSocket.setReuseAddress(true);
-            serverSocket.bind(new InetSocketAddress(port));
-            running = true;
+        int[] candidatePorts = new int[]{port, 8080, 8888, 8081, 9090, 0};
+        for (int p : candidatePorts) {
+            try {
+                serverSocket = new ServerSocket();
+                serverSocket.setReuseAddress(true);
+                serverSocket.bind(new InetSocketAddress(p));
+                this.port = serverSocket.getLocalPort();
+                running = true;
+                break;
+            } catch (Exception e) {
+                try {
+                    if (serverSocket != null) serverSocket.close();
+                } catch (Exception ignored) {}
+                serverSocket = null;
+            }
+        }
 
+        if (!running || serverSocket == null) {
+            Log.e(TAG, "Failed to bind wallpaper server on any port");
+            return false;
+        }
+
+        try {
             serverThread = new Thread(() -> {
-                Log.i(TAG, "Server started on port " + port);
-                while (running && !serverSocket.isClosed()) {
+                Log.i(TAG, "Server started successfully on port " + this.port);
+                while (running && serverSocket != null && !serverSocket.isClosed()) {
                     try {
                         Socket client = serverSocket.accept();
                         new Thread(() -> handleClient(client), "upload-client").start();
@@ -105,7 +129,7 @@ public class WallpaperUploadServer {
             serverThread.start();
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to start server on port " + port + ": " + e.getMessage());
+            Log.e(TAG, "Failed to launch server thread: " + e.getMessage());
             running = false;
             return false;
         }

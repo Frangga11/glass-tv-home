@@ -154,6 +154,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      */
     /** What the tiles were last built from; the same list next time means there is nothing to redo. */
     private String builtFrom;
+
+    void invalidateCache() {
+        builtFrom = null;
+    }
     /**
      * The app tiles of the last build, by component and install path: a rebuild (one app updated,
      * installed or removed) loads only what changed, and the rest keep their artwork and sampled glow.
@@ -208,7 +212,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         for (ResolveInfo ri : found) {
             if (ri.activityInfo == null) continue;
             String pkg = ri.activityInfo.packageName;
-            if (pkg.equals(ctx.getPackageName()) || hidden.contains(pkg)) continue;
+            if (pkg.equals(ctx.getPackageName()) || hidden.contains(pkg) || ChildModeManager.isAppHidden(ctx, pkg)) continue;
             ComponentName component = new ComponentName(pkg, ri.activityInfo.name);
             Cards.Card card = cardByPkg.get(pkg);
             if (card != null && !card.component.equals(component)) continue;   // the card stands in for this tile
@@ -396,6 +400,22 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             return;
         }
+        if (ChildModeManager.isAppLocked(ctx, e.pkg)) {
+            ChildModeManager.promptPin(ctx, "Aplikasi Dikunci", "Masukkan PIN 4-digit untuk membuka " + e.label, new ChildModeManager.PinCallback() {
+                @Override
+                public void onSuccess() {
+                    performLaunch(e);
+                }
+
+                @Override
+                public void onCancelled() {}
+            });
+            return;
+        }
+        performLaunch(e);
+    }
+
+    private void performLaunch(Entry e) {
         Intent i = new Intent(Intent.ACTION_MAIN)
                 .addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
                 .setComponent(e.component)

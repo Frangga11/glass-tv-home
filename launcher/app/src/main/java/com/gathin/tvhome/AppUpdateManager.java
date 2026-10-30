@@ -43,10 +43,59 @@ public final class AppUpdateManager {
     public static final String KEY_AUTO_UPDATE_TIME = "pref_auto_update_time";
     public static final String DEFAULT_AUTO_UPDATE_TIME = "03:30 AM";
 
+    public static final String KEY_UPDATE_AVAILABLE = "update_available";
+    public static final String KEY_NEW_VERSION_NAME = "new_version_name";
+    public static final String KEY_NEW_VERSION_CODE = "new_version_code";
+    public static final String KEY_NEW_CHANGELOG = "new_changelog";
+    public static final String KEY_NEW_APK_URL = "new_apk_url";
+    public static final String KEY_SKIPPED_VERSION_CODE = "skipped_version_code";
+
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private AppUpdateManager() {
+    }
+
+    public static boolean isUpdateAvailable(Context context) {
+        if (context == null) return false;
+        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return sp.getBoolean(KEY_UPDATE_AVAILABLE, false);
+    }
+
+    public static String getNewVersionName(Context context) {
+        if (context == null) return "";
+        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return sp.getString(KEY_NEW_VERSION_NAME, "");
+    }
+
+    public static String getNewChangelog(Context context) {
+        if (context == null) return "";
+        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return sp.getString(KEY_NEW_CHANGELOG, "");
+    }
+
+    public static String getNewApkUrl(Context context) {
+        if (context == null) return "";
+        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return sp.getString(KEY_NEW_APK_URL, "");
+    }
+
+    public static void skipUpdate(Context context, int versionCode) {
+        if (context == null) return;
+        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        sp.edit().putInt(KEY_SKIPPED_VERSION_CODE, versionCode).apply();
+    }
+
+    public static void clearUpdateBadge(Context context) {
+        if (context == null) return;
+        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        sp.edit()
+                .putBoolean(KEY_UPDATE_AVAILABLE, false)
+                .remove(KEY_NEW_VERSION_NAME)
+                .remove(KEY_NEW_VERSION_CODE)
+                .remove(KEY_NEW_CHANGELOG)
+                .remove(KEY_NEW_APK_URL)
+                .apply();
     }
 
     public static boolean isAutoUpdateEnabled(Context context) {
@@ -142,8 +191,27 @@ public final class AppUpdateManager {
                     if (activity.isFinishing()) return;
 
                     if (remoteVersionCode > currentVersionCode) {
-                        showUpdateDialog(activity, remoteVersionName, currentVersionName, changelog, apkUrl);
+                        sp.edit()
+                                .putBoolean(KEY_UPDATE_AVAILABLE, true)
+                                .putString(KEY_NEW_VERSION_NAME, remoteVersionName)
+                                .putInt(KEY_NEW_VERSION_CODE, remoteVersionCode)
+                                .putString(KEY_NEW_CHANGELOG, changelog)
+                                .putString(KEY_NEW_APK_URL, apkUrl)
+                                .apply();
+
+                        if (activity instanceof MainActivity) {
+                            ((MainActivity) activity).updateSettingsBadge();
+                        }
+
+                        int skippedCode = sp.getInt(KEY_SKIPPED_VERSION_CODE, 0);
+                        if (manualCheck || skippedCode < remoteVersionCode) {
+                            showUpdateDialog(activity, remoteVersionName, currentVersionName, changelog, apkUrl, remoteVersionCode);
+                        }
                     } else {
+                        clearUpdateBadge(activity);
+                        if (activity instanceof MainActivity) {
+                            ((MainActivity) activity).updateSettingsBadge();
+                        }
                         if (manualCheck) {
                             Toast.makeText(activity, "✅ Glass TV Home sudah di versi terkini (v" + currentVersionName + ")!", Toast.LENGTH_LONG).show();
                         }
@@ -159,22 +227,32 @@ public final class AppUpdateManager {
         });
     }
 
-    private static void showUpdateDialog(Activity activity, String newVersionName, String currentVersionName, String changelog, String apkUrl) {
+    private static void showUpdateDialog(Activity activity, String newVersionName, String currentVersionName, String changelog, String apkUrl, int remoteVersionCode) {
+        if (activity == null || activity.isFinishing()) return;
+        SoundEffects.playSelect();
+
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle("🚀 Kemas Kini Baharu Ditemui (v" + newVersionName + ")");
-        
+
         String message = "Versi Semasa: v" + currentVersionName + "\n"
                 + "Versi Terkini: v" + newVersionName + "\n\n"
                 + "📋 Nota Pembaharuan:\n" + changelog + "\n\n"
-                + "Adakah anda ingin memuat turun dan memasang sekarang?";
+                + "Adakah anda ingin mengemas kini sekarang?";
         builder.setMessage(message);
 
-        builder.setPositiveButton("Muat Turun & Pasang", (dialog, which) -> {
+        builder.setPositiveButton("⚡ Kemas Kini Sekarang", (dialog, which) -> {
+            SoundEffects.playSelect();
             dialog.dismiss();
             downloadAndInstallApk(activity, apkUrl, newVersionName);
         });
 
-        builder.setNegativeButton("Nanti Sahaja", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton("⏭️ Langkau / Nanti Sahaja", (dialog, which) -> {
+            SoundEffects.playSelect();
+            skipUpdate(activity, remoteVersionCode);
+            dialog.dismiss();
+            Toast.makeText(activity, "Kemas kini ditangguhkan. Ikon titik merah 🔴 kekal di butang Tetapan.", Toast.LENGTH_SHORT).show();
+        });
+
         AlertDialog dialog = builder.create();
         dialog.show();
     }

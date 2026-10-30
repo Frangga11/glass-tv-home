@@ -9,19 +9,31 @@ and come home to just your apps, with a new place to visit behind them every wee
 
 <p align="center">
   <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk">
-    <img src="https://img.shields.io/badge/Download_TV_Launcher-glass--tv--home.apk_(730_KB)-success?style=for-the-badge&logo=android" alt="Download Glass TV Home">
+    <img src="https://img.shields.io/badge/Download_TV_Launcher-glass--tv--home.apk_(v4.0.0)-success?style=for-the-badge&logo=android" alt="Download Glass TV Home">
   </a>
   &nbsp;
   <a href="https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk">
-    <img src="https://img.shields.io/badge/Download_Phone_Installer-glass--tv--installer.apk_(5.2_MB)-007ACC?style=for-the-badge&logo=android" alt="Download Glass TV Installer">
+    <img src="https://img.shields.io/badge/Download_Phone_Installer-glass--tv--installer.apk_(v1.0.0)-007ACC?style=for-the-badge&logo=android" alt="Download Glass TV Installer">
   </a>
 </p>
 
+> 🚨 **AMARAN PENTING: JANGAN SIDELOAD APK SECARA MENTAH!**
+> Ramai pengguna memuat turun fail APK secara terus melalui pendrive USB atau aplikasi *Downloader* di TV. **Ini adalah satu kesilapan besar pada Android TV & Google TV!**
+> - Firmware Android TV akan melayan Glass TV sebagai aplikasi biasa dan bukannya sistem pelancar utama.
+> - Apabila anda menekan butang **HOME** pada remote TV, sistem tetap akan kembali ke skrin utama asal pengeluar yang sarat dengan iklan dan bloatware.
+> - Pelayan muat naik gambar mungkin terhalang jika port disekat, dan resolusi paparan tidak diselaraskan.
+> 
+> 👉 **GUNAKAN 2 KAEDAH PALING PRAKTIKAL & MUDAH DI BAWAH:**
+> 1. 🤖 **Kaedah 1 (Paling Disyorkan — 1-Baris Prompt AI)**: Salin prompt di [AI_INSTALL_PROMPT.md](AI_INSTALL_PROMPT.md) ke pembantu AI (Google Antigravity, Claude Code, Cursor). AI akan mengaudit versi TV, resolusi 1080p vs 4K, DPI, dan mengunci butang Home secara automatik!
+> 2. 📱 **Kaedah 2 (Tanpa PC — Aplikasi Telefon Android)**: Pasang [**`release/glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) di telefon pintar anda. Sambung ke Wi-Fi sama, dan tekan *Pasang Terus ke TV* untuk kunci butang Home dalam 1-klik tanpa komputer!
+
 > 📦 **Official APK Downloads**:
-> - 📺 **Android TV / Google TV Launcher**: [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v3.1.4** • ~730 KB)
-> - 📱 **Phone / Tablet Companion Installer**: [**`release/glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) (**v1.0.0** • ~5.2 MB) — Install directly to your TV over Wi-Fi without any PC!
+> - 📺 **Android TV / Google TV Launcher**: [**`release/glass-tv-home.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-home.apk) (**v4.0.0** • ~800 KB)
+> - 📱 **Phone / Tablet Companion Installer**: [**`release/glass-tv-installer.apk`**](https://github.com/aqmangge/glass-tv-home/raw/main/release/glass-tv-installer.apk) (**v1.0.0** • ~5.2 MB) — Kunci butang Home TV terus dari telefon tanpa sebarang PC!
 >
-> 🎨 **Interactive Design Presentation Poster**: Open [`docs/poster.html`](docs/poster.html) in any browser for the complete UI/UX specifications, design tokens, and printable poster deck.
+> 🤖 **AI Prompt & Audit Guide**:
+> - ⚡ **[AI_INSTALL_PROMPT.md](AI_INSTALL_PROMPT.md)**: Arahan lengkap AI untuk audit TV (1080p vs 4K, DPI, IP LAN, stock launcher), debloat, dan kunci butang Home.
+> - 📋 **[PROMPT.md](PROMPT.md)**: Format prompt pantas 1-baris untuk semua coding assistants.
 >
 > 📖 **User Guides / Panduan Pengguna**:
 > - 🇬🇧 **English User Guide**: Complete beginner walkthrough, 1-line AI setup, remote navigation, phone setup & FAQ in [USER_GUIDE.md](USER_GUIDE.md).
@@ -38,6 +50,15 @@ every week.
   <img src="docs/screenshots/screensaver-live.png" width="19%" alt="StandBy Screensaver">
   <img src="docs/screenshots/wallpaper-dialog-live.png" width="19%" alt="4K Wallpapers & Phone QR Upload">
 </p>
+
+## What's New in Version 4.0
+
+- **Inter Font Typography Universally Applied**: The entire system UI, Leanback clock, settings, Islamic prayer timetable, weather bento cards, and app drawers are now rendered using the world-class **Inter** geometric sans-serif typeface (`@font/inter`) for ultra-crisp legibility from couch viewing distance.
+- **Top Bar Active User Avatar Switcher**: The top bar user button dynamically displays the currently active user's **animal avatar icon** (Fox, Panda, Tiger, Lion, Frog, Koala, Octopus) inside a circular accent status ring (Cyan for adult, Amber for child mode). Users immediately see which family ID is currently active.
+- **Multi-User Profile & Child Mode Engine**: Create up to 10 independent family profiles with custom names and animal avatars. Features dedicated **Child Mode** with PIN protection, individual app locking, and hidden app management.
+- **Self-Adapting 1080p & 4K UHD Hardware Engine**: Automatically audits display modes (`Display.getMode()`), supporting 4K UHD 60Hz panels with smooth 1080p 60fps UI framebuffers. Safely downsamples 48MP/8K phone camera wallpapers using `inSampleSize` and `RGB_565` to prevent Out-Of-Memory crashes on 1GB/2GB TVs.
+- **Fail-Safe Local HTTP Wallpaper Server**: Automatically binds across ports `8080 -> 8888 -> 8081 -> dynamic port 0` so that local Wi-Fi QR wallpaper upload from mobile never fails due to port blocking.
+- **Default Launcher Card in Settings (TV & Sistem)**: Built-in system card detecting default launcher status and providing direct TV settings navigation and ADB locking commands.
 
 ## What you get
 
