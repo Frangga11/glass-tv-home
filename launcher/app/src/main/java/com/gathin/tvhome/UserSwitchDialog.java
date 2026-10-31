@@ -309,7 +309,7 @@ public final class UserSwitchDialog {
             switchProfile(activity, target, targetChildMode, dialog);
             if (afterSwitch != null) afterSwitch.run();
         };
-        if (ChildModeManager.requiresParentPinToSwitch(currentChildMode, targetChildMode)) {
+        if (ChildModeManager.requiresParentPinToSwitch(currentChildMode)) {
             ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
                     "Masukkan PIN orang tua untuk keluar dari Mode Anak dan beralih ke profil " + target.name,
                     new ChildModeManager.PinCallback() {
