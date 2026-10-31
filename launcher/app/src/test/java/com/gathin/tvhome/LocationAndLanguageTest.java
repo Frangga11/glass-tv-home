@@ -8,12 +8,9 @@ import java.util.List;
 public class LocationAndLanguageTest {
 
     @Test
-    public void testSingaporeLocation() {
-        Location.Zone sg = Location.byCode("SGP01");
-        assertNotNull("Singapore zone should exist", sg);
-        assertEquals("Singapura", sg.town);
-        assertEquals(1.3521, sg.lat, 0.001);
-        assertEquals(103.8198, sg.lon, 0.001);
+    public void testNonIndonesianLocationsAreRemoved() {
+        assertNull("Legacy Malaysia locations must not be available", Location.byCode("WLY01"));
+        assertNull("Singapore locations must not be available", Location.byCode("SGP01"));
     }
 
     @Test
