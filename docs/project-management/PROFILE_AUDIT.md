@@ -89,4 +89,4 @@ These are source findings only; they are not physical-device acceptance.
 - Stock launcher has not been changed.
 - PR #7 remains Draft and unmerged.
 
-**Disposition: NOT FINAL.** P-002 and P-003 have source-level fixes in PR #8; P-004 remains unchanged by explicit user choice; P-005 remains unlimited by explicit user choice. Avatar PR #6 is still not integrated. CI #196 and physical TV/phone acceptance remain required before closure.
+**Disposition: NOT FINAL.** P-002 and P-003 have source-level fixes in PR #8; P-004 remains unchanged by explicit user choice; P-005 remains unlimited by explicit user choice. Avatar PR #6 is still not integrated. CI #196 passed on the previous PR #8 head; CI #197 is running on the latest head. Physical TV/phone acceptance and avatar PR #6 integration remain required before closure.
