@@ -77,3 +77,6 @@
 
 
 | 2026-11-01 | B03 focus and viewport sizing extension | [Draft PR #12](https://github.com/Frangga11/glass-tv-home/pull/12), current head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`, [CI #239](https://github.com/Frangga11/glass-tv-home/actions/runs/41233548406) | Added explicit D-pad focus selectors for standard AlertDialog action buttons and list rows; bounded the QR upload dialog to 90% of TV viewport with D-pad vertical scrolling; clamped Now Playing and card-prompt widths. Exact-head CI #239: Lists/tools/docs PASS; Launcher build/unit-test job running. | Finish CI and complete B03 source audit; no APK install, device changes, or PR merge |
+
+
+| 2026-11-01 | B03 exact-head source/CI gate | [Draft PR #12](https://github.com/Frangga11/glass-tv-home/pull/12), head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`, [CI #239](https://github.com/Frangga11/glass-tv-home/actions/runs/41233548406) | CI #239 PASS, both jobs. Launcher unit tests/release build succeeded; release APK size 1,398 KB (<1.5 MiB). Lists/tools/docs checks passed. Manual final TV-test artifact step was skipped; no artifact published. Source scope includes opaque dialog/popup panels, D-pad dialog selectors, bounded QR scroll dialog, and width clamps for custom dialogs. | Keep PR #12 Draft; physical device verification deferred to F02; proceed with B04 source audit |
