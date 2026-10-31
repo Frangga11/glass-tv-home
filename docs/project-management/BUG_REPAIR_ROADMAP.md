@@ -17,6 +17,7 @@ This roadmap is the approved sequence for the post-installation user testing rep
 - Do not claim a task or session is synchronized until the GitHub write and resulting commit are verified.
 - Re-ordering is allowed only when a dependency or newly discovered root cause justifies it; record the reason in the Decision Log and Operations Log.
 - Preserve working behavior and maintain rollback points.
+- User instruction, 1 November 2026: do not install or test any candidate APK on the TV while source audits and repairs are still underway. Complete the A–E audit/fix work and final integration/regression stage F first; only then create/publish one final TV-test APK after explicit readiness approval. CI may compile the release variant for source/build validation, but normal PR runs must not publish a TV-test artifact.
 
 ## 2. Status vocabulary
 
@@ -28,7 +29,7 @@ This roadmap is the approved sequence for the post-installation user testing rep
 | BLOCKED | Cannot proceed until a dependency or user action is resolved |
 | AWAITING APPROVAL | Proposal requires explicit user decision |
 
-A code change or passing CI alone does not close a physical-device acceptance item.
+A code change or passing CI alone does not close a physical-device acceptance item. Physical-device testing is deferred until all source audits/fixes are complete and the final integrated candidate has passed the pre-device quality gate.
 
 ## 3. Approved sequence and task register
 
