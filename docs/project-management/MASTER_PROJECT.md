@@ -158,6 +158,6 @@ The Master is the project map. Keep detailed test results in the relevant audit;
 - User formally approved [BUG_REPAIR_ROADMAP.md](BUG_REPAIR_ROADMAP.md), roadmap ID `GTVH-BRR-001`, version 1.0.
 - The approved sequence is A: preparation/audit → B: global UI/navigation/localization foundations → C: communication/QR/upload infrastructure → D: state and persistence → E: specific feature modules → F: integration/regression testing → G: finalization/release.
 - Completed: A01–A03 planning and A04 remote repository/branch/source-tree audit. A04 evidence and the explicit local-worktree limitation are recorded in `INVENTORY.md` and `AUDIT_REGISTER.md`.
-- A05 remains open: the APK most recently tested on the Mi TV Stick has not been matched to an exact source commit; versionName/versionCode alone are not unique.
-- A06 remains open and depends on A05: establish a reproducible source checkpoint, APK copy/hash, device-state backup, and rollback instructions before proceeding.
+- A05 is complete: the user-supplied tested APK SHA-256 matches the PR #9 CI #208 release APK record and exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- A06 is in progress: a preservation branch and APK/hash manifest are created at `checkpoint/a06-tested-apk-pr9-7e8392e1`; read-only Mi TV Stick state capture and rollback-readiness review remain.
 - Track task-level statuses and evidence only in `BUG_REPAIR_ROADMAP.md`; use the audit register for defect details and HANDOVER for the resume point.
