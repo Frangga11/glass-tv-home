@@ -4,6 +4,13 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      publish_device_apk:
+        description: "Publish the final TV-test APK only after all audits and fixes are approved"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -51,7 +58,8 @@ jobs:
           # The bundled Default wallpaper adds an intentional ~226 KiB JPEG asset.
           # Keep the complete release APK below 1.5 MiB while retaining headroom.
           test "$size" -lt 1572864 || { echo "APK exceeds the 1.5 MiB budget"; exit 1; }
-      - name: Publish release APK for device testing
+      - name: Publish final TV-test APK (manual opt-in only)
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_device_apk == true
         uses: actions/upload-artifact@v4
         with:
           name: glass-tv-home-pagar-alam-release
