@@ -49,3 +49,6 @@
 
 
 | 2026-11-01 | B02 focus indicator remediation | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), branch `feature/b02-remote-focus-indicators`, head `51be4c373ca985002ce8b940ab6e4ac6f679b257`, [CI #232](https://github.com/Frangga11/glass-tv-home/actions/runs/41230307222) | Audit found avatar focus/selection conflation, static QR-upload/reset buttons, static profile-name input borders, and a focusable Azan card without visible focus feedback. Added shared `TvFocusIndicator`, separate cyan avatar focus rings, focused button/input states, and Azan focus stroke. CI #232 pending. | Verify exact-head CI and source diff; no TV testing until all A–E audits/fixes and final F integration |
+
+
+| 2026-11-01 | B02 daily forecast focus contrast | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), head `68e87eaeead948367665470fa08503daeddbcaef`, exact-head CI pending | Extended the audit to WeatherActivity: daily forecast row focus was a low-opacity fill without an outline, unlike hourly/metric controls. Added a white focus stroke and stronger focused fill without changing row size. | Validate current head with CI; continue source-level review before B03; no TV test |
