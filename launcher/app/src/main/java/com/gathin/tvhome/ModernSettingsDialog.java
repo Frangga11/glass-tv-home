@@ -755,7 +755,7 @@ public final class ModernSettingsDialog {
                         activity::showAzanSettingsDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "✨ Asisten Gemini", "Bantuan AI dan asisten suara",
+                        "📋 Pusat Informasi & Tindakan", "Ringkasan cuaca, jadwal salat, kondisi perangkat, dan pintasan tindakan cepat",
                         activity::showGeminiAssistantDialog));
 
             } else if (tab == TAB_APPEARANCE) {
