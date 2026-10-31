@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — execution in progress; B01 active  
+**Status:** OFFICIALLY APPROVED — A04 complete; B01/B02 source work active; A05/A06 open  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -40,7 +40,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | A01 | Collect user test findings and screenshots | DONE | User's written test summary and supplied TV/phone screenshots, 1 Nov 2026 |
 | A02 | Group findings by global foundations, shared systems, and feature modules | DONE | Approved discussion and this roadmap |
 | A03 | Agree the repair sequence A–G | DONE | User explicitly approved the roadmap on 1 Nov 2026 |
-| A04 | Audit repository, branches, source tree, and current working state | IN PROGRESS | Recorded branch/commit, worktree state, and source inventory |
+| A04 | Audit repository, branches, source tree, and current working state | DONE | Remote repository identity, 14 branch heads, PR dependency chain, source tree/build/manifest/CI inventory recorded; local-clone limitation explicitly recorded in INVENTORY.md and AUDIT_REGISTER.md |
 | A05 | Match the tested APK/version to its exact source branch and commit | NOT STARTED | APK identity/hash and corresponding source commit |
 | A06 | Establish baseline, backup, and rollback/checkpoint | NOT STARTED | Reproducible baseline and documented rollback |
 
@@ -123,7 +123,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | G04 | Update GitHub master, inventory, audit register, decision log, operations log, and handover | NOT STARTED |
 | G05 | Update ChatGPT continuity memory/handover and confirm next resume point | NOT STARTED |
 
-## 4. Initial progress snapshot — 1 November 2026
+## 4. Progress snapshot — 1 November 2026 (after A04)
 
 - Tasks in roadmap: 47
 - DONE: 3 (A01, A02, A03)
