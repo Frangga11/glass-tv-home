@@ -122,14 +122,38 @@ final class StandbyPhotoStore {
         }
     }
 
-    static void clearUploadedFiles(Context context) {
+    /** Remove interrupted or orphaned QR uploads that are not referenced by the saved collection. */
+    static void cleanupOrphanedUploads(Context context) {
         if (context == null) return;
+        File directory = new File(context.getFilesDir(), "standby_photos");
+        File[] files = directory.listFiles();
+        if (files == null || files.length == 0) return;
+        Set<String> referenced = new HashSet<>();
         for (Uri uri : getUris(context)) {
             if (isManagedFile(context, uri)) {
                 try {
-                    new File(uri.getPath()).delete();
+                    referenced.add(new File(uri.getPath()).getCanonicalPath());
                 } catch (Exception ignored) {
                 }
+            }
+        }
+        for (File file : files) {
+            try {
+                if (file.isFile() && !referenced.contains(file.getCanonicalPath())) file.delete();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    static void clearUploadedFiles(Context context) {
+        if (context == null) return;
+        File directory = new File(context.getFilesDir(), "standby_photos");
+        File[] files = directory.listFiles();
+        if (files == null) return;
+        for (File file : files) {
+            try {
+                if (file.isFile()) file.delete();
+            } catch (Exception ignored) {
             }
         }
     }
