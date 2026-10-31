@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -12,6 +13,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.media.ExifInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -133,30 +135,60 @@ public final class ProfileManager {
             if (profile.customAvatarPath != null) {
                 File photo = new File(profile.customAvatarPath);
                 if (photo.isFile() && photo.length() > 0) {
-                    Bitmap src = BitmapFactory.decodeFile(photo.getAbsolutePath());
-                    if (src != null) {
-                        Bitmap output = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888);
-                        Canvas canvas = new Canvas(output);
-                        float inset = 2f * context.getResources().getDisplayMetrics().density;
-                        float radius = sizePx / 2f;
-                        Path clip = new Path();
-                        clip.addCircle(radius, radius, radius - inset, Path.Direction.CW);
-                        canvas.save();
-                        canvas.clipPath(clip);
-                        float scale = Math.max((sizePx - 2 * inset) / (float) src.getWidth(),
-                                (sizePx - 2 * inset) / (float) src.getHeight());
-                        float w = src.getWidth() * scale, h = src.getHeight() * scale;
-                        RectF dst = new RectF((sizePx - w) / 2f, (sizePx - h) / 2f,
-                                (sizePx + w) / 2f, (sizePx + h) / 2f);
-                        canvas.drawBitmap(src, null, dst, new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
-                        canvas.restore();
-                        src.recycle();
-                        Paint ring = new Paint(Paint.ANTI_ALIAS_FLAG);
-                        ring.setStyle(Paint.Style.STROKE);
-                        ring.setStrokeWidth(inset);
-                        ring.setColor(isChild ? 0xFFF59E0B : 0xFF38BDF8);
-                        canvas.drawCircle(radius, radius, radius - inset / 2f, ring);
-                        return new BitmapDrawable(context.getResources(), output);
+                    BitmapFactory.Options bounds = new BitmapFactory.Options();
+                    bounds.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(photo.getAbsolutePath(), bounds);
+                    if (bounds.outWidth > 0 && bounds.outHeight > 0) {
+                        int sample = 1;
+                        while (bounds.outWidth / (sample * 2) > sizePx * 2
+                                || bounds.outHeight / (sample * 2) > sizePx * 2) sample *= 2;
+                        BitmapFactory.Options opts = new BitmapFactory.Options();
+                        opts.inSampleSize = sample;
+                        opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap src = BitmapFactory.decodeFile(photo.getAbsolutePath(), opts);
+                        if (src != null) {
+                            int orientation = ExifInterface.ORIENTATION_NORMAL;
+                            try {
+                                ExifInterface exif = new ExifInterface(photo.getAbsolutePath());
+                                orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                            } catch (Exception ignored) {}
+                            Matrix matrix = new Matrix();
+                            switch (orientation) {
+                                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL: matrix.setScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_180: matrix.setRotate(180); break;
+                                case ExifInterface.ORIENTATION_FLIP_VERTICAL: matrix.setRotate(180); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_TRANSPOSE: matrix.setRotate(90); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_90: matrix.setRotate(90); break;
+                                case ExifInterface.ORIENTATION_TRANSVERSE: matrix.setRotate(-90); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_270: matrix.setRotate(-90); break;
+                                default: break;
+                            }
+                            Bitmap oriented = matrix.isIdentity() ? src
+                                    : Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
+                            if (oriented != src) src.recycle();
+                            Bitmap output = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888);
+                            Canvas canvas = new Canvas(output);
+                            float inset = 2f * context.getResources().getDisplayMetrics().density;
+                            float radius = sizePx / 2f;
+                            Path clip = new Path();
+                            clip.addCircle(radius, radius, radius - inset, Path.Direction.CW);
+                            canvas.save();
+                            canvas.clipPath(clip);
+                            float scale = Math.max((sizePx - 2 * inset) / (float) oriented.getWidth(),
+                                    (sizePx - 2 * inset) / (float) oriented.getHeight());
+                            float w = oriented.getWidth() * scale, h = oriented.getHeight() * scale;
+                            RectF dst = new RectF((sizePx - w) / 2f, (sizePx - h) / 2f,
+                                    (sizePx + w) / 2f, (sizePx + h) / 2f);
+                            canvas.drawBitmap(oriented, null, dst, new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
+                            canvas.restore();
+                            oriented.recycle();
+                            Paint ring = new Paint(Paint.ANTI_ALIAS_FLAG);
+                            ring.setStyle(Paint.Style.STROKE);
+                            ring.setStrokeWidth(inset);
+                            ring.setColor(isChild ? 0xFFF59E0B : 0xFF38BDF8);
+                            canvas.drawCircle(radius, radius, radius - inset / 2f, ring);
+                            return new BitmapDrawable(context.getResources(), output);
+                        }
                     }
                 }
             }
@@ -216,9 +248,16 @@ public final class ProfileManager {
             if (profileId.equals(profile.id)) {
                 String oldPath = profile.customAvatarPath;
                 profile.customAvatarPath = null;
-                saveProfiles(context, list);
+                JSONArray arr = new JSONArray();
+                for (UserProfile item : list) arr.put(item.toJson());
+                boolean saved = getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit();
+                if (!saved) { profile.customAvatarPath = oldPath; return false; }
                 if (oldPath != null) {
-                    try { new File(oldPath).delete(); } catch (Exception ignored) {}
+                    try {
+                        File dir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
+                        File old = new File(oldPath).getCanonicalFile();
+                        if (old.getParentFile().equals(dir) && old.isFile()) old.delete();
+                    } catch (Exception ignored) {}
                 }
                 return true;
             }
