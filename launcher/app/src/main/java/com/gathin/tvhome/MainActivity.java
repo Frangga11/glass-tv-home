@@ -5074,7 +5074,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Toast.makeText(this, "Tidak dapat memulai peladen unggah lokal. Periksa koneksi Wi-Fi TV.", Toast.LENGTH_LONG).show();
             return;
         }
-        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort();
+        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getWallpaperPath();
         showPhoneUploadQrDialog("📲 Unggah Wallpaper dari HP",
                 "Sambungkan ponsel dan TV ke Wi-Fi yang sama, lalu pindai QR ini. Foto akan masuk ke koleksi wallpaper.",
                 uploadUrl);
