@@ -154,10 +154,7 @@ public final class ModernSettingsDialog {
             v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
         });
 
-        searchBox.setOnClickListener(v -> {
-            SoundEffects.playSelect();
-            Toast.makeText(activity, "🔍 Carian Pantas Tetapan & Aplikasi", Toast.LENGTH_SHORT).show();
-        });
+        // The real search action is attached after the settings tabs are registered.
 
         searchBox.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -998,6 +995,98 @@ public final class ModernSettingsDialog {
                         }));
             }
         };
+
+        searchBox.setOnClickListener(v -> {
+            SoundEffects.playSelect();
+            EditText searchInput = new EditText(activity);
+            searchInput.setSingleLine(true);
+            searchInput.setTextColor(0xFFFFFFFF);
+            searchInput.setHintTextColor(0xFF8E929E);
+            searchInput.setHint("Contoh: wallpaper, foto, remote, cuaca");
+            searchInput.setTextSize(15f);
+            searchInput.setPadding((int) (14 * density), (int) (10 * density), (int) (14 * density), (int) (10 * density));
+            GradientDrawable inputBg = new GradientDrawable();
+            inputBg.setColor(0xFF282A33);
+            inputBg.setCornerRadius(10 * density);
+            inputBg.setStroke((int) (1 * density), 0xFF4A4E5C);
+            searchInput.setBackground(inputBg);
+
+            AlertDialog searchDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                    .setTitle("Cari Menu Pengaturan")
+                    .setView(searchInput)
+                    .setPositiveButton("Cari", (dialog, which) -> {
+                        String query = searchInput.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
+                        if (query.isEmpty()) {
+                            Toast.makeText(activity, "Masukkan kata kunci pencarian.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        String[] labels = {
+                                "Profil",
+                                "Layar Utama",
+                                "Tampilan",
+                                "Widget & Informasi",
+                                "Animasi & Efek",
+                                "Layar Siaga",
+                                "Mode Anak",
+                                "Pengaturan Perangkat"
+                        };
+                        String[] keywords = {
+                                "profil pengguna akun avatar nama",
+                                "beranda layar utama doa salat azan audio suara asisten gemini",
+                                "tampilan wallpaper latar gambar koleksi interval",
+                                "widget informasi lokasi cuaca udara kualitas aq i jadwal salat",
+                                "animasi efek cuaca dinamis hujan cahaya warna ikon glow transisi",
+                                "layar siaga standby screensaver jam foto pribadi foto upload",
+                                "mode anak pin kunci aplikasi sembunyikan kontrol orang tua",
+                                "perangkat remote tombol home aksesibilitas restart matikan daya tv android resolusi penyimpanan bahasa pembaruan cache"
+                        };
+                        int[] tabIds = {
+                                TAB_PROFILE, TAB_HOME_SCREEN, TAB_APPEARANCE, TAB_STATUS_WEATHER,
+                                TAB_EFFECTS, TAB_STANDBY, TAB_CHILD_MODE, TAB_DEVICE_SETTINGS
+                        };
+                        ArrayList<String> resultLabels = new ArrayList<>();
+                        ArrayList<Integer> resultTabs = new ArrayList<>();
+                        for (int i = 0; i < labels.length; i++) {
+                            if (labels[i].toLowerCase(java.util.Locale.ROOT).contains(query)
+                                    || keywords[i].contains(query)) {
+                                resultLabels.add(labels[i]);
+                                resultTabs.add(tabIds[i]);
+                            }
+                        }
+
+                        if (resultTabs.isEmpty()) {
+                            Toast.makeText(activity, "Menu tidak ditemukan. Coba kata kunci yang lebih umum.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        String[] choices = resultLabels.toArray(new String[0]);
+                        new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                .setTitle("Hasil Pencarian")
+                                .setItems(choices, (resultDialog, index) -> {
+                                    int selectedTab = resultTabs.get(index);
+                                    activeTab[0] = selectedTab;
+                                    if (selectedTab == TAB_PROFILE) {
+                                        activeSidebarView[0] = profileCard;
+                                    } else {
+                                        for (NavItem item : navItems) {
+                                            if (item.tabId == selectedTab) {
+                                                activeSidebarView[0] = item.rowView;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    updateSidebarSelection.run();
+                                    renderRightPane[0].run();
+                                })
+                                .setNegativeButton("Batal", null)
+                                .show();
+                    })
+                    .setNegativeButton("Batal", null)
+                    .create();
+            searchDialog.show();
+            styleGlassDialog(searchDialog);
+            searchInput.requestFocus();
+        });
 
         // Initial render of Tab 0 (Profile)
         updateSidebarSelection.run();
