@@ -2,7 +2,7 @@
 
 **Audit ID:** W-001  
 **Date opened:** 31 October 2026  
-**Status:** PARTIAL — source inspection started; no device acceptance  
+**Status:** PARTIAL — source inspection started; QR route remediation implemented in draft PR #7; CI/device acceptance pending  
 **Code baseline inspected:** `feature/settings-reorganization-standby-gallery`  
 **Files inspected:** `MainActivity.java`, `WallpaperUploadServer.java`, `AndroidManifest.xml`  
 **Target:** LG 32-inch display via Mi TV Stick (Android 11 / API 30; revalidate on device)
@@ -48,7 +48,8 @@ Audit the complete home-screen background system: bundled default, online catego
 
 ### QR upload and storage
 - Wallpaper upload starts a local `WallpaperUploadServer` on port 8080 with fallback ports (8080, 8888, 8081, 9090, then an ephemeral port).
-- The QR currently points to the server root URL, not to a unique tokenized wallpaper route.
+- Baseline branch QR pointed to the bare server root URL, and the server exposed upload and gallery-management endpoints without a per-session path token.
+- Remediation branch `fix/wallpaper-qr-session-security` now generates `/wallpaper/<random-session-token>` per server instance. The upload page, upload endpoint, gallery APIs, and thumbnail route use that tokenized base path; legacy unscoped routes are rejected. The QR page is marked `Cache-Control: no-store`.
 - The server's wallpaper upload route accepts a positive Content-Length below 60 MiB, writes into app-private `custom_wallpapers`, and validates decodable image bounds (maximum dimension 16,384 and 100 million pixels).
 - The QR dialog dismiss listener stops the upload server.
 - Standby upload uses a distinct standby-only server mode and tokenized standby paths. Avatar upload is a separate feature and store.
@@ -57,7 +58,7 @@ Audit the complete home-screen background system: bundled default, online catego
 
 | ID | Severity | Finding | Required action | Status |
 |---|---|---|---|---|
-| W-F-01 | P1 | Wallpaper QR URL uses the bare server root; the wallpaper upload route is not session-token scoped. On the same LAN, another client may reach the upload page/route while the server is running. | Design a short-lived, unpredictable, wallpaper-specific session path/token; scope allowed routes to that session; stop/revoke it on dialog close; test unauthorized paths and expired sessions. | OPEN — security fix required |
+| W-F-01 | P1 | Baseline wallpaper QR exposed upload and gallery-management routes on the LAN without a per-session path token. | Token-scoped page/upload/API/thumb routes implemented; verify unauthorized paths, token isolation, and dialog-close revocation on device. | IMPLEMENTED IN DRAFT PR #7 — CI/device pending |
 | W-F-02 | P2 | Bundled default asset failure returns null; the complete fallback behavior and first-frame experience are not yet proven. | Inspect layout/background initialization and test missing/corrupt asset path. | OPEN |
 | W-F-03 | P2 | CENTER_CROP may cut important image content depending on source aspect ratio and composition. | Test representative portrait, 16:9, ultrawide, and 4K assets; decide whether upload preview/crop guidance is needed. | OPEN |
 | W-F-04 | P2 | Text/widget legibility is not programmatically or visually guaranteed for bright wallpaper images. | Evaluate dim overlay/gradient and text contrast on real TV using worst-case images. | OPEN |
@@ -66,7 +67,16 @@ Audit the complete home-screen background system: bundled default, online catego
 | W-F-07 | P2 | File naming uses a .jpg suffix for received bytes even when source content may be PNG; decoder appears to inspect content, but all downstream filters and management paths need validation. | Test JPEG/PNG and confirm extension/filter consistency. | OPEN |
 | W-F-08 | P2 | Wallpaper, standby, and avatar are intended to be separate, but the end-to-end user flows have not been revalidated together. | Verify each upload changes only its own store and screen. | OPEN |
 
-## 5. Work sequence — no duplicate passes
+## 5. Remediation currently under review
+
+- Branch: `fix/wallpaper-qr-session-security` (4 commits ahead, 0 behind the baseline at last comparison).
+- Draft PR: https://github.com/Frangga11/glass-tv-home/pull/7
+- Changed: `WallpaperUploadServer.java`, `MainActivity.java`; added `WallpaperUploadSessionRouteTest.java`.
+- Unit tests cover accepted session routes, legacy root/upload/API rejection, foreign tokens, and unsupported methods.
+- Latest CI run: https://github.com/Frangga11/glass-tv-home/actions/runs/41200811301 — in progress at handover.
+- No physical TV/phone test has been performed.
+
+## 6. Work sequence — no duplicate passes
 
 1. Finish source review of upload server, custom manager, asset dimensions/format, config loading, and lifecycle.
 2. Fix W-F-01 first; do not expose the existing unauthenticated route as release-ready.
@@ -75,6 +85,6 @@ Audit the complete home-screen background system: bundled default, online catego
 5. Run one structured TV/phone acceptance pass against W-AC-01–W-AC-12; record results in this file.
 6. Close only passed criteria; retain any device-dependent item as NOT TESTED until the user tests it.
 
-## 6. Current disposition
+## 7. Current disposition
 
-**NOT FINAL / NOT YET DEVICE-READY.** Source inspection confirms the core wallpaper architecture exists. A high-priority QR upload session-scope issue is identified and must be corrected before the wallpaper upload workflow can be considered safe for release. No device testing has been performed in this audit.
+**NOT FINAL / NOT YET DEVICE-READY.** Source inspection confirms the core wallpaper architecture exists. A high-priority QR upload session-scope issue was identified and a token-scoped remediation is implemented in draft PR #7. It is not accepted until CI passes and unauthorized/expired/closed-session behavior is verified on the actual TV and phone. No device testing has been performed in this audit.
