@@ -18,10 +18,8 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * Where is this TV? States on the left, the state's JAKIM zones on the right (each with its main town and
- * districts). OK on a zone keeps it: Waktu Solat, the weather line and the Weather app follow it. Back
- * leaves everything as it was. Opened from the Wallpaper menu, and once by itself on a first start when
- * the theme names no zone.
+ * Where is this TV? Indonesian regions appear on the left, with their cities on the right. Choosing a
+ * city updates prayer times and weather. Back leaves the current selection unchanged.
  */
 public class LocationActivity extends Activity {
     private float density;
@@ -154,7 +152,7 @@ public class LocationActivity extends Activity {
                 Location.publish(this, z.code, z.town, z.state, z.lat, z.lon);
                 PrayerTimes.setZone(this, z.code, z.town, z.lat, z.lon);
                 if ("ID_PGA".equals(z.code)) {
-                    // Pagar Alam has no Malaysian DOE/APIMS ground station; keep its own coordinates.
+                    // Pagar Alam has no verified local air-quality ground station; keep its own coordinates.
                     AppLocationManager.setCustomLocation(this, "ID_PGA", z.town, "Indonesia",
                             "Kota Pagar Alam, Sumatera Selatan", z.lat, z.lon);
                 } else {
