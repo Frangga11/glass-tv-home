@@ -153,11 +153,17 @@ public class LocationActivity extends Activity {
                 Location.choose(this, z);
                 Location.publish(this, z.code, z.town, z.state, z.lat, z.lon);
                 PrayerTimes.setZone(this, z.code, z.town, z.lat, z.lon);
-                AppLocationManager.Station matched = AppLocationManager.findNearestStation(z.lat, z.lon);
-                if (matched != null) {
-                    AppLocationManager.setStation(this, matched);
+                if ("ID_PGA".equals(z.code)) {
+                    // Pagar Alam has no Malaysian DOE/APIMS ground station; keep its own coordinates.
+                    AppLocationManager.setCustomLocation(this, "ID_PGA", z.town, "Indonesia",
+                            "Kota Pagar Alam, Sumatera Selatan", z.lat, z.lon);
                 } else {
-                    AppLocationManager.setCustomLocation(this, "CUSTOM", z.town, z.state, z.town, z.lat, z.lon);
+                    AppLocationManager.Station matched = AppLocationManager.findNearestStation(z.lat, z.lon);
+                    if (matched != null) {
+                        AppLocationManager.setStation(this, matched);
+                    } else {
+                        AppLocationManager.setCustomLocation(this, "CUSTOM", z.town, z.state, z.town, z.lat, z.lon);
+                    }
                 }
                 HomeWeather.forget(this);
                 Azan.schedule(this, z.code);
