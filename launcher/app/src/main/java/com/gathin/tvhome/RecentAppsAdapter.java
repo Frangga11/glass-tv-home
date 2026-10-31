@@ -80,11 +80,23 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        android.util.DisplayMetrics metrics = parent.getResources().getDisplayMetrics();
+        int cardWidthPx = TvResponsiveLayout.recentCardWidthPx(metrics.widthPixels, metrics.density);
+        int cardHeightPx = TvResponsiveLayout.recentCardHeightPx(cardWidthPx);
         if (viewType == VIEW_TYPE_CLOSE_ALL) {
             View view = inflater.inflate(R.layout.item_recent_close_all, parent, false);
+            View cardSlot = view.findViewById(R.id.closeAllCardSlot);
+            ViewGroup.LayoutParams slotParams = cardSlot.getLayoutParams();
+            slotParams.height = cardHeightPx;
+            cardSlot.setLayoutParams(slotParams);
             return new CloseAllViewHolder(view);
         } else {
             View view = inflater.inflate(R.layout.item_recent_app, parent, false);
+            View card = view.findViewById(R.id.cardContainer);
+            ViewGroup.LayoutParams cardParams = card.getLayoutParams();
+            cardParams.width = cardWidthPx;
+            cardParams.height = cardHeightPx;
+            card.setLayoutParams(cardParams);
             return new AppViewHolder(view);
         }
     }
