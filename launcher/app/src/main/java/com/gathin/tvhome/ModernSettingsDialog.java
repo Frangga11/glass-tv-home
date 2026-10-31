@@ -431,7 +431,6 @@ public final class ModernSettingsDialog {
                 rightContent.addView(tvTitle);
 
                 ProfileManager.UserProfile activeP = ProfileManager.getActiveProfile(activity);
-                boolean activeChildMode = ChildModeManager.isChildModeEnabled(activity, activeP.id);
 
                 // Section 1: Active Profile Avatars
                 TextView tvAvatars = new TextView(activity);
@@ -678,14 +677,16 @@ public final class ModernSettingsDialog {
                     if (isCur) pBg.setStroke((int) (1.5f * density), 0x77FFFFFF);
                     pRow.setBackground(pBg);
 
+                    boolean profileChildMode = ChildModeManager.isChildModeEnabled(activity, p.id);
                     ImageView ivP = new ImageView(activity);
-                    ivP.setImageResource(ProfileManager.getAvatarResId(p.avatarIndex));
+                    ivP.setImageDrawable(ProfileManager.getAvatarDrawable(activity, p,
+                            Math.round(32 * density), profileChildMode));
                     LinearLayout.LayoutParams ivpLp2 = new LinearLayout.LayoutParams((int) (32 * density), (int) (32 * density));
                     ivpLp2.setMarginEnd((int) (10 * density));
                     pRow.addView(ivP, ivpLp2);
 
                     TextView tvPName = new TextView(activity);
-                    tvPName.setText(p.name + (p.isChild ? " (Mode Anak)" : ""));
+                    tvPName.setText(p.name + (profileChildMode ? " (Mode Anak)" : ""));
                     tvPName.setTextSize(13.5f);
                     tvPName.setTextColor(0xFFFFFFFF);
                     tvPName.setTypeface(outfit, isCur ? Typeface.BOLD : Typeface.NORMAL);
