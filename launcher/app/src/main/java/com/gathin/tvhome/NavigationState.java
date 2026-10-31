@@ -8,6 +8,8 @@ final class NavigationState {
     static final String PREFS = "navigation_state";
     static final String HOME_FOCUS_KEY = "home_focus_component";
     static final String HOME_FOCUS_POSITION = "home_focus_position";
+    static final String HOME_FOCUS_TOP_PILL = "home_focus_top_pill";
+    static final String HOME_FOCUS_TOP_PILL_ID = "home_focus_top_pill_id";
     static final String SETTINGS_TAB = "settings_tab";
 
     static final int DEFAULT_SETTINGS_TAB = 0;
