@@ -306,9 +306,8 @@ public final class UserSwitchDialog {
         if (current == null || target.id.equals(current.id)) return;
 
         boolean currentChildMode = ChildModeManager.isChildModeEnabled(activity, current.id);
-        boolean targetChildMode = ChildModeManager.isChildModeEnabled(activity, target.id);
         Runnable commitSwitch = () -> {
-            switchProfile(activity, target, targetChildMode, dialog);
+            switchProfile(activity, target, dialog);
             if (afterSwitch != null) afterSwitch.run();
         };
         if (ChildModeManager.requiresParentPinToSwitch(currentChildMode)) {
@@ -351,7 +350,7 @@ public final class UserSwitchDialog {
                 });
     }
 
-    static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, boolean activateChild, AlertDialog dialog) {
+    static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, AlertDialog dialog) {
         if (activity == null || prof == null) return;
         ProfileManager.setActiveProfile(activity, prof.id);
         activity.reloadTiles();
