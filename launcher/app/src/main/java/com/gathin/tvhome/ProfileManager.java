@@ -135,9 +135,10 @@ public final class ProfileManager {
         if (context == null || profile == null || sizePx <= 0) return null;
         try {
             if (profile.customAvatarPath != null) {
-                File avatarDir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
-                File photo = new File(profile.customAvatarPath).getCanonicalFile();
-                if (photo.getParentFile().equals(avatarDir) && photo.isFile() && photo.length() > 0) {
+                File avatarDir = new File(context.getFilesDir(), "profile_avatars");
+                File photo = new File(profile.customAvatarPath);
+                if (isPrivateAvatarFile(avatarDir, photo) && photo.getCanonicalFile().isFile()
+                        && photo.getCanonicalFile().length() > 0) {
                     BitmapFactory.Options bounds = new BitmapFactory.Options();
                     bounds.inJustDecodeBounds = true;
                     BitmapFactory.decodeFile(photo.getAbsolutePath(), bounds);
@@ -205,7 +206,7 @@ public final class ProfileManager {
         try {
             File avatarDir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
             File candidate = newPhoto.getCanonicalFile();
-            if (!candidate.getParentFile().equals(avatarDir)) return false;
+            if (!isPrivateAvatarFile(avatarDir, candidate)) return false;
             List<UserProfile> list = getAllProfiles(context);
             UserProfile target = null;
             for (UserProfile profile : list) if (profileId.equals(profile.id)) { target = profile; break; }
@@ -249,13 +250,25 @@ public final class ProfileManager {
         return false;
     }
 
+    static boolean isPrivateAvatarFile(File avatarDirectory, File candidate) {
+        if (avatarDirectory == null || candidate == null) return false;
+        try {
+            File canonicalDirectory = avatarDirectory.getCanonicalFile();
+            File canonicalCandidate = candidate.getCanonicalFile();
+            File parent = canonicalCandidate.getParentFile();
+            return parent != null && parent.equals(canonicalDirectory);
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
     private static void deleteAvatarIfUnreferenced(Context context, List<UserProfile> profiles,
                                                     String excludedProfileId, String path) {
         if (context == null || profiles == null || path == null) return;
         try {
             File avatarDir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
             File candidate = new File(path).getCanonicalFile();
-            if (!candidate.getParentFile().equals(avatarDir)) return;
+            if (!isPrivateAvatarFile(avatarDir, candidate)) return;
             for (UserProfile profile : profiles) {
                 if (profile == null || profile.id == null || profile.id.equals(excludedProfileId)
                         || profile.customAvatarPath == null) continue;
