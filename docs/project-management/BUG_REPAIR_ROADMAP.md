@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A04 complete; B01/B02 source work active; A05/A06 open  
+**Status:** OFFICIALLY APPROVED — A04 complete; B01/B02 branches isolated and paused pending A05/A06  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -132,11 +132,11 @@ A code change or passing CI alone does not close a physical-device acceptance it
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
-This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009. A05 requires installed-APK identity evidence; A06 depends on A05.
+This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009; further implementation is paused at the user's request until A05/A06 are complete. A05 requires installed-APK identity evidence; A06 depends on A05.
 
 ## 5. Current execution point
 
-A04 remote repository/source audit is DONE. A05 remains NOT STARTED because the exact APK most recently tested on the Mi TV Stick has not been identified; versionName/versionCode are insufficient because repair branches share 4.0.0/code 40. A06 remains NOT STARTED until A05 identifies the exact source commit and the APK/device-state backup can be captured. B01 and B02 are already in progress on isolated Draft PRs; pause further B02/B03 work until A05 and A06 are completed as requested. B01 exact-head CI #225 and B02 exact-head CI #234 both PASS; no TV-test artifact was published by those runs.
+A04 remote repository/source audit is DONE. A05 remains NOT STARTED because the exact APK most recently tested on the Mi TV Stick has not been identified; versionName/versionCode are insufficient because repair branches share 4.0.0/code 40. A06 remains NOT STARTED until A05 identifies the exact source commit and the APK/device-state backup can be captured. B01 and B02 already have isolated Draft PRs; further implementation is paused until A05 and A06 are completed as requested. B01 exact-head CI #225 and B02 exact-head CI #234 both PASS; no TV-test artifact was published by those runs.
 
 ## 6. Session closeout and callback protocol
 
