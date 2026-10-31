@@ -27,8 +27,7 @@ import java.util.Locale;
 
 /**
  * Live weather forecast and air-quality information for the selected location.
- * Open-Meteo supplies the forecast and modelled US AQI. The official JAS/APIMS source is used
- * only when a Malaysia region is explicitly selected; Indonesian locations use Open-Meteo AQI.
+ * Open-Meteo supplies the forecast and modelled US AQI for every supported location.
  */
 final class WeatherAirQuality {
     private static final String TAG = "TvHome.Weather";
@@ -238,7 +237,7 @@ final class WeatherAirQuality {
                     .putLong(KEY_LAST_UPDATE, now)
                     .apply();
 
-                Log.i(TAG, "Full weather & AQI synced successfully (JAS=" + isJas + ", IPU=" + aqi + ")");
+                Log.i(TAG, "Full weather & AQI synced successfully (US AQI=" + aqi + ")");
 
                 if (onUpdated != null) {
                     new Handler(Looper.getMainLooper()).post(onUpdated);
@@ -262,7 +261,7 @@ final class WeatherAirQuality {
         String condition = getWeatherCondition(code, isEnglish);
 
         String aqiStatus = prefs.getString(KEY_AQI_STATUS, getAqiStatus(aqi, isEnglish));
-        // Translate status if Malay
+        // Translate status to the Indonesian display language.
         if (!isEnglish) {
             aqiStatus = translateAqiStatus(aqiStatus);
         }
