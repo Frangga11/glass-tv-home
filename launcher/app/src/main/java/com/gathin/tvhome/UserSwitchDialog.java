@@ -147,7 +147,7 @@ public final class UserSwitchDialog {
             aFrame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
 
             ImageView aImg = new ImageView(activity);
-            aImg.setImageResource(ProfileManager.getAvatarResId(prof.avatarIndex));
+            aImg.setImageDrawable(ProfileManager.getAvatarDrawable(activity, prof, imgDimSafe(activity, density), prof.isChild));
             int imgDim = (int) (48 * density);
             aFrame.addView(aImg, new FrameLayout.LayoutParams(imgDim, imgDim, Gravity.CENTER));
 
@@ -465,6 +465,8 @@ public final class UserSwitchDialog {
         Toast.makeText(activity, "✨ Profil aktif: " + prof.name + (prof.isChild ? " (Mod Kanak-kanak)" : ""), Toast.LENGTH_SHORT).show();
         if (dialog != null) dialog.dismiss();
     }
+
+    private static int imgDimSafe(Context context, float density) { return Math.round(48 * density); }
 
     public static void showAddProfileDialog(MainActivity activity, float density, Typeface font, Runnable onAdded) {
         LinearLayout content = new LinearLayout(activity);
