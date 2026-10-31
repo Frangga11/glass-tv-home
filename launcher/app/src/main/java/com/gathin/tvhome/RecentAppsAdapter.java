@@ -92,6 +92,9 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return new CloseAllViewHolder(view);
         } else {
             View view = inflater.inflate(R.layout.item_recent_app, parent, false);
+            TextView appLabel = view.findViewById(R.id.tvAppLabel);
+            int labelMaxWidth = Math.max(1, cardWidthPx - Math.round(48f * metrics.density));
+            appLabel.setMaxWidth(Math.min(Math.round(260f * metrics.density), labelMaxWidth));
             View card = view.findViewById(R.id.cardContainer);
             ViewGroup.LayoutParams cardParams = card.getLayoutParams();
             cardParams.width = cardWidthPx;
