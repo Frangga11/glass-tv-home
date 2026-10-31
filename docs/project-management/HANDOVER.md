@@ -65,5 +65,6 @@
 - Switching away from any active Child Mode profile requires parent PIN, including child-to-child switching; top-bar and Settings entry points share the same switch authorization method.
 - Child Mode, locked apps, and hidden apps remain per-profile; PIN remains device-global.
 - User decisions: keep default PIN `0000` temporarily; user will change later. No failed-PIN attempt limit, cooldown, or lockout.
-- CI #196 (`41216406132`) passed both jobs on earlier PR #8 head. CI #197 (`41216508402`) is running on latest head `1ba744e`; wait for it before certifying current source.
+- CI #197 (`41216508402`) passed both jobs on exact latest PR #8 head `1ba744efee61fde662493cebd382743a5927aefa`.
+- Release artifact `13048321564`: APK 1,420,005 bytes; SHA-256 `735be1ff6e8ff88d31bf9de73940e527a570bbaace96c5ec9a001ce95610a44e`.
 - Avatar PR #6 remains unintegrated due to branch divergence; selectively integrate after profile security CI. No PR merged and no APK installed.
