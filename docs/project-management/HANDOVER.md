@@ -219,11 +219,11 @@
 ## Latest handover — B01–B03 renewed source QC PASS; B04/B05 expanded audit — 1 November 2026
 
 ### Confirmed completed gates
-- A04, A05, A06 are DONE. A06 manifest and rollback SOP were verified on checkpoint branch \`checkpoint/a06-tested-apk-pr9-7e8392e1\`; the full read-only device snapshot was captured. Its HOME resolver/preferred-activity discrepancy and unverified installed APK hash are E01 carry-forwards, not reasons to reopen A06.
+- A04, A05, A06 are DONE. A06 manifest and rollback SOP were verified on checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1`; the full read-only device snapshot was captured. Its HOME resolver/preferred-activity discrepancy and unverified installed APK hash are E01 carry-forwards, not reasons to reopen A06.
 - B01/B02/B03 renewed source QC and exact-head CI all PASS. PR #10/#11/#12 remain Draft/open/unmerged; no candidate APK artifact was published, no APK installed, and no TV setting/package changed.
-- B01 exact head \`bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5\`, CI #230 / run \`41230264083\`, 1,395 KB.
-- B02 exact head \`01cbef2c2fc90498295971b22c369a72cdfa734a\`, CI #234 / run \`41230495879\`, 1,396 KB.
-- B03 exact head \`56a4e1995aa8b8600614e6b5c4dca69d01c530c3\`, CI #239 / run \`41233548406\`, 1,398 KB.
+- B01 exact head `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`, CI #230 / run `41230264083`, 1,395 KB.
+- B02 exact head `01cbef2c2fc90498295971b22c369a72cdfa734a`, CI #234 / run `41230495879`, 1,396 KB.
+- B03 exact head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`, CI #239 / run `41233548406`, 1,398 KB.
 - Keep B01–B03 roadmap tasks IN PROGRESS until integrated F01/F02 and physical TV acceptance. Do not merge or create/install a final TV-test APK before the approved gate and explicit readiness approval.
 
 ### B04 — current source audit
@@ -232,7 +232,7 @@
 - Nightstand clock remains 110sp in a centered wrap-content layout.
 - Weather page is scrollable, but its Bento body is fixed at 385dp and metric rows around 91–92dp.
 - No source-level clipping defect is proven without actual TV logical display metrics. No speculative resizing was made.
-- **Next required input:** from Bugjaeger ADB, run \`wm size\` and \`wm density\` with no arguments and send the exact outputs. These are read-only commands.
+- **Next required input:** from Bugjaeger ADB, run `wm size` and `wm density` with no arguments and send the exact outputs. These are read-only commands.
 
 ### B05 — current source audit
 - Reviewed 66 app Java files, 18 layout XML files, 13 app string-resource XML files, AppLanguage, locale config, manifest, and dependencies.
@@ -244,7 +244,7 @@
 - No B05 source/resource changes applied yet; finish design and implementation after B04's shared layout surfaces are settled to avoid overlapping XML edits.
 
 ### Resume order
-1. Receive target \`wm size\` and \`wm density\` outputs; finish B04 viewport calculations and decide whether any source change is justified.
+1. Receive target `wm size` and `wm density` outputs; finish B04 viewport calculations and decide whether any source change is justified.
 2. Create/continue B04 branch from B03 head only if a measured defect or worthwhile adaptive improvement is confirmed; run exact-head CI.
 3. Then implement B05 on top of the accepted B04 head, so localization XML edits do not conflict with B04 layout work.
 4. Keep all PRs Draft and defer physical testing to F02. No APK installation/publication, device changes, or PR merge until all A–E and F integration/regression gates are complete and user explicitly approves readiness.
