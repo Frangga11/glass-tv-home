@@ -284,7 +284,7 @@ final class AppLanguage {
     public static String strStatusBarWeather(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Status Bar & Weather";
-            case LANG_ID: return "Bilah Status & Cuaca";
+            case LANG_ID: return "Widget & Informasi";
             case LANG_MS: default: return "Bar Status & Cuaca";
         }
     }
@@ -292,7 +292,7 @@ final class AppLanguage {
     public static String strStandByMode(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "StandBy Mode";
-            case LANG_ID: return "Mode StandBy";
+            case LANG_ID: return "Layar Siaga";
             case LANG_MS: default: return "Mod StandBy";
         }
     }
@@ -329,6 +329,13 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Device Settings";
             case LANG_ID: default: return "Pengaturan Perangkat";
+        }
+    }
+
+    public static String strVisualEffects(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Animations & Effects";
+            case LANG_ID: default: return "Animasi & Efek";
         }
     }
 
