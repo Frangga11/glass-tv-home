@@ -65,11 +65,11 @@ This confirms the Gradle configuration only. It does not prove that a new APK wa
 | Top-bar avatar | QR audit branch calls getAvatarDrawable for active profile | CONFIRMED-CODE; device test pending |
 | Avatar in profile switcher | Candidate branch renders getAvatarDrawable for each profile | CONFIRMED-CODE; device test pending |
 | Avatar in add-profile flow | Candidate add-profile dialog still only selects one of seven built-ins | PARTIAL |
-| Wallpaper QR upload | WallpaperUploadServer exists and handles wallpaper upload workflow | CONFIRMED-CODE; security/network test open |
+| Wallpaper QR upload | Local upload server and QR workflow exist; wallpaper QR targets bare server root without a session token | CONFIRMED-CODE; P1 security remediation and device test open — see WALLPAPER_AUDIT.md |
 | Standby gallery | MainActivity has a separate standby photo picker/store flow | CONFIRMED-CODE |
 | Weather / AQI | Weather-related activity/overlay and weather-air-quality sync are present in MainActivity | CONFIRMED-CODE; data correctness and offline test open |
 | Prayer times / Islamic shelf | PrayerTimes, Location, Azan and Islamic shelf are referenced in source | CONFIRMED-CODE; location/time accuracy test open |
-| Default wallpaper | Wallpaper system exists; exact default asset and selection logic still need audit | UNVERIFIED |
+| Default wallpaper | Bundled asset `assets/kabut-pagi-dempo.jpg`; Default category uses it offline | CONFIRMED-CODE; missing/corrupt fallback and device visual test open — see WALLPAPER_AUDIT.md |
 | Icon animation | Spring / focus animations exist; exact per-icon animation policy needs audit | PARTIAL |
 | Avatar visual report | Seven built-in avatars plus QR custom-photo flow; EXIF-aware downsampled rendering | PARTIAL; real-device QC pending |
 | Tab information layout | Tab names confirmed; final arrangement and screenshot acceptance not yet confirmed | PARTIAL |
