@@ -68,7 +68,7 @@ final class PrayerTimes {
         if (times == null || times.length < 6) return null;
         int[] minutes = new int[6];
         for (int i = 0; i < 6; i++) {
-            Calendar c = Calendar.getInstance();
+            Calendar c = Calendar.getInstance(getPrayerTimeZone(ctx));
             c.setTimeInMillis(times[i]);
             minutes[i] = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
         }
@@ -505,8 +505,7 @@ final class PrayerTimes {
 
     /** Returns formatted clean UI CharSequence with highlighted next prayer, bold and legible. */
     static CharSequence getFormatted(Context context) {
-        Calendar now = Calendar.getInstance();
-        int day = now.get(Calendar.DAY_OF_MONTH);
+        Calendar now = prayerCalendar(context);
         long[] times = getTimesForDate(context, now);
 
         if (times == null || times.length < 6) {
@@ -526,7 +525,7 @@ final class PrayerTimes {
         }
         if (nextIdx == -1) nextIdx = 0; // After Isyak -> Subuh next morning
 
-        SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        SimpleDateFormat timeFmt = prayerTimeFormat(context, "HH:mm");
         String[] prayerNames = AppLanguage.getPrayerNames(context);
         String nextWord = AppLanguage.getNextPrayerPrefix(context);
 
@@ -740,7 +739,7 @@ final class PrayerTimes {
     /** Returns full day prayer list for popup display. */
     static java.util.List<ScheduleItem> getFullSchedule(Context context) {
         java.util.List<ScheduleItem> list = new java.util.ArrayList<>();
-        Calendar now = Calendar.getInstance();
+        Calendar now = prayerCalendar(context);
         long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
@@ -767,7 +766,7 @@ final class PrayerTimes {
 
     /** Returns short summary of next prayer (e.g. for screensaver). */
     static String getNextPrayerSummary(Context context) {
-        Calendar now = Calendar.getInstance();
+        Calendar now = prayerCalendar(context);
         long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
@@ -799,7 +798,7 @@ final class PrayerTimes {
             nextTimeMs = (tomTimes != null && tomTimes.length > 0) ? tomTimes[0] : (times[0] + 86400000L);
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        SimpleDateFormat sdf = prayerTimeFormat(context, "h:mm a");
         String zone = getShortZoneName(context);
         return prayerName + " • " + sdf.format(new Date(nextTimeMs)) + " (" + zone + ")";
     }
