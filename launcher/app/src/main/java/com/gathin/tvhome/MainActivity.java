@@ -1086,15 +1086,61 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int last = prefs.getInt("index", -1);
         boolean shuffle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
         int next;
+        String selectedFileName;
         if (shuffle && wallpapers.size() > 1) {
-            java.util.Random rnd = new java.util.Random();
-            do {
-                next = rnd.nextInt(wallpapers.size());
-            } while (next == last && wallpapers.size() > 1);
+            List<String> fileNames = new ArrayList<>();
+            for (File wallpaper : wallpapers) fileNames.add(wallpaper.getName());
+
+            android.content.SharedPreferences shufflePrefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+            String previousFile = shufflePrefs.getString("shuffle_last_file", "");
+            List<String> cycle = new ArrayList<>();
+            int position = 0;
+            boolean validCycle = false;
+            String storedCycle = shufflePrefs.getString("shuffle_cycle", null);
+            if (storedCycle != null) {
+                try {
+                    org.json.JSONArray json = new org.json.JSONArray(storedCycle);
+                    for (int i = 0; i < json.length(); i++) cycle.add(json.getString(i));
+                    position = shufflePrefs.getInt("shuffle_position", 0);
+                    validCycle = cycle.size() == fileNames.size()
+                            && new HashSet<>(cycle).size() == fileNames.size()
+                            && new HashSet<>(cycle).equals(new HashSet<>(fileNames))
+                            && position >= 0 && position < cycle.size();
+                } catch (org.json.JSONException ignored) {
+                    validCycle = false;
+                }
+            }
+
+            if (!validCycle) {
+                cycle = WallpaperShuffle.newCycle(fileNames, previousFile, new java.util.Random());
+                org.json.JSONArray json = new org.json.JSONArray();
+                for (String name : cycle) json.put(name);
+                shufflePrefs.edit().putString("shuffle_cycle", json.toString())
+                        .putInt("shuffle_position", 0).apply();
+                position = 0;
+            }
+
+            selectedFileName = cycle.get(position);
+            next = fileNames.indexOf(selectedFileName);
+            if (next < 0) {
+                // A file changed while the list was being refreshed; rebuild once from the live list.
+                cycle = WallpaperShuffle.newCycle(fileNames, previousFile, new java.util.Random());
+                selectedFileName = cycle.get(0);
+                next = fileNames.indexOf(selectedFileName);
+                org.json.JSONArray json = new org.json.JSONArray();
+                for (String name : cycle) json.put(name);
+                shufflePrefs.edit().putString("shuffle_cycle", json.toString())
+                        .putInt("shuffle_position", 1).apply();
+            } else {
+                shufflePrefs.edit().putInt("shuffle_position", position + 1).apply();
+            }
         } else {
             next = (last + 1) % wallpapers.size();
+            selectedFileName = wallpapers.get(next).getName();
         }
         prefs.edit().putInt("index", next).apply();
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                .putString("shuffle_last_file", selectedFileName).apply();
         wallShownAt = android.os.SystemClock.elapsedRealtime();
         final File file = wallpapers.get(next);
         // On a cold start, name the place straight away: waiting for the decode showed the app's name
@@ -3882,7 +3928,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Category 6: Minimalist
         String tMin = AppLanguage.LANG_EN.equals(curLang) ? "🔲 Dark Minimalist (OLED)" : (AppLanguage.LANG_ID.equals(curLang) ? "🔲 Minimalis Gelap (OLED)" : "🔲 Minimalis Gelap (OLED)");
-        String sMin = AppLanguage.LANG_EN.equals(curLang) ? "16 Unsplash Dark Wallpapers • Perfect for OLED" : (AppLanguage.LANG_ID.equals(curLang) ? "20 Koleksi Wallpaper Gelap • Khusus Layar OLED" : "16 Koleksi Unsplash Dark Wallpaper • Khas Skrin OLED");
+        String sMin = AppLanguage.LANG_EN.equals(curLang) ? "20 Dark Wallpaper Images • Optimized for OLED" : (AppLanguage.LANG_ID.equals(curLang) ? "20 Koleksi Wallpaper Gelap • Khusus Layar OLED" : "20 Koleksi Wallpaper Gelap • Khas Skrin OLED");
         options.add(new WallpaperOption("Minimalist", tMin, sMin));
 
         // Category 7: Manage Custom
@@ -4061,7 +4107,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 } else if ("TOGGLE_SHUFFLE".equals(chosenKey)) {
                     boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
                     boolean newMode = !current;
-                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("shuffle_mode", newMode).apply();
+                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                            .putBoolean("shuffle_mode", newMode)
+                            .remove("shuffle_cycle")
+                            .remove("shuffle_position")
+                            .apply();
                     Toast.makeText(MainActivity.this, newMode ? "🔀 Mod Rawak: Gambar Dipilih Secara Rawak" : "➡️ Mod Berurutan: Gambar Dipilih Ikut Urutan", Toast.LENGTH_SHORT).show();
                     showWallpaperDialog();
                 } else if ("TOGGLE_DESC".equals(chosenKey)) {
