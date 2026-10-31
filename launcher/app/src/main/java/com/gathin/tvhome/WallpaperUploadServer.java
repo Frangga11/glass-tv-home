@@ -294,6 +294,7 @@ public class WallpaperUploadServer {
                 String response = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/html; charset=UTF-8\r\n" +
                         "Content-Length: " + pageBytes.length + "\r\n" +
+                        "Cache-Control: no-store\r\n" +
                         "Access-Control-Allow-Origin: *\r\n" +
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
