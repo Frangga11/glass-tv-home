@@ -1,12 +1,14 @@
 package com.gathin.tvhome;
 
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.service.dreams.DreamService;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -34,7 +36,19 @@ public class ClockDream extends DreamService {
     private TextView hijri;
     private TextView prayer;
     private TextView hint;
+    private ImageView photoView;
+    private View photoScrim;
+    private String photoUriShown = "";
     private long dreamStartTime = 0;
+
+    private final Runnable photoTick = new Runnable() {
+        @Override public void run() {
+            if (dreamStartTime > 0) {
+                updatePhoto();
+                handler.postDelayed(this, 20_000L);
+            }
+        }
+    };
 
     private final Runnable tick = new Runnable() {
         @Override
@@ -75,8 +89,11 @@ public class ClockDream extends DreamService {
         hijri = findViewById(R.id.nightstandHijri);
         prayer = findViewById(R.id.nightstandPrayer);
         hint = findViewById(R.id.nightstandHint);
+        photoView = findViewById(R.id.nightstandPhoto);
+        photoScrim = findViewById(R.id.nightstandPhotoScrim);
 
         updateNightstand();
+        updatePhoto();
     }
 
     @Override
@@ -92,12 +109,17 @@ public class ClockDream extends DreamService {
             });
         }
         handler.postDelayed(tick, MOVE_MS);
+        handler.removeCallbacks(photoTick);
+        handler.postDelayed(photoTick, 20_000L);
     }
 
     @Override
     public void onDreamingStopped() {
         dreamStartTime = 0;
         handler.removeCallbacks(tick);
+        handler.removeCallbacks(photoTick);
+        if (photoView != null) photoView.setImageDrawable(null);
+        photoUriShown = "";
         super.onDreamingStopped();
     }
 
@@ -105,7 +127,40 @@ public class ClockDream extends DreamService {
     public void onDetachedFromWindow() {
         dreamStartTime = 0;
         handler.removeCallbacks(tick);
+        handler.removeCallbacks(photoTick);
+        if (photoView != null) photoView.setImageDrawable(null);
+        photoUriShown = "";
         super.onDetachedFromWindow();
+    }
+
+    private void updatePhoto() {
+        if (photoView == null || photoScrim == null) return;
+        java.util.List<Uri> uris = StandbyPhotoStore.getUris(this);
+        if (!StandbyPhotoStore.isPhotoMode(this) || uris.isEmpty()) {
+            photoView.setImageDrawable(null);
+            photoView.setVisibility(View.GONE);
+            photoScrim.setVisibility(View.GONE);
+            photoUriShown = "";
+            return;
+        }
+
+        int index = (int) ((android.os.SystemClock.elapsedRealtime() / 20_000L) % uris.size());
+        Uri uri = uris.get(index);
+        photoView.setVisibility(View.VISIBLE);
+        photoScrim.setVisibility(View.VISIBLE);
+        if (!uri.toString().equals(photoUriShown)) {
+            android.graphics.Bitmap bitmap = StandbyPhotoStore.loadBitmap(this, uri);
+            if (bitmap != null) {
+                photoView.setImageBitmap(bitmap);
+                photoUriShown = uri.toString();
+            } else {
+                photoView.setImageDrawable(null);
+                photoView.setVisibility(View.GONE);
+                photoScrim.setVisibility(View.GONE);
+                photoUriShown = "";
+                Log.w(TAG, "Skipping unreadable StandBy photo: " + uri);
+            }
+        }
     }
 
     private void updateNightstand() {
