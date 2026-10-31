@@ -2,7 +2,7 @@
 
 **Version:** 0.1-draft  
 **Date:** 31 October 2026  
-**Current phase:** Avatar QR implementation review; CI/device acceptance pending
+**Current phase:** Avatar QR implementation passed CI; actual device acceptance pending
 
 ## 1. How to resume this project in a new conversation
 
@@ -38,7 +38,9 @@ Then ask to continue from HANDOVER.md and not to repeat closed checks. The assis
 - Avatar source changes have been committed to `fix/avatar-qr-upload-single-photo`; see draft PR #6.
 - No changes have been merged into the settings/gallery baseline.
 - No avatar code has been merged or cherry-picked.
-- GitHub CI docs/tools job passed in workflow run 41198793481; launcher build/unit-test job was still running at handover time.
+- GitHub CI passed in workflow run 41198793481: docs/tools, Android unit tests, release build, APK-size gate, and artifact publication all succeeded.
+- Release APK artifact size: 1,106,553 bytes; SHA-256: 009821bdc01f7327814cbe73b3a27b3f20253457a0243b2cd0f28d7d17c28aed.
+- Artifact / workflow: https://github.com/Frangga11/glass-tv-home/actions/runs/41198793481.
 - No release APK has been installed on the user's TV in this session.
 - No APK has been installed on the user's TV in this session.
 - No live device test has been performed in this session.
@@ -48,9 +50,8 @@ Then ask to continue from HANDOVER.md and not to repeat closed checks. The assis
 
 1. Finish source inventory for wallpaper defaults, icon animation, information tab layout, weather/AQI, prayer times, upload server, and ADB safety.
 2. Compare branch ancestry and relevant commits to identify the safest application baseline.
-3. Finish CI for draft PR #6; fix any build/test failures without repeating already-passed checks.
-4. Run the AVATAR_AUDIT.md phone/TV acceptance matrix and collect evidence.
-5. Update audit register and merge only after CI and device acceptance.
+3. Run the AVATAR_AUDIT.md phone/TV acceptance matrix and collect evidence; do not repeat CI unless code changes.
+4. Update audit register and merge PR #6 only after device acceptance.
 6. Continue with the next audit area only after avatar reaches final acceptance.
 7. Update documentation, export backup to ChatGPT Library, and publish a versioned handover.
 
