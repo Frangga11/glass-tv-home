@@ -264,7 +264,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long lastUserInteraction = android.os.SystemClock.elapsedRealtime();
     private boolean screensaverActive = false;
     private View screensaverView;
-    private int standbyPhotoIndex = -1;
     private String standbyPhotoUriShown = "";
     private final Runnable standbyPhotoTick = new Runnable() {
         @Override public void run() {
@@ -1288,12 +1287,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void clearStandbyPhotos() {
-        for (Uri uri : StandbyPhotoStore.getUris(this)) {
+        List<Uri> selectedUris = StandbyPhotoStore.getUris(this);
+        for (Uri uri : selectedUris) {
+            if (StandbyPhotoStore.isManagedFile(this, uri)) continue;
             try {
                 getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } catch (Exception ignored) {
             }
         }
+        StandbyPhotoStore.clearUploadedFiles(this);
         StandbyPhotoStore.saveUris(this, Collections.emptyList());
         StandbyPhotoStore.setPhotoMode(this, false);
         standbyPhotoUriShown = "";
@@ -1333,18 +1335,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Toast.makeText(this, "Foto tidak dapat diakses kembali. Coba pilih foto dari penyimpanan perangkat.", Toast.LENGTH_LONG).show();
             return;
         }
-        // Release permissions for photos that were removed from the selection.
-        for (Uri oldUri : StandbyPhotoStore.getUris(this)) {
-            if (!unique.contains(oldUri.toString())) {
+        // Release old document grants and delete only app-owned uploads no longer selected.
+        List<Uri> oldUris = StandbyPhotoStore.getUris(this);
+        for (Uri oldUri : oldUris) {
+            if (!unique.contains(oldUri.toString()) && !StandbyPhotoStore.isManagedFile(this, oldUri)) {
                 try {
                     getContentResolver().releasePersistableUriPermission(oldUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } catch (Exception ignored) {
                 }
             }
         }
+        StandbyPhotoStore.deleteRemovedUploadedFiles(this, oldUris, granted);
         StandbyPhotoStore.saveUris(this, granted);
         StandbyPhotoStore.setPhotoMode(this, true);
-        standbyPhotoIndex = -1;
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
         Toast.makeText(this, granted.size() + " foto ditambahkan ke Layar Siaga.", Toast.LENGTH_LONG).show();
@@ -5006,24 +5009,63 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void showWallpaperUploadQrDialog() {
+        if (qrUploadDialog != null && qrUploadDialog.isShowing()) qrUploadDialog.dismiss();
         if (uploadServer != null) {
             uploadServer.stop();
             uploadServer = null;
         }
 
         String localIp = WallpaperUploadServer.getLocalIpAddress();
-        WallpaperUploadServer.UploadListener listener = createUploadListener();
-        uploadServer = new WallpaperUploadServer(this, 8080, listener);
-        boolean started = uploadServer.start();
-
-        if (!started) {
-            Toast.makeText(this, "Ralat: Tidak dapat memulakan pelayan muat naik tempatan.", Toast.LENGTH_LONG).show();
+        uploadServer = new WallpaperUploadServer(this, 8080, createUploadListener());
+        if (!uploadServer.start()) {
+            uploadServer = null;
+            Toast.makeText(this, "Tidak dapat memulai peladen unggah lokal. Periksa koneksi Wi-Fi TV.", Toast.LENGTH_LONG).show();
             return;
         }
+        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort();
+        showPhoneUploadQrDialog("📲 Muat Naik Wallpaper dari HP",
+                "Sambungkan ponsel dan TV ke Wi-Fi yang sama, lalu pindai QR ini. Foto akan masuk ke koleksi wallpaper.",
+                uploadUrl);
+    }
 
-        int port = uploadServer.getPort();
-        String uploadUrl = "http://" + localIp + ":" + port;
+    void showStandbyUploadQrDialog() {
+        if (qrUploadDialog != null && qrUploadDialog.isShowing()) qrUploadDialog.dismiss();
+        if (uploadServer != null) {
+            uploadServer.stop();
+            uploadServer = null;
+        }
+
+        String localIp = WallpaperUploadServer.getLocalIpAddress();
+        WallpaperUploadServer.UploadListener listener = new WallpaperUploadServer.UploadListener() {
+            @Override public void onUploaded(File imageFile) {
+                // Wallpaper uploads are intentionally not handled by the StandBy endpoint.
+            }
+            @Override public void onStandbyUploaded(File imageFile) {
+                onStandbyPhotoUploaded(imageFile);
+            }
+        };
+        uploadServer = new WallpaperUploadServer(this, 8080, listener);
+        if (!uploadServer.start()) {
+            uploadServer = null;
+            Toast.makeText(this, "Tidak dapat memulai peladen unggah lokal. Periksa koneksi Wi-Fi TV.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getStandbyPath();
+        showPhoneUploadQrDialog("🖼️ Unggah Foto Layar Siaga",
+                "Pindai QR dengan ponsel yang memakai Wi-Fi sama. Pilih beberapa foto sekaligus; wallpaper tidak akan berubah.",
+                uploadUrl);
+    }
+
+    private void showPhoneUploadQrDialog(String titleText, String subtitleText, String uploadUrl) {
         Bitmap qrBmp = QrBitmapUtil.createQrBitmap(uploadUrl, Math.round(260 * density));
+        if (qrBmp == null) {
+            if (uploadServer != null) {
+                uploadServer.stop();
+                uploadServer = null;
+            }
+            Toast.makeText(this, "Kode QR tidak dapat dibuat.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         LinearLayout rootLayout = new LinearLayout(this);
         rootLayout.setOrientation(LinearLayout.VERTICAL);
@@ -5031,11 +5073,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int padH = Math.round(36 * density);
         int padV = Math.round(28 * density);
         rootLayout.setPadding(padH, padV, padH, padV);
-        rootLayout.setBackgroundColor(0xF0131722); // Elegant dark slate
+        rootLayout.setBackgroundColor(0xF0131722);
 
-        // Title
         TextView title = new TextView(this);
-        title.setText("📲 Muat Naik Wallpaper Dari Telefon");
+        title.setText(titleText);
         title.setTextColor(0xFFFFFFFF);
         title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         title.setFontVariationSettings("'wght' 700");
@@ -5044,9 +5085,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         title.setGravity(Gravity.CENTER);
         rootLayout.addView(title);
 
-        // Subtitle instructions
         TextView sub = new TextView(this);
-        sub.setText("Sambungkan telefon pada Wi-Fi yang sama, kemudian imbas kod QR di bawah:");
+        sub.setText(subtitleText);
         sub.setTextColor(0xFFE2E8F0);
         sub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         sub.setFontVariationSettings("'wght' 600");
@@ -5056,7 +5096,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sub.setPadding(0, Math.round(6 * density), 0, Math.round(18 * density));
         rootLayout.addView(sub);
 
-        // QR Code Container (Crisp White Card with subtle margin)
         FrameLayout qrContainer = new FrameLayout(this);
         qrContainer.setBackgroundColor(0xFFFFFFFF);
         int qrPad = Math.round(12 * density);
@@ -5067,9 +5106,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         qrContainer.setLayoutParams(qrLp);
 
         qrImageView = new ImageView(this);
-        if (qrBmp != null) {
-            qrImageView.setImageBitmap(qrBmp);
-        }
+        qrImageView.setImageBitmap(qrBmp);
         int qrDim = Math.round(220 * density);
         FrameLayout.LayoutParams imgLp = new FrameLayout.LayoutParams(qrDim, qrDim);
         imgLp.gravity = Gravity.CENTER;
@@ -5077,21 +5114,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         qrContainer.addView(qrImageView);
         rootLayout.addView(qrContainer);
 
-        // Web URL pill
         qrUrlText = new TextView(this);
         qrUrlText.setText("🌐 " + uploadUrl);
         qrUrlText.setTextColor(0xFF38BDF8);
         qrUrlText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         qrUrlText.setFontVariationSettings("'wght' 700");
-        qrUrlText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        qrUrlText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         qrUrlText.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         qrUrlText.setGravity(Gravity.CENTER);
         qrUrlText.setPadding(0, Math.round(14 * density), 0, Math.round(4 * density));
         rootLayout.addView(qrUrlText);
 
-        // Status text
         qrStatusText = new TextView(this);
-        qrStatusText.setText("📡 Menunggu imbasan kamera atau fail dari telefon...");
+        qrStatusText.setText("📡 Menunggu foto dikirim dari ponsel...");
         qrStatusText.setTextColor(0xFFF1F5F9);
         qrStatusText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         qrStatusText.setFontVariationSettings("'wght' 600");
@@ -5101,9 +5136,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         qrStatusText.setPadding(0, 0, 0, Math.round(18 * density));
         rootLayout.addView(qrStatusText);
 
-        // Close button
         Button btnClose = new Button(this);
-        btnClose.setText("Tutup / Cancel");
+        btnClose.setText("Tutup");
         btnClose.setTextColor(0xFFFFFFFF);
         btnClose.setBackgroundResource(R.drawable.pill_bg);
         btnClose.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -5117,9 +5151,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnClose.setLayoutParams(btnLp);
         rootLayout.addView(btnClose);
 
-        // Watermark credit
         TextView credit = new TextView(this);
-        credit.setText("✨ Powered by @imsomangge");
+        credit.setText("Glass TV • Pagar Alam");
         credit.setTextColor(0xFFCBD5E1);
         credit.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         credit.setFontVariationSettings("'wght' 600");
@@ -5128,20 +5161,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         credit.setPadding(0, Math.round(14 * density), 0, 0);
         rootLayout.addView(credit);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setView(rootLayout);
-        qrUploadDialog = builder.create();
-
+        qrUploadDialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                .setView(rootLayout).create();
         btnClose.setOnClickListener(v -> qrUploadDialog.dismiss());
-
         qrUploadDialog.setOnDismissListener(dialog -> {
             if (uploadServer != null) {
                 uploadServer.stop();
                 uploadServer = null;
             }
             qrUploadDialog = null;
+            qrImageView = null;
+            qrStatusText = null;
+            qrUrlText = null;
         });
-
         qrUploadDialog.show();
         btnClose.requestFocus();
     }
@@ -5173,6 +5205,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 onCustomWallpaperCleared();
             }
         };
+    }
+
+    private void onStandbyPhotoUploaded(File file) {
+        runOnUiThread(() -> {
+            if (!StandbyPhotoStore.addUploadedFile(this, file)) {
+                if (file != null) file.delete();
+                if (qrStatusText != null) qrStatusText.setText("Gagal menyimpan foto ke koleksi Layar Siaga.");
+                return;
+            }
+            StandbyPhotoStore.setPhotoMode(this, true);
+            standbyPhotoUriShown = "";
+            if (screensaverActive) updateNightstandScreensaver();
+            int count = StandbyPhotoStore.getPhotoCount(this);
+            Toast.makeText(this, "Foto berhasil disimpan. Total koleksi Layar Siaga: " + count + ".", Toast.LENGTH_LONG).show();
+            if (qrStatusText != null) qrStatusText.setText("✓ Foto tersimpan. Total koleksi: " + count + " foto.");
+            if (qrUrlText != null) qrUrlText.setText("Foto terbaru: " + file.getName());
+        });
     }
 
     private void onCustomWallpaperUploaded(File file) {
@@ -5702,23 +5751,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
 
-        int index = (int) ((android.os.SystemClock.elapsedRealtime() / 20_000L) % uris.size());
+        int index = StandbyPhotoStore.getCurrentPhotoIndex(this);
+        if (index < 0 || index >= uris.size()) return;
         Uri uri = uris.get(index);
         photo.setVisibility(View.VISIBLE);
         scrim.setVisibility(View.VISIBLE);
         if (!uri.toString().equals(standbyPhotoUriShown)) {
-            android.graphics.Bitmap bitmap = StandbyPhotoStore.loadBitmap(this, uri);
-            if (bitmap != null) {
+            standbyPhotoUriShown = uri.toString();
+            StandbyPhotoStore.loadBitmapAsync(this, uri, bitmap -> {
+                if (bitmap == null) {
+                    if (uri.toString().equals(standbyPhotoUriShown)) {
+                        photo.setImageDrawable(null);
+                        photo.setVisibility(View.GONE);
+                        scrim.setVisibility(View.GONE);
+                        android.util.Log.w("TvHome.StandBy", "Skipping unreadable StandBy photo: " + uri);
+                    }
+                    return;
+                }
+                if (!screensaverActive || screensaverView == null
+                        || !StandbyPhotoStore.isPhotoMode(this)
+                        || !uri.toString().equals(standbyPhotoUriShown)) {
+                    bitmap.recycle();
+                    return;
+                }
                 photo.setImageBitmap(bitmap);
-                standbyPhotoUriShown = uri.toString();
-                standbyPhotoIndex = index;
-            } else {
-                photo.setImageDrawable(null);
-                photo.setVisibility(View.GONE);
-                scrim.setVisibility(View.GONE);
-                standbyPhotoUriShown = "";
-                android.util.Log.w("TvHome.StandBy", "Skipping unreadable StandBy photo: " + uri);
-            }
+            });
         }
     }
 
