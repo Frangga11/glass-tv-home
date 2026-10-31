@@ -46,6 +46,10 @@ public class WeatherActivity extends Activity {
     private TextView aqiStation;
 
     private TextView humidityValText;
+    private TextView precipitationValue;
+    private TextView precipitationSub;
+    private TextView visibilityValue;
+    private TextView visibilitySub;
     private TextView weatherFooter;
 
     @Override
@@ -80,6 +84,10 @@ public class WeatherActivity extends Activity {
         aqiStation = findViewById(R.id.aqiStation);
 
         humidityValText = findViewById(R.id.humidityValText);
+        precipitationValue = findViewById(R.id.precipValue);
+        precipitationSub = findViewById(R.id.precipSub);
+        visibilityValue = findViewById(R.id.visibilityValue);
+        visibilitySub = findViewById(R.id.visibilitySub);
         weatherFooter = findViewById(R.id.weatherFooter);
 
         if (btnChangeLocation != null) {
@@ -359,7 +367,7 @@ public class WeatherActivity extends Activity {
 
         // 5. Populate Modular Metric Tiles
         if (windCompassView != null) {
-            windCompassView.setWind(w.windSpeed, w.windSpeed + 10, 180f);
+            windCompassView.setWind(w.windSpeed, w.windGust, w.windDirection);
         }
 
         if (sunArcView != null) {
@@ -401,9 +409,25 @@ public class WeatherActivity extends Activity {
             radarMapView.setDetails(w.temp, neatLoc);
         }
 
-        // Humidity & Pressure
+        // Humidity, precipitation, visibility & pressure
         if (humidityValText != null) {
             humidityValText.setText(w.humidity + "%");
+        }
+        boolean englishMetrics = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
+        if (precipitationValue != null) {
+            precipitationValue.setText(String.format(Locale.ROOT, "%.1f mm", w.precipitationMm));
+        }
+        if (precipitationSub != null) {
+            precipitationSub.setText((englishMetrics ? "Now" : "Saat ini") + " • "
+                    + (englishMetrics ? "rain chance " : "peluang hujan ") + w.rainChanceToday + "%");
+        }
+        if (visibilityValue != null) {
+            visibilityValue.setText(String.format(Locale.ROOT, "%.1f km", w.visibilityKm));
+        }
+        if (visibilitySub != null) {
+            visibilitySub.setText(w.visibilityKm < 1.0
+                    ? (englishMetrics ? "Limited visibility" : "Jarak pandang terbatas")
+                    : (englishMetrics ? "Good visibility" : "Jarak pandang baik"));
         }
         if (pressureGaugeView != null) {
             pressureGaugeView.setPressure(w.pressure);
