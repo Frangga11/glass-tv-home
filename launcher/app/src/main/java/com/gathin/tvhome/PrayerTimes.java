@@ -521,6 +521,9 @@ final class PrayerTimes {
                 JSONArray fields = obj.getJSONArray("fields");
                 JSONArray days = obj.getJSONArray("days");
                 Calendar target = Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Jakarta"));
+                int todayInJakarta = target.get(Calendar.DAY_OF_MONTH);
+                if (day < todayInJakarta) target.add(Calendar.MONTH, 1);
+                else if (day > target.getActualMaximum(Calendar.DAY_OF_MONTH)) target.add(Calendar.MONTH, -1);
                 target.set(Calendar.DAY_OF_MONTH, day);
                 String dateKey = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(target.getTime());
                 int[] indexes = new int[6];
