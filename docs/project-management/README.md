@@ -6,8 +6,9 @@
 **Repository:** https://github.com/Frangga11/glass-tv-home  
 **Documentation branch:** `docs/project-master-inventory`  
 **Working-code branch under review:** `feature/settings-reorganization-standby-gallery`  
-**Current avatar audit branch:** `fix/avatar-qr-upload-single-photo`
-**Avatar review PR:** https://github.com/Frangga11/glass-tv-home/pull/6
+**Current active wallpaper audit branch:** `fix/wallpaper-qr-session-security`
+**Wallpaper review PR:** https://github.com/Frangga11/glass-tv-home/pull/7
+**Avatar review PR (device acceptance pending):** https://github.com/Frangga11/glass-tv-home/pull/6
 
 ## Purpose
 
@@ -20,6 +21,7 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [MASTER_PROJECT.md](MASTER_PROJECT.md) | Goals, device baseline, agreed user requirements, product scope |
 | [INVENTORY.md](INVENTORY.md) | Current feature/code inventory and evidence-based status |
 | [DECISION_LOG.md](DECISION_LOG.md) | Approved decisions and unresolved choices |
+| [OPERATIONS_LOG.md](OPERATIONS_LOG.md) | Concise chronological change history (third documentation layer) |
 | [AUDIT_REGISTER.md](AUDIT_REGISTER.md) | Defects, risks, verification steps, and closure evidence |
 | [AVATAR_AUDIT.md](AVATAR_AUDIT.md) | Dedicated QR avatar audit, implementation record, and device acceptance checklist |
 | [DOCUMENTATION_WORKFLOW.md](DOCUMENTATION_WORKFLOW.md) | Mandatory three-layer documentation standard and efficient update rules |
@@ -28,7 +30,7 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 
 ## Documentation architecture
 
-The project uses three connected layers: **MASTER** (project memory and navigation), **AUDIT & SOP** (feature evidence and repeatable procedures), and **OPERATIONAL LOG** (concise change history). GitHub remains canonical; ChatGPT Library is the milestone backup. Follow DOCUMENTATION_WORKFLOW.md. Do not duplicate content across layers.
+The project uses three connected layers: **MASTER** (`MASTER_PROJECT.md`, `INVENTORY.md`, `DECISION_LOG.md`, `HANDOVER.md`), **AUDIT & SOP** (`AUDIT_REGISTER.md` plus focused feature audits/SOPs), and **OPERATIONAL LOG** (`OPERATIONS_LOG.md`). GitHub remains canonical; ChatGPT Library is the milestone backup. Follow DOCUMENTATION_WORKFLOW.md. Do not duplicate content across layers.
 
 ## Evidence and status rules
 
