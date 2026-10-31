@@ -5240,9 +5240,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             standbyPhotoUriShown = "";
             if (screensaverActive) updateNightstandScreensaver();
             int count = StandbyPhotoStore.getPhotoCount(this);
-            Toast.makeText(this, "Foto berhasil disimpan. Total koleksi Layar Siaga: " + count + ".", Toast.LENGTH_LONG).show();
             if (qrStatusText != null) qrStatusText.setText("✓ Foto tersimpan. Total koleksi: " + count + " foto.");
-            if (qrUrlText != null) qrUrlText.setText("Foto terbaru: " + file.getName());
+            if (qrUrlText != null) qrUrlText.setText("Koleksi Layar Siaga: " + count + " / " + StandbyPhotoStore.MAX_PHOTO_COUNT + " foto");
         });
     }
 
