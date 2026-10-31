@@ -104,11 +104,39 @@ final class PrayerTimes {
                 String zone = getJakimZone(context);
                 String cachedZone = prefs.getString("cached_zone", "");
 
-                if (zone != null && (zone.startsWith("SGP") || zone.startsWith("ID_"))) {
-                    // Singapore and Indonesia use accurate solar calculation directly
-                    if (onUpdated != null) {
-                        new Handler(Looper.getMainLooper()).post(onUpdated);
+                if (zone != null && zone.startsWith("ID_")) {
+                    // Indonesia: Kemenag RI annual timetable, mirrored as public JSON.
+                    String yearUrl = "https://sajadah.org/api/v1/times/id/kota-pagar-alam/"
+                            + now.get(Calendar.YEAR) + ".json";
+                    HttpURLConnection idConn = (HttpURLConnection) new URL(yearUrl).openConnection();
+                    idConn.setConnectTimeout(10000);
+                    idConn.setReadTimeout(10000);
+                    idConn.setRequestMethod("GET");
+                    if (idConn.getResponseCode() == 200) {
+                        BufferedReader idReader = new BufferedReader(new InputStreamReader(idConn.getInputStream()));
+                        StringBuilder idJson = new StringBuilder();
+                        String idLine;
+                        while ((idLine = idReader.readLine()) != null) idJson.append(idLine);
+                        idReader.close();
+                        JSONObject check = new JSONObject(idJson.toString());
+                        JSONObject authority = check.optJSONObject("authority");
+                        JSONObject region = check.optJSONObject("region");
+                        if (authority == null || region == null
+                                || !"kemenag".equalsIgnoreCase(authority.optString("id"))
+                                || !"kota-pagar-alam".equalsIgnoreCase(region.optString("id"))) {
+                            throw new IllegalStateException("Prayer timetable region/authority mismatch");
+                        }
+                        prefs.edit().putString(KEY_JSON, idJson.toString())
+                                .putInt(KEY_MONTH, currentMonth)
+                                .putString("cached_zone", zone).apply();
+                        Log.i(TAG, "Loaded Kemenag RI timetable for Kota Pagar Alam");
+                        if (onUpdated != null) new Handler(Looper.getMainLooper()).post(onUpdated);
                     }
+                    idConn.disconnect();
+                    return;
+                }
+                if (zone != null && zone.startsWith("SGP")) {
+                    if (onUpdated != null) new Handler(Looper.getMainLooper()).post(onUpdated);
                     return;
                 }
 
@@ -488,18 +516,54 @@ final class PrayerTimes {
             if (jsonStr == null) return null;
 
             JSONObject obj = new JSONObject(jsonStr);
+            String activeZone = getActiveZone(context);
+            if (activeZone != null && activeZone.startsWith("ID_")) {
+                JSONArray fields = obj.getJSONArray("fields");
+                JSONArray days = obj.getJSONArray("days");
+                Calendar target = Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Jakarta"));
+                target.set(Calendar.DAY_OF_MONTH, day);
+                String dateKey = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(target.getTime());
+                int[] indexes = new int[6];
+                String[] wanted = {"fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"};
+                for (int k = 0; k < wanted.length; k++) {
+                    indexes[k] = -1;
+                    for (int j = 0; j < fields.length(); j++) {
+                        if (wanted[k].equals(fields.optString(j))) { indexes[k] = j; break; }
+                    }
+                    if (indexes[k] < 0) return null;
+                }
+                for (int i = 0; i < days.length(); i++) {
+                    JSONArray row = days.getJSONArray(i);
+                    if (!dateKey.equals(row.optString(0))) continue;
+                    long[] result = new long[6];
+                    for (int k = 0; k < 6; k++) {
+                        String value = row.optString(indexes[k]);
+                        if (!value.matches("\\d{2}:\\d{2}")) return null;
+                        String[] hm = value.split(":");
+                        Calendar local = Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Jakarta"));
+                        local.setTime(target.getTime());
+                        local.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hm[0]));
+                        local.set(Calendar.MINUTE, Integer.parseInt(hm[1]));
+                        local.set(Calendar.SECOND, 0);
+                        local.set(Calendar.MILLISECOND, 0);
+                        result[k] = local.getTimeInMillis();
+                    }
+                    return result;
+                }
+                return null;
+            }
+
             JSONArray prayers = obj.getJSONArray("prayers");
             for (int i = 0; i < prayers.length(); i++) {
                 JSONObject p = prayers.getJSONObject(i);
                 if (p.optInt("day") == day) {
                     long[] res = new long[6];
-                    for (int k = 0; k < 6; k++) {
-                        res[k] = p.getLong(PRAYER_KEYS[k]) * 1000L;
-                    }
+                    for (int k = 0; k < 6; k++) res[k] = p.getLong(PRAYER_KEYS[k]) * 1000L;
                     return res;
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            Log.w(TAG, "Unable to read cached prayer timetable: " + e.getMessage());
         }
         return null;
     }
