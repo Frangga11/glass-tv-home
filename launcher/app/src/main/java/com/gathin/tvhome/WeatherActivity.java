@@ -256,7 +256,7 @@ public class WeatherActivity extends Activity {
         // 2. Header
         Location.Zone chosen = Location.chosen(this);
         String neatLoc = (chosen != null) ? chosen.town : w.location;
-        if (neatLoc == null || neatLoc.isEmpty()) neatLoc = "Kuala Lumpur";
+        if (neatLoc == null || neatLoc.isEmpty()) neatLoc = "Pagar Alam";
         neatLoc = neatLoc.substring(0, 1).toUpperCase(Locale.ROOT) + neatLoc.substring(1);
         weatherLocation.setText(neatLoc);
 
