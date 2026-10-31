@@ -65,9 +65,11 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rvRecentApps.setLayoutManager(layoutManager);
 
-        // Add 3D card deck overlapping decoration (-120dp overlap for CoverFlow stack)
-        float density = getResources().getDisplayMetrics().density;
-        final int overlapPx = Math.round(120 * density);
+        // Keep the CoverFlow overlap proportional to the responsive card width.
+        android.util.DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float density = displayMetrics.density;
+        int recentCardWidthPx = TvResponsiveLayout.recentCardWidthPx(displayMetrics.widthPixels, density);
+        final int overlapPx = TvResponsiveLayout.recentCardOverlapPx(recentCardWidthPx);
         final int closeAllGapPx = Math.round(32 * density);
 
         rvRecentApps.addItemDecoration(new RecyclerView.ItemDecoration() {
