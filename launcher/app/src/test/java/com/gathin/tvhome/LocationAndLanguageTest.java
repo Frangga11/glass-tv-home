@@ -40,12 +40,15 @@ public class LocationAndLanguageTest {
     }
 
     @Test
-    public void testStatesIncludeNewCountries() {
+    public void testLocationPickerShowsIndonesiaOnly() {
         List<String> states = Location.states();
-        assertTrue("States should contain Singapore", states.contains("Singapura (Singapore)"));
+        assertFalse("Singapore must not appear in the Indonesia-only picker", states.contains("Singapura (Singapore)"));
+        assertFalse("Malaysia regions must not appear in the Indonesia-only picker", states.contains("Wilayah Persekutuan"));
         assertTrue("States should contain DKI Jakarta", states.contains("Indonesia: DKI Jakarta"));
+        assertTrue("States should contain Sumatera Selatan", states.contains("Indonesia: Sumatera Selatan"));
         assertTrue("States should contain Jawa Barat", states.contains("Indonesia: Jawa Barat"));
         assertTrue("States should contain Bali", states.contains("Indonesia: Bali"));
+        assertNotNull("Pagar Alam must be available", Location.byCode("ID_PGA"));
     }
 
     @Test
