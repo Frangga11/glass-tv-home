@@ -27,7 +27,7 @@ public final class AvatarUploadServer {
     private static final long MAX_BYTES = 15L * 1024L * 1024L;
     private static final long SESSION_MS = 5L * 60L * 1000L;
 
-    public interface Listener { void onAvatarUploaded(File file); }
+    public interface Listener { boolean onAvatarUploaded(File file); }
 
     private final Context context;
     private final Listener listener;
@@ -166,12 +166,16 @@ public final class AvatarUploadServer {
                 respond(out, 415, "Berkas bukan gambar yang didukung atau resolusi terlalu besar."); return;
             }
             if (!running || System.currentTimeMillis() > expiresAt) { respond(out, 410, "Sesi upload berakhir."); return; }
+            File delivered = temp;
+            if (listener == null || !listener.onAvatarUploaded(delivered)) {
+                respond(out, 500, "Foto diterima tetapi profil gagal diperbarui. Foto lama tetap dipertahankan.");
+                return;
+            }
+            temp = null;
             byte[] ok = "{\\"status\\":\\"ok\\"}".getBytes(StandardCharsets.UTF_8);
             out.write(("HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\nContent-Length: " + ok.length
                     + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
             out.write(ok); out.flush();
-            File delivered = temp; temp = null;
-            if (listener != null) listener.onAvatarUploaded(delivered);
         } catch (Exception e) {
             Log.w(TAG, "Avatar upload failed", e);
         } finally {
