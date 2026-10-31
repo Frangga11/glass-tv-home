@@ -2,7 +2,7 @@
 
 **Audit ID:** W-001  
 **Date opened:** 31 October 2026  
-**Status:** PARTIAL — source inspection started; QR route remediation implemented in draft PR #7; CI/device acceptance pending  
+**Status:** PARTIAL — QR route remediation implemented in draft PR #7; CI PASS; default asset and device acceptance pending  
 **Code baseline inspected:** `feature/settings-reorganization-standby-gallery`  
 **Files inspected:** `MainActivity.java`, `WallpaperUploadServer.java`, `AndroidManifest.xml`  
 **Target:** LG 32-inch display via Mi TV Stick (Android 11 / API 30; revalidate on device)
@@ -59,7 +59,7 @@ Audit the complete home-screen background system: bundled default, online catego
 
 | ID | Severity | Finding | Required action | Status |
 |---|---|---|---|---|
-| W-F-01 | P1 | Baseline wallpaper QR exposed upload and gallery-management routes on the LAN without a per-session path token. | Token-scoped page/upload/API/thumb routes implemented; verify unauthorized paths, token isolation, and dialog-close revocation on device. | IMPLEMENTED IN DRAFT PR #7 — CI/device pending |
+| W-F-01 | P1 | Baseline wallpaper QR exposed upload and gallery-management routes on the LAN without a per-session path token. | Token-scoped page/upload/API/thumb routes implemented; verify unauthorized paths, token isolation, and dialog-close revocation on device. | IMPLEMENTED IN DRAFT PR #7 — CI PASS; device verification pending |
 | W-F-02 | P1 | Expected `kabut-pagi-dempo.jpg` is missing from the release APK; `getBundledDefaultWallpaper()` returns null on a fresh install, leaving Default without its offline image. | Obtain/approve the final wallpaper image, package it at the exact assets path, verify APK contents, then test cold-start/offline/fallback behavior. | OPEN — USER IMAGE/ART DIRECTION REQUIRED |
 | W-F-03 | P2 | CENTER_CROP may cut important image content depending on source aspect ratio and composition. | Test representative portrait, 16:9, ultrawide, and 4K assets; decide whether upload preview/crop guidance is needed. | OPEN |
 | W-F-04 | P2 | Text/widget legibility is not programmatically or visually guaranteed for bright wallpaper images. | Evaluate dim overlay/gradient and text contrast on real TV using worst-case images. | OPEN |
@@ -81,12 +81,12 @@ Audit the complete home-screen background system: bundled default, online catego
 
 ## 6. Work sequence — no duplicate passes
 
-1. Finish source review of upload server, custom manager, asset dimensions/format, config loading, and lifecycle.
-2. Fix W-F-01 first; do not expose the existing unauthenticated route as release-ready.
-3. Add focused automated tests for route/session authorization and image validation where the current test architecture permits.
-4. Run CI once after code changes.
-5. Run one structured TV/phone acceptance pass against W-AC-01–W-AC-12; record results in this file.
-6. Close only passed criteria; retain any device-dependent item as NOT TESTED until the user tests it.
+1. Resolve W-F-02: user approves/provides the default Dempo image; package it at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`.
+2. Verify the image is present in the APK and inspect its dimensions/aspect ratio. Do not rerun the already-passed QR security checks unless code changes.
+3. Finish the remaining source review of custom manager, image extension handling, file limits, and lifecycle.
+4. Run CI once after the asset/code change.
+5. Run one structured TV/phone acceptance pass against W-AC-01–W-AC-12, including QR foreign-token/legacy-route rejection and dialog-close revocation.
+6. Close only passed criteria; retain device-dependent items as NOT TESTED until actual TV/phone evidence exists.
 
 ## 7. Current disposition
 
