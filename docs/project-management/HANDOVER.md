@@ -94,10 +94,10 @@
 - B01 source baseline: PR #9 exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
 - B01 working branch: `feature/b01-global-navigation-retention`.
 - B01 Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10.
-- B01 current head: `82635fe5551f48b0d5b2c9f9a187da0765de0af6`.
-- CI #209: https://github.com/Frangga11/glass-tv-home/actions/runs/41228348247 — Lists/tools/docs passed; Android unit tests/release build were in progress at the last check.
+- B01 current head: `0f1c727da4c89576ba15a87238d17c1965a8a239`.
+- CI #212: https://github.com/Frangga11/glass-tv-home/actions/runs/41228628063 — Lists/tools/docs passed; Android unit tests/release build were in progress at the last check.
 - Implemented so far: home app focus key + slot persisted to preferences; restore by stable component key then clamped slot; null-safe empty-grid fallback; safer scroll-settle target; Settings selected tab/sidebar cursor persisted; pure JVM navigation-state tests.
-- Remaining B01 work: exact Settings right-pane cursor retention/action-return audit, CI result, and physical Mi TV Stick tests for D-pad, OK, Back, app return, app-list mutation, Settings reopen, process death, and cold boot.
+- Remaining B01 work: exact-head CI result and physical Mi TV Stick tests for D-pad, OK, Back, top-bar return, app return, app-list mutation, Settings reopen, process death, and cold boot. Settings right-pane action-return focus is tracked under B07.
 - No APK has been installed in this repair session; no device settings changed; PR #8/#9/#10 remain unmerged Draft/open.
 - Next action: inspect CI #209 result and fix any failure; then complete remaining B01 cursor audit. A05/A06 must be completed before installing any candidate APK or declaring device acceptance.
 - At each session close, update roadmap statuses, audit/operations records, this handover, and ChatGPT continuity memory. Report synchronization only after verifying the GitHub commit.
