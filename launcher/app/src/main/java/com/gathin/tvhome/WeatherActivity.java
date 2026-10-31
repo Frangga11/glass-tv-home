@@ -373,10 +373,11 @@ public class WeatherActivity extends Activity {
             uvValText.setText(String.valueOf(w.uvIndex));
         }
         if (uvDescText != null) {
-            if (w.uvIndex <= 2) uvDescText.setText("Low");
-            else if (w.uvIndex <= 5) uvDescText.setText("Moderate");
-            else if (w.uvIndex <= 7) uvDescText.setText("High");
-            else uvDescText.setText("Very High");
+            boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
+            if (w.uvIndex <= 2) uvDescText.setText(english ? "Low" : "Rendah");
+            else if (w.uvIndex <= 5) uvDescText.setText(english ? "Moderate" : "Sedang");
+            else if (w.uvIndex <= 7) uvDescText.setText(english ? "High" : "Tinggi");
+            else uvDescText.setText(english ? "Very High" : "Sangat Tinggi");
         }
 
         if (feelsLikeVal != null) {
@@ -391,7 +392,7 @@ public class WeatherActivity extends Activity {
             if (w.stationPlace != null && !w.stationPlace.isEmpty()) {
                 aqiStation.setText(w.stationPlace);
             } else {
-                aqiStation.setText("SK Putrajaya Presint 18");
+                aqiStation.setText(AppLocationManager.getStationPlace(this));
             }
         }
 
@@ -410,9 +411,12 @@ public class WeatherActivity extends Activity {
 
         // 6. Footer
         if (weatherFooter != null) {
-            weatherFooter.setText(String.format(Locale.ROOT,
-                    "Updated %s  •  %s",
-                    w.updatedTime, w.isJasSource ? "Jabatan Alam Sekitar (APIMS)" : "Open-Meteo air-quality model"));
+            boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
+            String updated = english ? "Updated" : "Diperbarui";
+            String source = w.isJasSource
+                    ? (english ? "Jabatan Alam Sekitar (APIMS)" : "JAS Malaysia (APIMS)")
+                    : (english ? "Open-Meteo model • US AQI estimate" : "Model Open-Meteo • estimasi US AQI");
+            weatherFooter.setText(String.format(Locale.ROOT, "%s %s  •  %s", updated, w.updatedTime, source));
         }
     }
 
