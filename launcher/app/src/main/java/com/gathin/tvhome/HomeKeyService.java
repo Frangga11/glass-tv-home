@@ -32,6 +32,17 @@ public class HomeKeyService extends AccessibilityService {
     private boolean isProcessingForceStop = false;
     private boolean isWaitingForConfirmDialog = false;
 
+    private static final int POWER_ACTION_NONE = 0;
+    private static final int POWER_ACTION_RESTART = 1;
+    private static final int POWER_ACTION_OFF = 2;
+    private int pendingPowerAction = POWER_ACTION_NONE;
+    private final Runnable powerActionTimeout = () -> {
+        if (pendingPowerAction != POWER_ACTION_NONE) {
+            Log.w(TAG, "System power menu did not expose a recognized action; leaving it for manual selection");
+            pendingPowerAction = POWER_ACTION_NONE;
+        }
+    };
+
     /** Scancodes of remote buttons that should open Settings (config.xml, settings_key_scancodes). */
     private int[] settingsScancodes = new int[0];
 
@@ -58,49 +69,75 @@ public class HomeKeyService extends AccessibilityService {
     }
 
     public static boolean restartTv(Context context) {
-        if (instance != null) {
-            Log.i(TAG, "Attempting TV restart via accessibility service");
-            // Android 11+ (API 30+) provides GLOBAL_ACTION_REBOOT = 12
-            if (android.os.Build.VERSION.SDK_INT >= 30) {
-                boolean done = instance.performGlobalAction(12);
-                if (done) return true;
-            }
-            // Fallback: System power dialog which presents Restart
-            boolean dialog = instance.performGlobalAction(GLOBAL_ACTION_POWER_DIALOG);
-            if (dialog) return true;
+        HomeKeyService service = instance;
+        if (service == null) {
+            Log.e(TAG, "Restart unavailable: accessibility service is not enabled");
+            return false;
         }
-        // Fallback: system broadcast or shell reboot
-        try {
-            Intent intent = new Intent(Intent.ACTION_REBOOT);
-            intent.putExtra("nowait", 1);
-            intent.putExtra("interval", 1);
-            intent.putExtra("window", 0);
-            context.sendBroadcast(intent);
-            return true;
-        } catch (Exception e) {
-            try {
-                Runtime.getRuntime().exec("reboot");
-                return true;
-            } catch (Exception ignored) {}
+        Log.i(TAG, "Requesting Android TV restart");
+        // GLOBAL_ACTION_REBOOT is available from Android 11 (API 30).
+        if (android.os.Build.VERSION.SDK_INT >= 30 && service.performGlobalAction(12)) return true;
+        return service.openPowerDialogAndSelect(POWER_ACTION_RESTART);
+    }
+
+    public static boolean turnOffTv(Context context) {
+        HomeKeyService service = instance;
+        if (service == null) {
+            Log.e(TAG, "Power off unavailable: accessibility service is not enabled");
+            return false;
+        }
+        Log.i(TAG, "Opening Android TV power menu and selecting a supported power-off option");
+        return service.openPowerDialogAndSelect(POWER_ACTION_OFF);
+    }
+
+    private boolean openPowerDialogAndSelect(int action) {
+        homeHandler.removeCallbacks(powerActionTimeout);
+        pendingPowerAction = action;
+        boolean opened = performGlobalAction(GLOBAL_ACTION_POWER_DIALOG);
+        if (!opened) {
+            pendingPowerAction = POWER_ACTION_NONE;
+            return false;
+        }
+        homeHandler.postDelayed(powerActionTimeout, 6000);
+        return true;
+    }
+
+    private static String normalizePowerLabel(CharSequence value) {
+        if (value == null) return "";
+        return value.toString().trim().toLowerCase(Locale.ROOT)
+                .replaceAll("[^\\p{L}\\p{N}]+", " ").trim();
+    }
+
+    private boolean isRequestedPowerLabel(CharSequence value) {
+        String label = normalizePowerLabel(value);
+        if (pendingPowerAction == POWER_ACTION_RESTART) {
+            return label.equals("restart") || label.equals("reboot") || label.equals("restart tv")
+                    || label.equals("reboot system") || label.equals("mulai ulang")
+                    || label.equals("mulai ulang tv") || label.equals("mulakan semula");
+        }
+        if (pendingPowerAction == POWER_ACTION_OFF) {
+            return label.equals("power off") || label.equals("turn off") || label.equals("shut down")
+                    || label.equals("shutdown") || label.equals("power down") || label.equals("matikan")
+                    || label.equals("matikan tv") || label.equals("sleep") || label.equals("sleep tv")
+                    || label.equals("standby") || label.equals("tidur");
         }
         return false;
     }
 
-    public static boolean turnOffTv(Context context) {
-        if (instance != null) {
-            Log.i(TAG, "Attempting TV power off / sleep via accessibility service");
-            boolean done = instance.performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN);
-            if (done) return true;
-            boolean dialog = instance.performGlobalAction(GLOBAL_ACTION_POWER_DIALOG);
-            if (dialog) return true;
+    private boolean selectPowerAction(AccessibilityNodeInfo node, int depth) {
+        if (node == null || depth > 10 || pendingPowerAction == POWER_ACTION_NONE) return false;
+        if (isRequestedPowerLabel(node.getText()) || isRequestedPowerLabel(node.getContentDescription())) {
+            if (clickNodeOrAncestor(node)) {
+                Log.i(TAG, "Selected system power action: " + normalizePowerLabel(node.getText()));
+                pendingPowerAction = POWER_ACTION_NONE;
+                homeHandler.removeCallbacks(powerActionTimeout);
+                return true;
+            }
         }
-        try {
-            Intent intent = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
-            intent.putExtra("android.intent.extra.KEY_CONFIRM", false);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-            return true;
-        } catch (Exception ignored) {}
+        for (int i = 0; i < node.getChildCount(); i++) {
+            AccessibilityNodeInfo child = node.getChild(i);
+            if (selectPowerAction(child, depth + 1)) return true;
+        }
         return false;
     }
 
@@ -213,6 +250,10 @@ public class HomeKeyService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        if (pendingPowerAction != POWER_ACTION_NONE) {
+            AccessibilityNodeInfo powerRoot = getRootInActiveWindow();
+            if (powerRoot != null && selectPowerAction(powerRoot, 0)) return;
+        }
         if (!isProcessingForceStop || targetForceStopPackage == null) return;
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
