@@ -34,7 +34,6 @@ final class StandbyPhotoStore {
         thread.setDaemon(true);
         return thread;
     });
-    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     interface BitmapCallback {
         void onLoaded(Bitmap bitmap);
@@ -186,7 +185,7 @@ final class StandbyPhotoStore {
         Context appContext = context.getApplicationContext();
         DECODE_EXECUTOR.execute(() -> {
             Bitmap bitmap = loadBitmap(appContext, uri);
-            MAIN_HANDLER.post(() -> callback.onLoaded(bitmap));
+            new Handler(Looper.getMainLooper()).post(() -> callback.onLoaded(bitmap));
         });
     }
 
