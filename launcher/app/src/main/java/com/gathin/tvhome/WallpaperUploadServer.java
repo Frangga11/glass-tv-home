@@ -102,6 +102,22 @@ public class WallpaperUploadServer {
         return "/standby-upload/" + sessionToken;
     }
 
+    /** Wallpaper QR routes are scoped to this unpredictable per-server session path. */
+    public String getWallpaperPath() {
+        return "/wallpaper/" + sessionToken;
+    }
+
+    private String getWallpaperUploadPath() {
+        return getWallpaperPath() + "/upload";
+    }
+
+    static boolean isWallpaperSessionRequest(String requestLine, String sessionPath) {
+        return requestLine.startsWith("GET " + sessionPath + " ")
+                || requestLine.startsWith("GET " + sessionPath + "/")
+                || requestLine.startsWith("POST " + sessionPath + "/")
+                || requestLine.startsWith("OPTIONS " + sessionPath + "/");
+    }
+
     public int getPort() {
         if (serverSocket != null && serverSocket.isBound()) {
             return serverSocket.getLocalPort();
@@ -224,34 +240,41 @@ public class WallpaperUploadServer {
             String requestLine = lines[0];
             Log.d(TAG, "Request: " + requestLine);
 
-            if (requestLine.startsWith("OPTIONS")) {
+            boolean standbySessionRoute = requestLine.startsWith("GET " + getStandbyPath() + " ")
+                    || requestLine.startsWith("POST " + getStandbyUploadPath() + " ");
+            boolean wallpaperSessionRoute = isWallpaperSessionRequest(requestLine, getWallpaperPath());
+
+            if (standbyOnly && !standbySessionRoute) {
+                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
+                out.write(notFound.getBytes("UTF-8"));
+                out.flush();
+            } else if (!standbyOnly && !wallpaperSessionRoute) {
+                String notFound = "HTTP/1.1 404 Not Found\r\nCache-Control: no-store\r\nConnection: close\r\n\r\nNot Found";
+                out.write(notFound.getBytes("UTF-8"));
+                out.flush();
+            } else if (requestLine.startsWith("OPTIONS")) {
                 String response = "HTTP/1.1 204 No Content\r\n" +
                         "Access-Control-Allow-Origin: *\r\n" +
                         "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n" +
                         "Access-Control-Allow-Headers: Content-Type\r\n" +
+                        "Cache-Control: no-store\r\n" +
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
                 out.flush();
-            } else if (standbyOnly
-                    && !requestLine.startsWith("GET " + getStandbyPath() + " ")
-                    && !requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
-            } else if (requestLine.startsWith("GET /thumb")) {
+            } else if (requestLine.startsWith("GET " + getWallpaperPath() + "/thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
                 serveThumbnail(fileName, out);
-            } else if (requestLine.startsWith("GET /api/list")) {
+            } else if (requestLine.startsWith("GET " + getWallpaperPath() + "/api/list")) {
                 serveApiList(out);
-            } else if (requestLine.startsWith("POST /api/select")) {
+            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/select")) {
                 String fileName = getQueryParam(requestLine, "file");
                 handleApiSelect(fileName, out);
-            } else if (requestLine.startsWith("POST /api/delete")) {
+            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/delete")) {
                 String fileName = getQueryParam(requestLine, "file");
                 handleApiDelete(fileName, out);
-            } else if (requestLine.startsWith("POST /api/slideshow")) {
+            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/slideshow")) {
                 handleApiSlideshow(out);
-            } else if (requestLine.startsWith("POST /api/clear")) {
+            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/clear")) {
                 handleApiClear(out);
             } else if (standbyOnly && requestLine.startsWith("GET " + getStandbyPath() + " ")) {
                 byte[] pageBytes = getStandbyHtmlPage().getBytes("UTF-8");
@@ -265,7 +288,8 @@ public class WallpaperUploadServer {
                 out.flush();
             } else if (standbyOnly && requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
                 handleStandbyUpload(client, in, out, lines);
-            } else if (requestLine.startsWith("GET / HTTP/") || requestLine.startsWith("GET /?")) {
+            } else if (requestLine.startsWith("GET " + getWallpaperPath() + " HTTP/")
+                    || requestLine.startsWith("GET " + getWallpaperPath() + "?")) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/html; charset=UTF-8\r\n" +
@@ -275,7 +299,7 @@ public class WallpaperUploadServer {
                 out.write(response.getBytes("UTF-8"));
                 out.write(pageBytes);
                 out.flush();
-            } else if (requestLine.startsWith("POST /upload")) {
+            } else if (requestLine.startsWith("POST " + getWallpaperUploadPath() + " ")) {
                 long contentLength = 0;
                 for (String line : lines) {
                     if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
@@ -670,6 +694,7 @@ public class WallpaperUploadServer {
     }
 
     private String getHtmlPage() {
+        String base = getWallpaperPath();
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"id\">\n" +
                 "<head>\n" +
@@ -1055,7 +1080,7 @@ public class WallpaperUploadServer {
                 "      statusMsg.style.display = 'none';\n" +
                 "\n" +
                 "      const xhr = new XMLHttpRequest();\n" +
-                "      xhr.open('POST', '/upload?name=' + encodeURIComponent(selectedFile.name), true);\n" +
+                "      xhr.open('POST', '" + getWallpaperUploadPath() + "?name=' + encodeURIComponent(selectedFile.name), true);\n" +
                 "      xhr.setRequestHeader('Content-Type', selectedFile.type || 'image/jpeg');\n" +
                 "\n" +
                 "      xhr.upload.onprogress = (e) => {\n" +
@@ -1095,7 +1120,7 @@ public class WallpaperUploadServer {
                 "    }\n" +
                 "\n" +
                 "    function loadGallery() {\n" +
-                "      fetch('/api/list')\n" +
+                "      fetch('" + base + "/api/list')\n" +
                 "        .then(r => r.json())\n" +
                 "        .then(items => {\n" +
                 "          const listEl = document.getElementById('gallery-list');\n" +
@@ -1109,7 +1134,7 @@ public class WallpaperUploadServer {
                 "          for (const item of items) {\n" +
                 "            const enc = encodeURIComponent(item.name);\n" +
                 "            html += '<div class=\"photo-row' + (item.active ? ' active' : '') + '\">' +\n" +
-                "              '<img class=\"photo-thumb\" src=\"/thumb?file=' + enc + '\" alt=\"thumb\">' +\n" +
+                "              '<img class=\"photo-thumb\" src=\"" + base + "/thumb?file=' + enc + '\" alt=\"thumb\">' +\n" +
                 "              '<div class=\"photo-meta\">' +\n" +
                 "                '<div class=\"photo-name\">' + (item.active ? '✨ ' : '') + item.name + '</div>' +\n" +
                 "                '<div class=\"photo-sub\">' + item.date + ' • ' + item.size + '</div>' +\n" +
@@ -1128,7 +1153,7 @@ public class WallpaperUploadServer {
                 "    }\n" +
                 "\n" +
                 "    function selectSingle(fileName) {\n" +
-                "      fetch('/api/select?file=' + fileName, { method: 'POST' })\n" +
+                "      fetch('" + base + "/api/select?file=' + fileName, { method: 'POST' })\n" +
                 "        .then(r => r.json())\n" +
                 "        .then(() => {\n" +
                 "          loadGallery();\n" +
@@ -1137,7 +1162,7 @@ public class WallpaperUploadServer {
                 "\n" +
                 "    function deletePhoto(fileName) {\n" +
                 "      if (!confirm('Hapus foto ini dari layar TV?')) return;\n" +
-                "      fetch('/api/delete?file=' + fileName, { method: 'POST' })\n" +
+                "      fetch('" + base + "/api/delete?file=' + fileName, { method: 'POST' })\n" +
                 "        .then(r => r.json())\n" +
                 "        .then(() => {\n" +
                 "          loadGallery();\n" +
@@ -1145,7 +1170,7 @@ public class WallpaperUploadServer {
                 "    }\n" +
                 "\n" +
                 "    function setSlideshow() {\n" +
-                "      fetch('/api/slideshow', { method: 'POST' })\n" +
+                "      fetch('" + base + "/api/slideshow', { method: 'POST' })\n" +
                 "        .then(r => r.json())\n" +
                 "        .then(() => {\n" +
                 "          loadGallery();\n" +
