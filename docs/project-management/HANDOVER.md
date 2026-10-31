@@ -267,3 +267,12 @@
 - Language switching must refresh visible UI without losing navigation tab/sidebar/focus or altering unrelated user data.
 - Keep installer module localization separate unless explicitly brought into scope.
 - Next action: inventory every Activity/service class and language-sensitive resource/call site, then implement B05 in a dedicated branch from B03 (B04 requires no code delta at current measured viewport). Run exact-head unit tests/build and resource parity checks. Keep PR Draft; no APK publication/install or TV settings change.
+
+
+### B05 branch opened for isolated implementation audit
+- Created feature/b05-id-en-localization from exact B03 source head 56a4e1995aa8b8600614e6b5c4dca69d01c530c3. This is an isolated working branch; no source changes have been committed yet.
+- Verified the six manifest Activity entry points: MainActivity, WeatherActivity, RecentAppsActivity, LocationActivity, AzanActivity, and HomeSettingsActivity. The first five are user-facing surfaces; HomeSettingsActivity is a no-display helper and must be assessed separately.
+- ClockDream is a DreamService with visible date/prayer text and needs locale-aware handling; HomeKeyService and MediaNotificationListener are service components but do not render ordinary app UI.
+- AppLanguage currently stores ID/EN and migrates MS to ID; 90 helper/translation methods exist. MainActivity's language selector currently writes preference and updates selected content but does not recreate the Activity or apply a resource locale. values/strings.xml has 44 keys with mixed ID/EN text; values-en-rUS only overrides date_format; localeConfig advertises 12 incomplete languages and omits ID.
+- Implementation must inspect saved navigation/focus restoration around MainActivity recreation before changing the selector. Do not implement a locale wrapper until lifecycle coverage and Activity/service context behavior are verified.
+- Next: inspect all 44 resource keys/placeholders, complete Activity and DreamService locale-context strategy, inventory hardcoded user-facing text by screen and dynamic state, then implement in small testable commits. Keep branch unmerged and no APK install/publication.
