@@ -4793,7 +4793,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Header Title
         TextView title = new TextView(this);
-        title.setText("✨ Gemini AI Assistant");
+        title.setText("✨ Pusat Informasi & Tindakan Glass TV");
         title.setTextSize(22);
         title.setTextColor(0xFFFFFFFF);
         title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -4803,7 +4803,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         layout.addView(title);
 
         TextView sub = new TextView(this);
-        sub.setText("Bantuan Pintar Built-In Glass TV Home");
+        sub.setText("Ringkasan sistem dan pintasan tindakan cepat");
         sub.setTextSize(14f);
         sub.setTextColor(0xE6FFFFFF);
         sub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -4823,16 +4823,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         statusCard.setBackground(cardBg);
 
         Location.Zone zone = Location.chosen(this);
-        String zoneTown = (zone != null) ? zone.town : "Kuala Lumpur";
+        String zoneTown = (zone != null) ? zone.town : "Pagar Alam";
         String nextPrayer = PrayerTimes.getNextPrayerSummary(this);
         HomeWeather.Line wx = HomeWeather.last(this);
         String wxStr = (wx != null && !wx.weather.isEmpty()) ? (wx.weather + (wx.api.isEmpty() ? "" : " • " + wx.api)) : "Cuaca Live Aktif";
 
         TextView statusText = new TextView(this);
-        statusText.setText("🤖 Ringkasan AI Sistem:\n"
-                + "• Solat Seterusnya: " + nextPrayer + " (" + zoneTown + ")\n"
-                + "• Cuaca & JAS IPU: " + wxStr + "\n"
-                + "• Memori & TV: Sistem Beroperasi Pantas & Bersih");
+        statusText.setText("📋 Ringkasan Sistem:\n"
+                + "• Salat Berikutnya: " + nextPrayer + " (" + zoneTown + ")\n"
+                + "• Cuaca & Kualitas Udara (US AQI): " + wxStr + "\n"
+                + "• Perangkat: Status sistem dan pengelolaan memori");
         statusText.setTextSize(14.5f);
         statusText.setTextColor(0xFFFFFFFF);
         statusText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -4843,7 +4843,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         layout.addView(statusCard);
 
         TextView actionsTitle = new TextView(this);
-        actionsTitle.setText("Tindakan Pintar:");
+        actionsTitle.setText("Tindakan Cepat:");
         actionsTitle.setTextSize(14.5f);
         actionsTitle.setTextColor(0xE6FFFFFF);
         actionsTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -4866,22 +4866,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             smartBoostTv();
         });
 
-        // Action 2: Cuaca & Kualiti Udara
-        addAiActionItem(actionList, "🌦️ Analisis Cuaca & Kualiti Udara JAS Terperinci", () -> {
+        // Action 2: Cuaca & Kualitas Udara
+        addAiActionItem(actionList, "🌦️ Informasi Cuaca & Kualitas Udara", () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
             showAiWeatherSummaryDialog(zoneTown, wxStr);
         });
 
-        // Action 3: Waktu Solat & Refleksi Doa
-        addAiActionItem(actionList, "🕌 Waktu Solat & Refleksi Doa Hari Ini", () -> {
+        // Action 3: Jadwal Salat & Ayat Pilihan
+        addAiActionItem(actionList, "🕌 Jadwal Salat & Ayat Pilihan Hari Ini", () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
             showAiIslamicDialog(zoneTown);
         });
 
-        // Action 4: Tips & Bantuan Kawalan TV
-        addAiActionItem(actionList, "💡 Tips & Panduan Kawalan Pintar TV", () -> {
+        // Action 4: Tips & Panduan Kontrol TV
+        addAiActionItem(actionList, "💡 Tips & Panduan Kontrol TV", () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
             showAiTipsDialog();
@@ -4891,7 +4891,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         layout.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
         builder.setView(layout);
-        builder.setNegativeButton("Tutup / Back", (d, w) -> d.dismiss());
+        builder.setNegativeButton("Tutup", (d, w) -> d.dismiss());
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
@@ -4959,7 +4959,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         + "• Tekan sekali butang HOME untuk kembali ke paparan utama.\n\n"
                         + "• Koleksi Wallpaper 4K dijana daripada Pexels & Unsplash mengikut kategori.\n\n"
                         + "• Jadwal salat disesuaikan dengan wilayah Indonesia dan sumber data Kemenag RI.\n\n"
-                        + "• Gunakan Gemini AI untuk membersihkan cache dan menyegarkan TV anda secara pantas.")
+                        + "• Gunakan menu Bersihkan Cache TV untuk menghapus berkas sementara tanpa menghapus data aplikasi.")
                 .setPositiveButton("Faham", null)
                 .show();
         styleGlassDialog(dialog);
@@ -4972,11 +4972,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showAiWeatherSummaryDialog(String town, String wxStr) {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
-                .setTitle("🌦️ Analisis Cuaca & Jerebu Pintar")
+                .setTitle("🌦️ Informasi Cuaca & Kualitas Udara")
                 .setMessage("📍 Lokasi: " + town + "\n\n"
                         + "📊 Status Terkini: " + wxStr + "\n\n"
                         + "ℹ️ Data cuaca disegerakkan daripada Open-Meteo dan indeks kualitas udara US AQI berbasis pemodelan Open-Meteo; bukan pengukuran ISPU resmi stasiun lokal.\n\n"
-                        + "💡 Saranan AI: Keadaan udara selamat dan memuaskan. Sangat sesuai untuk bersantai bersama keluarga.")
+                        + "📌 Periksa nilai AQI dan ikuti peringatan resmi BMKG atau instansi terkait sebelum mengambil keputusan aktivitas luar ruang.")
                 .setPositiveButton("OK", null)
                 .show();
         styleGlassDialog(dialog);
@@ -4989,11 +4989,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showAiIslamicDialog(String town) {
         WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
-        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.malay + "\"\n(" + ayah.reference + ")") : "Tiada doa harian.";
+        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : "Tiada doa harian.";
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
-                .setTitle("🕌 Waktu Solat & Doa Hari Ini")
-                .setMessage("📍 Zon JAKIM: " + town + "  •  " + PrayerTimes.getHijriDate() + "\n\n"
-                        + "⏳ Solat Seterusnya: " + PrayerTimes.getNextPrayerSummary(this) + "\n\n"
+                .setTitle("🕌 Jadwal Salat & Ayat Pilihan Hari Ini")
+                .setMessage("📍 Lokasi: " + town + "  •  " + PrayerTimes.getHijriDate() + "\n\n"
+                        + "⏳ Salat Berikutnya: " + PrayerTimes.getNextPrayerSummary(this) + "\n\n"
                         + "📖 Ayat Pilihan / Doa Harian:\n" + ayahTxt)
                 .setPositiveButton("Tutup", null)
                 .show();
