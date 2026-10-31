@@ -51,3 +51,10 @@ jobs:
           # Current measured release APK is 1,179,648 bytes (1,152 KiB).
           # Keep a tight 1.2 MiB ceiling until the upstream app is slimmed further.
           test "$size" -lt 1258291 || { echo "APK exceeds the 1.2 MiB budget"; exit 1; }
+      - name: Publish release APK for device testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: glass-tv-home-pagar-alam-release
+          path: launcher/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
