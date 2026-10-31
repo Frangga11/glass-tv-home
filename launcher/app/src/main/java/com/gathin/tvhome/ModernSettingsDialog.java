@@ -1035,7 +1035,7 @@ public final class ModernSettingsDialog {
                                 "profil pengguna akun avatar nama",
                                 "beranda layar utama doa salat azan audio suara asisten gemini",
                                 "tampilan wallpaper latar gambar koleksi interval",
-                                "widget informasi lokasi cuaca udara kualitas aq i jadwal salat",
+                                "widget informasi lokasi cuaca udara kualitas aqi jadwal salat",
                                 "animasi efek cuaca dinamis hujan cahaya warna ikon glow transisi",
                                 "layar siaga standby screensaver jam foto pribadi foto upload",
                                 "mode anak pin kunci aplikasi sembunyikan kontrol orang tua",
