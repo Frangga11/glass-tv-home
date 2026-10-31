@@ -182,21 +182,7 @@ public final class UserSwitchDialog {
                     return;
                 }
 
-                // If currently Child Mode is on and switching to adult profile, verify PIN
-                boolean curChildOn = ChildModeManager.isChildModeEnabled(activity);
-                boolean targetChildOn = ChildModeManager.isChildModeEnabled(activity, prof.id);
-                if (curChildOn && !targetChildOn) {
-                    ChildModeManager.promptPin(activity, "Sahkan PIN Keluar Mod Anak", "Masukkan PIN untuk bertukar ke profil " + prof.name, new ChildModeManager.PinCallback() {
-                        @Override
-                        public void onSuccess() {
-                            switchProfile(activity, prof, false, dialogHolder[0]);
-                        }
-                        @Override
-                        public void onCancelled() {}
-                    });
-                } else {
-                    switchProfile(activity, prof, false, dialogHolder[0]);
-                }
+                requestProfileSwitch(activity, prof, dialogHolder[0], null);
             });
 
             LinearLayout.LayoutParams iLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -310,11 +296,67 @@ public final class UserSwitchDialog {
         profRow.getChildAt(0).requestFocus();
     }
 
+    /** Centralized profile-switch policy shared by every profile entry point. */
+    static void requestProfileSwitch(MainActivity activity, ProfileManager.UserProfile target,
+                                     AlertDialog dialog, Runnable afterSwitch) {
+        if (activity == null || target == null) return;
+        ProfileManager.UserProfile current = ProfileManager.getActiveProfile(activity);
+        if (current == null || target.id.equals(current.id)) return;
+
+        boolean currentChildMode = ChildModeManager.isChildModeEnabled(activity, current.id);
+        boolean targetChildMode = ChildModeManager.isChildModeEnabled(activity, target.id);
+        Runnable commitSwitch = () -> {
+            switchProfile(activity, target, targetChildMode, dialog);
+            if (afterSwitch != null) afterSwitch.run();
+        };
+        if (ChildModeManager.requiresParentPinToSwitch(currentChildMode, targetChildMode)) {
+            ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
+                    "Masukkan PIN orang tua untuk keluar dari Mode Anak dan beralih ke profil " + target.name,
+                    new ChildModeManager.PinCallback() {
+                        @Override public void onSuccess() { commitSwitch.run(); }
+                        @Override public void onCancelled() { }
+                    });
+        } else {
+            commitSwitch.run();
+        }
+    }
+
+    /** Parent PIN is required before any profile can be deleted. */
+    static void requestDeleteProfile(MainActivity activity, String profileId, String profileName,
+                                     Runnable afterDelete) {
+        if (activity == null || profileId == null) return;
+        ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
+                "Masukkan PIN orang tua untuk menghapus profil " + profileName,
+                new ChildModeManager.PinCallback() {
+                    @Override public void onSuccess() {
+                        new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                .setTitle("Hapus profil " + profileName + "?")
+                                .setMessage("Semua pengaturan dan foto milik profil ini akan dihapus. Tindakan ini tidak dapat dibatalkan.")
+                                .setNegativeButton("Batal", (d, w) -> d.dismiss())
+                                .setPositiveButton("Hapus", (d, w) -> {
+                                    boolean deleted = ProfileManager.deleteProfile(activity, profileId);
+                                    if (deleted) {
+                                        Toast.makeText(activity, "Profil " + profileName + " berhasil dihapus", Toast.LENGTH_SHORT).show();
+                                        if (afterDelete != null) afterDelete.run();
+                                        activity.reloadTiles();
+                                        activity.updateTopBarUserIcon();
+                                    } else {
+                                        Toast.makeText(activity, "Profil tidak dapat dihapus. Pastikan masih ada profil lain.", Toast.LENGTH_LONG).show();
+                                    }
+                                }).show();
+                    }
+                    @Override public void onCancelled() { }
+                });
+    }
+
     static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, boolean activateChild, AlertDialog dialog) {
+        if (activity == null || prof == null) return;
         ProfileManager.setActiveProfile(activity, prof.id);
         activity.reloadTiles();
         activity.updateTopBarUserIcon();
-        Toast.makeText(activity, "✨ Profil aktif: " + prof.name + (prof.isChild ? " (Mod Kanak-kanak)" : ""), Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Profil aktif: " + prof.name
+                + (ChildModeManager.isChildModeEnabled(activity, prof.id) ? " (Mode Anak)" : ""),
+                Toast.LENGTH_SHORT).show();
         if (dialog != null) dialog.dismiss();
     }
 
