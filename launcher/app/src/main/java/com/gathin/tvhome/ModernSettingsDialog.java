@@ -1063,7 +1063,7 @@ public final class ModernSettingsDialog {
                         };
                         int[] tabIds = {
                                 TAB_PROFILE, TAB_HOME_SCREEN, TAB_APPEARANCE, TAB_STATUS_WEATHER,
-                                TAB_EFFECTS, TAB_STANDBY, TAB_CHILD_MODE, TAB_DEVICE_SETTINGS
+                                TAB_EFFECTS, TAB_STANDBY, TAB_PROFILE, TAB_DEVICE_SETTINGS
                         };
                         ArrayList<String> resultLabels = new ArrayList<>();
                         ArrayList<Integer> resultTabs = new ArrayList<>();
