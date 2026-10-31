@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — execution not yet started  
+**Status:** OFFICIALLY APPROVED — execution in progress; B01 active  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -39,7 +39,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | A01 | Collect user test findings and screenshots | DONE | User's written test summary and supplied TV/phone screenshots, 1 Nov 2026 |
 | A02 | Group findings by global foundations, shared systems, and feature modules | DONE | Approved discussion and this roadmap |
 | A03 | Agree the repair sequence A–G | DONE | User explicitly approved the roadmap on 1 Nov 2026 |
-| A04 | Audit repository, branches, source tree, and current working state | NOT STARTED | Recorded branch/commit, worktree state, and source inventory |
+| A04 | Audit repository, branches, source tree, and current working state | IN PROGRESS | Recorded branch/commit, worktree state, and source inventory |
 | A05 | Match the tested APK/version to its exact source branch and commit | NOT STARTED | APK identity/hash and corresponding source commit |
 | A06 | Establish baseline, backup, and rollback/checkpoint | NOT STARTED | Reproducible baseline and documented rollback |
 
@@ -47,7 +47,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 | ID | Task | Initial status |
 |---|---|---|
-| B01 | Audit and correct global navigation and cursor-position retention | NOT STARTED |
+| B01 | Audit and correct global navigation and cursor-position retention | IN PROGRESS |
 | B02 | Ensure visible, consistent D-pad/remote focus indicators | NOT STARTED |
 | B03 | Correct popup/dialog opacity, layering, focus, sizing, and dismissal behavior | NOT STARTED |
 | B04 | Normalize global UI layout, spacing, sizing, and TV responsiveness | NOT STARTED |
@@ -126,16 +126,16 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 - Tasks in roadmap: 47
 - DONE: 3 (A01, A02, A03)
-- IN PROGRESS: 0
-- NOT STARTED: 44
+- IN PROGRESS: 2 (A04, B01)
+- NOT STARTED: 42
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
-This is a task-count snapshot, not a percentage of application readiness. A01–A03 are planning/governance tasks; no code repair or source audit has started under this roadmap.
+This is a task-count snapshot, not a percentage of application readiness. A01–A03 are complete. A04 repository/source audit is in progress. B01 implementation has started on a dedicated branch at the user's explicit direction; the sequencing deviation and remaining A05/A06 gates are recorded in D-009.
 
 ## 5. First execution point
 
-The next authorized work item is **A04 — Audit repository, branches, source tree, and current working state**. Then proceed to A05 and A06 before changing application code.
+A04 remains in progress because the tested APK identity (A05) and complete baseline/backup (A06) are not yet established. B01 source work is isolated on `feature/b01-global-navigation-retention`, based on PR #9's exact head; it remains Draft and cannot be marked final before CI and physical-device tests.
 
 ## 6. Session closeout and callback protocol
 
