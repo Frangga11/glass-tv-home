@@ -401,6 +401,9 @@ public final class UserSwitchDialog {
         etBg.setCornerRadius(10 * density);
         etBg.setStroke((int) (1 * density), 0xFF3F4454);
         et.setBackground(etBg);
+        TvFocusIndicator.applyRoundedTextFocus(et, density, 10f,
+                0xFF262934, 0xFF343B4B, 0xFF3F4454, 0xFF7DD3FC,
+                0xFFFFFFFF, 0xFFFFFFFF, 1.0f);
         content.addView(et);
 
         // Avatar Picker Header
@@ -442,15 +445,13 @@ public final class UserSwitchDialog {
             ring.setVisibility(idx == 0 ? View.VISIBLE : View.GONE);
             frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
             rings[idx] = ring;
+            // The white ring marks selection; this cyan inset ring marks current D-pad focus.
+            TvFocusIndicator.attachAvatarFocusRing(frame, frameDim, density);
 
             ImageView img = new ImageView(activity);
             img.setImageResource(ProfileManager.getAvatarResId(idx));
             int innerDim = (int) (42 * density);
             frame.addView(img, new FrameLayout.LayoutParams(innerDim, innerDim, Gravity.CENTER));
-
-            frame.setOnFocusChangeListener((v, hasFocus) -> {
-                v.animate().scaleX(hasFocus ? 1.15f : 1.0f).scaleY(hasFocus ? 1.15f : 1.0f).setDuration(120).start();
-            });
 
             frame.setOnClickListener(v -> {
                 SoundEffects.playSelect();
