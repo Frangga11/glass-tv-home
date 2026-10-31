@@ -171,16 +171,17 @@ GitHub source URLs:
 
 | Area | Source finding | Remediation | Evidence / status |
 |---|---|---|---|
-| Home app-grid focus | Focus identity/slot were process-only and transient RecyclerView rebind events could overwrite saved preferences | Persist stable component key + fallback slot; snapshot, resolve against the rebuilt adapter, and restore the complete persisted snapshot | Draft PR #10; exact-head CI #224 passed previous code snapshot; current #225 pending |
-| Top-bar focus | Resource-ID persistence was brittle; returning from external Android screens could restore the wrong destination | Persist semantic keys and resolve the current view; preserve destination across internal reloads | Draft PR #10; CI #225 pending |
-| Settings tab | Dialog always initialized to Profile; tab IDs duplicated between persistence and dialog code | Persist tab/sidebar cursor and centralize canonical tab IDs in NavigationState | Draft PR #10; CI #225 pending |
-| Empty app list | Rebuild could retain an invalid -1 slot; pending scroll listener could exit without focus | Normalize empty-list slot, clear stale component key, and use Wi-Fi then Settings fallback | Draft PR #10; CI #225 pending |
-| Scroll-settle focus | Failed/missing target could leave focus unset or land on an unrelated card | Validate target visibility/focusability; retry requested slot and safely fall back | Draft PR #10; CI #225 pending |
+| Home app-grid focus | Focus identity/slot were process-only and transient RecyclerView rebind events could overwrite saved preferences | Persist stable component key + fallback slot; snapshot, resolve against the rebuilt adapter, and restore the complete persisted snapshot | Draft PR #10; exact-head CI #225 PASS |
+| Top-bar focus | Resource-ID persistence was brittle; returning from external Android screens could restore the wrong destination | Persist semantic keys and resolve the current view; preserve destination across internal reloads | Draft PR #10; CI #225 PASS |
+| Settings tab | Dialog always initialized to Profile; tab IDs duplicated between persistence and dialog code | Persist tab/sidebar cursor and centralize canonical tab IDs in NavigationState | Draft PR #10; CI #225 PASS |
+| Empty app list | Rebuild could retain an invalid -1 slot; pending scroll listener could exit without focus | Normalize empty-list slot, clear stale component key, and use Wi-Fi then Settings fallback | Draft PR #10; CI #225 PASS |
+| Scroll-settle focus | Failed/missing target could leave focus unset or land on an unrelated card | Validate target visibility/focusability; retry requested slot and safely fall back | Draft PR #10; CI #225 PASS |
 | Settings right-pane action return | Content focus after an action/re-render is a lifecycle restoration concern | Track under B07 | Deferred; not a B01 blocker |
 
 - Branch: `feature/b01-global-navigation-retention`
 - Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10
 - Current source head: `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`
-- CI #224 passed on preceding head `1613fef4d83102369a87178a881832a29295b8d7`; CI #225 is validating the current head.
+- Exact-head CI #225: https://github.com/Frangga11/glass-tv-home/actions/runs/41229763017 — both jobs PASS; unit tests and release build succeeded; APK size 1,395 KB, below 1.5 MiB.
+- Final TV-test APK publication step was skipped as required; CI run has no published artifact.
 - CI workflow now requires manual workflow-dispatch opt-in to publish the final TV-test APK. Normal PR runs do not publish it.
 - No APK has been installed on the TV. Physical device acceptance is deferred until all A–E audits/fixes and F integration/regression are complete.
