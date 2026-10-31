@@ -226,3 +226,34 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 ### A06 — Baseline and rollback checkpoint
 
 **NOT STARTED / DEPENDS ON A05.** A dedicated checkpoint must be anchored to the exact source revision matched to the installed/tested APK. It must include a reproducible source reference, APK copy/hash, and documented device-state backup/rollback evidence. Do not create a misleading checkpoint against an unverified candidate.
+
+
+## A05 — Tested APK identity match — 1 November 2026
+
+**DONE — hash matched to exact CI artifact/source commit.**
+
+The user uploaded `glass-tv-home-profile-avatar-test.apk` and confirmed it was the file used for the Mi TV Stick test.
+
+| Evidence | Value |
+|---|---|
+| APK size | 1,427,681 bytes |
+| SHA-256 | `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315` |
+| Matching CI artifact | `13048951728`, `glass-tv-home-pagar-alam-release` |
+| CI run | #208, run ID `41218171447`; conclusion success |
+| CI jobs | Launcher build/unit tests and Lists/tools/docs — both success |
+| Source branch | `feature/profile-avatar-security-integration` |
+| Exact source commit | `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` |
+| PR | #9, Draft/open/unmerged |
+
+The uploaded APK's SHA-256 and byte size exactly match the previously recorded PR #9 release APK. The CI artifact archive size (1,340,733 bytes) is a separate compressed-package measurement and is not the APK byte size. The APK contains `assets/kabut-pagi-dempo.jpg`; AGP metadata reports 8.5.2. The embedded VCS metadata reports `NO_SUPPORTED_VCS_FOUND`, so exact source attribution is established through the matching SHA-256 against the recorded CI artifact, not through embedded VCS metadata.
+
+Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 and https://github.com/Frangga11/glass-tv-home/pull/9.
+
+## A06 — Baseline and rollback checkpoint — IN PROGRESS
+
+- Exact-source checkpoint branch created directly from `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`: `checkpoint/a06-tested-apk-pr9-7e8392e1`.
+- Checkpoint manifest: [A06_TESTED_APK_BASELINE.md](checkpoints/A06_TESTED_APK_BASELINE.md).
+- No code changes were made on the checkpoint branch; it is a preservation ref.
+- Uploaded APK and SHA-256 are identified, but the separate read-only Mi TV Stick device-state snapshot and rollback-readiness evidence have not yet been collected.
+- Do not change HOME ownership, disable packages, install a candidate APK, or alter device settings before capturing that state.
+- Overall A06 remains open until the user provides the requested Bugjaeger/ADB read-only output and it is reviewed.
