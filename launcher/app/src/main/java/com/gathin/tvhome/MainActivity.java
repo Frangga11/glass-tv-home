@@ -4080,7 +4080,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView qrStatusText;
     private TextView qrUrlText;
 
-    /** Migrates the former Malaysia wallpaper selection to the Nature collection. */
+    /** Migrates legacy Malaysia wallpaper selections to the bundled Default wallpaper. */
     private String getActiveWallpaperCategory() {
         android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
         String category = prefs.getString("active_category", "Default");

@@ -761,7 +761,7 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, "Tampilan");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🖼️ Koleksi Wallpaper", "Pilih latar dari koleksi alam, kota, laut, dan luar angkasa.",
+                        "🖼️ Koleksi Wallpaper", "Pilih Wallpaper Default Kabut Pagi Dempo, koleksi alam, kota, laut, luar angkasa, atau Minimalis OLED.",
                         activity::showWallpaperDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
