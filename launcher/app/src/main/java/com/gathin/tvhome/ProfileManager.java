@@ -265,6 +265,20 @@ public final class ProfileManager {
         return false;
     }
 
+    /** Removes abandoned in-progress QR uploads left by a force-stop or power loss. */
+    public static void cleanupOrphanedAvatarUploads(Context context) {
+        if (context == null) return;
+        File dir = new File(context.getFilesDir(), "profile_avatars");
+        File[] pending = dir.listFiles((folder, name) -> name.startsWith("avatar_") && name.endsWith(".upload"));
+        if (pending == null) return;
+        long cutoff = System.currentTimeMillis() - 10L * 60L * 1000L;
+        for (File file : pending) {
+            if (file.isFile() && file.lastModified() < cutoff) {
+                try { file.delete(); } catch (Exception ignored) {}
+            }
+        }
+    }
+
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
