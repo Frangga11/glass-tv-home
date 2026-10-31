@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -39,6 +40,7 @@ public final class AvatarUploadServer {
     private Thread thread;
     private volatile boolean running;
     private int port;
+    private String boundIp;
     private final AtomicBoolean uploadClaimed = new AtomicBoolean(false);
     private final Set<Socket> activeClients = ConcurrentHashMap.newKeySet();
     private final AtomicInteger activeClientCount = new AtomicInteger(0);
@@ -54,22 +56,32 @@ public final class AvatarUploadServer {
         return WallpaperUploadServer.getLocalIpAddress();
     }
 
-    public String getUrl() { return "http://" + getLocalIpAddress() + ":" + port + "/avatar/" + token; }
+    public String getUrl() {
+        return boundIp == null || port <= 0 ? null : "http://" + boundIp + ":" + port + "/avatar/" + token;
+    }
 
     public synchronized boolean start() {
         if (running) return true;
-        int[] ports = new int[]{8080, 8888, 8081, 9090, 0};
-        for (int candidate : ports) {
-            try {
-                server = new ServerSocket();
-                server.setReuseAddress(true);
-                server.bind(new InetSocketAddress(candidate));
-                port = server.getLocalPort();
-                break;
-            } catch (Exception e) {
-                try { if (server != null) server.close(); } catch (Exception ignored) {}
-                server = null;
+        try {
+            boundIp = getLocalIpAddress();
+            if (boundIp == null || boundIp.trim().isEmpty() || "127.0.0.1".equals(boundIp)) return false;
+            InetAddress bindAddress = InetAddress.getByName(boundIp);
+            int[] ports = new int[]{8080, 8888, 8081, 9090, 0};
+            for (int candidate : ports) {
+                try {
+                    server = new ServerSocket();
+                    server.setReuseAddress(true);
+                    server.bind(new InetSocketAddress(bindAddress, candidate));
+                    port = server.getLocalPort();
+                    break;
+                } catch (Exception e) {
+                    try { if (server != null) server.close(); } catch (Exception ignored) {}
+                    server = null;
+                }
             }
+        } catch (Exception e) {
+            Log.w(TAG, "Cannot bind avatar service to local network interface", e);
+            server = null;
         }
         if (server == null) return false;
         running = true;
@@ -117,7 +129,7 @@ public final class AvatarUploadServer {
         boolean claimed = false;
         boolean uploadSucceeded = false;
         try (Socket client = socket) {
-            client.setSoTimeout(20000);
+            client.setSoTimeout(90000);
             InputStream in = client.getInputStream();
             OutputStream out = client.getOutputStream();
             ByteArrayOutputStream header = new ByteArrayOutputStream();
@@ -190,7 +202,16 @@ public final class AvatarUploadServer {
             }
             if (!running || System.currentTimeMillis() > expiresAt) { respond(out, 410, "Sesi upload berakhir."); return; }
             File delivered = temp;
-            if (listener == null || !listener.onAvatarUploaded(delivered)) {
+            boolean accepted;
+            synchronized (this) {
+                // stop() uses the same monitor: a closed/revoked QR session cannot commit afterwards.
+                if (!running || System.currentTimeMillis() >= expiresAt) {
+                    respond(out, 410, "Sesi upload berakhir atau telah ditutup.");
+                    return;
+                }
+                accepted = listener != null && listener.onAvatarUploaded(delivered);
+            }
+            if (!accepted) {
                 respond(out, 500, "Foto diterima tetapi profil gagal diperbarui. Foto lama tetap dipertahankan.");
                 return;
             }
