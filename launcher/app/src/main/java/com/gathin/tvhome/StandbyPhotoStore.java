@@ -122,26 +122,16 @@ final class StandbyPhotoStore {
         }
     }
 
-    /** Delete only app-owned QR uploads that are no longer selected; never delete user originals. */
-    static void deleteRemovedUploadedFiles(Context context, List<Uri> oldUris, List<Uri> retainedUris) {
-        if (context == null || oldUris == null) return;
-        Set<String> retained = new HashSet<>();
-        if (retainedUris != null) {
-            for (Uri uri : retainedUris) if (uri != null) retained.add(uri.toString());
-        }
-        for (Uri uri : oldUris) {
-            if (uri != null && !retained.contains(uri.toString()) && isManagedFile(context, uri)) {
+    static void clearUploadedFiles(Context context) {
+        if (context == null) return;
+        for (Uri uri : getUris(context)) {
+            if (isManagedFile(context, uri)) {
                 try {
                     new File(uri.getPath()).delete();
                 } catch (Exception ignored) {
                 }
             }
         }
-    }
-
-    static void clearUploadedFiles(Context context) {
-        if (context == null) return;
-        deleteRemovedUploadedFiles(context, getUris(context), new ArrayList<>());
     }
 
     static boolean isPhotoMode(Context context) {
