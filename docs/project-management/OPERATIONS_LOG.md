@@ -28,3 +28,6 @@
 
 
 | 2026-11-01 | Post-test repair roadmap approved | [BUG_REPAIR_ROADMAP.md](BUG_REPAIR_ROADMAP.md), decision D-008 | User approved the official A–G sequence: preparation/audit; global foundations; communication; state/persistence; specific modules; integration/testing; finalization/release. A01–A03 complete as planning tasks; no source audit or code repair started. | Begin A04 repository/branch/source/worktree audit; then match tested APK and establish baseline/rollback |
+
+
+| 2026-11-01 | B01 global navigation audit and remediation | [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), branch `feature/b01-global-navigation-retention`, base PR #9 head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`, [CI #209](https://github.com/Frangga11/glass-tv-home/actions/runs/41228348247) | Source audit found process-only home cursor retention, Settings tab reset to Profile, unsafe empty-grid focus fallback, and a scroll-settle fallback that could focus the wrong tile. Added persisted stable app identity/slot, tab retention, safe empty-grid fallback, and JVM navigation-state tests. Lists/tools/docs job passed; Android unit tests/release build were running at log update. | Verify exact-head CI; complete Settings right-pane cursor audit; then physical Mi TV Stick D-pad/Back/process-restart tests. Keep PR #10 Draft |
