@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01/B02 source audits and CI pass; B03 next; device testing deferred to F02  
+**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01–B03 source QC and exact-head CI pass; B04/B05 source audits underway; device testing deferred to F02  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -52,7 +52,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | B02 | Ensure visible, consistent D-pad/remote focus indicators | IN PROGRESS |
 | B03 | Correct popup/dialog opacity, layering, focus, sizing, and dismissal behavior | IN PROGRESS |
 | B04 | Normalize global UI layout, spacing, sizing, and TV responsiveness | IN PROGRESS |
-| B05 | Audit and complete Indonesian/English localization, including dynamic and error strings | NOT STARTED |
+| B05 | Audit and complete Indonesian/English localization, including dynamic and error strings | IN PROGRESS |
 | B06 | Standardize notifications, success/error messages, loading, and timeout feedback | NOT STARTED |
 | B07 | Audit activity/dialog lifecycle and restore prior menu/subtab/focus after actions | NOT STARTED |
 
@@ -127,8 +127,8 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 - Tasks in roadmap: 47
 - DONE: 6 (A01, A02, A03, A04, A05, A06)
-- IN PROGRESS: 4 (B01, B02, B03, B04)
-- NOT STARTED: 37
+- IN PROGRESS: 5 (B01, B02, B03, B04, B05)
+- NOT STARTED: 36
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
@@ -136,8 +136,13 @@ This is a task-count snapshot, not a percentage of application readiness. A01–
 
 ## 5. Current execution point
 
-A04 remote repository/source audit is DONE. A05 is DONE with direct three-evidence verification: the uploaded tested APK is byte-for-byte identical to `app-release.apk` extracted from CI artifact `13048951728` (run #208, `41218171447`); both are 1,427,681 bytes with SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`. CI run metadata binds that artifact to PR #9, branch `feature/profile-avatar-security-integration`, exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. The ZIP archive is separately 1,340,733 bytes (SHA-256 `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`). A06 is DONE: exact-source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1`, APK/hash manifest, rollback SOP, and read-only device snapshot are documented. The HOME resolver/preferred-activity discrepancy and unverified installed APK hash are carried as explicit E01 limitations. The user's historical APK test remains accepted and is not being repeated. B01/B02 source work resumes on their isolated Draft PRs. B03 opacity remediation is underway on Draft PR #12; CI #235 is running. No physical TV testing or candidate APK installation until F02/final readiness. B01 exact-head CI #225 and B02 exact-head CI #234 both PASS; no TV-test artifact was published by those runs.
+A04, A05, and A06 are DONE. The user's historical PR #9 APK test remains accepted and will not be repeated. B01–B03 have passed renewed source-level QC and exact-head CI. Their Draft PRs remain isolated and unmerged: PR #10 / feature/b01-global-navigation-retention @ bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5 (CI #230 PASS); PR #11 / feature/b02-remote-focus-indicators @ 01cbef2c2fc90498295971b22c369a72cdfa734a (CI #234 PASS); PR #12 / feature/b03-dialog-opacity-layering @ 56a4e1995aa8b8600614e6b5c4dca69d01c530c3 (CI #239 PASS). Unit tests, release builds, APK size gates, and lists/tools/docs checks passed; no TV-test artifacts were published. B01–B03 remain IN PROGRESS only for final integrated/physical acceptance at F02.
 
+B04 is IN PROGRESS. Source review finds the home grid, Settings, and most custom dialogs responsive/bounded. The Recent Apps card is fixed at 420×250dp with 64dp side padding; the Nightstand clock is fixed at 110sp. Do not resize speculatively. Obtain read-only target values using wm size and wm density without arguments, then decide whether adaptive dimensions are required.
+
+B05 is IN PROGRESS. Initial localization audit found mixed Indonesian/English strings in default Android resources, only a date-format override in values-en-rUS, no dedicated values-id or generic values-en resource set, and many user-facing hardcoded strings in high-traffic Java classes. Continue a full string inventory, centralize translations, verify dynamic/error messages, and test language switching without changing the user's saved preferences unexpectedly.
+
+No PR merge, candidate APK installation, device-setting change, or physical TV test is authorized before all A–E source audits/fixes and F integration/regression gates are complete and readiness is explicitly approved.
 ## 6. Session closeout and callback protocol
 
 At the end of every work session:
