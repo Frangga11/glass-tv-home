@@ -356,6 +356,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return getSharedPreferences("theme_prefs", MODE_PRIVATE).getBoolean("weather_widget_enabled", true);
     }
 
+    boolean isIconAnimationsEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_animations_enabled", true);
+    }
+
+    void setIconAnimationsEnabled(boolean enabled) {
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("icon_animations_enabled", enabled).apply();
+        if (adapter != null && grid != null) adapter.setIconAnimationsEnabled(enabled, grid);
+    }
+
+    boolean isGlassEffectsEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("glass_effects_enabled", true);
+    }
+
+    void setGlassEffectsEnabled(boolean enabled) {
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("glass_effects_enabled", enabled).apply();
+        if (glider != null && grid != null && grid.hasFocus()) {
+            glider.setStyle(enabled ? Glider.GLASS : Glider.DARK);
+        }
+        if (grid != null) grid.invalidateItemDecorations();
+        if (enabled && wallBitmap != null) blurBackdrop(wallBitmap);
+        if (root != null) root.invalidate();
+    }
+
     public void setWeatherWidgetEnabled(boolean enabled) {
         getSharedPreferences("theme_prefs", MODE_PRIVATE).edit().putBoolean("weather_widget_enabled", enabled).apply();
         if (weatherAirQualityView != null) {
@@ -737,7 +760,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // the animation arms it for the grid's first draw, so on any later fresh start (Android
         // closing Home while an app was open) it is not set at all: armed, it drew the dock's tray
         // empty while the apps faded in.
-        if (!tilesAnimatedOnce) {
+        if (!tilesAnimatedOnce && isIconAnimationsEnabled()) {
             int enterAnim = reducedMotion ? R.anim.tile_enter_reduced : R.anim.tile_enter;
             float enterDelay = reducedMotion ? 0f : 0.06f;
             grid.setLayoutAnimation(new LayoutAnimationController(
@@ -1070,6 +1093,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** Hands the picture now on screen to the glass, which blurs it once, off the main thread. */
     private void blurBackdrop(android.graphics.Bitmap bmp) {
+        if (!isGlassEffectsEnabled()) return;
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
         Backdrop.update(bmp, dm.widthPixels, dm.heightPixels, placesMode ? 0xFF7A7A7A : 0, wallDecoder, handler);
     }
@@ -1743,8 +1767,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         r.set(0, 0, card.getWidth(), card.getHeight());
         root.offsetDescendantRectToMyCoords(card, r);
         float pad = 6f * density;        // matches GlassView's glow inset
-        float w = card.getWidth() * AppAdapter.FOCUS_SCALE + 2 * pad;
-        float h = card.getHeight() * AppAdapter.FOCUS_SCALE + 2 * pad;
+        float focusScale = isIconAnimationsEnabled() ? AppAdapter.FOCUS_SCALE : 1f;
+        float w = card.getWidth() * focusScale + 2 * pad;
+        float h = card.getHeight() * focusScale + 2 * pad;
         float x = r.exactCenterX() - w / 2f;
         float y = r.exactCenterY() - h / 2f;
 
@@ -1754,23 +1779,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             lp.height = (int) h;
             glass.setLayoutParams(lp);
             // The rim is drawn inset by pad, right on the zoomed tile, so its corners use the tile's radius as is.
-            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * AppAdapter.FOCUS_SCALE);
+            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * focusScale);
         }
         glassTargetX = x;
         glassTargetY = y;
         // Exactly the zoomed card, behind it: at rest the app hides it completely, so it never lies
         // over an app and only shows while it travels between places.
-        float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * AppAdapter.FOCUS_SCALE;
+        float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * focusScale;
         if (gliderOnPill) {
             // Down from the top menu it travels dark, and turns to glass once it lands, unseen behind
             // the app.
             glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
             glider.onArrive(() -> {
-                if (!gliderOnPill) glider.setStyle(Glider.GLASS);
+                if (!gliderOnPill) glider.setStyle(isGlassEffectsEnabled() ? Glider.GLASS : Glider.DARK);
             });
         } else {
             // From app to app it is a pane of glass gliding behind them.
-            glider.setStyle(Glider.GLASS);
+            glider.setStyle(isGlassEffectsEnabled() ? Glider.GLASS : Glider.DARK);
             glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
         }
         gliderOnPill = false;
