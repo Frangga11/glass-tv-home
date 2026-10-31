@@ -2,9 +2,11 @@
 
 **Version:** 0.1-draft  
 **Date:** 31 October 2026  
-**Current phase:** Avatar QR implementation passed CI; actual device acceptance pending
+**Current phase:** Avatar QR implementation passed CI; actual device acceptance pending. Wallpaper/background audit W-001 is now the active workstream.
 
 ## 1. How to resume this project in a new conversation
+
+Read DOCUMENTATION_WORKFLOW.md first. Use the three connected layers: Master map, focused audit/SOP evidence, and concise operational log. Do not duplicate checks or repeat completed work.
 
 Attach or link the latest Project Master export and provide:
 - repository: https://github.com/Frangga11/glass-tv-home
@@ -45,6 +47,7 @@ Then ask to continue from HANDOVER.md and not to repeat closed checks. The assis
 - No APK has been installed on the user's TV in this session.
 - No live device test has been performed in this session.
 - No final QC approval has been issued.
+- Wallpaper/background source audit W-001 has started. See WALLPAPER_AUDIT.md. Confirmed P1 finding: the wallpaper QR points to the bare local server root and is not session-token scoped. No device testing has been performed.
 
 ## 4. Next ordered work
 
