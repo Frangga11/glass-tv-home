@@ -1326,8 +1326,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         if (selected.isEmpty()) return;
+        List<Uri> existingUris = StandbyPhotoStore.getUris(this);
         List<Uri> granted = new ArrayList<>();
+        int skippedByLimit = 0;
         for (Uri uri : selected) {
+            if (existingUris.contains(uri)) continue;
+            if (existingUris.size() + granted.size() >= StandbyPhotoStore.MAX_PHOTO_COUNT) {
+                skippedByLimit++;
+                continue;
+            }
             try {
                 getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 granted.add(uri);
@@ -1336,13 +1343,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         if (granted.isEmpty()) {
-            Toast.makeText(this, "Foto tidak dapat diakses kembali. Coba pilih foto dari penyimpanan perangkat.", Toast.LENGTH_LONG).show();
+            boolean allAlreadySelected = true;
+            for (Uri uri : selected) {
+                if (!existingUris.contains(uri)) {
+                    allAlreadySelected = false;
+                    break;
+                }
+            }
+            String message = skippedByLimit > 0
+                    ? "Koleksi sudah mencapai batas " + StandbyPhotoStore.MAX_PHOTO_COUNT + " foto."
+                    : (allAlreadySelected ? "Foto yang dipilih sudah ada di koleksi Layar Siaga."
+                    : "Foto tidak dapat diakses kembali. Coba pilih foto dari penyimpanan perangkat.");
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             return;
         }
         // Append new photos so a local/USB selection never replaces earlier QR uploads.
         List<Uri> merged = StandbyPhotoStore.getUris(this);
         int added = 0;
-        int skipped = 0;
+        int skipped = skippedByLimit;
         for (Uri uri : granted) {
             if (merged.contains(uri)) continue;
             if (merged.size() >= StandbyPhotoStore.MAX_PHOTO_COUNT) {
