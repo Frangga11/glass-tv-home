@@ -12,7 +12,7 @@ Keep project knowledge reliable without creating paperwork that slows delivery. 
 
 ### Layer 1 — MASTER: project memory and navigation
 
-The Master layer is the entry point. It records:
+The Master layer is the entry point. In this repository it consists of `MASTER_PROJECT.md`, `INVENTORY.md`, `DECISION_LOG.md`, and `HANDOVER.md`. It records:
 - product purpose, scope, device baseline, and key requirements;
 - feature inventory and current status;
 - approved decisions and unresolved decisions;
@@ -22,7 +22,7 @@ It must summarize and link, not repeat detailed audit findings. Update it only w
 
 ### Layer 2 — AUDIT & SOP: feature evidence and repeatable procedures
 
-Each substantial feature has one focused audit file. An audit contains:
+The audit layer consists of `AUDIT_REGISTER.md` plus one focused audit file per substantial feature. An audit contains:
 - scope and acceptance criteria;
 - exact branch/commit and files inspected or changed;
 - findings with severity;
@@ -33,7 +33,7 @@ Create an SOP only when a procedure will be repeated or must be followed consist
 
 ### Layer 3 — OPERATIONAL LOG: concise change history
 
-Record only the event needed to reconstruct the work:
+`OPERATIONS_LOG.md` is the single chronological log. Record only the event needed to reconstruct the work:
 - date, issue/audit ID, branch and commit/PR;
 - what changed and why;
 - CI/build/test result;
