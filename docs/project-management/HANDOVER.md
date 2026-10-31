@@ -2,7 +2,7 @@
 
 **Project:** Glass TV Home  
 **Documentation branch:** `docs/project-master-inventory`  
-**Last updated:** 31 October 2026
+**Last updated:** 1 November 2026
 
 ## Current wallpaper work
 
@@ -103,5 +103,20 @@
 - B02 is in progress on `feature/b02-remote-focus-indicators`, based on B01; Draft PR #11: https://github.com/Frangga11/glass-tv-home/pull/11.
 - B02 current head: `01cbef2c2fc90498295971b22c369a72cdfa734a`; exact-head CI #234 is pending. CI #233 passed the preceding snapshot. Physical Mi TV Stick acceptance is deferred to final integration stage F02, after all A–E audit/fix work. Settings right-pane action-return focus is tracked under B07.
 - No APK has been installed in this repair session; no device settings changed; PR #8/#9/#10 remain unmerged Draft/open. User explicitly requires no TV testing until all audits and repairs are complete.
-- Next action: verify exact-head CI #224; then proceed to B02 source audit/fix. Continue B03–B07, C, D, and E audits/repairs before generating/publishing any TV-test APK. Complete A05/A06 and F01–F07 before final TV acceptance.
+- Next action: pause further B02/B03 work. A04 remote repository/source audit is complete and recorded. Obtain the exact identity of the APK most recently tested on the Mi TV Stick (A05); then establish the matching source checkpoint, APK backup/hash, device-state backup, and rollback procedure (A06). Continue A–E audits/fixes and F01–F07 before generating/publishing one final TV-test APK.
 - At each session close, update roadmap statuses, audit/operations records, this handover, and ChatGPT continuity memory. Report synchronization only after verifying the GitHub commit.
+
+
+## Latest checkpoint — A04 complete; A05/A06 pending — 1 November 2026
+
+- Official roadmap: `GTVH-BRR-001 v1.0`.
+- A04: DONE for remote repository/source audit. Evidence in `INVENTORY.md` and `AUDIT_REGISTER.md`.
+- Repository: `Frangga11/glass-tv-home`, a fork of `aqmangge/glass-tv-home`.
+- Current B02 branch head: `01cbef2c2fc90498295971b22c369a72cdfa734a`; Draft PR #11 remains open/unmerged.
+- B01 branch head: `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`; Draft PR #10 remains open/unmerged.
+- Exact-head CI #225 (B01) and #234 (B02) both PASS; each ran launcher tests/build and lists/tools/docs checks. Manual TV-test APK publication was skipped.
+- A04 limitation: this session used GitHub remote inspection only; no local checkout/worktree was opened or changed. A separate local clone, if any, has not been inspected.
+- A05: no exact APK identity has been matched. Existing Gradle metadata 4.0.0/code 40 is not unique to a branch. Need installed APK evidence (preferably extracted APK file and SHA-256; package dump/path as supporting metadata).
+- A06: do not create the final checkpoint until A05 maps the tested APK to an exact commit. Then capture source ref, APK/hash, device-state backup, and rollback instructions.
+- **Execution hold:** no further B02/B03 implementation, no PR merge, no candidate APK installation, no device setting changes, and no TV-test artifact publication while A05/A06 and the remaining audits are unresolved.
+- Next resume point: A05 — identify the installed/tested APK from the Mi TV Stick.
