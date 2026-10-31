@@ -9,7 +9,7 @@ final class NavigationState {
     static final String HOME_FOCUS_KEY = "home_focus_component";
     static final String HOME_FOCUS_POSITION = "home_focus_position";
     static final String HOME_FOCUS_TOP_PILL = "home_focus_top_pill";
-    static final String HOME_FOCUS_TOP_PILL_ID = "home_focus_top_pill_id";
+    static final String HOME_FOCUS_TOP_PILL_KEY = "home_focus_top_pill_key";
     static final String SETTINGS_TAB = "settings_tab";
 
     static final int DEFAULT_SETTINGS_TAB = 0;
@@ -26,6 +26,12 @@ final class NavigationState {
         if (itemCount <= 0) return -1;
         int candidate = keyPosition >= 0 ? keyPosition : savedPosition;
         return Math.max(0, Math.min(candidate, itemCount - 1));
+    }
+
+    static String normalizeTopPillKey(String key) {
+        if ("inputs".equals(key) || "wifi".equals(key) || "assistant".equals(key)
+                || "candy_box".equals(key) || "settings".equals(key)) return key;
+        return null;
     }
 
     static int normalizeSettingsTab(int tab) {
