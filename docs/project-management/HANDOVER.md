@@ -176,3 +176,12 @@
 - Changes: shared AlertDialog background, shared glass panel, and phone QR upload panel made fully opaque. Interactive blurred-wallpaper `GlassDrawable` popups intentionally retained.
 - CI #235 / run `41233304847`: Lists/tools/docs job passed; Launcher build/unit-test job was still running at last check. No TV-test APK artifact published.
 - Next: finish B03 source audit for dialog geometry/focus/dismissal, verify CI, then proceed B04. No device test or PR merge.
+
+
+### B03 follow-up — focus and viewport geometry
+
+- Latest PR #12 head: `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`.
+- Added explicit D-pad focus backgrounds to standard AlertDialog action buttons and list rows.
+- QR upload dialog now has a 90%-viewport maximum width/height, a vertical ScrollView, and D-pad Up/Down scrolling while the Close button remains the focus target. Its existing onDismiss server-stop cleanup remains intact.
+- Now Playing and module-card prompt widths are clamped to 90% of the TV viewport.
+- Exact-head CI #239 / run `41233548406`: Lists/tools/docs PASS; Launcher build/unit-test job running at last check.
