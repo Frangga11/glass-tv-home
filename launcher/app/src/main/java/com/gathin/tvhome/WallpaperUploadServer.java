@@ -253,7 +253,7 @@ public class WallpaperUploadServer {
                 out.flush();
             } else if (requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
                 handleStandbyUpload(client, in, out, lines);
-            } else if (requestLine.startsWith("GET")) {
+            } else if (requestLine.startsWith("GET / HTTP/") || requestLine.startsWith("GET /?")) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/html; charset=UTF-8\r\n" +
