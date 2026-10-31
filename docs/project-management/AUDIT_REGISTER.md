@@ -25,14 +25,15 @@
 | A-008 | P2 | Avatar management | New profiles start with built-in avatars; custom QR upload is available after selecting the profile in Settings | Deferred by design; verify post-creation flow; inline upload at creation is not release-critical | DEFERRED |
 | A-009 | P2 | Avatar rendering | Downsampled rendering, center-crop, child/adult ring, EXIF orientation, and built-in fallback are implemented | Test portrait, landscape, large, unsupported, and corrupt images | OPEN — device verification |
 | A-010 | P2 | Branch control | Branch ancestry checked; avatar candidate is eight commits ahead and has no commits behind settings/gallery baseline; QR work is isolated in draft PR #6 | Complete review and merge only after all gates pass | OPEN — PR review |
-| A-011 | P1 | Real device | CI release APK exists, but no evidence yet of installation/test on user's actual Mi TV Stick | Install artifact from workflow run 41199143712 and execute AVATAR_AUDIT.md device checklist | OPEN — USER DEVICE TEST REQUIRED |
-| A-012 | P2 | Wallpaper | Exact default wallpaper asset and fallback behavior not yet documented | Inspect drawable/assets and wallpaper selection code | OPEN |
+| A-011 | P1 | Real device | CI release APK exists, but no evidence yet of installation/test on user's actual Mi TV Stick | Install artifact from workflow run 41199199372 and execute AVATAR_AUDIT.md device checklist | OPEN — USER DEVICE TEST REQUIRED |
+| A-012 | P2 | Wallpaper | Bundled default is `assets/kabut-pagi-dempo.jpg`; missing/corrupt fallback and visual behavior remain unverified | Complete W-001 source/device acceptance | OPEN — see WALLPAPER_AUDIT.md |
 | A-013 | P2 | Icon animation | Animation inventory and per-icon behavior not yet mapped | Inspect adapters, focus listeners, animators, and test on TV | OPEN |
 | A-014 | P2 | Information layout | Exact on-screen order and focus navigation of clock/weather/AQI/prayer/Islamic shelf not yet recorded | Map view hierarchy and compare with user-approved screenshots | OPEN |
 | A-015 | P2 | Weather/AQI | Source, location fallback, cache freshness, error/offline behavior not fully audited | Inspect weather services and test online/offline/stale data | OPEN |
 | A-016 | P1 | Prayer times | Regional zone, date boundary, DST/timezone and accuracy need confirmation for Pagar Alam | Validate source/time zone and compare against authoritative local timetable | OPEN |
-| A-017 | P1 | Wallpaper upload | QR upload server security, token validation, file validation, port fallback, and shutdown behavior need dedicated audit | Inspect full server and test same-LAN upload / invalid upload / server stop | OPEN |
+| A-017 | P1 | Wallpaper upload | QR currently targets bare server root; wallpaper routes are not session-token scoped | Fix session-scoped route, then test unauthorized/expired route and server shutdown | OPEN — confirmed source finding W-F-01 |
 | A-018 | P1 | ADB / debloat | Package disable and HOME-default changes need backup and rollback checklist | Verify scripts and prepare recovery procedure before device changes | OPEN |
+| W-001 | P1 | Wallpaper/background | Dedicated audit opened; W-F-01 identifies missing session scoping on wallpaper QR route | Complete source review, fix security finding, CI, then TV/phone acceptance | OPEN — see WALLPAPER_AUDIT.md |
 
 ## Avatar candidate acceptance tests
 
