@@ -57,6 +57,19 @@ final class GlassDrawable extends Drawable {
     @Override
     public void draw(@NonNull Canvas canvas) {
         rect.set(getBounds());
+        boolean glassEnabled = owner.getContext().getSharedPreferences("wallpaper_prefs", android.content.Context.MODE_PRIVATE)
+                .getBoolean("glass_effects_enabled", true);
+        if (!glassEnabled) {
+            if (paintsShape && highlight != null && highlight.isShowing()) {
+                owner.getLocationInWindow(at);
+                highlight.getLocationInWindow(highlightAt);
+                canvas.save();
+                canvas.clipRect(getBounds());
+                highlight.drawShape(canvas, highlightAt[0] - at[0], highlightAt[1] - at[1], owner);
+                canvas.restore();
+            }
+            return;
+        }
         // The glass gives way to the focus fill as it arrives: the more of this pill the gliding
         // shape covers, the fainter the glass, until a focused pill is the fill alone. As the shape
         // leaves, the glass comes back the same way.
