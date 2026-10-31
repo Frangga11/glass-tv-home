@@ -817,6 +817,11 @@ public final class ModernSettingsDialog {
                         "📷 Koleksi Foto Pribadi", photoCount + " foto tersimpan di perangkat. Foto berganti otomatis setiap 20 detik."));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
+                        "📲 Unggah Foto dari HP (Kode QR)",
+                        "Pindai kode QR dengan ponsel yang memakai Wi-Fi sama. Foto masuk ke koleksi Layar Siaga, bukan wallpaper.",
+                        activity::showStandbyUploadQrDialog));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
                         "➕ Pilih Foto untuk Layar Siaga",
                         "Pilih satu atau beberapa foto dari penyimpanan TV, USB, atau sumber berkas yang tersedia.",
                         activity::pickStandbyPhotos));
@@ -826,14 +831,6 @@ public final class ModernSettingsDialog {
                         "Tampilkan koleksi foto sebagai latar Layar Siaga. Matikan untuk kembali ke tampilan jam bawaan.",
                         photoMode, isChecked -> {
                             activity.setStandbyPhotoMode(isChecked);
-                            if (renderRightPane[0] != null) renderRightPane[0].run();
-                        }));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🕰️ Gunakan Tampilan Jam Bawaan",
-                        "Kembalikan Layar Siaga ke jam, tanggal Hijriah, dan informasi waktu salat.",
-                        () -> {
-                            activity.setStandbyPhotoMode(false);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -1033,11 +1030,11 @@ public final class ModernSettingsDialog {
                         };
                         String[] keywords = {
                                 "profil pengguna akun avatar nama",
-                                "beranda layar utama doa salat azan audio suara asisten gemini",
+                                "beranda layar utama doa salat azan audio suara pusat informasi",
                                 "tampilan wallpaper latar gambar koleksi interval",
                                 "widget informasi lokasi cuaca udara kualitas aqi jadwal salat",
                                 "animasi efek cuaca dinamis hujan cahaya warna ikon glow transisi",
-                                "layar siaga standby screensaver jam foto pribadi foto upload",
+                                "layar siaga standby screensaver jam foto pribadi foto upload qr hp ponsel",
                                 "mode anak pin kunci aplikasi sembunyikan kontrol orang tua",
                                 "perangkat remote tombol home aksesibilitas restart matikan daya tv android resolusi penyimpanan bahasa pembaruan cache"
                         };
