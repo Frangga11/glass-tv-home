@@ -254,6 +254,6 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 - Exact-source checkpoint branch created directly from `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`: `checkpoint/a06-tested-apk-pr9-7e8392e1`.
 - Checkpoint manifest: [A06_TESTED_APK_BASELINE.md](checkpoints/A06_TESTED_APK_BASELINE.md).
 - No code changes were made on the checkpoint branch; it is a preservation ref.
-- Uploaded APK and SHA-256 are identified, but the separate read-only Mi TV Stick device-state snapshot and rollback-readiness evidence have not yet been collected.
+- Historical Bugjaeger evidence recovered from the prior chat (31 Oct): `com.mitv.tvhome` appeared disabled; `com.google.android.tvlauncher` and `com.gathin.tvhome` appeared in enabled-package search; `get-home-activities` returned `unknown`; `set-home-activity` returned `Success`; `am start` said the launcher activity was already running. This is partial historical evidence only: no `pm path`, full `dumpsys package`, authoritative HOME resolver output, or installed APK SHA-256 was captured. Uploaded APK and SHA-256 are identified, but the fresh read-only device-state snapshot and rollback-readiness evidence remain pending.
 - Do not change HOME ownership, disable packages, install a candidate APK, or alter device settings before capturing that state.
 - Overall A06 remains open until the user provides the requested Bugjaeger/ADB read-only output and it is reviewed.
