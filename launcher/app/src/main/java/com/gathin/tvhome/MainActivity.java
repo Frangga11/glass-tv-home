@@ -1836,8 +1836,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onTileFocused(int position, View card) {
+        if (adapter == null || card == null || position < 0 || position >= adapter.getItemCount()) return;
         if (!resuming && hasWindowFocus()) SoundEffects.playNav();
-        if (adapter == null || position < 0 || position >= adapter.getItemCount()) return;
         lastFocused = position;
         lastFocusedKey = NavigationState.normalizeFocusKey(adapter.keyAt(position));
         android.content.SharedPreferences.Editor navigationEdit =
@@ -2698,30 +2698,41 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
             if (newState != RecyclerView.SCROLL_STATE_IDLE) return;
             rv.removeOnScrollListener(this);
-            if (adapter == null || adapter.getItemCount() == 0) return;
+            if (adapter == null) return;
+            if (adapter.getItemCount() == 0) {
+                focusTile(0);
+                return;
+            }
             int targetPosition = NavigationState.resolveHomePosition(-1, pendingFocus, adapter.getItemCount());
             RecyclerView.ViewHolder h = rv.findViewHolderForAdapterPosition(targetPosition);
             View target = h != null ? h.itemView.findViewById(R.id.card) : null;
-            if (target != null) target.requestFocus();
-            else rv.post(() -> focusTile(targetPosition));
+            if (target != null && target.isShown() && target.isFocusable() && target.requestFocus()) return;
+            rv.post(() -> focusTile(targetPosition));
         }
     };
+
+    private boolean focusTopBarFallback() {
+        View fallback = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE
+                && btnWifi.isFocusable() ? btnWifi : findViewById(R.id.btnSettings);
+        return fallback != null && fallback.isFocusable() && fallback.requestFocus();
+    }
 
     private void focusTile(int position) {
         if (adapter == null || grid == null) return;
         if (adapter.getItemCount() == 0) {
-            View fallback = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE
-                    ? btnWifi : findViewById(R.id.btnSettings);
-            if (fallback != null) fallback.requestFocus();
+            focusTopBarFallback();
             return;
         }
         final int pos = NavigationState.resolveHomePosition(-1, position, adapter.getItemCount());
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         if (vh != null) {
             View card = vh.itemView.findViewById(R.id.card);
-            // Already focused (e.g. back from an app): no focus change fires, so restore the glass by hand.
-            if (card.isFocused()) onTileFocused(pos, card);
-            else card.requestFocus();
+            if (card != null && card.isShown() && card.isFocusable()) {
+                // Already focused (e.g. back from an app): no focus change fires, so restore the glass by hand.
+                if (card.isFocused()) onTileFocused(pos, card);
+                else if (card.requestFocus()) return;
+            }
+            focusTopBarFallback();
             return;
         }
         // Not laid out yet: scroll there, then focus once the scroll settles. One listener at most,
