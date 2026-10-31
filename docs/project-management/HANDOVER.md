@@ -155,3 +155,13 @@
 - A06 checkpoint manifest and rollback SOP are on `checkpoint/a06-tested-apk-pr9-7e8392e1`. User's historical PR #9 APK test remains accepted; no retest requested.
 - No device settings/packages changed; no candidate APK installed; no PR merged.
 - **Next execution point:** resume source-level work on B01/B02 in their existing isolated Draft PRs. Physical TV acceptance remains deferred until final integrated regression stage F02 and explicit final APK approval.
+
+
+## B02 second-pass audit — 1 November 2026
+
+- PR #11 remains open/Draft, branch `feature/b02-remote-focus-indicators`, exact head `01cbef2c2fc90498295971b22c369a72cdfa734a`.
+- Reviewed all five changed files and relevant focus-listener context. No source-level listener collision was identified in the inspected paths.
+- CI #234 / run `41230495879`: Launcher build/unit tests and Lists/tools/docs both PASS; APK size guard PASS; manual TV-test artifact publication SKIPPED. No candidate artifact created.
+- B02 source review/CI gate PASS, but task remains IN PROGRESS until integrated remote acceptance in F02.
+- A06 is now DONE after receipt and documentation of the read-only Mi TV Stick snapshot. E01 must investigate the resolver/preferred-activity mismatch without changing device state.
+- **Next source task:** B03 — audit dialog/popup opacity, layering, focus, sizing and dismissal. No TV APK installation/testing or PR merge.
