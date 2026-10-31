@@ -253,7 +253,7 @@ public class WallpaperUploadServer {
                 handleApiSlideshow(out);
             } else if (requestLine.startsWith("POST /api/clear")) {
                 handleApiClear(out);
-            } else if (requestLine.startsWith("GET " + getStandbyPath() + " ")) {
+            } else if (standbyOnly && requestLine.startsWith("GET " + getStandbyPath() + " ")) {
                 byte[] pageBytes = getStandbyHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n"
                         + "Content-Type: text/html; charset=UTF-8\r\n"
@@ -263,7 +263,7 @@ public class WallpaperUploadServer {
                 out.write(response.getBytes("UTF-8"));
                 out.write(pageBytes);
                 out.flush();
-            } else if (requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
+            } else if (standbyOnly && requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
                 handleStandbyUpload(client, in, out, lines);
             } else if (requestLine.startsWith("GET / HTTP/") || requestLine.startsWith("GET /?")) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
