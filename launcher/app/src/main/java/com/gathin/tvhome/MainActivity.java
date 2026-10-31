@@ -3882,7 +3882,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Category 6: Minimalist
         String tMin = AppLanguage.LANG_EN.equals(curLang) ? "🔲 Dark Minimalist (OLED)" : (AppLanguage.LANG_ID.equals(curLang) ? "🔲 Minimalis Gelap (OLED)" : "🔲 Minimalis Gelap (OLED)");
-        String sMin = AppLanguage.LANG_EN.equals(curLang) ? "16 Unsplash Dark Wallpapers • Perfect for OLED" : (AppLanguage.LANG_ID.equals(curLang) ? "16 Koleksi Unsplash Dark Wallpaper • Khusus Layar OLED" : "16 Koleksi Unsplash Dark Wallpaper • Khas Skrin OLED");
+        String sMin = AppLanguage.LANG_EN.equals(curLang) ? "16 Unsplash Dark Wallpapers • Perfect for OLED" : (AppLanguage.LANG_ID.equals(curLang) ? "20 Koleksi Wallpaper Gelap • Khusus Layar OLED" : "16 Koleksi Unsplash Dark Wallpaper • Khas Skrin OLED");
         options.add(new WallpaperOption("Minimalist", tMin, sMin));
 
         // Category 7: Manage Custom
