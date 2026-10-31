@@ -26,24 +26,25 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
- * Clean Waktu Solat for Putrajaya (JAKIM Zone WLY01).
- * Fetches official JAKIM e-solat timetable, caches locally, and includes
- * an accurate solar-calculation fallback so it never fails offline.
+ * Indonesian prayer timetable support with a validated Kemenag data mirror and a local
+ * astronomical estimate as an offline fallback.
  */
 final class PrayerTimes {
     private static final String TAG = "TvHome.Prayer";
     private static final String PREFS_NAME = "prayer_times_cache";
-    private static final String KEY_JSON = "takwim_wly01";
+    private static final String KEY_JSON = "takwim_indonesia_annual";
     private static final String KEY_MONTH = "takwim_month";
+    private static final String KEY_YEAR = "takwim_year";
 
-    // Coordinates for Putrajaya
-    private static final double LATITUDE = 2.9264;
-    private static final double LONGITUDE = 101.6964;
-    private static final double TIMEZONE = 8.0;
+    // Default coordinates and timezone for Kota Pagar Alam.
+    private static final double LATITUDE = -4.0212;
+    private static final double LONGITUDE = 103.2517;
+    private static final double TIMEZONE = 7.0;
 
-    static final String[] NAMES = {"Subuh", "Syuruk", "Zohor", "Asar", "Maghrib", "Isyak"};
+    static final String[] NAMES = {"Subuh", "Terbit", "Dzuhur", "Ashar", "Maghrib", "Isya"};
     private static final String[] PRAYER_NAMES = NAMES;
     private static final String[] PRAYER_KEYS = {"fajr", "syuruk", "dhuhr", "asr", "maghrib", "isha"};
 
@@ -58,15 +59,15 @@ final class PrayerTimes {
     }
 
     static Day day(Context ctx, String zone, Calendar date) {
-        if (zone == null || zone.isEmpty()) zone = getJakimZone(ctx);
-        long[] times = getTimesForToday(ctx, date.get(Calendar.DAY_OF_MONTH));
+        if (zone == null || zone.isEmpty() || !zone.startsWith("ID_")) zone = getJakimZone(ctx);
+        long[] times = getTimesForDate(ctx, date);
         if (times == null || times.length < 6) {
             times = calculateFallback(ctx, date);
         }
         if (times == null || times.length < 6) return null;
         int[] minutes = new int[6];
         for (int i = 0; i < 6; i++) {
-            Calendar c = Calendar.getInstance();
+            Calendar c = Calendar.getInstance(getPrayerTimeZone(ctx));
             c.setTimeInMillis(times[i]);
             minutes[i] = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
         }
@@ -74,7 +75,7 @@ final class PrayerTimes {
     }
 
     static boolean due(Context ctx, String zone) {
-        return day(ctx, zone, Calendar.getInstance()) == null;
+        return day(ctx, zone, calendar(ctx)) == null;
     }
 
     static boolean refresh(Context ctx, String zone) {
@@ -99,16 +100,56 @@ final class PrayerTimes {
         new Thread(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-                Calendar now = Calendar.getInstance();
+                Calendar now = calendar(context);
                 int currentMonth = now.get(Calendar.YEAR) * 100 + (now.get(Calendar.MONTH) + 1);
                 String zone = getJakimZone(context);
                 String cachedZone = prefs.getString("cached_zone", "");
 
-                if (zone != null && (zone.startsWith("SGP") || zone.startsWith("ID_"))) {
-                    // Singapore and Indonesia use accurate solar calculation directly
-                    if (onUpdated != null) {
-                        new Handler(Looper.getMainLooper()).post(onUpdated);
+                if (zone != null && zone.startsWith("ID_")) {
+                    if (!"ID_PGA".equals(zone)) {
+                        Log.w(TAG, "No verified Kemenag city timetable configured for " + zone + "; using local fallback only");
+                        if (onUpdated != null) new Handler(Looper.getMainLooper()).post(onUpdated);
+                        return;
                     }
+                    int year = now.get(Calendar.YEAR);
+                    String cachedJson = prefs.getString(KEY_JSON, null);
+                    boolean validCache = false;
+                    if (!force && zone.equals(cachedZone) && prefs.getInt(KEY_YEAR, 0) == year
+                            && prefs.getInt(KEY_MONTH, 0) == currentMonth && cachedJson != null) {
+                        try {
+                            validCache = isValidIndonesiaTimetable(new JSONObject(cachedJson), year);
+                        } catch (Exception ignored) {
+                            // A damaged cache must trigger a fresh download, never block recovery.
+                        }
+                    }
+                    if (validCache) return;
+
+                    String yearUrl = "https://sajadah.org/api/v1/times/id/kota-pagar-alam/" + year + ".json";
+                    HttpURLConnection idConn = (HttpURLConnection) new URL(yearUrl).openConnection();
+                    idConn.setConnectTimeout(10000);
+                    idConn.setReadTimeout(10000);
+                    idConn.setRequestMethod("GET");
+                    try {
+                        if (idConn.getResponseCode() != HttpURLConnection.HTTP_OK)
+                            throw new IllegalStateException("Timetable HTTP " + idConn.getResponseCode());
+                        StringBuilder idJson = new StringBuilder();
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                                idConn.getInputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) idJson.append(line);
+                        }
+                        JSONObject timetable = new JSONObject(idJson.toString());
+                        if (!isValidIndonesiaTimetable(timetable, year))
+                            throw new IllegalStateException("Invalid Kemenag timetable for Kota Pagar Alam");
+                        prefs.edit().putString(KEY_JSON, idJson.toString()).putInt(KEY_YEAR, year).putInt(KEY_MONTH, currentMonth)
+                                .putString("cached_zone", zone).apply();
+                        Log.i(TAG, "Loaded validated Kemenag RI timetable for Kota Pagar Alam, " + year);
+                        if (onUpdated != null) new Handler(Looper.getMainLooper()).post(onUpdated);
+                    } finally { idConn.disconnect(); }
+                    return;
+                }
+                if (zone != null && zone.startsWith("SGP")) {
+                    if (onUpdated != null) new Handler(Looper.getMainLooper()).post(onUpdated);
                     return;
                 }
 
@@ -145,6 +186,90 @@ final class PrayerTimes {
                 Log.w(TAG, "Prayer sync offline/failed: " + e.getMessage());
             }
         }, "prayer-sync").start();
+    }
+
+    /** Validate the full annual timetable before trusting or caching the Kemenag mirror. */
+    private static boolean isValidIndonesiaTimetable(JSONObject obj, int expectedYear) {
+        try {
+            JSONObject authority = obj.getJSONObject("authority");
+            JSONObject region = obj.getJSONObject("region");
+            if (obj.optInt("schema", -1) != 1 || !"ID".equals(obj.optString("country"))
+                    || obj.optInt("year", -1) != expectedYear || !obj.optBoolean("official", false)
+                    || !"kemenag".equalsIgnoreCase(authority.optString("id"))
+                    || !"kota-pagar-alam".equalsIgnoreCase(region.optString("id"))
+                    || !"Asia/Jakarta".equals(region.optString("tz"))) return false;
+            JSONArray fields = obj.getJSONArray("fields");
+            String[] required = {"date", "fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"};
+            int[] indexes = new int[required.length];
+            for (int i = 0; i < required.length; i++) {
+                indexes[i] = -1;
+                for (int j = 0; j < fields.length(); j++)
+                    if (required[i].equals(fields.optString(j))) { indexes[i] = j; break; }
+                if (indexes[i] < 0) return false;
+            }
+            JSONArray days = obj.getJSONArray("days");
+            Calendar expected = new java.util.GregorianCalendar(TimeZone.getTimeZone("Asia/Jakarta"), Locale.ROOT);
+            expected.clear();
+            expected.set(expectedYear, Calendar.JANUARY, 1, 0, 0, 0);
+            if (days.length() != expected.getActualMaximum(Calendar.DAY_OF_YEAR)) return false;
+            for (int i = 0; i < days.length(); i++) {
+                JSONArray row = days.getJSONArray(i);
+                if (row.length() < fields.length()) return false;
+                String date = String.format(Locale.ROOT, "%04d-%02d-%02d",
+                        expected.get(Calendar.YEAR), expected.get(Calendar.MONTH) + 1, expected.get(Calendar.DAY_OF_MONTH));
+                if (!date.equals(row.optString(indexes[0]))) return false;
+                int previous = -1;
+                for (int k = 1; k < indexes.length; k++) {
+                    String value = row.optString(indexes[k]);
+                    if (!value.matches("(?:[01]\\d|2[0-3]):[0-5]\\d")) return false;
+                    int minute = Integer.parseInt(value.substring(0, 2)) * 60 + Integer.parseInt(value.substring(3, 5));
+                    if (minute <= previous) return false;
+                    previous = minute;
+                }
+                expected.add(Calendar.DAY_OF_MONTH, 1);
+            }
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Kemenag timetable validation failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    static boolean isUsingOfficialKemenagSchedule(Context context) {
+        if (!"ID_PGA".equals(getActiveZone(context))) return false;
+        try {
+            SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            String json = prefs.getString(KEY_JSON, null);
+            return json != null && isValidIndonesiaTimetable(new JSONObject(json), calendar(context).get(Calendar.YEAR));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static TimeZone getPrayerTimeZone(Context context) {
+        String zone = getActiveZone(context);
+        if (zone != null && zone.startsWith("ID_")) {
+            double longitude = AppLocationManager.getLongitude(context);
+            SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            if (prefs.contains("manual_lon")) {
+                try { longitude = Double.parseDouble(prefs.getString("manual_lon", String.valueOf(longitude))); }
+                catch (NumberFormatException ignored) { }
+            }
+            if (longitude < 114.0) return TimeZone.getTimeZone("Asia/Jakarta");
+            if (longitude < 125.0) return TimeZone.getTimeZone("Asia/Makassar");
+            return TimeZone.getTimeZone("Asia/Jayapura");
+        }
+        return TimeZone.getDefault();
+    }
+
+    static Calendar calendar(Context context) {
+        return Calendar.getInstance(getPrayerTimeZone(context));
+    }
+
+    private static SimpleDateFormat prayerTimeFormat(Context context, String pattern) {
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.getDefault());
+        format.setTimeZone(getPrayerTimeZone(context));
+        return format;
     }
 
     public static class PrayerZone {
@@ -238,7 +363,7 @@ final class PrayerTimes {
     public static String getActiveZone(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         if (prefs.contains("manual_prayer_zone")) {
-            return prefs.getString("manual_prayer_zone", "WLY01");
+            return getJakimZone(context);
         }
         return getJakimZone(context);
     }
@@ -246,9 +371,10 @@ final class PrayerTimes {
     public static String getActiveZoneName(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         if (prefs.contains("manual_prayer_zone_name")) {
-            return prefs.getString("manual_prayer_zone_name", "Putrajaya & Kuala Lumpur");
+            return prefs.getString("manual_prayer_zone_name", "Pagar Alam");
         }
         String zone = getActiveZone(context);
+        if ("ID_PGA".equals(zone)) return "Pagar Alam";
         for (PrayerZone pz : PRESET_ZONES) {
             if (pz.code.equalsIgnoreCase(zone)) return pz.name;
         }
@@ -257,7 +383,7 @@ final class PrayerTimes {
 
     public static String getShortZoneName(Context context) {
         String name = getActiveZoneName(context);
-        if (name == null || name.trim().isEmpty()) return "Putrajaya";
+        if (name == null || name.trim().isEmpty()) return "Pagar Alam";
         int cut = name.indexOf(',');
         if (cut > 0) name = name.substring(0, cut);
         cut = name.indexOf('&');
@@ -265,7 +391,7 @@ final class PrayerTimes {
         cut = name.indexOf('(');
         if (cut > 0) name = name.substring(0, cut);
         name = name.trim();
-        return name.isEmpty() ? "Putrajaya" : name;
+        return name.isEmpty() ? "Pagar Alam" : name;
     }
 
     public static void clearManualZone(Context context) {
@@ -316,43 +442,17 @@ final class PrayerTimes {
 
     private static String getJakimZone(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        if (prefs.contains("manual_prayer_zone")) {
-            return prefs.getString("manual_prayer_zone", "WLY01");
+        String selected = prefs.getString("manual_prayer_zone", "ID_PGA");
+        if (selected == null || !selected.startsWith("ID_")) {
+            // Migrate any former non-Indonesian default to the user's Pagar Alam location.
+            prefs.edit().putString("manual_prayer_zone", "ID_PGA")
+                    .putString("manual_prayer_zone_name", "Pagar Alam")
+                    .putString("manual_lat", "-4.0212")
+                    .putString("manual_lon", "103.2517")
+                    .apply();
+            return "ID_PGA";
         }
-        String loc = AppLocationManager.getLocationName(context).toLowerCase(Locale.ROOT);
-        String stationId = AppLocationManager.getStationId(context).toUpperCase(Locale.ROOT);
-
-        if (loc.contains("putrajaya") || stationId.equals("CA17W")) return "WLY01_PJ";
-        if (loc.contains("kuala lumpur") || loc.contains("cheras") || loc.contains("batu muda")) return "WLY01";
-        if (loc.contains("labuan")) return "WLY02";
-        if (loc.contains("melaka") || loc.contains("alor gajah") || loc.contains("rambai")) return "MLK01";
-        if (loc.contains("petaling") || loc.contains("shah alam")) return "SGR01";
-        if (loc.contains("klang") || loc.contains("banting")) return "SGR03";
-        if (loc.contains("seremban") || loc.contains("nilai") || loc.contains("port dickson")) return "NGS02";
-        if (loc.contains("johor") || loc.contains("larkin") || loc.contains("pasir gudang")) return "JHR02";
-        if (loc.contains("batu pahat")) return "JHR03";
-        if (loc.contains("kluang")) return "JHR04";
-        if (loc.contains("tangkak")) return "JHR01";
-        if (loc.contains("pinang") || loc.contains("seberang") || loc.contains("minden")) return "PNG01";
-        if (loc.contains("ipoh") || loc.contains("tasek") || loc.contains("taiping")) return "PRK02";
-        if (loc.contains("manjung")) return "PRK01";
-        if (loc.contains("alor setar")) return "KDH01";
-        if (loc.contains("sungai petani")) return "KDH02";
-        if (loc.contains("langkawi")) return "KDH07";
-        if (loc.contains("perlis") || loc.contains("kangar")) return "PLS01";
-        if (loc.contains("kuantan")) return "PHG02";
-        if (loc.contains("temerloh")) return "PHG04";
-        if (loc.contains("terengganu") || loc.contains("kemaman")) return "TRG01";
-        if (loc.contains("kota bharu") || loc.contains("kelantan")) return "KTN01";
-        if (loc.contains("kota kinabalu")) return "SBH07";
-        if (loc.contains("sandakan")) return "SBH05";
-        if (loc.contains("tawau")) return "SBH03";
-        if (loc.contains("kuching")) return "SWK08";
-        if (loc.contains("miri")) return "SWK04";
-        if (loc.contains("bintulu")) return "SWK06";
-        if (loc.contains("sibu")) return "SWK05";
-
-        return "WLY01"; // Default Putrajaya
+        return selected;
     }
 
     static class PrayerItem {
@@ -371,9 +471,8 @@ final class PrayerTimes {
 
     /** Returns all 6 prayers for today with formatted times and status. */
     static PrayerItem[] getPrayerItems(Context context) {
-        Calendar now = Calendar.getInstance();
-        int day = now.get(Calendar.DAY_OF_MONTH);
-        long[] times = getTimesForToday(context, day);
+        Calendar now = calendar(context);
+        long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) {
             times = calculateFallback(context, now);
         }
@@ -388,7 +487,7 @@ final class PrayerTimes {
         }
         if (nextIdx == -1) nextIdx = 0;
 
-        SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        SimpleDateFormat timeFmt = prayerTimeFormat(context, "HH:mm");
         String[] prayerNames = AppLanguage.getPrayerNames(context);
         PrayerItem[] items = new PrayerItem[6];
         for (int i = 0; i < 6; i++) {
@@ -404,9 +503,8 @@ final class PrayerTimes {
 
     /** Returns formatted clean UI CharSequence with highlighted next prayer, bold and legible. */
     static CharSequence getFormatted(Context context) {
-        Calendar now = Calendar.getInstance();
-        int day = now.get(Calendar.DAY_OF_MONTH);
-        long[] times = getTimesForToday(context, day);
+        Calendar now = calendar(context);
+        long[] times = getTimesForDate(context, now);
 
         if (times == null || times.length < 6) {
             times = calculateFallback(context, now);
@@ -425,7 +523,7 @@ final class PrayerTimes {
         }
         if (nextIdx == -1) nextIdx = 0; // After Isyak -> Subuh next morning
 
-        SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        SimpleDateFormat timeFmt = prayerTimeFormat(context, "HH:mm");
         String[] prayerNames = AppLanguage.getPrayerNames(context);
         String nextWord = AppLanguage.getNextPrayerPrefix(context);
 
@@ -437,7 +535,7 @@ final class PrayerTimes {
         if (nextIdx == 0 && times[0] < nowMs) {
             Calendar tomorrow = (Calendar) now.clone();
             tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-            long[] tomTimes = getTimesForToday(context, tomorrow.get(Calendar.DAY_OF_MONTH));
+            long[] tomTimes = getTimesForDate(context, tomorrow);
             if (tomTimes == null || tomTimes.length < 6) tomTimes = calculateFallback(context, tomorrow);
             if (tomTimes != null && tomTimes.length > 0) displayTimeMs = tomTimes[0];
         }
@@ -445,6 +543,9 @@ final class PrayerTimes {
 
         int l1Start = sb.length();
         String zoneHeader = getShortZoneName(context).toUpperCase(Locale.ROOT);
+        if ("ID_PGA".equals(getActiveZone(context))) {
+            zoneHeader += isUsingOfficialKemenagSchedule(context) ? " • KEMENAG RI" : " • PERKIRAAN";
+        }
         sb.append(zoneHeader).append("  •  ").append(nextWord).append(": ").append(nextName).append(" ").append(nextTime);
         int l1End = sb.length();
         sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), l1Start, l1End, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -481,54 +582,81 @@ final class PrayerTimes {
         return sb;
     }
 
-    private static long[] getTimesForToday(Context context, int day) {
+    private static long[] getTimesForDate(Context context, Calendar requestedDate) {
         try {
             SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             String jsonStr = prefs.getString(KEY_JSON, null);
-            if (jsonStr == null) return null;
-
+            if (jsonStr == null || requestedDate == null) return null;
             JSONObject obj = new JSONObject(jsonStr);
+            String activeZone = getActiveZone(context);
+            if ("ID_PGA".equals(activeZone)) {
+                TimeZone tz = getPrayerTimeZone(context);
+                Calendar target = (Calendar) requestedDate.clone();
+                target.setTimeZone(tz);
+                int year = target.get(Calendar.YEAR);
+                if (!isValidIndonesiaTimetable(obj, year)) return null;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+                dateFormat.setTimeZone(tz);
+                String dateKey = dateFormat.format(target.getTime());
+                JSONArray fields = obj.getJSONArray("fields"), days = obj.getJSONArray("days");
+                int dateIndex = -1;
+                String[] wanted = {"fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"};
+                int[] indexes = new int[wanted.length];
+                for (int j = 0; j < fields.length(); j++) {
+                    String field = fields.optString(j);
+                    if ("date".equals(field)) dateIndex = j;
+                    for (int k = 0; k < wanted.length; k++) if (wanted[k].equals(field)) indexes[k] = j;
+                }
+                if (dateIndex < 0) return null;
+                for (int i = 0; i < days.length(); i++) {
+                    JSONArray row = days.getJSONArray(i);
+                    if (!dateKey.equals(row.optString(dateIndex))) continue;
+                    long[] result = new long[6];
+                    for (int k = 0; k < 6; k++) {
+                        String value = row.optString(indexes[k]);
+                        if (!value.matches("(?:[01]\\d|2[0-3]):[0-5]\\d")) return null;
+                        Calendar local = (Calendar) target.clone();
+                        local.set(Calendar.HOUR_OF_DAY, Integer.parseInt(value.substring(0, 2)));
+                        local.set(Calendar.MINUTE, Integer.parseInt(value.substring(3, 5)));
+                        local.set(Calendar.SECOND, 0);
+                        local.set(Calendar.MILLISECOND, 0);
+                        result[k] = local.getTimeInMillis();
+                    }
+                    return result;
+                }
+                return null;
+            }
+            int day = requestedDate.get(Calendar.DAY_OF_MONTH);
             JSONArray prayers = obj.getJSONArray("prayers");
             for (int i = 0; i < prayers.length(); i++) {
-                JSONObject p = prayers.getJSONObject(i);
-                if (p.optInt("day") == day) {
-                    long[] res = new long[6];
-                    for (int k = 0; k < 6; k++) {
-                        res[k] = p.getLong(PRAYER_KEYS[k]) * 1000L;
-                    }
-                    return res;
+                JSONObject prayer = prayers.getJSONObject(i);
+                if (prayer.optInt("day") == day) {
+                    long[] result = new long[6];
+                    for (int k = 0; k < 6; k++) result[k] = prayer.getLong(PRAYER_KEYS[k]) * 1000L;
+                    return result;
                 }
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception e) { Log.w(TAG, "Unable to read cached prayer timetable: " + e.getMessage()); }
         return null;
     }
 
-    /** Astronomical calculation fallback based on user's active Malaysian, Singapore, or Indonesian location. */
+    /** Astronomical calculation fallback based on the selected Indonesian location. */
     private static long[] calculateFallback(Context context, Calendar cal) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        double latitude = prefs.contains("manual_lat")
-                ? Double.parseDouble(prefs.getString("manual_lat", String.valueOf(AppLocationManager.getLatitude(context))))
-                : AppLocationManager.getLatitude(context);
-        double longitude = prefs.contains("manual_lon")
-                ? Double.parseDouble(prefs.getString("manual_lon", String.valueOf(AppLocationManager.getLongitude(context))))
-                : AppLocationManager.getLongitude(context);
-
         String zone = getActiveZone(context);
-        double tz = 8.0;
-        if (zone != null && zone.startsWith("ID_")) {
-            // Indonesia timezones: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9)
-            if (longitude < 114.0) {
-                tz = 7.0; // WIB
-            } else if (longitude < 125.0) {
-                tz = 8.0; // WITA
-            } else {
-                tz = 9.0; // WIT
-            }
-        } else {
-            tz = 8.0; // Malaysia & Singapore (UTC+8)
-        }
+        double latitude = prefs.contains("manual_lat")
+                ? Double.parseDouble(prefs.getString("manual_lat", String.valueOf(LATITUDE)))
+                : ("ID_PGA".equals(zone) ? LATITUDE : AppLocationManager.getLatitude(context));
+        double longitude = prefs.contains("manual_lon")
+                ? Double.parseDouble(prefs.getString("manual_lon", String.valueOf(LONGITUDE)))
+                : ("ID_PGA".equals(zone) ? LONGITUDE : AppLocationManager.getLongitude(context));
 
+        double tz = 7.0;
+        if (zone != null && zone.startsWith("ID_")) {
+            if (longitude < 114.0) tz = 7.0;
+            else if (longitude < 125.0) tz = 8.0;
+            else tz = 9.0;
+        }
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -556,7 +684,7 @@ final class PrayerTimes {
         double sunsetHour = noon + sunAngleHour(-0.833, latitude, delta);
         double ishaHour = noon + sunAngleHour(-18.0, latitude, delta);
 
-        // Malaysia standard rounding & +2 min ihtiyat
+        // Conservative minute rounding and small ihtiyat for the offline estimate.
         double[] hours = {fajrHour + 0.05, sunriseHour, noon + 0.04, asrHour + 0.04, sunsetHour + 0.05, ishaHour + 0.05};
         long[] res = new long[6];
         Calendar base = (Calendar) cal.clone();
@@ -604,8 +732,8 @@ final class PrayerTimes {
     /** Returns full day prayer list for popup display. */
     static java.util.List<ScheduleItem> getFullSchedule(Context context) {
         java.util.List<ScheduleItem> list = new java.util.ArrayList<>();
-        Calendar now = Calendar.getInstance();
-        long[] times = getTimesForToday(context, now.get(Calendar.DAY_OF_MONTH));
+        Calendar now = calendar(context);
+        long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
         long nowMs = now.getTimeInMillis();
@@ -619,7 +747,7 @@ final class PrayerTimes {
         }
         if (nextIdx == -1) nextIdx = 0;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        SimpleDateFormat sdf = prayerTimeFormat(context, "h:mm a");
         String[] prayerNames = AppLanguage.getPrayerNames(context);
         for (int i = 0; i < times.length; i++) {
             boolean isNext = (i == nextIdx);
@@ -631,8 +759,8 @@ final class PrayerTimes {
 
     /** Returns short summary of next prayer (e.g. for screensaver). */
     static String getNextPrayerSummary(Context context) {
-        Calendar now = Calendar.getInstance();
-        long[] times = getTimesForToday(context, now.get(Calendar.DAY_OF_MONTH));
+        Calendar now = calendar(context);
+        long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
         long nowMs = now.getTimeInMillis();
@@ -656,14 +784,14 @@ final class PrayerTimes {
             prayerName = prayerNames[0];
             Calendar tomorrow = (Calendar) now.clone();
             tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-            long[] tomTimes = getTimesForToday(context, tomorrow.get(Calendar.DAY_OF_MONTH));
+            long[] tomTimes = getTimesForDate(context, tomorrow);
             if (tomTimes == null || tomTimes.length < 6) {
                 tomTimes = calculateFallback(context, tomorrow);
             }
             nextTimeMs = (tomTimes != null && tomTimes.length > 0) ? tomTimes[0] : (times[0] + 86400000L);
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        SimpleDateFormat sdf = prayerTimeFormat(context, "h:mm a");
         String zone = getShortZoneName(context);
         return prayerName + " • " + sdf.format(new Date(nextTimeMs)) + " (" + zone + ")";
     }
@@ -671,7 +799,8 @@ final class PrayerTimes {
     /** Returns Islamic Hijrah date localized according to active language (e.g. "11 Jamadilawal 1448H"). */
     static String getHijriDate(Context context) {
         try {
-            java.time.chrono.HijrahDate h = java.time.chrono.HijrahDate.now();
+            java.time.chrono.HijrahDate h = java.time.chrono.HijrahDate.now(
+                    java.time.Clock.system(getPrayerTimeZone(context).toZoneId()));
             int day = h.get(java.time.temporal.ChronoField.DAY_OF_MONTH);
             int month = h.get(java.time.temporal.ChronoField.MONTH_OF_YEAR);
             int year = h.get(java.time.temporal.ChronoField.YEAR);

@@ -8,12 +8,9 @@ import java.util.List;
 public class LocationAndLanguageTest {
 
     @Test
-    public void testSingaporeLocation() {
-        Location.Zone sg = Location.byCode("SGP01");
-        assertNotNull("Singapore zone should exist", sg);
-        assertEquals("Singapura", sg.town);
-        assertEquals(1.3521, sg.lat, 0.001);
-        assertEquals(103.8198, sg.lon, 0.001);
+    public void testNonIndonesianLocationsAreRemoved() {
+        assertNull("Legacy Malaysia locations must not be available", Location.byCode("WLY01"));
+        assertNull("Singapore locations must not be available", Location.byCode("SGP01"));
     }
 
     @Test
@@ -40,12 +37,15 @@ public class LocationAndLanguageTest {
     }
 
     @Test
-    public void testStatesIncludeNewCountries() {
+    public void testLocationPickerShowsIndonesiaOnly() {
         List<String> states = Location.states();
-        assertTrue("States should contain Singapore", states.contains("Singapura (Singapore)"));
+        assertFalse("Singapore must not appear in the Indonesia-only picker", states.contains("Singapura (Singapore)"));
+        assertFalse("Malaysia regions must not appear in the Indonesia-only picker", states.contains("Wilayah Persekutuan"));
         assertTrue("States should contain DKI Jakarta", states.contains("Indonesia: DKI Jakarta"));
+        assertTrue("States should contain Sumatera Selatan", states.contains("Indonesia: Sumatera Selatan"));
         assertTrue("States should contain Jawa Barat", states.contains("Indonesia: Jawa Barat"));
         assertTrue("States should contain Bali", states.contains("Indonesia: Bali"));
+        assertNotNull("Pagar Alam must be available", Location.byCode("ID_PGA"));
     }
 
     @Test

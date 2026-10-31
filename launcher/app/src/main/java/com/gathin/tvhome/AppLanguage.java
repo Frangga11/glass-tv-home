@@ -22,9 +22,19 @@ final class AppLanguage {
     private AppLanguage() {}
 
     public static String getLanguage(Context ctx) {
-        if (ctx == null) return LANG_MS;
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_LANG, LANG_MS);
+        if (ctx == null) return LANG_ID;
+        SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String selected = prefs.getString(KEY_LANG, LANG_ID);
+        // This build is localized for Indonesia; migrate the former Malay default and saved setting.
+        if (selected == null || LANG_MS.equalsIgnoreCase(selected)) {
+            prefs.edit().putString(KEY_LANG, LANG_ID).apply();
+            return LANG_ID;
+        }
+        if (!LANG_ID.equalsIgnoreCase(selected) && !LANG_EN.equalsIgnoreCase(selected)) {
+            prefs.edit().putString(KEY_LANG, LANG_ID).apply();
+            return LANG_ID;
+        }
+        return selected;
     }
 
     public static void setLanguage(Context ctx, String lang) {

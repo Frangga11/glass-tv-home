@@ -167,9 +167,13 @@ final class WeatherAirQuality {
                 String defaultPlace = AppLocationManager.getStationPlace(context);
 
                 // 1. Fetch Complete Weather Forecast (Open-Meteo)
+                String weatherTimezone = "Asia%2FKuala_Lumpur";
+                if ("Indonesia".equalsIgnoreCase(AppLocationManager.getActiveRegion(context))) {
+                    weatherTimezone = lon < 114.0 ? "Asia%2FJakarta" : (lon < 125.0 ? "Asia%2FMakassar" : "Asia%2FJayapura");
+                }
                 String weatherUrl = String.format(Locale.ROOT,
-                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=Asia%%2FKuala_Lumpur&forecast_days=7",
-                        lat, lon);
+                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=%s&forecast_days=7",
+                        lat, lon, weatherTimezone);
                 JSONObject wJson = fetchJson(weatherUrl);
 
                 int temp = 29;
@@ -182,7 +186,9 @@ final class WeatherAirQuality {
 
                 // 2. Fetch Official Air Quality from Jabatan Alam Sekitar Malaysia (APIMS)
                 String jasUrl = "https://eqms.doe.gov.my/api3/publicportalapims/currentapicurrentlocation?stationid=" + stationId;
-                JSONObject jasJson = fetchJson(jasUrl);
+                // JAS/APIMS is Malaysia-only. Indonesian locations use the Open-Meteo AQI model below.
+                JSONObject jasJson = "Malaysia".equalsIgnoreCase(AppLocationManager.getActiveRegion(context))
+                        ? fetchJson(jasUrl) : null;
 
                 boolean isMalay = Locale.getDefault().getLanguage().startsWith("ms");
                 int aqi = 50;
@@ -284,7 +290,8 @@ final class WeatherAirQuality {
 
         // Air Quality: "IPU 112 Tidak Sihat"
         int startAqi = sb.length();
-        String prefix = isMalay ? "IPU " : "API ";
+        boolean isJasSource = prefs.getBoolean(KEY_AQI_IS_JAS, false);
+        String prefix = isJasSource ? (isMalay ? "IPU " : "API ") : "US AQI ";
         sb.append(prefix).append(String.valueOf(aqi)).append(" ").append(aqiStatus);
         sb.setSpan(new ForegroundColorSpan(aqiColor), startAqi, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new StyleSpan(Typeface.BOLD), startAqi, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -408,7 +415,7 @@ final class WeatherAirQuality {
 
         // Air Quality
         int aqi = prefs.getInt(KEY_AQI, 50);
-        boolean isJas = prefs.getBoolean(KEY_AQI_IS_JAS, true);
+        boolean isJas = prefs.getBoolean(KEY_AQI_IS_JAS, false);
         String aqiStatus = prefs.getString(KEY_AQI_STATUS, "Sederhana");
         String aqiParam = prefs.getString(KEY_AQI_PARAM, "PM2.5");
         String stationPlace = prefs.getString(KEY_AQI_STATION_PLACE, AppLocationManager.getStationPlace(context));

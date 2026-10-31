@@ -778,7 +778,7 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, "Appearance");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🖼️ Koleksi Wallpaper 4K", "Malaysia 4K, Alam Semula Jadi, Bandar Raya, Luar Angkasa, dll.",
+                        "🖼️ Koleksi Wallpaper 4K", "Alam, lanskap, kota, laut, dan luar angkasa 4K.",
                         activity::showWallpaperDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
@@ -786,7 +786,7 @@ public final class ModernSettingsDialog {
                         activity::showWallpaperIntervalDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🌐 Pilihan Bahasa (Language Selection)", "Bahasa Melayu 🇲🇾, English 🇬🇧, Bahasa Indonesia 🇮🇩",
+                        "🌐 Pilihan Bahasa (Language Selection)", "Bahasa Indonesia 🇮🇩 dan English 🇬🇧",
                         activity::showLanguageDialog));
 
             } else if (tab == TAB_STATUS_WEATHER) {
@@ -794,7 +794,7 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, "Status Bar & Weather");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📍 Pilih Lokasi TV & Zon Solat", "Sokongan zon Malaysia (JAKIM), Singapura (MUIS), & Indonesia (Kemenag)",
+                        "📍 Pilih Lokasi TV & Zon Solat", "Lokasi Indonesia dan jadwal salat Kemenag RI",
                         () -> activity.startActivity(new Intent(activity, LocationActivity.class))));
 
                 boolean isWeatherFx = activity.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
@@ -901,11 +901,11 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, "General");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔄 Mulakan Semula TV (Restart TV)", "Mula semula sistem Android TV secara lancar",
+                        "🔄 Mulakan Semula TV (Restart TV)", "Mulai ulang sistem Android TV",
                         activity::showRestartDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔌 Padamkan TV (Turn Off TV)", "Letakkan peranti Android TV dalam mod tidur / mati",
+                        "🔌 Padamkan TV (Turn Off TV)", "Kirim perintah tidur atau daya ke Android TV",
                         activity::showTurnOffDialog));
 
                 long freeBytes = CacheCleaner.getFreeStorageBytes();

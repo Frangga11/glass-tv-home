@@ -397,7 +397,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroName != null) heroName.setMaxWidth(heroNameMaxWidth);
         if (heroDesc != null) heroDesc.setMaxWidth(heroMaxWidth);
 
-        String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Malaysia");
+        String activeCat = getActiveWallpaperCategory();
         if ("Custom".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File customDir = new File(getFilesDir(), "custom_wallpapers");
@@ -421,8 +421,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             placesMode = false;
             List<File> catFiles = OnlineWallpapers.listByCategory(this, activeCat);
-            if (!catFiles.isEmpty()) wallpapers = catFiles;
-            else if (cfg.wallpaperOnline && wallpapers.isEmpty()) wallpapers = OnlineWallpapers.list(this);
+            if (!catFiles.isEmpty()) {
+                wallpapers = catFiles;
+            } else if ("Minimalist".equalsIgnoreCase(activeCat)) {
+                // Do not silently show a non-OLED wallpaper while the selected OLED collection syncs.
+                wallpapers = Collections.emptyList();
+            } else if (cfg.wallpaperOnline && wallpapers.isEmpty()) {
+                wallpapers = OnlineWallpapers.list(this);
+            }
             if (wallpapers.isEmpty()) {
                 new Thread(() -> {
                     OnlineWallpapers.syncCategory(getApplicationContext(), activeCat);
@@ -432,13 +438,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         if (!fresh.isEmpty()) {
                             wallpapers = fresh;
                             showNextWallpaper(false);
+                        } else if ("Minimalist".equalsIgnoreCase(activeCat)) {
+                            // A failed network fetch leaves a clean black OLED-safe background.
+                            root.setBackgroundColor(android.graphics.Color.BLACK);
+                            if (wallView != null) {
+                                wallView.setImageDrawable(null);
+                                wallView.setBackgroundColor(android.graphics.Color.BLACK);
+                            }
                         }
                     });
-                }).start();
+                }, "wall-default-sync").start();
             }
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
-        else if (cfg.wallpaper != null && !placesMode) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        else if ("Minimalist".equalsIgnoreCase(activeCat)) {
+            root.setBackgroundColor(android.graphics.Color.BLACK);
+            if (wallView != null) {
+                wallView.setImageDrawable(null);
+                wallView.setBackgroundColor(android.graphics.Color.BLACK);
+            }
+        }
         if (!isWallpaperDescEnabled() && heroShelf != null) {
             heroShelf.setVisibility(View.GONE);
             heroShelf.setAlpha(0f);
@@ -778,7 +798,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             updateTopBarUserIcon();
         }
         if (btnSettings != null) {
-            btnSettings.setOnClickListener(v -> showSettingsPopup());
+            btnSettings.setOnClickListener(v -> showQuickControlPopup());
             btnSettings.setOnLongClickListener(v -> {
                 if (moduleCards) {
                     showModuleCards();
@@ -1066,15 +1086,61 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int last = prefs.getInt("index", -1);
         boolean shuffle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
         int next;
+        String selectedFileName;
         if (shuffle && wallpapers.size() > 1) {
-            java.util.Random rnd = new java.util.Random();
-            do {
-                next = rnd.nextInt(wallpapers.size());
-            } while (next == last && wallpapers.size() > 1);
+            List<String> fileNames = new ArrayList<>();
+            for (File wallpaper : wallpapers) fileNames.add(wallpaper.getName());
+
+            android.content.SharedPreferences shufflePrefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+            String previousFile = shufflePrefs.getString("shuffle_last_file", "");
+            List<String> cycle = new ArrayList<>();
+            int position = 0;
+            boolean validCycle = false;
+            String storedCycle = shufflePrefs.getString("shuffle_cycle", null);
+            if (storedCycle != null) {
+                try {
+                    org.json.JSONArray json = new org.json.JSONArray(storedCycle);
+                    for (int i = 0; i < json.length(); i++) cycle.add(json.getString(i));
+                    position = shufflePrefs.getInt("shuffle_position", 0);
+                    validCycle = cycle.size() == fileNames.size()
+                            && new HashSet<>(cycle).size() == fileNames.size()
+                            && new HashSet<>(cycle).equals(new HashSet<>(fileNames))
+                            && position >= 0 && position < cycle.size();
+                } catch (org.json.JSONException ignored) {
+                    validCycle = false;
+                }
+            }
+
+            if (!validCycle) {
+                cycle = WallpaperShuffle.newCycle(fileNames, previousFile, new java.util.Random());
+                org.json.JSONArray json = new org.json.JSONArray();
+                for (String name : cycle) json.put(name);
+                shufflePrefs.edit().putString("shuffle_cycle", json.toString())
+                        .putInt("shuffle_position", 0).apply();
+                position = 0;
+            }
+
+            selectedFileName = cycle.get(position);
+            next = fileNames.indexOf(selectedFileName);
+            if (next < 0) {
+                // A file changed while the list was being refreshed; rebuild once from the live list.
+                cycle = WallpaperShuffle.newCycle(fileNames, previousFile, new java.util.Random());
+                selectedFileName = cycle.get(0);
+                next = fileNames.indexOf(selectedFileName);
+                org.json.JSONArray json = new org.json.JSONArray();
+                for (String name : cycle) json.put(name);
+                shufflePrefs.edit().putString("shuffle_cycle", json.toString())
+                        .putInt("shuffle_position", 1).apply();
+            } else {
+                shufflePrefs.edit().putInt("shuffle_position", position + 1).apply();
+            }
         } else {
             next = (last + 1) % wallpapers.size();
+            selectedFileName = wallpapers.get(next).getName();
         }
         prefs.edit().putInt("index", next).apply();
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                .putString("shuffle_last_file", selectedFileName).apply();
         wallShownAt = android.os.SystemClock.elapsedRealtime();
         final File file = wallpapers.get(next);
         // On a cold start, name the place straight away: waiting for the decode showed the app's name
@@ -1805,13 +1871,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String country = about != null && about.length > 2 ? about[2] : "";
         if (country != null) {
             country = country.replaceAll("(?i)\\bunsplash\\s*•?\\s*", "").trim();
-            if (country.startsWith("Malaysia_")) {
-                String st = country.substring("Malaysia_".length());
-                if ("WP".equalsIgnoreCase(st)) st = "Wilayah Persekutuan";
-                else if ("NegeriSembilan".equalsIgnoreCase(st)) st = "Negeri Sembilan";
-                else if ("PulauPinang".equalsIgnoreCase(st)) st = "Pulau Pinang";
-                country = st + ", Malaysia";
-            }
+
         }
         if (title != null) {
             title = title.replaceAll("(?i)\\bunsplash\\s*•?\\s*", "").trim();
@@ -2757,6 +2817,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     /** Shows the modern floating 2-column Settings modal (Profile, Avatars, Child Mode, Home, etc.). */
+    /** Compact TV control menu, optimized for the remote and Mi TV Stick. */
+    private void showQuickControlPopup() {
+        if (openMenu != null) closeMenu(false);
+        SoundEffects.playSelect();
+        View anchor = findViewById(R.id.btnSettings);
+        if (anchor == null) {
+            showSettingsPopup();
+            return;
+        }
+        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        Runnable close = () -> closeMenu(false);
+
+        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strRestart(this), -1, this::showRestartDialog);
+        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strTurnOff(this), -1, this::showTurnOffDialog);
+        addSeparator(rows);
+        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strCleanCache(this), -1, this::showCleanTvCacheDialog);
+        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperIntervalDialog);
+
+        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, this::showLanguageDialog);
+
+        addSeparator(rows);
+        addInputRow(rows, close, R.drawable.ic_settings, "Pengaturan Glass TV", -1, this::showSettingsPopup);
+        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strAllSettings(this), -1,
+                () -> open(systemIntent(Settings.ACTION_SETTINGS)));
+        addInputRow(rows, close, R.drawable.ic_close, AppLanguage.strClose(this), -1, () -> closeMenu(true));
+
+        int width = (int) (285 * density);
+        panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.UNSPECIFIED);
+        showMenu(panel, rows, anchor, width, false);
+    }
+
     public void showSettingsPopup() {
         if (openMenu != null) {
             closeMenu(false);
@@ -2813,14 +2905,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     void showLanguageDialog() {
         SoundEffects.playSelect();
         final String[] langOptions = new String[]{
-                "🇲🇾 Bahasa Melayu (Standard)",
-                "🇬🇧 English",
-                "🇮🇩 Bahasa Indonesia"
+                "🇮🇩 Bahasa Indonesia",
+                "🇬🇧 English"
         };
         final String[] langKeys = new String[]{
-                AppLanguage.LANG_MS,
-                AppLanguage.LANG_EN,
-                AppLanguage.LANG_ID
+                AppLanguage.LANG_ID,
+                AppLanguage.LANG_EN
         };
 
         String currentLang = AppLanguage.getLanguage(this);
@@ -3270,8 +3360,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setMessage(AppLanguage.strRestartMsg(this));
         builder.setPositiveButton(AppLanguage.strRestartConfirm(this), (dialog, which) -> {
             dialog.dismiss();
-            Toast.makeText(MainActivity.this, AppLanguage.strRestartToast(MainActivity.this), Toast.LENGTH_SHORT).show();
-            handler.postDelayed(() -> HomeKeyService.restartTv(MainActivity.this), 300);
+            handler.postDelayed(() -> {
+                boolean requested = HomeKeyService.restartTv(MainActivity.this);
+                String message = requested
+                        ? "Perintah mulai ulang dikirim ke Android TV."
+                        : "Tidak dapat memulai ulang. Aktifkan layanan aksesibilitas Glass TV terlebih dahulu.";
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+            }, 300);
         });
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
@@ -3285,7 +3380,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setMessage(AppLanguage.strTurnOffMsg(this));
         builder.setPositiveButton(AppLanguage.strTurnOffConfirm(this), (dialog, which) -> {
             dialog.dismiss();
-            HomeKeyService.turnOffTv(MainActivity.this);
+            boolean requested = HomeKeyService.turnOffTv(MainActivity.this);
+            Toast.makeText(MainActivity.this, requested
+                    ? "Menu daya Android TV dibuka. Jika tidak mati otomatis, pilih Matikan / Power off pada menu sistem. Mematikan TV fisik bergantung pada HDMI-CEC."
+                    : "Tidak dapat mengirim perintah daya. Periksa layanan aksesibilitas Glass TV dan HDMI-CEC TV.",
+                    Toast.LENGTH_LONG).show();
         });
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
@@ -3774,12 +3873,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView qrStatusText;
     private TextView qrUrlText;
 
+    /** Migrates the former Malaysia wallpaper selection to the Nature collection. */
+    private String getActiveWallpaperCategory() {
+        android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+        String category = prefs.getString("active_category", "Minimalist");
+        if (category == null || category.startsWith("Malaysia")) {
+            // New installs and former Malaysia selections start with the dark OLED collection.
+            category = "Minimalist";
+            prefs.edit().putString("active_category", category).apply();
+        }
+        return category;
+    }
+
     void showWallpaperDialog() {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
         int customCount = (customFiles != null) ? customFiles.length : 0;
 
-        String currentKey = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Malaysia");
+        String currentKey = getActiveWallpaperCategory();
 
         class WallpaperOption {
             final String key;
@@ -3794,11 +3905,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String curLang = AppLanguage.getLanguage(this);
         List<WallpaperOption> options = new ArrayList<>();
-
-        // Category 1: Malaysia
-        String tMal = AppLanguage.LANG_EN.equals(curLang) ? "🇲🇾 Attractions in Malaysia" : (AppLanguage.LANG_ID.equals(curLang) ? "🇲🇾 Tempat Wisata Malaysia" : "🇲🇾 Tempat Menarik di Malaysia");
-        String sMal = AppLanguage.LANG_EN.equals(curLang) ? "16 Iconic 4K Collection (Pexels Ultra HD)" : "16 Koleksi 4K Ikonik (Pexels Ultra HD)";
-        options.add(new WallpaperOption("Malaysia", tMal, sMal));
 
         // Category 2: Natural
         String tNat = AppLanguage.LANG_EN.equals(curLang) ? "🌿 Nature & Landscapes" : (AppLanguage.LANG_ID.equals(curLang) ? "🌿 Alam Semesta & Lanskap" : "🌿 Alam Semula Jadi & Landskap");
@@ -3822,7 +3928,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Category 6: Minimalist
         String tMin = AppLanguage.LANG_EN.equals(curLang) ? "🔲 Dark Minimalist (OLED)" : (AppLanguage.LANG_ID.equals(curLang) ? "🔲 Minimalis Gelap (OLED)" : "🔲 Minimalis Gelap (OLED)");
-        String sMin = AppLanguage.LANG_EN.equals(curLang) ? "16 Unsplash Dark Wallpapers • Perfect for OLED" : (AppLanguage.LANG_ID.equals(curLang) ? "16 Koleksi Unsplash Dark Wallpaper • Khusus Layar OLED" : "16 Koleksi Unsplash Dark Wallpaper • Khas Skrin OLED");
+        String sMin = AppLanguage.LANG_EN.equals(curLang) ? "20 Dark Wallpaper Images • Optimized for OLED" : (AppLanguage.LANG_ID.equals(curLang) ? "20 Koleksi Wallpaper Gelap • Khusus Layar OLED" : "20 Koleksi Wallpaper Gelap • Khas Skrin OLED");
         options.add(new WallpaperOption("Minimalist", tMin, sMin));
 
         // Category 7: Manage Custom
@@ -3900,7 +4006,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         for (int i = 0; i < options.size(); i++) {
             WallpaperOption opt = options.get(i);
-            boolean isActive = opt.key.equalsIgnoreCase(currentKey) || (opt.key.equals("Malaysia") && currentKey.startsWith("Malaysia"));
+            boolean isActive = opt.key.equalsIgnoreCase(currentKey);
 
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.VERTICAL);
@@ -4001,7 +4107,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 } else if ("TOGGLE_SHUFFLE".equals(chosenKey)) {
                     boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
                     boolean newMode = !current;
-                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("shuffle_mode", newMode).apply();
+                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
+                            .putBoolean("shuffle_mode", newMode)
+                            .remove("shuffle_cycle")
+                            .remove("shuffle_position")
+                            .apply();
                     Toast.makeText(MainActivity.this, newMode ? "🔀 Mod Rawak: Gambar Dipilih Secara Rawak" : "➡️ Mod Berurutan: Gambar Dipilih Ikut Urutan", Toast.LENGTH_SHORT).show();
                     showWallpaperDialog();
                 } else if ("TOGGLE_DESC".equals(chosenKey)) {
@@ -4427,14 +4537,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void switchWallpaperCategory(String category) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
         String displayLabel;
-        if ("Malaysia".equalsIgnoreCase(category)) {
-            displayLabel = "Tempat Menarik di Malaysia";
-        } else if ("Minimalist".equalsIgnoreCase(category)) {
+        if ("Minimalist".equalsIgnoreCase(category)) {
             displayLabel = "Minimalis Gelap (OLED)";
         } else {
             displayLabel = category;
         }
         Toast.makeText(this, "Kategori: " + displayLabel, Toast.LENGTH_SHORT).show();
+        if ("Minimalist".equalsIgnoreCase(category)) {
+            root.setBackgroundColor(android.graphics.Color.BLACK);
+            if (wallView != null) {
+                wallView.setImageDrawable(null);
+                wallView.setBackgroundColor(android.graphics.Color.BLACK);
+            }
+        }
 
         if ("Custom".equalsIgnoreCase(category)) {
             placesMode = false;
@@ -4662,7 +4777,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setMessage("• Tekan lama butang HOME (Hold 500ms) untuk buka Popup Tetapan di mana-mana aplikasi atau skrin utama.\n\n"
                         + "• Tekan sekali butang HOME untuk kembali ke paparan utama.\n\n"
                         + "• Koleksi Wallpaper 4K dijana daripada Pexels & Unsplash mengikut kategori.\n\n"
-                        + "• Azan & Waktu Solat diselaraskan secara tepat dengan zon JAKIM Malaysia.\n\n"
+                        + "• Jadwal salat disesuaikan dengan wilayah Indonesia dan sumber data Kemenag RI.\n\n"
                         + "• Gunakan Gemini AI untuk membersihkan cache dan menyegarkan TV anda secara pantas.")
                 .setPositiveButton("Faham", null)
                 .show();
@@ -4679,7 +4794,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setTitle("🌦️ Analisis Cuaca & Jerebu Pintar")
                 .setMessage("📍 Lokasi: " + town + "\n\n"
                         + "📊 Status Terkini: " + wxStr + "\n\n"
-                        + "ℹ️ Data cuaca disegerakkan daripada Open-Meteo dan bacaan Indeks Pencemar Udara (IPU) rasmi stesen Jabatan Alam Sekitar Malaysia (APIMS DOE).\n\n"
+                        + "ℹ️ Data cuaca disegerakkan daripada Open-Meteo dan indeks kualitas udara US AQI berbasis pemodelan Open-Meteo; bukan pengukuran ISPU resmi stasiun lokal.\n\n"
                         + "💡 Saranan AI: Keadaan udara selamat dan memuaskan. Sangat sesuai untuk bersantai bersama keluarga.")
                 .setPositiveButton("OK", null)
                 .show();
@@ -5231,7 +5346,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Runnable close = () -> closeMenu(false);
 
         // Header: Active Prayer Zone
-        addInputRow(rows, close, R.drawable.ic_settings, "Waktu Solat " + PrayerTimes.getShortZoneName(this) + " (Tukar Zon ▶)", TvInputManager.INPUT_STATE_CONNECTED, () -> {
+        addInputRow(rows, close, R.drawable.ic_settings, "Waktu Sholat " + PrayerTimes.getShortZoneName(this) + " (Tukar Zon ▶)", TvInputManager.INPUT_STATE_CONNECTED, () -> {
             SoundEffects.playSelect();
             closeMenu(false);
             startActivity(new Intent(MainActivity.this, LocationActivity.class));

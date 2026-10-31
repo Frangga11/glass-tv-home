@@ -55,40 +55,6 @@ final class OnlineWallpapers {
 
     // Built-in curated catalog of dark, moody, atmospheric 4K desktop wallpapers (Unsplash)
     private static final WallpaperItem[] CURATED_CATALOG = new WallpaperItem[]{
-            // Malaysia: Tempat Menarik di Malaysia (16 Koleksi Pexels 4K Ultra HD)
-            new WallpaperItem("https://images.pexels.com/photos/40168956/pexels-photo-40168956.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Orangutan Rimba Borneo", "Spesies ikonik hidupan liar di kanopi hutan hujan tropika Borneo, khazanah alam semula jadi", "Malaysia_Sabah"),
-            new WallpaperItem("https://images.pexels.com/photos/36767161/pexels-photo-36767161.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Siluet Senja Kuala Lumpur", "Garis langit metropolis ibu negara berlatarkan kilauan warna merah saga dan jingga waktu senja", "Malaysia_WP"),
-            new WallpaperItem("https://images.pexels.com/photos/338416/pexels-photo-338416.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Masjid Putra & Tasik Putrajaya", "Keindahan seni bina kubah merah jambu Masjid Putra membiaskan pantulan anggun di permukaan tasik tenang", "Malaysia_Putrajaya"),
-            new WallpaperItem("https://images.pexels.com/photos/33676568/pexels-photo-33676568.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Puncak Menara Berkembar KLCC", "Menara Berkembar Petronas tersergam megah meredah lautan awan keemasan di ufuk Kuala Lumpur", "Malaysia_WP"),
-            new WallpaperItem("https://images.pexels.com/photos/39690291/pexels-photo-39690291.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Masjid Selat Melaka", "Masjid terapung tersohor di pesisir Selat Melaka disinari gemerlap lampu malam dan langit tembaga", "Malaysia_Melaka"),
-            new WallpaperItem("https://images.pexels.com/photos/33708542/pexels-photo-33708542.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Calet Pergunungan Kundasang", "Kediaman unik di lereng bukit menghijau berlatarbelakangkan udara nyaman banjaran tanah tinggi Sabah", "Malaysia_Sabah"),
-            new WallpaperItem("https://images.pexels.com/photos/14776919/pexels-photo-14776919.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Jalan Berliku Banjaran Titiwangsa", "Laluan berliku meredah rabung pergunungan hijau yang diselimuti kabut tebal waktu fajar", "Malaysia_Pahang"),
-            new WallpaperItem("https://images.pexels.com/photos/5224545/pexels-photo-5224545.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Fajar Lembah Sungai Pahang", "Limpahan cahaya emas mentari pagi menyinari aliran sungai permai dan perkampungan pesisir bukit", "Malaysia_Pahang"),
-            new WallpaperItem("https://images.pexels.com/photos/11643318/pexels-photo-11643318.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Senja Merah Lembah Sungai", "Panorama matahari terbenam membiaskan rona jingga tembaga di sepanjang liku sungai dan bukit bukau", "Malaysia_Pahang"),
-            new WallpaperItem("https://images.pexels.com/photos/28727775/pexels-photo-28727775.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Pesisiran Pantai Tanjung Balau", "Kejernihan air laut membiru dan keunikan tanjung berbatu di Desaru menghadap Laut China Selatan", "Malaysia_Johor"),
-            new WallpaperItem("https://images.pexels.com/photos/38188372/pexels-photo-38188372.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Jambatan Angkat Terengganu", "Seni bina jambatan angkat ikonik Kuala Terengganu bermandikan biasan sinaran matahari terbenam", "Malaysia_Terengganu"),
-            new WallpaperItem("https://images.pexels.com/photos/13890758/pexels-photo-13890758.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Pekan Diraja Kuala Kangsar", "Pemandangan udara bandar warisan permai di tebingan Sungai Perak diapit kehijauan alam tropika", "Malaysia_Perak"),
-            new WallpaperItem("https://images.pexels.com/photos/139974/pexels-photo-139974.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Perahu Nelayan Jalur Gemilang", "Bot nelayan tradisional berlabuh tenang di muara sungai ketika langit senja berona merah jambu", "Malaysia_Terengganu"),
-            new WallpaperItem("https://images.pexels.com/photos/5649468/pexels-photo-5649468.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Masjid Negeri Shah Alam", "Kubah biru tersergam indah dan empat menara bercahaya Masjid Sultan Salahuddin Abdul Aziz Shah pada waktu malam", "Malaysia_Selangor"),
-            new WallpaperItem("https://images.pexels.com/photos/130576/pexels-photo-130576.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Ladang Teh Cameron Highlands", "Hamparan bukit teh hijau beralun segar di bawah langit biru cerah tanah tinggi banjaran Pahang", "Malaysia_Pahang"),
-            new WallpaperItem("https://images.pexels.com/photos/35905094/pexels-photo-35905094.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160",
-                    "Beca Berhias Warisan Melaka", "Keunikan beca pelancongan berhias bunga dan lagu ceria menelusuri lorong warisan bersejarah bandar raya Melaka", "Malaysia_Melaka"),
-
             // Nature & Landscapes (Alam Semula Jadi - Pexels & Unsplash 4K)
             new WallpaperItem("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=3840&h=2160&q=80",
                     "Moody Alpine Mountains", "Silhouetted mountain peaks under starry skies", "Landscape"),
@@ -225,13 +191,6 @@ final class OnlineWallpapers {
         if (itemCat == null) return false;
         String ic = itemCat.toLowerCase(Locale.ROOT);
         String sc = selectedCat.toLowerCase(Locale.ROOT);
-        if (sc.startsWith("malaysia_")) {
-            String state = sc.substring("malaysia_".length());
-            return ic.contains(state);
-        }
-        if (sc.equals("malaysia") || sc.equals("malaysia_all")) {
-            return ic.contains("malay");
-        }
         if (sc.contains("sky") || sc.contains("arch") || sc.contains("city")) {
             return ic.contains("sky") || ic.contains("arch") || ic.contains("city") || ic.contains("urban");
         }
