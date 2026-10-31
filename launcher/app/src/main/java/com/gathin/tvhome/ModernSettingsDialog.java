@@ -679,13 +679,30 @@ public final class ModernSettingsDialog {
                             String[] opts = allProfiles.size() > 1 ? new String[]{"✨ Beralih ke Profil Ini", "🗑️ Hapus Pengguna"} : new String[]{"✨ Beralih ke Profil Ini"};
                             ob.setItems(opts, (d, which) -> {
                                 if (which == 0) {
-                                    ProfileManager.setActiveProfile(activity, p.id);
-                                    if (p.isChild) ChildModeManager.setChildModeEnabled(activity, true);
-                                    activity.reloadTiles();
-                                    activity.updateTopBarUserIcon();
-                                    updateSidebarSelection.run();
-                                    if (renderRightPane[0] != null) renderRightPane[0].run();
-                                    Toast.makeText(activity, "✨ Bertukar ke profil: " + p.name, Toast.LENGTH_SHORT).show();
+                                    // Keep profile switching consistent with the top-bar switcher:
+                                    // leaving Child Mode must always require the parent PIN.
+                                    boolean childModeOn = ChildModeManager.isChildModeEnabled(activity);
+                                    if (childModeOn && !p.isChild) {
+                                        ChildModeManager.promptPin(activity, "Sahkan PIN Keluar Mod Anak",
+                                                "Masukkan PIN untuk bertukar ke profil " + p.name,
+                                                new ChildModeManager.PinCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+                                                        UserSwitchDialog.switchProfile(activity, p, false, null);
+                                                        d.dismiss();
+                                                        updateSidebarSelection.run();
+                                                        if (renderRightPane[0] != null) renderRightPane[0].run();
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled() {}
+                                                });
+                                    } else {
+                                        UserSwitchDialog.switchProfile(activity, p, p.isChild, null);
+                                        d.dismiss();
+                                        updateSidebarSelection.run();
+                                        if (renderRightPane[0] != null) renderRightPane[0].run();
+                                    }
                                 } else if (which == 1) {
                                     ProfileManager.deleteProfile(activity, p.id);
                                     updateSidebarSelection.run();
