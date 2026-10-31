@@ -128,7 +128,7 @@
 - CI artifact ZIP is a separate object: 1,340,733 bytes, SHA-256 `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`. Workflow metadata maps the artifact to PR #9, branch `feature/profile-avatar-security-integration`, exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
 - A06 source checkpoint branch: `checkpoint/a06-tested-apk-pr9-7e8392e1`; created directly from exact tested source commit.
 - Checkpoint manifest: `docs/project-management/checkpoints/A06_TESTED_APK_BASELINE.md` on the checkpoint branch.
-- A06 remains IN PROGRESS until read-only Bugjaeger/ADB output captures Mi TV Stick build fingerprint, installed package details/path, current HOME resolver, enabled/disabled packages, and relevant secure/global settings. Review before any device changes.
+- A06 remains IN PROGRESS. Historical chat evidence recovered: `com.mitv.tvhome` appeared disabled; `com.google.android.tvlauncher` and `com.gathin.tvhome` appeared enabled; `get-home-activities` returned `unknown`; `set-home-activity` returned `Success`; `am start` said the launcher activity was already running. This does not prove current HOME ownership or installed APK hash. Still required: fresh read-only `getprop`, `pm path`, `dumpsys package`, `resolve-activity HOME`, enabled/disabled package lists, and relevant secure/global settings before any device changes.
 - No PR merged; no new APK installed; no device settings changed.
 - B01/B02 implementation remains paused at user's request until A06 is closed.
 - Next action: collect the read-only ADB baseline listed in the A06 checkpoint manifest; then complete rollback-readiness review.
