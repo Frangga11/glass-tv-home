@@ -54,10 +54,18 @@ public class NavigationStateTest {
 
     @Test
     public void acceptsAllCurrentSettingsTabsAndRejectsUnknownValues() {
-        for (int tab = 0; tab <= 5; tab++) {
+        int[] validTabs = {
+                NavigationState.TAB_PROFILE,
+                NavigationState.TAB_HOME_SCREEN,
+                NavigationState.TAB_APPEARANCE,
+                NavigationState.TAB_STATUS_WEATHER,
+                NavigationState.TAB_EFFECTS,
+                NavigationState.TAB_STANDBY,
+                NavigationState.TAB_DEVICE_SETTINGS
+        };
+        for (int tab : validTabs) {
             assertEquals(tab, NavigationState.normalizeSettingsTab(tab));
         }
-        assertEquals(7, NavigationState.normalizeSettingsTab(7));
         assertEquals(NavigationState.DEFAULT_SETTINGS_TAB, NavigationState.normalizeSettingsTab(-1));
         assertEquals(NavigationState.DEFAULT_SETTINGS_TAB, NavigationState.normalizeSettingsTab(6));
         assertEquals(NavigationState.DEFAULT_SETTINGS_TAB, NavigationState.normalizeSettingsTab(8));
