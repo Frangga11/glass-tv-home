@@ -245,3 +245,15 @@ GitHub source URLs:
 - A05: PASS. APK identity is matched by exact SHA-256 and byte size to the CI artifact evidence.
 - A06: source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1` created directly from that exact commit. Manifest at `docs/project-management/checkpoints/A06_TESTED_APK_BASELINE.md`.
 - A06 device-state capture remains pending; no local TV state was changed. See checkpoint manifest for read-only ADB capture commands.
+
+## B01–B03 renewed source QC — 1 November 2026
+
+- B01 PR #10 exact head bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5: source review PASS; exact-head CI #230 PASS; APK 1,395 KB; no TV-test artifact.
+- B02 PR #11 exact head 01cbef2c2fc90498295971b22c369a72cdfa734a: source review PASS; exact-head CI #234 PASS; APK 1,396 KB; no TV-test artifact.
+- B03 PR #12 exact head 56a4e1995aa8b8600614e6b5c4dca69d01c530c3: source review PASS; exact-head CI #239 PASS; APK 1,398 KB; no TV-test artifact.
+- All three PRs remain Draft/open/unmerged. Physical acceptance is deferred to F02; no candidate APK installed and no TV settings changed.
+
+## B04/B05 source inventory checkpoint
+
+- B04: home grid is dynamically sized; Settings and B03 dialogs are viewport bounded; Weather uses a ScrollView. Recent Apps cards remain fixed 420×250dp with 64dp side padding; Nightstand clock remains 110sp. Target wm size/density are needed before deciding on adjustment.
+- B05: AppLanguage provides app-level ID/EN selection, but Android string resources mix Indonesian/English and there are many hardcoded UI messages. First scan flagged 187 candidate strings across 12 high-traffic Java files. Full localization inventory remains open.
