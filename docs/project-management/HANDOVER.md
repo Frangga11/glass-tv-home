@@ -1,63 +1,39 @@
 # 05 — Project Handover
 
-**Version:** 0.1-draft  
+**Version:** 1.0  
 **Date:** 31 October 2026  
-**Current phase:** Wallpaper/background audit W-001 active. QR session-scope fix is implemented in draft PR #7 and CI passed. Default wallpaper asset is missing from the release APK; user image/creative direction is required. Device acceptance remains pending. Avatar device acceptance remains open separately.
+**Current phase:** Wallpaper/background audit W-001. QR security remediation passed CI; default wallpaper asset is missing from the APK; device acceptance has not been performed.
 
-## 1. How to resume this project in a new conversation
+## 1. Resume protocol
 
-Read DOCUMENTATION_WORKFLOW.md first. Use the three connected layers: Master map, focused audit/SOP evidence, and concise operational log. Do not duplicate checks or repeat completed work.
+Read `MASTER_PROJECT.md` and `DOCUMENTATION_WORKFLOW.md`, then use this handover as the current resume point. Do not repeat tests whose exact commit and result are already recorded.
 
-Attach or link the latest Project Master export and provide:
-- repository: https://github.com/Frangga11/glass-tv-home
-- documentation branch: `docs/project-master-inventory`
-- working branch to review: `feature/settings-reorganization-standby-gallery`
-- avatar QR audit branch: `fix/avatar-qr-upload-single-photo`
-- draft PR: https://github.com/Frangga11/glass-tv-home/pull/6
-- avatar audit report: `docs/project-management/AVATAR_AUDIT.md`
+## 2. Authoritative branches and reviews
 
-Then ask to continue from HANDOVER.md and not to repeat closed checks. The assistant must first inspect the latest GitHub commit and compare it with this document's version/date.
+- Repository: https://github.com/Frangga11/glass-tv-home
+- Documentation: `docs/project-master-inventory`
+- Code baseline / rollback branch: `feature/settings-reorganization-standby-gallery`
+- Wallpaper security branch: `fix/wallpaper-qr-session-security`
+- Wallpaper draft PR #7: https://github.com/Frangga11/glass-tv-home/pull/7
+- Avatar branch: `fix/avatar-qr-upload-single-photo`
+- Avatar draft PR #6: https://github.com/Frangga11/glass-tv-home/pull/6
 
-## 2. Current verified position
+## 3. Verified position
 
-- Documentation branch has been created from `feature/settings-reorganization-standby-gallery`.
-- Initial documentation files are being added under `docs/project-management/`.
-- Gradle source confirms app version 4.0.0 / code 40, minSdk 26, compileSdk 34, targetSdk 34, Java 17.
-- Settings/gallery branch contains seven built-in profile avatars, profile JSON with avatarIndex, and no personal avatar upload control in the Profile settings.
-- The earlier `fix/avatar-photo-upload-audit` branch contained a picker-based custom-avatar candidate.
-- The current `fix/avatar-qr-upload-single-photo` branch adds the QR-only replacement workflow:
-  - `customAvatarPath` profile field,
-  - Dedicated QR server with one-image upload, random session token, and five-minute expiry,
-  - private app storage under `filesDir/profile_avatars`,
-  - QR upload and reset buttons in the active Profile settings,
-  - custom image used in top bar, settings card, and profile switcher.
-  - transactional profile reference update before deleting the previous avatar file.
-  - EXIF-aware downsampled avatar rendering and stale upload cleanup.
-- Candidate branch still has gaps in profile switcher, profile card/sidebar, add-profile flow, image orientation, picker availability, and lifecycle/replacement testing.
+- Source baseline reports package `com.gathin.tvhome`, version 4.0.0 / code 40, minSdk 26, targetSdk 34, compileSdk 34, Java 17.
+- Avatar QR implementation CI passed in run 41199199372. Actual Mi TV Stick/phone acceptance remains open; PR #6 remains draft.
+- Wallpaper QR routes are now session-token scoped in PR #7. Upload page, upload endpoint, gallery APIs, and thumbnail routes use a random per-server path; legacy unscoped paths are rejected. QR page is no-store.
+- Wallpaper CI run 41200811301 passed: unit tests, release build, APK size gate, and artifact publication.
+- Wallpaper artifact ID 13042880821; size 1,102,820 bytes; SHA-256 `dd570c72b238bdca082c3096e857f877469b66af04ccfbee5ecf672de5fc8d3c`.
+- APK inspection confirmed that `assets/kabut-pagi-dempo.jpg` is absent. The code expects this file; on a clean install the Default category therefore has no bundled offline wallpaper.
+- No PR has been merged and no actual Mi TV Stick/phone test has been performed.
 
-## 3. Work not yet performed
+## 4. Next action
 
-- Avatar source changes have been committed to `fix/avatar-qr-upload-single-photo`; see draft PR #6.
-- No changes have been merged into the settings/gallery baseline.
-- No avatar code has been merged or cherry-picked.
-- GitHub CI passed on latest PR head 0cb1b96e2c2529e65795231519c6e0728b46390d in workflow run 41199199372: docs/tools, Android unit tests, release build, APK-size gate, and artifact publication all succeeded.
-- Release APK artifact size: 1,107,392 bytes; SHA-256: b4dc78502db5104e9b226fd75c232f0f090239a8cff979560e6784e5e5208ca8.
-- Artifact / workflow: https://github.com/Frangga11/glass-tv-home/actions/runs/41199199372.
-- No release APK has been installed on the user's TV in this session.
-- No APK has been installed on the user's TV in this session.
-- No live device test has been performed in this session.
-- No final QC approval has been issued.
-- Wallpaper/background audit W-001: token-scoped QR routes implemented on `fix/wallpaper-qr-session-security`, draft PR #7; CI run 41200811301 passed. Artifact inspection found `assets/kabut-pagi-dempo.jpg` absent from the APK; fresh-install Default therefore lacks its intended offline image. No device test has been performed.
+**One blocking user decision:** approve/provide the final default wallpaper image. The code expects the asset name `kabut-pagi-dempo.jpg`; once the image is approved, add it at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`, verify it is packaged in the APK, and run CI once for the changed commit.
 
-## 4. Next ordered work
+After that, perform one structured device pass covering W-AC-01–W-AC-12. Include phone upload, invalid upload, legacy/foreign route rejection, dialog-close revocation, crop/legibility, offline startup, rotation, and remote-only navigation.
 
-1. Finish source inventory for wallpaper defaults, icon animation, information tab layout, weather/AQI, prayer times, upload server, and ADB safety.
-2. Compare branch ancestry and relevant commits to identify the safest application baseline.
-3. Run the AVATAR_AUDIT.md phone/TV acceptance matrix and collect evidence; do not repeat CI unless code changes.
-4. Update audit register and merge PR #6 only after device acceptance.
-6. Continue with the next audit area only after avatar reaches final acceptance.
-7. Update documentation, export backup to ChatGPT Library, and publish a versioned handover.
+## 5. Safety and merge gate
 
-## 5. Resume instruction
-
-Do not assume any item is complete merely because it appears in the source. Read the current branch and commit first. Do not modify the user's TV, disable packages, replace the launcher, or merge feature branches without a clear rollback plan and user authorization.
+Keep PR #6 and PR #7 in draft. Do not merge, change the TV's default launcher, disable packages, or perform ADB modifications until the relevant device acceptance and rollback plan are confirmed. A CI pass is not a device pass.
