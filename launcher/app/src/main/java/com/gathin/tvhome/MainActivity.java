@@ -1335,22 +1335,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Toast.makeText(this, "Foto tidak dapat diakses kembali. Coba pilih foto dari penyimpanan perangkat.", Toast.LENGTH_LONG).show();
             return;
         }
-        // Release old document grants and delete only app-owned uploads no longer selected.
-        List<Uri> oldUris = StandbyPhotoStore.getUris(this);
-        for (Uri oldUri : oldUris) {
-            if (!granted.contains(oldUri) && !StandbyPhotoStore.isManagedFile(this, oldUri)) {
+        // Append new photos so a local/USB selection never replaces earlier QR uploads.
+        List<Uri> merged = StandbyPhotoStore.getUris(this);
+        int added = 0;
+        int skipped = 0;
+        for (Uri uri : granted) {
+            if (merged.contains(uri)) continue;
+            if (merged.size() >= StandbyPhotoStore.MAX_PHOTO_COUNT) {
+                skipped++;
                 try {
-                    getContentResolver().releasePersistableUriPermission(oldUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } catch (Exception ignored) {
                 }
+                continue;
             }
+            merged.add(uri);
+            added++;
         }
-        StandbyPhotoStore.deleteRemovedUploadedFiles(this, oldUris, granted);
-        StandbyPhotoStore.saveUris(this, granted);
+        if (added == 0) {
+            String message = skipped > 0
+                    ? "Koleksi sudah mencapai batas " + StandbyPhotoStore.MAX_PHOTO_COUNT + " foto."
+                    : "Foto yang dipilih sudah ada di koleksi Layar Siaga.";
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            return;
+        }
+        StandbyPhotoStore.saveUris(this, merged);
         StandbyPhotoStore.setPhotoMode(this, true);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
-        Toast.makeText(this, granted.size() + " foto ditambahkan ke Layar Siaga.", Toast.LENGTH_LONG).show();
+        String message = added + " foto ditambahkan. Total koleksi: " + merged.size() + " foto.";
+        if (skipped > 0) message += " " + skipped + " foto dilewati karena batas koleksi.";
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     /**
