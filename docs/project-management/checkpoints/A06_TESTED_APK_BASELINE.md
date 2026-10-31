@@ -39,7 +39,22 @@ Do not move this checkpoint branch. Any subsequent development must continue on 
 
 ## 3. Device-state backup — still required
 
-The source and tested APK identity are locked, but a complete A06 device-state snapshot has not yet been collected. Before calling A06 fully complete, capture read-only state from the Mi TV Stick with Bugjaeger/ADB:
+The source and tested APK identity are locked, but a complete A06 device-state snapshot has not yet been collected.
+
+### Historical device evidence recovered from earlier chat — partial only
+
+The user previously shared these Bugjaeger/ADB outcomes (31 October 2026):
+- `pm list packages -d`: `com.mitv.tvhome` appeared in the disabled-package list.
+- Enabled-package search: `com.google.android.tvlauncher` and `com.gathin.tvhome` appeared.
+- `get-home-activities` returned `unknown`.
+- `set-home-activity` returned `Success`.
+- `am start` reported that the launcher activity was already running.
+
+These are historical observations, not a fresh A06 snapshot. They do not establish which HOME activity is currently resolved, nor do they identify the installed APK bytes/hash. In particular, both the stock launcher and Glass TV Home appearing in the enabled-package results is not enough to determine the active HOME owner. Do not infer or change the current default from these outputs.
+
+### Required fresh read-only capture
+
+Before calling A06 fully complete, capture read-only state from the Mi TV Stick with Bugjaeger/ADB:
 
 1. Android release, SDK, model and build fingerprint:
    `getprop ro.build.version.release`
