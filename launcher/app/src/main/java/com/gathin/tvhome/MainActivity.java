@@ -438,10 +438,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         if (!fresh.isEmpty()) {
                             wallpapers = fresh;
                             showNextWallpaper(false);
-                        } else if ("Minimalist".equalsIgnoreCase(activeCat) && wallView != null) {
+                        } else if ("Minimalist".equalsIgnoreCase(activeCat)) {
                             // A failed network fetch leaves a clean black OLED-safe background.
-                            wallView.setImageDrawable(null);
-                            wallView.setBackgroundColor(android.graphics.Color.BLACK);
+                            root.setBackgroundColor(android.graphics.Color.BLACK);
+                            if (wallView != null) {
+                                wallView.setImageDrawable(null);
+                                wallView.setBackgroundColor(android.graphics.Color.BLACK);
+                            }
                         }
                     });
                 }, "wall-default-sync").start();
@@ -449,9 +452,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
         else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
-        else if ("Minimalist".equalsIgnoreCase(activeCat) && wallView != null) {
-            wallView.setImageDrawable(null);
-            wallView.setBackgroundColor(android.graphics.Color.BLACK);
+        else if ("Minimalist".equalsIgnoreCase(activeCat)) {
+            root.setBackgroundColor(android.graphics.Color.BLACK);
+            if (wallView != null) {
+                wallView.setImageDrawable(null);
+                wallView.setBackgroundColor(android.graphics.Color.BLACK);
+            }
         }
         if (!isWallpaperDescEnabled() && heroShelf != null) {
             heroShelf.setVisibility(View.GONE);
@@ -4487,6 +4493,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             displayLabel = category;
         }
         Toast.makeText(this, "Kategori: " + displayLabel, Toast.LENGTH_SHORT).show();
+        if ("Minimalist".equalsIgnoreCase(category)) {
+            root.setBackgroundColor(android.graphics.Color.BLACK);
+            if (wallView != null) {
+                wallView.setImageDrawable(null);
+                wallView.setBackgroundColor(android.graphics.Color.BLACK);
+            }
+        }
 
         if ("Custom".equalsIgnoreCase(category)) {
             placesMode = false;
