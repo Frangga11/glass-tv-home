@@ -71,14 +71,14 @@ public final class UserSwitchDialog {
         headerTextCol.setPadding((int) (10 * density), 0, 0, 0);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Tukar Pengguna & Mod Kanak-kanak");
+        tvTitle.setText("Tukar Pengguna");
         tvTitle.setTextSize(18);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(outfit, Typeface.BOLD);
         headerTextCol.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Pilih profil aktif atau kawal akses aplikasi anak");
+        tvSub.setText("Pilih profil yang akan digunakan pada perangkat ini");
         tvSub.setTextSize(12);
         tvSub.setTextColor(0xFF8E929E);
         tvSub.setTypeface(outfit, Typeface.NORMAL);
@@ -259,150 +259,6 @@ public final class UserSwitchDialog {
         profRow.addView(addCol);
         profScroll.addView(profRow);
         root.addView(profScroll);
-
-        // Divider
-        View div2 = new View(activity);
-        div2.setBackgroundColor(0xFF282B35);
-        LinearLayout.LayoutParams div2Lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (1 * density));
-        div2Lp.topMargin = (int) (6 * density);
-        div2Lp.bottomMargin = (int) (14 * density);
-        root.addView(div2, div2Lp);
-
-        // Section 2: Child Mode Quick Actions
-        TextView tvChildSec = new TextView(activity);
-        tvChildSec.setText("KAWALAN MOD KANAK-KANAK (CHILD MODE)");
-        tvChildSec.setTextSize(11.5f);
-        tvChildSec.setTextColor(0xFF8E929E);
-        tvChildSec.setTypeface(outfit, Typeface.BOLD);
-        tvChildSec.setPadding(0, 0, 0, (int) (8 * density));
-        root.addView(tvChildSec);
-
-        boolean isChildOn = ChildModeManager.isChildModeEnabled(activity);
-
-        // Switch Card: Status Mode Kanak-kanak
-        LinearLayout swCard = new LinearLayout(activity);
-        swCard.setOrientation(LinearLayout.HORIZONTAL);
-        swCard.setGravity(Gravity.CENTER_VERTICAL);
-        swCard.setPadding((int) (16 * density), (int) (12 * density), (int) (16 * density), (int) (12 * density));
-        swCard.setFocusable(true);
-        swCard.setClickable(true);
-
-        GradientDrawable swBg = new GradientDrawable();
-        swBg.setColor(0xFF242731);
-        swBg.setCornerRadius(12 * density);
-        swCard.setBackground(swBg);
-
-        LinearLayout swTextCol = new LinearLayout(activity);
-        swTextCol.setOrientation(LinearLayout.VERTICAL);
-
-        TextView tvSwTitle = new TextView(activity);
-        tvSwTitle.setText("🛡️ Status Mode Kanak-kanak");
-        tvSwTitle.setTextSize(14.5f);
-        tvSwTitle.setTextColor(0xFFFFFFFF);
-        tvSwTitle.setTypeface(outfit, Typeface.BOLD);
-        swTextCol.addView(tvSwTitle);
-
-        TextView tvSwSub = new TextView(activity);
-        tvSwSub.setText(isChildOn ? "Aktif: Aplikasi terpilih dikunci dengan PIN & disembunyikan" : "Tidak Aktif: Semua aplikasi dibuka tanpa sekatan");
-        tvSwSub.setTextSize(12);
-        tvSwSub.setTextColor(isChildOn ? 0xFFF59E0B : 0xFF8E929E);
-        tvSwSub.setTypeface(outfit, Typeface.NORMAL);
-        swTextCol.addView(tvSwSub);
-
-        swCard.addView(swTextCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-        Switch sw = new Switch(activity);
-        sw.setChecked(isChildOn);
-        sw.setFocusable(false);
-        sw.setClickable(false);
-        swCard.addView(sw);
-
-        swCard.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF333744 : 0xFF242731);
-            g.setCornerRadius(12 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
-            v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.02f : 1.0f).scaleY(hasFocus ? 1.02f : 1.0f).setDuration(120).start();
-        });
-
-        swCard.setOnClickListener(v -> {
-            SoundEffects.playSelect();
-            boolean currentlyOn = ChildModeManager.isChildModeEnabled(activity);
-            if (currentlyOn) {
-                // To turn OFF, prompt PIN
-                ChildModeManager.promptPin(activity, "Sahkan PIN Ibu Bapa", "Masukkan PIN untuk mematikan Mode Kanak-kanak", new ChildModeManager.PinCallback() {
-                    @Override
-                    public void onSuccess() {
-                        ChildModeManager.setChildModeEnabled(activity, false);
-                        sw.setChecked(false);
-                        tvSwSub.setText("Tidak Aktif: Semua aplikasi dibuka tanpa sekatan");
-                        tvSwSub.setTextColor(0xFF8E929E);
-                        activity.reloadTiles();
-                        Toast.makeText(activity, "Mode Kanak-kanak dimatikan", Toast.LENGTH_SHORT).show();
-                    }
-                    @Override
-                    public void onCancelled() {}
-                });
-            } else {
-                // To turn ON, activate immediately
-                ChildModeManager.setChildModeEnabled(activity, true);
-                sw.setChecked(true);
-                tvSwSub.setText("Aktif: Aplikasi terpilih dikunci dengan PIN & disembunyikan");
-                tvSwSub.setTextColor(0xFFF59E0B);
-                activity.reloadTiles();
-                Toast.makeText(activity, "✅ Mode Kanak-kanak diaktifkan!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        LinearLayout.LayoutParams scLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        scLp.bottomMargin = (int) (8 * density);
-        root.addView(swCard, scLp);
-
-        // Action Card: Manage Locked Apps
-        LinearLayout lockCard = new LinearLayout(activity);
-        lockCard.setOrientation(LinearLayout.HORIZONTAL);
-        lockCard.setGravity(Gravity.CENTER_VERTICAL);
-        lockCard.setPadding((int) (16 * density), (int) (11 * density), (int) (16 * density), (int) (11 * density));
-        lockCard.setFocusable(true);
-        lockCard.setClickable(true);
-
-        GradientDrawable lcBg = new GradientDrawable();
-        lcBg.setColor(0xFF242731);
-        lcBg.setCornerRadius(12 * density);
-        lockCard.setBackground(lcBg);
-
-        TextView tvLcTitle = new TextView(activity);
-        tvLcTitle.setText("🔒 Urus Senarai Kunci & Sembunyi Aplikasi");
-        tvLcTitle.setTextSize(14);
-        tvLcTitle.setTextColor(0xFFFFFFFF);
-        tvLcTitle.setTypeface(outfit, Typeface.BOLD);
-        lockCard.addView(tvLcTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-        TextView tvLcArrow = new TextView(activity);
-        tvLcArrow.setText("→");
-        tvLcArrow.setTextSize(16);
-        tvLcArrow.setTextColor(0xFF8E929E);
-        lockCard.addView(tvLcArrow);
-
-        lockCard.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF333744 : 0xFF242731);
-            g.setCornerRadius(12 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
-            v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.02f : 1.0f).scaleY(hasFocus ? 1.02f : 1.0f).setDuration(120).start();
-        });
-
-        lockCard.setOnClickListener(v -> {
-            SoundEffects.playSelect();
-            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-            ModernSettingsDialog.show(activity);
-        });
-
-        LinearLayout.LayoutParams lcLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lcLp.bottomMargin = (int) (10 * density);
-        root.addView(lockCard, lcLp);
 
         // Close / Batal Button
         Button btnClose = new Button(activity);
