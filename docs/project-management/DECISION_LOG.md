@@ -67,3 +67,10 @@ Execution starts at A04. A01–A03 are complete planning tasks; no code repair o
 | ID | Decision | Source | Status |
 |---|---|---|---|
 | D-009 | At the user's explicit instruction to begin B01, source audit and a narrowly scoped fix were started before A05 tested-APK identity and A06 full baseline/backup were complete. To contain risk, work is isolated on a new branch created from the verified PR #9 exact head; no existing branch was overwritten, no PR merged, and no TV/device setting changed. A05 and A06 remain mandatory before installation/release acceptance. | User instruction to begin B01; verified GitHub repository tree, PR #9 head, and dedicated B01 branch | APPROVED EXECUTION EXCEPTION; A05/A06 OPEN |
+
+
+## 8. No TV testing or candidate APK until audit completion — 1 November 2026
+
+| ID | Decision | Source | Status |
+|---|---|---|---|
+| D-010 | Do not install or physically test any candidate APK while source audits and repairs are ongoing. Complete all A–E audit/fix work and F01–F07 integration/regression first. Only then produce and publish one final TV-test APK after explicit readiness approval. CI may compile the release variant for source validation, but normal PR CI must not publish a TV-test artifact. | User's explicit instruction in conversation, 1 Nov 2026 | APPROVED — binding workflow rule |
