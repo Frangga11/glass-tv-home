@@ -1805,13 +1805,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String country = about != null && about.length > 2 ? about[2] : "";
         if (country != null) {
             country = country.replaceAll("(?i)\\bunsplash\\s*•?\\s*", "").trim();
-            if (country.startsWith("Malaysia_")) {
-                String st = country.substring("Malaysia_".length());
-                if ("WP".equalsIgnoreCase(st)) st = "Wilayah Persekutuan";
-                else if ("NegeriSembilan".equalsIgnoreCase(st)) st = "Negeri Sembilan";
-                else if ("PulauPinang".equalsIgnoreCase(st)) st = "Pulau Pinang";
-                country = st + ", Malaysia";
-            }
+
         }
         if (title != null) {
             title = title.replaceAll("(?i)\\bunsplash\\s*•?\\s*", "").trim();
@@ -3832,7 +3826,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
         int customCount = (customFiles != null) ? customFiles.length : 0;
 
-        String currentKey = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Malaysia");
+        String currentKey = getActiveWallpaperCategory();
 
         class WallpaperOption {
             final String key;
@@ -4475,9 +4469,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void switchWallpaperCategory(String category) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
         String displayLabel;
-        if ("Malaysia".equalsIgnoreCase(category)) {
-            displayLabel = "Tempat Menarik di Malaysia";
-        } else if ("Minimalist".equalsIgnoreCase(category)) {
+        if ("Minimalist".equalsIgnoreCase(category)) {
             displayLabel = "Minimalis Gelap (OLED)";
         } else {
             displayLabel = category;
