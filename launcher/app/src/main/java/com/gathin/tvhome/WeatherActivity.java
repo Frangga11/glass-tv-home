@@ -411,8 +411,8 @@ public class WeatherActivity extends Activity {
         // 6. Footer
         if (weatherFooter != null) {
             weatherFooter.setText(String.format(Locale.ROOT,
-                    "Updated %s  •  Jabatan Alam Sekitar (APIMS)  •  Open-Meteo Atmospheric Model",
-                    w.updatedTime));
+                    "Updated %s  •  %s",
+                    w.updatedTime, w.isJasSource ? "Jabatan Alam Sekitar (APIMS)" : "Open-Meteo air-quality model"));
         }
     }
 
