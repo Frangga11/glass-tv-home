@@ -128,11 +128,14 @@ public class WeatherBackgroundView extends View {
     }
 
     public void setCondition(ConditionType condition) {
+        if (condition == null) condition = ConditionType.NONE;
         if (this.currentCondition != condition) {
             this.currentCondition = condition;
             rebuildGradientsAndParticles();
             invalidate();
         }
+        if (condition == ConditionType.NONE) stopAnimation();
+        else if (isAttachedToWindow() && getVisibility() == VISIBLE) startAnimation();
     }
 
     public ConditionType getCondition() {
@@ -175,7 +178,18 @@ public class WeatherBackgroundView extends View {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        startAnimation();
+        if (getVisibility() == VISIBLE && currentCondition != ConditionType.NONE) startAnimation();
+        else stopAnimation();
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibility == VISIBLE && currentCondition != ConditionType.NONE && isAttachedToWindow()) {
+            startAnimation();
+        } else {
+            stopAnimation();
+        }
     }
 
     @Override
