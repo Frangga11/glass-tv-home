@@ -264,8 +264,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long lastUserInteraction = android.os.SystemClock.elapsedRealtime();
     private boolean screensaverActive = false;
     private View screensaverView;
+    private int standbyPhotoIndex = -1;
+    private String standbyPhotoUriShown = "";
+    private final Runnable standbyPhotoTick = new Runnable() {
+        @Override public void run() {
+            if (screensaverActive) {
+                updateNightstandPhoto();
+                handler.postDelayed(this, 20_000L);
+            }
+        }
+    };
     private boolean wallpaperFullscreen = false;
     private View mainContent;
+    private static final int REQUEST_STANDBY_PHOTOS = 6041;
     private static final long DOUBLE_BACK_DELAY_MS = 350L;
     private Runnable singleBackRunnable = null;
     private boolean doubleBackPending = false;
@@ -1242,6 +1253,91 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // A picture that fell due while you were in an app waits a few seconds: decoding, blurring
         // and fading it the moment you come back competed with Home for the TV's slow CPU.
         handler.postDelayed(wallTick, Math.max(RETURN_SETTLE_MS, wallpaperIntervalMs - waited));
+    }
+
+    int getStandbyPhotoCount() {
+        return StandbyPhotoStore.getPhotoCount(this);
+    }
+
+    boolean isStandbyPhotoMode() {
+        return StandbyPhotoStore.isPhotoMode(this);
+    }
+
+    void setStandbyPhotoMode(boolean enabled) {
+        if (enabled && getStandbyPhotoCount() == 0) {
+            Toast.makeText(this, "Pilih foto terlebih dahulu untuk mode foto.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        StandbyPhotoStore.setPhotoMode(this, enabled);
+        standbyPhotoUriShown = "";
+        updateNightstandScreensaver();
+        Toast.makeText(this, enabled ? "Foto pribadi digunakan pada Layar Siaga." : "Tampilan jam bawaan digunakan.", Toast.LENGTH_SHORT).show();
+    }
+
+    void pickStandbyPhotos() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        try {
+            startActivityForResult(intent, REQUEST_STANDBY_PHOTOS);
+        } catch (Exception e) {
+            Toast.makeText(this, "Pemilih foto tidak tersedia pada perangkat ini.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    void clearStandbyPhotos() {
+        for (Uri uri : StandbyPhotoStore.getUris(this)) {
+            try {
+                getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (Exception ignored) {
+            }
+        }
+        StandbyPhotoStore.saveUris(this, Collections.emptyList());
+        StandbyPhotoStore.setPhotoMode(this, false);
+        standbyPhotoUriShown = "";
+        updateNightstandScreensaver();
+        Toast.makeText(this, "Daftar foto Layar Siaga dikosongkan.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQUEST_STANDBY_PHOTOS || resultCode != Activity.RESULT_OK || data == null) return;
+
+        List<Uri> selected = new ArrayList<>();
+        Set<String> unique = new HashSet<>();
+        android.content.ClipData clip = data.getClipData();
+        if (clip != null) {
+            for (int i = 0; i < clip.getItemCount(); i++) {
+                Uri uri = clip.getItemAt(i).getUri();
+                if (uri != null && unique.add(uri.toString())) selected.add(uri);
+            }
+        } else if (data.getData() != null) {
+            selected.add(data.getData());
+        }
+
+        if (selected.isEmpty()) return;
+        List<Uri> granted = new ArrayList<>();
+        for (Uri uri : selected) {
+            try {
+                getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                granted.add(uri);
+            } catch (Exception e) {
+                android.util.Log.w("TvHome.StandBy", "Persistable photo permission unavailable for " + uri, e);
+            }
+        }
+        if (granted.isEmpty()) {
+            Toast.makeText(this, "Foto tidak dapat diakses kembali. Coba pilih foto dari penyimpanan perangkat.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        StandbyPhotoStore.saveUris(this, granted);
+        StandbyPhotoStore.setPhotoMode(this, true);
+        standbyPhotoIndex = -1;
+        standbyPhotoUriShown = "";
+        updateNightstandScreensaver();
+        Toast.makeText(this, granted.size() + " foto ditambahkan ke Layar Siaga.", Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -5527,6 +5623,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         updateNightstandScreensaver();
+        handler.removeCallbacks(standbyPhotoTick);
+        handler.postDelayed(standbyPhotoTick, 20_000L);
 
         screensaverView.setVisibility(View.VISIBLE);
         screensaverView.setAlpha(0f);
@@ -5536,6 +5634,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void updateNightstandScreensaver() {
         if (screensaverView == null) return;
+        updateNightstandPhoto();
         TextView hijri = screensaverView.findViewById(R.id.nightstandHijri);
         if (hijri != null) hijri.setText("🌙 " + PrayerTimes.getHijriDate());
 
@@ -5589,9 +5688,46 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    private void updateNightstandPhoto() {
+        if (screensaverView == null) return;
+        ImageView photo = screensaverView.findViewById(R.id.nightstandPhoto);
+        View scrim = screensaverView.findViewById(R.id.nightstandPhotoScrim);
+        if (photo == null || scrim == null) return;
+
+        List<Uri> uris = StandbyPhotoStore.getUris(this);
+        if (!StandbyPhotoStore.isPhotoMode(this) || uris.isEmpty()) {
+            photo.setImageDrawable(null);
+            photo.setVisibility(View.GONE);
+            scrim.setVisibility(View.GONE);
+            standbyPhotoUriShown = "";
+            standbyPhotoIndex = -1;
+            return;
+        }
+
+        int index = (int) ((android.os.SystemClock.elapsedRealtime() / 20_000L) % uris.size());
+        Uri uri = uris.get(index);
+        photo.setVisibility(View.VISIBLE);
+        scrim.setVisibility(View.VISIBLE);
+        if (!uri.toString().equals(standbyPhotoUriShown)) {
+            android.graphics.Bitmap bitmap = StandbyPhotoStore.loadBitmap(this, uri);
+            if (bitmap != null) {
+                photo.setImageBitmap(bitmap);
+                standbyPhotoUriShown = uri.toString();
+                standbyPhotoIndex = index;
+            } else {
+                photo.setImageDrawable(null);
+                photo.setVisibility(View.GONE);
+                scrim.setVisibility(View.GONE);
+                standbyPhotoUriShown = "";
+                android.util.Log.w("TvHome.StandBy", "Skipping unreadable StandBy photo: " + uri);
+            }
+        }
+    }
+
     private void dismissScreensaver() {
         if (!screensaverActive || screensaverView == null) return;
         screensaverActive = false;
+        handler.removeCallbacks(standbyPhotoTick);
         lastUserInteraction = android.os.SystemClock.elapsedRealtime();
         screensaverView.animate().alpha(0f).setDuration(350).withEndAction(() -> {
             if (!screensaverActive && screensaverView != null) {
