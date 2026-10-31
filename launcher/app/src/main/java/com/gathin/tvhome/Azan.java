@@ -17,7 +17,7 @@ import java.util.Calendar;
 /**
  * The azan at prayer time, while the TV is on. Each prayer can be switched on or off (Wallpaper menu →
  * Location, text &amp; ayat → Azan); Maghrib is on by default. One exact alarm is kept for the next prayer
- * that is switched on, worked out from the stored JAKIM timetable; Home sets it again each time it comes
+ * that is switched on, worked out from the stored regional prayer timetable; Home sets it again each time it comes
  * to the front, and the alarm sets the one after. Nothing runs in between.
  *
  * The recording is the theme's azan.mp3 when there is one, else the call to prayer recorded at Masjid
