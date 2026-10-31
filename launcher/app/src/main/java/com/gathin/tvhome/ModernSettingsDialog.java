@@ -52,7 +52,6 @@ public final class ModernSettingsDialog {
     private static final int TAB_STATUS_WEATHER = 3;
     private static final int TAB_EFFECTS = 4;
     private static final int TAB_STANDBY = 5;
-    private static final int TAB_CHILD_MODE = 6;
     private static final int TAB_DEVICE_SETTINGS = 7;
 
     private static Runnable sDpadLeftTarget;
@@ -271,7 +270,6 @@ public final class ModernSettingsDialog {
         navItems.add(new NavItem(TAB_STATUS_WEATHER, AppLanguage.strStatusBarWeather(activity), R.drawable.ic_screen_weather, 0xFF1976D2));
         navItems.add(new NavItem(TAB_EFFECTS, AppLanguage.strVisualEffects(activity), R.drawable.ic_settings, 0xFF7C3AED));
         navItems.add(new NavItem(TAB_STANDBY, AppLanguage.strStandByMode(activity), R.drawable.ic_standby_clock, 0xFF374151));
-        navItems.add(new NavItem(TAB_CHILD_MODE, AppLanguage.strChildMode(activity), R.drawable.ic_shield_child, 0xFFD97706));
         String deviceLabel = AppLanguage.strDeviceSettings(activity);
         if (AppUpdateManager.isUpdateAvailable(activity)) {
             deviceLabel += " 🔴";
@@ -729,6 +727,51 @@ public final class ModernSettingsDialog {
                 });
                 rightContent.addView(addUserBtn);
 
+                // Child Mode is grouped with user/profile management to avoid a duplicate sidebar destination.
+                // === PARENTAL CONTROLS: GROUPED UNDER PROFILE ===
+                addSectionHeader(rightContent, outfit, "PENGAWASAN ORANG TUA");
+
+                boolean isChildOn = ChildModeManager.isChildModeEnabled(activity);
+                Set<String> lockedSet = ChildModeManager.getLockedApps(activity);
+                Set<String> hiddenSet = ChildModeManager.getHiddenApps(activity);
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "🛡️ Status Mode Anak",
+                        "Kunci aplikasi dengan PIN 4 digit atau sembunyikan aplikasi dari layar utama",
+                        isChildOn, isChecked -> {
+                            ChildModeManager.promptPin(activity, "Sahkan PIN Keselamatan", "Masukkan PIN 4 digit untuk mengubah mode ini", new ChildModeManager.PinCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    ChildModeManager.setChildModeEnabled(activity, isChecked);
+                                    activity.reloadTiles();
+                                    Toast.makeText(activity, isChecked ? "✅ Mode Anak diaktifkan!" : "Mode Anak dinonaktifkan", Toast.LENGTH_SHORT).show();
+                                    if (renderRightPane[0] != null) renderRightPane[0].run();
+                                }
+
+                                @Override
+                                public void onCancelled() {
+                                    if (renderRightPane[0] != null) renderRightPane[0].run();
+                                }
+                            });
+                        }));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "🔒 Kunci Aplikasi dengan PIN (" + lockedSet.size() + " Aplikasi)",
+                        "Pilih aplikasi yang memerlukan PIN 4 digit untuk dibuka",
+                        () -> showAppLockPicker(activity, density, outfit, false)));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "👁️ Sembunyikan Aplikasi (" + hiddenSet.size() + " Aplikasi)",
+                        "Pilih aplikasi yang disembunyikan dari dok dan kisi layar utama",
+                        () -> showAppLockPicker(activity, density, outfit, true)));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "🔢 Ubah PIN Keamanan",
+                        "Ubah PIN kontrol orang tua 4 digit (PIN saat ini: " + (ChildModeManager.getPin(activity).equals("0000") ? "0000 [Lalai]" : "••••") + ")",
+                        () -> showChangePinDialog(activity, density, outfit)));
+
+
+
             } else if (tab == TAB_HOME_SCREEN) {
                 // === TAB 1: HOME SCREEN (CONSOLIDATING CANDY BOX SETTINGS) ===
                 addHeader(rightContent, outfit, "Layar Utama");
@@ -828,51 +871,7 @@ public final class ModernSettingsDialog {
                         "Atur cahaya latar dan perpaduan warna yang mengikuti aplikasi saat dipilih. Terpisah dari animasi ikon, Glass Effect, dan animasi cuaca.",
                         activity.isIconGlowEffectsEnabled(), isChecked -> {
                             activity.setIconGlowEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Efek cahaya ikon diaktifkan." : "Efek cahaya ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
-                            if (renderRightPane[0] != null) renderRightPane[0].run();
-                        }));
-
-            } else if (tab == TAB_STANDBY) {
-                // === TAB: STANDBY / PERSONAL PHOTO SCREENSAVER ===
-                addHeader(rightContent, outfit, "Layar Siaga");
-
-                int photoCount = activity.getStandbyPhotoCount();
-                boolean photoMode = activity.isStandbyPhotoMode();
-                rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📷 Koleksi Foto Pribadi", photoCount + " foto tersimpan. Foto berganti setiap 20 detik. Maksimal 100 foto; unggahan QR maks. 512 MB total dan 60 MB per foto. Foto USB dibaca langsung dari sumbernya."));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📲 Unggah Foto dari HP (Kode QR)",
-                        "Pindai kode QR dengan ponsel yang memakai Wi-Fi sama. Foto masuk ke koleksi Layar Siaga, bukan wallpaper.",
-                        activity::showStandbyUploadQrDialog));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "➕ Pilih Foto untuk Layar Siaga",
-                        "Tambahkan foto dari penyimpanan TV atau USB. Foto sebelumnya tetap tersimpan; USB harus tetap terpasang agar fotonya dapat dibaca.",
-                        activity::pickStandbyPhotos));
-
-                rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🖼️ Gunakan Foto Pribadi",
-                        "Tampilkan koleksi foto sebagai latar Layar Siaga. Matikan untuk kembali ke tampilan jam bawaan.",
-                        photoMode, isChecked -> {
-                            activity.setStandbyPhotoMode(isChecked);
-                            if (renderRightPane[0] != null) renderRightPane[0].run();
-                        }));
-
-                if (photoCount > 0) {
-                    rightContent.addView(buildCardRow(activity, density, outfit,
-                            "🗑️ Hapus Semua Foto Layar Siaga",
-                            "Hapus daftar foto pribadi dari Layar Siaga. Foto asli di penyimpanan tidak ikut dihapus.",
-                            () -> {
-                                activity.clearStandbyPhotos();
-                                if (renderRightPane[0] != null) renderRightPane[0].run();
-                            }));
-                }
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🌙 Pratinjau Layar Siaga Sekarang",
-                        "Lihat pratinjau jam atau foto pribadi di dalam aplikasi sesuai mode yang dipilih.",
-                        activity::showNightstandScreensaver));
+                            Toast.makeText(activity, isChecked ? "Efek caha            } else if (tab == TAB_DEVICE_SETTINGS) {    activity::showNightstandScreensaver));
 
             } else if (tab == TAB_CHILD_MODE) {
                 // === TAB 6: CHILD MODE & APP LOCK ===
