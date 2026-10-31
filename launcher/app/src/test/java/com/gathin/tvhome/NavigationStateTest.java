@@ -29,8 +29,8 @@ public class NavigationStateTest {
 
     @Test
     public void normalizesInvalidFocusKeys() {
-        assertEquals(null, NavigationState.normalizeFocusKey(null));
-        assertEquals(null, NavigationState.normalizeFocusKey("  "));
+        assertNull(NavigationState.normalizeFocusKey(null));
+        assertNull(NavigationState.normalizeFocusKey("  "));
         assertEquals("com.example/.Main", NavigationState.normalizeFocusKey(" com.example/.Main "));
     }
 
