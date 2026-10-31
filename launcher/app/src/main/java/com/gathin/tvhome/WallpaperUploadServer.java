@@ -258,7 +258,7 @@ public class WallpaperUploadServer {
                         out.write(response.getBytes("UTF-8"));
                         out.flush();
                     } else {
-                        String json = "{\\"status\\":\\"ok\\",\\"file\\":\\"" + targetFile.getName() + "\\"}";
+                        String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
                         String response = "HTTP/1.1 200 OK\\r\\n" +
                                 "Content-Type: application/json; charset=UTF-8\\r\\n" +
