@@ -14,6 +14,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -75,6 +76,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gathin.tvhome.qrcode.QrBitmapUtil;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -276,6 +279,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean wallpaperFullscreen = false;
     private View mainContent;
     private static final int REQUEST_STANDBY_PHOTOS = 6041;
+    private static final int REQUEST_AVATAR_PHOTO = 6042;
+    private String pendingAvatarProfileId;
     private static final long DOUBLE_BACK_DELAY_MS = 350L;
     private Runnable singleBackRunnable = null;
     private boolean doubleBackPending = false;
@@ -1307,9 +1312,98 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Toast.makeText(this, "Daftar foto Layar Siaga dikosongkan.", Toast.LENGTH_SHORT).show();
     }
 
+    /** Opens Android's document picker for a single profile photo. */
+    public void pickAvatarPhoto(String profileId) {
+        if (profileId == null || profileId.trim().isEmpty()) return;
+        pendingAvatarProfileId = profileId;
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            startActivityForResult(intent, REQUEST_AVATAR_PHOTO);
+        } catch (Exception e) {
+            pendingAvatarProfileId = null;
+            Toast.makeText(this, "Pemilih foto tidak tersedia pada perangkat ini.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void savePickedAvatar(Uri uri, String profileId) {
+        if (uri == null || profileId == null) return;
+        Bitmap decoded = null;
+        File temp = null;
+        File backup = null;
+        try {
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            try (InputStream in = getContentResolver().openInputStream(uri)) {
+                BitmapFactory.decodeStream(in, null, bounds);
+            }
+            if (bounds.outWidth <= 0 || bounds.outHeight <= 0
+                    || bounds.outWidth > 20000 || bounds.outHeight > 20000
+                    || (long) bounds.outWidth * bounds.outHeight > 150_000_000L) {
+                throw new java.io.IOException("Ukuran atau format foto tidak didukung.");
+            }
+            int sample = 1;
+            while (bounds.outWidth / sample > 1200 || bounds.outHeight / sample > 1200) sample *= 2;
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = sample;
+            try (InputStream in = getContentResolver().openInputStream(uri)) {
+                decoded = BitmapFactory.decodeStream(in, null, options);
+            }
+            if (decoded == null) throw new java.io.IOException("Foto tidak dapat dibaca.");
+            File dir = new File(getFilesDir(), "profile_avatars");
+            if (!dir.exists() && !dir.mkdirs()) throw new java.io.IOException("Folder foto profil tidak dapat dibuat.");
+            String safeId = profileId.replaceAll("[^a-zA-Z0-9_-]", "_");
+            File target = new File(dir, safeId + ".jpg");
+            temp = new File(dir, safeId + ".jpg.tmp");
+            backup = new File(dir, safeId + ".jpg.bak");
+            try (FileOutputStream out = new FileOutputStream(temp)) {
+                if (!decoded.compress(Bitmap.CompressFormat.JPEG, 90, out)) {
+                    throw new java.io.IOException("Foto gagal disimpan.");
+                }
+                out.flush();
+            }
+            if (backup.exists()) backup.delete();
+            boolean hadPreviousPhoto = target.exists();
+            if (hadPreviousPhoto && !target.renameTo(backup)) {
+                throw new java.io.IOException("Foto lama tidak dapat diamankan untuk penggantian.");
+            }
+            if (!temp.renameTo(target)) {
+                if (hadPreviousPhoto && backup.exists()) backup.renameTo(target);
+                throw new java.io.IOException("Penyimpanan foto tidak selesai.");
+            }
+            if (backup.exists()) backup.delete();
+            if (!ProfileManager.setCustomAvatar(this, profileId, target.getAbsolutePath())) {
+                target.delete();
+                throw new java.io.IOException("Profil tidak ditemukan; foto tidak disimpan.");
+            }
+            updateTopBarUserIcon();
+            Toast.makeText(this, "Foto avatar berhasil disimpan di TV.", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            if (temp != null && temp.exists()) temp.delete();
+            if (backup != null && backup.exists()) {
+                File target = new File(backup.getParentFile(), backup.getName().replace(".jpg.bak", ".jpg"));
+                if (!target.exists()) backup.renameTo(target);
+            }
+            Toast.makeText(this, "Gagal menyimpan foto avatar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            android.util.Log.e("TvHome.Profile", "Avatar photo import failed", e);
+        } finally {
+            if (decoded != null && !decoded.isRecycled()) decoded.recycle();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_AVATAR_PHOTO) {
+            String profileId = pendingAvatarProfileId;
+            pendingAvatarProfileId = null;
+            if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+                savePickedAvatar(data.getData(), profileId);
+            }
+            return;
+        }
         if (requestCode != REQUEST_STANDBY_PHOTOS || resultCode != Activity.RESULT_OK || data == null) return;
 
         List<Uri> selected = new ArrayList<>();
@@ -3002,7 +3096,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ProfileManager.UserProfile active = ProfileManager.getActiveProfile(this);
             boolean isChild = ChildModeManager.isChildModeEnabled(this);
             int size = Math.round(26 * density);
-            android.graphics.drawable.Drawable avDrawable = ProfileManager.getCircularAvatarDrawable(this, active.avatarIndex, size, isChild);
+            android.graphics.drawable.Drawable avDrawable = ProfileManager.getAvatarDrawable(this, active, size, isChild);
             if (avDrawable != null) {
                 tv.setCompoundDrawablesWithIntrinsicBounds(avDrawable, null, null, null);
                 tv.setCompoundDrawableTintList(null);
