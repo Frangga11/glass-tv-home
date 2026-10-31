@@ -15,7 +15,7 @@
 
 | ID | Severity | Area | Finding / risk | Required verification | Status |
 |---|---|---|---|---|---|
-| A-001 | P1 | Avatar integration | QR implementation is on dedicated branch and draft PR #6; not merged into settings/gallery baseline | Finish CI, device acceptance, then review/merge PR | OPEN — CI/device gate |
+| A-001 | P1 | Avatar integration | QR implementation is on dedicated branch and draft PR #6; not merged into settings/gallery baseline | Finish CI, device acceptance, then review/merge PR | OPEN — device gate; CI pass |
 | A-002 | P1 | Avatar surfaces | Shared avatar resolver is wired to top bar, Settings profile card, and profile switcher; add-profile starts with built-in avatar | Verify all surfaces and profile switching on target TV | OPEN — device verification |
 | A-003 | P2 | Avatar settings sidebar | Settings profile card now resolves the active custom photo | Verify after QR upload and after closing/reopening Settings | OPEN — device verification |
 | A-004 | P2 | Avatar image orientation | EXIF-aware orientation handling added to avatar renderer | Verify portrait/landscape and mirrored EXIF samples on TV | OPEN — device verification |
@@ -25,7 +25,7 @@
 | A-008 | P2 | Avatar management | New profiles start with built-in avatars; custom QR upload is available after selecting the profile in Settings | Deferred by design; verify post-creation flow; inline upload at creation is not release-critical | DEFERRED |
 | A-009 | P2 | Avatar rendering | Downsampled rendering, center-crop, child/adult ring, EXIF orientation, and built-in fallback are implemented | Test portrait, landscape, large, unsupported, and corrupt images | OPEN — device verification |
 | A-010 | P2 | Branch control | Branch ancestry checked; avatar candidate is eight commits ahead and has no commits behind settings/gallery baseline; QR work is isolated in draft PR #6 | Complete review and merge only after all gates pass | OPEN — PR review |
-| A-011 | P1 | Real device | No evidence yet of actual build/install/test on user's Mi TV Stick in this audit session | Run release build, install, and structured TV test | OPEN |
+| A-011 | P1 | Real device | CI release APK exists, but no evidence yet of installation/test on user's actual Mi TV Stick | Install artifact from workflow run 41199143712 and execute AVATAR_AUDIT.md device checklist | OPEN — USER DEVICE TEST REQUIRED |
 | A-012 | P2 | Wallpaper | Exact default wallpaper asset and fallback behavior not yet documented | Inspect drawable/assets and wallpaper selection code | OPEN |
 | A-013 | P2 | Icon animation | Animation inventory and per-icon behavior not yet mapped | Inspect adapters, focus listeners, animators, and test on TV | OPEN |
 | A-014 | P2 | Information layout | Exact on-screen order and focus navigation of clock/weather/AQI/prayer/Islamic shelf not yet recorded | Map view hierarchy and compare with user-approved screenshots | OPEN |
