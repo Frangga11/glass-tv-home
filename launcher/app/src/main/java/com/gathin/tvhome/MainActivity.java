@@ -5180,7 +5180,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         showPhoneUploadQrDialog("📷 Ganti Foto Avatar",
-                "Pindai QR dengan HP yang terhubung ke jaringan Wi-Fi yang sama. Pilih satu foto untuk profil aktif.",
+                "Pindai QR dengan HP di jaringan Wi-Fi yang sama. Pilih satu foto; sesi berlaku 5 menit. Jika kedaluwarsa, tutup dialog dan buat QR baru.",
                 avatarUploadServer.getUrl());
     }
 
