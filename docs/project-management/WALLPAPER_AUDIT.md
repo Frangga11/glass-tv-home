@@ -2,7 +2,7 @@
 
 **Audit ID:** W-001  
 **Date opened:** 31 October 2026  
-**Status:** PARTIAL — QR route remediation implemented in draft PR #7; CI PASS; default asset and device acceptance pending  
+**Status:** PARTIAL — default image received and validated (1536×864 JPEG, 16:9); optimized package asset prepared locally; repository/APK packaging and device acceptance pending  
 **Code baseline inspected:** `feature/settings-reorganization-standby-gallery`  
 **Files inspected:** `MainActivity.java`, `WallpaperUploadServer.java`, `AndroidManifest.xml`  
 **Target:** LG 32-inch display via Mi TV Stick (Android 11 / API 30; revalidate on device)
@@ -55,12 +55,21 @@ Audit the complete home-screen background system: bundled default, online catego
 - The QR dialog dismiss listener stops the upload server.
 - Standby upload uses a distinct standby-only server mode and tokenized standby paths. Avatar upload is a separate feature and store.
 
+### Default image received and validated — 31 October 2026
+- User supplied the intended official default image, titled **Kabut Pagi Dempo**.
+- The uploaded file's actual content is JPEG despite the uploaded filename ending in .png.
+- Verified dimensions: 1536 × 864 pixels (exact 16:9); RGB; suitable for a 16:9 TV frame without geometric crop.
+- A package-ready optimized JPEG was prepared as `kabut-pagi-dempo.jpg`, quality 82, 230,883 bytes.
+- SHA-256: `04e5793b92cab1fcaeaaf0e3b80769598f91c7521b8e3d62c4f7a38888982982`.
+- Intended repository destination: `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`.
+- The binary asset has **not yet been committed to GitHub or verified inside a new APK**. Do not mark W-F-02 closed until those steps and a clean-install/offline TV test pass.
+
 ## 4. Findings requiring action
 
 | ID | Severity | Finding | Required action | Status |
 |---|---|---|---|---|
 | W-F-01 | P1 | Baseline wallpaper QR exposed upload and gallery-management routes on the LAN without a per-session path token. | Token-scoped page/upload/API/thumb routes implemented; verify unauthorized paths, token isolation, and dialog-close revocation on device. | IMPLEMENTED IN DRAFT PR #7 — CI PASS; device verification pending |
-| W-F-02 | P1 | Expected `kabut-pagi-dempo.jpg` is missing from the release APK; `getBundledDefaultWallpaper()` returns null on a fresh install, leaving Default without its offline image. | Obtain/approve the final wallpaper image, package it at the exact assets path, verify APK contents, then test cold-start/offline/fallback behavior. | OPEN — USER IMAGE/ART DIRECTION REQUIRED |
+| W-F-02 | P1 | Expected `kabut-pagi-dempo.jpg` is missing from the release APK; `getBundledDefaultWallpaper()` returns null on a fresh install. | Commit the validated JPEG at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`, verify APK contents, then test cold-start/offline/fallback behavior. | IMAGE APPROVED & PACKAGE FILE PREPARED — REPOSITORY/APK PACKAGING OPEN |
 | W-F-03 | P2 | CENTER_CROP may cut important image content depending on source aspect ratio and composition. | Test representative portrait, 16:9, ultrawide, and 4K assets; decide whether upload preview/crop guidance is needed. | OPEN |
 | W-F-04 | P2 | Text/widget legibility is not programmatically or visually guaranteed for bright wallpaper images. | Evaluate dim overlay/gradient and text contrast on real TV using worst-case images. | OPEN |
 | W-F-05 | P2 | Performance comments describe intended memory reduction, but actual memory, blur latency, and long-run stability have not been measured on Mi TV Stick. | Run repeated rotation and long-duration test; record freezes, frame drops, and reloads. | OPEN |
@@ -81,7 +90,7 @@ Audit the complete home-screen background system: bundled default, online catego
 
 ## 6. Work sequence — no duplicate passes
 
-1. Resolve W-F-02: user approves/provides the default Dempo image; package it at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`.
+1. Add the validated package-ready image at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg` on the wallpaper implementation branch.
 2. Verify the image is present in the APK and inspect its dimensions/aspect ratio. Do not rerun the already-passed QR security checks unless code changes.
 3. Finish the remaining source review of custom manager, image extension handling, file limits, and lifecycle.
 4. Run CI once after the asset/code change.
