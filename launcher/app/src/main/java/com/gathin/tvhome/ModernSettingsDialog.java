@@ -1048,7 +1048,7 @@ public final class ModernSettingsDialog {
                                 "Widget & Informasi",
                                 "Animasi & Efek",
                                 "Layar Siaga",
-                                "Mode Anak",
+                                "Pengawasan Orang Tua (di Profil)",
                                 "Pengaturan Perangkat"
                         };
                         String[] keywords = {
