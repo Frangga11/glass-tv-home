@@ -15,6 +15,20 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 
 ---
 
+## 👤 Foto Avatar Profil
+
+Anda boleh menggunakan avatar haiwan bawaan atau foto sendiri untuk setiap profil pengguna.
+
+1. Buka **Pengaturan → Profil** pada Glass TV Home.
+2. Pilih salah satu avatar haiwan, atau tekan **📷 Unggah Foto Sendiri**.
+3. Pilih satu foto dari galeri atau penyimpanan Android TV.
+4. Foto akan disalin ke penyimpanan privat aplikasi, diperkecil secara otomatis, lalu digunakan sebagai avatar profil.
+5. Untuk kembali ke avatar hewan bawaan, tekan **↩ Gunakan Avatar Bawaan**.
+
+Foto avatar tampil pada ikon pengguna di bar atas dan daftar pergantian profil. Foto tersimpan lokal di TV dan tidak memerlukan koneksi internet setelah dipilih. Menghapus profil atau mengembalikan avatar bawaan juga membersihkan file foto profil terkait.
+
+---
+
 ## 📦 Muat Turun Fail APK Rasmi (Official Direct Downloads)
 
 Sila muat turun fail pemasangan rasmi mengikut peranti anda:
