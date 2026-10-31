@@ -4737,10 +4737,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private File getBundledDefaultWallpaper() {
-        // The APK asset is the single source of truth. Refresh the private runtime copy
-        // so an upgrade cannot keep showing a stale Malaysia/older Default image.
+        // The APK asset is the single source of truth. Never reuse an unverified legacy cache.
         File target = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg");
         File staged = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg.tmp");
+        File backup = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg.bak");
         try (java.io.InputStream in = getAssets().open("kabut-pagi-dempo.jpg");
              java.io.FileOutputStream out = new java.io.FileOutputStream(staged, false)) {
             byte[] buffer = new byte[8192];
@@ -4750,23 +4750,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             out.getFD().sync();
             if (!staged.isFile() || staged.length() == 0) {
                 staged.delete();
-                return target.isFile() && target.length() > 0 ? target : null;
+                return null;
             }
-            if (target.exists() && !target.delete()) {
-                android.util.Log.e("TvHome", "Cannot replace stale bundled default wallpaper");
+
+            if (backup.exists() && !backup.delete()) {
                 staged.delete();
-                return target.isFile() && target.length() > 0 ? target : null;
+                android.util.Log.e("TvHome", "Cannot clear previous Default wallpaper backup");
+                return null;
+            }
+            boolean hadTarget = target.isFile();
+            if (hadTarget && !target.renameTo(backup)) {
+                staged.delete();
+                android.util.Log.e("TvHome", "Cannot stage existing Default wallpaper for replacement");
+                return null;
             }
             if (!staged.renameTo(target)) {
-                android.util.Log.e("TvHome", "Cannot finalize bundled default wallpaper asset");
                 staged.delete();
+                if (hadTarget) backup.renameTo(target);
+                android.util.Log.e("TvHome", "Cannot finalize bundled Default wallpaper asset");
                 return null;
+            }
+            if (backup.exists() && !backup.delete()) {
+                android.util.Log.w("TvHome", "Could not remove previous Default wallpaper backup");
             }
             return target;
         } catch (Exception e) {
-            android.util.Log.e("TvHome", "Bundled default wallpaper unavailable", e);
+            android.util.Log.e("TvHome", "Bundled Default wallpaper unavailable", e);
             staged.delete();
-            return target.isFile() && target.length() > 0 ? target : null;
+            // Do not display an unverified cache: it may contain the retired Malaysia image.
+            return null;
         }
     }
 
