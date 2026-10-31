@@ -374,6 +374,7 @@ final class PrayerTimes {
             return prefs.getString("manual_prayer_zone_name", "Pagar Alam");
         }
         String zone = getActiveZone(context);
+        if ("ID_PGA".equals(zone)) return "Pagar Alam";
         for (PrayerZone pz : PRESET_ZONES) {
             if (pz.code.equalsIgnoreCase(zone)) return pz.name;
         }
@@ -642,28 +643,20 @@ final class PrayerTimes {
     /** Astronomical calculation fallback based on the selected Indonesian location. */
     private static long[] calculateFallback(Context context, Calendar cal) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        double latitude = prefs.contains("manual_lat")
-                ? Double.parseDouble(prefs.getString("manual_lat", String.valueOf(AppLocationManager.getLatitude(context))))
-                : AppLocationManager.getLatitude(context);
-        double longitude = prefs.contains("manual_lon")
-                ? Double.parseDouble(prefs.getString("manual_lon", String.valueOf(AppLocationManager.getLongitude(context))))
-                : AppLocationManager.getLongitude(context);
-
         String zone = getActiveZone(context);
+        double latitude = prefs.contains("manual_lat")
+                ? Double.parseDouble(prefs.getString("manual_lat", String.valueOf(LATITUDE)))
+                : ("ID_PGA".equals(zone) ? LATITUDE : AppLocationManager.getLatitude(context));
+        double longitude = prefs.contains("manual_lon")
+                ? Double.parseDouble(prefs.getString("manual_lon", String.valueOf(LONGITUDE)))
+                : ("ID_PGA".equals(zone) ? LONGITUDE : AppLocationManager.getLongitude(context));
+
         double tz = 7.0;
         if (zone != null && zone.startsWith("ID_")) {
-            // Indonesia timezones: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9)
-            if (longitude < 114.0) {
-                tz = 7.0; // WIB
-            } else if (longitude < 125.0) {
-                tz = 8.0; // WITA
-            } else {
-                tz = 9.0; // WIT
-            }
-        } else {
-            tz = 7.0; // Indonesia fallback (WIB)
+            if (longitude < 114.0) tz = 7.0;
+            else if (longitude < 125.0) tz = 8.0;
+            else tz = 9.0;
         }
-
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
         int day = cal.get(Calendar.DAY_OF_MONTH);
