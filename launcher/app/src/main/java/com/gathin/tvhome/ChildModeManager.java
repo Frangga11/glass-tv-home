@@ -130,6 +130,11 @@ public final class ChildModeManager {
                 .apply();
     }
 
+    /** A PIN is needed only when leaving an active Child Mode profile. */
+    static boolean requiresParentPinToSwitch(boolean currentChildMode, boolean targetChildMode) {
+        return currentChildMode && !targetChildMode;
+    }
+
     public static boolean verifyPin(Context ctx, String entered) {
         if (ctx == null || entered == null) return false;
         return entered.equals(getPin(ctx));
