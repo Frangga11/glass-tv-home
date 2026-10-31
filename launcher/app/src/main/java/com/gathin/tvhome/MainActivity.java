@@ -2614,8 +2614,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (weatherAirQualityView == null || homeWeatherRunning || !HomeWeather.due(this)) return;
         homeWeatherRunning = true;
         Location.Zone zone = Location.chosen(this);
-        final double lat = (zone != null) ? zone.lat : 3.1412;
-        final double lon = (zone != null) ? zone.lon : 101.6865;
+        final double lat = (zone != null) ? zone.lat : -4.0212;
+        final double lon = (zone != null) ? zone.lon : 103.2517;
         new Thread(() -> {
             HomeWeather.Line line = HomeWeather.refresh(getApplicationContext(), lat, lon);
             handler.post(() -> {
