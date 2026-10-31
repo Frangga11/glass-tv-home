@@ -43,3 +43,6 @@
 
 
 | 2026-11-01 | B01 current-head safe fallback and CI checkpoint | [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), head `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`, [CI #225](https://github.com/Frangga11/glass-tv-home/actions/runs/41229763017) | Final source review found that a visible Wi-Fi control could still reject focus without attempting Settings. Fallback now tries Wi-Fi only when shown/focusable and then Settings. Exact-head CI #224 passed the preceding snapshot; #225 is running against the current head. | Wait for #225 PASS before moving to B02; no TV testing or TV-test artifact publication until all source audits/fixes and final integration are complete |
+
+
+| 2026-11-01 | B01 final second-pass source/CI gate | [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), head `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`, [CI #225](https://github.com/Frangga11/glass-tv-home/actions/runs/41229763017) | Exact-head CI #225 PASS, both jobs. `testReleaseUnitTest` and `assembleRelease` succeeded; APK size guard passed at 1,395 KB (<1.5 MiB). Manual-only TV-test artifact step was skipped; CI run produced no artifacts. B01 source-level audit and CI gate are PASS. | Proceed to B02 source audit; defer all physical TV acceptance to final stage F02 after A–E audit/fix work and F integration |
