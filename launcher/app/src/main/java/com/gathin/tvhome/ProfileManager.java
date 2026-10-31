@@ -234,6 +234,7 @@ public final class ProfileManager {
         if (toRemove == null) return false;
         list.remove(toRemove);
         saveProfiles(context, list);
+        ChildModeManager.clearProfileSettings(context, profileId);
 
         String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
         if (profileId.equals(activeId)) {
