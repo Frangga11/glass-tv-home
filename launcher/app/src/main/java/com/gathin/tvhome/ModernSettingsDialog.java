@@ -677,47 +677,15 @@ public final class ModernSettingsDialog {
                             String[] opts = allProfiles.size() > 1 ? new String[]{"✨ Beralih ke Profil Ini", "🗑️ Hapus Pengguna"} : new String[]{"✨ Beralih ke Profil Ini"};
                             ob.setItems(opts, (d, which) -> {
                                 if (which == 0) {
-                                    // Keep profile switching consistent with the top-bar switcher:
-                                    // leaving Child Mode must always require the parent PIN.
-                                    boolean childModeOn = ChildModeManager.isChildModeEnabled(activity);
-                                    boolean targetChildModeOn = ChildModeManager.isChildModeEnabled(activity, p.id);
-                                    if (childModeOn && !targetChildModeOn) {
-                                        ChildModeManager.promptPin(activity, "Sahkan PIN Keluar Mod Anak",
-                                                "Masukkan PIN untuk bertukar ke profil " + p.name,
-                                                new ChildModeManager.PinCallback() {
-                                                    @Override
-                                                    public void onSuccess() {
-                                                        UserSwitchDialog.switchProfile(activity, p, false, null);
-                                                        d.dismiss();
-                                                        updateSidebarSelection.run();
-                                                        if (renderRightPane[0] != null) renderRightPane[0].run();
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled() {}
-                                                });
-                                    } else {
-                                        UserSwitchDialog.switchProfile(activity, p, false, null);
-                                        d.dismiss();
+                                    UserSwitchDialog.requestProfileSwitch(activity, p, null, () -> {
                                         updateSidebarSelection.run();
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
-                                    }
+                                    });
                                 } else if (which == 1) {
-                                    new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                                            .setTitle("Hapus profil " + p.name + "?")
-                                            .setMessage("Profil ini akan dihapus dari perangkat. Tindakan ini tidak dapat dibatalkan.")
-                                            .setNegativeButton("Batal", (confirmDialog, confirmWhich) -> confirmDialog.dismiss())
-                                            .setPositiveButton("Hapus", (confirmDialog, confirmWhich) -> {
-                                                boolean deleted = ProfileManager.deleteProfile(activity, p.id);
-                                                if (deleted) {
-                                                    updateSidebarSelection.run();
-                                                    if (renderRightPane[0] != null) renderRightPane[0].run();
-                                                    Toast.makeText(activity, "Profil " + p.name + " berhasil dihapus", Toast.LENGTH_SHORT).show();
-                                                } else {
-                                                    Toast.makeText(activity, "Profil tidak dapat dihapus. Pastikan masih ada profil lain.", Toast.LENGTH_LONG).show();
-                                                }
-                                            })
-                                            .show();
+                                    UserSwitchDialog.requestDeleteProfile(activity, p.id, p.name, () -> {
+                                        updateSidebarSelection.run();
+                                        if (renderRightPane[0] != null) renderRightPane[0].run();
+                                    });
                                 }
                             });
                             ob.show();
@@ -1429,7 +1397,19 @@ public final class ModernSettingsDialog {
         });
     }
 
+    /** Require parent PIN before changing either the locked-app or hidden-app policy. */
     private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode) {
+        ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
+                "Masukkan PIN orang tua untuk mengubah daftar aplikasi " + (isHideMode ? "tersembunyi" : "terkunci"),
+                new ChildModeManager.PinCallback() {
+                    @Override public void onSuccess() {
+                        showAppLockPickerAuthorized(activity, density, font, isHideMode);
+                    }
+                    @Override public void onCancelled() { }
+                });
+    }
+
+    private static void showAppLockPickerAuthorized(MainActivity activity, float density, Typeface font, boolean isHideMode) {
         PackageManager pm = activity.getPackageManager();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
