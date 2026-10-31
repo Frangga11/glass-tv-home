@@ -46,3 +46,6 @@
 
 
 | 2026-11-01 | B01 final second-pass source/CI gate | [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), head `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`, [CI #225](https://github.com/Frangga11/glass-tv-home/actions/runs/41229763017) | Exact-head CI #225 PASS, both jobs. `testReleaseUnitTest` and `assembleRelease` succeeded; APK size guard passed at 1,395 KB (<1.5 MiB). Manual-only TV-test artifact step was skipped; CI run produced no artifacts. B01 source-level audit and CI gate are PASS. | Proceed to B02 source audit; defer all physical TV acceptance to final stage F02 after A–E audit/fix work and F integration |
+
+
+| 2026-11-01 | B02 focus indicator remediation | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), branch `feature/b02-remote-focus-indicators`, head `51be4c373ca985002ce8b940ab6e4ac6f679b257`, [CI #232](https://github.com/Frangga11/glass-tv-home/actions/runs/41230307222) | Audit found avatar focus/selection conflation, static QR-upload/reset buttons, static profile-name input borders, and a focusable Azan card without visible focus feedback. Added shared `TvFocusIndicator`, separate cyan avatar focus rings, focused button/input states, and Azan focus stroke. CI #232 pending. | Verify exact-head CI and source diff; no TV testing until all A–E audits/fixes and final F integration |
