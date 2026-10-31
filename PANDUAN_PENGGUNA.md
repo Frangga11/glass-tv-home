@@ -23,8 +23,9 @@ Setiap profil dapat menggunakan avatar haiwan bawaan atau satu foto pribadi.
 2. Pada TV, buka **Pengaturan → Profil** dan pilih **📲 Ganti Foto Avatar via QR Code**.
 3. Pindai QR Code menggunakan kamera HP, lalu buka halaman yang muncul.
 4. Pilih **satu foto** (maksimal 15 MB) dan kirim ke TV. Sesi QR berlaku selama 5 menit.
-5. Setelah TV mengonfirmasi foto berhasil disimpan, avatar akan diperbarui pada tampilan profil.
-6. Untuk kembali ke avatar bawaan, pilih **↩ Gunakan Avatar Bawaan**.
+5. Setelah TV mengonfirmasi foto berhasil disimpan, avatar akan diperbarui pada tampilan profil. Satu QR hanya menerima satu unggahan yang berhasil.
+6. Untuk mengganti foto lagi, tutup dialog QR di TV lalu buat QR baru.
+7. Untuk kembali ke avatar bawaan, pilih **↩ Gunakan Avatar Bawaan**.
 
 Foto disimpan secara lokal dalam penyimpanan privat aplikasi. Saat foto diganti, referensi foto baru disimpan terlebih dahulu, lalu foto avatar sebelumnya dihapus. Jika penyimpanan foto baru atau pembaruan profil gagal, foto lama tetap dipertahankan. Menutup dialog QR menghentikan sesi upload; sesi baru harus dibuat dari TV.
 
