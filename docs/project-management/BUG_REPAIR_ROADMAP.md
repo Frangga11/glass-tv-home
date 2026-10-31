@@ -40,7 +40,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | A01 | Collect user test findings and screenshots | DONE | User's written test summary and supplied TV/phone screenshots, 1 Nov 2026 |
 | A02 | Group findings by global foundations, shared systems, and feature modules | DONE | Approved discussion and this roadmap |
 | A03 | Agree the repair sequence A–G | DONE | User explicitly approved the roadmap on 1 Nov 2026 |
-| A04 | Audit repository, branches, source tree, and current working state | DONE | Remote repository identity, 14 branch heads, PR dependency chain, source tree/build/manifest/CI inventory recorded; local-clone limitation explicitly recorded in INVENTORY.md and AUDIT_REGISTER.md |
+| A04 | Audit repository, branches, source tree, and current working state | DONE | Remote repository identity, 13 branch heads, PR dependency chain, source tree/build/manifest/CI inventory recorded; local-clone limitation explicitly recorded in INVENTORY.md and AUDIT_REGISTER.md |
 | A05 | Match the tested APK/version to its exact source branch and commit | DONE | User-supplied tested APK SHA-256 exactly matches PR #9 CI #208 release APK record; source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` verified |
 | A06 | Establish baseline, backup, and rollback/checkpoint | IN PROGRESS | Exact source checkpoint branch and APK/hash manifest created; read-only Mi TV Stick state capture and rollback-readiness review remain |
 
