@@ -398,7 +398,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroDesc != null) heroDesc.setMaxWidth(heroMaxWidth);
 
         String activeCat = getActiveWallpaperCategory();
-        if ("Custom".equalsIgnoreCase(activeCat)) {
+        if ("Default".equalsIgnoreCase(activeCat)) {
+            placesMode = false;
+            File defaultWallpaper = getBundledDefaultWallpaper();
+            wallpapers = defaultWallpaper != null
+                    ? Collections.singletonList(defaultWallpaper) : Collections.emptyList();
+        } else if ("Custom".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File customDir = new File(getFilesDir(), "custom_wallpapers");
             File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
@@ -3902,10 +3907,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Migrates the former Malaysia wallpaper selection to the Nature collection. */
     private String getActiveWallpaperCategory() {
         android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
-        String category = prefs.getString("active_category", "Minimalist");
+        String category = prefs.getString("active_category", "Default");
         if (category == null || category.startsWith("Malaysia")) {
-            // New installs and former Malaysia selections start with the dark OLED collection.
-            category = "Minimalist";
+            // Fresh installs and legacy Malaysia selections use the bundled Pagar Alam wallpaper.
+            category = "Default";
             prefs.edit().putString("active_category", category).apply();
         }
         return category;
@@ -3931,6 +3936,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String curLang = AppLanguage.getLanguage(this);
         List<WallpaperOption> options = new ArrayList<>();
+
+        // Bundled default wallpaper: available offline and separate from downloadable collections.
+        String tDef = AppLanguage.LANG_EN.equals(curLang) ? "🌄 Default Wallpaper" : "🌄 Wallpaper Default";
+        String sDef = AppLanguage.LANG_EN.equals(curLang) ? "Kabut Pagi Dempo • Built-in launcher wallpaper" : "Kabut Pagi Dempo • Wallpaper bawaan launcher";
+        options.add(new WallpaperOption("Default", tDef, sDef));
 
         // Category 2: Natural
         String tNat = AppLanguage.LANG_EN.equals(curLang) ? "🌿 Nature & Landscapes" : (AppLanguage.LANG_ID.equals(curLang) ? "🌿 Alam Semesta & Lanskap" : "🌿 Alam Semula Jadi & Landskap");
@@ -4577,6 +4587,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (Exception ignored) {}
     }
 
+    private File getBundledDefaultWallpaper() {
+        File target = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg");
+        if (target.isFile() && target.length() > 0) return target;
+        try (java.io.InputStream in = getAssets().open("kabut-pagi-dempo.jpg");
+             java.io.FileOutputStream out = new java.io.FileOutputStream(target)) {
+            byte[] buffer = new byte[8192];
+            int count;
+            while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
+            out.flush();
+            return target.length() > 0 ? target : null;
+        } catch (Exception e) {
+            android.util.Log.e("TvHome", "Bundled default wallpaper unavailable", e);
+            return null;
+        }
+    }
+
     private void switchWallpaperCategory(String category) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
         String displayLabel;
@@ -4586,6 +4612,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             displayLabel = category;
         }
         Toast.makeText(this, "Kategori: " + displayLabel, Toast.LENGTH_SHORT).show();
+        if ("Default".equalsIgnoreCase(category)) {
+            placesMode = false;
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.setAlpha(0f);
+                heroShelf.setVisibility(View.GONE);
+            }
+            File bundled = getBundledDefaultWallpaper();
+            if (bundled != null) {
+                wallpapers = Collections.singletonList(bundled);
+                getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                showNextWallpaper(true);
+            } else {
+                Toast.makeText(this, "Wallpaper bawaan tidak dapat dimuat", Toast.LENGTH_LONG).show();
+            }
+            handler.removeCallbacks(wallTick);
+            return;
+        }
         if ("Minimalist".equalsIgnoreCase(category)) {
             root.setBackgroundColor(android.graphics.Color.BLACK);
             if (wallView != null) {
