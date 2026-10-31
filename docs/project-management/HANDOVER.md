@@ -39,7 +39,7 @@
 - Detailed source audit: [PROFILE_AUDIT.md](PROFILE_AUDIT.md).
 - PR #6 avatar branch and PR #7 wallpaper/profile branch diverged from the common settings/gallery base; both change MainActivity, ModernSettingsDialog, ProfileManager, and UserSwitchDialog. Do not merge blindly.
 - PR #7 contains per-profile Child Mode/locked/hidden lists and global parent PIN, but source review found P1 gaps: lock/hide list editor lacks PIN gate; profile deletion lacks PIN authorization; default PIN 0000 is not forced to change.
-- Custom avatar QR flow is not yet integrated into PR #7.
+- At the time of the original PR #7 handover, custom avatar QR flow was not integrated; it is now selectively integrated in PR #9.
 - CI #195 validates PR #7 exact head only; PR #6 CI validates its own isolated head. Neither validates a combined integration.
 - Keep PR #6 and #7 Draft/unmerged. No APK install or stock-launcher modification has occurred.
 - Next code gate: create a dedicated integration branch from PR #7 head; selectively integrate avatar changes; fix P1 authorization gaps; add profile regression tests; run CI on the combined head.
@@ -55,7 +55,7 @@
 - User decisions: retain default PIN `0000` temporarily (user will change it later); do not add failed-PIN limits, cooldown, or lockout.
 - Regression tests added for switch policy and profile-key isolation.
 - CI #196 (`41216406132`) on PR #8 head `f0971b17ed752a9ac0bf16afa904990723c0c616` was in progress at last check. Physical Mi TV Stick/phone acceptance remains pending.
-- Avatar QR PR #6 is still divergent and must be selectively integrated; do not merge PR #6 or #7 directly.
+- Avatar QR PR #6 remains a divergent source branch; its changes are selectively integrated in PR #9. Do not merge PR #6 or #7 directly.
 
 
 ## Profile security follow-up — PR #8
@@ -68,3 +68,16 @@
 - CI #197 (`41216508402`) passed both jobs on exact latest PR #8 head `1ba744efee61fde662493cebd382743a5927aefa`.
 - Release artifact `13048321564`: APK 1,420,005 bytes; SHA-256 `735be1ff6e8ff88d31bf9de73940e527a570bbaace96c5ec9a001ce95610a44e`.
 - Avatar PR #6 remains unintegrated due to branch divergence; selectively integrate after profile security CI. No PR merged and no APK installed.
+
+
+## Profile + avatar integration — PR #9 (31 October 2026)
+
+- Draft PR #9: https://github.com/Frangga11/glass-tv-home/pull/9; branch `feature/profile-avatar-security-integration`, base PR #8 branch `feature/profile-security-integration`.
+- Exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; CI #208 (`41218171447`) passed both jobs, including `testReleaseUnitTest`, `assembleRelease`, APK size guard, and artifact publication.
+- Avatar implementation is selectively integrated: private per-profile file store, secure QR server bound to selected LAN IPv4, five-minute one-success session, 15 MB/80 MP bounds, image decode validation, fsync before profile reference commit, bounded clients and stop/expiry cleanup.
+- Avatar views are synchronized across top bar, Settings sidebar, active profile row, and profile switcher. Child Mode toggles refresh top bar/sidebar/list state; profile rename refreshes top-bar accessibility text/sidebar/list.
+- Profile deletion persists list removal before avatar cleanup and clears only that profile's parental-control keys after releasing the profile lock; device-wide PIN is preserved.
+- User decisions remain: PIN 0000 temporarily; unlimited incorrect PIN attempts; no cooldown/lockout.
+- APK artifact `13048951728`: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
+- Physical Mi TV Stick + phone acceptance is still open. No PR merged and no APK installed.
+- Merge sequence if approved after device tests: PR #8 → PR #9. PR #6 and PR #7 remain unmerged source branches.
