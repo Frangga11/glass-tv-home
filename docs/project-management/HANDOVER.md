@@ -214,3 +214,37 @@
 - B04 is IN PROGRESS. Home grid, Settings, and custom dialogs are largely responsive/bounded. Potential viewport-sensitive elements: Recent Apps 420×250dp cards + 64dp side padding; Nightstand clock 110sp; Weather bento block 385dp inside ScrollView. No speculative resize. Obtain read-only target metrics with wm size and wm density (no arguments).
 - B05 is IN PROGRESS. Initial audit: AppLanguage preference supports Indonesian/English and migrates legacy Malay setting, but default Android strings mix languages; values-en-rUS only changes date format; no values-id or generic values-en resource set; many Java UI labels/Toast/dialog/error strings remain hardcoded. First scan found 187 candidate user-facing string-call patterns across 12 high-traffic Java files (not a complete count).
 - Next: continue B04 responsive audit after receiving target display metrics; continue B05 complete string inventory and localization design. Keep all PRs Draft; no TV APK publication or device testing until A–E and F integration/regression gates complete and readiness is explicitly approved.
+
+
+## Latest handover — B01–B03 renewed source QC PASS; B04/B05 expanded audit — 1 November 2026
+
+### Confirmed completed gates
+- A04, A05, A06 are DONE. A06 manifest and rollback SOP were verified on checkpoint branch \`checkpoint/a06-tested-apk-pr9-7e8392e1\`; the full read-only device snapshot was captured. Its HOME resolver/preferred-activity discrepancy and unverified installed APK hash are E01 carry-forwards, not reasons to reopen A06.
+- B01/B02/B03 renewed source QC and exact-head CI all PASS. PR #10/#11/#12 remain Draft/open/unmerged; no candidate APK artifact was published, no APK installed, and no TV setting/package changed.
+- B01 exact head \`bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5\`, CI #230 / run \`41230264083\`, 1,395 KB.
+- B02 exact head \`01cbef2c2fc90498295971b22c369a72cdfa734a\`, CI #234 / run \`41230495879\`, 1,396 KB.
+- B03 exact head \`56a4e1995aa8b8600614e6b5c4dca69d01c530c3\`, CI #239 / run \`41233548406\`, 1,398 KB.
+- Keep B01–B03 roadmap tasks IN PROGRESS until integrated F01/F02 and physical TV acceptance. Do not merge or create/install a final TV-test APK before the approved gate and explicit readiness approval.
+
+### B04 — current source audit
+- Home tiles adapt to grid width/column count (180dp design cap; 80dp minimum).
+- Recent Apps cards remain fixed 420×250dp with 64dp side padding.
+- Nightstand clock remains 110sp in a centered wrap-content layout.
+- Weather page is scrollable, but its Bento body is fixed at 385dp and metric rows around 91–92dp.
+- No source-level clipping defect is proven without actual TV logical display metrics. No speculative resizing was made.
+- **Next required input:** from Bugjaeger ADB, run \`wm size\` and \`wm density\` with no arguments and send the exact outputs. These are read-only commands.
+
+### B05 — current source audit
+- Reviewed 66 app Java files, 18 layout XML files, 13 app string-resource XML files, AppLanguage, locale config, manifest, and dependencies.
+- AppLanguage has 90 helper/translation methods; saved selection is ID/EN, but legacy Malay branches remain.
+- Default Android resources mix ID/EN; no dedicated values-id or generic values-en directory exists; values-en-rUS only overrides date_format. Other locale folders are partial. localeConfig advertises 12 locales but omits ID, while in-app selector offers ID/EN.
+- Language selection updates only selected home content/date/toast; it does not set the Android resource locale or refresh all visible resource-backed UI.
+- At least 95 direct literal UI-setter calls were found in seven high-traffic Java files, plus hardcoded UI text in eight launcher layouts. This is a lower-bound scan, not a final unique-string inventory.
+- Proposed direction: support ID/EN consistently; apply locale-aware contexts for API 26–32 (including API 30 target), synchronize API 33+ app locale where appropriate, complete resource translations, migrate hardcoded UI text, preserve focus/state during language changes, and add parity/migration tests. Companion installer remains a separate scope.
+- No B05 source/resource changes applied yet; finish design and implementation after B04's shared layout surfaces are settled to avoid overlapping XML edits.
+
+### Resume order
+1. Receive target \`wm size\` and \`wm density\` outputs; finish B04 viewport calculations and decide whether any source change is justified.
+2. Create/continue B04 branch from B03 head only if a measured defect or worthwhile adaptive improvement is confirmed; run exact-head CI.
+3. Then implement B05 on top of the accepted B04 head, so localization XML edits do not conflict with B04 layout work.
+4. Keep all PRs Draft and defer physical testing to F02. No APK installation/publication, device changes, or PR merge until all A–E and F integration/regression gates are complete and user explicitly approves readiness.
