@@ -1664,11 +1664,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void restoreFocus() {
         final String returnKey = lastFocusedKey;
         final int returnSlot = lastFocused;
+        final boolean returnFocusWasTopPill = lastFocusWasTopPill;
+        final String returnTopPillKey = lastFocusedTopPillKey;
         grid.post(() -> {
             int pos = adapter.positionOf(returnKey);
             boolean restoredTopPill = false;
-            if (lastFocusWasTopPill) {
-                View pill = findTopPill(lastFocusedTopPillKey);
+            if (returnFocusWasTopPill) {
+                View pill = findTopPill(returnTopPillKey);
                 restoredTopPill = pill != null && pill.getVisibility() == View.VISIBLE
                         && pill.isFocusable() && pill.requestFocus();
                 if (!restoredTopPill) {
