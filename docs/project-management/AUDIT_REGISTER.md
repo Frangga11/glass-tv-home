@@ -200,6 +200,11 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Exact-head CI #234 PASS on current head `01cbef2c2fc90498295971b22c369a72cdfa734a`; both Launcher build/unit tests and Lists/tools/docs jobs passed; manual TV-test artifact publication was skipped. The final change moves the focus ring above the avatar image to ensure no overlap hides it.
 - Files: `TvFocusIndicator.java`, `ModernSettingsDialog.java`, `UserSwitchDialog.java`, `AzanActivity.java`.
 - No APK installed or published for TV testing; final device acceptance is deferred to F02.
+- **B02 second-pass source review — PASS:** inspected all five changed files and relevant surrounding code at exact head `01cbef2c2fc90498295971b22c369a72cdfa734a`. The shared helper separates transient focus ring from selected-avatar marker; avatar frame animation behavior is retained in the helper; upload/reset buttons and profile-name fields receive focus styling; Azan card gets an explicit focus stroke and initial focus request; daily forecast rows retain their existing focusability/scale-elevation handling and now add a high-contrast selector outline.
+- Listener interaction check: prior avatar-frame focus listeners were the simple scale-only listeners replaced by the helper; the changed EditText instances had no competing focus listener in their construction paths; Azan card had no previous focus listener; daily forecast focus animation is separate from the drawable selector. No source-level listener collision identified in the inspected paths.
+- Exact-head CI run #234 / `41230495879`: Launcher build/unit tests and Lists/tools/docs jobs both PASS; release size guard PASS; manual TV-test artifact publication SKIPPED as intended. No artifact produced.
+- B02 source review and CI gate: **PASS**. Keep B02 IN PROGRESS until integrated physical-device acceptance in F02.
+
 
 
 ## A04 — Repository, branch, source-tree and working-state audit — 1 November 2026
