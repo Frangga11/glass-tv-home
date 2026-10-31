@@ -418,6 +418,18 @@ public final class ModernSettingsDialog {
             item.rowView = row;
         }
 
+        // Restore the selected Settings destination and its sidebar cursor.
+        if (activeTab[0] == TAB_PROFILE) {
+            activeSidebarView[0] = profileCard;
+        } else {
+            for (NavItem item : navItems) {
+                if (item.tabId == activeTab[0]) {
+                    activeSidebarView[0] = item.rowView;
+                    break;
+                }
+            }
+        }
+
         // --- RENDER RIGHT CONTENT PANE ---
         renderRightPane[0] = () -> {
             rightContent.removeAllViews();
@@ -1209,7 +1221,8 @@ public final class ModernSettingsDialog {
             win.setGravity(Gravity.CENTER);
         }
 
-        profileCard.requestFocus();
+        if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+        else profileCard.requestFocus();
     }
 
     private static void addSectionHeader(LinearLayout root, Typeface font, String title) {
