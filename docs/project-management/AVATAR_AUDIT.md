@@ -6,7 +6,7 @@
 **Base branch:** feature/settings-reorganization-standby-gallery  
 **Pull request:** https://github.com/Frangga11/glass-tv-home/pull/6  
 **Latest reviewed head:** 0cb1b96e2c2529e65795231519c6e0728b46390d
-**Code commit built by CI:** ec19595654941f4c5a585a81ae8fe453f1e85421 (subsequent commit only updates the user guide)
+**Latest CI head:** 0cb1b96e2c2529e65795231519c6e0728b46390d
 
 ## 1. User acceptance requirements
 
@@ -78,8 +78,8 @@ GitHub comparison confirms:
 | Source inspection | COMPLETE | Reviewed avatar model, settings, top bar, switcher, upload server, and profile persistence |
 | Branch ancestry | COMPLETE | GitHub compare result: candidate branch is a direct descendant of settings/gallery baseline |
 | Documentation consistency | COMPLETE | User guide updated for QR rather than picker |
-| GitHub CI — docs/tools job | PASS | Workflow run 41199143712; latest documentation-only commit also passed this job in run 41199199372 |
-| GitHub CI — Android unit tests/release build | PASS | Workflow run 41199143712 on code commit ec195956; launcher unit tests and release build passed |
+| GitHub CI — docs/tools job | PASS | Latest PR workflow run 41199199372 |
+| GitHub CI — Android unit tests/release build | PASS | Latest PR workflow run 41199199372; launcher unit tests and release build passed |
 | QR upload from physical phone | NOT TESTED | Requires TV and phone on same Wi-Fi |
 | Replace photo twice; verify old file removed | NOT TESTED | Inspect private app storage / app behavior |
 | Failed upload / failed profile commit rollback | NOT TESTED | Exercise invalid image, interrupted transfer, and storage failure |
@@ -90,10 +90,10 @@ GitHub comparison confirms:
 
 ## 6. Build artifact
 
-- Workflow run: https://github.com/Frangga11/glass-tv-home/actions/runs/41199143712
-- Artifact: glass-tv-home-pagar-alam-release (artifact ID 13041588190)
-- APK size: 1,107,399 bytes (below the 1.2 MiB CI limit)
-- SHA-256: 65a60f1fa2a2fce23520721337a82ecf88ddb287ffd87ad801ff27d14bf8fab9
+- Workflow run: https://github.com/Frangga11/glass-tv-home/actions/runs/41199199372
+- Artifact: glass-tv-home-pagar-alam-release (artifact ID 13042201386)
+- APK size: 1,107,392 bytes (below the 1.2 MiB CI limit)
+- SHA-256: b4dc78502db5104e9b226fd75c232f0f090239a8cff979560e6784e5e5208ca8
 - Artifact expiry: 14 November 2026
 
 ## 7. Device acceptance checklist
