@@ -143,3 +143,15 @@
 - Historical ADB observations are documented but do not establish current HOME owner or installed APK path/hash. The only remaining A06 gap is a fresh read-only device snapshot; it is not a request to retest the APK.
 - No candidate APK installed, no TV setting changed, no PR merged.
 - **Resume point:** obtain the read-only Bugjaeger/ADB snapshot in the A06 manifest when convenient; review it, close A06, then resume the approved roadmap. B01/B02 implementation remains paused until A06 closes.
+
+
+## Latest repair handover — A06 CLOSED; resume B01/B02 source work
+
+- A06 is **DONE**. User supplied the complete read-only Bugjaeger/ADB snapshot on 1 November 2026.
+- Device: `MiTV-AYFR0`, Android 11 / SDK 30, fingerprint `Xiaomi/soul/soul:11/RTT0.211222.001/1546:user/release-keys`.
+- Glass TV Home installed at `/data/app/…/com.gathin.tvhome-…/base.apk`, version 4.0.0/code 40. Installed APK bytes/hash were not extracted; only package metadata matches baseline version.
+- HOME resolver returns `com.google.android.tvlauncher/.MainActivity`, but `dumpsys package` preferred-activity table lists `com.gathin.tvhome/.MainActivity`. Carry this discrepancy into E01; do not change HOME settings or assume the two outputs are equivalent.
+- Current enabled list includes both `com.google.android.tvlauncher` and `com.gathin.tvhome`. Current disabled list includes `com.mitv.tvhome.atv`; do not confuse this with the historical package name `com.mitv.tvhome`.
+- A06 checkpoint manifest and rollback SOP are on `checkpoint/a06-tested-apk-pr9-7e8392e1`. User's historical PR #9 APK test remains accepted; no retest requested.
+- No device settings/packages changed; no candidate APK installed; no PR merged.
+- **Next execution point:** resume source-level work on B01/B02 in their existing isolated Draft PRs. Physical TV acceptance remains deferred until final integrated regression stage F02 and explicit final APK approval.
