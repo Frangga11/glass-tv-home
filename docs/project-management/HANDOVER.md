@@ -194,3 +194,12 @@
 - Lists/tools/docs checks passed. Manual final TV-test artifact step was skipped; no artifact was published.
 - Source-level B03 changes are ready for final integrated acceptance, but B03 remains IN PROGRESS until F02 physical TV regression.
 - **Next source task:** B04 — audit global layout, spacing, sizing, and TV responsiveness. Keep PR #12 Draft and do not install or test candidate APKs.
+
+
+## B04 initial audit — display metrics pending
+
+- B04 is IN PROGRESS. Source review confirms the home grid computes tile width from available width/column count, hero and Islamic shelf widths are proportional, Settings is bounded/scrollable, and WeatherActivity uses a full-screen ScrollView.
+- Potential viewport-sensitive surfaces: Recent Apps cards are fixed 420×250dp with 64dp side padding; Nightstand clock is fixed at 110sp without explicit width cap. These are not proven defects.
+- Do not resize speculatively. Need the target TV's current read-only display metrics: run `wm size` and `wm density` without arguments. This does not change settings.
+- Final visual acceptance remains in F02; no TV APK installation/testing is authorized now.
+- B03 source/CI gate passed at head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`, CI #239 PASS; PR #12 remains Draft.
