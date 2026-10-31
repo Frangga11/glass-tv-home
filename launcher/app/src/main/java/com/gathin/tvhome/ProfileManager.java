@@ -21,6 +21,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 
 /**
@@ -235,6 +237,7 @@ public final class ProfileManager {
                     if (old.getParentFile().equals(avatarDir) && old.isFile()) old.delete();
                 } catch (Exception ignored) {}
             }
+            cleanupOrphanedAvatarUploads(context);
             return true;
         } catch (Exception e) {
             return false;
@@ -265,17 +268,30 @@ public final class ProfileManager {
         return false;
     }
 
-    /** Removes abandoned in-progress QR uploads left by a force-stop or power loss. */
-    public static void cleanupOrphanedAvatarUploads(Context context) {
+    /** Removes unreferenced avatar files and abandoned uploads left by a force-stop or power loss. */
+    public static synchronized void cleanupOrphanedAvatarUploads(Context context) {
         if (context == null) return;
         File dir = new File(context.getFilesDir(), "profile_avatars");
-        File[] pending = dir.listFiles((folder, name) -> name.startsWith("avatar_") && name.endsWith(".upload"));
-        if (pending == null) return;
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        Set<String> referenced = new HashSet<>();
+        for (UserProfile profile : getAllProfiles(context)) {
+            if (profile.customAvatarPath == null) continue;
+            try { referenced.add(new File(profile.customAvatarPath).getCanonicalPath()); }
+            catch (Exception ignored) {}
+        }
         long cutoff = System.currentTimeMillis() - 10L * 60L * 1000L;
-        for (File file : pending) {
-            if (file.isFile() && file.lastModified() < cutoff) {
-                try { file.delete(); } catch (Exception ignored) {}
-            }
+        for (File file : files) {
+            if (!file.isFile()) continue;
+            try {
+                String path = file.getCanonicalPath();
+                if (referenced.contains(path)) continue;
+                String name = file.getName().toLowerCase(java.util.Locale.ROOT);
+                if (name.endsWith(".upload") && file.lastModified() >= cutoff) continue;
+                // This directory is dedicated to profile avatars: unreferenced images and stale
+                // .tmp/.bak/.upload files are safe to remove.
+                file.delete();
+            } catch (Exception ignored) {}
         }
     }
 
