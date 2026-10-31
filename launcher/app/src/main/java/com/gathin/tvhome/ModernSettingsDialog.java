@@ -805,6 +805,8 @@ public final class ModernSettingsDialog {
                                 public void onSuccess() {
                                     ChildModeManager.setChildModeEnabled(activity, isChecked);
                                     activity.reloadTiles();
+                                    activity.updateTopBarUserIcon();
+                                    updateSidebarSelection.run();
                                     Toast.makeText(activity, isChecked ? "✅ Mode Anak diaktifkan!" : "Mode Anak dinonaktifkan", Toast.LENGTH_SHORT).show();
                                     if (renderRightPane[0] != null) renderRightPane[0].run();
                                 }
