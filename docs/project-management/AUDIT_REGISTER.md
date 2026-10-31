@@ -204,7 +204,7 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 
 ## A04 — Repository, branch, source-tree and working-state audit — 1 November 2026
 
-<badge>PASS — remote audit</badge>
+**Result: PASS — remote repository audit.**
 
 | Check | Evidence | Result |
 |---|---|---|
