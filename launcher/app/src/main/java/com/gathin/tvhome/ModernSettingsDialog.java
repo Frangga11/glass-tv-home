@@ -680,7 +680,8 @@ public final class ModernSettingsDialog {
                                     // Keep profile switching consistent with the top-bar switcher:
                                     // leaving Child Mode must always require the parent PIN.
                                     boolean childModeOn = ChildModeManager.isChildModeEnabled(activity);
-                                    if (childModeOn && !p.isChild) {
+                                    boolean targetChildModeOn = ChildModeManager.isChildModeEnabled(activity, p.id);
+                                    if (childModeOn && !targetChildModeOn) {
                                         ChildModeManager.promptPin(activity, "Sahkan PIN Keluar Mod Anak",
                                                 "Masukkan PIN untuk bertukar ke profil " + p.name,
                                                 new ChildModeManager.PinCallback() {
@@ -696,7 +697,7 @@ public final class ModernSettingsDialog {
                                                     public void onCancelled() {}
                                                 });
                                     } else {
-                                        UserSwitchDialog.switchProfile(activity, p, p.isChild, null);
+                                        UserSwitchDialog.switchProfile(activity, p, false, null);
                                         d.dismiss();
                                         updateSidebarSelection.run();
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
