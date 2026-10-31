@@ -678,6 +678,7 @@ public final class ModernSettingsDialog {
                             ob.setItems(opts, (d, which) -> {
                                 if (which == 0) {
                                     UserSwitchDialog.requestProfileSwitch(activity, p, null, () -> {
+                                        d.dismiss();
                                         updateSidebarSelection.run();
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
                                     });
@@ -1398,6 +1399,18 @@ public final class ModernSettingsDialog {
     }
 
     /** Require parent PIN before changing either the locked-app or hidden-app policy. */
+    private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode) {
+        ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
+                "Masukkan PIN orang tua untuk mengubah daftar aplikasi " + (isHideMode ? "tersembunyi" : "terkunci"),
+                new ChildModeManager.PinCallback() {
+                    @Override public void onSuccess() {
+                        showAppLockPickerAuthorized(activity, density, font, isHideMode);
+                    }
+                    @Override public void onCancelled() { }
+                });
+    }
+
+    /** Parent PIN gate for editing per-profile locked and hidden app lists. */
     private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode) {
         ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
                 "Masukkan PIN orang tua untuk mengubah daftar aplikasi " + (isHideMode ? "tersembunyi" : "terkunci"),
