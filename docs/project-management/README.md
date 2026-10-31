@@ -6,7 +6,8 @@
 **Repository:** https://github.com/Frangga11/glass-tv-home  
 **Documentation branch:** `docs/project-master-inventory`  
 **Working-code branch under review:** `feature/settings-reorganization-standby-gallery`  
-**Related audit branch:** `fix/avatar-photo-upload-audit`
+**Current avatar audit branch:** `fix/avatar-qr-upload-single-photo`
+**Avatar review PR:** https://github.com/Frangga11/glass-tv-home/pull/6
 
 ## Purpose
 
@@ -20,6 +21,7 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [INVENTORY.md](INVENTORY.md) | Current feature/code inventory and evidence-based status |
 | [DECISION_LOG.md](DECISION_LOG.md) | Approved decisions and unresolved choices |
 | [AUDIT_REGISTER.md](AUDIT_REGISTER.md) | Defects, risks, verification steps, and closure evidence |
+| [AVATAR_AUDIT.md](AVATAR_AUDIT.md) | Dedicated QR avatar audit, implementation record, and device acceptance checklist |
 | [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
 
 ## Evidence and status rules
@@ -50,4 +52,4 @@ The application source inspected for this draft reports package `com.gathin.tvho
 
 ## Important branch distinction
 
-The settings/gallery branch does not contain the personal-avatar upload implementation found on the separate `fix/avatar-photo-upload-audit` branch. The latter contains a first implementation, but it is not yet accepted as complete. See INVENTORY.md and AUDIT_REGISTER.md.
+The settings/gallery branch remains the rollback baseline. Avatar QR replacement is being reviewed in `fix/avatar-qr-upload-single-photo` through draft PR #6. The implementation is not release-approved until CI and actual Mi TV Stick acceptance pass. See AVATAR_AUDIT.md, INVENTORY.md, and AUDIT_REGISTER.md.
