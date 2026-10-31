@@ -209,7 +209,7 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 | Check | Evidence | Result |
 |---|---|---|
 | Repository identity | `Frangga11/glass-tv-home`; public fork of `aqmangge/glass-tv-home`; default branch `main` | VERIFIED |
-| Branch inventory | 14 remote branches and exact heads recorded in `INVENTORY.md` | VERIFIED |
+| Branch inventory | 13 remote branches and exact heads recorded in `INVENTORY.md` | VERIFIED |
 | PR dependency graph | PR #8 → #9 → #10 → #11; all open Draft/unmerged | VERIFIED |
 | Source tree | B02 head `01cbef2c2fc90498295971b22c369a72cdfa734a`; 647 entries, 496 files, 151 directories; not truncated | VERIFIED |
 | Baseline tree | PR #9 head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; 644 entries | VERIFIED |
