@@ -37,6 +37,14 @@ Audit the complete home-screen background system: bundled default, online catego
 ### User-approved Dempo collection implementation
 - The user's target-TV photograph is accepted as visual proof for the supplied composition: wallpaper, clock/date, weather, prayer times, doa, and app row are visible. Do not repeat this same visual review.
 - Source commit `5829212cfae018aeca25b07e7f9e35ec8955122b` adds a `Dempo` category with visible label `Kabut Pagi di Dempo`, placed directly after `Default` and before `Natural` / `Nature & Landscapes`.
+- The category reads images from `assets/wallpapers/dempo/`, copies them into app-private `bundled_wallpapers/dempo/`, and uses the existing wallpaper rotation pipeline without online sync.
+- A follow-up at `586d561b806869b4433ccf56c464f9c39332df2c` restores the selected Dempo category on launcher startup using the bundled asset loader.
+- The image binary is still not present in the repository. Required path: `launcher/app/src/main/assets/wallpapers/dempo/kabut-pagi-dempo.jpg`. Until then, the new tab displays an unavailable message rather than downloading the image.
+- Existing `Default` category behavior is preserved separately.
+
+### User-approved Dempo collection implementation
+- The user's target-TV photograph is accepted as visual proof for the supplied composition: wallpaper, clock/date, weather, prayer times, doa, and app row are visible. Do not repeat this same visual review.
+- Source commit `5829212cfae018aeca25b07e7f9e35ec8955122b` adds a `Dempo` category with visible label `Kabut Pagi di Dempo`, placed directly after `Default` and before `Natural` / `Nature & Landscapes`.
 - The new category reads images from `assets/wallpapers/dempo/`, copies them into app-private `bundled_wallpapers/dempo/`, and uses the existing wallpaper rotation pipeline. This is designed to work offline; it does not rely on QR upload or online category sync.
 - The image binary is still not present in the repository. The code path will therefore show a not-available message until `kabut-pagi-dempo.jpg` is committed at `launcher/app/src/main/assets/wallpapers/dempo/kabut-pagi-dempo.jpg`.
 - The existing `Default` category is intentionally preserved; the new collection is a separate category.
@@ -94,6 +102,7 @@ Audit the complete home-screen background system: bundled default, online catego
 - Branch: `fix/wallpaper-qr-session-security` (5 commits ahead, 0 behind the baseline at last comparison).
 - Draft PR: https://github.com/Frangga11/glass-tv-home/pull/7
 - Changed: `WallpaperUploadServer.java`, `MainActivity.java`; added `WallpaperUploadSessionRouteTest.java`.
+- `MainActivity.java` now includes the offline Dempo category and restores it on startup.
 - `MainActivity.java` also adds the offline `Dempo` collection category and asset-copy/rotation path.
 - Unit tests cover accepted session routes, legacy root/upload/API rejection, foreign tokens, and unsupported methods.
 - Security-only CI run 41200811301 passed before the Dempo category change.
@@ -103,12 +112,12 @@ Audit the complete home-screen background system: bundled default, online catego
 
 ## 6. Work sequence — no duplicate passes
 
-1. Finish CI run #159 for the new category source; fix only genuine failures.
-2. Add the validated JPEG at `launcher/app/src/main/assets/wallpapers/dempo/kabut-pagi-dempo.jpg`. The source file is available in the current conversation as `/mnt/data/1000598085.png` (actual format JPEG, 1536×864, RGB); preserve its bytes and use the .jpg extension.
-3. Rebuild once after the asset is present; inspect the APK to verify the exact asset path and dimensions.
-4. Verify category order: Default → Kabut Pagi di Dempo → Nature & Landscapes.
-5. Verify clean install and airplane/offline mode; open the new category and confirm the image loads and rotation uses bundled files.
-6. Reuse the supplied TV photo for the already-passed visual composition check. Test only remaining cases: offline install, rotation, focus/remote, QR security, and performance.
+1. Check CI #160 for the startup-restoration follow-up; fix only genuine failures.
+2. Add the approved original JPEG at `launcher/app/src/main/assets/wallpapers/dempo/kabut-pagi-dempo.jpg`.
+3. Rebuild once after the binary is committed; verify exact APK asset path, dimensions, and SHA-256.
+4. Verify order: Default → Kabut Pagi di Dempo → Nature & Landscapes.
+5. Verify clean install and offline mode; open the new category and confirm bundled image loading and rotation.
+6. Reuse the supplied TV photo for the already-passed visual composition check. Test only remaining cases: offline install, rotation, remote focus, QR security, and performance.
 7. Keep PR #7 draft until CI and required device/network acceptance pass.
 
 ## 7. Current disposition
