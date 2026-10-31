@@ -31,6 +31,7 @@ public class NavigationStateTest {
     public void normalizesInvalidFocusKeys() {
         assertNull(NavigationState.normalizeFocusKey(null));
         assertNull(NavigationState.normalizeFocusKey("  "));
+        assertNull(NavigationState.normalizeFocusKey(new String(new char[513]).replace('\0', 'x')));
         assertEquals("com.example/.Main", NavigationState.normalizeFocusKey(" com.example/.Main "));
     }
 
