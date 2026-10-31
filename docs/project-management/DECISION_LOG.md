@@ -45,6 +45,7 @@
 | 2026-10-31 | `docs/project-master-inventory` | Added documentation index, master specification, feature inventory, decision log, audit register, and handover | GitHub commits in documentation branch |
 | 2026-10-31 | `fix/avatar-photo-upload-audit` | Found a candidate implementation for custom profile photo upload | Source inspection only; not accepted as final |
 | 2026-10-31 | `fix/avatar-qr-upload-single-photo` | Added QR-only single-photo avatar upload, transactional replacement/reset, EXIF-aware rendering, and stale upload cleanup | Draft PR #6; CI/device acceptance pending |
+| 2026-10-31 | `fix/wallpaper-qr-session-security` | Scoped wallpaper upload page, upload endpoint, gallery APIs, and thumbnails to a random QR session path; added JVM route tests | Draft PR #7; CI run 41200811301 in progress; device acceptance pending |
 
 ## 5. Change-record template
 
