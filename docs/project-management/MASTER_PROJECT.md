@@ -157,6 +157,7 @@ The Master is the project map. Keep detailed test results in the relevant audit;
 
 - User formally approved [BUG_REPAIR_ROADMAP.md](BUG_REPAIR_ROADMAP.md), roadmap ID `GTVH-BRR-001`, version 1.0.
 - The approved sequence is A: preparation/audit → B: global UI/navigation/localization foundations → C: communication/QR/upload infrastructure → D: state and persistence → E: specific feature modules → F: integration/regression testing → G: finalization/release.
-- Initial completed planning tasks: A01 (collect test findings), A02 (group findings), A03 (approve sequence). No source audit or code repair has started in this cycle.
-- First execution point: A04, audit repository/branches/source tree and working state; then A05 APK-to-source matching and A06 baseline/rollback.
+- Completed: A01–A03 planning and A04 remote repository/branch/source-tree audit. A04 evidence and the explicit local-worktree limitation are recorded in `INVENTORY.md` and `AUDIT_REGISTER.md`.
+- A05 remains open: the APK most recently tested on the Mi TV Stick has not been matched to an exact source commit; versionName/versionCode alone are not unique.
+- A06 remains open and depends on A05: establish a reproducible source checkpoint, APK copy/hash, device-state backup, and rollback instructions before proceeding.
 - Track task-level statuses and evidence only in `BUG_REPAIR_ROADMAP.md`; use the audit register for defect details and HANDOVER for the resume point.
