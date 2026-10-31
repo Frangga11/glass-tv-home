@@ -177,6 +177,38 @@ public final class ProfileManager {
         return false;
     }
 
+    /** Atomically switches the profile reference, then deletes the superseded private photo. */
+    public static synchronized boolean replaceCustomAvatar(Context context, String profileId, File newPhoto) {
+        if (context == null || profileId == null || newPhoto == null || !newPhoto.isFile() || newPhoto.length() <= 0) return false;
+        try {
+            File avatarDir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
+            File candidate = newPhoto.getCanonicalFile();
+            if (!candidate.getParentFile().equals(avatarDir)) return false;
+            List<UserProfile> list = getAllProfiles(context);
+            UserProfile target = null;
+            for (UserProfile profile : list) if (profileId.equals(profile.id)) { target = profile; break; }
+            if (target == null) return false;
+            String oldPath = target.customAvatarPath;
+            target.customAvatarPath = candidate.getAbsolutePath();
+            JSONArray arr = new JSONArray();
+            for (UserProfile profile : list) arr.put(profile.toJson());
+            boolean saved = getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit();
+            if (!saved) {
+                target.customAvatarPath = oldPath;
+                return false;
+            }
+            if (oldPath != null && !oldPath.equals(candidate.getAbsolutePath())) {
+                try {
+                    File old = new File(oldPath).getCanonicalFile();
+                    if (old.getParentFile().equals(avatarDir) && old.isFile()) old.delete();
+                } catch (Exception ignored) {}
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static synchronized boolean clearCustomAvatar(Context context, String profileId) {
         if (context == null || profileId == null) return false;
         List<UserProfile> list = getAllProfiles(context);
