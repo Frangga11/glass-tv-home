@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public class WallpaperUploadServer {
     private static final String TAG = "TvHome.UploadServer";
@@ -36,6 +37,7 @@ public class WallpaperUploadServer {
         default void onSelected(File file) {}
         default void onSlideshowMode() {}
         default void onCleared() {}
+        default void onStandbyUploaded(File imageFile) {}
     }
 
     public interface OnWallpaperUploadedListener extends UploadListener {}
@@ -43,6 +45,7 @@ public class WallpaperUploadServer {
     private final Context context;
     private int port;
     private final UploadListener listener;
+    private final String sessionToken = UUID.randomUUID().toString().replace("-", "");
     private ServerSocket serverSocket;
     private volatile boolean running = false;
     private Thread serverThread;
@@ -79,6 +82,15 @@ public class WallpaperUploadServer {
             Log.w(TAG, "Error resolving IP: " + e.getMessage());
         }
         return "127.0.0.1";
+    }
+
+    /** Session-specific route; the StandBy QR never points at the wallpaper uploader. */
+    public String getStandbyPath() {
+        return "/standby/" + sessionToken;
+    }
+
+    private String getStandbyUploadPath() {
+        return "/standby-upload/" + sessionToken;
     }
 
     public int getPort() {
@@ -159,6 +171,13 @@ public class WallpaperUploadServer {
             int prev3 = 0, prev2 = 0, prev1 = 0, b;
             while ((b = in.read()) != -1) {
                 headerBuf.write(b);
+                if (headerBuf.size() > 16 * 1024) {
+                    byte[] error = "HTTP/1.1 431 Request Header Fields Too Large\\r\\nConnection: close\\r\\n\\r\\n".getBytes("UTF-8");
+                    out.write(error);
+                    out.flush();
+                    client.close();
+                    return;
+                }
                 if (prev3 == '\r' && prev2 == '\n' && prev1 == '\r' && b == '\n') {
                     break;
                 }
@@ -200,6 +219,18 @@ public class WallpaperUploadServer {
                 handleApiSlideshow(out);
             } else if (requestLine.startsWith("POST /api/clear")) {
                 handleApiClear(out);
+            } else if (requestLine.startsWith("GET " + getStandbyPath() + " ")) {
+                byte[] pageBytes = getStandbyHtmlPage().getBytes("UTF-8");
+                String response = "HTTP/1.1 200 OK\\r\\n"
+                        + "Content-Type: text/html; charset=UTF-8\\r\\n"
+                        + "Content-Length: " + pageBytes.length + "\\r\\n"
+                        + "Cache-Control: no-store\\r\\n"
+                        + "Connection: close\\r\\n\\r\\n";
+                out.write(response.getBytes("UTF-8"));
+                out.write(pageBytes);
+                out.flush();
+            } else if (requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
+                handleStandbyUpload(in, out, lines);
             } else if (requestLine.startsWith("GET")) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n" +
@@ -260,11 +291,11 @@ public class WallpaperUploadServer {
                     } else {
                         String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
-                        String response = "HTTP/1.1 200 OK\\r\\n" +
-                                "Content-Type: application/json; charset=UTF-8\\r\\n" +
-                                "Content-Length: " + jsonBytes.length + "\\r\\n" +
-                                "Access-Control-Allow-Origin: *\\r\\n" +
-                                "Connection: close\\r\\n\\r\\n";
+                        String response = "HTTP/1.1 200 OK\r\n" +
+                                "Content-Type: application/json; charset=UTF-8\r\n" +
+                                "Content-Length: " + jsonBytes.length + "\r\n" +
+                                "Access-Control-Allow-Origin: *\r\n" +
+                                "Connection: close\r\n\r\n";
                         out.write(response.getBytes("UTF-8"));
                         out.write(jsonBytes);
                         out.flush();
@@ -289,6 +320,128 @@ public class WallpaperUploadServer {
             Log.w(TAG, "Client handle exception: " + e.getMessage());
             try { client.close(); } catch (Exception ignored) {}
         }
+    }
+
+    private void handleStandbyUpload(InputStream in, OutputStream out, String[] lines) throws Exception {
+        long contentLength = 0;
+        for (String line : lines) {
+            if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
+                try {
+                    contentLength = Long.parseLong(line.substring(15).trim());
+                } catch (Exception ignored) {
+                    contentLength = -1;
+                }
+                break;
+            }
+        }
+        if (contentLength <= 0 || contentLength > 60L * 1024L * 1024L) {
+            sendUploadError(out, 400, "Ukuran foto tidak valid (maksimal 60 MB per foto).");
+            return;
+        }
+
+        File standbyDir = new File(context.getFilesDir(), "standby_photos");
+        if (!standbyDir.exists() && !standbyDir.mkdirs()) {
+            sendUploadError(out, 500, "Penyimpanan foto Layar Siaga tidak tersedia.");
+            return;
+        }
+
+        File targetFile = File.createTempFile("standby_", ".jpg", standbyDir);
+        boolean complete = false;
+        try (FileOutputStream fos = new FileOutputStream(targetFile)) {
+            byte[] buffer = new byte[8192];
+            long remaining = contentLength;
+            while (remaining > 0) {
+                int read = in.read(buffer, 0, (int) Math.min(buffer.length, remaining));
+                if (read < 0) break;
+                fos.write(buffer, 0, read);
+                remaining -= read;
+            }
+            fos.flush();
+            complete = remaining == 0 && targetFile.length() == contentLength;
+        }
+
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(targetFile.getAbsolutePath(), bounds);
+        boolean validImage = bounds.outWidth > 0 && bounds.outHeight > 0
+                && bounds.outWidth <= 16384 && bounds.outHeight <= 16384
+                && (long) bounds.outWidth * (long) bounds.outHeight <= 100_000_000L;
+
+        if (!complete || !validImage) {
+            targetFile.delete();
+            sendUploadError(out, 400, !complete
+                    ? "Unggahan tidak lengkap. Silakan coba lagi."
+                    : "Berkas bukan foto yang didukung atau resolusinya terlalu besar.");
+            return;
+        }
+
+        String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
+        byte[] bytes = json.getBytes("UTF-8");
+        String response = "HTTP/1.1 200 OK\\r\\n"
+                + "Content-Type: application/json; charset=UTF-8\\r\\n"
+                + "Content-Length: " + bytes.length + "\\r\\n"
+                + "Cache-Control: no-store\\r\\n"
+                + "Connection: close\\r\\n\\r\\n";
+        out.write(response.getBytes("UTF-8"));
+        out.write(bytes);
+        out.flush();
+        if (listener != null) listener.onStandbyUploaded(targetFile);
+    }
+
+    private void sendUploadError(OutputStream out, int status, String message) throws Exception {
+        byte[] bytes = message.getBytes("UTF-8");
+        String label = status == 500 ? "Internal Server Error" : "Bad Request";
+        String response = "HTTP/1.1 " + status + " " + label + "\\r\\n"
+                + "Content-Type: text/plain; charset=UTF-8\\r\\n"
+                + "Content-Length: " + bytes.length + "\\r\\n"
+                + "Connection: close\\r\\n\\r\\n";
+        out.write(response.getBytes("UTF-8"));
+        out.write(bytes);
+        out.flush();
+    }
+
+    private String getStandbyHtmlPage() {
+        String endpoint = getStandbyUploadPath();
+        return "<!doctype html><html lang='id'><head><meta charset='utf-8'>"
+                + "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+                + "<meta name='theme-color' content='#101827'><title>Foto Layar Siaga • Glass TV</title>"
+                + "<style>"
+                + "*{box-sizing:border-box}body{margin:0;padding:24px 16px 40px;background:#0b1220;color:#f8fafc;"
+                + "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh}"
+                + ".card{max-width:520px;margin:0 auto;padding:24px;border:1px solid #334155;border-radius:24px;"
+                + "background:#172235;box-shadow:0 18px 50px #0008}h1{font-size:24px;margin:0 0 8px}"
+                + "p{color:#cbd5e1;line-height:1.55;font-size:14px}.drop{display:block;margin:22px 0;padding:22px;"
+                + "border:2px dashed #64748b;border-radius:18px;text-align:center;background:#0f1a2b}"
+                + "input{width:100%;color:#e2e8f0}button{width:100%;border:0;border-radius:14px;padding:15px;"
+                + "font-size:16px;font-weight:700;color:#07111f;background:#7dd3fc;margin-top:14px}"
+                + "button:disabled{opacity:.45}#status{margin-top:16px;padding:12px;border-radius:12px;background:#0f1a2b;"
+                + "font-size:14px}#bar{height:7px;background:#334155;border-radius:9px;overflow:hidden;margin-top:10px}"
+                + "#fill{height:100%;width:0;background:#38bdf8;transition:width .15s}small{display:block;color:#94a3b8;"
+                + "margin-top:18px;line-height:1.5}"
+                + "</style></head><body><main class='card'><h1>🖼️ Foto Layar Siaga</h1>"
+                + "<p>Unggah foto dari ponsel ke koleksi Layar Siaga Glass TV. Ponsel dan TV harus berada di jaringan Wi-Fi yang sama.</p>"
+                + "<label class='drop'>Pilih satu atau beberapa foto<br><br><input id='files' type='file' accept='image/*' multiple></label>"
+                + "<button id='send' disabled>Unggah Foto ke TV</button><div id='status'>Belum ada foto dipilih.</div>"
+                + "<div id='bar'><div id='fill'></div></div>"
+                + "<small>Foto disimpan sebagai salinan di folder khusus Layar Siaga. Koleksi wallpaper dan wallpaper aktif tidak akan diubah. "
+                + "Maksimal 60 MB per foto.</small></main><script>"
+                + "const endpoint='" + endpoint + "';const input=document.getElementById('files');"
+                + "const send=document.getElementById('send');const status=document.getElementById('status');"
+                + "const fill=document.getElementById('fill');let files=[];"
+                + "input.addEventListener('change',()=>{files=Array.from(input.files||[]);"
+                + "send.disabled=!files.length;status.textContent=files.length+' foto dipilih.';fill.style.width='0%';});"
+                + "send.addEventListener('click',()=>{if(!files.length)return;send.disabled=true;let i=0;"
+                + "const next=()=>{if(i>=files.length){status.textContent='Selesai. '+files.length+' foto berhasil disimpan di TV.';"
+                + "fill.style.width='100%';input.value='';files=[];return;}const file=files[i];"
+                + "if(!file.type.startsWith('image/')){status.textContent='Berkas bukan foto: '+file.name;i++;next();return;}"
+                + "if(file.size>60*1024*1024){status.textContent='Foto terlalu besar (maksimal 60 MB): '+file.name;i++;next();return;}"
+                + "status.textContent='Mengunggah '+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();"
+                + "xhr.open('POST',endpoint,true);xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
+                + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;"
+                + "fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
+                + "xhr.onload=()=>{if(xhr.status>=200&&xhr.status<300){i++;next();}else{status.textContent='Gagal mengunggah '+file.name+' ('+xhr.status+'). Pilih ulang foto untuk mencoba lagi.';send.disabled=false;}};"
+                + "xhr.onerror=()=>{status.textContent='Koneksi terputus. Pastikan ponsel dan TV memakai Wi-Fi yang sama.';send.disabled=false;};"
+                + "xhr.send(file);};next();});</script></body></html>";
     }
 
     private String getQueryParam(String requestLine, String param) {
