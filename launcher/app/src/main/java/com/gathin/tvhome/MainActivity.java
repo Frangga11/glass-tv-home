@@ -397,7 +397,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroName != null) heroName.setMaxWidth(heroNameMaxWidth);
         if (heroDesc != null) heroDesc.setMaxWidth(heroMaxWidth);
 
-        String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Malaysia");
+        String activeCat = getActiveWallpaperCategory();
         if ("Custom".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File customDir = new File(getFilesDir(), "custom_wallpapers");
@@ -778,7 +778,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             updateTopBarUserIcon();
         }
         if (btnSettings != null) {
-            btnSettings.setOnClickListener(v -> showSettingsPopup());
+            btnSettings.setOnClickListener(v -> showQuickControlPopup());
             btnSettings.setOnLongClickListener(v -> {
                 if (moduleCards) {
                     showModuleCards();
@@ -2757,6 +2757,41 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     /** Shows the modern floating 2-column Settings modal (Profile, Avatars, Child Mode, Home, etc.). */
+    /** Compact TV control menu, optimized for the remote and Mi TV Stick. */
+    private void showQuickControlPopup() {
+        if (openMenu != null) closeMenu(false);
+        SoundEffects.playSelect();
+        View anchor = findViewById(R.id.btnSettings);
+        if (anchor == null) {
+            showSettingsPopup();
+            return;
+        }
+        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        Runnable close = () -> closeMenu(false);
+
+        addInputRow(rows, close, R.drawable.ic_power, "Mulai Ulang TV", -1, this::showRestartDialog);
+        addInputRow(rows, close, R.drawable.ic_power, "Matikan TV", -1, this::showTurnOffDialog);
+        addSeparator(rows);
+        addInputRow(rows, close, R.drawable.ic_settings, "Bersihkan Cache TV", -1, this::showCleanTvCacheDialog);
+        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperIntervalDialog);
+
+        String lang = AppLanguage.getLanguage(this);
+        String langLabel = AppLanguage.LANG_ID.equals(lang) ? "🇮🇩 ID"
+                : (AppLanguage.LANG_EN.equals(lang) ? "🇬🇧 EN" : "ID");
+        addInputRow(rows, close, R.drawable.ic_settings, "Pilihan Bahasa: " + langLabel, -1, this::showLanguageDialog);
+
+        addSeparator(rows);
+        addInputRow(rows, close, R.drawable.ic_settings, "Pengaturan Glass TV", -1, this::showSettingsPopup);
+        addInputRow(rows, close, R.drawable.ic_settings, "Semua Pengaturan Android", -1,
+                () -> open(systemIntent(Settings.ACTION_SETTINGS)));
+        addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> closeMenu(true));
+
+        int width = (int) (285 * density);
+        panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.UNSPECIFIED);
+        showMenu(panel, rows, anchor, width, false);
+    }
+
     public void showSettingsPopup() {
         if (openMenu != null) {
             closeMenu(false);
@@ -3774,6 +3809,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView qrStatusText;
     private TextView qrUrlText;
 
+    /** Migrates the former Malaysia wallpaper selection to the Nature collection. */
+    private String getActiveWallpaperCategory() {
+        android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+        String category = prefs.getString("active_category", "Natural");
+        if (category == null || category.startsWith("Malaysia")) {
+            category = "Natural";
+            prefs.edit().putString("active_category", category).apply();
+        }
+        return category;
+    }
+
     void showWallpaperDialog() {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
@@ -3794,11 +3840,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String curLang = AppLanguage.getLanguage(this);
         List<WallpaperOption> options = new ArrayList<>();
-
-        // Category 1: Malaysia
-        String tMal = AppLanguage.LANG_EN.equals(curLang) ? "🇲🇾 Attractions in Malaysia" : (AppLanguage.LANG_ID.equals(curLang) ? "🇲🇾 Tempat Wisata Malaysia" : "🇲🇾 Tempat Menarik di Malaysia");
-        String sMal = AppLanguage.LANG_EN.equals(curLang) ? "16 Iconic 4K Collection (Pexels Ultra HD)" : "16 Koleksi 4K Ikonik (Pexels Ultra HD)";
-        options.add(new WallpaperOption("Malaysia", tMal, sMal));
 
         // Category 2: Natural
         String tNat = AppLanguage.LANG_EN.equals(curLang) ? "🌿 Nature & Landscapes" : (AppLanguage.LANG_ID.equals(curLang) ? "🌿 Alam Semesta & Lanskap" : "🌿 Alam Semula Jadi & Landskap");
@@ -3900,7 +3941,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         for (int i = 0; i < options.size(); i++) {
             WallpaperOption opt = options.get(i);
-            boolean isActive = opt.key.equalsIgnoreCase(currentKey) || (opt.key.equals("Malaysia") && currentKey.startsWith("Malaysia"));
+            boolean isActive = opt.key.equalsIgnoreCase(currentKey);
 
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.VERTICAL);
