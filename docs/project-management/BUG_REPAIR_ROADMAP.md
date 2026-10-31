@@ -49,7 +49,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | ID | Task | Initial status |
 |---|---|---|
 | B01 | Audit and correct global navigation and cursor-position retention | IN PROGRESS |
-| B02 | Ensure visible, consistent D-pad/remote focus indicators | NOT STARTED |
+| B02 | Ensure visible, consistent D-pad/remote focus indicators | IN PROGRESS |
 | B03 | Correct popup/dialog opacity, layering, focus, sizing, and dismissal behavior | NOT STARTED |
 | B04 | Normalize global UI layout, spacing, sizing, and TV responsiveness | NOT STARTED |
 | B05 | Audit and complete Indonesian/English localization, including dynamic and error strings | NOT STARTED |
