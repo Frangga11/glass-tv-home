@@ -165,3 +165,14 @@
 - B02 source review/CI gate PASS, but task remains IN PROGRESS until integrated remote acceptance in F02.
 - A06 is now DONE after receipt and documentation of the read-only Mi TV Stick snapshot. E01 must investigate the resolver/preferred-activity mismatch without changing device state.
 - **Next source task:** B03 — audit dialog/popup opacity, layering, focus, sizing and dismissal. No TV APK installation/testing or PR merge.
+
+
+## B03 execution checkpoint — opacity patch in CI
+
+- A06 closed after the user-provided read-only device snapshot. Resolver/preferred-activity mismatch is a carry-forward for E01.
+- B02 second-pass source audit and exact-head CI #234 passed; physical acceptance remains F02.
+- B03 working branch: `feature/b03-dialog-opacity-layering`; Draft PR #12: https://github.com/Frangga11/glass-tv-home/pull/12.
+- Current head: `3f11618b34f7edb8618c74e6b2fe48dd7c9e6ccf`; base: B02 head `01cbef2c2fc90498295971b22c369a72cdfa734a`.
+- Changes: shared AlertDialog background, shared glass panel, and phone QR upload panel made fully opaque. Interactive blurred-wallpaper `GlassDrawable` popups intentionally retained.
+- CI #235 / run `41233304847`: Lists/tools/docs job passed; Launcher build/unit-test job was still running at last check. No TV-test APK artifact published.
+- Next: finish B03 source audit for dialog geometry/focus/dismissal, verify CI, then proceed B04. No device test or PR merge.
