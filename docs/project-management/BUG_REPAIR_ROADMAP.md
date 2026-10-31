@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A04 complete; B01/B02 branches isolated and paused pending A05/A06  
+**Status:** OFFICIALLY APPROVED — A04/A05 complete; A06 device snapshot pending; B01/B02 paused  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -41,8 +41,8 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | A02 | Group findings by global foundations, shared systems, and feature modules | DONE | Approved discussion and this roadmap |
 | A03 | Agree the repair sequence A–G | DONE | User explicitly approved the roadmap on 1 Nov 2026 |
 | A04 | Audit repository, branches, source tree, and current working state | DONE | Remote repository identity, 14 branch heads, PR dependency chain, source tree/build/manifest/CI inventory recorded; local-clone limitation explicitly recorded in INVENTORY.md and AUDIT_REGISTER.md |
-| A05 | Match the tested APK/version to its exact source branch and commit | NOT STARTED | APK identity/hash and corresponding source commit |
-| A06 | Establish baseline, backup, and rollback/checkpoint | NOT STARTED | Reproducible baseline and documented rollback |
+| A05 | Match the tested APK/version to its exact source branch and commit | DONE | User-supplied tested APK SHA-256 exactly matches PR #9 CI #208 release APK record; source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` verified |
+| A06 | Establish baseline, backup, and rollback/checkpoint | IN PROGRESS | Exact source checkpoint branch and APK/hash manifest created; read-only Mi TV Stick state capture and rollback-readiness review remain |
 
 ### Stage B — Global foundations and user experience
 
@@ -126,17 +126,17 @@ A code change or passing CI alone does not close a physical-device acceptance it
 ## 4. Progress snapshot — 1 November 2026 (after A04)
 
 - Tasks in roadmap: 47
-- DONE: 4 (A01, A02, A03, A04)
-- IN PROGRESS: 2 (B01, B02)
-- NOT STARTED: 41
+- DONE: 5 (A01, A02, A03, A04, A05)
+- IN PROGRESS: 3 (A06, B01, B02)
+- NOT STARTED: 39
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
-This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009; further implementation is paused at the user's request until A05/A06 are complete. A05 requires installed-APK identity evidence; A06 depends on A05.
+This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009; further implementation is paused at the user's request until A05/A06 are complete. A05 is complete: the user-supplied tested APK SHA-256 matches the recorded PR #9 CI #208 release APK and exact source commit. A06 is in progress: source checkpoint branch and APK/hash manifest exist; read-only device-state capture remains.
 
 ## 5. Current execution point
 
-A04 remote repository/source audit is DONE. A05 remains NOT STARTED because the exact APK most recently tested on the Mi TV Stick has not been identified; versionName/versionCode are insufficient because repair branches share 4.0.0/code 40. A06 remains NOT STARTED until A05 identifies the exact source commit and the APK/device-state backup can be captured. B01 and B02 already have isolated Draft PRs; further implementation is paused until A05 and A06 are completed as requested. B01 exact-head CI #225 and B02 exact-head CI #234 both PASS; no TV-test artifact was published by those runs.
+A04 remote repository/source audit is DONE. A05 is DONE: uploaded tested APK SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315` matches PR #9 CI #208 release APK evidence and exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. A06 is IN PROGRESS: exact-source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1` and APK/hash manifest have been created; read-only Mi TV Stick state capture and rollback-readiness review remain. B01 and B02 already have isolated Draft PRs; further implementation is paused until A05 and A06 are completed as requested. B01 exact-head CI #225 and B02 exact-head CI #234 both PASS; no TV-test artifact was published by those runs.
 
 ## 6. Session closeout and callback protocol
 
