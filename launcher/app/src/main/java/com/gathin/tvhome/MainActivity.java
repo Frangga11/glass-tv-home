@@ -4804,7 +4804,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
                 showNextWallpaper(true);
             } else {
-                Toast.makeText(this, "Wallpaper bawaan tidak dapat dimuat", Toast.LENGTH_LONG).show();
+                // Do not leave the previous category visible or fall back to a stale image.
+                root.setBackgroundColor(android.graphics.Color.BLACK);
+                if (wallView != null) {
+                    wallView.setImageDrawable(null);
+                    wallView.setBackgroundColor(android.graphics.Color.BLACK);
+                }
+                Toast.makeText(this, "Wallpaper Default tidak tersedia; latar aman ditampilkan", Toast.LENGTH_LONG).show();
             }
             handler.removeCallbacks(wallTick);
             return;
