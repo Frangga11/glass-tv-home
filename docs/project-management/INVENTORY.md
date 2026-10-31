@@ -2,7 +2,7 @@
 
 **Version:** 0.2-draft  
 **Date:** 1 November 2026  
-**Review status:** A04 repository/branch/source inventory PASS; A05 tested-APK identity and A06 baseline/backup remain open; physical device acceptance remains deferred
+**Review status:** A04 repository/branch/source inventory PASS; A05 tested-APK identity PASS; A06 device-state snapshot remains open; physical device acceptance remains deferred
 
 ## 1. Repository and branches
 
@@ -230,3 +230,15 @@ GitHub source URLs:
 - Repository identity, remote branch graph, open-PR dependency chain, source tree, Gradle configuration, manifest, CI workflow, and principal source ownership have been inspected and recorded.
 - No local worktree was created in this remote-only session; no local changes were made. A user's separate local clone, if any, is outside the available evidence.
 - A04 remote repository/source audit: PASS. A05 and A06 remain separate mandatory gates; this does not authorize APK installation, device testing, PR merge, or release.
+
+
+## 9. Tested APK identity and A06 checkpoint — 1 November 2026
+
+- User-confirmed tested file: `glass-tv-home-profile-avatar-test.apk`.
+- Size: 1,427,681 bytes.
+- SHA-256: `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
+- Exact match to recorded PR #9 CI #208 release APK; CI run ID `41218171447`, both jobs passed, artifact ID `13048951728`.
+- Exact source commit: `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` on `feature/profile-avatar-security-integration`; PR #9 remains Draft/open/unmerged.
+- A05: PASS. APK identity is matched by exact SHA-256 and byte size to the CI artifact evidence.
+- A06: source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1` created directly from that exact commit. Manifest at `docs/project-management/checkpoints/A06_TESTED_APK_BASELINE.md`.
+- A06 device-state capture remains pending; no local TV state was changed. See checkpoint manifest for read-only ADB capture commands.
