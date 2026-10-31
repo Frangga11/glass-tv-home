@@ -1,8 +1,8 @@
 # 05 — Project Handover
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Date:** 31 October 2026  
-**Current phase:** Wallpaper audit W-001. QR route security passed its dedicated CI; the new built-in Dempo collection category is in source; the JPEG binary is not yet committed; CI #160 is in progress.
+**Current phase:** Wallpaper audit W-001. Correct scope is the existing Default tab only; no extra Dempo tab or collection. The JPEG binary is still not committed; CI #162 is in progress.
 
 ## 1. Resume protocol
 
@@ -12,28 +12,28 @@ Read `MASTER_PROJECT.md` and `DOCUMENTATION_WORKFLOW.md`, then use this handover
 
 - Repository: https://github.com/Frangga11/glass-tv-home
 - Documentation: `docs/project-master-inventory`
-- Code baseline / rollback branch: `feature/settings-reorganization-standby-gallery`
+- Code baseline: `feature/settings-reorganization-standby-gallery`
 - Wallpaper branch: `fix/wallpaper-qr-session-security`
 - Wallpaper draft PR #7: https://github.com/Frangga11/glass-tv-home/pull/7
 - Avatar draft PR #6: https://github.com/Frangga11/glass-tv-home/pull/6
 
 ## 3. Verified position
 
-- User supplied a photo of the actual TV showing the approved Kabut Pagi Dempo wallpaper with the Glass TV Home UI. The shown composition and legibility are accepted; do not repeat this visual check.
-- Wallpaper QR session security was implemented in PR #7 and CI run 41200811301 passed before the latest category change.
-- Source commit `5829212cfae018aeca25b07e7f9e35ec8955122b` adds the `Kabut Pagi di Dempo` built-in offline collection directly after Default and before Nature & Landscapes.
-- Follow-up commit `586d561b806869b4433ccf56c464f9c39332df2c` restores the selected Dempo category on launcher startup using bundled assets.
-- The new category reads `assets/wallpapers/dempo/`, copies images into app-private storage, and uses offline wallpaper rotation.
-- CI #159 (41202506621) passed for the category implementation before the startup-restoration follow-up.
-- CI #160 (41202626180) for the latest source commit was in progress at last check: https://github.com/Frangga11/glass-tv-home/actions/runs/41202626180
-- Blocking: the JPEG is not yet committed. Required path: `launcher/app/src/main/assets/wallpapers/dempo/kabut-pagi-dempo.jpg`.
-- Original image bytes are available as `kabut-pagi-dempo-original.jpg`, JPEG 1536×864 RGB, SHA-256 `fc2a06324e4dd98ac6ab2abdaaf45cc7f34ff899a08f8abaea575c8e2ae5773`.
-- No APK containing the new category image has been built or inspected; clean-install/offline test remains open.
+- User's actual-TV photo is accepted as visual proof of the selected Dempo wallpaper composition and legibility. Do not repeat this visual check.
+- Existing `getActiveWallpaperCategory()` migrates legacy category values beginning with `Malaysia` to `Default`.
+- Existing `showWallpaperDialog()` has one Default option. The category list remains unchanged.
+- Startup and manual Default selection use `getBundledDefaultWallpaper()` and a singleton wallpaper list.
+- The mistaken extra Dempo category and collection loader were removed in commit `530c2dcc431d5ce42806f254e9a9cc468fc7f9f7`.
+- Commit `fbab186c3253ad6c37ed06d206b5597b660230a8` refreshes the existing private Default runtime copy from the APK asset on launch, preventing a stale cached Malaysia/older image from persisting after upgrade.
+- Single source asset destination: `launcher/app/src/main/assets/kabut-pagi-dempo.jpg` (runtime asset name `kabut-pagi-dempo.jpg`).
+- Expected storage: one packaged JPEG plus one private runtime cache copy required by the current File-based decoder. No additional category folder or duplicate APK image.
+- The JPEG is not yet committed. Current CI #162 (41203203377) for source commit `fbab186c3253ad6c37ed06d206b5597b660230a8` was in progress at last check: https://github.com/Frangga11/glass-tv-home/actions/runs/41203203377
+- No new APK containing the Dempo JPEG has been built or inspected.
 
 ## 4. Next action
 
-Upload the original JPEG to the required repository path. The GitHub connection in this session supports text-file writes and Git object operations, but has no direct local-binary upload handoff. Do not record the image as committed until the repository confirms it. Once uploaded: verify path/dimensions/hash, let CI run once, inspect the APK asset entry, then perform one clean-install/offline/category-order/rotation test.
+Add the approved JPEG at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`. Then run CI once, inspect the APK for exactly that one asset, and test: clean install/offline start; upgrade from a legacy Malaysia selection; replacement of any stale cached Default image; actual TV display. Keep the supplied photo as the already-passed visual evidence.
 
 ## 5. Safety and merge gate
 
-Keep PR #6 and PR #7 in draft. Do not merge or make ADB/default-launcher changes until device acceptance and rollback are confirmed. CI is not a device pass.
+Keep PR #7 and PR #6 draft. Do not merge or make ADB/default-launcher changes until the asset is packaged and the remaining device acceptance and rollback plan are confirmed. CI is not a device pass.
