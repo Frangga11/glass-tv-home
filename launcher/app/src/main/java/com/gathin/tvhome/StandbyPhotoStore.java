@@ -104,6 +104,7 @@ final class StandbyPhotoStore {
         if (context.getFilesDir().getUsableSpace() < MIN_FREE_BYTES) return false;
         uris.add(uploaded);
         saveUris(context, uris);
+        setPhotoMode(context, true);
         return true;
     }
 
