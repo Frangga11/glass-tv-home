@@ -150,10 +150,13 @@ final class StandbyPhotoStore {
     }
 
     /** Shared slide index so the in-app overlay and Android DreamService show the same photo. */
-    static int getCurrentPhotoIndex(Context context) {
-        int count = getPhotoCount(context);
-        if (count <= 0) return -1;
-        return (int) ((SystemClock.elapsedRealtime() / ROTATION_INTERVAL_MS) % count);
+    static int getCurrentPhotoIndex(int photoCount) {
+        return getPhotoIndexAtElapsedTime(photoCount, SystemClock.elapsedRealtime());
+    }
+
+    static int getPhotoIndexAtElapsedTime(int photoCount, long elapsedRealtimeMs) {
+        if (photoCount <= 0 || elapsedRealtimeMs < 0) return -1;
+        return (int) ((elapsedRealtimeMs / ROTATION_INTERVAL_MS) % photoCount);
     }
 
     static int calculateInSampleSize(int width, int height, int targetWidth, int targetHeight) {
