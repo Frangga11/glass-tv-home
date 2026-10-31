@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Date:** 31 October 2026  
-**Current phase:** Wallpaper/background audit W-001. QR security remediation passed CI; default wallpaper asset is missing from the APK; device acceptance has not been performed.
+**Current phase:** Wallpaper/background audit W-001. QR security remediation passed CI; default wallpaper asset is missing from the APK; user supplied the approved image and a package-ready JPEG has been prepared; repository/APK packaging and device acceptance remain.
 
 ## 1. Resume protocol
 
