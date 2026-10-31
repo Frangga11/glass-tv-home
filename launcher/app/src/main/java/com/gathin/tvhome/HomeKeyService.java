@@ -87,10 +87,7 @@ public class HomeKeyService extends AccessibilityService {
             return false;
         }
         Log.i(TAG, "Opening Android TV power menu and selecting a supported power-off option");
-        if (service.openPowerDialogAndSelect(POWER_ACTION_OFF)) return true;
-        // Last resort: Android's accessibility screen-lock action may put the TV display into standby.
-        // This is not a privileged device shutdown and depends on the TV firmware.
-        return service.performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN);
+        return service.openPowerDialogAndSelect(POWER_ACTION_OFF);
     }
 
     private boolean openPowerDialogAndSelect(int action) {
