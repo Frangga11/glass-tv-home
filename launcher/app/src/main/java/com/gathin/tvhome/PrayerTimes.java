@@ -29,23 +29,22 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Clean Waktu Solat for Putrajaya (JAKIM Zone WLY01).
- * Fetches official JAKIM e-solat timetable, caches locally, and includes
- * an accurate solar-calculation fallback so it never fails offline.
+ * Indonesian prayer timetable support with a validated Kemenag data mirror and a local
+ * astronomical estimate as an offline fallback.
  */
 final class PrayerTimes {
     private static final String TAG = "TvHome.Prayer";
     private static final String PREFS_NAME = "prayer_times_cache";
-    private static final String KEY_JSON = "takwim_wly01";
+    private static final String KEY_JSON = "takwim_indonesia_annual";
     private static final String KEY_MONTH = "takwim_month";
     private static final String KEY_YEAR = "takwim_year";
 
-    // Coordinates for Putrajaya
-    private static final double LATITUDE = 2.9264;
-    private static final double LONGITUDE = 101.6964;
-    private static final double TIMEZONE = 8.0;
+    // Default coordinates and timezone for Kota Pagar Alam.
+    private static final double LATITUDE = -4.0212;
+    private static final double LONGITUDE = 103.2517;
+    private static final double TIMEZONE = 7.0;
 
-    static final String[] NAMES = {"Subuh", "Syuruk", "Zohor", "Asar", "Maghrib", "Isyak"};
+    static final String[] NAMES = {"Subuh", "Terbit", "Dzuhur", "Ashar", "Maghrib", "Isya"};
     private static final String[] PRAYER_NAMES = NAMES;
     private static final String[] PRAYER_KEYS = {"fajr", "syuruk", "dhuhr", "asr", "maghrib", "isha"};
 
@@ -60,7 +59,7 @@ final class PrayerTimes {
     }
 
     static Day day(Context ctx, String zone, Calendar date) {
-        if (zone == null || zone.isEmpty()) zone = getJakimZone(ctx);
+        if (zone == null || zone.isEmpty() || !zone.startsWith("ID_")) zone = getJakimZone(ctx);
         long[] times = getTimesForDate(ctx, date);
         if (times == null || times.length < 6) {
             times = calculateFallback(ctx, date);
@@ -364,7 +363,7 @@ final class PrayerTimes {
     public static String getActiveZone(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         if (prefs.contains("manual_prayer_zone")) {
-            return prefs.getString("manual_prayer_zone", "WLY01");
+            return getJakimZone(context);
         }
         return getJakimZone(context);
     }
@@ -383,7 +382,7 @@ final class PrayerTimes {
 
     public static String getShortZoneName(Context context) {
         String name = getActiveZoneName(context);
-        if (name == null || name.trim().isEmpty()) return "Putrajaya";
+        if (name == null || name.trim().isEmpty()) return "Pagar Alam";
         int cut = name.indexOf(',');
         if (cut > 0) name = name.substring(0, cut);
         cut = name.indexOf('&');
@@ -391,7 +390,7 @@ final class PrayerTimes {
         cut = name.indexOf('(');
         if (cut > 0) name = name.substring(0, cut);
         name = name.trim();
-        return name.isEmpty() ? "Putrajaya" : name;
+        return name.isEmpty() ? "Pagar Alam" : name;
     }
 
     public static void clearManualZone(Context context) {
@@ -442,43 +441,17 @@ final class PrayerTimes {
 
     private static String getJakimZone(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        if (prefs.contains("manual_prayer_zone")) {
-            return prefs.getString("manual_prayer_zone", "WLY01");
+        String selected = prefs.getString("manual_prayer_zone", "ID_PGA");
+        if (selected == null || !selected.startsWith("ID_")) {
+            // Migrate any former non-Indonesian default to the user's Pagar Alam location.
+            prefs.edit().putString("manual_prayer_zone", "ID_PGA")
+                    .putString("manual_prayer_zone_name", "Pagar Alam")
+                    .putString("manual_lat", "-4.0212")
+                    .putString("manual_lon", "103.2517")
+                    .apply();
+            return "ID_PGA";
         }
-        String loc = AppLocationManager.getLocationName(context).toLowerCase(Locale.ROOT);
-        String stationId = AppLocationManager.getStationId(context).toUpperCase(Locale.ROOT);
-
-        if (loc.contains("putrajaya") || stationId.equals("CA17W")) return "WLY01_PJ";
-        if (loc.contains("kuala lumpur") || loc.contains("cheras") || loc.contains("batu muda")) return "WLY01";
-        if (loc.contains("labuan")) return "WLY02";
-        if (loc.contains("melaka") || loc.contains("alor gajah") || loc.contains("rambai")) return "MLK01";
-        if (loc.contains("petaling") || loc.contains("shah alam")) return "SGR01";
-        if (loc.contains("klang") || loc.contains("banting")) return "SGR03";
-        if (loc.contains("seremban") || loc.contains("nilai") || loc.contains("port dickson")) return "NGS02";
-        if (loc.contains("johor") || loc.contains("larkin") || loc.contains("pasir gudang")) return "JHR02";
-        if (loc.contains("batu pahat")) return "JHR03";
-        if (loc.contains("kluang")) return "JHR04";
-        if (loc.contains("tangkak")) return "JHR01";
-        if (loc.contains("pinang") || loc.contains("seberang") || loc.contains("minden")) return "PNG01";
-        if (loc.contains("ipoh") || loc.contains("tasek") || loc.contains("taiping")) return "PRK02";
-        if (loc.contains("manjung")) return "PRK01";
-        if (loc.contains("alor setar")) return "KDH01";
-        if (loc.contains("sungai petani")) return "KDH02";
-        if (loc.contains("langkawi")) return "KDH07";
-        if (loc.contains("perlis") || loc.contains("kangar")) return "PLS01";
-        if (loc.contains("kuantan")) return "PHG02";
-        if (loc.contains("temerloh")) return "PHG04";
-        if (loc.contains("terengganu") || loc.contains("kemaman")) return "TRG01";
-        if (loc.contains("kota bharu") || loc.contains("kelantan")) return "KTN01";
-        if (loc.contains("kota kinabalu")) return "SBH07";
-        if (loc.contains("sandakan")) return "SBH05";
-        if (loc.contains("tawau")) return "SBH03";
-        if (loc.contains("kuching")) return "SWK08";
-        if (loc.contains("miri")) return "SWK04";
-        if (loc.contains("bintulu")) return "SWK06";
-        if (loc.contains("sibu")) return "SWK05";
-
-        return "WLY01"; // Default Putrajaya
+        return selected;
     }
 
     static class PrayerItem {
@@ -677,7 +650,7 @@ final class PrayerTimes {
                 : AppLocationManager.getLongitude(context);
 
         String zone = getActiveZone(context);
-        double tz = 8.0;
+        double tz = 7.0;
         if (zone != null && zone.startsWith("ID_")) {
             // Indonesia timezones: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9)
             if (longitude < 114.0) {
@@ -688,7 +661,7 @@ final class PrayerTimes {
                 tz = 9.0; // WIT
             }
         } else {
-            tz = 8.0; // Malaysia & Singapore (UTC+8)
+            tz = 7.0; // Indonesia fallback (WIB)
         }
 
         int year = cal.get(Calendar.YEAR);
@@ -718,7 +691,7 @@ final class PrayerTimes {
         double sunsetHour = noon + sunAngleHour(-0.833, latitude, delta);
         double ishaHour = noon + sunAngleHour(-18.0, latitude, delta);
 
-        // Malaysia standard rounding & +2 min ihtiyat
+        // Conservative minute rounding and small ihtiyat for the offline estimate.
         double[] hours = {fajrHour + 0.05, sunriseHour, noon + 0.04, asrHour + 0.04, sunsetHour + 0.05, ishaHour + 0.05};
         long[] res = new long[6];
         Calendar base = (Calendar) cal.clone();
