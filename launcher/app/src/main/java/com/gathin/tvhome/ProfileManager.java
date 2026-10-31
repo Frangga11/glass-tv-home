@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,12 +50,18 @@ public final class ProfileManager {
         public String name;
         public int avatarIndex;
         public boolean isChild;
+        public String customAvatarPath;
 
         public UserProfile(String id, String name, int avatarIndex, boolean isChild) {
+            this(id, name, avatarIndex, isChild, null);
+        }
+
+        public UserProfile(String id, String name, int avatarIndex, boolean isChild, String customAvatarPath) {
             this.id = id != null ? id : "user_" + System.currentTimeMillis();
             this.name = name != null && !name.trim().isEmpty() ? name.trim() : "User";
             this.avatarIndex = (avatarIndex >= 0 && avatarIndex < AVATAR_RES_IDS.length) ? avatarIndex : 1;
             this.isChild = isChild;
+            this.customAvatarPath = customAvatarPath;
         }
 
         public JSONObject toJson() {
@@ -64,6 +71,7 @@ public final class ProfileManager {
                 obj.put("name", name);
                 obj.put("avatarIndex", avatarIndex);
                 obj.put("isChild", isChild);
+                if (customAvatarPath != null && !customAvatarPath.trim().isEmpty()) obj.put("customAvatarPath", customAvatarPath);
             } catch (JSONException ignored) {}
             return obj;
         }
@@ -74,7 +82,9 @@ public final class ProfileManager {
             String name = obj.optString("name", "User");
             int avatarIndex = obj.optInt("avatarIndex", 1);
             boolean isChild = obj.optBoolean("isChild", false);
-            return new UserProfile(id, name, avatarIndex, isChild);
+            String customAvatarPath = obj.optString("customAvatarPath", null);
+            if (customAvatarPath != null && customAvatarPath.trim().isEmpty()) customAvatarPath = null;
+            return new UserProfile(id, name, avatarIndex, isChild, customAvatarPath);
         }
     }
 
@@ -114,6 +124,70 @@ public final class ProfileManager {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    /** Returns the active profile image, preferring its private locally stored photo. */
+    public static Drawable getAvatarDrawable(Context context, UserProfile profile, int sizePx, boolean isChild) {
+        if (context == null || profile == null || sizePx <= 0) return null;
+        try {
+            if (profile.customAvatarPath != null) {
+                File photo = new File(profile.customAvatarPath);
+                if (photo.isFile() && photo.length() > 0) {
+                    Bitmap src = BitmapFactory.decodeFile(photo.getAbsolutePath());
+                    if (src != null) {
+                        Bitmap output = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888);
+                        Canvas canvas = new Canvas(output);
+                        float inset = 2f * context.getResources().getDisplayMetrics().density;
+                        float radius = sizePx / 2f;
+                        Path clip = new Path();
+                        clip.addCircle(radius, radius, radius - inset, Path.Direction.CW);
+                        canvas.save();
+                        canvas.clipPath(clip);
+                        float scale = Math.max((sizePx - 2 * inset) / (float) src.getWidth(),
+                                (sizePx - 2 * inset) / (float) src.getHeight());
+                        float w = src.getWidth() * scale, h = src.getHeight() * scale;
+                        RectF dst = new RectF((sizePx - w) / 2f, (sizePx - h) / 2f,
+                                (sizePx + w) / 2f, (sizePx + h) / 2f);
+                        canvas.drawBitmap(src, null, dst, new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
+                        canvas.restore();
+                        src.recycle();
+                        Paint ring = new Paint(Paint.ANTI_ALIAS_FLAG);
+                        ring.setStyle(Paint.Style.STROKE);
+                        ring.setStrokeWidth(inset);
+                        ring.setColor(isChild ? 0xFFF59E0B : 0xFF38BDF8);
+                        canvas.drawCircle(radius, radius, radius - inset / 2f, ring);
+                        return new BitmapDrawable(context.getResources(), output);
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return getCircularAvatarDrawable(context, profile.avatarIndex, sizePx, isChild);
+    }
+
+    public static synchronized boolean setCustomAvatar(Context context, String profileId, String path) {
+        if (context == null || profileId == null || path == null || !new File(path).isFile()) return false;
+        List<UserProfile> list = getAllProfiles(context);
+        for (UserProfile profile : list) {
+            if (profileId.equals(profile.id)) {
+                profile.customAvatarPath = path;
+                saveProfiles(context, list);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static synchronized boolean clearCustomAvatar(Context context, String profileId) {
+        if (context == null || profileId == null) return false;
+        List<UserProfile> list = getAllProfiles(context);
+        for (UserProfile profile : list) {
+            if (profileId.equals(profile.id)) {
+                profile.customAvatarPath = null;
+                saveProfiles(context, list);
+                return true;
+            }
+        }
+        return false;
     }
 
     private static SharedPreferences getPrefs(Context context) {
