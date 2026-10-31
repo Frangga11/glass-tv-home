@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A04/A05 complete; A06 rollback procedure documented, live device snapshot outstanding; B01/B02 paused  
+**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01/B02 source work resumed; device testing remains deferred to F02  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -42,7 +42,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | A03 | Agree the repair sequence A–G | DONE | User explicitly approved the roadmap on 1 Nov 2026 |
 | A04 | Audit repository, branches, source tree, and current working state | DONE | Remote repository identity, 13 branch heads, PR dependency chain, source tree/build/manifest/CI inventory recorded; local-clone limitation explicitly recorded in INVENTORY.md and AUDIT_REGISTER.md |
 | A05 | Match the tested APK/version to its exact source branch and commit | DONE | Downloaded CI artifact #208, extracted `app-release.apk`, and verified byte-for-byte identity with the user-uploaded tested APK (1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`); CI run/artifact metadata maps to PR #9 exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` |
-| A06 | Establish baseline, backup, and rollback/checkpoint | IN PROGRESS | Exact tested source/APK checkpoint and conservative rollback SOP documented; historical ADB state recorded. Fresh read-only device snapshot remains the only open evidence gate before any device mutation |
+| A06 | Establish baseline, backup, and rollback/checkpoint | IN PROGRESS | Exact tested source/APK checkpoint and rollback SOP documented; full read-only Mi TV Stick snapshot captured 1 Nov 2026. HOME resolver/preferred-activity discrepancy and installed APK hash limitation recorded for E01; no device mutation performed |
 
 ### Stage B — Global foundations and user experience
 
@@ -123,20 +123,20 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | G04 | Update GitHub master, inventory, audit register, decision log, operations log, and handover | NOT STARTED |
 | G05 | Update ChatGPT continuity memory/handover and confirm next resume point | NOT STARTED |
 
-## 4. Progress snapshot — 1 November 2026 (after A05)
+## 4. Progress snapshot — 1 November 2026 (after A06)
 
 - Tasks in roadmap: 47
-- DONE: 5 (A01, A02, A03, A04, A05)
-- IN PROGRESS: 3 (A06, B01, B02)
+- DONE: 6 (A01, A02, A03, A04, A05, A06)
+- IN PROGRESS: 2 (B01, B02)
 - NOT STARTED: 39
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
-This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009; further implementation is paused at the user's request until A06 is closed. A05 is complete with a direct byte-for-byte match between the user-uploaded tested APK and the APK extracted from CI artifact #13048951728; CI run #208 binds that artifact to PR #9 exact source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. A06 is in progress: exact source/APK checkpoint and rollback procedure are documented; historical ADB observations are retained. A fresh read-only snapshot remains outstanding solely to establish current HOME ownership/package state before any device mutation.
+This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009; source-level work may now resume because A06 is closed. Physical-device acceptance remains deferred to F02. A05 is complete with a direct byte-for-byte match between the user-uploaded tested APK and the APK extracted from CI artifact #13048951728; CI run #208 binds that artifact to PR #9 exact source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. A06 is DONE: the exact source/APK checkpoint and rollback procedure are documented, and the user supplied a fresh read-only Mi TV Stick snapshot. The resolver returns the stock launcher while the package preferred-activity table lists Glass TV Home; this discrepancy is carried into E01. The installed package metadata matches version 4.0.0/code 40, but its APK bytes/hash were not extracted from the TV.
 
 ## 5. Current execution point
 
-A04 remote repository/source audit is DONE. A05 is DONE with direct three-evidence verification: the uploaded tested APK is byte-for-byte identical to `app-release.apk` extracted from CI artifact `13048951728` (run #208, `41218171447`); both are 1,427,681 bytes with SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`. CI run metadata binds that artifact to PR #9, branch `feature/profile-avatar-security-integration`, exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. The ZIP archive is separately 1,340,733 bytes (SHA-256 `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`). A06 is IN PROGRESS: exact-source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1` and APK/hash manifest have been created; rollback procedure is documented; the only remaining evidence gap is a fresh read-only Mi TV Stick state snapshot. This is not a request to repeat or revalidate the user's historical APK test. B01 and B02 already have isolated Draft PRs; further implementation is paused until A05 and A06 are completed as requested. B01 exact-head CI #225 and B02 exact-head CI #234 both PASS; no TV-test artifact was published by those runs.
+A04 remote repository/source audit is DONE. A05 is DONE with direct three-evidence verification: the uploaded tested APK is byte-for-byte identical to `app-release.apk` extracted from CI artifact `13048951728` (run #208, `41218171447`); both are 1,427,681 bytes with SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`. CI run metadata binds that artifact to PR #9, branch `feature/profile-avatar-security-integration`, exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. The ZIP archive is separately 1,340,733 bytes (SHA-256 `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`). A06 is DONE: exact-source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1`, APK/hash manifest, rollback SOP, and read-only device snapshot are documented. The HOME resolver/preferred-activity discrepancy and unverified installed APK hash are carried as explicit E01 limitations. The user's historical APK test remains accepted and is not being repeated. B01/B02 source work resumes on their isolated Draft PRs; no physical TV testing or candidate APK installation until F02/final readiness. B01 exact-head CI #225 and B02 exact-head CI #234 both PASS; no TV-test artifact was published by those runs.
 
 ## 6. Session closeout and callback protocol
 
