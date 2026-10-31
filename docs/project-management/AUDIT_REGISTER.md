@@ -108,3 +108,26 @@ See `PROFILE_AUDIT.md` for the complete policy and device acceptance matrix. PR 
 | Physical device | NOT RUN — required before merge/release |
 
 PR #9: https://github.com/Frangga11/glass-tv-home/pull/9. Keep Draft; merge PR #8 base before PR #9 only after review and device acceptance.
+
+
+## Post-installation test findings — 1 November 2026
+
+These are user-observed findings from the latest Mi TV Stick test. They are triage inputs, not root-cause diagnoses. Task sequencing is tracked in [BUG_REPAIR_ROADMAP.md](BUG_REPAIR_ROADMAP.md). Do not close any item without reproduction, source-level diagnosis, a test procedure, and evidence.
+
+| Finding ID | Area | User-observed symptom | Initial severity | Status |
+|---|---|---|---|---|
+| T-001 | Profile / avatar QR | Phone QR avatar upload fails; phone reports connection failure | P1 | OPEN — reproduce and trace QR/server/routes |
+| T-002 | Profile / remote focus | No visible focus marker on avatar QR upload and built-in avatar choices | P2 | OPEN — global focus audit B02, then E02 |
+| T-003 | Profile / app lock | Locked-app count remains zero/stale until leaving and reopening Settings | P2 | OPEN — state audit D02/D03, then E02 |
+| T-004 | Home Screen settings | Previously available subtabs are missing from current settings UI | P2 | OPEN — compare inventory/history and restore only approved functions, E06 |
+| T-005 | Appearance / wallpaper | Phone wallpaper upload fails with `Not Found`; photo management cannot be used | P1 | OPEN — trace C01–C07, D05, then E03 |
+| T-006 | Information Center | Information Center / Quick Actions hierarchy and purpose are unclear; UI feels disorganized | P2 | OPEN — review information architecture, E05 |
+| T-007 | Effects | Overall behavior looks good; remaining gaps/performance need review | P3 | OPEN — E07 |
+| T-008 | Standby / screensaver | Upload appears possible but preview is black; location unknown; saved photos cannot be browsed clearly; overall flow fails | P1 | OPEN — trace storage/preview/location/playback, E04 |
+| T-009 | Device / launcher settings | Default-home dialog layout is disorganized; launcher status/help relevance unclear; accessibility and remote actions show no handler | P1 | OPEN — inspect Android intents/TV capability and E01 |
+| T-010 | Global navigation | After an action/back, focus/menu position resets and requires repeated navigation | P2 | OPEN — B01/B07 |
+| T-011 | Global dialogs | Popup backgrounds are translucent enough that underlying text bleeds through | P2 | OPEN — B03 |
+| T-012 | Localization | English mode still shows Indonesian strings | P2 | OPEN — B05 |
+| T-013 | Wallpaper settings | User requests three subtabs: Change Wallpaper, Wallpaper Shuffle Interval, Next Wallpaper | P2 | APPROVED REQUIREMENT — implement in E08 |
+
+Severity is provisional and may be adjusted after reproduction and impact analysis. Global dependencies must be addressed before feature-level patches where technically appropriate.
