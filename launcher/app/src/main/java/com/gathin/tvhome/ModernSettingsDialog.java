@@ -756,7 +756,7 @@ public final class ModernSettingsDialog {
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "📋 Pusat Informasi & Tindakan", "Ringkasan cuaca, jadwal salat, kondisi perangkat, dan pintasan tindakan cepat",
-                        activity::showGeminiAssistantDialog));
+                        activity::showInfoActionsDialog));
 
             } else if (tab == TAB_APPEARANCE) {
                 // === TAB 2: APPEARANCE ===
