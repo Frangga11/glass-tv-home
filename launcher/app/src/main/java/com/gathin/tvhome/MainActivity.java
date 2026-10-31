@@ -2764,22 +2764,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         LinearLayout rows = panel.findViewById(R.id.rows);
         Runnable close = () -> closeMenu(false);
 
-        addInputRow(rows, close, R.drawable.ic_power, "Mulai Ulang TV", -1, this::showRestartDialog);
-        addInputRow(rows, close, R.drawable.ic_power, "Matikan TV", -1, this::showTurnOffDialog);
+        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strRestart(this), -1, this::showRestartDialog);
+        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strTurnOff(this), -1, this::showTurnOffDialog);
         addSeparator(rows);
-        addInputRow(rows, close, R.drawable.ic_settings, "Bersihkan Cache TV", -1, this::showCleanTvCacheDialog);
-        addInputRow(rows, close, R.drawable.ic_wallpaper, "Wallpaper (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperIntervalDialog);
+        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strCleanCache(this), -1, this::showCleanTvCacheDialog);
+        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperIntervalDialog);
 
-        String lang = AppLanguage.getLanguage(this);
-        String langLabel = AppLanguage.LANG_ID.equals(lang) ? "🇮🇩 ID"
-                : (AppLanguage.LANG_EN.equals(lang) ? "🇬🇧 EN" : "ID");
-        addInputRow(rows, close, R.drawable.ic_settings, "Pilihan Bahasa: " + langLabel, -1, this::showLanguageDialog);
+        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, this::showLanguageDialog);
 
         addSeparator(rows);
         addInputRow(rows, close, R.drawable.ic_settings, "Pengaturan Glass TV", -1, this::showSettingsPopup);
-        addInputRow(rows, close, R.drawable.ic_settings, "Semua Pengaturan Android", -1,
+        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strAllSettings(this), -1,
                 () -> open(systemIntent(Settings.ACTION_SETTINGS)));
-        addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> closeMenu(true));
+        addInputRow(rows, close, R.drawable.ic_close, AppLanguage.strClose(this), -1, () -> closeMenu(true));
 
         int width = (int) (285 * density);
         panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.UNSPECIFIED);
