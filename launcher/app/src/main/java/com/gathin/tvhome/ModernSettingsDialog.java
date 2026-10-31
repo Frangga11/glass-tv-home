@@ -1084,7 +1084,6 @@ public final class ModernSettingsDialog {
                     .setNegativeButton("Batal", null)
                     .create();
             searchDialog.show();
-            styleGlassDialog(searchDialog);
             searchInput.requestFocus();
         });
 
