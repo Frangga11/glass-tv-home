@@ -177,10 +177,7 @@ final class WeatherAirQuality {
                 String defaultPlace = AppLocationManager.getStationPlace(context);
 
                 // 1. Fetch Complete Weather Forecast (Open-Meteo)
-                String weatherTimezone = "Asia%2FKuala_Lumpur";
-                if ("Indonesia".equalsIgnoreCase(AppLocationManager.getActiveRegion(context))) {
-                    weatherTimezone = lon < 114.0 ? "Asia%2FJakarta" : (lon < 125.0 ? "Asia%2FMakassar" : "Asia%2FJayapura");
-                }
+                String weatherTimezone = "auto";
                 String weatherUrl = String.format(Locale.ROOT,
                         "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,visibility,pressure_msl&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=%s&forecast_days=7",
                         lat, lon, weatherTimezone);
@@ -204,12 +201,7 @@ final class WeatherAirQuality {
                     visibilityKm = curr.optDouble("visibility", 10000.0) / 1000.0;
                 }
 
-                // 2. Fetch Official Air Quality from Jabatan Alam Sekitar Malaysia (APIMS)
-                String jasUrl = "https://eqms.doe.gov.my/api3/publicportalapims/currentapicurrentlocation?stationid=" + stationId;
-                // JAS/APIMS is Malaysia-only. Indonesian locations use the Open-Meteo AQI model below.
-                JSONObject jasJson = "Malaysia".equalsIgnoreCase(AppLocationManager.getActiveRegion(context))
-                        ? fetchJson(jasUrl) : null;
-
+                // Use one consistent, location-based AQI source for every supported region.
                 boolean isEnglish = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(context));
                 int aqi = 50;
                 String aqiStatus = isEnglish ? "Moderate" : "Sedang";
@@ -218,29 +210,11 @@ final class WeatherAirQuality {
                 String aqiDateTime = "";
                 boolean isJas = false;
 
-                if (jasJson != null && jasJson.has("data")) {
-                    JSONArray arr = jasJson.optJSONArray("data");
-                    if (arr != null && arr.length() > 0) {
-                        JSONObject st = arr.getJSONObject(0);
-                        aqi = st.optInt("API", 50);
-                        aqiStatus = st.optString("CLASS", getAqiStatus(aqi, isEnglish));
-                        aqiParam = st.optString("PARAM_SELECTED", "PM2.5");
-                        aqiPlace = st.optString("PLACE", defaultPlace);
-                        aqiDateTime = st.optString("DATETIME", "");
-                        isJas = true;
-                        Log.i(TAG, "Official JAS Malaysia APIMS sync successful for " + stationId + ": IPU=" + aqi + " (" + aqiStatus + ")");
-                    }
-                }
-
-                // Fallback to Open-Meteo Air Quality if JAS Malaysia endpoint is temporarily down
-                JSONObject fallbackAqiJson = null;
-                if (!isJas) {
-                    Log.i(TAG, "Using Open-Meteo modelled AQI for the selected non-JAS location.");
-                    String aqiUrl = String.format(Locale.ROOT,
-                            "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=%.4f&longitude=%.4f&current=pm2_5,pm10,us_aqi",
-                            lat, lon);
-                    fallbackAqiJson = fetchJson(aqiUrl);
-                    if (fallbackAqiJson != null && fallbackAqiJson.has("current")) {
+                String aqiUrl = String.format(Locale.ROOT,
+                        "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=%.4f&longitude=%.4f&current=pm2_5,pm10,us_aqi",
+                        lat, lon);
+                JSONObject fallbackAqiJson = fetchJson(aqiUrl);
+                if (fallbackAqiJson != null && fallbackAqiJson.has("current")) {
                         JSONObject curr = fallbackAqiJson.getJSONObject("current");
                         aqi = curr.optInt("us_aqi", 50);
                         double pm25 = curr.optDouble("pm2_5", 15.0);
