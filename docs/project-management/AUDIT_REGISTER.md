@@ -249,17 +249,17 @@ The CI artifact was downloaded from GitHub (artifact ID `13048951728`) and its Z
 
 Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 and https://github.com/Frangga11/glass-tv-home/pull/9.
 
-## A06 — Baseline and rollback checkpoint — IN PROGRESS
+## A06 — Baseline and rollback checkpoint — DONE
 
-**Result: SOURCE/APK CHECKPOINT LOCKED; ROLLBACK SOP DOCUMENTED; LIVE DEVICE SNAPSHOT OUTSTANDING.**
+**Result: PASS — exact tested baseline, source checkpoint, rollback SOP, and read-only device snapshot recorded.**
 
-- The user-confirmed PR #9 APK remains the official known-good tested baseline. Its historical test is accepted and will not be requested again.
-- Exact APK identity: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`; byte-for-byte match with CI artifact #13048951728 / run #208; exact source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
-- Immutable source checkpoint: `checkpoint/a06-tested-apk-pr9-7e8392e1`.
-- Checkpoint manifest: [A06_TESTED_APK_BASELINE.md](checkpoints/A06_TESTED_APK_BASELINE.md).
-- Rollback procedure: [A06_ROLLBACK_PROCEDURE.md](checkpoints/A06_ROLLBACK_PROCEDURE.md). It avoids guessing the stock HOME activity component and documents conservative recovery steps.
-- Historical Bugjaeger evidence: `com.mitv.tvhome` appeared disabled; `com.google.android.tvlauncher` and `com.gathin.tvhome` appeared enabled; `get-home-activities` returned `unknown`; `set-home-activity` returned `Success`; `am start` said launcher activity already running. This is historical context, not a current-state snapshot.
-- Remaining gap: fresh read-only `getprop`, `pm path`, `dumpsys package`, HOME resolver, enabled/disabled package lists, and relevant settings. This is needed before any device mutation; it does not challenge the user's earlier test.
-- No package state, HOME default, device setting, or installed APK was changed in this work.
+- Official known-good tested baseline remains the user-confirmed PR #9 APK; its historical test is accepted and will not be requested again.
+- APK identity: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`; byte-for-byte match with CI artifact #13048951728 / run #208; source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- Immutable checkpoint: `checkpoint/a06-tested-apk-pr9-7e8392e1`; rollback SOP: [A06_ROLLBACK_PROCEDURE.md](checkpoints/A06_ROLLBACK_PROCEDURE.md).
+- Read-only snapshot captured 1 November 2026: `MiTV-AYFR0`, Android 11 / SDK 30, fingerprint `Xiaomi/soul/soul:11/RTT0.211222.001/1546:user/release-keys`; Glass TV Home package path, version 4.0.0/code 40, package lists, HOME resolver, accessibility/input/power settings recorded in the A06 checkpoint manifest.
+- **E01 carry-forward:** HOME resolver returns `com.google.android.tvlauncher/.MainActivity`, while `dumpsys package` preferred activities lists `com.gathin.tvhome/.MainActivity`. Preserve this discrepancy for read-only investigation; do not change HOME state based on assumptions.
+- Installed package version matches the known baseline's version metadata, but the installed TV APK was not pulled and hashed. Do not claim byte-for-byte installed-file identity.
+- Exact package-name distinction: current disabled list contains `com.mitv.tvhome.atv`; the older historical output mentioned `com.mitv.tvhome`. Do not conflate these packages.
+- No package state, HOME default, device setting, or installed APK was changed during snapshot capture.
 
-**A06 disposition:** keep IN PROGRESS / DEVICE-MUTATION GATE until the fresh read-only snapshot is available. B01/B02 implementation remains paused per the user's sequencing instruction.
+**A06 closure:** DONE. Device mutation remains unauthorized; physical TV acceptance remains deferred to final stage F02.
