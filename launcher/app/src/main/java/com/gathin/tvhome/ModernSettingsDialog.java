@@ -50,9 +50,10 @@ public final class ModernSettingsDialog {
     private static final int TAB_HOME_SCREEN = 1;
     private static final int TAB_APPEARANCE = 2;
     private static final int TAB_STATUS_WEATHER = 3;
-    private static final int TAB_STANDBY = 4;
-    private static final int TAB_CHILD_MODE = 5;
-    private static final int TAB_DEVICE_SETTINGS = 6;
+    private static final int TAB_EFFECTS = 4;
+    private static final int TAB_STANDBY = 5;
+    private static final int TAB_CHILD_MODE = 6;
+    private static final int TAB_DEVICE_SETTINGS = 7;
 
     private static Runnable sDpadLeftTarget;
 
@@ -271,6 +272,7 @@ public final class ModernSettingsDialog {
         navItems.add(new NavItem(TAB_HOME_SCREEN, AppLanguage.strHomeScreen(activity), R.drawable.ic_home_screen, 0xFF7B1FA2));
         navItems.add(new NavItem(TAB_APPEARANCE, AppLanguage.strAppearance(activity), R.drawable.ic_appearance, 0xFF0097A7));
         navItems.add(new NavItem(TAB_STATUS_WEATHER, AppLanguage.strStatusBarWeather(activity), R.drawable.ic_screen_weather, 0xFF1976D2));
+        navItems.add(new NavItem(TAB_EFFECTS, AppLanguage.strVisualEffects(activity), R.drawable.ic_appearance, 0xFF0097A7));
         navItems.add(new NavItem(TAB_STANDBY, AppLanguage.strStandByMode(activity), R.drawable.ic_standby_clock, 0xFF374151));
         navItems.add(new NavItem(TAB_CHILD_MODE, AppLanguage.strChildMode(activity), R.drawable.ic_shield_child, 0xFFD97706));
         String deviceLabel = AppLanguage.strDeviceSettings(activity);
@@ -730,7 +732,7 @@ public final class ModernSettingsDialog {
 
             } else if (tab == TAB_HOME_SCREEN) {
                 // === TAB 1: HOME SCREEN (CONSOLIDATING CANDY BOX SETTINGS) ===
-                addHeader(rightContent, outfit, "Home Screen");
+                addHeader(rightContent, outfit, "Layar Utama");
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
                         "Rak Doa Harian & Waktu Solat", "Paparkan ayat pilihan & jadual solat waktu tempatan",
@@ -771,7 +773,7 @@ public final class ModernSettingsDialog {
 
             } else if (tab == TAB_APPEARANCE) {
                 // === TAB 2: APPEARANCE ===
-                addHeader(rightContent, outfit, "Appearance");
+                addHeader(rightContent, outfit, "Tampilan");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "🖼️ Koleksi Wallpaper 4K", "Alam, lanskap, kota, laut, dan luar angkasa 4K.",
@@ -786,21 +788,40 @@ public final class ModernSettingsDialog {
                         activity::showLanguageDialog));
 
             } else if (tab == TAB_STATUS_WEATHER) {
-                // === TAB 3: STATUS BAR & WEATHER ===
-                addHeader(rightContent, outfit, "Status Bar & Weather");
+                // === TAB: WIDGET & INFORMATION ===
+                addHeader(rightContent, outfit, "Widget & Informasi");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📍 Pilih Lokasi TV & Zon Solat", "Lokasi Indonesia dan jadwal salat Kemenag RI",
+                        "📍 Lokasi TV & Jadwal Salat", "Atur lokasi cuaca dan zona waktu salat untuk Pagar Alam atau wilayah Indonesia lainnya.",
                         () -> activity.startActivity(new Intent(activity, LocationActivity.class))));
 
-                boolean isWeatherFx = activity.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🌧️ Cuaca Dinamik (Weather Overlay Effects)", "Kesan visual zarah hujan, awan kabut dan salji pada wallpaper",
-                        isWeatherFx, isChecked -> {
-                            activity.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", isChecked).apply();
-                            activity.testWeatherOverride = null;
-                            activity.updateWeatherOverlay(HomeWeather.last(activity));
-                            Toast.makeText(activity, isChecked ? "🌧️ Cuaca Dinamik Dihidupkan" : "⛅ Cuaca Dinamik Dimatikan", Toast.LENGTH_SHORT).show();
+                        "🌤️ Widget Cuaca & Kualitas Udara",
+                        "Tampilkan atau sembunyikan informasi cuaca dan indeks kualitas udara pada layar utama.",
+                        activity.isWeatherWidgetEnabled(), isChecked -> {
+                            activity.setWeatherWidgetEnabled(isChecked);
+                        }));
+
+            } else if (tab == TAB_EFFECTS) {
+                // === TAB: ANIMATIONS & VISUAL EFFECTS ===
+                addHeader(rightContent, outfit, AppLanguage.strVisualEffects(activity));
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "🌧️ Animasi Cuaca pada Wallpaper",
+                        "Tampilkan efek hujan, awan, kabut, atau kondisi cuaca dinamis di atas wallpaper.",
+                        activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
+                            activity.setDynamicWeatherEffectsEnabled(isChecked);
+                            Toast.makeText(activity, isChecked ? "Animasi cuaca diaktifkan." : "Animasi cuaca dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        }));
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "✨ Efek Cahaya & Warna Ikon",
+                        "Atur cahaya latar dan transisi warna yang mengikuti aplikasi saat dipilih. Tidak memengaruhi animasi cuaca.",
+                        activity.isIconGlowEffectsEnabled(), isChecked -> {
+                            activity.setIconGlowEffectsEnabled(isChecked);
+                            Toast.makeText(activity, isChecked ? "Efek cahaya ikon diaktifkan." : "Efek cahaya ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
             } else if (tab == TAB_STANDBY) {
@@ -850,7 +871,7 @@ public final class ModernSettingsDialog {
 
             } else if (tab == TAB_CHILD_MODE) {
                 // === TAB 6: CHILD MODE & APP LOCK ===
-                addHeader(rightContent, outfit, "Child Mode");
+                addHeader(rightContent, outfit, "Mode Anak");
 
                 boolean isChildOn = ChildModeManager.isChildModeEnabled(activity);
                 Set<String> lockedSet = ChildModeManager.getLockedApps(activity);
