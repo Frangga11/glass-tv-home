@@ -290,7 +290,8 @@ final class WeatherAirQuality {
 
         // Air Quality: "IPU 112 Tidak Sihat"
         int startAqi = sb.length();
-        String prefix = isMalay ? "IPU " : "API ";
+        boolean isJasSource = prefs.getBoolean(KEY_AQI_IS_JAS, false);
+        String prefix = isJasSource ? (isMalay ? "IPU " : "API ") : "US AQI ";
         sb.append(prefix).append(String.valueOf(aqi)).append(" ").append(aqiStatus);
         sb.setSpan(new ForegroundColorSpan(aqiColor), startAqi, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new StyleSpan(Typeface.BOLD), startAqi, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -414,7 +415,7 @@ final class WeatherAirQuality {
 
         // Air Quality
         int aqi = prefs.getInt(KEY_AQI, 50);
-        boolean isJas = prefs.getBoolean(KEY_AQI_IS_JAS, true);
+        boolean isJas = prefs.getBoolean(KEY_AQI_IS_JAS, false);
         String aqiStatus = prefs.getString(KEY_AQI_STATUS, "Sederhana");
         String aqiParam = prefs.getString(KEY_AQI_PARAM, "PM2.5");
         String stationPlace = prefs.getString(KEY_AQI_STATION_PLACE, AppLocationManager.getStationPlace(context));
