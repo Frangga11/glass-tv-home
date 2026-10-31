@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01/B02 source work resumed; device testing remains deferred to F02  
+**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01/B02 source audits and CI pass; B03 next; device testing deferred to F02  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -132,7 +132,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
-This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009; source-level work may now resume because A06 is closed. Physical-device acceptance remains deferred to F02. A05 is complete with a direct byte-for-byte match between the user-uploaded tested APK and the APK extracted from CI artifact #13048951728; CI run #208 binds that artifact to PR #9 exact source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. A06 is DONE: the exact source/APK checkpoint and rollback procedure are documented, and the user supplied a fresh read-only Mi TV Stick snapshot. The resolver returns the stock launcher while the package preferred-activity table lists Glass TV Home; this discrepancy is carried into E01. The installed package metadata matches version 4.0.0/code 40, but its APK bytes/hash were not extracted from the TV.
+This is a task-count snapshot, not a percentage of application readiness. A01–A06 are complete. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009. B01 exact-head CI #225 and B02 exact-head CI #234 passed; B02 second-pass source review found no listener collision in the touched paths. Physical-device acceptance remains deferred to F02. A05 is complete with a direct byte-for-byte match between the user-uploaded tested APK and the APK extracted from CI artifact #13048951728; CI run #208 binds that artifact to PR #9 exact source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. A06 is DONE: the exact source/APK checkpoint and rollback procedure are documented, and the user supplied a fresh read-only Mi TV Stick snapshot. The resolver returns the stock launcher while the package preferred-activity table lists Glass TV Home; this discrepancy is carried into E01. The installed package metadata matches version 4.0.0/code 40, but its APK bytes/hash were not extracted from the TV.
 
 ## 5. Current execution point
 
