@@ -406,7 +406,7 @@ public class WeatherActivity extends Activity {
             humidityValText.setText(w.humidity + "%");
         }
         if (pressureGaugeView != null) {
-            pressureGaugeView.setPressure(1014);
+            pressureGaugeView.setPressure(w.pressure);
         }
 
         // 6. Footer
