@@ -1,7 +1,7 @@
 # 06 — Avatar QR Upload Audit
 
 **Audit date:** 31 October 2026  
-**Audit status:** Implementation submitted for CI; device acceptance pending  
+**Audit status:** CI/build passed; device acceptance pending  
 **Code branch:** fix/avatar-qr-upload-single-photo  
 **Base branch:** feature/settings-reorganization-standby-gallery  
 **Pull request:** https://github.com/Frangga11/glass-tv-home/pull/6  
@@ -76,16 +76,24 @@ GitHub comparison confirms:
 | Branch ancestry | COMPLETE | GitHub compare result: candidate branch is a direct descendant of settings/gallery baseline |
 | Documentation consistency | COMPLETE | User guide updated for QR rather than picker |
 | GitHub CI — docs/tools job | PASS | Workflow run 41198793481 |
-| GitHub CI — Android unit tests/release build | PENDING at time of this record | Wait for launcher job and APK-size step |
+| GitHub CI — Android unit tests/release build | PASS | Workflow run 41198793481; launcher unit tests and release build passed |
 | QR upload from physical phone | NOT TESTED | Requires TV and phone on same Wi-Fi |
 | Replace photo twice; verify old file removed | NOT TESTED | Inspect private app storage / app behavior |
 | Failed upload / failed profile commit rollback | NOT TESTED | Exercise invalid image, interrupted transfer, and storage failure |
 | Process death / reboot persistence | NOT TESTED | Test on target Mi TV Stick |
 | EXIF portrait / landscape / large / corrupt files | NOT TESTED | Device test matrix |
 | D-pad focus, OK, Back, cancel | NOT TESTED | Remote-only acceptance |
-| Final release approval | NOT APPROVED | Requires CI and device evidence |
+| Final release approval | NOT APPROVED | CI passed; actual Mi TV Stick and phone evidence still required |
 
-## 6. Device acceptance checklist
+## 6. Build artifact
+
+- Workflow run: https://github.com/Frangga11/glass-tv-home/actions/runs/41198793481
+- Artifact: glass-tv-home-pagar-alam-release
+- APK size: 1,106,553 bytes (below the 1.2 MiB CI limit)
+- SHA-256: 009821bdc01f7327814cbe73b3a27b3f20253457a0243b2cd0f28d7d17c28aed
+- Artifact expiry: 14 November 2026
+
+## 7. Device acceptance checklist
 
 1. Open Settings → Profile and start QR upload.
 2. Scan QR from a phone on the same Wi-Fi; verify the upload page opens.
@@ -102,13 +110,13 @@ GitHub comparison confirms:
 13. Test with TV remote only: focus, OK, Back, cancel.
 14. Confirm wallpaper and standby QR upload still work independently.
 
-## 7. Rollback
+## 8. Rollback
 
 - Do not merge PR #6 until all required checks pass.
 - If the change fails CI or device acceptance, close/revise the draft PR and keep the current feature/settings-reorganization-standby-gallery branch unchanged.
 - The existing settings/gallery branch remains the rollback baseline.
 - No device installation or launcher replacement has been performed by this audit.
 
-## 8. Final disposition
+## 9. Final disposition
 
-**NOT FINAL.** Code implementation and documentation are present on a dedicated branch, but CI is not yet fully complete and no physical-device test has been performed. Do not label the avatar feature release-ready until the checklist above is evidenced.
+**NOT FINAL.** Code implementation, documentation, CI, unit tests, and release build have passed on the dedicated branch. No physical-device test has been performed. Do not label the avatar feature release-ready until the checklist above is evidenced on the actual Mi TV Stick and phone.
