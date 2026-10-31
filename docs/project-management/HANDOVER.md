@@ -101,7 +101,7 @@
 - B01 source-level audit and exact-head CI #225 are PASS. Remaining acceptance is deferred to final integrated regression stage F02; keep roadmap B01 IN PROGRESS until then.
 - B01 PR #10 is isolated on `feature/b01-global-navigation-retention`, head `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`.
 - B02 is in progress on `feature/b02-remote-focus-indicators`, based on B01; Draft PR #11: https://github.com/Frangga11/glass-tv-home/pull/11.
-- B02 current head: `68e87eaeead948367665470fa08503daeddbcaef`; CI #232 validates the preceding snapshot and current-head CI #233 is pending. Physical Mi TV Stick acceptance is deferred to final integration stage F02, after all A–E audit/fix work. Settings right-pane action-return focus is tracked under B07.
+- B02 current head: `01cbef2c2fc90498295971b22c369a72cdfa734a`; exact-head CI #234 is pending. CI #233 passed the preceding snapshot. Physical Mi TV Stick acceptance is deferred to final integration stage F02, after all A–E audit/fix work. Settings right-pane action-return focus is tracked under B07.
 - No APK has been installed in this repair session; no device settings changed; PR #8/#9/#10 remain unmerged Draft/open. User explicitly requires no TV testing until all audits and repairs are complete.
 - Next action: verify exact-head CI #224; then proceed to B02 source audit/fix. Continue B03–B07, C, D, and E audits/repairs before generating/publishing any TV-test APK. Complete A05/A06 and F01–F07 before final TV acceptance.
 - At each session close, update roadmap statuses, audit/operations records, this handover, and ChatGPT continuity memory. Report synchronization only after verifying the GitHub commit.
