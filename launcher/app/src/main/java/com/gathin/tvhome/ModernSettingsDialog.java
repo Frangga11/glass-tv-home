@@ -1410,18 +1410,6 @@ public final class ModernSettingsDialog {
                 });
     }
 
-    /** Parent PIN gate for editing per-profile locked and hidden app lists. */
-    private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode) {
-        ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
-                "Masukkan PIN orang tua untuk mengubah daftar aplikasi " + (isHideMode ? "tersembunyi" : "terkunci"),
-                new ChildModeManager.PinCallback() {
-                    @Override public void onSuccess() {
-                        showAppLockPickerAuthorized(activity, density, font, isHideMode);
-                    }
-                    @Override public void onCancelled() { }
-                });
-    }
-
     private static void showAppLockPickerAuthorized(MainActivity activity, float density, Typeface font, boolean isHideMode) {
         PackageManager pm = activity.getPackageManager();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
