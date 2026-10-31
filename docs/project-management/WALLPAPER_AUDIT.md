@@ -13,6 +13,10 @@ Audit the complete home-screen background system: bundled default, online catego
 
 ## 2. Acceptance criteria
 
+**User visual evidence received (31 October 2026):** user supplied a photograph of the actual LG TV showing the Kabut Pagi Dempo wallpaper in Glass TV Home with clock/date, weather, prayer times, doa, and app icons visible. This is accepted as PASS for the specific visual composition and legibility shown in that photograph. It does not prove fresh-install asset packaging, offline fallback, QR/network security, animation performance, or other wallpaper images.
+
+**Scope clarification:** the requested outcome is not merely to replace the existing single-image `Default` wallpaper. Add a dedicated built-in/offline collection tab immediately above the existing `Nature & Landscapes` / `Alam Semesta & Lanskap` category, using the previously agreed label. Its image assets must be packaged inside the APK. Keep the existing `Default` behavior separate unless the user explicitly approves changing it.
+
 | ID | Acceptance criterion | Evidence required |
 |---|---|---|
 | W-AC-01 | Bundled default wallpaper appears on a fresh/offline install | asset/source check + cold-start device test |
@@ -21,8 +25,8 @@ Audit the complete home-screen background system: bundled default, online catego
 | W-AC-04 | Custom wallpaper QR upload works only while its dialog/session is active | phone-to-TV test, then closed-session rejection |
 | W-AC-05 | Upload rejects malformed, oversized, truncated, and non-image content without crashing | negative upload tests |
 | W-AC-06 | Upload endpoint is not exposed to unintended LAN clients or unrelated routes | security review and session/auth tests |
-| W-AC-07 | Crop, aspect ratio, and composition are suitable for 16:9 TV display | approved visual review on target TV |
-| W-AC-08 | Main text, app labels, prayer information, and status widgets remain readable over bright/dark images | visual contrast review across representative images |
+| W-AC-07 | Crop, aspect ratio, and composition are suitable for 16:9 TV display | USER VISUAL PASS — photo of actual TV supplied 31 Oct 2026; shown composition is acceptable |
+| W-AC-08 | Main text, app labels, prayer information, and status widgets remain readable over bright/dark images | USER VISUAL PASS for the supplied Dempo image and shown layout; representative bright/dark collection images still need review |
 | W-AC-09 | Wallpaper changes and glass blur remain synchronized without visible lag/flicker | device test |
 | W-AC-10 | Decode, rotation, and blur remain within acceptable memory/CPU limits on Mi TV Stick | repeated rotation and long-run device test |
 | W-AC-11 | Wallpaper, avatar, and standby collections remain separate | source and end-to-end workflow test |
@@ -90,6 +94,13 @@ Audit the complete home-screen background system: bundled default, online catego
 - No physical TV/phone test has been performed.
 
 ## 6. Work sequence — no duplicate passes
+
+1. Implement the dedicated offline collection category in the existing wallpaper selector, immediately after `Default` and immediately before `Natural` (`Nature & Landscapes`). Preserve the exact agreed category label; do not invent a new label.
+2. Package the user-approved 1536×864 Dempo JPEG inside the app assets and connect the collection to the existing category loading/rotation pipeline. Do not route this image only through custom upload storage or online download.
+3. Add focused tests for category order, asset discovery, and offline loading; verify the final APK contains the JPEG bytes.
+4. Preserve the current `Default` category behavior unless a user decision explicitly changes it.
+5. Run CI once after the implementation and asset packaging change.
+6. Reuse the already supplied TV photograph as visual evidence; do not repeat that same visual check. Test only remaining cases: clean install/offline, rotation, focus/remote, QR security, and performance.
 
 1. Add the validated package-ready image at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg` on the wallpaper implementation branch.
 2. Verify the image is present in the APK and inspect its dimensions/aspect ratio. Do not rerun the already-passed QR security checks unless code changes.
