@@ -423,7 +423,13 @@ public final class ProfileManager {
 
             if (toRemove == null) return false;
             list.remove(toRemove);
-            saveProfiles(context, list);
+            JSONArray persistedProfiles = new JSONArray();
+            for (UserProfile profile : list) persistedProfiles.put(profile.toJson());
+            // Persist profile removal before cleaning up its avatar file; never delete the photo if the
+            // profile-list write fails.
+            if (!getPrefs(context).edit().putString(KEY_PROFILES_JSON, persistedProfiles.toString()).commit()) {
+                return false;
+            }
             // The cleanup routine deletes only unreferenced files inside the private avatar directory.
             cleanupOrphanedAvatarUploads(context);
 
