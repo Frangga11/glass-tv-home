@@ -161,3 +161,11 @@ The Master is the project map. Keep detailed test results in the relevant audit;
 - A05 is complete: the user-supplied tested APK SHA-256 matches the PR #9 CI #208 release APK record and exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
 - A06 is in progress: a preservation branch and APK/hash manifest are created at `checkpoint/a06-tested-apk-pr9-7e8392e1`; read-only Mi TV Stick state capture and rollback-readiness review remain.
 - Track task-level statuses and evidence only in `BUG_REPAIR_ROADMAP.md`; use the audit register for defect details and HANDOVER for the resume point.
+
+
+## 11. A06 tested-baseline and rollback checkpoint — 1 November 2026
+
+- Official known-good tested baseline: user-confirmed PR #9 APK, 1,427,681 bytes, SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`, exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- Immutable source checkpoint: `checkpoint/a06-tested-apk-pr9-7e8392e1`.
+- Rollback SOP: [A06_ROLLBACK_PROCEDURE.md](checkpoints/A06_ROLLBACK_PROCEDURE.md) on the checkpoint branch.
+- A06 remains IN PROGRESS only because current device HOME resolver/package state has not been freshly captured. The historical user test is accepted; no retest is requested. No device changes or PR merges have been made.
