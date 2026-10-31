@@ -735,64 +735,50 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, "Layar Utama");
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "Rak Doa Harian & Waktu Solat", "Paparkan ayat pilihan & jadual solat waktu tempatan",
+                        "Panel Doa Harian & Waktu Salat", "Tampilkan ayat pilihan dan jadwal salat sesuai waktu setempat",
                         activity.isIslamicShelfEnabled(), isChecked -> {
                             activity.setIslamicShelfEnabled(isChecked);
                         }));
 
                 boolean ayahShown = WeeklyAyah.shown(activity);
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "📖 Paparan Ayat & Doa Harian", "Papar ayat Al-Quran dan doa harian di atas jadual solat",
+                        "📖 Ayat & Doa Harian", "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat",
                         ayahShown, isChecked -> {
                             WeeklyAyah.setShown(activity, isChecked);
                             activity.showAyah(WeeklyAyah.last(activity));
                             if (isChecked) activity.updateAyah();
                         }));
 
-                rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "Papan Pemuka Cuaca & Kualiti Udara (AQI)", "Papar suhu live, cuaca dan status jerebu JAS",
-                        activity.isWeatherWidgetEnabled(), isChecked -> {
-                            activity.setWeatherWidgetEnabled(isChecked);
-                        }));
-
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔊 Kesan Bunyi Antaramuka (UI Sound)", "Pilih bunyi pilihan: PS5, Nintendo Switch, Xbox, atau Matikan",
+                        "🔊 Efek Suara Antarmuka", "Pilih profil suara: PlayStation, Nintendo Switch, Xbox, atau tanpa suara",
                         activity::showSoundEffectsDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🕌 Tetapan & Pilihan Azan", "Konfigurasi audio azan Makkah/Madinah/KLCC & popup waktu solat",
+                        "🕌 Pengaturan Azan", "Atur audio azan dan tampilan pengingat waktu salat",
                         activity::showAzanSettingsDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "✨ Gemini AI Assistant", "Bantuan pintar AI dan pembantu suara peribadi",
+                        "✨ Asisten Gemini", "Bantuan AI dan asisten suara",
                         activity::showGeminiAssistantDialog));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🧹 Kosongkan Cache TV (Clean TV Cache)", "Segarkan memori TV dan kosongkan fail sementara",
-                        activity::showCleanTvCacheDialog));
 
             } else if (tab == TAB_APPEARANCE) {
                 // === TAB 2: APPEARANCE ===
                 addHeader(rightContent, outfit, "Tampilan");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🖼️ Koleksi Wallpaper 4K", "Alam, lanskap, kota, laut, dan luar angkasa 4K.",
+                        "🖼️ Koleksi Wallpaper", "Pilih latar dari koleksi alam, kota, laut, dan luar angkasa.",
                         activity::showWallpaperDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "⏱️ Selang Masa Shuffle Wallpaper", "Kekerapan pertukaran gambar automatik (5 min, 10 min, dll.)",
+                        "⏱️ Interval Pergantian Wallpaper", "Atur seberapa sering wallpaper berganti otomatis.",
                         activity::showWallpaperIntervalDialog));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🌐 Pilihan Bahasa (Language Selection)", "Bahasa Indonesia 🇮🇩 dan English 🇬🇧",
-                        activity::showLanguageDialog));
 
             } else if (tab == TAB_STATUS_WEATHER) {
                 // === TAB: WIDGET & INFORMATION ===
                 addHeader(rightContent, outfit, "Widget & Informasi");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📍 Lokasi TV & Jadwal Salat", "Atur lokasi cuaca dan zona waktu salat untuk Pagar Alam atau wilayah Indonesia lainnya.",
+                        "📍 Lokasi & Jadwal Salat", "Atur lokasi cuaca dan zona waktu salat untuk Pagar Alam atau wilayah Indonesia lainnya.",
                         () -> activity.startActivity(new Intent(activity, LocationActivity.class))));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
@@ -878,8 +864,8 @@ public final class ModernSettingsDialog {
                 Set<String> hiddenSet = ChildModeManager.getHiddenApps(activity);
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🛡️ Status Mode Kanak-kanak",
-                        "Kunci aplikasi dengan PIN keselamatan 4-digit atau sembunyikan aplikasi dari skrin utama",
+                        "🛡️ Status Mode Anak",
+                        "Kunci aplikasi dengan PIN 4 digit atau sembunyikan aplikasi dari layar utama",
                         isChildOn, isChecked -> {
                             ChildModeManager.promptPin(activity, "Sahkan PIN Keselamatan", "Masukkan PIN 4-digit untuk menukar mod ini", new ChildModeManager.PinCallback() {
                                 @Override
@@ -899,17 +885,17 @@ public final class ModernSettingsDialog {
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "🔒 Kunci Aplikasi dengan PIN (" + lockedSet.size() + " Aplikasi)",
-                        "Pilih aplikasi yang memerlukan kata laluan PIN 4-digit untuk dibuka",
+                        "Pilih aplikasi yang memerlukan PIN 4 digit untuk dibuka",
                         () -> showAppLockPicker(activity, density, outfit, false)));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "👁️ Sembunyikan Aplikasi (" + hiddenSet.size() + " Aplikasi)",
-                        "Pilih aplikasi yang disembunyikan sepenuhnya daripada dock dan grid skrin utama",
+                        "Pilih aplikasi yang disembunyikan dari dok dan kisi layar utama",
                         () -> showAppLockPicker(activity, density, outfit, true)));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "🔢 Tukar Kod PIN Keselamatan",
-                        "Tukar 4-digit PIN kawalan ibu bapa (PIN Semasa: " + (ChildModeManager.getPin(activity).equals("0000") ? "0000 [Lalai]" : "••••") + ")",
+                        "Ubah PIN kontrol orang tua 4 digit (PIN saat ini: " + (ChildModeManager.getPin(activity).equals("0000") ? "0000 [Lalai]" : "••••") + ")",
                         () -> showChangePinDialog(activity, density, outfit)));
 
             } else if (tab == TAB_DEVICE_SETTINGS) {
@@ -985,7 +971,12 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildInfoCard(activity, density, outfit,
                         "🖥️ Resolusi Antarmuka", dm.widthPixels + " × " + dm.heightPixels + " (" + Math.round(density * 160) + " dpi)"));
 
-                addSectionHeader(rightContent, outfit, "PEMBARUAN & PENGATURAN SISTEM");
+                addSectionHeader(rightContent, outfit, "PENGATURAN SISTEM");
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "🌐 Bahasa Aplikasi", "Pilih Bahasa Indonesia atau English.",
+                        activity::showLanguageDialog));
+
+                addSectionHeader(rightContent, outfit, "PEMBARUAN SISTEM");
                 boolean hasUpdate = AppUpdateManager.isUpdateAvailable(activity);
                 String otaTitle = hasUpdate ? "🚀 Pembaruan Glass TV tersedia 🔴" : "🚀 Periksa Pembaruan Glass TV";
                 String otaSub = hasUpdate
