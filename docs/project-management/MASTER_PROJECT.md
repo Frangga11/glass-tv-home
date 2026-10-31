@@ -148,7 +148,7 @@ The Master is the project map. Keep detailed test results in the relevant audit;
 
 - Draft PR #8 adds parent-PIN authorization for locked/hidden app policy edits and profile deletion, and requires PIN for every switch away from an active Child Mode profile, including child-to-child.
 - Draft PR #9 selectively integrates QR avatar upload on top of PR #8. Exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; CI #208 passed both jobs.
-- Release APK: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
+- Release APK: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`. Direct byte-for-byte match confirmed against `app-release.apk` extracted from CI #208 artifact `13048951728`; source branch/head: `feature/profile-avatar-security-integration` / `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. The CI ZIP archive itself is 1,340,733 bytes (not the APK size).
 - User-approved PIN decisions: keep `0000` temporarily; unlimited incorrect attempts; no cooldown/lockout.
 - PR #8 and PR #9 remain Draft/unmerged. Physical Mi TV Stick + phone acceptance remains mandatory.
 
