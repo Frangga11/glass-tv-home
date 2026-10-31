@@ -216,6 +216,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static int lastFocused = 0;
     /** App of the last focused tile, so focus follows it when the app list changes. */
     private static String lastFocusedKey;
+    /** Last focused top-bar pill, restored when returning from an external Android screen. */
+    private static boolean lastFocusWasTopPill;
+    private static int lastFocusedTopPillId = View.NO_ID;
     private float density;
     /** Module cards (res/values/config.xml, module_cards): discovered on resume, shown only after the owner's Show. */
     private boolean moduleCards;
@@ -413,6 +416,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     navigationPrefs.getString(NavigationState.HOME_FOCUS_KEY, null));
             lastFocused = Math.max(0, navigationPrefs.getInt(NavigationState.HOME_FOCUS_POSITION, 0));
         }
+        lastFocusWasTopPill = navigationPrefs.getBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false);
+        lastFocusedTopPillId = navigationPrefs.getInt(NavigationState.HOME_FOCUS_TOP_PILL_ID, View.NO_ID);
         reducedMotion = cfg.reducedMotion;
         liveTvPkg = cfg.liveTvPackage;
         liveTvAction = cfg.liveTvAction;
@@ -978,6 +983,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
+            if (newF != null && isTopPill(newF)) {
+                lastFocusWasTopPill = true;
+                lastFocusedTopPillId = newF.getId();
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                        .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, true)
+                        .putInt(NavigationState.HOME_FOCUS_TOP_PILL_ID, lastFocusedTopPillId).apply();
+            } else if (newF != null && !onTile) {
+                lastFocusWasTopPill = false;
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                        .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false).apply();
+            }
             if (!onTile) hideGlass();
             if (!onTile && (newF == null || !(isTopPill(newF) || inMenu(newF)))) glider.hide();
         });
@@ -1624,7 +1640,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final int returnSlot = lastFocused;
         grid.post(() -> {
             int pos = adapter.positionOf(returnKey);
-            focusTile(pos >= 0 ? pos : returnSlot);
+            boolean restoredTopPill = false;
+            if (lastFocusWasTopPill) {
+                View pill = lastFocusedTopPillId != View.NO_ID ? findViewById(lastFocusedTopPillId) : null;
+                restoredTopPill = pill != null && pill.getVisibility() == View.VISIBLE
+                        && pill.isFocusable() && pill.requestFocus();
+                if (!restoredTopPill) {
+                    lastFocusWasTopPill = false;
+                    lastFocusedTopPillId = View.NO_ID;
+                    getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                            .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false).apply();
+                }
+            }
+            if (!restoredTopPill) focusTile(pos >= 0 ? pos : returnSlot);
             tilesReady = true;
             resuming = false;
             View now = getCurrentFocus();
@@ -1788,7 +1816,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         .putInt(NavigationState.HOME_FOCUS_POSITION, lastFocused);
         if (lastFocusedKey != null) navigationEdit.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
         else navigationEdit.remove(NavigationState.HOME_FOCUS_KEY);
-        navigationEdit.apply();
+        navigationEdit.putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false).apply();
+        lastFocusWasTopPill = false;
+        lastFocusedTopPillId = View.NO_ID;
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
