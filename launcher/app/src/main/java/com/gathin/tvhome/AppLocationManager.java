@@ -43,7 +43,7 @@ public class AppLocationManager {
             this.id = id;
             this.name = name;
             this.state = state != null ? state : "";
-            this.country = country != null ? country : "Malaysia";
+            this.country = country != null ? country : "Indonesia";
             this.place = place != null ? place : "";
             this.lat = lat;
             this.lon = lon;
@@ -61,52 +61,6 @@ public class AppLocationManager {
     private static final List<Station> ALL_STATIONS = new ArrayList<>();
 
     static {
-        // --- 🇲🇾 Malaysia (Default) ---
-        List<Station> myStations = new ArrayList<>();
-        myStations.add(new Station("CA17W", "Putrajaya", "W.P. Putrajaya", "Malaysia", "SK Putrajaya Presint 18 (2)", 2.9158, 101.6909));
-        myStations.add(new Station("CA16W", "Cheras", "W.P. Kuala Lumpur", "Malaysia", "SMK Seri Permaisuri", 3.1063, 101.7179));
-        myStations.add(new Station("CA15W", "Batu Muda", "W.P. Kuala Lumpur", "Malaysia", "SK Batu Muda", 3.2124, 101.6822));
-        myStations.add(new Station("CA19B", "Petaling Jaya", "Selangor", "Malaysia", "Taman Universiti", 3.1090, 101.6548));
-        myStations.add(new Station("CA20B", "Shah Alam", "Selangor", "Malaysia", "Seksyen 4, Shah Alam", 3.0683, 101.5058));
-        myStations.add(new Station("CA21B", "Klang", "Selangor", "Malaysia", "SMK Raja Lumu", 3.0108, 101.4081));
-        myStations.add(new Station("CA22B", "Banting", "Selangor", "Malaysia", "Kolej MARA Banting", 2.8167, 101.6230));
-        myStations.add(new Station("CA28M", "Bandaraya Melaka", "Melaka", "Malaysia", "SMK Tinggi Melaka", 2.1909, 102.2571));
-        myStations.add(new Station("CA27M", "Bukit Rambai", "Melaka", "Malaysia", "SK Tanjung Minyak 2", 2.2685, 102.1936));
-        myStations.add(new Station("CA26M", "Alor Gajah", "Melaka", "Malaysia", "SMK Seri Pengkalan", 2.3709, 102.2232));
-        myStations.add(new Station("CA23N", "Seremban", "Negeri Sembilan", "Malaysia", "SK Seremban 2B", 2.6953, 101.9056));
-        myStations.add(new Station("CA24N", "Nilai", "Negeri Sembilan", "Malaysia", "SMK Desa Cempaka", 2.8128, 101.7989));
-        myStations.add(new Station("CA25N", "Port Dickson", "Negeri Sembilan", "Malaysia", "SK Port Dickson", 2.5283, 101.7967));
-        myStations.add(new Station("CA30J", "Larkin (Johor Bahru)", "Johor", "Malaysia", "Pusat Kraftangan Larkin", 1.4947, 103.7419));
-        myStations.add(new Station("CA32J", "Pasir Gudang", "Johor", "Malaysia", "SK Pasir Gudang 4", 1.4703, 103.8961));
-        myStations.add(new Station("CA31J", "Batu Pahat", "Johor", "Malaysia", "MRSM Batu Pahat", 1.9191, 102.8658));
-        myStations.add(new Station("CA33J", "Kluang", "Johor", "Malaysia", "Sekolah Menengah Agama Kluang", 2.0306, 103.3214));
-        myStations.add(new Station("CA66J", "Tangkak", "Johor", "Malaysia", "Tapak Semaian Majlis Daerah", 2.2957, 102.5713));
-        myStations.add(new Station("CA08P", "Seberang Jaya", "Pulau Pinang", "Malaysia", "SK Seberang Jaya II", 5.3942, 100.3983));
-        myStations.add(new Station("CA07P", "Minden", "Pulau Pinang", "Malaysia", "Universiti Sains Malaysia", 5.3581, 100.2975));
-        myStations.add(new Station("CA09P", "Balik Pulau", "Pulau Pinang", "Malaysia", "Kolej Vokasional Balik Pulau", 5.3371, 100.2166));
-        myStations.add(new Station("CA12A", "Ipoh (Tasek)", "Perak", "Malaysia", "SK Tasek Damai", 4.6397, 101.1083));
-        myStations.add(new Station("CA11A", "Taiping", "Perak", "Malaysia", "SK Seri Aman", 4.8569, 100.7417));
-        myStations.add(new Station("CA13A", "Seri Manjung", "Perak", "Malaysia", "SK Seri Manjung", 4.1953, 100.6728));
-        myStations.add(new Station("CA04K", "Alor Setar", "Kedah", "Malaysia", "Sek. Men. Teknik Alor Setar", 6.1367, 100.3800));
-        myStations.add(new Station("CA03K", "Sungai Petani", "Kedah", "Malaysia", "Institut Kemahiran Mara", 5.6706, 100.5217));
-        myStations.add(new Station("CA05K", "Langkawi", "Kedah", "Malaysia", "Kompleks Sukan Langkawi", 6.3267, 99.8500));
-        myStations.add(new Station("CA01R", "Kangar", "Perlis", "Malaysia", "Institut Latihan Perindustrian", 6.4447, 100.2036));
-        myStations.add(new Station("CA38C", "Indera Mahkota (Kuantan)", "Pahang", "Malaysia", "SK Indera Mahkota", 3.8239, 103.2975));
-        myStations.add(new Station("CA40C", "Temerloh", "Pahang", "Malaysia", "SMK Seberang Temerloh", 3.4478, 102.4178));
-        myStations.add(new Station("CA44T", "Kuala Terengganu", "Terengganu", "Malaysia", "SK Seri Budiman", 5.3117, 103.1325));
-        myStations.add(new Station("CA42T", "Kemaman", "Terengganu", "Malaysia", "SMK Bukit Kuang", 4.2622, 103.4258));
-        myStations.add(new Station("CA46D", "Kota Bharu", "Kelantan", "Malaysia", "SMK Tanjung Mas", 6.1256, 102.2386));
-        myStations.add(new Station("CA48S", "Kota Kinabalu", "Sabah", "Malaysia", "Politeknik Kota Kinabalu", 6.0971, 116.1665));
-        myStations.add(new Station("CA49S", "Sandakan", "Sabah", "Malaysia", "SMK Perempuan Sandakan", 5.8456, 118.0678));
-        myStations.add(new Station("CA50S", "Tawau", "Sabah", "Malaysia", "SMK Tawau", 4.2564, 117.8931));
-        myStations.add(new Station("CA54Q", "Kuching", "Sarawak", "Malaysia", "Cawangan Farmasi Logistik", 1.5622, 110.3889));
-        myStations.add(new Station("CA55Q", "Miri", "Sarawak", "Malaysia", "ILP Miri", 4.4947, 114.0434));
-        myStations.add(new Station("CA58Q", "Bintulu", "Sarawak", "Malaysia", "Balai Polis Bintulu", 3.1772, 113.0412));
-        myStations.add(new Station("CA59Q", "Sibu", "Sarawak", "Malaysia", "SK Bandaran Sibu No. 4", 2.2981, 111.8344));
-        myStations.add(new Station("CA53L", "Labuan", "W.P. Labuan", "Malaysia", "Kolej Matrikulasi Labuan", 5.3347, 115.2289));
-        REGION_STATIONS.put("Malaysia", myStations);
-        ALL_STATIONS.addAll(myStations);
-
         // --- 🇸🇬 Singapore ---
         List<Station> sgStations = new ArrayList<>();
         sgStations.add(new Station("SG01", "Marina Bay & Central", "Central", "Singapore", "Marina Bay / Downtown Core", 1.3521, 103.8198));
@@ -301,6 +255,6 @@ public class AppLocationManager {
                 best = s;
             }
         }
-        return best != null ? best : ALL_STATIONS.get(0);
+        return best != null ? best : new Station(DEFAULT_STATION_ID, DEFAULT_LOCATION_NAME, "Sumatera Selatan", "Indonesia", DEFAULT_STATION_PLACE, DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
     }
 }
