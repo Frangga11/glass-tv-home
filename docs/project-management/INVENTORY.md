@@ -60,10 +60,10 @@ This confirms the Gradle configuration only. It does not prove that a new APK wa
 | Settings navigation | ModernSettingsDialog defines 8 tabs: Profile, Home Screen, Appearance, Status & Weather, Effects, Standby, Child Mode, Device Settings | CONFIRMED-CODE |
 | Multi-user profiles | ProfileManager stores profile ID, name, avatar index, child flag in SharedPreferences JSON | CONFIRMED-CODE |
 | Built-in avatars | Seven animal avatars are registered | CONFIRMED-CODE |
-| Personal avatar photo | QR upload implementation on fix/avatar-qr-upload-single-photo; single-photo profile-scoped endpoint, old-photo cleanup after metadata commit | CODE IMPLEMENTED; CI and device verification pending |
-| Child Mode | Child mode / PIN manager is referenced by profile and settings flows | CONFIRMED-CODE; security and UX test open |
-| Top-bar avatar | QR audit branch calls getAvatarDrawable for active profile | CONFIRMED-CODE; device test pending |
-| Avatar in profile switcher | Candidate branch renders getAvatarDrawable for each profile | CONFIRMED-CODE; device test pending |
+| Personal avatar photo | QR upload implementation on PR #6 branch; not integrated into PR #7 profile/settings snapshot | CODE IMPLEMENTED IN ISOLATED BRANCH; selective integration required; device verification pending |
+| Child Mode | Per-profile flags and lock/hide sets implemented on PR #7; global parent PIN retained | SOURCE IMPLEMENTED; P1 authorization gaps and device test open; see PROFILE_AUDIT.md |
+| Top-bar avatar | Custom-photo resolver exists on PR #6 branch; PR #7 snapshot still uses built-in avatar | INTEGRATION GAP; see PROFILE_AUDIT.md |
+| Avatar in profile switcher | Custom-photo resolver exists on PR #6 branch; PR #7 snapshot not reconciled | INTEGRATION GAP; see PROFILE_AUDIT.md |
 | Avatar in add-profile flow | Candidate add-profile dialog still only selects one of seven built-ins | PARTIAL |
 | Wallpaper QR upload | Baseline bare-root endpoint replaced in draft PR #7 by random session-token-scoped page/upload/API/thumb routes | CODE IMPLEMENTED IN PR #7; CI PASS; device acceptance pending — see WALLPAPER_AUDIT.md |
 | Standby gallery | MainActivity has a separate standby photo picker/store flow | CONFIRMED-CODE |
