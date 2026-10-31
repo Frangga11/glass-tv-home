@@ -185,3 +185,12 @@
 - QR upload dialog now has a 90%-viewport maximum width/height, a vertical ScrollView, and D-pad Up/Down scrolling while the Close button remains the focus target. Its existing onDismiss server-stop cleanup remains intact.
 - Now Playing and module-card prompt widths are clamped to 90% of the TV viewport.
 - Exact-head CI #239 / run `41233548406`: Lists/tools/docs PASS; Launcher build/unit-test job running at last check.
+
+
+### B03 source/CI gate — PASS
+
+- Exact head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`; CI #239 / run `41233548406` succeeded in both jobs.
+- Launcher unit tests and release build succeeded; APK size check reported 1,398 KB (<1.5 MiB).
+- Lists/tools/docs checks passed. Manual final TV-test artifact step was skipped; no artifact was published.
+- Source-level B03 changes are ready for final integrated acceptance, but B03 remains IN PROGRESS until F02 physical TV regression.
+- **Next source task:** B04 — audit global layout, spacing, sizing, and TV responsiveness. Keep PR #12 Draft and do not install or test candidate APKs.
