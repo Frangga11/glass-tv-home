@@ -172,7 +172,7 @@ public final class AvatarUploadServer {
                 return;
             }
             temp = null;
-            byte[] ok = "{\\"status\\":\\"ok\\"}".getBytes(StandardCharsets.UTF_8);
+            byte[] ok = "{\"status\":\"ok\"}".getBytes(StandardCharsets.UTF_8);
             out.write(("HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\nContent-Length: " + ok.length
                     + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
             out.write(ok); out.flush();
