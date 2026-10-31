@@ -446,6 +446,7 @@ final class WeatherAirQuality {
         if (s.contains("good") || s.contains("baik")) return "Baik";
         if (s.contains("moderate") || s.contains("sederhana") || s.contains("sedang")) return "Sedang";
         if (s.contains("very unhealthy") || s.contains("sangat")) return "Sangat Tidak Sehat";
+        if (s.contains("sensitive") || s.contains("kelompok sensitif")) return "Tidak Sehat bagi Kelompok Sensitif";
         if (s.contains("unhealthy") || s.contains("tidak sihat") || s.contains("tidak sehat")) return "Tidak Sehat";
         if (s.contains("hazardous") || s.contains("bahaya")) return "Berbahaya";
         return status;
