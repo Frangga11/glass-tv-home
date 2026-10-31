@@ -194,6 +194,7 @@ public final class AvatarUploadServer {
                     fos.write(buffer, 0, read); remaining -= read;
                 }
                 fos.flush();
+                fos.getFD().sync(); // Make the photo durable before committing its path into profile preferences.
                 if (remaining != 0 || temp.length() != length) { respond(out, 400, "Unggahan tidak lengkap."); return; }
             }
             BitmapFactory.Options bounds = new BitmapFactory.Options();
