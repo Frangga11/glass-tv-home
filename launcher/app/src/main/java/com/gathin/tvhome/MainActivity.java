@@ -1315,7 +1315,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (uri != null && unique.add(uri.toString())) selected.add(uri);
             }
         } else if (data.getData() != null) {
-            selected.add(data.getData());
+            Uri uri = data.getData();
+            if (unique.add(uri.toString())) selected.add(uri);
         }
 
         if (selected.isEmpty()) return;
