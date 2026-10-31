@@ -168,7 +168,7 @@ GitHub source URLs:
 - PR #9: `feature/profile-avatar-security-integration`; Draft; base is PR #8 branch. Exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; CI #208 passed both jobs.
 - Tests: `ProfileSecurityPolicyTest`, `AvatarUploadServerPolicyTest`, `ProfileManagerAvatarPathTest`.
 - Uploaded/extracted APK: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`. Direct extraction from CI artifact `13048951728` produced a byte-for-byte identical APK. The CI artifact ZIP itself is 1,340,733 bytes; its SHA-256 is `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`.
-- No PR merged and no APK installed. Actual Mi TV Stick/phone test is the remaining release gate.
+- No PR merged and no new candidate APK installed during the current repair session. The uploaded APK was user-confirmed as previously tested on the Mi TV Stick; further device acceptance for repaired modules remains deferred.
 
 
 ## B01 global navigation implementation checkpoint — 1 November 2026 (second-pass audit)
