@@ -225,7 +225,7 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 
 ### A06 — Baseline and rollback checkpoint
 
-**NOT STARTED / DEPENDS ON A05.** A dedicated checkpoint must be anchored to the exact source revision matched to the installed/tested APK. It must include a reproducible source reference, APK copy/hash, and documented device-state backup/rollback evidence. Do not create a misleading checkpoint against an unverified candidate.
+**INITIAL STATUS — SUPERSEDED.** A05 has since been completed and the exact source checkpoint branch/manifest created. Device-state capture and rollback-readiness review remain open as recorded in the A06 section below.
 
 
 ## A05 — Tested APK identity match — 1 November 2026
