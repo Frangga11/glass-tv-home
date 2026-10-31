@@ -10,7 +10,7 @@ Repository: https://github.com/Frangga11/glass-tv-home
 
 Branches verified from GitHub on 1 November 2026 (branch head SHA abbreviated):
 - `docs/project-master-inventory` — latest documentation branch (documentation)
-- `feature/b03-dialog-opacity-layering` — `3f11618b` (B03; Draft PR #12)
+- `feature/b03-dialog-opacity-layering` — `56a4e199` (B03; Draft PR #12)
 - `checkpoint/a06-tested-apk-pr9-7e8392e1` — `5713dc9d` (immutable tested-baseline checkpoint)
 - `feature/b01-global-navigation-retention` — `bf899c7c` (B01; Draft PR #10)
 - `feature/b02-remote-focus-indicators` — `01cbef2c` (B02; Draft PR #11)
