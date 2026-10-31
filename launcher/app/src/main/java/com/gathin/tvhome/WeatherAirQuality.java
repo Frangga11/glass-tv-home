@@ -89,6 +89,10 @@ final class WeatherAirQuality {
         final int lowTemp;
         final int humidity;
         final int windSpeed;
+        final float windDirection;
+        final int windGust;
+        final double precipitationMm;
+        final double visibilityKm;
         final int pressure;
         final int uvIndex;
         final int rainChanceToday;
@@ -106,7 +110,8 @@ final class WeatherAirQuality {
 
         FullWeather(String location, String stationId, String stationPlace, boolean isJasSource,
                     int temp, int apparentTemp, String condition, String icon,
-                    int highTemp, int lowTemp, int humidity, int windSpeed, int pressure, int uvIndex,
+                    int highTemp, int lowTemp, int humidity, int windSpeed, float windDirection, int windGust,
+                    double precipitationMm, double visibilityKm, int pressure, int uvIndex,
                     int rainChanceToday, String sunrise, String sunset, int aqi,
                     String aqiStatus, int aqiColor, String aqiParam, double pm25, double pm10,
                     String updatedTime, List<HourlyItem> hourly, List<DailyItem> daily) {
@@ -122,6 +127,10 @@ final class WeatherAirQuality {
             this.lowTemp = lowTemp;
             this.humidity = humidity;
             this.windSpeed = windSpeed;
+            this.windDirection = windDirection;
+            this.windGust = windGust;
+            this.precipitationMm = precipitationMm;
+            this.visibilityKm = visibilityKm;
             this.pressure = pressure;
             this.uvIndex = uvIndex;
             this.rainChanceToday = rainChanceToday;
@@ -173,18 +182,26 @@ final class WeatherAirQuality {
                     weatherTimezone = lon < 114.0 ? "Asia%2FJakarta" : (lon < 125.0 ? "Asia%2FMakassar" : "Asia%2FJayapura");
                 }
                 String weatherUrl = String.format(Locale.ROOT,
-                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=%s&forecast_days=7",
+                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,visibility,pressure_msl&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=%s&forecast_days=7",
                         lat, lon, weatherTimezone);
                 JSONObject wJson = fetchJson(weatherUrl);
 
                 int temp = 29;
                 int code = 2; // Partly cloudy
                 int pressure = 1013;
+                float windDirection = 0f;
+                int windGust = 0;
+                double precipitationMm = 0.0;
+                double visibilityKm = 10.0;
                 if (wJson != null && wJson.has("current")) {
                     JSONObject curr = wJson.getJSONObject("current");
                     temp = (int) Math.round(curr.optDouble("temperature_2m", 29.0));
                     code = curr.optInt("weather_code", 2);
                     pressure = (int) Math.round(curr.optDouble("pressure_msl", 1013.0));
+                    windDirection = (float) curr.optDouble("wind_direction_10m", 0.0);
+                    windGust = (int) Math.round(curr.optDouble("wind_gusts_10m", 0.0));
+                    precipitationMm = curr.optDouble("precipitation", 0.0);
+                    visibilityKm = curr.optDouble("visibility", 10000.0) / 1000.0;
                 }
 
                 // 2. Fetch Official Air Quality from Jabatan Alam Sekitar Malaysia (APIMS)
@@ -316,6 +333,10 @@ final class WeatherAirQuality {
         int humidity = 78;
         int windSpeed = 8;
         int pressure = 1013;
+        float windDirection = 0f;
+        int windGust = 0;
+        double precipitationMm = 0.0;
+        double visibilityKm = 10.0;
         int uvIndex = 6;
         int rainChanceToday = 60;
         String sunrise = "6:54 AM";
@@ -336,6 +357,10 @@ final class WeatherAirQuality {
                     humidity = (int) Math.round(curr.optDouble("relative_humidity_2m", humidity));
                     windSpeed = (int) Math.round(curr.optDouble("wind_speed_10m", windSpeed));
                     pressure = (int) Math.round(curr.optDouble("pressure_msl", pressure));
+                    windDirection = (float) curr.optDouble("wind_direction_10m", windDirection);
+                    windGust = (int) Math.round(curr.optDouble("wind_gusts_10m", windGust));
+                    precipitationMm = curr.optDouble("precipitation", precipitationMm);
+                    visibilityKm = curr.optDouble("visibility", visibilityKm * 1000.0) / 1000.0;
                 }
 
                 if (wJson.has("daily")) {
@@ -441,7 +466,7 @@ final class WeatherAirQuality {
 
         return new FullWeather(locationName, stationId, stationPlace, isJas, temp, apparentTemp,
                 getWeatherCondition(code, isEnglish), getWeatherIcon(code),
-                highTemp, lowTemp, humidity, windSpeed, pressure, uvIndex, rainChanceToday,
+                highTemp, lowTemp, humidity, windSpeed, windDirection, windGust, precipitationMm, visibilityKm, pressure, uvIndex, rainChanceToday,
                 sunrise, sunset, aqi, aqiStatus, aqiColor, aqiParam, pm25, pm10, updated, hourly, daily);
     }
 
