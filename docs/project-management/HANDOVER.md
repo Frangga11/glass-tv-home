@@ -203,3 +203,14 @@
 - Do not resize speculatively. Need the target TV's current read-only display metrics: run `wm size` and `wm density` without arguments. This does not change settings.
 - Final visual acceptance remains in F02; no TV APK installation/testing is authorized now.
 - B03 source/CI gate passed at head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`, CI #239 PASS; PR #12 remains Draft.
+
+## Latest checkpoint — B01–B03 source QC PASS; B04/B05 underway — 1 November 2026
+
+- A04, A05, A06: DONE.
+- B01 source QC PASS: PR #10, branch feature/b01-global-navigation-retention, head bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5; exact-head CI #230 run 41230264083 PASS, APK 1,395 KB, no artifact.
+- B02 source QC PASS: PR #11, branch feature/b02-remote-focus-indicators, head 01cbef2c2fc90498295971b22c369a72cdfa734a; exact-head CI #234 run 41230495879 PASS, APK 1,396 KB, no artifact.
+- B03 source QC PASS: PR #12, branch feature/b03-dialog-opacity-layering, head 56a4e1995aa8b8600614e6b5c4dca69d01c530c3; exact-head CI #239 run 41233548406 PASS, APK 1,398 KB, no artifact.
+- All three remain Draft/unmerged and remain IN PROGRESS in the roadmap until integrated regression and physical acceptance at F02. No candidate APK installed; no TV settings changed.
+- B04 is IN PROGRESS. Home grid, Settings, and custom dialogs are largely responsive/bounded. Potential viewport-sensitive elements: Recent Apps 420×250dp cards + 64dp side padding; Nightstand clock 110sp; Weather bento block 385dp inside ScrollView. No speculative resize. Obtain read-only target metrics with wm size and wm density (no arguments).
+- B05 is IN PROGRESS. Initial audit: AppLanguage preference supports Indonesian/English and migrates legacy Malay setting, but default Android strings mix languages; values-en-rUS only changes date format; no values-id or generic values-en resource set; many Java UI labels/Toast/dialog/error strings remain hardcoded. First scan found 187 candidate user-facing string-call patterns across 12 high-traffic Java files (not a complete count).
+- Next: continue B04 responsive audit after receiving target display metrics; continue B05 complete string inventory and localization design. Keep all PRs Draft; no TV APK publication or device testing until A–E and F integration/regression gates complete and readiness is explicitly approved.
