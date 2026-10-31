@@ -39,7 +39,7 @@ public final class ChildModeManager {
 
     private static final String KEY_PROFILE_MIGRATION_DONE = "profile_settings_migration_v1";
 
-    private static String profileKey(String profileId, String key) {
+    static String profileKey(String profileId, String key) {
         return "profile_" + profileId + "_" + key;
     }
 
