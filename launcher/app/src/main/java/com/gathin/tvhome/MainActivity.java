@@ -421,8 +421,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             placesMode = false;
             List<File> catFiles = OnlineWallpapers.listByCategory(this, activeCat);
-            if (!catFiles.isEmpty()) wallpapers = catFiles;
-            else if (cfg.wallpaperOnline && wallpapers.isEmpty()) wallpapers = OnlineWallpapers.list(this);
+            if (!catFiles.isEmpty()) {
+                wallpapers = catFiles;
+            } else if ("Minimalist".equalsIgnoreCase(activeCat)) {
+                // Do not silently show a non-OLED wallpaper while the selected OLED collection syncs.
+                wallpapers = Collections.emptyList();
+            } else if (cfg.wallpaperOnline && wallpapers.isEmpty()) {
+                wallpapers = OnlineWallpapers.list(this);
+            }
             if (wallpapers.isEmpty()) {
                 new Thread(() -> {
                     OnlineWallpapers.syncCategory(getApplicationContext(), activeCat);
@@ -432,13 +438,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         if (!fresh.isEmpty()) {
                             wallpapers = fresh;
                             showNextWallpaper(false);
+                        } else if ("Minimalist".equalsIgnoreCase(activeCat) && wallView != null) {
+                            // A failed network fetch leaves a clean black OLED-safe background.
+                            wallView.setImageDrawable(null);
+                            wallView.setBackgroundColor(android.graphics.Color.BLACK);
                         }
                     });
-                }).start();
+                }, "wall-default-sync").start();
             }
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
-        else if (cfg.wallpaper != null && !placesMode) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        else if ("Minimalist".equalsIgnoreCase(activeCat) && wallView != null) {
+            wallView.setImageDrawable(null);
+            wallView.setBackgroundColor(android.graphics.Color.BLACK);
+        }
         if (!isWallpaperDescEnabled() && heroShelf != null) {
             heroShelf.setVisibility(View.GONE);
             heroShelf.setAlpha(0f);
@@ -3810,9 +3824,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Migrates the former Malaysia wallpaper selection to the Nature collection. */
     private String getActiveWallpaperCategory() {
         android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
-        String category = prefs.getString("active_category", "Natural");
+        String category = prefs.getString("active_category", "Minimalist");
         if (category == null || category.startsWith("Malaysia")) {
-            category = "Natural";
+            // New installs and former Malaysia selections start with the dark OLED collection.
+            category = "Minimalist";
             prefs.edit().putString("active_category", category).apply();
         }
         return category;
