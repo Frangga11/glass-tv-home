@@ -1,8 +1,8 @@
 # 01 — Master Project Specification
 
-**Version:** 0.1-draft  
+**Version:** 1.0  
 **Date:** 31 October 2026  
-**Status:** Draft inventory; not release approval
+**Status:** Master map; not release approval
 
 ## 1. Project identity
 
@@ -112,13 +112,32 @@ The project is ready for user acceptance only when:
 - Actual Mi TV Stick testing covers remote navigation, persistence, cold start, network loss, image upload, and all key information modules.
 - User reviews the final screenshots and explicitly accepts the result.
 
-## 7. Open confirmations
+## 7. Current work and status — 31 October 2026
+
+| Workstream | Current state | Next gate |
+|---|---|---|
+| Avatar QR upload | Implemented on `fix/avatar-qr-upload-single-photo`; CI passed previously; draft PR #6 remains unmerged | Actual Mi TV Stick/phone acceptance |
+| Wallpaper QR security | Token-scoped wallpaper page/upload/API/thumb routes implemented on `fix/wallpaper-qr-session-security`; PR #7 draft; CI run 41200811301 passed | Verify route rejection and dialog-close revocation on TV/phone |
+| Default wallpaper | Source expects `assets/kabut-pagi-dempo.jpg`, but release artifact 13042880821 does not contain this asset | User approves/provides final image; add it to APK and verify |
+| Visual wallpaper QC | CENTER_CROP, 800 ms cross-fade, and Backdrop blur exist in source | Review composition/legibility and performance on target TV |
+
+## 8. Open confirmations
 
 - Confirm exact Mi TV Stick model / generation, RAM and storage.
-- Confirm current installed Glass TV build and branch/commit.
-- Confirm whether the phone-to-TV QR photo upload should be the primary avatar upload method, the Android picker, or both.
+- Confirm current installed Glass TV build and branch/commit before device acceptance.
+- Approve/provide the final default wallpaper image. The intended asset name in code is `kabut-pagi-dempo.jpg`, but the image is missing from the release APK.
 - Confirm final information-tab order using a screenshot / mockup review.
-- Confirm exact default wallpaper asset and whether it must be fixed or rotate.
 - Confirm icon animation style and which icons are animated.
 - Confirm exact weather location and data source; AQI source and refresh cadence.
 - Confirm prayer-time zone/source for Pagar Alam and whether azan audio is enabled.
+
+## 9. Documentation navigation
+
+- `DOCUMENTATION_WORKFLOW.md` — approved three-layer documentation standard.
+- `INVENTORY.md` and `DECISION_LOG.md` — current feature map and approved/open decisions.
+- `AUDIT_REGISTER.md` — central audit status.
+- `WALLPAPER_AUDIT.md` and `AVATAR_AUDIT.md` — detailed feature evidence.
+- `OPERATIONS_LOG.md` — concise change history.
+- `HANDOVER.md` — resume point.
+
+The Master is the project map. Keep detailed test results in the relevant audit; do not duplicate them here.
