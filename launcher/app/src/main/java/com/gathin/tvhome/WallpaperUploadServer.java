@@ -430,17 +430,16 @@ public class WallpaperUploadServer {
                 + "const fill=document.getElementById('fill');let files=[];"
                 + "input.addEventListener('change',()=>{files=Array.from(input.files||[]);"
                 + "send.disabled=!files.length;status.textContent=files.length+' foto dipilih.';fill.style.width='0%';});"
-                + "send.addEventListener('click',()=>{if(!files.length)return;send.disabled=true;let i=0;"
-                + "const next=()=>{if(i>=files.length){status.textContent='Selesai. '+files.length+' foto berhasil disimpan di TV.';"
-                + "fill.style.width='100%';input.value='';files=[];return;}const file=files[i];"
-                + "if(!file.type.startsWith('image/')){status.textContent='Berkas bukan foto: '+file.name;i++;next();return;}"
-                + "if(file.size>60*1024*1024){status.textContent='Foto terlalu besar (maksimal 60 MB): '+file.name;i++;next();return;}"
+                + "send.addEventListener('click',()=>{if(!files.length)return;send.disabled=true;let i=0,uploaded=0,failed=0;"
+                + "const next=()=>{if(i>=files.length){status.textContent='Selesai: '+uploaded+' berhasil, '+failed+' gagal.';"
+                + "fill.style.width='100%';input.value='';files=[];send.disabled=true;return;}const file=files[i];"
+                + "if(file.size>60*1024*1024){failed++;i++;next();return;}"
                 + "status.textContent='Mengunggah '+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();"
                 + "xhr.open('POST',endpoint,true);xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
                 + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;"
                 + "fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
-                + "xhr.onload=()=>{if(xhr.status>=200&&xhr.status<300){i++;next();}else{status.textContent='Gagal mengunggah '+file.name+' ('+xhr.status+'). Pilih ulang foto untuk mencoba lagi.';send.disabled=false;}};"
-                + "xhr.onerror=()=>{status.textContent='Koneksi terputus. Pastikan ponsel dan TV memakai Wi-Fi yang sama.';send.disabled=false;};"
+                + "xhr.onload=()=>{if(xhr.status>=200&&xhr.status<300)uploaded++;else failed++;i++;next();};"
+                + "xhr.onerror=()=>{status.textContent='Koneksi terputus. '+uploaded+' foto sudah tersimpan. Periksa Wi-Fi lalu pilih ulang foto yang belum terkirim.';send.disabled=false;};"
                 + "xhr.send(file);};next();});</script></body></html>";
     }
 
