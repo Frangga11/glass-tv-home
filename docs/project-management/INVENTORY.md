@@ -69,7 +69,7 @@ This confirms the Gradle configuration only. It does not prove that a new APK wa
 | Standby gallery | MainActivity has a separate standby photo picker/store flow | CONFIRMED-CODE |
 | Weather / AQI | Weather-related activity/overlay and weather-air-quality sync are present in MainActivity | CONFIRMED-CODE; data correctness and offline test open |
 | Prayer times / Islamic shelf | PrayerTimes, Location, Azan and Islamic shelf are referenced in source | CONFIRMED-CODE; location/time accuracy test open |
-| Default wallpaper | Code expects `assets/kabut-pagi-dempo.jpg`, but the CI release APK does not contain the asset; fresh-install Default has no bundled image | P1 BLOCKER — requires approved image asset and APK verification; see WALLPAPER_AUDIT.md |
+| Default wallpaper | Code expects `assets/kabut-pagi-dempo.jpg`, but the CI release APK does not contain the asset; fresh-install Default has no bundled image | P1 BLOCKER — approved image received and package asset prepared; repository/APK packaging and device verification remain; see WALLPAPER_AUDIT.md |
 | Icon animation | Spring / focus animations exist; exact per-icon animation policy needs audit | PARTIAL |
 | Avatar visual report | Seven built-in avatars plus QR custom-photo flow; EXIF-aware downsampled rendering | PARTIAL; real-device QC pending |
 | Tab information layout | Tab names confirmed; final arrangement and screenshot acceptance not yet confirmed | PARTIAL |
