@@ -15,16 +15,16 @@
 
 | ID | Severity | Area | Finding / risk | Required verification | Status |
 |---|---|---|---|---|---|
-| A-001 | P1 | Avatar integration | Upload exists only on separate avatar-audit branch; not present on current settings/gallery branch | Select integration baseline; review diff; build and device test | OPEN |
-| A-002 | P1 | Avatar surfaces | Candidate custom photo is used by top bar, but switcher and profile creation still render built-in avatars | Apply custom avatar consistently to all profile surfaces | OPEN |
-| A-003 | P2 | Avatar settings sidebar | Profile card initially sets built-in resource; verify it loads custom photo at dialog open | Open settings after photo set and inspect sidebar | OPEN |
-| A-004 | P2 | Avatar image orientation | Candidate import uses BitmapFactory without EXIF orientation correction | Test portrait photos from common phone cameras; correct orientation if needed | OPEN |
-| A-005 | P2 | Avatar picker availability | Uses ACTION_OPEN_DOCUMENT and displays a message if no picker activity exists | Test on target Mi TV Stick firmware; decide QR fallback | OPEN |
-| A-006 | P2 | Avatar lifecycle | Pending profile ID is held in an Activity field; process recreation while picker is open may lose it | Test Activity recreation / process death and restore pending state | OPEN |
-| A-007 | P2 | Avatar replacement | File replacement uses temp/backup rename; inspect failure windows and old-photo recovery | Fault-injection / manual replacement test; verify metadata/file consistency | OPEN |
-| A-008 | P2 | Avatar management | Add-profile dialog does not offer photo upload at creation time | Decide whether post-creation upload is sufficient or add creation flow | OPEN |
-| A-009 | P2 | Avatar rendering | Verify center-crop, border ring, child/adult accent, image memory, and fallback | Test landscape/portrait/large/unsupported/corrupt images | OPEN |
-| A-010 | P2 | Branch control | Need determine approved baseline and whether avatar branch is ahead/behind settings/gallery branch | Compare branch ancestry and commits; avoid accidental regression | OPEN |
+| A-001 | P1 | Avatar integration | QR implementation is on dedicated branch and draft PR #6; not merged into settings/gallery baseline | Finish CI, device acceptance, then review/merge PR | OPEN — CI/device gate |
+| A-002 | P1 | Avatar surfaces | Shared avatar resolver is wired to top bar, Settings profile card, and profile switcher; add-profile starts with built-in avatar | Verify all surfaces and profile switching on target TV | OPEN — device verification |
+| A-003 | P2 | Avatar settings sidebar | Settings profile card now resolves the active custom photo | Verify after QR upload and after closing/reopening Settings | OPEN — device verification |
+| A-004 | P2 | Avatar image orientation | EXIF-aware orientation handling added to avatar renderer | Verify portrait/landscape and mirrored EXIF samples on TV | OPEN — device verification |
+| A-005 | P2 | Avatar QR availability | Dedicated QR endpoint replaces the picker flow; same-LAN reachability, port selection, token expiry, and dialog shutdown need device testing | Scan QR from phone, test same/different Wi-Fi, close dialog, and expiry | OPEN — device verification |
+| A-006 | P2 | Avatar lifecycle | QR session is profile-scoped and short-lived; interrupted upload temp files are cleaned on next launcher start | Force-stop during upload and verify cleanup and profile identity | OPEN — device verification |
+| A-007 | P2 | Avatar replacement | New avatar reference is committed before old private file is deleted; failed metadata commit preserves old photo | Test two successive replacements and simulated storage/commit failure | OPEN — failure-injection test |
+| A-008 | P2 | Avatar management | New profiles start with built-in avatars; custom QR upload is available after selecting the profile in Settings | Deferred by design; verify post-creation flow; inline upload at creation is not release-critical | DEFERRED |
+| A-009 | P2 | Avatar rendering | Downsampled rendering, center-crop, child/adult ring, EXIF orientation, and built-in fallback are implemented | Test portrait, landscape, large, unsupported, and corrupt images | OPEN — device verification |
+| A-010 | P2 | Branch control | Branch ancestry checked; avatar candidate is eight commits ahead and has no commits behind settings/gallery baseline; QR work is isolated in draft PR #6 | Complete review and merge only after all gates pass | OPEN — PR review |
 | A-011 | P1 | Real device | No evidence yet of actual build/install/test on user's Mi TV Stick in this audit session | Run release build, install, and structured TV test | OPEN |
 | A-012 | P2 | Wallpaper | Exact default wallpaper asset and fallback behavior not yet documented | Inspect drawable/assets and wallpaper selection code | OPEN |
 | A-013 | P2 | Icon animation | Animation inventory and per-icon behavior not yet mapped | Inspect adapters, focus listeners, animators, and test on TV | OPEN |
@@ -47,7 +47,9 @@
 9. Delete a profile; only that profile's avatar file is deleted.
 10. Test portrait, landscape, large JPEG, PNG, unsupported, corrupt, and EXIF-rotated images.
 11. Test remote focus, OK, Back, and cancellation with no touch input.
-12. Test picker missing/unavailable and verify graceful fallback.
+12. Close the QR dialog and verify its session stops; test QR expiry after five minutes.
+13. Test remote focus, OK, Back, and cancellation without touch input.
+14. Confirm wallpaper and standby QR upload still work independently.
 
 ## QC closure rule
 
@@ -59,4 +61,4 @@ An audit item can be closed only with:
 - evidence reference (CI log, screenshot, or device test note),
 - rollback note where applicable.
 
-No item is closed in this initial draft.
+No avatar item is closed yet. The implementation has been submitted in draft PR #6; CI and actual-device evidence are still required.
