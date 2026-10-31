@@ -804,7 +804,7 @@ public final class ModernSettingsDialog {
                 int photoCount = activity.getStandbyPhotoCount();
                 boolean photoMode = activity.isStandbyPhotoMode();
                 rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📷 Koleksi Foto Pribadi", photoCount + " foto tersimpan di perangkat. Foto berganti otomatis setiap 20 detik."));
+                        "📷 Koleksi Foto Pribadi", photoCount + " foto tersimpan di perangkat. Foto berganti otomatis setiap 20 detik. Batas unggah: 100 foto / 512 MB."));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "📲 Unggah Foto dari HP (Kode QR)",
