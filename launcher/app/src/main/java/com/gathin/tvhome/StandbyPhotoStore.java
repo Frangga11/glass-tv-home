@@ -3,6 +3,8 @@ package com.gathin.tvhome;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -190,6 +192,47 @@ final class StandbyPhotoStore {
         });
     }
 
+    private static Bitmap applyExifOrientation(Context context, Uri uri, Bitmap bitmap) {
+        try (InputStream in = openInputStream(context, uri)) {
+            if (in == null) return bitmap;
+            ExifInterface exif = new ExifInterface(in);
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            Matrix matrix = new Matrix();
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.postRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.postRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.postRotate(270);
+                    break;
+                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                    matrix.setScale(-1f, 1f);
+                    break;
+                case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                    matrix.setScale(1f, -1f);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSPOSE:
+                    matrix.setRotate(90);
+                    matrix.postScale(-1f, 1f);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSVERSE:
+                    matrix.setRotate(270);
+                    matrix.postScale(-1f, 1f);
+                    break;
+                default:
+                    return bitmap;
+            }
+            Bitmap corrected = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            if (corrected != bitmap) bitmap.recycle();
+            return corrected;
+        } catch (Exception ignored) {
+            return bitmap;
+        }
+    }
+
     /** Decode near screen resolution using RGB_565 to limit memory on Android TV sticks. */
     static Bitmap loadBitmap(Context context, Uri uri) {
         if (context == null || uri == null) return null;
@@ -208,9 +251,11 @@ final class StandbyPhotoStore {
             decode.inSampleSize = calculateInSampleSize(bounds.outWidth, bounds.outHeight, targetW, targetH);
             decode.inPreferredConfig = Bitmap.Config.RGB_565;
             decode.inDither = true;
+            Bitmap bitmap;
             try (InputStream in = openInputStream(context, uri)) {
-                return in == null ? null : BitmapFactory.decodeStream(in, null, decode);
+                bitmap = in == null ? null : BitmapFactory.decodeStream(in, null, decode);
             }
+            return bitmap == null ? null : applyExifOrientation(context, uri, bitmap);
         } catch (OutOfMemoryError e) {
             android.util.Log.e("TvHome.StandBy", "Not enough memory to decode StandBy photo", e);
             return null;
