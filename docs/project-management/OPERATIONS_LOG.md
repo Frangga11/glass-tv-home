@@ -80,3 +80,6 @@
 
 
 | 2026-11-01 | B03 exact-head source/CI gate | [Draft PR #12](https://github.com/Frangga11/glass-tv-home/pull/12), head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`, [CI #239](https://github.com/Frangga11/glass-tv-home/actions/runs/41233548406) | CI #239 PASS, both jobs. Launcher unit tests/release build succeeded; release APK size 1,398 KB (<1.5 MiB). Lists/tools/docs checks passed. Manual final TV-test artifact step was skipped; no artifact published. Source scope includes opaque dialog/popup panels, D-pad dialog selectors, bounded QR scroll dialog, and width clamps for custom dialogs. | Keep PR #12 Draft; physical device verification deferred to F02; proceed with B04 source audit |
+
+
+| 2026-11-01 | B04 initial global responsiveness audit | Source branch reviewed: `feature/b03-dialog-opacity-layering` head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3` | Reviewed home grid tile sizing, hero/Islamic shelf width calculations, settings dialog bounds, weather ScrollView/bento dimensions, Recent Apps card geometry, and Nightstand typography. Home/settings are responsive in source; potential viewport-sensitive areas are fixed Recent Apps 420×250dp cards with 64dp gutters and Nightstand 110sp clock. No change made without actual TV display size/density. | Request read-only `wm size` and `wm density`; retain physical visual acceptance for F02 |
