@@ -146,15 +146,17 @@ public final class UserSwitchDialog {
             ring.setBackground(ringBg);
             aFrame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
 
+            boolean profileChildMode = ChildModeManager.isChildModeEnabled(activity, prof.id);
             ImageView aImg = new ImageView(activity);
-            aImg.setImageResource(ProfileManager.getAvatarResId(prof.avatarIndex));
+            aImg.setImageDrawable(ProfileManager.getAvatarDrawable(activity, prof,
+                    Math.round(48 * density), profileChildMode));
             int imgDim = (int) (48 * density);
             aFrame.addView(aImg, new FrameLayout.LayoutParams(imgDim, imgDim, Gravity.CENTER));
 
             itemCol.addView(aFrame, new LinearLayout.LayoutParams(frameDim, frameDim));
 
             TextView tvName = new TextView(activity);
-            tvName.setText(prof.name + (prof.isChild ? " 👶" : ""));
+            tvName.setText(prof.name + (profileChildMode ? " 👶" : ""));
             tvName.setTextSize(12.5f);
             tvName.setTextColor(isActive ? 0xFFFFFFFF : 0xFFCBD5E1);
             tvName.setTypeface(outfit, isActive ? Typeface.BOLD : Typeface.NORMAL);
@@ -304,9 +306,8 @@ public final class UserSwitchDialog {
         if (current == null || target.id.equals(current.id)) return;
 
         boolean currentChildMode = ChildModeManager.isChildModeEnabled(activity, current.id);
-        boolean targetChildMode = ChildModeManager.isChildModeEnabled(activity, target.id);
         Runnable commitSwitch = () -> {
-            switchProfile(activity, target, targetChildMode, dialog);
+            switchProfile(activity, target, dialog);
             if (afterSwitch != null) afterSwitch.run();
         };
         if (ChildModeManager.requiresParentPinToSwitch(currentChildMode)) {
@@ -349,7 +350,7 @@ public final class UserSwitchDialog {
                 });
     }
 
-    static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, boolean activateChild, AlertDialog dialog) {
+    static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, AlertDialog dialog) {
         if (activity == null || prof == null) return;
         ProfileManager.setActiveProfile(activity, prof.id);
         activity.reloadTiles();

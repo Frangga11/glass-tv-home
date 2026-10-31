@@ -180,8 +180,9 @@ public final class ModernSettingsDialog {
         profileCard.setClickable(true);
 
         ImageView profileAvatarView = new ImageView(activity);
-        int curAvatarIdx = ProfileManager.getAvatarIndex(activity);
-        profileAvatarView.setImageResource(ProfileManager.getAvatarResId(curAvatarIdx));
+        ProfileManager.UserProfile sidebarProfile = ProfileManager.getActiveProfile(activity);
+        profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, sidebarProfile,
+                Math.round(38 * density), ChildModeManager.isChildModeEnabled(activity, sidebarProfile.id)));
         LinearLayout.LayoutParams pavLp = new LinearLayout.LayoutParams((int) (38 * density), (int) (38 * density));
         pavLp.setMarginEnd((int) (10 * density));
         profileCard.addView(profileAvatarView, pavLp);
@@ -286,7 +287,9 @@ public final class ModernSettingsDialog {
             if (isProfile) pcBg.setStroke((int) (1.5f * density), 0x55FFFFFF);
             profileCard.setBackground(pcBg);
 
-            profileAvatarView.setImageResource(ProfileManager.getAvatarResId(ProfileManager.getAvatarIndex(activity)));
+            ProfileManager.UserProfile sidebarActive = ProfileManager.getActiveProfile(activity);
+            profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, sidebarActive,
+                    Math.round(38 * density), ChildModeManager.isChildModeEnabled(activity, sidebarActive.id)));
             tvProfileName.setText(ProfileManager.getProfileName(activity));
 
             for (NavItem item : navItems) {
@@ -428,6 +431,7 @@ public final class ModernSettingsDialog {
                 rightContent.addView(tvTitle);
 
                 ProfileManager.UserProfile activeP = ProfileManager.getActiveProfile(activity);
+                ImageView[] activeProfileListAvatar = new ImageView[1];
 
                 // Section 1: Active Profile Avatars
                 TextView tvAvatars = new TextView(activity);
@@ -500,13 +504,25 @@ public final class ModernSettingsDialog {
 
                     frame.setOnClickListener(v -> {
                         SoundEffects.playSelect();
+                        // Selecting a built-in avatar replaces a personal photo only after its reference is cleared safely.
+                        if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                            Toast.makeText(activity, "Foto avatar belum dapat dihapus. Avatar tidak diubah.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         ProfileManager.setAvatarIndex(activity, idx);
                         for (int k = 0; k < 7; k++) {
                             if (avatarRings[k] != null) {
                                 avatarRings[k].setVisibility(k == idx ? View.VISIBLE : View.GONE);
                             }
                         }
-                        profileAvatarView.setImageResource(ProfileManager.getAvatarResId(idx));
+                        ProfileManager.UserProfile refreshedProfile = ProfileManager.getActiveProfile(activity);
+                        boolean refreshedChildMode = ChildModeManager.isChildModeEnabled(activity, refreshedProfile.id);
+                        profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
+                                Math.round(38 * density), refreshedChildMode));
+                        if (activeProfileListAvatar[0] != null) {
+                            activeProfileListAvatar[0].setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
+                                    Math.round(32 * density), refreshedChildMode));
+                        }
                         activity.updateTopBarUserIcon();
                         Toast.makeText(activity, "✨ Avatar dipilih: " + ProfileManager.AVATAR_NAMES[idx], Toast.LENGTH_SHORT).show();
                     });
@@ -514,6 +530,66 @@ public final class ModernSettingsDialog {
                     avatarRow.addView(frame);
                 }
                 rightContent.addView(avatarRow);
+
+                // Personal photo avatar actions use the same profile-scoped storage as built-in avatar selection.
+                LinearLayout avatarPhotoActions = new LinearLayout(activity);
+                avatarPhotoActions.setOrientation(LinearLayout.VERTICAL);
+                avatarPhotoActions.setPadding(0, 0, 0, (int) (12 * density));
+
+                Button uploadAvatarButton = new Button(activity);
+                uploadAvatarButton.setText("📲 Ganti Foto Avatar via QR Code");
+                uploadAvatarButton.setTextColor(0xFFFFFFFF);
+                uploadAvatarButton.setTextSize(13);
+                uploadAvatarButton.setAllCaps(false);
+                uploadAvatarButton.setFocusable(true);
+                GradientDrawable uploadAvatarBg = new GradientDrawable();
+                uploadAvatarBg.setColor(0xFF176B87);
+                uploadAvatarBg.setCornerRadius(10 * density);
+                uploadAvatarButton.setBackground(uploadAvatarBg);
+                uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
+                    ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
+                    boolean updatedChildMode = ChildModeManager.isChildModeEnabled(activity, updated.id);
+                    profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
+                            Math.round(38 * density), updatedChildMode));
+                    if (activeProfileListAvatar[0] != null) {
+                        activeProfileListAvatar[0].setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
+                                Math.round(32 * density), updatedChildMode));
+                    }
+                }));
+                avatarPhotoActions.addView(uploadAvatarButton, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
+
+                Button defaultAvatarButton = new Button(activity);
+                defaultAvatarButton.setText("↩ Gunakan Avatar Bawaan");
+                defaultAvatarButton.setTextColor(0xFFCBD5E1);
+                defaultAvatarButton.setTextSize(13);
+                defaultAvatarButton.setAllCaps(false);
+                defaultAvatarButton.setFocusable(true);
+                GradientDrawable defaultAvatarBg = new GradientDrawable();
+                defaultAvatarBg.setColor(0xFF292D37);
+                defaultAvatarBg.setCornerRadius(10 * density);
+                defaultAvatarButton.setBackground(defaultAvatarBg);
+                LinearLayout.LayoutParams defaultAvatarLp = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
+                defaultAvatarLp.topMargin = (int) (6 * density);
+                defaultAvatarButton.setOnClickListener(v -> {
+                    if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                        Toast.makeText(activity, "Foto avatar belum dapat dihapus. Foto lama tetap digunakan.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
+                    boolean restoredChildMode = ChildModeManager.isChildModeEnabled(activity, restored.id);
+                    profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
+                            Math.round(38 * density), restoredChildMode));
+                    if (activeProfileListAvatar[0] != null) {
+                        activeProfileListAvatar[0].setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
+                                Math.round(32 * density), restoredChildMode));
+                    }
+                    activity.updateTopBarUserIcon();
+                    Toast.makeText(activity, "Avatar bawaan dipulihkan.", Toast.LENGTH_SHORT).show();
+                });
+                avatarPhotoActions.addView(defaultAvatarButton, defaultAvatarLp);
+                rightContent.addView(avatarPhotoActions);
 
                 // Edit Active Profile Name Card
                 LinearLayout editNameCard = new LinearLayout(activity);
@@ -583,6 +659,8 @@ public final class ModernSettingsDialog {
                         ProfileManager.setProfileName(activity, newName);
                         tvCurName.setText(newName);
                         tvProfileName.setText(newName);
+                        activity.updateTopBarUserIcon();
+                        updateSidebarSelection.run();
                         if (renderRightPane[0] != null) renderRightPane[0].run();
                     });
                 });
@@ -617,14 +695,17 @@ public final class ModernSettingsDialog {
                     if (isCur) pBg.setStroke((int) (1.5f * density), 0x77FFFFFF);
                     pRow.setBackground(pBg);
 
+                    boolean profileChildMode = ChildModeManager.isChildModeEnabled(activity, p.id);
                     ImageView ivP = new ImageView(activity);
-                    ivP.setImageResource(ProfileManager.getAvatarResId(p.avatarIndex));
+                    ivP.setImageDrawable(ProfileManager.getAvatarDrawable(activity, p,
+                            Math.round(32 * density), profileChildMode));
+                    if (isCur) activeProfileListAvatar[0] = ivP;
                     LinearLayout.LayoutParams ivpLp2 = new LinearLayout.LayoutParams((int) (32 * density), (int) (32 * density));
                     ivpLp2.setMarginEnd((int) (10 * density));
                     pRow.addView(ivP, ivpLp2);
 
                     TextView tvPName = new TextView(activity);
-                    tvPName.setText(p.name + (p.isChild ? " (Mode Anak)" : ""));
+                    tvPName.setText(p.name + (profileChildMode ? " (Mode Anak)" : ""));
                     tvPName.setTextSize(13.5f);
                     tvPName.setTextColor(0xFFFFFFFF);
                     tvPName.setTypeface(outfit, isCur ? Typeface.BOLD : Typeface.NORMAL);
@@ -726,6 +807,8 @@ public final class ModernSettingsDialog {
                                 public void onSuccess() {
                                     ChildModeManager.setChildModeEnabled(activity, isChecked);
                                     activity.reloadTiles();
+                                    activity.updateTopBarUserIcon();
+                                    updateSidebarSelection.run();
                                     Toast.makeText(activity, isChecked ? "✅ Mode Anak diaktifkan!" : "Mode Anak dinonaktifkan", Toast.LENGTH_SHORT).show();
                                     if (renderRightPane[0] != null) renderRightPane[0].run();
                                 }

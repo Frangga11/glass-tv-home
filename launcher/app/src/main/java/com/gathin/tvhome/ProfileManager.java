@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -12,12 +13,16 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.media.ExifInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 
 /**
@@ -49,12 +54,18 @@ public final class ProfileManager {
         public String name;
         public int avatarIndex;
         public boolean isChild;
+        public String customAvatarPath;
 
         public UserProfile(String id, String name, int avatarIndex, boolean isChild) {
+            this(id, name, avatarIndex, isChild, null);
+        }
+
+        public UserProfile(String id, String name, int avatarIndex, boolean isChild, String customAvatarPath) {
             this.id = id != null ? id : "user_" + System.currentTimeMillis();
             this.name = name != null && !name.trim().isEmpty() ? name.trim() : "User";
             this.avatarIndex = (avatarIndex >= 0 && avatarIndex < AVATAR_RES_IDS.length) ? avatarIndex : 1;
             this.isChild = isChild;
+            this.customAvatarPath = customAvatarPath;
         }
 
         public JSONObject toJson() {
@@ -64,6 +75,7 @@ public final class ProfileManager {
                 obj.put("name", name);
                 obj.put("avatarIndex", avatarIndex);
                 obj.put("isChild", isChild);
+                if (customAvatarPath != null && !customAvatarPath.trim().isEmpty()) obj.put("customAvatarPath", customAvatarPath);
             } catch (JSONException ignored) {}
             return obj;
         }
@@ -74,7 +86,9 @@ public final class ProfileManager {
             String name = obj.optString("name", "User");
             int avatarIndex = obj.optInt("avatarIndex", 1);
             boolean isChild = obj.optBoolean("isChild", false);
-            return new UserProfile(id, name, avatarIndex, isChild);
+            String customAvatarPath = obj.optString("customAvatarPath", null);
+            if (customAvatarPath != null && customAvatarPath.trim().isEmpty()) customAvatarPath = null;
+            return new UserProfile(id, name, avatarIndex, isChild, customAvatarPath);
         }
     }
 
@@ -113,6 +127,181 @@ public final class ProfileManager {
             return new BitmapDrawable(context.getResources(), output);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /** Returns the active profile image, preferring its private locally stored photo. */
+    public static Drawable getAvatarDrawable(Context context, UserProfile profile, int sizePx, boolean isChild) {
+        if (context == null || profile == null || sizePx <= 0) return null;
+        try {
+            if (profile.customAvatarPath != null) {
+                File avatarDir = new File(context.getFilesDir(), "profile_avatars");
+                File photo = new File(profile.customAvatarPath);
+                if (isPrivateAvatarFile(avatarDir, photo) && photo.getCanonicalFile().isFile()
+                        && photo.getCanonicalFile().length() > 0) {
+                    BitmapFactory.Options bounds = new BitmapFactory.Options();
+                    bounds.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(photo.getAbsolutePath(), bounds);
+                    if (bounds.outWidth > 0 && bounds.outHeight > 0) {
+                        int sample = 1;
+                        while (bounds.outWidth / (sample * 2) > sizePx * 2
+                                || bounds.outHeight / (sample * 2) > sizePx * 2) sample *= 2;
+                        BitmapFactory.Options opts = new BitmapFactory.Options();
+                        opts.inSampleSize = sample;
+                        opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap src = BitmapFactory.decodeFile(photo.getAbsolutePath(), opts);
+                        if (src != null) {
+                            int orientation = ExifInterface.ORIENTATION_NORMAL;
+                            try {
+                                ExifInterface exif = new ExifInterface(photo.getAbsolutePath());
+                                orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                            } catch (Exception ignored) {}
+                            Matrix matrix = new Matrix();
+                            switch (orientation) {
+                                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL: matrix.setScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_180: matrix.setRotate(180); break;
+                                case ExifInterface.ORIENTATION_FLIP_VERTICAL: matrix.setRotate(180); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_TRANSPOSE: matrix.setRotate(90); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_90: matrix.setRotate(90); break;
+                                case ExifInterface.ORIENTATION_TRANSVERSE: matrix.setRotate(-90); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_270: matrix.setRotate(-90); break;
+                                default: break;
+                            }
+                            Bitmap oriented = matrix.isIdentity() ? src
+                                    : Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
+                            if (oriented != src) src.recycle();
+                            Bitmap output = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888);
+                            Canvas canvas = new Canvas(output);
+                            float inset = 2f * context.getResources().getDisplayMetrics().density;
+                            float radius = sizePx / 2f;
+                            Path clip = new Path();
+                            clip.addCircle(radius, radius, radius - inset, Path.Direction.CW);
+                            canvas.save();
+                            canvas.clipPath(clip);
+                            float scale = Math.max((sizePx - 2 * inset) / (float) oriented.getWidth(),
+                                    (sizePx - 2 * inset) / (float) oriented.getHeight());
+                            float w = oriented.getWidth() * scale, h = oriented.getHeight() * scale;
+                            RectF dst = new RectF((sizePx - w) / 2f, (sizePx - h) / 2f,
+                                    (sizePx + w) / 2f, (sizePx + h) / 2f);
+                            canvas.drawBitmap(oriented, null, dst, new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
+                            canvas.restore();
+                            oriented.recycle();
+                            Paint ring = new Paint(Paint.ANTI_ALIAS_FLAG);
+                            ring.setStyle(Paint.Style.STROKE);
+                            ring.setStrokeWidth(inset);
+                            ring.setColor(isChild ? 0xFFF59E0B : 0xFF38BDF8);
+                            canvas.drawCircle(radius, radius, radius - inset / 2f, ring);
+                            return new BitmapDrawable(context.getResources(), output);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return getCircularAvatarDrawable(context, profile.avatarIndex, sizePx, isChild);
+    }
+
+    /** Atomically switches the profile reference, then deletes the superseded private photo. */
+    public static synchronized boolean replaceCustomAvatar(Context context, String profileId, File newPhoto) {
+        if (context == null || profileId == null || newPhoto == null || !newPhoto.isFile() || newPhoto.length() <= 0) return false;
+        try {
+            File avatarDir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
+            File candidate = newPhoto.getCanonicalFile();
+            if (!isPrivateAvatarFile(avatarDir, candidate)) return false;
+            List<UserProfile> list = getAllProfiles(context);
+            UserProfile target = null;
+            for (UserProfile profile : list) if (profileId.equals(profile.id)) { target = profile; break; }
+            if (target == null) return false;
+            String oldPath = target.customAvatarPath;
+            target.customAvatarPath = candidate.getAbsolutePath();
+            JSONArray arr = new JSONArray();
+            for (UserProfile profile : list) arr.put(profile.toJson());
+            boolean saved = getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit();
+            if (!saved) {
+                target.customAvatarPath = oldPath;
+                return false;
+            }
+            if (oldPath != null && !oldPath.equals(candidate.getAbsolutePath())) {
+                // Do not remove a photo if another profile still references the same file.
+                deleteAvatarIfUnreferenced(context, list, profileId, oldPath);
+            }
+            cleanupOrphanedAvatarUploads(context);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static synchronized boolean clearCustomAvatar(Context context, String profileId) {
+        if (context == null || profileId == null) return false;
+        List<UserProfile> list = getAllProfiles(context);
+        for (UserProfile profile : list) {
+            if (profileId.equals(profile.id)) {
+                String oldPath = profile.customAvatarPath;
+                profile.customAvatarPath = null;
+                JSONArray arr = new JSONArray();
+                for (UserProfile item : list) arr.put(item.toJson());
+                boolean saved = getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit();
+                if (!saved) { profile.customAvatarPath = oldPath; return false; }
+                if (oldPath != null) deleteAvatarIfUnreferenced(context, list, profileId, oldPath);
+                cleanupOrphanedAvatarUploads(context);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean isPrivateAvatarFile(File avatarDirectory, File candidate) {
+        if (avatarDirectory == null || candidate == null) return false;
+        try {
+            File canonicalDirectory = avatarDirectory.getCanonicalFile();
+            File canonicalCandidate = candidate.getCanonicalFile();
+            File parent = canonicalCandidate.getParentFile();
+            return parent != null && parent.equals(canonicalDirectory);
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private static void deleteAvatarIfUnreferenced(Context context, List<UserProfile> profiles,
+                                                    String excludedProfileId, String path) {
+        if (context == null || profiles == null || path == null) return;
+        try {
+            File avatarDir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
+            File candidate = new File(path).getCanonicalFile();
+            if (!isPrivateAvatarFile(avatarDir, candidate)) return;
+            for (UserProfile profile : profiles) {
+                if (profile == null || profile.id == null || profile.id.equals(excludedProfileId)
+                        || profile.customAvatarPath == null) continue;
+                if (candidate.equals(new File(profile.customAvatarPath).getCanonicalFile())) return;
+            }
+            if (candidate.isFile()) candidate.delete();
+        } catch (Exception ignored) {}
+    }
+
+    /** Removes unreferenced avatar files and abandoned uploads left by a force-stop or power loss. */
+    public static synchronized void cleanupOrphanedAvatarUploads(Context context) {
+        if (context == null) return;
+        File dir = new File(context.getFilesDir(), "profile_avatars");
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        Set<String> referenced = new HashSet<>();
+        for (UserProfile profile : getAllProfiles(context)) {
+            if (profile.customAvatarPath == null) continue;
+            try { referenced.add(new File(profile.customAvatarPath).getCanonicalPath()); }
+            catch (Exception ignored) {}
+        }
+        long cutoff = System.currentTimeMillis() - 10L * 60L * 1000L;
+        for (File file : files) {
+            if (!file.isFile()) continue;
+            try {
+                String path = file.getCanonicalPath();
+                if (referenced.contains(path)) continue;
+                String name = file.getName().toLowerCase(java.util.Locale.ROOT);
+                if (name.endsWith(".upload") && file.lastModified() >= cutoff) continue;
+                // This directory is dedicated to profile avatars: unreferenced images and stale
+                // .tmp/.bak/.upload files are safe to remove.
+                file.delete();
+            } catch (Exception ignored) {}
         }
     }
 
@@ -218,29 +407,41 @@ public final class ProfileManager {
         return newProf;
     }
 
-    public static synchronized boolean deleteProfile(Context context, String profileId) {
+    public static boolean deleteProfile(Context context, String profileId) {
         if (context == null || profileId == null) return false;
-        List<UserProfile> list = getAllProfiles(context);
-        if (list.size() <= 1) return false; // Cannot delete the last remaining profile
+        synchronized (ProfileManager.class) {
+            List<UserProfile> list = getAllProfiles(context);
+            if (list.size() <= 1) return false; // Cannot delete the last remaining profile
 
-        UserProfile toRemove = null;
-        for (UserProfile p : list) {
-            if (profileId.equals(p.id)) {
-                toRemove = p;
-                break;
+            UserProfile toRemove = null;
+            for (UserProfile p : list) {
+                if (profileId.equals(p.id)) {
+                    toRemove = p;
+                    break;
+                }
+            }
+
+            if (toRemove == null) return false;
+            list.remove(toRemove);
+            JSONArray persistedProfiles = new JSONArray();
+            for (UserProfile profile : list) persistedProfiles.put(profile.toJson());
+            // Persist profile removal before cleaning up its avatar file; never delete the photo if the
+            // profile-list write fails.
+            if (!getPrefs(context).edit().putString(KEY_PROFILES_JSON, persistedProfiles.toString()).commit()) {
+                return false;
+            }
+            // The cleanup routine deletes only unreferenced files inside the private avatar directory.
+            cleanupOrphanedAvatarUploads(context);
+
+            String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
+            if (profileId.equals(activeId)) {
+                // Fall back to first remaining profile
+                setActiveProfile(context, list.get(0).id);
             }
         }
-
-        if (toRemove == null) return false;
-        list.remove(toRemove);
-        saveProfiles(context, list);
+        // Clear only after releasing ProfileManager's lock to avoid lock-order inversion.
+        // The shared device-wide parent PIN is deliberately preserved.
         ChildModeManager.clearProfileSettings(context, profileId);
-
-        String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
-        if (profileId.equals(activeId)) {
-            // Fall back to first remaining profile
-            setActiveProfile(context, list.get(0).id);
-        }
         return true;
     }
 
