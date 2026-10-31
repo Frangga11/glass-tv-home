@@ -394,32 +394,35 @@ public final class ProfileManager {
         return newProf;
     }
 
-    public static synchronized boolean deleteProfile(Context context, String profileId) {
+    public static boolean deleteProfile(Context context, String profileId) {
         if (context == null || profileId == null) return false;
-        List<UserProfile> list = getAllProfiles(context);
-        if (list.size() <= 1) return false; // Cannot delete the last remaining profile
+        synchronized (ProfileManager.class) {
+            List<UserProfile> list = getAllProfiles(context);
+            if (list.size() <= 1) return false; // Cannot delete the last remaining profile
 
-        UserProfile toRemove = null;
-        for (UserProfile p : list) {
-            if (profileId.equals(p.id)) {
-                toRemove = p;
-                break;
+            UserProfile toRemove = null;
+            for (UserProfile p : list) {
+                if (profileId.equals(p.id)) {
+                    toRemove = p;
+                    break;
+                }
+            }
+
+            if (toRemove == null) return false;
+            list.remove(toRemove);
+            saveProfiles(context, list);
+            // The cleanup routine deletes only unreferenced files inside the private avatar directory.
+            cleanupOrphanedAvatarUploads(context);
+
+            String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
+            if (profileId.equals(activeId)) {
+                // Fall back to first remaining profile
+                setActiveProfile(context, list.get(0).id);
             }
         }
-
-        if (toRemove == null) return false;
-        list.remove(toRemove);
-        saveProfiles(context, list);
-        // Remove this profile's parental-control keys but preserve the device-wide parent PIN.
+        // Clear only after releasing ProfileManager's lock to avoid lock-order inversion.
+        // The shared device-wide parent PIN is deliberately preserved.
         ChildModeManager.clearProfileSettings(context, profileId);
-        // The cleanup routine deletes only unreferenced files inside the private avatar directory.
-        cleanupOrphanedAvatarUploads(context);
-
-        String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
-        if (profileId.equals(activeId)) {
-            // Fall back to first remaining profile
-            setActiveProfile(context, list.get(0).id);
-        }
         return true;
     }
 
