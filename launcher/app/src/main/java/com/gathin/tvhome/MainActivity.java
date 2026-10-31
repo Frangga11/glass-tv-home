@@ -5016,6 +5016,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         String localIp = WallpaperUploadServer.getLocalIpAddress();
+        if (localIp == null || "127.0.0.1".equals(localIp)) {
+            Toast.makeText(this, "TV belum terhubung ke jaringan Wi-Fi atau Ethernet.", Toast.LENGTH_LONG).show();
+            return;
+        }
         uploadServer = new WallpaperUploadServer(this, 8080, createUploadListener());
         if (!uploadServer.start()) {
             uploadServer = null;
@@ -5036,6 +5040,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         String localIp = WallpaperUploadServer.getLocalIpAddress();
+        if (localIp == null || "127.0.0.1".equals(localIp)) {
+            Toast.makeText(this, "TV belum terhubung ke jaringan Wi-Fi atau Ethernet.", Toast.LENGTH_LONG).show();
+            return;
+        }
         WallpaperUploadServer.UploadListener listener = new WallpaperUploadServer.UploadListener() {
             @Override public void onUploaded(File imageFile) {
                 // Wallpaper uploads are intentionally not handled by the StandBy endpoint.
