@@ -118,7 +118,7 @@ The project is ready for user acceptance only when:
 |---|---|---|
 | Avatar QR upload | Implemented on `fix/avatar-qr-upload-single-photo`; CI passed previously; draft PR #6 remains unmerged | Actual Mi TV Stick/phone acceptance |
 | Wallpaper QR security | Token-scoped wallpaper page/upload/API/thumb routes implemented on `fix/wallpaper-qr-session-security`; PR #7 draft; CI run 41200811301 passed | Verify route rejection and dialog-close revocation on TV/phone |
-| Default wallpaper | Source expects `assets/kabut-pagi-dempo.jpg`, but release artifact 13042880821 does not contain this asset | User approves/provides final image; add it to APK and verify |
+| Default wallpaper | Source expects `assets/kabut-pagi-dempo.jpg`, but release artifact 13042880821 does not contain this asset | Commit the approved JPEG to assets, verify APK packaging, then device test |
 | Visual wallpaper QC | CENTER_CROP, 800 ms cross-fade, and Backdrop blur exist in source | Review composition/legibility and performance on target TV |
 
 ## 8. Open confirmations
