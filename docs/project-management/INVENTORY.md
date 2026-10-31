@@ -165,3 +165,21 @@ GitHub source URLs:
 - Tests: `ProfileSecurityPolicyTest`, `AvatarUploadServerPolicyTest`, `ProfileManagerAvatarPathTest`.
 - APK artifact `13048951728`: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
 - No PR merged and no APK installed. Actual Mi TV Stick/phone test is the remaining release gate.
+
+
+## B01 global navigation implementation checkpoint — 1 November 2026
+
+| Area | Source finding | Remediation | Evidence / status |
+|---|---|---|---|
+| Home app-grid focus | Last app identity/slot were static process-only state | Persist stable component key and fallback slot; restore identity first and clamp fallback | Draft PR #10; exact-head CI #212 PASS; physical device test open |
+| Top-bar focus | External Android screen return always restored a grid tile | Persist last top-bar pill ID and restore when still visible/focusable | Draft PR #10; exact-head CI #212 PASS; physical device test open |
+| Settings tab | Dialog always initialized to Profile | Persist selected tab and restore its sidebar cursor | Draft PR #10; exact-head CI #212 PASS; physical device test open |
+| Empty-grid fallback | Wi-Fi view was dereferenced without null check | Null-safe Wi-Fi/Settings fallback | Draft PR #10; exact-head CI #212 PASS |
+| Scroll-settle focus | Fallback could focus an unrelated first visible card | Retry the clamped requested position instead | Draft PR #10; exact-head CI #212 PASS |
+
+- Branch: `feature/b01-global-navigation-retention`
+- Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10
+- Exact head: `0f1c727da4c89576ba15a87238d17c1965a8a239`
+- CI #212: https://github.com/Frangga11/glass-tv-home/actions/runs/41228628063 — both jobs PASS.
+- Release artifact: `13052019782`; CI reports APK 1,394 KB, under the 1.5 MiB budget.
+- Physical Mi TV Stick acceptance has not been performed. Do not mark B01 final or merge PR #10 until remote/process-restart tests pass.
