@@ -798,7 +798,7 @@ public final class ModernSettingsDialog {
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
                         "🌧️ Animasi Cuaca pada Wallpaper",
-                        "Tampilkan efek hujan, awan, kabut, atau kondisi cuaca dinamis di atas wallpaper.",
+                        "Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.",
                         activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
                             activity.setDynamicWeatherEffectsEnabled(isChecked);
                             Toast.makeText(activity, isChecked ? "Animasi cuaca diaktifkan." : "Animasi cuaca dinonaktifkan.", Toast.LENGTH_SHORT).show();
@@ -821,7 +821,7 @@ public final class ModernSettingsDialog {
                 int photoCount = activity.getStandbyPhotoCount();
                 boolean photoMode = activity.isStandbyPhotoMode();
                 rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📷 Koleksi Foto Pribadi", photoCount + " foto tersimpan di perangkat. Foto berganti otomatis setiap 20 detik. Batas unggah: 100 foto / 512 MB."));
+                        "📷 Koleksi Foto Pribadi", photoCount + " foto tersimpan. Foto berganti setiap 20 detik. Maksimal 100 foto; unggahan QR maks. 512 MB total dan 60 MB per foto. Foto USB dibaca langsung dari sumbernya."));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "📲 Unggah Foto dari HP (Kode QR)",
