@@ -804,11 +804,48 @@ public final class ModernSettingsDialog {
                         }));
 
             } else if (tab == TAB_STANDBY) {
-                // === TAB 4: STANDBY MODE ===
-                addHeader(rightContent, outfit, "StandBy Mode");
+                // === TAB: STANDBY / PERSONAL PHOTO SCREENSAVER ===
+                addHeader(rightContent, outfit, "Layar Siaga");
+
+                int photoCount = activity.getStandbyPhotoCount();
+                boolean photoMode = activity.isStandbyPhotoMode();
+                rightContent.addView(buildInfoCard(activity, density, outfit,
+                        "📷 Koleksi Foto Pribadi", photoCount + " foto tersimpan di perangkat. Foto berganti otomatis setiap 20 detik."));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🌙 Uji StandBy Screensaver Sekarang", "Aktifkan jam ambien StandBy skrin penuh",
+                        "➕ Pilih Foto untuk Layar Siaga",
+                        "Pilih satu atau beberapa foto dari penyimpanan TV, USB, atau sumber berkas yang tersedia.",
+                        activity::pickStandbyPhotos));
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "🖼️ Gunakan Foto Pribadi",
+                        "Tampilkan koleksi foto sebagai latar Layar Siaga. Matikan untuk kembali ke tampilan jam bawaan.",
+                        photoMode, isChecked -> {
+                            activity.setStandbyPhotoMode(isChecked);
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        }));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "🕰️ Gunakan Tampilan Jam Bawaan",
+                        "Kembalikan Layar Siaga ke jam, tanggal Hijriah, dan informasi waktu salat.",
+                        () -> {
+                            activity.setStandbyPhotoMode(false);
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        }));
+
+                if (photoCount > 0) {
+                    rightContent.addView(buildCardRow(activity, density, outfit,
+                            "🗑️ Hapus Semua Foto Layar Siaga",
+                            "Hapus daftar foto pribadi dari Layar Siaga. Foto asli di penyimpanan tidak ikut dihapus.",
+                            () -> {
+                                activity.clearStandbyPhotos();
+                                if (renderRightPane[0] != null) renderRightPane[0].run();
+                            }));
+                }
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "🌙 Uji Tampilan Layar Siaga Sekarang",
+                        "Pratinjau tampilan jam bawaan atau foto pribadi sesuai mode yang dipilih.",
                         activity::showNightstandScreensaver));
 
             } else if (tab == TAB_CHILD_MODE) {
