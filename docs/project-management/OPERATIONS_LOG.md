@@ -119,3 +119,24 @@
 
 **Documentation correction**
 - Roadmap A06 task row corrected to DONE. A06 checkpoint manifest and rollback SOP were re-opened and verified on branch `checkpoint/a06-tested-apk-pr9-7e8392e1`; the earlier device-snapshot-pending text in INVENTORY was corrected. A06 residuals remain assigned to E01, not blockers for A06 closure.
+
+
+## 2026-11-01 — B04 target viewport metrics received; B05 implementation planning
+
+**B04 target metrics supplied by user**
+- Bugjaeger read-only \`wm size\`: Physical size \`1920x1080\`.
+- Bugjaeger read-only \`wm density\`: Physical density \`320\`.
+- Derived logical viewport: \`960×540 dp\` (density scale 2.0).
+- Recent Apps: two 420dp cards plus 64dp left/right padding total 968dp, only 8dp beyond viewport before inter-card spacing. This is a near-fit horizontal carousel, not proof of a defect. Confirm item spacing, partial-card affordance, and D-pad scroll at F02.
+- Nightstand: 110sp clock and 19sp date are not inherently oversized at 960dp width; long date/font-scale acceptance remains F02.
+- Weather: 385dp Bento body is about 71.3% of 540dp height and is hosted in a full-screen ScrollView/fillViewport. No clipping defect is established; verify remote focus/scroll and visual proportions at F02.
+- Disposition: no measured source-level overflow defect; no speculative layout changes. B04 source + target-metric audit PASS; retain F02 physical acceptance. B04 remains IN PROGRESS in the roadmap only until its integrated/physical gate is satisfied.
+
+**B05 architecture checkpoint — implementation not yet modified**
+- Scope is app-facing Indonesian/English only; installer localization is a separate scope unless explicitly added.
+- The target is Android 11/API 30, so the implementation must not depend solely on Android 13 per-app language APIs.
+- AppLanguage remains the single source of truth for persisted ID/EN selection and migration of legacy MS to ID. Remove unreachable Malay fallbacks from user-visible output as files are safely migrated; do not silently alter preference keys or existing saved selection.
+- Implement locale-aware contexts for Activity/resource-backed surfaces on API 26–32, synchronize API 33+ system per-app locale where supported, and ensure newly opened screens/dialogs use the selected language.
+- Add complete ID and EN resource coverage, correct localeConfig to advertise only actual supported locales, migrate XML/Java hardcoded labels/messages to resources or a consistent translation layer, and cover dynamic/errors/notifications.
+- Language change must refresh the UI while preserving the current tab/sidebar/focus position and must not reset profile, wallpaper, prayer, weather, or other user data.
+- Before implementation, inventory every Activity/service lifecycle entry point and current language call site; add unit tests for preference normalization/migration and resource key/placeholder parity. No source files modified in this planning pass.
