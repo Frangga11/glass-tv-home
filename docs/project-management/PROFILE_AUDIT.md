@@ -83,7 +83,8 @@ These are source findings only; they are not physical-device acceptance.
 
 - PR #7 exact-head CI #195 passed on `62b1e7ce63f34095b44afbde7fc80e19addc9b00`.
 - PR #8 CI run #196 (`41216406132`) passed both jobs on its tested head `f0971b17ed752a9ac0bf16afa904990723c0c616`.
-- Final UI cleanup commit `1ba744efee61fde662493cebd382743a5927aefa` is covered by CI run #197 (`41216508402`), which was in progress at last check. Only #197 can certify the latest PR head.
+- Final UI cleanup commit `1ba744efee61fde662493cebd382743a5927aefa` passed CI run #197 (`41216508402`): both jobs succeeded on the exact latest PR #8 head.
+- Release artifact `13048321564` was published: APK 1,420,005 bytes; SHA-256 `735be1ff6e8ff88d31bf9de73940e527a570bbaace96c5ec9a001ce95610a44e`.
 - PR #6 CI run #156 passed on its own head `0cb1b96e2c2529e65795231519c6e0728b46390d`; this does not validate the combined code.
 - No APK has been installed on the user's Mi TV Stick as part of this audit.
 - Stock launcher has not been changed.
