@@ -16,7 +16,7 @@ final class TvResponsiveLayout {
 
     static int recentCardWidthPx(int viewportWidthPx, float density) {
         if (!(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) {
-            return Math.max(1, viewportWidthPx);
+            return viewportWidthPx > 0 ? Math.max(1, Math.min(420, viewportWidthPx)) : 420;
         }
         int designWidth = Math.max(1, Math.round(RECENT_CARD_WIDTH_DP * density));
         if (viewportWidthPx <= 0) return designWidth;
