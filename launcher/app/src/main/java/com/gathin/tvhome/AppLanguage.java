@@ -325,6 +325,13 @@ final class AppLanguage {
         return "TV";
     }
 
+    public static String strDeviceSettings(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Device Settings";
+            case LANG_ID: default: return "Pengaturan Perangkat";
+        }
+    }
+
     public static String strBack(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Back";
