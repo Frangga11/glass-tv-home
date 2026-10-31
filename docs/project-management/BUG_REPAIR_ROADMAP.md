@@ -126,17 +126,17 @@ A code change or passing CI alone does not close a physical-device acceptance it
 ## 4. Progress snapshot — 1 November 2026 (after A04)
 
 - Tasks in roadmap: 47
-- DONE: 3 (A01, A02, A03)
-- IN PROGRESS: 2 (A04, B01)
-- NOT STARTED: 42
+- DONE: 4 (A01, A02, A03, A04)
+- IN PROGRESS: 2 (B01, B02)
+- NOT STARTED: 41
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
-This is a task-count snapshot, not a percentage of application readiness. A01–A03 are complete. A04 repository/source audit is in progress. B01 implementation has started on a dedicated branch at the user's explicit direction; the sequencing deviation and remaining A05/A06 gates are recorded in D-009.
+This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009. A05 requires installed-APK identity evidence; A06 depends on A05.
 
-## 5. First execution point
+## 5. Current execution point
 
-A04 remains in progress because the tested APK identity (A05) and complete baseline/backup (A06) are not yet established. B01 source work is isolated on `feature/b01-global-navigation-retention`, based on PR #9's exact head; it remains Draft and cannot be marked final before CI and physical-device tests.
+A04 remote repository/source audit is DONE. A05 remains NOT STARTED because the exact APK most recently tested on the Mi TV Stick has not been identified; versionName/versionCode are insufficient because repair branches share 4.0.0/code 40. A06 remains NOT STARTED until A05 identifies the exact source commit and the APK/device-state backup can be captured. B01 and B02 are already in progress on isolated Draft PRs; pause further B02/B03 work until A05 and A06 are completed as requested. B01 exact-head CI #225 and B02 exact-head CI #234 both PASS; no TV-test artifact was published by those runs.
 
 ## 6. Session closeout and callback protocol
 
