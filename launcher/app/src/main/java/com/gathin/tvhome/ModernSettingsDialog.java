@@ -559,7 +559,7 @@ public final class ModernSettingsDialog {
                 uploadAvatarBg.setCornerRadius(10 * density);
                 uploadAvatarButton.setBackground(uploadAvatarBg);
                 TvFocusIndicator.applyRoundedTextFocus(uploadAvatarButton, density, 10f,
-                        0xFF176B87, 0xFF2389A8, 0xFF2C7F98, 0xFFFFFFFF,
+                        0xFF176B87, 0xFF1B7189, 0xFF2C7F98, 0xFFFFFFFF,
                         0xFFFFFFFF, 0xFFFFFFFF, 1.025f);
                 uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
                     ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
