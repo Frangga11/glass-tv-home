@@ -46,13 +46,13 @@ import java.util.Set;
  */
 public final class ModernSettingsDialog {
 
-    private static final int TAB_PROFILE = 0;
-    private static final int TAB_HOME_SCREEN = 1;
-    private static final int TAB_APPEARANCE = 2;
-    private static final int TAB_STATUS_WEATHER = 3;
-    private static final int TAB_EFFECTS = 4;
-    private static final int TAB_STANDBY = 5;
-    private static final int TAB_DEVICE_SETTINGS = 7;
+    private static final int TAB_PROFILE = NavigationState.TAB_PROFILE;
+    private static final int TAB_HOME_SCREEN = NavigationState.TAB_HOME_SCREEN;
+    private static final int TAB_APPEARANCE = NavigationState.TAB_APPEARANCE;
+    private static final int TAB_STATUS_WEATHER = NavigationState.TAB_STATUS_WEATHER;
+    private static final int TAB_EFFECTS = NavigationState.TAB_EFFECTS;
+    private static final int TAB_STANDBY = NavigationState.TAB_STANDBY;
+    private static final int TAB_DEVICE_SETTINGS = NavigationState.TAB_DEVICE_SETTINGS;
 
     private static Runnable sDpadLeftTarget;
 
