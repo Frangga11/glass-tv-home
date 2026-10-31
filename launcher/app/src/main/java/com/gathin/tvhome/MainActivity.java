@@ -467,12 +467,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
-        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
-        else if ("Minimalist".equalsIgnoreCase(activeCat)) {
+        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat) && !"Default".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        else if ("Minimalist".equalsIgnoreCase(activeCat) || "Default".equalsIgnoreCase(activeCat)) {
+            // Never fall back to a theme/legacy wallpaper when Default's bundled asset is unavailable.
             root.setBackgroundColor(android.graphics.Color.BLACK);
             if (wallView != null) {
                 wallView.setImageDrawable(null);
                 wallView.setBackgroundColor(android.graphics.Color.BLACK);
+            }
+            if ("Default".equalsIgnoreCase(activeCat)) {
+                android.util.Log.e("TvHome", "Default wallpaper asset unavailable; showing safe black background");
             }
         }
         if (!isWallpaperDescEnabled() && heroShelf != null) {
