@@ -2918,7 +2918,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         addSeparator(rows);
 
-        // Row 2: Tetapan Wi-Fi
+        // Row 2: Pengaturan Wi-Fi
         addInputRow(rows, close, R.drawable.ic_settings, "Pengaturan Wi-Fi", -1, () -> {
             SoundEffects.playSelect();
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
@@ -2959,7 +2959,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 tv.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_shield_child, 0, 0, 0);
                 tv.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(isChild ? 0xFFF59E0B : 0xFFFFFFFF));
             }
-            tv.setContentDescription("Pengguna Semasa: " + active.name + (isChild ? " (Mod Kanak-kanak)" : ""));
+            tv.setContentDescription("Pengguna Semasa: " + active.name + (isChild ? " (Mode Anak)" : ""));
         }
     }
 
