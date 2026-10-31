@@ -52,3 +52,6 @@
 
 
 | 2026-11-01 | B02 daily forecast focus contrast | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), head `68e87eaeead948367665470fa08503daeddbcaef`, exact-head CI pending | Extended the audit to WeatherActivity: daily forecast row focus was a low-opacity fill without an outline, unlike hourly/metric controls. Added a white focus stroke and stronger focused fill without changing row size. | Validate current head with CI; continue source-level review before B03; no TV test |
+
+
+| 2026-11-01 | B02 avatar focus ring z-order refinement | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), head `01cbef2c2fc90498295971b22c369a72cdfa734a`, [CI #234](https://github.com/Frangga11/glass-tv-home/actions/runs/41230495879) | Final source review moved the separate cyan avatar focus ring above the image layer so the ring cannot be occluded by the avatar image. Exact-head CI #234 pending; preceding snapshot #233 passed. | Wait for #234 PASS; keep PR Draft; no TV test |
