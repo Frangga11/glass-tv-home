@@ -1,6 +1,6 @@
 # 01 — Master Project Specification
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Date:** 31 October 2026  
 **Status:** Master map; not release approval
 
@@ -116,16 +116,16 @@ The project is ready for user acceptance only when:
 
 | Workstream | Current state | Next gate |
 |---|---|---|
-| Avatar QR upload | Implemented on `fix/avatar-qr-upload-single-photo`; CI passed previously; draft PR #6 remains unmerged | Actual Mi TV Stick/phone acceptance |
+| Profile security + avatar QR | Selectively integrated in Draft PR #9 on PR #8 base; exact-head CI #208 passed; release APK produced | Physical Mi TV Stick/phone acceptance, then review merge order PR #8 → PR #9 |
 | Wallpaper QR security | Token-scoped wallpaper page/upload/API/thumb routes implemented on `fix/wallpaper-qr-session-security`; PR #7 draft; CI run 41200811301 passed | Verify route rejection and dialog-close revocation on TV/phone |
-| Default wallpaper | Source expects `assets/kabut-pagi-dempo.jpg`, but release artifact 13042880821 does not contain this asset | Commit the approved JPEG to assets, verify APK packaging, then device test |
+| Default wallpaper | `assets/kabut-pagi-dempo.jpg` is present in the PR #9 CI release APK (230,883 bytes in the ZIP listing) | Verify cold-start display and offline fallback on target TV |
 | Visual wallpaper QC | CENTER_CROP, 800 ms cross-fade, and Backdrop blur exist in source | Review composition/legibility and performance on target TV |
 
 ## 8. Open confirmations
 
 - Confirm exact Mi TV Stick model / generation, RAM and storage.
 - Confirm current installed Glass TV build and branch/commit before device acceptance.
-- Approve/provide the final default wallpaper image. The intended asset name in code is `kabut-pagi-dempo.jpg`, but the image is missing from the release APK.
+- Verify the bundled `kabut-pagi-dempo.jpg` wallpaper on a clean install and cold start.
 - Confirm final information-tab order using a screenshot / mockup review.
 - Confirm icon animation style and which icons are animated.
 - Confirm exact weather location and data source; AQI source and refresh cadence.
@@ -141,3 +141,12 @@ The project is ready for user acceptance only when:
 - `HANDOVER.md` — resume point.
 
 The Master is the project map. Keep detailed test results in the relevant audit; do not duplicate them here.
+
+
+## 9. Profile and avatar integration snapshot — 31 October 2026
+
+- Draft PR #8 adds parent-PIN authorization for locked/hidden app policy edits and profile deletion, and requires PIN for every switch away from an active Child Mode profile, including child-to-child.
+- Draft PR #9 selectively integrates QR avatar upload on top of PR #8. Exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; CI #208 passed both jobs.
+- Release APK: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
+- User-approved PIN decisions: keep `0000` temporarily; unlimited incorrect attempts; no cooldown/lockout.
+- PR #8 and PR #9 remain Draft/unmerged. Physical Mi TV Stick + phone acceptance remains mandatory.
