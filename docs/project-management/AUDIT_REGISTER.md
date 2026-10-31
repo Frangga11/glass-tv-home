@@ -251,9 +251,15 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 
 ## A06 — Baseline and rollback checkpoint — IN PROGRESS
 
-- Exact-source checkpoint branch created directly from `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`: `checkpoint/a06-tested-apk-pr9-7e8392e1`.
+**Result: SOURCE/APK CHECKPOINT LOCKED; ROLLBACK SOP DOCUMENTED; LIVE DEVICE SNAPSHOT OUTSTANDING.**
+
+- The user-confirmed PR #9 APK remains the official known-good tested baseline. Its historical test is accepted and will not be requested again.
+- Exact APK identity: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`; byte-for-byte match with CI artifact #13048951728 / run #208; exact source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- Immutable source checkpoint: `checkpoint/a06-tested-apk-pr9-7e8392e1`.
 - Checkpoint manifest: [A06_TESTED_APK_BASELINE.md](checkpoints/A06_TESTED_APK_BASELINE.md).
-- No code changes were made on the checkpoint branch; it is a preservation ref.
-- Historical Bugjaeger evidence recovered from the prior chat (31 Oct): `com.mitv.tvhome` appeared disabled; `com.google.android.tvlauncher` and `com.gathin.tvhome` appeared in enabled-package search; `get-home-activities` returned `unknown`; `set-home-activity` returned `Success`; `am start` said the launcher activity was already running. This is partial historical evidence only: no `pm path`, full `dumpsys package`, authoritative HOME resolver output, or installed APK SHA-256 was captured. Uploaded APK and SHA-256 are identified, but the fresh read-only device-state snapshot and rollback-readiness evidence remain pending.
-- Do not change HOME ownership, disable packages, install a candidate APK, or alter device settings before capturing that state.
-- Overall A06 remains open until the user provides the requested Bugjaeger/ADB read-only output and it is reviewed.
+- Rollback procedure: [A06_ROLLBACK_PROCEDURE.md](checkpoints/A06_ROLLBACK_PROCEDURE.md). It avoids guessing the stock HOME activity component and documents conservative recovery steps.
+- Historical Bugjaeger evidence: `com.mitv.tvhome` appeared disabled; `com.google.android.tvlauncher` and `com.gathin.tvhome` appeared enabled; `get-home-activities` returned `unknown`; `set-home-activity` returned `Success`; `am start` said launcher activity already running. This is historical context, not a current-state snapshot.
+- Remaining gap: fresh read-only `getprop`, `pm path`, `dumpsys package`, HOME resolver, enabled/disabled package lists, and relevant settings. This is needed before any device mutation; it does not challenge the user's earlier test.
+- No package state, HOME default, device setting, or installed APK was changed in this work.
+
+**A06 disposition:** keep IN PROGRESS / DEVICE-MUTATION GATE until the fresh read-only snapshot is available. B01/B02 implementation remains paused per the user's sequencing instruction.
