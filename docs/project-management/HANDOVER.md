@@ -248,3 +248,22 @@
 2. Create/continue B04 branch from B03 head only if a measured defect or worthwhile adaptive improvement is confirmed; run exact-head CI.
 3. Then implement B05 on top of the accepted B04 head, so localization XML edits do not conflict with B04 layout work.
 4. Keep all PRs Draft and defer physical testing to F02. No APK installation/publication, device changes, or PR merge until all A–E and F integration/regression gates are complete and user explicitly approves readiness.
+
+
+## Latest handover — B04 target metrics received; B05 ready for implementation audit — 1 November 2026
+
+### B04 measured viewport
+- User supplied read-only Bugjaeger output: \`wm size\` = Physical size \`1920x1080\`; \`wm density\` = Physical density \`320\`.
+- Logical viewport is \`960×540 dp\` at 2.0 px/dp.
+- Recent Apps two-card geometry is a near-fit: 420dp × 2 + 64dp × 2 = 968dp, 8dp wider than viewport before inter-card spacing. This is not by itself a defect; verify intended partial next-card visibility, item spacing and D-pad scroll at F02.
+- Nightstand 110sp clock/19sp date and Weather's scrollable 385dp Bento body do not prove clipping at this viewport. Weather body is ~71.3% of logical screen height.
+- B04 source + target-metric audit PASS; no speculative layout edits. Physical visual/remote acceptance remains F02. Keep overall roadmap B04 IN PROGRESS until integrated/physical gate.
+
+### B05 implementation guardrails
+- Supported app languages: Indonesian and English. Keep the existing persisted preference and migration from legacy \`ms\` to \`id\`.
+- Target Android 11/API 30 requires locale handling that works below Android 13; do not rely only on system per-app language APIs.
+- Audit all Activity and service lifecycle entry points before selecting the locale wrapper strategy. Ensure every user-facing Activity and dynamic message uses the selected locale.
+- Complete Indonesian/English resource parity; correct localeConfig so it advertises only supported complete languages; migrate hardcoded XML/Java UI text including dynamic/error/notification messages.
+- Language switching must refresh visible UI without losing navigation tab/sidebar/focus or altering unrelated user data.
+- Keep installer module localization separate unless explicitly brought into scope.
+- Next action: inventory every Activity/service class and language-sensitive resource/call site, then implement B05 in a dedicated branch from B03 (B04 requires no code delta at current measured viewport). Run exact-head unit tests/build and resource parity checks. Keep PR Draft; no APK publication/install or TV settings change.
