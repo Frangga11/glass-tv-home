@@ -1,7 +1,7 @@
 # Glass TV Home — Operational Log
 
 **Version:** 1.0  
-**Updated:** 31 October 2026  
+**Updated:** 1 November 2026  
 **Rule:** concise events only. Detailed findings and test matrices remain in the relevant audit.
 
 | Date | Work item | Branch / PR / evidence | Event and result | Next action |
@@ -54,7 +54,7 @@
 | 2026-11-01 | B02 daily forecast focus contrast | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), head `68e87eaeead948367665470fa08503daeddbcaef`, exact-head CI pending | Extended the audit to WeatherActivity: daily forecast row focus was a low-opacity fill without an outline, unlike hourly/metric controls. Added a white focus stroke and stronger focused fill without changing row size. | Validate current head with CI; continue source-level review before B03; no TV test |
 
 
-| 2026-11-01 | B02 avatar focus ring z-order refinement | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), head `01cbef2c2fc90498295971b22c369a72cdfa734a`, [CI #234](https://github.com/Frangga11/glass-tv-home/actions/runs/41230495879) | Final source review moved the separate cyan avatar focus ring above the image layer so the ring cannot be occluded by the avatar image. Exact-head CI #234 pending; preceding snapshot #233 passed. | Wait for #234 PASS; keep PR Draft; no TV test |
+| 2026-11-01 | B02 avatar focus ring z-order refinement | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), head `01cbef2c2fc90498295971b22c369a72cdfa734a`, [CI #234](https://github.com/Frangga11/glass-tv-home/actions/runs/41230495879) | Final source review moved the separate cyan avatar focus ring above the image layer so the ring cannot be occluded by the avatar image. Exact-head CI #234 PASS on the recorded current head; both jobs passed and manual TV-test artifact publication was skipped. | Pause further B02 work pending A05/A06; keep PR Draft; no TV test |
 
 
 | 2026-11-01 | A04 repository/branch/source audit | [Repository](https://github.com/Frangga11/glass-tv-home), [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11) | Verified fork identity, 14 branch heads, PR #8→#9→#10→#11 dependency chain, B02 tree (647 entries; 496 files/151 directories), PR #9 baseline tree (644 entries), Gradle/app/manifest/CI configuration and source ownership. A04 remote audit PASS; no local checkout was opened or modified. Also verified B01 CI #225 and B02 CI #234 both passed exact heads; manual TV-test artifact step skipped. | Pause further B02 work; obtain installed APK identity for A05, then create A06 reproducible baseline and rollback package |
