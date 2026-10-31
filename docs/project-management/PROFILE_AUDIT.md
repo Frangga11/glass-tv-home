@@ -1,7 +1,7 @@
 # Profile Tab and Parental Controls Audit
 
 **Audit date:** 31 October 2026  
-**Status:** SOURCE AUDIT COMPLETE FOR CURRENT SNAPSHOTS; NOT RELEASE-READY  
+**Status:** SECURITY FIXES IMPLEMENTED IN DRAFT PR #8; CI/AVATAR INTEGRATION/DEVICE ACCEPTANCE STILL OPEN  
 **Baseline:** `feature/settings-reorganization-standby-gallery`  
 **Profile/Child Mode candidate:** PR #7 head `62b1e7ce63f34095b44afbde7fc80e19addc9b00`  
 **Avatar QR candidate:** PR #6 head `0cb1b96e2c2529e65795231519c6e0728b46390d`
@@ -13,7 +13,7 @@
 - Reset to built-in avatar deletes only that profile's custom photo.
 - Child Mode, app locks, and hidden-app lists are per profile.
 - Parent PIN remains one device-wide/global PIN.
-- Switching from a child-restricted profile to an unrestricted/adult profile requires the global parent PIN.
+- Any switch away from an active Child Mode profile requires the global parent PIN, including child-to-child switches, to prevent switching into a less restrictive child profile.
 - Profile/avatar state must persist after launcher process restart and TV reboot.
 - All profile, PIN, and dialog interactions must be usable by D-pad/remote.
 - Wallpaper, standby, and avatar image stores/routes must remain separate.
@@ -41,12 +41,22 @@ Conclusion: the avatar QR implementation is **not present as an integrated featu
 | P-007 | P2 | Profile-specific Child Mode has no focused regression tests in PR #7 | Current PR #7 changed-file test additions cover regional cleanup and wallpaper QR routes; no dedicated tests cover profile migration/isolation, switch authorization, or deletion cleanup. | Add tests for per-profile flags/lists, one-time legacy migration, global PIN, adult-switch gate, and deletion cleanup. |
 | P-008 | P2 | Remote navigation and persistence remain unverified on target hardware | No actual Mi TV Stick/phone acceptance evidence exists. | Run the device checklist in section 5 after an integrated candidate APK is produced. |
 
-## 4. What is implemented in PR #7
+## 4. What is implemented in PR #7 and PR #8
+
+PR #8 (`feature/profile-security-integration`, draft) adds:
+- Parent PIN verification before either locked-app or hidden-app editor opens.
+- Parent PIN verification before profile deletion; a separate confirmation remains after successful PIN verification.
+- One shared profile-switch authorization method used by the top-bar switcher and Profile settings list.
+- Any switch away from an active Child Mode profile requires the parent PIN, even when the destination is another child profile. This deliberately prevents a child from escaping a stricter policy by switching to a different child profile.
+- JVM regression tests for switch authorization and profile preference-key separation.
+- The default PIN remains `0000` by explicit user decision; no failed-attempt throttling is implemented by explicit user decision.
+
+### Baseline behavior retained from PR #7
 
 - Child Mode state, locked-app set, and hidden-app set are stored with profile-scoped keys.
 - Parent PIN remains a single global preference key.
 - One-time migration copies legacy device-wide state to the profile active at first migration.
-- Switching from current Child Mode to a target profile without Child Mode prompts for the parent PIN.
+- Child Mode state, locked-app list, and hidden-app list remain profile-scoped; the parent PIN remains device-wide.
 - Profile deletion asks for confirmation, refuses deletion of the last profile, and clears that profile's Child Mode settings.
 - Parental controls are grouped under Profile settings instead of a separate settings tab.
 
@@ -59,9 +69,9 @@ These are source findings only; they are not physical-device acceptance.
 3. In child profile A, lock and hide different apps from child profile B; confirm B is unaffected.
 4. Attempt to edit lock/hide lists without PIN; access must be denied.
 5. Attempt to delete a profile without PIN; access must be denied.
-6. Switch child → adult without PIN; must be denied. Enter correct PIN; switch succeeds. Switch adult → child; child restrictions activate.
+6. Switch child → adult and child → another child without PIN; both must be denied. Enter correct PIN; switch succeeds. Switch adult → child; child restrictions activate.
 7. Confirm one global parent PIN works for all profiles and changing it updates all profile gates.
-8. Verify first-run default PIN cannot remain silently at 0000 when enabling parental controls.
+8. Verify the current `0000` PIN works for all profiles until the user changes it; do not require a forced change in this release candidate.
 9. Replace avatar twice; old file is removed only after successful profile-reference commit. Simulate invalid/interrupted upload; old photo remains.
 10. Reset one profile to built-in; only its custom photo is deleted.
 11. Delete one profile; only its avatar and Child Mode settings are cleaned.
@@ -72,10 +82,11 @@ These are source findings only; they are not physical-device acceptance.
 
 ## 6. Verification and release boundary
 
-- PR #7 exact-head CI #195 passed on `62b1e7ce63f34095b44afbde7fc80e19addc9b00`; this validates the PR #7 source snapshot only, not avatar integration or physical-device behavior.
+- PR #7 exact-head CI #195 passed on `62b1e7ce63f34095b44afbde7fc80e19addc9b00`.
+- PR #8 draft integration branch adds the above security fixes; CI run #196 (`41216406132`) was in progress at last check. Do not claim the new code passed CI until the run completes.
 - PR #6 CI run #156 passed on its own head `0cb1b96e2c2529e65795231519c6e0728b46390d`; this does not validate the combined code.
 - No APK has been installed on the user's Mi TV Stick as part of this audit.
 - Stock launcher has not been changed.
 - PR #7 remains Draft and unmerged.
 
-**Disposition: NOT FINAL.** The source audit identified P1 authorization gaps (P-002, P-003, P-004) and an unintegrated avatar implementation (P-001). Fix and test these before treating the Profile tab as complete. Physical TV/phone acceptance remains mandatory.
+**Disposition: NOT FINAL.** P-002 and P-003 have source-level fixes in PR #8; P-004 remains unchanged by explicit user choice; P-005 remains unlimited by explicit user choice. Avatar PR #6 is still not integrated. CI #196 and physical TV/phone acceptance remain required before closure.
