@@ -281,8 +281,8 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 | Phone QR upload panel in `MainActivity` | `0xF0131722` (94% opaque) | `0xFF131722` (fully opaque) | Avatar, wallpaper, and standby QR upload dialog content |
 
 - Interactive `GlassDrawable` popups were inspected and intentionally left unchanged: they render a blurred copy of the wallpaper plus a subtle veil, not legible underlying application text; changing them to opaque would remove the intended glass treatment.
-- Main settings and profile-switch dialog roots already use opaque custom backgrounds. Dialog dimensions, focus entry points, and dismissal/session cleanup were inspected in the relevant source paths; further B03 review and regression checks remain open.
+- Main settings and profile-switch dialog roots already use opaque custom backgrounds. Dialog dimensions, focus entry points, and dismissal/session cleanup were inspected. Added explicit D-pad selectors to AlertDialog buttons/list rows, bounded QR dialog dimensions with vertical D-pad scrolling, and clamped Now Playing/card-prompt widths to 90% of the viewport. Further B03 review and CI remain open.
 - Working branch: `feature/b03-dialog-opacity-layering`.
-- Draft PR #12: https://github.com/Frangga11/glass-tv-home/pull/12; base is B02 head `01cbef2c2fc90498295971b22c369a72cdfa734a`; current head `3f11618b34f7edb8618c74e6b2fe48dd7c9e6ccf`.
-- Exact-head CI #235 / run `41233304847` is in progress at last check: Lists/tools/docs job passed; Launcher build/unit-test job is running. Manual TV-test artifact publication remains disabled unless explicitly dispatched after readiness approval.
+- Draft PR #12: https://github.com/Frangga11/glass-tv-home/pull/12; base is B02 head `01cbef2c2fc90498295971b22c369a72cdfa734a`; current head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`.
+- Exact-head CI #239 / run `41233548406` on head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3` is in progress at last check: Lists/tools/docs job passed; Launcher build/unit-test job is running. Manual TV-test artifact publication remains disabled unless explicitly dispatched after readiness approval.
 - B03 remains IN PROGRESS until exact-head CI and source-level dialog lifecycle/geometry audit are complete; physical acceptance deferred to F02.
