@@ -2,7 +2,7 @@
 
 **Version:** 0.1-draft  
 **Date:** 31 October 2026  
-**Current phase:** Avatar QR implementation passed CI; actual device acceptance pending. Wallpaper/background audit W-001 is now the active workstream.
+**Current phase:** Wallpaper/background audit W-001 active. QR session-scope fix is implemented in draft PR #7; CI and device acceptance pending. Avatar device acceptance remains open separately.
 
 ## 1. How to resume this project in a new conversation
 
@@ -47,7 +47,7 @@ Then ask to continue from HANDOVER.md and not to repeat closed checks. The assis
 - No APK has been installed on the user's TV in this session.
 - No live device test has been performed in this session.
 - No final QC approval has been issued.
-- Wallpaper/background source audit W-001 has started. See WALLPAPER_AUDIT.md. Confirmed P1 finding: the wallpaper QR points to the bare local server root and is not session-token scoped. No device testing has been performed.
+- Wallpaper/background audit W-001: token-scoped QR routes implemented on `fix/wallpaper-qr-session-security`, draft PR #7. CI run 41200811301 was in progress at handover; no device test has been performed.
 
 ## 4. Next ordered work
 
