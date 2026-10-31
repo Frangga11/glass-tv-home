@@ -51,10 +51,8 @@ public final class ModernSettingsDialog {
     private static final int TAB_APPEARANCE = 2;
     private static final int TAB_STATUS_WEATHER = 3;
     private static final int TAB_STANDBY = 4;
-    private static final int TAB_REMOTE = 5;
-    private static final int TAB_CHILD_MODE = 6;
-    private static final int TAB_GENERAL = 7;
-    private static final int TAB_TV = 8;
+    private static final int TAB_CHILD_MODE = 5;
+    private static final int TAB_DEVICE_SETTINGS = 6;
 
     private static Runnable sDpadLeftTarget;
 
@@ -274,14 +272,12 @@ public final class ModernSettingsDialog {
         navItems.add(new NavItem(TAB_APPEARANCE, AppLanguage.strAppearance(activity), R.drawable.ic_appearance, 0xFF0097A7));
         navItems.add(new NavItem(TAB_STATUS_WEATHER, AppLanguage.strStatusBarWeather(activity), R.drawable.ic_screen_weather, 0xFF1976D2));
         navItems.add(new NavItem(TAB_STANDBY, AppLanguage.strStandByMode(activity), R.drawable.ic_standby_clock, 0xFF374151));
-        navItems.add(new NavItem(TAB_REMOTE, AppLanguage.strRemoteAccessibility(activity), R.drawable.ic_remote, 0xFF374151));
         navItems.add(new NavItem(TAB_CHILD_MODE, AppLanguage.strChildMode(activity), R.drawable.ic_shield_child, 0xFFD97706));
-        navItems.add(new NavItem(TAB_GENERAL, AppLanguage.strGeneral(activity), R.drawable.ic_globe, 0xFF374151));
-        String tvLabel = AppLanguage.strTv(activity);
+        String deviceLabel = AppLanguage.strDeviceSettings(activity);
         if (AppUpdateManager.isUpdateAvailable(activity)) {
-            tvLabel += " 🔴";
+            deviceLabel += " 🔴";
         }
-        navItems.add(new NavItem(TAB_TV, tvLabel, R.drawable.ic_tv_display, 0xFF374151));
+        navItems.add(new NavItem(TAB_DEVICE_SETTINGS, deviceLabel, R.drawable.ic_tv_display, 0xFF374151));
 
         Runnable[] renderRightPane = new Runnable[1];
 
@@ -815,44 +811,6 @@ public final class ModernSettingsDialog {
                         "🌙 Uji StandBy Screensaver Sekarang", "Aktifkan jam ambien StandBy skrin penuh",
                         activity::showNightstandScreensaver));
 
-            } else if (tab == TAB_REMOTE) {
-                // === TAB 5: REMOTE & ACCESSIBILITY ===
-                addHeader(rightContent, outfit, "Remote & Accessibility");
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🏠 Tetapkan Glass TV Sebagai Default Home",
-                        "Ubah butang Home alat kawalan TV supaya sentiasa membuka Glass TV Home secara automatik",
-                        () -> {
-                            SoundEffects.playSelect();
-                            try {
-                                Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                activity.startActivity(intent);
-                            } catch (Exception e) {
-                                try {
-                                    Intent intent2 = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
-                                    intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    activity.startActivity(intent2);
-                                } catch (Exception ex) {
-                                    Toast.makeText(activity, "Sila buka Tetapan TV > Apps > Default Apps > Home App", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "♿ Buka Tetapan Accessibility TV",
-                        "Hidupkan 'Glass TV Home Button Service' untuk memintas butang Home pada Google TV & Chromecast",
-                        () -> {
-                            SoundEffects.playSelect();
-                            try {
-                                Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                activity.startActivity(intent);
-                            } catch (Exception e) {
-                                Toast.makeText(activity, "Buka Tetapan TV > System > Accessibility", Toast.LENGTH_SHORT).show();
-                            }
-                        }));
-
             } else if (tab == TAB_CHILD_MODE) {
                 // === TAB 6: CHILD MODE & APP LOCK ===
                 addHeader(rightContent, outfit, "Child Mode");
@@ -896,90 +854,99 @@ public final class ModernSettingsDialog {
                         "Tukar 4-digit PIN kawalan ibu bapa (PIN Semasa: " + (ChildModeManager.getPin(activity).equals("0000") ? "0000 [Lalai]" : "••••") + ")",
                         () -> showChangePinDialog(activity, density, outfit)));
 
-            } else if (tab == TAB_GENERAL) {
-                // === TAB 7: GENERAL ===
-                addHeader(rightContent, outfit, "General");
+            } else if (tab == TAB_DEVICE_SETTINGS) {
+                // === TAB: DEVICE SETTINGS (GENERAL + REMOTE + ACCESSIBILITY + TV) ===
+                addHeader(rightContent, outfit, AppLanguage.strDeviceSettings(activity));
 
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔄 Mulakan Semula TV (Restart TV)", "Mulai ulang sistem Android TV",
-                        activity::showRestartDialog));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔌 Padamkan TV (Turn Off TV)", "Kirim perintah tidur atau daya ke Android TV",
-                        activity::showTurnOffDialog));
-
-                long freeBytes = CacheCleaner.getFreeStorageBytes();
-                long totalBytes = CacheCleaner.getTotalStorageBytes();
-                String freeStr = android.text.format.Formatter.formatFileSize(activity, freeBytes);
-                String totalStr = android.text.format.Formatter.formatFileSize(activity, totalBytes);
-
-                rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📊 Status Storan TV", "Ruang Bebas: " + freeStr + " daripada " + totalStr + " (" + (100 - CacheCleaner.usedPercent()) + "% bebas)"));
-
-            } else if (tab == TAB_TV) {
-                // === TAB 8: TV & SISTEM (NATIVE 4K RECOGNITION) ===
-                addHeader(rightContent, outfit, "TV & Sistem");
-
+                addSectionHeader(rightContent, outfit, "KONTROL & AKSESIBILITAS");
                 Display display = activity.getWindowManager().getDefaultDisplay();
                 Display.Mode mode = (display != null) ? display.getMode() : null;
                 int physW = (mode != null) ? mode.getPhysicalWidth() : dm.widthPixels;
                 int physH = (mode != null) ? mode.getPhysicalHeight() : dm.heightPixels;
                 float fps = (mode != null) ? mode.getRefreshRate() : 60f;
 
-                String resTitle;
-                if (physW >= 3840 || physH >= 2160) {
-                    resTitle = "4K Ultra HD (" + physW + " × " + physH + " @" + Math.round(fps) + "Hz)";
-                } else if (physW >= 2560) {
-                    resTitle = "2K QHD (" + physW + " × " + physH + " @" + Math.round(fps) + "Hz)";
-                } else if (physW >= 1920 || dm.widthPixels >= 1920) {
-                    resTitle = "Full HD (" + physW + " × " + physH + " @" + Math.round(fps) + "Hz)";
-                } else {
-                    resTitle = physW + " × " + physH + " @" + Math.round(fps) + "Hz";
-                }
-
-                rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📺 Model TV", Build.MODEL + " (" + Build.MANUFACTURER + ")"));
-
-                rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "🤖 Versi Android TV", "Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ")"));
-
-                rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📐 Resolusi Paparan TV", resTitle));
-
-                rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "🖥️ Resolusi UI Framebuffer", dm.widthPixels + " × " + dm.heightPixels + " (" + Math.round(density * 160) + " dpi · 60fps lancar)"));
-
                 Intent homeIntent = new Intent(Intent.ACTION_MAIN);
                 homeIntent.addCategory(Intent.CATEGORY_HOME);
                 ResolveInfo resolveInfo = activity.getPackageManager().resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY);
                 boolean isDefault = resolveInfo != null && activity.getPackageName().equals(resolveInfo.activityInfo.packageName);
-                String activePkg = resolveInfo != null ? resolveInfo.activityInfo.packageName : "Tiada";
+                String activePkg = resolveInfo != null ? resolveInfo.activityInfo.packageName : "Tidak diketahui";
 
-                String homeSub = isDefault ? "✅ Aktif sebagai pelancar utama default TV" : "⚠️ Butang Home masih dikawal oleh: " + activePkg;
+                String homeSub = isDefault ? "Glass TV aktif sebagai peluncur utama." : "Peluncur aktif saat ini: " + activePkg;
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🏠 Tetapkan Sebagai Pelancar Utama (Default Home)",
-                        homeSub + " — Klik untuk panduan kunci butang Home",
+                        "🏠 Status & Pengaturan Peluncur Utama", homeSub + " Pilih untuk melihat cara menetapkan Glass TV sebagai Home.",
                         () -> showDefaultLauncherDialog(activity, density, outfit, isDefault, activePkg)));
 
-                boolean hasUpdate = AppUpdateManager.isUpdateAvailable(activity);
-                String otaTitle = hasUpdate ? "🚀 Kemas Kini Sistem (OTA Update) 🔴" : "🚀 Kemas Kini Sistem (OTA Update)";
-                String otaSub = hasUpdate
-                        ? "Kemas kini baharu (v" + AppUpdateManager.getNewVersionName(activity) + ") sedia dipasang! Klik untuk kemas kini."
-                        : "Semak versi terkini Glass TV Home (" + activity.getAppVersionName() + ")";
-
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        otaTitle, otaSub,
+                        "♿ Aksesibilitas & Tombol Remote",
+                        "Buka pengaturan Android untuk mengaktifkan layanan tombol Home dan navigasi remote Glass TV.",
                         () -> {
-                            if (hasUpdate) {
-                                AppUpdateManager.checkForUpdates(activity, true);
-                            } else {
-                                activity.showAutoUpdateDialog();
+                            SoundEffects.playSelect();
+                            try {
+                                activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                            } catch (Exception e) {
+                                Toast.makeText(activity, "Buka Pengaturan TV > Sistem > Aksesibilitas.", Toast.LENGTH_LONG).show();
                             }
                         }));
 
+                addSectionHeader(rightContent, outfit, "DAYA & PEMELIHARAAN");
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "⚙️ Buka Tetapan Penuh Android TV", "Akses menu tetapan asal pengeluar peranti",
-                        () -> activity.startActivity(new Intent(Settings.ACTION_SETTINGS))));
+                        "🔄 Mulai Ulang TV", "Mulai ulang sistem Android TV.",
+                        activity::showRestartDialog));
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "⏻ Matikan / Siagakan TV", "Buka menu daya Android TV. Pilihan yang tersedia bergantung pada perangkat.",
+                        activity::showTurnOffDialog));
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "🧹 Bersihkan Cache TV", "Bersihkan berkas sementara tanpa menghapus data akun aplikasi.",
+                        activity::showCleanTvCacheDialog));
+
+                long freeBytes = CacheCleaner.getFreeStorageBytes();
+                long totalBytes = CacheCleaner.getTotalStorageBytes();
+                String freeStr = android.text.format.Formatter.formatFileSize(activity, freeBytes);
+                String totalStr = android.text.format.Formatter.formatFileSize(activity, totalBytes);
+                rightContent.addView(buildInfoCard(activity, density, outfit,
+                        "📊 Kapasitas Penyimpanan", "Ruang kosong: " + freeStr + " dari " + totalStr + " (" + (100 - CacheCleaner.usedPercent()) + "% tersedia)"));
+
+                addSectionHeader(rightContent, outfit, "INFORMASI PERANGKAT");
+                String resTitle;
+                if (physW >= 3840 || physH >= 2160) {
+                    resTitle = "4K Ultra HD (" + physW + " × " + physH + " @" + Math.round(fps) + " Hz)";
+                } else if (physW >= 2560 || physH >= 1440) {
+                    resTitle = "2K QHD (" + physW + " × " + physH + " @" + Math.round(fps) + " Hz)";
+                } else if (physW >= 1920 || physH >= 1080 || dm.widthPixels >= 1920) {
+                    resTitle = "Full HD (" + physW + " × " + physH + " @" + Math.round(fps) + " Hz)";
+                } else {
+                    resTitle = physW + " × " + physH + " @" + Math.round(fps) + " Hz";
+                }
+
+                rightContent.addView(buildInfoCard(activity, density, outfit,
+                        "📺 Model Perangkat", Build.MODEL + " (" + Build.MANUFACTURER + ")"));
+                rightContent.addView(buildInfoCard(activity, density, outfit,
+                        "🤖 Versi Android", "Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ")"));
+                rightContent.addView(buildInfoCard(activity, density, outfit,
+                        "📐 Resolusi Fisik Layar", resTitle));
+                rightContent.addView(buildInfoCard(activity, density, outfit,
+                        "🖥️ Resolusi Antarmuka", dm.widthPixels + " × " + dm.heightPixels + " (" + Math.round(density * 160) + " dpi)"));
+
+                addSectionHeader(rightContent, outfit, "PEMBARUAN & PENGATURAN SISTEM");
+                boolean hasUpdate = AppUpdateManager.isUpdateAvailable(activity);
+                String otaTitle = hasUpdate ? "🚀 Pembaruan Glass TV tersedia 🔴" : "🚀 Periksa Pembaruan Glass TV";
+                String otaSub = hasUpdate
+                        ? "Versi baru " + AppUpdateManager.getNewVersionName(activity) + " siap dipasang."
+                        : "Periksa apakah versi terbaru Glass TV Home tersedia.";
+                rightContent.addView(buildCardRow(activity, density, outfit, otaTitle, otaSub,
+                        () -> {
+                            if (hasUpdate) AppUpdateManager.checkForUpdates(activity, true);
+                            else activity.showAutoUpdateDialog();
+                        }));
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "⚙️ Pengaturan Android", "Buka pengaturan asli Android TV.",
+                        () -> {
+                            try {
+                                activity.startActivity(new Intent(Settings.ACTION_SETTINGS));
+                            } catch (Exception e) {
+                                Toast.makeText(activity, "Pengaturan Android tidak dapat dibuka pada perangkat ini.", Toast.LENGTH_SHORT).show();
+                            }
+                        }));
             }
         };
 
@@ -1010,6 +977,18 @@ public final class ModernSettingsDialog {
         }
 
         profileCard.requestFocus();
+    }
+
+    private static void addSectionHeader(LinearLayout root, Typeface font, String title) {
+        TextView tv = new TextView(root.getContext());
+        tv.setText(title);
+        tv.setTextSize(11.5f);
+        tv.setTextColor(0xFF7DD3FC);
+        tv.setTypeface(font, Typeface.BOLD);
+        tv.setLetterSpacing(0.08f);
+        tv.setPadding(0, (int) (16 * root.getContext().getResources().getDisplayMetrics().density),
+                0, (int) (7 * root.getContext().getResources().getDisplayMetrics().density));
+        root.addView(tv);
     }
 
     private static void addHeader(LinearLayout root, Typeface font, String title) {
