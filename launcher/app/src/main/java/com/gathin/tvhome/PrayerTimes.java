@@ -107,6 +107,11 @@ final class PrayerTimes {
                 String cachedZone = prefs.getString("cached_zone", "");
 
                 if (zone != null && zone.startsWith("ID_")) {
+                    if (!"ID_PGA".equals(zone)) {
+                        Log.w(TAG, "No verified Kemenag city timetable configured for " + zone + "; using local fallback only");
+                        if (onUpdated != null) new Handler(Looper.getMainLooper()).post(onUpdated);
+                        return;
+                    }
                     int year = now.get(Calendar.YEAR);
                     String cachedJson = prefs.getString(KEY_JSON, null);
                     if (!force && zone.equals(cachedZone) && prefs.getInt(KEY_YEAR, 0) == year
@@ -588,7 +593,7 @@ final class PrayerTimes {
             if (jsonStr == null || requestedDate == null) return null;
             JSONObject obj = new JSONObject(jsonStr);
             String activeZone = getActiveZone(context);
-            if (activeZone != null && activeZone.startsWith("ID_")) {
+            if ("ID_PGA".equals(activeZone)) {
                 TimeZone tz = getPrayerTimeZone(context);
                 Calendar target = (Calendar) requestedDate.clone();
                 target.setTimeZone(tz);
