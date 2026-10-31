@@ -2065,7 +2065,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * with no dip to plain in between, whether the move is along the dock, down into the grid or
      * back up again.
      */
+    private boolean isIconGlowEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
+    }
+
+    private void applyIconGlowPreference() {
+        if (ambient == null) return;
+        if (!isIconGlowEnabled()) {
+            if (glowBlend != null) glowBlend.cancel();
+            ambient.animate().cancel();
+            ambientShown = false;
+            ambient.setAlpha(0f);
+            syncGlassGlow();
+        } else if (grid != null && adapter != null) {
+            View focused = grid.getFocusedChild();
+            int position = focused == null ? RecyclerView.NO_POSITION : grid.getChildAdapterPosition(focused);
+            if (position != RecyclerView.NO_POSITION) showAmbient(adapter.ambientColorAt(position));
+        }
+    }
+
     private void showAmbient(int color) {
+        if (!isIconGlowEnabled()) {
+            ambientShown = false;
+            ambient.animate().cancel();
+            ambient.setAlpha(0f);
+            syncGlassGlow();
+            return;
+        }
         if (!ambientShown) {
             setAmbient(color);
             ambient.animate().alpha(1f).setDuration(reducedMotion ? 160 : 600)
@@ -3967,6 +3993,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 : (AppLanguage.LANG_EN.equals(curLang) ? "Static wallpaper without weather animations" : (AppLanguage.LANG_ID.equals(curLang) ? "Hanya wallpaper statis tanpa animasi cuaca" : "Hanya wallpaper pegun tanpa animasi cuaca"));
         options.add(new WallpaperOption("TOGGLE_WEATHER_OVERLAY", tWtr, sWtr));
 
+        boolean isIconGlowOn = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
+        String glowState = isIconGlowOn
+                ? (AppLanguage.LANG_EN.equals(curLang) ? "ON" : "Aktif")
+                : (AppLanguage.LANG_EN.equals(curLang) ? "OFF" : "Nonaktif");
+        String tGlow = (AppLanguage.LANG_EN.equals(curLang) ? "✨ App Icon Glow: " : "✨ Efek Cahaya Ikon: ") + glowState;
+        String sGlow = isIconGlowOn
+                ? (AppLanguage.LANG_EN.equals(curLang) ? "Colour glow follows the focused app icon" : "Cahaya dan warna mengikuti ikon aplikasi yang dipilih")
+                : (AppLanguage.LANG_EN.equals(curLang) ? "Disable colour transitions and glow when moving between app icons" : "Matikan perubahan warna dan cahaya saat berpindah antarikon aplikasi");
+        options.add(new WallpaperOption("TOGGLE_ICON_GLOW", tGlow, sGlow));
+
         String tNxt = AppLanguage.LANG_EN.equals(curLang) ? "⏭️ Change Wallpaper Now" : (AppLanguage.LANG_ID.equals(curLang) ? "⏭️ Ganti Gambar Sekarang" : "⏭️ Tukar Gambar Sekarang");
         String sNxt = AppLanguage.LANG_EN.equals(curLang) ? "Cycle and display next wallpaper immediately" : (AppLanguage.LANG_ID.equals(curLang) ? "Putar dan tampilkan gambar berikutnya sekarang juga" : "Putar dan paparkan gambar seterusnya serta-merta");
         options.add(new WallpaperOption("NEXT", tNxt, sNxt));
@@ -4143,8 +4179,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
                     boolean newMode = !current;
                     getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", newMode).apply();
-                    Toast.makeText(MainActivity.this, newMode ? "🌧️ Dynamic Weather Overlay Dihidupkan (ON)" : "⛅ Dynamic Weather Overlay Dimatikan (OFF)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, newMode ? "🌧️ Animasi cuaca diaktifkan" : "⛅ Animasi cuaca dinonaktifkan", Toast.LENGTH_SHORT).show();
                     updateWeatherOverlay(HomeWeather.last(MainActivity.this));
+                    showWallpaperDialog();
+                } else if ("TOGGLE_ICON_GLOW".equals(chosenKey)) {
+                    boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
+                    boolean newMode = !current;
+                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("icon_glow_effects", newMode).apply();
+                    applyIconGlowPreference();
+                    Toast.makeText(MainActivity.this, newMode ? "✨ Efek cahaya ikon diaktifkan" : "✨ Efek cahaya ikon dinonaktifkan", Toast.LENGTH_SHORT).show();
                     showWallpaperDialog();
                 } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
                     showCustomWallpaperManagerDialog();
