@@ -338,6 +338,10 @@ public class WallpaperUploadServer {
             sendUploadError(out, 400, "Ukuran foto tidak valid (maksimal 60 MB per foto).");
             return;
         }
+        if (!StandbyPhotoStore.canAcceptUpload(context, contentLength)) {
+            sendUploadError(out, 400, "Koleksi Layar Siaga penuh. Batasnya 100 foto atau 512 MB, dan TV harus menyisakan ruang penyimpanan.");
+            return;
+        }
 
         File standbyDir = new File(context.getFilesDir(), "standby_photos");
         if (!standbyDir.exists() && !standbyDir.mkdirs()) {
@@ -372,6 +376,12 @@ public class WallpaperUploadServer {
             sendUploadError(out, 400, !complete
                     ? "Unggahan tidak lengkap. Silakan coba lagi."
                     : "Berkas bukan foto yang didukung atau resolusinya terlalu besar.");
+            return;
+        }
+
+        if (!StandbyPhotoStore.addUploadedFile(context, targetFile)) {
+            targetFile.delete();
+            sendUploadError(out, 400, "Koleksi Layar Siaga penuh atau ruang penyimpanan tidak mencukupi.");
             return;
         }
 
@@ -424,7 +434,7 @@ public class WallpaperUploadServer {
                 + "<button id='send' disabled>Unggah Foto ke TV</button><div id='status'>Belum ada foto dipilih.</div>"
                 + "<div id='bar'><div id='fill'></div></div>"
                 + "<small>Foto disimpan sebagai salinan di folder khusus Layar Siaga. Koleksi wallpaper dan wallpaper aktif tidak akan diubah. "
-                + "Maksimal 60 MB per foto.</small></main><script>"
+                + "Maksimal 60 MB per foto, 100 foto, atau total 512 MB.</small></main><script>"
                 + "const endpoint='" + endpoint + "';const input=document.getElementById('files');"
                 + "const send=document.getElementById('send');const status=document.getElementById('status');"
                 + "const fill=document.getElementById('fill');let files=[];"
