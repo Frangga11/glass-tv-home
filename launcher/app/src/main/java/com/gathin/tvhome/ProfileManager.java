@@ -262,6 +262,7 @@ public final class ProfileManager {
                         if (old.getParentFile().equals(dir) && old.isFile()) old.delete();
                     } catch (Exception ignored) {}
                 }
+                cleanupOrphanedAvatarUploads(context);
                 return true;
             }
         }
@@ -416,6 +417,7 @@ public final class ProfileManager {
         if (toRemove.customAvatarPath != null) {
             try { new File(toRemove.customAvatarPath).delete(); } catch (Exception ignored) {}
         }
+        cleanupOrphanedAvatarUploads(context);
 
         String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
         if (profileId.equals(activeId)) {
