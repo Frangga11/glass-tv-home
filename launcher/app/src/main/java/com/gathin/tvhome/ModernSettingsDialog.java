@@ -797,6 +797,24 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, AppLanguage.strVisualEffects(activity));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "🎞️ Animasi Ikon & Fokus Aplikasi",
+                        "Aktifkan atau matikan gerakan zoom dan transisi label saat berpindah aplikasi. Tidak memengaruhi animasi cuaca atau efek kaca.",
+                        activity.isIconAnimationsEnabled(), isChecked -> {
+                            activity.setIconAnimationsEnabled(isChecked);
+                            Toast.makeText(activity, isChecked ? "Animasi ikon diaktifkan." : "Animasi ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        }));
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "🪟 Glass Effect",
+                        "Aktifkan atau matikan material kaca buram, lapisan transparan, dan garis tepi pada dock serta tombol. Penanda fokus remote tetap berfungsi.",
+                        activity.isGlassEffectsEnabled(), isChecked -> {
+                            activity.setGlassEffectsEnabled(isChecked);
+                            Toast.makeText(activity, isChecked ? "Glass Effect diaktifkan." : "Glass Effect dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        }));
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
                         "🌧️ Animasi Cuaca pada Wallpaper",
                         "Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.",
                         activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
@@ -806,8 +824,8 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "✨ Efek Cahaya & Warna Ikon",
-                        "Atur cahaya latar dan transisi warna yang mengikuti aplikasi saat dipilih. Tidak memengaruhi animasi cuaca.",
+                        "✨ Cahaya Ambient Ikon",
+                        "Atur cahaya latar dan perpaduan warna yang mengikuti aplikasi saat dipilih. Terpisah dari animasi ikon, Glass Effect, dan animasi cuaca.",
                         activity.isIconGlowEffectsEnabled(), isChecked -> {
                             activity.setIconGlowEffectsEnabled(isChecked);
                             Toast.makeText(activity, isChecked ? "Efek cahaya ikon diaktifkan." : "Efek cahaya ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
