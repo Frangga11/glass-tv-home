@@ -626,7 +626,7 @@ public final class ModernSettingsDialog {
                     pRow.addView(ivP, ivpLp2);
 
                     TextView tvPName = new TextView(activity);
-                    tvPName.setText(p.name + (p.isChild ? " (Mod Kanak-kanak)" : ""));
+                    tvPName.setText(p.name + (p.isChild ? " (Mode Anak)" : ""));
                     tvPName.setTextSize(13.5f);
                     tvPName.setTextColor(0xFFFFFFFF);
                     tvPName.setTypeface(outfit, isCur ? Typeface.BOLD : Typeface.NORMAL);
@@ -676,7 +676,7 @@ public final class ModernSettingsDialog {
                             // Show options: Switch or Delete
                             AlertDialog.Builder ob = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
                             ob.setTitle("Pengguna: " + p.name);
-                            String[] opts = allProfiles.size() > 1 ? new String[]{"✨ Tukar ke Profil Ini", "🗑️ Padam Pengguna"} : new String[]{"✨ Tukar ke Profil Ini"};
+                            String[] opts = allProfiles.size() > 1 ? new String[]{"✨ Beralih ke Profil Ini", "🗑️ Hapus Pengguna"} : new String[]{"✨ Beralih ke Profil Ini"};
                             ob.setItems(opts, (d, which) -> {
                                 if (which == 0) {
                                     ProfileManager.setActiveProfile(activity, p.id);
@@ -864,12 +864,12 @@ public final class ModernSettingsDialog {
                         "🛡️ Status Mode Anak",
                         "Kunci aplikasi dengan PIN 4 digit atau sembunyikan aplikasi dari layar utama",
                         isChildOn, isChecked -> {
-                            ChildModeManager.promptPin(activity, "Sahkan PIN Keselamatan", "Masukkan PIN 4-digit untuk menukar mod ini", new ChildModeManager.PinCallback() {
+                            ChildModeManager.promptPin(activity, "Sahkan PIN Keselamatan", "Masukkan PIN 4 digit untuk mengubah mode ini", new ChildModeManager.PinCallback() {
                                 @Override
                                 public void onSuccess() {
                                     ChildModeManager.setChildModeEnabled(activity, isChecked);
                                     activity.reloadTiles();
-                                    Toast.makeText(activity, isChecked ? "✅ Mode Kanak-kanak diaktifkan!" : "Mode Kanak-kanak dimatikan", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, isChecked ? "✅ Mode Anak diaktifkan!" : "Mode Anak dinonaktifkan", Toast.LENGTH_SHORT).show();
                                     if (renderRightPane[0] != null) renderRightPane[0].run();
                                 }
 
@@ -891,7 +891,7 @@ public final class ModernSettingsDialog {
                         () -> showAppLockPicker(activity, density, outfit, true)));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔢 Tukar Kod PIN Keselamatan",
+                        "🔢 Ubah PIN Keamanan",
                         "Ubah PIN kontrol orang tua 4 digit (PIN saat ini: " + (ChildModeManager.getPin(activity).equals("0000") ? "0000 [Lalai]" : "••••") + ")",
                         () -> showChangePinDialog(activity, density, outfit)));
 
@@ -1337,7 +1337,7 @@ public final class ModernSettingsDialog {
         ChildModeManager.promptPin(activity, "Sahkan PIN Semasa", "Masukkan 4-digit PIN keselamatan semasa", new ChildModeManager.PinCallback() {
             @Override
             public void onSuccess() {
-                ChildModeManager.promptPin(activity, "Tetapkan PIN Baharu", "Masukkan 4-digit PIN baharu untuk kawalan ibu bapa", new ChildModeManager.PinCallback() {
+                ChildModeManager.promptPin(activity, "Atur PIN Baru", "Masukkan PIN 4 digit baru untuk kontrol orang tua", new ChildModeManager.PinCallback() {
                     @Override
                     public void onSuccess() {
                         Toast.makeText(activity, "✅ PIN Keselamatan Berjaya Dikemaskini!", Toast.LENGTH_SHORT).show();
@@ -1398,14 +1398,14 @@ public final class ModernSettingsDialog {
         pickerLayout.setBackground(bg);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText(isHideMode ? "👁️ Sembunyikan Aplikasi dari Skrin Utama" : "🔒 Kunci Aplikasi dengan PIN 4-Digit");
+        tvTitle.setText(isHideMode ? "👁️ Sembunyikan Aplikasi dari Layar Utama" : "🔒 Kunci Aplikasi dengan PIN 4-Digit");
         tvTitle.setTextSize(17);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(font, Typeface.BOLD);
         pickerLayout.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText(isHideMode ? "Aplikasi yang ditandakan tidak akan dipaparkan pada skrin utama." : "Aplikasi yang dipilih memerlukan kod PIN untuk dibuka.");
+        tvSub.setText(isHideMode ? "Aplikasi yang dipilih tidak akan ditampilkan di layar utama." : "Aplikasi yang dipilih memerlukan kod PIN untuk dibuka.");
         tvSub.setTextSize(12);
         tvSub.setTextColor(0xFF8E929E);
         tvSub.setTypeface(font, Typeface.NORMAL);
@@ -1549,7 +1549,7 @@ public final class ModernSettingsDialog {
 
         TextView tvDesc = new TextView(activity);
         String desc = isDefault
-                ? "✅ Tahniah! Glass TV Home kini merupakan pelancar lalai utama peranti anda. Setiap kali butang Home ditekan pada alat kawalan jauh, anda akan terus kembali ke Glass TV."
+                ? "✅ Berhasil! Glass TV Home kini menjadi peluncur utama perangkat Anda. Setiap kali butang Home ditekan pada alat kawalan jauh, anda akan terus kembali ke Glass TV."
                 : "⚠️ Pelancar aktif semasa: " + activePkg + "\n\nKebanyakan Android TV dan Google TV menyekat butang Home supaya tetap membuka skrin asal pengeluar. Sila pilih kaedah di bawah untuk mengunci Glass TV sebagai pelancar utama:";
         tvDesc.setText(desc);
         tvDesc.setTextSize(13f);
@@ -1562,7 +1562,7 @@ public final class ModernSettingsDialog {
 
         // Option 1: Open TV Settings
         LinearLayout btnSettings = buildCardRow(activity, density, font,
-                "⚙️ Buka Tetapan Pemilih Pelancar TV",
+                "⚙️ Buka Pengaturan Pemilih Peluncur TV",
                 "Cuba buka menu Android untuk memilih Glass TV sebagai Default Home (jika disokong oleh TV)",
                 () -> {
                     try {
@@ -1573,7 +1573,7 @@ public final class ModernSettingsDialog {
                             Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
                             activity.startActivity(intent);
                         } catch (Exception e2) {
-                            Toast.makeText(activity, "Menu tetapan pelancar tidak disokong pada firmware ini.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "Menu pengaturan peluncur tidak didukung oleh firmware ini.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
