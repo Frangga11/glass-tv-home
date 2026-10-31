@@ -2,7 +2,7 @@
 
 **Roadmap:** GTVH-BRR-001 v1.0  
 **Checkpoint created:** 1 November 2026  
-**Status:** SOURCE + APK IDENTITY LOCKED; ROLLBACK PROCEDURE DOCUMENTED; LIVE DEVICE SNAPSHOT NOT YET CAPTURED  
+**Status:** A06 COMPLETE — SOURCE/APK BASELINE LOCKED; DEVICE SNAPSHOT CAPTURED; ROLLBACK SOP DOCUMENTED  
 **Checkpoint branch:** `checkpoint/a06-tested-apk-pr9-7e8392e1`
 
 ## 1. Official tested APK identity — accepted baseline
@@ -36,18 +36,52 @@ Evidence:
 
 Branch `checkpoint/a06-tested-apk-pr9-7e8392e1` was created directly from exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. It is a preservation ref. Do not move it. Development must continue on designated feature branches. No PR was merged.
 
-## 3. Device-state evidence and limitation
+## 3. Device-state snapshot — captured 1 November 2026
 
-Historical Bugjaeger/ADB outputs previously shared by the user (31 October 2026):
-- `pm list packages -d`: `com.mitv.tvhome` appeared in the disabled-package list.
-- Enabled-package search: `com.google.android.tvlauncher` and `com.gathin.tvhome` appeared.
-- `get-home-activities` returned `unknown`.
-- `set-home-activity` returned `Success`.
-- `am start` reported that the Glass TV Home launcher activity was already running.
+The user supplied the following read-only Bugjaeger/ADB output from the target device.
 
-These are accepted as historical device observations. They are not a fresh snapshot and do not identify the current HOME resolver or prove the installed APK bytes/hash. This is a bounded documentation gap only; it does not invalidate or reopen the user's historical APK test.
+### Device identity
 
-**No device mutation is authorized by this checkpoint.** Before any future change to package enabled states, HOME/default launcher, or installed APK, take a fresh read-only snapshot using the commands in section 5. Until then, the rollback steps must be treated as conditional and the actual current HOME owner as unknown.
+| Field | Captured value |
+|---|---|
+| Model | `MiTV-AYFR0` |
+| Android release | 11 |
+| SDK | 30 |
+| Build fingerprint | `Xiaomi/soul/soul:11/RTT0.211222.001/1546:user/release-keys` |
+
+### Installed Glass TV Home package
+
+| Field | Captured value |
+|---|---|
+| Package | `com.gathin.tvhome` |
+| APK path | `/data/app/~~816nBIzOXnBrEs1qYP1s1w==/com.gathin.tvhome-PKQ3gE07n8Ebj8ILlNzjxg==/base.apk` |
+| Version name / code | `4.0.0` / `40` |
+| minSdk / targetSdk | 26 / 34 |
+| Install / update time | 2026-11-01 00:38:53 / 2026-11-01 00:38:49 |
+| User 0 state | installed=true; hidden=false; suspended=false; stopped=false; enabled=0 (default enabled) |
+| Signing info shown by dumpsys | APK signing v2; signature digest prefix `9458f7bd` |
+
+The installed package metadata matches the baseline's recorded version name/code, but the installed `base.apk` was not pulled and hashed. Therefore the live installed APK has **not** been proven byte-for-byte identical to the accepted baseline APK. This does not change the user's accepted historical test or the independently verified uploaded baseline APK identity.
+
+### HOME resolver and package state
+
+- `cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME` returned:
+  `com.google.android.tvlauncher/.MainActivity`.
+- In the same `dumpsys package com.gathin.tvhome` output, the Preferred Activities section lists `com.gathin.tvhome/.MainActivity` as preferred/always, selected from the Google TV launcher, Glass TV Home, and FallbackHome candidates.
+- These two outputs conflict. Record the direct resolver result as the current command's resolved HOME activity, but do **not** claim the preference table is reconciled or infer the full user-visible HOME behavior from one command alone. This discrepancy is carried into E01 (device settings / launcher audit) for source and read-only device investigation before any launcher-default change.
+- `pm list packages -e` includes both `com.google.android.tvlauncher` and `com.gathin.tvhome`.
+- `pm list packages -d` does not list either of those packages. It lists `com.mitv.tvhome.atv` (among other packages) as disabled. This is a different package name from the historical `com.mitv.tvhome` observation; do not conflate them.
+- Accessibility service: `com.google.android.marvin.talkback/com.android.switchaccess.SwitchAccessService`.
+- Default input method: `com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME`.
+- `stay_on_while_plugged_in=0`.
+
+### Snapshot interpretation / residual risks
+
+1. Device identity is now captured and matches the previously recorded Android 11 / API 30 target.
+2. Both stock Google TV launcher and Glass TV Home packages are enabled. The stock launcher is returned by the HOME resolver, while the package's preferred-activity table records Glass TV Home. Treat this as a resolver/preferred-activity discrepancy, not as permission to change anything.
+3. Current installed package metadata is version 4.0.0/code 40, but its APK bytes/hash have not been extracted from the TV.
+4. Historical observation that `com.mitv.tvhome` was disabled differs from the fresh list, which reports `com.mitv.tvhome.atv` disabled. Package IDs must remain exact; no package action is authorized.
+5. No device setting or package state was changed during this capture.
 
 ## 4. Rollback procedure
 
@@ -59,31 +93,23 @@ The detailed procedure is in [A06_ROLLBACK_PROCEDURE.md](A06_ROLLBACK_PROCEDURE.
 - Do not factory-reset, clear app data, disable packages, or change HOME defaults during baseline capture.
 - No PR merge, candidate APK install, or launcher-default change is authorized by this checkpoint.
 
-## 5. Read-only snapshot required before any device mutation
+## 5. Snapshot provenance and future read-only checks
 
-When convenient, run this capture in Bugjaeger/ADB and retain the complete output:
+The complete read-only command set was run by the user and the output was received on 1 November 2026. No additional capture is required to close A06. If E01 needs to resolve the HOME/preferred-activity discrepancy, use a narrowly scoped read-only follow-up such as:
 
 ```sh
-getprop ro.product.model
-getprop ro.build.version.release
-getprop ro.build.version.sdk
-getprop ro.build.fingerprint
-pm path com.gathin.tvhome
-dumpsys package com.gathin.tvhome
+cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME
 cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME
-pm list packages -d
-pm list packages -e
-settings get secure enabled_accessibility_services
-settings get secure default_input_method
-settings get global stay_on_while_plugged_in
+dumpsys package preferred-activities
 ```
 
-This is read-only. It is requested to document present-day device state before a future device operation, not to repeat, validate, or challenge the user's previous test. No need to run it merely to reconfirm the APK baseline.
+Do not use `set-home-activity`, `pm enable`, `pm disable`, uninstall, clear-data, or install commands during that investigation.
 
 ## 6. Completion decision
 
 - A05 tested APK-to-source matching: **DONE**.
 - A06 exact source ref and APK identity checkpoint: **DONE**.
 - A06 rollback procedure: **DOCUMENTED**.
-- A06 live device-state snapshot: **NOT CAPTURED — historical evidence retained; current HOME owner and installed APK path/hash remain unknown**.
-- Overall A06: **IN PROGRESS / DEVICE-MUTATION GATE** until a fresh read-only snapshot is available. This is the only remaining A06 evidence gap; it does not block continued source-only work if the user elects to defer device operations.
+- A06 live device-state snapshot: **CAPTURED 1 November 2026**; model/build, installed package path/metadata, HOME resolver, enabled/disabled packages, accessibility, input method, and power setting recorded.
+- Residual E01 findings: HOME resolver returns stock launcher while preferred-activity table lists Glass TV Home; installed APK bytes/hash have not been extracted from the TV. Both are explicitly recorded and must not be silently inferred.
+- Overall A06: **DONE** — tested APK/source checkpoint, rollback SOP, and requested read-only device snapshot are documented. No device mutation was performed or authorized.
