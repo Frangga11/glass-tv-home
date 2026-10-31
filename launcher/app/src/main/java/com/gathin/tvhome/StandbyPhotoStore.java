@@ -163,10 +163,10 @@ final class StandbyPhotoStore {
                 .getBoolean(KEY_MODE, false);
     }
 
-    static void setPhotoMode(Context context, boolean enabled) {
-        if (context == null) return;
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                .putBoolean(KEY_MODE, enabled).apply();
+    static boolean setPhotoMode(Context context, boolean enabled) {
+        if (context == null) return false;
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putBoolean(KEY_MODE, enabled).commit();
     }
 
     static int getPhotoCount(Context context) {
