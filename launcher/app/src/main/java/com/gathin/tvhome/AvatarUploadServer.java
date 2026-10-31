@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.SocketTimeoutException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -61,6 +62,7 @@ public final class AvatarUploadServer {
 
     public synchronized boolean start() {
         if (running) return true;
+        if (System.currentTimeMillis() >= expiresAt) return false;
         try {
             boundIp = getLocalIpAddress();
             if (boundIp == null || boundIp.trim().isEmpty() || "127.0.0.1".equals(boundIp)) return false;
@@ -71,6 +73,7 @@ public final class AvatarUploadServer {
                     server = new ServerSocket();
                     server.setReuseAddress(true);
                     server.bind(new InetSocketAddress(bindAddress, candidate));
+                    server.setSoTimeout(10000);
                     port = server.getLocalPort();
                     break;
                 } catch (Exception e) {
@@ -102,6 +105,13 @@ public final class AvatarUploadServer {
                     worker.setDaemon(true);
                     worker.start();
                 } catch (Exception e) {
+                    if (e instanceof SocketTimeoutException) {
+                        if (System.currentTimeMillis() >= expiresAt) {
+                            stop();
+                            break;
+                        }
+                        continue;
+                    }
                     if (running) Log.w(TAG, "Accept failed", e);
                 }
             }
