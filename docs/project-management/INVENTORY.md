@@ -12,6 +12,7 @@ Branches found:
 - `main`
 - `feature/settings-reorganization-standby-gallery`
 - `fix/avatar-photo-upload-audit`
+- `fix/avatar-qr-upload-single-photo`
 - `feature/independent-visual-effects-id`
 - `fix/power-off-accessibility`
 - `indonesia-pagar-alam`
@@ -24,6 +25,9 @@ Working baseline selected for the first comparison:
 
 Related avatar implementation candidate:
 - `fix/avatar-photo-upload-audit`
+
+Current QR avatar audit branch:
+- `fix/avatar-qr-upload-single-photo` (draft PR #6 into settings/gallery baseline)
 
 **Important:** branches are separate snapshots. A feature found on one branch must not be attributed to another branch until merged or cherry-picked.
 
@@ -56,10 +60,10 @@ This confirms the Gradle configuration only. It does not prove that a new APK wa
 | Settings navigation | ModernSettingsDialog defines 8 tabs: Profile, Home Screen, Appearance, Status & Weather, Effects, Standby, Child Mode, Device Settings | CONFIRMED-CODE |
 | Multi-user profiles | ProfileManager stores profile ID, name, avatar index, child flag in SharedPreferences JSON | CONFIRMED-CODE |
 | Built-in avatars | Seven animal avatars are registered | CONFIRMED-CODE |
-| Personal avatar photo | Absent on settings/gallery branch; first implementation exists on fix/avatar-photo-upload-audit branch | PARTIAL; branch integration and device test open |
+| Personal avatar photo | QR upload implementation on fix/avatar-qr-upload-single-photo; single-photo profile-scoped endpoint, old-photo cleanup after metadata commit | CODE IMPLEMENTED; CI and device verification pending |
 | Child Mode | Child mode / PIN manager is referenced by profile and settings flows | CONFIRMED-CODE; security and UX test open |
-| Top-bar avatar | Candidate avatar branch calls getAvatarDrawable for active profile | CONFIRMED-CODE on candidate branch |
-| Avatar in profile switcher | UserSwitchDialog candidate still renders built-in resource by avatarIndex | PARTIAL |
+| Top-bar avatar | QR audit branch calls getAvatarDrawable for active profile | CONFIRMED-CODE; device test pending |
+| Avatar in profile switcher | Candidate branch renders getAvatarDrawable for each profile | CONFIRMED-CODE; device test pending |
 | Avatar in add-profile flow | Candidate add-profile dialog still only selects one of seven built-ins | PARTIAL |
 | Wallpaper QR upload | WallpaperUploadServer exists and handles wallpaper upload workflow | CONFIRMED-CODE; security/network test open |
 | Standby gallery | MainActivity has a separate standby photo picker/store flow | CONFIRMED-CODE |
@@ -67,7 +71,7 @@ This confirms the Gradle configuration only. It does not prove that a new APK wa
 | Prayer times / Islamic shelf | PrayerTimes, Location, Azan and Islamic shelf are referenced in source | CONFIRMED-CODE; location/time accuracy test open |
 | Default wallpaper | Wallpaper system exists; exact default asset and selection logic still need audit | UNVERIFIED |
 | Icon animation | Spring / focus animations exist; exact per-icon animation policy needs audit | PARTIAL |
-| Avatar visual report | Seven default animal choices confirmed; custom-photo implementation only on candidate branch | PARTIAL |
+| Avatar visual report | Seven built-in avatars plus QR custom-photo flow; EXIF-aware downsampled rendering | PARTIAL; real-device QC pending |
 | Tab information layout | Tab names confirmed; final arrangement and screenshot acceptance not yet confirmed | PARTIAL |
 | Indonesian localization | Indonesia / Pagar Alam localization branch and AppLanguage support are in repository history | CONFIRMED-CODE; full string audit open |
 | OTA / update indicator | README / commit history describe background update checks and badge; current implementation needs dedicated audit | UNVERIFIED |
@@ -102,6 +106,19 @@ Finding:
 - Top-bar icon uses `getAvatarDrawable`.
 - Does not yet consistently use custom images in profile card/sidebar, profile-switch cards, or add-profile flow.
 - Requires validation of picker availability, EXIF rotation, lifecycle, replacement/rollback, and TV remote navigation.
+
+### C. QR replacement audit branch
+
+Branch: `fix/avatar-qr-upload-single-photo` (draft PR #6).
+
+- Adds `AvatarUploadServer.java`, a dedicated single-image QR endpoint with a random token, five-minute expiry, 15 MB cap, and image validation.
+- QR upload is separate from wallpaper and standby photo endpoints.
+- `ProfileManager.replaceCustomAvatar` commits the new profile path before deleting the previous file.
+- Reset-to-built-in uses a synchronous preference commit before deleting the old custom file.
+- Avatar rendering downsamples images and reads EXIF orientation.
+- Stale `.upload` temporary files older than ten minutes are cleaned at launcher startup.
+- Android document-picker avatar upload was removed from the active flow.
+- CI and actual TV/phone tests remain pending; see AVATAR_AUDIT.md.
 
 ## 5. Key files identified
 
