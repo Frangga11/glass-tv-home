@@ -813,7 +813,7 @@ public final class ModernSettingsDialog {
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "➕ Pilih Foto untuk Layar Siaga",
-                        "Tambahkan satu atau beberapa foto dari penyimpanan TV, USB, atau sumber berkas yang tersedia. Foto sebelumnya tetap tersimpan.",
+                        "Tambahkan foto dari penyimpanan TV atau USB. Foto sebelumnya tetap tersimpan; USB harus tetap terpasang agar fotonya dapat dibaca.",
                         activity::pickStandbyPhotos));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
@@ -835,8 +835,8 @@ public final class ModernSettingsDialog {
                 }
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🌙 Uji Tampilan Layar Siaga Sekarang",
-                        "Pratinjau tampilan jam bawaan atau foto pribadi sesuai mode yang dipilih.",
+                        "🌙 Pratinjau Layar Siaga Sekarang",
+                        "Lihat pratinjau jam atau foto pribadi di dalam aplikasi sesuai mode yang dipilih.",
                         activity::showNightstandScreensaver));
 
             } else if (tab == TAB_CHILD_MODE) {
