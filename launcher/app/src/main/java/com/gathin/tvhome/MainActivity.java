@@ -14,6 +14,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -75,6 +76,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gathin.tvhome.qrcode.QrBitmapUtil;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -367,6 +370,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StandbyPhotoStore.cleanupOrphanedUploads(this);
+        ProfileManager.cleanupOrphanedAvatarUploads(this);
         sInstance = new java.lang.ref.WeakReference<>(this);
         SoundEffects.init(this);
         setContentView(R.layout.activity_main);
@@ -3002,7 +3006,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ProfileManager.UserProfile active = ProfileManager.getActiveProfile(this);
             boolean isChild = ChildModeManager.isChildModeEnabled(this);
             int size = Math.round(26 * density);
-            android.graphics.drawable.Drawable avDrawable = ProfileManager.getCircularAvatarDrawable(this, active.avatarIndex, size, isChild);
+            android.graphics.drawable.Drawable avDrawable = ProfileManager.getAvatarDrawable(this, active, size, isChild);
             if (avDrawable != null) {
                 tv.setCompoundDrawablesWithIntrinsicBounds(avDrawable, null, null, null);
                 tv.setCompoundDrawableTintList(null);
@@ -4076,6 +4080,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private Dialog qrUploadDialog;
     private WallpaperUploadServer uploadServer;
+    private AvatarUploadServer avatarUploadServer;
     private ImageView qrImageView;
     private TextView qrStatusText;
     private TextView qrUrlText;
@@ -5056,6 +5061,41 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /** Starts a short-lived, profile-scoped QR upload session for exactly one avatar photo. */
+    void showAvatarUploadQrDialog(String profileId, Runnable onUpdated) {
+        if (profileId == null || profileId.trim().isEmpty()) return;
+        if (qrUploadDialog != null && qrUploadDialog.isShowing()) qrUploadDialog.dismiss();
+        if (uploadServer != null) { uploadServer.stop(); uploadServer = null; }
+        if (avatarUploadServer != null) { avatarUploadServer.stop(); avatarUploadServer = null; }
+        String ip = AvatarUploadServer.getLocalIpAddress();
+        if (ip == null || "127.0.0.1".equals(ip)) {
+            Toast.makeText(this, "TV belum terhubung ke Wi-Fi atau Ethernet.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        avatarUploadServer = new AvatarUploadServer(this, profileId, file -> {
+            boolean saved = ProfileManager.replaceCustomAvatar(this, profileId, file);
+            if (saved) runOnUiThread(() -> {
+                updateTopBarUserIcon();
+                if (onUpdated != null) onUpdated.run();
+                if (qrStatusText != null) {
+                    qrStatusText.setText("✓ Avatar berhasil diperbarui. Foto sebelumnya telah dihapus.");
+                    qrStatusText.setTextColor(0xFF4ADE80);
+                }
+                if (qrUrlText != null) qrUrlText.setText("Foto lama sudah dibersihkan dari penyimpanan avatar.");
+                Toast.makeText(this, "Foto avatar berhasil diganti.", Toast.LENGTH_LONG).show();
+            });
+            return saved;
+        });
+        if (!avatarUploadServer.start()) {
+            avatarUploadServer = null;
+            Toast.makeText(this, "Tidak dapat memulai layanan QR avatar.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        showPhoneUploadQrDialog("📷 Ganti Foto Avatar",
+                "Pindai QR dengan HP yang terhubung ke jaringan Wi-Fi yang sama. Pilih satu foto untuk profil aktif.",
+                avatarUploadServer.getUrl());
+    }
+
     void showWallpaperUploadQrDialog() {
         if (qrUploadDialog != null && qrUploadDialog.isShowing()) qrUploadDialog.dismiss();
         if (uploadServer != null) {
@@ -5118,6 +5158,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (uploadServer != null) {
                 uploadServer.stop();
                 uploadServer = null;
+            }
+            if (avatarUploadServer != null) {
+                avatarUploadServer.stop();
+                avatarUploadServer = null;
             }
             Toast.makeText(this, "Kode QR tidak dapat dibuat.", Toast.LENGTH_LONG).show();
             return;
@@ -5224,6 +5268,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (uploadServer != null) {
                 uploadServer.stop();
                 uploadServer = null;
+            }
+            if (avatarUploadServer != null) {
+                avatarUploadServer.stop();
+                avatarUploadServer = null;
             }
             qrUploadDialog = null;
             qrImageView = null;

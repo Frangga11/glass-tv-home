@@ -182,7 +182,9 @@ public final class ModernSettingsDialog {
 
         ImageView profileAvatarView = new ImageView(activity);
         int curAvatarIdx = ProfileManager.getAvatarIndex(activity);
-        profileAvatarView.setImageResource(ProfileManager.getAvatarResId(curAvatarIdx));
+        ProfileManager.UserProfile sidebarProfile = ProfileManager.getActiveProfile(activity);
+        profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, sidebarProfile,
+                Math.round(38 * density), sidebarProfile.isChild));
         LinearLayout.LayoutParams pavLp = new LinearLayout.LayoutParams((int) (38 * density), (int) (38 * density));
         pavLp.setMarginEnd((int) (10 * density));
         profileCard.addView(profileAvatarView, pavLp);
@@ -288,7 +290,9 @@ public final class ModernSettingsDialog {
             if (isProfile) pcBg.setStroke((int) (1.5f * density), 0x55FFFFFF);
             profileCard.setBackground(pcBg);
 
-            profileAvatarView.setImageResource(ProfileManager.getAvatarResId(ProfileManager.getAvatarIndex(activity)));
+            ProfileManager.UserProfile sidebarActive = ProfileManager.getActiveProfile(activity);
+            profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, sidebarActive,
+                    Math.round(38 * density), sidebarActive.isChild));
             tvProfileName.setText(ProfileManager.getProfileName(activity));
 
             for (NavItem item : navItems) {
@@ -502,13 +506,21 @@ public final class ModernSettingsDialog {
 
                     frame.setOnClickListener(v -> {
                         SoundEffects.playSelect();
+                        // Always clear by looking up the current profile state; activeP is a render-time snapshot
+                        // and may not yet contain a photo uploaded moments earlier through the QR dialog.
+                        if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                            Toast.makeText(activity, "Foto avatar belum dapat dihapus. Avatar tidak diubah.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         ProfileManager.setAvatarIndex(activity, idx);
                         for (int k = 0; k < 7; k++) {
                             if (avatarRings[k] != null) {
                                 avatarRings[k].setVisibility(k == idx ? View.VISIBLE : View.GONE);
                             }
                         }
-                        profileAvatarView.setImageResource(ProfileManager.getAvatarResId(idx));
+                        ProfileManager.UserProfile refreshedProfile = ProfileManager.getActiveProfile(activity);
+                        profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
+                                Math.round(38 * density), refreshedProfile.isChild));
                         activity.updateTopBarUserIcon();
                         Toast.makeText(activity, "✨ Avatar dipilih: " + ProfileManager.AVATAR_NAMES[idx], Toast.LENGTH_SHORT).show();
                     });
@@ -516,6 +528,56 @@ public final class ModernSettingsDialog {
                     avatarRow.addView(frame);
                 }
                 rightContent.addView(avatarRow);
+
+                // Personal photo avatar actions; photos are copied into app-private storage by MainActivity.
+                LinearLayout avatarPhotoActions = new LinearLayout(activity);
+                avatarPhotoActions.setOrientation(LinearLayout.VERTICAL);
+                avatarPhotoActions.setPadding(0, 0, 0, (int) (12 * density));
+
+                Button uploadAvatarButton = new Button(activity);
+                uploadAvatarButton.setText("📲 Ganti Foto Avatar via QR Code");
+                uploadAvatarButton.setTextColor(0xFFFFFFFF);
+                uploadAvatarButton.setTextSize(13);
+                uploadAvatarButton.setAllCaps(false);
+                uploadAvatarButton.setFocusable(true);
+                GradientDrawable uploadAvatarBg = new GradientDrawable();
+                uploadAvatarBg.setColor(0xFF176B87);
+                uploadAvatarBg.setCornerRadius(10 * density);
+                uploadAvatarButton.setBackground(uploadAvatarBg);
+                uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
+                    ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
+                    profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
+                            Math.round(38 * density), updated.isChild));
+                }));
+                avatarPhotoActions.addView(uploadAvatarButton, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
+
+                Button defaultAvatarButton = new Button(activity);
+                defaultAvatarButton.setText("↩ Gunakan Avatar Bawaan");
+                defaultAvatarButton.setTextColor(0xFFCBD5E1);
+                defaultAvatarButton.setTextSize(13);
+                defaultAvatarButton.setAllCaps(false);
+                defaultAvatarButton.setFocusable(true);
+                GradientDrawable defaultAvatarBg = new GradientDrawable();
+                defaultAvatarBg.setColor(0xFF292D37);
+                defaultAvatarBg.setCornerRadius(10 * density);
+                defaultAvatarButton.setBackground(defaultAvatarBg);
+                LinearLayout.LayoutParams defaultAvatarLp = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
+                defaultAvatarLp.topMargin = (int) (6 * density);
+                defaultAvatarButton.setOnClickListener(v -> {
+                    if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                        Toast.makeText(activity, "Foto avatar belum dapat dihapus. Foto lama tetap digunakan.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
+                    profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
+                            Math.round(38 * density), restored.isChild));
+                    activity.updateTopBarUserIcon();
+                    Toast.makeText(activity, "Avatar bawaan dipulihkan.", Toast.LENGTH_SHORT).show();
+                });
+                avatarPhotoActions.addView(defaultAvatarButton, defaultAvatarLp);
+                rightContent.addView(avatarPhotoActions);
 
                 // Edit Active Profile Name Card
                 LinearLayout editNameCard = new LinearLayout(activity);
