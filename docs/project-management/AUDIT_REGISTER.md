@@ -150,9 +150,9 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Working branch: `feature/b01-global-navigation-retention`.
 - Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10.
 - Code changes: `MainActivity.java`, `ModernSettingsDialog.java`, `NavigationState.java`, `NavigationStateTest.java`, and `.github/workflows/ci.yml`.
-- Earlier exact-head CI #212 passed on the previous source snapshot; subsequent audit found additional focus-state edge cases and they have been corrected.
-- Current source head: `1613fef4d83102369a87178a881832a29295b8d7`; exact-head CI #224 is queued/pending at this checkpoint.
-- CI #213 failed on an intermediate commit because the helper constant was renamed before the dependent MainActivity references were migrated; the mismatch was corrected in subsequent commits, and CI #214–#221 passed on their respective intermediate snapshots. The final combined snapshot must still pass CI #224.
+- Earlier exact-head CI #212 passed on the previous source snapshot; subsequent audit found additional focus-state edge cases and they have been corrected. The complete second-pass snapshot now passes exact-head CI #225.
+- Current source head: `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`; exact-head CI #225 PASS.
+- CI #213 failed on an intermediate commit because the helper constant was renamed before dependent MainActivity references were migrated; this was corrected in subsequent commits. The final combined snapshot passed CI #225.
 - `.github/workflows/ci.yml` now gates publication of the final TV-test APK behind an explicit manual workflow-dispatch boolean. Normal PR CI still builds/tests the release variant but does not publish a TV-test artifact.
 - No APK has been installed on the TV and no device settings changed. Historical CI artifact #212 is a validation artifact only, not an approved TV-test build.
-- B01 source remediation remains IN PROGRESS pending exact-head CI #224; physical acceptance is deferred to the final integrated regression stage F02. Settings right-pane action-return focus remains assigned to B07.
+- B01 source remediation and exact-head CI are PASS; physical acceptance is deferred to the final integrated regression stage F02. Keep roadmap B01 IN PROGRESS until F02 acceptance. Settings right-pane action-return focus remains assigned to B07.
