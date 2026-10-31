@@ -294,6 +294,9 @@ public class WallpaperUploadServer {
                         }
                         fos.flush();
                         complete = remaining == 0 && targetFile.length() == contentLength;
+                    } catch (Exception e) {
+                        targetFile.delete();
+                        throw e;
                     }
 
                     // Verify the actual bytes before exposing the file to Home.
