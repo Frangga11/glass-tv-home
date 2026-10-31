@@ -5,9 +5,9 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.service.dreams.DreamService;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -176,8 +176,7 @@ public class ClockDream extends DreamService {
         }
     }
 
-
-    /** Keeps the clock and supporting text inside narrow TV viewports without changing the
+    /** Keeps the clock/ and supporting text inside narrow TV viewports without changing the
      * 110sp design size on normal widescreen displays. */
     private void applyResponsiveBounds() {
         if (content == null) return;
