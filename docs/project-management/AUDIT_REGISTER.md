@@ -15,16 +15,16 @@
 
 | ID | Severity | Area | Finding / risk | Required verification | Status |
 |---|---|---|---|---|---|
-| A-001 | P1 | Avatar integration | QR implementation is on dedicated branch and draft PR #6; not merged into settings/gallery baseline | Finish CI, device acceptance, then review/merge PR | OPEN — device gate; CI pass |
-| A-002 | P1 | Avatar surfaces | Shared avatar resolver is wired to top bar, Settings profile card, and profile switcher; add-profile starts with built-in avatar | Verify all surfaces and profile switching on target TV | OPEN — device verification |
+| A-001 | P1 | Avatar integration | Avatar QR source selectively integrated into Draft PR #9 on top of profile-security PR #8 | Complete physical TV/phone acceptance, then review merge order PR #8 → PR #9 | SOURCE + CI PASS — device gate open |
+| A-002 | P1 | Avatar surfaces | Shared profile-scoped resolver is wired to top bar, Settings sidebar, active profile row, and profile switcher; add-profile starts with built-in avatar | Verify all surfaces and focus behavior on target TV | SOURCE + CI PASS — device verification open |
 | A-003 | P2 | Avatar settings sidebar | Settings profile card now resolves the active custom photo | Verify after QR upload and after closing/reopening Settings | OPEN — device verification |
-| A-004 | P2 | Avatar image orientation | EXIF-aware orientation handling added to avatar renderer | Verify portrait/landscape and mirrored EXIF samples on TV | OPEN — device verification |
+| A-004 | P2 | Avatar image orientation | EXIF-aware orientation handling and bounded decode are integrated | Verify portrait/landscape and mirrored EXIF samples on TV | SOURCE + CI PASS — device verification open |
 | A-005 | P2 | Avatar QR availability | Dedicated QR endpoint replaces the picker flow; same-LAN reachability, port selection, token expiry, and dialog shutdown need device testing | Scan QR from phone, test same/different Wi-Fi, close dialog, and expiry | OPEN — device verification |
 | A-006 | P2 | Avatar lifecycle | QR session is profile-scoped and short-lived; interrupted upload temp files are cleaned on next launcher start | Force-stop during upload and verify cleanup and profile identity | OPEN — device verification |
-| A-007 | P2 | Avatar replacement | New avatar reference is committed before old private file is deleted; failed metadata commit preserves old photo | Test two successive replacements and simulated storage/commit failure | OPEN — failure-injection test |
+| A-007 | P2 | Avatar replacement | New photo is fsynced and profile reference committed before old unreferenced private file cleanup; failed metadata commit preserves old photo | Test two successive replacements and simulated storage/commit failure | SOURCE + CI PASS — device/failure-injection open |
 | A-008 | P2 | Avatar management | New profiles start with built-in avatars; custom QR upload is available after selecting the profile in Settings | Deferred by design; verify post-creation flow; inline upload at creation is not release-critical | DEFERRED |
 | A-009 | P2 | Avatar rendering | Downsampled rendering, center-crop, child/adult ring, EXIF orientation, and built-in fallback are implemented | Test portrait, landscape, large, unsupported, and corrupt images | OPEN — device verification |
-| A-010 | P2 | Branch control | Branch ancestry checked; avatar candidate is eight commits ahead and has no commits behind settings/gallery baseline; QR work is isolated in draft PR #6 | Complete review and merge only after all gates pass | OPEN — PR review |
+| A-010 | P2 | Branch control | Avatar source selectively integrated in Draft PR #9 based on PR #8; PR #6/#7 not merged directly | Review merge order and complete device gates | OPEN — Draft PR review |
 | A-011 | P1 | Real device | CI release APK exists, but no evidence yet of installation/test on user's actual Mi TV Stick | Install artifact from workflow run 41199199372 and execute AVATAR_AUDIT.md device checklist | OPEN — USER DEVICE TEST REQUIRED |
 | A-012 | P1 | Wallpaper | Default wallpaper asset is packaged and verified in exact-head release APK; runtime behavior on clean install/offline/upgrade still unproven | Install artifact from CI #195; test offline cold start and legacy Malaysia/cache migration on target TV | PACKAGING PASS — device acceptance OPEN; W-F-02 |
 | A-013 | P2 | Icon animation | Animation inventory and per-icon behavior not yet mapped | Inspect adapters, focus listeners, animators, and test on TV | OPEN |
@@ -62,20 +62,20 @@ An audit item can be closed only with:
 - evidence reference (CI log, screenshot, or device test note),
 - rollback note where applicable.
 
-No avatar item is closed yet. The implementation has been submitted in draft PR #6; CI and actual-device evidence are still required.
+Avatar source integration is in Draft PR #9 and exact-head CI #208 passed. No avatar item is release-closed until actual-device evidence is recorded.
 
 
 ## Profile Tab audit additions — 31 October 2026
 
 | ID | Severity | Area | Finding / risk | Required verification | Status |
 |---|---|---|---|---|---|
-| P-001 | P1 | Avatar integration | Avatar QR implementation remains isolated in draft PR #6; PR #7 does not contain the integrated custom-avatar resolver | Three-way integrate PR #6 into PR #7 without overwriting per-profile controls | OPEN — integration required |
+| P-001 | P1 | Avatar integration | Avatar QR implementation was isolated in PR #6 | Selective integration completed in PR #9, preserving PR #8 security/profile-scoped behavior | SOURCE + CI PASS — device acceptance open |
 | P-002 | P1 | Parental controls | App lock/hide editor lacked PIN gate | Parent PIN now required before opening either editor in PR #8 | FIX IMPLEMENTED — CI #197 PASS; device verification open |
-| P-003 | P1 | Profile deletion | Delete action lacked parent-PIN authorization | Parent PIN now required before destructive confirmation in PR #8 | FIX IMPLEMENTED — CI #196 pending; device verification open |
+| P-003 | P1 | Profile deletion | Delete action lacked parent-PIN authorization | Parent PIN required before destructive confirmation in PR #8 | FIX IMPLEMENTED — CI #197 PASS; device verification open |
 | P-004 | P1 | Parent PIN | Default PIN remains 0000 | User accepts 0000 temporarily and will change it later; no forced change in this scope | ACCEPTED TEMPORARILY — user to change later |
 | P-005 | P2 | PIN security | No retry cooldown/backoff | User explicitly requires unlimited attempts; no throttle/lockout to be added | ACCEPTED BY USER — preserve unlimited attempts |
-| P-006 | P2 | Avatar cleanup | Avatar deletion/reset cleanup cannot be verified on PR #7 until PR #6 is integrated | Verify profile-scoped cleanup after integration | OPEN |
-| P-007 | P2 | Regression tests | Focused tests were absent | PR #8 adds switch-policy and profile-key isolation JVM tests; migration, persistence, UI gates and cleanup coverage remain open | PARTIAL — CI #197 PASS; device verification open |
+| P-006 | P2 | Avatar cleanup | Profile-scoped cleanup must not delete another user's photo or parental data | PR #9 limits avatar cleanup to unreferenced files in private avatar directory and clears only deleted profile's Child Mode keys | SOURCE + CI PASS — device verification open |
+| P-007 | P2 | Regression tests | Focused profile/avatar tests were absent | PR #8 tests switch policy/key isolation; PR #9 tests QR routes, size/dimension limits and private avatar path containment | PARTIAL — CI #208 PASS; device/end-to-end verification open |
 | P-008 | P2 | Device acceptance | D-pad, dialogs, profile switching, and restart persistence have no physical Mi TV evidence | Complete PROFILE_AUDIT.md device matrix | OPEN — user device required |
 
 See [PROFILE_AUDIT.md](PROFILE_AUDIT.md) for detailed evidence and acceptance criteria.
@@ -95,3 +95,16 @@ See `PROFILE_AUDIT.md` for the complete policy and device acceptance matrix. PR 
 - PR #8 exact head `1ba744efee61fde662493cebd382743a5927aefa` passed CI #197 (`41216508402`), both jobs successful.
 - Release artifact `13048321564`: APK `app-release.apk`, 1,420,005 bytes; SHA-256 `735be1ff6e8ff88d31bf9de73940e527a570bbaace96c5ec9a001ce95610a44e`.
 - This proves build/unit-test and packaging checks for the profile-security branch only. It does not prove physical remote behavior or avatar integration.
+
+
+## PR #9 exact-head verification — 31 October 2026
+
+| Check | Result |
+|---|---|
+| Exact head | `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` |
+| CI | [#208](https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447) — PASS, both jobs |
+| Release APK | 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315` |
+| CI APK budget | PASS — below 1.5 MiB |
+| Physical device | NOT RUN — required before merge/release |
+
+PR #9: https://github.com/Frangga11/glass-tv-home/pull/9. Keep Draft; merge PR #8 base before PR #9 only after review and device acceptance.
