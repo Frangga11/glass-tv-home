@@ -80,7 +80,8 @@ public final class ModernSettingsDialog {
         Typeface outfit = activity.getResources().getFont(R.font.inter);
 
         AlertDialog[] dialogHolder = new AlertDialog[1];
-        int[] activeTab = new int[]{TAB_PROFILE};
+        android.content.SharedPreferences navigationPrefs = activity.getSharedPreferences(NavigationState.PREFS, Context.MODE_PRIVATE);
+        int[] activeTab = new int[]{NavigationState.normalizeSettingsTab(navigationPrefs.getInt(NavigationState.SETTINGS_TAB, TAB_PROFILE))};
 
         // Main Horizontal Container (2 Columns)
         LinearLayout root = new LinearLayout(activity);
@@ -280,6 +281,7 @@ public final class ModernSettingsDialog {
         Runnable[] renderRightPane = new Runnable[1];
 
         Runnable updateSidebarSelection = () -> {
+            navigationPrefs.edit().putInt(NavigationState.SETTINGS_TAB, NavigationState.normalizeSettingsTab(activeTab[0])).apply();
             boolean isProfile = (activeTab[0] == TAB_PROFILE);
             GradientDrawable pcBg = new GradientDrawable();
             pcBg.setColor(isProfile ? 0xFF333742 : 0xFF22242D);
