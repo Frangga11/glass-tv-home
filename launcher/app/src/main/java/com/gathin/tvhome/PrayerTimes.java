@@ -236,6 +236,17 @@ final class PrayerTimes {
         }
     }
 
+    static boolean isUsingOfficialKemenagSchedule(Context context) {
+        if (!"ID_PGA".equals(getActiveZone(context))) return false;
+        try {
+            SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            String json = prefs.getString(KEY_JSON, null);
+            return json != null && isValidIndonesiaTimetable(new JSONObject(json), calendar(context).get(Calendar.YEAR));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static TimeZone getPrayerTimeZone(Context context) {
         String zone = getActiveZone(context);
         if (zone != null && zone.startsWith("ID_")) {
@@ -558,6 +569,9 @@ final class PrayerTimes {
 
         int l1Start = sb.length();
         String zoneHeader = getShortZoneName(context).toUpperCase(Locale.ROOT);
+        if ("ID_PGA".equals(getActiveZone(context))) {
+            zoneHeader += isUsingOfficialKemenagSchedule(context) ? " • KEMENAG RI" : " • PERKIRAAN";
+        }
         sb.append(zoneHeader).append("  •  ").append(nextWord).append(": ").append(nextName).append(" ").append(nextTime);
         int l1End = sb.length();
         sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), l1Start, l1End, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
