@@ -60,3 +60,10 @@ Chronological implementation and verification events are recorded once in [OPERA
 | D-008 | Adopt `BUG_REPAIR_ROADMAP.md` (GTVH-BRR-001 v1.0) as the official post-test repair sequence: A preparation/audit, B global foundations, C communication, D state/persistence, E specific modules, F integration/testing, G finalization/release. GitHub remains canonical; ChatGPT memory is the continuity/handover index. | User explicitly approved the A–G roadmap on 1 November 2026 | APPROVED |
 
 Execution starts at A04. A01–A03 are complete planning tasks; no code repair or repository source audit has begun under this roadmap. Changes to order require a recorded technical dependency/root-cause rationale and user-facing checkpoint.
+
+
+## 7. B01 execution sequencing — 1 November 2026
+
+| ID | Decision | Source | Status |
+|---|---|---|---|
+| D-009 | At the user's explicit instruction to begin B01, source audit and a narrowly scoped fix were started before A05 tested-APK identity and A06 full baseline/backup were complete. To contain risk, work is isolated on a new branch created from the verified PR #9 exact head; no existing branch was overwritten, no PR merged, and no TV/device setting changed. A05 and A06 remain mandatory before installation/release acceptance. | User instruction to begin B01; verified GitHub repository tree, PR #9 head, and dedicated B01 branch | APPROVED EXECUTION EXCEPTION; A05/A06 OPEN |
