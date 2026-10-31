@@ -4084,16 +4084,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView qrStatusText;
     private TextView qrUrlText;
 
-    /** Migrates legacy Malaysia wallpaper selections to the bundled Default wallpaper. */
+    /** Keeps retired or unknown wallpaper selections compatible with the current catalog. */
     private String getActiveWallpaperCategory() {
         android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
         String category = prefs.getString("active_category", "Default");
-        if (category == null || category.startsWith("Malaysia")) {
-            // Fresh installs and legacy Malaysia selections use the bundled Pagar Alam wallpaper.
+        if (!isSupportedWallpaperCategory(category)) {
             category = "Default";
             prefs.edit().putString("active_category", category).apply();
         }
         return category;
+    }
+
+    private boolean isSupportedWallpaperCategory(String category) {
+        return "Default".equalsIgnoreCase(category)
+                || "Natural".equalsIgnoreCase(category)
+                || "Skyscraper".equalsIgnoreCase(category)
+                || "Space".equalsIgnoreCase(category)
+                || "Ocean".equalsIgnoreCase(category)
+                || "Minimalist".equalsIgnoreCase(category)
+                || "Custom".equalsIgnoreCase(category);
     }
 
     void showWallpaperDialog() {
@@ -4777,7 +4786,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (Exception e) {
             android.util.Log.e("TvHome", "Bundled Default wallpaper unavailable", e);
             staged.delete();
-            // Do not display an unverified cache: it may contain the retired Malaysia image.
+            // Do not display an unverified cache: it may contain an obsolete wallpaper.
             return null;
         }
     }
