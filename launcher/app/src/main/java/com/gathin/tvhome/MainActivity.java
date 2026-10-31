@@ -2170,6 +2170,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
     }
 
+    boolean isIconGlowEffectsEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
+    }
+
+    void setIconGlowEffectsEnabled(boolean enabled) {
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("icon_glow_effects", enabled).apply();
+        applyIconGlowPreference();
+    }
+
+    boolean isDynamicWeatherEffectsEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
+    }
+
+    void setDynamicWeatherEffectsEnabled(boolean enabled) {
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", enabled).apply();
+        testWeatherOverride = null;
+        updateWeatherOverlay(HomeWeather.last(this));
+    }
+
     private void applyIconGlowPreference() {
         if (ambient == null) return;
         if (!isIconGlowEnabled()) {
@@ -4075,7 +4094,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         boolean isShuffle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
         boolean isDescOn = isWallpaperDescEnabled();
-        boolean isWeatherFxOn = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
 
         String tInt = (AppLanguage.LANG_EN.equals(curLang) ? "⏱️ Shuffle Interval: " : (AppLanguage.LANG_ID.equals(curLang) ? "⏱️ Interval Shuffle: " : "⏱️ Selang Masa Shuffle: ")) + intervalText;
         String sInt = AppLanguage.LANG_EN.equals(curLang) ? "Choose wallpaper change frequency (5 min, 10 min, etc.)" : (AppLanguage.LANG_ID.equals(curLang) ? "Pilih frekuensi pergantian wallpaper (5 mnt, 10 mnt, dll)" : "Pilih kekerapan pertukaran wallpaper (5 min, 10 min, dll)");
@@ -4092,22 +4110,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 ? (AppLanguage.LANG_EN.equals(curLang) ? "Display title and description on home screen" : (AppLanguage.LANG_ID.equals(curLang) ? "Tampilkan judul dan deskripsi gambar di layar utama" : "Paparkan tajuk dan penerangan gambar di skrin utama"))
                 : (AppLanguage.LANG_EN.equals(curLang) ? "Hide text for a clean screen display" : (AppLanguage.LANG_ID.equals(curLang) ? "Sembunyikan teks untuk tampilan layar bersih" : "Sembunyikan teks untuk paparan skrin bersih (Clean Look)"));
         options.add(new WallpaperOption("TOGGLE_DESC", tDsc, sDsc));
-
-        String tWtr = (AppLanguage.LANG_EN.equals(curLang) ? "🌧️ Dynamic Weather: " : (AppLanguage.LANG_ID.equals(curLang) ? "🌧️ Cuaca Dinamis: " : "🌧️ Dynamic Weather: ")) + (isWeatherFxOn ? (AppLanguage.LANG_EN.equals(curLang) ? "ON" : (AppLanguage.LANG_ID.equals(curLang) ? "Aktif (ON)" : "Dihidupkan (ON)")) : (AppLanguage.LANG_EN.equals(curLang) ? "OFF" : (AppLanguage.LANG_ID.equals(curLang) ? "Mati (OFF)" : "Dimatikan (OFF)")));
-        String sWtr = isWeatherFxOn
-                ? (AppLanguage.LANG_EN.equals(curLang) ? "Rain & lightning animations on wallpaper when raining" : (AppLanguage.LANG_ID.equals(curLang) ? "Animasi rintik hujan & kilat di atas wallpaper saat hujan" : "Animasi rintik hujan & kilat di atas wallpaper bila cuaca hujan"))
-                : (AppLanguage.LANG_EN.equals(curLang) ? "Static wallpaper without weather animations" : (AppLanguage.LANG_ID.equals(curLang) ? "Hanya wallpaper statis tanpa animasi cuaca" : "Hanya wallpaper pegun tanpa animasi cuaca"));
-        options.add(new WallpaperOption("TOGGLE_WEATHER_OVERLAY", tWtr, sWtr));
-
-        boolean isIconGlowOn = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
-        String glowState = isIconGlowOn
-                ? (AppLanguage.LANG_EN.equals(curLang) ? "ON" : "Aktif")
-                : (AppLanguage.LANG_EN.equals(curLang) ? "OFF" : "Nonaktif");
-        String tGlow = (AppLanguage.LANG_EN.equals(curLang) ? "✨ App Icon Glow: " : "✨ Efek Cahaya Ikon: ") + glowState;
-        String sGlow = isIconGlowOn
-                ? (AppLanguage.LANG_EN.equals(curLang) ? "Colour glow follows the focused app icon" : "Cahaya dan warna mengikuti ikon aplikasi yang dipilih")
-                : (AppLanguage.LANG_EN.equals(curLang) ? "Disable colour transitions and glow when moving between app icons" : "Matikan perubahan warna dan cahaya saat berpindah antarikon aplikasi");
-        options.add(new WallpaperOption("TOGGLE_ICON_GLOW", tGlow, sGlow));
 
         String tNxt = AppLanguage.LANG_EN.equals(curLang) ? "⏭️ Change Wallpaper Now" : (AppLanguage.LANG_ID.equals(curLang) ? "⏭️ Ganti Gambar Sekarang" : "⏭️ Tukar Gambar Sekarang");
         String sNxt = AppLanguage.LANG_EN.equals(curLang) ? "Cycle and display next wallpaper immediately" : (AppLanguage.LANG_ID.equals(curLang) ? "Putar dan tampilkan gambar berikutnya sekarang juga" : "Putar dan paparkan gambar seterusnya serta-merta");
@@ -4280,20 +4282,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         }
                         Toast.makeText(MainActivity.this, "Deskripsi Wallpaper Dihidupkan (ON)", Toast.LENGTH_SHORT).show();
                     }
-                    showWallpaperDialog();
-                } else if ("TOGGLE_WEATHER_OVERLAY".equals(chosenKey)) {
-                    boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
-                    boolean newMode = !current;
-                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", newMode).apply();
-                    Toast.makeText(MainActivity.this, newMode ? "🌧️ Animasi cuaca diaktifkan" : "⛅ Animasi cuaca dinonaktifkan", Toast.LENGTH_SHORT).show();
-                    updateWeatherOverlay(HomeWeather.last(MainActivity.this));
-                    showWallpaperDialog();
-                } else if ("TOGGLE_ICON_GLOW".equals(chosenKey)) {
-                    boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
-                    boolean newMode = !current;
-                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("icon_glow_effects", newMode).apply();
-                    applyIconGlowPreference();
-                    Toast.makeText(MainActivity.this, newMode ? "✨ Efek cahaya ikon diaktifkan" : "✨ Efek cahaya ikon dinonaktifkan", Toast.LENGTH_SHORT).show();
                     showWallpaperDialog();
                 } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
                     showCustomWallpaperManagerDialog();
