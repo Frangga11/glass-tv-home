@@ -51,7 +51,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | B01 | Audit and correct global navigation and cursor-position retention | IN PROGRESS |
 | B02 | Ensure visible, consistent D-pad/remote focus indicators | IN PROGRESS |
 | B03 | Correct popup/dialog opacity, layering, focus, sizing, and dismissal behavior | IN PROGRESS |
-| B04 | Normalize global UI layout, spacing, sizing, and TV responsiveness | NOT STARTED |
+| B04 | Normalize global UI layout, spacing, sizing, and TV responsiveness | IN PROGRESS |
 | B05 | Audit and complete Indonesian/English localization, including dynamic and error strings | NOT STARTED |
 | B06 | Standardize notifications, success/error messages, loading, and timeout feedback | NOT STARTED |
 | B07 | Audit activity/dialog lifecycle and restore prior menu/subtab/focus after actions | NOT STARTED |
@@ -127,8 +127,8 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 - Tasks in roadmap: 47
 - DONE: 6 (A01, A02, A03, A04, A05, A06)
-- IN PROGRESS: 3 (B01, B02, B03)
-- NOT STARTED: 38
+- IN PROGRESS: 4 (B01, B02, B03, B04)
+- NOT STARTED: 37
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
