@@ -2727,9 +2727,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     };
 
     private boolean focusTopBarFallback() {
-        View fallback = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE
-                && btnWifi.isFocusable() ? btnWifi : findViewById(R.id.btnSettings);
-        return fallback != null && fallback.isFocusable() && fallback.requestFocus();
+        if (btnWifi != null && btnWifi.isShown() && btnWifi.isFocusable() && btnWifi.requestFocus()) {
+            return true;
+        }
+        View settings = findViewById(R.id.btnSettings);
+        return settings != null && settings.isShown() && settings.isFocusable() && settings.requestFocus();
     }
 
     private void focusTile(int position) {
