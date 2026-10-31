@@ -4733,18 +4733,36 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private File getBundledDefaultWallpaper() {
+        // The APK asset is the single source of truth. Refresh the private runtime copy
+        // so an upgrade cannot keep showing a stale Malaysia/older Default image.
         File target = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg");
-        if (target.isFile() && target.length() > 0) return target;
+        File staged = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg.tmp");
         try (java.io.InputStream in = getAssets().open("kabut-pagi-dempo.jpg");
-             java.io.FileOutputStream out = new java.io.FileOutputStream(target)) {
+             java.io.FileOutputStream out = new java.io.FileOutputStream(staged, false)) {
             byte[] buffer = new byte[8192];
             int count;
             while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
             out.flush();
-            return target.length() > 0 ? target : null;
+            out.getFD().sync();
+            if (!staged.isFile() || staged.length() == 0) {
+                staged.delete();
+                return target.isFile() && target.length() > 0 ? target : null;
+            }
+            if (target.exists() && !target.delete()) {
+                android.util.Log.e("TvHome", "Cannot replace stale bundled default wallpaper");
+                staged.delete();
+                return target.isFile() && target.length() > 0 ? target : null;
+            }
+            if (!staged.renameTo(target)) {
+                android.util.Log.e("TvHome", "Cannot finalize bundled default wallpaper asset");
+                staged.delete();
+                return null;
+            }
+            return target;
         } catch (Exception e) {
             android.util.Log.e("TvHome", "Bundled default wallpaper unavailable", e);
-            return null;
+            staged.delete();
+            return target.isFile() && target.length() > 0 ? target : null;
         }
     }
 
