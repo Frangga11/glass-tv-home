@@ -3319,7 +3319,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dialog.dismiss();
             boolean requested = HomeKeyService.turnOffTv(MainActivity.this);
             Toast.makeText(MainActivity.this, requested
-                    ? "Menu daya Android TV dibuka. Jika tidak mati otomatis, pilih Matikan TV pada menu sistem."
+                    ? "Perintah daya dikirim. Jika TV belum standby, gunakan tombol daya remote atau aktifkan HDMI-CEC pada TV dan Mi TV Stick."
                     : "Tidak dapat mengirim perintah daya. Periksa layanan aksesibilitas Glass TV dan HDMI-CEC TV.",
                     Toast.LENGTH_LONG).show();
         });
