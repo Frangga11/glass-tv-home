@@ -1289,6 +1289,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     void clearStandbyPhotos() {
         List<Uri> selectedUris = StandbyPhotoStore.getUris(this);
+        if (!StandbyPhotoStore.saveUris(this, Collections.emptyList())) {
+            Toast.makeText(this, "Gagal mengosongkan daftar foto. Coba lagi.", Toast.LENGTH_LONG).show();
+            return;
+        }
         for (Uri uri : selectedUris) {
             if (StandbyPhotoStore.isManagedFile(this, uri)) continue;
             try {
@@ -1297,7 +1301,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         StandbyPhotoStore.clearUploadedFiles(this);
-        StandbyPhotoStore.saveUris(this, Collections.emptyList());
         StandbyPhotoStore.setPhotoMode(this, false);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
@@ -1360,7 +1363,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             return;
         }
-        StandbyPhotoStore.saveUris(this, merged);
+        if (!StandbyPhotoStore.saveUris(this, merged)) {
+            for (Uri uri : granted) {
+                if (!StandbyPhotoStore.getUris(this).contains(uri)) {
+                    try {
+                        getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            Toast.makeText(this, "Gagal menyimpan daftar foto. Coba pilih kembali.", Toast.LENGTH_LONG).show();
+            return;
+        }
         StandbyPhotoStore.setPhotoMode(this, true);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
