@@ -712,21 +712,6 @@ public final class ModernSettingsDialog {
                 });
                 rightContent.addView(addUserBtn);
 
-                // Section 3: Your Photos
-                TextView tvPhotos = new TextView(activity);
-                tvPhotos.setText(AppLanguage.strYourPhotos(activity));
-                tvPhotos.setTextSize(11.5f);
-                tvPhotos.setTextColor(0xFF8E929E);
-                tvPhotos.setTypeface(outfit, Typeface.BOLD);
-                tvPhotos.setPadding(0, (int) (12 * density), 0, (int) (4 * density));
-                rightContent.addView(tvPhotos);
-
-                LinearLayout photoUploadRow = buildCardRow(activity, density, outfit, "📸 Urus Gambar & Muat Naik Telefon (QR)", "Imbas kod QR untuk hantar gambar dari telefon terus ke TV", () -> {
-                    SoundEffects.playSelect();
-                    activity.showCustomWallpaperManagerDialog();
-                });
-                rightContent.addView(photoUploadRow);
-
             } else if (tab == TAB_HOME_SCREEN) {
                 // === TAB 1: HOME SCREEN (CONSOLIDATING CANDY BOX SETTINGS) ===
                 addHeader(rightContent, outfit, "Layar Utama");
@@ -769,6 +754,11 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "⏱️ Interval Pergantian Wallpaper", "Atur seberapa sering wallpaper berganti otomatis.",
                         activity::showWallpaperIntervalDialog));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "📁 Kelola Wallpaper Pribadi & Unggah dari HP",
+                        "Pilih, hapus, atau unggah foto wallpaper melalui QR. Pengelola ini hanya mengubah koleksi wallpaper.",
+                        activity::showCustomWallpaperManagerDialog));
 
             } else if (tab == TAB_STATUS_WEATHER) {
                 // === TAB: WIDGET & INFORMATION ===
@@ -1031,7 +1021,7 @@ public final class ModernSettingsDialog {
                         String[] keywords = {
                                 "profil pengguna akun avatar nama",
                                 "beranda layar utama doa salat azan audio suara pusat informasi",
-                                "tampilan wallpaper latar gambar koleksi interval",
+                                "tampilan wallpaper latar gambar koleksi interval foto pribadi qr upload hp",
                                 "widget informasi lokasi cuaca udara kualitas aqi jadwal salat",
                                 "animasi efek cuaca dinamis hujan cahaya warna ikon glow transisi",
                                 "layar siaga standby screensaver jam foto pribadi foto upload qr hp ponsel",
