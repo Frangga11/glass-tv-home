@@ -191,6 +191,7 @@ final class OnlineWallpapers {
         if (itemCat == null) return false;
         String ic = itemCat.toLowerCase(Locale.ROOT);
         String sc = selectedCat.toLowerCase(Locale.ROOT);
+        if (sc.contains("malay")) return false; // Retired regional category.
         if (sc.contains("sky") || sc.contains("arch") || sc.contains("city")) {
             return ic.contains("sky") || ic.contains("arch") || ic.contains("city") || ic.contains("urban");
         }
