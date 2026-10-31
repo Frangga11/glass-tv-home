@@ -5,7 +5,7 @@
 **Code branch:** fix/avatar-qr-upload-single-photo  
 **Base branch:** feature/settings-reorganization-standby-gallery  
 **Pull request:** https://github.com/Frangga11/glass-tv-home/pull/6  
-**Latest reviewed head:** de39cdd5729a393d21942f62c665fa61d6abd5bf
+**Latest reviewed head:** ec19595654941f4c5a585a81ae8fe453f1e85421
 
 ## 1. User acceptance requirements
 
@@ -39,6 +39,7 @@
   - Separate single-photo endpoint.
   - Random unguessable route token.
   - Five-minute session expiry.
+  - Enforces one successful upload per QR session; failed uploads release the claim so the user can retry.
   - 15 MB upload limit.
   - Image bounds validation.
   - Temporary upload file in private filesDir/profile_avatars.
@@ -48,7 +49,8 @@
   - Transactional replacement and deletion of the superseded file.
   - Transactional reset to built-in avatar.
   - Downsampled rendering and EXIF orientation handling.
-  - Startup cleanup for abandoned temporary uploads.
+  - Startup cleanup for unreferenced avatar files, old backup/temp files, and abandoned uploads.
+  - Cleanup is also run immediately after replacement/reset/profile deletion.
 - MainActivity.java
   - QR session lifecycle and status feedback.
   - UI refresh after successful replacement.
@@ -98,17 +100,18 @@ GitHub comparison confirms:
 1. Open Settings → Profile and start QR upload.
 2. Scan QR from a phone on the same Wi-Fi; verify the upload page opens.
 3. Upload a valid portrait JPEG and verify the active avatar changes.
-4. Upload a second photo; verify the first file is no longer present and only one active photo remains for that profile.
-5. Repeat with landscape JPEG and PNG.
-6. Test EXIF-rotated phone photo.
-7. Try oversized, corrupt, and non-image files; verify failure and that the previous avatar remains.
-8. Close the QR dialog before upload; verify the old QR route no longer works.
-9. Wait beyond five minutes; verify the expired QR session is rejected.
-10. Force-stop/restart launcher and reboot TV; verify avatar persistence.
-11. Switch profiles; verify each profile displays its own avatar.
-12. Reset to built-in; verify custom photo file is deleted and built-in animal appears everywhere.
-13. Test with TV remote only: focus, OK, Back, cancel.
-14. Confirm wallpaper and standby QR upload still work independently.
+4. After the first successful upload, try to upload again using the same QR; it must be rejected. Close the dialog and create a new QR for the next replacement.
+5. Upload a second photo using the new QR; verify the first file is no longer present and only one active photo remains for that profile.
+6. Repeat with landscape JPEG and PNG.
+7. Test EXIF-rotated phone photo.
+8. Try oversized, corrupt, and non-image files; verify failure and that the previous avatar remains.
+9. Close the QR dialog before upload; verify the old QR route no longer works.
+10. Wait beyond five minutes; verify the expired QR session is rejected.
+11. Force-stop/restart launcher and reboot TV; verify avatar persistence.
+12. Switch profiles; verify each profile displays its own avatar.
+13. Reset to built-in; verify custom photo file is deleted and built-in animal appears everywhere.
+14. Test with TV remote only: focus, OK, Back, cancel.
+15. Confirm wallpaper and standby QR upload still work independently.
 
 ## 8. Rollback
 
