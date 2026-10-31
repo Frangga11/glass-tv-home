@@ -33,7 +33,7 @@
 | A-016 | P1 | Prayer times | Regional zone, date boundary, DST/timezone and accuracy need confirmation for Pagar Alam | Validate source/time zone and compare against authoritative local timetable | OPEN |
 | A-017 | P1 | Wallpaper upload | Baseline QR exposed upload and gallery-management endpoints without per-session path token | Review PR #7, then test foreign token, legacy routes, and dialog-close revocation on device | FIX IMPLEMENTED — CI PASS; device pending; W-F-01 |
 | A-018 | P1 | ADB / debloat | Package disable and HOME-default changes need backup and rollback checklist | Verify scripts and prepare recovery procedure before device changes | OPEN |
-| W-001 | P1 | Wallpaper/background | Dedicated audit opened; QR route remediation implemented in draft PR #7 | Complete source review, CI, then TV/phone acceptance for W-AC-01–W-AC-12 | IN PROGRESS — CI/device pending; see WALLPAPER_AUDIT.md |
+| W-001 | P1 | Wallpaper/background | Dedicated audit opened; QR route remediation implemented in draft PR #7 | Complete source review, CI, then TV/phone acceptance for W-AC-01–W-AC-12 | IN PROGRESS — CI PASS; default asset/device pending; see WALLPAPER_AUDIT.md |
 
 ## Avatar candidate acceptance tests
 
