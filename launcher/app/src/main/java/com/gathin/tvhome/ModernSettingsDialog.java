@@ -684,6 +684,7 @@ public final class ModernSettingsDialog {
                                     });
                                 } else if (which == 1) {
                                     UserSwitchDialog.requestDeleteProfile(activity, p.id, p.name, () -> {
+                                        d.dismiss();
                                         updateSidebarSelection.run();
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
                                     });
