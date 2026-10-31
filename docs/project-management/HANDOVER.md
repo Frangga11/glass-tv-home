@@ -44,3 +44,15 @@
 - Keep PR #6 and #7 Draft/unmerged. No APK install or stock-launcher modification has occurred.
 - Next code gate: create a dedicated integration branch from PR #7 head; selectively integrate avatar changes; fix P1 authorization gaps; add profile regression tests; run CI on the combined head.
 - Next device gate: D-pad/dialog/profile/avatar/persistence tests on actual Mi TV Stick and phone.
+
+
+## Profile security implementation — 31 October 2026
+
+- Dedicated integration branch: `feature/profile-security-integration`; draft PR #8 targets PR #7's branch. This preserves PR #7 and PR #6 without direct merging.
+- PR #8 source changes: parent PIN gate before opening locked/hidden app editors; parent PIN gate before profile deletion plus a second destructive confirmation; shared switch policy across top-bar and Settings switchers.
+- Strict switching rule: while current profile has Child Mode active, any switch to another profile requires parent PIN, including child-to-child, preventing policy downgrade by changing profile.
+- Locked/hidden lists and Child Mode remain per profile; parent PIN remains device-global.
+- User decisions: retain default PIN `0000` temporarily (user will change it later); do not add failed-PIN limits, cooldown, or lockout.
+- Regression tests added for switch policy and profile-key isolation.
+- CI #196 (`41216406132`) on PR #8 head `f0971b17ed752a9ac0bf16afa904990723c0c616` was in progress at last check. Physical Mi TV Stick/phone acceptance remains pending.
+- Avatar QR PR #6 is still divergent and must be selectively integrated; do not merge PR #6 or #7 directly.
