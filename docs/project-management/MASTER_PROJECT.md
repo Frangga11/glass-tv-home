@@ -1,7 +1,7 @@
 # 01 — Master Project Specification
 
-**Version:** 1.1  
-**Date:** 31 October 2026  
+**Version:** 1.2  
+**Date:** 1 November 2026  
 **Status:** Master map; not release approval
 
 ## 1. Project identity
@@ -136,6 +136,7 @@ The project is ready for user acceptance only when:
 - `DOCUMENTATION_WORKFLOW.md` — approved three-layer documentation standard.
 - `INVENTORY.md` and `DECISION_LOG.md` — current feature map and approved/open decisions.
 - `AUDIT_REGISTER.md` — central audit status.
+- `BUG_REPAIR_ROADMAP.md` — approved A–G repair sequence and task-level callback register.
 - `WALLPAPER_AUDIT.md` and `AVATAR_AUDIT.md` — detailed feature evidence.
 - `OPERATIONS_LOG.md` — concise change history.
 - `HANDOVER.md` — resume point.
@@ -150,3 +151,12 @@ The Master is the project map. Keep detailed test results in the relevant audit;
 - Release APK: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
 - User-approved PIN decisions: keep `0000` temporarily; unlimited incorrect attempts; no cooldown/lockout.
 - PR #8 and PR #9 remain Draft/unmerged. Physical Mi TV Stick + phone acceptance remains mandatory.
+
+
+## 10. Approved post-test repair roadmap — 1 November 2026
+
+- User formally approved [BUG_REPAIR_ROADMAP.md](BUG_REPAIR_ROADMAP.md), roadmap ID `GTVH-BRR-001`, version 1.0.
+- The approved sequence is A: preparation/audit → B: global UI/navigation/localization foundations → C: communication/QR/upload infrastructure → D: state and persistence → E: specific feature modules → F: integration/regression testing → G: finalization/release.
+- Initial completed planning tasks: A01 (collect test findings), A02 (group findings), A03 (approve sequence). No source audit or code repair has started in this cycle.
+- First execution point: A04, audit repository/branches/source tree and working state; then A05 APK-to-source matching and A06 baseline/rollback.
+- Track task-level statuses and evidence only in `BUG_REPAIR_ROADMAP.md`; use the audit register for defect details and HANDOVER for the resume point.
