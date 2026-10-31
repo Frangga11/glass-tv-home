@@ -235,7 +235,7 @@ public class WallpaperUploadServer {
             } else if (standbyOnly
                     && !requestLine.startsWith("GET " + getStandbyPath() + " ")
                     && !requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
-                String notFound = "HTTP/1.1 404 Not Found\\r\\nConnection: close\\r\\n\\r\\nNot Found";
+                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
                 out.write(notFound.getBytes("UTF-8"));
                 out.flush();
             } else if (requestLine.startsWith("GET /thumb")) {
