@@ -56,3 +56,14 @@
 - Regression tests added for switch policy and profile-key isolation.
 - CI #196 (`41216406132`) on PR #8 head `f0971b17ed752a9ac0bf16afa904990723c0c616` was in progress at last check. Physical Mi TV Stick/phone acceptance remains pending.
 - Avatar QR PR #6 is still divergent and must be selectively integrated; do not merge PR #6 or #7 directly.
+
+
+## Profile security follow-up — PR #8
+
+- Draft PR #8: https://github.com/Frangga11/glass-tv-home/pull/8; branch `feature/profile-security-integration`, latest head `1ba744efee61fde662493cebd382743a5927aefa`, based on PR #7 head.
+- Parent PIN is required before editing locked/hidden app lists and before profile deletion (with a second destructive confirmation).
+- Switching away from any active Child Mode profile requires parent PIN, including child-to-child switching; top-bar and Settings entry points share the same switch authorization method.
+- Child Mode, locked apps, and hidden apps remain per-profile; PIN remains device-global.
+- User decisions: keep default PIN `0000` temporarily; user will change later. No failed-PIN attempt limit, cooldown, or lockout.
+- CI #196 (`41216406132`) passed both jobs on earlier PR #8 head. CI #197 (`41216508402`) is running on latest head `1ba744e`; wait for it before certifying current source.
+- Avatar PR #6 remains unintegrated due to branch divergence; selectively integrate after profile security CI. No PR merged and no APK installed.
