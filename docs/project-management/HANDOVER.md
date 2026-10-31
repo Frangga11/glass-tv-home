@@ -86,9 +86,18 @@
 ## Official repair roadmap checkpoint — 1 November 2026
 
 - Approved roadmap: [BUG_REPAIR_ROADMAP.md](BUG_REPAIR_ROADMAP.md), ID `GTVH-BRR-001`, version 1.0.
-- Approved order: A preparation/audit → B global foundations → C communication → D state/persistence → E feature modules → F integration/testing → G finalization/release.
-- Planning tasks A01, A02, A03: DONE.
-- Current execution position: before A04. No source audit, code change, APK build, or device retest has been performed in this repair cycle.
-- Next action: A04 — inspect current repository branches, commits, source tree, and worktree state; then A05 match the user's tested APK to its exact source revision; then A06 establish baseline/rollback.
-- Do not infer current application branch or tested APK identity from historical notes; verify them at A04/A05.
+- A01–A03: DONE.
+- A04: IN PROGRESS — repository identity, branch graph, source tree, PR #9 exact-head baseline, and relevant navigation code inspected. The remote GitHub source was inspected; a local worktree status was not available in this session.
+- A05: NOT STARTED — user's tested APK has not yet been matched to an exact source revision.
+- A06: NOT COMPLETE — a dedicated GitHub branch provides a code rollback checkpoint, but a full baseline/backup package and device-state backup have not been produced.
+- B01: IN PROGRESS by explicit user direction; sequencing exception D-009 recorded.
+- B01 source baseline: PR #9 exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- B01 working branch: `feature/b01-global-navigation-retention`.
+- B01 Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10.
+- B01 current head: `82635fe5551f48b0d5b2c9f9a187da0765de0af6`.
+- CI #209: https://github.com/Frangga11/glass-tv-home/actions/runs/41228348247 — Lists/tools/docs passed; Android unit tests/release build were in progress at the last check.
+- Implemented so far: home app focus key + slot persisted to preferences; restore by stable component key then clamped slot; null-safe empty-grid fallback; safer scroll-settle target; Settings selected tab/sidebar cursor persisted; pure JVM navigation-state tests.
+- Remaining B01 work: exact Settings right-pane cursor retention/action-return audit, CI result, and physical Mi TV Stick tests for D-pad, OK, Back, app return, app-list mutation, Settings reopen, process death, and cold boot.
+- No APK has been installed in this repair session; no device settings changed; PR #8/#9/#10 remain unmerged Draft/open.
+- Next action: inspect CI #209 result and fix any failure; then complete remaining B01 cursor audit. A05/A06 must be completed before installing any candidate APK or declaring device acceptance.
 - At each session close, update roadmap statuses, audit/operations records, this handover, and ChatGPT continuity memory. Report synchronization only after verifying the GitHub commit.
