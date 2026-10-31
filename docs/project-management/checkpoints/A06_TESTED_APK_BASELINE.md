@@ -24,7 +24,7 @@ The user supplied `glass-tv-home-profile-avatar-test.apk` and confirmed it is th
 | Exact source commit | `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` |
 | Pull request | Draft PR #9, open/unmerged |
 
-The SHA-256 and uncompressed APK byte size match the previously recorded PR #9 release APK evidence exactly. The artifact archive size is a separate compressed artifact-package measurement and is not the APK file size.
+The GitHub CI artifact ZIP was downloaded and extracted. Its `app-release.apk` is byte-for-byte identical to the user-uploaded tested APK (same 1,427,681 bytes and SHA-256 above). The archive ZIP itself is a different object: 1,340,733 bytes with SHA-256 `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`. CI job logs show the release APK build path and report 1,394 KB (integer KB display). Workflow metadata binds run #208 / `41218171447` and artifact ID `13048951728` to branch `feature/profile-avatar-security-integration` and exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; PR #9 has the same head.
 
 Evidence:
 - CI run: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447
