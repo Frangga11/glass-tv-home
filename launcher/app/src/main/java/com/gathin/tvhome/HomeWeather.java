@@ -22,18 +22,18 @@ final class HomeWeather {
     static final long REFRESH_MS = 15 * 60_000L;
     /** US EPA AQI breakpoints, shown as a model estimate rather than an official ISPU reading. */
     private static final int[] AQI_TOP = {50, 100, 150, 200, 300, 500};
-    static final int[] API_COLOR = {0xFF34C759, 0xFFFFD60A, 0xFFFF9F0A, 0xFFFF453A, 0xFFAF52DE, 0xFF7A0019};
+    static final int[] AQI_COLOR = {0xFF34C759, 0xFFFFD60A, 0xFFFF9F0A, 0xFFFF453A, 0xFFAF52DE, 0xFF7A0019};
     private static final String[] AQI_NAME = {"Baik", "Sedang", "Tidak sehat bagi kelompok sensitif", "Tidak sehat", "Sangat tidak sehat", "Berbahaya"};
 
     /** What the line says: the weather part, the API part and its colour; either part may be empty. */
     static final class Line {
-        final String weather, api;
-        final int apiColor, icon;
+        final String weather, aqi;
+        final int aqiColor, icon;
 
-        Line(String weather, String api, int apiColor, int icon) {
+        Line(String weather, String aqi, int aqiColor, int icon) {
             this.weather = weather;
-            this.api = api;
-            this.apiColor = apiColor;
+            this.aqi = aqi;
+            this.aqiColor = aqiColor;
             this.icon = icon;
         }
     }
@@ -52,24 +52,24 @@ final class HomeWeather {
     /** The last line fetched, or null before the first. Reads storage only. */
     static Line last(Context ctx) {
         SharedPreferences p = prefs(ctx);
-        String w = p.getString("weather", null), a = p.getString("api", "");
+        String w = p.getString("weather", null), aqi = p.getString("api", "");
         if (w != null && !w.isEmpty() && !Character.isDigit(w.charAt(0))) {
             // An older line, with an emoji: dropped, and fetched again at once.
             w = "";
             p.edit().putLong("at", 0).putString("weather", "").apply();
         }
         // Drop cached Malaysian APIMS labels from older builds; never display them for Indonesian cities.
-        if (!a.isEmpty() && !a.startsWith("AQI ")) {
+        if (!aqi.isEmpty() && !aqi.startsWith("AQI ")) {
             p.edit().putString("api", "").putInt("api_color", 0).putLong("at", 0).apply();
-            a = "";
+            aqi = "";
         }
-        return w == null && a.isEmpty() ? null : new Line(w == null ? "" : w, a, p.getInt("api_color", 0),
+        return w == null && aqi.isEmpty() ? null : new Line(w == null ? "" : w, aqi, p.getInt("api_color", 0),
                 p.getInt("icon_code", -1) < 0 ? 0 : icon(p.getInt("icon_code", 3), p.getBoolean("icon_day", true)));
     }
 
     /** Fetches both parts. Network; never on the UI thread. Returns null when neither could be read. */
     static Line refresh(Context ctx, double lat, double lon) {
-        String weather = "", api = "";
+        String weather = "", aqi = "";
         int color = 0, code = -1;
         boolean day = true;
         try {
@@ -89,21 +89,21 @@ final class HomeWeather {
             if (value >= 0) {
                 int band = 0;
                 while (band < AQI_TOP.length - 1 && value > AQI_TOP[band]) band++;
-                api = "AQI " + value + " · " + AQI_NAME[band];
-                color = API_COLOR[band];
+                aqi = "AQI " + value + " · " + AQI_NAME[band];
+                color = AQI_COLOR[band];
             }
         } catch (Exception e) {
             Log.w(TAG, "Open-Meteo air quality failed: " + e.getMessage());
         }
         // A failed try waits for the next round too, rather than asking again every minute.
         SharedPreferences.Editor ed = prefs(ctx).edit().putLong("at", System.currentTimeMillis());
-        if (weather.isEmpty() && api.isEmpty()) {
+        if (weather.isEmpty() && aqi.isEmpty()) {
             ed.apply();
             return null;
         }
-        ed.putString("weather", weather).putString("api", api).putInt("api_color", color)
+        ed.putString("weather", weather).putString("api", aqi).putInt("api_color", color)
                 .putInt("icon_code", code).putBoolean("icon_day", day).apply();
-        return new Line(weather, api, color, code < 0 ? 0 : icon(code, day));
+        return new Line(weather, aqi, color, code < 0 ? 0 : icon(code, day));
     }
 
     private static String describe(int code) {
