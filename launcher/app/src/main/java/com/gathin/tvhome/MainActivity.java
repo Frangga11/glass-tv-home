@@ -2848,14 +2848,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     void showLanguageDialog() {
         SoundEffects.playSelect();
         final String[] langOptions = new String[]{
-                "🇲🇾 Bahasa Melayu (Standard)",
-                "🇬🇧 English",
-                "🇮🇩 Bahasa Indonesia"
+                "🇮🇩 Bahasa Indonesia",
+                "🇬🇧 English"
         };
         final String[] langKeys = new String[]{
-                AppLanguage.LANG_MS,
-                AppLanguage.LANG_EN,
-                AppLanguage.LANG_ID
+                AppLanguage.LANG_ID,
+                AppLanguage.LANG_EN
         };
 
         String currentLang = AppLanguage.getLanguage(this);
@@ -3305,8 +3303,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setMessage(AppLanguage.strRestartMsg(this));
         builder.setPositiveButton(AppLanguage.strRestartConfirm(this), (dialog, which) -> {
             dialog.dismiss();
-            Toast.makeText(MainActivity.this, AppLanguage.strRestartToast(MainActivity.this), Toast.LENGTH_SHORT).show();
-            handler.postDelayed(() -> HomeKeyService.restartTv(MainActivity.this), 300);
+            handler.postDelayed(() -> {
+                boolean requested = HomeKeyService.restartTv(MainActivity.this);
+                String message = requested
+                        ? "Perintah mulai ulang dikirim ke Android TV."
+                        : "Tidak dapat memulai ulang. Aktifkan layanan aksesibilitas Glass TV terlebih dahulu.";
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+            }, 300);
         });
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
@@ -3320,7 +3323,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setMessage(AppLanguage.strTurnOffMsg(this));
         builder.setPositiveButton(AppLanguage.strTurnOffConfirm(this), (dialog, which) -> {
             dialog.dismiss();
-            HomeKeyService.turnOffTv(MainActivity.this);
+            boolean requested = HomeKeyService.turnOffTv(MainActivity.this);
+            Toast.makeText(MainActivity.this, requested
+                    ? "Menu daya Android TV dibuka. Jika tidak mati otomatis, pilih Matikan TV pada menu sistem."
+                    : "Tidak dapat mengirim perintah daya. Periksa layanan aksesibilitas Glass TV dan HDMI-CEC TV.",
+                    Toast.LENGTH_LONG).show();
         });
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
@@ -4703,7 +4710,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setMessage("• Tekan lama butang HOME (Hold 500ms) untuk buka Popup Tetapan di mana-mana aplikasi atau skrin utama.\n\n"
                         + "• Tekan sekali butang HOME untuk kembali ke paparan utama.\n\n"
                         + "• Koleksi Wallpaper 4K dijana daripada Pexels & Unsplash mengikut kategori.\n\n"
-                        + "• Azan & Waktu Solat diselaraskan secara tepat dengan zon JAKIM Malaysia.\n\n"
+                        + "• Jadwal salat disesuaikan dengan wilayah Indonesia dan sumber data Kemenag RI.\n\n"
                         + "• Gunakan Gemini AI untuk membersihkan cache dan menyegarkan TV anda secara pantas.")
                 .setPositiveButton("Faham", null)
                 .show();
@@ -4720,7 +4727,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setTitle("🌦️ Analisis Cuaca & Jerebu Pintar")
                 .setMessage("📍 Lokasi: " + town + "\n\n"
                         + "📊 Status Terkini: " + wxStr + "\n\n"
-                        + "ℹ️ Data cuaca disegerakkan daripada Open-Meteo dan bacaan Indeks Pencemar Udara (IPU) rasmi stesen Jabatan Alam Sekitar Malaysia (APIMS DOE).\n\n"
+                        + "ℹ️ Data cuaca disegerakkan daripada Open-Meteo dan indeks kualitas udara US AQI berbasis pemodelan Open-Meteo; bukan pengukuran ISPU resmi stasiun lokal.\n\n"
                         + "💡 Saranan AI: Keadaan udara selamat dan memuaskan. Sangat sesuai untuk bersantai bersama keluarga.")
                 .setPositiveButton("OK", null)
                 .show();
