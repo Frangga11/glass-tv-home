@@ -362,7 +362,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     void setIconAnimationsEnabled(boolean enabled) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("icon_animations_enabled", enabled).apply();
-        if (adapter != null && grid != null) adapter.setIconAnimationsEnabled(enabled, grid);
+        if (adapter != null && grid != null) {
+            adapter.setIconAnimationsEnabled(enabled, grid);
+            View focusedItem = grid.getFocusedChild();
+            View focusedCard = focusedItem != null ? focusedItem.findViewById(R.id.card) : null;
+            int position = focusedItem != null ? grid.getChildAdapterPosition(focusedItem) : RecyclerView.NO_POSITION;
+            if (focusedCard != null && position != RecyclerView.NO_POSITION) {
+                onTileFocused(position, focusedCard);
+            }
+        }
     }
 
     boolean isGlassEffectsEnabled() {
