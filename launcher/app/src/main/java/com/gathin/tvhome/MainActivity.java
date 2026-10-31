@@ -356,6 +356,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return getSharedPreferences("theme_prefs", MODE_PRIVATE).getBoolean("weather_widget_enabled", true);
     }
 
+    boolean isIconAnimationsEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_animations_enabled", true);
+    }
+
+    void setIconAnimationsEnabled(boolean enabled) {
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("icon_animations_enabled", enabled).apply();
+        if (adapter != null && grid != null) {
+            adapter.setIconAnimationsEnabled(enabled, grid);
+            View focusedItem = grid.getFocusedChild();
+            View focusedCard = focusedItem != null ? focusedItem.findViewById(R.id.card) : null;
+            int position = focusedItem != null ? grid.getChildAdapterPosition(focusedItem) : RecyclerView.NO_POSITION;
+            if (focusedCard != null && position != RecyclerView.NO_POSITION) {
+                onTileFocused(position, focusedCard);
+            }
+        }
+    }
+
+    boolean isGlassEffectsEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("glass_effects_enabled", true);
+    }
+
+    void setGlassEffectsEnabled(boolean enabled) {
+        getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("glass_effects_enabled", enabled).apply();
+        if (glider != null && grid != null && grid.hasFocus()) {
+            glider.setStyle(enabled ? Glider.GLASS : Glider.DARK);
+        }
+        if (grid != null) grid.invalidateItemDecorations();
+        if (enabled && wallBitmap != null) blurBackdrop(wallBitmap);
+        if (root != null) root.invalidate();
+    }
+
     public void setWeatherWidgetEnabled(boolean enabled) {
         getSharedPreferences("theme_prefs", MODE_PRIVATE).edit().putBoolean("weather_widget_enabled", enabled).apply();
         if (weatherAirQualityView != null) {
@@ -467,12 +498,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
-        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
-        else if ("Minimalist".equalsIgnoreCase(activeCat)) {
+        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat) && !"Default".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        else if ("Minimalist".equalsIgnoreCase(activeCat) || "Default".equalsIgnoreCase(activeCat)) {
+            // Never fall back to a theme/legacy wallpaper when Default's bundled asset is unavailable.
             root.setBackgroundColor(android.graphics.Color.BLACK);
             if (wallView != null) {
                 wallView.setImageDrawable(null);
                 wallView.setBackgroundColor(android.graphics.Color.BLACK);
+            }
+            if ("Default".equalsIgnoreCase(activeCat)) {
+                android.util.Log.e("TvHome", "Default wallpaper asset unavailable; showing safe black background");
             }
         }
         if (!isWallpaperDescEnabled() && heroShelf != null) {
@@ -733,7 +768,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // the animation arms it for the grid's first draw, so on any later fresh start (Android
         // closing Home while an app was open) it is not set at all: armed, it drew the dock's tray
         // empty while the apps faded in.
-        if (!tilesAnimatedOnce) {
+        if (!tilesAnimatedOnce && isIconAnimationsEnabled()) {
             int enterAnim = reducedMotion ? R.anim.tile_enter_reduced : R.anim.tile_enter;
             float enterDelay = reducedMotion ? 0f : 0.06f;
             grid.setLayoutAnimation(new LayoutAnimationController(
@@ -1066,6 +1101,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** Hands the picture now on screen to the glass, which blurs it once, off the main thread. */
     private void blurBackdrop(android.graphics.Bitmap bmp) {
+        if (!isGlassEffectsEnabled()) return;
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
         Backdrop.update(bmp, dm.widthPixels, dm.heightPixels, placesMode ? 0xFF7A7A7A : 0, wallDecoder, handler);
     }
@@ -1739,8 +1775,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         r.set(0, 0, card.getWidth(), card.getHeight());
         root.offsetDescendantRectToMyCoords(card, r);
         float pad = 6f * density;        // matches GlassView's glow inset
-        float w = card.getWidth() * AppAdapter.FOCUS_SCALE + 2 * pad;
-        float h = card.getHeight() * AppAdapter.FOCUS_SCALE + 2 * pad;
+        float focusScale = isIconAnimationsEnabled() ? AppAdapter.FOCUS_SCALE : 1f;
+        float w = card.getWidth() * focusScale + 2 * pad;
+        float h = card.getHeight() * focusScale + 2 * pad;
         float x = r.exactCenterX() - w / 2f;
         float y = r.exactCenterY() - h / 2f;
 
@@ -1750,23 +1787,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             lp.height = (int) h;
             glass.setLayoutParams(lp);
             // The rim is drawn inset by pad, right on the zoomed tile, so its corners use the tile's radius as is.
-            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * AppAdapter.FOCUS_SCALE);
+            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * focusScale);
         }
         glassTargetX = x;
         glassTargetY = y;
         // Exactly the zoomed card, behind it: at rest the app hides it completely, so it never lies
         // over an app and only shows while it travels between places.
-        float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * AppAdapter.FOCUS_SCALE;
+        float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * focusScale;
         if (gliderOnPill) {
             // Down from the top menu it travels dark, and turns to glass once it lands, unseen behind
             // the app.
             glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
             glider.onArrive(() -> {
-                if (!gliderOnPill) glider.setStyle(Glider.GLASS);
+                if (!gliderOnPill) glider.setStyle(isGlassEffectsEnabled() ? Glider.GLASS : Glider.DARK);
             });
         } else {
             // From app to app it is a pane of glass gliding behind them.
-            glider.setStyle(Glider.GLASS);
+            glider.setStyle(isGlassEffectsEnabled() ? Glider.GLASS : Glider.DARK);
             glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
         }
         gliderOnPill = false;
@@ -4080,16 +4117,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView qrStatusText;
     private TextView qrUrlText;
 
-    /** Migrates the former Malaysia wallpaper selection to the Nature collection. */
+    /** Keeps retired or unknown wallpaper selections compatible with the current catalog. */
     private String getActiveWallpaperCategory() {
         android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
         String category = prefs.getString("active_category", "Default");
-        if (category == null || category.startsWith("Malaysia")) {
-            // Fresh installs and legacy Malaysia selections use the bundled Pagar Alam wallpaper.
+        if (!isSupportedWallpaperCategory(category)) {
             category = "Default";
             prefs.edit().putString("active_category", category).apply();
         }
         return category;
+    }
+
+    private boolean isSupportedWallpaperCategory(String category) {
+        return "Default".equalsIgnoreCase(category)
+                || "Natural".equalsIgnoreCase(category)
+                || "Skyscraper".equalsIgnoreCase(category)
+                || "Space".equalsIgnoreCase(category)
+                || "Ocean".equalsIgnoreCase(category)
+                || "Minimalist".equalsIgnoreCase(category)
+                || "Custom".equalsIgnoreCase(category);
     }
 
     void showWallpaperDialog() {
@@ -4733,17 +4779,47 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private File getBundledDefaultWallpaper() {
+        // The APK asset is the single source of truth. Never reuse an unverified legacy cache.
         File target = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg");
-        if (target.isFile() && target.length() > 0) return target;
+        File staged = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg.tmp");
+        File backup = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg.bak");
         try (java.io.InputStream in = getAssets().open("kabut-pagi-dempo.jpg");
-             java.io.FileOutputStream out = new java.io.FileOutputStream(target)) {
+             java.io.FileOutputStream out = new java.io.FileOutputStream(staged, false)) {
             byte[] buffer = new byte[8192];
             int count;
             while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
             out.flush();
-            return target.length() > 0 ? target : null;
+            out.getFD().sync();
+            if (!staged.isFile() || staged.length() == 0) {
+                staged.delete();
+                return null;
+            }
+
+            if (backup.exists() && !backup.delete()) {
+                staged.delete();
+                android.util.Log.e("TvHome", "Cannot clear previous Default wallpaper backup");
+                return null;
+            }
+            boolean hadTarget = target.isFile();
+            if (hadTarget && !target.renameTo(backup)) {
+                staged.delete();
+                android.util.Log.e("TvHome", "Cannot stage existing Default wallpaper for replacement");
+                return null;
+            }
+            if (!staged.renameTo(target)) {
+                staged.delete();
+                if (hadTarget) backup.renameTo(target);
+                android.util.Log.e("TvHome", "Cannot finalize bundled Default wallpaper asset");
+                return null;
+            }
+            if (backup.exists() && !backup.delete()) {
+                android.util.Log.w("TvHome", "Could not remove previous Default wallpaper backup");
+            }
+            return target;
         } catch (Exception e) {
-            android.util.Log.e("TvHome", "Bundled default wallpaper unavailable", e);
+            android.util.Log.e("TvHome", "Bundled Default wallpaper unavailable", e);
+            staged.delete();
+            // Do not display an unverified cache: it may contain an obsolete wallpaper.
             return null;
         }
     }
@@ -4770,7 +4846,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
                 showNextWallpaper(true);
             } else {
-                Toast.makeText(this, "Wallpaper bawaan tidak dapat dimuat", Toast.LENGTH_LONG).show();
+                // Do not leave the previous category visible or fall back to a stale image.
+                root.setBackgroundColor(android.graphics.Color.BLACK);
+                if (wallView != null) {
+                    wallView.setImageDrawable(null);
+                    wallView.setBackgroundColor(android.graphics.Color.BLACK);
+                }
+                Toast.makeText(this, "Wallpaper Default tidak tersedia; latar aman ditampilkan", Toast.LENGTH_LONG).show();
             }
             handler.removeCallbacks(wallTick);
             return;
@@ -5074,7 +5156,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Toast.makeText(this, "Tidak dapat memulai peladen unggah lokal. Periksa koneksi Wi-Fi TV.", Toast.LENGTH_LONG).show();
             return;
         }
-        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort();
+        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getWallpaperPath();
         showPhoneUploadQrDialog("📲 Unggah Wallpaper dari HP",
                 "Sambungkan ponsel dan TV ke Wi-Fi yang sama, lalu pindai QR ini. Foto akan masuk ke koleksi wallpaper.",
                 uploadUrl);

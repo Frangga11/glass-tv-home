@@ -52,7 +52,6 @@ public final class ModernSettingsDialog {
     private static final int TAB_STATUS_WEATHER = 3;
     private static final int TAB_EFFECTS = 4;
     private static final int TAB_STANDBY = 5;
-    private static final int TAB_CHILD_MODE = 6;
     private static final int TAB_DEVICE_SETTINGS = 7;
 
     private static Runnable sDpadLeftTarget;
@@ -271,7 +270,6 @@ public final class ModernSettingsDialog {
         navItems.add(new NavItem(TAB_STATUS_WEATHER, AppLanguage.strStatusBarWeather(activity), R.drawable.ic_screen_weather, 0xFF1976D2));
         navItems.add(new NavItem(TAB_EFFECTS, AppLanguage.strVisualEffects(activity), R.drawable.ic_settings, 0xFF7C3AED));
         navItems.add(new NavItem(TAB_STANDBY, AppLanguage.strStandByMode(activity), R.drawable.ic_standby_clock, 0xFF374151));
-        navItems.add(new NavItem(TAB_CHILD_MODE, AppLanguage.strChildMode(activity), R.drawable.ic_shield_child, 0xFFD97706));
         String deviceLabel = AppLanguage.strDeviceSettings(activity);
         if (AppUpdateManager.isUpdateAvailable(activity)) {
             deviceLabel += " 🔴";
@@ -682,7 +680,8 @@ public final class ModernSettingsDialog {
                                     // Keep profile switching consistent with the top-bar switcher:
                                     // leaving Child Mode must always require the parent PIN.
                                     boolean childModeOn = ChildModeManager.isChildModeEnabled(activity);
-                                    if (childModeOn && !p.isChild) {
+                                    boolean targetChildModeOn = ChildModeManager.isChildModeEnabled(activity, p.id);
+                                    if (childModeOn && !targetChildModeOn) {
                                         ChildModeManager.promptPin(activity, "Sahkan PIN Keluar Mod Anak",
                                                 "Masukkan PIN untuk bertukar ke profil " + p.name,
                                                 new ChildModeManager.PinCallback() {
@@ -698,16 +697,27 @@ public final class ModernSettingsDialog {
                                                     public void onCancelled() {}
                                                 });
                                     } else {
-                                        UserSwitchDialog.switchProfile(activity, p, p.isChild, null);
+                                        UserSwitchDialog.switchProfile(activity, p, false, null);
                                         d.dismiss();
                                         updateSidebarSelection.run();
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
                                     }
                                 } else if (which == 1) {
-                                    ProfileManager.deleteProfile(activity, p.id);
-                                    updateSidebarSelection.run();
-                                    if (renderRightPane[0] != null) renderRightPane[0].run();
-                                    Toast.makeText(activity, "🗑️ Profil dipadam", Toast.LENGTH_SHORT).show();
+                                    new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                            .setTitle("Hapus profil " + p.name + "?")
+                                            .setMessage("Profil ini akan dihapus dari perangkat. Tindakan ini tidak dapat dibatalkan.")
+                                            .setNegativeButton("Batal", (confirmDialog, confirmWhich) -> confirmDialog.dismiss())
+                                            .setPositiveButton("Hapus", (confirmDialog, confirmWhich) -> {
+                                                boolean deleted = ProfileManager.deleteProfile(activity, p.id);
+                                                if (deleted) {
+                                                    updateSidebarSelection.run();
+                                                    if (renderRightPane[0] != null) renderRightPane[0].run();
+                                                    Toast.makeText(activity, "Profil " + p.name + " berhasil dihapus", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(activity, "Profil tidak dapat dihapus. Pastikan masih ada profil lain.", Toast.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .show();
                                 }
                             });
                             ob.show();
@@ -728,6 +738,49 @@ public final class ModernSettingsDialog {
                     });
                 });
                 rightContent.addView(addUserBtn);
+
+                // Child Mode belongs with user/profile management, not as a separate navigation destination.
+                // === PARENTAL CONTROLS: GROUPED UNDER PROFILE ===
+                addSectionHeader(rightContent, outfit, "PENGAWASAN ORANG TUA");
+
+                boolean isChildOn = ChildModeManager.isChildModeEnabled(activity);
+                Set<String> lockedSet = ChildModeManager.getLockedApps(activity);
+                Set<String> hiddenSet = ChildModeManager.getHiddenApps(activity);
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "🛡️ Status Mode Anak",
+                        "Kunci aplikasi dengan PIN 4 digit atau sembunyikan aplikasi dari layar utama",
+                        isChildOn, isChecked -> {
+                            ChildModeManager.promptPin(activity, "Sahkan PIN Keselamatan", "Masukkan PIN 4 digit untuk mengubah mode ini", new ChildModeManager.PinCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    ChildModeManager.setChildModeEnabled(activity, isChecked);
+                                    activity.reloadTiles();
+                                    Toast.makeText(activity, isChecked ? "✅ Mode Anak diaktifkan!" : "Mode Anak dinonaktifkan", Toast.LENGTH_SHORT).show();
+                                    if (renderRightPane[0] != null) renderRightPane[0].run();
+                                }
+
+                                @Override
+                                public void onCancelled() {
+                                    if (renderRightPane[0] != null) renderRightPane[0].run();
+                                }
+                            });
+                        }));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "🔒 Kunci Aplikasi dengan PIN (" + lockedSet.size() + " Aplikasi)",
+                        "Pilih aplikasi yang memerlukan PIN 4 digit untuk dibuka",
+                        () -> showAppLockPicker(activity, density, outfit, false)));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "👁️ Sembunyikan Aplikasi (" + hiddenSet.size() + " Aplikasi)",
+                        "Pilih aplikasi yang disembunyikan dari dok dan kisi layar utama",
+                        () -> showAppLockPicker(activity, density, outfit, true)));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "🔢 Ubah PIN Keamanan",
+                        "Ubah PIN kontrol orang tua 4 digit (PIN saat ini: " + (ChildModeManager.getPin(activity).equals("0000") ? "0000 [Lalai]" : "••••") + ")",
+                        () -> showChangePinDialog(activity, density, outfit)));
 
             } else if (tab == TAB_HOME_SCREEN) {
                 // === TAB 1: HOME SCREEN (CONSOLIDATING CANDY BOX SETTINGS) ===
@@ -761,7 +814,7 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, "Tampilan");
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🖼️ Koleksi Wallpaper", "Pilih latar dari koleksi alam, kota, laut, dan luar angkasa.",
+                        "🖼️ Koleksi Wallpaper", "Pilih Wallpaper Default Kabut Pagi Dempo, koleksi alam, kota, laut, luar angkasa, atau Minimalis OLED.",
                         activity::showWallpaperDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
@@ -797,6 +850,24 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, AppLanguage.strVisualEffects(activity));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "🎞️ Animasi Ikon & Fokus Aplikasi",
+                        "Aktifkan atau matikan gerakan zoom dan transisi label saat berpindah aplikasi. Tidak memengaruhi animasi cuaca atau efek kaca.",
+                        activity.isIconAnimationsEnabled(), isChecked -> {
+                            activity.setIconAnimationsEnabled(isChecked);
+                            Toast.makeText(activity, isChecked ? "Animasi ikon diaktifkan." : "Animasi ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        }));
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
+                        "🪟 Glass Effect",
+                        "Aktifkan atau matikan material kaca buram, lapisan transparan, dan garis tepi pada dock serta tombol. Penanda fokus remote tetap berfungsi.",
+                        activity.isGlassEffectsEnabled(), isChecked -> {
+                            activity.setGlassEffectsEnabled(isChecked);
+                            Toast.makeText(activity, isChecked ? "Glass Effect diaktifkan." : "Glass Effect dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        }));
+
+                rightContent.addView(buildSwitchRow(activity, density, outfit,
                         "🌧️ Animasi Cuaca pada Wallpaper",
                         "Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.",
                         activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
@@ -806,8 +877,8 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "✨ Efek Cahaya & Warna Ikon",
-                        "Atur cahaya latar dan transisi warna yang mengikuti aplikasi saat dipilih. Tidak memengaruhi animasi cuaca.",
+                        "✨ Cahaya Ambient Ikon",
+                        "Atur cahaya latar dan perpaduan warna yang mengikuti aplikasi saat dipilih. Terpisah dari animasi ikon, Glass Effect, dan animasi cuaca.",
                         activity.isIconGlowEffectsEnabled(), isChecked -> {
                             activity.setIconGlowEffectsEnabled(isChecked);
                             Toast.makeText(activity, isChecked ? "Efek cahaya ikon diaktifkan." : "Efek cahaya ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
@@ -855,49 +926,6 @@ public final class ModernSettingsDialog {
                         "🌙 Pratinjau Layar Siaga Sekarang",
                         "Lihat pratinjau jam atau foto pribadi di dalam aplikasi sesuai mode yang dipilih.",
                         activity::showNightstandScreensaver));
-
-            } else if (tab == TAB_CHILD_MODE) {
-                // === TAB 6: CHILD MODE & APP LOCK ===
-                addHeader(rightContent, outfit, "Mode Anak");
-
-                boolean isChildOn = ChildModeManager.isChildModeEnabled(activity);
-                Set<String> lockedSet = ChildModeManager.getLockedApps(activity);
-                Set<String> hiddenSet = ChildModeManager.getHiddenApps(activity);
-
-                rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🛡️ Status Mode Anak",
-                        "Kunci aplikasi dengan PIN 4 digit atau sembunyikan aplikasi dari layar utama",
-                        isChildOn, isChecked -> {
-                            ChildModeManager.promptPin(activity, "Sahkan PIN Keselamatan", "Masukkan PIN 4 digit untuk mengubah mode ini", new ChildModeManager.PinCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    ChildModeManager.setChildModeEnabled(activity, isChecked);
-                                    activity.reloadTiles();
-                                    Toast.makeText(activity, isChecked ? "✅ Mode Anak diaktifkan!" : "Mode Anak dinonaktifkan", Toast.LENGTH_SHORT).show();
-                                    if (renderRightPane[0] != null) renderRightPane[0].run();
-                                }
-
-                                @Override
-                                public void onCancelled() {
-                                    if (renderRightPane[0] != null) renderRightPane[0].run();
-                                }
-                            });
-                        }));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔒 Kunci Aplikasi dengan PIN (" + lockedSet.size() + " Aplikasi)",
-                        "Pilih aplikasi yang memerlukan PIN 4 digit untuk dibuka",
-                        () -> showAppLockPicker(activity, density, outfit, false)));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "👁️ Sembunyikan Aplikasi (" + hiddenSet.size() + " Aplikasi)",
-                        "Pilih aplikasi yang disembunyikan dari dok dan kisi layar utama",
-                        () -> showAppLockPicker(activity, density, outfit, true)));
-
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔢 Ubah PIN Keamanan",
-                        "Ubah PIN kontrol orang tua 4 digit (PIN saat ini: " + (ChildModeManager.getPin(activity).equals("0000") ? "0000 [Lalai]" : "••••") + ")",
-                        () -> showChangePinDialog(activity, density, outfit)));
 
             } else if (tab == TAB_DEVICE_SETTINGS) {
                 // === TAB: DEVICE SETTINGS (GENERAL + REMOTE + ACCESSIBILITY + TV) ===
@@ -1032,7 +1060,7 @@ public final class ModernSettingsDialog {
                                 "Widget & Informasi",
                                 "Animasi & Efek",
                                 "Layar Siaga",
-                                "Mode Anak",
+                                "Pengawasan Orang Tua (di Profil)",
                                 "Pengaturan Perangkat"
                         };
                         String[] keywords = {
@@ -1047,7 +1075,7 @@ public final class ModernSettingsDialog {
                         };
                         int[] tabIds = {
                                 TAB_PROFILE, TAB_HOME_SCREEN, TAB_APPEARANCE, TAB_STATUS_WEATHER,
-                                TAB_EFFECTS, TAB_STANDBY, TAB_CHILD_MODE, TAB_DEVICE_SETTINGS
+                                TAB_EFFECTS, TAB_STANDBY, TAB_PROFILE, TAB_DEVICE_SETTINGS
                         };
                         ArrayList<String> resultLabels = new ArrayList<>();
                         ArrayList<Integer> resultTabs = new ArrayList<>();
@@ -1347,17 +1375,54 @@ public final class ModernSettingsDialog {
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
-        ChildModeManager.promptPin(activity, "Verifikasi PIN Saat Ini", "Masukkan PIN keamanan 4 digit saat ini", new ChildModeManager.PinCallback() {
+        ChildModeManager.promptPin(activity, "Verifikasi PIN Saat Ini",
+                "Masukkan PIN keamanan 4 digit saat ini", new ChildModeManager.PinCallback() {
             @Override
             public void onSuccess() {
-                ChildModeManager.promptPin(activity, "Atur PIN Baru", "Masukkan PIN 4 digit baru untuk kontrol orang tua", new ChildModeManager.PinCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(activity, "✅ PIN Keselamatan Berjaya Dikemaskini!", Toast.LENGTH_SHORT).show();
+                EditText newPin = new EditText(activity);
+                newPin.setHint("PIN baru (4 digit)");
+                newPin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                newPin.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(4)});
+                newPin.setSingleLine(true);
+
+                EditText confirmPin = new EditText(activity);
+                confirmPin.setHint("Ulangi PIN baru");
+                confirmPin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                confirmPin.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(4)});
+                confirmPin.setSingleLine(true);
+
+                LinearLayout fields = new LinearLayout(activity);
+                fields.setOrientation(LinearLayout.VERTICAL);
+                int pad = (int) (22 * density);
+                fields.setPadding(pad, (int) (8 * density), pad, 0);
+                fields.addView(newPin);
+                fields.addView(confirmPin);
+
+                AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        .setTitle("Atur PIN Baru")
+                        .setMessage("Buat PIN angka 4 digit dan masukkan kembali untuk konfirmasi.")
+                        .setView(fields)
+                        .setNegativeButton("Batal", (d, w) -> d.dismiss())
+                        .setPositiveButton("Simpan", null)
+                        .create();
+                dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                    String first = newPin.getText().toString();
+                    String second = confirmPin.getText().toString();
+                    if (!first.matches("[0-9]{4}")) {
+                        newPin.setError("PIN harus tepat 4 angka");
+                        newPin.requestFocus();
+                        return;
                     }
-                    @Override
-                    public void onCancelled() {}
-                });
+                    if (!first.equals(second)) {
+                        confirmPin.setError("PIN tidak sama");
+                        confirmPin.requestFocus();
+                        return;
+                    }
+                    ChildModeManager.setPin(activity, first);
+                    dialog.dismiss();
+                    Toast.makeText(activity, "PIN keamanan berhasil diperbarui.", Toast.LENGTH_SHORT).show();
+                }));
+                dialog.show();
             }
             @Override
             public void onCancelled() {}

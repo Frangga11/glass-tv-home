@@ -191,6 +191,7 @@ final class OnlineWallpapers {
         if (itemCat == null) return false;
         String ic = itemCat.toLowerCase(Locale.ROOT);
         String sc = selectedCat.toLowerCase(Locale.ROOT);
+        if (sc.contains("malay")) return false; // Retired regional category.
         if (sc.contains("sky") || sc.contains("arch") || sc.contains("city")) {
             return ic.contains("sky") || ic.contains("arch") || ic.contains("city") || ic.contains("urban");
         }
@@ -205,9 +206,6 @@ final class OnlineWallpapers {
         }
         if (sc.contains("minim") || sc.contains("oled") || sc.contains("dark")) {
             return ic.contains("minim") || ic.contains("oled") || ic.contains("dark") || ic.contains("atmos") || ic.contains("weather");
-        }
-        if (sc.contains("malay")) {
-            return ic.contains("malay");
         }
         return ic.contains(sc);
     }

@@ -78,6 +78,22 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         rect.inset(-pad, -pad);
         area.set(rect);
         float radius = 26 * density;
+        boolean glassEnabled = parent.getContext().getSharedPreferences("wallpaper_prefs", android.content.Context.MODE_PRIVATE)
+                .getBoolean("glass_effects_enabled", true);
+        if (!glassEnabled) {
+            // Keep D-pad focus feedback, but remove the glass material itself.
+            if (glider != null && glider.isShowing()) {
+                parent.getLocationInWindow(at);
+                glider.getLocationInWindow(gliderAt);
+                c.save();
+                RectF clipArea = new RectF(rect);
+                clipArea.inset(-36f * density, -36f * density);
+                c.clipRect(clipArea);
+                glider.drawShape(c, gliderAt[0] - at[0], gliderAt[1] - at[1], parent);
+                c.restore();
+            }
+            return;
+        }
         // Soft drop shadow under the glass dock tray
         RectF trayShadow = new RectF(rect);
         trayShadow.offset(0, 4f * density);

@@ -37,17 +37,82 @@ public final class ChildModeManager {
 
     private ChildModeManager() {}
 
+    private static final String KEY_PROFILE_MIGRATION_DONE = "profile_settings_migration_v1";
+
+    private static String profileKey(String profileId, String key) {
+        return "profile_" + profileId + "_" + key;
+    }
+
+    private static String activeProfileId(Context ctx) {
+        ProfileManager.UserProfile active = ProfileManager.getActiveProfile(ctx);
+        return active != null ? active.id : "profile_default";
+    }
+
+    /**
+     * One-time migration: move the former device-wide Child Mode and app lists
+     * into the profile that was active when this version first runs.
+     * The parent PIN intentionally remains device-wide.
+     */
+    private static synchronized void migrateLegacySettings(Context ctx) {
+        if (ctx == null) return;
+        SharedPreferences sp = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (sp.getBoolean(KEY_PROFILE_MIGRATION_DONE, false)) return;
+
+        String profileId = activeProfileId(ctx);
+        SharedPreferences.Editor edit = sp.edit();
+        if (sp.contains(KEY_ENABLED)) {
+            edit.putBoolean(profileKey(profileId, KEY_ENABLED), sp.getBoolean(KEY_ENABLED, false));
+        }
+        if (sp.contains(KEY_LOCKED_APPS)) {
+            Set<String> oldLocked = sp.getStringSet(KEY_LOCKED_APPS, null);
+            if (oldLocked != null) edit.putStringSet(profileKey(profileId, KEY_LOCKED_APPS), new HashSet<>(oldLocked));
+        }
+        if (sp.contains(KEY_HIDDEN_APPS)) {
+            Set<String> oldHidden = sp.getStringSet(KEY_HIDDEN_APPS, null);
+            if (oldHidden != null) edit.putStringSet(profileKey(profileId, KEY_HIDDEN_APPS), new HashSet<>(oldHidden));
+        }
+        edit.putBoolean(KEY_PROFILE_MIGRATION_DONE, true).apply();
+    }
+
+    private static SharedPreferences profilePrefs(Context ctx) {
+        migrateLegacySettings(ctx);
+        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
     public static boolean isChildModeEnabled(Context ctx) {
         if (ctx == null) return false;
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getBoolean(KEY_ENABLED, false);
+        return isChildModeEnabled(ctx, activeProfileId(ctx));
+    }
+
+    public static boolean isChildModeEnabled(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return false;
+        SharedPreferences sp = profilePrefs(ctx);
+        String key = profileKey(profileId, KEY_ENABLED);
+        if (sp.contains(key)) return sp.getBoolean(key, false);
+        for (ProfileManager.UserProfile profile : ProfileManager.getAllProfiles(ctx)) {
+            if (profileId.equals(profile.id)) return profile.isChild;
+        }
+        return false;
     }
 
     public static void setChildModeEnabled(Context ctx, boolean enabled) {
         if (ctx == null) return;
-        ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean(KEY_ENABLED, enabled)
+        setChildModeEnabled(ctx, activeProfileId(ctx), enabled);
+    }
+
+    public static void setChildModeEnabled(Context ctx, String profileId, boolean enabled) {
+        if (ctx == null || profileId == null) return;
+        profilePrefs(ctx).edit().putBoolean(profileKey(profileId, KEY_ENABLED), enabled).apply();
+    }
+
+    /** Removes only this profile's restrictions; the shared parent PIN is preserved. */
+    public static void clearProfileSettings(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return;
+        SharedPreferences sp = profilePrefs(ctx);
+        sp.edit()
+                .remove(profileKey(profileId, KEY_ENABLED))
+                .remove(profileKey(profileId, KEY_LOCKED_APPS))
+                .remove(profileKey(profileId, KEY_HIDDEN_APPS))
                 .apply();
     }
 
@@ -71,49 +136,43 @@ public final class ChildModeManager {
     }
 
     public static boolean isAppLocked(Context ctx, String pkg) {
-        if (ctx == null || pkg == null) return false;
-        if (!isChildModeEnabled(ctx)) return false;
-        Set<String> set = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getStringSet(KEY_LOCKED_APPS, null);
-        return set != null && set.contains(pkg);
+        if (ctx == null || pkg == null || !isChildModeEnabled(ctx)) return false;
+        return getLockedApps(ctx).contains(pkg);
     }
 
     public static void setAppLocked(Context ctx, String pkg, boolean locked) {
         if (ctx == null || pkg == null) return;
-        SharedPreferences sp = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        Set<String> set = new HashSet<>(sp.getStringSet(KEY_LOCKED_APPS, new HashSet<>()));
-        if (locked) set.add(pkg);
-        else set.remove(pkg);
-        sp.edit().putStringSet(KEY_LOCKED_APPS, set).apply();
+        SharedPreferences sp = profilePrefs(ctx);
+        String key = profileKey(activeProfileId(ctx), KEY_LOCKED_APPS);
+        Set<String> set = new HashSet<>(sp.getStringSet(key, new HashSet<>()));
+        if (locked) set.add(pkg); else set.remove(pkg);
+        sp.edit().putStringSet(key, set).apply();
     }
 
     public static Set<String> getLockedApps(Context ctx) {
         if (ctx == null) return new HashSet<>();
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getStringSet(KEY_LOCKED_APPS, new HashSet<>());
+        return new HashSet<>(profilePrefs(ctx).getStringSet(
+                profileKey(activeProfileId(ctx), KEY_LOCKED_APPS), new HashSet<>()));
     }
 
     public static boolean isAppHidden(Context ctx, String pkg) {
-        if (ctx == null || pkg == null) return false;
-        if (!isChildModeEnabled(ctx)) return false;
-        Set<String> set = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getStringSet(KEY_HIDDEN_APPS, null);
-        return set != null && set.contains(pkg);
+        if (ctx == null || pkg == null || !isChildModeEnabled(ctx)) return false;
+        return getHiddenApps(ctx).contains(pkg);
     }
 
     public static void setAppHidden(Context ctx, String pkg, boolean hidden) {
         if (ctx == null || pkg == null) return;
-        SharedPreferences sp = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        Set<String> set = new HashSet<>(sp.getStringSet(KEY_HIDDEN_APPS, new HashSet<>()));
-        if (hidden) set.add(pkg);
-        else set.remove(pkg);
-        sp.edit().putStringSet(KEY_HIDDEN_APPS, set).apply();
+        SharedPreferences sp = profilePrefs(ctx);
+        String key = profileKey(activeProfileId(ctx), KEY_HIDDEN_APPS);
+        Set<String> set = new HashSet<>(sp.getStringSet(key, new HashSet<>()));
+        if (hidden) set.add(pkg); else set.remove(pkg);
+        sp.edit().putStringSet(key, set).apply();
     }
 
     public static Set<String> getHiddenApps(Context ctx) {
         if (ctx == null) return new HashSet<>();
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getStringSet(KEY_HIDDEN_APPS, new HashSet<>());
+        return new HashSet<>(profilePrefs(ctx).getStringSet(
+                profileKey(activeProfileId(ctx), KEY_HIDDEN_APPS), new HashSet<>()));
     }
 
     /**

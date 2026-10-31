@@ -126,6 +126,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private final boolean showHomeSettings;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): no overshoot, shorter fades. */
     private final boolean reducedMotion;
+    private boolean iconAnimationsEnabled;
     private final List<Entry> items = new ArrayList<>();
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
@@ -141,6 +142,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         this.hidden = new HashSet<>(cfg.hiddenApps);
         this.showHomeSettings = cfg.showHomeSettingsShortcut;
         this.reducedMotion = cfg.reducedMotion;
+        this.iconAnimationsEnabled = ctx.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE)
+                .getBoolean("icon_animations_enabled", true);
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -304,7 +307,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         nameLp.width = w;
         nameLp.topMargin = h + Math.round(7 * density);
         name.setLayoutParams(nameLp);
-        return new Holder(v, listener, reducedMotion);
+        return new Holder(v, listener, reducedMotion, iconAnimationsEnabled);
     }
 
     @Override
@@ -314,8 +317,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         h.name.setVisibility(position < dockSize ? View.INVISIBLE : View.VISIBLE);   // the dock has no labels
         boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
         h.name.setAlpha(focused ? 1f : 0f);
-        h.card.setScaleX(focused ? FOCUS_SCALE : 1f);
-        h.card.setScaleY(focused ? FOCUS_SCALE : 1f);
+        h.card.setScaleX(focused && iconAnimationsEnabled ? FOCUS_SCALE : 1f);
+        h.card.setScaleY(focused && iconAnimationsEnabled ? FOCUS_SCALE : 1f);
+        h.name.setTranslationY(0f);
         if (e.banner != null) {
             h.banner.setImageDrawable(e.banner);
             h.banner.setVisibility(View.VISIBLE);
@@ -438,6 +442,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         return items.get(position).component.flattenToShortString().hashCode();
     }
 
+    void setIconAnimationsEnabled(boolean enabled, RecyclerView recyclerView) {
+        iconAnimationsEnabled = enabled;
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
+            if (holder instanceof Holder) ((Holder) holder).setIconAnimationsEnabled(enabled);
+        }
+    }
+
     /** Stable key for the app at a position (its component), or null. */
     String keyAt(int position) {
         return position >= 0 && position < items.size() ? items.get(position).component.flattenToShortString() : null;
@@ -518,8 +530,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         final TextView label;
         final TextView name;
         final boolean reducedMotion;
+        private boolean iconAnimationsEnabled;
 
-        Holder(View v, TileListener listener, boolean reducedMotion) {
+        Holder(View v, TileListener listener, boolean reducedMotion, boolean iconAnimationsEnabled) {
             super(v);
             card = v.findViewById(R.id.card);
             banner = v.findViewById(R.id.banner);
@@ -527,6 +540,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
             this.reducedMotion = reducedMotion;
+            this.iconAnimationsEnabled = iconAnimationsEnabled;
 
             final float density = v.getResources().getDisplayMetrics().density;
             card.setOutlineProvider(new ViewOutlineProvider() {
@@ -547,10 +561,15 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
 
             card.setOnFocusChangeListener((view, focused) -> {
-                float s = focused ? FOCUS_SCALE : 1.0f;
+                float s = focused && iconAnimationsEnabled ? FOCUS_SCALE : 1.0f;
                 view.animate().cancel();
                 name.animate().cancel();
-                if (reducedMotion) {
+                if (!iconAnimationsEnabled) {
+                    view.setScaleX(1f);
+                    view.setScaleY(1f);
+                    name.setAlpha(focused ? 1f : 0f);
+                    name.setTranslationY(0f);
+                } else if (reducedMotion) {
                     // No overshoot: the extra frames redraw the banner and the dock band on a weak GPU.
                     view.animate().scaleX(s).scaleY(s)
                             .setDuration(focused ? 120 : 80)
@@ -573,6 +592,23 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     listener.onTileFocused(pos, view);
                 }
             });
+        }
+
+        void setIconAnimationsEnabled(boolean enabled) {
+            iconAnimationsEnabled = enabled;
+            card.animate().cancel();
+            name.animate().cancel();
+            boolean focused = card.isFocused();
+            if (!enabled) {
+                card.setScaleX(1f);
+                card.setScaleY(1f);
+                name.setAlpha(focused ? 1f : 0f);
+                name.setTranslationY(0f);
+            } else if (focused) {
+                card.setScaleX(FOCUS_SCALE);
+                card.setScaleY(FOCUS_SCALE);
+                name.setAlpha(1f);
+            }
         }
     }
 }
