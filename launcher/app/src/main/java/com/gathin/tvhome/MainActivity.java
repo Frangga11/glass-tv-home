@@ -1332,6 +1332,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Toast.makeText(this, "Foto tidak dapat diakses kembali. Coba pilih foto dari penyimpanan perangkat.", Toast.LENGTH_LONG).show();
             return;
         }
+        // Release permissions for photos that were removed from the selection.
+        for (Uri oldUri : StandbyPhotoStore.getUris(this)) {
+            if (!unique.contains(oldUri.toString())) {
+                try {
+                    getContentResolver().releasePersistableUriPermission(oldUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } catch (Exception ignored) {
+                }
+            }
+        }
         StandbyPhotoStore.saveUris(this, granted);
         StandbyPhotoStore.setPhotoMode(this, true);
         standbyPhotoIndex = -1;
