@@ -38,10 +38,9 @@ Then ask to continue from HANDOVER.md and not to repeat closed checks. The assis
 - Avatar source changes have been committed to `fix/avatar-qr-upload-single-photo`; see draft PR #6.
 - No changes have been merged into the settings/gallery baseline.
 - No avatar code has been merged or cherry-picked.
-- GitHub CI passed in workflow run 41199143712 for the avatar code commit: docs/tools, Android unit tests, release build, APK-size gate, and artifact publication all succeeded.
-- Release APK artifact size: 1,107,399 bytes; SHA-256: 65a60f1fa2a2fce23520721337a82ecf88ddb287ffd87ad801ff27d14bf8fab9.
-- Artifact / workflow: https://github.com/Frangga11/glass-tv-home/actions/runs/41199143712.
-- A later commit updates only the user guide; the latest PR CI docs job passed, and the launcher job was still running at this handover snapshot.
+- GitHub CI passed on latest PR head 0cb1b96e2c2529e65795231519c6e0728b46390d in workflow run 41199199372: docs/tools, Android unit tests, release build, APK-size gate, and artifact publication all succeeded.
+- Release APK artifact size: 1,107,392 bytes; SHA-256: b4dc78502db5104e9b226fd75c232f0f090239a8cff979560e6784e5e5208ca8.
+- Artifact / workflow: https://github.com/Frangga11/glass-tv-home/actions/runs/41199199372.
 - No release APK has been installed on the user's TV in this session.
 - No APK has been installed on the user's TV in this session.
 - No live device test has been performed in this session.
