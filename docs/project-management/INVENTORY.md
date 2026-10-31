@@ -167,19 +167,20 @@ GitHub source URLs:
 - No PR merged and no APK installed. Actual Mi TV Stick/phone test is the remaining release gate.
 
 
-## B01 global navigation implementation checkpoint — 1 November 2026
+## B01 global navigation implementation checkpoint — 1 November 2026 (second-pass audit)
 
 | Area | Source finding | Remediation | Evidence / status |
 |---|---|---|---|
-| Home app-grid focus | Last app identity/slot were static process-only state | Persist stable component key and fallback slot; restore identity first and clamp fallback | Draft PR #10; exact-head CI #212 PASS; physical device test open |
-| Top-bar focus | External Android screen return always restored a grid tile | Persist last top-bar pill ID and restore when still visible/focusable | Draft PR #10; exact-head CI #212 PASS; physical device test open |
-| Settings tab | Dialog always initialized to Profile | Persist selected tab and restore its sidebar cursor | Draft PR #10; exact-head CI #212 PASS; physical device test open |
-| Empty-grid fallback | Wi-Fi view was dereferenced without null check | Null-safe Wi-Fi/Settings fallback | Draft PR #10; exact-head CI #212 PASS |
-| Scroll-settle focus | Fallback could focus an unrelated first visible card | Retry the clamped requested position instead | Draft PR #10; exact-head CI #212 PASS |
+| Home app-grid focus | Focus identity/slot were process-only and transient RecyclerView rebind events could overwrite saved preferences | Persist stable component key + fallback slot; snapshot, resolve against the rebuilt adapter, and restore the complete persisted snapshot | Draft PR #10; exact-head CI #224 passed previous code snapshot; current #225 pending |
+| Top-bar focus | Resource-ID persistence was brittle; returning from external Android screens could restore the wrong destination | Persist semantic keys and resolve the current view; preserve destination across internal reloads | Draft PR #10; CI #225 pending |
+| Settings tab | Dialog always initialized to Profile; tab IDs duplicated between persistence and dialog code | Persist tab/sidebar cursor and centralize canonical tab IDs in NavigationState | Draft PR #10; CI #225 pending |
+| Empty app list | Rebuild could retain an invalid -1 slot; pending scroll listener could exit without focus | Normalize empty-list slot, clear stale component key, and use Wi-Fi then Settings fallback | Draft PR #10; CI #225 pending |
+| Scroll-settle focus | Failed/missing target could leave focus unset or land on an unrelated card | Validate target visibility/focusability; retry requested slot and safely fall back | Draft PR #10; CI #225 pending |
+| Settings right-pane action return | Content focus after an action/re-render is a lifecycle restoration concern | Track under B07 | Deferred; not a B01 blocker |
 
 - Branch: `feature/b01-global-navigation-retention`
 - Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10
-- Exact head: `0f1c727da4c89576ba15a87238d17c1965a8a239`
-- CI #212: https://github.com/Frangga11/glass-tv-home/actions/runs/41228628063 — both jobs PASS.
-- Release artifact: `13052019782`; CI reports APK 1,394 KB, under the 1.5 MiB budget.
-- Physical Mi TV Stick acceptance has not been performed. Do not mark B01 final or merge PR #10 until remote/process-restart tests pass.
+- Current source head: `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`
+- CI #224 passed on preceding head `1613fef4d83102369a87178a881832a29295b8d7`; CI #225 is validating the current head.
+- CI workflow now requires manual workflow-dispatch opt-in to publish the final TV-test APK. Normal PR runs do not publish it.
+- No APK has been installed on the TV. Physical device acceptance is deferred until all A–E audits/fixes and F integration/regression are complete.
