@@ -164,12 +164,12 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 
 | ID | Severity | Area | Finding / root cause | Remediation / verification | Status |
 |---|---|---|---|---|---|
-| B02-001 | P2 | Active-profile built-in avatar choices | Focus listener only scales the avatar frame; the white ring represents the selected avatar, not the currently focused avatar | Add a distinct high-contrast focus ring separate from the selected ring; test selected and unselected avatar focus independently | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
-| B02-002 | P2 | Avatar QR upload / reset buttons | Custom static GradientDrawable backgrounds have no focus-state change or focus listener | Apply consistent focused fill + visible outline + restrained scale; test both buttons with D-pad | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
-| B02-003 | P2 | Add-profile avatar choices | Focus listener only scales frames; selection ring and focus state are conflated | Add a separate focus ring while retaining the selected-avatar ring | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
-| B02-004 | P2 | Add/edit profile name fields | Custom static EditText backgrounds do not change border/fill on remote focus | Add visible focused border and retain text/cursor contrast; verify keyboard focus and text entry | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
-| B02-005 | P2 | Azan overlay card | Card is focusable/clickable but its custom glass background does not visibly change when focused | Add a clear focus stroke without changing the overlay's blur/opacity/lifecycle behavior | FIX IMPLEMENTED in Draft PR #11; exact-head CI #233 pending |
-| B02-006 | P2 | Weather daily forecast rows | Focus selector used only a low-opacity fill and had no outline, weaker than adjacent hourly/metric controls | Add a clear white focus stroke and slightly stronger focused fill while preserving row dimensions | FIX IMPLEMENTED in Draft PR #11; exact-head CI #233 pending |
+| B02-001 | P2 | Active-profile built-in avatar choices | Focus listener only scales the avatar frame; the white ring represents the selected avatar, not the currently focused avatar | Add a distinct high-contrast focus ring separate from the selected ring; test selected and unselected avatar focus independently | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
+| B02-002 | P2 | Avatar QR upload / reset buttons | Custom static GradientDrawable backgrounds have no focus-state change or focus listener | Apply consistent focused fill + visible outline + restrained scale; test both buttons with D-pad | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
+| B02-003 | P2 | Add-profile avatar choices | Focus listener only scales frames; selection ring and focus state are conflated | Add a separate focus ring while retaining the selected-avatar ring | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
+| B02-004 | P2 | Add/edit profile name fields | Custom static EditText backgrounds do not change border/fill on remote focus | Add visible focused border and retain text/cursor contrast; verify keyboard focus and text entry | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
+| B02-005 | P2 | Azan overlay card | Card is focusable/clickable but its custom glass background does not visibly change when focused | Add a clear focus stroke without changing the overlay's blur/opacity/lifecycle behavior | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
+| B02-006 | P2 | Weather daily forecast rows | Focus selector used only a low-opacity fill and had no outline, weaker than adjacent hourly/metric controls | Add a clear white focus stroke and slightly stronger focused fill while preserving row dimensions | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
 
 ### Surfaces reviewed; existing focus treatment found
 
@@ -196,7 +196,7 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Branch: `feature/b02-remote-focus-indicators`.
 - Base: `feature/b01-global-navigation-retention` (B01 source/CI gate PASS).
 - Draft PR #11: https://github.com/Frangga11/glass-tv-home/pull/11.
-- Current head: `68e87eaeead948367665470fa08503daeddbcaef`.
-- Exact-head CI #233 is pending for the current head; CI #232 validates the preceding snapshot.
+- Current head: `01cbef2c2fc90498295971b22c369a72cdfa734a`.
+- Exact-head CI #234 is pending for the current head; CI #233 passed the preceding snapshot. The final change moves the focus ring above the avatar image to ensure no overlap hides it.
 - Files: `TvFocusIndicator.java`, `ModernSettingsDialog.java`, `UserSwitchDialog.java`, `AzanActivity.java`.
 - No APK installed or published for TV testing; final device acceptance is deferred to F02.
