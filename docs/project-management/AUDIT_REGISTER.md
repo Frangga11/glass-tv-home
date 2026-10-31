@@ -156,3 +156,35 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - `.github/workflows/ci.yml` now gates publication of the final TV-test APK behind an explicit manual workflow-dispatch boolean. Normal PR CI still builds/tests the release variant but does not publish a TV-test artifact.
 - No APK has been installed on the TV and no device settings changed. Historical CI artifact #212 is a validation artifact only, not an approved TV-test build.
 - B01 source remediation and exact-head CI are PASS; physical acceptance is deferred to the final integrated regression stage F02. Keep roadmap B01 IN PROGRESS until F02 acceptance. Settings right-pane action-return focus remains assigned to B07.
+
+
+## B02 — Global D-pad / remote focus indicator audit — 1 November 2026
+
+### Confirmed findings
+
+| ID | Severity | Area | Finding / root cause | Remediation / verification | Status |
+|---|---|---|---|---|---|
+| B02-001 | P2 | Active-profile built-in avatar choices | Focus listener only scales the avatar frame; the white ring represents the selected avatar, not the currently focused avatar | Add a distinct high-contrast focus ring separate from the selected ring; test selected and unselected avatar focus independently | FIX IN PROGRESS |
+| B02-002 | P2 | Avatar QR upload / reset buttons | Custom static GradientDrawable backgrounds have no focus-state change or focus listener | Apply consistent focused fill + visible outline + restrained scale; test both buttons with D-pad | FIX IN PROGRESS |
+| B02-003 | P2 | Add-profile avatar choices | Focus listener only scales frames; selection ring and focus state are conflated | Add a separate focus ring while retaining the selected-avatar ring | FIX IN PROGRESS |
+| B02-004 | P2 | Add/edit profile name fields | Custom static EditText backgrounds do not change border/fill on remote focus | Add visible focused border and retain text/cursor contrast; verify keyboard focus and text entry | FIX IN PROGRESS |
+| B02-005 | P2 | Azan overlay card | Card is focusable/clickable but its custom glass background does not visibly change when focused | Add a clear focus stroke without changing the overlay's blur/opacity/lifecycle behavior | FIX IN PROGRESS |
+
+### Surfaces reviewed; existing focus treatment found
+
+- Home app tiles: moving glass highlight and tile focus animation.
+- Top-bar pills: shared glass/glider focus treatment.
+- Main quick-action popups: `item_input.xml` uses focused selector.
+- Prayer-time pill and weather pill: focused drawable selectors.
+- Inline media controls: focused selectors for track info and round buttons.
+- Recent Apps: app card changes its top pill on focus; Close All uses a focused cyan outline selector.
+- WeatherActivity: hourly/daily items and metric cards use focused drawable selectors.
+- LocationActivity: state pills and zone cards use focused state selectors.
+- Settings search, profile rows, action rows and switch rows: visible focus background/border treatments.
+- Profile switch cards, Add Profile container, Cancel and Save controls: visible focus treatments.
+
+### B02 implementation checkpoint
+
+- Source baseline: `feature/b01-global-navigation-retention` at `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`.
+- B02 must preserve B01 navigation/focus routing and must not replace existing focus listeners without preserving their behavior.
+- Physical TV acceptance is deferred until all A–E audits/fixes and final integration stage F02.
