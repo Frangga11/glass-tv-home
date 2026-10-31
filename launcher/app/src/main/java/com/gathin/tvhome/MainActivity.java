@@ -1332,6 +1332,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (uri == null || profileId == null) return;
         Bitmap decoded = null;
         File temp = null;
+        File backup = null;
         try {
             BitmapFactory.Options bounds = new BitmapFactory.Options();
             bounds.inJustDecodeBounds = true;
@@ -1356,14 +1357,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             String safeId = profileId.replaceAll("[^a-zA-Z0-9_-]", "_");
             File target = new File(dir, safeId + ".jpg");
             temp = new File(dir, safeId + ".jpg.tmp");
+            backup = new File(dir, safeId + ".jpg.bak");
             try (FileOutputStream out = new FileOutputStream(temp)) {
                 if (!decoded.compress(Bitmap.CompressFormat.JPEG, 90, out)) {
                     throw new java.io.IOException("Foto gagal disimpan.");
                 }
                 out.flush();
             }
-            if (target.exists() && !target.delete()) throw new java.io.IOException("Foto lama tidak dapat diganti.");
-            if (!temp.renameTo(target)) throw new java.io.IOException("Penyimpanan foto tidak selesai.");
+            if (backup.exists()) backup.delete();
+            boolean hadPreviousPhoto = target.exists();
+            if (hadPreviousPhoto && !target.renameTo(backup)) {
+                throw new java.io.IOException("Foto lama tidak dapat diamankan untuk penggantian.");
+            }
+            if (!temp.renameTo(target)) {
+                if (hadPreviousPhoto && backup.exists()) backup.renameTo(target);
+                throw new java.io.IOException("Penyimpanan foto tidak selesai.");
+            }
+            if (backup.exists()) backup.delete();
             if (!ProfileManager.setCustomAvatar(this, profileId, target.getAbsolutePath())) {
                 target.delete();
                 throw new java.io.IOException("Profil tidak ditemukan; foto tidak disimpan.");
@@ -1372,6 +1382,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Toast.makeText(this, "Foto avatar berhasil disimpan di TV.", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             if (temp != null && temp.exists()) temp.delete();
+            if (backup != null && backup.exists()) {
+                File target = new File(backup.getParentFile(), backup.getName().replace(".jpg.bak", ".jpg"));
+                if (!target.exists()) backup.renameTo(target);
+            }
             Toast.makeText(this, "Gagal menyimpan foto avatar: " + e.getMessage(), Toast.LENGTH_LONG).show();
             android.util.Log.e("TvHome.Profile", "Avatar photo import failed", e);
         } finally {
