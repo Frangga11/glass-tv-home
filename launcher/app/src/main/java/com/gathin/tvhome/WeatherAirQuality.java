@@ -26,10 +26,9 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Live weather and air pollutant index (API / IPU) for Malaysia.
- * Fetches official ground-station Air Pollutant Index from Jabatan Alam Sekitar (JAS) Malaysia MyEQMS/APIMS,
- * paired with detailed 7-day and hourly weather forecasts from Open-Meteo.
- * Supports Putrajaya and all official monitoring stations across Malaysia.
+ * Live weather forecast and air-quality information for the selected location.
+ * Open-Meteo supplies the forecast and modelled US AQI. The official JAS/APIMS source is used
+ * only when a Malaysia region is explicitly selected; Indonesian locations use Open-Meteo AQI.
  */
 final class WeatherAirQuality {
     private static final String TAG = "TvHome.Weather";
@@ -219,7 +218,7 @@ final class WeatherAirQuality {
                 // Fallback to Open-Meteo Air Quality if JAS Malaysia endpoint is temporarily down
                 JSONObject fallbackAqiJson = null;
                 if (!isJas) {
-                    Log.w(TAG, "JAS Malaysia unreachable, falling back to Open-Meteo Air Quality");
+                    Log.i(TAG, "Using Open-Meteo modelled AQI for the selected non-JAS location.");
                     String aqiUrl = String.format(Locale.ROOT,
                             "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=%.4f&longitude=%.4f&current=pm2_5,pm10,us_aqi",
                             lat, lon);
