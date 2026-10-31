@@ -445,13 +445,12 @@ public final class UserSwitchDialog {
             ring.setVisibility(idx == 0 ? View.VISIBLE : View.GONE);
             frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
             rings[idx] = ring;
-            // The white ring marks selection; this cyan inset ring marks current D-pad focus.
-            TvFocusIndicator.attachAvatarFocusRing(frame, frameDim, density);
-
             ImageView img = new ImageView(activity);
             img.setImageResource(ProfileManager.getAvatarResId(idx));
             int innerDim = (int) (42 * density);
             frame.addView(img, new FrameLayout.LayoutParams(innerDim, innerDim, Gravity.CENTER));
+            // Draw above the avatar image so the focus ring remains visible at every edge.
+            TvFocusIndicator.attachAvatarFocusRing(frame, frameDim, density);
 
             frame.setOnClickListener(v -> {
                 SoundEffects.playSelect();
