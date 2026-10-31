@@ -4897,6 +4897,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             ListView listView = dialog.getListView();
             if (listView != null) {
+                listView.setSelector(R.drawable.selector_glass_dialog_list_item_bg);
+                listView.setDrawSelectorOnTop(false);
                 listView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
                     @Override
                     public void onChildViewAdded(View parent, View child) {
@@ -5483,8 +5485,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         credit.setPadding(0, Math.round(14 * density), 0, 0);
         rootLayout.addView(credit);
 
+        ScrollView qrScroll = new ScrollView(this);
+        qrScroll.setFillViewport(true);
+        qrScroll.setClipToPadding(false);
+        qrScroll.setFocusable(false);
+        qrScroll.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+        qrScroll.addView(rootLayout, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         qrUploadDialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
-                .setView(rootLayout).create();
+                .setView(qrScroll).create();
+        btnClose.setOnKeyListener((view, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            int scrollStep = Math.max(1, qrScroll.getHeight() / 2);
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && qrScroll.canScrollVertically(-1)) {
+                qrScroll.smoothScrollBy(0, -scrollStep);
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && qrScroll.canScrollVertically(1)) {
+                qrScroll.smoothScrollBy(0, scrollStep);
+                return true;
+            }
+            return false;
+        });
         btnClose.setOnClickListener(v -> qrUploadDialog.dismiss());
         qrUploadDialog.setOnDismissListener(dialog -> {
             if (uploadServer != null) {
@@ -5501,6 +5524,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             qrUrlText = null;
         });
         qrUploadDialog.show();
+        Window qrWindow = qrUploadDialog.getWindow();
+        if (qrWindow != null) {
+            qrWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            int screenHeight = getResources().getDisplayMetrics().heightPixels;
+            int dialogWidth = Math.min((int) (520 * density), (int) (screenWidth * 0.90f));
+            int dialogHeight = Math.min((int) (620 * density), (int) (screenHeight * 0.90f));
+            qrWindow.setLayout(dialogWidth, dialogHeight);
+            qrWindow.setGravity(Gravity.CENTER);
+        }
         btnClose.requestFocus();
     }
 
