@@ -506,8 +506,12 @@ public final class ModernSettingsDialog {
 
                     frame.setOnClickListener(v -> {
                         SoundEffects.playSelect();
+                        if (activeP.customAvatarPath != null
+                                && !ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                            Toast.makeText(activity, "Foto avatar belum dapat dihapus. Avatar tidak diubah.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         ProfileManager.setAvatarIndex(activity, idx);
-                        ProfileManager.clearCustomAvatar(activity, activeP.id);
                         for (int k = 0; k < 7; k++) {
                             if (avatarRings[k] != null) {
                                 avatarRings[k].setVisibility(k == idx ? View.VISIBLE : View.GONE);
@@ -561,7 +565,10 @@ public final class ModernSettingsDialog {
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
                 defaultAvatarLp.topMargin = (int) (6 * density);
                 defaultAvatarButton.setOnClickListener(v -> {
-                    ProfileManager.clearCustomAvatar(activity, activeP.id);
+                    if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                        Toast.makeText(activity, "Foto avatar belum dapat dihapus. Foto lama tetap digunakan.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
                     profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
                             Math.round(38 * density), restored.isChild));
