@@ -5100,7 +5100,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 onStandbyPhotoUploaded(imageFile);
             }
         };
-        uploadServer = new WallpaperUploadServer(this, 8080, listener);
+        uploadServer = new WallpaperUploadServer(this, 8080, listener, true);
         if (!uploadServer.start()) {
             uploadServer = null;
             Toast.makeText(this, "Tidak dapat memulai peladen unggah lokal. Periksa koneksi Wi-Fi TV.", Toast.LENGTH_LONG).show();
