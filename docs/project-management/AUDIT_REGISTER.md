@@ -344,24 +344,24 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 
 ## B04 expanded viewport audit — 1 November 2026
 
-- \`AppAdapter.tileWidthPx()\` derives Home tile width from the available grid width and column count, keeps the 180:101 design ratio, caps at 180dp, and applies an 80dp minimum. On the target wide-screen TV this is likely suitable, but the minimum can become a lower-bound constraint on unusually narrow logical viewports.
+- `AppAdapter.tileWidthPx()` derives Home tile width from the available grid width and column count, keeps the 180:101 design ratio, caps at 180dp, and applies an 80dp minimum. On the target wide-screen TV this is likely suitable, but the minimum can become a lower-bound constraint on unusually narrow logical viewports.
 - Recent Apps is the clearest fixed-geometry surface: each app card is 420×250dp; the horizontal RecyclerView also uses 64dp start/end padding, with a 64dp title/RAM-pill inset. Cards are not resized from available width in the inspected source.
 - Nightstand content is centered and wrap-content; the clock is fixed at 110sp, date 19sp, with no explicit max-width or auto-size strategy. Long localized date strings are a potential width concern.
 - Weather is a full-screen ScrollView with fillViewport, so the 385dp Bento body can scroll rather than forcing the entire page to fit. Its internal metric rows remain fixed-height (approximately 91–92dp); this is a visual-proportion risk on short logical viewports, not a proven clipping defect.
-- No target display-size/density values were present in the A06 snapshot. No layout adjustment is justified until the user supplies read-only \`wm size\` and \`wm density\` outputs. Do not append arguments to either command.
+- No target display-size/density values were present in the A06 snapshot. No layout adjustment is justified until the user supplies read-only `wm size` and `wm density` outputs. Do not append arguments to either command.
 - B04 remains IN PROGRESS; F02 remains the physical visual acceptance gate.
 
 ## B05 expanded localization inventory — 1 November 2026
 
-**Audit scope:** exact B03 source head \`56a4e1995aa8b8600614e6b5c4dca69d01c530c3\`; all 66 app Java source files, all 18 app/installer layout XML files, all 13 app string-resource XML files, \`AppLanguage.java\`, \`locales_config.xml\`, app manifest, and app Gradle dependencies.
+**Audit scope:** exact B03 source head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`; all 66 app Java source files, all 18 app/installer layout XML files, all 13 app string-resource XML files, `AppLanguage.java`, `locales_config.xml`, app manifest, and app Gradle dependencies.
 
 ### Confirmed findings
 
-- \`AppLanguage.java\` contains 90 static translation/helper methods. The preference supports \`id\` and \`en\`, defaults to Indonesian, and migrates legacy \`ms\` values to \`id\`. Many methods still retain unreachable Malay (\`LANG_MS\`) branches after normalization.
-- The app has 44 default string-resource keys in \`values/strings.xml\`, but the default file mixes Indonesian and English.
-- There is no \`values-id/strings.xml\`, no generic \`values-en/strings.xml\`; \`values-en-rUS/strings.xml\` contains only \`date_format\`. Other locale folders are partial: some contain 44 keys, while several contain only 17–25.
-- \`locales_config.xml\` advertises 12 locales (en, de, ca, es, fr, ru, zh-CN, th, sr-Latn, pl, ar, tr) but omits Indonesian, while the in-app selector offers only Indonesian and English. This is inconsistent and advertises incomplete translations.
-- The app language selector calls \`AppLanguage.setLanguage\`, refreshes the Islamic shelf/date and shows a Toast, but does not apply a locale to Android \`Resources\` or recreate/refresh all visible views. Resource-backed labels therefore do not reliably follow the selected language.
+- `AppLanguage.java` contains 90 static translation/helper methods. The preference supports `id` and `en`, defaults to Indonesian, and migrates legacy `ms` values to `id`. Many methods still retain unreachable Malay (`LANG_MS`) branches after normalization.
+- The app has 44 default string-resource keys in `values/strings.xml`, but the default file mixes Indonesian and English.
+- There is no `values-id/strings.xml`, no generic `values-en/strings.xml`; `values-en-rUS/strings.xml` contains only `date_format`. Other locale folders are partial: some contain 44 keys, while several contain only 17–25.
+- `locales_config.xml` advertises 12 locales (en, de, ca, es, fr, ru, zh-CN, th, sr-Latn, pl, ar, tr) but omits Indonesian, while the in-app selector offers only Indonesian and English. This is inconsistent and advertises incomplete translations.
+- The app language selector calls `AppLanguage.setLanguage`, refreshes the Islamic shelf/date and shows a Toast, but does not apply a locale to Android `Resources` or recreate/refresh all visible views. Resource-backed labels therefore do not reliably follow the selected language.
 - A static scan across all 66 Java files found at least 95 direct literal UI-setter calls in seven high-traffic files (MainActivity 43, ModernSettingsDialog 17, UserSwitchDialog 15, WeatherActivity 9, AppUpdateManager 5, ChildModeManager 4, ClockDream 2). This is a lower bound: it excludes strings assembled into variables/builders, dynamic states, notification text, and XML literals.
 - Eight launcher layout XML files contain hardcoded user-facing text; the installer module's layout also contains hardcoded Malay text. The installer is a separate companion-app scope and should not be silently conflated with TV launcher localization.
 - The app has no AppCompat dependency. Since the target device is Android 11/API 30, relying only on Android 13 per-app language APIs would not solve the target-device requirement.
@@ -369,8 +369,8 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 ### Recommended implementation direction — not yet applied
 
 - Keep the product language selector to Indonesian and English unless the user explicitly expands supported languages.
-- Make \`AppLanguage\` the single persisted language preference and apply a locale-aware base context to every user-facing Activity/service surface on API 26–32; on API 33+, synchronize the system per-app locale where appropriate.
-- Provide complete Indonesian and English resource coverage, align \`locales_config.xml\` with the actual supported languages, and migrate hardcoded XML/Java user-facing text into resources or a single translation layer.
+- Make `AppLanguage` the single persisted language preference and apply a locale-aware base context to every user-facing Activity/service surface on API 26–32; on API 33+, synchronize the system per-app locale where appropriate.
+- Provide complete Indonesian and English resource coverage, align `locales_config.xml` with the actual supported languages, and migrate hardcoded XML/Java user-facing text into resources or a single translation layer.
 - Language changes must refresh/recreate the relevant UI while preserving navigation/focus state; test language persistence, dynamic/error strings, notifications, dates, prayer labels, weather, and dialogs.
 - Add automated resource-key/placeholder parity checks and tests for language normalization/migration. Physical cross-screen acceptance remains F06.
 - B05 remains IN PROGRESS. No localization code or resource was modified during this inventory pass.
