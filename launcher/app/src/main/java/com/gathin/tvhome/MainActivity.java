@@ -5222,7 +5222,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (qrStatusText != null) qrStatusText.setText("Gagal menyimpan foto ke koleksi Layar Siaga.");
                 return;
             }
-            StandbyPhotoStore.setPhotoMode(this, true);
             standbyPhotoUriShown = "";
             if (screensaverActive) updateNightstandScreensaver();
             int count = StandbyPhotoStore.getPhotoCount(this);
