@@ -60,8 +60,8 @@ final class StandbyPhotoStore {
         return result;
     }
 
-    static void saveUris(Context context, List<Uri> uris) {
-        if (context == null) return;
+    static boolean saveUris(Context context, List<Uri> uris) {
+        if (context == null) return false;
         List<String> values = new ArrayList<>();
         Set<String> unique = new HashSet<>();
         if (uris != null) {
@@ -69,9 +69,9 @@ final class StandbyPhotoStore {
                 if (uri != null && unique.add(uri.toString())) values.add(uri.toString());
             }
         }
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putString(KEY_URIS, TextUtils.join("\n", values))
-                .apply();
+                .commit();
     }
 
     private static long getUploadedBytes(Context context) {
@@ -105,7 +105,7 @@ final class StandbyPhotoStore {
         if (getUploadedBytes(context) + imageFile.length() > MAX_UPLOADED_BYTES) return false;
         if (context.getFilesDir().getUsableSpace() < MIN_FREE_BYTES) return false;
         uris.add(uploaded);
-        saveUris(context, uris);
+        if (!saveUris(context, uris)) return false;
         setPhotoMode(context, true);
         return true;
     }
