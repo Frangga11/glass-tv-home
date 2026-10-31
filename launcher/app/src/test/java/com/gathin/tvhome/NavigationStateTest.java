@@ -1,14 +1,13 @@
 package com.gathin.tvhome;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 public class NavigationStateTest {
 
     @Test
-    public void resolvesStableComponentBeforeSavedSlot() {
+    public void usesResolvedComponentPositionBeforeSavedSlot() {
         assertEquals(4, NavigationState.resolveHomePosition(4, 1, 8));
     }
 
@@ -28,15 +27,16 @@ public class NavigationStateTest {
     }
 
     @Test
+    public void normalizesInvalidFocusKeys() {
+        assertEquals(null, NavigationState.normalizeFocusKey(null));
+        assertEquals(null, NavigationState.normalizeFocusKey("  "));
+        assertEquals("com.example/.Main", NavigationState.normalizeFocusKey(" com.example/.Main "));
+    }
+
+    @Test
     public void rejectsUnknownSettingsTab() {
         assertEquals(NavigationState.DEFAULT_SETTINGS_TAB, NavigationState.normalizeSettingsTab(6));
         assertEquals(7, NavigationState.normalizeSettingsTab(7));
     }
 
-    @Test
-    public void rejectsMalformedFocusPath() {
-        assertNull(NavigationState.normalizeFocusPath("1/a/3"));
-        assertNull(NavigationState.normalizeFocusPath("1//3"));
-        assertEquals("1/2/3", NavigationState.normalizeFocusPath("1/2/3"));
-    }
 }
