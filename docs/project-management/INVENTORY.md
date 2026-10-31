@@ -1,8 +1,8 @@
 # 02 — Feature and Code Inventory
 
-**Version:** 0.1-draft  
+**Version:** 0.2-draft  
 **Date:** 31 October 2026  
-**Review status:** Initial source inspection; broad audit still open
+**Review status:** Source integration and exact-head CI #208 pass; physical device acceptance remains open
 
 ## 1. Repository and branches
 
@@ -27,7 +27,9 @@ Related avatar implementation candidate:
 - `fix/avatar-photo-upload-audit`
 
 Current QR avatar audit branch:
-- `fix/avatar-qr-upload-single-photo` (draft PR #6 into settings/gallery baseline)
+- `fix/avatar-qr-upload-single-photo` (source PR #6; selectively integrated in PR #9)
+- `feature/profile-security-integration` (PR #8 base)
+- `feature/profile-avatar-security-integration` (Draft PR #9; latest exact-head CI pass)
 
 **Important:** branches are separate snapshots. A feature found on one branch must not be attributed to another branch until merged or cherry-picked.
 
@@ -60,10 +62,10 @@ This confirms the Gradle configuration only. It does not prove that a new APK wa
 | Settings navigation | ModernSettingsDialog defines 8 tabs: Profile, Home Screen, Appearance, Status & Weather, Effects, Standby, Child Mode, Device Settings | CONFIRMED-CODE |
 | Multi-user profiles | ProfileManager stores profile ID, name, avatar index, child flag in SharedPreferences JSON | CONFIRMED-CODE |
 | Built-in avatars | Seven animal avatars are registered | CONFIRMED-CODE |
-| Personal avatar photo | QR upload implementation on PR #6 branch; not integrated into PR #7 profile/settings snapshot | CODE IMPLEMENTED IN ISOLATED BRANCH; selective integration required; device verification pending |
-| Child Mode | Per-profile flags and lock/hide sets implemented on PR #7; global parent PIN retained | SOURCE IMPLEMENTED; P1 authorization gaps and device test open; see PROFILE_AUDIT.md |
-| Top-bar avatar | Custom-photo resolver exists on PR #6 branch; PR #7 snapshot still uses built-in avatar | INTEGRATION GAP; see PROFILE_AUDIT.md |
-| Avatar in profile switcher | Custom-photo resolver exists on PR #6 branch; PR #7 snapshot not reconciled | INTEGRATION GAP; see PROFILE_AUDIT.md |
+| Personal avatar photo | QR upload selectively integrated in PR #9 on PR #8 base; profile-scoped private file storage | SOURCE + CI #208 PASS; device verification pending |
+| Child Mode | Per-profile flags, lock/hide sets, global parent PIN; PR #8 adds PIN gates and strict child-profile exit authorization | SOURCE + CI #197 PASS; device verification pending; see PROFILE_AUDIT.md |
+| Top-bar avatar | Shared custom-photo resolver integrated in PR #9 and refreshed on profile/photo/Mode Anak changes | SOURCE + CI #208 PASS; device verification pending |
+| Avatar in profile switcher | Uses same profile-scoped resolver and effective Child Mode ring as other surfaces | SOURCE + CI #208 PASS; device verification pending |
 | Avatar in add-profile flow | Candidate add-profile dialog still only selects one of seven built-ins | PARTIAL |
 | Wallpaper QR upload | Baseline bare-root endpoint replaced in draft PR #7 by random session-token-scoped page/upload/API/thumb routes | CODE IMPLEMENTED IN PR #7; CI PASS; device acceptance pending — see WALLPAPER_AUDIT.md |
 | Standby gallery | MainActivity has a separate standby photo picker/store flow | CONFIRMED-CODE |
@@ -71,11 +73,11 @@ This confirms the Gradle configuration only. It does not prove that a new APK wa
 | Prayer times / Islamic shelf | PrayerTimes, Location, Azan and Islamic shelf are referenced in source | CONFIRMED-CODE; location/time accuracy test open |
 | Default wallpaper | Code expects `assets/kabut-pagi-dempo.jpg`, but the CI release APK does not contain the asset; fresh-install Default has no bundled image | P1 BLOCKER — approved image received and package asset prepared; repository/APK packaging and device verification remain; see WALLPAPER_AUDIT.md |
 | Icon animation | Spring / focus animations exist; exact per-icon animation policy needs audit | PARTIAL |
-| Avatar visual report | Seven built-in avatars plus QR custom-photo flow; EXIF-aware downsampled rendering | PARTIAL; real-device QC pending |
+| Avatar visual report | Seven built-in avatars plus QR custom-photo flow; EXIF-aware downsampled rendering; shared surfaces | SOURCE + CI #208 PASS; real-device QC pending |
 | Tab information layout | Tab names confirmed; final arrangement and screenshot acceptance not yet confirmed | PARTIAL |
 | Indonesian localization | Indonesia / Pagar Alam localization branch and AppLanguage support are in repository history | CONFIRMED-CODE; full string audit open |
 | OTA / update indicator | README / commit history describe background update checks and badge; current implementation needs dedicated audit | UNVERIFIED |
-| QR upload fallback | Wallpaper upload server is documented as fail-safe in release history; actual current branch ports/security require code audit | UNVERIFIED |
+| QR upload separation | Wallpaper, Standby, and avatar QR routes/stores remain separate; avatar server binds to selected LAN IPv4 and is stopped on dialog close/expiry | SOURCE + CI #208 PASS; device/network acceptance pending |
 
 ## 4. Avatar implementation comparison
 
@@ -154,3 +156,12 @@ GitHub source URLs:
 - Inspect wallpaper upload server for authentication, upload validation, port failover, and lifecycle cleanup.
 - Inspect Android manifest and ADB installation scripts for safe rollback.
 - Verify tests and CI runs, then build and test on the actual Mi TV Stick.
+
+
+## 5. Current profile/avatar integration — PR #8 + PR #9
+
+- PR #8: `feature/profile-security-integration`; Draft; parent PIN gates and centralized child-profile exit policy. Exact-head CI #197 passed.
+- PR #9: `feature/profile-avatar-security-integration`; Draft; base is PR #8 branch. Exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; CI #208 passed both jobs.
+- Tests: `ProfileSecurityPolicyTest`, `AvatarUploadServerPolicyTest`, `ProfileManagerAvatarPathTest`.
+- APK artifact `13048951728`: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
+- No PR merged and no APK installed. Actual Mi TV Stick/phone test is the remaining release gate.
