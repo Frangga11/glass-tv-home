@@ -16,8 +16,9 @@
         android:layout_height="50dp"
         android:visibility="invisible" />
 
-    <!-- Container matching cardContainer height (250dp) -->
+    <!-- Runtime height matches the responsive app-card aspect ratio. -->
     <FrameLayout
+        android:id="@+id/closeAllCardSlot"
         android:layout_width="150dp"
         android:layout_height="250dp"
         android:clipChildren="false"
