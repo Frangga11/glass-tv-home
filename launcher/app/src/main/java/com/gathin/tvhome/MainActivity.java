@@ -4955,12 +4955,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void showAiTipsDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle("💡 Tips Pintar Glass TV")
-                .setMessage("• Tekan lama butang HOME (Hold 500ms) untuk buka Popup Tetapan di mana-mana aplikasi atau skrin utama.\n\n"
+                .setMessage("• Tekan dan tahan tombol HOME selama 500 ms untuk membuka menu Pengaturan dari aplikasi mana pun atau layar utama.\n\n"
                         + "• Tekan sekali butang HOME untuk kembali ke paparan utama.\n\n"
                         + "• Koleksi Wallpaper 4K dijana daripada Pexels & Unsplash mengikut kategori.\n\n"
                         + "• Jadwal salat disesuaikan dengan wilayah Indonesia dan sumber data Kemenag RI.\n\n"
                         + "• Gunakan menu Bersihkan Cache TV untuk menghapus berkas sementara tanpa menghapus data aplikasi.")
-                .setPositiveButton("Faham", null)
+                .setPositiveButton("Mengerti", null)
                 .show();
         styleGlassDialog(dialog);
         if (dialog.getWindow() != null) {
@@ -4975,7 +4975,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setTitle("🌦️ Informasi Cuaca & Kualitas Udara")
                 .setMessage("📍 Lokasi: " + town + "\n\n"
                         + "📊 Status Terkini: " + wxStr + "\n\n"
-                        + "ℹ️ Data cuaca disegerakkan daripada Open-Meteo dan indeks kualitas udara US AQI berbasis pemodelan Open-Meteo; bukan pengukuran ISPU resmi stasiun lokal.\n\n"
+                        + "ℹ️ Data cuaca berasal dari Open-Meteo. Nilai US AQI merupakan estimasi model, bukan pengukuran ISPU resmi di stasiun setempat.\n\n"
                         + "📌 Periksa nilai AQI dan ikuti peringatan resmi BMKG atau instansi terkait sebelum mengambil keputusan aktivitas luar ruang.")
                 .setPositiveButton("OK", null)
                 .show();
@@ -4989,7 +4989,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showAiIslamicDialog(String town) {
         WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
-        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : "Tiada doa harian.";
+        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : "Tidak ada ayat harian.";
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle("🕌 Jadwal Salat & Ayat Pilihan Hari Ini")
                 .setMessage("📍 Lokasi: " + town + "  •  " + PrayerTimes.getHijriDate() + "\n\n"
