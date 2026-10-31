@@ -164,7 +164,7 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 
 | ID | Severity | Area | Finding / root cause | Remediation / verification | Status |
 |---|---|---|---|---|---|
-| B02-001 | P2 | Active-profile built-in avatar choices | Focus listener only scales the avatar frame; the white ring represents the selected avatar, not the currently focused avatar | Add a distinct high-contrast focus ring separate from the selected ring; test selected and unselected avatar focus independently | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
+| B02-001 | P2 | Active-profile built-in avatar choices | Focus listener only scales the avatar frame; the white ring represents the selected avatar, not the currently focused avatar | Add a distinct high-contrast focus ring separate from the selected ring; test selected and unselected avatar focus independently | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 PASS |
 | B02-002 | P2 | Avatar QR upload / reset buttons | Custom static GradientDrawable backgrounds have no focus-state change or focus listener | Apply consistent focused fill + visible outline + restrained scale; test both buttons with D-pad | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
 | B02-003 | P2 | Add-profile avatar choices | Focus listener only scales frames; selection ring and focus state are conflated | Add a separate focus ring while retaining the selected-avatar ring | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
 | B02-004 | P2 | Add/edit profile name fields | Custom static EditText backgrounds do not change border/fill on remote focus | Add visible focused border and retain text/cursor contrast; verify keyboard focus and text entry | FIX IMPLEMENTED in Draft PR #11; exact-head CI #234 pending |
@@ -197,6 +197,32 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Base: `feature/b01-global-navigation-retention` (B01 source/CI gate PASS).
 - Draft PR #11: https://github.com/Frangga11/glass-tv-home/pull/11.
 - Current head: `01cbef2c2fc90498295971b22c369a72cdfa734a`.
-- Exact-head CI #234 is pending for the current head; CI #233 passed the preceding snapshot. The final change moves the focus ring above the avatar image to ensure no overlap hides it.
+- Exact-head CI #234 PASS on current head `01cbef2c2fc90498295971b22c369a72cdfa734a`; both Launcher build/unit tests and Lists/tools/docs jobs passed; manual TV-test artifact publication was skipped. The final change moves the focus ring above the avatar image to ensure no overlap hides it.
 - Files: `TvFocusIndicator.java`, `ModernSettingsDialog.java`, `UserSwitchDialog.java`, `AzanActivity.java`.
 - No APK installed or published for TV testing; final device acceptance is deferred to F02.
+
+
+## A04 — Repository, branch, source-tree and working-state audit — 1 November 2026
+
+<badge>PASS — remote audit</badge>
+
+| Check | Evidence | Result |
+|---|---|---|
+| Repository identity | `Frangga11/glass-tv-home`; public fork of `aqmangge/glass-tv-home`; default branch `main` | VERIFIED |
+| Branch inventory | 14 remote branches and exact heads recorded in `INVENTORY.md` | VERIFIED |
+| PR dependency graph | PR #8 → #9 → #10 → #11; all open Draft/unmerged | VERIFIED |
+| Source tree | B02 head `01cbef2c2fc90498295971b22c369a72cdfa734a`; 647 entries, 496 files, 151 directories; not truncated | VERIFIED |
+| Baseline tree | PR #9 head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; 644 entries | VERIFIED |
+| Android build configuration | Gradle root `launcher/`; AGP 8.5.2; app 4.0.0/code 40; min 26, compile/target 34; Java 17 | VERIFIED |
+| Manifest and CI | HOME/Leanback declarations, permissions and components reviewed; CI build/test/size gate and manual-only TV artifact policy reviewed | VERIFIED |
+| Local working tree | No local checkout/worktree was used or modified in this session; user's separate local clone cannot be inspected remotely | LIMITATION RECORDED |
+
+**A04 result:** repository and remote source-state audit PASS. The limitation above is explicit; no claim is made that an external local clone has no uncommitted changes. Full evidence and source ownership map are in `INVENTORY.md`.
+
+### A05 — Tested APK identity
+
+**NOT STARTED / EVIDENCE REQUIRED.** The user confirmed a recent Mi TV Stick test, but no installed APK file, package dump, installed path, SHA-256, or exact artifact-to-commit mapping has been supplied. VersionName 4.0.0/versionCode 40 alone cannot identify the build because multiple repair branches share those values. Do not infer the tested APK from CI artifacts.
+
+### A06 — Baseline and rollback checkpoint
+
+**NOT STARTED / DEPENDS ON A05.** A dedicated checkpoint must be anchored to the exact source revision matched to the installed/tested APK. It must include a reproducible source reference, APK copy/hash, and documented device-state backup/rollback evidence. Do not create a misleading checkpoint against an unverified candidate.
