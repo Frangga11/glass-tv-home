@@ -406,6 +406,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
         COLUMNS = cfg.columns;
+        android.content.SharedPreferences navigationPrefs =
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE);
+        if (lastFocusedKey == null) {
+            lastFocusedKey = NavigationState.normalizeFocusKey(
+                    navigationPrefs.getString(NavigationState.HOME_FOCUS_KEY, null));
+            lastFocused = Math.max(0, navigationPrefs.getInt(NavigationState.HOME_FOCUS_POSITION, 0));
+        }
         reducedMotion = cfg.reducedMotion;
         liveTvPkg = cfg.liveTvPackage;
         liveTvAction = cfg.liveTvAction;
@@ -1773,8 +1780,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public void onTileFocused(int position, View card) {
         if (!resuming && hasWindowFocus()) SoundEffects.playNav();
+        if (adapter == null || position < 0 || position >= adapter.getItemCount()) return;
         lastFocused = position;
-        lastFocusedKey = adapter.keyAt(position);
+        lastFocusedKey = NavigationState.normalizeFocusKey(adapter.keyAt(position));
+        android.content.SharedPreferences.Editor navigationEdit =
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                        .putInt(NavigationState.HOME_FOCUS_POSITION, lastFocused);
+        if (lastFocusedKey != null) navigationEdit.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
+        else navigationEdit.remove(NavigationState.HOME_FOCUS_KEY);
+        navigationEdit.apply();
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
@@ -2598,18 +2612,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
             if (newState != RecyclerView.SCROLL_STATE_IDLE) return;
             rv.removeOnScrollListener(this);
-            RecyclerView.ViewHolder h = rv.findViewHolderForAdapterPosition(pendingFocus);
-            View target = h != null ? h.itemView.findViewById(R.id.card) : rv.getChildAt(0);
+            if (adapter == null || adapter.getItemCount() == 0) return;
+            int targetPosition = NavigationState.resolveHomePosition(-1, pendingFocus, adapter.getItemCount());
+            RecyclerView.ViewHolder h = rv.findViewHolderForAdapterPosition(targetPosition);
+            View target = h != null ? h.itemView.findViewById(R.id.card) : null;
             if (target != null) target.requestFocus();
+            else rv.post(() -> focusTile(targetPosition));
         }
     };
 
     private void focusTile(int position) {
+        if (adapter == null || grid == null) return;
         if (adapter.getItemCount() == 0) {
-            (btnWifi.getVisibility() == View.VISIBLE ? btnWifi : findViewById(R.id.btnSettings)).requestFocus();
+            View fallback = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE
+                    ? btnWifi : findViewById(R.id.btnSettings);
+            if (fallback != null) fallback.requestFocus();
             return;
         }
-        final int pos = Math.max(0, Math.min(position, adapter.getItemCount() - 1));
+        final int pos = NavigationState.resolveHomePosition(-1, position, adapter.getItemCount());
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         if (vh != null) {
             View card = vh.itemView.findViewById(R.id.card);
