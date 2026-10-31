@@ -619,11 +619,11 @@ public class WallpaperUploadServer {
 
     private String getHtmlPage() {
         return "<!DOCTYPE html>\n" +
-                "<html lang=\"ms\">\n" +
+                "<html lang=\"id\">\n" +
                 "<head>\n" +
                 "  <meta charset=\"UTF-8\">\n" +
                 "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">\n" +
-                "  <title>Glass TV • Upload Wallpaper</title>\n" +
+                "  <title>Glass TV • Unggah Wallpaper</title>\n" +
                 "  <style>\n" +
                 "    * { box-sizing: border-box; margin: 0; padding: 0; }\n" +
                 "    body {\n" +
@@ -920,24 +920,24 @@ public class WallpaperUploadServer {
                 "<body>\n" +
                 "  <div class=\"card\">\n" +
                 "    <div class=\"badge\">Glass TV OS • by @imsomangge</div>\n" +
-                "    <h1>Muat Naik Wallpaper</h1>\n" +
-                "    <p class=\"subtitle\">Pilih mana-mana foto dari galeri telefon untuk dipaparkan secara langsung pada skrin TV anda.</p>\n" +
+                "    <h1>Unggah Wallpaper</h1>\n" +
+                "    <p class=\"subtitle\">Pilih foto dari galeri ponsel untuk ditampilkan langsung di layar TV.</p>\n" +
                 "\n" +
                 "    <div class=\"dropzone\" id=\"dropzone\" onclick=\"document.getElementById('file-input').click()\">\n" +
                 "      <div class=\"dropzone-icon\">🖼️</div>\n" +
                 "      <div class=\"dropzone-text\">Pilih Foto dari Galeri</div>\n" +
-                "      <div class=\"dropzone-hint\">Menyokong JPG, PNG, WEBP (Resolusi 1080p / 4K)</div>\n" +
+                "      <div class=\"dropzone-hint\">Mendukung JPG, PNG, WEBP (resolusi 1080p / 4K)</div>\n" +
                 "    </div>\n" +
                 "\n" +
                 "    <div id=\"preview-container\">\n" +
                 "      <img id=\"preview\" alt=\"Preview\">\n" +
-                "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">Tukar Foto</button>\n" +
+                "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">Ganti Foto</button>\n" +
                 "    </div>\n" +
                 "\n" +
                 "    <input type=\"file\" id=\"file-input\" accept=\"image/*\">\n" +
                 "\n" +
                 "    <button class=\"btn-submit\" id=\"btn-submit\" disabled onclick=\"uploadImage()\">\n" +
-                "      <span>Hantar ke Skrin TV</span>\n" +
+                "      <span>Unggah ke Layar TV</span>\n" +
                 "    </button>\n" +
                 "\n" +
                 "    <div class=\"progress-wrap\" id=\"prog-wrap\">\n" +
@@ -950,17 +950,17 @@ public class WallpaperUploadServer {
                 "\n" +
                 "  <div class=\"gallery-card\">\n" +
                 "    <div class=\"gallery-header\">\n" +
-                "      <div class=\"gallery-title\">📱 Gambar di TV (<span id=\"photo-count\">0</span>)</div>\n" +
+                "      <div class=\"gallery-title\">📱 Foto di TV (<span id=\"photo-count\">0</span>)</div>\n" +
                 "      <button class=\"btn-slideshow\" onclick=\"setSlideshow()\">🔄 Putar Semua</button>\n" +
                 "    </div>\n" +
-                "    <div class=\"gallery-desc\">Pilih <strong>Kunci</strong> untuk kekalkan 1 gambar sahaja sebagai wallpaper, atau padam foto lama:</div>\n" +
+                "    <div class=\"gallery-desc\">Pilih <strong>Tetapkan</strong> untuk memakai satu gambar sebagai wallpaper, atau hapus foto lama:</div>\n" +
                 "    <div class=\"gallery-list\" id=\"gallery-list\">\n" +
-                "      <div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">Memuat senarai foto...</div>\n" +
+                "      <div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">Memuat daftar foto...</div>\n" +
                 "    </div>\n" +
                 "  </div>\n" +
                 "\n" +
                 "  <footer>\n" +
-                "    <div>Bersambung terus ke TV melalui Wi-Fi Tempatan</div>\n" +
+                "    <div>Terhubung langsung ke TV melalui Wi-Fi lokal</div>\n" +
                 "    <div style=\"margin-top: 6px; font-weight: 600; color: #64748b;\">Powered by @imsomangge</div>\n" +
                 "  </footer>\n" +
                 "\n" +
@@ -1016,18 +1016,18 @@ public class WallpaperUploadServer {
                 "      xhr.onload = () => {\n" +
                 "        if (xhr.status >= 200 && xhr.status < 300) {\n" +
                 "          progBar.style.width = '100%';\n" +
-                "          btnSubmit.innerText = '✅ Berjaya Dihantar!';\n" +
+                "          btnSubmit.innerText = '✅ Berhasil Diunggah!';\n" +
                 "          statusMsg.className = 'status-msg success';\n" +
-                "          statusMsg.innerHTML = '🎉 Hebat! Gambar telah dipaparkan pada skrin TV anda.';\n" +
+                "          statusMsg.innerHTML = '🎉 Foto berhasil ditampilkan di layar TV.';\n" +
                 "          statusMsg.style.display = 'block';\n" +
                 "          loadGallery();\n" +
                 "        } else {\n" +
-                "          showError('Gagal memuat naik: ' + xhr.statusText);\n" +
+                "          showError('Gagal mengunggah: ' + xhr.statusText);\n" +
                 "        }\n" +
                 "      };\n" +
                 "\n" +
                 "      xhr.onerror = () => {\n" +
-                "        showError('Sambungan terputus. Pastikan telefon dan TV dalam Wi-Fi yang sama.');\n" +
+                "        showError('Koneksi terputus. Pastikan ponsel dan TV menggunakan Wi-Fi yang sama.');\n" +
                 "      };\n" +
                 "\n" +
                 "      xhr.send(selectedFile);\n" +
@@ -1050,7 +1050,7 @@ public class WallpaperUploadServer {
                 "          const countEl = document.getElementById('photo-count');\n" +
                 "          if (countEl) countEl.innerText = items.length;\n" +
                 "          if (!items || items.length === 0) {\n" +
-                "            listEl.innerHTML = '<div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">Tiada gambar tersimpan di TV.</div>';\n" +
+                "            listEl.innerHTML = '<div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">Tidak ada foto tersimpan di TV.</div>';\n" +
                 "            return;\n" +
                 "          }\n" +
                 "          let html = '';\n" +
@@ -1064,7 +1064,7 @@ public class WallpaperUploadServer {
                 "              '</div>' +\n" +
                 "              '<div class=\"photo-btns\">' +\n" +
                 "                '<button class=\"btn-act' + (item.active ? ' active' : '') + '\" onclick=\"selectSingle(\\'' + enc + '\\')\">' +\n" +
-                "                  (item.active ? 'Kekal 📌' : 'Kunci 📌') +\n" +
+                "                  (item.active ? 'Aktif 📌' : 'Tetapkan 📌') +\n" +
                 "                '</button>' +\n" +
                 "                '<button class=\"btn-act del\" onclick=\"deletePhoto(\\'' + enc + '\\')\">🗑️</button>' +\n" +
                 "              '</div>' +\n" +
@@ -1084,7 +1084,7 @@ public class WallpaperUploadServer {
                 "    }\n" +
                 "\n" +
                 "    function deletePhoto(fileName) {\n" +
-                "      if (!confirm('Padam gambar ini dari skrin TV?')) return;\n" +
+                "      if (!confirm('Hapus foto ini dari layar TV?')) return;\n" +
                 "      fetch('/api/delete?file=' + fileName, { method: 'POST' })\n" +
                 "        .then(r => r.json())\n" +
                 "        .then(() => {\n" +
@@ -1097,11 +1097,11 @@ public class WallpaperUploadServer {
                 "        .then(r => r.json())\n" +
                 "        .then(() => {\n" +
                 "          loadGallery();\n" +
-                "          alert('Mod putaran semua gambar aktif pada TV.');\n" +
+                "          alert('Mode putar semua foto aktif di TV.');\n" +
                 "        });\n" +
                 "    }\n" +
                 "\n" +
-                "    // Muat galeri gambar sebaik sahaja laman dibuka\n" +
+                "    // Muat galeri foto saat halaman dibuka\n" +
                 "    loadGallery();\n" +
                 "  </script>\n" +
                 "</body>\n" +
