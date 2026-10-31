@@ -45,7 +45,7 @@ public class ClockDream extends DreamService {
         @Override public void run() {
             if (dreamStartTime > 0) {
                 updatePhoto();
-                handler.postDelayed(this, 20_000L);
+                handler.postDelayed(this, StandbyPhotoStore.ROTATION_INTERVAL_MS);
             }
         }
     };
@@ -93,13 +93,13 @@ public class ClockDream extends DreamService {
         photoScrim = findViewById(R.id.nightstandPhotoScrim);
 
         updateNightstand();
-        updatePhoto();
     }
 
     @Override
     public void onDreamingStarted() {
         super.onDreamingStarted();
         dreamStartTime = android.os.SystemClock.elapsedRealtime();
+        updatePhoto();
         if (content != null) {
             content.setAlpha(0f);
             content.post(() -> {
@@ -110,7 +110,7 @@ public class ClockDream extends DreamService {
         }
         handler.postDelayed(tick, MOVE_MS);
         handler.removeCallbacks(photoTick);
-        handler.postDelayed(photoTick, 20_000L);
+        handler.postDelayed(photoTick, StandbyPhotoStore.ROTATION_INTERVAL_MS);
     }
 
     @Override
@@ -144,22 +144,31 @@ public class ClockDream extends DreamService {
             return;
         }
 
-        int index = (int) ((android.os.SystemClock.elapsedRealtime() / 20_000L) % uris.size());
+        int index = StandbyPhotoStore.getCurrentPhotoIndex(this);
+        if (index < 0 || index >= uris.size()) return;
         Uri uri = uris.get(index);
         photoView.setVisibility(View.VISIBLE);
         photoScrim.setVisibility(View.VISIBLE);
         if (!uri.toString().equals(photoUriShown)) {
-            android.graphics.Bitmap bitmap = StandbyPhotoStore.loadBitmap(this, uri);
-            if (bitmap != null) {
+            photoUriShown = uri.toString();
+            StandbyPhotoStore.loadBitmapAsync(this, uri, bitmap -> {
+                if (bitmap == null) {
+                    if (dreamStartTime > 0 && uri.toString().equals(photoUriShown)) {
+                        photoView.setImageDrawable(null);
+                        photoView.setVisibility(View.GONE);
+                        photoScrim.setVisibility(View.GONE);
+                        Log.w(TAG, "Skipping unreadable StandBy photo: " + uri);
+                    }
+                    return;
+                }
+                if (dreamStartTime <= 0 || photoView == null
+                        || !StandbyPhotoStore.isPhotoMode(this)
+                        || !uri.toString().equals(photoUriShown)) {
+                    bitmap.recycle();
+                    return;
+                }
                 photoView.setImageBitmap(bitmap);
-                photoUriShown = uri.toString();
-            } else {
-                photoView.setImageDrawable(null);
-                photoView.setVisibility(View.GONE);
-                photoScrim.setVisibility(View.GONE);
-                photoUriShown = "";
-                Log.w(TAG, "Skipping unreadable StandBy photo: " + uri);
-            }
+            });
         }
     }
 
