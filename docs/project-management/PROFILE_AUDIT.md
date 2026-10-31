@@ -33,12 +33,12 @@ Conclusion: the avatar QR implementation is **not present as an integrated featu
 | ID | Severity | Finding | Evidence / impact | Required action |
 |---|---|---|---|---|
 | P-001 | P1 | Avatar QR feature is isolated in PR #6, not integrated into PR #7 | PR #7 ProfileManager currently exposes built-in avatar model only; its Profile settings card and switcher use built-in avatar rendering. | Integrate avatar implementation selectively into PR #7; preserve per-profile resolver across top bar, Profile card, and switcher. |
-| P-002 | P1 | App lock / hide list editor does not verify parent PIN before changing restrictions | `showAppLockPicker()` directly writes `setAppLocked` / `setAppHidden` from row clicks. No `promptPin` gate is present at entry or commit. A user in a child session who can open Settings can edit the restriction lists. | Require global parent PIN before opening or saving either editor. Re-render/cancel safely on failed or cancelled PIN. |
-| P-003 | P1 | Profile deletion has confirmation but no parent-PIN authorization | PR #7's delete menu opens a destructive confirmation then calls `ProfileManager.deleteProfile()` directly. | Require global parent PIN before destructive deletion (at minimum while a child profile is active; recommended for every profile deletion). Preserve last-profile protection and cleanup. |
-| P-004 | P1 | Default parent PIN is `0000`; enabling Child Mode does not force first-time PIN setup | `getPin()` falls back to `0000`; UI explicitly displays `0000 [Lalai]`. Anyone who knows/defaults to this can pass PIN gates until changed. | Add first-run PIN setup/mandatory change before Child Mode can be activated or protected actions used. Never disclose the PIN in the settings summary. |
-| P-005 | P2 | PIN retry throttling is absent in the inspected keypad flow | Wrong attempts clear the input and allow immediate retries; no delay/lockout is present. | Add a bounded cooldown/backoff and test Back/cancel behavior; avoid permanent lockout that could strand the owner. |
+| P-002 | P1 | App lock / hide list editor lacked parent-PIN verification | PR #8 adds parent-PIN verification before either editor opens; failed/cancelled verification does not expose the editor. | Verify wrong/cancelled PIN and all editor entry points on device. |
+| P-003 | P1 | Profile deletion lacked parent-PIN authorization | PR #8 adds global parent-PIN verification before the destructive confirmation; last-profile protection remains in `ProfileManager`. | Verify wrong/cancelled PIN, confirmation cancel, and last-profile protection on device. |
+| P-004 | P1 | Default parent PIN remains `0000` | `getPin()` falls back to `0000`. User explicitly accepts this temporarily and will change it later; forced change is outside this implementation. | User will change PIN later; keep PIN global and do not force setup in this scope. |
+| P-005 | P2 | PIN retry throttling is intentionally absent | User explicitly rejects attempt limits, cooldowns, and lockout; incorrect entries continue to allow immediate retry. | No change requested; preserve unlimited attempts. |
 | P-006 | P2 | Profile deletion clears per-profile Child Mode keys but avatar cleanup is not yet proven in PR #7 | PR #7 ProfileManager currently has no custom-avatar path; PR #6 contains private avatar-file cleanup on delete/reset. | During avatar integration, verify deletion removes only that profile's avatar and never another profile's image. |
-| P-007 | P2 | Profile-specific Child Mode has no focused regression tests in PR #7 | Current PR #7 changed-file test additions cover regional cleanup and wallpaper QR routes; no dedicated tests cover profile migration/isolation, switch authorization, or deletion cleanup. | Add tests for per-profile flags/lists, one-time legacy migration, global PIN, adult-switch gate, and deletion cleanup. |
+| P-007 | P2 | Profile-specific controls lacked focused regression tests | PR #8 adds JVM tests for child-profile switch authorization and profile-key isolation; migration, persistence, UI gates, and deletion cleanup still need more coverage. | Extend regression coverage during avatar integration and verify on device. |
 | P-008 | P2 | Remote navigation and persistence remain unverified on target hardware | No actual Mi TV Stick/phone acceptance evidence exists. | Run the device checklist in section 5 after an integrated candidate APK is produced. |
 
 ## 4. What is implemented in PR #7 and PR #8
@@ -56,7 +56,6 @@ PR #8 (`feature/profile-security-integration`, draft) adds:
 - Child Mode state, locked-app set, and hidden-app set are stored with profile-scoped keys.
 - Parent PIN remains a single global preference key.
 - One-time migration copies legacy device-wide state to the profile active at first migration.
-- Child Mode state, locked-app list, and hidden-app list remain profile-scoped; the parent PIN remains device-wide.
 - Profile deletion asks for confirmation, refuses deletion of the last profile, and clears that profile's Child Mode settings.
 - Parental controls are grouped under Profile settings instead of a separate settings tab.
 
@@ -83,7 +82,8 @@ These are source findings only; they are not physical-device acceptance.
 ## 6. Verification and release boundary
 
 - PR #7 exact-head CI #195 passed on `62b1e7ce63f34095b44afbde7fc80e19addc9b00`.
-- PR #8 draft integration branch adds the above security fixes; CI run #196 (`41216406132`) was in progress at last check. Do not claim the new code passed CI until the run completes.
+- PR #8 CI run #196 (`41216406132`) passed both jobs on its tested head `f0971b17ed752a9ac0bf16afa904990723c0c616`.
+- Final UI cleanup commit `1ba744efee61fde662493cebd382743a5927aefa` is covered by CI run #197 (`41216508402`), which was in progress at last check. Only #197 can certify the latest PR head.
 - PR #6 CI run #156 passed on its own head `0cb1b96e2c2529e65795231519c6e0728b46390d`; this does not validate the combined code.
 - No APK has been installed on the user's Mi TV Stick as part of this audit.
 - Stock launcher has not been changed.
