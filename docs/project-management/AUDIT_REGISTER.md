@@ -1,7 +1,7 @@
 # 04 — Audit and Quality Register
 
 **Version:** 0.1-draft  
-**Date:** 31 October 2026  
+**Date:** 1 November 2026  
 **Status:** Open register; not a final QC certificate
 
 ## Severity definitions
