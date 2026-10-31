@@ -144,7 +144,7 @@ public class ClockDream extends DreamService {
             return;
         }
 
-        int index = StandbyPhotoStore.getCurrentPhotoIndex(this);
+        int index = StandbyPhotoStore.getCurrentPhotoIndex(uris.size());
         if (index < 0 || index >= uris.size()) return;
         Uri uri = uris.get(index);
         photoView.setVisibility(View.VISIBLE);
