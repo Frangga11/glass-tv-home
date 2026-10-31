@@ -151,4 +151,4 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Code changes: `MainActivity.java`, `ModernSettingsDialog.java`, new `NavigationState.java`, new `NavigationStateTest.java`.
 - Exact-head CI run #209: https://github.com/Frangga11/glass-tv-home/actions/runs/41228348247 — in progress at this checkpoint; Lists/tools/docs job passed; Android unit tests/release build running.
 - No APK installed, no device settings changed, no existing PR merged.
-- B01 remains IN PROGRESS until CI passes, remaining right-pane cursor behavior is resolved, and physical Mi TV Stick remote/process-restart acceptance is recorded.
+- B01 remains IN PROGRESS until exact-head CI passes and physical Mi TV Stick remote/process-restart acceptance is recorded. Settings right-pane action-return focus is tracked separately under B07.
