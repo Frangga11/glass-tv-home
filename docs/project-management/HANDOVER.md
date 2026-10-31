@@ -132,3 +132,14 @@
 - No PR merged; no new APK installed; no device settings changed.
 - B01/B02 implementation remains paused at user's request until A06 is closed.
 - Next action: collect the read-only ADB baseline listed in the A06 checkpoint manifest; then complete rollback-readiness review.
+
+
+## Latest repair handover — A06 rollback documentation advanced
+
+- User-confirmed PR #9 APK remains the official known-good tested baseline; its historical test is accepted and will not be requested again.
+- A05 is DONE: exact uploaded APK ↔ CI artifact #13048951728 match, 1,427,681 bytes, SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`, source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- A06 checkpoint branch: `checkpoint/a06-tested-apk-pr9-7e8392e1`. Updated manifest and added [A06_ROLLBACK_PROCEDURE.md](https://github.com/Frangga11/glass-tv-home/blob/checkpoint/a06-tested-apk-pr9-7e8392e1/docs/project-management/checkpoints/A06_ROLLBACK_PROCEDURE.md).
+- Rollback SOP: verify APK hash, capture state, restore stock HOME through system UI without guessing an activity component, and reinstall the baseline with `adb install -r` only after package/signature compatibility is confirmed. Avoid uninstall/clear-data/factory-reset actions.
+- Historical ADB observations are documented but do not establish current HOME owner or installed APK path/hash. The only remaining A06 gap is a fresh read-only device snapshot; it is not a request to retest the APK.
+- No candidate APK installed, no TV setting changed, no PR merged.
+- **Resume point:** obtain the read-only Bugjaeger/ADB snapshot in the A06 manifest when convenient; review it, close A06, then resume the approved roadmap. B01/B02 implementation remains paused until A06 closes.
