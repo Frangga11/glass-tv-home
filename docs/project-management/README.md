@@ -22,7 +22,13 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [DECISION_LOG.md](DECISION_LOG.md) | Approved decisions and unresolved choices |
 | [AUDIT_REGISTER.md](AUDIT_REGISTER.md) | Defects, risks, verification steps, and closure evidence |
 | [AVATAR_AUDIT.md](AVATAR_AUDIT.md) | Dedicated QR avatar audit, implementation record, and device acceptance checklist |
+| [DOCUMENTATION_WORKFLOW.md](DOCUMENTATION_WORKFLOW.md) | Mandatory three-layer documentation standard and efficient update rules |
+| [WALLPAPER_AUDIT.md](WALLPAPER_AUDIT.md) | Wallpaper/background audit, source findings, security issue, and acceptance criteria |
 | [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
+
+## Documentation architecture
+
+The project uses three connected layers: **MASTER** (project memory and navigation), **AUDIT & SOP** (feature evidence and repeatable procedures), and **OPERATIONAL LOG** (concise change history). GitHub remains canonical; ChatGPT Library is the milestone backup. Follow DOCUMENTATION_WORKFLOW.md. Do not duplicate content across layers.
 
 ## Evidence and status rules
 
