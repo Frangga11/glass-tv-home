@@ -12,7 +12,14 @@ final class NavigationState {
     static final String HOME_FOCUS_TOP_PILL_KEY = "home_focus_top_pill_key";
     static final String SETTINGS_TAB = "settings_tab";
 
-    static final int DEFAULT_SETTINGS_TAB = 0;
+    static final int TAB_PROFILE = 0;
+    static final int TAB_HOME_SCREEN = 1;
+    static final int TAB_APPEARANCE = 2;
+    static final int TAB_STATUS_WEATHER = 3;
+    static final int TAB_EFFECTS = 4;
+    static final int TAB_STANDBY = 5;
+    static final int TAB_DEVICE_SETTINGS = 7;
+    static final int DEFAULT_SETTINGS_TAB = TAB_PROFILE;
 
     private NavigationState() { }
 
@@ -36,7 +43,13 @@ final class NavigationState {
 
     static int normalizeSettingsTab(int tab) {
         switch (tab) {
-            case 0: case 1: case 2: case 3: case 4: case 5: case 7:
+            case TAB_PROFILE:
+            case TAB_HOME_SCREEN:
+            case TAB_APPEARANCE:
+            case TAB_STATUS_WEATHER:
+            case TAB_EFFECTS:
+            case TAB_STANDBY:
+            case TAB_DEVICE_SETTINGS:
                 return tab;
             default:
                 return DEFAULT_SETTINGS_TAB;
