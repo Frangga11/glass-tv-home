@@ -702,10 +702,21 @@ public final class ModernSettingsDialog {
                                         if (renderRightPane[0] != null) renderRightPane[0].run();
                                     }
                                 } else if (which == 1) {
-                                    ProfileManager.deleteProfile(activity, p.id);
-                                    updateSidebarSelection.run();
-                                    if (renderRightPane[0] != null) renderRightPane[0].run();
-                                    Toast.makeText(activity, "🗑️ Profil dipadam", Toast.LENGTH_SHORT).show();
+                                    new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                            .setTitle("Hapus profil " + p.name + "?")
+                                            .setMessage("Profil ini akan dihapus dari perangkat. Tindakan ini tidak dapat dibatalkan.")
+                                            .setNegativeButton("Batal", (confirmDialog, confirmWhich) -> confirmDialog.dismiss())
+                                            .setPositiveButton("Hapus", (confirmDialog, confirmWhich) -> {
+                                                boolean deleted = ProfileManager.deleteProfile(activity, p.id);
+                                                if (deleted) {
+                                                    updateSidebarSelection.run();
+                                                    if (renderRightPane[0] != null) renderRightPane[0].run();
+                                                    Toast.makeText(activity, "Profil " + p.name + " berhasil dihapus", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(activity, "Profil tidak dapat dihapus. Pastikan masih ada profil lain.", Toast.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .show();
                                 }
                             });
                             ob.show();
@@ -1363,17 +1374,55 @@ public final class ModernSettingsDialog {
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
-        ChildModeManager.promptPin(activity, "Verifikasi PIN Saat Ini", "Masukkan PIN keamanan 4 digit saat ini", new ChildModeManager.PinCallback() {
+        ChildModeManager.promptPin(activity, "Verifikasi PIN Saat Ini",
+                "Masukkan PIN keamanan 4 digit saat ini", new ChildModeManager.PinCallback() {
             @Override
             public void onSuccess() {
-                ChildModeManager.promptPin(activity, "Atur PIN Baru", "Masukkan PIN 4 digit baru untuk kontrol orang tua", new ChildModeManager.PinCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(activity, "✅ PIN Keselamatan Berjaya Dikemaskini!", Toast.LENGTH_SHORT).show();
+                EditText newPin = new EditText(activity);
+                newPin.setHint("PIN baru (4 digit)");
+                newPin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                newPin.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(4)});
+                newPin.setSingleLine(true);
+
+                EditText confirmPin = new EditText(activity);
+                confirmPin.setHint("Ulangi PIN baru");
+                confirmPin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                confirmPin.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(4)});
+                confirmPin.setSingleLine(true);
+
+                LinearLayout fields = new LinearLayout(activity);
+                fields.setOrientation(LinearLayout.VERTICAL);
+                int pad = (int) (22 * density);
+                fields.setPadding(pad, (int) (8 * density), pad, 0);
+                fields.addView(newPin);
+                fields.addView(confirmPin);
+
+                AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        .setTitle("Atur PIN Baru")
+                        .setMessage("Buat PIN angka 4 digit dan masukkan kembali untuk konfirmasi.")
+                        .setView(fields)
+                        .setNegativeButton("Batal", (d, w) -> d.dismiss())
+                        .setPositiveButton("Simpan", null)
+                        .create();
+                dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                    String first = newPin.getText().toString();
+                    String second = confirmPin.getText().toString();
+                    if (!first.matches("[0-9]{4}")) {
+                        newPin.setError("PIN harus tepat 4 angka");
+                        newPin.requestFocus();
+                        return;
                     }
-                    @Override
-                    public void onCancelled() {}
-                });
+                    if (!first.equals(second)) {
+                        confirmPin.setError("PIN tidak sama");
+                        confirmPin.requestFocus();
+                        return;
+                    }
+                    ChildModeManager.setPin(activity, first);
+                    dialog.dismiss();
+                    Toast.makeText(activity, "PIN keamanan berhasil diperbarui.", Toast.LENGTH_SHORT).show();
+                    if (renderRightPane[0] != null) renderRightPane[0].run();
+                }));
+                dialog.show();
             }
             @Override
             public void onCancelled() {}
