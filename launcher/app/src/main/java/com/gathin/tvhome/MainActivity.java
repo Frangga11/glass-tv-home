@@ -4975,7 +4975,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setTitle("🌦️ Informasi Cuaca & Kualitas Udara")
                 .setMessage("📍 Lokasi: " + town + "\n\n"
                         + "📊 Status Terkini: " + wxStr + "\n\n"
-                        + "ℹ️ Data cuaca berasal dari Open-Meteo. Nilai US AQI merupakan estimasi model, bukan pengukuran ISPU resmi di stasiun setempat.\n\n"
+                        + "ℹ️ Sumber: Open-Meteo / CAMS (CC BY 4.0). US AQI adalah estimasi model, bukan pengukuran ISPU resmi di stasiun setempat.\n\n"
                         + "📌 Periksa nilai AQI dan ikuti peringatan resmi BMKG atau instansi terkait sebelum mengambil keputusan aktivitas luar ruang.")
                 .setPositiveButton("OK", null)
                 .show();
