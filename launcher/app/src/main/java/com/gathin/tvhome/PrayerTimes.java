@@ -76,7 +76,7 @@ final class PrayerTimes {
     }
 
     static boolean due(Context ctx, String zone) {
-        return day(ctx, zone, prayerCalendar(ctx)) == null;
+        return day(ctx, zone, calendar(ctx)) == null;
     }
 
     static boolean refresh(Context ctx, String zone) {
@@ -101,7 +101,7 @@ final class PrayerTimes {
         new Thread(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-                Calendar now = prayerCalendar(context);
+                Calendar now = calendar(context);
                 int currentMonth = now.get(Calendar.YEAR) * 100 + (now.get(Calendar.MONTH) + 1);
                 String zone = getJakimZone(context);
                 String cachedZone = prefs.getString("cached_zone", "");
@@ -239,7 +239,7 @@ final class PrayerTimes {
         return TimeZone.getDefault();
     }
 
-    private static Calendar prayerCalendar(Context context) {
+    static Calendar calendar(Context context) {
         return Calendar.getInstance(getPrayerTimeZone(context));
     }
 
@@ -806,7 +806,8 @@ final class PrayerTimes {
     /** Returns Islamic Hijrah date localized according to active language (e.g. "11 Jamadilawal 1448H"). */
     static String getHijriDate(Context context) {
         try {
-            java.time.chrono.HijrahDate h = java.time.chrono.HijrahDate.now();
+            java.time.chrono.HijrahDate h = java.time.chrono.HijrahDate.now(
+                    java.time.Clock.system(getPrayerTimeZone(context).toZoneId()));
             int day = h.get(java.time.temporal.ChronoField.DAY_OF_MONTH);
             int month = h.get(java.time.temporal.ChronoField.MONTH_OF_YEAR);
             int year = h.get(java.time.temporal.ChronoField.YEAR);
