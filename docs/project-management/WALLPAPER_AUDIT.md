@@ -15,7 +15,7 @@ Audit the complete home-screen background system: bundled default, online catego
 
 **User visual evidence received (31 October 2026):** user supplied a photograph of the actual LG TV showing the Kabut Pagi Dempo wallpaper in Glass TV Home with clock/date, weather, prayer times, doa, and app icons visible. This is accepted as PASS for the specific visual composition and legibility shown in that photograph. It does not prove fresh-install asset packaging, offline fallback, QR/network security, animation performance, or other wallpaper images.
 
-**Scope clarification:** the requested outcome is not merely to replace the existing single-image `Default` wallpaper. Add a dedicated built-in/offline collection tab immediately above the existing `Nature & Landscapes` / `Alam Semesta & Lanskap` category, using the recovered label `Kabut Pagi di Dempo`. Its image assets must be packaged inside the APK. Keep the existing `Default` behavior separate unless the user explicitly approves changing it.
+**Scope clarification (user reconfirmed 31 Oct 2026):** Kabut Pagi Dempo is the image for the existing `Default` tab. Do not add a new category, tab, or separate Dempo collection. Reuse the former Malaysia default method: legacy `Malaysia*` selections migrate to `Default`, which loads one bundled APK asset at `assets/kabut-pagi-dempo.jpg`.
 
 | ID | Acceptance criterion | Evidence required |
 |---|---|---|
@@ -89,7 +89,7 @@ Audit the complete home-screen background system: bundled default, online catego
 | ID | Severity | Finding | Required action | Status |
 |---|---|---|---|---|
 | W-F-01 | P1 | Baseline wallpaper QR exposed upload and gallery-management routes on the LAN without a per-session path token. | Token-scoped page/upload/API/thumb routes implemented; verify unauthorized paths, token isolation, and dialog-close revocation on device. | IMPLEMENTED IN DRAFT PR #7 — CI PASS; device verification pending |
-| W-F-02 | P1 | Dempo offline collection category source exists, but its image binary is not yet committed to the APK assets. | Commit `kabut-pagi-dempo.jpg` at `launcher/app/src/main/assets/wallpapers/dempo/`, verify APK contents, then test fresh-install/offline loading and rotation. | SOURCE IMPLEMENTED IN PR #7; BINARY ASSET OPEN |
+| W-F-02 | P1 | Existing Default loader expects `assets/kabut-pagi-dempo.jpg`, but the approved JPEG is not yet committed to APK assets. | Add exactly one JPEG at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`, verify APK contents, then test clean install and legacy Malaysia upgrade. | CODE CORRECTED; BINARY ASSET OPEN |
 | W-F-03 | P2 | CENTER_CROP may cut important image content depending on source aspect ratio and composition. | Test representative portrait, 16:9, ultrawide, and 4K assets; decide whether upload preview/crop guidance is needed. | OPEN |
 | W-F-04 | P2 | Text/widget legibility is not programmatically or visually guaranteed for bright wallpaper images. | Evaluate dim overlay/gradient and text contrast on real TV using worst-case images. | OPEN |
 | W-F-05 | P2 | Performance comments describe intended memory reduction, but actual memory, blur latency, and long-run stability have not been measured on Mi TV Stick. | Run repeated rotation and long-duration test; record freezes, frame drops, and reloads. | OPEN |
@@ -112,13 +112,12 @@ Audit the complete home-screen background system: bundled default, online catego
 
 ## 6. Work sequence — no duplicate passes
 
-1. Check CI #160 for the startup-restoration follow-up; fix only genuine failures.
-2. Add the approved original JPEG at `launcher/app/src/main/assets/wallpapers/dempo/kabut-pagi-dempo.jpg`.
-3. Rebuild once after the binary is committed; verify exact APK asset path, dimensions, and SHA-256.
-4. Verify order: Default → Kabut Pagi di Dempo → Nature & Landscapes.
-5. Verify clean install and offline mode; open the new category and confirm bundled image loading and rotation.
-6. Reuse the supplied TV photo for the already-passed visual composition check. Test only remaining cases: offline install, rotation, remote focus, QR security, and performance.
-7. Keep PR #7 draft until CI and required device/network acceptance pass.
+1. Check CI #162 for the corrected Default-only code and asset-refresh loader.
+2. Add exactly one approved JPEG at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`.
+3. Rebuild once after the binary is committed; verify the exact APK asset path, dimensions, and SHA-256. Confirm there is no separate Dempo folder/category asset.
+4. Test clean install and offline startup; test upgrade with a legacy `Malaysia*` selection and an older cached Default image to confirm it is replaced by the packaged Dempo asset.
+5. Reuse the supplied TV photo for the already-passed visual composition check. Test only remaining cases: install/upgrade, offline start, remote focus, QR security, and performance.
+6. Keep PR #7 draft until CI, APK verification, and required device/network acceptance pass.
 
 ## 7. Current disposition
 
