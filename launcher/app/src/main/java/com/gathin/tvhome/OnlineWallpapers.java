@@ -206,9 +206,6 @@ final class OnlineWallpapers {
         if (sc.contains("minim") || sc.contains("oled") || sc.contains("dark")) {
             return ic.contains("minim") || ic.contains("oled") || ic.contains("dark") || ic.contains("atmos") || ic.contains("weather");
         }
-        if (sc.contains("malay")) {
-            return ic.contains("malay");
-        }
         return ic.contains(sc);
     }
 
