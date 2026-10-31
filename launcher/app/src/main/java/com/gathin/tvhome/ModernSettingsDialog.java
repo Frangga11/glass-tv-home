@@ -530,7 +530,7 @@ public final class ModernSettingsDialog {
                 avatarPhotoActions.setPadding(0, 0, 0, (int) (12 * density));
 
                 Button uploadAvatarButton = new Button(activity);
-                uploadAvatarButton.setText("📷 Unggah Foto Sendiri");
+                uploadAvatarButton.setText("📲 Ganti Foto Avatar via QR Code");
                 uploadAvatarButton.setTextColor(0xFFFFFFFF);
                 uploadAvatarButton.setTextSize(13);
                 uploadAvatarButton.setAllCaps(false);
@@ -539,7 +539,11 @@ public final class ModernSettingsDialog {
                 uploadAvatarBg.setColor(0xFF176B87);
                 uploadAvatarBg.setCornerRadius(10 * density);
                 uploadAvatarButton.setBackground(uploadAvatarBg);
-                uploadAvatarButton.setOnClickListener(v -> activity.pickAvatarPhoto(activeP.id));
+                uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
+                    ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
+                    profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
+                            Math.round(38 * density), updated.isChild));
+                }));
                 avatarPhotoActions.addView(uploadAvatarButton, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
 
