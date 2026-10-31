@@ -105,7 +105,7 @@ final class Azan {
             return;
         }
         for (int d = 0; d < 2; d++) {
-            Calendar day = Calendar.getInstance();
+            Calendar day = PrayerTimes.calendar(ctx);
             day.add(Calendar.DAY_OF_MONTH, d);
             PrayerTimes.Day times = PrayerTimes.day(ctx, zone, day);
             if (times == null) continue;
