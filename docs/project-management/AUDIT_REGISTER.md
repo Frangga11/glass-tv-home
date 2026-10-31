@@ -164,11 +164,11 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 
 | ID | Severity | Area | Finding / root cause | Remediation / verification | Status |
 |---|---|---|---|---|---|
-| B02-001 | P2 | Active-profile built-in avatar choices | Focus listener only scales the avatar frame; the white ring represents the selected avatar, not the currently focused avatar | Add a distinct high-contrast focus ring separate from the selected ring; test selected and unselected avatar focus independently | FIX IN PROGRESS |
-| B02-002 | P2 | Avatar QR upload / reset buttons | Custom static GradientDrawable backgrounds have no focus-state change or focus listener | Apply consistent focused fill + visible outline + restrained scale; test both buttons with D-pad | FIX IN PROGRESS |
-| B02-003 | P2 | Add-profile avatar choices | Focus listener only scales frames; selection ring and focus state are conflated | Add a separate focus ring while retaining the selected-avatar ring | FIX IN PROGRESS |
-| B02-004 | P2 | Add/edit profile name fields | Custom static EditText backgrounds do not change border/fill on remote focus | Add visible focused border and retain text/cursor contrast; verify keyboard focus and text entry | FIX IN PROGRESS |
-| B02-005 | P2 | Azan overlay card | Card is focusable/clickable but its custom glass background does not visibly change when focused | Add a clear focus stroke without changing the overlay's blur/opacity/lifecycle behavior | FIX IN PROGRESS |
+| B02-001 | P2 | Active-profile built-in avatar choices | Focus listener only scales the avatar frame; the white ring represents the selected avatar, not the currently focused avatar | Add a distinct high-contrast focus ring separate from the selected ring; test selected and unselected avatar focus independently | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
+| B02-002 | P2 | Avatar QR upload / reset buttons | Custom static GradientDrawable backgrounds have no focus-state change or focus listener | Apply consistent focused fill + visible outline + restrained scale; test both buttons with D-pad | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
+| B02-003 | P2 | Add-profile avatar choices | Focus listener only scales frames; selection ring and focus state are conflated | Add a separate focus ring while retaining the selected-avatar ring | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
+| B02-004 | P2 | Add/edit profile name fields | Custom static EditText backgrounds do not change border/fill on remote focus | Add visible focused border and retain text/cursor contrast; verify keyboard focus and text entry | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
+| B02-005 | P2 | Azan overlay card | Card is focusable/clickable but its custom glass background does not visibly change when focused | Add a clear focus stroke without changing the overlay's blur/opacity/lifecycle behavior | FIX IMPLEMENTED in Draft PR #11; exact-head CI #232 pending |
 
 ### Surfaces reviewed; existing focus treatment found
 
@@ -188,3 +188,14 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Source baseline: `feature/b01-global-navigation-retention` at `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`.
 - B02 must preserve B01 navigation/focus routing and must not replace existing focus listeners without preserving their behavior.
 - Physical TV acceptance is deferred until all A–E audits/fixes and final integration stage F02.
+
+
+### B02 implementation checkpoint
+
+- Branch: `feature/b02-remote-focus-indicators`.
+- Base: `feature/b01-global-navigation-retention` (B01 source/CI gate PASS).
+- Draft PR #11: https://github.com/Frangga11/glass-tv-home/pull/11.
+- Current head: `51be4c373ca985002ce8b940ab6e4ac6f679b257`.
+- Exact-head CI #232: https://github.com/Frangga11/glass-tv-home/actions/runs/41230307222 — in progress at this checkpoint.
+- Files: `TvFocusIndicator.java`, `ModernSettingsDialog.java`, `UserSwitchDialog.java`, `AzanActivity.java`.
+- No APK installed or published for TV testing; final device acceptance is deferred to F02.
