@@ -31,9 +31,9 @@
 | A-014 | P2 | Information layout | Exact on-screen order and focus navigation of clock/weather/AQI/prayer/Islamic shelf not yet recorded | Map view hierarchy and compare with user-approved screenshots | OPEN |
 | A-015 | P2 | Weather/AQI | Source, location fallback, cache freshness, error/offline behavior not fully audited | Inspect weather services and test online/offline/stale data | OPEN |
 | A-016 | P1 | Prayer times | Regional zone, date boundary, DST/timezone and accuracy need confirmation for Pagar Alam | Validate source/time zone and compare against authoritative local timetable | OPEN |
-| A-017 | P1 | Wallpaper upload | QR currently targets bare server root; wallpaper routes are not session-token scoped | Fix session-scoped route, then test unauthorized/expired route and server shutdown | OPEN — confirmed source finding W-F-01 |
+| A-017 | P1 | Wallpaper upload | Baseline QR exposed upload and gallery-management endpoints without per-session path token | Review PR #7/CI, then test foreign token, legacy routes, and dialog-close revocation on device | FIX IMPLEMENTED — CI/device pending; W-F-01 |
 | A-018 | P1 | ADB / debloat | Package disable and HOME-default changes need backup and rollback checklist | Verify scripts and prepare recovery procedure before device changes | OPEN |
-| W-001 | P1 | Wallpaper/background | Dedicated audit opened; W-F-01 identifies missing session scoping on wallpaper QR route | Complete source review, fix security finding, CI, then TV/phone acceptance | OPEN — see WALLPAPER_AUDIT.md |
+| W-001 | P1 | Wallpaper/background | Dedicated audit opened; QR route remediation implemented in draft PR #7 | Complete source review, CI, then TV/phone acceptance for W-AC-01–W-AC-12 | IN PROGRESS — CI/device pending; see WALLPAPER_AUDIT.md |
 
 ## Avatar candidate acceptance tests
 
