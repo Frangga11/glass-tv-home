@@ -1,41 +1,45 @@
 # 02 — Feature and Code Inventory
 
 **Version:** 0.2-draft  
-**Date:** 31 October 2026  
-**Review status:** Source integration and exact-head CI #208 pass; physical device acceptance remains open
+**Date:** 1 November 2026  
+**Review status:** A04 repository/branch/source inventory PASS; A05 tested-APK identity and A06 baseline/backup remain open; physical device acceptance remains deferred
 
 ## 1. Repository and branches
 
 Repository: https://github.com/Frangga11/glass-tv-home
 
-Branches found:
-- `main`
-- `feature/settings-reorganization-standby-gallery`
-- `fix/avatar-photo-upload-audit`
-- `fix/avatar-qr-upload-single-photo`
-- `feature/independent-visual-effects-id`
-- `fix/power-off-accessibility`
-- `indonesia-pagar-alam`
+Branches verified from GitHub on 1 November 2026 (branch head SHA abbreviated):
+- `docs/project-master-inventory` — `e342691c` (documentation)
+- `feature/b01-global-navigation-retention` — `bf899c7c` (B01; Draft PR #10)
+- `feature/b02-remote-focus-indicators` — `01cbef2c` (B02; Draft PR #11)
+- `feature/independent-visual-effects-id` — `888471fe`
+- `feature/profile-avatar-security-integration` — `7e8392e1` (PR #9)
+- `feature/profile-security-integration` — `1ba744ef` (PR #8)
+- `feature/settings-reorganization-standby-gallery` — `06f4fa2a`
+- `fix/avatar-photo-upload-audit` — `29a5a8bb`
+- `fix/avatar-qr-upload-single-photo` — `0cb1b96e` (PR #6 source)
+- `fix/power-off-accessibility` — `ed320d03`
+- `fix/wallpaper-qr-session-security` — `62b1e7ce` (PR #7)
+- `indonesia-pagar-alam` — `e8e4d0a7`
+- `main` — `fec70ffa`
+- `checkpoint` branches: none present at audit time.
 
-Current documentation branch:
-- `docs/project-master-inventory` (created from `feature/settings-reorganization-standby-gallery`).
+Repository identity: `Frangga11/glass-tv-home` is a public fork of `aqmangge/glass-tv-home`; default branch is `main`. Do not confuse the fork's `main` with the feature-branch chain used by the open draft PRs.
 
-Working baseline selected for the first comparison:
-- `feature/settings-reorganization-standby-gallery`
+Current dependency chain:
+- PR #8 `feature/profile-security-integration` → PR #9 `feature/profile-avatar-security-integration`
+- PR #9 → PR #10 `feature/b01-global-navigation-retention`
+- PR #10 → PR #11 `feature/b02-remote-focus-indicators`
 
-Related avatar implementation candidate:
-- `fix/avatar-photo-upload-audit`
+All PRs #8–#11 remain open Draft/unmerged at this checkpoint. Keep each feature isolated; do not merge or retarget branches as part of A04.
 
-Current QR avatar audit branch:
-- `fix/avatar-qr-upload-single-photo` (source PR #6; selectively integrated in PR #9)
-- `feature/profile-security-integration` (PR #8 base)
-- `feature/profile-avatar-security-integration` (Draft PR #9; latest exact-head CI pass)
+Remote working state: branch refs and PR metadata were read from GitHub. No local clone/worktree was opened or modified in this audit session; therefore no claim is made about uncommitted files on the user's own computer.
 
 **Important:** branches are separate snapshots. A feature found on one branch must not be attributed to another branch until merged or cherry-picked.
 
 ## 2. Build configuration — source-confirmed
 
-File: `launcher/app/build.gradle`
+Files: `launcher/settings.gradle`, `launcher/build.gradle`, `launcher/app/build.gradle`
 
 | Property | Value |
 |---|---|
@@ -71,7 +75,7 @@ This confirms the Gradle configuration only. It does not prove that a new APK wa
 | Standby gallery | MainActivity has a separate standby photo picker/store flow | CONFIRMED-CODE |
 | Weather / AQI | Weather-related activity/overlay and weather-air-quality sync are present in MainActivity | CONFIRMED-CODE; data correctness and offline test open |
 | Prayer times / Islamic shelf | PrayerTimes, Location, Azan and Islamic shelf are referenced in source | CONFIRMED-CODE; location/time accuracy test open |
-| Default wallpaper | Code expects `assets/kabut-pagi-dempo.jpg`, but the CI release APK does not contain the asset; fresh-install Default has no bundled image | P1 BLOCKER — approved image received and package asset prepared; repository/APK packaging and device verification remain; see WALLPAPER_AUDIT.md |
+| Default wallpaper | `launcher/app/src/main/assets/kabut-pagi-dempo.jpg` is present in the PR #9/B01/B02 source chain; Git blob `758f4225581f8c01e62d26c8d73c9aec43adb0df`; source image 230,883 bytes | SOURCE CONFIRMED; CI/APK packaging previously inspected on PR #7; fresh-install/device verification remains open — see WALLPAPER_AUDIT.md |
 | Icon animation | Spring / focus animations exist; exact per-icon animation policy needs audit | PARTIAL |
 | Avatar visual report | Seven built-in avatars plus QR custom-photo flow; EXIF-aware downsampled rendering; shared surfaces | SOURCE + CI #208 PASS; real-device QC pending |
 | Tab information layout | Tab names confirmed; final arrangement and screenshot acceptance not yet confirmed | PARTIAL |
@@ -185,3 +189,44 @@ GitHub source URLs:
 - Final TV-test APK publication step was skipped as required; CI run has no published artifact.
 - CI workflow now requires manual workflow-dispatch opt-in to publish the final TV-test APK. Normal PR runs do not publish it.
 - No APK has been installed on the TV. Physical device acceptance is deferred until all A–E audits/fixes and F integration/regression are complete.
+
+
+## 8. A04 repository and source-tree audit — 1 November 2026
+
+### Repository snapshot
+
+- Audited commit: B02 head `01cbef2c2fc90498295971b22c369a72cdfa734a`.
+- Baseline integration commit: PR #9 head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- PR #10 B01 head: `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`.
+- GitHub recursive tree at B02 head: 647 entries (496 files, 151 directories); tree response was not truncated.
+- PR #9 baseline tree: 644 entries (493 files, 151 directories).
+- B02 source tree contains 66 Java files under the app package, 14 JVM test files across app/installer, 159 XML files, and one packaged Default wallpaper JPEG.
+- Principal roots: `.github`, `docs`, `examples`, `launcher`, `release`, `tests`, `themes`, `tools`, and `webos`.
+
+### Android build and app configuration
+
+- Gradle project root: `launcher/` (not repository root); modules `:app` and `:installer`.
+- Android Gradle Plugin: 8.5.2.
+- App ID/namespace: `com.gathin.tvhome`; versionName 4.0.0; versionCode 40.
+- minSdk 26; compileSdk 34; targetSdk 34; Java 17.
+- Release build enables R8 minification and resource shrinking; release signing is configured with the debug signing config for sideloading.
+- CI workflow runs JVM release unit tests, assembles release, enforces APK size below 1.5 MiB, and runs lists/tools/docs tests. Publishing the TV-test APK is manual workflow-dispatch opt-in only.
+- Manifest declares Android TV/Leanback support as optional, the HOME and LEANBACK_LAUNCHER entry points, app permissions, activities, receivers, and services. Device permissions and actual HOME ownership must be verified read-only before final acceptance.
+
+### Important source ownership map
+
+- `MainActivity.java`: home UI, app grid, top bar, widgets, profile/wallpaper/standby entry points.
+- `ModernSettingsDialog.java`: settings tabs and settings workflows.
+- `NavigationState.java`: persisted navigation/focus identifiers introduced in B01.
+- `TvFocusIndicator.java`: shared focus indicator helper introduced in B02.
+- `ProfileManager.java` / `UserSwitchDialog.java`: profile model, avatar resolver and profile switching.
+- `AvatarUploadServer.java`: profile avatar QR server.
+- `WallpaperUploadServer.java`: wallpaper/StandBy QR HTTP server.
+- `StandbyPhotoStore.java`: isolated StandBy photo persistence.
+- `WeatherActivity.java`, `WeatherAirQuality.java`, `PrayerTimes.java`, `AzanActivity.java`, `LocationActivity.java`: weather/AQI, prayer, azan, and location modules.
+
+### A04 disposition
+
+- Repository identity, remote branch graph, open-PR dependency chain, source tree, Gradle configuration, manifest, CI workflow, and principal source ownership have been inspected and recorded.
+- No local worktree was created in this remote-only session; no local changes were made. A user's separate local clone, if any, is outside the available evidence.
+- A04 remote repository/source audit: PASS. A05 and A06 remain separate mandatory gates; this does not authorize APK installation, device testing, PR merge, or release.
