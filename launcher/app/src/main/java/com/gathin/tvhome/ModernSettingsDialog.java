@@ -596,7 +596,7 @@ public final class ModernSettingsDialog {
                 // Section 2: Manage All Users (Add & Delete User)
                 List<ProfileManager.UserProfile> allProfiles = ProfileManager.getAllProfiles(activity);
                 TextView tvUserList = new TextView(activity);
-                tvUserList.setText("SENARAI PENGGUNA (" + allProfiles.size() + ")");
+                tvUserList.setText("DAFTAR PROFIL (" + allProfiles.size() + ")");
                 tvUserList.setTextSize(11.5f);
                 tvUserList.setTextColor(0xFF8E929E);
                 tvUserList.setTypeface(outfit, Typeface.BOLD);
@@ -1481,7 +1481,7 @@ public final class ModernSettingsDialog {
 
         AlertDialog[] pickerHolder = new AlertDialog[1];
         Button btnDone = new Button(activity);
-        btnDone.setText("SELESAI (DONE)");
+        btnDone.setText("SELESAI");
         btnDone.setTextSize(13.5f);
         btnDone.setTextColor(0xFFFFFFFF);
         btnDone.setTypeface(font, Typeface.BOLD);
@@ -1582,7 +1582,7 @@ public final class ModernSettingsDialog {
         // Option 2: ADB Command guidance
         LinearLayout btnAdb = buildCardRow(activity, density, font,
                 "💻 Tetapkan Permanen melalui Perintah ADB (Disarankan)",
-                "Jalankan arahan ini melalui PC / AI coding assistant:\nadb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity" +
+                "Jalankan arahan ini melalui PC atau asisten pemrograman:\nadb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity" +
                 (isDefault ? "" : "\n\nJika TV masih membatasi tombol Home, nonaktifkan peluncur lama:\nadb shell pm disable-user --user 0 " + activePkg),
                 () -> {
                     Toast.makeText(activity, "Arahan: adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity", Toast.LENGTH_LONG).show();
