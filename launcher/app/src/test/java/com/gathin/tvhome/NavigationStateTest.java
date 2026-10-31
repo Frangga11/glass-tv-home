@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -34,9 +35,32 @@ public class NavigationStateTest {
     }
 
     @Test
-    public void rejectsUnknownSettingsTab() {
-        assertEquals(NavigationState.DEFAULT_SETTINGS_TAB, NavigationState.normalizeSettingsTab(6));
+    public void clampsInvalidResolvedPosition() {
+        assertEquals(0, NavigationState.resolveHomePosition(-1, -4, 5));
+        assertEquals(4, NavigationState.resolveHomePosition(99, 1, 5));
+    }
+
+    @Test
+    public void acceptsOnlyKnownSemanticTopPillKeys() {
+        assertEquals("inputs", NavigationState.normalizeTopPillKey("inputs"));
+        assertEquals("wifi", NavigationState.normalizeTopPillKey("wifi"));
+        assertEquals("assistant", NavigationState.normalizeTopPillKey("assistant"));
+        assertEquals("candy_box", NavigationState.normalizeTopPillKey("candy_box"));
+        assertEquals("settings", NavigationState.normalizeTopPillKey("settings"));
+        assertNull(NavigationState.normalizeTopPillKey(null));
+        assertNull(NavigationState.normalizeTopPillKey("btnSettings"));
+        assertNull(NavigationState.normalizeTopPillKey("unknown"));
+    }
+
+    @Test
+    public void acceptsAllCurrentSettingsTabsAndRejectsUnknownValues() {
+        for (int tab = 0; tab <= 5; tab++) {
+            assertEquals(tab, NavigationState.normalizeSettingsTab(tab));
+        }
         assertEquals(7, NavigationState.normalizeSettingsTab(7));
+        assertEquals(NavigationState.DEFAULT_SETTINGS_TAB, NavigationState.normalizeSettingsTab(-1));
+        assertEquals(NavigationState.DEFAULT_SETTINGS_TAB, NavigationState.normalizeSettingsTab(6));
+        assertEquals(NavigationState.DEFAULT_SETTINGS_TAB, NavigationState.normalizeSettingsTab(8));
     }
 
 }
