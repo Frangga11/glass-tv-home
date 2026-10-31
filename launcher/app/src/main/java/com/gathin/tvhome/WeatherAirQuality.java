@@ -167,9 +167,13 @@ final class WeatherAirQuality {
                 String defaultPlace = AppLocationManager.getStationPlace(context);
 
                 // 1. Fetch Complete Weather Forecast (Open-Meteo)
+                String weatherTimezone = "Asia%2FKuala_Lumpur";
+                if ("Indonesia".equalsIgnoreCase(AppLocationManager.getActiveRegion(context))) {
+                    weatherTimezone = lon < 114.0 ? "Asia%2FJakarta" : (lon < 125.0 ? "Asia%2FMakassar" : "Asia%2FJayapura");
+                }
                 String weatherUrl = String.format(Locale.ROOT,
-                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=Asia%%2FKuala_Lumpur&forecast_days=7",
-                        lat, lon);
+                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=%s&forecast_days=7",
+                        lat, lon, weatherTimezone);
                 JSONObject wJson = fetchJson(weatherUrl);
 
                 int temp = 29;
