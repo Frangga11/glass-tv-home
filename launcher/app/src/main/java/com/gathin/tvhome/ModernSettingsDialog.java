@@ -489,15 +489,14 @@ public final class ModernSettingsDialog {
                     ring.setBackground(ringBg);
                     ring.setVisibility(idx == activeAvatar ? View.VISIBLE : View.GONE);
                     frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
-                    // Separate transient focus ring; the white ring above remains the selected-avatar marker.
-                    TvFocusIndicator.attachAvatarFocusRing(frame, frameDim, density);
-
                     // Inner Avatar Circle ImageView
                     ImageView img = new ImageView(activity);
                     img.setImageResource(ProfileManager.getAvatarResId(idx));
                     int innerDim = (int) (48 * density);
                     FrameLayout.LayoutParams imgLp = new FrameLayout.LayoutParams(innerDim, innerDim, Gravity.CENTER);
                     frame.addView(img, imgLp);
+                    // Draw above the avatar image so the focus ring cannot be clipped by it.
+                    TvFocusIndicator.attachAvatarFocusRing(frame, frameDim, density);
 
                     avatarFrames[idx] = frame;
                     avatarRings[idx] = ring;
