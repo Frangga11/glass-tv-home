@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Short-lived, single-purpose local HTTP endpoint for replacing one profile avatar. */
 public final class AvatarUploadServer {
@@ -38,6 +39,7 @@ public final class AvatarUploadServer {
     private Thread thread;
     private volatile boolean running;
     private int port;
+    private final AtomicBoolean uploadClaimed = new AtomicBoolean(false);
 
     public AvatarUploadServer(Context context, String profileId, Listener listener) {
         this.context = context.getApplicationContext();
@@ -96,6 +98,8 @@ public final class AvatarUploadServer {
 
     private void handle(Socket socket) {
         File temp = null;
+        boolean claimed = false;
+        boolean uploadSucceeded = false;
         try (Socket client = socket) {
             client.setSoTimeout(20000);
             InputStream in = client.getInputStream();
@@ -127,6 +131,11 @@ public final class AvatarUploadServer {
             if (!"POST".equals(request[0]) || !expectedUpload.equals(request[1])) {
                 respond(out, 404, "Tidak ditemukan."); return;
             }
+            if (!uploadClaimed.compareAndSet(false, true)) {
+                respond(out, 409, "QR ini sudah digunakan. Tutup dialog dan buat QR baru jika ingin mengganti foto lagi.");
+                return;
+            }
+            claimed = true;
             long length = -1;
             for (String line : lines) if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
                 try { length = Long.parseLong(line.substring(15).trim()); } catch (Exception ignored) {}
@@ -160,6 +169,7 @@ public final class AvatarUploadServer {
                 respond(out, 500, "Foto diterima tetapi profil gagal diperbarui. Foto lama tetap dipertahankan.");
                 return;
             }
+            uploadSucceeded = true;
             temp = null;
             byte[] ok = "{\"status\":\"ok\"}".getBytes(StandardCharsets.UTF_8);
             out.write(("HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\nContent-Length: " + ok.length
@@ -169,6 +179,7 @@ public final class AvatarUploadServer {
             Log.w(TAG, "Avatar upload failed", e);
         } finally {
             if (temp != null && temp.exists()) temp.delete();
+            if (claimed && !uploadSucceeded) uploadClaimed.set(false);
         }
     }
 
@@ -187,7 +198,7 @@ public final class AvatarUploadServer {
     }
 
     private void respond(OutputStream out, int status, String message) throws Exception {
-        String label = status == 200 ? "OK" : status == 404 ? "Not Found" : status == 410 ? "Gone" : status == 413 ? "Payload Too Large" : "Bad Request";
+        String label = status == 200 ? "OK" : status == 404 ? "Not Found" : status == 409 ? "Conflict" : status == 410 ? "Gone" : status == 413 ? "Payload Too Large" : status == 431 ? "Request Header Fields Too Large" : "Bad Request";
         byte[] body = message.getBytes(StandardCharsets.UTF_8);
         out.write(("HTTP/1.1 " + status + " " + label + "\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Length: " + body.length
                 + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
