@@ -1609,8 +1609,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             // A package change must not steal focus from a top button or the Inputs popup.
             int pos = adapter.positionOf(returnKey);
-            lastFocused = Math.max(0, Math.min(pos >= 0 ? pos : returnSlot, adapter.getItemCount() - 1));
-            lastFocusedKey = adapter.keyAt(lastFocused);
+            int itemCount = adapter.getItemCount();
+            int resolvedPosition = NavigationState.resolveHomePosition(pos, returnSlot, itemCount);
+            lastFocused = itemCount > 0 ? resolvedPosition : 0;
+            lastFocusedKey = itemCount > 0
+                    ? NavigationState.normalizeFocusKey(adapter.keyAt(lastFocused)) : null;
+            android.content.SharedPreferences.Editor savedFocus =
+                    getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                            .putInt(NavigationState.HOME_FOCUS_POSITION, lastFocused);
+            if (lastFocusedKey != null) savedFocus.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
+            else savedFocus.remove(NavigationState.HOME_FOCUS_KEY);
+            savedFocus.apply();
             if (pos < 0) hideHero();
             // A newly installed app may have brought a card with it.
             tilesReady = true;
@@ -1629,11 +1638,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Read these before reload(): rebinding can move focus to the first tile and overwrite them.
         final String returnKey = lastFocusedKey;
         final int returnSlot = lastFocused;
+        final boolean returnFocusWasTopPill = lastFocusWasTopPill;
+        final String returnTopPillKey = lastFocusedTopPillKey;
         final List<Cards.Card> none = Collections.emptyList();
         cards = moduleCards ? CardFeature.run(() -> Cards.discover(this, hiddenApps, Cards.load(Cards.storeFile(this))), none) : none;
         boolean rebuilt = adapter.reload(cards.isEmpty() ? none : CardFeature.run(() -> Cards.shown(cards), none));
+        // RecyclerView rebinding may transiently move focus and fire onTileFocused(). Preserve
+        // the user's top-bar destination across that internal rebuild; it is not a user move.
         lastFocusedKey = returnKey;
         lastFocused = returnSlot;
+        lastFocusWasTopPill = returnFocusWasTopPill;
+        lastFocusedTopPillKey = returnTopPillKey;
+        if (returnFocusWasTopPill && returnTopPillKey != null) {
+            getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                    .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, true)
+                    .putString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, returnTopPillKey).apply();
+        }
         return rebuilt;
     }
 
