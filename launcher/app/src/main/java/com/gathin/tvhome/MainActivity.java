@@ -414,6 +414,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             File defaultWallpaper = getBundledDefaultWallpaper();
             wallpapers = defaultWallpaper != null
                     ? Collections.singletonList(defaultWallpaper) : Collections.emptyList();
+        } else if ("Dempo".equalsIgnoreCase(activeCat)) {
+            placesMode = false;
+            wallpapers = getBundledWallpaperCollection("dempo");
+            if (wallpapers.isEmpty()) {
+                android.util.Log.w("TvHome", "Saved Dempo collection is empty; keeping the current safe background");
+            }
         } else if ("Custom".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File customDir = new File(getFilesDir(), "custom_wallpapers");
