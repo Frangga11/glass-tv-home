@@ -2,7 +2,7 @@
 
 **Version:** 0.1-draft  
 **Date:** 31 October 2026  
-**Current phase:** Wallpaper/background audit W-001 active. QR session-scope fix is implemented in draft PR #7; CI and device acceptance pending. Avatar device acceptance remains open separately.
+**Current phase:** Wallpaper/background audit W-001 active. QR session-scope fix is implemented in draft PR #7 and CI passed. Default wallpaper asset is missing from the release APK; user image/creative direction is required. Device acceptance remains pending. Avatar device acceptance remains open separately.
 
 ## 1. How to resume this project in a new conversation
 
@@ -47,7 +47,7 @@ Then ask to continue from HANDOVER.md and not to repeat closed checks. The assis
 - No APK has been installed on the user's TV in this session.
 - No live device test has been performed in this session.
 - No final QC approval has been issued.
-- Wallpaper/background audit W-001: token-scoped QR routes implemented on `fix/wallpaper-qr-session-security`, draft PR #7. CI run 41200811301 was in progress at handover; no device test has been performed.
+- Wallpaper/background audit W-001: token-scoped QR routes implemented on `fix/wallpaper-qr-session-security`, draft PR #7; CI run 41200811301 passed. Artifact inspection found `assets/kabut-pagi-dempo.jpg` absent from the APK; fresh-install Default therefore lacks its intended offline image. No device test has been performed.
 
 ## 4. Next ordered work
 
