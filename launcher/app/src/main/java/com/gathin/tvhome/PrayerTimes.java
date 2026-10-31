@@ -478,7 +478,7 @@ final class PrayerTimes {
 
     /** Returns all 6 prayers for today with formatted times and status. */
     static PrayerItem[] getPrayerItems(Context context) {
-        Calendar now = prayerCalendar(context);
+        Calendar now = calendar(context);
         long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) {
             times = calculateFallback(context, now);
@@ -510,7 +510,7 @@ final class PrayerTimes {
 
     /** Returns formatted clean UI CharSequence with highlighted next prayer, bold and legible. */
     static CharSequence getFormatted(Context context) {
-        Calendar now = prayerCalendar(context);
+        Calendar now = calendar(context);
         long[] times = getTimesForDate(context, now);
 
         if (times == null || times.length < 6) {
@@ -744,7 +744,7 @@ final class PrayerTimes {
     /** Returns full day prayer list for popup display. */
     static java.util.List<ScheduleItem> getFullSchedule(Context context) {
         java.util.List<ScheduleItem> list = new java.util.ArrayList<>();
-        Calendar now = prayerCalendar(context);
+        Calendar now = calendar(context);
         long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
@@ -771,7 +771,7 @@ final class PrayerTimes {
 
     /** Returns short summary of next prayer (e.g. for screensaver). */
     static String getNextPrayerSummary(Context context) {
-        Calendar now = prayerCalendar(context);
+        Calendar now = calendar(context);
         long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
