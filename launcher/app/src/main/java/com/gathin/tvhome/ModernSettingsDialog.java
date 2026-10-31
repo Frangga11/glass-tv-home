@@ -518,6 +518,8 @@ public final class ModernSettingsDialog {
                         profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
                                 Math.round(38 * density), ChildModeManager.isChildModeEnabled(activity, refreshedProfile.id)));
                         activity.updateTopBarUserIcon();
+                        // Refresh the active profile row as well as the sidebar and top bar.
+                        if (renderRightPane[0] != null) renderRightPane[0].run();
                         Toast.makeText(activity, "✨ Avatar dipilih: " + ProfileManager.AVATAR_NAMES[idx], Toast.LENGTH_SHORT).show();
                     });
 
@@ -544,6 +546,8 @@ public final class ModernSettingsDialog {
                     ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
                     profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
                             Math.round(38 * density), ChildModeManager.isChildModeEnabled(activity, updated.id)));
+                    // Rebuild profile-list rows so the same new photo appears everywhere immediately.
+                    if (renderRightPane[0] != null) renderRightPane[0].run();
                 }));
                 avatarPhotoActions.addView(uploadAvatarButton, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
@@ -570,6 +574,7 @@ public final class ModernSettingsDialog {
                     profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
                             Math.round(38 * density), ChildModeManager.isChildModeEnabled(activity, restored.id)));
                     activity.updateTopBarUserIcon();
+                    if (renderRightPane[0] != null) renderRightPane[0].run();
                     Toast.makeText(activity, "Avatar bawaan dipulihkan.", Toast.LENGTH_SHORT).show();
                 });
                 avatarPhotoActions.addView(defaultAvatarButton, defaultAvatarLp);
