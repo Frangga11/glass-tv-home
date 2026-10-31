@@ -5217,7 +5217,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void onStandbyPhotoUploaded(File file) {
         runOnUiThread(() -> {
-            if (!StandbyPhotoStore.addUploadedFile(this, file)) {
+            if (file == null || !StandbyPhotoStore.getUris(this).contains(Uri.fromFile(file))) {
                 if (file != null) file.delete();
                 if (qrStatusText != null) qrStatusText.setText("Gagal menyimpan foto ke koleksi Layar Siaga.");
                 return;
