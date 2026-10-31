@@ -12,6 +12,7 @@
 | D-003 | Keep profile avatar, home wallpaper, and standby/screen-saver photo collections as separate features and data stores | Product architecture / explicit clarification in current work | APPROVED |
 | D-004 | Do not call a feature final solely because code is present; distinguish code inspection, CI/build, and real-device test | User's quality expectations and current audit protocol | APPROVED |
 | D-005 | Maintain a separate documentation branch rather than mixing docs with application feature changes | Documentation workflow design | APPROVED FOR THIS DOCUMENTATION PASS |
+| D-006 | Avatar photo upload must use a phone-scanned QR code; accept one image per session and delete the previous avatar only after the new file and profile reference are successfully committed | User explicitly requested QR upload and no retained old photo | APPROVED |
 
 ## 2. Baseline technical facts
 
@@ -26,9 +27,9 @@
 
 | ID | Question | Proposed direction | Status |
 |---|---|---|---|
-| O-001 | Should avatar upload use Android picker, phone QR transfer, or both? | Keep Android picker as first path; consider QR fallback if TV picker is unavailable | OPEN |
-| O-002 | Should a new profile be able to upload its photo during profile creation? | Yes, ideally; can also allow editing immediately after creation | OPEN |
-| O-003 | Should custom avatars appear everywhere (top bar, settings card, switcher, add/edit dialogs)? | Yes, consistent identity across all profile surfaces | PROPOSED |
+| O-001 | Avatar upload method | QR upload from phone on the same LAN; Android picker removed from active flow | DECIDED — QR ONLY |
+| O-002 | Should a new profile be able to upload its photo during profile creation? | Create profile first, then select it and upload from Profile settings; inline creation upload can be considered later | DEFERRED |
+| O-003 | Should custom avatars appear everywhere (top bar, settings card, switcher, add/edit dialogs)? | Use the same profile image resolver for top bar, settings card, and profile switcher; device verification remains | IMPLEMENTED IN AUDIT BRANCH; DEVICE TEST OPEN |
 | O-004 | Exact final order and density of information tabs | Decide after screenshot / remote navigation review | OPEN |
 | O-005 | Default wallpaper: fixed image or rotating selection | Await asset/behavior audit and user confirmation | OPEN |
 | O-006 | Icon animation: always animated or only on focus / interaction | Prefer focus-driven, restrained animation pending performance test | OPEN |
@@ -42,6 +43,7 @@
 | 2026-10-31 | `docs/project-master-inventory` | Created documentation branch from settings/gallery branch | GitHub branch created |
 | 2026-10-31 | `docs/project-master-inventory` | Added documentation index, master specification, feature inventory, decision log, audit register, and handover | GitHub commits in documentation branch |
 | 2026-10-31 | `fix/avatar-photo-upload-audit` | Found a candidate implementation for custom profile photo upload | Source inspection only; not accepted as final |
+| 2026-10-31 | `fix/avatar-qr-upload-single-photo` | Added QR-only single-photo avatar upload, transactional replacement/reset, EXIF-aware rendering, and stale upload cleanup | Draft PR #6; CI/device acceptance pending |
 
 ## 5. Change-record template
 
