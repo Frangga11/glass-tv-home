@@ -124,8 +124,8 @@
 
 ## Latest checkpoint — A05 complete; A06 device snapshot pending — 1 November 2026
 
-- A05 DONE: user supplied the exact APK used in the Mi TV Stick test. SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`, size 1,427,681 bytes.
-- Hash/size match PR #9 CI #208 release APK record, artifact ID `13048951728`, exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- A05 DONE: user supplied the exact APK used in the Mi TV Stick test. The APK was directly extracted from CI artifact `13048951728` (run #208 / `41218171447`) and compared byte-for-byte with the upload: both 1,427,681 bytes, SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
+- CI artifact ZIP is a separate object: 1,340,733 bytes, SHA-256 `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`. Workflow metadata maps the artifact to PR #9, branch `feature/profile-avatar-security-integration`, exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
 - A06 source checkpoint branch: `checkpoint/a06-tested-apk-pr9-7e8392e1`; created directly from exact tested source commit.
 - Checkpoint manifest: `docs/project-management/checkpoints/A06_TESTED_APK_BASELINE.md` on the checkpoint branch.
 - A06 remains IN PROGRESS until read-only Bugjaeger/ADB output captures Mi TV Stick build fingerprint, installed package details/path, current HOME resolver, enabled/disabled packages, and relevant secure/global settings. Review before any device changes.
