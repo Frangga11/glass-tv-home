@@ -5165,10 +5165,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 updateTopBarUserIcon();
                 if (onUpdated != null) onUpdated.run();
                 if (qrStatusText != null) {
-                    qrStatusText.setText("✓ Avatar berhasil diperbarui. Foto sebelumnya telah dihapus.");
+                    qrStatusText.setText("✓ Foto avatar berhasil diperbarui.");
                     qrStatusText.setTextColor(0xFF4ADE80);
                 }
-                if (qrUrlText != null) qrUrlText.setText("Foto lama sudah dibersihkan dari penyimpanan avatar.");
+                if (qrUrlText != null) qrUrlText.setText("Avatar tersimpan pada profil yang dipilih.");
                 Toast.makeText(this, "Foto avatar berhasil diganti.", Toast.LENGTH_LONG).show();
             });
             return saved;
