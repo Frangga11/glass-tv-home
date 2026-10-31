@@ -94,11 +94,12 @@
 - B01 source baseline: PR #9 exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
 - B01 working branch: `feature/b01-global-navigation-retention`.
 - B01 Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10.
-- B01 current head: `0f1c727da4c89576ba15a87238d17c1965a8a239`.
-- CI #212: https://github.com/Frangga11/glass-tv-home/actions/runs/41228628063 — PASS, both jobs (unit tests, release build, APK size gate, artifact publication, and lists/tools/docs checks).
-- Release artifact: `13052019782`; CI reports APK size 1,394 KB, below the 1.5 MiB budget.
-- Implemented so far: home app focus key + slot persisted to preferences; restore by stable component key then clamped slot; null-safe empty-grid fallback; safer scroll-settle target; Settings selected tab/sidebar cursor persisted; pure JVM navigation-state tests.
-- Remaining B01 work: physical Mi TV Stick tests for D-pad, OK, Back, top-bar return, app return, app-list mutation, Settings reopen, process death, and cold boot. Settings right-pane action-return focus is tracked under B07.
-- No APK has been installed in this repair session; no device settings changed; PR #8/#9/#10 remain unmerged Draft/open.
-- Next action: inspect CI #209 result and fix any failure; then complete remaining B01 cursor audit. A05/A06 must be completed before installing any candidate APK or declaring device acceptance.
+- B01 current source head: `1613fef4d83102369a87178a881832a29295b8d7`.
+- Exact-head CI #224: https://github.com/Frangga11/glass-tv-home/actions/runs/41229617890 — queued/pending at checkpoint.
+- Earlier CI #212 passed on the previous snapshot; CI #213 failed only on an intermediate API-renaming commit; complete subsequent snapshots #214–#221 passed. Final combined snapshot must pass #224.
+- CI workflow now builds/tests release variant but publishes a TV-test APK only through manual workflow_dispatch opt-in after explicit readiness approval.
+- Implemented so far: home app focus key + slot persisted; stable semantic top-bar focus key; snapshot/restore full focus state across RecyclerView rebind; normalized empty-list persistence; safe fallback for empty/failed scroll focus; Settings selected tab/sidebar cursor persistence; canonical shared tab IDs; expanded JVM navigation-state tests.
+- Remaining B01 work: final exact-head CI #224 and source-level review closure. Physical Mi TV Stick acceptance is deferred to final integration stage F02, after all A–E audit/fix work. Settings right-pane action-return focus is tracked under B07.
+- No APK has been installed in this repair session; no device settings changed; PR #8/#9/#10 remain unmerged Draft/open. User explicitly requires no TV testing until all audits and repairs are complete.
+- Next action: verify exact-head CI #224; then proceed to B02 source audit/fix. Continue B03–B07, C, D, and E audits/repairs before generating/publishing any TV-test APK. Complete A05/A06 and F01–F07 before final TV acceptance.
 - At each session close, update roadmap statuses, audit/operations records, this handover, and ChatGPT continuity memory. Report synchronization only after verifying the GitHub commit.
