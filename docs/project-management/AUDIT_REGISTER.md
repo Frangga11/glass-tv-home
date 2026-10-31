@@ -286,3 +286,22 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 - Draft PR #12: https://github.com/Frangga11/glass-tv-home/pull/12; base is B02 head `01cbef2c2fc90498295971b22c369a72cdfa734a`; current head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`.
 - Exact-head CI #239 / run `41233548406` on head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`: **PASS**, both jobs successful. Launcher unit tests and release build succeeded; release APK size 1,398 KB (<1.5 MiB); manual TV-test artifact publication was skipped and no artifact was produced. Manual TV-test artifact publication remains disabled unless explicitly dispatched after readiness approval.
 - B03 source/CI gate: **PASS**. Keep roadmap B03 IN PROGRESS until physical acceptance in F02; no TV-test artifact was produced.
+
+
+## B04 — Global layout, spacing, sizing and TV responsiveness — IN PROGRESS
+
+**Initial source audit — no code change recommended until target display metrics are confirmed.**
+
+| Surface | Source evidence | Assessment |
+|---|---|---|
+| Home grid | `AppAdapter.tileWidthPx()` calculates tile width from available grid width and configured column count; maintains 180:101 design ratio, caps at 180dp and has an 80dp floor. Grid uses weighted height and scrollable RecyclerView. | RESPONSIVE SOURCE DESIGN |
+| Home hero / Islamic shelf | Hero width is derived from usable screen width (40% description / 45% title); Islamic shelf text is capped at 38% of usable width. | PROPORTIONAL WIDTH |
+| Settings | Main dialog is clamped to 92% of display width/height; right pane is scrollable. Add-profile and device-settings dialogs clamp widths to viewport. | BOUNDED + SCROLLABLE |
+| Weather | Full-screen ScrollView with fillViewport; bento body uses a fixed 385dp height and weighted columns/rows. Shorter viewports can scroll rather than clip the whole page. | SCROLLABLE; fixed design block requires visual check |
+| Recent Apps | Horizontal RecyclerView; app cards are fixed at 420×250dp and root uses 64dp side padding. | POTENTIAL NARROW-VIEWPORT RISK; actual dp viewport not yet captured |
+| Standby / Nightstand | Centered wrap-content layout; clock is fixed at 110sp and date at 19sp; no explicit width cap/auto-size in XML. | LOCALE / SMALL-VIEWPORT VISUAL CHECK |
+| Dialogs | B03 now clamps custom dialog widths and QR dialog height to 90% of viewport; QR content scrolls. | BOUNDED |
+
+- No source-level clipping defect was proven in the current target environment. The target's actual display size/density were not included in the A06 snapshot, so changing fixed card/clock design dimensions now would be speculative.
+- Needed read-only device values: `wm size` and `wm density`. These are display metrics only; do not run `wm size` or `wm density` with arguments because that would change device configuration.
+- B04 remains IN PROGRESS pending those two values and the final F02 visual acceptance. No layout changes were made in this initial audit.
