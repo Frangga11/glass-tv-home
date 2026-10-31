@@ -729,14 +729,14 @@
                                 android:orientation="vertical" />
                         </LinearLayout>
 
-                        <!-- Right: PRECIPITATION RADAR MAP & HUMIDITY / PRESSURE (252dp) -->
+                        <!-- Right: WEATHER ILLUSTRATION & HUMIDITY / PRESSURE (252dp) -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1.08"
                             android:orientation="vertical">
 
-                            <!-- Radar Card (170dp) -->
+                            <!-- Local atmosphere illustration (not live radar) -->
                             <LinearLayout
                                 android:id="@+id/cardRadar"
                                 android:layout_width="match_parent"
@@ -753,7 +753,7 @@
                                     android:includeFontPadding="false"
                                     android:letterSpacing="0.08"
                                     android:singleLine="true"
-                                    android:text="☂  PRECIPITATION"
+                                    android:text="⛰️  ILUSTRASI CUACA"
                                     android:textColor="#94A3B8"
                                     android:textSize="10sp" />
 
