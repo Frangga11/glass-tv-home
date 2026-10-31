@@ -186,7 +186,9 @@ final class WeatherAirQuality {
 
                 // 2. Fetch Official Air Quality from Jabatan Alam Sekitar Malaysia (APIMS)
                 String jasUrl = "https://eqms.doe.gov.my/api3/publicportalapims/currentapicurrentlocation?stationid=" + stationId;
-                JSONObject jasJson = fetchJson(jasUrl);
+                // JAS/APIMS is Malaysia-only. Indonesian locations use the Open-Meteo AQI model below.
+                JSONObject jasJson = "Malaysia".equalsIgnoreCase(AppLocationManager.getActiveRegion(context))
+                        ? fetchJson(jasUrl) : null;
 
                 boolean isMalay = Locale.getDefault().getLanguage().startsWith("ms");
                 int aqi = 50;
