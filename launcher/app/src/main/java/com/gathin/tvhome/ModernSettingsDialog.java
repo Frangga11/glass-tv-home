@@ -756,10 +756,6 @@ public final class ModernSettingsDialog {
                         "🕌 Pengaturan Azan", "Atur audio azan dan tampilan pengingat waktu salat",
                         activity::showAzanSettingsDialog));
 
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📋 Pusat Informasi & Tindakan", "Ringkasan cuaca, jadwal salat, kondisi perangkat, dan pintasan tindakan cepat",
-                        activity::showInfoActionsDialog));
-
             } else if (tab == TAB_APPEARANCE) {
                 // === TAB 2: APPEARANCE ===
                 addHeader(rightContent, outfit, "Tampilan");
@@ -791,6 +787,10 @@ public final class ModernSettingsDialog {
                         activity.isWeatherWidgetEnabled(), isChecked -> {
                             activity.setWeatherWidgetEnabled(isChecked);
                         }));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        "📋 Pusat Informasi & Tindakan", "Ringkasan cuaca, jadwal salat, kondisi perangkat, dan pintasan tindakan cepat",
+                        activity::showInfoActionsDialog));
 
             } else if (tab == TAB_EFFECTS) {
                 // === TAB: ANIMATIONS & VISUAL EFFECTS ===
@@ -1037,9 +1037,9 @@ public final class ModernSettingsDialog {
                         };
                         String[] keywords = {
                                 "profil pengguna akun avatar nama",
-                                "beranda layar utama doa salat azan audio suara pusat informasi",
+                                "beranda layar utama doa salat azan audio suara",
                                 "tampilan wallpaper latar gambar koleksi interval foto pribadi qr upload hp",
-                                "widget informasi lokasi cuaca udara kualitas aqi jadwal salat",
+                                "widget informasi lokasi cuaca udara kualitas aqi jadwal salat pusat informasi tindakan status sistem ringkasan",
                                 "animasi efek cuaca dinamis hujan cahaya warna ikon glow transisi",
                                 "layar siaga standby screensaver jam foto pribadi foto upload qr hp ponsel",
                                 "mode anak pin kunci aplikasi sembunyikan kontrol orang tua",
