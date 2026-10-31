@@ -2,7 +2,7 @@
 
 **Audit ID:** W-001  
 **Date opened:** 31 October 2026  
-**Status:** PARTIAL — default image received and validated (1536×864 JPEG, 16:9); optimized package asset prepared locally; repository/APK packaging and device acceptance pending  
+**Status:** PARTIAL — approved default image validated; user supplied a photo showing it running on the target TV, so visual composition/readability for this image is accepted; repository/APK packaging and remaining device/network tests pending  
 **Code baseline inspected:** `feature/settings-reorganization-standby-gallery`  
 **Files inspected:** `MainActivity.java`, `WallpaperUploadServer.java`, `AndroidManifest.xml`  
 **Target:** LG 32-inch display via Mi TV Stick (Android 11 / API 30; revalidate on device)
@@ -62,14 +62,15 @@ Audit the complete home-screen background system: bundled default, online catego
 - A package-ready optimized JPEG was prepared as `kabut-pagi-dempo.jpg`, quality 82, 230,883 bytes.
 - SHA-256: `04e5793b92cab1fcaeaaf0e3b80769598f91c7521b8e3d62c4f7a38888982982`.
 - Intended repository destination: `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`.
-- The binary asset has **not yet been committed to GitHub or verified inside a new APK**. Do not mark W-F-02 closed until those steps and a clean-install/offline TV test pass.
+- User subsequently supplied a photograph of the actual TV showing this wallpaper behind the Glass TV Home interface (31 October 2026). The displayed wallpaper composition, app row, clock, weather, prayer times, and information text are visible and reasonably legible in this evidence. Mark the approved-image visual check W-AC-07 as PASS; mark the single approved wallpaper's visual legibility check as PASS, but retain W-AC-08 as PARTIAL because alternate bright/dark wallpapers have not been tested.
+- The photograph proves that a visually matching wallpaper has run on the TV; it does not by itself prove the exact optimized JPEG hash above is bundled in the APK. The binary asset has **not yet been committed to GitHub or verified inside a new APK**. Do not mark W-F-02 closed until those steps and a clean-install/offline TV test pass.
 
 ## 4. Findings requiring action
 
 | ID | Severity | Finding | Required action | Status |
 |---|---|---|---|---|
 | W-F-01 | P1 | Baseline wallpaper QR exposed upload and gallery-management routes on the LAN without a per-session path token. | Token-scoped page/upload/API/thumb routes implemented; verify unauthorized paths, token isolation, and dialog-close revocation on device. | IMPLEMENTED IN DRAFT PR #7 — CI PASS; device verification pending |
-| W-F-02 | P1 | Expected `kabut-pagi-dempo.jpg` is missing from the release APK; `getBundledDefaultWallpaper()` returns null on a fresh install. | Commit the validated JPEG at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`, verify APK contents, then test cold-start/offline/fallback behavior. | IMAGE APPROVED & PACKAGE FILE PREPARED — REPOSITORY/APK PACKAGING OPEN |
+| W-F-02 | P1 | Expected `kabut-pagi-dempo.jpg` is missing from the inspected release APK; `getBundledDefaultWallpaper()` returns null on a fresh install. | Commit the validated JPEG at `launcher/app/src/main/assets/kabut-pagi-dempo.jpg`, verify APK contents, then test cold-start/offline/fallback behavior. | IMAGE APPROVED; TV VISUAL EVIDENCE RECEIVED — REPOSITORY/APK PACKAGING OPEN |
 | W-F-03 | P2 | CENTER_CROP may cut important image content depending on source aspect ratio and composition. | Test representative portrait, 16:9, ultrawide, and 4K assets; decide whether upload preview/crop guidance is needed. | OPEN |
 | W-F-04 | P2 | Text/widget legibility is not programmatically or visually guaranteed for bright wallpaper images. | Evaluate dim overlay/gradient and text contrast on real TV using worst-case images. | OPEN |
 | W-F-05 | P2 | Performance comments describe intended memory reduction, but actual memory, blur latency, and long-run stability have not been measured on Mi TV Stick. | Run repeated rotation and long-duration test; record freezes, frame drops, and reloads. | OPEN |
@@ -94,9 +95,9 @@ Audit the complete home-screen background system: bundled default, online catego
 2. Verify the image is present in the APK and inspect its dimensions/aspect ratio. Do not rerun the already-passed QR security checks unless code changes.
 3. Finish the remaining source review of custom manager, image extension handling, file limits, and lifecycle.
 4. Run CI once after the asset/code change.
-5. Run one structured TV/phone acceptance pass against W-AC-01–W-AC-12, including QR foreign-token/legacy-route rejection and dialog-close revocation.
+5. Reuse the supplied TV photo as evidence for W-AC-07 and the approved image's initial legibility check; do not repeat that visual check. Run one remaining structured TV/phone acceptance pass for W-AC-01–W-AC-06 and W-AC-08–W-AC-12, including QR foreign-token/legacy-route rejection and dialog-close revocation.
 6. Close only passed criteria; retain device-dependent items as NOT TESTED until actual TV/phone evidence exists.
 
 ## 7. Current disposition
 
-**NOT FINAL / NOT YET DEVICE-READY.** Source inspection confirms the core wallpaper architecture exists. Two P1 issues remain at different gates: (1) QR route security is implemented in draft PR #7 and CI passes, but unauthorized/closed-session behavior still needs device/network verification; (2) the expected default Dempo wallpaper asset is absent from the release APK and requires an approved image asset. No device testing has been performed in this audit.
+**NOT FINAL / NOT YET DEVICE-READY.** The user has supplied target-TV photo evidence confirming the approved Dempo wallpaper is visually displayed with the Glass TV Home UI; W-AC-07 passes for this image. W-AC-08 passes only for this specific image, not for all wallpaper categories. QR route security is implemented in draft PR #7 and CI passes, but unauthorized/closed-session behavior still needs device/network verification. The approved binary asset is not yet committed to the repository or verified in a new APK, so W-F-02 remains open. Other device acceptance items remain pending.
