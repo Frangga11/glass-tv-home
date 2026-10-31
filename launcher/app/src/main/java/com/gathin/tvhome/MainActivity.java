@@ -4118,6 +4118,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String sDef = AppLanguage.LANG_EN.equals(curLang) ? "Kabut Pagi Dempo • Built-in launcher wallpaper" : "Kabut Pagi Dempo • Wallpaper bawaan launcher";
         options.add(new WallpaperOption("Default", tDef, sDef));
 
+        // Built-in offline Dempo collection. Keep this directly above Nature & Landscapes.
+        String tDempo = AppLanguage.LANG_EN.equals(curLang)
+                ? "🏞️ Kabut Pagi di Dempo"
+                : "🏞️ Kabut Pagi di Dempo";
+        String sDempo = AppLanguage.LANG_EN.equals(curLang)
+                ? "Pagar Alam • Built-in offline collection"
+                : "Pagar Alam • Koleksi bawaan offline";
+        options.add(new WallpaperOption("Dempo", tDempo, sDempo));
+
         // Category 2: Natural
         String tNat = AppLanguage.LANG_EN.equals(curLang) ? "🌿 Nature & Landscapes" : (AppLanguage.LANG_ID.equals(curLang) ? "🌿 Alam Semesta & Lanskap" : "🌿 Alam Semula Jadi & Landskap");
         String sNat = AppLanguage.LANG_EN.equals(curLang) ? "Mountains, Forests & Aurora 4K" : (AppLanguage.LANG_ID.equals(curLang) ? "Pegunungan, Hutan & Aurora 4K" : "Pergunungan, Rimba & Aurora 4K");
@@ -4748,15 +4757,70 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /** Copies a packaged wallpaper collection into app-private storage for offline rotation. */
+    private List<File> getBundledWallpaperCollection(String collectionName) {
+        if (!"dempo".equals(collectionName)) return Collections.emptyList();
+        final String assetFolder = "wallpapers/dempo";
+        File targetDir = new File(getFilesDir(), "bundled_wallpapers/dempo");
+        if (!targetDir.exists() && !targetDir.mkdirs()) {
+            android.util.Log.e("TvHome", "Cannot create bundled wallpaper directory");
+            return Collections.emptyList();
+        }
+        List<File> result = new ArrayList<>();
+        try {
+            String[] assets = getAssets().list(assetFolder);
+            if (assets == null) return result;
+            Arrays.sort(assets, String.CASE_INSENSITIVE_ORDER);
+            for (String asset : assets) {
+                String lower = asset.toLowerCase(Locale.ROOT);
+                if (!(lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png"))) continue;
+                File target = new File(targetDir, asset);
+                if (!target.isFile() || target.length() == 0) {
+                    try (java.io.InputStream in = getAssets().open(assetFolder + "/" + asset);
+                         java.io.FileOutputStream out = new java.io.FileOutputStream(target)) {
+                        byte[] buffer = new byte[8192];
+                        int count;
+                        while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
+                        out.flush();
+                    }
+                }
+                if (target.isFile() && target.length() > 0) result.add(target);
+            }
+        } catch (Exception e) {
+            android.util.Log.e("TvHome", "Bundled Dempo wallpaper collection unavailable", e);
+        }
+        return result;
+    }
+
     private void switchWallpaperCategory(String category) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
         String displayLabel;
         if ("Minimalist".equalsIgnoreCase(category)) {
             displayLabel = "Minimalis Gelap (OLED)";
+        } else if ("Dempo".equalsIgnoreCase(category)) {
+            displayLabel = "Kabut Pagi di Dempo";
         } else {
             displayLabel = category;
         }
         Toast.makeText(this, "Kategori: " + displayLabel, Toast.LENGTH_SHORT).show();
+        if ("Dempo".equalsIgnoreCase(category)) {
+            placesMode = false;
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.setAlpha(0f);
+                heroShelf.setVisibility(View.GONE);
+            }
+            List<File> bundled = getBundledWallpaperCollection("dempo");
+            if (!bundled.isEmpty()) {
+                wallpapers = bundled;
+                getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                showNextWallpaper(true);
+                startWallpaperRotation();
+            } else {
+                Toast.makeText(this, "Koleksi Kabut Pagi di Dempo belum tersedia di instalasi ini", Toast.LENGTH_LONG).show();
+            }
+            return;
+        }
         if ("Default".equalsIgnoreCase(category)) {
             placesMode = false;
             if (heroShelf != null) {
