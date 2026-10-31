@@ -39,7 +39,7 @@ public final class ChildModeManager {
 
     private static final String KEY_PROFILE_MIGRATION_DONE = "profile_settings_migration_v1";
 
-    private static String profileKey(String profileId, String key) {
+    static String profileKey(String profileId, String key) {
         return "profile_" + profileId + "_" + key;
     }
 
@@ -128,6 +128,12 @@ public final class ChildModeManager {
                 .edit()
                 .putString(KEY_PIN, pin)
                 .apply();
+    }
+
+    /** Any switch away from an active Child Mode profile requires parent authorization.
+     * This also prevents moving to a second child profile with weaker restrictions. */
+    static boolean requiresParentPinToSwitch(boolean currentChildMode) {
+        return currentChildMode;
     }
 
     public static boolean verifyPin(Context ctx, String entered) {
