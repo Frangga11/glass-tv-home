@@ -114,8 +114,16 @@ final class PrayerTimes {
                     }
                     int year = now.get(Calendar.YEAR);
                     String cachedJson = prefs.getString(KEY_JSON, null);
+                    boolean validCache = false;
                     if (!force && zone.equals(cachedZone) && prefs.getInt(KEY_YEAR, 0) == year
-                            && cachedJson != null && isValidIndonesiaTimetable(new JSONObject(cachedJson), year)) return;
+                            && prefs.getInt(KEY_MONTH, 0) == currentMonth && cachedJson != null) {
+                        try {
+                            validCache = isValidIndonesiaTimetable(new JSONObject(cachedJson), year);
+                        } catch (Exception ignored) {
+                            // A damaged cache must trigger a fresh download, never block recovery.
+                        }
+                    }
+                    if (validCache) return;
 
                     String yearUrl = "https://sajadah.org/api/v1/times/id/kota-pagar-alam/" + year + ".json";
                     HttpURLConnection idConn = (HttpURLConnection) new URL(yearUrl).openConnection();
@@ -134,7 +142,7 @@ final class PrayerTimes {
                         JSONObject timetable = new JSONObject(idJson.toString());
                         if (!isValidIndonesiaTimetable(timetable, year))
                             throw new IllegalStateException("Invalid Kemenag timetable for Kota Pagar Alam");
-                        prefs.edit().putString(KEY_JSON, idJson.toString()).putInt(KEY_YEAR, year)
+                        prefs.edit().putString(KEY_JSON, idJson.toString()).putInt(KEY_YEAR, year).putInt(KEY_MONTH, currentMonth)
                                 .putString("cached_zone", zone).apply();
                         Log.i(TAG, "Loaded validated Kemenag RI timetable for Kota Pagar Alam, " + year);
                         if (onUpdated != null) new Handler(Looper.getMainLooper()).post(onUpdated);
