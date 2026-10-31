@@ -123,7 +123,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | G04 | Update GitHub master, inventory, audit register, decision log, operations log, and handover | NOT STARTED |
 | G05 | Update ChatGPT continuity memory/handover and confirm next resume point | NOT STARTED |
 
-## 4. Progress snapshot — 1 November 2026 (after A04)
+## 4. Progress snapshot — 1 November 2026 (after A05)
 
 - Tasks in roadmap: 47
 - DONE: 5 (A01, A02, A03, A04, A05)
@@ -132,7 +132,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 - BLOCKED: 0
 - AWAITING APPROVAL: 0
 
-This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009; further implementation is paused at the user's request until A05/A06 are complete. A05 is complete: the user-supplied tested APK SHA-256 matches the recorded PR #9 CI #208 release APK and exact source commit. A06 is in progress: source checkpoint branch and APK/hash manifest exist; read-only device-state capture remains.
+This is a task-count snapshot, not a percentage of application readiness. A01–A04 are complete for the remote repository/source audit. A04 did not inspect a separate local clone; this limitation is recorded. B01/B02 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009; further implementation is paused at the user's request until A06 is closed. A05 is complete with a direct byte-for-byte match between the user-uploaded tested APK and the APK extracted from CI artifact #13048951728; CI run #208 binds that artifact to PR #9 exact source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. A06 is in progress: source checkpoint branch and APK/hash manifest exist; read-only device-state capture remains.
 
 ## 5. Current execution point
 
