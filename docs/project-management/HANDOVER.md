@@ -23,7 +23,8 @@
 3. Test clean install and offline startup on the target TV.
 4. Test upgrade from legacy Malaysia selection and stale cache replacement.
 5. Complete QR/security and remote-control device tests.
-6. The cross-audit found and corrected the stale Malaysia migration comment and incomplete Appearance card description in code commit `7bca68e56e51ea828c2ef7d22ca830470ca28381`; CI #167 is running for that commit.
+6. Cross-audit corrected the stale Malaysia migration comment and incomplete Appearance card description in code commit `7bca68e56e51ea828c2ef7d22ca830470ca28381` (CI #167 passed).
 7. Wallpaper upload and Standby photo stores remain distinct (`custom_wallpapers` vs `standby_photos`); QR sessions use separate routes. Device-level isolation tests remain pending.
+8. Follow-up hardening commits `da1e43a241582c71a86e54530c730f20f225b2ef` and `91a31e757d796bd1384a962ced2054ce74badd96` prevent Default from silently falling back to a theme/legacy wallpaper and avoid reusing an unverified old cache when the packaged asset cannot be read. A further commit `9f5a9411120dad879aaa1d8c1bb8cc6e90684924` clears the prior image and shows a safe black background if Default cannot load after manual selection. CI #168 passed; CI #169 covers the cache-loader hardening. The final manual-selection fallback commit still needs its own CI result.
 
 **Disposition: NOT FINAL. Do not merge or call the wallpaper device-ready until these gates pass.**
