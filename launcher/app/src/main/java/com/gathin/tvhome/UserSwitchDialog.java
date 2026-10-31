@@ -184,7 +184,8 @@ public final class UserSwitchDialog {
 
                 // If currently Child Mode is on and switching to adult profile, verify PIN
                 boolean curChildOn = ChildModeManager.isChildModeEnabled(activity);
-                if (curChildOn && !prof.isChild) {
+                boolean targetChildOn = ChildModeManager.isChildModeEnabled(activity, prof.id);
+                if (curChildOn && !targetChildOn) {
                     ChildModeManager.promptPin(activity, "Sahkan PIN Keluar Mod Anak", "Masukkan PIN untuk bertukar ke profil " + prof.name, new ChildModeManager.PinCallback() {
                         @Override
                         public void onSuccess() {
@@ -194,7 +195,7 @@ public final class UserSwitchDialog {
                         public void onCancelled() {}
                     });
                 } else {
-                    switchProfile(activity, prof, prof.isChild, dialogHolder[0]);
+                    switchProfile(activity, prof, false, dialogHolder[0]);
                 }
             });
 
@@ -311,11 +312,6 @@ public final class UserSwitchDialog {
 
     static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, boolean activateChild, AlertDialog dialog) {
         ProfileManager.setActiveProfile(activity, prof.id);
-        if (activateChild) {
-            ChildModeManager.setChildModeEnabled(activity, true);
-        } else {
-            ChildModeManager.setChildModeEnabled(activity, false);
-        }
         activity.reloadTiles();
         activity.updateTopBarUserIcon();
         Toast.makeText(activity, "✨ Profil aktif: " + prof.name + (prof.isChild ? " (Mod Kanak-kanak)" : ""), Toast.LENGTH_SHORT).show();
