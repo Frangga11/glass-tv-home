@@ -252,7 +252,7 @@ public class WallpaperUploadServer {
                 out.write(pageBytes);
                 out.flush();
             } else if (requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
-                handleStandbyUpload(in, out, lines);
+                handleStandbyUpload(client, in, out, lines);
             } else if (requestLine.startsWith("GET")) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n" +
@@ -350,7 +350,7 @@ public class WallpaperUploadServer {
         }
     }
 
-    private void handleStandbyUpload(InputStream in, OutputStream out, String[] lines) throws Exception {
+    private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
         long contentLength = 0;
         for (String line : lines) {
             if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
@@ -410,10 +410,16 @@ public class WallpaperUploadServer {
             return;
         }
 
-        if (!StandbyPhotoStore.addUploadedFile(context, targetFile)) {
-            targetFile.delete();
-            sendUploadError(out, 400, "Koleksi Layar Siaga penuh atau ruang penyimpanan tidak mencukupi.");
-            return;
+        synchronized (activeClients) {
+            if (!running || client.isClosed()) {
+                targetFile.delete();
+                return;
+            }
+            if (!StandbyPhotoStore.addUploadedFile(context, targetFile)) {
+                targetFile.delete();
+                sendUploadError(out, 400, "Koleksi Layar Siaga penuh atau ruang penyimpanan tidak mencukupi.");
+                return;
+            }
         }
 
         String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
