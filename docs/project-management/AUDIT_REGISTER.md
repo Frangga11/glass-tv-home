@@ -70,12 +70,12 @@ No avatar item is closed yet. The implementation has been submitted in draft PR 
 | ID | Severity | Area | Finding / risk | Required verification | Status |
 |---|---|---|---|---|---|
 | P-001 | P1 | Avatar integration | Avatar QR implementation remains isolated in draft PR #6; PR #7 does not contain the integrated custom-avatar resolver | Three-way integrate PR #6 into PR #7 without overwriting per-profile controls | OPEN — integration required |
-| P-002 | P1 | Parental controls | App lock/hide editor lacked PIN gate | Parent PIN now required before opening either editor in PR #8 | FIX IMPLEMENTED — CI #196 pending; device verification open |
+| P-002 | P1 | Parental controls | App lock/hide editor lacked PIN gate | Parent PIN now required before opening either editor in PR #8 | FIX IMPLEMENTED — CI #197 PASS; device verification open |
 | P-003 | P1 | Profile deletion | Delete action lacked parent-PIN authorization | Parent PIN now required before destructive confirmation in PR #8 | FIX IMPLEMENTED — CI #196 pending; device verification open |
 | P-004 | P1 | Parent PIN | Default PIN remains 0000 | User accepts 0000 temporarily and will change it later; no forced change in this scope | ACCEPTED TEMPORARILY — user to change later |
 | P-005 | P2 | PIN security | No retry cooldown/backoff | User explicitly requires unlimited attempts; no throttle/lockout to be added | ACCEPTED BY USER — preserve unlimited attempts |
 | P-006 | P2 | Avatar cleanup | Avatar deletion/reset cleanup cannot be verified on PR #7 until PR #6 is integrated | Verify profile-scoped cleanup after integration | OPEN |
-| P-007 | P2 | Regression tests | Focused tests were absent | PR #8 adds switch-policy and profile-key isolation JVM tests; migration, persistence, UI gates and cleanup coverage remain open | PARTIAL — CI #196 pending |
+| P-007 | P2 | Regression tests | Focused tests were absent | PR #8 adds switch-policy and profile-key isolation JVM tests; migration, persistence, UI gates and cleanup coverage remain open | PARTIAL — CI #197 PASS; device verification open |
 | P-008 | P2 | Device acceptance | D-pad, dialogs, profile switching, and restart persistence have no physical Mi TV evidence | Complete PROFILE_AUDIT.md device matrix | OPEN — user device required |
 
 See [PROFILE_AUDIT.md](PROFILE_AUDIT.md) for detailed evidence and acceptance criteria.
@@ -88,3 +88,10 @@ See [PROFILE_AUDIT.md](PROFILE_AUDIT.md) for detailed evidence and acceptance cr
 | P-009 | P1 | Profile switching | A child could potentially switch to a different child profile with weaker restrictions | Central switch gate now requires parent PIN for every switch away from an active Child Mode profile, regardless of target profile | FIX IMPLEMENTED — CI #196 pending; device verification open |
 
 See `PROFILE_AUDIT.md` for the complete policy and device acceptance matrix. PR #8 is Draft and targets PR #7's branch; do not merge until CI, review, avatar integration, and device gates are complete.
+
+
+## Latest Profile Security CI — 31 October 2026
+
+- PR #8 exact head `1ba744efee61fde662493cebd382743a5927aefa` passed CI #197 (`41216508402`), both jobs successful.
+- Release artifact `13048321564`: APK `app-release.apk`, 1,420,005 bytes; SHA-256 `735be1ff6e8ff88d31bf9de73940e527a570bbaace96c5ec9a001ce95610a44e`.
+- This proves build/unit-test and packaging checks for the profile-security branch only. It does not prove physical remote behavior or avatar integration.
