@@ -34,3 +34,6 @@
 
 
 | 2026-11-01 | B01 top-bar focus restoration and exact-head validation | [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), head `0f1c727da4c89576ba15a87238d17c1965a8a239`, [CI #212](https://github.com/Frangga11/glass-tv-home/actions/runs/41228628063) | Extended B01 to preserve the last focused top-bar pill when returning from external Android screens; it falls back to the app grid if the pill is unavailable. Added persisted top-pill ID/state. Exact-head CI #212: Lists/tools/docs PASS; Android unit tests/release build still running at this checkpoint. | Confirm CI #212; then record artifact/build and proceed to physical-device acceptance only after A05/A06 safety gates |
+
+
+| 2026-11-01 | B01 exact-head CI and release artifact | [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), [CI #212](https://github.com/Frangga11/glass-tv-home/actions/runs/41228628063), head `0f1c727da4c89576ba15a87238d17c1965a8a239`, artifact `13052019782` | Both CI jobs passed: Android unit tests, release build, APK size budget (1,394 KB; below 1.5 MiB), artifact publication, and lists/tools/docs checks. | Keep PR #10 Draft; physical Mi TV Stick remote and process-restart acceptance still required; do not install until A05/A06 gates are completed |
