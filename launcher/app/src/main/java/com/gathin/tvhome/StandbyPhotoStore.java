@@ -25,6 +25,9 @@ final class StandbyPhotoStore {
     private static final String KEY_URIS = "photo_uris";
     private static final String KEY_MODE = "display_mode";
     static final long ROTATION_INTERVAL_MS = 20_000L;
+    static final int MAX_PHOTO_COUNT = 100;
+    static final long MAX_UPLOADED_BYTES = 512L * 1024L * 1024L;
+    private static final long MIN_FREE_BYTES = 64L * 1024L * 1024L;
 
     private static final ExecutorService DECODE_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
         Thread thread = new Thread(r, "standby-photo-decoder");
@@ -70,12 +73,37 @@ final class StandbyPhotoStore {
                 .apply();
     }
 
-    static boolean addUploadedFile(Context context, File imageFile) {
+    private static long getUploadedBytes(Context context) {
+        long total = 0;
+        for (Uri uri : getUris(context)) {
+            if (isManagedFile(context, uri)) {
+                try {
+                    total += new File(uri.getPath()).length();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return total;
+    }
+
+    static synchronized boolean canAcceptUpload(Context context, long incomingBytes) {
+        if (context == null || incomingBytes <= 0) return false;
+        if (getPhotoCount(context) >= MAX_PHOTO_COUNT) return false;
+        long used = getUploadedBytes(context);
+        if (used + incomingBytes > MAX_UPLOADED_BYTES) return false;
+        return context.getFilesDir().getUsableSpace() - incomingBytes >= MIN_FREE_BYTES;
+    }
+
+    static synchronized boolean addUploadedFile(Context context, File imageFile) {
         if (context == null || imageFile == null || !imageFile.isFile()) return false;
         if (!isManagedFile(context, Uri.fromFile(imageFile))) return false;
         List<Uri> uris = getUris(context);
         Uri uploaded = Uri.fromFile(imageFile);
-        if (!uris.contains(uploaded)) uris.add(uploaded);
+        if (uris.contains(uploaded)) return true;
+        if (uris.size() >= MAX_PHOTO_COUNT) return false;
+        if (getUploadedBytes(context) + imageFile.length() > MAX_UPLOADED_BYTES) return false;
+        if (context.getFilesDir().getUsableSpace() < MIN_FREE_BYTES) return false;
+        uris.add(uploaded);
         saveUris(context, uris);
         return true;
     }
