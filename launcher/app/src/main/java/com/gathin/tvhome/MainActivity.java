@@ -4089,7 +4089,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Window w = dialog.getWindow();
         if (w != null) {
             w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            w.setLayout((int) (480 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+            int maxWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.90f);
+            w.setLayout(Math.min((int) (480 * density), maxWidth), ViewGroup.LayoutParams.WRAP_CONTENT);
             w.setDimAmount(0.65f);
             w.setFlags(android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
@@ -6614,7 +6615,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Window w = dialog.getWindow();
         if (w != null) {
             w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            w.setLayout((int) (440 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+            int maxWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.90f);
+            w.setLayout(Math.min((int) (440 * density), maxWidth), ViewGroup.LayoutParams.WRAP_CONTENT);
             w.setDimAmount(0.6f);
         }
         // One decision per prompt: the buttons and Back (cancel) all end here.
