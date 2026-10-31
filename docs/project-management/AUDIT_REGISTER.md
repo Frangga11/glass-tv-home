@@ -63,3 +63,19 @@ An audit item can be closed only with:
 - rollback note where applicable.
 
 No avatar item is closed yet. The implementation has been submitted in draft PR #6; CI and actual-device evidence are still required.
+
+
+## Profile Tab audit additions — 31 October 2026
+
+| ID | Severity | Area | Finding / risk | Required verification | Status |
+|---|---|---|---|---|---|
+| P-001 | P1 | Avatar integration | Avatar QR implementation remains isolated in draft PR #6; PR #7 does not contain the integrated custom-avatar resolver | Three-way integrate PR #6 into PR #7 without overwriting per-profile controls | OPEN — integration required |
+| P-002 | P1 | Parental controls | App lock/hide list editor mutates restrictions without parent-PIN verification | Gate editor entry/commit with global parent PIN | OPEN — source defect |
+| P-003 | P1 | Profile deletion | Delete action has confirmation but no parent-PIN authorization | Require global parent PIN before deletion | OPEN — source defect |
+| P-004 | P1 | Parent PIN | Default PIN is 0000 and first activation does not force PIN setup/change | Require first-run PIN setup before enabling parental controls | OPEN — source hardening |
+| P-005 | P2 | PIN security | No retry cooldown/backoff in keypad flow | Add bounded retry throttling and test cancel/recovery | OPEN |
+| P-006 | P2 | Avatar cleanup | Avatar deletion/reset cleanup cannot be verified on PR #7 until PR #6 is integrated | Verify profile-scoped cleanup after integration | OPEN |
+| P-007 | P2 | Regression tests | No dedicated profile migration/isolation/switch authorization/deletion tests in PR #7 | Add focused tests | OPEN |
+| P-008 | P2 | Device acceptance | D-pad, dialogs, profile switching, and restart persistence have no physical Mi TV evidence | Complete PROFILE_AUDIT.md device matrix | OPEN — user device required |
+
+See [PROFILE_AUDIT.md](PROFILE_AUDIT.md) for detailed evidence and acceptance criteria.
