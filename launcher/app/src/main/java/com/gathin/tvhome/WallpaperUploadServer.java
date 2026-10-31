@@ -46,6 +46,7 @@ public class WallpaperUploadServer {
     private final Context context;
     private int port;
     private final UploadListener listener;
+    private final boolean standbyOnly;
     private final String sessionToken = UUID.randomUUID().toString().replace("-", "");
     private ServerSocket serverSocket;
     private volatile boolean running = false;
@@ -53,9 +54,14 @@ public class WallpaperUploadServer {
     private Thread serverThread;
 
     public WallpaperUploadServer(Context context, int port, UploadListener listener) {
+        this(context, port, listener, false);
+    }
+
+    public WallpaperUploadServer(Context context, int port, UploadListener listener, boolean standbyOnly) {
         this.context = context.getApplicationContext();
         this.port = port;
         this.listener = listener;
+        this.standbyOnly = standbyOnly;
     }
 
     public static String getLocalIpAddress() {
@@ -225,6 +231,12 @@ public class WallpaperUploadServer {
                         "Access-Control-Allow-Headers: Content-Type\r\n" +
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
+                out.flush();
+            } else if (standbyOnly
+                    && !requestLine.startsWith("GET " + getStandbyPath() + " ")
+                    && !requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
+                String notFound = "HTTP/1.1 404 Not Found\\r\\nConnection: close\\r\\n\\r\\nNot Found";
+                out.write(notFound.getBytes("UTF-8"));
                 out.flush();
             } else if (requestLine.startsWith("GET /thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
