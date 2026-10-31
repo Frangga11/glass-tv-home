@@ -269,7 +269,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         @Override public void run() {
             if (screensaverActive) {
                 updateNightstandPhoto();
-                handler.postDelayed(this, 20_000L);
+                handler.postDelayed(this, StandbyPhotoStore.ROTATION_INTERVAL_MS);
             }
         }
     };
@@ -5671,7 +5671,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         updateNightstandScreensaver();
         handler.removeCallbacks(standbyPhotoTick);
-        handler.postDelayed(standbyPhotoTick, 20_000L);
+        handler.postDelayed(standbyPhotoTick, StandbyPhotoStore.ROTATION_INTERVAL_MS);
 
         screensaverView.setVisibility(View.VISIBLE);
         screensaverView.setAlpha(0f);
@@ -5747,7 +5747,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             photo.setVisibility(View.GONE);
             scrim.setVisibility(View.GONE);
             standbyPhotoUriShown = "";
-            standbyPhotoIndex = -1;
             return;
         }
 
