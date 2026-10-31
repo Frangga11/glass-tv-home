@@ -237,7 +237,7 @@ GitHub source URLs:
 - User-confirmed tested file: `glass-tv-home-profile-avatar-test.apk`.
 - Size: 1,427,681 bytes.
 - SHA-256: `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
-- Exact match to recorded PR #9 CI #208 release APK; CI run ID `41218171447`, both jobs passed, artifact ID `13048951728`.
+- Downloaded CI artifact `13048951728` from run #208 (`41218171447`), extracted `app-release.apk`, and compared it directly with the uploaded APK: both are 1,427,681 bytes and SHA-256-identical (`f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`). CI archive ZIP is 1,340,733 bytes with SHA-256 `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`. Workflow metadata binds run #208 to branch `feature/profile-avatar-security-integration` and exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; PR #9 is that exact head.
 - Exact source commit: `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` on `feature/profile-avatar-security-integration`; PR #9 remains Draft/open/unmerged.
 - A05: PASS. APK identity is matched by exact SHA-256 and byte size to the CI artifact evidence.
 - A06: source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1` created directly from that exact commit. Manifest at `docs/project-management/checkpoints/A06_TESTED_APK_BASELINE.md`.
