@@ -5771,7 +5771,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
 
-        int index = StandbyPhotoStore.getCurrentPhotoIndex(this);
+        int index = StandbyPhotoStore.getCurrentPhotoIndex(uris.size());
         if (index < 0 || index >= uris.size()) return;
         Uri uri = uris.get(index);
         photo.setVisibility(View.VISIBLE);
