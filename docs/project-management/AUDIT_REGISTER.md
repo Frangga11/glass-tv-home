@@ -221,7 +221,7 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 
 ### A05 — Tested APK identity
 
-**NOT STARTED / EVIDENCE REQUIRED.** The user confirmed a recent Mi TV Stick test, but no installed APK file, package dump, installed path, SHA-256, or exact artifact-to-commit mapping has been supplied. VersionName 4.0.0/versionCode 40 alone cannot identify the build because multiple repair branches share those values. Do not infer the tested APK from CI artifacts.
+**INITIAL STATUS — SUPERSEDED.** At the time of the first audit, the tested APK identity evidence had not yet been supplied. The later A05 section below records the completed direct artifact-to-source match.
 
 ### A06 — Baseline and rollback checkpoint
 
