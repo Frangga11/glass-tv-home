@@ -4783,7 +4783,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    void showGeminiAssistantDialog() {
+    void showInfoActionsDialog() {
         SoundEffects.playSelect();
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
 
@@ -4812,7 +4812,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sub.setPadding(0, 0, 0, (int) (14 * density));
         layout.addView(sub);
 
-        // Status Card: Contextual AI Overview
+        // Status Card: System status overview
         LinearLayout statusCard = new LinearLayout(this);
         statusCard.setOrientation(LinearLayout.VERTICAL);
         statusCard.setPadding((int) (16 * density), (int) (12 * density), (int) (16 * density), (int) (12 * density));
@@ -4860,31 +4860,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog[] dialogHolder = new AlertDialog[1];
 
         // Action 1: Smart Boost
-        addAiActionItem(actionList, "🚀 Smart Boost TV (Bebas Memori & Bersih Cache)", () -> {
+        addInfoActionItem(actionList, "🚀 Smart Boost TV (Bebas Memori & Bersih Cache)", () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
             smartBoostTv();
         });
 
         // Action 2: Cuaca & Kualitas Udara
-        addAiActionItem(actionList, "🌦️ Informasi Cuaca & Kualitas Udara", () -> {
+        addInfoActionItem(actionList, "🌦️ Informasi Cuaca & Kualitas Udara", () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
-            showAiWeatherSummaryDialog(zoneTown, wxStr);
+            showWeatherSummaryDialog(zoneTown, wxStr);
         });
 
         // Action 3: Jadwal Salat & Ayat Pilihan
-        addAiActionItem(actionList, "🕌 Jadwal Salat & Ayat Pilihan Hari Ini", () -> {
+        addInfoActionItem(actionList, "🕌 Jadwal Salat & Ayat Pilihan Hari Ini", () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
-            showAiIslamicDialog(zoneTown);
+            showPrayerAndAyahDialog(zoneTown);
         });
 
         // Action 4: Tips & Panduan Kontrol TV
-        addAiActionItem(actionList, "💡 Tips & Panduan Kontrol TV", () -> {
+        addInfoActionItem(actionList, "💡 Tips & Panduan Kontrol TV", () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
-            showAiTipsDialog();
+            showTvTipsDialog();
         });
 
         scroll.addView(actionList);
@@ -4907,7 +4907,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void addAiActionItem(LinearLayout container, String title, Runnable onClick) {
+    private void addInfoActionItem(LinearLayout container, String title, Runnable onClick) {
         TextView btn = new TextView(this);
         btn.setText(title);
         btn.setTextSize(15.5f);
@@ -4952,7 +4952,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }, "gemini-boost").start();
     }
 
-    private void showAiTipsDialog() {
+    private void showTvTipsDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle("💡 Tips Pintar Glass TV")
                 .setMessage("• Tekan dan tahan tombol HOME selama 500 ms untuk membuka menu Pengaturan dari aplikasi mana pun atau layar utama.\n\n"
@@ -4970,7 +4970,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void showAiWeatherSummaryDialog(String town, String wxStr) {
+    private void showWeatherSummaryDialog(String town, String wxStr) {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle("🌦️ Informasi Cuaca & Kualitas Udara")
                 .setMessage("📍 Lokasi: " + town + "\n\n"
@@ -4987,7 +4987,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void showAiIslamicDialog(String town) {
+    private void showPrayerAndAyahDialog(String town) {
         WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
         String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : "Tidak ada ayat harian.";
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
