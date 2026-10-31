@@ -81,3 +81,14 @@
 - APK artifact `13048951728`: 1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`.
 - Physical Mi TV Stick + phone acceptance is still open. No PR merged and no APK installed.
 - Merge sequence if approved after device tests: PR #8 → PR #9. PR #6 and PR #7 remain unmerged source branches.
+
+
+## Official repair roadmap checkpoint — 1 November 2026
+
+- Approved roadmap: [BUG_REPAIR_ROADMAP.md](BUG_REPAIR_ROADMAP.md), ID `GTVH-BRR-001`, version 1.0.
+- Approved order: A preparation/audit → B global foundations → C communication → D state/persistence → E feature modules → F integration/testing → G finalization/release.
+- Planning tasks A01, A02, A03: DONE.
+- Current execution position: before A04. No source audit, code change, APK build, or device retest has been performed in this repair cycle.
+- Next action: A04 — inspect current repository branches, commits, source tree, and worktree state; then A05 match the user's tested APK to its exact source revision; then A06 establish baseline/rollback.
+- Do not infer current application branch or tested APK identity from historical notes; verify them at A04/A05.
+- At each session close, update roadmap statuses, audit/operations records, this handover, and ChatGPT continuity memory. Report synchronization only after verifying the GitHub commit.
