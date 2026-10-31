@@ -23,7 +23,6 @@ public class ProfileSecurityPolicyTest {
     @Test
     public void switchingFromAdultProfileDoesNotRequireParentPin() {
         assertFalse(ChildModeManager.requiresParentPinToSwitch(false));
-        assertFalse(ChildModeManager.requiresParentPinToSwitch(false));
     }
 
     @Test
