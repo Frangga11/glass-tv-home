@@ -141,7 +141,7 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 | B01-002 | P2 | Settings navigation | Settings dialog initialized `activeTab` to Profile on every open | Persist selected tab and restore its sidebar cursor; verify each tab survives close/reopen and profile changes | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS; physical-device test OPEN |
 | B01-003 | P2 | Empty app grid | Empty-list focus fallback dereferenced Wi-Fi view without confirming it exists | Use null-safe fallback to Wi-Fi when visible, otherwise Settings; verify no-app/filtered-app state | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS |
 | B01-004 | P2 | Scroll-settle focus | If target holder was not attached, fallback could focus the first visible tile rather than the requested tile | Remove unrelated first-child fallback; retry requested, clamped position; verify long-grid navigation and rapid repeated D-pad input | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS; physical-device test OPEN |
-| B01-005 | P2 | Top-bar cursor | Returning from an external Android screen always restored a grid tile, even when focus had been on a top-bar pill | Persist the focused top-bar pill ID and restore it if still visible/focusable; otherwise fall back to the grid; verify Wi-Fi/settings return on TV | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS; physical-device test OPEN |
+| B01-005 | P2 | Top-bar cursor | Returning from an external Android screen always restored a grid tile, even when focus had been on a top-bar pill | Persist a semantic top-bar key (inputs/wifi/assistant/candy_box/settings) and restore it if still visible/focusable; otherwise fall back to the grid; verify return behavior in final integrated test | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS; physical-device test OPEN |
 | B01-006 | P2 | Settings content cursor after actions | Exact focus within the Settings right-hand content pane after an action/re-render is a separate action-return/lifecycle concern | Track under B07, whose approved scope explicitly restores prior menu/subtab/focus after actions; test there rather than duplicating navigation state here | DEFERRED TO B07 — not a B01 blocker |
 
 ### B01 implementation checkpoint
@@ -149,7 +149,10 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Source baseline: PR #9 exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
 - Working branch: `feature/b01-global-navigation-retention`.
 - Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10.
-- Code changes: `MainActivity.java`, `ModernSettingsDialog.java`, new `NavigationState.java`, new `NavigationStateTest.java`.
-- Exact-head CI run #212: https://github.com/Frangga11/glass-tv-home/actions/runs/41228628063 — PASS, both jobs: unit tests, release build, APK size gate, artifact publication, and lists/tools/docs checks.
-- Release APK artifact `13052019782` (artifact ZIP 1,341,523 bytes; CI reports APK 1,394 KB, below 1.5 MiB). No APK installed, no device settings changed, no existing PR merged.
-- B01 remains IN PROGRESS until physical Mi TV Stick remote/process-restart acceptance is recorded. Settings right-pane action-return focus is tracked separately under B07.
+- Code changes: `MainActivity.java`, `ModernSettingsDialog.java`, `NavigationState.java`, `NavigationStateTest.java`, and `.github/workflows/ci.yml`.
+- Earlier exact-head CI #212 passed on the previous source snapshot; subsequent audit found additional focus-state edge cases and they have been corrected.
+- Current source head: `1613fef4d83102369a87178a881832a29295b8d7`; exact-head CI #224 is queued/pending at this checkpoint.
+- CI #213 failed on an intermediate commit because the helper constant was renamed before the dependent MainActivity references were migrated; the mismatch was corrected in subsequent commits, and CI #214–#221 passed on their respective intermediate snapshots. The final combined snapshot must still pass CI #224.
+- `.github/workflows/ci.yml` now gates publication of the final TV-test APK behind an explicit manual workflow-dispatch boolean. Normal PR CI still builds/tests the release variant but does not publish a TV-test artifact.
+- No APK has been installed on the TV and no device settings changed. Historical CI artifact #212 is a validation artifact only, not an approved TV-test build.
+- B01 source remediation remains IN PROGRESS pending exact-head CI #224; physical acceptance is deferred to the final integrated regression stage F02. Settings right-pane action-return focus remains assigned to B07.
