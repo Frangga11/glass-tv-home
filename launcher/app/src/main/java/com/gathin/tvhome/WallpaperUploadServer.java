@@ -285,7 +285,7 @@ public class WallpaperUploadServer {
 
                     if (!complete || !validImage) {
                         targetFile.delete();
-                        String message = !complete ? "Upload tidak lengkap" : "Format gambar tidak didukung atau resolusi terlalu besar";
+                        String message = !complete ? "Unggahan tidak lengkap" : "Format gambar tidak didukung atau resolusi terlalu besar";
                         String response = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\n\r\n" + message;
                         out.write(response.getBytes("UTF-8"));
                         out.flush();
