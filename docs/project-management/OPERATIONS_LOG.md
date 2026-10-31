@@ -83,3 +83,11 @@
 
 
 | 2026-11-01 | B04 initial global responsiveness audit | Source branch reviewed: `feature/b03-dialog-opacity-layering` head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3` | Reviewed home grid tile sizing, hero/Islamic shelf width calculations, settings dialog bounds, weather ScrollView/bento dimensions, Recent Apps card geometry, and Nightstand typography. Home/settings are responsive in source; potential viewport-sensitive areas are fixed Recent Apps 420×250dp cards with 64dp gutters and Nightstand 110sp clock. No change made without actual TV display size/density. | Request read-only `wm size` and `wm density`; retain physical visual acceptance for F02 |
+
+## Renewed B01–B03 source QC and B04/B05 audit start — 1 November 2026
+
+- Rechecked exact PR heads and diffs for B01 (#10), B02 (#11), and B03 (#12); verified branch ancestry and no merge.
+- Exact-head CI #230 (B01, 1,395 KB), #234 (B02, 1,396 KB), and #239 (B03, 1,398 KB) all passed launcher unit tests/release build, APK size guard, and lists/tools/docs checks. Manual TV-test artifact step skipped; artifact list empty.
+- Source QC disposition: B01–B03 PASS at source/CI level; keep roadmap tasks IN PROGRESS until F02 integrated and physical acceptance. No APK installed and no TV setting changed.
+- B04 source audit: home grid/settings/dialogs already responsive or bounded; Recent Apps fixed 420×250dp card plus 64dp padding and Nightstand 110sp clock remain viewport-sensitive. No speculative change pending read-only wm size/density.
+- B05 source audit: AppLanguage ID/EN preference exists but resource localization and hardcoded strings are incomplete. First-pass scan of 12 high-traffic Java files flagged 187 user-facing string-call patterns for classification. B05 moved to IN PROGRESS.
