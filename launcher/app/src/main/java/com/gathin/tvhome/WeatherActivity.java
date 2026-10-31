@@ -125,7 +125,7 @@ public class WeatherActivity extends Activity {
         String activeRegion = AppLocationManager.getActiveRegion(this);
         CharSequence[] topOptions = new CharSequence[]{
                 "📍 Pilih Bandar / Stesen (" + activeRegion + ")",
-                "🌏 Tukar Negara / Region Asia (Default: Malaysia)",
+                "🌏 Tukar Negara / Region Asia (Default: Indonesia)",
                 "✨ Tetapkan Suasana Latar Cuaca (Cerah, Hujan, Ribut, Malam)"
         };
 
