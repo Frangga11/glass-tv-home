@@ -122,6 +122,8 @@ public final class AvatarUploadServer {
         }
         activeClients.clear();
         server = null;
+        boundIp = null;
+        port = 0;
     }
 
     private void handle(Socket socket) {
@@ -153,7 +155,9 @@ public final class AvatarUploadServer {
             if ("GET".equals(request[0]) && isAvatarPagePath(request[1], token)) {
                 byte[] page = page(expectedUpload).getBytes(StandardCharsets.UTF_8);
                 out.write(("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Length: " + page.length
-                        + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+                        + "\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: no-referrer\r\n"
+                        + "Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'\r\n"
+                        + "Connection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
                 out.write(page); out.flush(); return;
             }
             if (!"POST".equals(request[0]) || !isAvatarUploadPath(request[1], token)) {
