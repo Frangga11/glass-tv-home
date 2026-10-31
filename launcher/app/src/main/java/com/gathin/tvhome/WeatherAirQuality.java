@@ -222,7 +222,6 @@ final class WeatherAirQuality {
                             aqi = (int) Math.round(pm25 * 2.1);
                         }
                         aqiStatus = getAqiStatus(aqi, isEnglish);
-                    }
                 }
 
                 SharedPreferences.Editor edit = prefs.edit();
