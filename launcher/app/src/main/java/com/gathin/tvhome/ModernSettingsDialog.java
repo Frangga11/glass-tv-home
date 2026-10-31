@@ -1034,9 +1034,17 @@ public final class ModernSettingsDialog {
                         };
                         ArrayList<String> resultLabels = new ArrayList<>();
                         ArrayList<Integer> resultTabs = new ArrayList<>();
+                        String[] terms = query.split("\\s+");
                         for (int i = 0; i < labels.length; i++) {
-                            if (labels[i].toLowerCase(java.util.Locale.ROOT).contains(query)
-                                    || keywords[i].contains(query)) {
+                            String searchable = (labels[i] + " " + keywords[i]).toLowerCase(java.util.Locale.ROOT);
+                            boolean matches = true;
+                            for (String term : terms) {
+                                if (!searchable.contains(term)) {
+                                    matches = false;
+                                    break;
+                                }
+                            }
+                            if (matches) {
                                 resultLabels.add(labels[i]);
                                 resultTabs.add(tabIds[i]);
                             }
@@ -1064,6 +1072,7 @@ public final class ModernSettingsDialog {
                                     }
                                     updateSidebarSelection.run();
                                     renderRightPane[0].run();
+                                    if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                                 })
                                 .setNegativeButton("Batal", null)
                                 .show();
