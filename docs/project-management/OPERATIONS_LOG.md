@@ -58,3 +58,7 @@
 
 
 | 2026-11-01 | A04 repository/branch/source audit | [Repository](https://github.com/Frangga11/glass-tv-home), [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11) | Verified fork identity, 13 branch heads, PR #8→#9→#10→#11 dependency chain, B02 tree (647 entries; 496 files/151 directories), PR #9 baseline tree (644 entries), Gradle/app/manifest/CI configuration and source ownership. A04 remote audit PASS; no local checkout was opened or modified. Also verified B01 CI #225 and B02 CI #234 both passed exact heads; manual TV-test artifact step skipped. | Pause further B02 work; obtain installed APK identity for A05, then create A06 reproducible baseline and rollback package |
+
+
+| 2026-11-01 | A05 tested APK identity | User-uploaded `glass-tv-home-profile-avatar-test.apk`; [CI #208](https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447); PR #9 | SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`, size 1,427,681 bytes, exactly matches recorded PR #9 release APK. Exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. A05 PASS. | Preserve source/APK checkpoint; collect device state for A06 |
+| 2026-11-01 | A06 source checkpoint | `checkpoint/a06-tested-apk-pr9-7e8392e1` | Preservation branch created directly from exact tested source commit; checkpoint manifest added. Device-state snapshot not yet captured; A06 remains IN PROGRESS. | Obtain read-only Bugjaeger/ADB baseline before any device change |
