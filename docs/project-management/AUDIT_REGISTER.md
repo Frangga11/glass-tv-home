@@ -305,3 +305,38 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 - No source-level clipping defect was proven in the current target environment. The target's actual display size/density were not included in the A06 snapshot, so changing fixed card/clock design dimensions now would be speculative.
 - Needed read-only device values: `wm size` and `wm density`. These are display metrics only; do not run `wm size` or `wm density` with arguments because that would change device configuration.
 - B04 remains IN PROGRESS pending those two values and the final F02 visual acceptance. No layout changes were made in this initial audit.
+
+## B01–B03 renewed final source quality check — 1 November 2026
+
+**Disposition:** source review and exact-head CI PASS for all three modules. Physical device acceptance remains open for F02; do not mark roadmap tasks fully DONE before that gate.
+
+| Module | Exact branch / head | Reviewed scope | CI evidence | Source QC |
+|---|---|---|---|---|
+| B01 | feature/b01-global-navigation-retention / bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5 | Stable Home tile identity + fallback slot, semantic top-bar keys, RecyclerView reload snapshot, empty-list fallback, Settings tab/sidebar restore, navigation validation tests | CI #230 / run 41230264083; launcher unit tests + release build PASS; APK 1,395 KB; size gate PASS; publication step skipped; no artifact | PASS — source + CI |
+| B02 | feature/b02-remote-focus-indicators / 01cbef2c2fc90498295971b22c369a72cdfa734a | Avatar selected-vs-focused ring separation, focus treatment for QR/reset buttons and name fields, Azan card focus, daily forecast focus; shared TvFocusIndicator | CI #234 / run 41230495879; launcher unit tests + release build PASS; APK 1,396 KB; size gate PASS; publication step skipped; no artifact | PASS — source + CI |
+| B03 | feature/b03-dialog-opacity-layering / 56a4e1995aa8b8600614e6b5c4dca69d01c530c3 | Opaque dialog/panel/QR surfaces, AlertDialog button/list focus selectors, QR viewport cap + vertical scroll + dismiss cleanup, Now Playing/card-prompt width bounds | CI #239 / run 41233548406; launcher unit tests + release build PASS; APK 1,398 KB; size gate PASS; publication step skipped; no artifact | PASS — source + CI |
+
+### Cross-module checks and carry-forwards
+
+- Branch ancestry is intact: B01 → B02 → B03; PR #10 → #11 → #12. Each PR remains Draft/open/unmerged.
+- B01 focus restoration uses stable component identity first and clamped slot fallback. Empty lists normalize the saved slot and use a safe top-bar fallback. Settings action-return focus within the right pane remains assigned to B07, not silently claimed as solved by B01.
+- B02 focus styling remains independent from persistent selection styling. The shared helper is only attached to the intended avatar frames and rounded text controls; no source-level focus-listener collision was identified in the touched paths.
+- B03 keeps the interactive blurred-wallpaper GlassDrawable treatment intentionally; only shared dialog/panel surfaces that need legible isolation were made opaque. The QR dialog retains its Close target and existing server-stop cleanup on dismissal.
+- CI passing proves JVM tests/build/size and repository checks, not physical D-pad geometry, TV firmware behavior, or visual acceptance. All device tests remain deferred to F02.
+- No candidate APK was installed, no TV settings/packages were changed, and no APK artifact was published by CI #230/#234/#239.
+
+## B04 initial source audit — viewport-sensitive surfaces — 1 November 2026
+
+- Home app tiles are already sized from available grid width and configured columns by AppAdapter.tileWidthPx(); Settings is clamped to 92% of display width/height; custom dialogs including OTA are clamped to viewport fractions; WeatherActivity is full-screen and vertically scrollable.
+- Recent Apps uses fixed 420×250dp cards plus 64dp horizontal padding on the RecyclerView. This may exceed the usable viewport at some display densities/resolutions; it is a potential risk, not yet a proven defect.
+- Nightstand view_nightstand.xml uses a fixed 110sp clock in a wrap-content centered row and has no explicit width cap/auto-size. This needs a viewport calculation and F02 visual check.
+- WeatherActivity uses a fixed 385dp bento body inside a ScrollView; scrolling is available, but row/card proportions still need a visual pass.
+- No speculative size changes were made. Read-only target values required: wm size and wm density with no arguments.
+
+## B05 initial localization audit — 1 November 2026
+
+- AppLanguage.java stores an app-level Indonesian/English preference and migrates the former ms setting to Indonesian. The selector exposes only Bahasa Indonesia and English.
+- Android resources are not yet consistently localized: values/strings.xml (default) mixes Indonesian and English strings; values-en-rUS/strings.xml only overrides date_format; no values-id/strings.xml or generic values-en/strings.xml exists at the audited head. Other locale resource folders also exist and need a scope/selection audit.
+- The app-level preference does not by itself switch Android resource locale. Only a subset of user-facing UI uses AppLanguage wrappers; other labels, dialogs, Toasts, dynamic states, and error messages remain hardcoded.
+- A first-pass scan of 12 high-traffic Java files found 187 user-facing string-call patterns that require classification. This is a preliminary count, not a complete repository-wide inventory.
+- B05 is IN PROGRESS. Required next: full inventory by screen/module, a single consistent Indonesian/English strategy, complete dynamic/error coverage, and regression tests for language switch + persistence.
