@@ -230,7 +230,7 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 
 ### A06 — Baseline and rollback checkpoint
 
-**INITIAL STATUS — SUPERSEDED.** A05 has since been completed and the exact source checkpoint branch/manifest created. Device-state capture and rollback-readiness review remain open as recorded in the A06 section below.
+**INITIAL STATUS — SUPERSEDED.** A05 has since been completed and the exact source checkpoint branch/manifest created. The later A06 section below records the received device snapshot and completed rollback checkpoint.
 
 
 ## A05 — Tested APK identity match — 1 November 2026
