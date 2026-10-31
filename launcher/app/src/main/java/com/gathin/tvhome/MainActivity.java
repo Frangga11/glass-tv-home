@@ -1645,15 +1645,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         boolean rebuilt = adapter.reload(cards.isEmpty() ? none : CardFeature.run(() -> Cards.shown(cards), none));
         // RecyclerView rebinding may transiently move focus and fire onTileFocused(). Preserve
         // the user's top-bar destination across that internal rebuild; it is not a user move.
-        lastFocusedKey = returnKey;
-        lastFocused = returnSlot;
-        lastFocusWasTopPill = returnFocusWasTopPill;
-        lastFocusedTopPillKey = returnTopPillKey;
-        if (returnFocusWasTopPill && returnTopPillKey != null) {
-            getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
-                    .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, true)
-                    .putString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, returnTopPillKey).apply();
+        int itemCount = adapter.getItemCount();
+        int foundPosition = adapter.positionOf(returnKey);
+        int safePosition = itemCount > 0
+                ? NavigationState.resolveHomePosition(foundPosition, returnSlot, itemCount) : 0;
+        lastFocused = safePosition;
+        lastFocusedKey = itemCount > 0
+                ? NavigationState.normalizeFocusKey(adapter.keyAt(safePosition)) : null;
+        lastFocusWasTopPill = returnFocusWasTopPill
+                && NavigationState.normalizeTopPillKey(returnTopPillKey) != null;
+        lastFocusedTopPillKey = lastFocusWasTopPill ? returnTopPillKey : null;
+
+        // Restore the complete persisted snapshot after RecyclerView's transient rebind focus events.
+        android.content.SharedPreferences.Editor savedNavigation =
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                        .putInt(NavigationState.HOME_FOCUS_POSITION, lastFocused)
+                        .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, lastFocusWasTopPill);
+        if (lastFocusedKey != null) savedNavigation.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
+        else savedNavigation.remove(NavigationState.HOME_FOCUS_KEY);
+        if (lastFocusedTopPillKey != null) {
+            savedNavigation.putString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, lastFocusedTopPillKey);
+        } else {
+            savedNavigation.remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY);
         }
+        savedNavigation.apply();
         return rebuilt;
     }
 
