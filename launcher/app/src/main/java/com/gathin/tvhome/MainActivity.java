@@ -3316,7 +3316,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dialog.dismiss();
             boolean requested = HomeKeyService.turnOffTv(MainActivity.this);
             Toast.makeText(MainActivity.this, requested
-                    ? "Perintah daya dikirim. Jika TV belum standby, gunakan tombol daya remote atau aktifkan HDMI-CEC pada TV dan Mi TV Stick."
+                    ? "Menu daya Android TV dibuka. Jika tidak mati otomatis, pilih Matikan / Power off pada menu sistem. Mematikan TV fisik bergantung pada HDMI-CEC."
                     : "Tidak dapat mengirim perintah daya. Periksa layanan aksesibilitas Glass TV dan HDMI-CEC TV.",
                     Toast.LENGTH_LONG).show();
         });
@@ -5268,7 +5268,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Runnable close = () -> closeMenu(false);
 
         // Header: Active Prayer Zone
-        addInputRow(rows, close, R.drawable.ic_settings, "Waktu Solat " + PrayerTimes.getShortZoneName(this) + " (Tukar Zon ▶)", TvInputManager.INPUT_STATE_CONNECTED, () -> {
+        addInputRow(rows, close, R.drawable.ic_settings, "Waktu Sholat " + PrayerTimes.getShortZoneName(this) + " (Tukar Zon ▶)", TvInputManager.INPUT_STATE_CONNECTED, () -> {
             SoundEffects.playSelect();
             closeMenu(false);
             startActivity(new Intent(MainActivity.this, LocationActivity.class));
