@@ -32,3 +32,15 @@
 9. Historical artifact `13044766496` was superseded by the exact-head artifact `13047428749` (see verification above).
 
 **Disposition: NOT FINAL / NOT READY FOR MERGE. Exact-head CI #195 and APK asset inspection PASS. Physical Mi TV Stick + phone acceptance remains mandatory: clean install/offline cold start, legacy upgrade/cache refresh, remote navigation, QR session isolation/revocation, and wallpaper/standby/avatar separation. Keep PR #7 Draft until device evidence is recorded.**
+
+
+## Profile Tab audit — 31 October 2026
+
+- Detailed source audit: [PROFILE_AUDIT.md](PROFILE_AUDIT.md).
+- PR #6 avatar branch and PR #7 wallpaper/profile branch diverged from the common settings/gallery base; both change MainActivity, ModernSettingsDialog, ProfileManager, and UserSwitchDialog. Do not merge blindly.
+- PR #7 contains per-profile Child Mode/locked/hidden lists and global parent PIN, but source review found P1 gaps: lock/hide list editor lacks PIN gate; profile deletion lacks PIN authorization; default PIN 0000 is not forced to change.
+- Custom avatar QR flow is not yet integrated into PR #7.
+- CI #195 validates PR #7 exact head only; PR #6 CI validates its own isolated head. Neither validates a combined integration.
+- Keep PR #6 and #7 Draft/unmerged. No APK install or stock-launcher modification has occurred.
+- Next code gate: create a dedicated integration branch from PR #7 head; selectively integrate avatar changes; fix P1 authorization gaps; add profile regression tests; run CI on the combined head.
+- Next device gate: D-pad/dialog/profile/avatar/persistence tests on actual Mi TV Stick and phone.
