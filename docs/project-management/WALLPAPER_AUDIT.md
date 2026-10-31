@@ -32,9 +32,10 @@ Audit the complete home-screen background system: bundled default, online catego
 
 ### Background selection and default
 - `MainActivity` reads the active category from `wallpaper_prefs`; the default is `Default`.
-- The built-in category uses the bundled asset `assets/kabut-pagi-dempo.jpg`, copied to app-private storage as `kabut-pagi-dempo-default.jpg`.
-- The Default category is described in the settings dialog as offline and separate from downloadable collections.
-- If the bundled file cannot be opened, `getBundledDefaultWallpaper()` returns null and logs an error. The complete user-visible fallback path still needs verification.
+- Source code expects `assets/kabut-pagi-dempo.jpg` and copies it to app-private storage as `kabut-pagi-dempo-default.jpg`.
+- **The expected asset is absent from the inspected release APK.** APK artifact from CI run 41200811301 contains only `assets/dexopt/baseline.prof` and `assets/dexopt/baseline.profm`; it does not contain `assets/kabut-pagi-dempo.jpg`. Attempts to fetch the expected source path from the baseline branch also returned not found.
+- `getBundledDefaultWallpaper()` catches the missing-asset error and returns null. `Config.load()` has no built-in wallpaper file on a fresh install; therefore the Default category has no bundled image to display and falls back to the plain background (black by default).
+- The Default category is described in the settings dialog as offline and separate from downloadable collections. This promise is not currently met until the asset is added to the APK.
 - Fresh/legacy category values beginning with "Malaysia" are migrated to "Default".
 
 ### Rendering and rotation
@@ -59,7 +60,7 @@ Audit the complete home-screen background system: bundled default, online catego
 | ID | Severity | Finding | Required action | Status |
 |---|---|---|---|---|
 | W-F-01 | P1 | Baseline wallpaper QR exposed upload and gallery-management routes on the LAN without a per-session path token. | Token-scoped page/upload/API/thumb routes implemented; verify unauthorized paths, token isolation, and dialog-close revocation on device. | IMPLEMENTED IN DRAFT PR #7 — CI/device pending |
-| W-F-02 | P2 | Bundled default asset failure returns null; the complete fallback behavior and first-frame experience are not yet proven. | Inspect layout/background initialization and test missing/corrupt asset path. | OPEN |
+| W-F-02 | P1 | Expected `kabut-pagi-dempo.jpg` is missing from the release APK; `getBundledDefaultWallpaper()` returns null on a fresh install, leaving Default without its offline image. | Obtain/approve the final wallpaper image, package it at the exact assets path, verify APK contents, then test cold-start/offline/fallback behavior. | OPEN — USER IMAGE/ART DIRECTION REQUIRED |
 | W-F-03 | P2 | CENTER_CROP may cut important image content depending on source aspect ratio and composition. | Test representative portrait, 16:9, ultrawide, and 4K assets; decide whether upload preview/crop guidance is needed. | OPEN |
 | W-F-04 | P2 | Text/widget legibility is not programmatically or visually guaranteed for bright wallpaper images. | Evaluate dim overlay/gradient and text contrast on real TV using worst-case images. | OPEN |
 | W-F-05 | P2 | Performance comments describe intended memory reduction, but actual memory, blur latency, and long-run stability have not been measured on Mi TV Stick. | Run repeated rotation and long-duration test; record freezes, frame drops, and reloads. | OPEN |
@@ -73,7 +74,9 @@ Audit the complete home-screen background system: bundled default, online catego
 - Draft PR: https://github.com/Frangga11/glass-tv-home/pull/7
 - Changed: `WallpaperUploadServer.java`, `MainActivity.java`; added `WallpaperUploadSessionRouteTest.java`.
 - Unit tests cover accepted session routes, legacy root/upload/API rejection, foreign tokens, and unsupported methods.
-- Latest CI run: https://github.com/Frangga11/glass-tv-home/actions/runs/41200811301 — in progress at handover.
+- Latest CI run: https://github.com/Frangga11/glass-tv-home/actions/runs/41200811301 — PASS (unit tests, release build, APK size gate, artifact publication).
+- Artifact: `glass-tv-home-pagar-alam-release`, ID `13042880821`, size 1,102,820 bytes, SHA-256 `dd570c72b238bdca082c3096e857f877469b66af04ccfbee5ecf672de5fc8d3c`.
+- Artifact inspection confirmed the expected `assets/kabut-pagi-dempo.jpg` is absent. This is a separate P1 default-wallpaper blocker not fixed by PR #7.
 - No physical TV/phone test has been performed.
 
 ## 6. Work sequence — no duplicate passes
@@ -87,4 +90,4 @@ Audit the complete home-screen background system: bundled default, online catego
 
 ## 7. Current disposition
 
-**NOT FINAL / NOT YET DEVICE-READY.** Source inspection confirms the core wallpaper architecture exists. A high-priority QR upload session-scope issue was identified and a token-scoped remediation is implemented in draft PR #7. It is not accepted until CI passes and unauthorized/expired/closed-session behavior is verified on the actual TV and phone. No device testing has been performed in this audit.
+**NOT FINAL / NOT YET DEVICE-READY.** Source inspection confirms the core wallpaper architecture exists. Two P1 issues remain at different gates: (1) QR route security is implemented in draft PR #7 and CI passes, but unauthorized/closed-session behavior still needs device/network verification; (2) the expected default Dempo wallpaper asset is absent from the release APK and requires an approved image asset. No device testing has been performed in this audit.
