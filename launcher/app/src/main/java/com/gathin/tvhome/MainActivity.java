@@ -5395,7 +5395,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int padH = Math.round(36 * density);
         int padV = Math.round(28 * density);
         rootLayout.setPadding(padH, padV, padH, padV);
-        rootLayout.setBackgroundColor(0xF0131722);
+        rootLayout.setBackgroundColor(0xFF131722);
 
         TextView title = new TextView(this);
         title.setText(titleText);
