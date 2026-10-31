@@ -2,14 +2,16 @@
 
 **Version:** 0.2-draft  
 **Date:** 1 November 2026  
-**Review status:** A04 repository/branch/source inventory PASS; A05 tested-APK identity PASS; A06 device-state snapshot remains open; physical device acceptance remains deferred
+**Review status:** A04 repository/branch/source inventory PASS; A05 tested-APK identity PASS; A06 baseline/rollback/device snapshot DONE; B01/B02 source/CI pass; B03 in progress; physical device acceptance deferred
 
 ## 1. Repository and branches
 
 Repository: https://github.com/Frangga11/glass-tv-home
 
 Branches verified from GitHub on 1 November 2026 (branch head SHA abbreviated):
-- `docs/project-master-inventory` — `e342691c` (documentation)
+- `docs/project-master-inventory` — latest documentation branch (documentation)
+- `feature/b03-dialog-opacity-layering` — `3f11618b` (B03; Draft PR #12)
+- `checkpoint/a06-tested-apk-pr9-7e8392e1` — `5713dc9d` (immutable tested-baseline checkpoint)
 - `feature/b01-global-navigation-retention` — `bf899c7c` (B01; Draft PR #10)
 - `feature/b02-remote-focus-indicators` — `01cbef2c` (B02; Draft PR #11)
 - `feature/independent-visual-effects-id` — `888471fe`
@@ -29,9 +31,10 @@ Repository identity: `Frangga11/glass-tv-home` is a public fork of `aqmangge/gla
 Current dependency chain:
 - PR #8 `feature/profile-security-integration` → PR #9 `feature/profile-avatar-security-integration`
 - PR #9 → PR #10 `feature/b01-global-navigation-retention`
-- PR #10 → PR #11 `feature/b02-remote-focus-indicators`
+- PR #10 → PR #11
+- PR #11 → PR #12 `feature/b02-remote-focus-indicators`
 
-All PRs #8–#11 remain open Draft/unmerged at this checkpoint. Keep each feature isolated; do not merge or retarget branches as part of A04.
+PRs #8–#12 remain open Draft/unmerged at this checkpoint. Keep each feature isolated; do not merge or retarget branches as part of A04.
 
 Remote working state: branch refs and PR metadata were read from GitHub. No local clone/worktree was opened or modified in this audit session; therefore no claim is made about uncommitted files on the user's own computer.
 
