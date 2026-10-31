@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -150,7 +149,6 @@ public final class AvatarUploadServer {
             }
             String[] request = lines[0].split(" ");
             if (request.length < 2) { respond(out, 400, "Permintaan tidak valid."); return; }
-            String expectedPage = "/avatar/" + token;
             String expectedUpload = "/avatar-upload/" + token;
             if ("GET".equals(request[0]) && isAvatarPagePath(request[1], token)) {
                 byte[] page = page(expectedUpload).getBytes(StandardCharsets.UTF_8);
