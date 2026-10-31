@@ -203,6 +203,18 @@ public final class AvatarUploadServer {
             if (!isValidImageDimensions(bounds.outWidth, bounds.outHeight)) {
                 respond(out, 415, "Berkas bukan gambar yang didukung atau resolusi terlalu besar."); return;
             }
+            // Bounds alone can accept a truncated or malformed image. Decode a small sample to
+            // verify that the platform decoder can actually read the photo before replacing anything.
+            BitmapFactory.Options verify = new BitmapFactory.Options();
+            verify.inSampleSize = 1;
+            while (bounds.outWidth / (verify.inSampleSize * 2) > 512
+                    || bounds.outHeight / (verify.inSampleSize * 2) > 512) verify.inSampleSize *= 2;
+            verify.inPreferredConfig = android.graphics.Bitmap.Config.RGB_565;
+            android.graphics.Bitmap verifiedBitmap = BitmapFactory.decodeFile(temp.getAbsolutePath(), verify);
+            if (verifiedBitmap == null) {
+                respond(out, 415, "Foto rusak atau format gambar tidak didukung."); return;
+            }
+            verifiedBitmap.recycle();
             if (!running || System.currentTimeMillis() > expiresAt) { respond(out, 410, "Sesi upload berakhir."); return; }
             File delivered = temp;
             boolean accepted;
