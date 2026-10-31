@@ -7,13 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Where the TV is: one of JAKIM's 60 e-solat zones, chosen on the TV (Location screen, from the Wallpaper
- * menu, or by itself on a first start with no zone in the theme). It sets the Waktu Solat zone, and the
- * zone's main town gives the coordinates for the weather line and the Weather app. A choice made on the
- * TV wins over the theme's prayer_zone, weather_lat and weather_lon.
- *
- * Zones and their districts are JAKIM's (as listed by api.waktusolat.app); each zone's main town and its
- * coordinates are from Open-Meteo's geocoding, checked by hand.
+ * Where the TV is: an Indonesian city or region selected on the TV. The selected location controls
+ * prayer times and supplies coordinates for the weather line and Weather app.
  */
 final class Location {
     static final class Zone {
@@ -139,13 +134,13 @@ final class Location {
     /** The states, in the list's order. */
     static List<String> states() {
         List<String> s = new ArrayList<>();
-        for (Zone z : all()) if (!s.contains(z.state)) s.add(z.state);
+        for (Zone z : all()) if (z.code.startsWith("ID_") && !s.contains(z.state)) s.add(z.state);
         return s;
     }
 
     static List<Zone> inState(String state) {
         List<Zone> s = new ArrayList<>();
-        for (Zone z : all()) if (z.state.equals(state)) s.add(z);
+        for (Zone z : all()) if (z.code.startsWith("ID_") && z.state.equals(state)) s.add(z);
         return s;
     }
 
@@ -157,7 +152,10 @@ final class Location {
 
     /** The zone chosen on the TV, or null when none has been chosen there. */
     static Zone chosen(Context ctx) {
-        return byCode(prefs(ctx).getString("zone", null));
+        Zone selected = byCode(prefs(ctx).getString("zone", null));
+        // This build is localized for Indonesia; migrate an unset or former non-Indonesian zone.
+        if (selected == null || !selected.code.startsWith("ID_")) return byCode("ID_PGA");
+        return selected;
     }
 
     static void choose(Context ctx, Zone z) {
