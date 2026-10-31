@@ -223,36 +223,53 @@ public class WallpaperUploadServer {
 
                 if (contentLength > 0 && contentLength < 60 * 1024 * 1024) { // Max 60 MB
                     File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-                    if (!customDir.exists()) customDir.mkdirs();
-
-                    File targetFile = new File(customDir, "custom_" + System.currentTimeMillis() + ".jpg");
-                    FileOutputStream fos = new FileOutputStream(targetFile);
-
-                    byte[] buffer = new byte[8192];
-                    long remaining = contentLength;
-                    while (remaining > 0) {
-                        int toRead = (int) Math.min(buffer.length, remaining);
-                        int r = in.read(buffer, 0, toRead);
-                        if (r == -1) break;
-                        fos.write(buffer, 0, r);
-                        remaining -= r;
+                    if (!customDir.exists() && !customDir.mkdirs()) {
+                        throw new java.io.IOException("Cannot create wallpaper storage");
                     }
-                    fos.flush();
-                    fos.close();
 
-                    String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
-                    byte[] jsonBytes = json.getBytes("UTF-8");
-                    String response = "HTTP/1.1 200 OK\r\n" +
-                            "Content-Type: application/json; charset=UTF-8\r\n" +
-                            "Content-Length: " + jsonBytes.length + "\r\n" +
-                            "Access-Control-Allow-Origin: *\r\n" +
-                            "Connection: close\r\n\r\n";
-                    out.write(response.getBytes("UTF-8"));
-                    out.write(jsonBytes);
-                    out.flush();
+                    File targetFile = File.createTempFile("custom_", ".jpg", customDir);
+                    boolean complete = false;
+                    try (FileOutputStream fos = new FileOutputStream(targetFile)) {
+                        byte[] buffer = new byte[8192];
+                        long remaining = contentLength;
+                        while (remaining > 0) {
+                            int toRead = (int) Math.min(buffer.length, remaining);
+                            int r = in.read(buffer, 0, toRead);
+                            if (r == -1) break;
+                            fos.write(buffer, 0, r);
+                            remaining -= r;
+                        }
+                        fos.flush();
+                        complete = remaining == 0 && targetFile.length() == contentLength;
+                    }
 
-                    if (listener != null && targetFile.exists() && targetFile.length() > 0) {
-                        listener.onUploaded(targetFile);
+                    // Verify the actual bytes before exposing the file to Home.
+                    BitmapFactory.Options bounds = new BitmapFactory.Options();
+                    bounds.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(targetFile.getAbsolutePath(), bounds);
+                    boolean validImage = bounds.outWidth > 0 && bounds.outHeight > 0
+                            && bounds.outWidth <= 16384 && bounds.outHeight <= 16384
+                            && (long) bounds.outWidth * (long) bounds.outHeight <= 100_000_000L;
+
+                    if (!complete || !validImage) {
+                        targetFile.delete();
+                        String message = !complete ? "Upload tidak lengkap" : "Format gambar tidak didukung atau resolusi terlalu besar";
+                        String response = "HTTP/1.1 400 Bad Request\\r\\nContent-Type: text/plain; charset=UTF-8\\r\\nConnection: close\\r\\n\\r\\n" + message;
+                        out.write(response.getBytes("UTF-8"));
+                        out.flush();
+                    } else {
+                        String json = "{\\"status\\":\\"ok\\",\\"file\\":\\"" + targetFile.getName() + "\\"}";
+                        byte[] jsonBytes = json.getBytes("UTF-8");
+                        String response = "HTTP/1.1 200 OK\\r\\n" +
+                                "Content-Type: application/json; charset=UTF-8\\r\\n" +
+                                "Content-Length: " + jsonBytes.length + "\\r\\n" +
+                                "Access-Control-Allow-Origin: *\\r\\n" +
+                                "Connection: close\\r\\n\\r\\n";
+                        out.write(response.getBytes("UTF-8"));
+                        out.write(jsonBytes);
+                        out.flush();
+
+                        if (listener != null) listener.onUploaded(targetFile);
                     }
                 } else {
                     String error = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\nInvalid file size";
