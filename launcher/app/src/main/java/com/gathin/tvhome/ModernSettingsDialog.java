@@ -489,6 +489,8 @@ public final class ModernSettingsDialog {
                     ring.setBackground(ringBg);
                     ring.setVisibility(idx == activeAvatar ? View.VISIBLE : View.GONE);
                     frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
+                    // Separate transient focus ring; the white ring above remains the selected-avatar marker.
+                    TvFocusIndicator.attachAvatarFocusRing(frame, frameDim, density);
 
                     // Inner Avatar Circle ImageView
                     ImageView img = new ImageView(activity);
@@ -511,10 +513,6 @@ public final class ModernSettingsDialog {
                             return false;
                         });
                     }
-
-                    frame.setOnFocusChangeListener((v, hasFocus) -> {
-                        v.animate().scaleX(hasFocus ? 1.12f : 1.0f).scaleY(hasFocus ? 1.12f : 1.0f).setDuration(120).start();
-                    });
 
                     frame.setOnClickListener(v -> {
                         SoundEffects.playSelect();
@@ -560,6 +558,9 @@ public final class ModernSettingsDialog {
                 uploadAvatarBg.setColor(0xFF176B87);
                 uploadAvatarBg.setCornerRadius(10 * density);
                 uploadAvatarButton.setBackground(uploadAvatarBg);
+                TvFocusIndicator.applyRoundedTextFocus(uploadAvatarButton, density, 10f,
+                        0xFF176B87, 0xFF2389A8, 0xFF2C7F98, 0xFFFFFFFF,
+                        0xFFFFFFFF, 0xFFFFFFFF, 1.025f);
                 uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
                     ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
                     boolean updatedChildMode = ChildModeManager.isChildModeEnabled(activity, updated.id);
@@ -583,6 +584,9 @@ public final class ModernSettingsDialog {
                 defaultAvatarBg.setColor(0xFF292D37);
                 defaultAvatarBg.setCornerRadius(10 * density);
                 defaultAvatarButton.setBackground(defaultAvatarBg);
+                TvFocusIndicator.applyRoundedTextFocus(defaultAvatarButton, density, 10f,
+                        0xFF292D37, 0xFF3B4354, 0xFF454B5A, 0xFFFFFFFF,
+                        0xFFCBD5E1, 0xFFFFFFFF, 1.025f);
                 LinearLayout.LayoutParams defaultAvatarLp = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
                 defaultAvatarLp.topMargin = (int) (6 * density);
@@ -1423,6 +1427,9 @@ public final class ModernSettingsDialog {
         etBg.setCornerRadius(10 * density);
         etBg.setStroke((int) (1 * density), 0xFF4A4E5C);
         et.setBackground(etBg);
+        TvFocusIndicator.applyRoundedTextFocus(et, density, 10f,
+                0xFF282A33, 0xFF333B4B, 0xFF4A4E5C, 0xFF7DD3FC,
+                0xFFFFFFFF, 0xFFFFFFFF, 1.0f);
 
         FrameLayout container = new FrameLayout(activity);
         container.setPadding((int) (24 * density), (int) (12 * density), (int) (24 * density), (int) (8 * density));
