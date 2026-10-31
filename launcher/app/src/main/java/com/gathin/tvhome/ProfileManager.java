@@ -182,8 +182,12 @@ public final class ProfileManager {
         List<UserProfile> list = getAllProfiles(context);
         for (UserProfile profile : list) {
             if (profileId.equals(profile.id)) {
+                String oldPath = profile.customAvatarPath;
                 profile.customAvatarPath = null;
                 saveProfiles(context, list);
+                if (oldPath != null) {
+                    try { new File(oldPath).delete(); } catch (Exception ignored) {}
+                }
                 return true;
             }
         }
@@ -308,6 +312,9 @@ public final class ProfileManager {
         if (toRemove == null) return false;
         list.remove(toRemove);
         saveProfiles(context, list);
+        if (toRemove.customAvatarPath != null) {
+            try { new File(toRemove.customAvatarPath).delete(); } catch (Exception ignored) {}
+        }
 
         String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
         if (profileId.equals(activeId)) {
