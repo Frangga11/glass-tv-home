@@ -374,3 +374,25 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 - Language changes must refresh/recreate the relevant UI while preserving navigation/focus state; test language persistence, dynamic/error strings, notifications, dates, prayer labels, weather, and dialogs.
 - Add automated resource-key/placeholder parity checks and tests for language normalization/migration. Physical cross-screen acceptance remains F06.
 - B05 remains IN PROGRESS. No localization code or resource was modified during this inventory pass.
+
+
+## B04 target viewport verification — 1 November 2026
+
+**User-supplied read-only Bugjaeger output**
+- \`wm size\`: Physical size \`1920x1080\`.
+- \`wm density\`: Physical density \`320\`.
+- Derived logical viewport at density scale 2.0: \`960×540 dp\`. No override size/density was reported; the commands were run without arguments.
+
+### Measured source implications
+
+- Home app tiles use available grid width/column count and remain within their 80–180dp sizing constraints. A 960dp logical width does not create a narrow-screen condition for the TV home grid.
+- Recent Apps cards are 420×250dp. Two cards plus 64dp left/right RecyclerView padding require 968dp before any inter-card spacing, 8dp wider than the 960dp viewport. This is a near-fit horizontal carousel, not evidence of a broken layout; normal horizontal scrolling/partial next-card visibility is expected. Verify exact item spacing and D-pad traversal at F02.
+- Nightstand clock at 110sp and date at 19sp are not inherently oversized for a 960dp-wide landscape viewport. Long localized date text and actual font scale still require visual acceptance.
+- Weather's 385dp Bento body occupies about 71.3% of the 540dp logical height. The parent is a full-screen ScrollView with fillViewport; this is a scrollable composition, not a proven vertical clipping defect. Confirm focus/scroll reachability and proportional appearance at F02.
+- The supplied data confirms the target is a 16:9 960×540dp logical viewport. No source-level overflow/clipping defect is established by the current audit. **No speculative layout change is justified.**
+
+### B04 disposition
+
+- Source + target-metric audit: **PASS — no measured source fix required at this stage**.
+- Keep physical visual/remote acceptance in F02; do not claim device visual acceptance from ADB dimensions alone.
+- B04 can be treated as source-audit complete for sequencing, while the overall roadmap remains subject to integrated F01/F02 gates.
