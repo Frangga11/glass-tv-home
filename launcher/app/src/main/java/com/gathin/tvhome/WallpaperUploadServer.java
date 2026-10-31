@@ -172,7 +172,7 @@ public class WallpaperUploadServer {
             while ((b = in.read()) != -1) {
                 headerBuf.write(b);
                 if (headerBuf.size() > 16 * 1024) {
-                    byte[] error = "HTTP/1.1 431 Request Header Fields Too Large\\r\\nConnection: close\\r\\n\\r\\n".getBytes("UTF-8");
+                    byte[] error = "HTTP/1.1 431 Request Header Fields Too Large\r\nConnection: close\r\n\r\n".getBytes("UTF-8");
                     out.write(error);
                     out.flush();
                     client.close();
@@ -221,11 +221,11 @@ public class WallpaperUploadServer {
                 handleApiClear(out);
             } else if (requestLine.startsWith("GET " + getStandbyPath() + " ")) {
                 byte[] pageBytes = getStandbyHtmlPage().getBytes("UTF-8");
-                String response = "HTTP/1.1 200 OK\\r\\n"
-                        + "Content-Type: text/html; charset=UTF-8\\r\\n"
-                        + "Content-Length: " + pageBytes.length + "\\r\\n"
-                        + "Cache-Control: no-store\\r\\n"
-                        + "Connection: close\\r\\n\\r\\n";
+                String response = "HTTP/1.1 200 OK\r\n"
+                        + "Content-Type: text/html; charset=UTF-8\r\n"
+                        + "Content-Length: " + pageBytes.length + "\r\n"
+                        + "Cache-Control: no-store\r\n"
+                        + "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
                 out.write(pageBytes);
                 out.flush();
@@ -377,11 +377,11 @@ public class WallpaperUploadServer {
 
         String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
         byte[] bytes = json.getBytes("UTF-8");
-        String response = "HTTP/1.1 200 OK\\r\\n"
-                + "Content-Type: application/json; charset=UTF-8\\r\\n"
-                + "Content-Length: " + bytes.length + "\\r\\n"
-                + "Cache-Control: no-store\\r\\n"
-                + "Connection: close\\r\\n\\r\\n";
+        String response = "HTTP/1.1 200 OK\r\n"
+                + "Content-Type: application/json; charset=UTF-8\r\n"
+                + "Content-Length: " + bytes.length + "\r\n"
+                + "Cache-Control: no-store\r\n"
+                + "Connection: close\r\n\r\n";
         out.write(response.getBytes("UTF-8"));
         out.write(bytes);
         out.flush();
@@ -391,10 +391,10 @@ public class WallpaperUploadServer {
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
         byte[] bytes = message.getBytes("UTF-8");
         String label = status == 500 ? "Internal Server Error" : "Bad Request";
-        String response = "HTTP/1.1 " + status + " " + label + "\\r\\n"
-                + "Content-Type: text/plain; charset=UTF-8\\r\\n"
-                + "Content-Length: " + bytes.length + "\\r\\n"
-                + "Connection: close\\r\\n\\r\\n";
+        String response = "HTTP/1.1 " + status + " " + label + "\r\n"
+                + "Content-Type: text/plain; charset=UTF-8\r\n"
+                + "Content-Length: " + bytes.length + "\r\n"
+                + "Connection: close\r\n\r\n";
         out.write(response.getBytes("UTF-8"));
         out.write(bytes);
         out.flush();
