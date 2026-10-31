@@ -433,7 +433,7 @@ public final class ModernSettingsDialog {
 
                 // Section 1: Active Profile Avatars
                 TextView tvAvatars = new TextView(activity);
-                tvAvatars.setText("AVATAR PROFIL SEMASA (" + activeP.name.toUpperCase() + ")");
+                tvAvatars.setText("AVATAR PROFIL AKTIF (" + activeP.name.toUpperCase() + ")");
                 tvAvatars.setTextSize(11.5f);
                 tvAvatars.setTextColor(0xFF8E929E);
                 tvAvatars.setTypeface(outfit, Typeface.BOLD);
@@ -641,7 +641,7 @@ public final class ModernSettingsDialog {
                         pRow.addView(tvTag);
                     } else if (allProfiles.size() > 1) {
                         TextView tvDel = new TextView(activity);
-                        tvDel.setText("🗑️ Padam");
+                        tvDel.setText("🗑️ Hapus");
                         tvDel.setTextSize(11.5f);
                         tvDel.setTextColor(0xFFF87171);
                         tvDel.setTypeface(outfit, Typeface.NORMAL);
@@ -703,7 +703,7 @@ public final class ModernSettingsDialog {
                 }
 
                 // Add User Button
-                LinearLayout addUserBtn = buildCardRow(activity, density, outfit, "➕ Tambah Pengguna Baru", "Cipta profil baharu untuk ahli keluarga atau anak", () -> {
+                LinearLayout addUserBtn = buildCardRow(activity, density, outfit, "➕ Tambah Profil Baru", "Buat profil untuk anggota keluarga atau anak", () -> {
                     SoundEffects.playSelect();
                     UserSwitchDialog.showAddProfileDialog(activity, density, outfit, () -> {
                         updateSidebarSelection.run();
@@ -1334,7 +1334,7 @@ public final class ModernSettingsDialog {
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
-        ChildModeManager.promptPin(activity, "Sahkan PIN Semasa", "Masukkan 4-digit PIN keselamatan semasa", new ChildModeManager.PinCallback() {
+        ChildModeManager.promptPin(activity, "Verifikasi PIN Saat Ini", "Masukkan PIN keamanan 4 digit saat ini", new ChildModeManager.PinCallback() {
             @Override
             public void onSuccess() {
                 ChildModeManager.promptPin(activity, "Atur PIN Baru", "Masukkan PIN 4 digit baru untuk kontrol orang tua", new ChildModeManager.PinCallback() {
@@ -1549,8 +1549,8 @@ public final class ModernSettingsDialog {
 
         TextView tvDesc = new TextView(activity);
         String desc = isDefault
-                ? "✅ Berhasil! Glass TV Home kini menjadi peluncur utama perangkat Anda. Setiap kali butang Home ditekan pada alat kawalan jauh, anda akan terus kembali ke Glass TV."
-                : "⚠️ Pelancar aktif semasa: " + activePkg + "\n\nKebanyakan Android TV dan Google TV menyekat butang Home supaya tetap membuka skrin asal pengeluar. Sila pilih kaedah di bawah untuk mengunci Glass TV sebagai pelancar utama:";
+                ? "✅ Berhasil! Glass TV Home kini menjadi peluncur utama perangkat Anda. Setiap kali tombol Home pada remote ditekan, perangkat akan kembali ke Glass TV."
+                : "⚠️ Peluncur aktif saat ini: " + activePkg + "\n\nSebagian besar Android TV dan Google TV membatasi tombol Home agar tetap membuka layar utama bawaan produsen. Pilih salah satu cara berikut untuk menetapkan Glass TV sebagai peluncur utama:";
         tvDesc.setText(desc);
         tvDesc.setTextSize(13f);
         tvDesc.setTextColor(isDefault ? 0xFF34D399 : 0xFFCBD5E1);
@@ -1563,7 +1563,7 @@ public final class ModernSettingsDialog {
         // Option 1: Open TV Settings
         LinearLayout btnSettings = buildCardRow(activity, density, font,
                 "⚙️ Buka Pengaturan Pemilih Peluncur TV",
-                "Cuba buka menu Android untuk memilih Glass TV sebagai Default Home (jika disokong oleh TV)",
+                "Coba buka menu Android untuk memilih Glass TV sebagai peluncur utama (jika didukung TV).",
                 () -> {
                     try {
                         Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
@@ -1581,9 +1581,9 @@ public final class ModernSettingsDialog {
 
         // Option 2: ADB Command guidance
         LinearLayout btnAdb = buildCardRow(activity, density, font,
-                "💻 Kunci Kekal Melalui Arahan ADB (Sangat Disyorkan)",
+                "💻 Tetapkan Permanen melalui Perintah ADB (Disarankan)",
                 "Jalankan arahan ini melalui PC / AI coding assistant:\nadb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity" +
-                (isDefault ? "" : "\n\nJika TV masih menyekat butang Home, nyahdayakan pelancar lama:\nadb shell pm disable-user --user 0 " + activePkg),
+                (isDefault ? "" : "\n\nJika TV masih membatasi tombol Home, nonaktifkan peluncur lama:\nadb shell pm disable-user --user 0 " + activePkg),
                 () -> {
                     Toast.makeText(activity, "Arahan: adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity", Toast.LENGTH_LONG).show();
                 });
