@@ -25,7 +25,7 @@ final class HomeWeather {
     static final int[] AQI_COLOR = {0xFF34C759, 0xFFFFD60A, 0xFFFF9F0A, 0xFFFF453A, 0xFFAF52DE, 0xFF7A0019};
     private static final String[] AQI_NAME = {"Baik", "Sedang", "Tidak sehat bagi kelompok sensitif", "Tidak sehat", "Sangat tidak sehat", "Berbahaya"};
 
-    /** What the line says: the weather part, the API part and its colour; either part may be empty. */
+    /** What the line says: the weather part, the AQI part and its colour; either part may be empty. */
     static final class Line {
         final String weather, aqi;
         final int aqiColor, icon;
@@ -53,8 +53,10 @@ final class HomeWeather {
     static Line last(Context ctx) {
         SharedPreferences p = prefs(ctx);
         String w = p.getString("weather", null), aqi = p.getString("api", "");
-        if (w != null && !w.isEmpty() && !Character.isDigit(w.charAt(0))) {
-            // An older line, with an emoji: dropped, and fetched again at once.
+        if (w != null && !w.isEmpty()
+                && (!Character.isDigit(w.charAt(0)) || w.contains("Clear") || w.contains("Cloudy")
+                || w.contains("Rain") || w.contains("Haze") || w.contains("Showers") || w.contains("Thunderstorm"))) {
+            // Discard older English or emoji-based labels so the Indonesian description is fetched.
             w = "";
             p.edit().putLong("at", 0).putString("weather", "").apply();
         }
