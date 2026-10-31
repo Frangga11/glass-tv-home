@@ -218,7 +218,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static String lastFocusedKey;
     /** Last focused top-bar pill, restored when returning from an external Android screen. */
     private static boolean lastFocusWasTopPill;
-    private static int lastFocusedTopPillId = View.NO_ID;
+    private static String lastFocusedTopPillKey;
     private float density;
     /** Module cards (res/values/config.xml, module_cards): discovered on resume, shown only after the owner's Show. */
     private boolean moduleCards;
@@ -417,7 +417,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             lastFocused = Math.max(0, navigationPrefs.getInt(NavigationState.HOME_FOCUS_POSITION, 0));
         }
         lastFocusWasTopPill = navigationPrefs.getBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false);
-        lastFocusedTopPillId = navigationPrefs.getInt(NavigationState.HOME_FOCUS_TOP_PILL_ID, View.NO_ID);
+        lastFocusedTopPillKey = NavigationState.normalizeTopPillKey(
+                navigationPrefs.getString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, null));
         reducedMotion = cfg.reducedMotion;
         liveTvPkg = cfg.liveTvPackage;
         liveTvAction = cfg.liveTvAction;
@@ -984,15 +985,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
             if (newF != null && isTopPill(newF)) {
-                lastFocusWasTopPill = true;
-                lastFocusedTopPillId = newF.getId();
-                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
-                        .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, true)
-                        .putInt(NavigationState.HOME_FOCUS_TOP_PILL_ID, lastFocusedTopPillId).apply();
+                String pillKey = topPillKeyForView(newF);
+                if (pillKey != null) {
+                    lastFocusWasTopPill = true;
+                    lastFocusedTopPillKey = pillKey;
+                    getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                            .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, true)
+                            .putString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, pillKey).apply();
+                }
             } else if (newF != null && !onTile) {
                 lastFocusWasTopPill = false;
+                lastFocusedTopPillKey = null;
                 getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
-                        .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false).apply();
+                        .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
+                        .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
             }
             if (!onTile) hideGlass();
             if (!onTile && (newF == null || !(isTopPill(newF) || inMenu(newF)))) glider.hide();
@@ -1642,14 +1648,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int pos = adapter.positionOf(returnKey);
             boolean restoredTopPill = false;
             if (lastFocusWasTopPill) {
-                View pill = lastFocusedTopPillId != View.NO_ID ? findViewById(lastFocusedTopPillId) : null;
+                View pill = findTopPill(lastFocusedTopPillKey);
                 restoredTopPill = pill != null && pill.getVisibility() == View.VISIBLE
                         && pill.isFocusable() && pill.requestFocus();
                 if (!restoredTopPill) {
                     lastFocusWasTopPill = false;
-                    lastFocusedTopPillId = View.NO_ID;
+                    lastFocusedTopPillKey = null;
                     getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
-                            .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false).apply();
+                            .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
+                            .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
                 }
             }
             if (!restoredTopPill) focusTile(pos >= 0 ? pos : returnSlot);
@@ -1816,9 +1823,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         .putInt(NavigationState.HOME_FOCUS_POSITION, lastFocused);
         if (lastFocusedKey != null) navigationEdit.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
         else navigationEdit.remove(NavigationState.HOME_FOCUS_KEY);
-        navigationEdit.putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false).apply();
+        navigationEdit.putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
+                .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
         lastFocusWasTopPill = false;
-        lastFocusedTopPillId = View.NO_ID;
+        lastFocusedTopPillKey = null;
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
@@ -2014,6 +2022,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         // The glider replaces the glass selection outright.
         glass.setVisibility(View.GONE);
+    }
+
+    private String topPillKeyForView(View view) {
+        if (view == null) return null;
+        int id = view.getId();
+        if (id == R.id.btnInputs) return "inputs";
+        if (id == R.id.btnWifi) return "wifi";
+        if (id == R.id.btnAssistant) return "assistant";
+        if (id == R.id.btnCandyBox) return "candy_box";
+        if (id == R.id.btnSettings) return "settings";
+        return null;
+    }
+
+    private View findTopPill(String key) {
+        String normalized = NavigationState.normalizeTopPillKey(key);
+        if (normalized == null) return null;
+        int id;
+        switch (normalized) {
+            case "inputs": id = R.id.btnInputs; break;
+            case "wifi": id = R.id.btnWifi; break;
+            case "assistant": id = R.id.btnAssistant; break;
+            case "candy_box": id = R.id.btnCandyBox; break;
+            case "settings": id = R.id.btnSettings; break;
+            default: return null;
+        }
+        return findViewById(id);
     }
 
     private boolean isTopPill(View v) {
