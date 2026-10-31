@@ -76,7 +76,7 @@ final class PrayerTimes {
     }
 
     static boolean due(Context ctx, String zone) {
-        return day(ctx, zone, Calendar.getInstance()) == null;
+        return day(ctx, zone, prayerCalendar(ctx)) == null;
     }
 
     static boolean refresh(Context ctx, String zone) {
@@ -473,8 +473,7 @@ final class PrayerTimes {
 
     /** Returns all 6 prayers for today with formatted times and status. */
     static PrayerItem[] getPrayerItems(Context context) {
-        Calendar now = Calendar.getInstance();
-        int day = now.get(Calendar.DAY_OF_MONTH);
+        Calendar now = prayerCalendar(context);
         long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) {
             times = calculateFallback(context, now);
@@ -508,7 +507,7 @@ final class PrayerTimes {
     static CharSequence getFormatted(Context context) {
         Calendar now = Calendar.getInstance();
         int day = now.get(Calendar.DAY_OF_MONTH);
-        long[] times = getTimesForToday(context, day);
+        long[] times = getTimesForDate(context, now);
 
         if (times == null || times.length < 6) {
             times = calculateFallback(context, now);
@@ -769,7 +768,7 @@ final class PrayerTimes {
     /** Returns short summary of next prayer (e.g. for screensaver). */
     static String getNextPrayerSummary(Context context) {
         Calendar now = Calendar.getInstance();
-        long[] times = getTimesForToday(context, now.get(Calendar.DAY_OF_MONTH));
+        long[] times = getTimesForDate(context, now);
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
         long nowMs = now.getTimeInMillis();
@@ -793,7 +792,7 @@ final class PrayerTimes {
             prayerName = prayerNames[0];
             Calendar tomorrow = (Calendar) now.clone();
             tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-            long[] tomTimes = getTimesForToday(context, tomorrow.get(Calendar.DAY_OF_MONTH));
+            long[] tomTimes = getTimesForDate(context, tomorrow);
             if (tomTimes == null || tomTimes.length < 6) {
                 tomTimes = calculateFallback(context, tomorrow);
             }
