@@ -2580,10 +2580,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));
             return;
         }
-        String sep = line.weather.isEmpty() || line.api.isEmpty() ? "" : "     ·     ";
-        android.text.SpannableString text = new android.text.SpannableString(line.weather + sep + line.api);
-        if (!line.api.isEmpty()) {
-            text.setSpan(new android.text.style.ForegroundColorSpan(line.apiColor), text.length() - line.api.length(),
+        String sep = line.weather.isEmpty() || line.aqi.isEmpty() ? "" : "     ·     ";
+        android.text.SpannableString text = new android.text.SpannableString(line.weather + sep + line.aqi);
+        if (!line.aqi.isEmpty()) {
+            text.setSpan(new android.text.style.ForegroundColorSpan(line.aqiColor), text.length() - line.aqi.length(),
                     text.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         weatherAirQualityView.setText(text);
@@ -4826,7 +4826,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String zoneTown = (zone != null) ? zone.town : "Pagar Alam";
         String nextPrayer = PrayerTimes.getNextPrayerSummary(this);
         HomeWeather.Line wx = HomeWeather.last(this);
-        String wxStr = (wx != null && !wx.weather.isEmpty()) ? (wx.weather + (wx.api.isEmpty() ? "" : " • " + wx.api)) : "Cuaca Live Aktif";
+        String wxStr = (wx != null && !wx.weather.isEmpty()) ? (wx.weather + (wx.aqi.isEmpty() ? "" : " • " + wx.aqi)) : "Cuaca Live Aktif";
 
         TextView statusText = new TextView(this);
         statusText.setText("📋 Ringkasan Sistem:\n"
