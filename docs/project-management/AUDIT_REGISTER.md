@@ -137,11 +137,12 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 
 | ID | Severity | Area | Finding / root cause | Remediation / required verification | Status |
 |---|---|---|---|---|---|
-| B01-001 | P2 | Home grid cursor | Focus identity and slot were held only in static process memory (`lastFocused`, `lastFocusedKey`); process death loses both | Persist stable component key + fallback slot in `navigation_state`; restore by component identity first and clamp fallback slot; verify force-stop/process recreation/reboot on Mi TV Stick | FIX IMPLEMENTED in Draft PR #10; CI pending; device test OPEN |
-| B01-002 | P2 | Settings navigation | Settings dialog initialized `activeTab` to Profile on every open | Persist selected tab and restore its sidebar cursor; verify each tab survives close/reopen and profile changes | FIX IMPLEMENTED in Draft PR #10; CI pending; device test OPEN |
-| B01-003 | P2 | Empty app grid | Empty-list focus fallback dereferenced Wi-Fi view without confirming it exists | Use null-safe fallback to Wi-Fi when visible, otherwise Settings; verify no-app/filtered-app state | FIX IMPLEMENTED in Draft PR #10; CI pending |
-| B01-004 | P2 | Scroll-settle focus | If target holder was not attached, fallback could focus the first visible tile rather than the requested tile | Remove unrelated first-child fallback; retry requested, clamped position; verify long-grid navigation and rapid repeated D-pad input | FIX IMPLEMENTED in Draft PR #10; CI pending; device test OPEN |
-| B01-005 | P2 | Settings content cursor | Exact focus within the Settings right-hand content pane is not yet proven to survive dialog close/reopen or content re-render | Audit/implement stable focus restoration for right-pane controls if required after current CI/source review; test action-return behavior | OPEN — B01 not final |
+| B01-001 | P2 | Home grid cursor | Focus identity and slot were held only in static process memory (`lastFocused`, `lastFocusedKey`); process death loses both | Persist stable component key + fallback slot in `navigation_state`; restore by component identity first and clamp fallback slot; verify force-stop/process recreation/reboot on Mi TV Stick | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS; physical-device test OPEN |
+| B01-002 | P2 | Settings navigation | Settings dialog initialized `activeTab` to Profile on every open | Persist selected tab and restore its sidebar cursor; verify each tab survives close/reopen and profile changes | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS; physical-device test OPEN |
+| B01-003 | P2 | Empty app grid | Empty-list focus fallback dereferenced Wi-Fi view without confirming it exists | Use null-safe fallback to Wi-Fi when visible, otherwise Settings; verify no-app/filtered-app state | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS |
+| B01-004 | P2 | Scroll-settle focus | If target holder was not attached, fallback could focus the first visible tile rather than the requested tile | Remove unrelated first-child fallback; retry requested, clamped position; verify long-grid navigation and rapid repeated D-pad input | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS; physical-device test OPEN |
+| B01-005 | P2 | Top-bar cursor | Returning from an external Android screen always restored a grid tile, even when focus had been on a top-bar pill | Persist the focused top-bar pill ID and restore it if still visible/focusable; otherwise fall back to the grid; verify Wi-Fi/settings return on TV | FIX IMPLEMENTED in Draft PR #10; exact-head CI #212 PASS; physical-device test OPEN |
+| B01-006 | P2 | Settings content cursor after actions | Exact focus within the Settings right-hand content pane after an action/re-render is a separate action-return/lifecycle concern | Track under B07, whose approved scope explicitly restores prior menu/subtab/focus after actions; test there rather than duplicating navigation state here | DEFERRED TO B07 — not a B01 blocker |
 
 ### B01 implementation checkpoint
 
@@ -149,6 +150,6 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Working branch: `feature/b01-global-navigation-retention`.
 - Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10.
 - Code changes: `MainActivity.java`, `ModernSettingsDialog.java`, new `NavigationState.java`, new `NavigationStateTest.java`.
-- Exact-head CI run #209: https://github.com/Frangga11/glass-tv-home/actions/runs/41228348247 — in progress at this checkpoint; Lists/tools/docs job passed; Android unit tests/release build running.
+- Exact-head CI run #212: https://github.com/Frangga11/glass-tv-home/actions/runs/41228628063 — PASS, both jobs: unit tests, release build, APK size gate, artifact publication, and lists/tools/docs checks.
 - Release APK artifact `13052019782` (artifact ZIP 1,341,523 bytes; CI reports APK 1,394 KB, below 1.5 MiB). No APK installed, no device settings changed, no existing PR merged.
 - B01 remains IN PROGRESS until physical Mi TV Stick remote/process-restart acceptance is recorded. Settings right-pane action-return focus is tracked separately under B07.
