@@ -9,8 +9,6 @@ final class NavigationState {
     static final String HOME_FOCUS_KEY = "home_focus_component";
     static final String HOME_FOCUS_POSITION = "home_focus_position";
     static final String SETTINGS_TAB = "settings_tab";
-    static final String SETTINGS_FOCUS_ZONE = "settings_focus_zone";
-    static final String SETTINGS_FOCUS_PATH = "settings_focus_path";
 
     static final int DEFAULT_SETTINGS_TAB = 0;
 
@@ -37,21 +35,4 @@ final class NavigationState {
         }
     }
 
-    static String normalizeFocusZone(String zone) {
-        if ("right".equals(zone) || "sidebar".equals(zone) || "search".equals(zone)) return zone;
-        return "sidebar";
-    }
-
-    static String normalizeFocusPath(String path) {
-        if (path == null || path.isEmpty() || path.length() > 128) return null;
-        String[] parts = path.split("/", -1);
-        if (parts.length == 0 || parts.length > 16) return null;
-        for (String part : parts) {
-            if (part.isEmpty()) return null;
-            for (int i = 0; i < part.length(); i++) {
-                if (!Character.isDigit(part.charAt(i))) return null;
-            }
-        }
-        return path;
-    }
 }
