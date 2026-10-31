@@ -1,7 +1,6 @@
 package com.gathin.tvhome;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -11,20 +10,20 @@ public class ProfileSecurityPolicyTest {
 
     @Test
     public void leavingChildProfileRequiresParentPin() {
-        assertTrue(ChildModeManager.requiresParentPinToSwitch(true, false));
+        assertTrue(ChildModeManager.requiresParentPinToSwitch(true));
     }
 
     @Test
     public void switchingBetweenChildProfilesAlsoRequiresParentPin() {
         // Different child profiles can have different app allow-lists.
         // Requiring the PIN prevents switching to a less restricted child profile.
-        assertTrue(ChildModeManager.requiresParentPinToSwitch(true, true));
+        assertTrue(ChildModeManager.requiresParentPinToSwitch(true));
     }
 
     @Test
     public void switchingFromAdultProfileDoesNotRequireParentPin() {
-        assertFalse(ChildModeManager.requiresParentPinToSwitch(false, false));
-        assertFalse(ChildModeManager.requiresParentPinToSwitch(false, true));
+        assertFalse(ChildModeManager.requiresParentPinToSwitch(false));
+        assertFalse(ChildModeManager.requiresParentPinToSwitch(false));
     }
 
     @Test
@@ -33,8 +32,8 @@ public class ProfileSecurityPolicyTest {
         String adultLocked = ChildModeManager.profileKey("adult_1", "locked_apps");
         String childHidden = ChildModeManager.profileKey("child_1", "hidden_apps");
 
-        assertNotEquals(childLocked, adultLocked);
-        assertNotEquals(childLocked, childHidden);
+        assertFalse(childLocked.equals(adultLocked));
+        assertFalse(childLocked.equals(childHidden));
         assertEquals(childLocked, ChildModeManager.profileKey("child_1", "locked_apps"));
     }
 }
