@@ -91,3 +91,31 @@
 - Source QC disposition: B01–B03 PASS at source/CI level; keep roadmap tasks IN PROGRESS until F02 integrated and physical acceptance. No APK installed and no TV setting changed.
 - B04 source audit: home grid/settings/dialogs already responsive or bounded; Recent Apps fixed 420×250dp card plus 64dp padding and Nightstand 110sp clock remain viewport-sensitive. No speculative change pending read-only wm size/density.
 - B05 source audit: AppLanguage ID/EN preference exists but resource localization and hardcoded strings are incomplete. First-pass scan of 12 high-traffic Java files flagged 187 user-facing string-call patterns for classification. B05 moved to IN PROGRESS.
+
+
+## 2026-11-01 — renewed final B01–B03 source QC and expanded B04/B05 inventory
+
+**B01–B03 recheck**
+- Re-read PR metadata, changed-file patches, key implementation paths, and exact branch heads for PR #10/#11/#12. All remain Draft/open/unmerged and preserve the approved B01 → B02 → B03 base chain.
+- B01 head \`bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5\`: reviewed NavigationState persistence/tests, stable Home component identity + fallback slot, semantic top-bar focus keys, RecyclerView reload snapshot, empty-list normalization/fallback, and Settings tab/sidebar restoration. No source blocker found; right-pane action-return focus remains B07.
+- B02 head \`01cbef2c2fc90498295971b22c369a72cdfa734a\`: reviewed shared TvFocusIndicator and its call sites in avatar frames, rounded text controls, upload/reset buttons, Azan overlay, and weather forecast rows. Focus indicator remains distinct from selected state; no listener collision found in the touched paths.
+- B03 head \`56a4e1995aa8b8600614e6b5c4dca69d01c530c3\`: reviewed opaque dialog/panel surfaces, AlertDialog button/list selectors, QR dialog viewport/scroll/focus/dismissal cleanup, and custom dialog width clamps. Blurred-wallpaper GlassDrawable popups remain intentionally unchanged.
+- Exact-head CI evidence: B01 #230 / run \`41230264083\` PASS (1,395 KB); B02 #234 / run \`41230495879\` PASS (1,396 KB); B03 #239 / run \`41233548406\` PASS (1,398 KB). Logs confirm app and installer \`testReleaseUnitTest\`, \`assembleRelease\`, size gate, and Lists/tools/docs checks. All manual TV-test artifact steps were skipped; artifact lists are empty.
+- Disposition: B01/B02/B03 source + CI gate PASS. Keep roadmap status IN PROGRESS until F01/F02 integrated and physical acceptance. No candidate APK installed, no device setting/package changed, no PR merged.
+
+**B04 expanded source audit**
+- Reviewed 66 app Java sources and the relevant home/recent-apps/weather/nightstand layouts.
+- Home tile width is derived from available grid width/column count (180dp design cap, 80dp floor, 180:101 ratio).
+- Recent Apps card remains fixed 420×250dp with 64dp RecyclerView side padding; Nightstand clock remains 110sp with wrap-content centered layout; Weather uses a ScrollView but has a fixed 385dp Bento body and ~91–92dp metric rows.
+- No clipping defect can be proven without actual logical viewport/density. No speculative layout changes made. Need user-provided read-only \`wm size\` and \`wm density\` outputs before changing fixed geometry.
+
+**B05 expanded localization inventory**
+- Audited all 66 app Java source files, 18 app/installer layout XML files, 13 app string-resource XML files, AppLanguage, locale config, manifest, and app Gradle dependencies.
+- AppLanguage has 90 static translation/helper methods; the saved preference supports ID/EN and migrates legacy MS to ID. Many dormant LANG_MS branches remain.
+- Resource inventory: 44 keys in default values/strings.xml, default strings mix Indonesian/English; no values-id/strings.xml or generic values-en/strings.xml; values-en-rUS overrides only date_format. Other language folders are partial. localeConfig advertises 12 locales but omits Indonesian, while the app selector offers ID/EN only.
+- Language selection updates the Islamic shelf/date and toast but does not apply a locale to Android Resources or refresh/recreate all visible screens.
+- Static scan found at least 95 direct literal UI-setter calls across seven high-traffic Java files, plus hardcoded text in eight launcher layout XML files. This is a lower bound, not a complete unique-string count; dynamic/assembled text, notification messages, and installer text require separate classification.
+- No localization code/resources changed in this pass. Recommended direction: make ID/EN the supported language set; unify persisted preference and locale-aware contexts for API 26–32 (target API 30), synchronize API 33+ app locale where appropriate, create complete ID/EN resources, migrate hardcoded UI strings, preserve focus on language change, and add resource parity/normalization tests. Keep companion installer scope separate unless explicitly added.
+
+**Documentation correction**
+- Roadmap A06 task row corrected to DONE. A06 checkpoint manifest and rollback SOP were re-opened and verified on branch \`checkpoint/a06-tested-apk-pr9-7e8392e1\`; the earlier device-snapshot-pending text in INVENTORY was corrected. A06 residuals remain assigned to E01, not blockers for A06 closure.
