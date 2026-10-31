@@ -62,8 +62,9 @@ public class WallpaperUploadServer {
             Collections.sort(interfaces, (a, b) -> {
                 String an = a.getName().toLowerCase(Locale.ROOT);
                 String bn = b.getName().toLowerCase(Locale.ROOT);
-                if (an.startsWith("wlan") || an.startsWith("eth")) return -1;
-                if (bn.startsWith("wlan") || bn.startsWith("eth")) return 1;
+                boolean aPreferred = an.startsWith("wlan") || an.startsWith("eth");
+                boolean bPreferred = bn.startsWith("wlan") || bn.startsWith("eth");
+                if (aPreferred != bPreferred) return aPreferred ? -1 : 1;
                 return an.compareTo(bn);
             });
             for (NetworkInterface nif : interfaces) {
@@ -72,7 +73,7 @@ public class WallpaperUploadServer {
                 for (InetAddress addr : addrs) {
                     if (!addr.isLoopbackAddress() && addr instanceof Inet4Address) {
                         String ip = addr.getHostAddress();
-                        if (ip != null && !ip.startsWith("127.")) {
+                        if (ip != null && !ip.startsWith("127.") && !ip.startsWith("169.254.")) {
                             return ip;
                         }
                     }
