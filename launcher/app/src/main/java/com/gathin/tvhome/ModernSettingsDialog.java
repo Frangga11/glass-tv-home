@@ -659,6 +659,8 @@ public final class ModernSettingsDialog {
                         ProfileManager.setProfileName(activity, newName);
                         tvCurName.setText(newName);
                         tvProfileName.setText(newName);
+                        activity.updateTopBarUserIcon();
+                        updateSidebarSelection.run();
                         if (renderRightPane[0] != null) renderRightPane[0].run();
                     });
                 });
