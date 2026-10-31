@@ -2,7 +2,7 @@
 
 **Version:** 0.2-draft  
 **Date:** 1 November 2026  
-**Review status:** A04 repository/branch/source inventory PASS; A05 tested-APK identity PASS; A06 baseline/rollback/device snapshot DONE; B01/B02 source/CI pass; B03 in progress; physical device acceptance deferred
+**Review status:** A04 repository/branch/source inventory PASS; A05 tested-APK identity PASS; A06 baseline/rollback/device snapshot DONE; B01/B02/B03 renewed source/CI QC PASS; B04/B05 source audits IN PROGRESS; physical device acceptance deferred
 
 ## 1. Repository and branches
 
@@ -243,8 +243,8 @@ GitHub source URLs:
 - Downloaded CI artifact `13048951728` from run #208 (`41218171447`), extracted `app-release.apk`, and compared it directly with the uploaded APK: both are 1,427,681 bytes and SHA-256-identical (`f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`). CI archive ZIP is 1,340,733 bytes with SHA-256 `85475980a94b35a1a356cd5b5156bae3b50e7b405bc76ca1c22cd1e9557d32d6`. Workflow metadata binds run #208 to branch `feature/profile-avatar-security-integration` and exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`; PR #9 is that exact head.
 - Exact source commit: `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` on `feature/profile-avatar-security-integration`; PR #9 remains Draft/open/unmerged.
 - A05: PASS. APK identity is matched by exact SHA-256 and byte size to the CI artifact evidence.
-- A06: source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1` created directly from that exact commit. Manifest at `docs/project-management/checkpoints/A06_TESTED_APK_BASELINE.md`.
-- A06 device-state capture remains pending; no local TV state was changed. See checkpoint manifest for read-only ADB capture commands.
+- A06: DONE. Immutable source checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1` was created directly from the exact tested commit. The [A06 baseline manifest](https://github.com/Frangga11/glass-tv-home/blob/checkpoint/a06-tested-apk-pr9-7e8392e1/docs/project-management/checkpoints/A06_TESTED_APK_BASELINE.md) and [rollback SOP](https://github.com/Frangga11/glass-tv-home/blob/checkpoint/a06-tested-apk-pr9-7e8392e1/docs/project-management/checkpoints/A06_ROLLBACK_PROCEDURE.md) are verified on that checkpoint branch.
+- A06 read-only device-state snapshot was captured 1 November 2026: MiTV-AYFR0 / Android 11 / API 30; package metadata, enabled/disabled packages, HOME resolver, accessibility, input method, and power setting recorded. HOME resolver/preferred-activity mismatch and unverified installed APK hash remain E01 carry-forwards; no device state was changed.
 
 ## B01–B03 renewed source QC — 1 November 2026
 
