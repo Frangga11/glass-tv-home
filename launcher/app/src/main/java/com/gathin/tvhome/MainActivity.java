@@ -5250,6 +5250,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 uploadServer.stop();
                 uploadServer = null;
             }
+            if (avatarUploadServer != null) {
+                avatarUploadServer.stop();
+                avatarUploadServer = null;
+            }
             Toast.makeText(this, "Kode QR tidak dapat dibuat.", Toast.LENGTH_LONG).show();
             return;
         }
