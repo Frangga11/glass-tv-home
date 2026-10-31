@@ -371,7 +371,7 @@ final class PrayerTimes {
     public static String getActiveZoneName(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         if (prefs.contains("manual_prayer_zone_name")) {
-            return prefs.getString("manual_prayer_zone_name", "Putrajaya & Kuala Lumpur");
+            return prefs.getString("manual_prayer_zone_name", "Pagar Alam");
         }
         String zone = getActiveZone(context);
         for (PrayerZone pz : PRESET_ZONES) {
@@ -639,7 +639,7 @@ final class PrayerTimes {
         return null;
     }
 
-    /** Astronomical calculation fallback based on user's active Malaysian, Singapore, or Indonesian location. */
+    /** Astronomical calculation fallback based on the selected Indonesian location. */
     private static long[] calculateFallback(Context context, Calendar cal) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         double latitude = prefs.contains("manual_lat")
