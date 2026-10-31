@@ -212,7 +212,7 @@ final class AppLanguage {
     public static String strSettingsSearch(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Search";
-            case LANG_ID: return "Cari";
+            case LANG_ID: return "Cari menu";
             case LANG_MS: default: return "Cari";
         }
     }
