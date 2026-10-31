@@ -132,7 +132,7 @@ public final class ChildModeManager {
 
     /** Any switch away from an active Child Mode profile requires parent authorization.
      * This also prevents moving to a second child profile with weaker restrictions. */
-    static boolean requiresParentPinToSwitch(boolean currentChildMode, boolean targetChildMode) {
+    static boolean requiresParentPinToSwitch(boolean currentChildMode) {
         return currentChildMode;
     }
 
