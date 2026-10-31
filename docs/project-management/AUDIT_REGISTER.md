@@ -150,5 +150,5 @@ Severity is provisional and may be adjusted after reproduction and impact analys
 - Draft PR #10: https://github.com/Frangga11/glass-tv-home/pull/10.
 - Code changes: `MainActivity.java`, `ModernSettingsDialog.java`, new `NavigationState.java`, new `NavigationStateTest.java`.
 - Exact-head CI run #209: https://github.com/Frangga11/glass-tv-home/actions/runs/41228348247 — in progress at this checkpoint; Lists/tools/docs job passed; Android unit tests/release build running.
-- No APK installed, no device settings changed, no existing PR merged.
-- B01 remains IN PROGRESS until exact-head CI passes and physical Mi TV Stick remote/process-restart acceptance is recorded. Settings right-pane action-return focus is tracked separately under B07.
+- Release APK artifact `13052019782` (artifact ZIP 1,341,523 bytes; CI reports APK 1,394 KB, below 1.5 MiB). No APK installed, no device settings changed, no existing PR merged.
+- B01 remains IN PROGRESS until physical Mi TV Stick remote/process-restart acceptance is recorded. Settings right-pane action-return focus is tracked separately under B07.
