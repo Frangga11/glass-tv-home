@@ -1338,7 +1338,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Release old document grants and delete only app-owned uploads no longer selected.
         List<Uri> oldUris = StandbyPhotoStore.getUris(this);
         for (Uri oldUri : oldUris) {
-            if (!unique.contains(oldUri.toString()) && !StandbyPhotoStore.isManagedFile(this, oldUri)) {
+            if (!granted.contains(oldUri) && !StandbyPhotoStore.isManagedFile(this, oldUri)) {
                 try {
                     getContentResolver().releasePersistableUriPermission(oldUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } catch (Exception ignored) {
