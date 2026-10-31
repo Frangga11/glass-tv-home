@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 public class WallpaperUploadServer {
@@ -48,6 +49,7 @@ public class WallpaperUploadServer {
     private final String sessionToken = UUID.randomUUID().toString().replace("-", "");
     private ServerSocket serverSocket;
     private volatile boolean running = false;
+    private final Set<Socket> activeClients = Collections.synchronizedSet(new java.util.HashSet<>());
     private Thread serverThread;
 
     public WallpaperUploadServer(Context context, int port, UploadListener listener) {
@@ -131,6 +133,16 @@ public class WallpaperUploadServer {
                 while (running && serverSocket != null && !serverSocket.isClosed()) {
                     try {
                         Socket client = serverSocket.accept();
+                        if (!running) {
+                            client.close();
+                            break;
+                        }
+                        activeClients.add(client);
+                        if (!running) {
+                            activeClients.remove(client);
+                            client.close();
+                            break;
+                        }
                         new Thread(() -> handleClient(client), "upload-client").start();
                     } catch (Exception e) {
                         if (!running) break;
@@ -158,6 +170,15 @@ public class WallpaperUploadServer {
         if (serverThread != null) {
             serverThread.interrupt();
             serverThread = null;
+        }
+        synchronized (activeClients) {
+            for (Socket client : activeClients) {
+                try {
+                    client.close();
+                } catch (Exception ignored) {
+                }
+            }
+            activeClients.clear();
         }
         Log.i(TAG, "Server stopped");
     }
@@ -320,6 +341,12 @@ public class WallpaperUploadServer {
         } catch (Exception e) {
             Log.w(TAG, "Client handle exception: " + e.getMessage());
             try { client.close(); } catch (Exception ignored) {}
+        } finally {
+            activeClients.remove(client);
+            try {
+                if (!client.isClosed()) client.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 
