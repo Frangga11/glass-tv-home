@@ -506,8 +506,9 @@ public final class ModernSettingsDialog {
 
                     frame.setOnClickListener(v -> {
                         SoundEffects.playSelect();
-                        if (activeP.customAvatarPath != null
-                                && !ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                        // Always clear by looking up the current profile state; activeP is a render-time snapshot
+                        // and may not yet contain a photo uploaded moments earlier through the QR dialog.
+                        if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
                             Toast.makeText(activity, "Foto avatar belum dapat dihapus. Avatar tidak diubah.", Toast.LENGTH_LONG).show();
                             return;
                         }
