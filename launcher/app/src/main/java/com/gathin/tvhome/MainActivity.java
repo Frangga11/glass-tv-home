@@ -5027,7 +5027,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort();
-        showPhoneUploadQrDialog("📲 Muat Naik Wallpaper dari HP",
+        showPhoneUploadQrDialog("📲 Unggah Wallpaper dari HP",
                 "Sambungkan ponsel dan TV ke Wi-Fi yang sama, lalu pindai QR ini. Foto akan masuk ke koleksi wallpaper.",
                 uploadUrl);
     }
@@ -5234,7 +5234,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void onCustomWallpaperUploaded(File file) {
         runOnUiThread(() -> {
             SoundEffects.playSelect();
-            Toast.makeText(this, "✅ Wallpaper berjaya dimuat naik dari telefon!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "✅ Wallpaper berhasil diunggah dari ponsel!", Toast.LENGTH_LONG).show();
 
             getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
                     .putString("active_category", "Custom")
@@ -5332,7 +5332,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
                 showNextWallpaper(true);
                 startWallpaperRotation();
-                Toast.makeText(this, "🔄 Mod Putar Semua Wallpaper Aktif (" + files.length + " foto)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "🔄 Mode putar semua wallpaper aktif (" + files.length + " foto)", Toast.LENGTH_SHORT).show();
             } else {
                 switchWallpaperCategory("Natural");
             }
@@ -5381,7 +5381,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if ("Custom".equalsIgnoreCase(activeCat)) {
                 switchWallpaperCategory("Natural");
             }
-            Toast.makeText(this, "🧹 Semua gambar muat naik telah dibersihkan.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "🧹 Semua gambar yang diunggah telah dihapus.", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -5391,7 +5391,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (files == null || files.length == 0) {
             AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                     .setTitle("📁 Urus Gambar Dimuat Naik")
-                    .setMessage("Tiada gambar peribadi dijumpai di dalam storan TV. Anda boleh memuat naik gambar dari telefon menggunakan kod QR.")
+                    .setMessage("Tidak ada gambar pribadi di penyimpanan TV. Anda dapat mengunggah gambar dari ponsel menggunakan kode QR.")
                     .setPositiveButton("📲 Buka Kod QR", (d, w) -> showWallpaperUploadQrDialog())
                     .setNegativeButton("Kembali", (d, w) -> showWallpaperDialog())
                     .show();
@@ -5408,17 +5408,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         List<Runnable> actions = new ArrayList<>();
 
         // Quick Mode Actions at top
-        items.add("📲 Muat Naik Foto Baharu (QR Code Telefon)");
+        items.add("📲 Unggah Foto Baru (Kode QR Ponsel)");
         actions.add(this::showWallpaperUploadQrDialog);
 
-        items.add("🔄 Putar Semua Gambar (Slideshow Mod)");
+        items.add("🔄 Putar Semua Gambar (Mode Slideshow)");
         actions.add(this::onCustomWallpaperSlideshow);
 
         items.add("🗑️ Padam Semua Gambar (Kosongkan)");
         actions.add(() -> {
             AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                     .setTitle("⚠️ Padam Semua Gambar?")
-                    .setMessage("Adakah anda pasti ingin memadam semua " + files.length + " gambar yang dimuat naik?")
+                    .setMessage("Apakah Anda yakin ingin menghapus semua " + files.length + " gambar yang diunggah?")
                     .setPositiveButton("Ya, Padam Semua", (d, w) -> {
                         for (File f : files) f.delete();
                         onCustomWallpaperCleared();
