@@ -26,14 +26,14 @@
 | A-009 | P2 | Avatar rendering | Downsampled rendering, center-crop, child/adult ring, EXIF orientation, and built-in fallback are implemented | Test portrait, landscape, large, unsupported, and corrupt images | OPEN — device verification |
 | A-010 | P2 | Branch control | Branch ancestry checked; avatar candidate is eight commits ahead and has no commits behind settings/gallery baseline; QR work is isolated in draft PR #6 | Complete review and merge only after all gates pass | OPEN — PR review |
 | A-011 | P1 | Real device | CI release APK exists, but no evidence yet of installation/test on user's actual Mi TV Stick | Install artifact from workflow run 41199199372 and execute AVATAR_AUDIT.md device checklist | OPEN — USER DEVICE TEST REQUIRED |
-| A-012 | P1 | Wallpaper | Code expects `assets/kabut-pagi-dempo.jpg`, but CI release APK does not contain it; clean-install Default has no bundled image | Obtain/approve image, package it, verify APK asset entry, then test offline cold start | OPEN — user image/creative direction required; W-F-02 |
+| A-012 | P1 | Wallpaper | Default wallpaper asset is packaged and verified in exact-head release APK; runtime behavior on clean install/offline/upgrade still unproven | Install artifact from CI #195; test offline cold start and legacy Malaysia/cache migration on target TV | PACKAGING PASS — device acceptance OPEN; W-F-02 |
 | A-013 | P2 | Icon animation | Animation inventory and per-icon behavior not yet mapped | Inspect adapters, focus listeners, animators, and test on TV | OPEN |
 | A-014 | P2 | Information layout | Exact on-screen order and focus navigation of clock/weather/AQI/prayer/Islamic shelf not yet recorded | Map view hierarchy and compare with user-approved screenshots | OPEN |
 | A-015 | P2 | Weather/AQI | Source, location fallback, cache freshness, error/offline behavior not fully audited | Inspect weather services and test online/offline/stale data | OPEN |
 | A-016 | P1 | Prayer times | Regional zone, date boundary, DST/timezone and accuracy need confirmation for Pagar Alam | Validate source/time zone and compare against authoritative local timetable | OPEN |
-| A-017 | P1 | Wallpaper upload | Baseline QR exposed upload and gallery-management endpoints without per-session path token | Review PR #7, then test foreign token, legacy routes, and dialog-close revocation on device | FIX IMPLEMENTED — CI PASS; device pending; W-F-01 |
+| A-017 | P1 | Wallpaper upload | Baseline QR exposed upload and gallery-management endpoints without per-session path token | Test foreign token, legacy routes, expiry, and dialog-close revocation on TV/phone | SOURCE + exact-head CI #195 PASS; device pending; W-F-01 |
 | A-018 | P1 | ADB / debloat | Package disable and HOME-default changes need backup and rollback checklist | Verify scripts and prepare recovery procedure before device changes | OPEN |
-| W-001 | P1 | Wallpaper/background | Dedicated audit opened; QR route remediation implemented in draft PR #7 | Complete source review, CI, then TV/phone acceptance for W-AC-01–W-AC-12 | IN PROGRESS — CI PASS; default asset/device pending; see WALLPAPER_AUDIT.md |
+| W-001 | P1 | Wallpaper/background | Source remediation, exact-head CI #195, and APK packaging inspection completed on PR #7 head `62b1e7c` | Complete TV/phone acceptance for W-AC-01–W-AC-12 | IN PROGRESS — CI + APK PASS; device acceptance pending; see WALLPAPER_AUDIT.md |
 
 ## Avatar candidate acceptance tests
 
