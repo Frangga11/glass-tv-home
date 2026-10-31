@@ -813,7 +813,7 @@ public final class ModernSettingsDialog {
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "➕ Pilih Foto untuk Layar Siaga",
-                        "Pilih satu atau beberapa foto dari penyimpanan TV, USB, atau sumber berkas yang tersedia.",
+                        "Tambahkan satu atau beberapa foto dari penyimpanan TV, USB, atau sumber berkas yang tersedia. Foto sebelumnya tetap tersimpan.",
                         activity::pickStandbyPhotos));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
