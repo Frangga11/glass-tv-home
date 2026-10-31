@@ -120,3 +120,15 @@
 - A06: do not create the final checkpoint until A05 maps the tested APK to an exact commit. Then capture source ref, APK/hash, device-state backup, and rollback instructions.
 - **Execution hold:** no further B02/B03 implementation, no PR merge, no candidate APK installation, no device setting changes, and no TV-test artifact publication while A05/A06 and the remaining audits are unresolved.
 - Next resume point: A05 — identify the installed/tested APK from the Mi TV Stick.
+
+
+## Latest checkpoint — A05 complete; A06 device snapshot pending — 1 November 2026
+
+- A05 DONE: user supplied the exact APK used in the Mi TV Stick test. SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`, size 1,427,681 bytes.
+- Hash/size match PR #9 CI #208 release APK record, artifact ID `13048951728`, exact source commit `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`.
+- A06 source checkpoint branch: `checkpoint/a06-tested-apk-pr9-7e8392e1`; created directly from exact tested source commit.
+- Checkpoint manifest: `docs/project-management/checkpoints/A06_TESTED_APK_BASELINE.md` on the checkpoint branch.
+- A06 remains IN PROGRESS until read-only Bugjaeger/ADB output captures Mi TV Stick build fingerprint, installed package details/path, current HOME resolver, enabled/disabled packages, and relevant secure/global settings. Review before any device changes.
+- No PR merged; no new APK installed; no device settings changed.
+- B01/B02 implementation remains paused at user's request until A06 is closed.
+- Next action: collect the read-only ADB baseline listed in the A06 checkpoint manifest; then complete rollback-readiness review.
