@@ -2,13 +2,13 @@
 
 **Audit ID:** W-001  
 **Last checked:** 31 October 2026  
-**Status:** NOT FINAL — bundled Default asset committed; CI build succeeds but size guard is being recalibrated; device acceptance remains pending.  
+**Status:** NOT FINAL — bundled Default asset committed and CI #172 is running for the cleanup pass; device acceptance remains pending.  
 **Code branch:** `fix/wallpaper-qr-session-security`  
 **Draft PR:** https://github.com/Frangga11/glass-tv-home/pull/7
 
 ## 1. Approved scope
 
-Kabut Pagi Dempo replaces the old Malaysia image **inside the existing Default wallpaper tab**. Do not add a Dempo tab, category, collection, or separate collection loader. Keep the existing Malaysia-to-Default migration.
+Kabut Pagi Dempo is the single bundled image **inside the existing Default wallpaper tab**. Do not add a Dempo tab, category, collection, or separate collection loader. Retired category values are normalized to the supported catalog and fall back to Default; no Malaysia-specific branch remains in the active source.
 
 ## 2. Asset verification
 
@@ -23,11 +23,13 @@ Kabut Pagi Dempo replaces the old Malaysia image **inside the existing Default w
 ## 3. Code and CI
 
 - Default-only source changes are in PR #7. The accidental extra Dempo category/collection was removed.
-- `getBundledDefaultWallpaper()` refreshes the private cache through a staged temporary file and replacement, avoiding stale Malaysia/default cache on upgrade.
-- Legacy active category values beginning with `Malaysia` migrate to `Default`.
+- `getBundledDefaultWallpaper()` refreshes the private cache through a staged temporary file and replacement, avoiding reuse of obsolete wallpaper cache on upgrade.
+- Unknown or retired active category values migrate to `Default`; supported categories remain Default, Natural, Skyscraper, Space, Ocean, Minimalist, and Custom. This preserves upgrade safety without retaining a Malaysia-specific code path.
 - CI run `41205556026`: Android unit tests and release build completed successfully; the job failed only because the APK size guard was 1.2 MiB. Measured APK: approximately 1,387 KiB. The lists/tools/docs job passed.
 - CI workflow was updated to a 1.5 MiB ceiling, reflecting the intentional bundled 230,883-byte wallpaper. This is a size-budget adjustment, not evidence that the next CI run has passed.
 - PR #7 remains Draft and unmerged.
+
+- Cleanup pass on 31 October 2026: removed the two Malaysia-market streaming package IDs (`my.com.tonton.screen`, `my.gov.rtm.tv`) from the default dock configuration; retained the dock mechanism and remaining configured apps. MainActivity and the inspected wallpaper/store source files contain no Malaysia/Kuala Lumpur/Petronas references. CI #172 is running for this change.
 
 ## 4. Acceptance status
 
@@ -48,7 +50,7 @@ Kabut Pagi Dempo replaces the old Malaysia image **inside the existing Default w
 ## 5. Remaining work — in order
 
 1. Confirm CI passes with the updated 1.5 MiB size ceiling.
-2. Download the resulting APK artifact and inspect its ZIP contents. Confirm exactly one `assets/kabut-pagi-dempo.jpg`, with the expected dimensions/content; check no Dempo collection folder or duplicate asset.
+2. Download the resulting APK artifact for CI #172 and inspect its ZIP contents. Confirm exactly one `assets/kabut-pagi-dempo.jpg`, with the expected dimensions/content; check no Dempo collection folder or duplicate asset.
 3. Install fresh on the TV, disconnect internet, launch, and verify Default displays Kabut Pagi Dempo.
 4. Upgrade an installation with a legacy Malaysia selection and stale wallpaper cache; verify it migrates to Default and refreshes to Dempo.
 5. Test remote navigation, wallpaper rendering, and the QR upload security/session-close cases.
