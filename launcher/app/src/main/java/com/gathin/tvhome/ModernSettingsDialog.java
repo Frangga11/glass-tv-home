@@ -1420,7 +1420,6 @@ public final class ModernSettingsDialog {
                     ChildModeManager.setPin(activity, first);
                     dialog.dismiss();
                     Toast.makeText(activity, "PIN keamanan berhasil diperbarui.", Toast.LENGTH_SHORT).show();
-                    if (renderRightPane[0] != null) renderRightPane[0].run();
                 }));
                 dialog.show();
             }
