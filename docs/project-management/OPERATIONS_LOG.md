@@ -55,3 +55,6 @@
 
 
 | 2026-11-01 | B02 avatar focus ring z-order refinement | [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11), head `01cbef2c2fc90498295971b22c369a72cdfa734a`, [CI #234](https://github.com/Frangga11/glass-tv-home/actions/runs/41230495879) | Final source review moved the separate cyan avatar focus ring above the image layer so the ring cannot be occluded by the avatar image. Exact-head CI #234 pending; preceding snapshot #233 passed. | Wait for #234 PASS; keep PR Draft; no TV test |
+
+
+| 2026-11-01 | A04 repository/branch/source audit | [Repository](https://github.com/Frangga11/glass-tv-home), [Draft PR #10](https://github.com/Frangga11/glass-tv-home/pull/10), [Draft PR #11](https://github.com/Frangga11/glass-tv-home/pull/11) | Verified fork identity, 14 branch heads, PR #8→#9→#10→#11 dependency chain, B02 tree (647 entries; 496 files/151 directories), PR #9 baseline tree (644 entries), Gradle/app/manifest/CI configuration and source ownership. A04 remote audit PASS; no local checkout was opened or modified. Also verified B01 CI #225 and B02 CI #234 both passed exact heads; manual TV-test artifact step skipped. | Pause further B02 work; obtain installed APK identity for A05, then create A06 reproducible baseline and rollback package |
