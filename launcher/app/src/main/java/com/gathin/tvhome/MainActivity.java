@@ -467,7 +467,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else if ("Custom".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             boolean singleMode = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("custom_single_mode", false);
             String singleFile = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("custom_single_file", null);
             if (singleMode && singleFile != null) {
@@ -4295,7 +4295,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     void showWallpaperDialog() {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
-        File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+        File[] customFiles = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
         int customCount = (customFiles != null) ? customFiles.length : 0;
 
         String currentKey = getActiveWallpaperCategory();
@@ -5030,7 +5030,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 heroShelf.setVisibility(View.GONE);
             }
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
                 wallpapers = new ArrayList<>(Arrays.asList(files));
@@ -5617,7 +5617,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 heroShelf.setVisibility(View.GONE);
             }
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
                 wallpapers = new ArrayList<>(Arrays.asList(files));
@@ -5693,7 +5693,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
 
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
                 wallpapers = new ArrayList<>(Arrays.asList(files));
@@ -5718,7 +5718,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
 
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
 
             if ("Custom".equalsIgnoreCase(activeCat)) {
@@ -5755,7 +5755,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     void showCustomWallpaperManagerDialog() {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
-        File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+        File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
         if (files == null || files.length == 0) {
             AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                     .setTitle(R.string.wallpaper_manage_title)
@@ -5845,7 +5845,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     break;
                 case 2: // Keep this, delete others
                     File customDir = new File(getFilesDir(), "custom_wallpapers");
-                    File[] allFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+                    File[] allFiles = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
                     if (allFiles != null) {
                         for (File f : allFiles) {
                             if (!f.getName().equals(file.getName())) {
