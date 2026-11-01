@@ -180,3 +180,16 @@
 - Exact-head CI run #295 / `41280874732` passed both jobs; APK publication skipped. No APK/device changes.
 - Final device/runtime/phone QR acceptance remains deferred to F-stage. B07 is next.
 - Evidence: `B06_FEEDBACK_AUDIT.md`.
+
+
+## 2026-11-01 — C03 phone-to-TV active LAN audit and repair
+
+- Created isolated branch `feature/c03-phone-tv-network-verification` from C02 exact head `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`; Draft PR #20 targets C02.
+- Audited Avatar, Wallpaper, and StandBy QR network selection and URL construction. Found the app resolver selected an IPv4 address by interface-name preference rather than Android's active default network.
+- Added `LocalNetworkAddress` using `ConnectivityManager`, `NetworkCapabilities`, and `LinkProperties`; only active Wi-Fi/Ethernet IPv4 is eligible. VPN-default and unusable address cases fail closed without fabricated IP fallback.
+- Migrated Avatar, Wallpaper, and StandBy preflight and server-start address resolution to the shared helper. Preserved bound-address/actual-port QR URLs, independent session routes, tokens, limits, timeouts, and existing same-Wi-Fi instructions.
+- Added `LocalNetworkAddressTest` with three JVM test groups for usable IPv4, invalid address classes, and invalid prefix lengths.
+- Source head `a0615b2135659a515b3bea39d98bf08639248c09`: CI #337 / `41287435536` PASS. Audit-doc checkpoint head `d266287df287167e5a8e73fd675b51759b580ed6`: CI #338 / `41287563951` PASS, both jobs. `testReleaseUnitTest` and `assembleRelease` succeeded.
+- APK size diagnostic: 1,546,045 bytes; below 1.5 MiB cap by 26,819 bytes. Artifact publication skipped.
+- Physical phone/TV same-network acceptance is deferred to F-stage and remains mandatory. No APK published/installed, no device settings changed, no PR merged.
+- Next action: begin C04 endpoint/routing/method/response-code audit without reopening C01–C03 unless a concrete dependency is found.
