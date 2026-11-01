@@ -131,6 +131,11 @@ public final class TvScanner {
                 + ((value >>> 8) & 0xff) + "." + (value & 0xff);
     }
 
+    static int getScanHostCount(Context context) {
+        LocalNetwork network = getLocalNetwork(context);
+        return network == null ? -1 : network.hostCount();
+    }
+
     public static ScanHandle scan(Context context, ScanCallback callback) {
         final ScanHandle handle = new ScanHandle();
         if (callback == null) return handle;
