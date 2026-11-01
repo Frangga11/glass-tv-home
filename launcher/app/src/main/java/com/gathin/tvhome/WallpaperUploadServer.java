@@ -1114,7 +1114,8 @@ public class WallpaperUploadServer {
                 "          statusMsg.style.display = 'block';\n" +
                 "          loadGallery();\n" +
                 "        } else {\n" +
-                "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + xhr.statusText);\n" +
+                "          const detail = (xhr.responseText || xhr.statusText || '').trim();\n" +
+                "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + detail);\n" +
                 "        }\n" +
                 "      };\n" +
                 "\n" +
