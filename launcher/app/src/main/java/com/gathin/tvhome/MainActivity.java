@@ -4207,7 +4207,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         if (hasMedia) {
             if (txtTrackTitle != null) {
-                txtTrackTitle.setText(info.title.isEmpty() ? "Lagu Dimainkan" : info.title);
+                txtTrackTitle.setText(info.title.isEmpty() ? getString(R.string.now_playing_fallback_title) : info.title);
                 txtTrackTitle.setSelected(true);
             }
             if (txtTrackArtist != null) {
