@@ -113,7 +113,11 @@ No B06 source implementation has started. This policy approval and branch setup 
 | Final APK | PENDING | Build from exact approved `main` SHA; record version, artifact, workflow run, and SHA-256. A separately labelled test candidate may be required for physical acceptance. |
 
 This timing decision supersedes the rolling stage-merge schedule previously recorded under D-012. It does not relax any quality gate or waive final device/runtime acceptance.
-\n\n## B06 audit and closure — 1 November 2026\n\n## B06 completion checkpoint — 1 November 2026
+
+
+## B06 audit and closure — 1 November 2026
+
+## B06 completion checkpoint — 1 November 2026
 
 - B06 source implementation and static quality checks are complete on `feature/b06-notification-feedback`; exact verified head: `bc86a250d73a5cbb83250217d42c3c3993cf29d7`.
 - Draft PR #16 targets `integration/b-series`, remains OPEN/DRAFT/UNMERGED under D-013. No merge was performed.
@@ -127,4 +131,14 @@ This timing decision supersedes the rolling stage-merge schedule previously reco
 - Final API 30/33+ lifecycle/focus, real-phone QR over same Wi-Fi, and physical TV acceptance remain deferred to final F-stage overall system test; not waived.
 - Detailed evidence: [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md). B07 is next; grouped merge remains deferred until A–G source work is complete.
 
-\n| Gate | Result | Evidence |\n|---|---|---|\n| Shared feedback abstraction | PASS | 108 Toast call sites migrated across 10 app-layer Java files to TvFeedback. |\n| OTA loading and failure handling | PASS | HTTP status, length validation, resource closure, partial cleanup, lifecycle guards, and cancel action. |\n| QR upload feedback | PASS | Avatar/Wallpaper/Standby progress, timeout/connection messages, localized response details. |\n| Timeout policy | PASS | Browser and socket budgets remain operation-specific and are covered by NetworkFeedbackPolicyTest. |\n| Localization parity | PASS | 566 keys in default/ID/EN; zero duplicates, key differences, or placeholder mismatches. |\n| Exact-head CI | PASS | Run #295 / 41280874732 on bc86a250d73a5cbb83250217d42c3c3993cf29d7; both jobs SUCCESS. |\n| Merge | DEFERRED BY D-013 | PR #16 OPEN/DRAFT/UNMERGED; grouped merge after A–G work. |\n| Physical/runtime/phone QR | DEFERRED, NOT WAIVED | Final F-stage overall system acceptance. |\n
+
+| Gate | Result | Evidence |
+|---|---|---|
+| Shared feedback abstraction | PASS | 108 Toast call sites migrated across 10 app-layer Java files to TvFeedback. |
+| OTA loading and failure handling | PASS | HTTP status, length validation, resource closure, partial cleanup, lifecycle guards, and cancel action. |
+| QR upload feedback | PASS | Avatar/Wallpaper/Standby progress, timeout/connection messages, localized response details. |
+| Timeout policy | PASS | Browser and socket budgets remain operation-specific and are covered by NetworkFeedbackPolicyTest. |
+| Localization parity | PASS | 566 keys in default/ID/EN; zero duplicates, key differences, or placeholder mismatches. |
+| Exact-head CI | PASS | Run #295 / 41280874732 on bc86a250d73a5cbb83250217d42c3c3993cf29d7; both jobs SUCCESS. |
+| Merge | DEFERRED BY D-013 | PR #16 OPEN/DRAFT/UNMERGED; grouped merge after A–G work. |
+| Physical/runtime/phone QR | DEFERRED, NOT WAIVED | Final F-stage overall system acceptance. |
