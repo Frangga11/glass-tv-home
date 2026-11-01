@@ -243,3 +243,17 @@ C03 finding C03-F01 (interface-name-based address selection) was remediated by a
 - Release APK diagnostic: 1,548,097 bytes, 14,767 bytes below the 1.5 MiB cap. APK publication skipped.
 - PR #21 remains OPEN/DRAFT/UNMERGED under D-013. Physical phone/TV browser acceptance remains deferred to F-stage, not waived.
 - Next task: C05 shared upload/receive-file pipeline audit.
+
+
+## D01 — Settings/configuration storage ownership, 1 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Storage ownership inventory | PASS | SharedPreferences, resource defaults, Config overlay, app-private files, external caches, profile/device scope, and consumers mapped in `D01_SETTINGS_STORAGE_OWNERSHIP_AUDIT.md`. |
+| Cross-project consistency review | FINDING RECORDED | D01-F11 traces StandBy collection/mode commit handling through C07 `WallpaperUploadServer` to its HTTP 200 success response; D05/D07 repair and regression coverage required. |
+| Android backup semantics | PASS — corrected | D01-F10 distinguishes Android 11/API 30 Auto Backup behavior from Android 12+ OEM D2D-transfer exceptions; no unsupported recovery guarantee claimed. |
+| Data/code mutation | NONE | Audit-only; no preference key/store, migration, source behavior, APK, or device setting changed. |
+| Exact-head CI #373 | PASS — prior head | Run #373 / 41293666682 passed both jobs on `9a2f2aa29812acd3c24a895c1c4feed5b4cf94eb`. |
+| Final exact-head CI | PENDING | Current D01 head `cd710681099faece14905faa244f57245bae84d1`; run required after final audit-doc correction. |
+| PR / merge | OPEN / DRAFT / UNMERGED | PR #25, branch `feature/d01-config-storage-audit`, base C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`; D-013 merge deferral applies. |
+| Runtime/process-death/reboot | DEFERRED, NOT WAIVED | Final F-stage acceptance; D06 will define and verify persistence/recovery behavior. |
