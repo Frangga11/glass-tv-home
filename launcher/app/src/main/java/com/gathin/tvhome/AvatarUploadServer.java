@@ -322,12 +322,12 @@ public final class AvatarUploadServer {
                 + "f.onchange=()=>b.disabled=!f.files.length;c.onclick=()=>{if(active)active.abort();};"
                 + "b.onclick=()=>{const x=f.files[0];if(!x||active)return;b.disabled=true;c.hidden=false;s.textContent='" + localized(R.string.avatar_upload_sending) + "';"
                 + "const r=new XMLHttpRequest();active=r;r.open('POST','" + endpoint + "');r.timeout=" + NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS + ";r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"
-                + "const finish=()=>{active=null;c.hidden=true;b.disabled=false;};"
+                + "const finish=retry=>{active=null;c.hidden=true;b.disabled=!retry;};"
                 + "r.upload.onprogress=e=>{if(e.lengthComputable)s.textContent='" + localized(R.string.avatar_upload_sending) + " '+Math.round(e.loaded/e.total*100)+'%';};"
-                + "r.onload=()=>{s.textContent=r.status===200?'" + localized(R.string.avatar_upload_success) + "':'" + localized(R.string.avatar_upload_failed_prefix) + " '+r.responseText;finish();};"
-                + "r.onerror=()=>{s.textContent='" + localized(R.string.avatar_upload_connection_error) + "';finish();};"
-                + "r.ontimeout=()=>{s.textContent='" + localized(R.string.avatar_upload_timeout) + "';finish();};"
-                + "r.onabort=()=>{s.textContent='" + localized(R.string.cancel_action) + "';finish();};r.send(x);};</script></html>";
+                + "r.onload=()=>{s.textContent=r.status===200?'" + localized(R.string.avatar_upload_success) + "':'" + localized(R.string.avatar_upload_failed_prefix) + " '+r.responseText;finish(r.status!==200&&r.status!==409&&r.status!==410);};"
+                + "r.onerror=()=>{s.textContent='" + localized(R.string.avatar_upload_connection_error) + "';finish(true);};"
+                + "r.ontimeout=()=>{s.textContent='" + localized(R.string.avatar_upload_timeout) + "';finish(true);};"
+                + "r.onabort=()=>{s.textContent='" + localized(R.string.cancel_action) + "';finish(true);};r.send(x);};</script></html>";
     }
 
     private void respondMethodNotAllowed(OutputStream out, String allowed) throws Exception {
