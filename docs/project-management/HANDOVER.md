@@ -264,16 +264,16 @@
 
 
 
-## Latest resume checkpoint — E00 documentation reconciliation, 2 November 2026
+## Historical resume checkpoint — E00 documentation reconciliation, 2 November 2026
 
-- **Current work unit:** E00 master inventory/document reconciliation. Documentation-only branch: `docs/e00-inventory-reconciliation`, based on `docs/project-master-inventory`. Review PR into the documentation branch is pending.
+- **E00 status:** CLOSED. PR #32 merged into `docs/project-master-inventory` (merge commit `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97`); exact-head CI #414 passed both jobs. PR #33 records the official closure and the CI artifact-publication guard.
 - **New report:** `docs/project-management/E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md`. It records the 36-branch inventory, refreshed PR states, protected B/C/D contracts, E01–E08 planning findings, F/G sequence, and explicit audit limitations.
 - **Verified D07 source baseline:** `feature/d07-concurrent-profile-content-state` @ `964163c918e281b68af5cf7114ca56ead2797486`; PR #31 OPEN/DRAFT/UNMERGED; exact-final-head CI #404 / `41313690556` PASS.
 - **PR inventory:** #10–#12 and #16–#31 OPEN/DRAFT/UNMERGED; B04/B05 reconciled merge history #13–#15 retained. Do not infer merge permission from source/CI closure.
 - **Current phase status:** A01–A06 DONE; B01–B07, C01–C07, D01–D07 source/CI complete but final integrated/device acceptance pending F; E00 DONE — PR #32 merged and canonical documents re-verified; E01–E08, F and G not started.
-- **Next action:** E00 is closed after PR #32 integration, CI #414 PASS and canonical document reread. Begin E01 from its exact dependency heads, keeping source changes scoped and preserving all B/C/D protections.
+- **Next action:** Begin E01 from its exact dependency heads, keeping source changes scoped and preserving all B/C/D protections.
 - **Integration timing:** D-013 remains active. F01 is an isolated integration rehearsal/candidate assembly and combined-diff audit; do not merge feature PRs into the reserved `integration/b-series` branch. F02–F07 validate the candidate. G01 repairs residual findings through their owning projects. Only after all A–G source audits/fixes are complete and findings are closed or explicitly accepted may exact heads be frozen and merged into `integration/b-series` by coherent dependency groups, with exact-head CI/regression after each group. G02–G03 cover the traceable candidate/artifact and target-TV install/upgrade/rollback. Merge to `main` only after final acceptance and explicit user approval; G04–G05 finalize records and handover.
-- **Safety:** no app source, feature PR, APK, device setting or user data changed by E00; no APK publication/installation or physical TV test performed.
+- **Safety:** no app source, feature PR, device setting or user data changed; no APK was installed or physical TV test performed. The pre-fix PR workflow uploaded two transient diagnostic artifacts (runs #414/#415); PR #33 adds a main-push-only upload guard.
 
 
 ## E00 official closure — 2 November 2026
