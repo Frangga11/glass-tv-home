@@ -287,7 +287,7 @@ public final class AvatarUploadServer {
                 + "main{max-width:460px;margin:auto;background:#172235;padding:24px;border-radius:20px}button,input{width:100%;padding:14px;margin:12px 0}"
                 + "button{background:#7dd3fc;border:0;border-radius:12px;font-weight:700}#s{color:#bae6fd}</style>"
                 + "<main><h2>📷 " + localized(R.string.avatar_upload_heading) + "</h2><p>" + localized(R.string.avatar_upload_intro) + "</p>"
-                + "<input id='f' type='file' accept='image/jpeg,image/png,image/webp,image/gif'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
+                + "<input id='f' type='file' accept='image/jpeg,image/png,image/webp'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
                 + "<script>const f=document.getElementById('f'),b=document.getElementById('b'),s=document.getElementById('s');"
                 + "f.onchange=()=>b.disabled=!f.files.length;b.onclick=()=>{const x=f.files[0];if(!x)return;b.disabled=true;s.textContent='" + localized(R.string.avatar_upload_sending) + "';"
                 + "const r=new XMLHttpRequest();r.open('POST','" + endpoint + "');r.timeout=" + NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS + ";r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"
