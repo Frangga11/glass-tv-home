@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Locale;
 
 public class RecentAppsActivity extends Activity implements RecentAppsAdapter.OnRecentAppInteractionListener {
     private static RecentAppsActivity sForegroundInstance = null;
@@ -49,6 +50,11 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
     private TextView tvBottomHint;
     private RecentAppsAdapter adapter;
     private long lastHomePressTime = 0;
+
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +143,9 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
 
     private void updateRamStats() {
         RecentAppsManager.MemoryStats stats = RecentAppsManager.getMemoryStats(this);
-        tvRamText.setText(stats.formattedText);
+        String usedGb = String.format(Locale.US, "%.1f", stats.usedBytes / (1024.0 * 1024.0 * 1024.0));
+        String totalGb = String.format(Locale.US, "%.1f", stats.totalBytes / (1024.0 * 1024.0 * 1024.0));
+        tvRamText.setText(getString(R.string.ram_usage_summary, usedGb, totalGb));
         pbRam.setProgress(stats.percentUsed);
     }
 
@@ -175,7 +183,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
         if (item.launchIntent != null) {
             SoundEffects.playSelect();
             if (ChildModeManager.isAppLocked(this, item.packageName)) {
-                ChildModeManager.promptPin(this, "Aplikasi Dikunci", "Masukkan PIN 4-digit untuk membuka " + item.label, new ChildModeManager.PinCallback() {
+                ChildModeManager.promptPin(this, getString(R.string.locked_app_title), getString(R.string.enter_pin_to_open_app, item.label), new ChildModeManager.PinCallback() {
                     @Override
                     public void onSuccess() {
                         try {
@@ -183,7 +191,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
                             startActivity(item.launchIntent);
                             finish();
                         } catch (ActivityNotFoundException e) {
-                            Toast.makeText(RecentAppsActivity.this, "Cannot open app", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RecentAppsActivity.this, R.string.cannot_open_app, Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -197,7 +205,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
                 startActivity(item.launchIntent);
                 finish();
             } catch (ActivityNotFoundException e) {
-                Toast.makeText(this, "Cannot open app", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.cannot_open_app, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -235,7 +243,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
                     adapter.clearAll();
                     updateRamStats();
                     showEmptyState();
-                    Toast.makeText(this, "RAM cleared! All apps closed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.ram_cleared_all_apps_closed, Toast.LENGTH_SHORT).show();
                     new Handler(Looper.getMainLooper()).postDelayed(this::finish, 650);
                 })
                 .start();

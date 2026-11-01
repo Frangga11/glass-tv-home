@@ -71,14 +71,14 @@ public final class UserSwitchDialog {
         headerTextCol.setPadding((int) (10 * density), 0, 0, 0);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Tukar Pengguna");
+        tvTitle.setText(R.string.switch_user_title);
         tvTitle.setTextSize(18);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(outfit, Typeface.BOLD);
         headerTextCol.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Pilih profil yang akan digunakan pada perangkat ini");
+        tvSub.setText(R.string.switch_user_subtitle);
         tvSub.setTextSize(12);
         tvSub.setTextColor(0xFF8E929E);
         tvSub.setTypeface(outfit, Typeface.NORMAL);
@@ -97,7 +97,7 @@ public final class UserSwitchDialog {
 
         // Section 1: User Profiles
         TextView tvProfSec = new TextView(activity);
-        tvProfSec.setText("PILIH PENGGUNA (PROFILES)");
+        tvProfSec.setText(R.string.switch_user_section);
         tvProfSec.setTextSize(11.5f);
         tvProfSec.setTextColor(0xFF8E929E);
         tvProfSec.setTypeface(outfit, Typeface.BOLD);
@@ -180,7 +180,7 @@ public final class UserSwitchDialog {
             itemCol.setOnClickListener(v -> {
                 SoundEffects.playSelect();
                 if (isActive) {
-                    Toast.makeText(activity, "Profil " + prof.name + " sudah aktif", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, activity.getString(R.string.profile_already_active, prof.name), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -221,7 +221,7 @@ public final class UserSwitchDialog {
         addCol.addView(plusFrame, new LinearLayout.LayoutParams(pfDim, pfDim));
 
         TextView tvAddLbl = new TextView(activity);
-        tvAddLbl.setText("Tambah");
+        tvAddLbl.setText(R.string.add_user_label);
         tvAddLbl.setTextSize(12);
         tvAddLbl.setTextColor(0xFF8E929E);
         tvAddLbl.setTypeface(outfit, Typeface.NORMAL);
@@ -251,7 +251,7 @@ public final class UserSwitchDialog {
 
         // Close / Batal Button
         Button btnClose = new Button(activity);
-        btnClose.setText("Tutup");
+        btnClose.setText(R.string.close_label);
         btnClose.setTextSize(14);
         btnClose.setTextColor(0xFFE2E8F0);
         btnClose.setTypeface(outfit, Typeface.BOLD);
@@ -311,8 +311,8 @@ public final class UserSwitchDialog {
             if (afterSwitch != null) afterSwitch.run();
         };
         if (ChildModeManager.requiresParentPinToSwitch(currentChildMode)) {
-            ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
-                    "Masukkan PIN orang tua untuk keluar dari Mode Anak dan beralih ke profil " + target.name,
+            ChildModeManager.promptPin(activity, activity.getString(R.string.verify_parent_pin_title),
+                    activity.getString(R.string.switch_from_child_pin_prompt, target.name),
                     new ChildModeManager.PinCallback() {
                         @Override public void onSuccess() { commitSwitch.run(); }
                         @Override public void onCancelled() { }
@@ -326,23 +326,23 @@ public final class UserSwitchDialog {
     static void requestDeleteProfile(MainActivity activity, String profileId, String profileName,
                                      Runnable afterDelete) {
         if (activity == null || profileId == null) return;
-        ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
-                "Masukkan PIN orang tua untuk menghapus profil " + profileName,
+        ChildModeManager.promptPin(activity, activity.getString(R.string.parent_pin_delete_title),
+                activity.getString(R.string.parent_pin_delete_message, profileName),
                 new ChildModeManager.PinCallback() {
                     @Override public void onSuccess() {
                         new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                                .setTitle("Hapus profil " + profileName + "?")
-                                .setMessage("Semua pengaturan dan foto milik profil ini akan dihapus. Tindakan ini tidak dapat dibatalkan.")
-                                .setNegativeButton("Batal", (d, w) -> d.dismiss())
-                                .setPositiveButton("Hapus", (d, w) -> {
+                                .setTitle(activity.getString(R.string.delete_profile_title, profileName))
+                                .setMessage(R.string.delete_profile_message)
+                                .setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss())
+                                .setPositiveButton(R.string.delete_action, (d, w) -> {
                                     boolean deleted = ProfileManager.deleteProfile(activity, profileId);
                                     if (deleted) {
-                                        Toast.makeText(activity, "Profil " + profileName + " berhasil dihapus", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity, activity.getString(R.string.profile_deleted, profileName), Toast.LENGTH_SHORT).show();
                                         if (afterDelete != null) afterDelete.run();
                                         activity.reloadTiles();
                                         activity.updateTopBarUserIcon();
                                     } else {
-                                        Toast.makeText(activity, "Profil tidak dapat dihapus. Pastikan masih ada profil lain.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(activity, R.string.profile_delete_failed, Toast.LENGTH_LONG).show();
                                     }
                                 }).show();
                     }
@@ -355,8 +355,8 @@ public final class UserSwitchDialog {
         ProfileManager.setActiveProfile(activity, prof.id);
         activity.reloadTiles();
         activity.updateTopBarUserIcon();
-        Toast.makeText(activity, "Profil aktif: " + prof.name
-                + (ChildModeManager.isChildModeEnabled(activity, prof.id) ? " (Mode Anak)" : ""),
+        Toast.makeText(activity, activity.getString(R.string.profile_active_message, prof.name,
+                ChildModeManager.isChildModeEnabled(activity, prof.id) ? activity.getString(R.string.child_mode_suffix) : ""),
                 Toast.LENGTH_SHORT).show();
         if (dialog != null) dialog.dismiss();
     }
@@ -373,14 +373,14 @@ public final class UserSwitchDialog {
         content.setBackground(bg);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("➕ Tambah Pengguna Baru");
+        tvTitle.setText(R.string.add_user_title);
         tvTitle.setTextSize(18);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(font, Typeface.BOLD);
         content.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Masukkan nama dan pilih avatar untuk profil ini");
+        tvSub.setText(R.string.add_user_subtitle);
         tvSub.setTextSize(12.5f);
         tvSub.setTextColor(0xFF8E929E);
         tvSub.setTypeface(font, Typeface.NORMAL);
@@ -389,7 +389,7 @@ public final class UserSwitchDialog {
 
         // Edit text for Name
         EditText et = new EditText(activity);
-        et.setHint("Contoh: Ibu, Ayah, Adik");
+        et.setHint(R.string.add_user_name_hint);
         et.setHintTextColor(0xFF6B7280);
         et.setTextColor(0xFFFFFFFF);
         et.setTextSize(15);
@@ -408,7 +408,7 @@ public final class UserSwitchDialog {
 
         // Avatar Picker Header
         TextView tvAvHeader = new TextView(activity);
-        tvAvHeader.setText("PILIH AVATAR");
+        tvAvHeader.setText(R.string.choose_avatar_label);
         tvAvHeader.setTextSize(11.5f);
         tvAvHeader.setTextColor(0xFF8E929E);
         tvAvHeader.setTypeface(font, Typeface.BOLD);
@@ -467,7 +467,7 @@ public final class UserSwitchDialog {
 
         // Checkbox: Child Mode profile
         CheckBox cbChild = new CheckBox(activity);
-        cbChild.setText("Tandakan sebagai Profil Kanak-kanak (Auto Child Mode)");
+        cbChild.setText(R.string.child_profile_checkbox);
         cbChild.setTextColor(0xFFCBD5E1);
         cbChild.setTextSize(13);
         cbChild.setTypeface(font, Typeface.NORMAL);
@@ -482,7 +482,7 @@ public final class UserSwitchDialog {
         btnRow.setGravity(Gravity.END);
 
         Button btnCancel = new Button(activity);
-        btnCancel.setText("Batal");
+        btnCancel.setText(R.string.cancel_action);
         btnCancel.setTextColor(0xFF8E929E);
         btnCancel.setTypeface(font, Typeface.NORMAL);
         btnCancel.setFocusable(true);
@@ -503,7 +503,7 @@ public final class UserSwitchDialog {
         btnRow.addView(btnCancel, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) (40 * density)));
 
         Button btnSave = new Button(activity);
-        btnSave.setText("Simpan Profil");
+        btnSave.setText(R.string.save_profile_action);
         btnSave.setTextColor(0xFFFFFFFF);
         btnSave.setTypeface(font, Typeface.BOLD);
         btnSave.setFocusable(true);
@@ -521,12 +521,12 @@ public final class UserSwitchDialog {
         btnSave.setOnClickListener(v -> {
             String name = et.getText().toString().trim();
             if (name.isEmpty()) {
-                Toast.makeText(activity, "Sila masukkan nama pengguna", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, R.string.user_name_required, Toast.LENGTH_SHORT).show();
                 return;
             }
             SoundEffects.playSelect();
             ProfileManager.addProfile(activity, name, chosenAvatar[0], cbChild.isChecked());
-            Toast.makeText(activity, "✨ Profil " + name + " berjaya dicipta!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.profile_created, name), Toast.LENGTH_SHORT).show();
             if (dHolder[0] != null) dHolder[0].dismiss();
             if (onAdded != null) onAdded.run();
         });

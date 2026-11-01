@@ -30,6 +30,11 @@ public class LocationActivity extends Activity {
     private String current;
 
     @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         density = getResources().getDisplayMetrics().density;
@@ -52,13 +57,9 @@ public class LocationActivity extends Activity {
                 hintText = "OK: choose  ·  Back: leave it as it is";
                 break;
             case AppLanguage.LANG_ID:
-                subtitle = "Di mana posisi TV ini? Waktu sholat mengikuti zona, dan cuaca mengikuti kota utama.";
-                hintText = "OK: pilih  ·  Kembali: batalkan";
-                break;
-            case AppLanguage.LANG_MS:
             default:
-                subtitle = "Di manakah lokasi TV ini? Waktu Solat mengikut zon, dan cuaca mengikut bandar utama.";
-                hintText = "OK: pilih  ·  Kembali: kekalkan tetapan";
+                subtitle = getString(R.string.location_setup_subtitle);
+                hintText = getString(R.string.location_setup_hint);
                 break;
         }
 
