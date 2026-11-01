@@ -47,4 +47,22 @@
     <string name="weather_activity_label">Cuaca &amp; Kualitas Udara</string>
     <string name="recent_apps_activity_label">Aplikasi Terbaru</string>
     <string name="media_listener_service_label">Layanan Media Glass TV</string>
+
+    <string name="daily_prayer_label">DOA HARIAN  •  AYAT PILIHAN</string>
+    <string name="prayer_subuh">Subuh</string>
+    <string name="prayer_sunrise">Terbit</string>
+    <string name="prayer_dhuhr">Dzuhur</string>
+    <string name="prayer_asr">Ashar</string>
+    <string name="prayer_maghrib">Maghrib</string>
+    <string name="prayer_isha">Isya</string>
+    <string name="now_playing_placeholder">Now playing • SPOTIFY</string>
+    <string name="song_title_placeholder">Judul Lagu</string>
+    <string name="assistant_content_description">Google Assistant</string>
+    <string name="user_profile_content_description">Pilih Pengguna &amp; Mode Anak</string>
+    <string name="recent_apps_title">Aplikasi Terbaru</string>
+    <string name="recent_apps_ram_usage">RAM %1$s digunakan dari %2$s</string>
+    <string name="recent_apps_empty">Tidak ada aplikasi yang baru dibuka</string>
+    <string name="recent_apps_hint_close">Tekan ▲ pada aplikasi untuk menutupnya</string>
+    <string name="standby_photo_description">Foto latar Layar Siaga</string>
+    <string name="standby_return_hint">Tekan tombol apa pun untuk kembali</string>
 </resources>
