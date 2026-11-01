@@ -193,3 +193,16 @@
 - APK size diagnostic: 1,546,045 bytes; below 1.5 MiB cap by 26,819 bytes. Artifact publication skipped.
 - Physical phone/TV same-network acceptance is deferred to F-stage and remains mandatory. No APK published/installed, no device settings changed, no PR merged.
 - Next action: begin C04 endpoint/routing/method/response-code audit without reopening C01–C03 unless a concrete dependency is found.
+
+
+## 2026-11-01 — C04 HTTP endpoint/routing audit and repair
+
+- Created isolated branch `feature/c04-http-endpoint-routing` from C03 exact head `d266287df287167e5a8e73fd675b51759b580ed6`; Draft PR #21 targets C03.
+- Audited Avatar, Wallpaper, and StandBy request-line parsing, session route boundaries, method handling, query parameters, response codes, and gallery browser API behavior.
+- Findings: prefix/minimum-token request parsing; incomplete headers could continue to route; unsupported methods were often 404; Wallpaper OPTIONS was broad; select/delete could report false 200; browser actions ignored HTTP status; query parameters did not reject duplicate/missing values consistently.
+- Added `UploadHttpRequest` and JVM tests; both services now require a complete header and strict HTTP/1.0/1.1 request line. Route map is exact and token-scoped. Known path/wrong method returns 405 + Allow; unknown path 404; invalid line/header 400; header too large 431; oversized upload 413.
+- Wallpaper API now reports select/delete/slideshow/clear failure states; list/thumbnail errors return explicit responses. Browser POST actions respect response.ok and display localized failure feedback. Added aligned default/ID/EN string.
+- Exact-head CI #342 / `41288521501` PASS on `f09ee1b30b80e45e793c1678935eff8867aedae4`; both jobs SUCCESS; launcher/installer `testReleaseUnitTest` and `assembleRelease` succeeded.
+- APK size: 1,547,845 bytes; 15,019 bytes below 1.5 MiB cap. Publication skipped. Avoid nonessential APK growth in later stages.
+- Physical phone/TV QR/browser acceptance remains deferred to F-stage and mandatory. No APK published/installed, no device settings changed, no PR merged.
+- Next: C05 shared upload/receive-file pipeline audit.
