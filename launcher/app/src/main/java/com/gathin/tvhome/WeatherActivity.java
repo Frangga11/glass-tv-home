@@ -379,7 +379,7 @@ public class WeatherActivity extends Activity {
             sunArcView.setTimes(w.sunrise, w.sunset);
         }
         if (sunsetText != null) {
-            sunsetText.setText(w.sunset != null ? w.sunset : "6:57 PM");
+            sunsetText.setText(w.sunset != null ? w.sunset : "—");
         }
 
         if (uvValText != null) {
@@ -387,10 +387,10 @@ public class WeatherActivity extends Activity {
         }
         if (uvDescText != null) {
             boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
-            if (w.uvIndex <= 2) uvDescText.setText(english ? "Low" : "Rendah");
-            else if (w.uvIndex <= 5) uvDescText.setText(english ? "Moderate" : "Sedang");
-            else if (w.uvIndex <= 7) uvDescText.setText(english ? "High" : "Tinggi");
-            else uvDescText.setText(english ? "Very High" : "Sangat Tinggi");
+            if (w.uvIndex <= 2) uvDescText.setText(R.string.uv_low);
+            else if (w.uvIndex <= 5) uvDescText.setText(R.string.uv_moderate);
+            else if (w.uvIndex <= 7) uvDescText.setText(R.string.uv_high);
+            else uvDescText.setText(R.string.uv_very_high);
         }
 
         if (feelsLikeVal != null) {
@@ -423,16 +423,15 @@ public class WeatherActivity extends Activity {
             precipitationValue.setText(String.format(Locale.ROOT, "%.1f mm", w.precipitationMm));
         }
         if (precipitationSub != null) {
-            precipitationSub.setText((englishMetrics ? "Now" : "Saat ini") + " • "
-                    + (englishMetrics ? "rain chance " : "peluang hujan ") + w.rainChanceToday + "%");
+            precipitationSub.setText(getString(R.string.precipitation_summary, w.rainChanceToday));
         }
         if (visibilityValue != null) {
             visibilityValue.setText(String.format(Locale.ROOT, "%.1f km", w.visibilityKm));
         }
         if (visibilitySub != null) {
             visibilitySub.setText(w.visibilityKm < 1.0
-                    ? (englishMetrics ? "Limited visibility" : "Jarak pandang terbatas")
-                    : (englishMetrics ? "Good visibility" : "Jarak pandang baik"));
+                    ? getString(R.string.limited_visibility)
+                    : getString(R.string.good_visibility));
         }
         if (pressureGaugeView != null) {
             pressureGaugeView.setPressure(w.pressure);
