@@ -1,6 +1,4 @@
-[object Object]
-
-## Latest audit register — B04/B05, 1 November 2026
+## Historical audit register checkpoint — B04/B05, 1 November 2026
 
 **Integration head:** `89d769689eb566671725c52982e0b73c4f1e8c31` | **PR #15:** open, Draft.
 
