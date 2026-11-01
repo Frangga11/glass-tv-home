@@ -273,8 +273,16 @@ GitHub source URLs:
 
 - B04 PR #13 source head `baf0e7dad2dfa28a9f79c7bb25a58502243f04ae` passed exact-head CI #242. The seven-file B04 scope includes responsive Recent Apps card sizing, proportional overlap, Close All slot sizing, Nightstand responsive bounds, and JVM sizing tests. Physical visual acceptance remains F02.
 - B05 PR #14 source head `04cf544ca240e32a87baef525f266f3d038ff668` remains without exact-head CI evidence.
-- Reconciliation branch `integration/b04-b05-reconciled`, current head `9476b4da24efffc328430533c298acdcc6866ab8`; Draft PR #15 targets `feature/b04-responsive-layout`. Commit `73817ce41e4ae5b034922f190052a95ac45886d9` is the two-parent integration of exact B04 and B05 heads; subsequent localization-remediation commits extend that integration branch.
+- Reconciliation branch `integration/b04-b05-reconciled`, current head `fd8c14630254e27d42e257be342a5324bd40522c`; Draft PR #15 targets `feature/b04-responsive-layout`. Commit `73817ce41e4ae5b034922f190052a95ac45886d9` is the two-parent integration of exact B04 and B05 heads; subsequent localization-remediation commits extend that integration branch.
 - Four overlapping files were selectively combined. B04-only RecentAppsAdapter, TvResponsiveLayout, and TvResponsiveLayoutTest were retained. B05 locale resources, LocaleContext, language normalization, and tests were retained.
-- Current default/ID/EN string sets contain 345 keys each. Static audit: no duplicates, same key sets, no printf-placeholder mismatches; no missing resource references in the three directly audited Java files.
+- Current default/ID/EN string sets contain 347 keys each. Static audit: no duplicates, same key sets, no printf-placeholder mismatches; no missing resource references in the three directly audited Java files.
 - Additional localized feedback: StandBy mode, Adhan popup, Auto-Update status/actions, Now Playing fallbacks, playback state, wallpaper shuffle, next prayer suffix, Child Mode and visual-effect feedback, hide/lock app dialog labels, UV bands, precipitation summary, and visibility descriptions.
 - Remaining B05 source debt: ModernSettingsDialog still contains user-facing Indonesian literals in profile, wallpaper, StandBy, device/system, OTA, and launcher guidance sections; perform a full app-wide Java/XML scan. Exact-head integrated CI has not reported; no local Gradle execution was available through the connected GitHub actions interface. API 30/API 33 runtime and physical acceptance remain pending.
+
+
+### QC follow-up — 1 November 2026
+
+- Latest integration head: `fd8c14630254e27d42e257be342a5324bd40522c` (Draft PR #15).
+- Additional parental PIN fallback prompts are now localized. Static resource audit now reports 347 keys in each of default/ID/EN, with no duplicates, key-set differences, placeholder mismatches, or missing R.string references in the audited Java files.
+- Exact-head Actions run is still absent. Do not infer build/test success from static checks.
+- B05 remains IN PROGRESS: broader ModernSettingsDialog copy sweep, app-wide final scan, exact-head CI, API 30/API 33 lifecycle checks, and physical acceptance remain open.
