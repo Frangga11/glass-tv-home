@@ -1372,7 +1372,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         for (Uri uri : selectedUris) {
-            if (StandbyPhotoStore.isManagedFile(this, uri)) continue;
+            // Managed QR photos are file:// URIs and their files were removed by the store.
+            if ("file".equalsIgnoreCase(uri.getScheme())) continue;
             try {
                 getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } catch (Exception ignored) {
