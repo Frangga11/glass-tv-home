@@ -242,7 +242,7 @@ public class WallpaperUploadServer {
                         }
                         if (!accepted) {
                             try {
-                                byte[] body = localized(R.string.avatar_error_busy).getBytes("UTF-8");
+                                byte[] body = localized(R.string.local_upload_error_busy).getBytes("UTF-8");
                                 OutputStream rejectOut = client.getOutputStream();
                                 rejectOut.write(("HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain; charset=UTF-8\r\n"
                                         + "Content-Length: " + body.length + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes("UTF-8"));
