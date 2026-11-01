@@ -74,7 +74,11 @@ public final class LocalApkServer {
 
         void serve() {
             try {
-                if (callback != null && running.get()) callback.onStarted(url);
+                boolean announce;
+                synchronized (LocalApkServer.class) {
+                    announce = activeState == this && running.get();
+                }
+                if (callback != null && announce) callback.onStarted(url);
                 while (running.get() && !listeningSocket.isClosed()) {
                     Socket client;
                     try {
@@ -87,15 +91,24 @@ public final class LocalApkServer {
                         closeQuietly(client);
                         break;
                     }
-                    if (clients.size() >= MAX_ACTIVE_CLIENTS) {
-                        writeError(client, 503, "Service Unavailable", "Server sedang sibuk. Coba lagi.");
+                    boolean accepted;
+                    synchronized (clients) {
+                        accepted = running.get() && clients.size() < MAX_ACTIVE_CLIENTS;
+                        if (accepted) clients.add(client);
+                    }
+                    if (!accepted) {
+                        if (running.get()) writeError(client, 503, "Service Unavailable", "Server sedang sibuk. Coba lagi.");
                         closeQuietly(client);
                         continue;
                     }
-                    clients.add(client);
-                    Thread worker = new Thread(() -> handleClient(this, client), "installer-apk-client");
-                    worker.setDaemon(true);
-                    worker.start();
+                    try {
+                        Thread worker = new Thread(() -> handleClient(this, client), "installer-apk-client");
+                        worker.setDaemon(true);
+                        worker.start();
+                    } catch (Exception e) {
+                        clients.remove(client);
+                        closeQuietly(client);
+                    }
                 }
             } catch (Exception e) {
                 if (running.get()) Log.w(TAG, "HTTP server stopped unexpectedly", e);
@@ -225,12 +238,12 @@ public final class LocalApkServer {
             int query = path.indexOf('?');
             if (query >= 0) path = path.substring(0, query);
 
-            if (!"GET".equals(parts[0])) {
-                writeError(out, 405, "Method Not Allowed", "Metode tidak didukung.");
-            } else if ("/glass-tv.apk".equals(path)) {
+            if (isDownloadRequest(parts[0], path)) {
                 sendApk(state.context, out);
-            } else if ("/".equals(path)) {
+            } else if (isLandingRequest(parts[0], path)) {
                 sendLandingPage(out);
+            } else if (!"GET".equals(parts[0])) {
+                writeError(out, 405, "Method Not Allowed", "Metode tidak didukung.");
             } else {
                 writeError(out, 404, "Not Found", "Halaman tidak ditemukan.");
             }
@@ -240,6 +253,14 @@ public final class LocalApkServer {
             state.clients.remove(client);
             closeQuietly(client);
         }
+    }
+
+    static boolean isDownloadRequest(String method, String path) {
+        return "GET".equals(method) && "/glass-tv.apk".equals(path);
+    }
+
+    static boolean isLandingRequest(String method, String path) {
+        return "GET".equals(method) && "/".equals(path);
     }
 
     private static String readLine(InputStream in, int maxBytes) throws Exception {
