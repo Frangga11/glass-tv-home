@@ -104,3 +104,15 @@
 - C03 source/CI pass: Draft PR #20, `feature/c03-phone-tv-network-verification` @ `d266287df287167e5a8e73fd675b51759b580ed6`, CI #338 PASS. Active default Wi-Fi/Ethernet IPv4 resolution now drives Avatar, Wallpaper, and StandBy QR services.
 - C01–C03 remain OPEN/DRAFT/UNMERGED under D-013. Real phone/TV same-network acceptance remains deferred to F-stage and is not waived.
 - Next: C04 HTTP endpoint/routing/method/response-code audit. Detailed resume point is in `HANDOVER.md`; evidence is in `AUDIT_REGISTER.md`.
+
+
+## Project C current checkpoint — C04 source complete, 1 November 2026
+
+- C01 source/CI pass: Draft PR #18, `feature/c01-local-communication-audit` @ `bba0801c9eb61ab27ae5046379c7a50aabebf570`, CI #314 PASS.
+- C02 source/CI pass: Draft PR #19, `feature/c02-tv-local-server-ip` @ `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`, CI #333 PASS.
+- C03 source/CI pass: Draft PR #20, `feature/c03-phone-tv-network-verification` @ `d266287df287167e5a8e73fd675b51759b580ed6`, CI #338 PASS.
+- C04 code/test head: `f09ee1b30b80e45e793c1678935eff8867aedae4`, CI #342 PASS; Draft PR #21. The subsequent audit-document-only branch head is `9094969d968c6fffef6598e1e8c5a7bd62e5efa8`; exact-head documentation CI #343 is in progress at checkpoint.
+- C04 added strict HTTP request-line parsing, exact endpoint/method contracts, 404/405/413 behavior, deterministic gallery API errors, duplicate/missing query rejection, and browser-side HTTP status handling.
+- APK diagnostic on code/test head: 1,547,845 bytes, 15,019 bytes below the 1.5 MiB cap; artifact publication skipped. Avoid unnecessary APK growth in later stages.
+- C01–C04 remain OPEN/DRAFT/UNMERGED under D-013. Physical phone/TV QR/browser acceptance remains deferred to F-stage and is not waived.
+- Next: C05 shared upload/receive-file pipeline audit. Detailed resume state is in `HANDOVER.md`; audit evidence is in `AUDIT_REGISTER.md`.
