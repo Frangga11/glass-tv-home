@@ -497,7 +497,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="standby_photos_skipped">%1$d foto dilewati karena batas koleksi.</string>
     <string name="wifi_settings_label">Pengaturan Wi-Fi</string>
     <string name="glass_tv_settings_label">Pengaturan Glass TV</string>
-    <string name="restart_tv_requested">Perintah mulai ulang dikirim ke Android TV.</string>
+    <string name="restart_tv_requested">Menu daya dibuka. Jika TV tidak mulai ulang, pilih Restart secara manual.</string>
     <string name="restart_tv_failed">Tidak dapat memulai ulang. Aktifkan layanan aksesibilitas Glass TV terlebih dahulu.</string>
     <string name="power_menu_opened">Menu daya Android TV dibuka. Jika tidak mati otomatis, pilih Matikan / Power off pada menu sistem. Mematikan TV fisik bergantung pada HDMI-CEC.</string>
     <string name="power_menu_failed">Tidak dapat mengirim perintah daya. Periksa layanan aksesibilitas Glass TV dan HDMI-CEC TV.</string>
