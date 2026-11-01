@@ -311,8 +311,8 @@ public final class UserSwitchDialog {
             if (afterSwitch != null) afterSwitch.run();
         };
         if (ChildModeManager.requiresParentPinToSwitch(currentChildMode)) {
-            ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
-                    "Masukkan PIN orang tua untuk keluar dari Mode Anak dan beralih ke profil " + target.name,
+            ChildModeManager.promptPin(activity, activity.getString(R.string.verify_parent_pin_title),
+                    activity.getString(R.string.switch_from_child_pin_prompt, target.name),
                     new ChildModeManager.PinCallback() {
                         @Override public void onSuccess() { commitSwitch.run(); }
                         @Override public void onCancelled() { }

@@ -1425,9 +1425,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 }
             }
             String message = skippedByLimit > 0
-                    ? "Koleksi sudah mencapai batas " + StandbyPhotoStore.MAX_PHOTO_COUNT + " foto."
-                    : (allAlreadySelected ? "Foto yang dipilih sudah ada di koleksi Layar Siaga."
-                    : "Foto tidak dapat diakses kembali. Coba pilih foto dari penyimpanan perangkat.");
+                    ? getString(R.string.standby_collection_limit, StandbyPhotoStore.MAX_PHOTO_COUNT)
+                    : (allAlreadySelected ? getString(R.string.standby_photos_already_selected)
+                    : getString(R.string.standby_photo_access_error));
             Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             return;
         }
@@ -1450,8 +1450,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (added == 0) {
             String message = skipped > 0
-                    ? "Koleksi sudah mencapai batas " + StandbyPhotoStore.MAX_PHOTO_COUNT + " foto."
-                    : "Foto yang dipilih sudah ada di koleksi Layar Siaga.";
+                    ? getString(R.string.standby_collection_limit, StandbyPhotoStore.MAX_PHOTO_COUNT)
+                    : getString(R.string.standby_photos_already_selected);
             Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             return;
         }
@@ -1470,8 +1470,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         StandbyPhotoStore.setPhotoMode(this, true);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
-        String message = added + " foto ditambahkan. Total koleksi: " + merged.size() + " foto.";
-        if (skipped > 0) message += " " + skipped + " foto dilewati karena batas koleksi.";
+        String message = getString(R.string.standby_photos_added, added, merged.size());
+        if (skipped > 0) message += " " + getString(R.string.standby_photos_skipped, skipped);
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
@@ -3154,13 +3154,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addSeparator(rows);
 
         // Row 2: Pengaturan Wi-Fi
-        addInputRow(rows, close, R.drawable.ic_settings, "Pengaturan Wi-Fi", -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_settings, getString(R.string.wifi_settings_label), -1, () -> {
             SoundEffects.playSelect();
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
         });
 
         // Row 3: Tutup
-        addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_close, getString(R.string.close_label), -1, () -> {
             SoundEffects.playSelect();
             closeMenu(true);
         });
@@ -3230,7 +3230,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, this::showLanguageDialog);
 
         addSeparator(rows);
-        addInputRow(rows, close, R.drawable.ic_settings, "Pengaturan Glass TV", -1, this::showSettingsPopup);
+        addInputRow(rows, close, R.drawable.ic_settings, getString(R.string.glass_tv_settings_label), -1, this::showSettingsPopup);
         addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strAllSettings(this), -1,
                 () -> open(systemIntent(Settings.ACTION_SETTINGS)));
         addInputRow(rows, close, R.drawable.ic_close, AppLanguage.strClose(this), -1, () -> closeMenu(true));
@@ -3760,8 +3760,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             handler.postDelayed(() -> {
                 boolean requested = HomeKeyService.restartTv(MainActivity.this);
                 String message = requested
-                        ? "Perintah mulai ulang dikirim ke Android TV."
-                        : "Tidak dapat memulai ulang. Aktifkan layanan aksesibilitas Glass TV terlebih dahulu.";
+                        ? getString(R.string.restart_tv_requested)
+                        : getString(R.string.restart_tv_failed);
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
             }, 300);
         });
@@ -3779,8 +3779,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dialog.dismiss();
             boolean requested = HomeKeyService.turnOffTv(MainActivity.this);
             Toast.makeText(MainActivity.this, requested
-                    ? "Menu daya Android TV dibuka. Jika tidak mati otomatis, pilih Matikan / Power off pada menu sistem. Mematikan TV fisik bergantung pada HDMI-CEC."
-                    : "Tidak dapat mengirim perintah daya. Periksa layanan aksesibilitas Glass TV dan HDMI-CEC TV.",
+                    ? getString(R.string.power_menu_opened)
+                    : getString(R.string.power_menu_failed),
                     Toast.LENGTH_LONG).show();
         });
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
@@ -4763,8 +4763,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     handler.postDelayed(wallTick, wallpaperIntervalMs);
                 }
                 String msg = (chosenMin == 0)
-                        ? "⏸️ Pertukaran automatik dimatikan (Tukar manual)"
-                        : "✅ Wallpaper akan bertukar setiap " + (chosenMin == 60 ? "1 jam" : chosenMin + " minit");
+                        ? getString(R.string.wallpaper_auto_change_off)
+                        : getString(R.string.wallpaper_auto_change_interval, chosenMin == 60 ? getString(R.string.one_hour_label) : getString(R.string.minutes_label, chosenMin));
                 Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                 showWallpaperDialog();
             });
@@ -5116,7 +5116,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String zoneTown = (zone != null) ? zone.town : "Pagar Alam";
         String nextPrayer = PrayerTimes.getNextPrayerSummary(this);
         HomeWeather.Line wx = HomeWeather.last(this);
-        String wxStr = (wx != null && !wx.weather.isEmpty()) ? (wx.weather + (wx.aqi.isEmpty() ? "" : " • " + wx.aqi)) : "Cuaca Live Aktif";
+        String wxStr = (wx != null && !wx.weather.isEmpty()) ? (wx.weather + (wx.aqi.isEmpty() ? "" : " • " + wx.aqi)) : getString(R.string.weather_live_active);
 
         TextView statusText = new TextView(this);
         statusText.setText(getString(R.string.info_system_summary, nextPrayer, zoneTown, wxStr));
@@ -5269,7 +5269,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showPrayerAndAyahDialog(String town) {
         WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
-        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : "Tidak ada ayat harian.";
+        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : getString(R.string.no_daily_ayah);
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(R.string.prayer_summary_title)
                 .setMessage(getString(R.string.prayer_summary_body, town, PrayerTimes.getHijriDate(), PrayerTimes.getNextPrayerSummary(this), ayahTxt))
@@ -5761,13 +5761,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         List<Runnable> actions = new ArrayList<>();
 
         // Quick Mode Actions at top
-        items.add("📲 Unggah Foto Baru (Kode QR Ponsel)");
+        items.add(getString(R.string.wallpaper_upload_new_phone));
         actions.add(this::showWallpaperUploadQrDialog);
 
-        items.add("🔄 Putar Semua Gambar (Mode Slideshow)");
+        items.add(getString(R.string.wallpaper_slideshow_all));
         actions.add(this::onCustomWallpaperSlideshow);
 
-        items.add("🗑️ Padam Semua Gambar (Kosongkan)");
+        items.add(getString(R.string.wallpaper_delete_all_uploaded));
         actions.add(() -> {
             AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                     .setTitle(R.string.delete_all_wallpapers_title)
@@ -5786,7 +5786,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             double kb = f.length() / 1024.0;
             String sizeStr = kb > 1024 ? String.format(Locale.ROOT, "%.1f MB", kb / 1024.0) : String.format(Locale.ROOT, "%.0f KB", kb);
             boolean isCurrent = isSingleMode && f.getName().equals(singleFile);
-            String prefix = isCurrent ? "📌 [Kekal] " : "🖼️ ";
+            String prefix = isCurrent ? getString(R.string.wallpaper_pinned_prefix) : "🖼️ ";
             items.add(prefix + f.getName() + " (" + sizeStr + " • " + sdf.format(new Date(f.lastModified())) + ")");
             actions.add(() -> showSingleCustomActionDialog(f));
         }
@@ -5811,10 +5811,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showSingleCustomActionDialog(File file) {
         String[] actions = {
-                "📌 Jadikan Wallpaper Tunggal (Kunci Gambar Ini)",
-                "🗑️ Padam Gambar Ini",
-                "🧹 Simpan Gambar Ini Sahaja & Padam Yang Lain",
-                "⬅️ Kembali"
+                getString(R.string.wallpaper_pin_single),
+                getString(R.string.wallpaper_delete_one),
+                getString(R.string.wallpaper_keep_only_one),
+                getString(R.string.back_action)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
@@ -5956,14 +5956,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addSeparator(rows);
 
         // Tetapan Azan shortcut
-        addInputRow(rows, close, R.drawable.ic_azan, "Pengaturan & Pilihan Azan ▶", -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_azan, getString(R.string.azan_settings_menu_label), -1, () -> {
             SoundEffects.playSelect();
             closeMenu(false);
             showAzanSettingsDialog();
         });
 
         // Tutup
-        addInputRow(rows, close, R.drawable.ic_close, "Tutup", -1, () -> {
+        addInputRow(rows, close, R.drawable.ic_close, getString(R.string.close_label), -1, () -> {
             SoundEffects.playSelect();
             closeMenu(true);
         });

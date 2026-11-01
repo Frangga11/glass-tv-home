@@ -475,4 +475,41 @@ adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity%1$s</str
 
 If the TV still restricts the Home button, disable the previous launcher:
 adb shell pm disable-user --user 0 %1$s</string>
+    <string name="standby_collection_limit">The collection has reached its limit of %1$d photos.</string>
+    <string name="standby_photos_already_selected">The selected photos are already in the Standby collection.</string>
+    <string name="standby_photo_access_error">The photos can no longer be accessed. Try selecting them from device storage again.</string>
+    <string name="standby_photos_added">%1$d photos added. Collection total: %2$d photos.</string>
+    <string name="standby_photos_skipped">%1$d photos skipped because the collection limit was reached.</string>
+    <string name="wifi_settings_label">Wi-Fi Settings</string>
+    <string name="glass_tv_settings_label">Glass TV Settings</string>
+    <string name="restart_tv_requested">Restart command sent to Android TV.</string>
+    <string name="restart_tv_failed">Could not restart. Enable the Glass TV accessibility service first.</string>
+    <string name="power_menu_opened">Android TV power menu opened. If the TV does not turn off automatically, choose Power off in the system menu. Turning off the physical TV depends on HDMI-CEC.</string>
+    <string name="power_menu_failed">Could not send the power command. Check the Glass TV accessibility service and the TV&apos;s HDMI-CEC setting.</string>
+    <string name="wallpaper_auto_change_off">⏸️ Automatic changes are off (manual only)</string>
+    <string name="wallpaper_auto_change_interval">✅ Wallpaper will change every %1$s</string>
+    <string name="one_hour_label">1 hour</string>
+    <string name="minutes_label">%1$d minutes</string>
+    <string name="weather_live_active">Live weather active</string>
+    <string name="no_daily_ayah">No daily verse is available.</string>
+    <string name="wallpaper_upload_new_phone">📲 Upload New Photo (Phone QR Code)</string>
+    <string name="wallpaper_slideshow_all">🔄 Slideshow All Images</string>
+    <string name="wallpaper_delete_all_uploaded">🗑️ Delete All Images</string>
+    <string name="wallpaper_pinned_prefix">📌 [Pinned] </string>
+    <string name="wallpaper_pin_single">📌 Set as Single Wallpaper (Pin This Image)</string>
+    <string name="wallpaper_delete_one">🗑️ Delete This Image</string>
+    <string name="wallpaper_keep_only_one">🧹 Keep Only This Image &amp; Delete Others</string>
+    <string name="azan_settings_menu_label">Adhan Settings &amp; Options ▶</string>
+    <string name="weather_pick_city_station">📍 Choose City / Station (%1$s)</string>
+    <string name="weather_change_asia_region">🌏 Change Country / Asia Region (Default: Indonesia)</string>
+    <string name="weather_set_background_mood">✨ Set Weather Background Mood (Sunny, Rain, Storm, Night)</string>
+    <string name="weather_set_sunny">☀️ Set Sunny (Sun reflections, lens flare &amp; light)</string>
+    <string name="weather_set_rain">🌧️ Set Rain (Raindrops &amp; splashes)</string>
+    <string name="weather_set_storm">⛈️ Set Thunderstorm (Lightning &amp; rain)</string>
+    <string name="weather_set_cloudy">⛅ Set Cloudy (Moving clouds)</string>
+    <string name="weather_set_night">🌙 Set Night (Twinkling stars &amp; moonlight)</string>
+    <string name="weather_restore_live">🔄 Restore Live Weather (Auto)</string>
+    <string name="switch_from_child_pin_prompt">Enter the parent PIN to exit Child Mode and switch to profile %1$s.</string>
+    <string name="location_setup_subtitle">Where is this TV? Prayer times follow your zone, and weather follows its main town.</string>
+    <string name="location_setup_hint">OK: choose  ·  Back: cancel</string>
 </resources>

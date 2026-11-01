@@ -137,9 +137,9 @@ public class WeatherActivity extends Activity {
     private void showLocationPickerDialog() {
         String activeRegion = AppLocationManager.getActiveRegion(this);
         CharSequence[] topOptions = new CharSequence[]{
-                "📍 Pilih Bandar / Stesen (" + activeRegion + ")",
-                "🌏 Tukar Negara / Region Asia (Default: Indonesia)",
-                "✨ Tetapkan Suasana Latar Cuaca (Cerah, Hujan, Ribut, Malam)"
+                getString(R.string.weather_pick_city_station, activeRegion),
+                getString(R.string.weather_change_asia_region),
+                getString(R.string.weather_set_background_mood)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
@@ -162,12 +162,12 @@ public class WeatherActivity extends Activity {
         SharedPreferences p = getSharedPreferences("app_weather_prefs", MODE_PRIVATE);
 
         CharSequence[] conditions = new CharSequence[]{
-                "☀️ Tetapkan Cerah / Sunny (Pantulan suria, lens flare & cahaya)",
-                "🌧️ Tetapkan Hujan / Rain (Titisan hujan & percikan air)",
-                "⛈️ Tetapkan Ribut Petir / Thunderstorm (Kilat menyambar & hujan)",
-                "⛅ Tetapkan Mendung / Cloudy (Awan berarak di langit)",
-                "🌙 Tetapkan Malam / Night (Bintang berkelip & sinaran bulan)",
-                "🔄 Pulihkan kepada Cuaca Semasa Sebenar (Auto)"
+                getString(R.string.weather_set_sunny),
+                getString(R.string.weather_set_rain),
+                getString(R.string.weather_set_storm),
+                getString(R.string.weather_set_cloudy),
+                getString(R.string.weather_set_night),
+                getString(R.string.weather_restore_live)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
