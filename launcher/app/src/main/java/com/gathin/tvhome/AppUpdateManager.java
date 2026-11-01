@@ -305,12 +305,12 @@ public final class AppUpdateManager {
         progressDialog.setCancelable(false);
         AtomicBoolean cancelled = new AtomicBoolean(false);
         AtomicReference<HttpURLConnection> activeConnection = new AtomicReference<>();
-        progressDialog.show();
         progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel_action), (dialog, which) -> {
             cancelled.set(true);
             HttpURLConnection active = activeConnection.get();
             if (active != null) active.disconnect();
         });
+        progressDialog.show();
 
         executor.execute(() -> {
             File cacheDir = activity.getExternalCacheDir() != null ? activity.getExternalCacheDir() : activity.getCacheDir();
@@ -377,7 +377,11 @@ public final class AppUpdateManager {
                 mainHandler.post(() -> {
                     if (!isActivityUsable(activity)) return;
                     if (progressDialog.isShowing()) progressDialog.dismiss();
-                    if (!cancelled.get()) installApk(activity, apkFile);
+                    if (cancelled.get()) {
+                        if (apkFile.exists() && !apkFile.delete()) Log.w(TAG, "Could not remove cancelled update APK");
+                        return;
+                    }
+                    installApk(activity, apkFile);
                 });
 
             } catch (Exception e) {
