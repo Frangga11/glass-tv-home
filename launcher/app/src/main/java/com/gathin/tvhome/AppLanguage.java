@@ -23,6 +23,22 @@ final class AppLanguage {
     public static String getLanguage(Context ctx) {
         if (ctx == null) return LANG_ID;
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+
+        // On Android 13+, a language selected in Android's per-app settings is authoritative.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            android.app.LocaleManager localeManager =
+                    (android.app.LocaleManager) ctx.getSystemService(Context.LOCALE_SERVICE);
+            android.os.LocaleList appLocales = localeManager == null ? null : localeManager.getApplicationLocales();
+            if (appLocales != null && !appLocales.isEmpty()) {
+                String platformLanguage = normalizeLanguage(appLocales.get(0).getLanguage());
+                String saved = prefs.getString(KEY_LANG, LANG_ID);
+                if (!platformLanguage.equals(saved)) {
+                    prefs.edit().putString(KEY_LANG, platformLanguage).apply();
+                }
+                return platformLanguage;
+            }
+        }
+
         String selected = prefs.getString(KEY_LANG, LANG_ID);
         String normalized = normalizeLanguage(selected);
         if (!normalized.equals(selected)) {
