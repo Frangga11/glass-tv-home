@@ -146,4 +146,23 @@
 
     <string name="incorrect_pin">❌ PIN salah. Silakan coba lagi.</string>
     <string name="pin_four_digits">Silakan masukkan PIN 4 digit</string>
+
+    <string name="update_checking">🔄 Memeriksa pembaruan terbaru...</string>
+    <string name="update_http_failure">❌ Gagal memeriksa server pembaruan (HTTP %1$d)</string>
+    <string name="update_latest_version">✅ Glass TV Home sudah menggunakan versi terbaru (v%1$s)!</string>
+    <string name="update_check_error">❌ Gagal memeriksa pembaruan. Pastikan Wi-Fi tersambung.</string>
+    <string name="update_dialog_title">🚀 Pembaruan Baru Tersedia (v%1$s)</string>
+    <string name="update_dialog_message">Versi saat ini: v%1$s\nVersi terbaru: v%2$s\n\n📋 Catatan pembaruan:\n%3$s\n\nApakah Anda ingin memperbarui sekarang?</string>
+    <string name="update_now_action">⚡ Perbarui Sekarang</string>
+    <string name="update_later_action">⏭️ Lewati / Nanti Saja</string>
+    <string name="update_deferred">Pembaruan ditunda. Titik merah 🔴 tetap muncul pada tombol Pengaturan.</string>
+    <string name="install_permission_title">⚠️ Izin Instalasi Diperlukan</string>
+    <string name="install_permission_message">Aktifkan 'Allow from this source' agar Glass TV Home dapat memasang pembaruan otomatis.</string>
+    <string name="open_settings_action">Buka Pengaturan</string>
+    <string name="install_unknown_apps_hint">Buka Pengaturan &gt; Keamanan &gt; Instal aplikasi tidak dikenal</string>
+    <string name="download_update_title">📥 Mengunduh Pembaruan (v%1$s)</string>
+    <string name="download_update_message">Sedang mengunduh berkas instalasi...</string>
+    <string name="download_update_error">❌ Gagal mengunduh pembaruan: %1$s</string>
+    <string name="update_apk_missing">Berkas APK pembaruan tidak ditemukan.</string>
+    <string name="install_update_error">❌ Gagal memulai instalasi: %1$s</string>
 </resources>
