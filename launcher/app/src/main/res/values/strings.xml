@@ -165,4 +165,15 @@
     <string name="download_update_error">❌ Gagal mengunduh pembaruan: %1$s</string>
     <string name="update_apk_missing">Berkas APK pembaruan tidak ditemukan.</string>
     <string name="install_update_error">❌ Gagal memulai instalasi: %1$s</string>
+
+    <string name="weather_location_dialog_title">🌏 Lokasi &amp; Suasana Cuaca</string>
+    <string name="weather_mood_dialog_title">✨ Pilihan Suasana Latar Belakang</string>
+    <string name="weather_mood_selected">Suasana diatur ke: %1$s</string>
+    <string name="weather_mood_auto">Kembali ke data cuaca aktual (Otomatis)</string>
+    <string name="weather_region_picker_title">🌏 Pilih Negara / Kawasan Asia</string>
+    <string name="weather_region_selected">Kawasan dipilih: %1$s</string>
+    <string name="weather_no_stations">Tidak ada stasiun cuaca untuk %1$s</string>
+    <string name="weather_station_picker_title">📍 Pilih Kota / Stasiun (%1$s)</string>
+    <string name="weather_syncing">Menyelaraskan cuaca %1$s...</string>
+    <string name="back_action">Kembali</string>
 </resources>
