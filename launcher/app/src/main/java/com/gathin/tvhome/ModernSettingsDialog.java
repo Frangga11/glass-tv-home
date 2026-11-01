@@ -2,6 +2,8 @@ package com.gathin.tvhome;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -1104,35 +1106,57 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, AppLanguage.strDeviceSettings(activity));
 
                 addSectionHeader(rightContent, outfit, activity.getString(R.string.device_accessibility_section));
-                Display display = activity.getWindowManager().getDefaultDisplay();
-                Display.Mode mode = (display != null) ? display.getMode() : null;
-                int physW = (mode != null) ? mode.getPhysicalWidth() : dm.widthPixels;
-                int physH = (mode != null) ? mode.getPhysicalHeight() : dm.heightPixels;
-                float fps = (mode != null) ? mode.getRefreshRate() : 60f;
 
-                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-                homeIntent.addCategory(Intent.CATEGORY_HOME);
-                ResolveInfo resolveInfo = activity.getPackageManager().resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                boolean isDefault = resolveInfo != null && activity.getPackageName().equals(resolveInfo.activityInfo.packageName);
-                String activePkg = resolveInfo != null ? resolveInfo.activityInfo.packageName : activity.getString(R.string.unknown_value);
-
-                String homeSub = isDefault ? activity.getString(R.string.launcher_is_default) : activity.getString(R.string.launcher_currently_active, activePkg);
-                rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.default_launcher_status_title), activity.getString(R.string.default_launcher_status_summary, homeSub),
-                        () -> showDefaultLauncherDialog(activity, density, outfit, isDefault, activePkg)));
+                List<ResolveInfo> homeCandidates = DeviceSettingsStatus.getHomeActivities(activity);
+                ResolveInfo resolvedHome = DeviceSettingsStatus.getResolvedHome(activity);
+                String activePkg = resolvedHome != null && resolvedHome.activityInfo != null
+                        ? resolvedHome.activityInfo.packageName : "";
+                String activeLabel = DeviceSettingsStatus.getDisplayLabel(activity.getPackageManager(), resolvedHome);
+                if (activeLabel == null || activeLabel.isEmpty()) {
+                    activeLabel = activity.getString(R.string.home_status_unknown);
+                }
+                boolean isDefault = activity.getPackageName().equals(activePkg);
+                String homeSub = isDefault
+                        ? activity.getString(R.string.launcher_is_default)
+                        : activity.getString(R.string.launcher_currently_active, activeLabel);
+                homeSub += "\n" + activity.getString(R.string.home_candidates_summary, homeCandidates.size());
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.accessibility_remote_title),
-                        activity.getString(R.string.accessibility_remote_summary),
-                        () -> {
-                            SoundEffects.playSelect();
-                            try {
-                                activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                            } catch (Exception e) {
-                                TvFeedback.show(activity, R.string.open_accessibility_settings_hint, Toast.LENGTH_LONG);
-                            }
-                        }));
+                        activity.getString(R.string.default_launcher_status_title),
+                        activity.getString(R.string.default_launcher_status_summary, homeSub),
+                        () -> showDefaultLauncherDialog(activity, density, outfit)));
 
+                boolean homeKeyEnabled = DeviceSettingsStatus.isAccessibilityServiceEnabled(activity, HomeKeyService.class);
+                String homeKeyStatus = activity.getString(homeKeyEnabled
+                        ? R.string.device_service_enabled : R.string.device_service_disabled);
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.home_key_status_title),
+                        activity.getString(R.string.home_key_status_summary, homeKeyStatus),
+                        () -> openDeviceSettings(activity, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))));
+
+                boolean inputKeyEnabled = DeviceSettingsStatus.isAccessibilityServiceEnabled(activity, InputKeyService.class);
+                String inputKeyStatus = activity.getString(inputKeyEnabled
+                        ? R.string.device_service_enabled : R.string.device_service_disabled);
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.input_key_status_title),
+                        activity.getString(R.string.input_key_status_summary, inputKeyStatus),
+                        () -> openDeviceSettings(activity, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))));
+
+                boolean notificationAccessEnabled = DeviceSettingsStatus.isNotificationListenerEnabled(
+                        activity, MediaNotificationListener.class);
+                String notificationStatus = activity.getString(notificationAccessEnabled
+                        ? R.string.device_service_enabled : R.string.device_service_disabled);
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.notification_access_title),
+                        activity.getString(R.string.notification_access_summary, notificationStatus),
+                        () -> openDeviceSettings(activity, new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))));
+
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.system_settings_section));
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.screensaver_settings_title),
+                        activity.getString(R.string.screensaver_settings_summary),
+                        () -> openDeviceSettings(activity, new Intent(Settings.ACTION_DREAM_SETTINGS),
+                                new Intent(Settings.ACTION_DISPLAY_SETTINGS))));
                 addSectionHeader(rightContent, outfit, activity.getString(R.string.power_maintenance_section));
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.restart_tv_title), activity.getString(R.string.restart_tv_summary),
@@ -1858,9 +1882,19 @@ public final class ModernSettingsDialog {
         }
     }
 
-    private static void showDefaultLauncherDialog(MainActivity activity, float density, Typeface font, boolean isDefault, String activePkg) {
-        if (activity == null || activity.isFinishing()) return;
+    private static void showDefaultLauncherDialog(MainActivity activity, float density, Typeface font) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
         SoundEffects.playSelect();
+
+        List<ResolveInfo> candidates = DeviceSettingsStatus.getHomeActivities(activity);
+        ResolveInfo resolvedHome = DeviceSettingsStatus.getResolvedHome(activity);
+        String activePkg = resolvedHome != null && resolvedHome.activityInfo != null
+                ? resolvedHome.activityInfo.packageName : "";
+        String activeLabel = DeviceSettingsStatus.getDisplayLabel(activity.getPackageManager(), resolvedHome);
+        if (activeLabel == null || activeLabel.isEmpty()) {
+            activeLabel = activity.getString(R.string.home_status_unknown);
+        }
+        boolean isDefault = activity.getPackageName().equals(activePkg);
 
         ScrollView scroll = new ScrollView(activity);
         scroll.setFillViewport(true);
@@ -1884,56 +1918,107 @@ public final class ModernSettingsDialog {
         root.addView(tvTitle);
 
         TextView tvDesc = new TextView(activity);
-        String desc = isDefault
+        tvDesc.setText(isDefault
                 ? activity.getString(R.string.default_launcher_success)
-                : activity.getString(R.string.default_launcher_explanation, activePkg);
-        tvDesc.setText(desc);
+                : activity.getString(R.string.default_launcher_explanation, activeLabel));
         tvDesc.setTextSize(13f);
         tvDesc.setTextColor(isDefault ? 0xFF34D399 : 0xFFCBD5E1);
         tvDesc.setTypeface(font, Typeface.NORMAL);
-        tvDesc.setPadding(0, 0, 0, (int) (16 * density));
+        tvDesc.setLineSpacing(0, 1.15f);
+        tvDesc.setPadding(0, 0, 0, (int) (12 * density));
         root.addView(tvDesc);
+
+        TextView currentHeading = new TextView(activity);
+        currentHeading.setText(R.string.home_current_heading);
+        currentHeading.setTextSize(12f);
+        currentHeading.setTextColor(0xFF38BDF8);
+        currentHeading.setTypeface(font, Typeface.BOLD);
+        root.addView(currentHeading);
+
+        TextView currentValue = new TextView(activity);
+        currentValue.setText(activeLabel + (activePkg.isEmpty() ? "" : "  •  " + activePkg));
+        currentValue.setTextSize(12.5f);
+        currentValue.setTextColor(0xFFE2E8F0);
+        currentValue.setTypeface(font, Typeface.NORMAL);
+        currentValue.setPadding(0, (int) (3 * density), 0, (int) (10 * density));
+        root.addView(currentValue);
+
+        TextView candidatesHeading = new TextView(activity);
+        candidatesHeading.setText(R.string.home_candidates_heading);
+        candidatesHeading.setTextSize(12f);
+        candidatesHeading.setTextColor(0xFF38BDF8);
+        candidatesHeading.setTypeface(font, Typeface.BOLD);
+        root.addView(candidatesHeading);
+
+        if (candidates.isEmpty()) {
+            TextView none = new TextView(activity);
+            none.setText(R.string.home_status_unknown);
+            none.setTextSize(12.5f);
+            none.setTextColor(0xFFCBD5E1);
+            none.setPadding(0, (int) (3 * density), 0, (int) (10 * density));
+            root.addView(none);
+        } else {
+            for (ResolveInfo candidate : candidates) {
+                String label = DeviceSettingsStatus.getDisplayLabel(activity.getPackageManager(), candidate);
+                String pkg = candidate.activityInfo != null ? candidate.activityInfo.packageName : "";
+                TextView item = new TextView(activity);
+                item.setText((activity.getPackageName().equals(pkg) ? "✓ " : "• ") + label + "  (" + pkg + ")");
+                item.setTextSize(12.5f);
+                item.setTextColor(activity.getPackageName().equals(pkg) ? 0xFF34D399 : 0xFFCBD5E1);
+                item.setTypeface(font, Typeface.NORMAL);
+                item.setPadding((int) (4 * density), (int) (3 * density), 0, (int) (3 * density));
+                root.addView(item);
+            }
+        }
 
         AlertDialog[] dialogHolder = new AlertDialog[1];
 
-        // Option 1: Open TV Settings
         LinearLayout btnSettings = buildCardRow(activity, density, font,
                 activity.getString(R.string.open_home_picker_title),
                 activity.getString(R.string.open_home_picker_summary),
                 () -> {
-                    try {
-                        Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
-                        activity.startActivity(intent);
-                    } catch (Exception e1) {
-                        try {
-                            Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
-                            activity.startActivity(intent);
-                        } catch (Exception e2) {
-                            TvFeedback.show(activity, R.string.launcher_settings_unsupported, Toast.LENGTH_SHORT);
-                        }
+                    boolean opened = openDeviceSettings(activity, new Intent(Settings.ACTION_HOME_SETTINGS),
+                            new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS));
+                    if (!opened) {
+                        TvFeedback.show(activity, R.string.home_picker_unavailable, Toast.LENGTH_LONG);
+                    } else if (dialogHolder[0] != null) {
+                        dialogHolder[0].dismiss();
                     }
                 });
         root.addView(btnSettings);
 
-        // Option 2: ADB Command guidance
         LinearLayout btnAdb = buildCardRow(activity, density, font,
                 activity.getString(R.string.set_home_adb_title),
-                activity.getString(R.string.adb_command_guidance, isDefault ? "" : activity.getString(R.string.disable_old_launcher_hint, activePkg)),
+                activity.getString(R.string.adb_command_guidance,
+                        isDefault ? "" : activity.getString(R.string.disable_old_launcher_hint, activePkg)),
                 () -> {
-                    TvFeedback.show(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG);
+                    String command = "adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity";
+                    ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                    if (clipboard != null) {
+                        clipboard.setPrimaryClip(ClipData.newPlainText("Glass TV HOME command", command));
+                        TvFeedback.show(activity, R.string.adb_command_copied, Toast.LENGTH_LONG);
+                    } else {
+                        TvFeedback.show(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG);
+                    }
                 });
         root.addView(btnAdb);
 
-        // Option 3: Phone Installer
         LinearLayout btnPhone = buildCardRow(activity, density, font,
                 activity.getString(R.string.phone_installer_title),
                 activity.getString(R.string.phone_installer_summary),
-                () -> {
-                    TvFeedback.show(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT);
-                });
+                () -> TvFeedback.show(activity, R.string.installer_phone_hint, Toast.LENGTH_LONG));
         root.addView(btnPhone);
 
-        // Close button
+        LinearLayout btnRefresh = buildCardRow(activity, density, font,
+                activity.getString(R.string.home_refresh_action),
+                activity.getString(R.string.default_launcher_status_summary,
+                        activity.getString(R.string.home_candidates_summary, candidates.size())),
+                () -> {
+                    if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+                    showDefaultLauncherDialog(activity, density, font);
+                });
+        root.addView(btnRefresh);
+
         Button btnClose = new Button(activity);
         btnClose.setText(R.string.close_label);
         btnClose.setTextColor(0xFFFFFFFF);
@@ -1973,12 +2058,24 @@ public final class ModernSettingsDialog {
         if (win != null) {
             win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             int dw = Math.min((int) (620 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.90f));
-            int dh = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
+            int dh = Math.min((int) (560 * density), (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
             win.setLayout(dw, dh);
             win.setGravity(Gravity.CENTER);
         }
 
         btnSettings.requestFocus();
+    }
+
+    private static boolean openDeviceSettings(Context context, Intent... intents) {
+        for (Intent intent : intents) {
+            try {
+                context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                return true;
+            } catch (Exception ignored) {
+                // Try the next firmware-compatible settings action.
+            }
+        }
+        return false;
     }
 
     interface EditNameCallback {
