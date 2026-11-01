@@ -534,7 +534,7 @@ public class WallpaperUploadServer {
                 + "fill.style.width='100%';input.value='';files=[];send.disabled=true;return;}const file=files[i];"
                 + "if(file.size>60*1024*1024){failed++;i++;next();return;}"
                 + "status.textContent='" + jsText(R.string.standby_page_uploading_prefix) + "'+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();"
-                + "xhr.open('POST',endpoint,true);xhr.timeout=600000;xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
+                + "xhr.open('POST',endpoint,true);xhr.timeout=" + NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS + ";xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
                 + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;"
                 + "fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
                 + "xhr.onload=()=>{if(xhr.status>=200&&xhr.status<300)uploaded++;else failed++;i++;next();};"
@@ -1095,7 +1095,7 @@ public class WallpaperUploadServer {
                 "\n" +
                 "      const xhr = new XMLHttpRequest();\n" +
                 "      xhr.open('POST', '" + getWallpaperUploadPath() + "?name=' + encodeURIComponent(selectedFile.name), true);\n" +
-                "      xhr.timeout = 600000;\n" +
+                "      xhr.timeout = " + NetworkFeedbackPolicy.WALLPAPER_BROWSER_UPLOAD_TIMEOUT_MS + ";\n" +
                 "      xhr.setRequestHeader('Content-Type', selectedFile.type || 'image/jpeg');\n" +
                 "\n" +
                 "      xhr.upload.onprogress = (e) => {\n" +
