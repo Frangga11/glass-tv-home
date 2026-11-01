@@ -126,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
             tvStatus.setText("Status: Tidak ada koneksi Wi-Fi/Ethernet dengan IPv4 aktif. Sambungkan ke jaringan yang sama dengan TV.");
             return;
         }
+        int scanHosts = TvScanner.getScanHostCount(this);
+        if (scanHosts < 1 || scanHosts > 512) {
+            tvStatus.setText("Status: Rentang jaringan terlalu besar atau tidak didukung untuk pemindaian otomatis. Masukkan IP dan port TV secara manual.");
+            return;
+        }
         btnScan.setEnabled(false);
         btnScan.setText("🔄 Sedang Mengimbas Rangkaian Wi-Fi...");
         tvStatus.setText("Status: Mencari Android TV di rangkaian tempatan...");
