@@ -580,9 +580,15 @@ public class WallpaperUploadServer {
                 if (!client.isClosed()) sendUploadError(out, 410, "Upload session expired or closed");
                 return;
             }
-            if (!StandbyPhotoStore.addUploadedFile(context, storedFile)) {
+            StandbyPhotoStore.UploadResult uploadResult =
+                    StandbyPhotoStore.addUploadedFile(context, storedFile);
+            int responseStatus = standbyUploadResponseStatus(uploadResult);
+            if (responseStatus != 200) {
                 storedFile.delete();
-                sendUploadError(out, 400, localized(R.string.standby_error_collection_storage));
+                String message = responseStatus == 500
+                        ? localized(R.string.standby_error_storage)
+                        : localized(R.string.standby_error_collection_storage);
+                sendUploadError(out, responseStatus, message);
                 return;
             }
             if (listener != null) {
@@ -604,6 +610,12 @@ public class WallpaperUploadServer {
         out.write(response.getBytes("UTF-8"));
         out.write(bytes);
         out.flush();
+    }
+
+    static int standbyUploadResponseStatus(StandbyPhotoStore.UploadResult result) {
+        if (result == StandbyPhotoStore.UploadResult.ADDED
+                || result == StandbyPhotoStore.UploadResult.ALREADY_PRESENT) return 200;
+        return result == StandbyPhotoStore.UploadResult.PERSISTENCE_FAILED ? 500 : 400;
     }
 
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
