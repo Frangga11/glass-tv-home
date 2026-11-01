@@ -46,7 +46,7 @@ public final class LocalNetworkAddress {
                     return address.getHostAddress();
                 }
             }
-        } catch (SecurityException | RuntimeException ignored) {
+        } catch (RuntimeException ignored) {
             // A missing/inaccessible active LAN must never produce a fabricated QR address.
         }
         return null;
