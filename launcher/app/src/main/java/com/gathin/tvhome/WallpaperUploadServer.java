@@ -332,7 +332,7 @@ public class WallpaperUploadServer {
             }
             String headerText = headerBuf.toString("UTF-8");
             String[] lines = headerText.split("\r\n");
-            if (lines.length == 0 || lines[0].isEmpty()) {
+            if (lines.length == 0 || lines[0].isEmpty() || !UploadHttpRequest.hasValidHeaders(lines)) {
                 sendTextResponse(out, 400, "Bad Request", "Invalid HTTP request", null);
                 return;
             }
