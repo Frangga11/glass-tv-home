@@ -232,7 +232,7 @@ public final class AvatarUploadServer {
             File storedAvatar = new File(dir,
                     temp.getName().substring(0, temp.getName().length() - ".upload".length())
                             + "." + imageFormat.extension);
-            if (!temp.renameTo(storedAvatar)) {
+            if (storedAvatar.exists() || !temp.renameTo(storedAvatar)) {
                 respond(out, 500, localized(R.string.avatar_error_storage));
                 return;
             }
