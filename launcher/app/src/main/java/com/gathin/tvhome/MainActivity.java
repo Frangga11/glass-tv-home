@@ -1337,15 +1337,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return StandbyPhotoStore.isPhotoMode(this);
     }
 
-    void setStandbyPhotoMode(boolean enabled) {
+    boolean setStandbyPhotoMode(boolean enabled) {
         if (enabled && getStandbyPhotoCount() == 0) {
             TvFeedback.show(this, R.string.standby_photo_required, Toast.LENGTH_LONG);
-            return;
+            return false;
         }
-        StandbyPhotoStore.setPhotoMode(this, enabled);
+        if (!StandbyPhotoStore.setPhotoMode(this, enabled)) {
+            TvFeedback.show(this, R.string.standby_mode_save_failed, Toast.LENGTH_LONG);
+            return false;
+        }
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
         TvFeedback.show(this, enabled ? R.string.standby_photo_mode_enabled : R.string.standby_clock_mode_enabled, Toast.LENGTH_SHORT);
+        return true;
     }
 
     void pickStandbyPhotos() {
