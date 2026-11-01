@@ -1,7 +1,7 @@
 # C04 — HTTP Endpoint, Routing, Method & Response-Code Audit
 
 **Date:** 1 November 2026  
-**Status:** SOURCE FIXES APPLIED — EXACT-HEAD CI PENDING; PHYSICAL ACCEPTANCE DEFERRED  
+**Status:** SOURCE + EXACT-HEAD CI VERIFIED — PASS; PHYSICAL ACCEPTANCE DEFERRED  
 **Branch:** feature/c04-http-endpoint-routing  
 **Parent:** C03 exact source head d266287df287167e5a8e73fd675b51759b580ed6  
 **Merge policy:** D-013 — isolated Draft PR; no early merge.
@@ -45,7 +45,7 @@ C04 does not redesign upload body validation, file-type/dimension/size policy, s
 
 ## 5. Verification
 
-Exact-head CI, release build, resource parity, and APK size checks are pending on this branch. No pass is claimed until the latest branch head completes CI.
+Exact-head CI #342 / 41288521501 PASS on `f09ee1b30b80e45e793c1678935eff8867aedae4`; both CI jobs SUCCESS. Launcher and installer `testReleaseUnitTest` and `assembleRelease` SUCCESS. APK diagnostic: 1,547,845 bytes, 15,019 bytes below the 1,572,864-byte (1.5 MiB) cap. APK publication skipped. The localized resource parity and tools/docs checks also passed in the same exact-head CI run.
 
 Physical phone/TV validation of QR browser flows remains deferred to F-stage final acceptance, not waived.
 
@@ -54,6 +54,7 @@ Physical phone/TV validation of QR browser flows remains deferred to F-stage fin
 - HTTP request parser and route contracts: IMPLEMENTED.
 - Response-code/API failure semantics: IMPLEMENTED.
 - Browser action status handling: IMPLEMENTED.
-- Regression tests: ADDED; CI PENDING.
+- Regression tests: PASS in exact-head CI #342 (`41288521501`).
+- Release APK size gate: PASS, with 15,019 bytes of remaining headroom; avoid nonessential APK growth.
 - Physical phone/TV browser acceptance: DEFERRED, NOT WAIVED.
 - No merge, APK publication/installation, or device-setting change.
