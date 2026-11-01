@@ -145,22 +145,35 @@ public final class AvatarUploadServer {
             OutputStream out = client.getOutputStream();
             ByteArrayOutputStream header = new ByteArrayOutputStream();
             int state = 0, value;
+            boolean headerComplete = false;
             while ((value = in.read()) != -1) {
                 header.write(value);
                 if (header.size() > 8192) { respond(out, 431, localized(R.string.avatar_error_header_too_large)); return; }
                 if ((state == 0 && value == 13) || (state == 2 && value == 13)) state++;
                 else if ((state == 1 && value == 10) || (state == 3 && value == 10)) state++;
                 else state = value == 13 ? 1 : 0;
-                if (state == 4) break;
+                if (state == 4) { headerComplete = true; break; }
             }
+            if (!headerComplete) { respond(out, 400, localized(R.string.avatar_error_invalid_request)); return; }
             String[] lines = header.toString("UTF-8").split("\\r\\n");
             if (lines.length == 0 || System.currentTimeMillis() >= expiresAt || !running) {
                 respond(out, 410, localized(R.string.avatar_error_session_expired)); return;
             }
-            String[] request = lines[0].split(" ");
-            if (request.length < 2) { respond(out, 400, localized(R.string.avatar_error_invalid_request)); return; }
+            UploadHttpRequest request = UploadHttpRequest.parse(lines[0]);
+            if (request == null) { respond(out, 400, localized(R.string.avatar_error_invalid_request)); return; }
+            boolean pagePath = isAvatarPagePath(request.path, token);
+            boolean uploadPath = isAvatarUploadPath(request.path, token);
+            if (!pagePath && !uploadPath) {
+                respond(out, 404, localized(R.string.avatar_error_not_found)); return;
+            }
+            if (pagePath && !"GET".equals(request.method)) {
+                respondMethodNotAllowed(out, "GET"); return;
+            }
+            if (uploadPath && !"POST".equals(request.method)) {
+                respondMethodNotAllowed(out, "POST"); return;
+            }
             String expectedUpload = "/avatar-upload/" + token;
-            if ("GET".equals(request[0]) && isAvatarPagePath(request[1], token)) {
+            if ("GET".equals(request.method) && pagePath) {
                 byte[] page = page(expectedUpload).getBytes(StandardCharsets.UTF_8);
                 out.write(("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Length: " + page.length
                         + "\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\nReferrer-Policy: no-referrer\r\n"
@@ -168,8 +181,8 @@ public final class AvatarUploadServer {
                         + "Connection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
                 out.write(page); out.flush(); return;
             }
-            if (!"POST".equals(request[0]) || !isAvatarUploadPath(request[1], token)) {
-                respond(out, 404, localized(R.string.avatar_error_not_found)); return;
+            if (!"POST".equals(request.method) || !uploadPath) {
+                respond(out, 405, localized(R.string.avatar_error_not_found)); return;
             }
             if (!uploadClaimed.compareAndSet(false, true)) {
                 respond(out, 409, localized(R.string.avatar_error_qr_used));
@@ -293,11 +306,23 @@ public final class AvatarUploadServer {
                 + "r.ontimeout=()=>{s.textContent='" + localized(R.string.avatar_upload_timeout) + "';b.disabled=false;};r.send(x);};</script></html>";
     }
 
+    private void respondMethodNotAllowed(OutputStream out, String allowed) throws Exception {
+        byte[] body = "Method Not Allowed".getBytes(StandardCharsets.UTF_8);
+        out.write(("HTTP/1.1 405 Method Not Allowed\\r\\n"
+                + "Content-Type: text/plain; charset=UTF-8\\r\\n"
+                + "Content-Length: " + body.length + "\\r\\n"
+                + "Allow: " + allowed + "\\r\\n"
+                + "Cache-Control: no-store\\r\\n"
+                + "Connection: close\\r\\n\\r\\n").getBytes(StandardCharsets.UTF_8));
+        out.write(body);
+        out.flush();
+    }
+
     private void respond(OutputStream out, int status, String message) throws Exception {
         String label = status == 200 ? "OK" : status == 400 ? "Bad Request" : status == 404 ? "Not Found"
                 : status == 409 ? "Conflict" : status == 410 ? "Gone" : status == 413 ? "Payload Too Large"
                 : status == 415 ? "Unsupported Media Type" : status == 431 ? "Request Header Fields Too Large"
-                : status == 503 ? "Service Unavailable" : "Internal Server Error";
+                : status == 405 ? "Method Not Allowed" : status == 503 ? "Service Unavailable" : "Internal Server Error";
         byte[] body = message.getBytes(StandardCharsets.UTF_8);
         out.write(("HTTP/1.1 " + status + " " + label + "\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Length: " + body.length
                 + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
