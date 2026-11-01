@@ -3272,7 +3272,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("🔊 Pilih Kesan Bunyi (Sound Effects)");
+        builder.setTitle(R.string.sound_effects_title);
         builder.setSingleChoiceItems(soundOptions, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             String chosenKey = soundKeys[which];
@@ -3280,14 +3280,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             String displayName = SoundEffects.getThemeDisplayName(chosenKey);
 
             if (SoundEffects.THEME_OFF.equalsIgnoreCase(chosenKey)) {
-                Toast.makeText(MainActivity.this, "🔇 Kesan Bunyi Dimatikan", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.sound_effects_off, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(MainActivity.this, "🔊 Kesan Bunyi: " + displayName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, getString(R.string.sound_effects_selected, displayName), Toast.LENGTH_SHORT).show();
                 // Play sample of the selected theme
                 handler.postDelayed(() -> SoundEffects.playSelect(), 120);
             }
         });
-        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
@@ -3970,16 +3970,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("⏱️ Pilih Waktu Auto-Update Harian");
+        builder.setTitle(R.string.auto_update_schedule_title);
         builder.setSingleChoiceItems(times, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             String chosen = rawTimes[which];
             AppUpdateManager.setAutoUpdateTime(MainActivity.this, chosen);
             AppUpdateManager.setAutoUpdateEnabled(MainActivity.this, true);
-            Toast.makeText(MainActivity.this, "Waktu Auto-Update ditetapkan ke: " + chosen, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, getString(R.string.auto_update_time_selected, chosen), Toast.LENGTH_SHORT).show();
             showAutoUpdateDialog();
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> {
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> {
             dialog.dismiss();
             showAutoUpdateDialog();
         });
@@ -4018,7 +4018,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Active playback from Spotify or YouTube Music
         cardTitle.setText(info.title.isEmpty() ? "Lagu Dimainkan" : info.title);
         cardTitle.setSelected(true);
-        cardSubtitle.setText("Now playing • " + (info.appName.isEmpty() ? "SPOTIFY" : info.appName.toUpperCase(Locale.ROOT)));
+        cardSubtitle.setText(getString(R.string.now_playing_subtitle, info.appName.isEmpty() ? "SPOTIFY" : info.appName.toUpperCase(Locale.ROOT)));
 
         if (info.albumArt != null && cardAlbumArt != null) {
             cardAlbumArt.setImageBitmap(info.albumArt);
@@ -4250,13 +4250,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
 
             if (btnOpenApp != null) {
-                btnOpenApp.setText("Buka " + (info.appName.isEmpty() ? "Aplikasi" : info.appName));
+                btnOpenApp.setText(getString(R.string.open_app_action, info.appName.isEmpty() ? getString(R.string.app_name) : info.appName));
             }
         } else {
-            if (txtTrackTitle != null) txtTrackTitle.setText("Tiada Lagu Dimainkan");
-            if (txtTrackArtist != null) txtTrackArtist.setText("Buka Spotify atau YouTube Music untuk mula mendengar");
+            if (txtTrackTitle != null) txtTrackTitle.setText(R.string.no_song_playing);
+            if (txtTrackArtist != null) txtTrackArtist.setText(R.string.now_playing_help);
             if (txtPlaybackStatus != null) {
-                txtPlaybackStatus.setText("⏸ Tiada Mainan");
+                txtPlaybackStatus.setText(R.string.playback_idle);
                 txtPlaybackStatus.setTextColor(Color.parseColor("#80FFFFFF"));
             }
             if (btnPlayPause != null) {
@@ -5083,7 +5083,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Header Title
         TextView title = new TextView(this);
-        title.setText("✨ Pusat Informasi & Tindakan Glass TV");
+        title.setText(R.string.info_center_title);
         title.setTextSize(22);
         title.setTextColor(0xFFFFFFFF);
         title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -5093,7 +5093,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         layout.addView(title);
 
         TextView sub = new TextView(this);
-        sub.setText("Ringkasan sistem dan pintasan tindakan cepat");
+        sub.setText(R.string.info_center_subtitle);
         sub.setTextSize(14f);
         sub.setTextColor(0xE6FFFFFF);
         sub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -5119,10 +5119,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String wxStr = (wx != null && !wx.weather.isEmpty()) ? (wx.weather + (wx.aqi.isEmpty() ? "" : " • " + wx.aqi)) : "Cuaca Live Aktif";
 
         TextView statusText = new TextView(this);
-        statusText.setText("📋 Ringkasan Sistem:\n"
-                + "• Salat Berikutnya: " + nextPrayer + " (" + zoneTown + ")\n"
-                + "• Cuaca & Kualitas Udara (US AQI): " + wxStr + "\n"
-                + "• Perangkat: Status sistem dan pengelolaan memori");
+        statusText.setText(getString(R.string.info_system_summary, nextPrayer, zoneTown, wxStr));
         statusText.setTextSize(14.5f);
         statusText.setTextColor(0xFFFFFFFF);
         statusText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -5133,7 +5130,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         layout.addView(statusCard);
 
         TextView actionsTitle = new TextView(this);
-        actionsTitle.setText("Tindakan Cepat:");
+        actionsTitle.setText(R.string.info_actions_title);
         actionsTitle.setTextSize(14.5f);
         actionsTitle.setTextColor(0xE6FFFFFF);
         actionsTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
@@ -5150,28 +5147,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog[] dialogHolder = new AlertDialog[1];
 
         // Action 1: Smart Boost
-        addInfoActionItem(actionList, "🚀 Smart Boost TV (Bebas Memori & Bersih Cache)", () -> {
+        addInfoActionItem(actionList, getString(R.string.info_action_smart_boost), () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
             smartBoostTv();
         });
 
         // Action 2: Cuaca & Kualitas Udara
-        addInfoActionItem(actionList, "🌦️ Informasi Cuaca & Kualitas Udara", () -> {
+        addInfoActionItem(actionList, getString(R.string.info_action_weather), () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
             showWeatherSummaryDialog(zoneTown, wxStr);
         });
 
         // Action 3: Jadwal Salat & Ayat Pilihan
-        addInfoActionItem(actionList, "🕌 Jadwal Salat & Ayat Pilihan Hari Ini", () -> {
+        addInfoActionItem(actionList, getString(R.string.info_action_prayer), () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
             showPrayerAndAyahDialog(zoneTown);
         });
 
         // Action 4: Tips & Panduan Kontrol TV
-        addInfoActionItem(actionList, "💡 Tips & Panduan Kontrol TV", () -> {
+        addInfoActionItem(actionList, getString(R.string.info_action_tips), () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
             SoundEffects.playSelect();
             showTvTipsDialog();
@@ -5181,7 +5178,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         layout.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
         builder.setView(layout);
-        builder.setNegativeButton("Tutup", (d, w) -> d.dismiss());
+        builder.setNegativeButton(R.string.close_label, (d, w) -> d.dismiss());
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
@@ -5238,19 +5235,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             } catch (Exception ignored) {}
             CacheCleaner.maybeRun(getApplicationContext(), 1);
             System.gc();
-            handler.post(() -> Toast.makeText(this, "Glass TV: Memori dan cache TV berhasil dioptimalkan.", Toast.LENGTH_SHORT).show());
+            handler.post(() -> Toast.makeText(this, R.string.smart_boost_success, Toast.LENGTH_SHORT).show());
         }, "gemini-boost").start();
     }
 
     private void showTvTipsDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
-                .setTitle("💡 Tips Pintar Glass TV")
-                .setMessage("• Tekan dan tahan tombol HOME selama 500 ms untuk membuka menu Pengaturan dari aplikasi mana pun atau layar utama.\n\n"
-                        + "• Tekan tombol HOME sekali untuk kembali ke layar utama.\n\n"
-                        + "• Koleksi Wallpaper 4K dijana daripada Pexels & Unsplash mengikut kategori.\n\n"
-                        + "• Jadwal salat disesuaikan dengan wilayah Indonesia dan sumber data Kemenag RI.\n\n"
-                        + "• Gunakan menu Bersihkan Cache TV untuk menghapus berkas sementara tanpa menghapus data aplikasi.")
-                .setPositiveButton("Mengerti", null)
+                .setTitle(R.string.tv_tips_title)
+                .setMessage(R.string.tv_tips_body)
+                .setPositiveButton(R.string.understand_action, null)
                 .show();
         styleGlassDialog(dialog);
         if (dialog.getWindow() != null) {
@@ -5262,12 +5255,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showWeatherSummaryDialog(String town, String wxStr) {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
-                .setTitle("🌦️ Informasi Cuaca & Kualitas Udara")
-                .setMessage("📍 Lokasi: " + town + "\n\n"
-                        + "📊 Status Terkini: " + wxStr + "\n\n"
-                        + "ℹ️ Sumber: Open-Meteo / CAMS (CC BY 4.0). US AQI adalah estimasi model, bukan pengukuran ISPU resmi di stasiun setempat.\n\n"
-                        + "📌 Periksa nilai AQI dan ikuti peringatan resmi BMKG atau instansi terkait sebelum mengambil keputusan aktivitas luar ruang.")
-                .setPositiveButton("OK", null)
+                .setTitle(R.string.weather_summary_title)
+                .setMessage(getString(R.string.weather_summary_body, town, wxStr))
+                .setPositiveButton(R.string.ok_action, null)
                 .show();
         styleGlassDialog(dialog);
         if (dialog.getWindow() != null) {
@@ -5281,11 +5271,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
         String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : "Tidak ada ayat harian.";
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
-                .setTitle("🕌 Jadwal Salat & Ayat Pilihan Hari Ini")
-                .setMessage("📍 Lokasi: " + town + "  •  " + PrayerTimes.getHijriDate() + "\n\n"
-                        + "⏳ Salat Berikutnya: " + PrayerTimes.getNextPrayerSummary(this) + "\n\n"
-                        + "📖 Ayat Pilihan / Doa Harian:\n" + ayahTxt)
-                .setPositiveButton("Tutup", null)
+                .setTitle(R.string.prayer_summary_title)
+                .setMessage(getString(R.string.prayer_summary_body, town, PrayerTimes.getHijriDate(), PrayerTimes.getNextPrayerSummary(this), ayahTxt))
+                .setPositiveButton(R.string.close_label, null)
                 .show();
         styleGlassDialog(dialog);
         if (dialog.getWindow() != null) {
