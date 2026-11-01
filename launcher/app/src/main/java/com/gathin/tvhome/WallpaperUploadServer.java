@@ -1122,7 +1122,7 @@ public class WallpaperUploadServer {
                 "        showError('" + jsText(R.string.wallpaper_page_connection_error) + "');\n" +
                 "      };\n" +
                 "\n" +
-                "      xhr.ontimeout = () => { showError(\'" + jsText(R.string.wallpaper_page_upload_timeout) + "\'); };\n" +
+                "      xhr.ontimeout = () => { showError('" + jsText(R.string.wallpaper_page_upload_timeout) + "'); };\n" +
                 "      xhr.send(selectedFile);\n" +
                 "    }\n" +
                 "\n" +
