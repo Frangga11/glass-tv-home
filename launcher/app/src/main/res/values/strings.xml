@@ -409,6 +409,8 @@
     <string name="standby_preview_title">🌙 Pratinjau Layar Siaga Sekarang</string>
     <string name="standby_preview_summary">Lihat pratinjau jam atau foto pribadi di dalam aplikasi sesuai mode yang dipilih.</string>
     <string name="screensaver_settings_section">TAMPILAN &amp; SIAGA TV</string>
+    <string name="cache_system_trim_success">Cache aplikasi dan cache sistem Android berhasil diproses.</string>
+    <string name="cache_system_trim_skipped">Cache aplikasi dibersihkan. Cache sistem Android belum diproses karena akses ADB tidak tersedia atau belum diizinkan.</string>
     <string name="home_key_status_title">Layanan Tombol HOME</string>
     <string name="home_key_status_summary">Status: %1$s. Dibutuhkan untuk remote tertentu, mulai ulang, dan fungsi daya.</string>
     <string name="input_key_status_title">Layanan Tombol INPUT</string>
