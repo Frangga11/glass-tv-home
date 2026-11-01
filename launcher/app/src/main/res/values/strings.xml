@@ -143,4 +143,7 @@
     <string name="save_profile_action">Simpan Profil</string>
     <string name="user_name_required">Silakan masukkan nama pengguna</string>
     <string name="profile_created">✨ Profil %1$s berhasil dibuat!</string>
+
+    <string name="incorrect_pin">❌ PIN salah. Silakan coba lagi.</string>
+    <string name="pin_four_digits">Silakan masukkan PIN 4 digit</string>
 </resources>
