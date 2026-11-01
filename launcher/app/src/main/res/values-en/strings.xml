@@ -297,4 +297,13 @@
     <string name="sound_xbox_option">🟩 Xbox Series X/S (Warm Harmonic Chime)</string>
     <string name="sound_off_option">🔇 Turn Sound Effects Off</string>
     <string name="azan_audio_selected">Selected audio: %1$s</string>
+
+    <string name="locked_app_title">App Locked</string>
+    <string name="enter_pin_to_open_app">Enter the 4-digit PIN to open %1$s</string>
+    <string name="cannot_open_app">Could not open the app.</string>
+    <string name="ram_cleared_all_apps_closed">RAM cleared! All apps closed.</string>
+    <string name="weather_input_status">🌧️ Weather input: %1$s</string>
+    <string name="auto_label">Auto</string>
+    <string name="tv_location_status">📍 TV location: %1$s</string>
+    <string name="custom_location_name">Custom location</string>
 </resources>
