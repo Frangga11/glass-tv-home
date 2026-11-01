@@ -42,8 +42,20 @@ public class UploadFilePolicyTest {
         assertFalse(UploadFilePolicy.hasCompatibleContentType(
                 new String[]{"Content-Type: text/plain"}, jpeg));
         assertFalse(UploadFilePolicy.hasCompatibleContentType(
+                new String[]{"Content-Type: "}, jpeg));
+        assertFalse(UploadFilePolicy.hasCompatibleContentType(
                 new String[]{"Content-Type: image/jpeg", "Content-Type: image/jpeg"}, jpeg));
         assertFalse(UploadFilePolicy.hasCompatibleContentType(null, null));
+    }
+
+    @Test
+    public void enforcesWallpaperAndStandbyDimensionLimitsWithoutOverflow() {
+        assertFalse(UploadFilePolicy.isValidWallpaperImageDimensions(0, 100));
+        assertFalse(UploadFilePolicy.isValidWallpaperImageDimensions(100, -1));
+        assertFalse(UploadFilePolicy.isValidWallpaperImageDimensions(16385, 1));
+        assertFalse(UploadFilePolicy.isValidWallpaperImageDimensions(10000, 10001));
+        assertTrue(UploadFilePolicy.isValidWallpaperImageDimensions(10000, 10000));
+        assertTrue(UploadFilePolicy.isValidWallpaperImageDimensions(16384, 1));
     }
 
     @Test
