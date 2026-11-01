@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- The azan at prayer time: one exact alarm for the next prayer that is switched on. -->
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -115,6 +116,16 @@
             <intent-filter>
                 <action android:name="com.gathin.tvhome.SET_LOCATION" />
                 <action android:name="com.gathin.tvhome.SET_WEATHER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Restore the next prayer alarm after Android clears AlarmManager state on reboot. -->
+        <receiver
+            android:name=".AzanBootReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
