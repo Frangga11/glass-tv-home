@@ -333,3 +333,15 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - D05 source-audit and CI gates are closed. Physical Android TV, process-death and reboot acceptance remains deferred to F-stage, NOT waived. No APK installation, physical-device test, or merge claimed.
 - Detailed audit: `D05_STANDBY_PHOTO_PERSISTENCE_AUDIT.md` on D05 branch.
 - **Next: D06 — proceed to the next Project D item only after checking the current roadmap/handover assignment. D01-F11's identified upload-acknowledgement inconsistency is repaired at source/CI level; retain runtime durability verification in F-stage.**
+
+## D06 final exact-head closure — 1 November 2026
+
+- D06 completed on isolated branch `feature/d06-process-death-recovery`, final head `548581e909139dd67b2ddc725bb546a838c75702`, based on D05 exact head `835986c0e28c50311d4474f1060c73dd56104bf8`. Draft PR #30 remains OPEN/DRAFT/UNMERGED under D-013.
+- D06 audit covered app-owned settings/profile/content/cache/navigation and scheduled work recovery across process recreation and device reboot. No preference schema/key migration, backup policy, user data, or broad refactor changed.
+- Confirmed D06-F01: Android clears AlarmManager schedules on reboot; existing rescheduling depended on MainActivity.onResume() because manifest had no BOOT_COMPLETED receiver.
+- Fixed with RECEIVE_BOOT_COMPLETED permission and non-exported AzanBootReceiver. On BOOT_COMPLETED, it resolves the persisted selected prayer zone and delegates to existing Azan.schedule(), preserving existing master/prayer enablement and scheduling logic. Added four JVM tests for dispatch, unrelated broadcasts, missing zone, and missing scheduler.
+- Exact-head CI #398 / run `41311958235`: PASS on final head. Both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. App/installer `testReleaseUnitTest` and `assembleRelease` succeeded.
+- Release APK exact size: **1,551,217 bytes**, **21,647 bytes** below 1,572,864-byte cap; size gate PASS. Manual APK publication skipped.
+- D06 source-audit and exact-head CI gates CLOSED. Process-death, force-stop and actual Android TV reboot acceptance remain mandatory in F-stage, DEFERRED and NOT WAIVED. No APK installation or physical-device test claimed.
+- Detailed report: `D06_PROCESS_DEATH_REBOOT_RECOVERY_AUDIT.md` on D06 feature branch.
+- **Next: D07 — read the canonical roadmap and handover for exact D07 scope/dependencies before any code changes. Preserve D01–D06 and keep PRs unmerged until grouped integration.**
