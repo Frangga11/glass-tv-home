@@ -1321,10 +1321,16 @@ public final class ModernSettingsDialog {
                             .apply();
                 }
             } else if (isDescendantOf(leftCol, newFocus)) {
-                navigationPrefs.edit()
-                        .putString(PREF_SETTINGS_FOCUS_AREA, "sidebar")
-                        .putInt(PREF_SETTINGS_LEFT_SCROLL, leftScroll.getScrollY())
-                        .apply();
+                String path = focusPath(leftCol, newFocus);
+                if (path != null) {
+                    navigationPrefs.edit()
+                            .putString(PREF_SETTINGS_FOCUS_AREA, "sidebar")
+                            .putString(PREF_SETTINGS_FOCUS_PATH, path)
+                            .putString(PREF_SETTINGS_FOCUS_SIGNATURE, focusSignature(newFocus))
+                            .putInt(PREF_SETTINGS_FOCUS_TAB, activeTab[0])
+                            .putInt(PREF_SETTINGS_LEFT_SCROLL, leftScroll.getScrollY())
+                            .apply();
+                }
             }
         };
         root.getViewTreeObserver().addOnGlobalFocusChangeListener(focusListener[0]);
@@ -1346,7 +1352,7 @@ public final class ModernSettingsDialog {
         int savedFocusTab = navigationPrefs.getInt(PREF_SETTINGS_FOCUS_TAB, -1);
         String savedFocusPath = navigationPrefs.getString(PREF_SETTINGS_FOCUS_PATH, null);
         String savedFocusSignature = navigationPrefs.getString(PREF_SETTINGS_FOCUS_SIGNATURE, null);
-        if ("right".equals(savedFocusArea) && savedFocusTab == activeTab[0]) {
+        if (savedFocusTab == activeTab[0] && "right".equals(savedFocusArea)) {
             root.post(() -> {
                 rightScroll.scrollTo(0, Math.max(0, navigationPrefs.getInt(rightScrollKey(activeTab[0]), 0)));
                 rightScroll.post(() -> {
@@ -1355,6 +1361,13 @@ public final class ModernSettingsDialog {
                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                     else profileCard.requestFocus();
                 });
+            });
+        } else if (savedFocusTab == activeTab[0] && "sidebar".equals(savedFocusArea)) {
+            root.post(() -> {
+                View restored = resolveFocusPath(leftCol, savedFocusPath, savedFocusSignature);
+                if (restored != null && restored.requestFocus()) return;
+                if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+                else profileCard.requestFocus();
             });
         } else {
             root.post(() -> {
