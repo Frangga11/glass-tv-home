@@ -51,7 +51,7 @@ final class StandbyPhotoStore {
         if (TextUtils.isEmpty(raw)) return result;
         Set<String> unique = new HashSet<>();
         for (String value : raw.split("\\n")) {
-            if (TextUtils.isEmpty(value) || !unique.add(value)) continue;
+            if (value == null || value.isEmpty() || !unique.add(value)) continue;
             try {
                 Uri uri = Uri.parse(value);
                 if (uri != null) result.add(uri);
@@ -149,7 +149,7 @@ final class StandbyPhotoStore {
         Set<String> unique = new HashSet<>();
         if (current != null) {
             for (String value : current) {
-                if (!TextUtils.isEmpty(value) && unique.add(value)) merged.add(value);
+                if (value != null && !value.isEmpty() && unique.add(value)) merged.add(value);
             }
         }
         int added = 0;
