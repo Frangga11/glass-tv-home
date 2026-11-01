@@ -375,7 +375,11 @@ public class WallpaperUploadServer {
                 sendTextResponse(out, 405, "Method Not Allowed", "Method Not Allowed", "Allow: " + wallpaperAllowed.replace(", OPTIONS", "") + "\r\n");
             } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
-                serveThumbnail(fileName, out);
+                if (fileName == null || fileName.trim().isEmpty()) {
+                    sendTextResponse(out, 400, "Bad Request", "Missing or ambiguous file parameter", null);
+                } else {
+                    serveThumbnail(fileName, out);
+                }
             } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/api/list")) {
                 serveApiList(out);
             } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/select")) {
