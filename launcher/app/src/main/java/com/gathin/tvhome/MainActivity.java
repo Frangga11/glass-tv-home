@@ -1345,7 +1345,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         StandbyPhotoStore.setPhotoMode(this, enabled);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
-        Toast.makeText(this, enabled ? "Foto pribadi digunakan pada Layar Siaga." : "Tampilan jam bawaan digunakan.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, enabled ? R.string.standby_photo_mode_enabled : R.string.standby_clock_mode_enabled, Toast.LENGTH_SHORT).show();
     }
 
     void pickStandbyPhotos() {
@@ -3418,7 +3418,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     Azan.schedule(MainActivity.this, zoneCode);
                     SoundEffects.playSelect();
                     updateMasterTag(masterStatusTag, nowOn);
-                    Toast.makeText(MainActivity.this, nowOn ? "✅ Popup Azan Diaktifkan" : "⭕ Popup Azan Dimatikan", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, nowOn ? R.string.azan_popup_enabled : R.string.azan_popup_disabled, Toast.LENGTH_SHORT).show();
                 }
         );
         updateMasterTag(masterStatusTag, Azan.isMasterEnabled(this));
@@ -3859,10 +3859,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
             String sched = AppUpdateManager.getAutoUpdateTime(this);
             if (tvAutoStatus != null) {
-                tvAutoStatus.setText(isAuto ? "✅ Auto-Update: Aktif (" + sched + ")" : "⭕ Auto-Update: Dimatikan");
+                tvAutoStatus.setText(isAuto ? getString(R.string.auto_update_status_enabled, sched) : getString(R.string.auto_update_status_disabled));
             }
             if (btnToggleAuto != null) {
-                btnToggleAuto.setText(isAuto ? "❌ Matikan Auto-Update" : "⚡ Hidupkan Auto-Update");
+                btnToggleAuto.setText(isAuto ? R.string.auto_update_disable_action : R.string.auto_update_enable_action);
             }
         };
         updateStatusUi.run();
@@ -3917,7 +3917,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 boolean newMode = !isAuto;
                 AppUpdateManager.setAutoUpdateEnabled(this, newMode);
                 updateStatusUi.run();
-                Toast.makeText(this, newMode ? "✅ Auto-Update Dihidupkan (" + AppUpdateManager.getAutoUpdateTime(this) + ")" : "⭕ Auto-Update Dimatikan", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, newMode ? getString(R.string.auto_update_enabled_at, AppUpdateManager.getAutoUpdateTime(this)) : getString(R.string.auto_update_disabled), Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -4016,7 +4016,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         // Active playback from Spotify or YouTube Music
-        cardTitle.setText(info.title.isEmpty() ? "Lagu Dimainkan" : info.title);
+        cardTitle.setText(info.title.isEmpty() ? getString(R.string.now_playing_fallback_title) : info.title);
         cardTitle.setSelected(true);
         cardSubtitle.setText(getString(R.string.now_playing_subtitle, info.appName.isEmpty() ? "SPOTIFY" : info.appName.toUpperCase(Locale.ROOT)));
 
@@ -4211,10 +4211,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 txtTrackTitle.setSelected(true);
             }
             if (txtTrackArtist != null) {
-                txtTrackArtist.setText(info.artist.isEmpty() ? (info.appName.isEmpty() ? "Muzik" : info.appName) : info.artist);
+                txtTrackArtist.setText(info.artist.isEmpty() ? (info.appName.isEmpty() ? getString(R.string.now_playing_fallback_artist) : info.appName) : info.artist);
             }
             if (txtPlaybackStatus != null) {
-                txtPlaybackStatus.setText(info.isPlaying ? "▶ Sedang Dimainkan" : "⏸ Pause");
+                txtPlaybackStatus.setText(info.isPlaying ? R.string.playback_status_playing : R.string.playback_status_paused);
                 txtPlaybackStatus.setTextColor(info.isPlaying ? Color.parseColor("#1DB954") : Color.parseColor("#FFC107"));
             }
 
@@ -4518,7 +4518,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                             .remove("shuffle_cycle")
                             .remove("shuffle_position")
                             .apply();
-                    Toast.makeText(MainActivity.this, newMode ? "🔀 Mod Rawak: Gambar Dipilih Secara Rawak" : "➡️ Mod Berurutan: Gambar Dipilih Ikut Urutan", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, newMode ? R.string.wallpaper_shuffle_random : R.string.wallpaper_shuffle_ordered, Toast.LENGTH_SHORT).show();
                     showWallpaperDialog();
                 } else if ("TOGGLE_DESC".equals(chosenKey)) {
                     boolean current = isWallpaperDescEnabled();
@@ -5979,7 +5979,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
         ((ImageView) row.findViewById(R.id.icon)).setImageResource(R.drawable.ic_input);
         TextView title = row.findViewById(R.id.title);
-        title.setText(name + (isNext ? " (Seterusnya)" : ""));
+        title.setText(name + (isNext ? getString(R.string.next_prayer_suffix) : ""));
         title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         title.setFontVariationSettings(isNext ? "'wght' 700" : "'wght' 650");
         title.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
