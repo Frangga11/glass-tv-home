@@ -10,7 +10,7 @@
 
 Audit and harden the common receive-file path used by Avatar, Wallpaper, and StandBy QR uploads: strict Content-Length interpretation, bounded streaming, exact byte accounting, partial-file cleanup, and durability before the uploaded file is handed to the existing application/storage callback.
 
-Preserve existing per-feature limits, image dimension/decode validation, storage directories/naming, route contracts, QR tokens, listener semantics, and operation-specific timeouts. Retry/disconnect/session-expiry policy and broader storage policy remain separate C06/C07 concerns unless a direct shared-pipeline dependency is demonstrated.
+Preserve existing per-feature limits, image dimension/decode validation, storage directories/naming, route contracts, QR tokens, listener semantics, and operation-specific timeouts. File-type/dimension/size/name/path policy remains C06; disconnect/retry/expiry/cancellation/timeout policy remains C07. C05 does not change those policies unless a direct shared-pipeline defect requires it.
 
 ## 2. Baseline findings
 
