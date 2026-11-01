@@ -65,4 +65,29 @@
     <string name="recent_apps_hint_close">Press ▲ on an app to close it</string>
     <string name="standby_photo_description">Standby background photo</string>
     <string name="standby_return_hint">Press any button to return</string>
+
+    <string name="weather_my_location">MY LOCATION</string>
+    <string name="weather_drizzle">Drizzle</string>
+    <string name="weather_wind_label">💨  WIND</string>
+    <string name="weather_moon_phase_label">🌕  MOON PHASE</string>
+    <string name="weather_sunset_label">🌅  SUNSET</string>
+    <string name="weather_uv_label">☀️  UV INDEX</string>
+    <string name="weather_uv_high">High</string>
+    <string name="weather_uv_description">Take care with UV exposure based on the current index.</string>
+    <string name="weather_feels_like_label">🌡️  FEELS LIKE</string>
+    <string name="weather_feels_like_description">Feels-like temperature may differ from the actual air temperature.</string>
+    <string name="weather_air_quality_label">🍃  AIR QUALITY</string>
+    <string name="weather_air_quality_moderate">Moderate</string>
+    <string name="weather_rainfall_label">💧  RAINFALL</string>
+    <string name="weather_precipitation_chance">Current • chance of rain</string>
+    <string name="weather_visibility_label">👁️  VISIBILITY</string>
+    <string name="weather_visibility_good">Good visibility</string>
+    <string name="weather_conditions_label">WEATHER CONDITIONS</string>
+    <string name="weather_temperature_c">Temperature (°C)</string>
+    <string name="weather_forecast_7_days">📅  7-DAY FORECAST</string>
+    <string name="weather_illustration_label">⛰️  WEATHER ILLUSTRATION</string>
+    <string name="weather_humidity_label">💧  HUMIDITY</string>
+    <string name="weather_humidity_description">Current relative humidity.</string>
+    <string name="weather_pressure_label">⏱️  AIR PRESSURE</string>
+    <string name="weather_data_source">Open-Meteo model • US AQI estimate</string>
 </resources>
