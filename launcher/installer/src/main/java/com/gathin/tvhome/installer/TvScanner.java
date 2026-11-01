@@ -44,6 +44,7 @@ public final class TvScanner {
     public static final class ScanHandle {
         private final AtomicBoolean cancelled = new AtomicBoolean(false);
         private volatile ExecutorService executor;
+        private volatile Thread coordinator;
 
         private ScanHandle() {}
 
@@ -51,6 +52,8 @@ public final class TvScanner {
             if (cancelled.compareAndSet(false, true)) {
                 ExecutorService current = executor;
                 if (current != null) current.shutdownNow();
+                Thread worker = coordinator;
+                if (worker != null) worker.interrupt();
             }
         }
 
@@ -191,6 +194,7 @@ public final class TvScanner {
                 }
             }
         }, "tv-network-scan");
+        handle.coordinator = coordinator;
         coordinator.setDaemon(true);
         coordinator.start();
         return handle;
