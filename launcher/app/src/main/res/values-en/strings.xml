@@ -482,7 +482,7 @@
     <string name="set_home_adb_title">💻 Set Permanently with an ADB Command (Recommended)</string>
     <string name="phone_installer_title">📱 No PC: Use the Phone App (Glass TV Installer)</string>
     <string name="phone_installer_summary">Install release/glass-tv-installer.apk on an Android phone connected to the same Wi-Fi network to enable Home automatically in one tap.</string>
-    <string name="default_launcher_success">✅ Success! Glass TV Home is now the device\'s default launcher. Pressing the remote\'s Home button will return to Glass TV.</string>
+    <string name="default_launcher_success">Android currently resolves HOME to Glass TV Home. Test the remote's Home button to confirm the TV firmware actually routes to Glass TV.</string>
     <string name="default_launcher_explanation">⚠️ Currently active launcher: %1$s
 
 Most Android TV and Google TV devices restrict the Home button to the manufacturer\'s built-in home screen. Choose one of the following methods to set Glass TV as the default launcher:</string>
