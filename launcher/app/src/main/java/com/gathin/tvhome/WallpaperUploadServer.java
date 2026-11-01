@@ -64,6 +64,18 @@ public class WallpaperUploadServer {
         this.standbyOnly = standbyOnly;
     }
 
+    private String localized(int resourceId) {
+        return LocaleContext.wrap(context).getString(resourceId);
+    }
+
+    private String htmlText(int resourceId) {
+        return localized(resourceId).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+    private String jsText(int resourceId) {
+        return localized(resourceId).replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ");
+    }
+
     public static String getLocalIpAddress() {
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -346,7 +358,7 @@ public class WallpaperUploadServer {
 
                     if (!complete || !validImage) {
                         targetFile.delete();
-                        String message = !complete ? "Unggahan tidak lengkap" : "Format gambar tidak didukung atau resolusi terlalu besar";
+                        String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
                         String response = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\n\r\n" + message;
                         out.write(response.getBytes("UTF-8"));
                         out.flush();
@@ -403,17 +415,17 @@ public class WallpaperUploadServer {
             }
         }
         if (contentLength <= 0 || contentLength > 60L * 1024L * 1024L) {
-            sendUploadError(out, 400, "Ukuran foto tidak valid (maksimal 60 MB per foto).");
+            sendUploadError(out, 400, localized(R.string.standby_error_photo_size));
             return;
         }
         if (!StandbyPhotoStore.canAcceptUpload(context, contentLength)) {
-            sendUploadError(out, 400, "Koleksi Layar Siaga penuh. Batasnya 100 foto atau 512 MB, dan TV harus menyisakan ruang penyimpanan.");
+            sendUploadError(out, 400, localized(R.string.standby_error_collection_full));
             return;
         }
 
         File standbyDir = new File(context.getFilesDir(), "standby_photos");
         if (!standbyDir.exists() && !standbyDir.mkdirs()) {
-            sendUploadError(out, 500, "Penyimpanan foto Layar Siaga tidak tersedia.");
+            sendUploadError(out, 500, localized(R.string.standby_error_storage));
             return;
         }
 
@@ -445,8 +457,8 @@ public class WallpaperUploadServer {
         if (!complete || !validImage) {
             targetFile.delete();
             sendUploadError(out, 400, !complete
-                    ? "Unggahan tidak lengkap. Silakan coba lagi."
-                    : "Berkas bukan foto yang didukung atau resolusinya terlalu besar.");
+                    ? localized(R.string.wallpaper_error_incomplete_retry)
+                    : localized(R.string.wallpaper_error_unsupported_image));
             return;
         }
 
@@ -457,7 +469,7 @@ public class WallpaperUploadServer {
             }
             if (!StandbyPhotoStore.addUploadedFile(context, targetFile)) {
                 targetFile.delete();
-                sendUploadError(out, 400, "Koleksi Layar Siaga penuh atau ruang penyimpanan tidak mencukupi.");
+                sendUploadError(out, 400, localized(R.string.standby_error_collection_storage));
                 return;
             }
         }
@@ -489,9 +501,9 @@ public class WallpaperUploadServer {
 
     private String getStandbyHtmlPage() {
         String endpoint = getStandbyUploadPath();
-        return "<!doctype html><html lang='id'><head><meta charset='utf-8'>"
+        return "<!doctype html><html lang='" + AppLanguage.getLanguage(context) + "'><head><meta charset='utf-8'>"
                 + "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-                + "<meta name='theme-color' content='#101827'><title>Foto Layar Siaga • Glass TV</title>"
+                + "<meta name='theme-color' content='#101827'><title>" + htmlText(R.string.standby_page_title) + "</title>"
                 + "<style>"
                 + "*{box-sizing:border-box}body{margin:0;padding:24px 16px 40px;background:#0b1220;color:#f8fafc;"
                 + "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh}"
@@ -505,28 +517,28 @@ public class WallpaperUploadServer {
                 + "font-size:14px}#bar{height:7px;background:#334155;border-radius:9px;overflow:hidden;margin-top:10px}"
                 + "#fill{height:100%;width:0;background:#38bdf8;transition:width .15s}small{display:block;color:#94a3b8;"
                 + "margin-top:18px;line-height:1.5}"
-                + "</style></head><body><main class='card'><h1>🖼️ Foto Layar Siaga</h1>"
-                + "<p>Unggah foto dari ponsel ke koleksi Layar Siaga Glass TV. Ponsel dan TV harus berada di jaringan Wi-Fi yang sama.</p>"
-                + "<label class='drop'>Pilih satu atau beberapa foto<br><br><input id='files' type='file' accept='image/*' multiple></label>"
-                + "<button id='send' disabled>Unggah Foto ke TV</button><div id='status'>Belum ada foto dipilih.</div>"
+                + "</style></head><body><main class='card'><h1>" + htmlText(R.string.standby_page_heading) + "</h1>"
+                + "<p>" + htmlText(R.string.standby_page_intro) + "</p>"
+                + "<label class='drop'>" + htmlText(R.string.standby_page_choose_photos) + "<br><br><input id='files' type='file' accept='image/*' multiple></label>"
+                + "<button id='send' disabled>" + htmlText(R.string.standby_page_upload_button) + "</button><div id='status'>" + htmlText(R.string.standby_page_no_photo) + "</div>"
                 + "<div id='bar'><div id='fill'></div></div>"
-                + "<small>Foto disimpan sebagai salinan di folder khusus Layar Siaga. Koleksi wallpaper dan wallpaper aktif tidak akan diubah. "
-                + "Maksimal 60 MB per foto, 100 foto, atau total 512 MB.</small></main><script>"
+                + "<small>" + htmlText(R.string.standby_page_storage_note) + " "
+                + " + htmlText(R.string.standby_page_limit_note) + "</small></main><script>"
                 + "const endpoint='" + endpoint + "';const input=document.getElementById('files');"
                 + "const send=document.getElementById('send');const status=document.getElementById('status');"
                 + "const fill=document.getElementById('fill');let files=[];"
                 + "input.addEventListener('change',()=>{files=Array.from(input.files||[]);"
-                + "send.disabled=!files.length;status.textContent=files.length+' foto dipilih.';fill.style.width='0%';});"
+                + "send.disabled=!files.length;status.textContent=files.length+'" + jsText(R.string.standby_page_selected_suffix) + "';fill.style.width='0%';});"
                 + "send.addEventListener('click',()=>{if(!files.length)return;send.disabled=true;let i=0,uploaded=0,failed=0;"
-                + "const next=()=>{if(i>=files.length){status.textContent='Selesai: '+uploaded+' berhasil, '+failed+' gagal.';"
+                + "const next=()=>{if(i>=files.length){status.textContent='" + jsText(R.string.standby_page_done_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_done_middle) + "'+failed+'" + jsText(R.string.standby_page_done_suffix) + "';"
                 + "fill.style.width='100%';input.value='';files=[];send.disabled=true;return;}const file=files[i];"
                 + "if(file.size>60*1024*1024){failed++;i++;next();return;}"
-                + "status.textContent='Mengunggah '+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();"
+                + "status.textContent='" + jsText(R.string.standby_page_uploading_prefix) + "'+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();"
                 + "xhr.open('POST',endpoint,true);xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
                 + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;"
                 + "fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
                 + "xhr.onload=()=>{if(xhr.status>=200&&xhr.status<300)uploaded++;else failed++;i++;next();};"
-                + "xhr.onerror=()=>{status.textContent='Koneksi terputus. '+uploaded+' foto sudah tersimpan. Periksa Wi-Fi lalu pilih ulang foto yang belum terkirim.';send.disabled=false;};"
+                + "xhr.onerror=()=>{status.textContent='" + jsText(R.string.standby_page_connection_lost_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_connection_lost_suffix) + "';send.disabled=false;};"
                 + "xhr.send(file);};next();});</script></body></html>";
     }
 
@@ -697,11 +709,11 @@ public class WallpaperUploadServer {
     private String getHtmlPage() {
         String base = getWallpaperPath();
         return "<!DOCTYPE html>\n" +
-                "<html lang=\"id\">\n" +
+                "<html lang=\"" + AppLanguage.getLanguage(context) + "\">\n" +
                 "<head>\n" +
                 "  <meta charset=\"UTF-8\">\n" +
                 "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">\n" +
-                "  <title>Glass TV • Unggah Wallpaper</title>\n" +
+                "  <title>" + htmlText(R.string.wallpaper_page_title) + "</title>\n" +
                 "  <style>\n" +
                 "    * { box-sizing: border-box; margin: 0; padding: 0; }\n" +
                 "    body {\n" +
@@ -998,24 +1010,24 @@ public class WallpaperUploadServer {
                 "<body>\n" +
                 "  <div class=\"card\">\n" +
                 "    <div class=\"badge\">Glass TV OS • by @imsomangge</div>\n" +
-                "    <h1>Unggah Wallpaper</h1>\n" +
-                "    <p class=\"subtitle\">Pilih foto dari galeri ponsel untuk ditampilkan langsung di layar TV.</p>\n" +
+                "    <h1>" + htmlText(R.string.wallpaper_page_heading) + "</h1>\n" +
+                "    <p class=\"subtitle\">" + htmlText(R.string.wallpaper_page_intro) + "</p>\n" +
                 "\n" +
                 "    <div class=\"dropzone\" id=\"dropzone\" onclick=\"document.getElementById('file-input').click()\">\n" +
                 "      <div class=\"dropzone-icon\">🖼️</div>\n" +
-                "      <div class=\"dropzone-text\">Pilih Foto dari Galeri</div>\n" +
-                "      <div class=\"dropzone-hint\">Mendukung JPG, PNG, WEBP (resolusi 1080p / 4K)</div>\n" +
+                "      <div class=\"dropzone-text\">" + htmlText(R.string.wallpaper_page_choose_photo) + "</div>\n" +
+                "      <div class=\"dropzone-hint\">" + htmlText(R.string.wallpaper_page_format_hint) + "</div>\n" +
                 "    </div>\n" +
                 "\n" +
                 "    <div id=\"preview-container\">\n" +
                 "      <img id=\"preview\" alt=\"Preview\">\n" +
-                "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">Ganti Foto</button>\n" +
+                "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">" + htmlText(R.string.wallpaper_page_change_photo) + "</button>\n" +
                 "    </div>\n" +
                 "\n" +
                 "    <input type=\"file\" id=\"file-input\" accept=\"image/*\">\n" +
                 "\n" +
                 "    <button class=\"btn-submit\" id=\"btn-submit\" disabled onclick=\"uploadImage()\">\n" +
-                "      <span>Unggah ke Layar TV</span>\n" +
+                "      <span>" + htmlText(R.string.wallpaper_page_upload_button) + "</span>\n" +
                 "    </button>\n" +
                 "\n" +
                 "    <div class=\"progress-wrap\" id=\"prog-wrap\">\n" +
@@ -1028,17 +1040,17 @@ public class WallpaperUploadServer {
                 "\n" +
                 "  <div class=\"gallery-card\">\n" +
                 "    <div class=\"gallery-header\">\n" +
-                "      <div class=\"gallery-title\">📱 Foto di TV (<span id=\"photo-count\">0</span>)</div>\n" +
-                "      <button class=\"btn-slideshow\" onclick=\"setSlideshow()\">🔄 Putar Semua</button>\n" +
+                "      <div class=\"gallery-title\">" + htmlText(R.string.wallpaper_page_gallery_title) + " (<span id=\"photo-count\">0</span>)</div>\n" +
+                "      <button class=\"btn-slideshow\" onclick=\"setSlideshow()\">" + htmlText(R.string.wallpaper_page_slideshow) + "</button>\n" +
                 "    </div>\n" +
-                "    <div class=\"gallery-desc\">Pilih <strong>Tetapkan</strong> untuk memakai satu gambar sebagai wallpaper, atau hapus foto lama:</div>\n" +
+                "    <div class=\"gallery-desc\">" + htmlText(R.string.wallpaper_page_gallery_description) + "</div>\n" +
                 "    <div class=\"gallery-list\" id=\"gallery-list\">\n" +
-                "      <div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">Memuat daftar foto...</div>\n" +
+                "      <div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">" + htmlText(R.string.wallpaper_page_loading_gallery) + "</div>\n" +
                 "    </div>\n" +
                 "  </div>\n" +
                 "\n" +
                 "  <footer>\n" +
-                "    <div>Terhubung langsung ke TV melalui Wi-Fi lokal</div>\n" +
+                "    <div>" + htmlText(R.string.wallpaper_page_connected) + "</div>\n" +
                 "    <div style=\"margin-top: 6px; font-weight: 600; color: #64748b;\">Powered by @imsomangge</div>\n" +
                 "  </footer>\n" +
                 "\n" +
@@ -1065,7 +1077,7 @@ public class WallpaperUploadServer {
                 "        dropzone.style.display = 'none';\n" +
                 "        previewContainer.style.display = 'block';\n" +
                 "        btnSubmit.disabled = false;\n" +
-                "        btnSubmit.innerHTML = '<span>✨ Tetapkan Sebagai Wallpaper TV</span>';\n" +
+                "        btnSubmit.innerHTML = '<span>✨ " + jsText(R.string.wallpaper_page_set_wallpaper) + "</span>';\n" +
                 "        statusMsg.style.display = 'none';\n" +
                 "      };\n" +
                 "      reader.readAsDataURL(file);\n" +
@@ -1075,7 +1087,7 @@ public class WallpaperUploadServer {
                 "      if (!selectedFile) return;\n" +
                 "\n" +
                 "      btnSubmit.disabled = true;\n" +
-                "      btnSubmit.innerText = 'Menghantar ke TV...';\n" +
+                "      btnSubmit.innerText = '" + jsText(R.string.wallpaper_page_sending) + "';\n" +
                 "      progWrap.style.display = 'block';\n" +
                 "      progBar.style.width = '15%';\n" +
                 "      statusMsg.style.display = 'none';\n" +
@@ -1094,18 +1106,18 @@ public class WallpaperUploadServer {
                 "      xhr.onload = () => {\n" +
                 "        if (xhr.status >= 200 && xhr.status < 300) {\n" +
                 "          progBar.style.width = '100%';\n" +
-                "          btnSubmit.innerText = '✅ Berhasil Diunggah!';\n" +
+                "          btnSubmit.innerText = '✅ " + jsText(R.string.wallpaper_page_uploaded) + "';\n" +
                 "          statusMsg.className = 'status-msg success';\n" +
-                "          statusMsg.innerHTML = '🎉 Foto berhasil ditampilkan di layar TV.';\n" +
+                "          statusMsg.innerHTML = '🎉 " + jsText(R.string.wallpaper_page_success) + "';\n" +
                 "          statusMsg.style.display = 'block';\n" +
                 "          loadGallery();\n" +
                 "        } else {\n" +
-                "          showError('Gagal mengunggah: ' + xhr.statusText);\n" +
+                "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + xhr.statusText);\n" +
                 "        }\n" +
                 "      };\n" +
                 "\n" +
                 "      xhr.onerror = () => {\n" +
-                "        showError('Koneksi terputus. Pastikan ponsel dan TV menggunakan Wi-Fi yang sama.');\n" +
+                "        showError('" + jsText(R.string.wallpaper_page_connection_error) + "');\n" +
                 "      };\n" +
                 "\n" +
                 "      xhr.send(selectedFile);\n" +
@@ -1113,7 +1125,7 @@ public class WallpaperUploadServer {
                 "\n" +
                 "    function showError(msg) {\n" +
                 "      btnSubmit.disabled = false;\n" +
-                "      btnSubmit.innerText = 'Cuba Semula';\n" +
+                "      btnSubmit.innerText = '" + jsText(R.string.wallpaper_page_retry) + "';\n" +
                 "      statusMsg.className = 'status-msg error';\n" +
                 "      statusMsg.innerText = '❌ ' + msg;\n" +
                 "      statusMsg.style.display = 'block';\n" +
@@ -1128,7 +1140,7 @@ public class WallpaperUploadServer {
                 "          const countEl = document.getElementById('photo-count');\n" +
                 "          if (countEl) countEl.innerText = items.length;\n" +
                 "          if (!items || items.length === 0) {\n" +
-                "            listEl.innerHTML = '<div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">Tidak ada foto tersimpan di TV.</div>';\n" +
+                "            listEl.innerHTML = '<div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">" + jsText(R.string.wallpaper_page_gallery_empty) + "</div>';\n" +
                 "            return;\n" +
                 "          }\n" +
                 "          let html = '';\n" +
@@ -1142,7 +1154,7 @@ public class WallpaperUploadServer {
                 "              '</div>' +\n" +
                 "              '<div class=\"photo-btns\">' +\n" +
                 "                '<button class=\"btn-act' + (item.active ? ' active' : '') + '\" onclick=\"selectSingle(\\'' + enc + '\\')\">' +\n" +
-                "                  (item.active ? 'Aktif 📌' : 'Tetapkan 📌') +\n" +
+                "                  (item.active ? '" + jsText(R.string.wallpaper_page_active) + " 📌' : '" + jsText(R.string.wallpaper_page_set) + " 📌') +\n" +
                 "                '</button>' +\n" +
                 "                '<button class=\"btn-act del\" onclick=\"deletePhoto(\\'' + enc + '\\')\">🗑️</button>' +\n" +
                 "              '</div>' +\n" +
@@ -1162,7 +1174,7 @@ public class WallpaperUploadServer {
                 "    }\n" +
                 "\n" +
                 "    function deletePhoto(fileName) {\n" +
-                "      if (!confirm('Hapus foto ini dari layar TV?')) return;\n" +
+                "      if (!confirm('" + jsText(R.string.wallpaper_page_confirm_delete) + "')) return;\n" +
                 "      fetch('" + base + "/api/delete?file=' + fileName, { method: 'POST' })\n" +
                 "        .then(r => r.json())\n" +
                 "        .then(() => {\n" +
@@ -1175,7 +1187,7 @@ public class WallpaperUploadServer {
                 "        .then(r => r.json())\n" +
                 "        .then(() => {\n" +
                 "          loadGallery();\n" +
-                "          alert('Mode putar semua foto aktif di TV.');\n" +
+                "          alert('" + jsText(R.string.wallpaper_page_slideshow_active) + "');\n" +
                 "        });\n" +
                 "    }\n" +
                 "\n" +
