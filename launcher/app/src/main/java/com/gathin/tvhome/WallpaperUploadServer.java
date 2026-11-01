@@ -488,8 +488,8 @@ public class WallpaperUploadServer {
         }
         BitmapFactory.Options verify = new BitmapFactory.Options();
         int sample = 1;
-        while (bounds.outWidth / (sample * 2) > 512
-                || bounds.outHeight / (sample * 2) > 512) {
+        while (bounds.outWidth / sample > 512
+                || bounds.outHeight / sample > 512) {
             sample *= 2;
         }
         verify.inSampleSize = sample;
