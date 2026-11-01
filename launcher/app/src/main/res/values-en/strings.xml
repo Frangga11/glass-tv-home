@@ -90,4 +90,27 @@
     <string name="weather_humidity_description">Current relative humidity.</string>
     <string name="weather_pressure_label">⏱️  AIR PRESSURE</string>
     <string name="weather_data_source">Open-Meteo model • US AQI estimate</string>
+
+    <string name="media_now_playing">NOW PLAYING</string>
+    <string name="media_spotify">SPOTIFY</string>
+    <string name="media_track_title">Track</string>
+    <string name="media_artist">Artist</string>
+    <string name="media_playing_status">▶ Playing</string>
+    <string name="media_open_spotify">Open Spotify</string>
+    <string name="media_close_stop">Close &amp; Stop</string>
+    <string name="ota_support_title">System Updates &amp; Support</string>
+    <string name="ota_version_subtitle">Glass TV Home • Automatic Update Engine (OTA)</string>
+    <string name="ota_auto_update_active">✅ Auto-Update: On</string>
+    <string name="ota_update_description">Updates download and install in the background without interrupting playback.</string>
+    <string name="ota_check_now">🔄 Check for Updates Now</string>
+    <string name="ota_change_time">⏱️ Change Auto-Update Time</string>
+    <string name="ota_disable">⚡ Turn Off Auto-Update</string>
+    <string name="coffee_support">Support Development</string>
+    <string name="coffee_payment_method">Payment QR • GXBank</string>
+    <string name="coffee_qr_description">Scan with your phone camera or banking app</string>
+    <string name="coffee_suggestion_email">📧 Suggestions and feedback</string>
+    <string name="close_label">Close</string>
+    <string name="close_all_label">Close All</string>
+    <string name="close_all_description">Close all recent apps</string>
+    <string name="today_label">Today</string>
 </resources>
