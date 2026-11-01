@@ -157,7 +157,7 @@
     <string name="update_later_action">⏭️ Skip / Later</string>
     <string name="update_deferred">Update postponed. The red dot 🔴 remains on the Settings button.</string>
     <string name="install_permission_title">⚠️ Installation Permission Required</string>
-    <string name="install_permission_message">Enable 'Allow from this source' so Glass TV Home can install updates automatically.</string>
+    <string name="install_permission_message">Enable the Allow from this source option so Glass TV Home can install updates automatically.</string>
     <string name="open_settings_action">Open Settings</string>
     <string name="install_unknown_apps_hint">Open Settings &gt; Security &gt; Install unknown apps</string>
     <string name="download_update_title">📥 Downloading Update (v%1$s)</string>
