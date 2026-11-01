@@ -311,14 +311,14 @@
 ### Current GitHub state
 - PR #13 B04 head `baf0e7dad2dfa28a9f79c7bb25a58502243f04ae`: exact-head CI #242 PASS; seven-file responsive-layout source scope. F02 physical viewport acceptance remains pending.
 - PR #14 B05 head `04cf544ca240e32a87baef525f266f3d038ff668`: no exact-head CI evidence.
-- Integration branch `integration/b04-b05-reconciled`; current head `9476b4da24efffc328430533c298acdcc6866ab8`; Draft PR #15 targets B04. Two-parent integration commit `73817ce41e4ae5b034922f190052a95ac45886d9` preserves both original histories.
+- Integration branch `integration/b04-b05-reconciled`; current head `fd8c14630254e27d42e257be342a5324bd40522c`; Draft PR #15 targets B04. Two-parent integration commit `73817ce41e4ae5b034922f190052a95ac45886d9` preserves both original histories.
 - B04/B05 overlap manually reconciled in ClockDream, RecentAppsActivity, item_recent_close_all.xml, and view_nightstand.xml. B04-only adapter/helper/tests retained.
 
 ### Completed in this checkpoint
 - B04 source review and exact-head CI verification.
 - Selective B04+B05 integration branch and Draft PR #15; no source PR was merged.
 - Additional high-traffic localization fixes in Home, Auto-Update, Adhan popup, media playback, wallpaper shuffle, Child Mode/effect feedback, hide/lock dialog, and Weather UV/precipitation/visibility.
-- Static resource audit: 345 keys in default/ID/EN; identical key sets; no duplicates or placeholder mismatches; no missing R.string references in the three audited Java files.
+- Static resource audit: 347 keys in default/ID/EN; identical key sets; no duplicates or placeholder mismatches; no missing R.string references in the three audited Java files.
 
 ### Remaining / do not close
 - Complete ModernSettingsDialog hardcoded user-facing text sweep, including profile, wallpaper, StandBy, device/system, OTA, and launcher guidance.
@@ -333,3 +333,11 @@
 3. Obtain exact-head CI for current PR #15 and inspect both jobs and logs; resolve all failures before readiness.
 4. Review locale lifecycle/focus behavior on Android 11/API 30 and Android 13+; defer physical acceptance to the approved F stage.
 5. Keep PR #13, #14, and #15 unmerged and Draft until all source/CI/regression gates pass.
+
+
+### QC follow-up — 1 November 2026
+
+- Latest integration head: `fd8c14630254e27d42e257be342a5324bd40522c` (Draft PR #15).
+- Additional parental PIN fallback prompts are now localized. Static resource audit now reports 347 keys in each of default/ID/EN, with no duplicates, key-set differences, placeholder mismatches, or missing R.string references in the audited Java files.
+- Exact-head Actions run is still absent. Do not infer build/test success from static checks.
+- B05 remains IN PROGRESS: broader ModernSettingsDialog copy sweep, app-wide final scan, exact-head CI, API 30/API 33 lifecycle checks, and physical acceptance remain open.
