@@ -116,3 +116,11 @@
 - APK diagnostic on code/test head: 1,547,845 bytes, 15,019 bytes below the 1.5 MiB cap; artifact publication skipped. Avoid unnecessary APK growth in later stages.
 - C01–C04 remain OPEN/DRAFT/UNMERGED under D-013. Physical phone/TV QR/browser acceptance remains deferred to F-stage and is not waived.
 - Next: C05 shared upload/receive-file pipeline audit. Detailed resume state is in `HANDOVER.md`; audit evidence is in `AUDIT_REGISTER.md`.
+
+
+## C04 final exact-head verification — 1 November 2026
+
+- Latest C04 feature branch head: `9094969d968c6fffef6598e1e8c5a7bd62e5efa8`.
+- Exact-head CI #343 / `41288644099`: PASS; both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. `testReleaseUnitTest` and `assembleRelease` succeeded.
+- APK diagnostic remains 1,547,845 bytes; 15,019 bytes below the 1.5 MiB cap. APK publication skipped.
+- PR #21 remains OPEN/DRAFT/UNMERGED; base is C03 exact head `d266287df287167e5a8e73fd675b51759b580ed6`. No merge or device acceptance claimed.
