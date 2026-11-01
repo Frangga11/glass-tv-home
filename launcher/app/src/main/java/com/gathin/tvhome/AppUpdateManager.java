@@ -271,7 +271,7 @@ public final class AppUpdateManager {
                         Toast.makeText(activity, R.string.install_unknown_apps_hint, Toast.LENGTH_LONG).show();
                     }
                 });
-                permDialog.setNegativeButton("Batal", (d, w) -> d.dismiss());
+                permDialog.setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss());
                 permDialog.show();
                 return;
             }
