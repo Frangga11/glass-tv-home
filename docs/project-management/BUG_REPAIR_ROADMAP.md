@@ -284,3 +284,14 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - Exact-head CI #380 / `41305432110` and #381 / `41305453205` are IN PROGRESS on that exact head. Do not close D02 until at least one full run passes both jobs and the final branch/PR head is reverified.
 - D01-F11 remains open for the separate upload metadata/mode atomicity repair and regression tests in D05/D07. No APK publication/installation or device setting change.
 - Next: monitor exact-head CI, inspect any failures, then record final D02 status and proceed to D03.
+
+
+## D02 final exact-head closure — 1 November 2026
+
+- Final D02 head: `2dbfcc181651184914422ad0697a3c5c27d15614` on `feature/d02-settings-ui-propagation`.
+- Exact-head CI #382 / run `41305782187`: PASS. Both `Launcher build and unit tests` and `Lists, tools and docs` jobs succeeded; `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and 1.5 MiB size gate passed.
+- Final release APK diagnostic: 1,550,617 bytes, 12,247 bytes below the 1,572,864-byte cap. APK publication skipped.
+- D02 source-audit and exact-head CI gates: CLOSED. Physical Android TV acceptance remains deferred to F-stage, not waived.
+- PR #26 remains OPEN/DRAFT/UNMERGED under D-013; no merge or APK installation.
+- D01-F11 remains assigned to D05/D07 for the distinct upload metadata/mode atomicity repair and regression tests.
+- **Next task: D03 — audit locked/hidden app count and list refresh in the open Settings pane.** Preserve existing D02 fixes and do not introduce a global preference listener without a demonstrated need.
