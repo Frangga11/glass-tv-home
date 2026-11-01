@@ -1221,9 +1221,7 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.android_settings_title), activity.getString(R.string.android_settings_summary),
                         () -> {
-                            try {
-                                activity.startActivity(new Intent(Settings.ACTION_SETTINGS));
-                            } catch (Exception e) {
+                            if (!openDeviceSettings(activity, activity.systemIntent(Settings.ACTION_SETTINGS))) {
                                 TvFeedback.show(activity, R.string.android_settings_unavailable, Toast.LENGTH_SHORT);
                             }
                         }));
@@ -2075,7 +2073,7 @@ public final class ModernSettingsDialog {
     private static boolean openDeviceSettings(Context context, Intent... intents) {
         for (Intent intent : intents) {
             try {
-                context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(intent);
                 return true;
             } catch (Exception ignored) {
                 // Try the next firmware-compatible settings action.
