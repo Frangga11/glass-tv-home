@@ -263,3 +263,13 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - D01-F10 clarifies `allowBackup=false`: Android 11/API 30 target disables Auto Backup; some Android 12+/API 31+ OEMs may still permit device-to-device transfer. No universal D2D exclusion is claimed.
 - D01-F11 is a confirmed cross-project consistency defect: `StandbyPhotoStore.addUploadedFile()` ignores the photo-mode commit result, while C07 `WallpaperUploadServer.handleStandbyUpload()` can consequently return HTTP 200. Assign repair and regression coverage to D05/D07 while preserving C07's other upload/session hardening.
 - Next: verify exact-head CI for `cd710681099faece14905faa244f57245bae84d1`, close D01 source-audit gate with evidence, then proceed to D02.
+
+
+
+## D01 final exact-head CI closure — 1 November 2026
+
+- Final D01 head: `cd710681099faece14905faa244f57245bae84d1`.
+- Exact-head CI #375 / run `41304411195`: PASS; both Launcher build/unit tests and Lists/tools/docs jobs SUCCESS.
+- Exact-head CI #376 / run `41304430928`: PASS; both jobs SUCCESS. These are two successful runs on the final D01 head.
+- Draft PR #25 remains OPEN/DRAFT/UNMERGED; base is C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`. No merge performed under D-013.
+- D01 source-audit/CI gate is CLOSED. Runtime/process-death/reboot validation remains deferred to F-stage, not waived. D01-F11 remains assigned to D05/D07 for targeted repair and regression coverage.
