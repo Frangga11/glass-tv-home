@@ -1367,7 +1367,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     void clearStandbyPhotos() {
         List<Uri> selectedUris = StandbyPhotoStore.getUris(this);
-        if (!StandbyPhotoStore.saveUris(this, Collections.emptyList())) {
+        if (!StandbyPhotoStore.clearCollectionAndMode(this)) {
             TvFeedback.show(this, R.string.standby_clear_failed, Toast.LENGTH_LONG);
             return;
         }
@@ -1378,8 +1378,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             } catch (Exception ignored) {
             }
         }
-        StandbyPhotoStore.clearUploadedFiles(this);
-        StandbyPhotoStore.setPhotoMode(this, false);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
         TvFeedback.show(this, R.string.standby_list_cleared, Toast.LENGTH_SHORT);
@@ -1435,23 +1433,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TvFeedback.show(this, message, Toast.LENGTH_LONG);
             return;
         }
-        // Append new photos so a local/USB selection never replaces earlier QR uploads.
-        List<Uri> merged = StandbyPhotoStore.getUris(this);
-        int added = 0;
-        int skipped = skippedByLimit;
+        // Merge against the latest persisted collection inside StandbyPhotoStore's
+        // serialized mutation boundary; an upload may have completed while the picker was open.
+        StandbyPhotoStore.UriMergeResult update = StandbyPhotoStore.appendUris(this, granted);
+        List<Uri> finalUris = StandbyPhotoStore.getUris(this);
         for (Uri uri : granted) {
-            if (merged.contains(uri)) continue;
-            if (merged.size() >= StandbyPhotoStore.MAX_PHOTO_COUNT) {
-                skipped++;
+            if (!finalUris.contains(uri)) {
                 try {
                     getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } catch (Exception ignored) {
                 }
-                continue;
             }
-            merged.add(uri);
-            added++;
         }
+        if (!update.persisted) {
+            TvFeedback.show(this, R.string.standby_save_failed, Toast.LENGTH_LONG);
+            return;
+        }
+        int added = update.addedCount;
+        int skipped = skippedByLimit + update.skippedCount;
         if (added == 0) {
             String message = skipped > 0
                     ? getString(R.string.standby_collection_limit, StandbyPhotoStore.MAX_PHOTO_COUNT)
@@ -1459,22 +1458,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TvFeedback.show(this, message, Toast.LENGTH_LONG);
             return;
         }
-        if (!StandbyPhotoStore.saveUris(this, merged)) {
-            for (Uri uri : granted) {
-                if (!StandbyPhotoStore.getUris(this).contains(uri)) {
-                    try {
-                        getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-            TvFeedback.show(this, R.string.standby_save_failed, Toast.LENGTH_LONG);
-            return;
-        }
-        StandbyPhotoStore.setPhotoMode(this, true);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
-        String message = getString(R.string.standby_photos_added, added, merged.size());
+        String message = getString(R.string.standby_photos_added, added, finalUris.size());
         if (skipped > 0) message += " " + getString(R.string.standby_photos_skipped, skipped);
         TvFeedback.show(this, message, Toast.LENGTH_LONG);
     }
