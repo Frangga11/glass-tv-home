@@ -188,3 +188,21 @@ Detailed audit and acceptance matrix: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_A
 - Largest source candidates include the intentional 230,883-byte default wallpaper, font resources (Inter and Outfit are byte-identical by Git blob SHA), QR artwork, avatars, and audio. Source sizes do not prove final APK contribution; the resource shrinker may remove unreferenced resources.
 - A read-only APK ZIP breakdown step was added to the B07 PR workflow. Its output is pending the next CI execution; no asset/function was removed or modified.
 - Detailed record: [APK_SIZE_AUDIT.md](APK_SIZE_AUDIT.md).
+
+
+## C03 — Phone-to-TV communication and active LAN resolution, 1 November 2026
+
+| Gate | Result | Evidence |
+|---|---|---|
+| Active network selection | PASS | Shared `LocalNetworkAddress` resolves Android active default Wi-Fi/Ethernet IPv4; rejects VPN-default, cellular-only, loopback, link-local, unspecified, multicast, IPv6, and unsupported prefixes. |
+| Avatar QR resolver consistency | PASS | Preflight and server bind use the same resolver; URL uses the bound IPv4 and actual listening port. |
+| Wallpaper QR resolver consistency | PASS | Preflight and server bind use the same resolver; URL uses bound address, actual port, and session-specific route. |
+| StandBy QR resolver consistency | PASS | Same resolver and independent StandBy session route; wallpaper store remains separate. |
+| Same-Wi-Fi user instructions | PASS | Existing ID/EN/default resource strings explicitly instruct phone and TV to use the same Wi-Fi network. |
+| JVM regression tests | PASS | `LocalNetworkAddressTest` covers accepted LAN IPv4 and rejected address/prefix classes. |
+| Exact-head CI | PASS | Run #338 / `41287563951` on `d266287df287167e5a8e73fd675b51759b580ed6`; both jobs SUCCESS. |
+| Release build and APK size | PASS | `testReleaseUnitTest` + `assembleRelease` succeeded; APK 1,546,045 bytes (<1.5 MiB cap). |
+| Real phone/TV same-network test | DEFERRED, NOT WAIVED | Final F-stage acceptance: scan all three QR flows, verify upload/store isolation, alternate network reachability, Wi-Fi reconnect, Ethernet/Wi-Fi switch, VPN, and QR revocation. |
+| Merge / APK publication | DEFERRED / NOT PERFORMED | PR #20 OPEN/DRAFT/UNMERGED under D-013; no APK published or installed. |
+
+C03 finding C03-F01 (interface-name-based address selection) was remediated by active-default-network resolution. C03-F02 (separate preflight and server address discovery) now uses the same resolver in both paths. C03-F03 (unisolated address policy) is covered by the new helper and JVM tests.
