@@ -12,7 +12,7 @@
 - Final API 30/33+ lifecycle/focus, real-phone QR over same Wi-Fi, and physical TV acceptance remain deferred to final F-stage overall system test; not waived.
 - Detailed evidence: [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md). B07 is next; grouped merge remains deferred until A–G source work is complete.
 
-## B04/B05 integration QC — latest checkpoint, 1 November 2026
+## Historical B04/B05 integration QC checkpoint — 1 November 2026
 
 - Integration branch `integration/b04-b05-reconciled`; exact head `89d769689eb566671725c52982e0b73c4f1e8c31`; Draft PR #15 targets B04 head. Source PR #13 and #14 remain open; no merge.
 - B05 expanded beyond native Settings copy: profile/app-lock prompts, avatar QR page and HTTP errors, wallpaper/Standby QR pages and upload errors, weather mood picker, location setup, restart/power feedback, and radar illustration label now use Indonesian/English strings.
@@ -95,7 +95,7 @@
 - B07 detailed evidence: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
 
 
-## Project C current checkpoint — 1 November 2026
+## Historical Project C checkpoint — 1 November 2026
 
 - C01 source/CI pass: Draft PR #18, `feature/c01-local-communication-audit` @ `bba0801c9eb61ab27ae5046379c7a50aabebf570`, CI #314 PASS.
 - C02 source/CI pass: Draft PR #19, `feature/c02-tv-local-server-ip` @ `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`, CI #333 PASS.
@@ -104,7 +104,7 @@
 - Next: C04 HTTP endpoint/routing/method/response-code audit. Detailed resume point is in `HANDOVER.md`; evidence is in `AUDIT_REGISTER.md`.
 
 
-## Project C current checkpoint — C04 source complete, 1 November 2026
+## Historical Project C C04 source checkpoint — 1 November 2026
 
 - C01 source/CI pass: Draft PR #18, `feature/c01-local-communication-audit` @ `bba0801c9eb61ab27ae5046379c7a50aabebf570`, CI #314 PASS.
 - C02 source/CI pass: Draft PR #19, `feature/c02-tv-local-server-ip` @ `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`, CI #333 PASS.
