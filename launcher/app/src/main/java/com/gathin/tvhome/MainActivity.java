@@ -6178,7 +6178,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * settings app (com.xiaomi.mitv.settings) there, so the Settings and Wi-Fi pills keep working.
      * On firmware with a standard settings handler the behaviour is unchanged.
      */
-    private Intent systemIntent(String standardAction) {
+    Intent systemIntent(String standardAction) {
         Intent i = new Intent(standardAction);
         if (i.resolveActivity(getPackageManager()) != null) return i;
         i = new Intent().setComponent(new ComponentName(
