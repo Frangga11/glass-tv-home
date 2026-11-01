@@ -142,3 +142,20 @@ This timing decision supersedes the rolling stage-merge schedule previously reco
 | Exact-head CI | PASS | Run #295 / 41280874732 on bc86a250d73a5cbb83250217d42c3c3993cf29d7; both jobs SUCCESS. |
 | Merge | DEFERRED BY D-013 | PR #16 OPEN/DRAFT/UNMERGED; grouped merge after A–G work. |
 | Physical/runtime/phone QR | DEFERRED, NOT WAIVED | Final F-stage overall system acceptance. |
+
+
+## B07 menu, submenu & focus restoration — 1 November 2026
+
+| Gate | Result | Evidence |
+|---|---|---|
+| Source branch | IN PROGRESS | `feature/b07-menu-focus-restoration`, stacked on B06 exact head `bc86a250d73a5cbb83250217d42c3c3993cf29d7`. |
+| Draft PR | OPEN / DRAFT / UNMERGED | PR #17; base `feature/b06-notification-feedback`; grouped merge deferred by D-013. |
+| Root cause | CONFIRMED | Settings tab persisted, but show() always focused selected sidebar; right-pane/sidebar exact cursor and scroll state were not persisted. |
+| B07 source implementation | IMPLEMENTED | Persist active focus area, validated focus path/signature, active tab, left scroll, and per-tab right scroll. |
+| Stale-path protection | IMPLEMENTED | Require visible/enabled/focusable target and matching class/ID/label signature; fallback to selected sidebar. |
+| JVM regression tests | ADDED / CI PENDING | `SettingsFocusPathTest`: round-trip, empty/deep path, malformed/out-of-range, zero index. |
+| Exact-head CI | IN PROGRESS | Run #298 / `41281838510` on `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`; no PASS claim until completed. |
+| Runtime/API 30/33+ and physical TV | DEFERRED, NOT WAIVED | Final B-series/F-stage acceptance matrix. |
+| Grouped merge | DEFERRED BY D-013 | Do not merge PR #17 before A–G source work and grouped integration. |
+
+Detailed audit and acceptance matrix: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
