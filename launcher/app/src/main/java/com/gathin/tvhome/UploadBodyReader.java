@@ -45,6 +45,17 @@ final class UploadBodyReader {
         return length > maxBytes ? -2L : length;
     }
 
+    static boolean hasTransferEncoding(String[] headerLines) {
+        if (headerLines == null) return false;
+        for (String line : headerLines) {
+            if (line == null) continue;
+            int separator = line.indexOf(':');
+            if (separator > 0 && "transfer-encoding".equals(
+                    line.substring(0, separator).toLowerCase(Locale.ROOT))) return true;
+        }
+        return false;
+    }
+
     /**
      * Writes exactly expectedBytes to an existing temporary file. Bytes after the
      * declared body remain unread for the caller/socket close. On truncation or
