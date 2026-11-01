@@ -1366,8 +1366,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void clearStandbyPhotos() {
-        List<Uri> selectedUris = StandbyPhotoStore.getUris(this);
-        if (!StandbyPhotoStore.clearCollectionAndMode(this)) {
+        List<Uri> selectedUris = StandbyPhotoStore.clearCollectionAndMode(this);
+        if (selectedUris == null) {
             TvFeedback.show(this, R.string.standby_clear_failed, Toast.LENGTH_LONG);
             return;
         }
