@@ -176,4 +176,32 @@
     <string name="weather_station_picker_title">📍 Choose City / Station (%1$s)</string>
     <string name="weather_syncing">Syncing weather for %1$s...</string>
     <string name="back_action">Back</string>
+
+    <string name="now_playing_subtitle">Now playing • %1$s</string>
+    <string name="open_app_action">Open %1$s</string>
+    <string name="no_song_playing">Nothing is playing</string>
+    <string name="now_playing_help">Open Spotify or YouTube Music to start listening</string>
+    <string name="playback_idle">⏸ Nothing playing</string>
+    <string name="info_center_title">✨ Glass TV Information &amp; Actions</string>
+    <string name="info_center_subtitle">System overview and quick action shortcuts</string>
+    <string name="info_system_summary">📋 System Overview:\n• Next prayer: %1$s (%2$s)\n• Weather &amp; air quality (US AQI): %3$s\n• Device: system status and memory management</string>
+    <string name="info_actions_title">Quick Actions:</string>
+    <string name="info_action_smart_boost">🚀 Smart Boost TV (Free Memory &amp; Clear Cache)</string>
+    <string name="info_action_weather">🌦️ Weather &amp; Air Quality</string>
+    <string name="info_action_prayer">🕌 Prayer Times &amp; Daily Verse</string>
+    <string name="info_action_tips">💡 TV Control Tips &amp; Guide</string>
+    <string name="smart_boost_success">Glass TV: TV memory and cache were optimized.</string>
+    <string name="tv_tips_title">💡 Glass TV Tips</string>
+    <string name="tv_tips_body">• Hold the HOME button for 500 ms to open Settings from any app or the home screen.\n\n• Press HOME once to return to the home screen.\n\n• 4K wallpaper collections are sourced from Pexels &amp; Unsplash by category.\n\n• Prayer times follow Indonesian regions and data from Kemenag RI.\n\n• Use Clear TV Cache to remove temporary files without deleting app data.</string>
+    <string name="understand_action">Got it</string>
+    <string name="weather_summary_title">🌦️ Weather &amp; Air Quality</string>
+    <string name="weather_summary_body">📍 Location: %1$s\n\n📊 Current conditions: %2$s\n\nℹ️ Source: Open-Meteo / CAMS (CC BY 4.0). US AQI is a model estimate, not an official local-station ISPU measurement.\n\n📌 Check AQI values and follow official BMKG or relevant agency alerts before making outdoor activity decisions.</string>
+    <string name="prayer_summary_title">🕌 Prayer Times &amp; Daily Verse</string>
+    <string name="prayer_summary_body">📍 Location: %1$s • %2$s\n\n⏳ Next prayer: %3$s\n\n📖 Selected verse / daily prayer:\n%4$s</string>
+    <string name="ok_action">OK</string>
+    <string name="sound_effects_title">🔊 Choose Sound Effects</string>
+    <string name="sound_effects_off">🔇 Sound effects turned off</string>
+    <string name="sound_effects_selected">🔊 Sound effects: %1$s</string>
+    <string name="auto_update_schedule_title">⏱️ Choose Daily Auto-Update Time</string>
+    <string name="auto_update_time_selected">Auto-update time set to: %1$s</string>
 </resources>
