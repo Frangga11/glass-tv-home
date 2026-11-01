@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -29,6 +30,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Manages OTA in-app update checks, changelog display, and seamless APK downloading
@@ -300,7 +303,14 @@ public final class AppUpdateManager {
         progressDialog.setMax(100);
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
+        AtomicBoolean cancelled = new AtomicBoolean(false);
+        AtomicReference<HttpURLConnection> activeConnection = new AtomicReference<>();
         progressDialog.show();
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel_action), (dialog, which) -> {
+            cancelled.set(true);
+            HttpURLConnection active = activeConnection.get();
+            if (active != null) active.disconnect();
+        });
 
         executor.execute(() -> {
             File cacheDir = activity.getExternalCacheDir() != null ? activity.getExternalCacheDir() : activity.getCacheDir();
@@ -311,12 +321,15 @@ public final class AppUpdateManager {
             HttpURLConnection conn = null;
 
             try {
+                if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
                 if (apkFile.exists() && !apkFile.delete()) throw new java.io.IOException("Tidak dapat menyiapkan file pembaruan");
                 URL url = new URL(apkUrl);
                 conn = (HttpURLConnection) url.openConnection();
+                activeConnection.set(conn);
                 conn.setRequestMethod("GET");
                 conn.setConnectTimeout(DOWNLOAD_CONNECT_TIMEOUT_MS);
                 conn.setReadTimeout(DOWNLOAD_READ_TIMEOUT_MS);
+                if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
                 conn.connect();
 
                 int responseCode = conn.getResponseCode();
@@ -337,6 +350,7 @@ public final class AppUpdateManager {
                 int count;
 
                 while ((count = is.read(buffer)) != -1) {
+                    if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
                     total += count;
                     fos.write(buffer, 0, count);
                     if (fileLength > 0) {
@@ -358,25 +372,27 @@ public final class AppUpdateManager {
                 is = null;
                 conn.disconnect();
                 conn = null;
+                activeConnection.set(null);
 
                 mainHandler.post(() -> {
                     if (!isActivityUsable(activity)) return;
                     if (progressDialog.isShowing()) progressDialog.dismiss();
-                    installApk(activity, apkFile);
+                    if (!cancelled.get()) installApk(activity, apkFile);
                 });
 
             } catch (Exception e) {
                 if (apkFile.exists() && !apkFile.delete()) Log.w(TAG, "Could not remove incomplete update APK");
-                Log.e(TAG, "Download error: " + e.getMessage());
+                if (!cancelled.get()) Log.e(TAG, "Download error: " + e.getMessage());
                 mainHandler.post(() -> {
                     if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.dismiss();
-                    if (isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG);
+                    if (!cancelled.get() && isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG);
                 });
             } finally {
                 try {
                     if (fos != null) fos.close();
                     if (is != null) is.close();
                     if (conn != null) conn.disconnect();
+                    activeConnection.set(null);
                 } catch (Exception ignored) {
                 }
             }
