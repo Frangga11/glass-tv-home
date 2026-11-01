@@ -72,7 +72,7 @@ Final B04/B05 integration chain is complete and CI-gated. Runtime/device/QR/phys
 
 ## B06 baseline audit — 1 November 2026
 
-- Active implementation branch: `feature/b06-notification-feedback`, created from B03 continuation head `d7b76c4a22c9eadffb8171a616283f3ad647d488`. No B06 source changes have been made yet.
+- Historical baseline: `feature/b06-notification-feedback` was created from B03 continuation head `d7b76c4a22c9eadffb8171a616283f3ad647d488`; at that point no B06 source changes had been made. See the B06 audit and closure section below for the current state.
 - Scanned the complete launcher Java source directory (63 Java files) for Toast, dialogs, progress/loading, delayed callbacks, and network/socket timeouts.
 - Transient feedback is scattered across `MainActivity`, `ModernSettingsDialog`, `WeatherActivity`, `RecentAppsActivity`, `HomeSettingsActivity`, `LocationBroadcastReceiver`, `ChildModeManager`, `UserSwitchDialog`, `AppUpdateManager`, and `AppAdapter`. No shared in-app feedback abstraction or Snackbar usage was found in the scanned Java sources.
 - OTA download uses `ProgressDialog` in `AppUpdateManager`; it has no cancel action and reports download failure via Toast. This is a candidate for a consistent, lifecycle-safe loading/error pattern.
@@ -95,7 +95,7 @@ Final B04/B05 integration chain is complete and CI-gated. Runtime/device/QR/phys
 | Audit expansion | ACTIVE | Expand for global/shared foundations, cross-module contracts, common infrastructure, build/resources/permissions, or multi-module regressions; otherwise keep audit scoped to affected dependencies. |
 | Device/runtime acceptance | DEFERRED | Final overall acceptance only; not waived and must not be recorded as PASS before performed. |
 
-No B06 source implementation has started. This policy approval and branch setup do not constitute B06 completion or merge readiness.
+At the time of this policy checkpoint, B06 source implementation had not started. See the B06 audit and closure section below for the current verified state; merge timing remains deferred under D-013.
 
 
 ## Deferred grouped merge decision — 1 November 2026
