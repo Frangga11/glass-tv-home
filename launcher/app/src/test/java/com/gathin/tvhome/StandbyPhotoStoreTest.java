@@ -54,6 +54,7 @@ public class StandbyPhotoStoreTest {
         assertEquals(1, StandbyPhotoStore.calculateInSampleSize(0, 4000, 1920, 1080));
         assertEquals(1, StandbyPhotoStore.calculateInSampleSize(4000, 3000, 0, 1080));
     }
+
     @Test
     public void uploadedCollectionAndPhotoModeUseOnePreferenceCommit() {
         Map<String, Object> values = new HashMap<>();
@@ -74,6 +75,7 @@ public class StandbyPhotoStoreTest {
         SharedPreferences preferences = recordingPreferences(false, values, commits);
 
         assertFalse(StandbyPhotoStore.commitUploadedState(preferences, "file:///standby_photos/photo.jpg"));
+        assertEquals("file:///standby_photos/photo.jpg", values.get("photo_uris"));
         assertEquals(Boolean.TRUE, values.get("display_mode"));
         assertEquals(1, commits[0]);
     }
