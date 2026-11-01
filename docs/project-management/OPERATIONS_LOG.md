@@ -140,3 +140,16 @@
 - Add complete ID and EN resource coverage, correct localeConfig to advertise only actual supported locales, migrate XML/Java hardcoded labels/messages to resources or a consistent translation layer, and cover dynamic/errors/notifications.
 - Language change must refresh the UI while preserving the current tab/sidebar/focus position and must not reset profile, wallpaper, prayer, weather, or other user data.
 - Before implementation, inventory every Activity/service lifecycle entry point and current language call site; add unit tests for preference normalization/migration and resource key/placeholder parity. No source files modified in this planning pass.
+
+
+## 2026-11-01 — B05 localization implementation checkpoint
+
+- Created Draft PR [#14](https://github.com/Frangga11/glass-tv-home/pull/14), branch `feature/b05-id-en-localization`, stacked on B03 exact head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`; latest audited head at this checkpoint: `cce889f231aeff3a28805fd517853a3f0a91e79c`.
+- Added complete 158-key default/Indonesian/English string sets. Static parity audit: 158/158/158 keys, no duplicate keys, no key-set differences, no placeholder differences.
+- Restricted `locales_config.xml` to `id` and `en`; added locale-aware base contexts to five user-facing Activities and ClockDream. Added API 33+ per-app locale synchronization and API 26–32 resource-context handling.
+- Updated the language-switch flow to recreate on API 26–32 and reopen Settings; B01 persists the selected Settings tab/sidebar cursor. No right-pane action focus restoration is claimed.
+- Migrated static strings in eight launcher layouts (Home, Recent Apps, Weather, media hub, OTA/support, close-all, daily weather row, Nightstand) and programmatic text in profile, PIN, weather-condition, and update/install flows.
+- Added tests for language normalization and resource key/placeholder parity. Static resource audit passed; Gradle tests/build have NOT yet been run for this head.
+- A fresh Actions query showed no workflow run associated with the B05 head. Do not treat source parity as build/CI pass. CI must be triggered and exact-head logs inspected before source gate can pass.
+- Remaining work: migrate hardcoded Java strings in MainActivity/ModernSettingsDialog/WeatherActivity and remaining dynamic/error/notification paths; complete lifecycle/focus review; run exact-head CI; update final audit.
+- PR #14 remains Draft/open/unmerged. No artifact publication, APK install, device setting/package change, or physical TV test.
