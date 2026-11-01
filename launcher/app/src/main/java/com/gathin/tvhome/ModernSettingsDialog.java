@@ -1966,9 +1966,10 @@ public final class ModernSettingsDialog {
                 String label = DeviceSettingsStatus.getDisplayLabel(activity.getPackageManager(), candidate);
                 String pkg = candidate.activityInfo != null ? candidate.activityInfo.packageName : "";
                 TextView item = new TextView(activity);
-                item.setText((activity.getPackageName().equals(pkg) ? "✓ " : "• ") + label + "  (" + pkg + ")");
+                boolean isSelectedHome = !activePkg.isEmpty() && activePkg.equals(pkg);
+                item.setText((isSelectedHome ? "✓ " : "• ") + label + "  (" + pkg + ")");
                 item.setTextSize(12.5f);
-                item.setTextColor(activity.getPackageName().equals(pkg) ? 0xFF34D399 : 0xFFCBD5E1);
+                item.setTextColor(isSelectedHome ? 0xFF34D399 : 0xFFCBD5E1);
                 item.setTypeface(font, Typeface.NORMAL);
                 item.setPadding((int) (4 * density), (int) (3 * density), 0, (int) (3 * density));
                 root.addView(item);
