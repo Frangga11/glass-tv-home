@@ -1239,6 +1239,11 @@ public class WallpaperUploadServer {
                 "    const progWrap = document.getElementById('prog-wrap');\n" +
                 "    const progBar = document.getElementById('prog-bar');\n" +
                 "    const statusMsg = document.getElementById('status-msg');\n" +
+                "    const cancelUpload = document.createElement('button');\n" +
+                "    cancelUpload.type = 'button'; cancelUpload.textContent = '" + jsText(R.string.cancel_action) + "'; cancelUpload.hidden = true;\n" +
+                "    btnSubmit.insertAdjacentElement('afterend', cancelUpload);\n" +
+                "    let activeUpload = null;\n" +
+                "    cancelUpload.addEventListener('click', () => { if (activeUpload) activeUpload.abort(); });\n" +
                 "\n" +
                 "    let selectedFile = null;\n" +
                 "\n" +
@@ -1261,6 +1266,7 @@ public class WallpaperUploadServer {
                 "\n" +
                 "    function uploadImage() {\n" +
                 "      if (!selectedFile) return;\n" +
+                "      if (activeUpload) return;\n" +
                 "\n" +
                 "      btnSubmit.disabled = true;\n" +
                 "      btnSubmit.innerText = '" + jsText(R.string.wallpaper_page_sending) + "';\n" +
@@ -1269,6 +1275,7 @@ public class WallpaperUploadServer {
                 "      statusMsg.style.display = 'none';\n" +
                 "\n" +
                 "      const xhr = new XMLHttpRequest();\n" +
+                "      activeUpload = xhr; cancelUpload.hidden = false;\n" +
                 "      xhr.open('POST', '" + getWallpaperUploadPath() + "?name=' + encodeURIComponent(selectedFile.name), true);\n" +
                 "      xhr.timeout = " + NetworkFeedbackPolicy.WALLPAPER_BROWSER_UPLOAD_TIMEOUT_MS + ";\n" +
                 "      xhr.setRequestHeader('Content-Type', selectedFile.type || 'image/jpeg');\n" +
@@ -1281,6 +1288,7 @@ public class WallpaperUploadServer {
                 "      };\n" +
                 "\n" +
                 "      xhr.onload = () => {\n" +
+                "        activeUpload = null; cancelUpload.hidden = true;\n" +
                 "        if (xhr.status >= 200 && xhr.status < 300) {\n" +
                 "          progBar.style.width = '100%';\n" +
                 "          btnSubmit.innerText = '✅ " + jsText(R.string.wallpaper_page_uploaded) + "';\n" +
@@ -1295,10 +1303,12 @@ public class WallpaperUploadServer {
                 "      };\n" +
                 "\n" +
                 "      xhr.onerror = () => {\n" +
+                "        activeUpload = null; cancelUpload.hidden = true;\n" +
                 "        showError('" + jsText(R.string.wallpaper_page_connection_error) + "');\n" +
                 "      };\n" +
                 "\n" +
-                "      xhr.ontimeout = () => { showError('" + jsText(R.string.wallpaper_page_upload_timeout) + "'); };\n" +
+                "      xhr.ontimeout = () => { activeUpload = null; cancelUpload.hidden = true; showError('" + jsText(R.string.wallpaper_page_upload_timeout) + "'); };\n" +
+                "      xhr.onabort = () => { activeUpload = null; cancelUpload.hidden = true; showError('" + jsText(R.string.cancel_action) + "'); };\n" +
                 "      xhr.send(selectedFile);\n" +
                 "    }\n" +
                 "\n" +
