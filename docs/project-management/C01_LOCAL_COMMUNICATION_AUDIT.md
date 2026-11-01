@@ -39,6 +39,7 @@ No QR routes, user-facing screens, file formats, storage directories, upload siz
 | C01-F04 | Wallpaper/StandBy accepted ambiguous Content-Length and did not reject Transfer-Encoding | Ambiguous HTTP body framing | Require exactly one positive decimal Content-Length; reject duplicate, malformed, missing, oversized lengths and all Transfer-Encoding |
 | C01-F05 | Wallpaper/StandBy validated image headers/dimensions but did not confirm a real decode | Truncated/corrupt image could pass initial checks | Validate dimensions and decode a bounded sample before accepting the file |
 | C01-F06 | Wallpaper rejected exactly 60 MiB while StandBy accepted it | Inconsistent boundary behavior | Both flows now share the same inclusive 60 MiB maximum |
+| C01-F07 | Wallpaper browser appends `?name=...` to the upload URL, but server route matching required a space immediately after `/upload` | Valid browser upload could be rejected with HTTP 404 | Match exact request paths after removing the query string; add regression tests for query-bearing upload routes and prefix/suffix rejection |
 
 ### Important implementation notes
 
