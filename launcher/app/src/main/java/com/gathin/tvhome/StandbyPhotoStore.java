@@ -129,11 +129,17 @@ final class StandbyPhotoStore {
         final List<String> values;
         final int addedCount;
         final int skippedCount;
+        final boolean persisted;
 
         UriMergeResult(List<String> values, int addedCount, int skippedCount) {
+            this(values, addedCount, skippedCount, true);
+        }
+
+        UriMergeResult(List<String> values, int addedCount, int skippedCount, boolean persisted) {
             this.values = values;
             this.addedCount = addedCount;
             this.skippedCount = skippedCount;
+            this.persisted = persisted;
         }
     }
 
@@ -171,7 +177,7 @@ final class StandbyPhotoStore {
         SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String serialized = TextUtils.join("\n", merged.values);
         if (!commitUploadedState(preferences, serialized)) {
-            return new UriMergeResult(current, 0, merged.skippedCount);
+            return new UriMergeResult(current, 0, merged.skippedCount, false);
         }
         return merged;
     }
