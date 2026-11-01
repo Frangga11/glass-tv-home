@@ -581,7 +581,7 @@ public class WallpaperUploadServer {
                 + "margin-top:18px;line-height:1.5}"
                 + "</style></head><body><main class='card'><h1>" + htmlText(R.string.standby_page_heading) + "</h1>"
                 + "<p>" + htmlText(R.string.standby_page_intro) + "</p>"
-                + "<label class='drop'>" + htmlText(R.string.standby_page_choose_photos) + "<br><br><input id='files' type='file' accept='image/jpeg,image/png,image/webp,image/gif' multiple></label>"
+                + "<label class='drop'>" + htmlText(R.string.standby_page_choose_photos) + "<br><br><input id='files' type='file' accept='image/jpeg,image/png,image/webp' multiple></label>"
                 + "<button id='send' disabled>" + htmlText(R.string.standby_page_upload_button) + "</button><div id='status'>" + htmlText(R.string.standby_page_no_photo) + "</div>"
                 + "<div id='bar'><div id='fill'></div></div>"
                 + "<small>" + htmlText(R.string.standby_page_storage_note) + " "
@@ -1155,7 +1155,7 @@ public class WallpaperUploadServer {
                 "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">" + htmlText(R.string.wallpaper_page_change_photo) + "</button>\n" +
                 "    </div>\n" +
                 "\n" +
-                "    <input type=\"file\" id=\"file-input\" accept=\"image/jpeg,image/png,image/webp,image/gif\">\n" +
+                "    <input type=\"file\" id=\"file-input\" accept=\"image/jpeg,image/png,image/webp\">\n" +
                 "\n" +
                 "    <button class=\"btn-submit\" id=\"btn-submit\" disabled onclick=\"uploadImage()\">\n" +
                 "      <span>" + htmlText(R.string.wallpaper_page_upload_button) + "</span>\n" +
