@@ -100,7 +100,7 @@ public class WallpaperUploadSessionRouteTest {
         assertTrue(WallpaperUploadServer.parseContentLength(
                 new String[]{"Content-Length: +1"}, 60L) < 0);
         assertTrue(WallpaperUploadServer.parseContentLength(
-                new String[]{"Content-Length: 61"}, 60L) < 0);
+                new String[]{"Content-Length: 61"}, 60L) == -2L);
         assertTrue(WallpaperUploadServer.parseContentLength(
                 new String[]{"Content-Length: 0"}, 60L) < 0);
     }
