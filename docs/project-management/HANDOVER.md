@@ -1,6 +1,4 @@
-[object Object]
-
-## Latest resume checkpoint — B06 complete, 1 November 2026
+## Historical resume checkpoint — B06 complete, 1 November 2026
 
 - Current completed workstream: B06 Notification Feedback.
 - Source branch/head: `feature/b06-notification-feedback` / `bc86a250d73a5cbb83250217d42c3c3993cf29d7`.
@@ -12,7 +10,7 @@
 - Next stage: B07 Activity/dialog lifecycle and return-focus audit. Do not re-open B06 unless B07 or integrated regression finds a reproducible dependency defect.
 - Final API 30/33+, D-pad/focus, same-Wi-Fi phone QR, and physical TV checks remain deferred to final F-stage acceptance, not waived. No APK installed and no device settings changed.
 
-## Latest resume checkpoint — 1 November 2026
+## Historical resume checkpoint — 1 November 2026
 
 - Current branch/head: `integration/b04-b05-reconciled` / `89d769689eb566671725c52982e0b73c4f1e8c31`; PR #15 is Draft/open. PR #13 and #14 remain source references.
 - Static localization QC: 560 aligned resource keys; no duplicates, locale-key differences, or placeholder mismatches. Duplicate key detection was added to the unit test.
@@ -93,7 +91,7 @@
 - B06 implementation remains not started; only baseline audit is complete. Retain its existing branch; do not target integration until grouped integration is authorized.
 
 
-## Latest resume checkpoint — B07 implementation and CI, 1 November 2026
+## Historical resume checkpoint — B07 implementation and CI, 1 November 2026
 
 - B07 scope: Settings menu/submenu, exact D-pad focus, and sidebar/right-pane scroll restoration after dialog/Activity recreation.
 - Source branch: `feature/b07-menu-focus-restoration`; Draft PR #17: https://github.com/Frangga11/glass-tv-home/pull/17.
@@ -109,7 +107,7 @@
 - Detailed record: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
 
 
-## Latest resume checkpoint — B07 source and CI complete, 1 November 2026
+## Historical resume checkpoint — B07 source and CI complete, 1 November 2026
 
 - B07 source branch/head: `feature/b07-menu-focus-restoration` / `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`.
 - Draft PR #17 remains OPEN/DRAFT/UNMERGED and is stacked on B06 exact head `bc86a250d73a5cbb83250217d42c3c3993cf29d7`.
@@ -123,7 +121,7 @@
 - Detailed record: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
 
 
-## Latest resume checkpoint — C03 source and CI complete, 1 November 2026
+## Historical resume checkpoint — C03 source and CI complete, 1 November 2026
 
 - **Current next task:** C04 — audit HTTP endpoints, routing, methods, and response codes.
 - C01 branch/head: `feature/c01-local-communication-audit` / `bba0801c9eb61ab27ae5046379c7a50aabebf570`; Draft PR #18; exact-head CI #314 PASS.
@@ -138,7 +136,7 @@
 - C03 detailed report: `C03_PHONE_TV_NETWORK_AUDIT.md` on the feature branch.
 
 
-## Latest resume checkpoint — C04 source and CI complete, 1 November 2026
+## Historical resume checkpoint — C04 source and CI complete, 1 November 2026
 
 - **Next task:** C05 — audit shared upload/receive-file pipeline and repair only demonstrated shared pipeline defects.
 - C01: `feature/c01-local-communication-audit` @ `bba0801c9eb61ab27ae5046379c7a50aabebf570`; Draft PR #18; CI #314 PASS.
@@ -169,7 +167,7 @@
 - Next task: C05 shared upload/receive-file pipeline audit.
 
 
-## Latest resume checkpoint — Project D D01, 1 November 2026
+## Historical resume checkpoint — Project D D01, 1 November 2026
 
 - **Current task:** D01 — Config & Storage Audit. Original inventory is complete; follow-up quality review and cross-project finding are recorded.
 - Branch/head: `feature/d01-config-storage-audit` @ `cd710681099faece14905faa244f57245bae84d1`; Draft PR #25 targets C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`; OPEN/DRAFT/UNMERGED under D-013.
@@ -190,7 +188,7 @@
 - Runtime/process-death/reboot acceptance remains deferred to F-stage and is not waived.
 
 
-## Latest resume checkpoint — Project D D02 in progress, 1 November 2026
+## Historical resume checkpoint — Project D D02 in progress, 1 November 2026
 
 - **Current task:** D02 — ensure settings changes propagate immediately to dependent UI.
 - Branch/head: `feature/d02-settings-ui-propagation` @ `3bb4ae592904a49989fd76d7dabd92ed1cebd94b`; Draft PR #26 targets D01 exact head `cd710681099faece14905faa244f57245bae84d1`; OPEN/DRAFT/UNMERGED under D-013.
@@ -202,7 +200,7 @@
 - **Next action:** check CI #380/#381 and close D02 only after exact-head PASS; then start D03 locked-app count/list refresh audit.
 
 
-## Latest resume checkpoint — Project D D02 closed, 1 November 2026
+## Historical resume checkpoint — Project D D02 closed, 1 November 2026
 
 - **Next task:** D03 — verify locked/hidden app counts and lists refresh immediately in the open Settings pane.
 - D02 branch/head: `feature/d02-settings-ui-propagation` @ `2dbfcc181651184914422ad0697a3c5c27d15614`; Draft PR #26 targets D01 exact head `cd710681099faece14905faa244f57245bae84d1`; OPEN/DRAFT/UNMERGED under D-013.
@@ -213,7 +211,7 @@
 - No merge, APK publication/installation, or device setting changes.
 
 
-## Latest resume checkpoint — Project D D03 closed, 1 November 2026
+## Historical resume checkpoint — Project D D03 closed, 1 November 2026
 
 - **Next task: D04 — synchronize profile/avatar state across all surfaces.** Begin with a targeted source/ownership audit and preserve the completed D01–D03 changes.
 - D03 branch/head: `feature/d03-locked-app-ui-refresh` @ `c119198e5c5ecc0d3cfdc283049ea3299d0067ca`; Draft PR #27 targets D02 exact head `2dbfcc181651184914422ad0697a3c5c27d15614`; OPEN/DRAFT/UNMERGED under D-013.
@@ -223,7 +221,7 @@
 - D01-F11 remains assigned to D05/D07. Preserve C07 upload/session hardening.
 
  
-## Latest resume checkpoint — Project D D04 closed, 1 November 2026
+## Historical resume checkpoint — Project D D04 closed, 1 November 2026
 
 - **Next task: D05 — targeted repair of D01-F11 StandBy upload persistence/HTTP-success consistency.**
 - D04 branch/head: `feature/d04-profile-avatar-state-sync` @ `ad69d229a6b3cd6ca1810a595597dc88481c3ebd`; Draft PR #28 targets D03 exact head `c119198e5c5ecc0d3cfdc283049ea3299d0067ca`; OPEN/DRAFT/UNMERGED under D-013.
@@ -233,7 +231,7 @@
 - D01-F11 remains open for D05/D07: targeted atomic/failure-aware handling of StandBy upload collection metadata and photo-mode persistence, plus truthful HTTP response and regression coverage. Preserve C07's unrelated upload/session hardening.
 
 
-## Latest resume checkpoint — Project D D05 source/CI closed, 1 November 2026
+## Historical resume checkpoint — Project D D05 source/CI closed, 1 November 2026
 
 - **Next task: D06.** Read the Project D roadmap for the exact D06 scope before touching code; preserve D01–D05 and do not broaden into unrelated C07 changes.
 - D05 branch/head at implementation CI: `feature/d05-standby-photo-atomic-persistence` @ `835986c0e28c50311d4474f1060c73dd56104bf8`; Draft PR #29 is OPEN/DRAFT/UNMERGED under D-013, stacked on D04 exact head `ad69d229a6b3cd6ca1810a595597dc88481c3ebd`.
@@ -242,7 +240,7 @@
 - Exact-head CI #396 / `41311199958`: PASS; final branch head `835986c0e28c50311d4474f1060c73dd56104bf8` CI #397 PASS on implementation head; both jobs SUCCESS, app/installer release unit tests and release build passed. APK 1,551,005 bytes, 21,859 bytes below 1,572,864-byte cap; manual publication skipped.
 - D05 source and CI gates closed. F-stage process-death/reboot/physical Android TV acceptance remains mandatory, deferred, and not waived. No APK installed and no merge performed.
 
-## Latest resume checkpoint — Project D D06 source/CI closed, 1 November 2026
+## Historical resume checkpoint — Project D D06 source/CI closed, 1 November 2026
 
 - **Next task: D07.** Before coding, read the canonical roadmap and handover for exact D07 assignment and dependencies. Preserve D01–D06; do not broaden scope.
 - D06 branch/head: `feature/d06-process-death-recovery` @ `548581e909139dd67b2ddc725bb546a838c75702`; Draft PR #30 targets D05 exact head `835986c0e28c50311d4474f1060c73dd56104bf8`; OPEN/DRAFT/UNMERGED under D-013.
@@ -253,7 +251,7 @@
 - D06 source/CI gates closed. Process-death, force-stop and physical TV reboot acceptance remains mandatory in F-stage, deferred and not waived. No APK installed and no merge.
 
 
-## Latest resume checkpoint — Project D D01–D07 source/CI closed, 1 November 2026
+## Historical resume checkpoint — Project D D01–D07 source/CI closed, 1 November 2026
 
 - **Project D source-audit and exact-head CI work is complete. Next project: E01.** Keep all Project A–G PRs OPEN/DRAFT/UNMERGED under D-013 until grouped integration and cross-project regression are approved.
 - D06 final branch/head: `feature/d06-process-death-recovery` @ `78a12e9fc196a596fa98ea272edc735501047af1`; Draft PR #30 targets D05 exact head `835986c0e28c50311d4474f1060c73dd56104bf8`, OPEN/DRAFT/UNMERGED. D06-F01 reboot alarm recovery is implemented through non-exported BOOT_COMPLETED receiver delegating to existing `Azan.schedule()`. Exact-final-head CI #399 / `41312553920`: PASS; both jobs SUCCESS; APK 1,551,217 bytes, 21,647 bytes below 1,572,864-byte cap; publication skipped.
@@ -263,3 +261,16 @@
 - Exact-final-head CI #404 / `41313690556`: PASS on `964163c918e281b68af5cf7114ca56ead2797486`; both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. App/installer release unit tests and release build passed. APK exact size 1,552,197 bytes; 20,667 bytes below cap; publication skipped.
 - D07 source-audit and exact-head CI gates CLOSED. Physical TV acceptance remains mandatory in F-stage: process death/force-stop/reboot/alarm recovery, profile switching and cross-profile isolation, Child Mode lock/hide, concurrent picker/QR operations, and location/language switch during refresh. Deferred, NOT waived. No APK installed or physical TV test claimed.
 - Canonical audit evidence: `D07_CONCURRENT_PROFILE_CONTENT_STATE_AUDIT.md` on the D07 feature branch; D06 evidence in `D06_PROCESS_DEATH_REBOOT_RECOVERY_AUDIT.md`.
+
+
+
+## Latest resume checkpoint — E00 documentation reconciliation, 2 November 2026
+
+- **Current work unit:** E00 master inventory/document reconciliation. Documentation-only branch: `docs/e00-inventory-reconciliation`, based on `docs/project-master-inventory`. Review PR into the documentation branch is pending.
+- **New report:** `docs/project-management/E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md`. It records the 36-branch inventory, refreshed PR states, protected B/C/D contracts, E01–E08 planning findings, F/G sequence, and explicit audit limitations.
+- **Verified D07 source baseline:** `feature/d07-concurrent-profile-content-state` @ `964163c918e281b68af5cf7114ca56ead2797486`; PR #31 OPEN/DRAFT/UNMERGED; exact-final-head CI #404 / `41313690556` PASS.
+- **PR inventory:** #10–#12 and #16–#31 OPEN/DRAFT/UNMERGED; B04/B05 reconciled merge history #13–#15 retained. Do not infer merge permission from source/CI closure.
+- **Current phase status:** A01–A06 DONE; B01–B07, C01–C07, D01–D07 source/CI complete but final integrated/device acceptance pending F; E00 documentation review pending; E01–E08, F and G not started.
+- **Next action:** review and integrate the E00 documentation PR into `docs/project-master-inventory`; re-read the resulting canonical docs and verify no stale/conflicting current-state summary remains. Then begin E01 from its exact dependency heads, keeping source changes scoped and preserving all B/C/D protections.
+- **Integration timing:** D-013 remains active. F01 is an isolated integration rehearsal/candidate assembly and combined-diff audit; do not merge feature PRs into the reserved `integration/b-series` branch. F02–F07 validate the candidate. G01 repairs residual findings through their owning projects. Only after all A–G source audits/fixes are complete and findings are closed or explicitly accepted may exact heads be frozen and merged into `integration/b-series` by coherent dependency groups, with exact-head CI/regression after each group. G02–G03 cover the traceable candidate/artifact and target-TV install/upgrade/rollback. Merge to `main` only after final acceptance and explicit user approval; G04–G05 finalize records and handover.
+- **Safety:** no app source, feature PR, APK, device setting or user data changed by E00; no APK publication/installation or physical TV test performed.

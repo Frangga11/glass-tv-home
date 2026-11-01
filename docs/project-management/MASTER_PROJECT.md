@@ -1,6 +1,4 @@
-[object Object]
-
-## B06 completion checkpoint — 1 November 2026
+## Historical B06 completion checkpoint — 1 November 2026
 
 - B06 source implementation and static quality checks are complete on `feature/b06-notification-feedback`; exact verified head: `bc86a250d73a5cbb83250217d42c3c3993cf29d7`.
 - Draft PR #16 targets `integration/b-series`, remains OPEN/DRAFT/UNMERGED under D-013. No merge was performed.
@@ -14,7 +12,7 @@
 - Final API 30/33+ lifecycle/focus, real-phone QR over same Wi-Fi, and physical TV acceptance remain deferred to final F-stage overall system test; not waived.
 - Detailed evidence: [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md). B07 is next; grouped merge remains deferred until A–G source work is complete.
 
-## B04/B05 integration QC — latest checkpoint, 1 November 2026
+## Historical B04/B05 integration QC checkpoint — 1 November 2026
 
 - Integration branch `integration/b04-b05-reconciled`; exact head `89d769689eb566671725c52982e0b73c4f1e8c31`; Draft PR #15 targets B04 head. Source PR #13 and #14 remain open; no merge.
 - B05 expanded beyond native Settings copy: profile/app-lock prompts, avatar QR page and HTTP errors, wallpaper/Standby QR pages and upload errors, weather mood picker, location setup, restart/power feedback, and radar illustration label now use Indonesian/English strings.
@@ -97,7 +95,7 @@
 - B07 detailed evidence: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
 
 
-## Project C current checkpoint — 1 November 2026
+## Historical Project C checkpoint — 1 November 2026
 
 - C01 source/CI pass: Draft PR #18, `feature/c01-local-communication-audit` @ `bba0801c9eb61ab27ae5046379c7a50aabebf570`, CI #314 PASS.
 - C02 source/CI pass: Draft PR #19, `feature/c02-tv-local-server-ip` @ `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`, CI #333 PASS.
@@ -106,7 +104,7 @@
 - Next: C04 HTTP endpoint/routing/method/response-code audit. Detailed resume point is in `HANDOVER.md`; evidence is in `AUDIT_REGISTER.md`.
 
 
-## Project C current checkpoint — C04 source complete, 1 November 2026
+## Historical Project C C04 source checkpoint — 1 November 2026
 
 - C01 source/CI pass: Draft PR #18, `feature/c01-local-communication-audit` @ `bba0801c9eb61ab27ae5046379c7a50aabebf570`, CI #314 PASS.
 - C02 source/CI pass: Draft PR #19, `feature/c02-tv-local-server-ip` @ `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`, CI #333 PASS.
@@ -144,3 +142,13 @@
 - Final D07 APK diagnostic: 1,552,197 bytes, 20,667 bytes below the 1,572,864-byte cap; manual APK publication skipped.
 - Physical TV acceptance remains deferred to Stage F and is not waived: process death/force-stop/reboot, alarm restoration, profile switching/isolation, Child Mode, picker/QR concurrency and location/language freshness.
 - **Next stage: E01.** After A–G source work, freeze exact heads, perform grouped integration and combined-diff audit, run cross-project regressions, then complete Stage F device acceptance before any merge/release approval.
+
+
+
+## E00 master inventory reconciliation — 2 November 2026
+
+- Current state and dependency map: [E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md](E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md).
+- A01–A06 are recorded DONE. B01–B07, C01–C07 and D01–D07 source/CI work is complete; final integration/runtime/physical acceptance remains pending in F.
+- B01–B03 (#10–#12) and B06–B07 (#16–#17) remain open/Draft/unmerged; B04/B05 reconciled merge history (#13–#15) is preserved. C01–C07 (#18–#24) and D01–D07 (#25–#31) remain open/Draft/unmerged under D-013.
+- D07 final source head: `964163c918e281b68af5cf7114ca56ead2797486`; exact-final-head CI #404 / `41313690556` PASS. Diagnostic APK 1,552,197 bytes; no artifact published or installed.
+- Next feature task: E01, after E00 documentation PR review/integration. Do not merge feature PRs early. F01 is an isolated integration rehearsal and combined-diff audit, not a canonical feature merge. F02–F07 validate the candidate. G01 closes findings through their owning projects. Only after all A–G source audits/fixes are complete and findings are closed or explicitly accepted may grouped integration into `integration/b-series` proceed. G02–G03 cover candidate/artifact and target-device verification; final `main` merge and final APK build require final acceptance and explicit user approval.

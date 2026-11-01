@@ -1,6 +1,4 @@
-[object Object]
-
-## Latest B04/B05 inventory checkpoint — 1 November 2026
+## Historical B04/B05 inventory checkpoint — 1 November 2026
 
 - Source integration head: `89d769689eb566671725c52982e0b73c4f1e8c31` (`integration/b04-b05-reconciled`, PR #15 Draft).
 - B04 responsive sizing changes retained; exact-head CI #242 passed. F02 physical viewport check is still pending.
@@ -10,7 +8,7 @@
 - Integrated CI remains pending (no workflow run/status for exact head); no build or test pass is claimed. API 30/33+ lifecycle and physical F02/F06 acceptance remain open.
 
 
-## Final source checkpoint — 1 November 2026
+## Historical source checkpoint — 1 November 2026
 
 - Integration head: `89d769689eb566671725c52982e0b73c4f1e8c31`; PR #15 is OPEN, DRAFT, and GitHub reports `mergeable_state=clean`. PR #13 and #14 are also OPEN/DRAFT. No merge has occurred.
 - Localization static QC: 560 keys in default/ID/EN; zero duplicate keys, locale key differences, or placeholder mismatches. Duplicate-key rejection is now part of `LocalizationResourceParityTest`.
@@ -55,3 +53,17 @@
 - Release APK diagnostic: 1,548,097 bytes, 14,767 bytes below the 1.5 MiB cap. APK publication skipped.
 - PR #21 remains OPEN/DRAFT/UNMERGED under D-013. Physical phone/TV browser acceptance remains deferred to F-stage, not waived.
 - Next task: C05 shared upload/receive-file pipeline audit.
+
+
+
+## E00 current inventory reconciliation — 2 November 2026
+
+**Authoritative current snapshot:** see [E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md](E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md). This dated section supersedes older status snapshots below where they conflict; earlier entries remain as historical evidence and are not deleted.
+
+- Current remote branch listing: 36 branch names. Branch existence alone does not establish merge/readiness/currentness.
+- Verified PR state: #10–#12 and #16–#31 OPEN/DRAFT/UNMERGED; #13–#15 retain their earlier B04/B05 reconciled merge history. D-013 applies to B06 onward and grouped integration.
+- B01–B07, C01–C07, D01–D07 source/CI work is recorded complete; their final integrated and physical-device acceptance remains pending in F. C01–C07 are PR #18–#24; D01–D07 are PR #25–#31.
+- D07 baseline: `feature/d07-concurrent-profile-content-state` @ `964163c918e281b68af5cf7114ca56ead2797486`; PR #31 open/Draft/unmerged; exact-final-head CI #404 / `41313690556` PASS.
+- D07 resource parity spot-check: 569 unique keys each in default, Indonesian and English sets; zero duplicates, key-set differences or printf-placeholder mismatches. Runtime localization acceptance remains in F.
+- Latest D07 APK diagnostic: 1,552,197 bytes / 1,572,864-byte cap; 20,667 bytes headroom. No APK published or installed.
+- No application source, device settings, user data, or feature PR was changed by E00.

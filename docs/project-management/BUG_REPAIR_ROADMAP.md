@@ -35,61 +35,62 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 ### Stage A — Preparation and audit
 
-| ID | Task | Initial status | Completion evidence |
+| ID | Task | Current status (2 Nov 2026) | Completion evidence |
 |---|---|---|---|
 | A01 | Collect user test findings and screenshots | DONE | User's written test summary and supplied TV/phone screenshots, 1 Nov 2026 |
 | A02 | Group findings by global foundations, shared systems, and feature modules | DONE | Approved discussion and this roadmap |
 | A03 | Agree the repair sequence A–G | DONE | User explicitly approved the roadmap on 1 Nov 2026 |
-| A04 | Audit repository, branches, source tree, and current working state | DONE | Remote repository identity, 13 branch heads, PR dependency chain, source tree/build/manifest/CI inventory recorded; local-clone limitation explicitly recorded in INVENTORY.md and AUDIT_REGISTER.md |
+| A04 | Audit repository, branches, source tree, and current working state | DONE | Remote repository identity, 36 remote branch names reconciled at E00; current branch/PR status is recorded in E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md, PR dependency chain, source tree/build/manifest/CI inventory recorded; local-clone limitation explicitly recorded in INVENTORY.md and AUDIT_REGISTER.md |
 | A05 | Match the tested APK/version to its exact source branch and commit | DONE | Downloaded CI artifact #208, extracted `app-release.apk`, and verified byte-for-byte identity with the user-uploaded tested APK (1,427,681 bytes; SHA-256 `f19584332514df03dbf54149f3f446211ab43c2dce00eae545ac768ded1ce315`); CI run/artifact metadata maps to PR #9 exact head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` |
 | A06 | Establish baseline, backup, and rollback/checkpoint | DONE | Immutable checkpoint branch `checkpoint/a06-tested-apk-pr9-7e8392e1`, manifest and rollback SOP verified; full read-only Mi TV Stick snapshot captured 1 Nov 2026. HOME resolver/preferred-activity discrepancy and installed APK hash limitation recorded for E01; no device mutation performed |
 
 ### Stage B — Global foundations and user experience
 
-| ID | Task | Initial status |
+| ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
-| B01 | Audit and correct global navigation and cursor-position retention | IN PROGRESS |
-| B02 | Ensure visible, consistent D-pad/remote focus indicators | IN PROGRESS |
-| B03 | Correct popup/dialog opacity, layering, focus, sizing, and dismissal behavior | IN PROGRESS |
-| B04 | Normalize global UI layout, spacing, sizing, and TV responsiveness | IN PROGRESS |
-| B05 | Audit and complete Indonesian/English localization, including dynamic and error strings | IN PROGRESS |
-| B06 | Standardize notifications, success/error messages, loading, and timeout feedback | IN PROGRESS |
-| B07 | Audit activity/dialog lifecycle and restore prior menu/subtab/focus after actions | NOT STARTED |
+| B01 | Audit and correct global navigation and cursor-position retention | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| B02 | Ensure visible, consistent D-pad/remote focus indicators | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| B03 | Correct popup/dialog opacity, layering, focus, sizing, and dismissal behavior | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| B04 | Normalize global UI layout, spacing, sizing, and TV responsiveness | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| B05 | Audit and complete Indonesian/English localization, including dynamic and error strings | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| B06 | Standardize notifications, success/error messages, loading, and timeout feedback | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| B07 | Audit activity/dialog lifecycle and restore prior menu/subtab/focus after actions | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
 
 **Stage exit criteria:** remote navigation and focus are predictable; dialogs are visually isolated and readable; language selection is consistent; actions do not unexpectedly reset the user to the first tab.
 
 ### Stage C — Shared communication infrastructure
 
-| ID | Task | Initial status |
+| ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
-| C01 | Audit QR generation, payload, token, and QR destination behavior | IN PROGRESS — source/CI pass; physical acceptance deferred |
-| C02 | Audit TV local server lifecycle, LAN IP selection, and port handling | IN PROGRESS — source/CI pass; physical acceptance deferred |
-| C03 | Verify phone-to-TV communication and same-network behavior | IN PROGRESS — source/CI pass; physical acceptance deferred |
-| C04 | Audit HTTP endpoints, routing, methods, and response codes | IN PROGRESS — source/CI pass; physical acceptance deferred |
-| C05 | Repair shared upload/receive-file pipeline where appropriate | NOT STARTED |
-| C06 | Validate file types, dimensions, sizes, names, and storage paths | NOT STARTED |
-| C07 | Handle disconnects, retries, expiry, cancellation, and timeouts safely | NOT STARTED |
+| C01 | Audit QR generation, payload, token, and QR destination behavior | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| C02 | Audit TV local server lifecycle, LAN IP selection, and port handling | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| C03 | Verify phone-to-TV communication and same-network behavior | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| C04 | Audit HTTP endpoints, routing, methods, and response codes | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| C05 | Repair shared upload/receive-file pipeline where appropriate | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| C06 | Validate file types, dimensions, sizes, names, and storage paths | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| C07 | Handle disconnects, retries, expiry, cancellation, and timeouts safely | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
 
 **Stage exit criteria:** QR workflows reach the intended TV service, upload routes resolve correctly, invalid/expired requests fail safely, and independent content types remain isolated.
 
 ### Stage D — State management and persistence
 
-| ID | Task | Initial status |
+| ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
-| D01 | Audit settings/configuration storage and ownership | NOT STARTED |
-| D02 | Ensure settings changes propagate to all dependent UI immediately | NOT STARTED |
-| D03 | Fix locked-app count/list refresh without leaving and re-entering Settings | NOT STARTED |
-| D04 | Synchronize profile/avatar state across all surfaces | NOT STARTED |
-| D05 | Synchronize photo collections and their metadata/counts | NOT STARTED |
-| D06 | Verify persistence and recovery after process death and TV restart | NOT STARTED |
-| D07 | Prevent stale state, concurrent writes, and cross-profile/content-store conflicts | NOT STARTED |
+| D01 | Audit settings/configuration storage and ownership | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| D02 | Ensure settings changes propagate to all dependent UI immediately | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| D03 | Fix locked-app count/list refresh without leaving and re-entering Settings | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| D04 | Synchronize profile/avatar state across all surfaces | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| D05 | Synchronize photo collections and their metadata/counts | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| D06 | Verify persistence and recovery after process death and TV restart | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
+| D07 | Prevent stale state, concurrent writes, and cross-profile/content-store conflicts | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
 
 **Stage exit criteria:** a successful change is reflected immediately, persists where intended, and is not overwritten by stale state or another profile/module.
 
 ### Stage E — Specific feature modules
 
-| ID | Module / task | Initial status |
+| ID | Module / task | Current status (2 Nov 2026) |
 |---|---|---|
+| E00 | Master inventory, document reconciliation, branch/PR status, and cross-project dependency map | DOCUMENTATION PR OPEN — REVIEW/INTEGRATION PENDING |
 | E01 | Device settings and launcher: default-home dialog, launcher status/help, accessibility, remote actions | NOT STARTED |
 | E02 | Profile: avatar QR, built-in avatar selection, focus indicators, app-lock counts and policy UI | NOT STARTED |
 | E03 | Appearance: wallpaper upload, QR flow, photo management, preview, delete and apply | NOT STARTED |
@@ -103,9 +104,9 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 ### Stage F — Integration and full regression testing
 
-| ID | Task | Initial status |
+| ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
-| F01 | Integrate all repaired modules and check shared dependencies | NOT STARTED |
+| F01 | Prepare isolated integration candidate and audit shared dependencies (no canonical feature merge) | NOT STARTED |
 | F02 | Test remote navigation, focus, back behavior, and retained cursor position | NOT STARTED |
 | F03 | Test QR generation, phone connection, upload, expiry, and cancellation | NOT STARTED |
 | F04 | Test avatar, wallpaper, and standby image flows and verify store separation | NOT STARTED |
@@ -115,7 +116,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 ### Stage G — Finalization and release
 
-| ID | Task | Initial status |
+| ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
 | G01 | Resolve remaining release-blocking and regression findings | NOT STARTED |
 | G02 | Produce release APK and record version, commit, artifact, and SHA-256 | NOT STARTED |
@@ -123,26 +124,36 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | G04 | Update GitHub master, inventory, audit register, decision log, operations log, and handover | NOT STARTED |
 | G05 | Update ChatGPT continuity memory/handover and confirm next resume point | NOT STARTED |
 
-## 4. Progress snapshot — 1 November 2026 (after A06)
+## 4. Progress snapshot — 2 November 2026 (E00 reconciliation)
 
-- Tasks in roadmap: 47
-- DONE: 6 (A01, A02, A03, A04, A05, A06)
-- IN PROGRESS: 5 (B01, B02, B03, B04, B05)
-- NOT STARTED: 36
-- BLOCKED: 0
-- AWAITING APPROVAL: 0
+- Roadmap tasks: 48 (original 47 plus E00 inventory/reconciliation gate).
+- DONE: 6 (A01–A06).
+- SOURCE/CI COMPLETE — FINAL INTEGRATION/ACCEPTANCE PENDING: 21 (B01–B07, C01–C07, D01–D07).
+- DOCUMENTATION PR OPEN — REVIEW/INTEGRATION PENDING: 1 (E00).
+- NOT STARTED: 20 (E01–E08 and F01–F07 and G01–G05).
+- BLOCKED: 0 currently evidenced.
+- AWAITING APPROVAL: 0 currently evidenced.
 
-This is a task-count snapshot, not a percentage of application readiness. A01–A06 are complete. A04 did not inspect a separate local clone; this limitation is recorded. B01–B03 source work remains isolated on dedicated Draft PRs under the previously approved sequencing exception D-009. Renewed source QC passed for all three modules; exact-head CI #230/#234/#239 passed and no TV-test artifact was published. B03 source/CI gate PASS on Draft PR #12: shared dialog/panel/QR surfaces made opaque; explicit D-pad focus selectors added to standard dialog buttons/lists; QR dialog bounded and scrollable; Now Playing/card prompt widths clamped. Exact-head CI #239 passed both jobs, with release APK size 1,398 KB (<1.5 MiB); manual TV-test artifact publication was skipped. B03 physical acceptance remains deferred to F02. B04 source + target-metric audit is complete: the user's read-only `wm size`/`wm density` outputs establish 1920×1080 px at 320 dpi (960×540 dp). Recent Apps two-card geometry is a near-fit carousel (420dp × 2 + 64dp side padding × 2 = 968dp, 8dp over viewport before inter-card spacing); Nightstand 110sp and Weather's scrollable 385dp Bento body do not establish a source-level clipping defect. No speculative B04 layout change is justified; physical visual/remote acceptance remains F02. B05 full inventory is complete and localization implementation is next. A05 is complete with a direct byte-for-byte match between the user-uploaded tested APK and the APK extracted from CI artifact #13048951728; CI run #208 binds that artifact to PR #9 exact source head `7e8392e1a76223b2c1aef314c10fa54d0b813fdc`. A06 is DONE: the exact source/APK checkpoint and rollback procedure are documented, and the user supplied a fresh read-only Mi TV Stick snapshot. The resolver returns the stock launcher while the package preferred-activity table lists Glass TV Home; this discrepancy is carried into E01. The installed package metadata matches version 4.0.0/code 40, but its APK bytes/hash were not extracted from the TV. B03 is IN PROGRESS on branch `feature/b03-dialog-opacity-layering`, Draft PR #12, based on B02 head `01cbef2c2fc90498295971b22c369a72cdfa734a`; source/CI gate passed on head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`, CI #239. B04 is IN PROGRESS: source review found responsive home/settings/weather layouts, with fixed Recent Apps card and Nightstand clock dimensions requiring target display metrics before any adjustment. Next read-only values: `wm size` and `wm density`.
+These are task-state counts, not a percentage of application readiness. Source/CI completion is not integrated completion. B01–B03 and B06–B07 remain open Draft PRs; B04/B05 have their earlier reconciled merge history. C01–C07 PR #18–#24 and D01–D07 PR #25–#31 remain open Draft/unmerged under D-013. All corresponding runtime/device acceptance remains mandatory in F and is not waived. D07 final head is `964163c918e281b68af5cf7114ca56ead2797486`; exact-final-head CI #404 / run `41313690556` passed. Latest D07 diagnostic APK was 1,552,197 bytes against the 1,572,864-byte gate; no APK was published or installed.
 
-## 5. Current execution point
+The D07 resource parity spot-check found 569 unique string keys in each of default, Indonesian, and English resource sets, with no duplicate keys, locale key-set differences, or printf-placeholder mismatches. This is static parity only, not proof of complete runtime localization.
 
-A04, A05, and A06 are DONE. The user's historical PR #9 APK test remains accepted and will not be repeated. B01–B03 have passed renewed source-level QC and exact-head CI. Their Draft PRs remain isolated and unmerged: PR #10 / feature/b01-global-navigation-retention @ bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5 (CI #230 PASS); PR #11 / feature/b02-remote-focus-indicators @ 01cbef2c2fc90498295971b22c369a72cdfa734a (CI #234 PASS); PR #12 / feature/b03-dialog-opacity-layering @ 56a4e1995aa8b8600614e6b5c4dca69d01c530c3 (CI #239 PASS). Unit tests, release builds, APK size gates, and lists/tools/docs checks passed; no TV-test artifacts were published. B01–B03 remain IN PROGRESS only for final integrated/physical acceptance at F02.
+## 5. Current execution point — E00 documentation reconciliation
 
-B04 is IN PROGRESS. Source review finds the home grid, Settings, and most custom dialogs responsive/bounded. The Recent Apps card is fixed at 420×250dp with 64dp side padding; the Nightstand clock is fixed at 110sp. Do not resize speculatively. Obtain read-only target values using wm size and wm density without arguments, then decide whether adaptive dimensions are required.
+A01–A06 and B01–B07, C01–C07, D01–D07 source/CI work are recorded at their verified gates. The next feature work is E01, but E00 documentation reconciliation must first be reviewed and integrated into the canonical documentation branch. E00 does not change application source or authorize merging feature PRs.
 
-B05 is IN PROGRESS. Initial localization audit found mixed Indonesian/English strings in default Android resources, only a date-format override in values-en-rUS, no dedicated values-id or generic values-en resource set, and many user-facing hardcoded strings in high-traffic Java classes. Continue a full string inventory, centralize translations, verify dynamic/error messages, and test language switching without changing the user's saved preferences unexpectedly.
+Current feature PR inventory:
+- B01–B03: PR #10–#12 OPEN/DRAFT/UNMERGED.
+- B04/B05: earlier reconciled source merge history retained (PR #13–#15 merged).
+- B06–B07: PR #16–#17 OPEN/DRAFT/UNMERGED.
+- C01–C07: PR #18–#24 OPEN/DRAFT/UNMERGED.
+- D01–D07: PR #25–#31 OPEN/DRAFT/UNMERGED.
+- D07 exact head: `964163c918e281b68af5cf7114ca56ead2797486`; exact-final-head CI #404 PASS.
 
-No PR merge, candidate APK installation, device-setting change, or physical TV test is authorized before all A–E source audits/fixes and F integration/regression gates are complete and readiness is explicitly approved.
+**Integration timing:** D-013 remains active. Complete A–E source audits/fixes first. F01 is an isolated integration rehearsal: freeze candidate heads, assemble a temporary candidate if needed, inspect the combined diff and verify dependencies; do not merge feature PRs into the reserved `integration/b-series` branch yet. F02–F07 test that candidate and complete the integrated acceptance matrix. G01 resolves findings through their owning projects and re-verifies affected paths. Only after all A–G source audits/fixes are complete and findings are closed or explicitly accepted may the exact heads be frozen and merged into `integration/b-series` by coherent dependency groups, with exact-head CI and cross-group regression after each group. G02 produces the traceable release candidate/artifact; G03 verifies target-TV installation, upgrade, launcher behavior and rollback. Merge to `main` only after final acceptance, release review and explicit user approval; build/record the final APK from the exact approved `main` commit. G04–G05 reconcile documentation and handover.
+
+No feature PR merge, candidate APK publication/installation, device-setting change, or physical TV test is authorized by this documentation update. Read the E00 audit report for the detailed branch inventory, protected contracts, findings, and limitations.
+
 ## 6. Session closeout and callback protocol
 
 At the end of every work session:
