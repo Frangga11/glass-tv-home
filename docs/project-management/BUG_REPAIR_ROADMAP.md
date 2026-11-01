@@ -180,7 +180,7 @@ Useful callback requests:
 
 ## 8. Latest execution checkpoint — 1 November 2026 (B04/B05 CI and merge completion)
 
-- B04/B05 exact integration CI PASS on `5932cf60e19640bc5fc648f43105f86c8752813c`, run #244 (`41277076284`); both jobs passed. Follow-up PR #13 exact-head CI PASS on `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`, run `41277353285`.
+- B04/B05 exact integration CI PASS on `5932cf60e19640bc5fc648f43105f86c8752813c`, run #254 (`41277076284`); both jobs passed. Follow-up PR #13 exact-head CI PASS on `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`, run #256 (`41277353285`).
 - CI findings fixed: Android string apostrophe escaping across default/ID/EN resources; `AppUpdateManager` localized progress message type; `LocalizationResourceParityTest` placeholder-list type.
 - PR #15 merged to B04 branch (`ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`); PR #13 merged to B03 continuation (`d7b76c4a22c9eadffb8171a616283f3ad647d488`). GitHub also reports PR #14 merged (`73817ce41e4ae5b034922f190052a95ac45886d9`). Current B03 continuation head: `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
 - B04/B05 source + CI gate is complete. B01–B05 still require final integrated/physical acceptance in F; do not mark the entire Stage B exit criteria complete until B06/B07 and final acceptance are done.
