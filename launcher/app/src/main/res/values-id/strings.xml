@@ -176,4 +176,32 @@
     <string name="weather_station_picker_title">📍 Pilih Kota / Stasiun (%1$s)</string>
     <string name="weather_syncing">Menyelaraskan cuaca %1$s...</string>
     <string name="back_action">Kembali</string>
+
+    <string name="now_playing_subtitle">Sedang diputar • %1$s</string>
+    <string name="open_app_action">Buka %1$s</string>
+    <string name="no_song_playing">Tidak ada lagu yang diputar</string>
+    <string name="now_playing_help">Buka Spotify atau YouTube Music untuk mulai mendengarkan</string>
+    <string name="playback_idle">⏸ Tidak ada pemutaran</string>
+    <string name="info_center_title">✨ Pusat Informasi &amp; Tindakan Glass TV</string>
+    <string name="info_center_subtitle">Ringkasan sistem dan pintasan tindakan cepat</string>
+    <string name="info_system_summary">📋 Ringkasan Sistem:\n• Salat berikutnya: %1$s (%2$s)\n• Cuaca &amp; kualitas udara (US AQI): %3$s\n• Perangkat: status sistem dan pengelolaan memori</string>
+    <string name="info_actions_title">Tindakan Cepat:</string>
+    <string name="info_action_smart_boost">🚀 Optimalkan TV (Bebaskan Memori &amp; Bersihkan Cache)</string>
+    <string name="info_action_weather">🌦️ Informasi Cuaca &amp; Kualitas Udara</string>
+    <string name="info_action_prayer">🕌 Jadwal Salat &amp; Ayat Pilihan Hari Ini</string>
+    <string name="info_action_tips">💡 Tips &amp; Panduan Kontrol TV</string>
+    <string name="smart_boost_success">Glass TV: Memori dan cache TV berhasil dioptimalkan.</string>
+    <string name="tv_tips_title">💡 Tips Glass TV</string>
+    <string name="tv_tips_body">• Tekan dan tahan tombol HOME selama 500 ms untuk membuka Pengaturan dari aplikasi mana pun atau layar utama.\n\n• Tekan tombol HOME sekali untuk kembali ke layar utama.\n\n• Koleksi wallpaper 4K berasal dari Pexels &amp; Unsplash berdasarkan kategori.\n\n• Jadwal salat disesuaikan dengan wilayah Indonesia dan data Kemenag RI.\n\n• Gunakan Bersihkan Cache TV untuk menghapus berkas sementara tanpa menghapus data aplikasi.</string>
+    <string name="understand_action">Mengerti</string>
+    <string name="weather_summary_title">🌦️ Informasi Cuaca &amp; Kualitas Udara</string>
+    <string name="weather_summary_body">📍 Lokasi: %1$s\n\n📊 Kondisi terkini: %2$s\n\nℹ️ Sumber: Open-Meteo / CAMS (CC BY 4.0). US AQI merupakan estimasi model, bukan pengukuran ISPU resmi di stasiun setempat.\n\n📌 Periksa nilai AQI dan ikuti peringatan resmi BMKG atau instansi terkait sebelum beraktivitas di luar ruangan.</string>
+    <string name="prayer_summary_title">🕌 Jadwal Salat &amp; Ayat Pilihan Hari Ini</string>
+    <string name="prayer_summary_body">📍 Lokasi: %1$s • %2$s\n\n⏳ Salat berikutnya: %3$s\n\n📖 Ayat pilihan / doa harian:\n%4$s</string>
+    <string name="ok_action">OK</string>
+    <string name="sound_effects_title">🔊 Pilih Efek Suara</string>
+    <string name="sound_effects_off">🔇 Efek suara dimatikan</string>
+    <string name="sound_effects_selected">🔊 Efek suara: %1$s</string>
+    <string name="auto_update_schedule_title">⏱️ Pilih Waktu Pembaruan Otomatis Harian</string>
+    <string name="auto_update_time_selected">Waktu pembaruan otomatis diatur ke: %1$s</string>
 </resources>
