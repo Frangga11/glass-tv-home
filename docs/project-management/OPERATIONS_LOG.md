@@ -274,3 +274,14 @@
 - D03 source and CI gates closed. Physical TV acceptance remains mandatory in F-stage; no APK installed and no merge performed.
 - D01-F11 remains assigned to D05/D07. Preserve C07 upload/session hardening.
 - Next: D04 profile/avatar state synchronization audit.
+
+ 
+## 2026-11-01 — D04 profile/avatar synchronization closure
+
+- Completed targeted D04 audit and repair on `feature/d04-profile-avatar-state-sync`; final head `ad69d229a6b3cd6ca1810a595597dc88481c3ebd`; Draft PR #28 remains OPEN/DRAFT/UNMERGED under D-013.
+- Fixed D04-F01: built-in avatar selection rings now reflect the effective avatar when a custom photo overrides the stored built-in avatar; restoring default avatar restores the fallback ring. Added two JVM regression tests.
+- Exact-head CI #390 / `41309327872`: both Launcher build/unit tests and Lists/tools/docs jobs SUCCESS. App/installer `testReleaseUnitTest` and `assembleRelease` succeeded.
+- APK exact size 1,550,805 bytes; 22,059 bytes below the 1,572,864-byte gate. Size gate passed; manual APK publication skipped.
+- D04 source and CI gates closed. Physical Android TV acceptance remains mandatory in F-stage; no APK installed and no merge performed.
+- D01-F11 remains assigned to D05/D07. Preserve C07 upload/session hardening.
+- Next: D05 targeted repair of D01-F11 StandBy upload persistence and truthful HTTP success response, with regression coverage.
