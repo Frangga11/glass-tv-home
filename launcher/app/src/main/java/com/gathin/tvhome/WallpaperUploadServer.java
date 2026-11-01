@@ -416,7 +416,7 @@ public class WallpaperUploadServer {
                         File storedFile = new File(customDir,
                                 targetFile.getName().substring(0, targetFile.getName().length() - ".upload".length())
                                         + "." + imageFormat.extension);
-                        if (!targetFile.renameTo(storedFile)) {
+                        if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
                             targetFile.delete();
                             sendTextResponse(out, 500, "Internal Server Error", "Unable to store uploaded image", null);
                             return;
@@ -518,7 +518,7 @@ public class WallpaperUploadServer {
         File storedFile = new File(standbyDir,
                 targetFile.getName().substring(0, targetFile.getName().length() - ".upload".length())
                         + "." + imageFormat.extension);
-        if (!targetFile.renameTo(storedFile)) {
+        if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
             targetFile.delete();
             sendUploadError(out, 500, localized(R.string.standby_error_storage));
             return;
