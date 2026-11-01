@@ -53,14 +53,15 @@ final class HomeWeather {
     static Line last(Context ctx) {
         SharedPreferences p = prefs(ctx);
         String w = p.getString("weather", null), aqi = p.getString("api", "");
-        if (w != null && !w.isEmpty()
-                && (!Character.isDigit(w.charAt(0)) || w.contains("Clear") || w.contains("Cloudy")
-                || w.contains("Rain") || w.contains("Haze") || w.contains("Showers") || w.contains("Thunderstorm"))) {
-            // Discard older English or emoji-based labels so the Indonesian description is fetched.
-            w = "";
-            p.edit().putLong("at", 0).putString("weather", "").apply();
+        String selectedLanguage = AppLanguage.getLanguage(ctx);
+        String cachedLanguage = p.getString("language", "");
+        if (!selectedLanguage.equals(cachedLanguage)) {
+            // Cached weather/AQI labels are localized. Never show stale Indonesian text in English mode (or vice versa).
+            p.edit().putLong("at", 0).putString("weather", "").putString("api", "")
+                    .putString("language", selectedLanguage).apply();
+            return null;
         }
-        // Drop cached Malaysian APIMS labels from older builds; never display them for Indonesian cities.
+        // Drop cached Malaysian APIMS labels from older builds; this launcher uses Open-Meteo US AQI.
         if (!aqi.isEmpty() && !aqi.startsWith("AQI ")) {
             p.edit().putString("api", "").putInt("api_color", 0).putLong("at", 0).apply();
             aqi = "";
@@ -79,7 +80,8 @@ final class HomeWeather {
                     + "&current=temperature_2m,weather_code,is_day&timezone=Asia%2FJakarta")).getJSONObject("current");
             code = now.optInt("weather_code");
             day = now.optInt("is_day", 1) == 1;
-            weather = Math.round(now.optDouble("temperature_2m")) + "°  " + describe(code);
+            boolean isEnglish = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(ctx));
+            weather = Math.round(now.optDouble("temperature_2m")) + "°  " + describe(code, isEnglish);
         } catch (Exception e) {
             Log.w(TAG, "weather failed: " + e.getMessage());
         }
@@ -91,14 +93,15 @@ final class HomeWeather {
             if (value >= 0) {
                 int band = 0;
                 while (band < AQI_TOP.length - 1 && value > AQI_TOP[band]) band++;
-                aqi = "AQI " + value + " · " + AQI_NAME[band];
+                aqi = "AQI " + value + " · " + aqiName(band, AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(ctx)));
                 color = AQI_COLOR[band];
             }
         } catch (Exception e) {
             Log.w(TAG, "Open-Meteo air quality failed: " + e.getMessage());
         }
         // A failed try waits for the next round too, rather than asking again every minute.
-        SharedPreferences.Editor ed = prefs(ctx).edit().putLong("at", System.currentTimeMillis());
+        SharedPreferences.Editor ed = prefs(ctx).edit().putLong("at", System.currentTimeMillis())
+                .putString("language", AppLanguage.getLanguage(ctx));
         if (weather.isEmpty() && aqi.isEmpty()) {
             ed.apply();
             return null;
@@ -108,17 +111,25 @@ final class HomeWeather {
         return new Line(weather, aqi, color, code < 0 ? 0 : icon(code, day));
     }
 
-    private static String describe(int code) {
-        if (code == 0) return "Cerah";
-        if (code == 1) return "Umumnya cerah";
-        if (code == 2) return "Cerah berawan";
-        if (code == 3) return "Berawan";
-        if (code == 45 || code == 48) return "Berkabut";
-        if (code >= 51 && code <= 57) return "Gerimis";
-        if (code >= 61 && code <= 67) return code >= 65 ? "Hujan lebat" : "Hujan";
-        if (code >= 80 && code <= 82) return "Hujan lokal";
-        if (code >= 95) return "Badai petir";
+    private static String describe(int code, boolean isEnglish) {
+        if (code == 0) return isEnglish ? "Clear sky" : "Cerah";
+        if (code == 1) return isEnglish ? "Mainly clear" : "Umumnya cerah";
+        if (code == 2) return isEnglish ? "Partly cloudy" : "Cerah berawan";
+        if (code == 3) return isEnglish ? "Overcast" : "Berawan";
+        if (code == 45 || code == 48) return isEnglish ? "Fog" : "Berkabut";
+        if (code >= 51 && code <= 57) return isEnglish ? "Drizzle" : "Gerimis";
+        if (code >= 61 && code <= 67) return isEnglish ? (code >= 65 ? "Heavy rain" : "Rain") : (code >= 65 ? "Hujan lebat" : "Hujan");
+        if (code >= 80 && code <= 82) return isEnglish ? "Rain showers" : "Hujan lokal";
+        if (code >= 95) return isEnglish ? "Thunderstorm" : "Badai petir";
         return "";
+    }
+
+    private static String aqiName(int band, boolean isEnglish) {
+        if (isEnglish) {
+            String[] names = {"Good", "Moderate", "Unhealthy for sensitive groups", "Unhealthy", "Very unhealthy", "Hazardous"};
+            return names[Math.max(0, Math.min(names.length - 1, band))];
+        }
+        return AQI_NAME[Math.max(0, Math.min(AQI_NAME.length - 1, band))];
     }
 
     /** The sky as a small vector symbol (not an emoji: the colour emoji font alone costs Home megabytes). */
