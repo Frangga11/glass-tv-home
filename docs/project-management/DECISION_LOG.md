@@ -99,3 +99,11 @@ Execution starts at A04. A01–A03 are complete planning tasks; no code repair o
 | D-012 | Adopt GTVH-MQP-001 v1.0 in `MERGE_QUALITY_POLICY.md` as the mandatory merge and bug-fix standard. Use a two-level model: stage PRs merge to rolling `integration/b-series` only after all applicable audit, regression, static QC, test, and exact-head CI gates pass; merge to `main` only after full integration/regression, final acceptance, release review, and explicit user approval. For future bugs, use a risk-based impact map and scoped dependency audit, expanding to app-wide review only when shared foundations or evidence require it. Missing/stale evidence is not a pass. | User explicitly approved the proposed merge policy on 1 November 2026 | APPROVED — ACTIVE |
 
 Implementation checkpoint: `integration/b-series` created from `d7b76c4a22c9eadffb8171a616283f3ad647d488`; existing B06 feature branch shares that base and is to target this integration branch. This does not mean B06 implementation is complete.
+
+
+## 11. Deferred grouped merge for B06–G — 1 November 2026
+
+| ID | Decision | Source | Status |
+|---|---|---|---|
+| D-013 | Starting with B06, defer all stage merges while A–G audits and repairs remain active. Keep work isolated and traceable in dependency-ordered feature branches/Draft PRs; continue source audits, regression tests, static QC, builds, and exact-head CI during development. After all planned source work is audited and repaired, freeze exact branch heads, audit the combined diff, then merge into `integration/b-series` by coherent dependency groups with CI and cross-group regression after each group. Complete final integrated acceptance, obtain explicit approval, merge to `main`, and build the final release APK from the exact approved `main` commit. A separate labelled test candidate may be needed for physical acceptance; it is not the final release APK. This supersedes D-012's rolling stage-merge timing for B06 onward; all quality gates and bug-audit rules remain active. | User explicitly directed that merging begin only at the end, in groups, after C–G may have introduced further changes | APPROVED — ACTIVE |
+
