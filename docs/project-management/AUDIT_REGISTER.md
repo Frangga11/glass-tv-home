@@ -396,3 +396,26 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 - Source + target-metric audit: **PASS — no measured source fix required at this stage**.
 - Keep physical visual/remote acceptance in F02; do not claim device visual acceptance from ADB dimensions alone.
 - B04 can be treated as source-audit complete for sequencing, while the overall roadmap remains subject to integrated F01/F02 gates.
+
+
+## B05 implementation checkpoint — 1 November 2026
+
+**Working branch:** `feature/b05-id-en-localization` — current source head `cce889f231aeff3a28805fd517853a3f0a91e79c`.
+**Draft PR:** [#14](https://github.com/Frangga11/glass-tv-home/pull/14), based on B03 exact head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`. PR remains open/Draft/unmerged.
+
+### Implemented and statically checked
+- Added `values-id/strings.xml` and `values-en/strings.xml`; default, Indonesian, and English sets now each contain 158 string keys. Static comparison found no duplicate keys, missing/extra keys, or printf-placeholder mismatches.
+- `locales_config.xml` now advertises only `id` and `en`. Manifest labels for Weather, Recent Apps, and the media listener use localized resources.
+- Added `LocaleContext` and applied it in the five user-facing launcher Activities (`MainActivity`, `WeatherActivity`, `RecentAppsActivity`, `LocationActivity`, `AzanActivity`) and `ClockDream` (DreamService). `HomeSettingsActivity` remains a no-display helper.
+- `AppLanguage` normalizes supported values to `id`/`en`, migrates legacy `ms` and unsupported values to `id`, and synchronizes Android 13+ per-app locale state. Android 11/API 30 uses the locale-aware base context.
+- Language changes reopen Settings after Activity recreation; selected Settings tab/sidebar cursor uses B01's persisted `NavigationState.SETTINGS_TAB`. Right-pane control focus is not claimed as restored; its fallback is the persisted sidebar cursor.
+- Migrated static text in Home, Recent Apps, Weather, media hub, OTA/support, close-all, and Nightstand layouts. Migrated profile switch/create/delete messages, parental PIN feedback, weather condition labels, and update/download/install messages.
+- Added `LocationAndLanguageTest` coverage for supported-language normalization and legacy/unsupported fallback; added `LocalizationResourceParityTest` for resource key/placeholder parity.
+
+### Remaining findings and gate
+- Java UI literals remain in `MainActivity`, `ModernSettingsDialog`, and several `WeatherActivity` dialog/mood/location paths; remaining dynamic/error/notification strings still require a full sweep. B05 is not complete.
+- Installer-module localization remains outside this B05 TV-launcher scope unless explicitly expanded.
+- Exact-head CI is NOT VERIFIED. No workflow run for the current B05 head is present in the Actions run list checked during this session. The resource parity was independently statically checked, but no successful Gradle build/unit-test evidence is available yet.
+- No APK artifact was published, no candidate APK was installed, no TV settings/packages were changed, and no physical acceptance was performed.
+
+**Disposition:** B05 remains IN PROGRESS. Do not merge PR #14 or publish/install a candidate APK. Continue Java hardcoded-string migration, run exact-head CI, inspect logs, and defer physical language acceptance to F06.
