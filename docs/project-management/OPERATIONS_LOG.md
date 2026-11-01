@@ -162,3 +162,10 @@
 - Final integration head `5932cf60e19640bc5fc648f43105f86c8752813c`: CI run `41277076284` PASS; both jobs PASS. Matching push run `41277072693` PASS. No APK artifact was published.
 - PR #15 merged as `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`. PR #13 passed exact-head CI run `41277353285` and merged as `d7b76c4a22c9eadffb8171a616283f3ad647d488`. GitHub reports PR #14 merged as `73817ce41e4ae5b034922f190052a95ac45886d9`. Current B03 continuation branch head is `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
 - Next: B06 audit/implementation, then B07. Final runtime/device/QR/TV tests remain deferred until final overall B-series acceptance. No APK install or device setting change occurred.
+
+## 2026-11-01 — B06 baseline audit started
+
+- Created `feature/b06-notification-feedback` from exact B03 continuation head `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
+- Scanned 63 launcher Java files for transient messages, dialogs, loading/progress, delayed callbacks, and network/socket timeouts.
+- Initial finding: feedback calls are distributed across Activities/managers; OTA still uses `ProgressDialog`; avatar/wallpaper QR pages expose separate browser-side statuses. No shared feedback abstraction/Snackbar usage found.
+- No B06 code changes yet. Next action is to complete the feedback taxonomy and lifecycle ownership audit before implementing a shared pattern. Preserve locale, D-pad focus, and operation-specific transport timeouts.
