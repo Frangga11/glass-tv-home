@@ -201,3 +201,10 @@ Useful callback requests:
 All subsequent work is governed by [MERGE_QUALITY_POLICY.md](MERGE_QUALITY_POLICY.md), policy GTVH-MQP-001 v1.0, approved 1 November 2026. Stage PRs target the rolling `integration/b-series` branch and may merge only after scope/impact audit, relevant regression protection, static/resource QC, required build/tests, and exact-head CI all pass. `main` remains the stable release line and receives the completed integrated result only after full regression, final acceptance, release review, and explicit user approval. A green CI or GitHub mergeable flag alone is not sufficient.
 
 For each new bug, reproduce and define it, locate its owning path and dependencies, create an impact map, audit the relevant surface, fix the root cause, add regression coverage, verify the exact diff/head, and record evidence/rollback. Expand to app-wide audit only when a shared foundation, cross-module contract, or evidence justifies it. Missing or stale evidence is NOT PASS. Deferred device/runtime checks remain pending, never waived.
+
+
+## 11. Merge timing amendment — D-013, 1 November 2026
+
+Starting with B06, all stage merges are deferred until the A–G audit and repair work is complete. Keep each work unit isolated and traceable in dependency-ordered branches/Draft PRs. Continue all scoped audits, regression protection, static QC, builds, and exact-head CI while development proceeds; only merge timing is deferred. Reserve `integration/b-series` for final grouped integration.
+
+At the end, freeze exact branch heads, audit the combined diff and dependencies, merge into `integration/b-series` by coherent groups, run exact-head CI and cross-group regression after each group, complete final acceptance, obtain explicit user approval, merge to `main`, and build the final APK from the exact approved `main` SHA. If a physical test candidate is needed before final release, label it clearly as a non-release candidate. See `MERGE_QUALITY_POLICY.md` v1.1 and Decision D-013. This amendment supersedes D-012's rolling stage-merge timing for B06 onward; it does not weaken quality gates.
