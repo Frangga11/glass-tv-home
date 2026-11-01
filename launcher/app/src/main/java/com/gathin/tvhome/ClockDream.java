@@ -6,10 +6,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.service.dreams.DreamService;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.View;
 import android.view.ViewGroup;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.ImageView;
 
@@ -71,6 +71,11 @@ public class ClockDream extends DreamService {
             handler.postDelayed(this, MOVE_MS);
         }
     };
+
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
 
     @Override
     public void onAttachedToWindow() {

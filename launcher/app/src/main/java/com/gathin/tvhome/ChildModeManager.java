@@ -307,12 +307,12 @@ public final class ChildModeManager {
                             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                             if (callback != null) callback.onSuccess();
                         } else {
-                            Toast.makeText(ctx, "❌ PIN salah. Sila cuba lagi.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT).show();
                             pinBuilder.setLength(0);
                             updateDots.run();
                         }
                     } else {
-                        Toast.makeText(ctx, "Sila masukkan 4 digit PIN", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, R.string.pin_four_digits, Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     if (pinBuilder.length() < 4) {
@@ -324,7 +324,7 @@ public final class ChildModeManager {
                                 if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                                 if (callback != null) callback.onSuccess();
                             } else {
-                                Toast.makeText(ctx, "❌ PIN salah. Sila cuba lagi.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT).show();
                                 pinBuilder.setLength(0);
                                 updateDots.run();
                             }
@@ -346,7 +346,7 @@ public final class ChildModeManager {
 
         // Cancel Button
         Button btnCancel = new Button(ctx);
-        btnCancel.setText("Batal");
+        btnCancel.setText(R.string.cancel_action);
         btnCancel.setTextSize(13);
         btnCancel.setTypeface(outfit, Typeface.NORMAL);
         btnCancel.setTextColor(0xAAFFFFFF);

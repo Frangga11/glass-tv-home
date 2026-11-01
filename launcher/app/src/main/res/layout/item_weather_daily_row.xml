@@ -23,7 +23,7 @@
             android:fontVariationSettings="'wght' 600"
             android:includeFontPadding="false"
             android:singleLine="true"
-            android:text="Today"
+            android:text="@string/today_label"
             android:textColor="#FFFFFF"
             android:textSize="11sp" />
 

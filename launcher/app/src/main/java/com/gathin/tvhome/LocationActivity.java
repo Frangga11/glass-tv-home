@@ -30,6 +30,11 @@ public class LocationActivity extends Activity {
     private String current;
 
     @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         density = getResources().getDisplayMetrics().density;
