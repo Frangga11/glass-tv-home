@@ -229,4 +229,36 @@
     <string name="wallpaper_uploaded_from_phone">✅ Wallpaper uploaded from your phone!</string>
     <string name="wallpaper_upload_success">🎉 Successfully received and displayed on the TV!</string>
     <string name="wallpaper_active_file">✅ Active wallpaper: %1$s</string>
+
+    <string name="active_profile_avatar_header">ACTIVE PROFILE AVATAR (%1$s)</string>
+    <string name="avatar_delete_failed">Avatar photo could not be deleted. The avatar was not changed.</string>
+    <string name="avatar_selected_toast">✨ Avatar selected: %1$s</string>
+    <string name="avatar_upload_qr_action">📲 Change Avatar Photo via QR</string>
+    <string name="avatar_use_default_action">↩ Use Default Avatar</string>
+    <string name="avatar_default_restored">Default avatar restored.</string>
+    <string name="profile_list_header">PROFILES (%1$d)</string>
+    <string name="active_label">Active ✓</string>
+    <string name="delete_label">🗑️ Delete</string>
+    <string name="profile_user_title">User: %1$s</string>
+    <string name="switch_profile_action">✨ Switch to This Profile</string>
+    <string name="delete_user_action">🗑️ Delete User</string>
+    <string name="open_accessibility_settings_hint">Open TV Settings &gt; System &gt; Accessibility.</string>
+    <string name="android_settings_unavailable">Android Settings cannot be opened on this device.</string>
+    <string name="settings_search_hint">Example: wallpaper, photos, remote, weather</string>
+    <string name="settings_search_title">Search Settings</string>
+    <string name="search_action">Search</string>
+    <string name="search_keyword_required">Enter a search keyword.</string>
+    <string name="settings_search_not_found">No menu found. Try a more general keyword.</string>
+    <string name="settings_search_results">Search Results</string>
+    <string name="save_action">Save</string>
+    <string name="new_pin_hint">New PIN (4 digits)</string>
+    <string name="confirm_pin_hint">Confirm new PIN</string>
+    <string name="new_pin_title">Set New PIN</string>
+    <string name="new_pin_message">Create a 4-digit PIN and enter it again to confirm.</string>
+    <string name="pin_updated">Security PIN updated successfully.</string>
+    <string name="done_action">DONE</string>
+    <string name="set_default_home_title">🏠 Set Glass TV as the Default Home Screen</string>
+    <string name="launcher_settings_unsupported">Launcher selection settings are not supported by this firmware.</string>
+    <string name="adb_home_command_hint">Command: adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity</string>
+    <string name="installer_phone_hint">Open glass-tv-installer.apk on a phone connected to the same Wi-Fi network.</string>
 </resources>
