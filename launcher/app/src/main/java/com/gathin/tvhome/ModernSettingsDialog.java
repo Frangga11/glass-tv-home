@@ -60,6 +60,7 @@ public final class ModernSettingsDialog {
     private static final String PREF_SETTINGS_FOCUS_AREA = "settings_focus_area";
     private static final String PREF_SETTINGS_FOCUS_PATH = "settings_focus_path";
     private static final String PREF_SETTINGS_FOCUS_TAB = "settings_focus_tab";
+    private static final String PREF_SETTINGS_FOCUS_SIGNATURE = "settings_focus_signature";
     private static final String PREF_SETTINGS_LEFT_SCROLL = "settings_left_scroll";
 
     private static String rightScrollKey(int tab) {
@@ -97,9 +98,26 @@ public final class ModernSettingsDialog {
         return SettingsFocusPath.encode(indexes);
     }
 
-    private static View resolveFocusPath(ViewGroup root, String encodedPath) {
+    private static String focusSignature(View target) {
+        if (target == null) return "";
+        String label = "";
+        if (target instanceof EditText) {
+            CharSequence hint = ((EditText) target).getHint();
+            if (hint != null) label = hint.toString();
+        } else if (target instanceof TextView) {
+            CharSequence text = ((TextView) target).getText();
+            if (text != null) label = text.toString();
+        }
+        if (label.isEmpty() && target.getContentDescription() != null) {
+            label = target.getContentDescription().toString();
+        }
+        if (label.length() > 160) label = label.substring(0, 160);
+        return target.getClass().getName() + "#" + target.getId() + "#" + label;
+    }
+
+    private static View resolveFocusPath(ViewGroup root, String encodedPath, String signature) {
         int[] indexes = SettingsFocusPath.decode(encodedPath);
-        if (root == null || indexes == null) return null;
+        if (root == null || indexes == null || signature == null || signature.isEmpty()) return null;
         View current = root;
         for (int index : indexes) {
             if (!(current instanceof ViewGroup)) return null;
@@ -107,7 +125,8 @@ public final class ModernSettingsDialog {
             if (index < 0 || index >= group.getChildCount()) return null;
             current = group.getChildAt(index);
         }
-        return current.isFocusable() && current.isEnabled() && current.isShown() ? current : null;
+        return current.isFocusable() && current.isEnabled() && current.isShown()
+                && signature.equals(focusSignature(current)) ? current : null;
     }
 
     private static boolean focusRightPane(ViewGroup container) {
@@ -1296,6 +1315,7 @@ public final class ModernSettingsDialog {
                     navigationPrefs.edit()
                             .putString(PREF_SETTINGS_FOCUS_AREA, "right")
                             .putString(PREF_SETTINGS_FOCUS_PATH, path)
+                            .putString(PREF_SETTINGS_FOCUS_SIGNATURE, focusSignature(newFocus))
                             .putInt(PREF_SETTINGS_FOCUS_TAB, activeTab[0])
                             .putInt(rightScrollKey(activeTab[0]), rightScroll.getScrollY())
                             .apply();
@@ -1325,11 +1345,12 @@ public final class ModernSettingsDialog {
         String savedFocusArea = navigationPrefs.getString(PREF_SETTINGS_FOCUS_AREA, "sidebar");
         int savedFocusTab = navigationPrefs.getInt(PREF_SETTINGS_FOCUS_TAB, -1);
         String savedFocusPath = navigationPrefs.getString(PREF_SETTINGS_FOCUS_PATH, null);
+        String savedFocusSignature = navigationPrefs.getString(PREF_SETTINGS_FOCUS_SIGNATURE, null);
         if ("right".equals(savedFocusArea) && savedFocusTab == activeTab[0]) {
             root.post(() -> {
                 rightScroll.scrollTo(0, Math.max(0, navigationPrefs.getInt(rightScrollKey(activeTab[0]), 0)));
                 rightScroll.post(() -> {
-                    View restored = resolveFocusPath(rightContent, savedFocusPath);
+                    View restored = resolveFocusPath(rightContent, savedFocusPath, savedFocusSignature);
                     if (restored != null && restored.requestFocus()) return;
                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                     else profileCard.requestFocus();
