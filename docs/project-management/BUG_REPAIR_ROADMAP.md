@@ -106,7 +106,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 | ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
-| F01 | Integrate all repaired modules and check shared dependencies | NOT STARTED |
+| F01 | Prepare isolated integration candidate and audit shared dependencies (no canonical feature merge) | NOT STARTED |
 | F02 | Test remote navigation, focus, back behavior, and retained cursor position | NOT STARTED |
 | F03 | Test QR generation, phone connection, upload, expiry, and cancellation | NOT STARTED |
 | F04 | Test avatar, wallpaper, and standby image flows and verify store separation | NOT STARTED |
