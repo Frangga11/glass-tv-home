@@ -1155,7 +1155,7 @@ public class WallpaperUploadServer {
                 "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">" + htmlText(R.string.wallpaper_page_change_photo) + "</button>\n" +
                 "    </div>\n" +
                 "\n" +
-                "    <input type=\"file\" id=\"file-input\" accept=\"image/*\">\n" +
+                "    <input type=\"file\" id=\"file-input\" accept=\"image/jpeg,image/png,image/webp,image/gif\">\n" +
                 "\n" +
                 "    <button class=\"btn-submit\" id=\"btn-submit\" disabled onclick=\"uploadImage()\">\n" +
                 "      <span>" + htmlText(R.string.wallpaper_page_upload_button) + "</span>\n" +
