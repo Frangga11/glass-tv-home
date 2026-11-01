@@ -324,7 +324,7 @@ public final class ChildModeManager {
                                 if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                                 if (callback != null) callback.onSuccess();
                             } else {
-                                Toast.makeText(ctx, "❌ PIN salah. Sila cuba lagi.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT).show();
                                 pinBuilder.setLength(0);
                                 updateDots.run();
                             }
