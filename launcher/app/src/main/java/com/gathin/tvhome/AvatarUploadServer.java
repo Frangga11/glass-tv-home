@@ -146,7 +146,6 @@ public final class AvatarUploadServer {
             try { client.close(); } catch (Exception ignored) {}
         }
         activeClients.clear();
-        activeClientCount.set(0);
         server = null;
         boundIp = null;
         port = 0;
