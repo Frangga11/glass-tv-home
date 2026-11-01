@@ -325,3 +325,21 @@ D03 source-audit and exact-head CI gates are closed. D01-F11 remains an independ
 | Physical Android TV acceptance | DEFERRED, NOT WAIVED | F-stage must verify profile switching, rename, built-in/custom/default avatar, Home/Settings/profile switcher consistency, and cross-profile isolation. No device test or APK installation claimed. |
 
 D04 source-audit and exact-head CI gates are closed. D01-F11 remains a separate downstream repair assigned to D05/D07.
+
+
+## D05 StandBy photo persistence / D01-F11 — 1 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Root-cause audit | PASS | `addUploadedFile()` ignored second photo-mode commit result after collection commit. |
+| Atomic collection + mode persistence | FIXED | One SharedPreferences editor commit writes photo URI collection and `display_mode=true`; duplicate path also persists mode. |
+| Truthful HTTP result | FIXED | 200 success, 400 validation/collection rejection, 500 persistence failure; success callback only after persisted success. |
+| Failure/file consistency | PASS | File retained on reported commit failure to avoid dangling in-memory URI; existing orphan cleanup handles non-durable file after restart. |
+| Regression tests | PASS | One-commit state, commit-failure result, and HTTP outcome mapping tests. |
+| C07 preservation | PASS | No unrelated upload/session changes; C07 validation/framing/limits/expiry/cancellation retained. |
+| Exact-head CI | PASS | #395 / 41310507890 on implementation head 427dd6a92601e472bae01c3964c6059e551307a5; both jobs SUCCESS; app/installer unit tests and release build passed. |
+| APK size | PASS | 1,551,005 bytes; 21,859 bytes below 1,572,864-byte cap. Manual publication skipped. |
+| PR / merge | OPEN / DRAFT / UNMERGED | PR #29; D-013 grouped-integration rule applies. |
+| Runtime / device acceptance | DEFERRED, NOT WAIVED | F-stage must verify upload failure/retry, process death/reboot and Android TV behavior. No APK installation or physical test claimed. |
+
+D05 source-audit and CI gates are closed. See `D05_STANDBY_PHOTO_PERSISTENCE_AUDIT.md` on the feature branch for detailed findings and scope.
