@@ -223,3 +223,13 @@
 - Release APK diagnostic: 1,548,097 bytes, 14,767 bytes below the 1.5 MiB cap. APK publication skipped.
 - PR #21 remains OPEN/DRAFT/UNMERGED under D-013. Physical phone/TV browser acceptance remains deferred to F-stage, not waived.
 - Next task: C05 shared upload/receive-file pipeline audit.
+
+
+## 2026-11-01 — D01 settings/configuration storage audit
+
+- Resumed existing D01 work; did not repeat the original storage inventory. Confirmed PR #25 is OPEN/DRAFT/UNMERGED on `feature/d01-config-storage-audit`, based on C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`.
+- Verified original exact-head CI #373 / run `41293666682` passed both `Launcher build and unit tests` and `Lists, tools and docs`; APK publication step was skipped.
+- Re-read the D01 storage ownership report and independently spot-checked the manifest, Config, ProfileManager, ChildModeManager, StandbyPhotoStore, AppLanguage, AppLocationManager, Location, Azan, and C07 StandBy upload response path.
+- Quality correction: documented Android 12+ OEM device-to-device transfer caveat for `allowBackup=false`; current target TV is Android 11/API 30.
+- Added D01-F11: StandbyPhotoStore commits collection metadata, then ignores the result of the photo-mode commit; C07 WallpaperUploadServer can return HTTP 200 based on the misleading success result. Assigned targeted repair/regression coverage to D05/D07; did not change source code or weaken C07 behavior.
+- D01 audit document updated on feature head `cd710681099faece14905faa244f57245bae84d1`; exact-head CI for this final head is pending. No merge, APK publication/installation, or device setting changes.
