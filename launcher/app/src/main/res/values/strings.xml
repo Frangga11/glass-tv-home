@@ -204,4 +204,29 @@
     <string name="sound_effects_selected">🔊 Efek suara: %1$s</string>
     <string name="auto_update_schedule_title">⏱️ Pilih Waktu Pembaruan Otomatis Harian</string>
     <string name="auto_update_time_selected">Waktu pembaruan otomatis diatur ke: %1$s</string>
+
+    <string name="standby_photo_required">Pilih foto terlebih dahulu untuk mode foto.</string>
+    <string name="standby_picker_unavailable">Pemilih foto tidak tersedia pada perangkat ini.</string>
+    <string name="standby_clear_failed">Gagal mengosongkan daftar foto. Coba lagi.</string>
+    <string name="standby_list_cleared">Daftar foto Layar Siaga dikosongkan.</string>
+    <string name="standby_save_failed">Gagal menyimpan daftar foto. Coba pilih kembali.</string>
+    <string name="tv_network_required">TV belum terhubung ke jaringan Wi-Fi atau Ethernet.</string>
+    <string name="avatar_photo_updated">✓ Foto avatar berhasil diperbarui.</string>
+    <string name="avatar_photo_saved">Avatar tersimpan pada profil yang dipilih.</string>
+    <string name="avatar_photo_replaced">Foto avatar berhasil diganti.</string>
+    <string name="avatar_server_start_failed">Tidak dapat memulai layanan QR avatar.</string>
+    <string name="local_upload_server_start_failed">Tidak dapat memulai server unggah lokal. Periksa koneksi Wi-Fi TV.</string>
+    <string name="qr_create_failed">Kode QR tidak dapat dibuat.</string>
+    <string name="avatar_qr_title">📷 Ganti Foto Avatar</string>
+    <string name="avatar_qr_instructions">Pindai QR dengan ponsel di jaringan Wi-Fi yang sama. Pilih satu foto; sesi berlaku 5 menit. Jika kedaluwarsa, tutup dialog dan buat QR baru.</string>
+    <string name="wallpaper_qr_title">📲 Unggah Wallpaper dari Ponsel</string>
+    <string name="wallpaper_qr_instructions">Sambungkan ponsel dan TV ke Wi-Fi yang sama, lalu pindai QR ini. Foto akan masuk ke koleksi wallpaper.</string>
+    <string name="standby_qr_title">🖼️ Unggah Foto Layar Siaga</string>
+    <string name="standby_qr_instructions">Pindai QR dengan ponsel yang memakai Wi-Fi sama. Pilih beberapa foto sekaligus; wallpaper tidak akan berubah.</string>
+    <string name="standby_photo_save_failed">Gagal menyimpan foto ke koleksi Layar Siaga.</string>
+    <string name="standby_photo_saved_count">✓ Foto tersimpan. Total koleksi: %1$d foto.</string>
+    <string name="standby_collection_count">Koleksi Layar Siaga: %1$d / %2$d foto</string>
+    <string name="wallpaper_uploaded_from_phone">✅ Wallpaper berhasil diunggah dari ponsel!</string>
+    <string name="wallpaper_upload_success">🎉 Berhasil diterima dan ditampilkan di TV!</string>
+    <string name="wallpaper_active_file">✅ Wallpaper aktif: %1$s</string>
 </resources>
