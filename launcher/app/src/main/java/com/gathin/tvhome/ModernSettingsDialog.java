@@ -2002,11 +2002,12 @@ public final class ModernSettingsDialog {
                 activity.getString(R.string.adb_command_guidance),
                 () -> {
                     String command = "adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity";
-                    ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                    if (clipboard != null) {
+                    try {
+                        ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                        if (clipboard == null) throw new IllegalStateException("Clipboard unavailable");
                         clipboard.setPrimaryClip(ClipData.newPlainText("Glass TV HOME command", command));
                         TvFeedback.show(activity, R.string.adb_command_copied, Toast.LENGTH_LONG);
-                    } else {
+                    } catch (Exception unavailable) {
                         TvFeedback.show(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG);
                     }
                 });
