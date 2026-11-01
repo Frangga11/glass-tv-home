@@ -156,6 +156,17 @@ public class WallpaperUploadServer {
         return count == 1 && length > 0 && length <= maxBytes ? length : -1L;
     }
 
+    /** Matches an exact HTTP path while allowing a query string (for example ?name=photo.jpg). */
+    static boolean isRequestToPath(String requestLine, String method, String path) {
+        if (requestLine == null || method == null || path == null) return false;
+        String[] parts = requestLine.split(" ");
+        if (parts.length < 3 || !method.equals(parts[0])) return false;
+        String target = parts[1];
+        int queryIndex = target.indexOf('?');
+        if (queryIndex >= 0) target = target.substring(0, queryIndex);
+        return path.equals(target);
+    }
+
     static boolean isWallpaperSessionRequest(String requestLine, String sessionPath) {
         return requestLine.startsWith("GET " + sessionPath + " ")
                 || requestLine.startsWith("GET " + sessionPath + "/")
@@ -349,22 +360,22 @@ public class WallpaperUploadServer {
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
                 out.flush();
-            } else if (requestLine.startsWith("GET " + getWallpaperPath() + "/thumb")) {
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
                 serveThumbnail(fileName, out);
-            } else if (requestLine.startsWith("GET " + getWallpaperPath() + "/api/list")) {
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/api/list")) {
                 serveApiList(out);
-            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/select")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/select")) {
                 String fileName = getQueryParam(requestLine, "file");
                 handleApiSelect(fileName, out);
-            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/delete")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/delete")) {
                 String fileName = getQueryParam(requestLine, "file");
                 handleApiDelete(fileName, out);
-            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/slideshow")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/slideshow")) {
                 handleApiSlideshow(out);
-            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/clear")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/clear")) {
                 handleApiClear(out);
-            } else if (standbyOnly && requestLine.startsWith("GET " + getStandbyPath() + " ")) {
+            } else if (standbyOnly && isRequestToPath(requestLine, "GET", getStandbyPath())) {
                 byte[] pageBytes = getStandbyHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n"
                         + "Content-Type: text/html; charset=UTF-8\r\n"
@@ -374,10 +385,9 @@ public class WallpaperUploadServer {
                 out.write(response.getBytes("UTF-8"));
                 out.write(pageBytes);
                 out.flush();
-            } else if (standbyOnly && requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
+            } else if (standbyOnly && isRequestToPath(requestLine, "POST", getStandbyUploadPath())) {
                 handleStandbyUpload(client, in, out, lines);
-            } else if (requestLine.startsWith("GET " + getWallpaperPath() + " HTTP/")
-                    || requestLine.startsWith("GET " + getWallpaperPath() + "?")) {
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath())) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/html; charset=UTF-8\r\n" +
@@ -388,7 +398,7 @@ public class WallpaperUploadServer {
                 out.write(response.getBytes("UTF-8"));
                 out.write(pageBytes);
                 out.flush();
-            } else if (requestLine.startsWith("POST " + getWallpaperUploadPath() + " ")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperUploadPath())) {
                 long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
 
                 if (contentLength > 0) {
