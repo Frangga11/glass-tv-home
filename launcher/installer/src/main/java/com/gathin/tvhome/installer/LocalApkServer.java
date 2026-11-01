@@ -342,4 +342,9 @@ public final class LocalApkServer {
         if (socket == null) return;
         try { socket.close(); } catch (Exception ignored) {}
     }
+
+    private static void closeQuietly(ServerSocket socket) {
+        if (socket == null) return;
+        try { socket.close(); } catch (Exception ignored) {}
+    }
 }
