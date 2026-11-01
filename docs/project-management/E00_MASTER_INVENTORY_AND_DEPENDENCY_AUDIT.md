@@ -78,21 +78,19 @@ The resource audit compared `values/strings.xml`, `values-id/strings.xml`, and `
 D-013 remains active: do not merge B06 or later feature PRs into `integration/b-series` while A–G source audits and fixes are active. Keep the branch reserved for final grouped integration. D-014 remains binding: project boundaries are ownership/coordination boundaries, not barriers to cross-project audit and repair.
 
 **Before F:**
-- Complete A–E source audits and scoped fixes.
-- Close each finding or explicitly classify it as accepted residual risk with rationale.
+- Complete A–E source audits and scoped fixes; close findings or explicitly classify accepted residual risks with rationale.
 - Keep exact source heads, PR bases, dependencies, CI evidence and audit records synchronized.
-- No candidate APK installation or physical TV test during active source repair.
+- Do not merge feature PRs into `integration/b-series` yet. No candidate APK installation or physical TV test during active source repair.
 
-**F01 — grouped integration:**
-1. Freeze the exact approved source heads for A–E.
-2. Reconcile branch ancestry and inspect the combined diff, especially shared files, Android manifest, storage contracts, QR endpoints, resources/localization, lifecycle, focus/navigation and build configuration.
-3. Merge into `integration/b-series` by coherent dependency groups, not one blind merge per project and not one giant merge.
-4. After each group, run conflict review, exact-head CI, relevant unit/integration/regression checks and update evidence. If a group fails, stop dependent integration and repair at the owning project.
-5. Run cross-group regression before F02–F07.
+**F01 — integration rehearsal, not the final grouped merge:**
+1. Freeze candidate heads for A–E and record each exact SHA.
+2. Assemble an isolated, temporary integration candidate only when needed to test composition; keep it separate from the reserved `integration/b-series` branch and do not merge feature PRs into that canonical integration branch.
+3. Audit ancestry and the combined diff, especially shared files, Android manifest, storage contracts, QR endpoints, resources/localization, lifecycle, focus/navigation and build configuration.
+4. Run exact-head CI, relevant unit/integration/regression checks and cross-project contract checks. If a group fails, stop dependent work and return the finding to its owning project.
 
-**F02–F07 — integrated acceptance:** remote/focus/lifecycle, phone-to-TV QR and upload, avatar/wallpaper/StandBy store isolation, persistence/process death/reboot, Indonesian/English, and performance/stability on the target Mi TV Stick. Device testing starts only after the integrated candidate passes its pre-device gate and the user explicitly approves it.
+**F02–F07 — candidate acceptance:** remote/focus/lifecycle, phone-to-TV QR and upload, avatar/wallpaper/StandBy store isolation, persistence/process death/reboot, Indonesian/English, and performance/stability on the target Mi TV Stick. Physical testing uses only a clearly labelled test candidate after the pre-device gate and explicit user approval; it is not the final release APK.
 
-**G01–G05 — release:** resolve F findings through the owning project and re-run affected integration tests; freeze the final source; create and hash the APK from the exact approved commit; install/upgrade/verify launcher and rollback on the target TV; then reconcile master documentation and handover. Merge the verified result to `main` only after final acceptance, release review and explicit user approval. The final release APK must be traceable to its exact `main` commit, workflow run, artifact and SHA-256.
+**G01–G05 — closure and release:** G01 resolves findings through their owning projects and re-verifies affected candidate paths. Only after all A–G source audits/fixes are complete and findings are closed or explicitly accepted may the exact approved heads be frozen and merged into `integration/b-series` by coherent dependency groups, with exact-head CI and cross-group regression after each group. G02 produces the traceable release candidate/artifact; G03 verifies installation, upgrade, launcher behavior and rollback on the target TV. Merge the verified result to `main` only after final acceptance, release review and explicit user approval; build/record the final APK from that exact approved `main` commit, workflow run, artifact and SHA-256. G04–G05 reconcile master documentation and handover.
 
 ## 7. E00 exit criteria
 
