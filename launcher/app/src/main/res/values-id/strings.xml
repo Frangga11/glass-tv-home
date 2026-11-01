@@ -427,6 +427,7 @@
     <string name="home_candidates_heading">Pilihan launcher yang terdeteksi:</string>
     <string name="home_current_heading">Hasil resolver HOME Android:</string>
     <string name="home_status_unknown">Belum dapat dipastikan</string>
+    <string name="home_refresh_summary">Baca ulang hasil resolver HOME dan daftar launcher setelah kembali dari Pengaturan Android.</string>
     <string name="home_refresh_action">Periksa ulang status launcher</string>
     <string name="adb_command_copied">Perintah ADB disalin. Jalankan dari komputer yang terhubung ke TV.</string>
     <string name="home_picker_unavailable">Pengaturan pemilih Home tidak tersedia pada firmware ini.</string>
