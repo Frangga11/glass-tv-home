@@ -320,3 +320,16 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - PR #28 remains OPEN/DRAFT/UNMERGED under D-013. No merge performed.
 - D01-F11 remains assigned to D05/D07 for targeted StandBy upload metadata/mode atomicity repair and regression coverage. Preserve unrelated C07 upload/session hardening.
 - **Next: D05 — continue Project D sequence with targeted repair of the D01-F11 upload persistence/HTTP-success contract, retaining strict scope and regression coverage.**
+
+
+## D05 final implementation checkpoint — 1 November 2026
+
+- D05 repairs D01-F11 on isolated branch `feature/d05-standby-photo-atomic-persistence`, based on D04 exact head `ad69d229a6b3cd6ca1810a595597dc88481c3ebd`. Draft PR #29 remains OPEN/DRAFT/UNMERGED under D-013.
+- Root cause fixed: StandBy uploaded-photo collection and `display_mode=true` now commit through one synchronous SharedPreferences editor operation. Duplicate/already-present photos also ensure the mode is durably enabled before success.
+- Explicit outcomes distinguish added, already-present, validation rejection, and persistence failure. HTTP response maps success to 200, rejected input/collection to 400, and persistence failure to 500. On persistence failure, retain the file temporarily because Android may update the in-memory preference map before disk failure is reported; existing orphan cleanup handles non-durable files after restart.
+- Regression tests cover one-commit collection+mode persistence, commit failure propagation, and HTTP outcome mapping. Existing C07 session validation, framing, limits, image validation, expiry/cancellation and upload hardening are preserved.
+- Exact implementation-head CI #395 / run `41310507890` on `427dd6a92601e472bae01c3964c6059e551307a5`: PASS; both jobs SUCCESS; app/installer `testReleaseUnitTest` and `assembleRelease` succeeded.
+- Release APK diagnostic: **1,551,005 bytes**, **21,859 bytes** below 1,572,864-byte cap; size gate PASS; manual publication skipped.
+- D05 source-audit and CI gates are closed. Physical Android TV, process-death and reboot acceptance remains deferred to F-stage, NOT waived. No APK installation, physical-device test, or merge claimed.
+- Detailed audit: `D05_STANDBY_PHOTO_PERSISTENCE_AUDIT.md` on D05 branch.
+- **Next: D06 — proceed to the next Project D item only after checking the current roadmap/handover assignment. D01-F11's identified upload-acknowledgement inconsistency is repaired at source/CI level; retain runtime durability verification in F-stage.**
