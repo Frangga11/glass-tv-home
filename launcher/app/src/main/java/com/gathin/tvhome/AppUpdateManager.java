@@ -157,9 +157,10 @@ public final class AppUpdateManager {
         }
 
         executor.execute(() -> {
+            HttpURLConnection conn = null;
             try {
                 URL url = new URL(VERSION_URL);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setConnectTimeout(CHECK_CONNECT_TIMEOUT_MS);
                 conn.setReadTimeout(CHECK_READ_TIMEOUT_MS);
@@ -176,14 +177,11 @@ public final class AppUpdateManager {
                     return;
                 }
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) sb.append(line);
                 }
-                reader.close();
-                conn.disconnect();
 
                 JSONObject json = new JSONObject(sb.toString());
                 int remoteVersionCode = json.optInt("versionCode", 0);
@@ -238,6 +236,8 @@ public final class AppUpdateManager {
                         if (isActivityUsable(activity)) Toast.makeText(activity, activity.getString(R.string.update_check_error), Toast.LENGTH_SHORT).show();
                     });
                 }
+            } finally {
+                if (conn != null) conn.disconnect();
             }
         });
     }
@@ -335,7 +335,9 @@ public final class AppUpdateManager {
                     fos.write(buffer, 0, count);
                     if (fileLength > 0) {
                         int progress = (int) (total * 100 / fileLength);
-                        mainHandler.post(() -> progressDialog.setProgress(progress));
+                        mainHandler.post(() -> {
+                            if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.setProgress(progress);
+                        });
                     }
                 }
                 fos.flush();
