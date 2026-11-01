@@ -14,7 +14,6 @@ import java.net.ServerSocket;
 import java.net.SocketTimeoutException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -191,6 +190,10 @@ public final class AvatarUploadServer {
                 return;
             }
             claimed = true;
+            if (UploadBodyReader.hasTransferEncoding(lines)) {
+                respond(out, 400, localized(R.string.avatar_error_upload_format));
+                return;
+            }
             long length = UploadBodyReader.parseContentLength(lines, MAX_BYTES);
             if (length == -2L) { respond(out, 413, localized(R.string.avatar_error_max_size)); return; }
             if (length <= 0) { respond(out, 400, localized(R.string.avatar_error_upload_size)); return; }
