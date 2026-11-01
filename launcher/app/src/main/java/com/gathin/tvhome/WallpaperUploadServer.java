@@ -130,22 +130,32 @@ public class WallpaperUploadServer {
         return count == 1 && length > 0 && length <= maxBytes ? length : -1L;
     }
 
-    /** Matches an exact HTTP path while allowing a query string (for example ?name=photo.jpg). */
+    /** Matches a fully parsed request against one exact path, ignoring only its query string. */
     static boolean isRequestToPath(String requestLine, String method, String path) {
-        if (requestLine == null || method == null || path == null) return false;
-        String[] parts = requestLine.split(" ");
-        if (parts.length < 3 || !method.equals(parts[0])) return false;
-        String target = parts[1];
-        int queryIndex = target.indexOf('?');
-        if (queryIndex >= 0) target = target.substring(0, queryIndex);
-        return path.equals(target);
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        return request != null && method != null && method.equals(request.method)
+                && request.isPath(path);
+    }
+
+    static String wallpaperAllowedMethods(String requestPath, String sessionPath) {
+        if (requestPath == null || sessionPath == null) return null;
+        if (requestPath.equals(sessionPath)
+                || requestPath.equals(sessionPath + "/thumb")
+                || requestPath.equals(sessionPath + "/api/list")) return "GET, OPTIONS";
+        if (requestPath.equals(sessionPath + "/upload")
+                || requestPath.equals(sessionPath + "/api/select")
+                || requestPath.equals(sessionPath + "/api/delete")
+                || requestPath.equals(sessionPath + "/api/slideshow")
+                || requestPath.equals(sessionPath + "/api/clear")) return "POST, OPTIONS";
+        return null;
     }
 
     static boolean isWallpaperSessionRequest(String requestLine, String sessionPath) {
-        return requestLine.startsWith("GET " + sessionPath + " ")
-                || requestLine.startsWith("GET " + sessionPath + "/")
-                || requestLine.startsWith("POST " + sessionPath + "/")
-                || requestLine.startsWith("OPTIONS " + sessionPath + "/");
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        if (request == null) return false;
+        String allowed = wallpaperAllowedMethods(request.path, sessionPath);
+        return allowed != null && (request.method.equals("OPTIONS")
+                || (allowed.startsWith(request.method + ",") || allowed.equals(request.method)));
     }
 
     public int getPort() {
@@ -278,6 +288,19 @@ public class WallpaperUploadServer {
         Log.i(TAG, "Server stopped");
     }
 
+    private void sendTextResponse(OutputStream out, int status, String reason, String message, String extraHeaders) throws Exception {
+        byte[] body = (message == null ? "" : message).getBytes("UTF-8");
+        String response = "HTTP/1.1 " + status + " " + reason + "\r\n"
+                + "Content-Type: text/plain; charset=UTF-8\r\n"
+                + "Content-Length: " + body.length + "\r\n"
+                + "Cache-Control: no-store\r\n"
+                + (extraHeaders == null ? "" : extraHeaders)
+                + "Connection: close\r\n\r\n";
+        out.write(response.getBytes("UTF-8"));
+        out.write(body);
+        out.flush();
+    }
+
     private void handleClient(Socket client) {
         try {
             client.setSoTimeout(NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS); // Session expiry remains independently enforced.
@@ -286,16 +309,15 @@ public class WallpaperUploadServer {
 
             ByteArrayOutputStream headerBuf = new ByteArrayOutputStream();
             int prev3 = 0, prev2 = 0, prev1 = 0, b;
+            boolean headerComplete = false;
             while ((b = in.read()) != -1) {
                 headerBuf.write(b);
                 if (headerBuf.size() > 16 * 1024) {
-                    byte[] error = "HTTP/1.1 431 Request Header Fields Too Large\r\nConnection: close\r\n\r\n".getBytes("UTF-8");
-                    out.write(error);
-                    out.flush();
-                    client.close();
+                    sendTextResponse(out, 431, "Request Header Fields Too Large", "Request Header Fields Too Large", null);
                     return;
                 }
                 if (prev3 == '\r' && prev2 == '\n' && prev1 == '\r' && b == '\n') {
+                    headerComplete = true;
                     break;
                 }
                 prev3 = prev2;
@@ -303,37 +325,54 @@ public class WallpaperUploadServer {
                 prev1 = b;
             }
 
+            if (!headerComplete) {
+                sendTextResponse(out, 400, "Bad Request", "Incomplete HTTP headers", null);
+                return;
+            }
             String headerText = headerBuf.toString("UTF-8");
             String[] lines = headerText.split("\r\n");
             if (lines.length == 0 || lines[0].isEmpty()) {
-                client.close();
+                sendTextResponse(out, 400, "Bad Request", "Invalid HTTP request", null);
                 return;
             }
 
             String requestLine = lines[0];
+            UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+            if (request == null) {
+                sendTextResponse(out, 400, "Bad Request", "Invalid HTTP request line", null);
+                return;
+            }
             Log.d(TAG, "Request: " + requestLine);
 
-            boolean standbySessionRoute = requestLine.startsWith("GET " + getStandbyPath() + " ")
-                    || requestLine.startsWith("POST " + getStandbyUploadPath() + " ");
-            boolean wallpaperSessionRoute = isWallpaperSessionRequest(requestLine, getWallpaperPath());
+            boolean standbyPagePath = request.isPath(getStandbyPath());
+            boolean standbyUploadPath = request.isPath(getStandbyUploadPath());
+            boolean standbySessionPath = standbyPagePath || standbyUploadPath;
+            boolean standbyRoute = (standbyPagePath && "GET".equals(request.method))
+                    || (standbyUploadPath && "POST".equals(request.method));
+            String wallpaperAllowed = wallpaperAllowedMethods(request.path, getWallpaperPath());
+            boolean wallpaperSessionPath = request.isWithinPath(getWallpaperPath());
 
-            if (standbyOnly && !standbySessionRoute) {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
-            } else if (!standbyOnly && !wallpaperSessionRoute) {
-                String notFound = "HTTP/1.1 404 Not Found\r\nCache-Control: no-store\r\nConnection: close\r\n\r\nNot Found";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
-            } else if (requestLine.startsWith("OPTIONS")) {
+            if (standbyOnly && !standbySessionPath) {
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
+            } else if (!standbyOnly && !wallpaperSessionPath) {
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
+            } else if (standbyOnly && !standbyRoute) {
+                String allow = standbyPagePath ? "GET" : "POST";
+                sendTextResponse(out, 405, "Method Not Allowed", "Method Not Allowed", "Allow: " + allow + "\r\n");
+            } else if (!standbyOnly && wallpaperAllowed == null) {
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
+            } else if (!standbyOnly && "OPTIONS".equals(request.method)) {
                 String response = "HTTP/1.1 204 No Content\r\n" +
                         "Access-Control-Allow-Origin: *\r\n" +
-                        "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n" +
+                        "Access-Control-Allow-Methods: " + wallpaperAllowed + "\r\n" +
                         "Access-Control-Allow-Headers: Content-Type\r\n" +
                         "Cache-Control: no-store\r\n" +
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
                 out.flush();
+            } else if (!standbyOnly && !wallpaperAllowed.startsWith(request.method + ",")
+                    && !wallpaperAllowed.equals(request.method)) {
+                sendTextResponse(out, 405, "Method Not Allowed", "Method Not Allowed", "Allow: " + wallpaperAllowed.replace(", OPTIONS", "") + "\r\n");
             } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
                 serveThumbnail(fileName, out);
@@ -601,20 +640,22 @@ public class WallpaperUploadServer {
     }
 
     private String getQueryParam(String requestLine, String param) {
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        if (request == null || param == null || request.query.isEmpty()) return null;
         try {
-            int qIdx = requestLine.indexOf('?');
-            if (qIdx == -1) return "";
-            int spIdx = requestLine.indexOf(' ', qIdx);
-            String query = spIdx > qIdx ? requestLine.substring(qIdx + 1, spIdx) : requestLine.substring(qIdx + 1);
-            String[] pairs = query.split("&");
-            for (String pair : pairs) {
+            String found = null;
+            for (String pair : request.query.split("&", -1)) {
                 int eq = pair.indexOf('=');
-                if (eq > 0 && pair.substring(0, eq).equals(param)) {
-                    return URLDecoder.decode(pair.substring(eq + 1), "UTF-8");
-                }
+                if (eq <= 0) continue;
+                String name = URLDecoder.decode(pair.substring(0, eq), "UTF-8");
+                if (!param.equals(name)) continue;
+                if (found != null) return null; // Ambiguous duplicate parameter.
+                found = URLDecoder.decode(pair.substring(eq + 1), "UTF-8");
             }
-        } catch (Exception ignored) {}
-        return "";
+            return found;
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private void serveThumbnail(String fileName, OutputStream out) {
