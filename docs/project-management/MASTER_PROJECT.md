@@ -42,7 +42,7 @@
 
 ## B04/B05 closure and next-stage checkpoint — 1 November 2026
 
-- B04+B05 integrated CI passed on exact integration head `5932cf60e19640bc5fc648f43105f86c8752813c` (run #244 / `41277076284`; both CI jobs passed). Follow-up PR #13 exact-head CI passed on `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838` (run `41277353285`).
+- B04+B05 integrated CI passed on exact integration head `5932cf60e19640bc5fc648f43105f86c8752813c` (run #254 / `41277076284`; both CI jobs passed). Follow-up PR #13 exact-head CI passed on `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838` (run `41277353285`).
 - CI-discovered defects were corrected: apostrophe escaping in Android localized strings, localized update-progress message type, and localization parity test expected type.
 - Merge chain: PR #15 merged as `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`; PR #13 merged as `d7b76c4a22c9eadffb8171a616283f3ad647d488`; GitHub reports PR #14 merged as `73817ce41e4ae5b034922f190052a95ac45886d9`. Current B03 continuation branch head is `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
 - Manual CI dispatch is now enabled on `main` (commit `6eaf787c56226606b1d2e650c59540c553756c62`). APK publishing remained disabled; no APK was published/installed.
