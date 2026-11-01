@@ -143,4 +143,7 @@
     <string name="save_profile_action">Save Profile</string>
     <string name="user_name_required">Please enter a user name</string>
     <string name="profile_created">✨ Profile %1$s created!</string>
+
+    <string name="incorrect_pin">❌ Incorrect PIN. Please try again.</string>
+    <string name="pin_four_digits">Please enter your 4-digit PIN</string>
 </resources>
