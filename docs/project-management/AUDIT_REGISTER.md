@@ -293,3 +293,19 @@ C03 finding C03-F01 (interface-name-based address selection) was remediated by a
 | PR / merge | OPEN / DRAFT / UNMERGED | PR #26; D-013 merge deferral applies. |
 | Physical Android TV acceptance | DEFERRED, NOT WAIVED | Final F-stage acceptance; no APK published or installed. |
 | D01-F11 | OPEN — D05/D07 | Distinct upload collection/mode atomicity issue remains downstream. |
+
+
+## D03 locked/hidden app refresh — 1 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Root cause | CONFIRMED | Profile Settings count labels read ChildModeManager locked/hidden collections; picker writes persisted immediately but the parent pane was not rerendered on dismissal. Tile reload was previously tied to Done only. |
+| Picker dismissal refresh | FIXED | Narrow completion callback refreshes the owning Settings right pane; dialog dismissal reloads home tiles for both Done and Back. |
+| PIN cancellation | PRESERVED | Cancellation before the app picker opens does not execute the picker dismissal refresh path. |
+| Scope control | PASS | No ChildModeManager storage/schema/migration, PIN policy, package discovery, global listener/event bus, or unrelated C07/D01/D02 changes. |
+| Exact-head CI | PASS | Run #385 / 41307515649 on `c119198e5c5ecc0d3cfdc283049ea3299d0067ca`; both jobs SUCCESS; unit tests and release build succeeded. |
+| APK size | PASS | 1,550,761 bytes; 22,103 bytes below 1,572,864-byte cap. Manual publication skipped. |
+| PR / merge | OPEN / DRAFT / UNMERGED | PR #27; D-013 grouped-integration rule applies. |
+| Physical Android TV acceptance | DEFERRED, NOT WAIVED | F-stage must verify Done/Back, separate locked/hidden counts, home tile refresh, PIN cancellation, and D-pad focus. No device test or APK installation claimed. |
+
+D03 source-audit and exact-head CI gates are closed. D01-F11 remains an independent downstream repair assigned to D05/D07.
