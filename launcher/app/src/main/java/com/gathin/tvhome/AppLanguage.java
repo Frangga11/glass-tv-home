@@ -24,20 +24,21 @@ final class AppLanguage {
         if (ctx == null) return LANG_ID;
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String selected = prefs.getString(KEY_LANG, LANG_ID);
-        // Migrate the former Malay preference and reject every unsupported language.
-        if (selected == null || LANG_MS.equalsIgnoreCase(selected)) {
-            prefs.edit().putString(KEY_LANG, LANG_ID).apply();
-            return LANG_ID;
+        String normalized = normalizeLanguage(selected);
+        if (!normalized.equals(selected)) {
+            // Migrate the former Malay preference and canonicalize/reject unsupported values.
+            prefs.edit().putString(KEY_LANG, normalized).apply();
         }
-        if (LANG_EN.equalsIgnoreCase(selected)) return LANG_EN;
-        if (LANG_ID.equalsIgnoreCase(selected)) return LANG_ID;
-        prefs.edit().putString(KEY_LANG, LANG_ID).apply();
-        return LANG_ID;
+        return normalized;
+    }
+
+    static String normalizeLanguage(String language) {
+        return LANG_EN.equalsIgnoreCase(language) ? LANG_EN : LANG_ID;
     }
 
     public static void setLanguage(Context ctx, String lang) {
         if (ctx == null || lang == null) return;
-        String normalized = LANG_EN.equalsIgnoreCase(lang) ? LANG_EN : LANG_ID;
+        String normalized = normalizeLanguage(lang);
         ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()
                 .putString(KEY_LANG, normalized)
