@@ -169,7 +169,7 @@ final class StandbyPhotoStore {
     }
 
     static synchronized UriMergeResult appendUris(Context context, List<Uri> additions) {
-        if (context == null) return new UriMergeResult(new ArrayList<>(), 0, 0);
+        if (context == null) return new UriMergeResult(new ArrayList<>(), 0, 0, false);
         List<String> current = toUriStrings(getUris(context));
         List<String> incoming = toUriStrings(additions);
         UriMergeResult merged = mergeUriValues(current, incoming, MAX_PHOTO_COUNT);
@@ -182,12 +182,19 @@ final class StandbyPhotoStore {
         return merged;
     }
 
+    static boolean commitClearedState(SharedPreferences preferences) {
+        return preferences != null && preferences.edit()
+                .putString(KEY_URIS, "")
+                .putBoolean(KEY_MODE, false)
+                .commit();
+    }
+
     /** Clears collection membership and photo mode as one durable transition. */
     static synchronized List<Uri> clearCollectionAndMode(Context context) {
         if (context == null) return null;
         List<Uri> previousUris = getUris(context);
         SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        boolean saved = preferences.edit().putString(KEY_URIS, "").putBoolean(KEY_MODE, false).commit();
+        boolean saved = commitClearedState(preferences);
         if (!saved) return null;
         clearUploadedFiles(context);
         return previousUris;
