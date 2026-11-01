@@ -309,4 +309,43 @@
 
     <string name="ram_usage_summary">%1$s GB RAM used of %2$s GB</string>
     <string name="now_label">Now</string>
+
+    <string name="standby_photo_mode_enabled">Personal photos are now used in StandBy mode.</string>
+    <string name="standby_clock_mode_enabled">The built-in clock display is now used.</string>
+    <string name="azan_popup_enabled">✅ Adhan popup enabled.</string>
+    <string name="azan_popup_disabled">⭕ Adhan popup disabled.</string>
+    <string name="auto_update_status_enabled">✅ Auto-Update: On (%1$s)</string>
+    <string name="auto_update_status_disabled">⭕ Auto-Update: Off</string>
+    <string name="auto_update_disable_action">❌ Turn Auto-Update Off</string>
+    <string name="auto_update_enable_action">⚡ Turn Auto-Update On</string>
+    <string name="auto_update_enabled_at">✅ Auto-Update enabled (%1$s)</string>
+    <string name="auto_update_disabled">⭕ Auto-Update disabled</string>
+    <string name="now_playing_fallback_title">Now playing</string>
+    <string name="now_playing_fallback_artist">Music</string>
+    <string name="playback_status_playing">▶ Playing</string>
+    <string name="playback_status_paused">⏸ Paused</string>
+    <string name="wallpaper_shuffle_random">🔀 Shuffle mode: wallpapers are selected randomly</string>
+    <string name="wallpaper_shuffle_ordered">➡️ Sequential mode: wallpapers follow their order</string>
+    <string name="next_prayer_suffix"> (Next)</string>
+    <string name="child_mode_enabled">✅ Child Mode enabled!</string>
+    <string name="child_mode_disabled">Child Mode disabled.</string>
+    <string name="icon_animation_enabled">Icon animations enabled.</string>
+    <string name="icon_animation_disabled">Icon animations disabled.</string>
+    <string name="glass_effect_enabled">Glass Effect enabled.</string>
+    <string name="glass_effect_disabled">Glass Effect disabled.</string>
+    <string name="weather_animation_enabled">Weather animations enabled.</string>
+    <string name="weather_animation_disabled">Weather animations disabled.</string>
+    <string name="icon_glow_enabled">Icon glow enabled.</string>
+    <string name="icon_glow_disabled">Icon glow disabled.</string>
+    <string name="hide_apps_title">👁️ Hide Apps from Home Screen</string>
+    <string name="lock_apps_title">🔒 Lock Apps with a 4-Digit PIN</string>
+    <string name="hide_apps_description">Selected apps will not appear on the Home Screen.</string>
+    <string name="lock_apps_description">A PIN will be required to open selected apps.</string>
+    <string name="uv_low">Low</string>
+    <string name="uv_moderate">Moderate</string>
+    <string name="uv_high">High</string>
+    <string name="uv_very_high">Very high</string>
+    <string name="precipitation_summary">Now • rain chance %1$d%%</string>
+    <string name="limited_visibility">Limited visibility</string>
+    <string name="good_visibility">Good visibility</string>
 </resources>
