@@ -19,6 +19,7 @@ D01 is an audit-only step. It does not rename preference files/keys, migrate use
 - `Config` optionally reads `config.json` from `getExternalFilesDir(null)`; the file is an external theme/config overlay, not a SharedPreferences store.
 - User content is stored in app-private `getFilesDir()` directories (profile avatars, custom wallpapers, StandBy photos, and Azan audio).
 - External cache/files are also used for downloaded update/wallpaper assets.
+- The manifest sets `android:allowBackup=false`; SharedPreferences and app-private files therefore must be treated as local app state, not as an OS/cloud backup or reinstall-recovery mechanism. This is a key D06 acceptance constraint.
 - No Room, SQLiteOpenHelper, or DataStore owner was identified in the inspected launcher persistence paths.
 
 ## 3. Preference-store ownership inventory
@@ -73,6 +74,7 @@ D01 is an audit-only step. It does not rename preference files/keys, migrate use
 | D01-F07 | MEDIUM | `Config` uses resource defaults plus an optional external-files JSON overlay, loads once at Activity creation, and is not wired as a live mutable settings store. | Do not treat this overlay as the source of Settings UI toggles or migrate it into SharedPreferences without a separate compatibility plan. |
 | D01-F08 | LOW | UI navigation restoration, network-derived caches, update metadata, recent-app history, and user preferences are all persisted through SharedPreferences but have different lifecycle/retention semantics. | D02/D06 must distinguish durable user choices from ephemeral/restorable state and disposable caches. |
 | D01-F09 | HIGH / OUT OF D01 SCOPE | `MainActivity.ensureSystemScreensaverAndSleepSettings()` writes Android System/Secure settings (sleep timeout, screensaver, accessibility/notification listener settings). | These are OS/device settings, not app-owned preferences. D01 does not execute or alter them; carry them to the separately scoped E01/device-settings audit. |
+| D01-F10 | MEDIUM | Manifest sets `android:allowBackup=false`. | App-owned preferences and private files are not an OS backup/restore guarantee; D06 must validate process death/reboot separately and must not imply reinstall recovery. |
 
 ## 6. D01 disposition and guardrails
 
