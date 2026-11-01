@@ -589,4 +589,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_page_upload_timeout">The upload timed out. Check your Wi-Fi connection and try again.</string>
     <string name="standby_page_timeout_prefix">The upload timed out. </string>
     <string name="standby_page_timeout_suffix"> photos have already been saved. Check Wi-Fi and select the remaining photos again.</string>
+    <string name="wallpaper_download_complete">Downloaded %2$d wallpapers in the %1$s category.</string>
+    <string name="wallpaper_download_failed">Could not download wallpapers in the %1$s category. Check your internet connection and try again.</string>
 </resources>
