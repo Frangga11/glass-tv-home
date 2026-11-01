@@ -655,7 +655,8 @@ public class WallpaperUploadServer {
                 + "xhr.open('POST',endpoint,true);xhr.timeout=" + NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS + ";xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
                 + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
                 + "xhr.onload=()=>{activeXhr=null;cancel.hidden=true;if(xhr.status>=200&&xhr.status<300){uploaded++;i++;next();return;}"
-                + "if(xhr.status===410||xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'Upload session unavailable. Create a new QR code if it expired.';send.disabled=false;return;}"
+                + "if(xhr.status===410){status.textContent=xhr.responseText||'Upload session expired. Scan a new QR code.';send.disabled=true;return;}"
+                + "if(xhr.status===408||xhr.status===429||xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'Upload interrupted. Press retry to resume this photo.';send.disabled=false;return;}"
                 + "failed++;i++;next();};"
                 + "xhr.onerror=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_connection_lost_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_connection_lost_suffix) + "';send.disabled=false;};"
                 + "xhr.ontimeout=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_timeout_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_timeout_suffix) + "';send.disabled=false;};"
@@ -1314,6 +1315,7 @@ public class WallpaperUploadServer {
                 "        } else {\n" +
                 "          const detail = (xhr.responseText || xhr.statusText || '').trim();\n" +
                 "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + detail);\n" +
+                "          if (xhr.status === 410) btnSubmit.disabled = true;\n" +
                 "        }\n" +
                 "      };\n" +
                 "\n" +
