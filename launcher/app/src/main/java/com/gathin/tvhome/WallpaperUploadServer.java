@@ -101,8 +101,8 @@ public class WallpaperUploadServer {
     }
 
     /**
-     * Accept one unambiguous Content-Length only. This server deliberately does not implement
-     * chunked transfer decoding, so Transfer-Encoding and duplicate/malformed lengths are rejected.
+     * Accept one unambiguous Content-Length only. Returns -1 for invalid/missing values and
+     * -2 for a valid numeric length above the endpoint limit. Chunked transfer is not supported.
      */
     static long parseContentLength(String[] headerLines, long maxBytes) {
         if (headerLines == null || maxBytes <= 0) return -1L;
@@ -690,8 +690,12 @@ public class WallpaperUploadServer {
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+            boolean compressed = bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
             bmp.recycle();
+            if (!compressed) {
+                sendTextResponse(out, 500, "Internal Server Error", "Thumbnail encoding failed", null);
+                return;
+            }
             byte[] bytes = baos.toByteArray();
 
             String response = "HTTP/1.1 200 OK\r\n" +
@@ -712,7 +716,10 @@ public class WallpaperUploadServer {
     private void serveApiList(OutputStream out) {
         try {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.exists()
+                    ? customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"))
+                    : new File[0];
+            if (files == null) throw new java.io.IOException("Cannot list wallpaper storage");
             JSONArray arr = new JSONArray();
             String activeSingle = context.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE)
                     .getString("custom_single_file", "");
