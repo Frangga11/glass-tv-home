@@ -219,7 +219,7 @@ public class WallpaperUploadServer {
 
     private void handleClient(Socket client) {
         try {
-            client.setSoTimeout(30000); // 30 seconds timeout
+            client.setSoTimeout(90000); // Match avatar upload inactivity timeout; session expiry remains independently enforced.
             InputStream in = client.getInputStream();
             OutputStream out = client.getOutputStream();
 
