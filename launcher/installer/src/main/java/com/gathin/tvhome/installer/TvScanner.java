@@ -32,7 +32,9 @@ public final class TvScanner {
     private static final int MAX_SCAN_HOSTS = 512;
     private static final int CONNECT_TIMEOUT_MS = 450;
     private static final long SCAN_DEADLINE_SECONDS = 8L;
-    private static final Handler MAIN = new Handler(Looper.getMainLooper());
+    private static final class MainThread {
+        static final Handler HANDLER = new Handler(Looper.getMainLooper());
+    }
 
     private TvScanner() {}
 
@@ -159,7 +161,7 @@ public final class TvScanner {
         if (callback == null) return handle;
         final LocalNetwork local = getLocalNetwork(context);
         if (local == null || local.hostCount() < 1 || local.hostCount() > MAX_SCAN_HOSTS) {
-            MAIN.post(() -> {
+            MainThread.HANDLER.post(() -> {
                 if (!handle.isCancelled()) callback.onScanFinished(Collections.emptyList());
             });
             return handle;
