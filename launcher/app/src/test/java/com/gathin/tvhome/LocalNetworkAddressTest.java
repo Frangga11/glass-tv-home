@@ -23,7 +23,7 @@ public class LocalNetworkAddressTest {
     public void rejectsLoopbackLinkLocalUnspecifiedAndMulticastAddresses() throws Exception {
         assertFalse(LocalNetworkAddress.isUsableLanIpv4(address("127.0.0.1"), 8));
         assertFalse(LocalNetworkAddress.isUsableLanIpv4(address("169.254.10.20"), 16));
-        assertFalse(LocalNetworkAddress.isUsableLanIpv4(address("0.0.0.0"), 0));
+        assertFalse(LocalNetworkAddress.isUsableLanIpv4(address("0.0.0.0"), 24));
         assertFalse(LocalNetworkAddress.isUsableLanIpv4(address("224.0.0.1"), 24));
     }
 
