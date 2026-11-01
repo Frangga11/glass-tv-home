@@ -146,4 +146,23 @@
 
     <string name="incorrect_pin">❌ Incorrect PIN. Please try again.</string>
     <string name="pin_four_digits">Please enter your 4-digit PIN</string>
+
+    <string name="update_checking">🔄 Checking for updates...</string>
+    <string name="update_http_failure">❌ Could not check the update server (HTTP %1$d)</string>
+    <string name="update_latest_version">✅ Glass TV Home is up to date (v%1$s)!</string>
+    <string name="update_check_error">❌ Could not check for updates. Make sure Wi-Fi is connected.</string>
+    <string name="update_dialog_title">🚀 New Update Available (v%1$s)</string>
+    <string name="update_dialog_message">Current version: v%1$s\nLatest version: v%2$s\n\n📋 Release notes:\n%3$s\n\nWould you like to update now?</string>
+    <string name="update_now_action">⚡ Update Now</string>
+    <string name="update_later_action">⏭️ Skip / Later</string>
+    <string name="update_deferred">Update postponed. The red dot 🔴 remains on the Settings button.</string>
+    <string name="install_permission_title">⚠️ Installation Permission Required</string>
+    <string name="install_permission_message">Enable 'Allow from this source' so Glass TV Home can install updates automatically.</string>
+    <string name="open_settings_action">Open Settings</string>
+    <string name="install_unknown_apps_hint">Open Settings &gt; Security &gt; Install unknown apps</string>
+    <string name="download_update_title">📥 Downloading Update (v%1$s)</string>
+    <string name="download_update_message">Downloading the installation file...</string>
+    <string name="download_update_error">❌ Update download failed: %1$s</string>
+    <string name="update_apk_missing">Update APK file not found.</string>
+    <string name="install_update_error">❌ Could not start installation: %1$s</string>
 </resources>
