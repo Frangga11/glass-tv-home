@@ -96,6 +96,29 @@ public class StandbyPhotoStoreTest {
     }
 
     @Test
+    public void clearedCollectionAndPhotoModeUseOnePreferenceCommit() {
+        Map<String, Object> values = new HashMap<>();
+        int[] commits = {0};
+        SharedPreferences preferences = recordingPreferences(true, values, commits);
+
+        assertTrue(StandbyPhotoStore.commitClearedState(preferences));
+
+        assertEquals("", values.get("photo_uris"));
+        assertEquals(Boolean.FALSE, values.get("display_mode"));
+        assertEquals(1, commits[0]);
+    }
+
+    @Test
+    public void failedClearCommitDoesNotReportSuccess() {
+        Map<String, Object> values = new HashMap<>();
+        int[] commits = {0};
+        SharedPreferences preferences = recordingPreferences(false, values, commits);
+
+        assertFalse(StandbyPhotoStore.commitClearedState(preferences));
+        assertEquals(1, commits[0]);
+    }
+
+    @Test
     public void uploadedStateReportsPreferenceCommitFailure() {
         Map<String, Object> values = new HashMap<>();
         int[] commits = {0};
