@@ -5305,7 +5305,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (uploadServer != null) { uploadServer.stop(); uploadServer = null; }
         if (avatarUploadServer != null) { avatarUploadServer.stop(); avatarUploadServer = null; }
 
-        String ip = AvatarUploadServer.getLocalIpAddress();
+        String ip = AvatarUploadServer.getLocalIpAddress(this);
         if (ip == null || "127.0.0.1".equals(ip)) {
             TvFeedback.show(this, R.string.tv_network_required, Toast.LENGTH_LONG);
             return;
@@ -5345,7 +5345,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             uploadServer = null;
         }
 
-        String localIp = WallpaperUploadServer.getLocalIpAddress();
+        String localIp = WallpaperUploadServer.getLocalIpAddress(this);
         if (localIp == null || "127.0.0.1".equals(localIp)) {
             TvFeedback.show(this, R.string.tv_network_required, Toast.LENGTH_LONG);
             return;
