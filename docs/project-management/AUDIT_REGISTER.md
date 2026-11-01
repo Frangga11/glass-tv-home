@@ -266,3 +266,16 @@ C03 finding C03-F01 (interface-name-based address selection) was remediated by a
 - D01 source-audit and exact-head CI gates: PASS. No source code/data migration performed; no APK published or installed.
 - PR #25 remains OPEN/DRAFT/UNMERGED on `feature/d01-config-storage-audit`, based on C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`, under D-013.
 - D01-F11 remains an open downstream repair item owned by D05/D07; runtime/process-death/reboot acceptance remains deferred to F-stage, not waived.
+
+
+## D02 settings-to-UI propagation — 1 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Settings propagation audit | SOURCE AUDIT PASS | Home widgets/effects, prayer panel/Ayah, wallpaper, profile/Child Mode, location/weather, language and cross-Activity return paths traced in `D02_SETTINGS_UI_PROPAGATION_AUDIT.md`. |
+| D02-F01 StandBy mode failure handling | FIX IMPLEMENTED | MainActivity now checks StandbyPhotoStore commit result, does not claim success or refresh the live screensaver on failure, and shows localized error; Settings pane rerenders from persisted state. |
+| Localization parity | IMPLEMENTED / CI PENDING | New `standby_mode_save_failed` key added to default, Indonesian and English resources. |
+| Exact-head CI | IN PROGRESS | Runs #380 / 41305432110 and #381 / 41305453205 on `3bb4ae592904a49989fd76d7dabd92ed1cebd94b`; both Lists/tools/docs jobs have succeeded; Launcher build/unit-test jobs are still running. |
+| PR / merge | OPEN / DRAFT / UNMERGED | PR #26, `feature/d02-settings-ui-propagation` stacked on D01 exact head; D-013 merge deferral applies. |
+| D01-F11 upload persistence contract | OPEN — D05/D07 | Separate upload atomicity/failure propagation issue remains open; not closed by D02. |
+| Physical Android TV acceptance | DEFERRED, NOT WAIVED | Final F-stage acceptance. No APK published or installed. |
