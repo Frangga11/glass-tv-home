@@ -90,21 +90,33 @@ public final class AvatarUploadServer {
             while (running && !listeningSocket.isClosed()) {
                 try {
                     Socket client = listeningSocket.accept();
-                    if (!running) { client.close(); break; }
-                    int active = activeClientCount.incrementAndGet();
-                    if (active > MAX_ACTIVE_CLIENTS) {
-                        activeClientCount.decrementAndGet();
+                    boolean accepted;
+                    synchronized (this) {
+                        if (!running) {
+                            client.close();
+                            break;
+                        }
+                        int active = activeClientCount.incrementAndGet();
+                        accepted = active <= MAX_ACTIVE_CLIENTS;
+                        if (accepted) {
+                            activeClients.add(client);
+                        } else {
+                            activeClientCount.decrementAndGet();
+                        }
+                    }
+                    if (!accepted) {
                         try { respond(client.getOutputStream(), 503, localized(R.string.avatar_error_busy)); } catch (Exception ignored) {}
                         try { client.close(); } catch (Exception ignored) {}
                         continue;
                     }
-                    activeClients.add(client);
                     try {
                         Thread worker = new Thread(() -> handle(client), "avatar-upload-client");
                         worker.setDaemon(true);
                         worker.start();
                     } catch (RuntimeException startFailure) {
-                        if (activeClients.remove(client)) activeClientCount.decrementAndGet();
+                        synchronized (this) {
+                            if (activeClients.remove(client)) activeClientCount.decrementAndGet();
+                        }
                         try { client.close(); } catch (Exception ignored) {}
                         Log.w(TAG, "Cannot start avatar upload worker", startFailure);
                     }
@@ -272,7 +284,9 @@ public final class AvatarUploadServer {
         } finally {
             if (temp != null && temp.exists()) temp.delete();
             if (claimed && !uploadSucceeded) uploadClaimed.set(false);
-            if (activeClients.remove(socket)) activeClientCount.decrementAndGet();
+            synchronized (this) {
+                if (activeClients.remove(socket)) activeClientCount.decrementAndGet();
+            }
         }
     }
 
