@@ -69,7 +69,7 @@ Timeouts remain operation-specific and are named/tested; they are not globally e
 - Static parity result: zero duplicate keys, zero missing/extra keys, zero format-placeholder mismatches.
 - Added `FeedbackPolicyTest` (3 test methods).
 - Added/expanded `NetworkFeedbackPolicyTest` (4 test methods) for download completeness and operation-specific socket/browser timeout budgets.
-- Explicit confirmation/settings AlertDialogs retain their existing TV styling and focus behavior; B06 does not replace unrelated interactive dialogs.
+- Explicit confirmation/settings AlertDialogs were left unchanged to avoid altering unrelated interaction semantics; their styling/focus acceptance remains covered by the broader B03/B07 and final integration regression.
 
 ## 5. CI evidence
 
