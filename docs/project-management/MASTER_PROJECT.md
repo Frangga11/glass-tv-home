@@ -10,3 +10,12 @@
 - B04 exact-head CI #242: PASS. Current integration head has no GitHub Actions workflow run or combined status; no integrated build/test pass is claimed. The connection exposes no workflow-dispatch action, and local environment has no Gradle/Android SDK or network access to run a substitute build.
 - Runtime gates: API 30 locale/context/recreation; API 33+ per-app locale synchronization/configuration; Activity/DreamService lifecycle; settings tab and D-pad focus retention; QR upload on real phone/Wi-Fi; F02/F06 physical TV acceptance. No APK published/installed, no device settings changed.
 - PR #15 remains Draft/unmerged pending exact-head CI and physical/runtime acceptance.
+
+
+## Final source checkpoint — 1 November 2026
+
+- Integration head: `89d769689eb566671725c52982e0b73c4f1e8c31`; PR #15 is OPEN, DRAFT, and GitHub reports `mergeable_state=clean`. PR #13 and #14 are also OPEN/DRAFT. No merge has occurred.
+- Localization static QC: 560 keys in default/ID/EN; zero duplicate keys, locale key differences, or placeholder mismatches. Duplicate-key rejection is now part of `LocalizationResourceParityTest`.
+- App-wide scan: 68 Java files and 17 layout XML files; 21 changed Java files with 534 `R.string` refs and 17 layouts with 71 `@string` refs; zero unresolved references.
+- B04 exact-head CI #242 passed. There is still no Actions run or combined status for the exact integration head. Do not treat `mergeable_state=clean` as a build/test result.
+- Remaining gates are external: integrated CI; API 30/API 33+ runtime lifecycle/focus checks; phone-on-same-Wi-Fi QR upload verification; physical F02/F06 TV acceptance. No APK was published/installed and no TV settings were changed.
