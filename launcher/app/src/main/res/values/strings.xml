@@ -465,4 +465,14 @@ Sebagian besar Android TV dan Google TV membatasi tombol Home agar tetap membuka
     <string name="set_home_adb_title">💻 Tetapkan Permanen melalui Perintah ADB (Disarankan)</string>
     <string name="phone_installer_title">📱 Tanpa PC: Gunakan Aplikasi Telepon (Glass TV Installer)</string>
     <string name="phone_installer_summary">Pasang release/glass-tv-installer.apk pada telepon Android di jaringan Wi-Fi yang sama untuk mengaktifkan Home secara otomatis dalam satu klik.</string>
+    <string name="default_launcher_success">✅ Berhasil! Glass TV Home kini menjadi peluncur utama perangkat Anda. Setiap kali tombol Home pada remote ditekan, perangkat akan kembali ke Glass TV.</string>
+    <string name="default_launcher_explanation">⚠️ Peluncur aktif saat ini: %1$s
+
+Sebagian besar Android TV dan Google TV membatasi tombol Home agar tetap membuka layar utama bawaan produsen. Pilih salah satu cara berikut untuk menetapkan Glass TV sebagai peluncur utama:</string>
+    <string name="adb_command_guidance">Jalankan perintah ini melalui PC atau asisten pemrograman:
+adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity%1$s</string>
+    <string name="disable_old_launcher_hint">
+
+Jika TV masih membatasi tombol Home, nonaktifkan peluncur lama:
+adb shell pm disable-user --user 0 %1$s</string>
 </resources>

@@ -1713,8 +1713,8 @@ public final class ModernSettingsDialog {
 
         TextView tvDesc = new TextView(activity);
         String desc = isDefault
-                ? "✅ Berhasil! Glass TV Home kini menjadi peluncur utama perangkat Anda. Setiap kali tombol Home pada remote ditekan, perangkat akan kembali ke Glass TV."
-                : "⚠️ Peluncur aktif saat ini: " + activePkg + "\n\nSebagian besar Android TV dan Google TV membatasi tombol Home agar tetap membuka layar utama bawaan produsen. Pilih salah satu cara berikut untuk menetapkan Glass TV sebagai peluncur utama:";
+                ? activity.getString(R.string.default_launcher_success)
+                : activity.getString(R.string.default_launcher_explanation, activePkg);
         tvDesc.setText(desc);
         tvDesc.setTextSize(13f);
         tvDesc.setTextColor(isDefault ? 0xFF34D399 : 0xFFCBD5E1);
@@ -1746,8 +1746,7 @@ public final class ModernSettingsDialog {
         // Option 2: ADB Command guidance
         LinearLayout btnAdb = buildCardRow(activity, density, font,
                 activity.getString(R.string.set_home_adb_title),
-                "Jalankan arahan ini melalui PC atau asisten pemrograman:\nadb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity" +
-                (isDefault ? "" : "\n\nJika TV masih membatasi tombol Home, nonaktifkan peluncur lama:\nadb shell pm disable-user --user 0 " + activePkg),
+                activity.getString(R.string.adb_command_guidance, isDefault ? "" : activity.getString(R.string.disable_old_launcher_hint, activePkg)),
                 () -> {
                     Toast.makeText(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG).show();
                 });
