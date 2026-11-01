@@ -48,7 +48,9 @@ public class LocalizationResourceParityTest {
         Map<String, String> result = new HashMap<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             Element element = (Element) nodes.item(i);
-            result.put(element.getAttribute("name"), element.getTextContent());
+            String key = element.getAttribute("name");
+            assertTrue("Duplicate string resource key: " + key, !result.containsKey(key));
+            result.put(key, element.getTextContent());
         }
         return result;
     }
