@@ -17,6 +17,7 @@ public class NetworkFeedbackPolicyTest {
         assertFalse(NetworkFeedbackPolicy.isCompleteDownload(0, 0));
         assertFalse(NetworkFeedbackPolicy.isCompleteDownload(512, 1024));
         assertFalse(NetworkFeedbackPolicy.isCompleteDownload(0, 1024));
+        assertFalse(NetworkFeedbackPolicy.isCompleteDownload(1, 0));
     }
 
     @Test
