@@ -263,3 +263,16 @@
 - Exact-final-head CI #404 / `41313690556`: PASS on `964163c918e281b68af5cf7114ca56ead2797486`; both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. App/installer release unit tests and release build passed. APK exact size 1,552,197 bytes; 20,667 bytes below cap; publication skipped.
 - D07 source-audit and exact-head CI gates CLOSED. Physical TV acceptance remains mandatory in F-stage: process death/force-stop/reboot/alarm recovery, profile switching and cross-profile isolation, Child Mode lock/hide, concurrent picker/QR operations, and location/language switch during refresh. Deferred, NOT waived. No APK installed or physical TV test claimed.
 - Canonical audit evidence: `D07_CONCURRENT_PROFILE_CONTENT_STATE_AUDIT.md` on the D07 feature branch; D06 evidence in `D06_PROCESS_DEATH_REBOOT_RECOVERY_AUDIT.md`.
+
+
+
+## Latest resume checkpoint — E00 documentation reconciliation, 2 November 2026
+
+- **Current work unit:** E00 master inventory/document reconciliation. Documentation-only branch: `docs/e00-inventory-reconciliation`, based on `docs/project-master-inventory`. Review PR into the documentation branch is pending.
+- **New report:** `docs/project-management/E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md`. It records the 36-branch inventory, refreshed PR states, protected B/C/D contracts, E01–E08 planning findings, F/G sequence, and explicit audit limitations.
+- **Verified D07 source baseline:** `feature/d07-concurrent-profile-content-state` @ `964163c918e281b68af5cf7114ca56ead2797486`; PR #31 OPEN/DRAFT/UNMERGED; exact-final-head CI #404 / `41313690556` PASS.
+- **PR inventory:** #10–#12 and #16–#31 OPEN/DRAFT/UNMERGED; B04/B05 reconciled merge history #13–#15 retained. Do not infer merge permission from source/CI closure.
+- **Current phase status:** A01–A06 DONE; B01–B07, C01–C07, D01–D07 source/CI complete but final integrated/device acceptance pending F; E00 documentation review pending; E01–E08, F and G not started.
+- **Next action:** review and integrate the E00 documentation PR into `docs/project-master-inventory`; re-read the resulting canonical docs and verify no stale/conflicting current-state summary remains. Then begin E01 from its exact dependency heads, keeping source changes scoped and preserving all B/C/D protections.
+- **Integration timing:** D-013 remains active. Do not merge feature PRs into `integration/b-series` before A–E source/fix closure. At F01 freeze exact heads, audit combined diffs and merge coherent dependency groups with exact-head CI/regression after each group. F02–F07 run the integrated acceptance matrix. G01 repairs residual findings through their owning project; G02 builds and hashes the approved APK; G03 verifies target-TV install/upgrade/launcher/rollback; G04–G05 finalize records and handover. Merge to `main` only after final acceptance and explicit user approval.
+- **Safety:** no app source, feature PR, APK, device setting or user data changed by E00; no APK publication/installation or physical TV test performed.
