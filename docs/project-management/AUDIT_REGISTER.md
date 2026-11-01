@@ -69,3 +69,13 @@ Workflow configuration now explicitly supports `ready_for_review` and `integrati
 | APK publication | NOT PERFORMED | `publish_device_apk=false`; artifact publication step skipped. |
 
 Final B04/B05 integration chain is complete and CI-gated. Runtime/device/QR/physical TV tests remain DEFERRED BY USER until final overall B-series acceptance; they are not waived.
+
+## B06 baseline audit — 1 November 2026
+
+- Active implementation branch: `feature/b06-notification-feedback`, created from B03 continuation head `d7b76c4a22c9eadffb8171a616283f3ad647d488`. No B06 source changes have been made yet.
+- Scanned the complete launcher Java source directory (63 Java files) for Toast, dialogs, progress/loading, delayed callbacks, and network/socket timeouts.
+- Transient feedback is scattered across `MainActivity`, `ModernSettingsDialog`, `WeatherActivity`, `RecentAppsActivity`, `HomeSettingsActivity`, `LocationBroadcastReceiver`, `ChildModeManager`, `UserSwitchDialog`, `AppUpdateManager`, and `AppAdapter`. No shared in-app feedback abstraction or Snackbar usage was found in the scanned Java sources.
+- OTA download uses `ProgressDialog` in `AppUpdateManager`; it has no cancel action and reports download failure via Toast. This is a candidate for a consistent, lifecycle-safe loading/error pattern.
+- QR upload pages use independent JavaScript status strings in `AvatarUploadServer` and `WallpaperUploadServer`; their success/error/connection-lost states need parity review with native TV feedback.
+- Existing transport timeouts are intentionally varied by operation (e.g. OTA check/download, weather fetches, local upload sockets, cache-cleaner socket stages, and power-action timeout). Do not globally normalize transport timeout values: classify them by operation and only standardize user-visible timeout messaging/cleanup.
+- B06 implementation must preserve Indonesian/English locale context, TV D-pad behavior, focus ownership, and existing feature semantics. Audit asynchronous callback ownership and Activity lifecycle before replacing any feedback surface.
