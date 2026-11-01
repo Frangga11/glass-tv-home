@@ -229,4 +229,36 @@
     <string name="wallpaper_uploaded_from_phone">✅ Wallpaper berhasil diunggah dari ponsel!</string>
     <string name="wallpaper_upload_success">🎉 Berhasil diterima dan ditampilkan di TV!</string>
     <string name="wallpaper_active_file">✅ Wallpaper aktif: %1$s</string>
+
+    <string name="active_profile_avatar_header">AVATAR PROFIL AKTIF (%1$s)</string>
+    <string name="avatar_delete_failed">Foto avatar belum dapat dihapus. Avatar tidak diubah.</string>
+    <string name="avatar_selected_toast">✨ Avatar dipilih: %1$s</string>
+    <string name="avatar_upload_qr_action">📲 Ganti Foto Avatar melalui QR</string>
+    <string name="avatar_use_default_action">↩ Gunakan Avatar Bawaan</string>
+    <string name="avatar_default_restored">Avatar bawaan dipulihkan.</string>
+    <string name="profile_list_header">DAFTAR PROFIL (%1$d)</string>
+    <string name="active_label">Aktif ✓</string>
+    <string name="delete_label">🗑️ Hapus</string>
+    <string name="profile_user_title">Pengguna: %1$s</string>
+    <string name="switch_profile_action">✨ Beralih ke Profil Ini</string>
+    <string name="delete_user_action">🗑️ Hapus Pengguna</string>
+    <string name="open_accessibility_settings_hint">Buka Pengaturan TV &gt; Sistem &gt; Aksesibilitas.</string>
+    <string name="android_settings_unavailable">Pengaturan Android tidak dapat dibuka pada perangkat ini.</string>
+    <string name="settings_search_hint">Contoh: wallpaper, foto, remote, cuaca</string>
+    <string name="settings_search_title">Cari Menu Pengaturan</string>
+    <string name="search_action">Cari</string>
+    <string name="search_keyword_required">Masukkan kata kunci pencarian.</string>
+    <string name="settings_search_not_found">Menu tidak ditemukan. Coba kata kunci yang lebih umum.</string>
+    <string name="settings_search_results">Hasil Pencarian</string>
+    <string name="save_action">Simpan</string>
+    <string name="new_pin_hint">PIN baru (4 digit)</string>
+    <string name="confirm_pin_hint">Ulangi PIN baru</string>
+    <string name="new_pin_title">Atur PIN Baru</string>
+    <string name="new_pin_message">Buat PIN angka 4 digit dan masukkan kembali untuk konfirmasi.</string>
+    <string name="pin_updated">PIN keamanan berhasil diperbarui.</string>
+    <string name="done_action">SELESAI</string>
+    <string name="set_default_home_title">🏠 Tetapkan Glass TV sebagai Layar Utama Default</string>
+    <string name="launcher_settings_unsupported">Menu pengaturan peluncur tidak didukung oleh firmware ini.</string>
+    <string name="adb_home_command_hint">Perintah: adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity</string>
+    <string name="installer_phone_hint">Buka glass-tv-installer.apk di ponsel pada jaringan Wi-Fi yang sama.</string>
 </resources>
