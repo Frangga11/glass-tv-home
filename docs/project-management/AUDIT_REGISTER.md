@@ -146,16 +146,35 @@ This timing decision supersedes the rolling stage-merge schedule previously reco
 
 ## B07 menu, submenu & focus restoration — 1 November 2026
 
+**Outcome:** SOURCE & CI VERIFIED / PASS. Runtime and physical TV acceptance remains deferred, not waived.
+
 | Gate | Result | Evidence |
 |---|---|---|
-| Source branch | IN PROGRESS | `feature/b07-menu-focus-restoration`, stacked on B06 exact head `bc86a250d73a5cbb83250217d42c3c3993cf29d7`. |
+| Source branch | SOURCE COMPLETE | `feature/b07-menu-focus-restoration`, stacked on B06 exact head `bc86a250d73a5cbb83250217d42c3c3993cf29d7`. |
 | Draft PR | OPEN / DRAFT / UNMERGED | PR #17; base `feature/b06-notification-feedback`; grouped merge deferred by D-013. |
 | Root cause | CONFIRMED | Settings tab persisted, but show() always focused selected sidebar; right-pane/sidebar exact cursor and scroll state were not persisted. |
-| B07 source implementation | IMPLEMENTED | Persist active focus area, validated focus path/signature, active tab, left scroll, and per-tab right scroll. |
-| Stale-path protection | IMPLEMENTED | Require visible/enabled/focusable target and matching class/ID/label signature; fallback to selected sidebar. |
-| JVM regression tests | ADDED / CI PENDING | `SettingsFocusPathTest`: round-trip, empty/deep path, malformed/out-of-range, zero index. |
-| Exact-head CI | IN PROGRESS | Run #298 / `41281838510` on `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`; no PASS claim until completed. |
+| B07 source implementation | PASS | Persist active focus area, validated focus path/signature, active tab, left scroll, and per-tab right scroll. |
+| Stale-path protection | PASS | Require visible/enabled/focusable target and matching class/ID/label signature; fallback to selected sidebar. |
+| JVM regression tests | PASS | Four `SettingsFocusPathTest` cases ran under `testReleaseUnitTest`. |
+| Exact-head CI | PASS | Run #298 / `41281838510` on `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`; both jobs SUCCESS. |
+| Android release build | PASS | `testReleaseUnitTest` + `assembleRelease` SUCCESS; APK size 1509 KB (<1.5 MiB). |
+| APK publication | SKIPPED | No APK published or installed. |
 | Runtime/API 30/33+ and physical TV | DEFERRED, NOT WAIVED | Final B-series/F-stage acceptance matrix. |
 | Grouped merge | DEFERRED BY D-013 | Do not merge PR #17 before A–G source work and grouped integration. |
 
 Detailed audit and acceptance matrix: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
+
+
+## B-series dependency and CI synchronization — 1 November 2026
+
+| Stage | Source / PR state | Exact-head CI evidence | Integration boundary |
+|---|---|---|---|
+| B01 Global navigation | PR #10 OPEN / DRAFT / UNMERGED | Runs #230 and #225 SUCCESS on `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5`. | Retain source history; grouped merge under D-013. |
+| B02 Remote focus indicators | PR #11 OPEN / DRAFT / UNMERGED | Run #234 SUCCESS on `01cbef2c2fc90498295971b22c369a72cdfa734a`. | Depends on B01. |
+| B03 Dialog opacity/layering | PR #12 OPEN / DRAFT / UNMERGED | Run #257 SUCCESS on `d7b76c4a22c9eadffb8171a616283f3ad647d488`. | Depends on B02; B04/B05 work is included in the continuation head through the reconciled merge chain. |
+| B04 Responsive layout | PR #13 MERGED | Integrated run #254 and follow-up exact-head run #256 SUCCESS. | Merged into B03 continuation chain. |
+| B05 Localization | PR #14 MERGED; PR #15 reconciled integration MERGED | Integrated run #254 and follow-up exact-head run #256 SUCCESS. | 566 aligned keys on B06/B07 continuation; final locale/runtime acceptance deferred. |
+| B06 Notification feedback | PR #16 OPEN / DRAFT / UNMERGED | Run #295 SUCCESS on `bc86a250d73a5cbb83250217d42c3c3993cf29d7`. | B07 is stacked directly on this exact head. |
+| B07 Menu/submenu/focus restoration | PR #17 OPEN / DRAFT / UNMERGED | Run #298 SUCCESS on `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`. | Source/CI complete; cross-B regression and physical acceptance remain in final grouped test. |
+
+**B-series decision:** B01–B07 source/CI work is verified sufficiently to continue to Project C. This does not authorize early merges. Under D-013, preserve Draft PRs and exact heads, then perform combined-diff audit, dependency-group integration, cross-B regression, and final API/device acceptance after A–G source work is complete. No final APK was published or installed.
