@@ -1,7 +1,7 @@
 # C02 — TV Local Server & IP Address Audit
 
 **Date:** 1 November 2026  
-**Status:** IMPLEMENTATION APPLIED — AUTOMATED CI PENDING; DEVICE ACCEPTANCE DEFERRED  
+**Status:** IMPLEMENTATION APPLIED — CI PASS; DEVICE ACCEPTANCE DEFERRED  
 **Work branch:** `feature/c02-tv-local-server-ip`  
 **Parent:** C01 exact source head `bba0801c9eb61ab27ae5046379c7a50aabebf570`  
 **Merge policy:** D-013 — isolated branch and Draft PR; no early merge.
@@ -70,7 +70,10 @@ C02 is distinct from C01's launcher avatar/wallpaper/StandBy QR upload servers. 
 
 ### CI coverage
 - Repository CI runs ./gradlew --no-daemon testReleaseUnitTest assembleRelease from the launcher root, plus the repository tools/docs checks.
-- Exact latest C02 head must pass both jobs before C02 is marked CI-verified.
+- CI run #331 on source commit `41d77fa6240bd096a69b98ece3007918ec78945a`: **SUCCESS**.
+- Jobs: Launcher build and unit tests — PASS; Lists, tools and docs — PASS.
+- `testReleaseUnitTest` and `assembleRelease` completed successfully for both launcher and installer modules.
+- Main launcher APK: 1,545,977 bytes; 26,887 bytes below the 1.5 MiB cap. No APK artifact was published.
 
 ### Runtime acceptance (final integrated device test)
 - Phone and TV on same Wi-Fi; confirm displayed phone IP is the active LAN address.
@@ -93,7 +96,7 @@ C02 is distinct from C01's launcher avatar/wallpaper/StandBy QR upload servers. 
 - C02 source audit: **COMPLETE**.
 - Findings F01–F07, F09–F10: **REMEDIATION APPLIED**.
 - Finding F08: **KNOWN SCOPE LIMITATION** — legacy ADB TCP/5555 discovery only; manual port entry preserved.
-- Regression tests: **ADDED; CI RESULT PENDING**.
+- Regression tests: **PASS** (CI #331).
 - Physical phone/TV acceptance: **DEFERRED to final integrated acceptance; not waived**.
 - No APK was published or installed; no device settings were changed.
 - C01 remains separate and unmerged under D-013.
