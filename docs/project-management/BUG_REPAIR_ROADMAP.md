@@ -307,3 +307,16 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - PR #27 remains OPEN/DRAFT/UNMERGED under D-013. No merge performed.
 - D01-F11 remains assigned to D05/D07 for targeted StandBy upload metadata/mode atomicity repair and regression coverage. Preserve unrelated C07 upload/session hardening.
 - **Next task: D04 — synchronize profile/avatar state across all surfaces.** Inspect the current D04 ownership map and branch dependencies first; do not presume or broaden its scope.
+
+ 
+## D04 final exact-head closure — 1 November 2026
+
+- Final D04 branch head: `ad69d229a6b3cd6ca1810a595597dc88481c3ebd` on `feature/d04-profile-avatar-state-sync`; Draft PR #28 remains OPEN/DRAFT/UNMERGED, stacked on D03 exact head `c119198e5c5ecc0d3cfdc283049ea3299d0067ca`.
+- D04-F01 repaired: Profile Settings built-in avatar selection rings now reflect the effective avatar. A custom-photo override hides built-in rings while preserving the stored built-in avatar as fallback; restoring default avatar restores the matching ring.
+- Added JVM regression tests for custom-photo override and fallback restoration. No profile schema/preferences, upload protocol, Child Mode/PIN, or unrelated C07/D01–D03 behavior changed.
+- Exact-head CI #390 / run `41309327872`: PASS on final head; both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. App/installer `testReleaseUnitTest` and `assembleRelease` succeeded.
+- Release APK diagnostic: 1,550,805 bytes; 22,059 bytes below the 1,572,864-byte cap. Size gate PASS; manual APK publication skipped.
+- D04 source-audit and exact-head CI gates: CLOSED. Physical Android TV acceptance (profile switching, rename, built-in/custom/default avatar transitions, all Home/Settings/switcher surfaces, cross-profile isolation) remains DEFERRED to F-stage, NOT WAIVED; no APK installation or physical-device test is claimed.
+- PR #28 remains OPEN/DRAFT/UNMERGED under D-013. No merge performed.
+- D01-F11 remains assigned to D05/D07 for targeted StandBy upload metadata/mode atomicity repair and regression coverage. Preserve unrelated C07 upload/session hardening.
+- **Next: D05 — continue Project D sequence with targeted repair of the D01-F11 upload persistence/HTTP-success contract, retaining strict scope and regression coverage.**
