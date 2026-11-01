@@ -13,26 +13,26 @@
     <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="not_available">Not available on this TV</string>
-    <string name="cant_open">Can&apos;t open %1$s</string>
+    <string name="cant_open">Can\'t open %1$s</string>
     <string name="date_format">EEEE, MMMM d, yyyy</string>
     <string name="dream_name">Standby Clock Display</string>
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN off</string>
     <string name="home_settings">Default home screen</string>
     <string name="home_settings_help">Choose a home screen in system settings, then press Home.</string>
-    <string name="input_key_service_description">Opens the input switcher when the remote&apos;s Input button is pressed.</string>
+    <string name="input_key_service_description">Opens the input switcher when the remote\'s Input button is pressed.</string>
     <string name="home_key_name">Home button</string>
-    <string name="home_key_description">Makes the remote&apos;s Home button open this launcher.</string>
+    <string name="home_key_description">Makes the remote\'s Home button open this launcher.</string>
     <string name="card_prompt_title">New card from %1$s</string>
-    <string name="card_prompt_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app&apos;s normal tile as it is.</string>
-    <string name="card_prompt_names">The card is named &apos;%1$s&apos;. The app is &apos;%2$s&apos;.</string>
+    <string name="card_prompt_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app\'s normal tile as it is.</string>
+    <string name="card_prompt_names">The card is named \'%1$s\'. The app is \'%2$s\'.</string>
     <string name="card_prompt_resigned">%1$s was updated with a different signing key, so your earlier answer no longer applies. Decide again for its card.</string>
     <string name="card_prompt_relabelled">%1$s changed the name of its card since you decided. Decide again for it.</string>
     <string name="card_prompt_hint">You can change this later: hold OK on Settings.</string>
     <string name="card_prompt_identity">%1$s, key %2$s</string>
     <string name="card_keep_hidden">Keep hidden</string>
     <string name="card_show">Show card</string>
-    <string name="card_not_saved">Couldn&apos;t save the choice</string>
+    <string name="card_not_saved">Couldn\'t save the choice</string>
     <string name="module_cards">Module cards</string>
     <string name="no_module_cards">No module cards installed</string>
     <string name="card_app_name">App: %1$s</string>
@@ -461,10 +461,10 @@
     <string name="set_home_adb_title">💻 Set Permanently with an ADB Command (Recommended)</string>
     <string name="phone_installer_title">📱 No PC: Use the Phone App (Glass TV Installer)</string>
     <string name="phone_installer_summary">Install release/glass-tv-installer.apk on an Android phone connected to the same Wi-Fi network to enable Home automatically in one tap.</string>
-    <string name="default_launcher_success">✅ Success! Glass TV Home is now the device&apos;s default launcher. Pressing the remote&apos;s Home button will return to Glass TV.</string>
+    <string name="default_launcher_success">✅ Success! Glass TV Home is now the device\'s default launcher. Pressing the remote\'s Home button will return to Glass TV.</string>
     <string name="default_launcher_explanation">⚠️ Currently active launcher: %1$s
 
-Most Android TV and Google TV devices restrict the Home button to the manufacturer&apos;s built-in home screen. Choose one of the following methods to set Glass TV as the default launcher:</string>
+Most Android TV and Google TV devices restrict the Home button to the manufacturer\'s built-in home screen. Choose one of the following methods to set Glass TV as the default launcher:</string>
     <string name="adb_command_guidance">Run this command from a PC or ADB tool:
 adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity%1$s</string>
     <string name="disable_old_launcher_hint">
@@ -481,7 +481,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="restart_tv_requested">Restart command sent to Android TV.</string>
     <string name="restart_tv_failed">Could not restart. Enable the Glass TV accessibility service first.</string>
     <string name="power_menu_opened">Android TV power menu opened. If the TV does not turn off automatically, choose Power off in the system menu. Turning off the physical TV depends on HDMI-CEC.</string>
-    <string name="power_menu_failed">Could not send the power command. Check the Glass TV accessibility service and the TV&apos;s HDMI-CEC setting.</string>
+    <string name="power_menu_failed">Could not send the power command. Check the Glass TV accessibility service and the TV\'s HDMI-CEC setting.</string>
     <string name="wallpaper_auto_change_off">⏸️ Automatic changes are off (manual only)</string>
     <string name="wallpaper_auto_change_interval">✅ Wallpaper will change every %1$s</string>
     <string name="one_hour_label">1 hour</string>
