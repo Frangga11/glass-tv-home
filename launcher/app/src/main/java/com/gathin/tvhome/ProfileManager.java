@@ -130,6 +130,13 @@ public final class ProfileManager {
         }
     }
 
+    /** Built-in avatar selection is inactive while a custom photo overrides it. */
+    static boolean isBuiltInAvatarSelected(UserProfile profile, int avatarIndex) {
+        return profile != null
+                && (profile.customAvatarPath == null || profile.customAvatarPath.trim().isEmpty())
+                && profile.avatarIndex == avatarIndex;
+    }
+
     /** Returns the active profile image, preferring its private locally stored photo. */
     public static Drawable getAvatarDrawable(Context context, UserProfile profile, int sizePx, boolean isChild) {
         if (context == null || profile == null || sizePx <= 0) return null;
