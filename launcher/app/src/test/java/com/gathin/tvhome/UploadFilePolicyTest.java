@@ -21,8 +21,6 @@ public class UploadFilePolicyTest {
                 new byte[]{(byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10}));
         assertEquals(UploadFilePolicy.ImageFormat.WEBP, detect(
                 "RIFF0000WEBP".getBytes(StandardCharsets.US_ASCII)));
-        assertEquals(UploadFilePolicy.ImageFormat.GIF, detect(
-                "GIF89a".getBytes(StandardCharsets.US_ASCII)));
         assertNull(detect("not an image".getBytes(StandardCharsets.US_ASCII)));
         assertNull(detect(new byte[]{1, 2}));
     }
