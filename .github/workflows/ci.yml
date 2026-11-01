@@ -4,6 +4,13 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      publish_device_apk:
+        description: "Publish the final TV-test APK only after all audits and fixes are approved"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
