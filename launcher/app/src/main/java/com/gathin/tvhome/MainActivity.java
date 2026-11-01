@@ -1339,7 +1339,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     void setStandbyPhotoMode(boolean enabled) {
         if (enabled && getStandbyPhotoCount() == 0) {
-            Toast.makeText(this, "Pilih foto terlebih dahulu untuk mode foto.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.standby_photo_required, Toast.LENGTH_LONG).show();
             return;
         }
         StandbyPhotoStore.setPhotoMode(this, enabled);
@@ -1357,14 +1357,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         try {
             startActivityForResult(intent, REQUEST_STANDBY_PHOTOS);
         } catch (Exception e) {
-            Toast.makeText(this, "Pemilih foto tidak tersedia pada perangkat ini.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.standby_picker_unavailable, Toast.LENGTH_LONG).show();
         }
     }
 
     void clearStandbyPhotos() {
         List<Uri> selectedUris = StandbyPhotoStore.getUris(this);
         if (!StandbyPhotoStore.saveUris(this, Collections.emptyList())) {
-            Toast.makeText(this, "Gagal mengosongkan daftar foto. Coba lagi.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.standby_clear_failed, Toast.LENGTH_LONG).show();
             return;
         }
         for (Uri uri : selectedUris) {
@@ -1378,7 +1378,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         StandbyPhotoStore.setPhotoMode(this, false);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
-        Toast.makeText(this, "Daftar foto Layar Siaga dikosongkan.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.standby_list_cleared, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -1464,7 +1464,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     }
                 }
             }
-            Toast.makeText(this, "Gagal menyimpan daftar foto. Coba pilih kembali.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.standby_save_failed, Toast.LENGTH_LONG).show();
             return;
         }
         StandbyPhotoStore.setPhotoMode(this, true);
@@ -5292,7 +5292,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String ip = AvatarUploadServer.getLocalIpAddress();
         if (ip == null || "127.0.0.1".equals(ip)) {
-            Toast.makeText(this, "TV belum terhubung ke Wi-Fi atau Ethernet.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.tv_network_required, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -5304,22 +5304,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 updateTopBarUserIcon();
                 if (onUpdated != null) onUpdated.run();
                 if (qrStatusText != null) {
-                    qrStatusText.setText("✓ Foto avatar berhasil diperbarui.");
+                    qrStatusText.setText(R.string.avatar_photo_updated);
                     qrStatusText.setTextColor(0xFF4ADE80);
                 }
-                if (qrUrlText != null) qrUrlText.setText("Avatar tersimpan pada profil yang dipilih.");
-                Toast.makeText(this, "Foto avatar berhasil diganti.", Toast.LENGTH_LONG).show();
+                if (qrUrlText != null) qrUrlText.setText(R.string.avatar_photo_saved);
+                Toast.makeText(this, R.string.avatar_photo_replaced, Toast.LENGTH_LONG).show();
             });
             return saved;
         });
 
         if (!avatarUploadServer.start()) {
             avatarUploadServer = null;
-            Toast.makeText(this, "Tidak dapat memulai layanan QR avatar.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.avatar_server_start_failed, Toast.LENGTH_LONG).show();
             return;
         }
-        showPhoneUploadQrDialog("📷 Ganti Foto Avatar",
-                "Pindai QR dengan HP di jaringan Wi-Fi yang sama. Pilih satu foto; sesi berlaku 5 menit. Jika kedaluwarsa, tutup dialog dan buat QR baru.",
+        showPhoneUploadQrDialog(getString(R.string.avatar_qr_title),
+                getString(R.string.avatar_qr_instructions),
                 avatarUploadServer.getUrl());
     }
 
@@ -5332,18 +5332,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String localIp = WallpaperUploadServer.getLocalIpAddress();
         if (localIp == null || "127.0.0.1".equals(localIp)) {
-            Toast.makeText(this, "TV belum terhubung ke jaringan Wi-Fi atau Ethernet.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.tv_network_required, Toast.LENGTH_LONG).show();
             return;
         }
         uploadServer = new WallpaperUploadServer(this, 8080, createUploadListener());
         if (!uploadServer.start()) {
             uploadServer = null;
-            Toast.makeText(this, "Tidak dapat memulai peladen unggah lokal. Periksa koneksi Wi-Fi TV.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG).show();
             return;
         }
         String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getWallpaperPath();
-        showPhoneUploadQrDialog("📲 Unggah Wallpaper dari HP",
-                "Sambungkan ponsel dan TV ke Wi-Fi yang sama, lalu pindai QR ini. Foto akan masuk ke koleksi wallpaper.",
+        showPhoneUploadQrDialog(getString(R.string.wallpaper_qr_title),
+                getString(R.string.wallpaper_qr_instructions),
                 uploadUrl);
     }
 
@@ -5356,7 +5356,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String localIp = WallpaperUploadServer.getLocalIpAddress();
         if (localIp == null || "127.0.0.1".equals(localIp)) {
-            Toast.makeText(this, "TV belum terhubung ke jaringan Wi-Fi atau Ethernet.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.tv_network_required, Toast.LENGTH_LONG).show();
             return;
         }
         WallpaperUploadServer.UploadListener listener = new WallpaperUploadServer.UploadListener() {
@@ -5374,8 +5374,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getStandbyPath();
-        showPhoneUploadQrDialog("🖼️ Unggah Foto Layar Siaga",
-                "Pindai QR dengan ponsel yang memakai Wi-Fi sama. Pilih beberapa foto sekaligus; wallpaper tidak akan berubah.",
+        showPhoneUploadQrDialog(getString(R.string.standby_qr_title),
+                getString(R.string.standby_qr_instructions),
                 uploadUrl);
     }
 
@@ -5390,7 +5390,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 avatarUploadServer.stop();
                 avatarUploadServer = null;
             }
-            Toast.makeText(this, "Kode QR tidak dapat dibuat.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.qr_create_failed, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -5573,21 +5573,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         runOnUiThread(() -> {
             if (file == null || !StandbyPhotoStore.getUris(this).contains(Uri.fromFile(file))) {
                 if (file != null) file.delete();
-                if (qrStatusText != null) qrStatusText.setText("Gagal menyimpan foto ke koleksi Layar Siaga.");
+                if (qrStatusText != null) qrStatusText.setText(R.string.standby_photo_save_failed);
                 return;
             }
             standbyPhotoUriShown = "";
             if (screensaverActive) updateNightstandScreensaver();
             int count = StandbyPhotoStore.getPhotoCount(this);
-            if (qrStatusText != null) qrStatusText.setText("✓ Foto tersimpan. Total koleksi: " + count + " foto.");
-            if (qrUrlText != null) qrUrlText.setText("Koleksi Layar Siaga: " + count + " / " + StandbyPhotoStore.MAX_PHOTO_COUNT + " foto");
+            if (qrStatusText != null) qrStatusText.setText(getString(R.string.standby_photo_saved_count, count));
+            if (qrUrlText != null) qrUrlText.setText(getString(R.string.standby_collection_count, count, StandbyPhotoStore.MAX_PHOTO_COUNT));
         });
     }
 
     private void onCustomWallpaperUploaded(File file) {
         runOnUiThread(() -> {
             SoundEffects.playSelect();
-            Toast.makeText(this, "✅ Wallpaper berhasil diunggah dari ponsel!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.wallpaper_uploaded_from_phone, Toast.LENGTH_LONG).show();
 
             getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
                     .putString("active_category", "Custom")
@@ -5614,11 +5614,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             showNextWallpaper(true);
 
             if (qrStatusText != null) {
-                qrStatusText.setText("🎉 Berjaya Diterima & Dipaparkan di TV!");
+                qrStatusText.setText(R.string.wallpaper_upload_success);
                 qrStatusText.setTextColor(0xFF4ADE80);
             }
             if (qrUrlText != null) {
-                qrUrlText.setText("✅ Wallpaper Aktif: " + file.getName());
+                qrUrlText.setText(getString(R.string.wallpaper_active_file, file.getName()));
                 qrUrlText.setTextColor(0xFF4ADE80);
             }
             if (qrImageView != null) {
