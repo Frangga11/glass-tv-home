@@ -40,6 +40,7 @@ No QR routes, user-facing screens, file formats, storage directories, upload siz
 | C01-F05 | Wallpaper/StandBy validated image headers/dimensions but did not confirm a real decode | Truncated/corrupt image could pass initial checks | Validate dimensions and decode a bounded sample before accepting the file |
 | C01-F06 | Wallpaper rejected exactly 60 MiB while StandBy accepted it | Inconsistent boundary behavior | Both flows now share the same inclusive 60 MiB maximum |
 | C01-F07 | Wallpaper browser appends `?name=...` to the upload URL, but server route matching required a space immediately after `/upload` | Valid browser upload could be rejected with HTTP 404 | Match exact request paths after removing the query string; add regression tests for query-bearing upload routes and prefix/suffix rejection |
+| C01-F08 | Server overload response was not localized | Inconsistent phone-side error feedback | Add matching default/ID/EN resource and use it for HTTP 503 responses |
 
 ### Important implementation notes
 
@@ -56,7 +57,7 @@ No QR routes, user-facing screens, file formats, storage directories, upload siz
 - exact 60 MiB boundary;
 - missing, duplicate, malformed, zero, and oversized Content-Length;
 - rejection of Transfer-Encoding;
-- existing session route isolation and unsupported method checks.
+- existing session route isolation and unsupported method checks;\n- localization resource parity for the new overload response.
 
 Existing avatar route, byte-limit, and image-dimension policy tests remain unchanged.
 
