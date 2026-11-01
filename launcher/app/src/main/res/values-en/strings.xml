@@ -362,4 +362,7 @@
     <string name="weather_animation_setting_description">Show drizzle, rain, and lightning effects over the wallpaper when weather conditions allow.</string>
     <string name="icon_glow_setting_title">✨ Ambient Icon Glow</string>
     <string name="icon_glow_setting_description">Adjust the background glow and color blend that follows the selected app. Independent of icon animations, Glass Effect, and weather animations.</string>
+
+    <string name="security_pin_title">PIN Security</string>
+    <string name="pin_continue_prompt">Enter your 4-digit PIN to continue.</string>
 </resources>
