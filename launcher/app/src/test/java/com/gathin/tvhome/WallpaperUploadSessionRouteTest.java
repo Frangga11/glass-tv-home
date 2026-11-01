@@ -1,12 +1,50 @@
 package com.gathin.tvhome;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 public class WallpaperUploadSessionRouteTest {
     private static final String SESSION = "/wallpaper/0123456789abcdef0123456789abcdef";
+
+    @Test
+    public void mapsEveryWallpaperEndpointToItsAllowedMethods() {
+        assertEquals("GET, OPTIONS", WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION, SESSION));
+        assertEquals("POST, OPTIONS", WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "/upload", SESSION));
+        assertEquals("GET, OPTIONS", WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "/thumb", SESSION));
+        assertEquals("GET, OPTIONS", WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "/api/list", SESSION));
+        assertEquals("POST, OPTIONS", WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "/api/select", SESSION));
+        assertEquals("POST, OPTIONS", WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "/api/delete", SESSION));
+        assertEquals("POST, OPTIONS", WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "/api/slideshow", SESSION));
+        assertEquals("POST, OPTIONS", WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "/api/clear", SESSION));
+        assertNull(WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "/api/unknown", SESSION));
+        assertNull(WallpaperUploadServer.wallpaperAllowedMethods(
+                SESSION + "suffix/api/list", SESSION));
+    }
+
+    @Test
+    public void rejectsMalformedAndWrongMethodRequestsAtEndpointContract() {
+        assertFalse(WallpaperUploadServer.isWallpaperSessionRequest(
+                "GET " + SESSION + "/upload HTTP/1.1", SESSION));
+        assertFalse(WallpaperUploadServer.isWallpaperSessionRequest(
+                "DELETE " + SESSION + "/upload HTTP/1.1", SESSION));
+        assertFalse(WallpaperUploadServer.isWallpaperSessionRequest(
+                "GET " + SESSION + "/api/list HTTP/1.1 EXTRA", SESSION));
+        assertFalse(WallpaperUploadServer.isWallpaperSessionRequest(
+                "GET  " + SESSION + "/api/list HTTP/1.1", SESSION));
+    }
 
     @Test
     public void acceptsOnlyRequestsScopedToTheCurrentSession() {
