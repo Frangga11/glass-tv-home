@@ -279,3 +279,17 @@ C03 finding C03-F01 (interface-name-based address selection) was remediated by a
 | PR / merge | OPEN / DRAFT / UNMERGED | PR #26, `feature/d02-settings-ui-propagation` stacked on D01 exact head; D-013 merge deferral applies. |
 | D01-F11 upload persistence contract | OPEN — D05/D07 | Separate upload atomicity/failure propagation issue remains open; not closed by D02. |
 | Physical Android TV acceptance | DEFERRED, NOT WAIVED | Final F-stage acceptance. No APK published or installed. |
+
+
+## D02 final exact-head verification — 1 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Settings-to-UI propagation audit | PASS | Home widgets/effects, prayer panel/Ayah, wallpaper, profile/Child Mode, location/weather, language and cross-Activity return paths traced in D02 report. |
+| D02-F01 StandBy mode failure handling | FIXED | Setter checks commit result, preserves live state on failure, and shows localized failure feedback; existing Settings rerender restores persisted value. |
+| Localization parity | PASS | Default, Indonesian and English strings aligned. |
+| Final exact-head CI | PASS | #382 / 41305782187 on `2dbfcc181651184914422ad0697a3c5c27d15614`; both jobs SUCCESS; unit tests, release builds, APK diagnostics and size gate passed. |
+| APK size | PASS, LOW HEADROOM | 1,550,617 bytes; 12,247 bytes below 1,572,864-byte cap. |
+| PR / merge | OPEN / DRAFT / UNMERGED | PR #26; D-013 merge deferral applies. |
+| Physical Android TV acceptance | DEFERRED, NOT WAIVED | Final F-stage acceptance; no APK published or installed. |
+| D01-F11 | OPEN — D05/D07 | Distinct upload collection/mode atomicity issue remains downstream. |
