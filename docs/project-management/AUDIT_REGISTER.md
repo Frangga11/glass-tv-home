@@ -206,3 +206,23 @@ Detailed audit and acceptance matrix: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_A
 | Merge / APK publication | DEFERRED / NOT PERFORMED | PR #20 OPEN/DRAFT/UNMERGED under D-013; no APK published or installed. |
 
 C03 finding C03-F01 (interface-name-based address selection) was remediated by active-default-network resolution. C03-F02 (separate preflight and server address discovery) now uses the same resolver in both paths. C03-F03 (unisolated address policy) is covered by the new helper and JVM tests.
+
+
+## C04 — HTTP endpoint, routing, method, and response contract, 1 November 2026
+
+| Gate | Result | Evidence |
+|---|---|---|
+| Request-line parsing | PASS | Shared Android-free parser requires exactly method/target/version, uppercase method, origin-form path, HTTP/1.0 or HTTP/1.1. |
+| Header completion | PASS | Avatar and Wallpaper/StandBy reject EOF before CRLFCRLF with 400; oversized headers return 431. |
+| Avatar routes | PASS | Exact page/upload token paths; query string does not alter path; wrong method returns 405 + Allow; unknown route 404. |
+| Wallpaper routes | PASS | Exact known endpoint map; per-endpoint GET/POST/OPTIONS; unknown session endpoint 404; wrong method 405 + Allow. |
+| StandBy routes | PASS | Exact page GET and upload POST; wrong method 405; unknown path 404. |
+| Query parameters | PASS | Missing, malformed, and duplicate file parameters rejected; query cannot alter route identity. |
+| Gallery API status | PASS | Select/delete/slideshow/clear report validation, missing file, unavailable callback, and operation failures rather than unconditional 200. |
+| Upload length status | PASS | Invalid/missing Content-Length 400; numeric size over limit 413; unsupported chunked transfer rejected. |
+| Browser action handling | PASS | Gallery POST actions check response.ok, refresh on success, and show localized error feedback. |
+| Regression tests | PASS | UploadHttpRequestTest, AvatarUploadRouteTest, expanded WallpaperUploadSessionRouteTest, and inherited C01/C03 tests pass in CI. |
+| Exact-head CI | PASS | Run #342 / `41288521501` on `f09ee1b30b80e45e793c1678935eff8867aedae4`; both jobs SUCCESS; launcher/installer testReleaseUnitTest and assembleRelease succeeded. |
+| APK size | PASS | 1,547,845 bytes; 15,019 bytes below 1,572,864-byte cap. Publication skipped. |
+| Physical phone/TV browser acceptance | DEFERRED, NOT WAIVED | Final F-stage QR browser and upload acceptance. |
+| Merge / APK publication | DEFERRED / NOT PERFORMED | PR #21 OPEN/DRAFT/UNMERGED under D-013; no APK published or installed. |
