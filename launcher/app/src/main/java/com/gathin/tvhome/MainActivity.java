@@ -5846,7 +5846,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     break;
             }
         });
-        builder.setNegativeButton("Batal", null);
+        builder.setNegativeButton(R.string.cancel_action, null);
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
@@ -5913,7 +5913,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Toast.makeText(MainActivity.this, getString(R.string.weather_location_selected, chosen.name, chosen.country), Toast.LENGTH_SHORT).show();
             refreshLocationDependentData();
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> {
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> {
             dialog.dismiss();
             showHazeLocationDialog();
         });
