@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01–B05 source/CI and integration merge chain complete; B06/B07 next; device testing deferred to final F-stage acceptance  
+**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01–B05 source/CI and integration merge chain complete; B06 source/CI complete; B07 next; device testing deferred to final F-stage acceptance  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -208,3 +208,8 @@ For each new bug, reproduce and define it, locate its owning path and dependenci
 Starting with B06, all stage merges are deferred until the A–G audit and repair work is complete. Keep each work unit isolated and traceable in dependency-ordered branches/Draft PRs. Continue all scoped audits, regression protection, static QC, builds, and exact-head CI while development proceeds; only merge timing is deferred. Reserve `integration/b-series` for final grouped integration.
 
 At the end, freeze exact branch heads, audit the combined diff and dependencies, merge into `integration/b-series` by coherent groups, run exact-head CI and cross-group regression after each group, complete final acceptance, obtain explicit user approval, merge to `main`, and build the final APK from the exact approved `main` SHA. If a physical test candidate is needed before final release, label it clearly as a non-release candidate. See `MERGE_QUALITY_POLICY.md` v1.1 and Decision D-013. This amendment supersedes D-012's rolling stage-merge timing for B06 onward; it does not weaken quality gates.
+
+
+## B06 current status update — 1 November 2026
+
+B06 is **DONE for source implementation, static QC, and exact-head CI**. The initial-status table above records the stage's starting state and is not a current-status override. See [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md) for the complete implementation inventory, timeout policy, resource parity, tests, and CI evidence. Runtime/device/phone QR acceptance remains deferred to final F-stage system testing, not waived. PR #16 remains Draft/unmerged under D-013.
