@@ -200,3 +200,14 @@
 - D01-F11 upload collection/mode atomicity remains assigned to D05/D07; do not alter unrelated C07 upload/session hardening.
 - No APK published/installed, no TV/device settings changed, no merge. Physical TV acceptance remains in F-stage.
 - **Next action:** check CI #380/#381 and close D02 only after exact-head PASS; then start D03 locked-app count/list refresh audit.
+
+
+## Latest resume checkpoint — Project D D02 closed, 1 November 2026
+
+- **Next task:** D03 — verify locked/hidden app counts and lists refresh immediately in the open Settings pane.
+- D02 branch/head: `feature/d02-settings-ui-propagation` @ `2dbfcc181651184914422ad0697a3c5c27d15614`; Draft PR #26 targets D01 exact head `cd710681099faece14905faa244f57245bae84d1`; OPEN/DRAFT/UNMERGED under D-013.
+- D02 report: `D02_SETTINGS_UI_PROPAGATION_AUDIT.md`. D02-F01 repaired: StandBy photo-mode setter honors the synchronous commit result and reports localized failure without falsely refreshing/claiming success.
+- Exact-head CI #382 / `41305782187`: PASS; both jobs SUCCESS. Release APK diagnostic 1,550,617 bytes (<1,572,864-byte cap); publication skipped.
+- D02 source-audit and CI gates are closed. Physical TV acceptance remains deferred to F-stage, not waived.
+- D01-F11 remains assigned to D05/D07 for upload collection/mode atomicity and regression tests; preserve C07 upload/session hardening.
+- No merge, APK publication/installation, or device setting changes.
