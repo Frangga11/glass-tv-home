@@ -194,3 +194,10 @@ Useful callback requests:
 - B06 baseline audit started on `feature/b06-notification-feedback`, based on `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
 - Initial scan: 63 Java files; scattered Toast/AlertDialog feedback; OTA `ProgressDialog`; separate QR upload page statuses; no shared feedback abstraction/Snackbar found. Keep transport timeouts operation-specific.
 - B06 implementation is IN PROGRESS. B07 remains NOT STARTED. Final physical/runtime acceptance remains deferred until Stage F.
+
+
+## 10. Mandatory merge and bug-fix quality policy
+
+All subsequent work is governed by [MERGE_QUALITY_POLICY.md](MERGE_QUALITY_POLICY.md), policy GTVH-MQP-001 v1.0, approved 1 November 2026. Stage PRs target the rolling `integration/b-series` branch and may merge only after scope/impact audit, relevant regression protection, static/resource QC, required build/tests, and exact-head CI all pass. `main` remains the stable release line and receives the completed integrated result only after full regression, final acceptance, release review, and explicit user approval. A green CI or GitHub mergeable flag alone is not sufficient.
+
+For each new bug, reproduce and define it, locate its owning path and dependencies, create an impact map, audit the relevant surface, fix the root cause, add regression coverage, verify the exact diff/head, and record evidence/rollback. Expand to app-wide audit only when a shared foundation, cross-module contract, or evidence justifies it. Missing or stale evidence is NOT PASS. Deferred device/runtime checks remain pending, never waived.
