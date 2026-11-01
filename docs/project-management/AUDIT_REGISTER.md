@@ -343,3 +343,18 @@ D04 source-audit and exact-head CI gates are closed. D01-F11 remains a separate 
 | Runtime / device acceptance | DEFERRED, NOT WAIVED | F-stage must verify upload failure/retry, process death/reboot and Android TV behavior. No APK installation or physical test claimed. |
 
 D05 source-audit and CI gates are closed. See `D05_STANDBY_PHOTO_PERSISTENCE_AUDIT.md` on the feature branch for detailed findings and scope.
+
+## D06 process-death / reboot recovery — 1 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| App-owned persistence/recovery path audit | PASS | Settings, profile/avatar, Child Mode, StandBy photos, wallpaper, language, cached weather/prayer data, config overlay and scheduled alarms traced in D06 report. |
+| D06-F01 reboot alarm recovery | FIXED | Non-exported BOOT_COMPLETED receiver restores selected-zone prayer alarm through existing Azan.schedule(); master/prayer toggles remain authoritative. |
+| Regression tests | PASS | Four JVM tests cover boot dispatch, unrelated broadcast, missing zone and missing scheduler. |
+| Scope preservation | PASS | No preference schema/key migration, backup policy, user data, broad refactor, or unrelated C07/D01–D05 changes. |
+| Exact-head CI | PASS | #398 / 41311958235 on `548581e909139dd67b2ddc725bb546a838c75702`; both jobs SUCCESS; app/installer unit tests and Release build passed. |
+| APK size | PASS | 1,551,217 bytes; 21,647 bytes below 1,572,864-byte cap. Manual publication skipped. |
+| PR / merge | OPEN / DRAFT / UNMERGED | PR #30; D-013 grouped-integration rule applies. |
+| Runtime / physical TV acceptance | DEFERRED, NOT WAIVED | Process death, force-stop, full reboot and actual alarm restoration must be verified in F-stage. No APK installation or physical test claimed. |
+
+D06 source-audit and exact-head CI gates are closed. Detailed report: `D06_PROCESS_DEATH_REBOOT_RECOVERY_AUDIT.md` on the feature branch.
