@@ -31,7 +31,7 @@ A failed second commit could therefore leave the collection and mode inconsisten
 - The upload path now writes `photo_uris` and `display_mode=true` through one `SharedPreferences.Editor` and one synchronous `commit()`.
 - The upload path returns `PERSISTENCE_FAILED` if that commit reports failure; it no longer claims success after a failed durable write.
 - The server maps successful/already-present outcomes to HTTP 200, validation/collection rejection to HTTP 400, and preference persistence failure to HTTP 500.
-- The server removes the newly stored image on non-success outcomes and invokes the existing success callback only after successful persistence.
+- The server removes the newly stored image on validation/collection rejection and invokes the existing success callback only after successful persistence. On a reported persistence failure it retains the file temporarily because Android may already have updated the in-memory preference map before the disk-write failure is returned; existing orphan cleanup removes the file after restart if the URI was not durable.
 - Existing session validation, request framing, upload limits, file signature/dimension validation, temporary-file handling, session expiry/cancellation, and C07 upload/session behavior are preserved.
 
 ## 4. Regression coverage
@@ -46,7 +46,7 @@ A failed second commit could therefore leave the collection and mode inconsisten
 - This change does not consolidate other preference stores, introduce a database, change keys/schema, or migrate existing user data.
 - It does not broaden into C07 rework.
 - A single SharedPreferences commit makes the two related keys one atomic durable write operation. Android may update its in-memory preference map before a disk-write failure is reported; therefore the API result is treated as failure and the upload is not acknowledged. Process-death/reboot and interrupted-write behavior remain part of D06/F-stage verification.
-- A failed commit may leave the just-uploaded file orphaned after the server removes it; the existing orphan cleanup path remains available. No new cleanup policy is introduced here.
+- A failed commit is reported as HTTP 500. The file is retained to avoid a dangling URI if the process-local SharedPreferences map already contains the new collection entry; the existing `cleanupOrphanedUploads()` path removes it after restart if the collection update was not durable. No new cleanup policy is introduced here.
 - No APK publication/installation or physical Android TV acceptance is part of D05.
 
 ## 6. Verification gates
