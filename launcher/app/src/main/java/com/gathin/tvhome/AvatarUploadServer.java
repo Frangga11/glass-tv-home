@@ -286,7 +286,7 @@ public final class AvatarUploadServer {
                 + "<input id='f' type='file' accept='image/*'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
                 + "<script>const f=document.getElementById('f'),b=document.getElementById('b'),s=document.getElementById('s');"
                 + "f.onchange=()=>b.disabled=!f.files.length;b.onclick=()=>{const x=f.files[0];if(!x)return;b.disabled=true;s.textContent='" + localized(R.string.avatar_upload_sending) + "';"
-                + "const r=new XMLHttpRequest();r.open('POST','" + endpoint + "');r.timeout=240000;r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"
+                + "const r=new XMLHttpRequest();r.open('POST','" + endpoint + "');r.timeout=" + NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS + ";r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"
                 + "r.upload.onprogress=e=>{if(e.lengthComputable)s.textContent='" + localized(R.string.avatar_upload_sending) + " '+Math.round(e.loaded/e.total*100)+'%';};"
                 + "r.onload=()=>{s.textContent=r.status===200?'" + localized(R.string.avatar_upload_success) + "':'" + localized(R.string.avatar_upload_failed_prefix) + " '+r.responseText;b.disabled=false;};"
                 + "r.onerror=()=>{s.textContent='" + localized(R.string.avatar_upload_connection_error) + "';b.disabled=false;};"
