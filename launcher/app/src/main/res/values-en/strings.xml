@@ -306,4 +306,7 @@
     <string name="auto_label">Auto</string>
     <string name="tv_location_status">📍 TV location: %1$s</string>
     <string name="custom_location_name">Custom location</string>
+
+    <string name="ram_usage_summary">%1$s GB RAM used of %2$s GB</string>
+    <string name="now_label">Now</string>
 </resources>
