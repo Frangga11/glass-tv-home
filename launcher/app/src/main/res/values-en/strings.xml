@@ -408,6 +408,7 @@
     <string name="standby_clear_summary">Remove the personal photo list from Standby. Original files in storage are not deleted.</string>
     <string name="standby_preview_title">🌙 Preview Standby Now</string>
     <string name="standby_preview_summary">Preview the clock or personal photos in the app according to the selected mode.</string>
+    <string name="screensaver_settings_section">TV DISPLAY &amp; SLEEP</string>
     <string name="home_key_status_title">HOME Button Service</string>
     <string name="home_key_status_summary">Status: %1$s. Needed by some remotes and for restart and power actions.</string>
     <string name="input_key_status_title">INPUT Button Service</string>
@@ -425,7 +426,7 @@
     <string name="home_refresh_action">Refresh launcher status</string>
     <string name="adb_command_copied">ADB command copied. Run it from a computer connected to the TV.</string>
     <string name="home_picker_unavailable">Home picker settings are not available on this firmware.</string>
-    <string name="device_accessibility_section">CONTROLS &amp; ACCESSIBILITY</string>
+    <string name="device_accessibility_section">HOME, REMOTE &amp; ACCESSIBILITY</string>
     <string name="power_maintenance_section">POWER &amp; MAINTENANCE</string>
     <string name="device_information_section">DEVICE INFORMATION</string>
     <string name="system_settings_section">SYSTEM SETTINGS</string>
