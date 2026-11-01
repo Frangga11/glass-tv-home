@@ -585,4 +585,8 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_page_set">Tetapkan</string>
     <string name="wallpaper_page_confirm_delete">Hapus foto ini dari layar TV?</string>
     <string name="wallpaper_page_slideshow_active">Mode putar semua foto aktif di TV.</string>
+    <string name="avatar_upload_timeout">Waktu unggah habis. Periksa Wi-Fi dan buat QR baru dari TV jika sesi sudah berakhir.</string>
+    <string name="wallpaper_page_upload_timeout">Waktu unggah habis. Periksa koneksi Wi-Fi lalu coba lagi.</string>
+    <string name="standby_page_timeout_prefix">Waktu unggah habis. </string>
+    <string name="standby_page_timeout_suffix"> foto sudah tersimpan. Periksa Wi-Fi lalu pilih ulang foto yang belum terkirim.</string>
 </resources>
