@@ -352,9 +352,28 @@ D05 source-audit and CI gates are closed. See `D05_STANDBY_PHOTO_PERSISTENCE_AUD
 | D06-F01 reboot alarm recovery | FIXED | Non-exported BOOT_COMPLETED receiver restores selected-zone prayer alarm through existing Azan.schedule(); master/prayer toggles remain authoritative. |
 | Regression tests | PASS | Four JVM tests cover boot dispatch, unrelated broadcast, missing zone and missing scheduler. |
 | Scope preservation | PASS | No preference schema/key migration, backup policy, user data, broad refactor, or unrelated C07/D01–D05 changes. |
-| Exact-head CI | PASS | #398 / 41311958235 on `548581e909139dd67b2ddc725bb546a838c75702`; both jobs SUCCESS; app/installer unit tests and Release build passed. |
+| Exact-final-head CI | PASS | #399 / 41312553920 on `78a12e9fc196a596fa98ea272edc735501047af1`; both jobs SUCCESS; app/installer unit tests and Release build passed. |
 | APK size | PASS | 1,551,217 bytes; 21,647 bytes below 1,572,864-byte cap. Manual publication skipped. |
 | PR / merge | OPEN / DRAFT / UNMERGED | PR #30; D-013 grouped-integration rule applies. |
 | Runtime / physical TV acceptance | DEFERRED, NOT WAIVED | Process death, force-stop, full reboot and actual alarm restoration must be verified in F-stage. No APK installation or physical test claimed. |
 
 D06 source-audit and exact-head CI gates are closed. Detailed report: `D06_PROCESS_DEATH_REBOOT_RECOVERY_AUDIT.md` on the feature branch.
+
+
+## D07 concurrent profile/content-store state — 1 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Child Mode/profile state audit | PASS | Found package-set read/modify/write lost-update risk and repeated active-profile resolution. Mutations/reads and profile cleanup now share the ChildModeManager monitor; operations use one captured profile ID. |
+| Profile identifier collision | FIXED | New profile IDs use UUIDs rather than millisecond timestamps; existing IDs and stored profile JSON remain unchanged. |
+| StandBy picker/QR content-store race | FIXED | Picker additions merge against the latest collection under the store lock; capacity is rechecked; collection+mode activation commits atomically. |
+| StandBy clear consistency | FIXED | Collection+mode clear commits atomically; managed files are deleted only after successful commit; the committed URI snapshot is used to release external grants. |
+| Stale weather/AQI response | FIXED | Request generation, selected coordinates and language are checked before cache writes; superseded responses are discarded and current location is retried. |
+| Regression tests | PASS | JVM tests cover Child Mode profile/set behavior, StandBy merge/commit/clear and weather freshness policy. |
+| Scope preservation | PASS | No preference schema migration, global state store/event bus, profile ownership rewrite, PIN policy change, or C07 upload/session protocol change. D01–D06 parent history preserved. |
+| Final exact-head CI | PASS | #404 / 41313690556 on 964163c918e281b68af5cf7114ca56ead2797486; both jobs SUCCESS; app/installer testReleaseUnitTest and assembleRelease passed. |
+| APK size | PASS | 1,552,197 bytes; 20,667 bytes below 1,572,864-byte cap. Manual publication skipped. |
+| PR / merge | OPEN / DRAFT / UNMERGED | PR #31; D-013 grouped-integration rule applies. |
+| Runtime / physical TV acceptance | DEFERRED, NOT WAIVED | F-stage must verify profile switching/isolation, Child Mode, concurrent picker/QR operations, location/language refresh, process death and reboot. No APK installation or physical test claimed. |
+
+D07 source-audit and exact-head CI gates are closed. Detailed findings and repairs: D07_CONCURRENT_PROFILE_CONTENT_STATE_AUDIT.md on the D07 feature branch.
