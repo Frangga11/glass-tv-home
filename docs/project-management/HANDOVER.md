@@ -276,3 +276,31 @@
 - AppLanguage currently stores ID/EN and migrates MS to ID; 90 helper/translation methods exist. MainActivity's language selector currently writes preference and updates selected content but does not recreate the Activity or apply a resource locale. values/strings.xml has 44 keys with mixed ID/EN text; values-en-rUS only overrides date_format; localeConfig advertises 12 incomplete languages and omits ID.
 - Implementation must inspect saved navigation/focus restoration around MainActivity recreation before changing the selector. Do not implement a locale wrapper until lifecycle coverage and Activity/service context behavior are verified.
 - Next: inspect all 44 resource keys/placeholders, complete Activity and DreamService locale-context strategy, inventory hardcoded user-facing text by screen and dynamic state, then implement in small testable commits. Keep branch unmerged and no APK install/publication.
+
+
+### Latest B05 checkpoint — implementation underway — 1 November 2026
+
+**Source branch:** `feature/b05-id-en-localization`.
+**Draft PR:** [#14](https://github.com/Frangga11/glass-tv-home/pull/14), base `feature/b03-dialog-opacity-layering` at exact head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`.
+**Last audited source head:** `cce889f231aeff3a28805fd517853a3f0a91e79c`.
+
+#### Completed in this checkpoint
+- Three Android resource sets (default, `values-id`, `values-en`) have 158 keys each; static key/placeholder comparison passed with no duplicate or mismatched entries.
+- `locales_config.xml` lists only Indonesian and English. Manifest labels for Weather, Recent Apps, and the media listener now use resources.
+- `LocaleContext` wraps resource configuration for API 26–32; it is applied to MainActivity, WeatherActivity, RecentAppsActivity, LocationActivity, AzanActivity, and ClockDream. HomeSettingsActivity is a no-display helper and is not treated as a normal UI Activity.
+- AppLanguage normalization/migration and Android 13+ per-app locale synchronization added. MainActivity recreates after language change on API 26–32 and reopens Settings. B01 restores the saved selected tab/sidebar cursor; right-pane action focus falls back to the sidebar.
+- Layout text migrated in Home, Recent Apps, Weather, media hub, OTA/support, close-all, daily forecast row, and Nightstand. Profile switching/creation/deletion, parental PIN feedback, weather conditions, and update/install messages partially migrated.
+- Added tests: supported-language normalization in `LocationAndLanguageTest`; resource key/placeholder parity in `LocalizationResourceParityTest`.
+
+#### Not yet complete / risks
+- B05 remains IN PROGRESS. Direct Java UI strings remain in MainActivity, ModernSettingsDialog, WeatherActivity dialogs, and other dynamic/error/notification paths. Continue classification and migration; do not claim complete localization.
+- Exact-head CI is not verified: no Actions run was present for the current B05 head in the latest query. Static parity is not a substitute for Gradle tests/build. Run CI and inspect both jobs/logs before marking source gate passed.
+- Need a careful lifecycle review of DreamService locale wrapping and Android 13 system locale changes; verify language persistence, date/prayer labels, weather, dialogs, dynamic errors, and focus after recreation.
+- Installer module remains separate from TV launcher localization unless the user expands scope.
+
+#### Next resume actions
+1. Re-audit current branch head before editing; continue migrating Java literals in MainActivity and ModernSettingsDialog, then WeatherActivity and remaining dynamic/error/notification surfaces.
+2. Re-scan all app Java/XML for hardcoded user-facing text and check `values-en-rUS` interaction with generic `values-en`.
+3. Verify XML well-formedness, key parity, placeholder parity, and all resource references; inspect AppLanguage/LocaleContext and Activity/DreamService lifecycle behavior.
+4. Trigger exact-head CI (the connected GitHub actions available in this session only exposed run/job inspection, not workflow dispatch). Keep the manual artifact publication input disabled; inspect tests, release build, size guard, and Lists/tools/docs job.
+5. Update PR #14 description and audit/operations records only after evidence. Keep PR Draft/unmerged. No APK publication/install, TV settings change, or physical device testing until A–E and F regression gates are complete and user explicitly approves readiness.
