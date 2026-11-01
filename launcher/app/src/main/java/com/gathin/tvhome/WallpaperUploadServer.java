@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -105,30 +104,7 @@ public class WallpaperUploadServer {
      * -2 for a valid numeric length above the endpoint limit. Chunked transfer is not supported.
      */
     static long parseContentLength(String[] headerLines, long maxBytes) {
-        if (headerLines == null || maxBytes <= 0) return -1L;
-        int count = 0;
-        long length = -1L;
-        for (String line : headerLines) {
-            if (line == null) continue;
-            int separator = line.indexOf(':');
-            if (separator <= 0) continue;
-            String name = line.substring(0, separator).trim().toLowerCase(Locale.ROOT);
-            String value = line.substring(separator + 1).trim();
-            if ("transfer-encoding".equals(name)) return -1L;
-            if (!"content-length".equals(name)) continue;
-            count++;
-            if (count != 1 || value.isEmpty()) return -1L;
-            for (int i = 0; i < value.length(); i++) {
-                if (value.charAt(i) < '0' || value.charAt(i) > '9') return -1L;
-            }
-            try {
-                length = Long.parseLong(value);
-            } catch (NumberFormatException e) {
-                return -1L;
-            }
-        }
-        if (count != 1 || length <= 0) return -1L;
-        return length > maxBytes ? -2L : length;
+        return UploadBodyReader.parseContentLength(headerLines, maxBytes);
     }
 
     /** Matches a fully parsed request against one exact path, ignoring only its query string. */
@@ -428,23 +404,7 @@ public class WallpaperUploadServer {
                     }
 
                     File targetFile = File.createTempFile("custom_", ".jpg", customDir);
-                    boolean complete = false;
-                    try (FileOutputStream fos = new FileOutputStream(targetFile)) {
-                        byte[] buffer = new byte[8192];
-                        long remaining = contentLength;
-                        while (remaining > 0) {
-                            int toRead = (int) Math.min(buffer.length, remaining);
-                            int r = in.read(buffer, 0, toRead);
-                            if (r == -1) break;
-                            fos.write(buffer, 0, r);
-                            remaining -= r;
-                        }
-                        fos.flush();
-                        complete = remaining == 0 && targetFile.length() == contentLength;
-                    } catch (Exception e) {
-                        targetFile.delete();
-                        throw e;
-                    }
+                    boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
 
                     // Verify the actual image can be decoded before exposing it to Home.
                     boolean validImage = isValidImageFile(targetFile);
@@ -536,22 +496,7 @@ public class WallpaperUploadServer {
         }
 
         File targetFile = File.createTempFile("standby_", ".jpg", standbyDir);
-        boolean complete = false;
-        try (FileOutputStream fos = new FileOutputStream(targetFile)) {
-            byte[] buffer = new byte[8192];
-            long remaining = contentLength;
-            while (remaining > 0) {
-                int read = in.read(buffer, 0, (int) Math.min(buffer.length, remaining));
-                if (read < 0) break;
-                fos.write(buffer, 0, read);
-                remaining -= read;
-            }
-            fos.flush();
-            complete = remaining == 0 && targetFile.length() == contentLength;
-        } catch (Exception e) {
-            targetFile.delete();
-            throw e;
-        }
+        boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
 
         boolean validImage = isValidImageFile(targetFile);
 

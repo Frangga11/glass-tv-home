@@ -6,7 +6,6 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -15,7 +14,6 @@ import java.net.ServerSocket;
 import java.net.SocketTimeoutException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -192,36 +190,21 @@ public final class AvatarUploadServer {
                 return;
             }
             claimed = true;
-            long length = -1;
-            int lengthHeaders = 0;
-            for (String line : lines) {
-                String lower = line.toLowerCase(Locale.ROOT);
-                if (lower.startsWith("transfer-encoding:")) {
-                    respond(out, 400, localized(R.string.avatar_error_upload_format)); return;
-                }
-                if (lower.startsWith("content-length:")) {
-                    lengthHeaders++;
-                    try { length = Long.parseLong(line.substring(15).trim()); }
-                    catch (Exception ignored) { length = -1; }
-                }
+            if (UploadBodyReader.hasTransferEncoding(lines)) {
+                respond(out, 400, localized(R.string.avatar_error_upload_format));
+                return;
             }
-            if (lengthHeaders != 1 || length <= 0) { respond(out, 400, localized(R.string.avatar_error_upload_size)); return; }
-            if (!isValidUploadLength(length)) { respond(out, 413, localized(R.string.avatar_error_max_size)); return; }
+            long length = UploadBodyReader.parseContentLength(lines, MAX_BYTES);
+            if (length == -2L) { respond(out, 413, localized(R.string.avatar_error_max_size)); return; }
+            if (length <= 0) { respond(out, 400, localized(R.string.avatar_error_upload_size)); return; }
             File dir = new File(context.getFilesDir(), "profile_avatars");
             if (!dir.exists() && !dir.mkdirs()) { respond(out, 500, localized(R.string.avatar_error_storage)); return; }
             String safeId = profileId == null ? "" : profileId.replaceAll("[^a-zA-Z0-9_-]", "_");
             if (safeId.isEmpty()) { respond(out, 400, localized(R.string.avatar_error_profile)); return; }
             temp = File.createTempFile("avatar_" + safeId + "_", ".upload", dir);
-            try (FileOutputStream fos = new FileOutputStream(temp)) {
-                byte[] buffer = new byte[8192]; long remaining = length;
-                while (remaining > 0) {
-                    int read = in.read(buffer, 0, (int)Math.min(buffer.length, remaining));
-                    if (read < 0) break;
-                    fos.write(buffer, 0, read); remaining -= read;
-                }
-                fos.flush();
-                fos.getFD().sync(); // Make the photo durable before committing its path into profile preferences.
-                if (remaining != 0 || temp.length() != length) { respond(out, 400, localized(R.string.avatar_error_incomplete)); return; }
+            if (!UploadBodyReader.receiveExactly(in, temp, length, true)) {
+                respond(out, 400, localized(R.string.avatar_error_incomplete));
+                return;
             }
             BitmapFactory.Options bounds = new BitmapFactory.Options();
             bounds.inJustDecodeBounds = true;
