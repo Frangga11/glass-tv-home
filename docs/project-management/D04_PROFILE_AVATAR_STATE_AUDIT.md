@@ -1,7 +1,7 @@
 # D04 Profile/Avatar State Synchronization Audit
 
 Date: 1 November 2026  
-Status: targeted source repair implemented; exact-head CI pending  
+Status: source repair and initial CI passed; final report commit and exact-head CI rerun pending  
 Parent: D03 exact head `c119198e5c5ecc0d3cfdc283049ea3299d0067ca`
 
 ## Scope
@@ -45,7 +45,12 @@ The Profile Settings avatar row always showed the stored built-in `avatarIndex` 
 ## Verification
 
 - Source review and targeted tests are included on the D04 branch.
-- Exact-head CI is pending; do not close D04 until both required CI jobs pass on the final branch head and APK size gate is verified.
+- CI run #388 (41308871048) completed successfully on the PR merge ref containing D04 branch head `8a082f7bcee411019c658f8024f3c7cdfd49c2c7`.
+- Both required jobs passed: `Launcher build and unit tests`; `Lists, tools and docs`.
+- Release unit tests passed for both app and installer modules; `assembleRelease` completed successfully.
+- APK exact size: **1,550,805 bytes** against the strict **1,572,864-byte** limit; remaining headroom: **21,059 bytes**. APK size gate passed.
+- Manual APK publication was skipped as designed.
+- This CI result verifies the D04 source branch as incorporated into the PR merge ref. Because this report update creates a new branch commit, a fresh CI run on the final updated head is required before closing D04 source/CI gates.
 - Physical Android TV acceptance remains required in Project F: switch profiles, rename, select built-in avatar, upload custom photo, restore default, verify Home top bar, Settings sidebar/detail/list, and profile switcher; verify no cross-profile avatar leakage.
 - No APK publication/installation or physical-device test is claimed.
 
