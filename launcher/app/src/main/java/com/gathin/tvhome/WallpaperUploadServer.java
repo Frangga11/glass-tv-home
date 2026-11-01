@@ -468,9 +468,7 @@ public class WallpaperUploadServer {
                     sendTextResponse(out, 400, "Bad Request", localized(R.string.wallpaper_error_invalid_size), null);
                 }
             } else {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
             }
 
             out.close();
@@ -736,6 +734,7 @@ public class WallpaperUploadServer {
             String response = "HTTP/1.1 200 OK\r\n" +
                     "Content-Type: application/json; charset=UTF-8\r\n" +
                     "Content-Length: " + jsonBytes.length + "\r\n" +
+                    "Cache-Control: no-store\r\n" +
                     "Access-Control-Allow-Origin: *\r\n" +
                     "Connection: close\r\n\r\n";
             out.write(response.getBytes("UTF-8"));
