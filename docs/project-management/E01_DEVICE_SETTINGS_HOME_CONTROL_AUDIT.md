@@ -27,7 +27,7 @@ Audit and improve the complete **Pengaturan Perangkat** tab: HOME launcher selec
 - Reworked the Device tab into clearer sections for HOME/remote/accessibility, display/standby, maintenance, device information, system settings and updates.
 - Added separate live status cards for HomeKeyService, InputKeyService and Now Playing notification access. Each opens the corresponding Android user-managed settings page; no service is enabled by the app.
 - Added a native Android screensaver settings entry with display-settings fallback. Internal Glass TV StandBy behavior remains app-owned and unchanged.
-- Improved HOME dialog with the resolved launcher label, detected HOME candidates, explicit system picker fallback, an ADB command copy action and an in-dialog status refresh action.
+- Improved HOME dialog with the resolved launcher label, detected HOME candidates, explicit system picker fallback, an ADB command copy action, an in-dialog status refresh action, and a QR-guided phone-installer download flow.
 - Fixed restart to use the system power dialog instead of misusing accessibility global-action ID 12.
 - Made restart feedback accurately state that the power menu was opened and manual selection may be needed on unsupported firmware.
 - Made manual cache-clean result explicitly report whether Android system caches were actually trimmed.
@@ -46,6 +46,7 @@ Audit and improve the complete **Pengaturan Perangkat** tab: HOME launcher selec
 
 - [ ] Exact-head CI: Android build, JVM unit tests, documentation checks.
 - [ ] Review HOME query visibility and launcher candidate rendering on Android 11 and newer.
+- [ ] Verify the phone-installer QR destination and downloaded APK version before public release.
 - [ ] Verify HOME picker fallback on OEM firmware; no device HOME default was changed during source work.
 - [ ] Verify accessibility and notification-access status against actual Android Settings state.
 - [ ] Verify restart and power menu labels on target TV; unsupported OEM labels must fall back to manual user selection.
