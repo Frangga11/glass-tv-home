@@ -336,12 +336,25 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 
 ## D06 final exact-head closure — 1 November 2026
 
-- D06 completed on isolated branch `feature/d06-process-death-recovery`, final head `548581e909139dd67b2ddc725bb546a838c75702`, based on D05 exact head `835986c0e28c50311d4474f1060c73dd56104bf8`. Draft PR #30 remains OPEN/DRAFT/UNMERGED under D-013.
+- D06 completed on isolated branch `feature/d06-process-death-recovery`, final head `78a12e9fc196a596fa98ea272edc735501047af1`, based on D05 exact head `835986c0e28c50311d4474f1060c73dd56104bf8`. Draft PR #30 remains OPEN/DRAFT/UNMERGED under D-013.
 - D06 audit covered app-owned settings/profile/content/cache/navigation and scheduled work recovery across process recreation and device reboot. No preference schema/key migration, backup policy, user data, or broad refactor changed.
 - Confirmed D06-F01: Android clears AlarmManager schedules on reboot; existing rescheduling depended on MainActivity.onResume() because manifest had no BOOT_COMPLETED receiver.
 - Fixed with RECEIVE_BOOT_COMPLETED permission and non-exported AzanBootReceiver. On BOOT_COMPLETED, it resolves the persisted selected prayer zone and delegates to existing Azan.schedule(), preserving existing master/prayer enablement and scheduling logic. Added four JVM tests for dispatch, unrelated broadcasts, missing zone, and missing scheduler.
-- Exact-head CI #398 / run `41311958235`: PASS on final head. Both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. App/installer `testReleaseUnitTest` and `assembleRelease` succeeded.
+- Exact-head CI #399 / run `41312553920`: PASS on final head `78a12e9fc196a596fa98ea272edc735501047af1`; both jobs SUCCESS. Both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. App/installer `testReleaseUnitTest` and `assembleRelease` succeeded.
 - Release APK exact size: **1,551,217 bytes**, **21,647 bytes** below 1,572,864-byte cap; size gate PASS. Manual APK publication skipped.
 - D06 source-audit and exact-head CI gates CLOSED. Process-death, force-stop and actual Android TV reboot acceptance remain mandatory in F-stage, DEFERRED and NOT WAIVED. No APK installation or physical-device test claimed.
 - Detailed report: `D06_PROCESS_DEATH_REBOOT_RECOVERY_AUDIT.md` on D06 feature branch.
-- **Next: D07 — read the canonical roadmap and handover for exact D07 scope/dependencies before any code changes. Preserve D01–D06 and keep PRs unmerged until grouped integration.**
+- **D07 is now closed for source audit and exact-head CI. Project D source/CI work is complete; proceed to Project E only under the existing grouped-integration policy.**
+
+
+## D07 final exact-head closure — 1 November 2026
+
+- D07 completed on isolated branch `feature/d07-concurrent-profile-content-state`, final head `964163c918e281b68af5cf7114ca56ead2797486`, based on D06 final head `78a12e9fc196a596fa98ea272edc735501047af1`. Draft PR #31 remains OPEN/DRAFT/UNMERGED under D-013.
+- D07-F01 repaired: Child Mode package-set mutations and profile cleanup are serialized; each check uses one captured profile ID; new profile IDs use UUIDs to avoid same-millisecond collisions. Device-wide parent PIN is unchanged.
+- D07-F02 repaired: StandBy picker additions merge against the latest collection; capacity is rechecked under the store lock; collection+photo-mode activation and clear are atomic; managed files are deleted only after successful clear commit; the committed URI snapshot drives grant release.
+- D07-F03 repaired: weather/AQI refreshes use request generations and selected-location/language validation; stale responses are discarded and the current location is retried. No preference schema migration or global state architecture was introduced.
+- Added JVM regression tests for Child Mode profile/set behavior, StandBy merge/commit/clear behavior, and weather freshness.
+- Exact-final-head CI #404 / run `41313690556`: PASS on `964163c918e281b68af5cf7114ca56ead2797486`; both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. App/installer `testReleaseUnitTest` and `assembleRelease` passed.
+- Release APK exact size: **1,552,197 bytes**, **20,667 bytes** below the 1,572,864-byte cap; size gate PASS; manual publication skipped.
+- D07 source-audit and exact-head CI gates CLOSED. Physical Android TV concurrency, profile-switch, picker/QR overlap, location/language and lifecycle acceptance remains mandatory in F-stage, deferred and NOT WAIVED. No APK installation or physical-device test claimed.
+- PR #31 remains OPEN/DRAFT/UNMERGED. D01–D07 are source/CI complete; do not merge until grouped A–G integration and cross-project regression are approved.
