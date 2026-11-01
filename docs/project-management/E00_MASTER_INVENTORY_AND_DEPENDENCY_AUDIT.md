@@ -109,12 +109,13 @@ D-013 remains active: do not merge B06 or later feature PRs into `integration/b-
 - CI #414 / run `41359874778`: PASS; both jobs successful.
 - Post-merge canonical reread: E00 report, roadmap, inventory, audit register, operations log, master project and handover verified on the target branch.
 - E00 is CLOSED. Next: E01. This closure does not waive F-stage runtime/physical acceptance or change D-013/D-014.
+- Post-merge CI audit found that the prior workflow uploaded transient diagnostic APK artifacts on PR runs #414 (1,102,541 bytes) and #415 (1,102,537 bytes). Neither was installed. PR #33 narrows the upload step to pushes on `main`; its updated-head CI must confirm no artifact is produced on a PR.
 
 ## 9. Scope and limitations
 
 This pass did not run a fresh local Gradle build, inspect every source file in all feature branches, install an APK, connect to the TV, change device settings, or perform phone-to-TV runtime tests. It is a documentation/metadata and targeted source spot-check. The E01–E08 source audits must still inspect their exact parent heads and changed-file diffs before any implementation decision.
 
-**Safety disposition:** no application source, APK, user data, device settings, feature branch, or existing PR was modified by E00 documentation preparation.
+**Safety disposition:** no application source, user data or TV settings were modified, and no APK was installed. Two transient diagnostic APK artifacts were uploaded by the pre-fix PR workflow (runs #414/#415); PR #33 adds a guard so ordinary PR runs do not publish artifacts.
 
 
 ## E00 official closure — 2 November 2026
