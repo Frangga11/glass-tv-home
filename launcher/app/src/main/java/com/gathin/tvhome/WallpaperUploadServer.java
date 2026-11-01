@@ -1326,30 +1326,24 @@ public class WallpaperUploadServer {
                 "        .catch(() => {});\n" +
                 "    }\n" +
                 "\n" +
+                "    function postAction(url, onSuccess) {\n" +
+                "      fetch(url, { method: 'POST' })\n" +
+                "        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })\n" +
+                "        .then(() => { loadGallery(); if (onSuccess) onSuccess(); })\n" +
+                "        .catch(() => alert('" + jsText(R.string.wallpaper_page_action_failed) + "'));\n" +
+                "    }\n" +
+                "\n" +
                 "    function selectSingle(fileName) {\n" +
-                "      fetch('" + base + "/api/select?file=' + fileName, { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "        });\n" +
+                "      postAction('" + base + "/api/select?file=' + fileName);\n" +
                 "    }\n" +
                 "\n" +
                 "    function deletePhoto(fileName) {\n" +
                 "      if (!confirm('" + jsText(R.string.wallpaper_page_confirm_delete) + "')) return;\n" +
-                "      fetch('" + base + "/api/delete?file=' + fileName, { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "        });\n" +
+                "      postAction('" + base + "/api/delete?file=' + fileName);\n" +
                 "    }\n" +
                 "\n" +
                 "    function setSlideshow() {\n" +
-                "      fetch('" + base + "/api/slideshow', { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "          alert('" + jsText(R.string.wallpaper_page_slideshow_active) + "');\n" +
-                "        });\n" +
+                "      postAction('" + base + "/api/slideshow', () => alert('" + jsText(R.string.wallpaper_page_slideshow_active) + "'));\n" +
                 "    }\n" +
                 "\n" +
                 "    // Muat galeri foto saat halaman dibuka\n" +
