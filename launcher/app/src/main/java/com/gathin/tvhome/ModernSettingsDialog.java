@@ -2020,8 +2020,7 @@ public final class ModernSettingsDialog {
 
         LinearLayout btnRefresh = buildCardRow(activity, density, font,
                 activity.getString(R.string.home_refresh_action),
-                activity.getString(R.string.default_launcher_status_summary,
-                        activity.getString(R.string.home_candidates_summary, candidates.size())),
+                activity.getString(R.string.home_refresh_summary),
                 () -> {
                     if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                     showDefaultLauncherDialog(activity, density, font);
