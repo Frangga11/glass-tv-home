@@ -119,4 +119,28 @@
     <string name="weather_condition_storm">Thunderstorm</string>
     <string name="weather_condition_rain">Rain</string>
     <string name="weather_condition_cloudy">Cloudy</string>
+
+    <string name="switch_user_title">Switch User</string>
+    <string name="switch_user_subtitle">Choose the profile to use on this device</string>
+    <string name="switch_user_section">CHOOSE USER (PROFILES)</string>
+    <string name="add_user_label">Add</string>
+    <string name="profile_already_active">Profile %1$s is already active</string>
+    <string name="parent_pin_delete_title">Verify Parent PIN</string>
+    <string name="parent_pin_delete_message">Enter the parent PIN to delete profile %1$s</string>
+    <string name="delete_profile_title">Delete profile %1$s?</string>
+    <string name="delete_profile_message">All settings and photos for this profile will be deleted. This action cannot be undone.</string>
+    <string name="cancel_action">Cancel</string>
+    <string name="delete_action">Delete</string>
+    <string name="profile_deleted">Profile %1$s was deleted</string>
+    <string name="profile_delete_failed">Could not delete the profile. Make sure another profile remains.</string>
+    <string name="profile_active_message">Active profile: %1$s%2$s</string>
+    <string name="child_mode_suffix"> (Child Mode)</string>
+    <string name="add_user_title">➕ Add New User</string>
+    <string name="add_user_subtitle">Enter a name and choose an avatar for this profile</string>
+    <string name="add_user_name_hint">Example: Mom, Dad, Sibling</string>
+    <string name="choose_avatar_label">CHOOSE AVATAR</string>
+    <string name="child_profile_checkbox">Mark as a Child Profile (Automatic Child Mode)</string>
+    <string name="save_profile_action">Save Profile</string>
+    <string name="user_name_required">Please enter a user name</string>
+    <string name="profile_created">✨ Profile %1$s created!</string>
 </resources>
