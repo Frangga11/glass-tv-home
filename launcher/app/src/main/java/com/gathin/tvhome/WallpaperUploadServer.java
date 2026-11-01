@@ -212,8 +212,8 @@ public class WallpaperUploadServer {
                             try {
                                 byte[] body = "Too many active connections".getBytes("UTF-8");
                                 OutputStream rejectOut = client.getOutputStream();
-                                rejectOut.write(("HTTP/1.1 503 Service Unavailable\\r\\nContent-Type: text/plain; charset=UTF-8\\r\\n"
-                                        + "Content-Length: " + body.length + "\\r\\nCache-Control: no-store\\r\\nConnection: close\\r\\n\\r\\n").getBytes("UTF-8"));
+                                rejectOut.write(("HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain; charset=UTF-8\r\n"
+                                        + "Content-Length: " + body.length + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes("UTF-8"));
                                 rejectOut.write(body);
                                 rejectOut.flush();
                             } catch (Exception ignored) {}
