@@ -29,3 +29,15 @@ No PR merged, no APK published/installed, no device settings changed. Release st
 - App-wide scan: 68 Java files and 17 layout XML files; 21 changed Java files with 534 `R.string` refs and 17 layouts with 71 `@string` refs; zero unresolved references.
 - B04 exact-head CI #242 passed. There is still no Actions run or combined status for the exact integration head. Do not treat `mergeable_state=clean` as a build/test result.
 - Remaining gates are external: integrated CI; API 30/API 33+ runtime lifecycle/focus checks; phone-on-same-Wi-Fi QR upload verification; physical F02/F06 TV acceptance. No APK was published/installed and no TV settings were changed.
+
+
+## CI trigger correction — 1 November 2026
+
+| Audit | Result | Evidence / boundary |
+|---|---|---|
+| Pull-request CI activity types | FIXED | Added explicit `opened`, `synchronize`, `reopened`, and `ready_for_review`; default pull_request activity types omitted ready_for_review. |
+| Integration branch push CI | CONFIGURED | Added `integration/**` to the workflow push branches. |
+| Base/integration ancestry | PASS | Updated B04 base commit included as a second parent in integration history; PR #15 reports mergeable=true. |
+| Exact integration CI | PENDING | No check runs or combined statuses observed for head `5e7481c4902c85352b1ab95b7f1ef41acdf9ed78`; no integrated CI pass claimed. |
+
+Current PR #15 is OPEN and Ready for review, not merged. Release remains NOT FINAL until CI, runtime, QR network, and physical TV gates pass.
