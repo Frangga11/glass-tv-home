@@ -169,3 +169,14 @@ The Master is the project map. Keep detailed test results in the relevant audit;
 - Immutable source checkpoint: `checkpoint/a06-tested-apk-pr9-7e8392e1`.
 - Rollback SOP: [A06_ROLLBACK_PROCEDURE.md](checkpoints/A06_ROLLBACK_PROCEDURE.md) on the checkpoint branch.
 - A06 is CLOSED after the live device snapshot was received and recorded in section 12. The user's historical APK test remains accepted; no retest was requested. No device changes or PR merges were made.
+
+
+## 12. B04/B05 reconciliation checkpoint — 1 November 2026
+
+- PR #13 (B04) exact head `baf0e7dad2dfa28a9f79c7bb25a58502243f04ae`; exact-head CI #242 passed (launcher unit tests/release build/size guard and lists/tools/docs checks). Physical viewport acceptance remains F02.
+- PR #14 (B05) exact source head `04cf544ca240e32a87baef525f266f3d038ff668`; no exact-head CI run is available. B05 source is not release-ready.
+- Selective two-parent integration branch: `integration/b04-b05-reconciled`; current head `9476b4da24efffc328430533c298acdcc6866ab8`; Draft PR #15 targets B04 and preserves both B04/B05 source histories.
+- Four overlapping files were reconciled: ClockDream, RecentAppsActivity, item_recent_close_all.xml, and view_nightstand.xml. B04 responsive adapter/helper/tests were retained alongside B05 locale changes.
+- Additional B05 remediation moved Home/Recent Media feedback, Auto-Update, Adhan popup, wallpaper shuffle, Child Mode, visual-effect feedback, app hide/lock dialog labels, UV bands, precipitation summary, and visibility descriptions into resources.
+- Static locale audit now reports 345 keys in each of default/ID/EN, no duplicate keys, identical key sets, no placeholder parity differences, and no missing R.string references in MainActivity, ModernSettingsDialog, and WeatherActivity.
+- Remaining: broad ModernSettingsDialog hardcoded UI copy sweep; full app-wide resource reference scan; exact-head integrated CI/build/log inspection; API 30/API 33 lifecycle/focus verification; physical TV acceptance F02/F06. Do not merge PR #13/#14/#15 or publish/install an APK until required gates pass.
