@@ -307,6 +307,6 @@
     <string name="tv_location_status">📍 Lokasi TV: %1$s</string>
     <string name="custom_location_name">Lokasi khusus</string>
 
-    <string name="ram_usage_summary">RAM %.1f GB digunakan dari %.1f GB</string>
+    <string name="ram_usage_summary">RAM %1$s GB digunakan dari %2$s GB</string>
     <string name="now_label">Saat ini</string>
 </resources>
