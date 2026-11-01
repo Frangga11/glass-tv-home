@@ -62,9 +62,9 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 | ID | Task | Initial status |
 |---|---|---|
-| C01 | Audit QR generation, payload, token, and QR destination behavior | NOT STARTED |
-| C02 | Audit TV local server lifecycle, LAN IP selection, and port handling | NOT STARTED |
-| C03 | Verify phone-to-TV communication and same-network behavior | NOT STARTED |
+| C01 | Audit QR generation, payload, token, and QR destination behavior | IN PROGRESS — source/CI pass; physical acceptance deferred |
+| C02 | Audit TV local server lifecycle, LAN IP selection, and port handling | IN PROGRESS — source/CI pass; physical acceptance deferred |
+| C03 | Verify phone-to-TV communication and same-network behavior | IN PROGRESS — source/CI pass; physical acceptance deferred |
 | C04 | Audit HTTP endpoints, routing, methods, and response codes | NOT STARTED |
 | C05 | Repair shared upload/receive-file pipeline where appropriate | NOT STARTED |
 | C06 | Validate file types, dimensions, sizes, names, and storage paths | NOT STARTED |
@@ -213,3 +213,15 @@ At the end, freeze exact branch heads, audit the combined diff and dependencies,
 ## B06 current status update — 1 November 2026
 
 B06 is **DONE for source implementation, static QC, and exact-head CI**. The initial-status table above records the stage's starting state and is not a current-status override. See [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md) for the complete implementation inventory, timeout policy, resource parity, tests, and CI evidence. Runtime/device/phone QR acceptance remains deferred to final F-stage system testing, not waived. PR #16 remains Draft/unmerged under D-013.
+
+
+## 10. Project C execution checkpoint — 1 November 2026
+
+- **C01:** source/CI pass on `feature/c01-local-communication-audit`, Draft PR #18, exact head `bba0801c9eb61ab27ae5046379c7a50aabebf570`, CI #314 PASS. QR upload server foundation, selected-interface binding, framing, concurrency, and image validation were hardened.
+- **C02:** source/CI pass on `feature/c02-tv-local-server-ip`, Draft PR #19, exact head `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`, CI #333 PASS (run #334 also succeeded). Installer active IPv4 discovery, bounded subnet scan, APK HTTP server lifecycle, routing, and cleanup were hardened.
+- **C03:** source/CI pass on `feature/c03-phone-tv-network-verification`, Draft PR #20, exact head `d266287df287167e5a8e73fd675b51759b580ed6`, CI #338 / 41287563951 PASS on exact C03 head `d266287df287167e5a8e73fd675b51759b580ed6`; both jobs succeeded. The launcher unit-test/release-build job passed, including `testReleaseUnitTest`, `assembleRelease`, and the 1.5 MiB APK size gate. APK publication was skipped.
+- C03 corrected the QR upload IP resolver: Avatar, Wallpaper, and StandBy now use Android's active default Wi-Fi/Ethernet IPv4 rather than selecting an interface by its name. Added JVM tests for usable IPv4 and invalid address/prefix rejection.
+- Release APK diagnostic on C03: 1,546,045 bytes (1,509 KiB), below the 1,572,864-byte / 1.5 MiB gate by 26,819 bytes. No APK was published or installed.
+- **Physical acceptance remains DEFERRED, NOT WAIVED:** real phone/TV same-Wi-Fi QR reachability, uploads, Wi-Fi reconnect, Ethernet/Wi-Fi switching, VPN behavior, and route revocation after closing the QR dialog must be verified during F03/final integrated acceptance.
+- PRs #18, #19, and #20 remain OPEN/DRAFT/UNMERGED under D-013. Do not merge until A–G source work is complete and grouped integration is approved.
+- **Next task:** C04 — audit HTTP endpoints, route matching, methods, and response codes. Preserve C01–C03 changes unless a concrete dependency or defect requires adjustment.
