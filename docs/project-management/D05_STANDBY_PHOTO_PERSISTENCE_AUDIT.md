@@ -1,0 +1,72 @@
+# D05 — StandBy photo collection persistence and upload response audit
+
+**Date:** 1 November 2026  
+**Finding:** D01-F11  
+**Status:** Implementation committed; exact-head CI and final source review pending.
+
+## 1. Scope and ownership
+
+D05 is a targeted continuation of D01-F11. The owning persistence component is `StandbyPhotoStore`; the upload boundary is `WallpaperUploadServer.handleStandbyUpload()`.
+
+The audited state consists of:
+- `standby_prefs/photo_uris`: newline-separated private photo URI collection.
+- `standby_prefs/display_mode`: whether StandBy photo mode is enabled.
+- `files/standby_photos/`: private image files referenced by the collection.
+
+The server already deletes a newly stored image and sends a non-2xx response when the store reports failure. The confirmed defect was inside the store: it committed the URI list, ignored the boolean result of a second mode commit, and returned success regardless.
+
+## 2. Root cause
+
+Previous upload persistence sequence:
+1. Commit updated `photo_uris`.
+2. Call `setPhotoMode(context, true)`.
+3. Ignore the mode commit result.
+4. Return `true`, allowing the server to send HTTP 200.
+
+A failed second commit could therefore leave the collection and mode inconsistent on durable storage while the phone received a success response.
+
+## 3. Implementation
+
+- Introduced explicit upload outcomes: `ADDED`, `ALREADY_PRESENT`, `REJECTED`, and `PERSISTENCE_FAILED`.
+- The upload path now writes `photo_uris` and `display_mode=true` through one `SharedPreferences.Editor` and one synchronous `commit()`.
+- The upload path returns `PERSISTENCE_FAILED` if that commit reports failure; it no longer claims success after a failed durable write.
+- The server maps successful/already-present outcomes to HTTP 200, validation/collection rejection to HTTP 400, and preference persistence failure to HTTP 500.
+- The server removes the newly stored image on non-success outcomes and invokes the existing success callback only after successful persistence.
+- Existing session validation, request framing, upload limits, file signature/dimension validation, temporary-file handling, session expiry/cancellation, and C07 upload/session behavior are preserved.
+
+## 4. Regression coverage
+
+- Added a JVM test using a recording `SharedPreferences` / `Editor` proxy to verify both keys are set through one editor commit.
+- Added a test proving a false commit result is propagated as failure.
+- Added response mapping tests for successful, duplicate, rejected, and persistence-failed outcomes.
+- Existing StandBy image rotation and upload route/framing tests remain unchanged.
+
+## 5. Boundaries and caveats
+
+- This change does not consolidate other preference stores, introduce a database, change keys/schema, or migrate existing user data.
+- It does not broaden into C07 rework.
+- A single SharedPreferences commit makes the two related keys one atomic durable write operation. Android may update its in-memory preference map before a disk-write failure is reported; therefore the API result is treated as failure and the upload is not acknowledged. Process-death/reboot and interrupted-write behavior remain part of D06/F-stage verification.
+- A failed commit may leave the just-uploaded file orphaned after the server removes it; the existing orphan cleanup path remains available. No new cleanup policy is introduced here.
+- No APK publication/installation or physical Android TV acceptance is part of D05.
+
+## 6. Verification gates
+
+| Gate | Result |
+|---|---|
+| Targeted source audit | PASS — root cause and caller path confirmed |
+| Atomic collection + mode commit | IMPLEMENTED |
+| Failure-aware upload result | IMPLEMENTED |
+| HTTP failure mapping | IMPLEMENTED |
+| JVM regression tests | ADDED; CI pending |
+| Exact-head CI | PENDING |
+| C07 unrelated upload/session hardening | PRESERVED |
+| PR / merge | Draft, open, unmerged under D-013 |
+| Physical device acceptance | Deferred to F-stage, not waived |
+
+## 7. Changed files
+
+- `launcher/app/src/main/java/com/gathin/tvhome/StandbyPhotoStore.java`
+- `launcher/app/src/main/java/com/gathin/tvhome/WallpaperUploadServer.java`
+- `launcher/app/src/test/java/com/gathin/tvhome/StandbyPhotoStoreTest.java`
+- `launcher/app/src/test/java/com/gathin/tvhome/WallpaperUploadSessionRouteTest.java`
+- `docs/project-management/D05_STANDBY_PHOTO_PERSISTENCE_AUDIT.md`
