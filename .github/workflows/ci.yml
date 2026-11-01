@@ -52,6 +52,7 @@ jobs:
           # Keep a tight 1.2 MiB ceiling until the upstream app is slimmed further.
           test "$size" -lt 1258291 || { echo "APK exceeds the 1.2 MiB budget"; exit 1; }
       - name: Publish release APK for device testing
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
           name: glass-tv-home-pagar-alam-release

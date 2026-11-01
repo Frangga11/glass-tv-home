@@ -336,6 +336,15 @@
 - Reconciled B01–B07, C01–C07 and D01–D07 as source/CI complete while keeping integrated/runtime/physical acceptance pending in F. No project is described as fully accepted solely because its branch CI passed.
 - Revalidated D07 baseline: `964163c918e281b68af5cf7114ca56ead2797486`; PR #31; exact-final-head CI #404 / `41313690556` PASS. Latest APK diagnostic 1,552,197 bytes with 20,667 bytes below the 1,572,864-byte gate; publication skipped.
 - Static resource parity spot-check on D07 source: 569 unique keys in default, Indonesian and English; no duplicate keys, key-set differences or printf-placeholder mismatches. Runtime translation and UI acceptance remains F06.
-- Added E00 audit report and reconciled roadmap, inventory, audit register, operations log, master project and handover on documentation-only branch `docs/e00-inventory-reconciliation`. Documentation PR review/integration remains pending.
+- Added E00 audit report and reconciled roadmap, inventory, audit register, operations log, master project and handover. PR #32 merged into `docs/project-master-inventory` (merge commit `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97`); PR #33 records official closure and the CI artifact-publication guard.
 - No application source, feature PR, APK, device setting or user data changed. No merge, APK publication/installation or physical TV test performed.
 - D-013 grouped merge timing and D-014 cross-project coordination standard remain binding. F01 is an isolated integration rehearsal/candidate assembly and combined-diff audit, not a merge into `integration/b-series`. F02–F07 validate the candidate. G01 closes findings through owning projects. Only after all A–G source audits/fixes are complete and findings are closed or explicitly accepted may grouped merges into `integration/b-series` begin, with exact-head CI/regression after each group. G02–G03 cover the traceable candidate/artifact and target-TV install/upgrade/rollback; final `main` merge and final APK build require final acceptance and explicit user approval.
+
+
+## E00 official closure — 2 November 2026
+
+- E00 documentation PR #32 was merged into `docs/project-master-inventory` (merge commit `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97`).
+- Exact PR head `541dd9accb66eb3b071367a3e4967769d742c2cd`; CI workflow run #414 / `41359874778`: PASS. Both `Launcher build and unit tests` and `Lists, tools and docs` jobs completed successfully. No review comments or change requests were present.
+- Canonical E00 report, roadmap, inventory, audit register, operations log, master project and handover were re-read from `docs/project-master-inventory` after merge.
+- E00 scope is closed: documentation/inventory/dependency reconciliation only. No application source, feature PR, APK, user data, TV setting, installation or physical-device acceptance was changed or claimed.
+- **Next work unit: E01 — Device Settings & Launcher audit.** Begin with exact dependency heads and the A06 read-only HOME resolver/preferred-activity discrepancy. Preserve D-013/D-014; do not merge feature PRs early.

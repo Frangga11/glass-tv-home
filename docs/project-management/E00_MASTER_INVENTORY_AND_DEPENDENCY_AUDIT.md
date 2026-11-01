@@ -2,7 +2,7 @@
 
 **Project:** Glass TV Home  
 **Record:** GTVH-E00-INV-001  
-**Version:** 1.0  
+**Version:** 1.1  
 **Audit date:** 2 November 2026  
 **Baseline source:** `feature/d07-concurrent-profile-content-state` @ `964163c918e281b68af5cf7114ca56ead2797486`  
 **Documentation base:** `docs/project-master-inventory`  
@@ -12,7 +12,7 @@
 
 E00 is a documentation and governance reconciliation, not an application refactor. The verified Project D endpoint is D07 at `964163c918e281b68af5cf7114ca56ead2797486`, with PR #31 open, Draft and unmerged. B01–B03 (#10–#12), B06–B07 (#16–#17), C01–C07 (#18–#24) and D01–D07 (#25–#31) PRs are open, Draft and unmerged under D-013. The B04/B05 source integration history is already merged within its earlier chain; this does not mean all B-series work is finally integrated or accepted.
 
-The E00 document work is prepared on `docs/e00-inventory-reconciliation` for review against `docs/project-master-inventory`. It does not authorize application PR merges, APK publication, installation, or device-setting changes.
+The E00 documentation work was merged from `docs/e00-inventory-reconciliation` into the canonical `docs/project-master-inventory` branch by PR #32 (merge commit `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97`). It does not authorize application feature PR merges, APK publication, installation, or device-setting changes.
 
 ## 2. Verified project state
 
@@ -22,7 +22,7 @@ The E00 document work is prepared on `docs/e00-inventory-reconciliation` for rev
 | B | B01–B07 source/CI work recorded complete; B01–B03 PR #10–#12 and B06–B07 PR #16–#17 open/Draft/unmerged; B04/B05 PR #13–#15 merged in the earlier reconciliation chain | F-stage integrated navigation, D-pad/focus, lifecycle, localization and device checks |
 | C | C01–C07 source/CI work recorded complete; PR #18–#24 open/Draft/unmerged | F-stage phone-to-TV LAN, QR, upload, retry, expiry, cancellation and storage-isolation acceptance |
 | D | D01–D07 source/CI work recorded complete; PR #25–#31 open/Draft/unmerged | F-stage runtime, profile concurrency, persistence, process-death, force-stop and reboot acceptance |
-| E | E00 inventory/reconciliation in progress; E01–E08 not yet started | Complete source audits/fixes, exact-head CI and cross-project impact records |
+| E | E00 DONE; E01–E08 not yet started | E01–E08 source audits/fixes, exact-head CI and cross-project impact records |
 | F | Not started | Grouped integration, combined-diff review and full regression matrix |
 | G | Not started | Release-blocker closure, approved APK, target-TV install/upgrade/rollback, records and handover |
 
@@ -99,11 +99,29 @@ D-013 remains active: do not merge B06 or later feature PRs into `integration/b-
 - [x] B/C/D source/CI closure separated from F-stage acceptance.
 - [x] E01–E08 scope and cross-project dependencies inventoried at planning level.
 - [x] F/G work and release gates reconciled with D-013/D-014.
-- [ ] Documentation PR reviewed and integrated into the canonical documentation branch.
-- [ ] E00 checkpoint re-read after merge; only then mark E00 fully closed.
+- [x] Documentation PR #32 reviewed and integrated into `docs/project-master-inventory` (merge commit `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97`).
+- [x] Canonical E00 report and master documents re-read after merge; E00 officially closed.
 
-## 8. Scope and limitations
+## 8. Official closure evidence
+
+- PR #32: merged; exact head `541dd9accb66eb3b071367a3e4967769d742c2cd`.
+- Merge commit: `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97` into `docs/project-master-inventory`.
+- CI #414 / run `41359874778`: PASS; both jobs successful.
+- Post-merge canonical reread: E00 report, roadmap, inventory, audit register, operations log, master project and handover verified on the target branch.
+- E00 is CLOSED. Next: E01. This closure does not waive F-stage runtime/physical acceptance or change D-013/D-014.
+- Post-merge CI audit found that the prior workflow uploaded transient diagnostic APK artifacts on PR runs #414 (1,102,541 bytes) and #415 (1,102,537 bytes). Neither was installed. PR #33 narrows the upload step to pushes on `main`; its updated-head CI must confirm no artifact is produced on a PR.
+
+## 9. Scope and limitations
 
 This pass did not run a fresh local Gradle build, inspect every source file in all feature branches, install an APK, connect to the TV, change device settings, or perform phone-to-TV runtime tests. It is a documentation/metadata and targeted source spot-check. The E01–E08 source audits must still inspect their exact parent heads and changed-file diffs before any implementation decision.
 
-**Safety disposition:** no application source, APK, user data, device settings, feature branch, or existing PR was modified by E00 documentation preparation.
+**Safety disposition:** no application source, user data or TV settings were modified, and no APK was installed. Two transient diagnostic APK artifacts were uploaded by the pre-fix PR workflow (runs #414/#415); PR #33 adds a guard so ordinary PR runs do not publish artifacts.
+
+
+## E00 official closure — 2 November 2026
+
+- E00 documentation PR #32 was merged into `docs/project-master-inventory` (merge commit `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97`).
+- Exact PR head `541dd9accb66eb3b071367a3e4967769d742c2cd`; CI workflow run #414 / `41359874778`: PASS. Both `Launcher build and unit tests` and `Lists, tools and docs` jobs completed successfully. No review comments or change requests were present.
+- Canonical E00 report, roadmap, inventory, audit register, operations log, master project and handover were re-read from `docs/project-master-inventory` after merge.
+- E00 scope is closed: documentation/inventory/dependency reconciliation only. No application source, feature PR, APK, user data, TV setting, installation or physical-device acceptance was changed or claimed.
+- **Next work unit: E01 — Device Settings & Launcher audit.** Begin with exact dependency heads and the A06 read-only HOME resolver/preferred-activity discrepancy. Preserve D-013/D-014; do not merge feature PRs early.

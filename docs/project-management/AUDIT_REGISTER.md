@@ -387,9 +387,18 @@ D07 source-audit and exact-head CI gates are closed. Detailed findings and repai
 | B/C/D source/CI versus acceptance status | RECONCILED | B01–B07, C01–C07 and D01–D07 source/CI gates recorded complete; integrated/runtime/physical acceptance remains mandatory in F, not waived. |
 | D07 baseline | PASS | `964163c918e281b68af5cf7114ca56ead2797486`; PR #31; exact-final-head CI #404 / `41313690556` PASS. |
 | Resource parity spot-check | PASS — STATIC ONLY | 569 unique keys in default/ID/EN; zero duplicate keys, locale key-set differences or printf-placeholder mismatches. Runtime screen/translation acceptance remains F06. |
-| E00 documentation corrections | PREPARED | Roadmap, inventory, audit register, operations log, master project and handover updated on `docs/e00-inventory-reconciliation`; review/integration into `docs/project-master-inventory` pending. |
-| Application source / APK / device mutation | NONE | E00 is documentation-only. No application source, APK, TV setting, user data or feature PR changed. |
+| E00 documentation corrections | CLOSED | PR #32 merged into `docs/project-master-inventory` (merge commit `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97`); PR #33 records closure and CI artifact guard. |
+| Application source / device mutation | NONE | No application source, TV setting, user data or feature PR changed; no APK installed. Pre-fix CI uploaded transient diagnostic artifacts in runs #414/#415; PR #33 gates future uploads to main pushes. |
 
 **Integration disposition:** D-013 remains active. F01 is an isolated integration rehearsal/candidate assembly and combined-diff audit; it must not merge feature PRs into the reserved `integration/b-series` branch. F02–F07 perform candidate integrated acceptance. G01 returns failures to their owning projects and closes/re-verifies them. Only after all A–G source audits/fixes are complete and findings are closed or explicitly accepted may exact heads be frozen and merged into `integration/b-series` by coherent dependency groups, with exact-head CI and cross-group regression after each group. G02–G03 handle the traceable candidate/artifact and target-device verification. Merge to `main` only after final acceptance, release review and explicit user approval.
 
 Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md](E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md).
+
+
+## E00 official closure — 2 November 2026
+
+- E00 documentation PR #32 was merged into `docs/project-master-inventory` (merge commit `4ba80230cb9ddfbcc27657b7b0d07bed6905fc97`).
+- Exact PR head `541dd9accb66eb3b071367a3e4967769d742c2cd`; CI workflow run #414 / `41359874778`: PASS. Both `Launcher build and unit tests` and `Lists, tools and docs` jobs completed successfully. No review comments or change requests were present.
+- Canonical E00 report, roadmap, inventory, audit register, operations log, master project and handover were re-read from `docs/project-master-inventory` after merge.
+- E00 scope is closed: documentation/inventory/dependency reconciliation only. No application source, feature PR, APK, user data, TV setting, installation or physical-device acceptance was changed or claimed.
+- **Next work unit: E01 — Device Settings & Launcher audit.** Begin with exact dependency heads and the A06 read-only HOME resolver/preferred-activity discrepancy. Preserve D-013/D-014; do not merge feature PRs early.
