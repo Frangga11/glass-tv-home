@@ -2,7 +2,7 @@
 
 **Date:** 1 November 2026  
 **Finding:** D01-F11  
-**Status:** Implementation committed; exact-head CI and final source review pending.
+**Status:** Source audit and implementation closed; exact-head CI PASS on final implementation head `427dd6a92601e472bae01c3964c6059e551307a5` (CI #395 / run `41310507890`).
 
 ## 1. Scope and ownership
 
@@ -57,13 +57,21 @@ A failed second commit could therefore leave the collection and mode inconsisten
 | Atomic collection + mode commit | IMPLEMENTED |
 | Failure-aware upload result | IMPLEMENTED |
 | HTTP failure mapping | IMPLEMENTED |
-| JVM regression tests | ADDED; CI pending |
-| Exact-head CI | PENDING |
+| JVM regression tests | PASS | Atomic preference commit/failure and HTTP outcome mapping tests included in successful exact-head CI. |
+| Exact-head CI | PASS | CI #395 / `41310507890`; both jobs SUCCESS; app/installer `testReleaseUnitTest` and `assembleRelease` succeeded. |
 | C07 unrelated upload/session hardening | PRESERVED |
 | PR / merge | Draft, open, unmerged under D-013 |
 | Physical device acceptance | Deferred to F-stage, not waived |
 
-## 7. Changed files
+## 7. Final CI evidence
+
+- Exact implementation head tested: `427dd6a92601e472bae01c3964c6059e551307a5`.
+- CI #395 / run `41310507890`: PASS; both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS.
+- `./gradlew --no-daemon testReleaseUnitTest assembleRelease`: BUILD SUCCESSFUL; app and installer release unit-test tasks passed.
+- Release APK exact size: **1,551,005 bytes**, leaving **21,859 bytes** below the 1,572,864-byte cap. Size gate passed; manual APK publication skipped.
+- No APK installation or physical Android TV acceptance claimed; those remain F-stage gates.
+
+## 8. Changed files
 
 - `launcher/app/src/main/java/com/gathin/tvhome/StandbyPhotoStore.java`
 - `launcher/app/src/main/java/com/gathin/tvhome/WallpaperUploadServer.java`
