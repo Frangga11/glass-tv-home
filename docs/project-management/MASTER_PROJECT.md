@@ -30,3 +30,12 @@
 - Static localization QC remains: 560 aligned keys; zero duplicates, key parity errors, or placeholder mismatches; 68 Java files and 17 layouts audited; 534 Java and 71 layout resource references with zero unresolved references.
 - Release gates still open: exact-head CI; API 30/API 33+ lifecycle/focus; real phone QR upload over same Wi-Fi; physical TV F02/F06 acceptance. No APK published/installed and no TV settings changed.
 - Do not merge PR #15 until every gate passes. Once these gates are satisfied, close redundant source PR #14 with a superseded note and complete the B04/B05 merge chain cleanly; retain PR #13 as the B04 parent until that chain is merged.
+
+
+## B04/B05 completion path and final test timing — 1 November 2026
+
+- User decision: run integrated CI before progressing; defer all physical device/TV validation to the final overall B-series system test after B06/B07 and remaining planned stages. This is a scheduling decision, not a waiver.
+- Current integrated head: `5e7481c4902c85352b1ab95b7f1ef41acdf9ed78`. Exact-head CI is still PENDING; no check run/status exists.
+- Workflow triggers were corrected, but reopening the PR did not create a run. Manual GitHub Actions dispatch is required: select workflow CI, branch `integration/b04-b05-reconciled`, keep `publish_device_apk=false`.
+- Next sequence: pass exact-head CI → complete B04/B05 merge chain → proceed B06/B07 → consolidate final device/TV test matrix for end-of-project acceptance.
+- No APK has been published/installed and no device settings have changed.
