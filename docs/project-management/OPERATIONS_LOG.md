@@ -307,3 +307,23 @@
 - APK exact size **1,551,217 bytes**; **21,647 bytes** below the 1,572,864-byte gate. Size gate passed; manual APK publication skipped.
 - D06 source and CI gates closed. Process-death, force-stop and physical Android TV reboot/alarm acceptance remains mandatory in F-stage; deferred and not waived. No APK installed and no merge performed.
 - Next: D07 — read exact assignment from canonical roadmap/handover before coding.
+
+
+## 2026-11-01 — D06 exact-final-head CI confirmation
+
+- Rechecked D06 PR #30 after its audit-report commit changed the branch head. Exact-final-head CI #399 / run 41312553920 passed on 78a12e9fc196a596fa98ea272edc735501047af1; both workflow jobs succeeded.
+- App and installer release unit tests and Release build passed. APK exact size 1,551,217 bytes; 21,647 bytes below the 1,572,864-byte cap; manual publication skipped.
+- Updated PR #30 description to record #399 as the authoritative final-head run. PR #30 remains OPEN/DRAFT/UNMERGED under D-013. D06 source/CI gates closed; physical reboot/process-death acceptance remains in F-stage.
+
+## 2026-11-01 — D07 concurrent profile/content-store state closure
+
+- Completed D07 on isolated branch feature/d07-concurrent-profile-content-state, final head 964163c918e281b68af5cf7114ca56ead2797486; Draft PR #31 targets D06 final head 78a12e9fc196a596fa98ea272edc735501047af1 and remains OPEN/DRAFT/UNMERGED under D-013.
+- Confirmed and fixed Child Mode package-set lost-update/profile-context risks; serialized profile-scoped reads, mutations and deletion cleanup, captured one profile ID per operation, and replaced timestamp-only new profile IDs with UUIDs. Parent PIN remains device-wide.
+- Fixed StandBy picker/QR/clear races by merging picker selections against the latest collection under the store lock, rechecking capacity, committing collection+photo-mode atomically, committing clear before deleting managed files, and releasing grants from the committed URI snapshot.
+- Fixed stale weather/AQI cache writes using request generations and location/language freshness checks; discarded superseded responses and retried current location.
+- Added JVM regression coverage for Child Mode state/profile isolation, StandBy merge/atomic commit/clear, and weather freshness.
+- CI runs #400–#402 exposed Android TextUtils calls in a pure JVM merge-policy helper; removed that Android dependency. Exact implementation-head CI #403 / 41313536393 passed, then audit report was committed and final-head CI #404 / 41313690556 passed on 964163c918e281b68af5cf7114ca56ead2797486.
+- Exact-final-head CI #404: both Launcher build/unit tests and Lists/tools/docs jobs SUCCESS; app/installer testReleaseUnitTest and assembleRelease passed. APK exact size 1,552,197 bytes; 20,667 bytes below the 1,572,864-byte cap; manual publication skipped.
+- D07 source-audit and exact-head CI gates closed. No preference schema migration, global state store/event bus, PIN policy change or C07 upload/session/protocol refactor. D01–D06 preserved.
+- Physical Android TV concurrency, profile switching/isolation, picker/QR overlap, location/language switch, process death and reboot acceptance remain mandatory in F-stage, deferred and not waived. No APK installed or physical device test claimed.
+- Project D D01–D07 source/CI work is complete. Next planned stage is E01. Grouped A–G integration, combined-diff audit and physical acceptance remain before merge/release approval.
