@@ -35,7 +35,7 @@ public class LocalizationResourceParityTest {
         assertEquals("English resource keys must match the default set", defaults.keySet(), english.keySet());
 
         for (String key : defaults.keySet()) {
-            String expected = placeholders(defaults.get(key));
+            java.util.List<String> expected = placeholders(defaults.get(key));
             assertEquals("Placeholder mismatch for Indonesian key " + key, expected, placeholders(indonesian.get(key)));
             assertEquals("Placeholder mismatch for English key " + key, expected, placeholders(english.get(key)));
         }
