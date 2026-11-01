@@ -20,9 +20,9 @@
     <string name="vpn_off">VPN nonaktif</string>
     <string name="home_settings">Layar utama bawaan</string>
     <string name="home_settings_help">Pilih layar utama di pengaturan sistem, lalu tekan tombol Home.</string>
-    <string name="input_key_service_description">Membuka pemilih sumber masukan saat tombol Input pada remote ditekan.</string>
+    <string name="input_key_service_description">Membuka pemilih sumber TV dan mengamati perubahan aplikasi di depan agar Glass TV dapat menyesuaikan perilaku Live TV dan HDMI.</string>
     <string name="home_key_name">Tombol Home</string>
-    <string name="home_key_description">Membuat tombol Home pada remote membuka launcher ini.</string>
+    <string name="home_key_description">Menangani tombol Home pada remote yang kompatibel dan membaca dialog daya atau konfirmasi sistem hanya saat Anda meminta tindakan tersebut.</string>
     <string name="card_prompt_title">Kartu baru dari %1$s</string>
     <string name="card_prompt_body">%1$s dapat menampilkan kartu di layar utama. Jika disembunyikan, ubin aplikasi tetap seperti biasa.</string>
     <string name="card_prompt_names">Nama kartu: %1$s. Nama aplikasi: %2$s.</string>
