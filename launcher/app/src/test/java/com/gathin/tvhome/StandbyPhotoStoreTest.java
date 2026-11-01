@@ -56,6 +56,33 @@ public class StandbyPhotoStoreTest {
     }
 
     @Test
+    public void pickerMergePreservesLatestQrEntriesAndDeduplicatesUris() {
+        StandbyPhotoStore.UriMergeResult merged = StandbyPhotoStore.mergeUriValues(
+                java.util.Arrays.asList("content://local/one", "file:///standby_photos/qr.jpg"),
+                java.util.Arrays.asList("content://local/two", "file:///standby_photos/qr.jpg"),
+                10);
+
+        assertEquals(1, merged.addedCount);
+        assertEquals(0, merged.skippedCount);
+        assertEquals(java.util.Arrays.asList(
+                "content://local/one",
+                "file:///standby_photos/qr.jpg",
+                "content://local/two"), merged.values);
+    }
+
+    @Test
+    public void pickerMergeEnforcesLimitAgainstLatestCollection() {
+        StandbyPhotoStore.UriMergeResult merged = StandbyPhotoStore.mergeUriValues(
+                java.util.Arrays.asList("one", "two", "three"),
+                java.util.Arrays.asList("four", "five"),
+                4);
+
+        assertEquals(1, merged.addedCount);
+        assertEquals(1, merged.skippedCount);
+        assertEquals(java.util.Arrays.asList("one", "two", "three", "four"), merged.values);
+    }
+
+    @Test
     public void uploadedCollectionAndPhotoModeUseOnePreferenceCommit() {
         Map<String, Object> values = new HashMap<>();
         int[] commits = {0};
