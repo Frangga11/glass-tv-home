@@ -572,7 +572,7 @@ public final class ModernSettingsDialog {
                     ringBg.setColor(Color.TRANSPARENT);
                     ringBg.setStroke((int) (3f * density), 0xFFFFFFFF);
                     ring.setBackground(ringBg);
-                    ring.setVisibility(idx == activeAvatar ? View.VISIBLE : View.GONE);
+                    ring.setVisibility(ProfileManager.isBuiltInAvatarSelected(activeP, idx) ? View.VISIBLE : View.GONE);
                     frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
                     // Inner Avatar Circle ImageView
                     ImageView img = new ImageView(activity);
@@ -606,12 +606,13 @@ public final class ModernSettingsDialog {
                             return;
                         }
                         ProfileManager.setAvatarIndex(activity, idx);
+                        ProfileManager.UserProfile refreshedProfile = ProfileManager.getActiveProfile(activity);
                         for (int k = 0; k < 7; k++) {
                             if (avatarRings[k] != null) {
-                                avatarRings[k].setVisibility(k == idx ? View.VISIBLE : View.GONE);
+                                avatarRings[k].setVisibility(ProfileManager.isBuiltInAvatarSelected(refreshedProfile, k)
+                                        ? View.VISIBLE : View.GONE);
                             }
                         }
-                        ProfileManager.UserProfile refreshedProfile = ProfileManager.getActiveProfile(activity);
                         boolean refreshedChildMode = ChildModeManager.isChildModeEnabled(activity, refreshedProfile.id);
                         profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
                                 Math.round(38 * density), refreshedChildMode));
@@ -654,6 +655,12 @@ public final class ModernSettingsDialog {
                         activeProfileListAvatar[0].setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
                                 Math.round(32 * density), updatedChildMode));
                     }
+                    for (int k = 0; k < 7; k++) {
+                        if (avatarRings[k] != null) {
+                            avatarRings[k].setVisibility(ProfileManager.isBuiltInAvatarSelected(updated, k)
+                                    ? View.VISIBLE : View.GONE);
+                        }
+                    }
                 }));
                 avatarPhotoActions.addView(uploadAvatarButton, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
@@ -686,6 +693,12 @@ public final class ModernSettingsDialog {
                     if (activeProfileListAvatar[0] != null) {
                         activeProfileListAvatar[0].setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
                                 Math.round(32 * density), restoredChildMode));
+                    }
+                    for (int k = 0; k < 7; k++) {
+                        if (avatarRings[k] != null) {
+                            avatarRings[k].setVisibility(ProfileManager.isBuiltInAvatarSelected(restored, k)
+                                    ? View.VISIBLE : View.GONE);
+                        }
                     }
                     activity.updateTopBarUserIcon();
                     TvFeedback.show(activity, R.string.avatar_default_restored, Toast.LENGTH_SHORT);
