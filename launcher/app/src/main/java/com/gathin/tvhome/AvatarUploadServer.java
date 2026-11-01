@@ -206,6 +206,11 @@ public final class AvatarUploadServer {
                 respond(out, 400, localized(R.string.avatar_error_incomplete));
                 return;
             }
+            UploadFilePolicy.ImageFormat imageFormat = UploadFilePolicy.detectImageFormat(temp);
+            if (imageFormat == null || !UploadFilePolicy.hasCompatibleContentType(lines, imageFormat)) {
+                respond(out, 415, localized(R.string.avatar_error_unsupported_image));
+                return;
+            }
             BitmapFactory.Options bounds = new BitmapFactory.Options();
             bounds.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(temp.getAbsolutePath(), bounds);
