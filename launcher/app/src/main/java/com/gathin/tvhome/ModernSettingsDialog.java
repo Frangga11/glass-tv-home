@@ -2111,7 +2111,7 @@ public final class ModernSettingsDialog {
 
         TextView steps = new TextView(activity);
         steps.setText(activity.getString(R.string.phone_installer_steps)
-                + "\\n\\n" + downloadPage);
+                + "\n\n" + downloadPage);
         steps.setTextSize(12.5f);
         steps.setTextColor(0xFFCBD5E1);
         steps.setTypeface(font, Typeface.NORMAL);
