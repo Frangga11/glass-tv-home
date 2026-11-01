@@ -20,7 +20,7 @@ Harden disconnect, retry, session expiry, cancellation, and timeout behavior for
 | C07-F04 | MEDIUM | StandBy response used the temporary filename after the file had been renamed to its final extension. | Client success metadata did not match the stored file. |
 | C07-F05 | MEDIUM | StandBy retry after a transport interruption needed to resume the current item rather than restart the completed batch. | Replaying a batch could duplicate already completed photos. |
 | C07-F06 | LOW | Browser upload flows lacked consistent explicit cancellation and terminal expired-session feedback. | Users had limited control and could retry a QR session that was no longer valid. |
-| C07-F07 | LOW | Avatar active-client count could be reset while workers still decremented it during shutdown. | The concurrent count could become negative. |
+| C07-F07 | LOW | Avatar active-client membership and count updates were not coordinated across accept, worker start/finally, and stop. | Shutdown and worker completion could double-decrement or leave stale active-client accounting. |
 
 ## 3. Implemented controls
 
@@ -36,7 +36,7 @@ Harden disconnect, retry, session expiry, cancellation, and timeout behavior for
 - StandBy batch state persists the current index and completed counts across transport retries. A retry resumes the current photo; completed items are not replayed. HTTP 410 stops the batch and requires a new QR session.
 - Wallpaper/StandBy retryable transport/server failures retain the current item; terminal validation failures advance to the next selected item.
 - StandBy success JSON now reports the final stored filename, not the temporary `.upload` filename.
-- Removed a shutdown counter reset that could race with Avatar workers decrementing the active-client count.
+- Serialized Avatar accept, worker-start failure, worker-finally, and stop accounting under one monitor. Stop clears tracked sockets and resets the count atomically; late worker-finally paths decrement only when they still remove a tracked socket.
 
 ## 4. Regression coverage
 
