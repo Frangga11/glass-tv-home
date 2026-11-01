@@ -20,9 +20,9 @@
     <string name="vpn_off">VPN off</string>
     <string name="home_settings">Default home screen</string>
     <string name="home_settings_help">Choose a home screen in system settings, then press Home.</string>
-    <string name="input_key_service_description">Opens the TV input switcher and observes foreground-app changes so Glass TV can adapt its Live TV and HDMI behavior.</string>
+    <string name="input_key_service_description">Opens the TV input switcher and observes foreground-app changes so Glass TV can adapt its Live TV, HDMI and Azan behavior.</string>
     <string name="home_key_name">Home button</string>
-    <string name="home_key_description">Handles the Home key on compatible remotes and reads system power or confirmation dialogs only when you request those actions.</string>
+    <string name="home_key_description">Handles the Home key on compatible remotes and reads system power or confirmation dialogs for restart, sleep and power actions.</string>
     <string name="card_prompt_title">New card from %1$s</string>
     <string name="card_prompt_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app\'s normal tile as it is.</string>
     <string name="card_prompt_names">The card is named \'%1$s\'. The app is \'%2$s\'.</string>
@@ -414,9 +414,9 @@
     <string name="phone_installer_qr_hint">Scan this QR code with an Android phone to open the official installer folder.</string>
     <string name="phone_installer_steps">1. Scan the QR code with an Android phone.\n2. Download glass-tv-installer.apk from the release folder.\n3. Connect the phone and TV to the same Wi-Fi network.\n4. Open the installer, enter the TV IP or scan the network, then follow the ADB instructions shown on the TV.</string>
     <string name="home_key_status_title">HOME Button Service</string>
-    <string name="home_key_status_summary">Status: %1$s. Needed by some remotes and for restart and power actions.</string>
+    <string name="home_key_status_summary">Status: %1$s. Needed for HOME mapping on some remotes, restart, power and automatic sleep.</string>
     <string name="input_key_status_title">INPUT Button Service</string>
-    <string name="input_key_status_summary">Status: %1$s. Opens the HDMI/source picker when the remote Input button is pressed.</string>
+    <string name="input_key_status_summary">Status: %1$s. Opens the HDMI/source picker and helps detect Live TV or HDMI for Azan behavior.</string>
     <string name="notification_access_title">Now Playing Notification Access</string>
     <string name="notification_access_summary">Status: %1$s. Allow access so music information can appear in the Now Playing card.</string>
     <string name="device_service_enabled">Enabled in Android</string>
