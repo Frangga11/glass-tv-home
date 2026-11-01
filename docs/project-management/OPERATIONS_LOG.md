@@ -263,3 +263,14 @@
 - D02 source-audit and CI gates are closed. PR #26 remains OPEN/DRAFT/UNMERGED under D-013. No APK installation, device setting changes, or merge.
 - Physical Android TV acceptance remains deferred to F-stage, not waived. D01-F11 remains assigned to D05/D07.
 - Next task: D03 — locked/hidden app count and list refresh in the open Settings pane.
+
+
+## 2026-11-01 — D03 locked/hidden app refresh closure
+
+- Completed targeted D03 repair on `feature/d03-locked-app-ui-refresh`; final head `c119198e5c5ecc0d3cfdc283049ea3299d0067ca`; Draft PR #27 remains OPEN/DRAFT/UNMERGED under D-013.
+- Fixed stale Profile Settings locked/hidden counts by refreshing the owning right pane when the picker dismisses. Home tiles now reload on both Done and Back; PIN cancellation before picker launch remains outside this callback path.
+- Exact-head CI #385 / `41307515649`: both Launcher build/unit tests and Lists/tools/docs jobs SUCCESS. `testReleaseUnitTest` and `assembleRelease` succeeded.
+- APK exact size 1,550,761 bytes; 22,103 bytes below the 1,572,864-byte gate. Size gate passed; manual APK publication skipped.
+- D03 source and CI gates closed. Physical TV acceptance remains mandatory in F-stage; no APK installed and no merge performed.
+- D01-F11 remains assigned to D05/D07. Preserve C07 upload/session hardening.
+- Next: D04 profile/avatar state synchronization audit.
