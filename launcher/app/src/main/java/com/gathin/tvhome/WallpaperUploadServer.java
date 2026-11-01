@@ -560,8 +560,8 @@ public class WallpaperUploadServer {
             return;
         }
 
-        synchronized (activeClients) {
-            if (!running || client.isClosed()) {
+        synchronized (this) {
+            if (!isSessionActive() || client.isClosed()) {
                 storedFile.delete();
                 return;
             }
@@ -570,6 +570,7 @@ public class WallpaperUploadServer {
                 sendUploadError(out, 400, localized(R.string.standby_error_collection_storage));
                 return;
             }
+            if (listener != null) listener.onStandbyUploaded(storedFile);
         }
 
         String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
@@ -582,12 +583,11 @@ public class WallpaperUploadServer {
         out.write(response.getBytes("UTF-8"));
         out.write(bytes);
         out.flush();
-        if (listener != null) listener.onStandbyUploaded(storedFile);
     }
 
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
         byte[] bytes = message.getBytes("UTF-8");
-        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large" : "Bad Request";
+        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large" : status == 410 ? "Gone" : "Bad Request";
         String response = "HTTP/1.1 " + status + " " + label + "\r\n"
                 + "Content-Type: text/plain; charset=UTF-8\r\n"
                 + "Content-Length: " + bytes.length + "\r\n"
