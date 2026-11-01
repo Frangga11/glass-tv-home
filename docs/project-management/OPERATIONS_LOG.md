@@ -327,3 +327,15 @@
 - D07 source-audit and exact-head CI gates closed. No preference schema migration, global state store/event bus, PIN policy change or C07 upload/session/protocol refactor. D01–D06 preserved.
 - Physical Android TV concurrency, profile switching/isolation, picker/QR overlap, location/language switch, process death and reboot acceptance remain mandatory in F-stage, deferred and not waived. No APK installed or physical device test claimed.
 - Project D D01–D07 source/CI work is complete. Next planned stage is E01. Grouped A–G integration, combined-diff audit and physical acceptance remain before merge/release approval.
+
+
+
+## 2026-11-02 — E00 master inventory and document reconciliation
+
+- Refreshed the remote branch list (36 names) and individually queried PR #16–#31. All #16–#31 are OPEN/DRAFT/UNMERGED; PR #10–#12 remain open/Draft/unmerged; B04/B05 reconciled merge history #13–#15 is retained.
+- Reconciled B01–B07, C01–C07 and D01–D07 as source/CI complete while keeping integrated/runtime/physical acceptance pending in F. No project is described as fully accepted solely because its branch CI passed.
+- Revalidated D07 baseline: `964163c918e281b68af5cf7114ca56ead2797486`; PR #31; exact-final-head CI #404 / `41313690556` PASS. Latest APK diagnostic 1,552,197 bytes with 20,667 bytes below the 1,572,864-byte gate; publication skipped.
+- Static resource parity spot-check on D07 source: 569 unique keys in default, Indonesian and English; no duplicate keys, key-set differences or printf-placeholder mismatches. Runtime translation and UI acceptance remains F06.
+- Added E00 audit report and reconciled roadmap, inventory, audit register, operations log, master project and handover on documentation-only branch `docs/e00-inventory-reconciliation`. Documentation PR review/integration remains pending.
+- No application source, feature PR, APK, device setting or user data changed. No merge, APK publication/installation or physical TV test performed.
+- D-013 grouped merge timing and D-014 cross-project coordination standard remain binding. F01 is the first grouped integration point after A–E source/fix closure; F02–F07 verify the integrated system; G01–G05 close release blockers, produce/hash the approved APK, verify target-TV install/upgrade/rollback, and finalize records/handover.
