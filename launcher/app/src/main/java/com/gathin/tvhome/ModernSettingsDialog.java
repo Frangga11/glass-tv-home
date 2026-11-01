@@ -18,6 +18,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -55,6 +57,58 @@ public final class ModernSettingsDialog {
     private static final int TAB_DEVICE_SETTINGS = NavigationState.TAB_DEVICE_SETTINGS;
 
     private static Runnable sDpadLeftTarget;
+    private static final String PREF_SETTINGS_FOCUS_AREA = "settings_focus_area";
+    private static final String PREF_SETTINGS_FOCUS_PATH = "settings_focus_path";
+    private static final String PREF_SETTINGS_FOCUS_TAB = "settings_focus_tab";
+    private static final String PREF_SETTINGS_LEFT_SCROLL = "settings_left_scroll";
+
+    private static String rightScrollKey(int tab) {
+        return "settings_right_scroll_" + NavigationState.normalizeSettingsTab(tab);
+    }
+
+    private static boolean isDescendantOf(ViewGroup ancestor, View view) {
+        if (ancestor == null || view == null) return false;
+        View current = view;
+        while (current != null) {
+            if (current == ancestor) return true;
+            ViewParent parent = current.getParent();
+            current = parent instanceof View ? (View) parent : null;
+        }
+        return false;
+    }
+
+    private static String focusPath(ViewGroup ancestor, View target) {
+        if (ancestor == null || target == null || target == ancestor) return null;
+        ArrayList<Integer> reversed = new ArrayList<>();
+        View current = target;
+        while (current != ancestor) {
+            ViewParent parent = current.getParent();
+            if (!(parent instanceof ViewGroup)) return null;
+            ViewGroup group = (ViewGroup) parent;
+            int index = group.indexOfChild(current);
+            if (index < 0) return null;
+            reversed.add(index);
+            current = group;
+        }
+        int[] indexes = new int[reversed.size()];
+        for (int i = 0; i < reversed.size(); i++) {
+            indexes[i] = reversed.get(reversed.size() - 1 - i);
+        }
+        return SettingsFocusPath.encode(indexes);
+    }
+
+    private static View resolveFocusPath(ViewGroup root, String encodedPath) {
+        int[] indexes = SettingsFocusPath.decode(encodedPath);
+        if (root == null || indexes == null) return null;
+        View current = root;
+        for (int index : indexes) {
+            if (!(current instanceof ViewGroup)) return null;
+            ViewGroup group = (ViewGroup) current;
+            if (index < 0 || index >= group.getChildCount()) return null;
+            current = group.getChildAt(index);
+        }
+        return current.isFocusable() && current.isEnabled() && current.isShown() ? current : null;
+    }
 
     private static boolean focusRightPane(ViewGroup container) {
         if (container == null) return false;
@@ -279,6 +333,8 @@ public final class ModernSettingsDialog {
         navItems.add(new NavItem(TAB_DEVICE_SETTINGS, deviceLabel, R.drawable.ic_tv_display, 0xFF374151));
 
         Runnable[] renderRightPane = new Runnable[1];
+        int[] lastRenderedTab = new int[]{activeTab[0]};
+        boolean[] hasRenderedPane = new boolean[]{false};
 
         Runnable updateSidebarSelection = () -> {
             navigationPrefs.edit().putInt(NavigationState.SETTINGS_TAB, NavigationState.normalizeSettingsTab(activeTab[0])).apply();
@@ -432,8 +488,18 @@ public final class ModernSettingsDialog {
 
         // --- RENDER RIGHT CONTENT PANE ---
         renderRightPane[0] = () -> {
+            if (hasRenderedPane[0]) {
+                navigationPrefs.edit()
+                        .putInt(rightScrollKey(lastRenderedTab[0]), rightScroll.getScrollY())
+                        .apply();
+            }
+            int tab = NavigationState.normalizeSettingsTab(activeTab[0]);
+            activeTab[0] = tab;
+            lastRenderedTab[0] = tab;
+            hasRenderedPane[0] = true;
             rightContent.removeAllViews();
-            int tab = activeTab[0];
+            rightScroll.post(() -> rightScroll.scrollTo(0,
+                    Math.max(0, navigationPrefs.getInt(rightScrollKey(tab), 0))));
 
             if (tab == TAB_PROFILE) {
                 // === TAB 0: PROFILES & MULTI-USER MANAGEMENT ===
@@ -1210,8 +1276,38 @@ public final class ModernSettingsDialog {
         builder.setView(root);
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
-        dialog.setOnDismissListener(d -> sDpadLeftTarget = null);
+        final ViewTreeObserver.OnGlobalFocusChangeListener[] focusListener =
+                new ViewTreeObserver.OnGlobalFocusChangeListener[1];
+        dialog.setOnDismissListener(d -> {
+            if (focusListener[0] != null && root.getViewTreeObserver().isAlive()) {
+                root.getViewTreeObserver().removeOnGlobalFocusChangeListener(focusListener[0]);
+            }
+            sDpadLeftTarget = null;
+        });
         dialog.show();
+
+        // Keep a validated path into the active pane so a recreated Settings dialog can return
+        // to the last control. If the content has changed, restoration falls back to the sidebar.
+        focusListener[0] = (oldFocus, newFocus) -> {
+            if (newFocus == null) return;
+            if (isDescendantOf(rightContent, newFocus)) {
+                String path = focusPath(rightContent, newFocus);
+                if (path != null) {
+                    navigationPrefs.edit()
+                            .putString(PREF_SETTINGS_FOCUS_AREA, "right")
+                            .putString(PREF_SETTINGS_FOCUS_PATH, path)
+                            .putInt(PREF_SETTINGS_FOCUS_TAB, activeTab[0])
+                            .putInt(rightScrollKey(activeTab[0]), rightScroll.getScrollY())
+                            .apply();
+                }
+            } else if (isDescendantOf(leftCol, newFocus)) {
+                navigationPrefs.edit()
+                        .putString(PREF_SETTINGS_FOCUS_AREA, "sidebar")
+                        .putInt(PREF_SETTINGS_LEFT_SCROLL, leftScroll.getScrollY())
+                        .apply();
+            }
+        };
+        root.getViewTreeObserver().addOnGlobalFocusChangeListener(focusListener[0]);
 
         Window win = dialog.getWindow();
         if (win != null) {
@@ -1224,8 +1320,27 @@ public final class ModernSettingsDialog {
             win.setGravity(Gravity.CENTER);
         }
 
-        if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
-        else profileCard.requestFocus();
+        leftScroll.post(() -> leftScroll.scrollTo(0,
+                Math.max(0, navigationPrefs.getInt(PREF_SETTINGS_LEFT_SCROLL, 0))));
+        String savedFocusArea = navigationPrefs.getString(PREF_SETTINGS_FOCUS_AREA, "sidebar");
+        int savedFocusTab = navigationPrefs.getInt(PREF_SETTINGS_FOCUS_TAB, -1);
+        String savedFocusPath = navigationPrefs.getString(PREF_SETTINGS_FOCUS_PATH, null);
+        if ("right".equals(savedFocusArea) && savedFocusTab == activeTab[0]) {
+            root.post(() -> {
+                rightScroll.scrollTo(0, Math.max(0, navigationPrefs.getInt(rightScrollKey(activeTab[0]), 0)));
+                rightScroll.post(() -> {
+                    View restored = resolveFocusPath(rightContent, savedFocusPath);
+                    if (restored != null && restored.requestFocus()) return;
+                    if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+                    else profileCard.requestFocus();
+                });
+            });
+        } else {
+            root.post(() -> {
+                if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+                else profileCard.requestFocus();
+            });
+        }
     }
 
     private static void addSectionHeader(LinearLayout root, Typeface font, String title) {
