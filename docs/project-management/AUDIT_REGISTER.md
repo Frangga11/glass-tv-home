@@ -178,3 +178,13 @@ Detailed audit and acceptance matrix: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_A
 | B07 Menu/submenu/focus restoration | PR #17 OPEN / DRAFT / UNMERGED | Run #298 SUCCESS on `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`. | Source/CI complete; cross-B regression and physical acceptance remain in final grouped test. |
 
 **B-series decision:** B01–B07 source/CI work is verified sufficiently to continue to Project C. This does not authorize early merges. Under D-013, preserve Draft PRs and exact heads, then perform combined-diff audit, dependency-group integration, cross-B regression, and final API/device acceptance after A–G source work is complete. No final APK was published or installed.
+
+
+## APK size investigation — 1 November 2026
+
+- CI run #298 reported 1509 KiB; the current configured gate is 1.5 MiB = 1536 KiB. The APK passed and did not exceed that gate, with about 27 KiB headroom.
+- The same reported size is approximately 1.545 MB decimal, so it would exceed a strict 1.5 MB decimal target by about 45 KB. Keep MB and MiB distinct.
+- Release build already has R8 minification and resource shrinking enabled.
+- Largest source candidates include the intentional 230,883-byte default wallpaper, font resources (Inter and Outfit are byte-identical by Git blob SHA), QR artwork, avatars, and audio. Source sizes do not prove final APK contribution; the resource shrinker may remove unreferenced resources.
+- A read-only APK ZIP breakdown step was added to the B07 PR workflow. Its output is pending the next CI execution; no asset/function was removed or modified.
+- Detailed record: [APK_SIZE_AUDIT.md](APK_SIZE_AUDIT.md).
