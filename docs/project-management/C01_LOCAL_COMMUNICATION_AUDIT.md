@@ -57,7 +57,9 @@ No QR routes, user-facing screens, file formats, storage directories, upload siz
 - exact 60 MiB boundary;
 - missing, duplicate, malformed, zero, and oversized Content-Length;
 - rejection of Transfer-Encoding;
-- existing session route isolation and unsupported method checks;\n- localization resource parity for the new overload response.
+- exact upload route matching with a filename query parameter;
+- rejection of route-prefix/suffix collisions and wrong methods;
+- existing session route isolation and unsupported method checks.
 
 Localization static check after the new string was added: **567 keys** in default/ID/EN, zero duplicate keys, identical key sets, and the new overload key present in all three locales.
 
@@ -80,7 +82,7 @@ These are not marked PASS by static source review.
 | Bounded wallpaper/StandBy client concurrency | IMPLEMENTED |
 | Strict request body framing | IMPLEMENTED |
 | Image decode validation | IMPLEMENTED |
-| Regression unit tests added | IMPLEMENTED — CI pending |
+| Regression unit tests added | PASS |
 | Exact-head GitHub Actions CI | PASS |
 | Real phone / TV same-Wi-Fi test | DEFERRED to final system acceptance |
 | API 30 / API 33+ lifecycle test | DEFERRED to final system acceptance |
