@@ -419,3 +419,30 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 - No APK artifact was published, no candidate APK was installed, no TV settings/packages were changed, and no physical acceptance was performed.
 
 **Disposition:** B05 remains IN PROGRESS. Do not merge PR #14 or publish/install a candidate APK. Continue Java hardcoded-string migration, run exact-head CI, inspect logs, and defer physical language acceptance to F06.
+
+
+## B04/B05 reconciliation and integrated QC — 1 November 2026
+
+### Evidence and source identity
+- B04 PR #13: `feature/b04-responsive-layout`, head `baf0e7dad2dfa28a9f79c7bb25a58502243f04ae`; CI #242 completed SUCCESS. Both jobs passed; manual TV-test artifact publication was skipped.
+- B05 PR #14: `feature/b05-id-en-localization`, head `04cf544ca240e32a87baef525f266f3d038ff668`; no exact-head Actions run/check was available.
+- Integrated branch: `integration/b04-b05-reconciled`, current head `9476b4da24efffc328430533c298acdcc6866ab8`; Draft PR #15 targets `feature/b04-responsive-layout`. Initial integration commit `73817ce41e4ae5b034922f190052a95ac45886d9` has B04 and B05 as its two parents; subsequent commits apply localization remediation.
+
+### Reconciliation checks
+- Preserved B04 responsive sizing helpers/tests, adapter card dimensions, proportional overlap, Close All slot, and Nightstand responsive content.
+- Preserved B05 locale context, Indonesian/English resource sets, language normalization/platform synchronization, and localization tests.
+- Manually reconciled ClockDream, RecentAppsActivity, Close All XML, and Nightstand XML so locale and responsive changes coexist.
+- Compared integrated branch to B04 base: 32 changed files. Compared the initial integration to B03: union included 35 paths (32 B05 paths plus three B04-only files).
+
+### Additional B05 remediation and static checks
+- Moved remaining high-traffic Home/Recent Media, Auto-Update, Adhan popup, wallpaper shuffle, Child Mode/effect feedback, app hide/lock labels, UV bands, precipitation, and visibility copy into locale resources.
+- Default, values-id, and values-en each contain 345 string keys; no duplicate keys; key sets identical; printf placeholders match.
+- No unresolved R.string references in MainActivity, ModernSettingsDialog, and WeatherActivity at the audited integration head.
+
+### Remaining blockers / disposition
+- ModernSettingsDialog still has Indonesian hardcoded copy in profile, wallpaper, StandBy, device/system, OTA, and launcher-guidance cards; full Java/XML user-facing string sweep is not complete.
+- No exact-head integrated CI result/check run is available. Static checks do not substitute for Gradle unit tests, release build, APK size guard, and both workflow jobs.
+- Android 11/API 30 and Android 13+ locale/lifecycle/focus behavior remains unverified on runtime devices; physical acceptance remains F02/F06.
+- No APK artifact was published, no TV installation or settings change was made, and no PR was merged.
+
+**Disposition:** B04 source/CI gate PASS; physical acceptance pending. B05 and integrated PR #15 remain IN PROGRESS / NOT MERGE-READY. Keep PR #13, #14, and #15 Draft/open until full localization sweep and exact-head integrated CI pass.
