@@ -233,3 +233,12 @@
 - Quality correction: documented Android 12+ OEM device-to-device transfer caveat for `allowBackup=false`; current target TV is Android 11/API 30.
 - Added D01-F11: StandbyPhotoStore commits collection metadata, then ignores the result of the photo-mode commit; C07 WallpaperUploadServer can return HTTP 200 based on the misleading success result. Assigned targeted repair/regression coverage to D05/D07; did not change source code or weaken C07 behavior.
 - D01 audit document updated on feature head `cd710681099faece14905faa244f57245bae84d1`; exact-head CI for this final head is pending. No merge, APK publication/installation, or device setting changes.
+
+
+
+## 2026-11-01 — D01 final exact-head CI closure
+
+- Final D01 feature head `cd710681099faece14905faa244f57245bae84d1` passed exact-head CI twice: #375 / `41304411195` and #376 / `41304430928`; both Launcher build/unit tests and Lists/tools/docs jobs SUCCESS in both runs.
+- D01 source audit and CI gate are closed. PR #25 remains OPEN/DRAFT/UNMERGED under D-013; no merge, APK publication/installation, or device-setting changes.
+- D01-F11 remains assigned to D05/D07 for a targeted atomic/failure-aware persistence repair and regression tests. F-stage runtime/process-death/reboot acceptance remains mandatory.
+- Next project task: D02, following the approved Project D sequence.
