@@ -242,3 +242,14 @@
 - D01 source audit and CI gate are closed. PR #25 remains OPEN/DRAFT/UNMERGED under D-013; no merge, APK publication/installation, or device-setting changes.
 - D01-F11 remains assigned to D05/D07 for a targeted atomic/failure-aware persistence repair and regression tests. F-stage runtime/process-death/reboot acceptance remains mandatory.
 - Next project task: D02, following the approved Project D sequence.
+
+
+## 2026-11-01 — D02 settings-to-UI propagation audit and targeted repair
+
+- Created isolated branch `feature/d02-settings-ui-propagation` from D01 exact head `cd710681099faece14905faa244f57245bae84d1`; opened Draft PR #26 targeting D01. PR remains OPEN/DRAFT/UNMERGED under D-013.
+- Audited Settings callbacks and dependent Home/profile/Child Mode/wallpaper/weather/location/StandBy/language UI update paths. Existing owner callbacks and lifecycle refreshes already cover the inspected successful mutation paths; no global SharedPreferences listener/event bus was justified.
+- Found D02-F01: `MainActivity.setStandbyPhotoMode()` ignored the boolean commit result and showed success/refreshed screensaver even when persistence failed.
+- Repaired setter to honor commit success, preserve current live UI on failure, and show a localized failure message. Added `standby_mode_save_failed` to default/ID/EN resources. No preference key/store migration or broad state refactor.
+- D02 audit report: `D02_SETTINGS_UI_PROPAGATION_AUDIT.md`; source head `3bb4ae592904a49989fd76d7dabd92ed1cebd94b`.
+- Exact-head CI #380 / `41305432110` and #381 / `41305453205` are still in progress. Both documentation/tool jobs passed; launcher build/unit-test job is running. Final D02 closure awaits exact-head CI.
+- D01-F11 remains assigned to D05/D07 for the distinct upload collection/mode atomicity fix and regression coverage. No merge, APK publication/installation, or device setting change.
