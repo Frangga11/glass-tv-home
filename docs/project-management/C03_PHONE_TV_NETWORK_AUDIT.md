@@ -1,7 +1,7 @@
 # C03 — Phone-to-TV Communication & Same-Network Audit
 
 **Date:** 1 November 2026  
-**Status:** SOURCE FIXES APPLIED — EXACT-HEAD CI PENDING; PHYSICAL ACCEPTANCE DEFERRED  
+**Status:** SOURCE + EXACT-HEAD CI VERIFIED — PASS; PHYSICAL ACCEPTANCE DEFERRED  
 **Work branch:** `feature/c03-phone-tv-network-verification`  
 **Parent:** C02 exact source head `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`  
 **Merge policy:** D-013 — isolated Draft PR; no early merge.
@@ -58,6 +58,9 @@ A static source audit or CI run cannot prove access-point client isolation, rout
 
 - Active-network resolver: IMPLEMENTED.
 - QR caller/server resolver consistency: IMPLEMENTED.
-- Regression tests: ADDED; CI PENDING.
+- Regression tests: PASS in exact-head CI #337 (`41287435536`).
+- `testReleaseUnitTest` and `assembleRelease`: SUCCESS for launcher and installer modules.
+- Exact-head CI #337: both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS on `a0615b2135659a515b3bea39d98bf08639248c09`.
+- Release APK diagnostic: 1,546,045 bytes; 26,819 bytes below the 1,572,864-byte (1.5 MiB) gate. APK publication was skipped.
 - Physical phone/TV same-network acceptance: DEFERRED, NOT WAIVED.
 - No APK publication/installation, device setting changes, or PR merge.
