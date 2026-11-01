@@ -125,4 +125,17 @@ public class WallpaperUploadSessionRouteTest {
         assertFalse(WallpaperUploadServer.isRequestToPath(
                 "POST " + uploadPath + "/extra HTTP/1.1", "POST", uploadPath));
     }
+
+    @Test
+    public void standbyUploadMapsPersistenceFailureToServerError() {
+        assertEquals(200, WallpaperUploadServer.standbyUploadResponseStatus(
+                StandbyPhotoStore.UploadResult.ADDED));
+        assertEquals(200, WallpaperUploadServer.standbyUploadResponseStatus(
+                StandbyPhotoStore.UploadResult.ALREADY_PRESENT));
+        assertEquals(400, WallpaperUploadServer.standbyUploadResponseStatus(
+                StandbyPhotoStore.UploadResult.REJECTED));
+        assertEquals(500, WallpaperUploadServer.standbyUploadResponseStatus(
+                StandbyPhotoStore.UploadResult.PERSISTENCE_FAILED));
+    }
+
 }
