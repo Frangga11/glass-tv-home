@@ -60,7 +60,7 @@
     <string name="assistant_content_description">Google Assistant</string>
     <string name="user_profile_content_description">Select User &amp; Child Mode</string>
     <string name="recent_apps_title">Recent Apps</string>
-    <string name="recent_apps_ram_usage">RAM %1$s used of %2$s</string>
+    <string name="recent_apps_ram_usage">RAM usage</string>
     <string name="recent_apps_empty">No recent apps running</string>
     <string name="recent_apps_hint_close">Press ▲ on an app to close it</string>
     <string name="standby_photo_description">Standby background photo</string>
