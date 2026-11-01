@@ -45,9 +45,9 @@ C04 does not redesign upload body validation, file-type/dimension/size policy, s
 
 ## 5. Verification
 
-- Earlier exact-head CI #342 / 41288521501 passed on prior head `f09ee1b30b80e45e793c1678935eff8867aedae4`.
+- Earlier exact-head CI #342 / 41288521501 passed on prior head `f09ee1b30b80e45e793c1678935eff8867aedae4`.\n- Follow-up CI #350 / 41288909657 passed on intermediate head `4e10c725818d7f0a97b9a4a46a32bae92c240fcb`; both jobs SUCCESS, APK publication skipped.
 - Additional header-syntax hardening and regression tests were added after that verified head; the earlier CI result does not certify these later changes.
-- New exact-head CI is pending and must pass both jobs before C04 is considered source/CI complete.
+- Final exact-head CI for the current source and consolidated audit is pending and must pass both jobs before C04 is considered source/CI complete.
 - APK size gate must be rechecked because the earlier diagnostic had only 15,019 bytes of remaining headroom; APK publication remains skipped.
 - Physical phone/TV browser validation remains deferred to F-stage final acceptance, not waived.
 
