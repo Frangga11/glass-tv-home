@@ -449,7 +449,7 @@ public final class ModernSettingsDialog {
 
                 // Section 1: Active Profile Avatars
                 TextView tvAvatars = new TextView(activity);
-                tvAvatars.setText("AVATAR PROFIL AKTIF (" + activeP.name.toUpperCase() + ")");
+                tvAvatars.setText(activity.getString(R.string.active_profile_avatar_header, activeP.name.toUpperCase()));
                 tvAvatars.setTextSize(11.5f);
                 tvAvatars.setTextColor(0xFF8E929E);
                 tvAvatars.setTypeface(outfit, Typeface.BOLD);
@@ -517,7 +517,7 @@ public final class ModernSettingsDialog {
                         SoundEffects.playSelect();
                         // Selecting a built-in avatar replaces a personal photo only after its reference is cleared safely.
                         if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
-                            Toast.makeText(activity, "Foto avatar belum dapat dihapus. Avatar tidak diubah.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG).show();
                             return;
                         }
                         ProfileManager.setAvatarIndex(activity, idx);
@@ -535,7 +535,7 @@ public final class ModernSettingsDialog {
                                     Math.round(32 * density), refreshedChildMode));
                         }
                         activity.updateTopBarUserIcon();
-                        Toast.makeText(activity, "✨ Avatar dipilih: " + ProfileManager.AVATAR_NAMES[idx], Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, activity.getString(R.string.avatar_selected_toast, ProfileManager.AVATAR_NAMES[idx]), Toast.LENGTH_SHORT).show();
                     });
 
                     avatarRow.addView(frame);
@@ -548,7 +548,7 @@ public final class ModernSettingsDialog {
                 avatarPhotoActions.setPadding(0, 0, 0, (int) (12 * density));
 
                 Button uploadAvatarButton = new Button(activity);
-                uploadAvatarButton.setText("📲 Ganti Foto Avatar via QR Code");
+                uploadAvatarButton.setText(R.string.avatar_upload_qr_action);
                 uploadAvatarButton.setTextColor(0xFFFFFFFF);
                 uploadAvatarButton.setTextSize(13);
                 uploadAvatarButton.setAllCaps(false);
@@ -574,7 +574,7 @@ public final class ModernSettingsDialog {
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
 
                 Button defaultAvatarButton = new Button(activity);
-                defaultAvatarButton.setText("↩ Gunakan Avatar Bawaan");
+                defaultAvatarButton.setText(R.string.avatar_use_default_action);
                 defaultAvatarButton.setTextColor(0xFFCBD5E1);
                 defaultAvatarButton.setTextSize(13);
                 defaultAvatarButton.setAllCaps(false);
@@ -591,7 +591,7 @@ public final class ModernSettingsDialog {
                 defaultAvatarLp.topMargin = (int) (6 * density);
                 defaultAvatarButton.setOnClickListener(v -> {
                     if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
-                        Toast.makeText(activity, "Foto avatar belum dapat dihapus. Foto lama tetap digunakan.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG).show();
                         return;
                     }
                     ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
@@ -603,7 +603,7 @@ public final class ModernSettingsDialog {
                                 Math.round(32 * density), restoredChildMode));
                     }
                     activity.updateTopBarUserIcon();
-                    Toast.makeText(activity, "Avatar bawaan dipulihkan.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.avatar_default_restored, Toast.LENGTH_SHORT).show();
                 });
                 avatarPhotoActions.addView(defaultAvatarButton, defaultAvatarLp);
                 rightContent.addView(avatarPhotoActions);
@@ -689,7 +689,7 @@ public final class ModernSettingsDialog {
                 // Section 2: Manage All Users (Add & Delete User)
                 List<ProfileManager.UserProfile> allProfiles = ProfileManager.getAllProfiles(activity);
                 TextView tvUserList = new TextView(activity);
-                tvUserList.setText("DAFTAR PROFIL (" + allProfiles.size() + ")");
+                tvUserList.setText(activity.getString(R.string.profile_list_header, allProfiles.size()));
                 tvUserList.setTextSize(11.5f);
                 tvUserList.setTextColor(0xFF8E929E);
                 tvUserList.setTypeface(outfit, Typeface.BOLD);
@@ -730,14 +730,14 @@ public final class ModernSettingsDialog {
 
                     if (isCur) {
                         TextView tvTag = new TextView(activity);
-                        tvTag.setText("Aktif ✓");
+                        tvTag.setText(R.string.active_label);
                         tvTag.setTextSize(11f);
                         tvTag.setTextColor(0xFF38BDF8);
                         tvTag.setTypeface(outfit, Typeface.BOLD);
                         pRow.addView(tvTag);
                     } else if (allProfiles.size() > 1) {
                         TextView tvDel = new TextView(activity);
-                        tvDel.setText("🗑️ Hapus");
+                        tvDel.setText(R.string.delete_label);
                         tvDel.setTextSize(11.5f);
                         tvDel.setTextColor(0xFFF87171);
                         tvDel.setTypeface(outfit, Typeface.NORMAL);
@@ -767,12 +767,12 @@ public final class ModernSettingsDialog {
                     pRow.setOnClickListener(v -> {
                         SoundEffects.playSelect();
                         if (isCur) {
-                            Toast.makeText(activity, "Profil " + p.name + " sudah aktif", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.profile_already_active, p.name), Toast.LENGTH_SHORT).show();
                         } else {
                             // Show options: Switch or Delete
                             AlertDialog.Builder ob = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
-                            ob.setTitle("Pengguna: " + p.name);
-                            String[] opts = allProfiles.size() > 1 ? new String[]{"✨ Beralih ke Profil Ini", "🗑️ Hapus Pengguna"} : new String[]{"✨ Beralih ke Profil Ini"};
+                            ob.setTitle(activity.getString(R.string.profile_user_title, p.name));
+                            String[] opts = allProfiles.size() > 1 ? new String[]{activity.getString(R.string.switch_profile_action), activity.getString(R.string.delete_user_action)} : new String[]{activity.getString(R.string.switch_profile_action)};
                             ob.setItems(opts, (d, which) -> {
                                 if (which == 0) {
                                     UserSwitchDialog.requestProfileSwitch(activity, p, null, () -> {
@@ -1027,7 +1027,7 @@ public final class ModernSettingsDialog {
                             try {
                                 activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                             } catch (Exception e) {
-                                Toast.makeText(activity, "Buka Pengaturan TV > Sistem > Aksesibilitas.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(activity, R.string.open_accessibility_settings_hint, Toast.LENGTH_LONG).show();
                             }
                         }));
 
@@ -1092,7 +1092,7 @@ public final class ModernSettingsDialog {
                             try {
                                 activity.startActivity(new Intent(Settings.ACTION_SETTINGS));
                             } catch (Exception e) {
-                                Toast.makeText(activity, "Pengaturan Android tidak dapat dibuka pada perangkat ini.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, R.string.android_settings_unavailable, Toast.LENGTH_SHORT).show();
                             }
                         }));
             }
@@ -1104,7 +1104,7 @@ public final class ModernSettingsDialog {
             searchInput.setSingleLine(true);
             searchInput.setTextColor(0xFFFFFFFF);
             searchInput.setHintTextColor(0xFF8E929E);
-            searchInput.setHint("Contoh: wallpaper, foto, remote, cuaca");
+            searchInput.setHint(R.string.settings_search_hint);
             searchInput.setTextSize(15f);
             searchInput.setPadding((int) (14 * density), (int) (10 * density), (int) (14 * density), (int) (10 * density));
             GradientDrawable inputBg = new GradientDrawable();
@@ -1114,12 +1114,12 @@ public final class ModernSettingsDialog {
             searchInput.setBackground(inputBg);
 
             AlertDialog searchDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                    .setTitle("Cari Menu Pengaturan")
+                    .setTitle(R.string.settings_search_title)
                     .setView(searchInput)
-                    .setPositiveButton("Cari", (dialog, which) -> {
+                    .setPositiveButton(R.string.search_action, (dialog, which) -> {
                         String query = searchInput.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
                         if (query.isEmpty()) {
-                            Toast.makeText(activity, "Masukkan kata kunci pencarian.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, R.string.search_keyword_required, Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -1166,12 +1166,12 @@ public final class ModernSettingsDialog {
                         }
 
                         if (resultTabs.isEmpty()) {
-                            Toast.makeText(activity, "Menu tidak ditemukan. Coba kata kunci yang lebih umum.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, R.string.settings_search_not_found, Toast.LENGTH_LONG).show();
                             return;
                         }
                         String[] choices = resultLabels.toArray(new String[0]);
                         new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                                .setTitle("Hasil Pencarian")
+                                .setTitle(R.string.settings_search_results)
                                 .setItems(choices, (resultDialog, index) -> {
                                     int selectedTab = resultTabs.get(index);
                                     activeTab[0] = selectedTab;
@@ -1189,10 +1189,10 @@ public final class ModernSettingsDialog {
                                     renderRightPane[0].run();
                                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                                 })
-                                .setNegativeButton("Batal", null)
+                                .setNegativeButton(R.string.cancel_action, null)
                                 .show();
                     })
-                    .setNegativeButton("Batal", null)
+                    .setNegativeButton(R.string.cancel_action, null)
                     .create();
             searchDialog.show();
             searchInput.requestFocus();
@@ -1437,7 +1437,7 @@ public final class ModernSettingsDialog {
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(AppLanguage.strEditName(activity))
                 .setView(container)
-                .setPositiveButton("Simpan", (d, which) -> {
+                .setPositiveButton(R.string.save_action, (d, which) -> {
                     String newName = et.getText().toString().trim();
                     if (!newName.isEmpty()) {
                         if (callback != null) callback.onSave(newName);
@@ -1454,13 +1454,13 @@ public final class ModernSettingsDialog {
             @Override
             public void onSuccess() {
                 EditText newPin = new EditText(activity);
-                newPin.setHint("PIN baru (4 digit)");
+                newPin.setHint(R.string.new_pin_hint);
                 newPin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
                 newPin.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(4)});
                 newPin.setSingleLine(true);
 
                 EditText confirmPin = new EditText(activity);
-                confirmPin.setHint("Ulangi PIN baru");
+                confirmPin.setHint(R.string.confirm_pin_hint);
                 confirmPin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
                 confirmPin.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(4)});
                 confirmPin.setSingleLine(true);
@@ -1473,11 +1473,11 @@ public final class ModernSettingsDialog {
                 fields.addView(confirmPin);
 
                 AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                        .setTitle("Atur PIN Baru")
-                        .setMessage("Buat PIN angka 4 digit dan masukkan kembali untuk konfirmasi.")
+                        .setTitle(R.string.new_pin_title)
+                        .setMessage(R.string.new_pin_message)
                         .setView(fields)
-                        .setNegativeButton("Batal", (d, w) -> d.dismiss())
-                        .setPositiveButton("Simpan", null)
+                        .setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.save_action, null)
                         .create();
                 dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                     String first = newPin.getText().toString();
@@ -1494,7 +1494,7 @@ public final class ModernSettingsDialog {
                     }
                     ChildModeManager.setPin(activity, first);
                     dialog.dismiss();
-                    Toast.makeText(activity, "PIN keamanan berhasil diperbarui.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.pin_updated, Toast.LENGTH_SHORT).show();
                 }));
                 dialog.show();
             }
@@ -1645,7 +1645,7 @@ public final class ModernSettingsDialog {
 
         AlertDialog[] pickerHolder = new AlertDialog[1];
         Button btnDone = new Button(activity);
-        btnDone.setText("SELESAI");
+        btnDone.setText(R.string.done_action);
         btnDone.setTextSize(13.5f);
         btnDone.setTextColor(0xFFFFFFFF);
         btnDone.setTypeface(font, Typeface.BOLD);
@@ -1704,7 +1704,7 @@ public final class ModernSettingsDialog {
         root.setBackground(bg);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("🏠 Tetapkan Glass TV Sebagai Default Home");
+        tvTitle.setText(R.string.set_default_home_title);
         tvTitle.setTextSize(18f);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(font, Typeface.BOLD);
@@ -1737,7 +1737,7 @@ public final class ModernSettingsDialog {
                             Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
                             activity.startActivity(intent);
                         } catch (Exception e2) {
-                            Toast.makeText(activity, "Menu pengaturan peluncur tidak didukung oleh firmware ini.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, R.string.launcher_settings_unsupported, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -1749,7 +1749,7 @@ public final class ModernSettingsDialog {
                 "Jalankan arahan ini melalui PC atau asisten pemrograman:\nadb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity" +
                 (isDefault ? "" : "\n\nJika TV masih membatasi tombol Home, nonaktifkan peluncur lama:\nadb shell pm disable-user --user 0 " + activePkg),
                 () -> {
-                    Toast.makeText(activity, "Arahan: adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG).show();
                 });
         root.addView(btnAdb);
 
@@ -1758,13 +1758,13 @@ public final class ModernSettingsDialog {
                 "📱 Tanpa PC: Gunakan Aplikasi Telefon (Glass TV Installer)",
                 "Pasang release/glass-tv-installer.apk pada telefon Android anda di rangkaian Wi-Fi yang sama untuk aktifkan Home secara automatik dalam 1-klik.",
                 () -> {
-                    Toast.makeText(activity, "Buka glass-tv-installer.apk di telefon anda pada Wi-Fi sama.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT).show();
                 });
         root.addView(btnPhone);
 
         // Close button
         Button btnClose = new Button(activity);
-        btnClose.setText("Tutup");
+        btnClose.setText(R.string.close_label);
         btnClose.setTextColor(0xFFFFFFFF);
         btnClose.setTypeface(font, Typeface.BOLD);
         btnClose.setTextSize(14f);
