@@ -261,4 +261,31 @@
     <string name="launcher_settings_unsupported">Menu pengaturan peluncur tidak didukung oleh firmware ini.</string>
     <string name="adb_home_command_hint">Perintah: adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity</string>
     <string name="installer_phone_hint">Buka glass-tv-installer.apk di ponsel pada jaringan Wi-Fi yang sama.</string>
+
+    <string name="next_wallpaper_toast">Menampilkan gambar berikutnya...</string>
+    <string name="wallpaper_description_disabled">Deskripsi wallpaper dimatikan (tampilan bersih).</string>
+    <string name="wallpaper_description_enabled">Deskripsi wallpaper diaktifkan.</string>
+    <string name="assistant_unavailable">Google Assistant tidak dapat dibuka.</string>
+    <string name="wallpaper_category_selected">Kategori: %1$s</string>
+    <string name="default_wallpaper_missing">Wallpaper default tidak tersedia; latar aman ditampilkan.</string>
+    <string name="wallpaper_download_started">Mengunduh wallpaper 4K %1$s (Pexels &amp; Unsplash)...</string>
+    <string name="wallpaper_pinned">📌 Kunci satu wallpaper: %1$s</string>
+    <string name="wallpaper_shuffle_enabled">🔄 Mode putar semua wallpaper aktif (%1$d foto)</string>
+    <string name="wallpaper_deleted_remaining">🗑️ Gambar dihapus. Tersisa %1$d foto.</string>
+    <string name="wallpaper_all_deleted_default">Semua gambar dihapus. Beralih ke wallpaper Natural.</string>
+    <string name="wallpaper_removed_storage">🗑️ Gambar dihapus dari penyimpanan.</string>
+    <string name="wallpaper_all_uploaded_deleted">🧹 Semua gambar yang diunggah telah dihapus.</string>
+    <string name="wallpaper_manage_title">📁 Kelola Gambar yang Diunggah</string>
+    <string name="wallpaper_manage_empty">Tidak ada gambar pribadi di penyimpanan TV. Anda dapat mengunggah gambar dari ponsel menggunakan kode QR.</string>
+    <string name="wallpaper_open_qr_action">📲 Buka Kode QR</string>
+    <string name="delete_all_wallpapers_title">⚠️ Hapus Semua Gambar?</string>
+    <string name="delete_all_wallpapers_message">Yakin ingin menghapus semua %1$d gambar yang diunggah?</string>
+    <string name="delete_all_action">Ya, Hapus Semua</string>
+    <string name="tv_wallpaper_manager_title">📱 Pengelola Gambar TV (%1$d foto)</string>
+    <string name="wallpaper_other_deleted">🧹 Gambar lain dihapus. Gambar ini tetap disimpan.</string>
+    <string name="region_picker_title">🌏 Pilih Negara / Kawasan Asia</string>
+    <string name="region_selected">Kawasan dipilih: %1$s</string>
+    <string name="city_picker_title">📍 Pilih Kota / Stasiun (%1$s)</string>
+    <string name="weather_location_selected">Lokasi: %1$s (%2$s)</string>
+    <string name="qr_waiting_for_photo">📡 Menunggu foto dikirim dari ponsel...</string>
 </resources>
