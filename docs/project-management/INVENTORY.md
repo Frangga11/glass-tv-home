@@ -17,3 +17,13 @@
 - App-wide scan: 68 Java files and 17 layout XML files; 21 changed Java files with 534 `R.string` refs and 17 layouts with 71 `@string` refs; zero unresolved references.
 - B04 exact-head CI #242 passed. There is still no Actions run or combined status for the exact integration head. Do not treat `mergeable_state=clean` as a build/test result.
 - Remaining gates are external: integrated CI; API 30/API 33+ runtime lifecycle/focus checks; phone-on-same-Wi-Fi QR upload verification; physical F02/F06 TV acceptance. No APK was published/installed and no TV settings were changed.
+
+
+## C03 source inventory checkpoint — 1 November 2026
+
+- Feature branch: `feature/c03-phone-tv-network-verification`; Draft PR #20; parent C02 exact head `b0e1ff048e36bf21f8da1e165a427075f85a7cb3`; latest head `d266287df287167e5a8e73fd675b51759b580ed6`.
+- Added `launcher/app/src/main/java/com/gathin/tvhome/LocalNetworkAddress.java` — active default Wi-Fi/Ethernet IPv4 resolver.
+- Added `launcher/app/src/test/java/com/gathin/tvhome/LocalNetworkAddressTest.java` — address eligibility and prefix regression coverage.
+- Modified `WallpaperUploadServer.java`, `AvatarUploadServer.java`, and `MainActivity.java` to use the shared resolver for QR preflight and server binding.
+- Added `docs/project-management/C03_PHONE_TV_NETWORK_AUDIT.md` on the feature branch.
+- Exact latest branch-head CI #338 / `41287563951`: PASS. No unrelated modules changed; C01 and C02 remain separate.
