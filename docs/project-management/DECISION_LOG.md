@@ -74,3 +74,18 @@ Execution starts at A04. A01–A03 are complete planning tasks; no code repair o
 | ID | Decision | Source | Status |
 |---|---|---|---|
 | D-010 | Do not install or physically test any candidate APK while source audits and repairs are ongoing. Complete all A–E audit/fix work and F01–F07 integration/regression first. Only then produce and publish one final TV-test APK after explicit readiness approval. CI may compile the release variant for source validation, but normal PR CI must not publish a TV-test artifact. | User's explicit instruction in conversation, 1 Nov 2026 | APPROVED — binding workflow rule |
+
+
+## 9. Lean Engineering operating model — 1 November 2026
+
+| ID | Decision | Source | Status |
+|---|---|---|---|
+| D-011 | Adopt Lean Engineering for execution of the approved GTVH-BRR-001 A–G roadmap. Preserve the roadmap, all existing branches/PRs/commits, source and audit evidence, and the three-layer documentation standard. Eliminate duplicate audits and unnecessary paperwork; use risk-based verification, one active work unit at a time, and milestone-based checkpointing. Do not weaken required CI, regression, physical-device, safety, or release acceptance gates. | User explicitly selected Lean Engineering on 1 November 2026 | APPROVED |
+
+### Operating rules
+- Existing verified evidence is reusable only for the exact source commit and unchanged environment/scope; otherwise perform the smallest relevant re-verification.
+- Keep one primary active work unit. Other work may remain open only when a real dependency or independent review requires it.
+- A finding has one ID and one authoritative audit record. Other records link to it.
+- Batch documentation updates at work-unit closure; update only affected records.
+- Use L1/L2/L3 risk-based verification, but never skip mandatory roadmap stage gates or user-approved device/release restrictions.
+- Preserve Draft/unmerged PRs and do not publish/install a candidate APK before all A–E work and F integration/regression gates and explicit readiness approval.
