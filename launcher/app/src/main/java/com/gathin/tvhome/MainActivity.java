@@ -5356,7 +5356,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TvFeedback.show(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG);
             return;
         }
-        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getWallpaperPath();
+        String uploadUrl = "http://" + uploadServer.getBoundIpAddress() + ":" + uploadServer.getPort() + uploadServer.getWallpaperPath();
         showPhoneUploadQrDialog(getString(R.string.wallpaper_qr_title),
                 getString(R.string.wallpaper_qr_instructions),
                 uploadUrl);
@@ -5388,7 +5388,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TvFeedback.show(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG);
             return;
         }
-        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getStandbyPath();
+        String uploadUrl = "http://" + uploadServer.getBoundIpAddress() + ":" + uploadServer.getPort() + uploadServer.getStandbyPath();
         showPhoneUploadQrDialog(getString(R.string.standby_qr_title),
                 getString(R.string.standby_qr_instructions),
                 uploadUrl);
