@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -46,7 +47,8 @@ public class WallpaperUploadServer {
     private int port;
     private final UploadListener listener;
     private final boolean standbyOnly;
-    private final String sessionToken = UUID.randomUUID().toString().replace("-", "");
+    private volatile String sessionToken = UUID.randomUUID().toString().replace("-", "");
+    private volatile long sessionExpiresAtMs;
     private ServerSocket serverSocket;
     private String boundIpAddress;
     private volatile boolean running = false;
@@ -168,8 +170,11 @@ public class WallpaperUploadServer {
                 serverSocket = new ServerSocket();
                 serverSocket.setReuseAddress(true);
                 serverSocket.bind(new InetSocketAddress(bindAddress, p));
+                serverSocket.setSoTimeout(10000);
                 boundIpAddress = selectedIp;
                 this.port = serverSocket.getLocalPort();
+                sessionToken = UUID.randomUUID().toString().replace("-", "");
+                sessionExpiresAtMs = System.currentTimeMillis() + NetworkFeedbackPolicy.WALLPAPER_SESSION_LIFETIME_MS;
                 running = true;
                 break;
             } catch (Exception e) {
@@ -223,6 +228,11 @@ public class WallpaperUploadServer {
                             try { client.close(); } catch (Exception ignored) {}
                             Log.w(TAG, "Cannot start upload client worker", e);
                         }
+                    } catch (SocketTimeoutException e) {
+                        if (!isSessionActive()) {
+                            stop();
+                            break;
+                        }
                     } catch (Exception e) {
                         if (!running) break;
                         Log.w(TAG, "Accept error: " + e.getMessage());
@@ -241,8 +251,13 @@ public class WallpaperUploadServer {
         }
     }
 
+    private boolean isSessionActive() {
+        return NetworkFeedbackPolicy.isSessionActive(running, sessionExpiresAtMs, System.currentTimeMillis());
+    }
+
     public synchronized void stop() {
         running = false;
+        sessionExpiresAtMs = 0L;
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
@@ -280,8 +295,10 @@ public class WallpaperUploadServer {
 
     private void handleClient(Socket client) {
         try {
-            client.setSoTimeout(NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS); // Session expiry remains independently enforced.
-            InputStream in = client.getInputStream();
+            long requestDeadline = Math.min(sessionExpiresAtMs,
+                    System.currentTimeMillis() + NetworkFeedbackPolicy.WALLPAPER_UPLOAD_REQUEST_DEADLINE_MS);
+            InputStream in = new UploadDeadlineInputStream(client.getInputStream(), client,
+                    requestDeadline, NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
             OutputStream out = client.getOutputStream();
 
             ByteArrayOutputStream headerBuf = new ByteArrayOutputStream();
@@ -313,6 +330,10 @@ public class WallpaperUploadServer {
                 return;
             }
 
+            if (!isSessionActive()) {
+                sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                return;
+            }
             String requestLine = lines[0];
             UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
             if (request == null) {
@@ -403,23 +424,45 @@ public class WallpaperUploadServer {
                         throw new java.io.IOException("Cannot create wallpaper storage");
                     }
 
+                    if (!isSessionActive()) {
+                        sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                        return;
+                    }
                     File targetFile = File.createTempFile("custom_", ".upload", customDir);
                     boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
-                    UploadFilePolicy.ImageFormat imageFormat = complete
+                    UploadFilePolicy.ImageFormat imageFormat = complete && isSessionActive()
                             ? validateImageFile(targetFile, lines) : null;
 
                     if (!complete || imageFormat == null) {
                         targetFile.delete();
-                        String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
-                        sendTextResponse(out, 400, "Bad Request", message, null);
+                        if (!isSessionActive()) {
+                            sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                        } else {
+                            String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
+                            sendTextResponse(out, 400, "Bad Request", message, null);
+                        }
                     } else {
                         File storedFile = new File(customDir,
                                 targetFile.getName().substring(0, targetFile.getName().length() - ".upload".length())
                                         + "." + imageFormat.extension);
-                        if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
-                            targetFile.delete();
-                            sendTextResponse(out, 500, "Internal Server Error", "Unable to store uploaded image", null);
-                            return;
+                        synchronized (this) {
+                            if (!isSessionActive()) {
+                                targetFile.delete();
+                                sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                                return;
+                            }
+                            if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
+                                targetFile.delete();
+                                sendTextResponse(out, 500, "Internal Server Error", "Unable to store uploaded image", null);
+                                return;
+                            }
+                            if (listener != null) {
+                                try {
+                                    listener.onUploaded(storedFile);
+                                } catch (RuntimeException callbackFailure) {
+                                    Log.w(TAG, "Wallpaper upload callback failed after durable save", callbackFailure);
+                                }
+                            }
                         }
                         String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
@@ -431,7 +474,6 @@ public class WallpaperUploadServer {
                         out.write(response.getBytes("UTF-8"));
                         out.write(jsonBytes);
                         out.flush();
-                        if (listener != null) listener.onUploaded(storedFile);
                     }
                 } else {
                     sendTextResponse(out, 400, "Bad Request", localized(R.string.wallpaper_error_invalid_size), null);
@@ -492,6 +534,10 @@ public class WallpaperUploadServer {
             sendUploadError(out, 400, localized(R.string.standby_error_photo_size));
             return;
         }
+        if (!isSessionActive()) {
+            sendUploadError(out, 410, "Upload session expired or closed");
+            return;
+        }
         if (!StandbyPhotoStore.canAcceptUpload(context, contentLength)) {
             sendUploadError(out, 400, localized(R.string.standby_error_collection_full));
             return;
@@ -505,14 +551,18 @@ public class WallpaperUploadServer {
 
         File targetFile = File.createTempFile("standby_", ".upload", standbyDir);
         boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
-        UploadFilePolicy.ImageFormat imageFormat = complete
+        UploadFilePolicy.ImageFormat imageFormat = complete && isSessionActive()
                 ? validateImageFile(targetFile, lines) : null;
 
         if (!complete || imageFormat == null) {
             targetFile.delete();
-            sendUploadError(out, 400, !complete
-                    ? localized(R.string.wallpaper_error_incomplete_retry)
-                    : localized(R.string.wallpaper_error_unsupported_image));
+            if (!isSessionActive()) {
+                sendUploadError(out, 410, "Upload session expired or closed");
+            } else {
+                sendUploadError(out, 400, !complete
+                        ? localized(R.string.wallpaper_error_incomplete_retry)
+                        : localized(R.string.wallpaper_error_unsupported_image));
+            }
             return;
         }
         File storedFile = new File(standbyDir,
@@ -524,9 +574,10 @@ public class WallpaperUploadServer {
             return;
         }
 
-        synchronized (activeClients) {
-            if (!running || client.isClosed()) {
+        synchronized (this) {
+            if (!isSessionActive() || client.isClosed()) {
                 storedFile.delete();
+                if (!client.isClosed()) sendUploadError(out, 410, "Upload session expired or closed");
                 return;
             }
             if (!StandbyPhotoStore.addUploadedFile(context, storedFile)) {
@@ -534,9 +585,16 @@ public class WallpaperUploadServer {
                 sendUploadError(out, 400, localized(R.string.standby_error_collection_storage));
                 return;
             }
+            if (listener != null) {
+                try {
+                    listener.onStandbyUploaded(storedFile);
+                } catch (RuntimeException callbackFailure) {
+                    Log.w(TAG, "StandBy upload callback failed after durable save", callbackFailure);
+                }
+            }
         }
 
-        String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
+        String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
         byte[] bytes = json.getBytes("UTF-8");
         String response = "HTTP/1.1 200 OK\r\n"
                 + "Content-Type: application/json; charset=UTF-8\r\n"
@@ -546,12 +604,11 @@ public class WallpaperUploadServer {
         out.write(response.getBytes("UTF-8"));
         out.write(bytes);
         out.flush();
-        if (listener != null) listener.onStandbyUploaded(storedFile);
     }
 
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
         byte[] bytes = message.getBytes("UTF-8");
-        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large" : "Bad Request";
+        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large" : status == 410 ? "Gone" : "Bad Request";
         String response = "HTTP/1.1 " + status + " " + label + "\r\n"
                 + "Content-Type: text/plain; charset=UTF-8\r\n"
                 + "Content-Length: " + bytes.length + "\r\n"
@@ -582,27 +639,31 @@ public class WallpaperUploadServer {
                 + "</style></head><body><main class='card'><h1>" + htmlText(R.string.standby_page_heading) + "</h1>"
                 + "<p>" + htmlText(R.string.standby_page_intro) + "</p>"
                 + "<label class='drop'>" + htmlText(R.string.standby_page_choose_photos) + "<br><br><input id='files' type='file' accept='image/jpeg,image/png,image/webp' multiple></label>"
-                + "<button id='send' disabled>" + htmlText(R.string.standby_page_upload_button) + "</button><div id='status'>" + htmlText(R.string.standby_page_no_photo) + "</div>"
+                + "<button id='send' disabled>" + htmlText(R.string.standby_page_upload_button) + "</button><button id='cancel' type='button' hidden>" + htmlText(R.string.cancel_action) + "</button><div id='status'>" + htmlText(R.string.standby_page_no_photo) + "</div>"
                 + "<div id='bar'><div id='fill'></div></div>"
                 + "<small>" + htmlText(R.string.standby_page_storage_note) + " "
                 + htmlText(R.string.standby_page_limit_note) + "</small></main><script>"
                 + "const endpoint='" + endpoint + "';const input=document.getElementById('files');"
-                + "const send=document.getElementById('send');const status=document.getElementById('status');"
-                + "const fill=document.getElementById('fill');let files=[];"
-                + "input.addEventListener('change',()=>{files=Array.from(input.files||[]);"
+                + "const send=document.getElementById('send');const cancel=document.getElementById('cancel');const status=document.getElementById('status');"
+                + "const fill=document.getElementById('fill');let files=[],i=0,uploaded=0,failed=0,activeXhr=null;"
+                + "input.addEventListener('change',()=>{if(activeXhr)activeXhr.abort();files=Array.from(input.files||[]);i=0;uploaded=0;failed=0;"
                 + "send.disabled=!files.length;status.textContent=files.length+'" + jsText(R.string.standby_page_selected_suffix) + "';fill.style.width='0%';});"
-                + "send.addEventListener('click',()=>{if(!files.length)return;send.disabled=true;let i=0,uploaded=0,failed=0;"
                 + "const next=()=>{if(i>=files.length){status.textContent='" + jsText(R.string.standby_page_done_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_done_middle) + "'+failed+'" + jsText(R.string.standby_page_done_suffix) + "';"
-                + "fill.style.width='100%';input.value='';files=[];send.disabled=true;return;}const file=files[i];"
+                + "fill.style.width='100%';input.value='';files=[];i=0;uploaded=0;failed=0;send.disabled=true;cancel.hidden=true;return;}const file=files[i];"
                 + "if(file.size>60*1024*1024){failed++;i++;next();return;}"
-                + "status.textContent='" + jsText(R.string.standby_page_uploading_prefix) + "'+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();"
+                + "status.textContent='" + jsText(R.string.standby_page_uploading_prefix) + "'+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();activeXhr=xhr;cancel.hidden=false;"
                 + "xhr.open('POST',endpoint,true);xhr.timeout=" + NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS + ";xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
-                + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;"
-                + "fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
-                + "xhr.onload=()=>{if(xhr.status>=200&&xhr.status<300)uploaded++;else failed++;i++;next();};"
-                + "xhr.onerror=()=>{status.textContent='" + jsText(R.string.standby_page_connection_lost_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_connection_lost_suffix) + "';send.disabled=false;};"
-                + "xhr.ontimeout=()=>{status.textContent='" + jsText(R.string.standby_page_timeout_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_timeout_suffix) + "';send.disabled=false;};"
-                + "xhr.send(file);};next();});</script></body></html>";
+                + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
+                + "xhr.onload=()=>{activeXhr=null;cancel.hidden=true;if(xhr.status>=200&&xhr.status<300){uploaded++;i++;next();return;}"
+                + "if(xhr.status===410){status.textContent=xhr.responseText||'Upload session expired. Generate a new QR code on TV.';send.disabled=true;return;}"
+                + "if(xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'Server unavailable. Retry this photo.';send.disabled=false;return;}"
+                + "failed++;i++;next();};"
+                + "xhr.onerror=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_connection_lost_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_connection_lost_suffix) + "';send.disabled=false;};"
+                + "xhr.ontimeout=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_timeout_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_timeout_suffix) + "';send.disabled=false;};"
+                + "xhr.onabort=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.cancel_action) + " — file saat ini dapat dicoba lagi; periksa koleksi sebelum mengulang.';send.disabled=false;};"
+                + "xhr.send(file);};"
+                + "send.addEventListener('click',()=>{if(!files.length||activeXhr)return;send.disabled=true;next();});"
+                + "cancel.addEventListener('click',()=>{if(activeXhr)activeXhr.abort();});</script></body></html>";
     }
 
     private String getQueryParam(String requestLine, String param) {
@@ -1194,6 +1255,11 @@ public class WallpaperUploadServer {
                 "    const progWrap = document.getElementById('prog-wrap');\n" +
                 "    const progBar = document.getElementById('prog-bar');\n" +
                 "    const statusMsg = document.getElementById('status-msg');\n" +
+                "    const cancelUpload = document.createElement('button');\n" +
+                "    cancelUpload.type = 'button'; cancelUpload.textContent = '" + jsText(R.string.cancel_action) + "'; cancelUpload.hidden = true;\n" +
+                "    btnSubmit.insertAdjacentElement('afterend', cancelUpload);\n" +
+                "    let activeUpload = null;\n" +
+                "    cancelUpload.addEventListener('click', () => { if (activeUpload) activeUpload.abort(); });\n" +
                 "\n" +
                 "    let selectedFile = null;\n" +
                 "\n" +
@@ -1216,6 +1282,7 @@ public class WallpaperUploadServer {
                 "\n" +
                 "    function uploadImage() {\n" +
                 "      if (!selectedFile) return;\n" +
+                "      if (activeUpload) return;\n" +
                 "\n" +
                 "      btnSubmit.disabled = true;\n" +
                 "      btnSubmit.innerText = '" + jsText(R.string.wallpaper_page_sending) + "';\n" +
@@ -1224,6 +1291,7 @@ public class WallpaperUploadServer {
                 "      statusMsg.style.display = 'none';\n" +
                 "\n" +
                 "      const xhr = new XMLHttpRequest();\n" +
+                "      activeUpload = xhr; cancelUpload.hidden = false;\n" +
                 "      xhr.open('POST', '" + getWallpaperUploadPath() + "?name=' + encodeURIComponent(selectedFile.name), true);\n" +
                 "      xhr.timeout = " + NetworkFeedbackPolicy.WALLPAPER_BROWSER_UPLOAD_TIMEOUT_MS + ";\n" +
                 "      xhr.setRequestHeader('Content-Type', selectedFile.type || 'image/jpeg');\n" +
@@ -1236,6 +1304,7 @@ public class WallpaperUploadServer {
                 "      };\n" +
                 "\n" +
                 "      xhr.onload = () => {\n" +
+                "        activeUpload = null; cancelUpload.hidden = true;\n" +
                 "        if (xhr.status >= 200 && xhr.status < 300) {\n" +
                 "          progBar.style.width = '100%';\n" +
                 "          btnSubmit.innerText = '✅ " + jsText(R.string.wallpaper_page_uploaded) + "';\n" +
@@ -1246,14 +1315,17 @@ public class WallpaperUploadServer {
                 "        } else {\n" +
                 "          const detail = (xhr.responseText || xhr.statusText || '').trim();\n" +
                 "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + detail);\n" +
+                "          if (xhr.status === 410) btnSubmit.disabled = true;\n" +
                 "        }\n" +
                 "      };\n" +
                 "\n" +
                 "      xhr.onerror = () => {\n" +
+                "        activeUpload = null; cancelUpload.hidden = true;\n" +
                 "        showError('" + jsText(R.string.wallpaper_page_connection_error) + "');\n" +
                 "      };\n" +
                 "\n" +
-                "      xhr.ontimeout = () => { showError('" + jsText(R.string.wallpaper_page_upload_timeout) + "'); };\n" +
+                "      xhr.ontimeout = () => { activeUpload = null; cancelUpload.hidden = true; showError('" + jsText(R.string.wallpaper_page_upload_timeout) + "'); };\n" +
+                "      xhr.onabort = () => { activeUpload = null; cancelUpload.hidden = true; showError('" + jsText(R.string.cancel_action) + "'); };\n" +
                 "      xhr.send(selectedFile);\n" +
                 "    }\n" +
                 "\n" +

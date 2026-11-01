@@ -90,18 +90,36 @@ public final class AvatarUploadServer {
             while (running && !listeningSocket.isClosed()) {
                 try {
                     Socket client = listeningSocket.accept();
-                    if (!running) { client.close(); break; }
-                    int active = activeClientCount.incrementAndGet();
-                    if (active > MAX_ACTIVE_CLIENTS) {
-                        activeClientCount.decrementAndGet();
+                    boolean accepted;
+                    synchronized (this) {
+                        if (!running) {
+                            client.close();
+                            break;
+                        }
+                        int active = activeClientCount.incrementAndGet();
+                        accepted = active <= MAX_ACTIVE_CLIENTS;
+                        if (accepted) {
+                            activeClients.add(client);
+                        } else {
+                            activeClientCount.decrementAndGet();
+                        }
+                    }
+                    if (!accepted) {
                         try { respond(client.getOutputStream(), 503, localized(R.string.avatar_error_busy)); } catch (Exception ignored) {}
                         try { client.close(); } catch (Exception ignored) {}
                         continue;
                     }
-                    activeClients.add(client);
-                    Thread worker = new Thread(() -> handle(client), "avatar-upload-client");
-                    worker.setDaemon(true);
-                    worker.start();
+                    try {
+                        Thread worker = new Thread(() -> handle(client), "avatar-upload-client");
+                        worker.setDaemon(true);
+                        worker.start();
+                    } catch (RuntimeException startFailure) {
+                        synchronized (this) {
+                            if (activeClients.remove(client)) activeClientCount.decrementAndGet();
+                        }
+                        try { client.close(); } catch (Exception ignored) {}
+                        Log.w(TAG, "Cannot start avatar upload worker", startFailure);
+                    }
                 } catch (Exception e) {
                     if (e instanceof SocketTimeoutException) {
                         if (System.currentTimeMillis() >= expiresAt) {
@@ -128,6 +146,7 @@ public final class AvatarUploadServer {
             try { client.close(); } catch (Exception ignored) {}
         }
         activeClients.clear();
+        activeClientCount.set(0);
         server = null;
         boundIp = null;
         port = 0;
@@ -138,8 +157,10 @@ public final class AvatarUploadServer {
         boolean claimed = false;
         boolean uploadSucceeded = false;
         try (Socket client = socket) {
-            client.setSoTimeout(NetworkFeedbackPolicy.AVATAR_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
-            InputStream in = client.getInputStream();
+            long requestDeadline = Math.min(expiresAt,
+                    System.currentTimeMillis() + NetworkFeedbackPolicy.AVATAR_UPLOAD_REQUEST_DEADLINE_MS);
+            InputStream in = new UploadDeadlineInputStream(client.getInputStream(), client,
+                    requestDeadline, NetworkFeedbackPolicy.AVATAR_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
             OutputStream out = client.getOutputStream();
             ByteArrayOutputStream header = new ByteArrayOutputStream();
             int state = 0, value;
@@ -263,8 +284,9 @@ public final class AvatarUploadServer {
         } finally {
             if (temp != null && temp.exists()) temp.delete();
             if (claimed && !uploadSucceeded) uploadClaimed.set(false);
-            activeClients.remove(socket);
-            activeClientCount.decrementAndGet();
+            synchronized (this) {
+                if (activeClients.remove(socket)) activeClientCount.decrementAndGet();
+            }
         }
     }
 
@@ -295,14 +317,17 @@ public final class AvatarUploadServer {
                 + "main{max-width:460px;margin:auto;background:#172235;padding:24px;border-radius:20px}button,input{width:100%;padding:14px;margin:12px 0}"
                 + "button{background:#7dd3fc;border:0;border-radius:12px;font-weight:700}#s{color:#bae6fd}</style>"
                 + "<main><h2>📷 " + localized(R.string.avatar_upload_heading) + "</h2><p>" + localized(R.string.avatar_upload_intro) + "</p>"
-                + "<input id='f' type='file' accept='image/jpeg,image/png,image/webp'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
-                + "<script>const f=document.getElementById('f'),b=document.getElementById('b'),s=document.getElementById('s');"
-                + "f.onchange=()=>b.disabled=!f.files.length;b.onclick=()=>{const x=f.files[0];if(!x)return;b.disabled=true;s.textContent='" + localized(R.string.avatar_upload_sending) + "';"
-                + "const r=new XMLHttpRequest();r.open('POST','" + endpoint + "');r.timeout=" + NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS + ";r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"
+                + "<input id='f' type='file' accept='image/jpeg,image/png,image/webp'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><button id='c' type='button' hidden>" + localized(R.string.cancel_action) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
+                + "<script>const f=document.getElementById('f'),b=document.getElementById('b'),s=document.getElementById('s'),c=document.getElementById('c');let active=null;"
+                + "f.onchange=()=>b.disabled=!f.files.length;c.onclick=()=>{if(active)active.abort();};"
+                + "b.onclick=()=>{const x=f.files[0];if(!x||active)return;b.disabled=true;c.hidden=false;s.textContent='" + localized(R.string.avatar_upload_sending) + "';"
+                + "const r=new XMLHttpRequest();active=r;r.open('POST','" + endpoint + "');r.timeout=" + NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS + ";r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"
+                + "const finish=retry=>{active=null;c.hidden=true;b.disabled=!retry;};"
                 + "r.upload.onprogress=e=>{if(e.lengthComputable)s.textContent='" + localized(R.string.avatar_upload_sending) + " '+Math.round(e.loaded/e.total*100)+'%';};"
-                + "r.onload=()=>{s.textContent=r.status===200?'" + localized(R.string.avatar_upload_success) + "':'" + localized(R.string.avatar_upload_failed_prefix) + " '+r.responseText;b.disabled=false;};"
-                + "r.onerror=()=>{s.textContent='" + localized(R.string.avatar_upload_connection_error) + "';b.disabled=false;};"
-                + "r.ontimeout=()=>{s.textContent='" + localized(R.string.avatar_upload_timeout) + "';b.disabled=false;};r.send(x);};</script></html>";
+                + "r.onload=()=>{s.textContent=r.status===200?'" + localized(R.string.avatar_upload_success) + "':'" + localized(R.string.avatar_upload_failed_prefix) + " '+r.responseText;finish(r.status!==200&&r.status!==409&&r.status!==410);};"
+                + "r.onerror=()=>{s.textContent='" + localized(R.string.avatar_upload_connection_error) + "';finish(true);};"
+                + "r.ontimeout=()=>{s.textContent='" + localized(R.string.avatar_upload_timeout) + "';finish(true);};"
+                + "r.onabort=()=>{s.textContent='" + localized(R.string.cancel_action) + "';finish(true);};r.send(x);};</script></html>";
     }
 
     private void respondMethodNotAllowed(OutputStream out, String allowed) throws Exception {
