@@ -156,7 +156,10 @@ public final class AvatarUploadServer {
             }
             if (!headerComplete) { respond(out, 400, localized(R.string.avatar_error_invalid_request)); return; }
             String[] lines = header.toString("UTF-8").split("\\r\\n");
-            if (lines.length == 0 || System.currentTimeMillis() >= expiresAt || !running) {
+            if (lines.length == 0 || !UploadHttpRequest.hasValidHeaders(lines)) {
+                respond(out, 400, localized(R.string.avatar_error_invalid_request)); return;
+            }
+            if (System.currentTimeMillis() >= expiresAt || !running) {
                 respond(out, 410, localized(R.string.avatar_error_session_expired)); return;
             }
             UploadHttpRequest request = UploadHttpRequest.parse(lines[0]);
