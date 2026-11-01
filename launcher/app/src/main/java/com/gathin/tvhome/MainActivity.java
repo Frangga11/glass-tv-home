@@ -398,6 +398,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StandbyPhotoStore.cleanupOrphanedUploads(this);
@@ -1024,10 +1029,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.postDelayed(() -> AppUpdateManager.checkForUpdates(this, false), 5000);
 
         if (getIntent() != null && getIntent().getBooleanExtra("open_settings", false)) {
+            getIntent().removeExtra("open_settings");
             handler.postDelayed(() -> {
-                if (screensaverActive) dismissScreensaver();
-                showSettingsPopup();
-            }, 100);
+                if (!isFinishing() && !isDestroyed()) {
+                    if (screensaverActive) dismissScreensaver();
+                    showSettingsPopup();
+                }
+            }, 180);
         }
         if (getIntent() != null && getIntent().getBooleanExtra("open_candy_box", false)) {
             handler.postDelayed(() -> {
@@ -3310,12 +3318,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setSingleChoiceItems(langOptions, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             String chosenLang = langKeys[which];
+            boolean languageChanged = !chosenLang.equalsIgnoreCase(currentLang);
+            if (languageChanged && getIntent() != null) {
+                // Reopen Settings after recreation; its selected tab and sidebar cursor are persisted by B01.
+                getIntent().putExtra("open_settings", true);
+            }
             AppLanguage.setLanguage(MainActivity.this, chosenLang);
             WeeklyAyah.setEnglish(MainActivity.this, AppLanguage.LANG_EN.equals(chosenLang));
             WeeklyAyah.clearCache(MainActivity.this);
-            updateIslamicShelf();
-            updateDateAndPeriod();
             Toast.makeText(MainActivity.this, AppLanguage.strLanguageChangedToast(MainActivity.this, chosenLang), Toast.LENGTH_SHORT).show();
+            if (languageChanged && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                recreate();
+            }
         });
         builder.setNegativeButton(AppLanguage.strClose(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
