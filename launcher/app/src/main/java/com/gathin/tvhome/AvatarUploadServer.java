@@ -308,12 +308,12 @@ public final class AvatarUploadServer {
 
     private void respondMethodNotAllowed(OutputStream out, String allowed) throws Exception {
         byte[] body = "Method Not Allowed".getBytes(StandardCharsets.UTF_8);
-        out.write(("HTTP/1.1 405 Method Not Allowed\\r\\n"
-                + "Content-Type: text/plain; charset=UTF-8\\r\\n"
-                + "Content-Length: " + body.length + "\\r\\n"
-                + "Allow: " + allowed + "\\r\\n"
-                + "Cache-Control: no-store\\r\\n"
-                + "Connection: close\\r\\n\\r\\n").getBytes(StandardCharsets.UTF_8));
+        out.write(("HTTP/1.1 405 Method Not Allowed\r\n"
+                + "Content-Type: text/plain; charset=UTF-8\r\n"
+                + "Content-Length: " + body.length + "\r\n"
+                + "Allow: " + allowed + "\r\n"
+                + "Cache-Control: no-store\r\n"
+                + "Connection: close\r\n\r\n").getBytes(StandardCharsets.UTF_8));
         out.write(body);
         out.flush();
     }
