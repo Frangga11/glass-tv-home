@@ -16,3 +16,20 @@ public class ProfileManagerAvatarPathTest {
         assertFalse(ProfileManager.isPrivateAvatarFile(avatarDirectory, null));
     }
 }
+
+
+    @Test
+    public void customPhotoOverridesBuiltInAvatarSelectionIndicator() {
+        ProfileManager.UserProfile profile = new ProfileManager.UserProfile(
+                "profile_1", "Profile", 2, false, "/private/profile_avatars/photo.jpg");
+        assertFalse(ProfileManager.isBuiltInAvatarSelected(profile, 2));
+        assertFalse(ProfileManager.isBuiltInAvatarSelected(profile, 1));
+    }
+
+    @Test
+    public void clearingCustomPhotoRestoresStoredBuiltInAvatarSelection() {
+        ProfileManager.UserProfile profile = new ProfileManager.UserProfile(
+                "profile_1", "Profile", 2, false, null);
+        assertTrue(ProfileManager.isBuiltInAvatarSelected(profile, 2));
+        assertFalse(ProfileManager.isBuiltInAvatarSelected(profile, 1));
+    }
