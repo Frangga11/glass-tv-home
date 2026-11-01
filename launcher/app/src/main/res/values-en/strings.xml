@@ -204,4 +204,29 @@
     <string name="sound_effects_selected">🔊 Sound effects: %1$s</string>
     <string name="auto_update_schedule_title">⏱️ Choose Daily Auto-Update Time</string>
     <string name="auto_update_time_selected">Auto-update time set to: %1$s</string>
+
+    <string name="standby_photo_required">Choose photos before enabling photo mode.</string>
+    <string name="standby_picker_unavailable">The photo picker is not available on this device.</string>
+    <string name="standby_clear_failed">Could not clear the photo list. Please try again.</string>
+    <string name="standby_list_cleared">The Standby photo list was cleared.</string>
+    <string name="standby_save_failed">Could not save the photo list. Please select the photos again.</string>
+    <string name="tv_network_required">The TV is not connected to Wi-Fi or Ethernet.</string>
+    <string name="avatar_photo_updated">✓ Avatar photo updated successfully.</string>
+    <string name="avatar_photo_saved">Avatar saved to the selected profile.</string>
+    <string name="avatar_photo_replaced">Avatar photo replaced successfully.</string>
+    <string name="avatar_server_start_failed">Could not start the avatar QR service.</string>
+    <string name="local_upload_server_start_failed">Could not start the local upload server. Check the TV Wi-Fi connection.</string>
+    <string name="qr_create_failed">Could not create the QR code.</string>
+    <string name="avatar_qr_title">📷 Change Avatar Photo</string>
+    <string name="avatar_qr_instructions">Scan the QR code with a phone on the same Wi-Fi network. Choose one photo; the session lasts 5 minutes. If it expires, close this dialog and create a new QR code.</string>
+    <string name="wallpaper_qr_title">📲 Upload Wallpaper from Phone</string>
+    <string name="wallpaper_qr_instructions">Connect your phone and TV to the same Wi-Fi network, then scan this QR code. The photo will be added to the wallpaper collection.</string>
+    <string name="standby_qr_title">🖼️ Upload Standby Photos</string>
+    <string name="standby_qr_instructions">Scan the QR code with a phone on the same Wi-Fi network. Select multiple photos; the current wallpaper will not change.</string>
+    <string name="standby_photo_save_failed">Could not save the photo to the Standby collection.</string>
+    <string name="standby_photo_saved_count">✓ Photo saved. Collection total: %1$d photos.</string>
+    <string name="standby_collection_count">Standby collection: %1$d / %2$d photos</string>
+    <string name="wallpaper_uploaded_from_phone">✅ Wallpaper uploaded from your phone!</string>
+    <string name="wallpaper_upload_success">🎉 Successfully received and displayed on the TV!</string>
+    <string name="wallpaper_active_file">✅ Active wallpaper: %1$s</string>
 </resources>
