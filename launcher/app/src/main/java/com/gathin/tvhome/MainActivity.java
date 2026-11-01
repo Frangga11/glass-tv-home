@@ -3277,7 +3277,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dialog.dismiss();
             String chosenKey = soundKeys[which];
             SoundEffects.setTheme(MainActivity.this, chosenKey);
-            String displayName = SoundEffects.getThemeDisplayName(chosenKey);
+            String displayName = SoundEffects.getThemeDisplayName(chosenKey, this);
 
             if (SoundEffects.THEME_OFF.equalsIgnoreCase(chosenKey)) {
                 Toast.makeText(MainActivity.this, R.string.sound_effects_off, Toast.LENGTH_SHORT).show();

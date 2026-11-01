@@ -510,4 +510,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="location_setup_hint">OK: choose  ·  Back: cancel</string>
     <string name="ota_qr_content_description">Support payment QR code for @imsomangge</string>
     <string name="ota_backup_contact">📧 Backup: ahmad.anammat@me.com</string>
+    <string name="weather_radar_illustration_label">WEATHER ILLUSTRATION • NOT A LIVE RADAR</string>
+    <string name="sound_theme_off_display">Sound Off</string>
 </resources>

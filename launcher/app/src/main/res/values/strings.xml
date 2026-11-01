@@ -510,4 +510,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="location_setup_hint">OK: pilih  ·  Kembali: batalkan</string>
     <string name="ota_qr_content_description">Kode QR dukungan @imsomangge</string>
     <string name="ota_backup_contact">📧 Cadangan: ahmad.anammat@me.com</string>
+    <string name="weather_radar_illustration_label">ILUSTRASI CUACA • BUKAN RADAR LANGSUNG</string>
+    <string name="sound_theme_off_display">Matikan Bunyi (Off)</string>
 </resources>
