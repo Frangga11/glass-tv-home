@@ -377,3 +377,21 @@ D06 source-audit and exact-head CI gates are closed. Detailed report: `D06_PROCE
 | Runtime / physical TV acceptance | DEFERRED, NOT WAIVED | F-stage must verify profile switching/isolation, Child Mode, concurrent picker/QR operations, location/language refresh, process death and reboot. No APK installation or physical test claimed. |
 
 D07 source-audit and exact-head CI gates are closed. Detailed findings and repairs: D07_CONCURRENT_PROFILE_CONTENT_STATE_AUDIT.md on the D07 feature branch.
+
+
+
+## E00 master inventory and integration-boundary reconciliation — 2 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Remote branch inventory | PASS | 36 remote branch names returned; branch existence is not treated as merge/readiness evidence. |
+| PR state refresh | PASS | Individually queried PR #16–#31: all OPEN/DRAFT/UNMERGED. PR #10–#12 also remain open/Draft/unmerged; B04/B05 reconciled merge history #13–#15 retained. |
+| B/C/D source/CI versus acceptance status | RECONCILED | B01–B07, C01–C07 and D01–D07 source/CI gates recorded complete; integrated/runtime/physical acceptance remains mandatory in F, not waived. |
+| D07 baseline | PASS | `964163c918e281b68af5cf7114ca56ead2797486`; PR #31; exact-final-head CI #404 / `41313690556` PASS. |
+| Resource parity spot-check | PASS — STATIC ONLY | 569 unique keys in default/ID/EN; zero duplicate keys, locale key-set differences or printf-placeholder mismatches. Runtime screen/translation acceptance remains F06. |
+| E00 documentation corrections | PREPARED | Roadmap, inventory, audit register, operations log, master project and handover updated on `docs/e00-inventory-reconciliation`; review/integration into `docs/project-master-inventory` pending. |
+| Application source / APK / device mutation | NONE | E00 is documentation-only. No application source, APK, TV setting, user data or feature PR changed. |
+
+**Integration disposition:** D-013 remains active. Do not merge B06 onward to `integration/b-series` during active A–E source work. After A–E source/fix closure, F01 freezes exact heads, audits combined diffs and integrates coherent dependency groups with exact-head CI and cross-group regression after each group. F02–F07 perform integrated acceptance. G01 returns failures to their owning project for repair; G02–G05 handle approved artifact, device verification, records and handover. Merge to `main` only after final acceptance, release review and explicit user approval.
+
+Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md](E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md).
