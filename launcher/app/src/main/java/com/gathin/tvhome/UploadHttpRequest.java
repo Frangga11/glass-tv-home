@@ -45,7 +45,7 @@ final class UploadHttpRequest {
     }
 
     static boolean hasValidHeaders(String[] lines) {
-        if (lines == null || lines.length < 2) return false;
+        if (lines == null || lines.length < 1) return false;
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i];
             if (line == null || line.isEmpty()) continue;
