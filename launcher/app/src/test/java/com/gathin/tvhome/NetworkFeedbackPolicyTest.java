@@ -31,5 +31,10 @@ public class NetworkFeedbackPolicyTest {
         assertTrue(NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS == 30_000);
         assertTrue(NetworkFeedbackPolicy.AVATAR_UPLOAD_CLIENT_IDLE_TIMEOUT_MS
                 != NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
+        assertTrue(NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS == 240_000);
+        assertTrue(NetworkFeedbackPolicy.WALLPAPER_BROWSER_UPLOAD_TIMEOUT_MS == 600_000);
+        assertTrue(NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS == 600_000);
+        assertTrue(NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS
+                < NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS);
     }
 }
