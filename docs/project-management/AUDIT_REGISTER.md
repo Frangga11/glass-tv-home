@@ -257,3 +257,12 @@ C03 finding C03-F01 (interface-name-based address selection) was remediated by a
 | Final exact-head CI | PENDING | Current D01 head `cd710681099faece14905faa244f57245bae84d1`; run required after final audit-doc correction. |
 | PR / merge | OPEN / DRAFT / UNMERGED | PR #25, branch `feature/d01-config-storage-audit`, base C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`; D-013 merge deferral applies. |
 | Runtime/process-death/reboot | DEFERRED, NOT WAIVED | Final F-stage acceptance; D06 will define and verify persistence/recovery behavior. |
+
+
+
+## D01 final exact-head verification — 1 November 2026
+
+- Final D01 head `cd710681099faece14905faa244f57245bae84d1`: CI #375 / `41304411195` PASS and CI #376 / `41304430928` PASS; both jobs SUCCESS in each run.
+- D01 source-audit and exact-head CI gates: PASS. No source code/data migration performed; no APK published or installed.
+- PR #25 remains OPEN/DRAFT/UNMERGED on `feature/d01-config-storage-audit`, based on C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`, under D-013.
+- D01-F11 remains an open downstream repair item owned by D05/D07; runtime/process-death/reboot acceptance remains deferred to F-stage, not waived.
