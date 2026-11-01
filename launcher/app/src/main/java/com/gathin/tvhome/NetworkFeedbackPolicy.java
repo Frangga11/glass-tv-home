@@ -8,6 +8,6 @@ final class NetworkFeedbackPolicy {
     private NetworkFeedbackPolicy() {}
 
     static boolean isCompleteDownload(long receivedBytes, long declaredBytes) {
-        return receivedBytes > 0 && (declaredBytes <= 0 || receivedBytes == declaredBytes);
+        return receivedBytes > 0 && (declaredBytes < 0 || receivedBytes == declaredBytes);
     }
 }
