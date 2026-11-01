@@ -70,3 +70,16 @@
 - Baseline scan of 63 Java files found scattered Toast feedback, AlertDialog usage, OTA `ProgressDialog`, and separate JavaScript feedback states in the QR upload pages. No shared feedback abstraction or Snackbar usage was found.
 - Transport timeout values are operation-specific; preserve their engineering purpose. B06 should standardize user-visible timeout messages and cleanup, not blindly equalize socket/network timeout values.
 - B07 remains NOT STARTED. Device/runtime/QR/TV acceptance remains deferred until final overall B-series testing.
+
+
+## B07 implementation checkpoint — 1 November 2026
+
+- B07 audit identified a reproducible source-level restoration gap: selected Settings tab survived reopening, but focus always returned to the sidebar; exact sidebar/right-pane cursor and scroll state were not preserved.
+- Implemented restoration state for focus area, active tab, validated focus path + target signature, sidebar scroll, and per-tab submenu/right-pane scroll.
+- Stale path, changed content, or non-focusable target falls back to the selected sidebar destination.
+- Added `SettingsFocusPath` codec and `SettingsFocusPathTest` JVM coverage.
+- Source branch/head: `feature/b07-menu-focus-restoration` / `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`.
+- Draft PR #17 targets the B06 branch and remains unmerged under D-013.
+- Exact-head CI #298 / `41281838510` was IN PROGRESS at this checkpoint. B07 is not yet marked complete.
+- Final API 30/33+, Activity recreation, physical TV D-pad, and grouped B01–B06 regression remain required; device acceptance is deferred, not waived.
+- Detailed evidence and test matrix: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
