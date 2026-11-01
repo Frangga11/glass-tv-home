@@ -229,6 +229,14 @@ public final class AvatarUploadServer {
                 respond(out, 415, localized(R.string.avatar_error_corrupt_image)); return;
             }
             verifiedBitmap.recycle();
+            File storedAvatar = new File(dir,
+                    temp.getName().substring(0, temp.getName().length() - ".upload".length())
+                            + "." + imageFormat.extension);
+            if (!temp.renameTo(storedAvatar)) {
+                respond(out, 500, localized(R.string.avatar_error_storage));
+                return;
+            }
+            temp = storedAvatar;
             if (!running || System.currentTimeMillis() > expiresAt) { respond(out, 410, localized(R.string.avatar_error_session_expired_short)); return; }
             File delivered = temp;
             boolean accepted;
