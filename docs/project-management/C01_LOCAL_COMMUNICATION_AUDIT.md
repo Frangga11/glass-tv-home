@@ -1,7 +1,7 @@
 # C01 — Local Communication & Server Foundation Audit
 
 **Date:** 1 November 2026  
-**Status:** SOURCE CHANGES IMPLEMENTED — EXACT-HEAD CI PENDING  
+**Status:** SOURCE + EXACT-HEAD CI VERIFIED — PASS  
 **Work branch:** `feature/c01-local-communication-audit`  
 **Parent:** B07 source head `3fcbf8d52d0baafe76d8239a5e5dab7634d0850e`  
 **Merge policy:** D-013 — isolated branch and Draft PR; no early merge.
@@ -81,8 +81,10 @@ These are not marked PASS by static source review.
 | Strict request body framing | IMPLEMENTED |
 | Image decode validation | IMPLEMENTED |
 | Regression unit tests added | IMPLEMENTED — CI pending |
-| Exact-head GitHub Actions CI | PENDING |
+| Exact-head GitHub Actions CI | PASS |
 | Real phone / TV same-Wi-Fi test | DEFERRED to final system acceptance |
 | API 30 / API 33+ lifecycle test | DEFERRED to final system acceptance |
 
-**C01 is not complete until exact-head CI is green.** Device/runtime checks remain deferred, not waived. No APK publication, installation, or TV settings change is authorized by this work.
+**Exact-head CI evidence:** run #312 / `41283698907`, commit `a29cb45cc46a67b3626a75d5496f85cca0c71980` — both jobs SUCCESS; `testReleaseUnitTest` and `assembleRelease` succeeded. APK size: 1,545,977 bytes (approximately 1,509.7 KiB), under the 1,572,864-byte gate by 26,887 bytes. APK publication was skipped.
+
+**C01 source and CI gates are PASS.** Device/runtime checks remain deferred, not waived. No APK was published or installed and no TV settings were changed.
