@@ -1157,7 +1157,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.notification_access_summary, notificationStatus),
                         () -> openDeviceSettings(activity, new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))));
 
-                addSectionHeader(rightContent, outfit, activity.getString(R.string.system_settings_section));
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.screensaver_settings_section));
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.screensaver_settings_title),
                         activity.getString(R.string.screensaver_settings_summary),
