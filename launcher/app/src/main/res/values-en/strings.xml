@@ -585,4 +585,8 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_page_set">Set</string>
     <string name="wallpaper_page_confirm_delete">Delete this photo from the TV?</string>
     <string name="wallpaper_page_slideshow_active">TV slideshow mode is now active.</string>
+    <string name="avatar_upload_timeout">The upload timed out. Check Wi-Fi and create a new QR code on the TV if the session has expired.</string>
+    <string name="wallpaper_page_upload_timeout">The upload timed out. Check your Wi-Fi connection and try again.</string>
+    <string name="standby_page_timeout_prefix">The upload timed out. </string>
+    <string name="standby_page_timeout_suffix"> photos have already been saved. Check Wi-Fi and select the remaining photos again.</string>
 </resources>
