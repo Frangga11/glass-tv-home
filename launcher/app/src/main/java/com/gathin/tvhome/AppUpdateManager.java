@@ -279,7 +279,7 @@ public final class AppUpdateManager {
 
         ProgressDialog progressDialog = new ProgressDialog(activity, R.style.Theme_TvHome_GlassDialog);
         progressDialog.setTitle(activity.getString(R.string.download_update_title, versionName));
-        progressDialog.setMessage(R.string.download_update_message);
+        progressDialog.setMessage(activity.getString(R.string.download_update_message));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setIndeterminate(false);
         progressDialog.setMax(100);
