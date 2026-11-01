@@ -99,3 +99,29 @@ Expand beyond the immediate module when a change touches:
 ## 8. Approval
 
 This policy was approved by the user on 1 November 2026 and applies to all subsequent Glass TV Home work unless explicitly revised and versioned in the project Decision Log.
+
+
+## 9. Revised execution model — deferred grouped merge (v1.1)
+
+**User decision, 1 November 2026:** Starting with B06, do not merge stage work into the integration branch while the A–G audit and repair program is still underway. Preserve flexibility for cross-stage findings and follow-on changes from C through G. Keep work unmerged until all planned source audits and fixes are complete and the grouped integration plan is ready.
+
+### Work while A–G is in progress
+- Keep each work unit isolated and traceable in its own feature branch/PR; PRs may remain Draft/open and unmerged.
+- Preserve dependency order by stacking the next work branch on the verified head of its prerequisite branch, or use another explicitly documented cumulative working branch. Never base dependent work on an unverified or abandoned head.
+- Run scoped audits, regression tests, static QC, builds, and CI during development. Deferring merge does NOT mean deferring verification.
+- If a later stage requires a correction to an earlier stage, update the earlier work branch and re-run the affected downstream checks. Record the dependency and impact map.
+- `integration/b-series` is a reserved final integration/staging branch, not a rolling merge destination during active A–G repair. Do not merge B06 or subsequent stage PRs into it yet.
+
+### Grouped integration at the end
+1. Complete all A–G source audits and fixes; close open findings or explicitly classify accepted residual risks.
+2. Freeze a candidate set of exact branch heads and map their dependencies.
+3. Audit the combined diff and resolve conflicts in dependency order.
+4. Merge into `integration/b-series` by coherent dependency groups (not necessarily one PR per roadmap letter); run exact-head CI and cross-group regression after each group.
+5. Run the full integrated regression and final acceptance matrix. Any failure returns to the owning group for repair and re-verification; do not proceed to release on a failing integration head.
+6. After acceptance and explicit approval, merge the verified integration result to `main`.
+7. Build the final release APK from the exact final approved `main` commit; record version, commit SHA, workflow run/artifact, and SHA-256. If physical acceptance requires an installable candidate first, create a clearly labelled test candidate from the frozen integration head; it is not the final release APK and must not be confused with it.
+
+### Merge decision rule
+No stage merge is required merely to mark that stage's development complete. Development completion, verification completion, grouped integration, final acceptance, and release are separate states. The final grouped merge is allowed only after all applicable gates pass. A green stage CI is necessary evidence, not permission to merge early.
+
+This v1.1 execution model supersedes the rolling-stage-merge instruction in v1.0 for B06 onward. The quality gates and risk-based bug audit method in v1.0 remain in force.
