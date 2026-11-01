@@ -65,7 +65,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | C01 | Audit QR generation, payload, token, and QR destination behavior | IN PROGRESS — source/CI pass; physical acceptance deferred |
 | C02 | Audit TV local server lifecycle, LAN IP selection, and port handling | IN PROGRESS — source/CI pass; physical acceptance deferred |
 | C03 | Verify phone-to-TV communication and same-network behavior | IN PROGRESS — source/CI pass; physical acceptance deferred |
-| C04 | Audit HTTP endpoints, routing, methods, and response codes | NOT STARTED |
+| C04 | Audit HTTP endpoints, routing, methods, and response codes | IN PROGRESS — source/CI pass; physical acceptance deferred |
 | C05 | Repair shared upload/receive-file pipeline where appropriate | NOT STARTED |
 | C06 | Validate file types, dimensions, sizes, names, and storage paths | NOT STARTED |
 | C07 | Handle disconnects, retries, expiry, cancellation, and timeouts safely | NOT STARTED |
@@ -225,3 +225,13 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - **Physical acceptance remains DEFERRED, NOT WAIVED:** real phone/TV same-Wi-Fi QR reachability, uploads, Wi-Fi reconnect, Ethernet/Wi-Fi switching, VPN behavior, and route revocation after closing the QR dialog must be verified during F03/final integrated acceptance.
 - PRs #18, #19, and #20 remain OPEN/DRAFT/UNMERGED under D-013. Do not merge until A–G source work is complete and grouped integration is approved.
 - **Next task:** C04 — audit HTTP endpoints, route matching, methods, and response codes. Preserve C01–C03 changes unless a concrete dependency or defect requires adjustment.
+
+
+## C04 execution checkpoint — 1 November 2026
+
+- Branch/head: `feature/c04-http-endpoint-routing` / `f09ee1b30b80e45e793c1678935eff8867aedae4`; Draft PR #21 targets C03 exact head `d266287df287167e5a8e73fd675b51759b580ed6`.
+- Audit: `C04_HTTP_ENDPOINT_AUDIT.md`; HTTP request parsing, token-scoped route matching, per-endpoint method contracts, query parsing, response codes, and gallery browser action handling reviewed.
+- Exact-head CI #342 / `41288521501`: PASS, both jobs SUCCESS; launcher and installer unit tests and release builds succeeded.
+- APK size: 1,547,845 bytes; 15,019 bytes below the 1.5 MiB cap. Artifact publication skipped.
+- Physical phone/TV QR browser acceptance remains deferred to F-stage, not waived. PR #21 remains OPEN/DRAFT/UNMERGED under D-013.
+- Next: C05 shared upload/receive-file pipeline audit; preserve C01–C04 and expand scope only for demonstrated shared pipeline defects.
