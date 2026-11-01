@@ -191,7 +191,7 @@ public final class TvScanner {
                                 synchronized (callbackLock) {
                                     if (!handle.isCancelled() && !completed.get()) {
                                         found.add(target);
-                                        MAIN.post(() -> {
+                                        MainThread.HANDLER.post(() -> {
                                             if (!handle.isCancelled()) callback.onDeviceFound(target);
                                         });
                                     }
@@ -219,7 +219,7 @@ public final class TvScanner {
                             result = new ArrayList<>(found);
                         }
                         Collections.sort(result);
-                        MAIN.post(() -> {
+                        MainThread.HANDLER.post(() -> {
                             if (!handle.isCancelled()) callback.onScanFinished(result);
                         });
                     }
