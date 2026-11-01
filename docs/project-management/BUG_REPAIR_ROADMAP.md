@@ -252,3 +252,14 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - Release APK diagnostic: 1,548,097 bytes, 14,767 bytes below the 1.5 MiB cap. APK publication skipped.
 - PR #21 remains OPEN/DRAFT/UNMERGED under D-013. Physical phone/TV browser acceptance remains deferred to F-stage, not waived.
 - Next task: C05 shared upload/receive-file pipeline audit.
+
+
+## Project D execution checkpoint — D01, 1 November 2026
+
+- D01 source inventory and ownership map are recorded in [D01_SETTINGS_STORAGE_OWNERSHIP_AUDIT.md](D01_SETTINGS_STORAGE_OWNERSHIP_AUDIT.md) on the isolated feature branch.
+- Branch/head: `feature/d01-config-storage-audit` @ `cd710681099faece14905faa244f57245bae84d1`; Draft PR #25 targets C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`; PR remains OPEN/DRAFT/UNMERGED under D-013.
+- Audit findings: D01-F01–F11. The audit preserves existing stores and keys; no code, preference, data, UI, APK, or device setting was changed.
+- Exact-head CI #373 passed on earlier D01 head `9a2f2aa29812acd3c24a895c1c4feed5b4cf94eb`. Follow-up audit corrections are on the newer head above; exact-head CI for that final head is pending and must pass before D01 is closed.
+- D01-F10 clarifies `allowBackup=false`: Android 11/API 30 target disables Auto Backup; some Android 12+/API 31+ OEMs may still permit device-to-device transfer. No universal D2D exclusion is claimed.
+- D01-F11 is a confirmed cross-project consistency defect: `StandbyPhotoStore.addUploadedFile()` ignores the photo-mode commit result, while C07 `WallpaperUploadServer.handleStandbyUpload()` can consequently return HTTP 200. Assign repair and regression coverage to D05/D07 while preserving C07's other upload/session hardening.
+- Next: verify exact-head CI for `cd710681099faece14905faa244f57245bae84d1`, close D01 source-audit gate with evidence, then proceed to D02.
