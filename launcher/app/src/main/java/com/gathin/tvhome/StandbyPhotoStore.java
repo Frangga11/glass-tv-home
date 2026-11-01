@@ -44,7 +44,7 @@ final class StandbyPhotoStore {
 
     private StandbyPhotoStore() {}
 
-    static List<Uri> getUris(Context context) {
+    static synchronized List<Uri> getUris(Context context) {
         List<Uri> result = new ArrayList<>();
         if (context == null) return result;
         String raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_URIS, "");
@@ -61,7 +61,7 @@ final class StandbyPhotoStore {
         return result;
     }
 
-    static boolean saveUris(Context context, List<Uri> uris) {
+    static synchronized boolean saveUris(Context context, List<Uri> uris) {
         if (context == null) return false;
         List<String> values = new ArrayList<>();
         Set<String> unique = new HashSet<>();
@@ -125,6 +125,67 @@ final class StandbyPhotoStore {
                 ? UploadResult.ADDED : UploadResult.PERSISTENCE_FAILED;
     }
 
+    static final class UriMergeResult {
+        final List<String> values;
+        final int addedCount;
+        final int skippedCount;
+
+        UriMergeResult(List<String> values, int addedCount, int skippedCount) {
+            this.values = values;
+            this.addedCount = addedCount;
+            this.skippedCount = skippedCount;
+        }
+    }
+
+    /** Merges a picker result against the latest collection, not a stale UI snapshot. */
+    static synchronized UriMergeResult mergeUriValues(List<String> current, List<String> additions, int limit) {
+        List<String> merged = new ArrayList<>();
+        Set<String> unique = new HashSet<>();
+        if (current != null) {
+            for (String value : current) {
+                if (!TextUtils.isEmpty(value) && unique.add(value)) merged.add(value);
+            }
+        }
+        int added = 0;
+        int skipped = 0;
+        if (additions != null) {
+            for (String value : additions) {
+                if (TextUtils.isEmpty(value) || !unique.add(value)) continue;
+                if (merged.size() >= Math.max(0, limit)) {
+                    skipped++;
+                    continue;
+                }
+                merged.add(value);
+                added++;
+            }
+        }
+        return new UriMergeResult(merged, added, skipped);
+    }
+
+    static synchronized UriMergeResult appendUris(Context context, List<Uri> additions) {
+        if (context == null) return new UriMergeResult(new ArrayList<>(), 0, 0);
+        List<String> current = toUriStrings(getUris(context));
+        List<String> incoming = toUriStrings(additions);
+        UriMergeResult merged = mergeUriValues(current, incoming, MAX_PHOTO_COUNT);
+        if (merged.addedCount == 0) return merged;
+        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String serialized = TextUtils.join("\\n", merged.values);
+        if (!commitUploadedState(preferences, serialized)) {
+            return new UriMergeResult(current, 0, merged.skippedCount);
+        }
+        return merged;
+    }
+
+    /** Clears collection membership and photo mode as one durable transition. */
+    static synchronized boolean clearCollectionAndMode(Context context) {
+        if (context == null) return false;
+        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        boolean saved = preferences.edit().putString(KEY_URIS, "").putBoolean(KEY_MODE, false).commit();
+        if (!saved) return false;
+        clearUploadedFiles(context);
+        return true;
+    }
+
     private static List<String> toUriStrings(List<Uri> uris) {
         List<String> values = new ArrayList<>();
         Set<String> unique = new HashSet<>();
@@ -181,7 +242,7 @@ final class StandbyPhotoStore {
         }
     }
 
-    static void clearUploadedFiles(Context context) {
+    static synchronized void clearUploadedFiles(Context context) {
         if (context == null) return;
         File directory = new File(context.getFilesDir(), "standby_photos");
         File[] files = directory.listFiles();
@@ -199,7 +260,7 @@ final class StandbyPhotoStore {
                 .getBoolean(KEY_MODE, false);
     }
 
-    static boolean setPhotoMode(Context context, boolean enabled) {
+    static synchronized boolean setPhotoMode(Context context, boolean enabled) {
         if (context == null) return false;
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putBoolean(KEY_MODE, enabled).commit();
