@@ -3806,10 +3806,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 SoundEffects.playSelect();
                 String freedStr = android.text.format.Formatter.formatFileSize(MainActivity.this, bytesFreed);
                 String resultMsg = AppLanguage.strCleanCacheDoneMsg(MainActivity.this, freedStr, bytesFreed > 0);
+                String systemStatus = getString(systemTrimmed
+                        ? R.string.cache_system_trim_success : R.string.cache_system_trim_skipped);
 
                 AlertDialog resDialog = new AlertDialog.Builder(MainActivity.this, R.style.Theme_TvHome_GlassDialog)
                         .setTitle(AppLanguage.strCleanCacheDoneTitle(MainActivity.this))
-                        .setMessage(resultMsg + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
+                        .setMessage(resultMsg + "\\n\\n" + systemStatus
+                                + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
                         .setPositiveButton(AppLanguage.strDone(MainActivity.this), (d, w) -> d.dismiss())
                         .create();
                 resDialog.show();
