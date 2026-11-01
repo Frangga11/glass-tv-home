@@ -53,7 +53,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | B03 | Correct popup/dialog opacity, layering, focus, sizing, and dismissal behavior | IN PROGRESS |
 | B04 | Normalize global UI layout, spacing, sizing, and TV responsiveness | IN PROGRESS |
 | B05 | Audit and complete Indonesian/English localization, including dynamic and error strings | IN PROGRESS |
-| B06 | Standardize notifications, success/error messages, loading, and timeout feedback | NOT STARTED |
+| B06 | Standardize notifications, success/error messages, loading, and timeout feedback | IN PROGRESS |
 | B07 | Audit activity/dialog lifecycle and restore prior menu/subtab/focus after actions | NOT STARTED |
 
 **Stage exit criteria:** remote navigation and focus are predictable; dialogs are visually isolated and readable; language selection is consistent; actions do not unexpectedly reset the user to the first tab.
@@ -186,3 +186,11 @@ Useful callback requests:
 - B04/B05 source + CI gate is complete. B01–B05 still require final integrated/physical acceptance in F; do not mark the entire Stage B exit criteria complete until B06/B07 and final acceptance are done.
 - B06 (notification, success/error, loading and timeout feedback) and B07 (activity/dialog lifecycle and restore menu/subtab/focus) remain NOT STARTED. Start B06 first, then B07, from the current B03 continuation head; keep each work unit isolated and CI-gated.
 - Physical/runtime acceptance remains deferred, not waived: API 30/33+ lifecycle/configuration, Activity/DreamService recreation and focus/tab retention, real-phone QR upload over same Wi-Fi, physical TV F02/F06. No APK was published/installed; `publish_device_apk=false`.
+
+
+## 9. Latest execution checkpoint — B06 started
+
+- B04/B05 integration CI and merge chain are complete; see the latest execution checkpoint in HANDOVER.md and AUDIT_REGISTER.md.
+- B06 baseline audit started on `feature/b06-notification-feedback`, based on `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
+- Initial scan: 63 Java files; scattered Toast/AlertDialog feedback; OTA `ProgressDialog`; separate QR upload page statuses; no shared feedback abstraction/Snackbar found. Keep transport timeouts operation-specific.
+- B06 implementation is IN PROGRESS. B07 remains NOT STARTED. Final physical/runtime acceptance remains deferred until Stage F.
