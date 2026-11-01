@@ -751,53 +751,114 @@ public class WallpaperUploadServer {
 
     private void handleApiSelect(String fileName, OutputStream out) {
         try {
+            if (fileName == null || fileName.trim().isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"missing_file\"}");
+                return;
+            }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (target.exists() && listener != null) {
-                listener.onSelected(target);
+            if (safeName.isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
+                return;
             }
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            File target = new File(customDir, safeName);
+            if (!target.isFile()) {
+                sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
+                return;
+            }
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
+            }
+            listener.onSelected(target);
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Select API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void handleApiDelete(String fileName, OutputStream out) {
         try {
+            if (fileName == null || fileName.trim().isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"missing_file\"}");
+                return;
+            }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (target.exists()) {
-                target.delete();
-                if (listener != null) listener.onDeleted(target);
+            if (safeName.isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
+                return;
             }
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            File target = new File(customDir, safeName);
+            if (!target.isFile()) {
+                sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
+                return;
+            }
+            if (!target.delete()) {
+                sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"delete_failed\"}");
+                return;
+            }
+            if (listener != null) listener.onDeleted(target);
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Delete API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void handleApiSlideshow(OutputStream out) {
         try {
-            if (listener != null) listener.onSlideshowMode();
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
+            }
+            listener.onSlideshowMode();
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Slideshow API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void handleApiClear(OutputStream out) {
         try {
-            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles();
-            if (files != null) {
-                for (File f : files) f.delete();
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
             }
-            if (listener != null) listener.onCleared();
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
+            File[] files = customDir.exists() ? customDir.listFiles() : new File[0];
+            if (files == null) {
+                sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"storage_unavailable\"}");
+                return;
+            }
+            for (File file : files) {
+                if (file.isFile() && !file.delete()) {
+                    sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"delete_failed\"}");
+                    return;
+                }
+            }
+            listener.onCleared();
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Clear API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void sendSimpleJsonResponse(OutputStream out, String json) throws Exception {
+        sendSimpleJsonResponse(out, 200, json);
+    }
+
+    private void sendSimpleJsonResponse(OutputStream out, int status, String json) throws Exception {
+        String reason = status == 200 ? "OK" : status == 400 ? "Bad Request"
+                : status == 404 ? "Not Found" : status == 503 ? "Service Unavailable" : "Internal Server Error";
         byte[] bytes = json.getBytes("UTF-8");
-        String response = "HTTP/1.1 200 OK\r\n" +
+        String response = "HTTP/1.1 " + status + " " + reason + "\r\n" +
                 "Content-Type: application/json; charset=UTF-8\r\n" +
                 "Content-Length: " + bytes.length + "\r\n" +
+                "Cache-Control: no-store\r\n" +
                 "Access-Control-Allow-Origin: *\r\n" +
                 "Connection: close\r\n\r\n";
         out.write(response.getBytes("UTF-8"));
