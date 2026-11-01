@@ -177,22 +177,22 @@ public class WeatherActivity extends Activity {
             SharedPreferences.Editor ed = p.edit();
             if (which == 0) {
                 ed.putString("atmosphere_mode", "SUNNY").apply();
-                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_clear)), Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_clear)), Toast.LENGTH_SHORT);
             } else if (which == 1) {
                 ed.putString("atmosphere_mode", "RAIN").apply();
-                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_rain)), Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_rain)), Toast.LENGTH_SHORT);
             } else if (which == 2) {
                 ed.putString("atmosphere_mode", "THUNDERSTORM").apply();
-                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_storm)), Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_storm)), Toast.LENGTH_SHORT);
             } else if (which == 3) {
                 ed.putString("atmosphere_mode", "CLOUDY").apply();
-                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_cloudy)), Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_cloudy)), Toast.LENGTH_SHORT);
             } else if (which == 4) {
                 ed.putString("atmosphere_mode", "NIGHT").apply();
-                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_night)), Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_night)), Toast.LENGTH_SHORT);
             } else {
                 ed.putString("atmosphere_mode", "AUTO").apply();
-                Toast.makeText(this, R.string.weather_mood_auto, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, R.string.weather_mood_auto, Toast.LENGTH_SHORT);
             }
             populateUi();
         });
@@ -219,7 +219,7 @@ public class WeatherActivity extends Activity {
             dialog.dismiss();
             String chosenRegion = regions.get(which);
             AppLocationManager.setActiveRegion(WeatherActivity.this, chosenRegion);
-            Toast.makeText(WeatherActivity.this, getString(R.string.weather_region_selected, chosenRegion), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(WeatherActivity.this, getString(R.string.weather_region_selected, chosenRegion), Toast.LENGTH_SHORT);
             showStationListDialog(chosenRegion);
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
@@ -229,7 +229,7 @@ public class WeatherActivity extends Activity {
     private void showStationListDialog(String region) {
         final List<AppLocationManager.Station> stations = AppLocationManager.getStationsForRegion(region);
         if (stations.isEmpty()) {
-            Toast.makeText(this, getString(R.string.weather_no_stations, region), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, getString(R.string.weather_no_stations, region), Toast.LENGTH_SHORT);
             return;
         }
 
@@ -250,7 +250,7 @@ public class WeatherActivity extends Activity {
             dialog.dismiss();
             AppLocationManager.Station picked = stations.get(which);
             AppLocationManager.setStation(WeatherActivity.this, picked);
-            Toast.makeText(WeatherActivity.this, getString(R.string.weather_syncing, picked.name), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(WeatherActivity.this, getString(R.string.weather_syncing, picked.name), Toast.LENGTH_SHORT);
             WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::populateUi);
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
