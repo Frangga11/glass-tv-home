@@ -76,8 +76,8 @@ public class HomeKeyService extends AccessibilityService {
             return false;
         }
         Log.i(TAG, "Requesting Android TV restart");
-        // GLOBAL_ACTION_REBOOT is available from Android 11 (API 30).
-        if (android.os.Build.VERSION.SDK_INT >= 30 && service.performGlobalAction(12)) return true;
+        // Accessibility global-action ID 12 is not a reboot action; on Android 12+ it is the
+        // accessibility-button chooser. Use the visible system power menu on every supported TV.
         return service.openPowerDialogAndSelect(POWER_ACTION_RESTART);
     }
 
