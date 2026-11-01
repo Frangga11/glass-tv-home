@@ -296,7 +296,7 @@ public final class AppUpdateManager {
         progressDialog.setTitle(activity.getString(R.string.download_update_title, versionName));
         progressDialog.setMessage(activity.getString(R.string.download_update_message));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setIndeterminate(false);
+        progressDialog.setIndeterminate(true); // Remains indeterminate until the server supplies a usable content length.
         progressDialog.setMax(100);
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
@@ -311,6 +311,7 @@ public final class AppUpdateManager {
             HttpURLConnection conn = null;
 
             try {
+                if (apkFile.exists() && !apkFile.delete()) throw new java.io.IOException("Tidak dapat menyiapkan file pembaruan");
                 URL url = new URL(apkUrl);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -322,7 +323,12 @@ public final class AppUpdateManager {
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     throw new java.io.IOException("HTTP " + responseCode);
                 }
-                int fileLength = conn.getContentLength();
+                long fileLength = conn.getContentLengthLong();
+                if (fileLength > 0) {
+                    mainHandler.post(() -> {
+                        if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.setIndeterminate(false);
+                    });
+                }
                 is = conn.getInputStream();
                 fos = new FileOutputStream(apkFile);
 
@@ -334,7 +340,7 @@ public final class AppUpdateManager {
                     total += count;
                     fos.write(buffer, 0, count);
                     if (fileLength > 0) {
-                        int progress = (int) (total * 100 / fileLength);
+                        int progress = (int) Math.min(100L, (total * 100L) / fileLength);
                         mainHandler.post(() -> {
                             if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.setProgress(progress);
                         });
@@ -345,6 +351,13 @@ public final class AppUpdateManager {
                 if (!NetworkFeedbackPolicy.isCompleteDownload(total, fileLength)) {
                     throw new java.io.IOException("Unduhan APK tidak lengkap");
                 }
+                // Do not let the installer race the worker's still-open file descriptors.
+                fos.close();
+                fos = null;
+                is.close();
+                is = null;
+                conn.disconnect();
+                conn = null;
 
                 mainHandler.post(() -> {
                     if (!isActivityUsable(activity)) return;
@@ -353,6 +366,7 @@ public final class AppUpdateManager {
                 });
 
             } catch (Exception e) {
+                if (apkFile.exists() && !apkFile.delete()) Log.w(TAG, "Could not remove incomplete update APK");
                 Log.e(TAG, "Download error: " + e.getMessage());
                 mainHandler.post(() -> {
                     if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.dismiss();
