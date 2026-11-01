@@ -1,6 +1,4 @@
-[object Object]
-
-## B06 completion checkpoint — 1 November 2026
+## Historical B06 completion checkpoint — 1 November 2026
 
 - B06 source implementation and static quality checks are complete on `feature/b06-notification-feedback`; exact verified head: `bc86a250d73a5cbb83250217d42c3c3993cf29d7`.
 - Draft PR #16 targets `integration/b-series`, remains OPEN/DRAFT/UNMERGED under D-013. No merge was performed.
