@@ -257,3 +257,13 @@ GitHub source URLs:
 
 - B04: home grid is dynamically sized; Settings and B03 dialogs are viewport bounded; Weather uses a ScrollView. Recent Apps cards remain fixed 420×250dp with 64dp side padding; Nightstand clock remains 110sp. Target wm size/density are needed before deciding on adjustment.
 - B05: AppLanguage provides app-level ID/EN selection, but Android string resources mix Indonesian/English and there are many hardcoded UI messages. First scan flagged 187 candidate strings across 12 high-traffic Java files. Full localization inventory remains open.
+
+
+## B05 implementation inventory — 1 November 2026
+
+- Working branch `feature/b05-id-en-localization`; Draft PR #14; current audited source head `cce889f231aeff3a28805fd517853a3f0a91e79c`; base is B03 exact head `56a4e1995aa8b8600614e6b5c4dca69d01c530c3`.
+- Added locale resource sets `values-id/strings.xml` and `values-en/strings.xml`; default/ID/EN sets each contain 158 keys with no static key or placeholder mismatch.
+- Added `LocaleContext.java`; locale context applied to MainActivity, WeatherActivity, RecentAppsActivity, LocationActivity, AzanActivity, and ClockDream. AppLanguage normalization and Android 13+ per-app locale synchronization added.
+- Localized static strings in eight launcher layouts and programmatic profile/PIN/weather-condition/update flows. Added normalization and resource-parity unit tests.
+- Remaining: direct Java UI strings in MainActivity, ModernSettingsDialog, WeatherActivity dialogs, and other dynamic/error/notification paths. B05 remains IN PROGRESS.
+- Exact-head CI not yet verified; no B05 Actions run was present in the latest run query. No APK artifact, installation, device setting change, or physical acceptance.
