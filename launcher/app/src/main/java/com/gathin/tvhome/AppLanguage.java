@@ -24,16 +24,15 @@ final class AppLanguage {
         if (ctx == null) return LANG_ID;
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String selected = prefs.getString(KEY_LANG, LANG_ID);
-        // This build is localized for Indonesia; migrate the former Malay default and saved setting.
+        // Migrate the former Malay preference and reject every unsupported language.
         if (selected == null || LANG_MS.equalsIgnoreCase(selected)) {
             prefs.edit().putString(KEY_LANG, LANG_ID).apply();
             return LANG_ID;
         }
-        if (!LANG_ID.equalsIgnoreCase(selected) && !LANG_EN.equalsIgnoreCase(selected)) {
-            prefs.edit().putString(KEY_LANG, LANG_ID).apply();
-            return LANG_ID;
-        }
-        return selected;
+        if (LANG_EN.equalsIgnoreCase(selected)) return LANG_EN;
+        if (LANG_ID.equalsIgnoreCase(selected)) return LANG_ID;
+        prefs.edit().putString(KEY_LANG, LANG_ID).apply();
+        return LANG_ID;
     }
 
     public static void setLanguage(Context ctx, String lang) {
@@ -43,6 +42,19 @@ final class AppLanguage {
                 .edit()
                 .putString(KEY_LANG, normalized)
                 .apply();
+
+        // Keep Android 13+ system per-app language settings aligned with the launcher's selector.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            android.app.LocaleManager localeManager =
+                    (android.app.LocaleManager) ctx.getSystemService(Context.LOCALE_SERVICE);
+            if (localeManager != null) {
+                android.os.LocaleList current = localeManager.getApplicationLocales();
+                String currentTags = current == null ? "" : current.toLanguageTags();
+                if (!normalized.equalsIgnoreCase(currentTags)) {
+                    localeManager.setApplicationLocales(android.os.LocaleList.forLanguageTags(normalized));
+                }
+            }
+        }
     }
 
     public static String getLanguageDisplayName(Context ctx) {
