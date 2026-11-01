@@ -251,7 +251,7 @@ public final class UserSwitchDialog {
 
         // Close / Batal Button
         Button btnClose = new Button(activity);
-        btnClose.setText("Tutup");
+        btnClose.setText(R.string.close_label);
         btnClose.setTextSize(14);
         btnClose.setTextColor(0xFFE2E8F0);
         btnClose.setTypeface(outfit, Typeface.BOLD);
