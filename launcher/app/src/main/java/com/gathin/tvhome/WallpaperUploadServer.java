@@ -13,10 +13,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
@@ -79,33 +77,9 @@ public class WallpaperUploadServer {
         return localized(resourceId).replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ");
     }
 
-    public static String getLocalIpAddress() {
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            Collections.sort(interfaces, (a, b) -> {
-                String an = a.getName().toLowerCase(Locale.ROOT);
-                String bn = b.getName().toLowerCase(Locale.ROOT);
-                boolean aPreferred = an.startsWith("wlan") || an.startsWith("eth");
-                boolean bPreferred = bn.startsWith("wlan") || bn.startsWith("eth");
-                if (aPreferred != bPreferred) return aPreferred ? -1 : 1;
-                return an.compareTo(bn);
-            });
-            for (NetworkInterface nif : interfaces) {
-                if (nif.isLoopback() || !nif.isUp()) continue;
-                List<InetAddress> addrs = Collections.list(nif.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress() && addr instanceof Inet4Address) {
-                        String ip = addr.getHostAddress();
-                        if (ip != null && !ip.startsWith("127.") && !ip.startsWith("169.254.")) {
-                            return ip;
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Error resolving IP: " + e.getMessage());
-        }
-        return "127.0.0.1";
+    /** Active default Wi-Fi/Ethernet IPv4 used by the QR upload route. */
+    public static String getLocalIpAddress(Context context) {
+        return LocalNetworkAddress.getActiveLanIpv4(context);
     }
 
     /** Session-specific route; the StandBy QR never points at the wallpaper uploader. */
@@ -188,7 +162,7 @@ public class WallpaperUploadServer {
 
     public synchronized boolean start() {
         if (running) return true;
-        String selectedIp = getLocalIpAddress();
+        String selectedIp = getLocalIpAddress(context);
         if (selectedIp == null || selectedIp.trim().isEmpty() || "127.0.0.1".equals(selectedIp)) {
             Log.e(TAG, "No usable local IPv4 interface for upload server");
             return false;
