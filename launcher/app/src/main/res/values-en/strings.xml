@@ -261,4 +261,31 @@
     <string name="launcher_settings_unsupported">Launcher selection settings are not supported by this firmware.</string>
     <string name="adb_home_command_hint">Command: adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity</string>
     <string name="installer_phone_hint">Open glass-tv-installer.apk on a phone connected to the same Wi-Fi network.</string>
+
+    <string name="next_wallpaper_toast">Showing the next wallpaper...</string>
+    <string name="wallpaper_description_disabled">Wallpaper description turned off (clean look).</string>
+    <string name="wallpaper_description_enabled">Wallpaper description turned on.</string>
+    <string name="assistant_unavailable">Google Assistant could not be opened.</string>
+    <string name="wallpaper_category_selected">Category: %1$s</string>
+    <string name="default_wallpaper_missing">Default wallpaper is unavailable; a safe background is shown.</string>
+    <string name="wallpaper_download_started">Downloading 4K wallpaper %1$s (Pexels &amp; Unsplash)...</string>
+    <string name="wallpaper_pinned">📌 Pinned wallpaper: %1$s</string>
+    <string name="wallpaper_shuffle_enabled">🔄 Shuffle all wallpapers is on (%1$d photos)</string>
+    <string name="wallpaper_deleted_remaining">🗑️ Image deleted. %1$d photos remain.</string>
+    <string name="wallpaper_all_deleted_default">All images deleted. Switching to Natural wallpaper.</string>
+    <string name="wallpaper_removed_storage">🗑️ Image removed from storage.</string>
+    <string name="wallpaper_all_uploaded_deleted">🧹 All uploaded images have been deleted.</string>
+    <string name="wallpaper_manage_title">📁 Manage Uploaded Images</string>
+    <string name="wallpaper_manage_empty">There are no personal images in TV storage. You can upload images from your phone using the QR code.</string>
+    <string name="wallpaper_open_qr_action">📲 Open QR Code</string>
+    <string name="delete_all_wallpapers_title">⚠️ Delete All Images?</string>
+    <string name="delete_all_wallpapers_message">Are you sure you want to delete all %1$d uploaded images?</string>
+    <string name="delete_all_action">Yes, Delete All</string>
+    <string name="tv_wallpaper_manager_title">📱 TV Image Manager (%1$d photos)</string>
+    <string name="wallpaper_other_deleted">🧹 Other images deleted. This image was kept.</string>
+    <string name="region_picker_title">🌏 Choose Country / Asia Region</string>
+    <string name="region_selected">Region selected: %1$s</string>
+    <string name="city_picker_title">📍 Choose City / Station (%1$s)</string>
+    <string name="weather_location_selected">Location: %1$s (%2$s)</string>
+    <string name="qr_waiting_for_photo">📡 Waiting for a photo from your phone...</string>
 </resources>
