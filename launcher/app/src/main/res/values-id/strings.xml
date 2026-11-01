@@ -119,4 +119,28 @@
     <string name="weather_condition_storm">Ribut Petir</string>
     <string name="weather_condition_rain">Hujan</string>
     <string name="weather_condition_cloudy">Mendung</string>
+
+    <string name="switch_user_title">Ganti Pengguna</string>
+    <string name="switch_user_subtitle">Pilih profil yang akan digunakan pada perangkat ini</string>
+    <string name="switch_user_section">PILIH PENGGUNA (PROFIL)</string>
+    <string name="add_user_label">Tambah</string>
+    <string name="profile_already_active">Profil %1$s sudah aktif</string>
+    <string name="parent_pin_delete_title">Verifikasi PIN Orang Tua</string>
+    <string name="parent_pin_delete_message">Masukkan PIN orang tua untuk menghapus profil %1$s</string>
+    <string name="delete_profile_title">Hapus profil %1$s?</string>
+    <string name="delete_profile_message">Semua pengaturan dan foto milik profil ini akan dihapus. Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="cancel_action">Batal</string>
+    <string name="delete_action">Hapus</string>
+    <string name="profile_deleted">Profil %1$s berhasil dihapus</string>
+    <string name="profile_delete_failed">Profil tidak dapat dihapus. Pastikan masih ada profil lain.</string>
+    <string name="profile_active_message">Profil aktif: %1$s%2$s</string>
+    <string name="child_mode_suffix"> (Mode Anak)</string>
+    <string name="add_user_title">➕ Tambah Pengguna Baru</string>
+    <string name="add_user_subtitle">Masukkan nama dan pilih avatar untuk profil ini</string>
+    <string name="add_user_name_hint">Contoh: Ibu, Ayah, Adik</string>
+    <string name="choose_avatar_label">PILIH AVATAR</string>
+    <string name="child_profile_checkbox">Tandai sebagai Profil Anak (Mode Anak Otomatis)</string>
+    <string name="save_profile_action">Simpan Profil</string>
+    <string name="user_name_required">Silakan masukkan nama pengguna</string>
+    <string name="profile_created">✨ Profil %1$s berhasil dibuat!</string>
 </resources>
