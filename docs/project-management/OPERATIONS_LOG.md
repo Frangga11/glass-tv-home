@@ -297,3 +297,13 @@
 - APK exact size 1,551,005 bytes; 21,859 bytes below the 1,572,864-byte gate. Size gate passed; manual APK publication skipped.
 - D05 source/CI gates closed. Runtime/process-death/reboot/physical Android TV acceptance remains mandatory in F-stage; no APK installed and no merge performed.
 - Next: D06, following the exact scope in the current roadmap.
+
+## 2026-11-01 — D06 process-death and reboot recovery closure
+
+- Completed D06 on isolated branch `feature/d06-process-death-recovery`, head `548581e909139dd67b2ddc725bb546a838c75702`; Draft PR #30 remains OPEN/DRAFT/UNMERGED under D-013, stacked on D05 exact head.
+- Audited persistence/recovery paths for app-owned settings, profiles/avatars, Child Mode, StandBy photos, wallpaper, language, caches, config overlay and scheduled prayer alarms.
+- Fixed D06-F01: Android clears AlarmManager alarms on reboot. Added RECEIVE_BOOT_COMPLETED permission and non-exported AzanBootReceiver; it resolves the saved prayer zone and delegates to existing Azan.schedule(), preserving existing enable switches and schedule calculation. Four JVM regression tests added.
+- Exact-head CI #398 / `41311958235`: both Launcher build/unit tests and Lists/tools/docs jobs SUCCESS. App/installer `testReleaseUnitTest` and `assembleRelease` succeeded.
+- APK exact size **1,551,217 bytes**; **21,647 bytes** below the 1,572,864-byte gate. Size gate passed; manual APK publication skipped.
+- D06 source and CI gates closed. Process-death, force-stop and physical Android TV reboot/alarm acceptance remains mandatory in F-stage; deferred and not waived. No APK installed and no merge performed.
+- Next: D07 — read exact assignment from canonical roadmap/handover before coding.
