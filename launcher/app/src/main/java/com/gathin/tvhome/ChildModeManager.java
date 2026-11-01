@@ -142,43 +142,71 @@ public final class ChildModeManager {
     }
 
     public static boolean isAppLocked(Context ctx, String pkg) {
-        if (ctx == null || pkg == null || !isChildModeEnabled(ctx)) return false;
-        return getLockedApps(ctx).contains(pkg);
+        if (ctx == null || pkg == null) return false;
+        String profileId = activeProfileId(ctx);
+        return isChildModeEnabled(ctx, profileId) && getLockedApps(ctx, profileId).contains(pkg);
     }
 
     public static void setAppLocked(Context ctx, String pkg, boolean locked) {
         if (ctx == null || pkg == null) return;
-        SharedPreferences sp = profilePrefs(ctx);
-        String key = profileKey(activeProfileId(ctx), KEY_LOCKED_APPS);
-        Set<String> set = new HashSet<>(sp.getStringSet(key, new HashSet<>()));
-        if (locked) set.add(pkg); else set.remove(pkg);
-        sp.edit().putStringSet(key, set).apply();
+        synchronized (ChildModeManager.class) {
+            String profileId = activeProfileId(ctx);
+            updatePackageMembership(profilePrefs(ctx), profileId, KEY_LOCKED_APPS, pkg, locked);
+        }
     }
 
     public static Set<String> getLockedApps(Context ctx) {
-        if (ctx == null) return new HashSet<>();
-        return new HashSet<>(profilePrefs(ctx).getStringSet(
-                profileKey(activeProfileId(ctx), KEY_LOCKED_APPS), new HashSet<>()));
+        return ctx == null ? new HashSet<>() : getLockedApps(ctx, activeProfileId(ctx));
+    }
+
+    static Set<String> getLockedApps(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return new HashSet<>();
+        synchronized (ChildModeManager.class) {
+            return new HashSet<>(profilePrefs(ctx).getStringSet(
+                    profileKey(profileId, KEY_LOCKED_APPS), new HashSet<>()));
+        }
     }
 
     public static boolean isAppHidden(Context ctx, String pkg) {
-        if (ctx == null || pkg == null || !isChildModeEnabled(ctx)) return false;
-        return getHiddenApps(ctx).contains(pkg);
+        if (ctx == null || pkg == null) return false;
+        String profileId = activeProfileId(ctx);
+        return isChildModeEnabled(ctx, profileId) && getHiddenApps(ctx, profileId).contains(pkg);
     }
 
     public static void setAppHidden(Context ctx, String pkg, boolean hidden) {
         if (ctx == null || pkg == null) return;
-        SharedPreferences sp = profilePrefs(ctx);
-        String key = profileKey(activeProfileId(ctx), KEY_HIDDEN_APPS);
-        Set<String> set = new HashSet<>(sp.getStringSet(key, new HashSet<>()));
-        if (hidden) set.add(pkg); else set.remove(pkg);
-        sp.edit().putStringSet(key, set).apply();
+        synchronized (ChildModeManager.class) {
+            String profileId = activeProfileId(ctx);
+            updatePackageMembership(profilePrefs(ctx), profileId, KEY_HIDDEN_APPS, pkg, hidden);
+        }
     }
 
     public static Set<String> getHiddenApps(Context ctx) {
-        if (ctx == null) return new HashSet<>();
-        return new HashSet<>(profilePrefs(ctx).getStringSet(
-                profileKey(activeProfileId(ctx), KEY_HIDDEN_APPS), new HashSet<>()));
+        return ctx == null ? new HashSet<>() : getHiddenApps(ctx, activeProfileId(ctx));
+    }
+
+    static Set<String> getHiddenApps(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return new HashSet<>();
+        synchronized (ChildModeManager.class) {
+            return new HashSet<>(profilePrefs(ctx).getStringSet(
+                    profileKey(profileId, KEY_HIDDEN_APPS), new HashSet<>()));
+        }
+    }
+
+    private static void updatePackageMembership(SharedPreferences preferences, String profileId,
+                                                String keyName, String packageName, boolean enabled) {
+        String key = profileKey(profileId, keyName);
+        Set<String> current = new HashSet<>(preferences.getStringSet(key, new HashSet<>()));
+        Set<String> updated = updatedPackageSet(current, packageName, enabled);
+        preferences.edit().putStringSet(key, updated).apply();
+    }
+
+    static Set<String> updatedPackageSet(Set<String> current, String packageName, boolean enabled) {
+        Set<String> updated = current == null ? new HashSet<>() : new HashSet<>(current);
+        if (packageName != null) {
+            if (enabled) updated.add(packageName); else updated.remove(packageName);
+        }
+        return updated;
     }
 
     /**
