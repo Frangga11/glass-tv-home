@@ -411,6 +411,8 @@
     <string name="screensaver_settings_section">TAMPILAN &amp; SIAGA TV</string>
     <string name="cache_system_trim_success">Cache aplikasi dan cache sistem Android berhasil diproses.</string>
     <string name="cache_system_trim_skipped">Cache aplikasi dibersihkan. Cache sistem Android belum diproses karena akses ADB tidak tersedia atau belum diizinkan.</string>
+    <string name="phone_installer_qr_hint">Pindai QR ini dengan HP Android untuk membuka folder installer resmi.</string>
+    <string name="phone_installer_steps">1. Pindai QR menggunakan HP Android.\n2. Unduh glass-tv-installer.apk dari folder release.\n3. Sambungkan HP dan TV ke jaringan Wi-Fi yang sama.\n4. Buka installer, masukkan IP TV atau pindai jaringan, lalu ikuti petunjuk ADB di layar TV.</string>
     <string name="home_key_status_title">Layanan Tombol HOME</string>
     <string name="home_key_status_summary">Status: %1$s. Dibutuhkan untuk remote tertentu, mulai ulang, dan fungsi daya.</string>
     <string name="input_key_status_title">Layanan Tombol INPUT</string>
