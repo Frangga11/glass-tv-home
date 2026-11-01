@@ -153,7 +153,7 @@ public final class AppUpdateManager {
         if (!isActivityUsable(activity)) return;
 
         if (manualCheck) {
-            Toast.makeText(activity, activity.getString(R.string.update_checking), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, activity.getString(R.string.update_checking), Toast.LENGTH_SHORT);
         }
 
         executor.execute(() -> {
@@ -170,7 +170,7 @@ public final class AppUpdateManager {
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     if (manualCheck) {
                         mainHandler.post(() -> {
-                            if (isActivityUsable(activity)) Toast.makeText(activity, activity.getString(R.string.update_http_failure, responseCode), Toast.LENGTH_SHORT).show();
+                            if (isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.update_http_failure, responseCode), Toast.LENGTH_SHORT);
                         });
                     }
                     conn.disconnect();
@@ -224,7 +224,7 @@ public final class AppUpdateManager {
                             ((MainActivity) activity).updateSettingsBadge();
                         }
                         if (manualCheck) {
-                            Toast.makeText(activity, activity.getString(R.string.update_latest_version, currentVersionName), Toast.LENGTH_LONG).show();
+                            TvFeedback.show(activity, activity.getString(R.string.update_latest_version, currentVersionName), Toast.LENGTH_LONG);
                         }
                     }
                 });
@@ -233,7 +233,7 @@ public final class AppUpdateManager {
                 Log.e(TAG, "Error checking updates: " + e.getMessage());
                 if (manualCheck) {
                     mainHandler.post(() -> {
-                        if (isActivityUsable(activity)) Toast.makeText(activity, activity.getString(R.string.update_check_error), Toast.LENGTH_SHORT).show();
+                        if (isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.update_check_error), Toast.LENGTH_SHORT);
                     });
                 }
             } finally {
@@ -262,7 +262,7 @@ public final class AppUpdateManager {
             SoundEffects.playSelect();
             skipUpdate(activity, remoteVersionCode);
             dialog.dismiss();
-            Toast.makeText(activity, activity.getString(R.string.update_deferred), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, activity.getString(R.string.update_deferred), Toast.LENGTH_SHORT);
         });
 
         AlertDialog dialog = builder.create();
@@ -283,7 +283,7 @@ public final class AppUpdateManager {
                                 Uri.parse("package:" + activity.getPackageName()));
                         activity.startActivity(intent);
                     } catch (Exception e) {
-                        Toast.makeText(activity, R.string.install_unknown_apps_hint, Toast.LENGTH_LONG).show();
+                        TvFeedback.show(activity, R.string.install_unknown_apps_hint, Toast.LENGTH_LONG);
                     }
                 });
                 permDialog.setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss());
@@ -356,7 +356,7 @@ public final class AppUpdateManager {
                 Log.e(TAG, "Download error: " + e.getMessage());
                 mainHandler.post(() -> {
                     if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.dismiss();
-                    if (isActivityUsable(activity)) Toast.makeText(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG).show();
+                    if (isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG);
                 });
             } finally {
                 try {
@@ -372,7 +372,7 @@ public final class AppUpdateManager {
     private static void installApk(Activity activity, File apkFile) {
         if (!isActivityUsable(activity)) return;
         if (!apkFile.exists() || !apkFile.isFile() || apkFile.length() <= 0) {
-            Toast.makeText(activity, R.string.update_apk_missing, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, R.string.update_apk_missing, Toast.LENGTH_SHORT);
             return;
         }
 
@@ -385,7 +385,7 @@ public final class AppUpdateManager {
             activity.startActivity(intent);
         } catch (Exception e) {
             Log.e(TAG, "Install error: " + e.getMessage());
-            Toast.makeText(activity, activity.getString(R.string.install_update_error, e.getMessage()), Toast.LENGTH_LONG).show();
+            TvFeedback.show(activity, activity.getString(R.string.install_update_error, e.getMessage()), Toast.LENGTH_LONG);
         }
     }
 }
