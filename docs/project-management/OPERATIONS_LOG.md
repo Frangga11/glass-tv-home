@@ -169,3 +169,14 @@
 - Scanned 63 launcher Java files for transient messages, dialogs, loading/progress, delayed callbacks, and network/socket timeouts.
 - Initial finding: feedback calls are distributed across Activities/managers; OTA still uses `ProgressDialog`; avatar/wallpaper QR pages expose separate browser-side statuses. No shared feedback abstraction/Snackbar usage found.
 - No B06 code changes yet. Next action is to complete the feedback taxonomy and lifecycle ownership audit before implementing a shared pattern. Preserve locale, D-pad focus, and operation-specific transport timeouts.
+
+
+## 1 November 2026 — B06 source/CI closure
+
+- Completed B06 on `feature/b06-notification-feedback`, exact head `bc86a250d73a5cbb83250217d42c3c3993cf29d7`; Draft PR #16 remains unmerged per D-013.
+- Centralized 108 Toast call sites across 10 app-layer Java files via `TvFeedback`; added lifecycle and duration policy tests.
+- Hardened OTA check/download, indeterminate/determinate loading, cancellation, and partial APK cleanup; added Avatar/Wallpaper/Standby QR progress and timeout feedback; added wallpaper category sync result feedback.
+- Preserved operation-specific timeout budgets. Static resource parity: 566 keys in default/ID/EN with zero differences or placeholder mismatches.
+- Exact-head CI run #295 / `41280874732` passed both jobs; APK publication skipped. No APK/device changes.
+- Final device/runtime/phone QR acceptance remains deferred to F-stage. B07 is next.
+- Evidence: `B06_FEEDBACK_AUDIT.md`.
