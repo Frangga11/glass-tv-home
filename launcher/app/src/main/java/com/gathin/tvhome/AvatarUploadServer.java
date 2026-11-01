@@ -297,14 +297,17 @@ public final class AvatarUploadServer {
                 + "main{max-width:460px;margin:auto;background:#172235;padding:24px;border-radius:20px}button,input{width:100%;padding:14px;margin:12px 0}"
                 + "button{background:#7dd3fc;border:0;border-radius:12px;font-weight:700}#s{color:#bae6fd}</style>"
                 + "<main><h2>📷 " + localized(R.string.avatar_upload_heading) + "</h2><p>" + localized(R.string.avatar_upload_intro) + "</p>"
-                + "<input id='f' type='file' accept='image/jpeg,image/png,image/webp'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
-                + "<script>const f=document.getElementById('f'),b=document.getElementById('b'),s=document.getElementById('s');"
-                + "f.onchange=()=>b.disabled=!f.files.length;b.onclick=()=>{const x=f.files[0];if(!x)return;b.disabled=true;s.textContent='" + localized(R.string.avatar_upload_sending) + "';"
-                + "const r=new XMLHttpRequest();r.open('POST','" + endpoint + "');r.timeout=" + NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS + ";r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"
+                + "<input id='f' type='file' accept='image/jpeg,image/png,image/webp'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><button id='c' type='button' hidden>" + localized(R.string.cancel_action) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
+                + "<script>const f=document.getElementById('f'),b=document.getElementById('b'),s=document.getElementById('s'),c=document.getElementById('c');let active=null;"
+                + "f.onchange=()=>b.disabled=!f.files.length;c.onclick=()=>{if(active)active.abort();};"
+                + "b.onclick=()=>{const x=f.files[0];if(!x||active)return;b.disabled=true;c.hidden=false;s.textContent='" + localized(R.string.avatar_upload_sending) + "';"
+                + "const r=new XMLHttpRequest();active=r;r.open('POST','" + endpoint + "');r.timeout=" + NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS + ";r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"
+                + "const finish=()=>{active=null;c.hidden=true;b.disabled=false;};"
                 + "r.upload.onprogress=e=>{if(e.lengthComputable)s.textContent='" + localized(R.string.avatar_upload_sending) + " '+Math.round(e.loaded/e.total*100)+'%';};"
-                + "r.onload=()=>{s.textContent=r.status===200?'" + localized(R.string.avatar_upload_success) + "':'" + localized(R.string.avatar_upload_failed_prefix) + " '+r.responseText;b.disabled=false;};"
-                + "r.onerror=()=>{s.textContent='" + localized(R.string.avatar_upload_connection_error) + "';b.disabled=false;};"
-                + "r.ontimeout=()=>{s.textContent='" + localized(R.string.avatar_upload_timeout) + "';b.disabled=false;};r.send(x);};</script></html>";
+                + "r.onload=()=>{s.textContent=r.status===200?'" + localized(R.string.avatar_upload_success) + "':'" + localized(R.string.avatar_upload_failed_prefix) + " '+r.responseText;finish();};"
+                + "r.onerror=()=>{s.textContent='" + localized(R.string.avatar_upload_connection_error) + "';finish();};"
+                + "r.ontimeout=()=>{s.textContent='" + localized(R.string.avatar_upload_timeout) + "';finish();};"
+                + "r.onabort=()=>{s.textContent='" + localized(R.string.cancel_action) + "';finish();};r.send(x);};</script></html>";
     }
 
     private void respondMethodNotAllowed(OutputStream out, String allowed) throws Exception {
