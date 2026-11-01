@@ -1,7 +1,7 @@
 # D02 — Settings Change / Dependent UI Propagation Audit
 
 **Date:** 1 November 2026  
-**Status:** SOURCE AUDIT COMPLETE — NO CONFIRMED PROPAGATION DEFECT — NO SOURCE CHANGE JUSTIFIED  
+**Status:** TARGETED SOURCE REPAIR COMPLETE — EXACT-HEAD CI PENDING — DEVICE ACCEPTANCE DEFERRED  
 **Branch:** `feature/d02-settings-ui-propagation`  
 **Parent:** D01 exact head `cd710681099faece14905faa244f57245bae84d1`  
 **Merge policy:** D-013 — isolated Draft PR; no early merge.
@@ -36,7 +36,7 @@ The audit is limited to source-level call paths on the exact D01 parent. It does
 | Icon glow | `MainActivity.setIconGlowEffectsEnabled()` writes `wallpaper_prefs` | Applies/cancels glow and synchronizes glass glow immediately | PASS |
 | Wallpaper description | `MainActivity` toggle writes `wallpaper_prefs` | Hides/shows hero shelf and refreshes current wallpaper metadata when enabled | PASS |
 | Wallpaper shuffle/category/next | MainActivity wallpaper controls update wallpaper preference/cycle state | Selection flow applies next wallpaper and resets/restarts the appropriate cycle/timer | PASS |
-| StandBy photo mode | `MainActivity.setStandbyPhotoMode()` delegates to `StandbyPhotoStore` | Clears displayed-photo cursor and refreshes the active Nightstand/screensaver view; empty collection is rejected with feedback | PASS WITH D01-F11 CAVEAT |
+| StandBy photo mode | `MainActivity.setStandbyPhotoMode()` delegates to `StandbyPhotoStore` | Now checks the synchronous commit result; refreshes screensaver and shows success only after persistence succeeds. Empty collection and failed commit retain the prior state and show an error; Settings pane rerenders from persisted state | PASS AFTER D02-F01 FIX |
 | Profile name/avatar | `ProfileManager` mutation from Settings | Updates Settings profile labels/avatar, sidebar card and Home top-bar user icon; pane is rerendered where needed | PASS |
 | Profile switch / add / delete | `UserSwitchDialog` / `ProfileManager` callbacks | Settings sidebar and right pane are rebuilt; Home's `onResume()` refreshes tiles and top-bar profile state | PASS |
 | Child Mode | `ChildModeManager` profile-scoped mutation | Reloads Home tiles, refreshes top-bar identity, updates sidebar and rerenders Settings after PIN result | PASS |
@@ -55,11 +55,13 @@ The audit is limited to source-level call paths on the exact D01 parent. It does
 
 ## 5. Findings and disposition
 
-No new D02 finding was confirmed in the inspected in-app settings mutation paths. The existing architecture uses explicit owner callbacks and direct updates to the dependent live views; separate-Activity changes are reconciled on Home return through `onResume()` or an explicit completion callback.
+**D02-F01 — CONFIRMED / FIXED (MEDIUM): StandBy mode toggle ignored persistence failure.** `StandbyPhotoStore.setPhotoMode()` returns the synchronous `commit()` result, but `MainActivity.setStandbyPhotoMode()` previously ignored it, refreshed the screensaver and emitted a success message unconditionally. On a failed write, the setting could remain unchanged while the UI had already claimed success. The setter now checks the result, leaves the live screensaver untouched on failure, emits a localized error, and returns the actual success state. The Settings pane's existing rerender reads the persisted value, restoring the switch to the real state. This does not change preference keys, storage ownership, or saved user data.
+
+The other inspected in-app settings mutation paths use explicit owner callbacks and direct updates to dependent live views; separate-Activity changes are reconciled on Home return through `onResume()` or an explicit completion callback.
 
 A global `SharedPreferences.OnSharedPreferenceChangeListener` or generic event bus is not justified by the evidence. Adding one would duplicate existing state ownership, introduce listener lifecycle/leak and ordering risks, and make the UI react to storage changes without knowing the semantic operation or whether it succeeded.
 
-**Known adjacent issue, not closed by D02:** D01-F11 — StandBy upload can report success even if photo-mode persistence fails. D05/D07 remain responsible for the targeted atomic/failure-aware correction and regression tests. Do not alter C07's unrelated upload/session hardening.
+**Still open, owned by D05/D07:** D01-F11 — StandBy upload can report success even if photo-mode persistence fails after collection metadata has been saved. D05/D07 remain responsible for the atomic/failure-aware upload correction and regression tests. Do not alter C07's unrelated upload/session hardening.
 
 ## 6. Guardrails and deferred acceptance
 
@@ -75,5 +77,5 @@ A global `SharedPreferences.OnSharedPreferenceChangeListener` or generic event b
 
 - Parent source: D01 exact head `cd710681099faece14905faa244f57245bae84d1`.
 - Inspected Settings callbacks, MainActivity owner setters and lifecycle refresh, profile/child-mode callbacks, LocationActivity, WeatherActivity, StandbyPhotoStore and wallpaper update paths.
-- No application source or test code was changed because no D02 source-level defect was demonstrated.
-- Exact-head CI is required for this audit branch; CI does not substitute for deferred device acceptance.
+- Targeted application change: `MainActivity.setStandbyPhotoMode()` now propagates commit failure correctly; localized error string added to default, Indonesian and English resources.
+- No broad state refactor or data migration was performed. Exact-head CI is required for this branch; CI does not substitute for deferred device acceptance.
