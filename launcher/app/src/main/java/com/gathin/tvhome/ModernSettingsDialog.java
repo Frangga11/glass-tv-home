@@ -449,7 +449,7 @@ public final class ModernSettingsDialog {
 
                 // Section 1: Active Profile Avatars
                 TextView tvAvatars = new TextView(activity);
-                tvAvatars.setText("AVATAR PROFIL AKTIF (" + activeP.name.toUpperCase() + ")");
+                tvAvatars.setText(activity.getString(R.string.active_profile_avatar_header, activeP.name.toUpperCase()));
                 tvAvatars.setTextSize(11.5f);
                 tvAvatars.setTextColor(0xFF8E929E);
                 tvAvatars.setTypeface(outfit, Typeface.BOLD);
@@ -517,7 +517,7 @@ public final class ModernSettingsDialog {
                         SoundEffects.playSelect();
                         // Selecting a built-in avatar replaces a personal photo only after its reference is cleared safely.
                         if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
-                            Toast.makeText(activity, "Foto avatar belum dapat dihapus. Avatar tidak diubah.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG).show();
                             return;
                         }
                         ProfileManager.setAvatarIndex(activity, idx);
@@ -535,7 +535,7 @@ public final class ModernSettingsDialog {
                                     Math.round(32 * density), refreshedChildMode));
                         }
                         activity.updateTopBarUserIcon();
-                        Toast.makeText(activity, "✨ Avatar dipilih: " + ProfileManager.AVATAR_NAMES[idx], Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, activity.getString(R.string.avatar_selected_toast, ProfileManager.AVATAR_NAMES[idx]), Toast.LENGTH_SHORT).show();
                     });
 
                     avatarRow.addView(frame);
@@ -548,7 +548,7 @@ public final class ModernSettingsDialog {
                 avatarPhotoActions.setPadding(0, 0, 0, (int) (12 * density));
 
                 Button uploadAvatarButton = new Button(activity);
-                uploadAvatarButton.setText("📲 Ganti Foto Avatar via QR Code");
+                uploadAvatarButton.setText(R.string.avatar_upload_qr_action);
                 uploadAvatarButton.setTextColor(0xFFFFFFFF);
                 uploadAvatarButton.setTextSize(13);
                 uploadAvatarButton.setAllCaps(false);
@@ -574,7 +574,7 @@ public final class ModernSettingsDialog {
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
 
                 Button defaultAvatarButton = new Button(activity);
-                defaultAvatarButton.setText("↩ Gunakan Avatar Bawaan");
+                defaultAvatarButton.setText(R.string.avatar_use_default_action);
                 defaultAvatarButton.setTextColor(0xFFCBD5E1);
                 defaultAvatarButton.setTextSize(13);
                 defaultAvatarButton.setAllCaps(false);
@@ -591,7 +591,7 @@ public final class ModernSettingsDialog {
                 defaultAvatarLp.topMargin = (int) (6 * density);
                 defaultAvatarButton.setOnClickListener(v -> {
                     if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
-                        Toast.makeText(activity, "Foto avatar belum dapat dihapus. Foto lama tetap digunakan.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG).show();
                         return;
                     }
                     ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
@@ -603,7 +603,7 @@ public final class ModernSettingsDialog {
                                 Math.round(32 * density), restoredChildMode));
                     }
                     activity.updateTopBarUserIcon();
-                    Toast.makeText(activity, "Avatar bawaan dipulihkan.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.avatar_default_restored, Toast.LENGTH_SHORT).show();
                 });
                 avatarPhotoActions.addView(defaultAvatarButton, defaultAvatarLp);
                 rightContent.addView(avatarPhotoActions);
@@ -689,7 +689,7 @@ public final class ModernSettingsDialog {
                 // Section 2: Manage All Users (Add & Delete User)
                 List<ProfileManager.UserProfile> allProfiles = ProfileManager.getAllProfiles(activity);
                 TextView tvUserList = new TextView(activity);
-                tvUserList.setText("DAFTAR PROFIL (" + allProfiles.size() + ")");
+                tvUserList.setText(activity.getString(R.string.profile_list_header, allProfiles.size()));
                 tvUserList.setTextSize(11.5f);
                 tvUserList.setTextColor(0xFF8E929E);
                 tvUserList.setTypeface(outfit, Typeface.BOLD);
@@ -722,7 +722,7 @@ public final class ModernSettingsDialog {
                     pRow.addView(ivP, ivpLp2);
 
                     TextView tvPName = new TextView(activity);
-                    tvPName.setText(p.name + (profileChildMode ? " (Mode Anak)" : ""));
+                    tvPName.setText(p.name + (profileChildMode ? activity.getString(R.string.child_mode_suffix) : ""));
                     tvPName.setTextSize(13.5f);
                     tvPName.setTextColor(0xFFFFFFFF);
                     tvPName.setTypeface(outfit, isCur ? Typeface.BOLD : Typeface.NORMAL);
@@ -730,14 +730,14 @@ public final class ModernSettingsDialog {
 
                     if (isCur) {
                         TextView tvTag = new TextView(activity);
-                        tvTag.setText("Aktif ✓");
+                        tvTag.setText(R.string.active_label);
                         tvTag.setTextSize(11f);
                         tvTag.setTextColor(0xFF38BDF8);
                         tvTag.setTypeface(outfit, Typeface.BOLD);
                         pRow.addView(tvTag);
                     } else if (allProfiles.size() > 1) {
                         TextView tvDel = new TextView(activity);
-                        tvDel.setText("🗑️ Hapus");
+                        tvDel.setText(R.string.delete_label);
                         tvDel.setTextSize(11.5f);
                         tvDel.setTextColor(0xFFF87171);
                         tvDel.setTypeface(outfit, Typeface.NORMAL);
@@ -767,12 +767,12 @@ public final class ModernSettingsDialog {
                     pRow.setOnClickListener(v -> {
                         SoundEffects.playSelect();
                         if (isCur) {
-                            Toast.makeText(activity, "Profil " + p.name + " sudah aktif", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.profile_already_active, p.name), Toast.LENGTH_SHORT).show();
                         } else {
                             // Show options: Switch or Delete
                             AlertDialog.Builder ob = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
-                            ob.setTitle("Pengguna: " + p.name);
-                            String[] opts = allProfiles.size() > 1 ? new String[]{"✨ Beralih ke Profil Ini", "🗑️ Hapus Pengguna"} : new String[]{"✨ Beralih ke Profil Ini"};
+                            ob.setTitle(activity.getString(R.string.profile_user_title, p.name));
+                            String[] opts = allProfiles.size() > 1 ? new String[]{activity.getString(R.string.switch_profile_action), activity.getString(R.string.delete_user_action)} : new String[]{activity.getString(R.string.switch_profile_action)};
                             ob.setItems(opts, (d, which) -> {
                                 if (which == 0) {
                                     UserSwitchDialog.requestProfileSwitch(activity, p, null, () -> {
@@ -798,7 +798,7 @@ public final class ModernSettingsDialog {
                 }
 
                 // Add User Button
-                LinearLayout addUserBtn = buildCardRow(activity, density, outfit, "➕ Tambah Profil Baru", "Buat profil untuk anggota keluarga atau anak", () -> {
+                LinearLayout addUserBtn = buildCardRow(activity, density, outfit, activity.getString(R.string.add_profile_card_title), activity.getString(R.string.add_profile_card_summary), () -> {
                     SoundEffects.playSelect();
                     UserSwitchDialog.showAddProfileDialog(activity, density, outfit, () -> {
                         updateSidebarSelection.run();
@@ -809,24 +809,24 @@ public final class ModernSettingsDialog {
 
                 // Child Mode belongs with user/profile management, not as a separate navigation destination.
                 // === PARENTAL CONTROLS: GROUPED UNDER PROFILE ===
-                addSectionHeader(rightContent, outfit, "PENGAWASAN ORANG TUA");
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.parent_controls_section));
 
                 boolean isChildOn = ChildModeManager.isChildModeEnabled(activity);
                 Set<String> lockedSet = ChildModeManager.getLockedApps(activity);
                 Set<String> hiddenSet = ChildModeManager.getHiddenApps(activity);
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🛡️ Status Mode Anak",
-                        "Kunci aplikasi dengan PIN 4 digit atau sembunyikan aplikasi dari layar utama",
+                        activity.getString(R.string.child_mode_switch_title),
+                        activity.getString(R.string.child_mode_switch_description),
                         isChildOn, isChecked -> {
-                            ChildModeManager.promptPin(activity, "Sahkan PIN Keselamatan", "Masukkan PIN 4 digit untuk mengubah mode ini", new ChildModeManager.PinCallback() {
+                            ChildModeManager.promptPin(activity, activity.getString(R.string.child_mode_pin_confirm_title), activity.getString(R.string.child_mode_pin_confirm_message), new ChildModeManager.PinCallback() {
                                 @Override
                                 public void onSuccess() {
                                     ChildModeManager.setChildModeEnabled(activity, isChecked);
                                     activity.reloadTiles();
                                     activity.updateTopBarUserIcon();
                                     updateSidebarSelection.run();
-                                    Toast.makeText(activity, isChecked ? "✅ Mode Anak diaktifkan!" : "Mode Anak dinonaktifkan", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, isChecked ? R.string.child_mode_enabled : R.string.child_mode_disabled, Toast.LENGTH_SHORT).show();
                                     if (renderRightPane[0] != null) renderRightPane[0].run();
                                 }
 
@@ -838,33 +838,33 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔒 Kunci Aplikasi dengan PIN (" + lockedSet.size() + " Aplikasi)",
-                        "Pilih aplikasi yang memerlukan PIN 4 digit untuk dibuka",
+                        activity.getString(R.string.lock_apps_count, lockedSet.size()),
+                        activity.getString(R.string.lock_apps_count_summary),
                         () -> showAppLockPicker(activity, density, outfit, false)));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "👁️ Sembunyikan Aplikasi (" + hiddenSet.size() + " Aplikasi)",
-                        "Pilih aplikasi yang disembunyikan dari dok dan kisi layar utama",
+                        activity.getString(R.string.hide_apps_count, hiddenSet.size()),
+                        activity.getString(R.string.hide_apps_count_summary),
                         () -> showAppLockPicker(activity, density, outfit, true)));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔢 Ubah PIN Keamanan",
-                        "Ubah PIN kontrol orang tua 4 digit (PIN saat ini: " + (ChildModeManager.getPin(activity).equals("0000") ? "0000 [Lalai]" : "••••") + ")",
+                        activity.getString(R.string.change_pin_title),
+                        activity.getString(R.string.change_pin_summary, ChildModeManager.getPin(activity).equals("0000") ? activity.getString(R.string.default_pin_label) : "••••"),
                         () -> showChangePinDialog(activity, density, outfit)));
 
             } else if (tab == TAB_HOME_SCREEN) {
                 // === TAB 1: HOME SCREEN (CONSOLIDATING CANDY BOX SETTINGS) ===
-                addHeader(rightContent, outfit, "Layar Utama");
+                addHeader(rightContent, outfit, AppLanguage.strHomeScreen(activity));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "Panel Doa Harian & Waktu Salat", "Tampilkan ayat pilihan dan jadwal salat sesuai waktu setempat",
+                        activity.getString(R.string.daily_prayer_panel_title), activity.getString(R.string.daily_prayer_panel_summary),
                         activity.isIslamicShelfEnabled(), isChecked -> {
                             activity.setIslamicShelfEnabled(isChecked);
                         }));
 
                 boolean ayahShown = WeeklyAyah.shown(activity);
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "📖 Ayat & Doa Harian", "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat",
+                        activity.getString(R.string.daily_ayah_title), activity.getString(R.string.daily_ayah_summary),
                         ayahShown, isChecked -> {
                             WeeklyAyah.setShown(activity, isChecked);
                             activity.showAyah(WeeklyAyah.last(activity));
@@ -872,47 +872,47 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔊 Efek Suara Antarmuka", "Pilih profil suara: PlayStation, Nintendo Switch, Xbox, atau tanpa suara",
+                        activity.getString(R.string.interface_sound_title), activity.getString(R.string.interface_sound_summary),
                         activity::showSoundEffectsDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🕌 Pengaturan Azan", "Atur audio azan dan tampilan pengingat waktu salat",
+                        activity.getString(R.string.azan_settings_title), activity.getString(R.string.azan_settings_summary),
                         activity::showAzanSettingsDialog));
 
             } else if (tab == TAB_APPEARANCE) {
                 // === TAB 2: APPEARANCE ===
-                addHeader(rightContent, outfit, "Tampilan");
+                addHeader(rightContent, outfit, AppLanguage.strAppearance(activity));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🖼️ Koleksi Wallpaper", "Pilih Wallpaper Default Kabut Pagi Dempo, koleksi alam, kota, laut, luar angkasa, atau Minimalis OLED.",
+                        activity.getString(R.string.wallpaper_collection_title), activity.getString(R.string.wallpaper_collection_summary),
                         activity::showWallpaperDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "⏱️ Interval Pergantian Wallpaper", "Atur seberapa sering wallpaper berganti otomatis.",
+                        activity.getString(R.string.wallpaper_interval_title), activity.getString(R.string.wallpaper_interval_summary),
                         activity::showWallpaperIntervalDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📁 Kelola Wallpaper Pribadi & Unggah dari HP",
-                        "Pilih, hapus, atau unggah foto wallpaper melalui QR. Pengelola ini hanya mengubah koleksi wallpaper.",
+                        activity.getString(R.string.wallpaper_manage_title_card),
+                        activity.getString(R.string.wallpaper_manage_summary_card),
                         activity::showCustomWallpaperManagerDialog));
 
             } else if (tab == TAB_STATUS_WEATHER) {
                 // === TAB: WIDGET & INFORMATION ===
-                addHeader(rightContent, outfit, "Widget & Informasi");
+                addHeader(rightContent, outfit, AppLanguage.strStatusBarWeather(activity));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📍 Lokasi & Jadwal Salat", "Atur lokasi cuaca dan zona waktu salat untuk Pagar Alam atau wilayah Indonesia lainnya.",
+                        activity.getString(R.string.location_prayer_title), activity.getString(R.string.location_prayer_summary),
                         () -> activity.startActivity(new Intent(activity, LocationActivity.class))));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🌤️ Widget Cuaca & Kualitas Udara",
-                        "Tampilkan atau sembunyikan informasi cuaca dan indeks kualitas udara pada layar utama.",
+                        activity.getString(R.string.weather_widget_title),
+                        activity.getString(R.string.weather_widget_summary),
                         activity.isWeatherWidgetEnabled(), isChecked -> {
                             activity.setWeatherWidgetEnabled(isChecked);
                         }));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📋 Pusat Informasi & Tindakan", "Ringkasan cuaca, jadwal salat, kondisi perangkat, dan pintasan tindakan cepat",
+                        activity.getString(R.string.info_actions_title_card), activity.getString(R.string.info_actions_summary_card),
                         activity::showInfoActionsDialog));
 
             } else if (tab == TAB_EFFECTS) {
@@ -920,63 +920,63 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, AppLanguage.strVisualEffects(activity));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🎞️ Animasi Ikon & Fokus Aplikasi",
-                        "Aktifkan atau matikan gerakan zoom dan transisi label saat berpindah aplikasi. Tidak memengaruhi animasi cuaca atau efek kaca.",
+                        activity.getString(R.string.icon_animation_setting_title),
+                        activity.getString(R.string.icon_animation_setting_description),
                         activity.isIconAnimationsEnabled(), isChecked -> {
                             activity.setIconAnimationsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Animasi ikon diaktifkan." : "Animasi ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, isChecked ? R.string.icon_animation_enabled : R.string.icon_animation_disabled, Toast.LENGTH_SHORT).show();
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🪟 Glass Effect",
-                        "Aktifkan atau matikan material kaca buram, lapisan transparan, dan garis tepi pada dock serta tombol. Penanda fokus remote tetap berfungsi.",
+                        activity.getString(R.string.glass_effect_setting_title),
+                        activity.getString(R.string.glass_effect_setting_description),
                         activity.isGlassEffectsEnabled(), isChecked -> {
                             activity.setGlassEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Glass Effect diaktifkan." : "Glass Effect dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, isChecked ? R.string.glass_effect_enabled : R.string.glass_effect_disabled, Toast.LENGTH_SHORT).show();
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🌧️ Animasi Cuaca pada Wallpaper",
-                        "Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.",
+                        activity.getString(R.string.weather_animation_setting_title),
+                        activity.getString(R.string.weather_animation_setting_description),
                         activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
                             activity.setDynamicWeatherEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Animasi cuaca diaktifkan." : "Animasi cuaca dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, isChecked ? R.string.weather_animation_enabled : R.string.weather_animation_disabled, Toast.LENGTH_SHORT).show();
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "✨ Cahaya Ambient Ikon",
-                        "Atur cahaya latar dan perpaduan warna yang mengikuti aplikasi saat dipilih. Terpisah dari animasi ikon, Glass Effect, dan animasi cuaca.",
+                        activity.getString(R.string.icon_glow_setting_title),
+                        activity.getString(R.string.icon_glow_setting_description),
                         activity.isIconGlowEffectsEnabled(), isChecked -> {
                             activity.setIconGlowEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Efek cahaya ikon diaktifkan." : "Efek cahaya ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, isChecked ? R.string.icon_glow_enabled : R.string.icon_glow_disabled, Toast.LENGTH_SHORT).show();
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
             } else if (tab == TAB_STANDBY) {
                 // === TAB: STANDBY / PERSONAL PHOTO SCREENSAVER ===
-                addHeader(rightContent, outfit, "Layar Siaga");
+                addHeader(rightContent, outfit, AppLanguage.strStandByMode(activity));
 
                 int photoCount = activity.getStandbyPhotoCount();
                 boolean photoMode = activity.isStandbyPhotoMode();
                 rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📷 Koleksi Foto Pribadi", photoCount + " foto tersimpan. Foto berganti setiap 20 detik. Maksimal 100 foto; unggahan QR maks. 512 MB total dan 60 MB per foto. Foto USB dibaca langsung dari sumbernya."));
+                        activity.getString(R.string.standby_collection_title), activity.getString(R.string.standby_collection_summary, photoCount)));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "📲 Unggah Foto dari HP (Kode QR)",
-                        "Pindai kode QR dengan ponsel yang memakai Wi-Fi sama. Foto masuk ke koleksi Layar Siaga, bukan wallpaper.",
+                        activity.getString(R.string.standby_upload_title),
+                        activity.getString(R.string.standby_upload_summary),
                         activity::showStandbyUploadQrDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "➕ Pilih Foto untuk Layar Siaga",
-                        "Tambahkan foto dari penyimpanan TV atau USB. Foto sebelumnya tetap tersimpan; USB harus tetap terpasang agar fotonya dapat dibaca.",
+                        activity.getString(R.string.standby_pick_title),
+                        activity.getString(R.string.standby_pick_summary),
                         activity::pickStandbyPhotos));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🖼️ Gunakan Foto Pribadi",
-                        "Tampilkan koleksi foto sebagai latar Layar Siaga. Matikan untuk kembali ke tampilan jam bawaan.",
+                        activity.getString(R.string.standby_use_photos_title),
+                        activity.getString(R.string.standby_use_photos_summary),
                         photoMode, isChecked -> {
                             activity.setStandbyPhotoMode(isChecked);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
@@ -984,8 +984,8 @@ public final class ModernSettingsDialog {
 
                 if (photoCount > 0) {
                     rightContent.addView(buildCardRow(activity, density, outfit,
-                            "🗑️ Hapus Semua Foto Layar Siaga",
-                            "Hapus daftar foto pribadi dari Layar Siaga. Foto asli di penyimpanan tidak ikut dihapus.",
+                            activity.getString(R.string.standby_clear_title),
+                            activity.getString(R.string.standby_clear_summary),
                             () -> {
                                 activity.clearStandbyPhotos();
                                 if (renderRightPane[0] != null) renderRightPane[0].run();
@@ -993,15 +993,15 @@ public final class ModernSettingsDialog {
                 }
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🌙 Pratinjau Layar Siaga Sekarang",
-                        "Lihat pratinjau jam atau foto pribadi di dalam aplikasi sesuai mode yang dipilih.",
+                        activity.getString(R.string.standby_preview_title),
+                        activity.getString(R.string.standby_preview_summary),
                         activity::showNightstandScreensaver));
 
             } else if (tab == TAB_DEVICE_SETTINGS) {
                 // === TAB: DEVICE SETTINGS (GENERAL + REMOTE + ACCESSIBILITY + TV) ===
                 addHeader(rightContent, outfit, AppLanguage.strDeviceSettings(activity));
 
-                addSectionHeader(rightContent, outfit, "KONTROL & AKSESIBILITAS");
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.device_accessibility_section));
                 Display display = activity.getWindowManager().getDefaultDisplay();
                 Display.Mode mode = (display != null) ? display.getMode() : null;
                 int physW = (mode != null) ? mode.getPhysicalWidth() : dm.widthPixels;
@@ -1012,34 +1012,34 @@ public final class ModernSettingsDialog {
                 homeIntent.addCategory(Intent.CATEGORY_HOME);
                 ResolveInfo resolveInfo = activity.getPackageManager().resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY);
                 boolean isDefault = resolveInfo != null && activity.getPackageName().equals(resolveInfo.activityInfo.packageName);
-                String activePkg = resolveInfo != null ? resolveInfo.activityInfo.packageName : "Tidak diketahui";
+                String activePkg = resolveInfo != null ? resolveInfo.activityInfo.packageName : activity.getString(R.string.unknown_value);
 
-                String homeSub = isDefault ? "Glass TV aktif sebagai peluncur utama." : "Peluncur aktif saat ini: " + activePkg;
+                String homeSub = isDefault ? activity.getString(R.string.launcher_is_default) : activity.getString(R.string.launcher_currently_active, activePkg);
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🏠 Status & Pengaturan Peluncur Utama", homeSub + " Pilih untuk melihat cara menetapkan Glass TV sebagai Home.",
+                        activity.getString(R.string.default_launcher_status_title), activity.getString(R.string.default_launcher_status_summary, homeSub),
                         () -> showDefaultLauncherDialog(activity, density, outfit, isDefault, activePkg)));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "♿ Aksesibilitas & Tombol Remote",
-                        "Buka pengaturan Android untuk mengaktifkan layanan tombol Home dan navigasi remote Glass TV.",
+                        activity.getString(R.string.accessibility_remote_title),
+                        activity.getString(R.string.accessibility_remote_summary),
                         () -> {
                             SoundEffects.playSelect();
                             try {
                                 activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                             } catch (Exception e) {
-                                Toast.makeText(activity, "Buka Pengaturan TV > Sistem > Aksesibilitas.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(activity, R.string.open_accessibility_settings_hint, Toast.LENGTH_LONG).show();
                             }
                         }));
 
-                addSectionHeader(rightContent, outfit, "DAYA & PEMELIHARAAN");
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.power_maintenance_section));
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🔄 Mulai Ulang TV", "Mulai ulang sistem Android TV.",
+                        activity.getString(R.string.restart_tv_title), activity.getString(R.string.restart_tv_summary),
                         activity::showRestartDialog));
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "⏻ Matikan / Siagakan TV", "Buka menu daya Android TV. Pilihan yang tersedia bergantung pada perangkat.",
+                        activity.getString(R.string.power_tv_title), activity.getString(R.string.power_tv_summary),
                         activity::showTurnOffDialog));
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🧹 Bersihkan Cache TV", "Bersihkan berkas sementara tanpa menghapus data akun aplikasi.",
+                        activity.getString(R.string.clear_tv_cache_title), activity.getString(R.string.clear_tv_cache_summary),
                         activity::showCleanTvCacheDialog));
 
                 long freeBytes = CacheCleaner.getFreeStorageBytes();
@@ -1047,9 +1047,9 @@ public final class ModernSettingsDialog {
                 String freeStr = android.text.format.Formatter.formatFileSize(activity, freeBytes);
                 String totalStr = android.text.format.Formatter.formatFileSize(activity, totalBytes);
                 rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📊 Kapasitas Penyimpanan", "Ruang kosong: " + freeStr + " dari " + totalStr + " (" + (100 - CacheCleaner.usedPercent()) + "% tersedia)"));
+                        activity.getString(R.string.storage_capacity_title), activity.getString(R.string.storage_capacity_summary, freeStr, totalStr, 100 - CacheCleaner.usedPercent())));
 
-                addSectionHeader(rightContent, outfit, "INFORMASI PERANGKAT");
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.device_information_section));
                 String resTitle;
                 if (physW >= 3840 || physH >= 2160) {
                     resTitle = "4K Ultra HD (" + physW + " × " + physH + " @" + Math.round(fps) + " Hz)";
@@ -1062,37 +1062,37 @@ public final class ModernSettingsDialog {
                 }
 
                 rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📺 Model Perangkat", Build.MODEL + " (" + Build.MANUFACTURER + ")"));
+                        activity.getString(R.string.device_model_title), Build.MODEL + " (" + Build.MANUFACTURER + ")"));
                 rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "🤖 Versi Android", "Android " + Build.VERSION.RELEASE + " (SDK " + Build.VERSION.SDK_INT + ")"));
+                        activity.getString(R.string.android_version_title), activity.getString(R.string.android_version_value, Build.VERSION.RELEASE, Build.VERSION.SDK_INT)));
                 rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "📐 Resolusi Fisik Layar", resTitle));
+                        activity.getString(R.string.physical_resolution_title), resTitle));
                 rightContent.addView(buildInfoCard(activity, density, outfit,
-                        "🖥️ Resolusi Antarmuka", dm.widthPixels + " × " + dm.heightPixels + " (" + Math.round(density * 160) + " dpi)"));
+                        activity.getString(R.string.ui_resolution_title), dm.widthPixels + " × " + dm.heightPixels + " (" + Math.round(density * 160) + " dpi)"));
 
-                addSectionHeader(rightContent, outfit, "PENGATURAN SISTEM");
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.system_settings_section));
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "🌐 Bahasa Aplikasi", "Pilih Bahasa Indonesia atau English.",
+                        activity.getString(R.string.app_language_title), activity.getString(R.string.app_language_summary),
                         activity::showLanguageDialog));
 
-                addSectionHeader(rightContent, outfit, "PEMBARUAN SISTEM");
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.system_updates_section));
                 boolean hasUpdate = AppUpdateManager.isUpdateAvailable(activity);
-                String otaTitle = hasUpdate ? "🚀 Pembaruan Glass TV tersedia 🔴" : "🚀 Periksa Pembaruan Glass TV";
+                String otaTitle = hasUpdate ? activity.getString(R.string.update_available_title) : activity.getString(R.string.check_updates_title);
                 String otaSub = hasUpdate
-                        ? "Versi baru " + AppUpdateManager.getNewVersionName(activity) + " siap dipasang."
-                        : "Periksa apakah versi terbaru Glass TV Home tersedia.";
+                        ? activity.getString(R.string.update_available_summary, AppUpdateManager.getNewVersionName(activity))
+                        : activity.getString(R.string.check_updates_summary);
                 rightContent.addView(buildCardRow(activity, density, outfit, otaTitle, otaSub,
                         () -> {
                             if (hasUpdate) AppUpdateManager.checkForUpdates(activity, true);
                             else activity.showAutoUpdateDialog();
                         }));
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        "⚙️ Pengaturan Android", "Buka pengaturan asli Android TV.",
+                        activity.getString(R.string.android_settings_title), activity.getString(R.string.android_settings_summary),
                         () -> {
                             try {
                                 activity.startActivity(new Intent(Settings.ACTION_SETTINGS));
                             } catch (Exception e) {
-                                Toast.makeText(activity, "Pengaturan Android tidak dapat dibuka pada perangkat ini.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, R.string.android_settings_unavailable, Toast.LENGTH_SHORT).show();
                             }
                         }));
             }
@@ -1104,7 +1104,7 @@ public final class ModernSettingsDialog {
             searchInput.setSingleLine(true);
             searchInput.setTextColor(0xFFFFFFFF);
             searchInput.setHintTextColor(0xFF8E929E);
-            searchInput.setHint("Contoh: wallpaper, foto, remote, cuaca");
+            searchInput.setHint(R.string.settings_search_hint);
             searchInput.setTextSize(15f);
             searchInput.setPadding((int) (14 * density), (int) (10 * density), (int) (14 * density), (int) (10 * density));
             GradientDrawable inputBg = new GradientDrawable();
@@ -1114,24 +1114,24 @@ public final class ModernSettingsDialog {
             searchInput.setBackground(inputBg);
 
             AlertDialog searchDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                    .setTitle("Cari Menu Pengaturan")
+                    .setTitle(R.string.settings_search_title)
                     .setView(searchInput)
-                    .setPositiveButton("Cari", (dialog, which) -> {
+                    .setPositiveButton(R.string.search_action, (dialog, which) -> {
                         String query = searchInput.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
                         if (query.isEmpty()) {
-                            Toast.makeText(activity, "Masukkan kata kunci pencarian.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, R.string.search_keyword_required, Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         String[] labels = {
-                                "Profil",
-                                "Layar Utama",
-                                "Tampilan",
-                                "Widget & Informasi",
-                                "Animasi & Efek",
-                                "Layar Siaga",
-                                "Pengawasan Orang Tua (di Profil)",
-                                "Pengaturan Perangkat"
+                                activity.getString(R.string.search_tab_profile),
+                                activity.getString(R.string.search_tab_home),
+                                activity.getString(R.string.search_tab_appearance),
+                                activity.getString(R.string.search_tab_information),
+                                activity.getString(R.string.search_tab_effects),
+                                activity.getString(R.string.search_tab_standby),
+                                activity.getString(R.string.search_tab_parental),
+                                activity.getString(R.string.search_tab_device)
                         };
                         String[] keywords = {
                                 "profil pengguna akun avatar nama",
@@ -1166,12 +1166,12 @@ public final class ModernSettingsDialog {
                         }
 
                         if (resultTabs.isEmpty()) {
-                            Toast.makeText(activity, "Menu tidak ditemukan. Coba kata kunci yang lebih umum.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(activity, R.string.settings_search_not_found, Toast.LENGTH_LONG).show();
                             return;
                         }
                         String[] choices = resultLabels.toArray(new String[0]);
                         new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                                .setTitle("Hasil Pencarian")
+                                .setTitle(R.string.settings_search_results)
                                 .setItems(choices, (resultDialog, index) -> {
                                     int selectedTab = resultTabs.get(index);
                                     activeTab[0] = selectedTab;
@@ -1189,10 +1189,10 @@ public final class ModernSettingsDialog {
                                     renderRightPane[0].run();
                                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                                 })
-                                .setNegativeButton("Batal", null)
+                                .setNegativeButton(R.string.cancel_action, null)
                                 .show();
                     })
-                    .setNegativeButton("Batal", null)
+                    .setNegativeButton(R.string.cancel_action, null)
                     .create();
             searchDialog.show();
             searchInput.requestFocus();
@@ -1437,7 +1437,7 @@ public final class ModernSettingsDialog {
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(AppLanguage.strEditName(activity))
                 .setView(container)
-                .setPositiveButton("Simpan", (d, which) -> {
+                .setPositiveButton(R.string.save_action, (d, which) -> {
                     String newName = et.getText().toString().trim();
                     if (!newName.isEmpty()) {
                         if (callback != null) callback.onSave(newName);
@@ -1449,18 +1449,18 @@ public final class ModernSettingsDialog {
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
-        ChildModeManager.promptPin(activity, "Verifikasi PIN Saat Ini",
-                "Masukkan PIN keamanan 4 digit saat ini", new ChildModeManager.PinCallback() {
+        ChildModeManager.promptPin(activity, activity.getString(R.string.verify_current_pin_title),
+                activity.getString(R.string.verify_current_pin_message), new ChildModeManager.PinCallback() {
             @Override
             public void onSuccess() {
                 EditText newPin = new EditText(activity);
-                newPin.setHint("PIN baru (4 digit)");
+                newPin.setHint(R.string.new_pin_hint);
                 newPin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
                 newPin.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(4)});
                 newPin.setSingleLine(true);
 
                 EditText confirmPin = new EditText(activity);
-                confirmPin.setHint("Ulangi PIN baru");
+                confirmPin.setHint(R.string.confirm_pin_hint);
                 confirmPin.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
                 confirmPin.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(4)});
                 confirmPin.setSingleLine(true);
@@ -1473,28 +1473,28 @@ public final class ModernSettingsDialog {
                 fields.addView(confirmPin);
 
                 AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                        .setTitle("Atur PIN Baru")
-                        .setMessage("Buat PIN angka 4 digit dan masukkan kembali untuk konfirmasi.")
+                        .setTitle(R.string.new_pin_title)
+                        .setMessage(R.string.new_pin_message)
                         .setView(fields)
-                        .setNegativeButton("Batal", (d, w) -> d.dismiss())
-                        .setPositiveButton("Simpan", null)
+                        .setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.save_action, null)
                         .create();
                 dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                     String first = newPin.getText().toString();
                     String second = confirmPin.getText().toString();
                     if (!first.matches("[0-9]{4}")) {
-                        newPin.setError("PIN harus tepat 4 angka");
+                        newPin.setError(activity.getString(R.string.pin_exactly_four_digits));
                         newPin.requestFocus();
                         return;
                     }
                     if (!first.equals(second)) {
-                        confirmPin.setError("PIN tidak sama");
+                        confirmPin.setError(activity.getString(R.string.pin_mismatch));
                         confirmPin.requestFocus();
                         return;
                     }
                     ChildModeManager.setPin(activity, first);
                     dialog.dismiss();
-                    Toast.makeText(activity, "PIN keamanan berhasil diperbarui.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.pin_updated, Toast.LENGTH_SHORT).show();
                 }));
                 dialog.show();
             }
@@ -1505,8 +1505,8 @@ public final class ModernSettingsDialog {
 
     /** Require parent PIN before changing either the locked-app or hidden-app policy. */
     private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode) {
-        ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
-                "Masukkan PIN orang tua untuk mengubah daftar aplikasi " + (isHideMode ? "tersembunyi" : "terkunci"),
+        ChildModeManager.promptPin(activity, activity.getString(R.string.verify_parent_pin_title),
+                activity.getString(R.string.verify_parent_pin_message, activity.getString(isHideMode ? R.string.hidden_apps_label : R.string.locked_apps_label)),
                 new ChildModeManager.PinCallback() {
                     @Override public void onSuccess() {
                         showAppLockPickerAuthorized(activity, density, font, isHideMode);
@@ -1562,14 +1562,14 @@ public final class ModernSettingsDialog {
         pickerLayout.setBackground(bg);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText(isHideMode ? "👁️ Sembunyikan Aplikasi dari Layar Utama" : "🔒 Kunci Aplikasi dengan PIN 4-Digit");
+        tvTitle.setText(isHideMode ? R.string.hide_apps_title : R.string.lock_apps_title);
         tvTitle.setTextSize(17);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(font, Typeface.BOLD);
         pickerLayout.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText(isHideMode ? "Aplikasi yang dipilih tidak akan ditampilkan di layar utama." : "Aplikasi yang dipilih memerlukan kod PIN untuk dibuka.");
+        tvSub.setText(isHideMode ? R.string.hide_apps_description : R.string.lock_apps_description);
         tvSub.setTextSize(12);
         tvSub.setTextColor(0xFF8E929E);
         tvSub.setTypeface(font, Typeface.NORMAL);
@@ -1645,7 +1645,7 @@ public final class ModernSettingsDialog {
 
         AlertDialog[] pickerHolder = new AlertDialog[1];
         Button btnDone = new Button(activity);
-        btnDone.setText("SELESAI");
+        btnDone.setText(R.string.done_action);
         btnDone.setTextSize(13.5f);
         btnDone.setTextColor(0xFFFFFFFF);
         btnDone.setTypeface(font, Typeface.BOLD);
@@ -1704,7 +1704,7 @@ public final class ModernSettingsDialog {
         root.setBackground(bg);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("🏠 Tetapkan Glass TV Sebagai Default Home");
+        tvTitle.setText(R.string.set_default_home_title);
         tvTitle.setTextSize(18f);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(font, Typeface.BOLD);
@@ -1713,8 +1713,8 @@ public final class ModernSettingsDialog {
 
         TextView tvDesc = new TextView(activity);
         String desc = isDefault
-                ? "✅ Berhasil! Glass TV Home kini menjadi peluncur utama perangkat Anda. Setiap kali tombol Home pada remote ditekan, perangkat akan kembali ke Glass TV."
-                : "⚠️ Peluncur aktif saat ini: " + activePkg + "\n\nSebagian besar Android TV dan Google TV membatasi tombol Home agar tetap membuka layar utama bawaan produsen. Pilih salah satu cara berikut untuk menetapkan Glass TV sebagai peluncur utama:";
+                ? activity.getString(R.string.default_launcher_success)
+                : activity.getString(R.string.default_launcher_explanation, activePkg);
         tvDesc.setText(desc);
         tvDesc.setTextSize(13f);
         tvDesc.setTextColor(isDefault ? 0xFF34D399 : 0xFFCBD5E1);
@@ -1726,8 +1726,8 @@ public final class ModernSettingsDialog {
 
         // Option 1: Open TV Settings
         LinearLayout btnSettings = buildCardRow(activity, density, font,
-                "⚙️ Buka Pengaturan Pemilih Peluncur TV",
-                "Coba buka menu Android untuk memilih Glass TV sebagai peluncur utama (jika didukung TV).",
+                activity.getString(R.string.open_home_picker_title),
+                activity.getString(R.string.open_home_picker_summary),
                 () -> {
                     try {
                         Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
@@ -1737,7 +1737,7 @@ public final class ModernSettingsDialog {
                             Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
                             activity.startActivity(intent);
                         } catch (Exception e2) {
-                            Toast.makeText(activity, "Menu pengaturan peluncur tidak didukung oleh firmware ini.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, R.string.launcher_settings_unsupported, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -1745,26 +1745,25 @@ public final class ModernSettingsDialog {
 
         // Option 2: ADB Command guidance
         LinearLayout btnAdb = buildCardRow(activity, density, font,
-                "💻 Tetapkan Permanen melalui Perintah ADB (Disarankan)",
-                "Jalankan arahan ini melalui PC atau asisten pemrograman:\nadb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity" +
-                (isDefault ? "" : "\n\nJika TV masih membatasi tombol Home, nonaktifkan peluncur lama:\nadb shell pm disable-user --user 0 " + activePkg),
+                activity.getString(R.string.set_home_adb_title),
+                activity.getString(R.string.adb_command_guidance, isDefault ? "" : activity.getString(R.string.disable_old_launcher_hint, activePkg)),
                 () -> {
-                    Toast.makeText(activity, "Arahan: adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG).show();
                 });
         root.addView(btnAdb);
 
         // Option 3: Phone Installer
         LinearLayout btnPhone = buildCardRow(activity, density, font,
-                "📱 Tanpa PC: Gunakan Aplikasi Telefon (Glass TV Installer)",
-                "Pasang release/glass-tv-installer.apk pada telefon Android anda di rangkaian Wi-Fi yang sama untuk aktifkan Home secara automatik dalam 1-klik.",
+                activity.getString(R.string.phone_installer_title),
+                activity.getString(R.string.phone_installer_summary),
                 () -> {
-                    Toast.makeText(activity, "Buka glass-tv-installer.apk di telefon anda pada Wi-Fi sama.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT).show();
                 });
         root.addView(btnPhone);
 
         // Close button
         Button btnClose = new Button(activity);
-        btnClose.setText("Tutup");
+        btnClose.setText(R.string.close_label);
         btnClose.setTextColor(0xFFFFFFFF);
         btnClose.setTypeface(font, Typeface.BOLD);
         btnClose.setTextSize(14f);

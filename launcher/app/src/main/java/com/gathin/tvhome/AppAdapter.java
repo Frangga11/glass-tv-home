@@ -405,7 +405,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             return;
         }
         if (ChildModeManager.isAppLocked(ctx, e.pkg)) {
-            ChildModeManager.promptPin(ctx, "Aplikasi Dikunci", "Masukkan PIN 4-digit untuk membuka " + e.label, new ChildModeManager.PinCallback() {
+            Context localized = LocaleContext.wrap(ctx);
+            ChildModeManager.promptPin(localized, localized.getString(R.string.locked_app_title), localized.getString(R.string.enter_pin_to_open_app, e.label), new ChildModeManager.PinCallback() {
                 @Override
                 public void onSuccess() {
                     performLaunch(e);
