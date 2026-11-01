@@ -180,7 +180,7 @@ public final class UserSwitchDialog {
             itemCol.setOnClickListener(v -> {
                 SoundEffects.playSelect();
                 if (isActive) {
-                    Toast.makeText(activity, activity.getString(R.string.profile_already_active, prof.name), Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, activity.getString(R.string.profile_already_active, prof.name), Toast.LENGTH_SHORT);
                     return;
                 }
 
@@ -337,12 +337,12 @@ public final class UserSwitchDialog {
                                 .setPositiveButton(R.string.delete_action, (d, w) -> {
                                     boolean deleted = ProfileManager.deleteProfile(activity, profileId);
                                     if (deleted) {
-                                        Toast.makeText(activity, activity.getString(R.string.profile_deleted, profileName), Toast.LENGTH_SHORT).show();
+                                        TvFeedback.show(activity, activity.getString(R.string.profile_deleted, profileName), Toast.LENGTH_SHORT);
                                         if (afterDelete != null) afterDelete.run();
                                         activity.reloadTiles();
                                         activity.updateTopBarUserIcon();
                                     } else {
-                                        Toast.makeText(activity, R.string.profile_delete_failed, Toast.LENGTH_LONG).show();
+                                        TvFeedback.show(activity, R.string.profile_delete_failed, Toast.LENGTH_LONG);
                                     }
                                 }).show();
                     }
@@ -355,9 +355,9 @@ public final class UserSwitchDialog {
         ProfileManager.setActiveProfile(activity, prof.id);
         activity.reloadTiles();
         activity.updateTopBarUserIcon();
-        Toast.makeText(activity, activity.getString(R.string.profile_active_message, prof.name,
+        TvFeedback.show(activity, activity.getString(R.string.profile_active_message, prof.name,
                 ChildModeManager.isChildModeEnabled(activity, prof.id) ? activity.getString(R.string.child_mode_suffix) : ""),
-                Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT);
         if (dialog != null) dialog.dismiss();
     }
 
@@ -521,12 +521,12 @@ public final class UserSwitchDialog {
         btnSave.setOnClickListener(v -> {
             String name = et.getText().toString().trim();
             if (name.isEmpty()) {
-                Toast.makeText(activity, R.string.user_name_required, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(activity, R.string.user_name_required, Toast.LENGTH_SHORT);
                 return;
             }
             SoundEffects.playSelect();
             ProfileManager.addProfile(activity, name, chosenAvatar[0], cbChild.isChecked());
-            Toast.makeText(activity, activity.getString(R.string.profile_created, name), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, activity.getString(R.string.profile_created, name), Toast.LENGTH_SHORT);
             if (dHolder[0] != null) dHolder[0].dismiss();
             if (onAdded != null) onAdded.run();
         });
