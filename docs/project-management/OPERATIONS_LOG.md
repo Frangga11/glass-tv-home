@@ -158,7 +158,7 @@
 
 - User requested direct execution and quick escalation only if user action was required. User manually dispatched CI once the workflow trigger was made available on `main`.
 - Added `workflow_dispatch` to `.github/workflows/ci.yml` on `main` (commit `6eaf787c56226606b1d2e650c59540c553756c62`). User selected `integration/b04-b05-reconciled`; APK publish input remained false.
-- Initial integrated CI #244 failed on resource apostrophe parsing, then follow-up runs exposed a localized progress-message type mismatch and a localization test placeholder-list type mismatch. All three defects were corrected on the integration branch.
+- Initial integrated CI #254 failed on resource apostrophe parsing, then follow-up runs exposed a localized progress-message type mismatch and a localization test placeholder-list type mismatch. All three defects were corrected on the integration branch.
 - Final integration head `5932cf60e19640bc5fc648f43105f86c8752813c`: CI run `41277076284` PASS; both jobs PASS. Matching push run `41277072693` PASS. No APK artifact was published.
 - PR #15 merged as `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`. PR #13 passed exact-head CI run `41277353285` and merged as `d7b76c4a22c9eadffb8171a616283f3ad647d488`. GitHub reports PR #14 merged as `73817ce41e4ae5b034922f190052a95ac45886d9`. Current B03 continuation branch head is `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
 - Next: B06 audit/implementation, then B07. Final runtime/device/QR/TV tests remain deferred until final overall B-series acceptance. No APK install or device setting change occurred.
