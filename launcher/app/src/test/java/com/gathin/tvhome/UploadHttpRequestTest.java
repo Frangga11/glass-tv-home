@@ -10,6 +10,26 @@ import org.junit.Test;
 
 public class UploadHttpRequestTest {
     @Test
+    public void acceptsWellFormedHeadersAndHeaderlessRequests() {
+        assertTrue(UploadHttpRequest.hasValidHeaders(new String[]{
+                "GET /page HTTP/1.1", "Host: 192.168.1.10", "Accept: */*"}));
+        assertTrue(UploadHttpRequest.hasValidHeaders(new String[]{
+                "GET /page HTTP/1.0"}));
+    }
+
+    @Test
+    public void rejectsFoldedMalformedAndControlCharacterHeaders() {
+        assertFalse(UploadHttpRequest.hasValidHeaders(new String[]{
+                "GET /page HTTP/1.1", " Content-Length: 10"}));
+        assertFalse(UploadHttpRequest.hasValidHeaders(new String[]{
+                "GET /page HTTP/1.1", "Bad Header: value"}));
+        assertFalse(UploadHttpRequest.hasValidHeaders(new String[]{
+                "GET /page HTTP/1.1", "Content-Length"}));
+        assertFalse(UploadHttpRequest.hasValidHeaders(new String[]{
+                "GET /page HTTP/1.1", "X-Test: bad\u0001value"}));
+    }
+
+    @Test
     public void parsesOriginFormPathAndQuery() {
         UploadHttpRequest request = UploadHttpRequest.parse(
                 "POST /wallpaper/token/upload?name=photo.jpg HTTP/1.1");
