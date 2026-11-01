@@ -19,11 +19,11 @@ public final class TvFeedback {
     private TvFeedback() {}
 
     public static void show(Context context, CharSequence message, int duration) {
-        if (context == null || message == null || message.toString().trim().isEmpty()) return;
+        if (context == null || !FeedbackPolicy.hasMessage(message)) return;
 
         Runnable display = () -> {
             Activity activity = findActivity(context);
-            if (activity != null && (activity.isFinishing() || activity.isDestroyed())) return;
+            if (activity != null && !FeedbackPolicy.isActivityUsable(activity.isFinishing(), activity.isDestroyed())) return;
 
             Context toastContext = context.getApplicationContext();
             if (toastContext == null) toastContext = context;
