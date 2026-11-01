@@ -133,3 +133,14 @@
 - Release APK diagnostic: 1,548,097 bytes, 14,767 bytes below the 1.5 MiB cap. APK publication skipped.
 - PR #21 remains OPEN/DRAFT/UNMERGED under D-013. Physical phone/TV browser acceptance remains deferred to F-stage, not waived.
 - Next task: C05 shared upload/receive-file pipeline audit.
+
+
+## Project D source/CI closure checkpoint — 1 November 2026
+
+- D01–D07 source-audit and exact-head CI work is complete. All Project D PRs remain OPEN/DRAFT/UNMERGED under D-013; no early merge or APK publication.
+- D01–D06 outcomes and exact CI evidence are recorded in BUG_REPAIR_ROADMAP.md, HANDOVER.md, AUDIT_REGISTER.md and OPERATIONS_LOG.md. D06 final head 78a12e9fc196a596fa98ea272edc735501047af1; exact-final-head CI #399 / 41312553920 PASS.
+- D07 final head 964163c918e281b68af5cf7114ca56ead2797486; Draft PR #31 targets D06 exact head and remains OPEN/DRAFT/UNMERGED. Exact-final-head CI #404 / 41313690556 PASS on that exact head; both jobs succeeded, app/installer release unit tests and release build passed.
+- D07 repaired Child Mode profile-scoped concurrent mutations, StandBy picker/QR/clear content-store conflicts, and stale weather/AQI responses after location/language changes. New profile IDs use UUIDs. C07 upload/session hardening, existing profile schema and device-wide parent PIN policy were preserved.
+- Final D07 APK diagnostic: 1,552,197 bytes, 20,667 bytes below the 1,572,864-byte cap; manual APK publication skipped.
+- Physical TV acceptance remains deferred to Stage F and is not waived: process death/force-stop/reboot, alarm restoration, profile switching/isolation, Child Mode, picker/QR concurrency and location/language freshness.
+- **Next stage: E01.** After A–G source work, freeze exact heads, perform grouped integration and combined-diff audit, run cross-project regressions, then complete Stage F device acceptance before any merge/release approval.
