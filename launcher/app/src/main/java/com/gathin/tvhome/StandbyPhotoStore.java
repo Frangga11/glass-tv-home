@@ -183,13 +183,14 @@ final class StandbyPhotoStore {
     }
 
     /** Clears collection membership and photo mode as one durable transition. */
-    static synchronized boolean clearCollectionAndMode(Context context) {
-        if (context == null) return false;
+    static synchronized List<Uri> clearCollectionAndMode(Context context) {
+        if (context == null) return null;
+        List<Uri> previousUris = getUris(context);
         SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         boolean saved = preferences.edit().putString(KEY_URIS, "").putBoolean(KEY_MODE, false).commit();
-        if (!saved) return false;
+        if (!saved) return null;
         clearUploadedFiles(context);
-        return true;
+        return previousUris;
     }
 
     private static List<String> toUriStrings(List<Uri> uris) {
