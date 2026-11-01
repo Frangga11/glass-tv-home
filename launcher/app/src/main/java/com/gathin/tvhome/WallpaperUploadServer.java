@@ -463,9 +463,7 @@ public class WallpaperUploadServer {
             BitmapFactory.Options bounds = new BitmapFactory.Options();
             bounds.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(file.getAbsolutePath(), bounds);
-            if (bounds.outWidth <= 0 || bounds.outHeight <= 0
-                    || bounds.outWidth > 16384 || bounds.outHeight > 16384
-                    || (long) bounds.outWidth * (long) bounds.outHeight > 100_000_000L) return null;
+            if (!UploadFilePolicy.isValidWallpaperImageDimensions(bounds.outWidth, bounds.outHeight)) return null;
             BitmapFactory.Options verify = new BitmapFactory.Options();
             int sample = 1;
             while (bounds.outWidth / sample > 512 || bounds.outHeight / sample > 512) sample *= 2;
@@ -731,7 +729,7 @@ public class WallpaperUploadServer {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             File target = resolveWallpaperFile(customDir, fileName);
             if (target == null) {
-                sendSimpleJsonResponse(out, 400, "{\\"status\\":\\"error\\",\\"error\\":\\"invalid_file\\"}");
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
                 return;
             }
             if (!target.isFile()) {
@@ -759,7 +757,7 @@ public class WallpaperUploadServer {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             File target = resolveWallpaperFile(customDir, fileName);
             if (target == null) {
-                sendSimpleJsonResponse(out, 400, "{\\"status\\":\\"error\\",\\"error\\":\\"invalid_file\\"}");
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
                 return;
             }
             if (!target.isFile()) {
