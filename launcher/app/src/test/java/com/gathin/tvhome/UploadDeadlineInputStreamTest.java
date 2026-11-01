@@ -26,7 +26,7 @@ public class UploadDeadlineInputStreamTest {
                 System.currentTimeMillis() + 5000L, 30000);
         assertEquals(10, input.read());
         assertEquals(20, input.read());
-        assertEquals(0, input.read());
+        assertEquals(-1, input.read());
         assertTrueBounded(socket.lastTimeout);
     }
 
