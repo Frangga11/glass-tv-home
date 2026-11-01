@@ -59,12 +59,12 @@ Workflow configuration now explicitly supports `ready_for_review` and `integrati
 | Check | Result | Evidence |
 |---|---|---|
 | Manual CI trigger on default branch | PASS | `workflow_dispatch` added to `main`, commit `6eaf787c56226606b1d2e650c59540c553756c62`; user ran workflow with APK publication disabled. |
-| Exact B04+B05 integration CI | PASS | Run #244 `41277076284` on `5932cf60e19640bc5fc648f43105f86c8752813c`; both CI jobs SUCCESS. Matching push run `41277072693` SUCCESS. |
+| Exact B04+B05 integration CI | PASS | Run #254 `41277076284` on `5932cf60e19640bc5fc648f43105f86c8752813c`; both CI jobs SUCCESS. Matching push run `41277072693` SUCCESS. |
 | Resource compiler errors | FIXED | Apostrophe escaping corrected in default/ID/EN Android string resources. |
 | Java compile error in update dialog | FIXED | `ProgressDialog.setMessage` now receives `activity.getString(R.string.download_update_message)`. |
 | Localization test compile error | FIXED | Expected placeholder type corrected to `List<String>`. |
 | PR #15 B04+B05 integration | MERGED | Merge commit `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`. |
-| PR #13 B04 parent into B03 | MERGED | Exact-head CI run `41277353285` SUCCESS; merge commit `d7b76c4a22c9eadffb8171a616283f3ad647d488`. |
+| PR #13 B04 parent into B03 | MERGED | Exact-head CI run #256 `41277353285` SUCCESS; merge commit `d7b76c4a22c9eadffb8171a616283f3ad647d488`. |
 | PR #14 B05 source PR | CLOSED / MERGED | GitHub reports merge commit `73817ce41e4ae5b034922f190052a95ac45886d9`; final branch head after chain is `d7b76c4a22c9eadffb8171a616283f3ad647d488`. |
 | APK publication | NOT PERFORMED | `publish_device_apk=false`; artifact publication step skipped. |
 
