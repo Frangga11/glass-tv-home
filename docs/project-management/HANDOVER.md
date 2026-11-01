@@ -1,6 +1,4 @@
-[object Object]
-
-## Latest resume checkpoint — B06 complete, 1 November 2026
+## Historical resume checkpoint — B06 complete, 1 November 2026
 
 - Current completed workstream: B06 Notification Feedback.
 - Source branch/head: `feature/b06-notification-feedback` / `bc86a250d73a5cbb83250217d42c3c3993cf29d7`.
