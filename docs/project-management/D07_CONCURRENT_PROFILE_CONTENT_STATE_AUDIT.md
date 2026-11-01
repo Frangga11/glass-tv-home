@@ -1,7 +1,7 @@
 # D07 — Concurrent profile and content-store state audit
 
 **Date:** 1 November 2026  
-**Status:** Implementation complete; exact-head CI pending.  
+**Status:** Source audit and implementation complete. CI evidence is tracked on the PR and in the canonical project handover/operations log; this report is a source-audit record.  
 **Branch:** `feature/d07-concurrent-profile-content-state`  
 **Parent:** D06 final exact head `78a12e9fc196a596fa98ea272edc735501047af1`  
 **Merge policy:** D-013 — isolated Draft PR; no early merge.
@@ -82,8 +82,8 @@ No global state manager, event bus, preference schema migration or broad storage
 | D07-F01 Child Mode/profile mutation repair | IMPLEMENTED |
 | D07-F02 StandBy collection transaction repair | IMPLEMENTED |
 | D07-F03 weather response freshness repair | IMPLEMENTED |
-| Targeted JVM regression tests | ADDED; exact-head CI pending |
-| Release build and APK size gate | Pending exact-head CI |
+| Targeted JVM regression tests | PASS in CI #403 on implementation head `4f9bbe10cd687380077fd46aa902e967cb2eb6bf` |
+| Release build and APK size gate | PASS in CI #403; APK 1,552,197 bytes, 20,667 bytes below 1,572,864-byte cap; publication skipped |
 | Physical Android TV, D-pad, picker/QR concurrency and location-switch acceptance | Deferred to Stage F; not waived |
 | Grouped A–G integration and cross-project regression | Deferred until all project branches are complete |
 | APK publication/installation or physical-device mutation | Not performed |
@@ -92,4 +92,4 @@ The source-level tests exercise pure merge/freshness policies and preference com
 
 ## 5. Finalization rule
 
-D07 may be marked closed for source audit and CI only after both jobs pass on the final PR head, including app/installer unit tests, release build and the 1.5 MiB APK size gate. If any final report or code commit changes the feature head, exact-head CI must be rerun. PR remains OPEN/DRAFT/UNMERGED under D-013; no merge or release approval is implied.
+D07 may be marked closed for source audit and CI only after both jobs pass on the final PR head, including app/installer unit tests, release build and the 1.5 MiB APK size gate. CI #403 passed both jobs on the implementation head above; this audit report commit changes the branch head, so the final PR head must receive a fresh exact-head CI run. Record that final run in the PR and canonical project handover/operations log without adding another feature-branch commit. PR remains OPEN/DRAFT/UNMERGED under D-013; no merge or release approval is implied.
