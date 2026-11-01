@@ -47,4 +47,22 @@
     <string name="weather_activity_label">Weather &amp; Air Quality</string>
     <string name="recent_apps_activity_label">Recent Apps</string>
     <string name="media_listener_service_label">Glass TV Media Listener</string>
+
+    <string name="daily_prayer_label">DAILY PRAYER  •  VERSE OF THE DAY</string>
+    <string name="prayer_subuh">Fajr</string>
+    <string name="prayer_sunrise">Sunrise</string>
+    <string name="prayer_dhuhr">Dhuhr</string>
+    <string name="prayer_asr">Asr</string>
+    <string name="prayer_maghrib">Maghrib</string>
+    <string name="prayer_isha">Isha</string>
+    <string name="now_playing_placeholder">Now playing • SPOTIFY</string>
+    <string name="song_title_placeholder">Song Title</string>
+    <string name="assistant_content_description">Google Assistant</string>
+    <string name="user_profile_content_description">Select User &amp; Child Mode</string>
+    <string name="recent_apps_title">Recent Apps</string>
+    <string name="recent_apps_ram_usage">RAM %1$s used of %2$s</string>
+    <string name="recent_apps_empty">No recent apps running</string>
+    <string name="recent_apps_hint_close">Press ▲ on an app to close it</string>
+    <string name="standby_photo_description">Standby background photo</string>
+    <string name="standby_return_hint">Press any button to return</string>
 </resources>
