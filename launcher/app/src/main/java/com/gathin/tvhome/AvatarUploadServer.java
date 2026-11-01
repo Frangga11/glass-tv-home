@@ -138,8 +138,10 @@ public final class AvatarUploadServer {
         boolean claimed = false;
         boolean uploadSucceeded = false;
         try (Socket client = socket) {
-            client.setSoTimeout(NetworkFeedbackPolicy.AVATAR_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
-            InputStream in = client.getInputStream();
+            long requestDeadline = Math.min(expiresAt,
+                    System.currentTimeMillis() + NetworkFeedbackPolicy.AVATAR_UPLOAD_REQUEST_DEADLINE_MS);
+            InputStream in = new UploadDeadlineInputStream(client.getInputStream(), client,
+                    requestDeadline, NetworkFeedbackPolicy.AVATAR_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
             OutputStream out = client.getOutputStream();
             ByteArrayOutputStream header = new ByteArrayOutputStream();
             int state = 0, value;
