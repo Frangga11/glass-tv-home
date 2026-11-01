@@ -425,7 +425,7 @@
     <string name="screensaver_settings_summary">Atur screensaver bawaan Android dan waktu layar mati. Glass TV tidak akan mengubahnya diam-diam.</string>
     <string name="home_candidates_summary">Pilihan Home terdeteksi: %1$d</string>
     <string name="home_candidates_heading">Pilihan launcher yang terdeteksi:</string>
-    <string name="home_current_heading">Launcher yang dipilih sistem:</string>
+    <string name="home_current_heading">Hasil resolver HOME Android:</string>
     <string name="home_status_unknown">Belum dapat dipastikan</string>
     <string name="home_refresh_action">Periksa ulang status launcher</string>
     <string name="adb_command_copied">Perintah ADB disalin. Jalankan dari komputer yang terhubung ke TV.</string>
@@ -435,8 +435,8 @@
     <string name="device_information_section">INFORMASI PERANGKAT</string>
     <string name="system_settings_section">PENGATURAN SISTEM</string>
     <string name="system_updates_section">PEMBARUAN SISTEM</string>
-    <string name="launcher_is_default">Glass TV aktif sebagai peluncur utama.</string>
-    <string name="launcher_currently_active">Peluncur aktif saat ini: %1$s</string>
+    <string name="launcher_is_default">Android saat ini mengarahkan HOME ke Glass TV.</string>
+    <string name="launcher_currently_active">Hasil resolver HOME saat ini: %1$s</string>
     <string name="default_launcher_status_title">🏠 Status &amp; Pengaturan Peluncur Utama</string>
     <string name="default_launcher_status_summary">%1$s Pilih untuk melihat cara menetapkan Glass TV sebagai Home.</string>
     <string name="accessibility_remote_title">♿ Aksesibilitas &amp; Tombol Remote</string>
