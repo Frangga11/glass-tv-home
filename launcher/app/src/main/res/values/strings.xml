@@ -90,4 +90,27 @@
     <string name="weather_humidity_description">Kelembapan relatif saat ini.</string>
     <string name="weather_pressure_label">⏱️  TEKANAN UDARA</string>
     <string name="weather_data_source">Model Open-Meteo • estimasi US AQI</string>
+
+    <string name="media_now_playing">SEDANG DIPUTAR</string>
+    <string name="media_spotify">SPOTIFY</string>
+    <string name="media_track_title">Lagu Dimainkan</string>
+    <string name="media_artist">Artis</string>
+    <string name="media_playing_status">▶ Sedang Diputar</string>
+    <string name="media_open_spotify">Buka Spotify</string>
+    <string name="media_close_stop">Tutup &amp; Hentikan</string>
+    <string name="ota_support_title">Pembaruan Sistem &amp; Dukungan</string>
+    <string name="ota_version_subtitle">Glass TV Home • Mesin Pembaruan Otomatis (OTA)</string>
+    <string name="ota_auto_update_active">✅ Pembaruan Otomatis: Aktif</string>
+    <string name="ota_update_description">Pembaruan diunduh dan dipasang di latar belakang tanpa mengganggu tontonan.</string>
+    <string name="ota_check_now">🔄 Periksa Pembaruan Sekarang</string>
+    <string name="ota_change_time">⏱️ Ubah Waktu Pembaruan Otomatis</string>
+    <string name="ota_disable">⚡ Matikan Pembaruan Otomatis</string>
+    <string name="coffee_support">Dukung Pengembangan</string>
+    <string name="coffee_payment_method">QR Pembayaran • GXBank</string>
+    <string name="coffee_qr_description">Pindai dengan kamera ponsel atau aplikasi perbankan</string>
+    <string name="coffee_suggestion_email">📧 Saran dan masukan</string>
+    <string name="close_label">Tutup</string>
+    <string name="close_all_label">Tutup Semua</string>
+    <string name="close_all_description">Tutup semua aplikasi terbaru</string>
+    <string name="today_label">Hari ini</string>
 </resources>
