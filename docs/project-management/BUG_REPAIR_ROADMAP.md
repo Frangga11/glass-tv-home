@@ -295,3 +295,15 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - PR #26 remains OPEN/DRAFT/UNMERGED under D-013; no merge or APK installation.
 - D01-F11 remains assigned to D05/D07 for the distinct upload metadata/mode atomicity repair and regression tests.
 - **Next task: D03 — audit locked/hidden app count and list refresh in the open Settings pane.** Preserve existing D02 fixes and do not introduce a global preference listener without a demonstrated need.
+
+
+## D03 final exact-head closure — 1 November 2026
+
+- Final D03 branch head: `c119198e5c5ecc0d3cfdc283049ea3299d0067ca` on `feature/d03-locked-app-ui-refresh`; Draft PR #27 remains OPEN/DRAFT/UNMERGED, stacked on D02 exact head `2dbfcc181651184914422ad0697a3c5c27d15614`.
+- D03-F01 repaired: locked/hidden app counts in the open Profile Settings pane now refresh when the picker dismisses; home tiles reload on both Done and Back dismissal. PIN cancellation before opening the picker does not trigger the refresh path.
+- Exact-head CI #385 / run `41307515649`: PASS on final head; both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS. `testReleaseUnitTest` and `assembleRelease` completed successfully.
+- Release APK diagnostic: 1,550,761 bytes; 22,103 bytes below the 1,572,864-byte (1.5 MiB) cap. Size gate PASS; manual APK publication skipped.
+- D03 source-audit and exact-head CI gates: CLOSED. Physical Android TV acceptance (Done/Back, independent lock/hide counts, tile refresh, PIN cancellation, D-pad focus) remains DEFERRED to F-stage, NOT WAIVED; no APK installation or physical-device test is claimed.
+- PR #27 remains OPEN/DRAFT/UNMERGED under D-013. No merge performed.
+- D01-F11 remains assigned to D05/D07 for targeted StandBy upload metadata/mode atomicity repair and regression coverage. Preserve unrelated C07 upload/session hardening.
+- **Next task: D04 — synchronize profile/avatar state across all surfaces.** Inspect the current D04 ownership map and branch dependencies first; do not presume or broaden its scope.
