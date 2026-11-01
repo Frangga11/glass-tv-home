@@ -46,7 +46,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 ### Stage B — Global foundations and user experience
 
-| ID | Task | Initial status |
+| ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
 | B01 | Audit and correct global navigation and cursor-position retention | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
 | B02 | Ensure visible, consistent D-pad/remote focus indicators | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
@@ -60,7 +60,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 ### Stage C — Shared communication infrastructure
 
-| ID | Task | Initial status |
+| ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
 | C01 | Audit QR generation, payload, token, and QR destination behavior | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
 | C02 | Audit TV local server lifecycle, LAN IP selection, and port handling | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
@@ -74,7 +74,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 ### Stage D — State management and persistence
 
-| ID | Task | Initial status |
+| ID | Task | Current status (2 Nov 2026) |
 |---|---|---|
 | D01 | Audit settings/configuration storage and ownership | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
 | D02 | Ensure settings changes propagate to all dependent UI immediately | SOURCE/CI COMPLETE — F ACCEPTANCE PENDING |
