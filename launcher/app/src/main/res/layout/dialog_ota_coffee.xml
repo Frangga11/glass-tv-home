@@ -211,7 +211,7 @@
                 android:layout_height="185dp"
                 android:src="@drawable/qr_coffee"
                 android:scaleType="fitCenter"
-                android:contentDescription="DuitNow QR @imsomangge" />
+                android:contentDescription="@string/ota_qr_content_description" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -225,7 +225,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📧 Cadangan: ahmad.anammat@me.com"
+                android:text="@string/ota_backup_contact"
                 android:textColor="#80FFFFFF"
                 android:textSize="10sp"
                 android:fontFamily="@font/inter"

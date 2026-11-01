@@ -456,10 +456,6 @@
     <string name="verify_parent_pin_message">Enter the parent PIN to change the list of %1$s apps</string>
     <string name="hidden_apps_label">hidden</string>
     <string name="locked_apps_label">locked</string>
-    <string name="default_launcher_success">Whenever the remote&apos;s Home button is pressed, the device will return to Glass TV.</string>
-    <string name="default_launcher_explanation">Currently active launcher: %1$s
-
-Most Android TV and Google TV devices restrict the Home button to the manufacturer&apos;s built-in home screen. Choose one of the following methods to set Glass TV as the default launcher:</string>
     <string name="open_home_picker_title">⚙️ Open TV Launcher Picker Settings</string>
     <string name="open_home_picker_summary">Try opening Android settings to select Glass TV as the default launcher (if supported by the TV).</string>
     <string name="set_home_adb_title">💻 Set Permanently with an ADB Command (Recommended)</string>
@@ -512,4 +508,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="switch_from_child_pin_prompt">Enter the parent PIN to exit Child Mode and switch to profile %1$s.</string>
     <string name="location_setup_subtitle">Where is this TV? Prayer times follow your zone, and weather follows its main town.</string>
     <string name="location_setup_hint">OK: choose  ·  Back: cancel</string>
+    <string name="ota_qr_content_description">Support payment QR code for @imsomangge</string>
+    <string name="ota_backup_contact">📧 Backup: ahmad.anammat@me.com</string>
 </resources>

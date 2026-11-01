@@ -456,10 +456,6 @@
     <string name="verify_parent_pin_message">Masukkan PIN orang tua untuk mengubah daftar aplikasi %1$s</string>
     <string name="hidden_apps_label">tersembunyi</string>
     <string name="locked_apps_label">terkunci</string>
-    <string name="default_launcher_success">Setiap kali tombol Home pada remote ditekan, perangkat akan kembali ke Glass TV.</string>
-    <string name="default_launcher_explanation">Peluncur aktif saat ini: %1$s
-
-Sebagian besar Android TV dan Google TV membatasi tombol Home agar tetap membuka layar utama bawaan produsen. Pilih salah satu cara berikut untuk menetapkan Glass TV sebagai peluncur utama:</string>
     <string name="open_home_picker_title">⚙️ Buka Pengaturan Pemilih Peluncur TV</string>
     <string name="open_home_picker_summary">Coba buka menu Android untuk memilih Glass TV sebagai peluncur utama (jika didukung TV).</string>
     <string name="set_home_adb_title">💻 Tetapkan Permanen melalui Perintah ADB (Disarankan)</string>
@@ -512,4 +508,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="switch_from_child_pin_prompt">Masukkan PIN orang tua untuk keluar dari Mode Anak dan beralih ke profil %1$s.</string>
     <string name="location_setup_subtitle">Di mana posisi TV ini? Waktu salat mengikuti zona, dan cuaca mengikuti kota utama.</string>
     <string name="location_setup_hint">OK: pilih  ·  Kembali: batalkan</string>
+    <string name="ota_qr_content_description">Kode QR dukungan @imsomangge</string>
+    <string name="ota_backup_contact">📧 Cadangan: ahmad.anammat@me.com</string>
 </resources>
