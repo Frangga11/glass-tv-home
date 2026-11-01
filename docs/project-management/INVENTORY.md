@@ -27,3 +27,14 @@
 - Modified `WallpaperUploadServer.java`, `AvatarUploadServer.java`, and `MainActivity.java` to use the shared resolver for QR preflight and server binding.
 - Added `docs/project-management/C03_PHONE_TV_NETWORK_AUDIT.md` on the feature branch.
 - Exact latest branch-head CI #338 / `41287563951`: PASS. No unrelated modules changed; C01 and C02 remain separate.
+
+
+## C04 source inventory checkpoint — 1 November 2026
+
+- Feature branch/head: `feature/c04-http-endpoint-routing` / `f09ee1b30b80e45e793c1678935eff8867aedae4`; Draft PR #21; parent C03 exact head `d266287df287167e5a8e73fd675b51759b580ed6`.
+- Added `launcher/app/src/main/java/com/gathin/tvhome/UploadHttpRequest.java` and JVM test `UploadHttpRequestTest.java`.
+- Modified `AvatarUploadServer.java` and `WallpaperUploadServer.java` for strict request parsing, complete-header enforcement, endpoint/method contracts, status/error responses, query parsing, and gallery API semantics.
+- Added `AvatarUploadRouteTest.java`; expanded `WallpaperUploadSessionRouteTest.java`.
+- Added aligned `wallpaper_page_action_failed` resource in default, Indonesian, and English strings.
+- Added `docs/project-management/C04_HTTP_ENDPOINT_AUDIT.md`.
+- Exact-head CI #342 / `41288521501`: PASS. APK size 1,547,845 bytes (<1.5 MiB cap); publication skipped.
