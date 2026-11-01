@@ -1,13 +1,13 @@
 # B07 — Menu, submenu & focus restoration audit
 
 **Date:** 1 November 2026  
-**Status:** IMPLEMENTED — VERIFICATION IN PROGRESS  
+**Status:** SOURCE & CI VERIFIED — FINAL DEVICE ACCEPTANCE DEFERRED  
 **Repository:** `Frangga11/glass-tv-home`  
 **Source branch:** `feature/b07-menu-focus-restoration`  
 **Source PR:** [#17](https://github.com/Frangga11/glass-tv-home/pull/17) — Draft / open / unmerged  
 **Base dependency:** `feature/b06-notification-feedback` at `bc86a250d73a5cbb83250217d42c3c3993cf29d7`  
 **Current source head:** `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`  
-**Exact-head CI:** run #298 / `41281838510` — IN PROGRESS at checkpoint; no PASS claim yet.
+**Exact-head CI:** run #298 / `41281838510` — SUCCESS on the exact source head.
 
 ## 1. Trigger and scope
 
@@ -51,12 +51,12 @@ B01 already owns Home tile/top-pill focus restoration. B07 does not replace that
 | Scope and dependency map | PASS | B01–B06 contracts reviewed; source work is isolated on B07 branch stacked on B06. |
 | Root-cause source audit | PASS | Confirmed unconditional sidebar focus and missing right-pane/sidebar cursor+scroll snapshot. |
 | Scoped implementation | PASS | PR #17 diff contains only the three files listed above. |
-| Focus-path bounds and JVM test coverage | IMPLEMENTED / CI PENDING | Four tests added; require exact-head CI result. |
-| Android release build and full JVM suite | IN PROGRESS | GitHub Actions run #298 on exact head `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`. |
-| Lists/tools/docs CI | IN PROGRESS | Same exact-head run #298. |
+| Focus-path bounds and JVM test coverage | PASS | Four `SettingsFocusPathTest` tests compiled and ran under `testReleaseUnitTest`; exact-head CI #298 succeeded. |
+| Android release build and full JVM suite | PASS | Exact-head CI #298 / `41281838510`; `testReleaseUnitTest` and `assembleRelease` succeeded. |
+| Lists/tools/docs CI | PASS | Exact-head CI #298; job succeeded. |
 | Runtime recreation/API 30 and API 33+ | DEFERRED | Final B-series/F-stage device matrix; not waived. |
 | Physical TV D-pad, submenu, and scroll acceptance | DEFERRED | Requires target TV and remote; not waived. |
-| Cross-B regression against B01–B06 | PENDING | Re-run during grouped integration after all A–G source work is frozen. |
+| Cross-B regression against B01–B06 | DEFERRED BY D-013 | Run after A–G source heads are frozen during grouped integration; not waived. |
 | Merge | DEFERRED BY D-013 | PR #17 remains Draft/open/unmerged; no stage merge before grouped integration. |
 
 ## 7. Residual risks and acceptance cases
@@ -67,4 +67,13 @@ A stale or mismatched path must always fall back safely to the active tab's side
 
 ## 8. Decision
 
-B07 source implementation is in place but is **not yet paripurna**. Do not mark B07 complete, merge PR #17, or advance Project B to final closure until exact-head CI is green, code review/QC is complete, and the remaining deferred runtime/device tests are carried into the final B-series acceptance matrix. Grouped merge remains governed by D-013.
+B07 source implementation, static quality, JVM tests, Android release build, APK-size gate, and exact-head CI are **PASS**. B07 source work is complete and Project C may proceed under the approved D-013 sequence. This is not final integrated/device acceptance: cross-B regression, API 30/33+ runtime, and physical TV acceptance remain deferred to grouped integration/final system testing. PR #17 remains Draft/open/unmerged; no APK was published or installed.
+
+
+## Exact-head CI closure — 1 November 2026
+
+- Workflow run #298 / `41281838510` completed SUCCESS on exact B07 source head `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`.
+- Both jobs passed: `Lists, tools and docs`; `Launcher build and unit tests`.
+- Gradle tasks `testReleaseUnitTest` and `assembleRelease` succeeded. The release APK measured 1509 KB, below the 1.5 MiB limit.
+- APK publication was skipped. No APK was published/installed and no TV/device settings were changed.
+- B07 source/CI gate is PASS. Runtime/API/device and cross-B integration checks remain deferred to final grouped acceptance; not waived.
