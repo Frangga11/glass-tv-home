@@ -348,4 +348,18 @@
     <string name="precipitation_summary">Now • rain chance %1$d%%</string>
     <string name="limited_visibility">Limited visibility</string>
     <string name="good_visibility">Good visibility</string>
+
+    <string name="parent_controls_section">PARENTAL CONTROLS</string>
+    <string name="child_mode_switch_title">🛡️ Child Mode Status</string>
+    <string name="child_mode_switch_description">Lock apps with a 4-digit PIN or hide apps from the Home Screen.</string>
+    <string name="child_mode_pin_confirm_title">Confirm Security PIN</string>
+    <string name="child_mode_pin_confirm_message">Enter the 4-digit PIN to change this mode.</string>
+    <string name="icon_animation_setting_title">🎞️ App Icon &amp; Focus Animations</string>
+    <string name="icon_animation_setting_description">Enable or disable zoom motion and label transitions when moving between apps. This does not affect weather animations or glass effects.</string>
+    <string name="glass_effect_setting_title">🪟 Glass Effect</string>
+    <string name="glass_effect_setting_description">Enable or disable frosted glass, translucent layers, and borders on the dock and buttons. Remote focus indicators remain active.</string>
+    <string name="weather_animation_setting_title">🌧️ Wallpaper Weather Animations</string>
+    <string name="weather_animation_setting_description">Show drizzle, rain, and lightning effects over the wallpaper when weather conditions allow.</string>
+    <string name="icon_glow_setting_title">✨ Ambient Icon Glow</string>
+    <string name="icon_glow_setting_description">Adjust the background glow and color blend that follows the selected app. Independent of icon animations, Glass Effect, and weather animations.</string>
 </resources>
