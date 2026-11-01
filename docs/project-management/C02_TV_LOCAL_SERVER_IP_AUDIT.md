@@ -1,7 +1,7 @@
 # C02 — TV Local Server & IP Address Audit
 
 **Date:** 1 November 2026  
-**Status:** SOURCE AUDIT — FINDINGS RECORDED; REMEDIATION NOT YET APPLIED  
+**Status:** IMPLEMENTATION APPLIED — AUTOMATED CI PENDING; DEVICE ACCEPTANCE DEFERRED  
 **Work branch:** `feature/c02-tv-local-server-ip`  
 **Parent:** C01 exact source head `bba0801c9eb61ab27ae5046379c7a50aabebf570`  
 **Merge policy:** D-013 — isolated branch and Draft PR; no early merge.
@@ -48,27 +48,37 @@ C02 is distinct from C01's launcher avatar/wallpaper/StandBy QR upload servers. 
 - Browser/Downloader receives a URL and downloads the packaged APK at `/glass-tv.apk`.
 - ADB install, launch, and set-default-home flows are separate from the HTTP APK-serving transport; C02 should not change their protocol or authorization behavior without a demonstrated dependency.
 
-## 4. Recommended remediation design
+## 4. Remediation applied
 
-1. Replace the hard-coded IP fallback with an explicit “no usable local IPv4” result. Select only an up, non-loopback, non-link-local IPv4 interface and prefer the active Wi-Fi/Ethernet network that will carry the phone-TV traffic. Do not infer a subnet mask from an IP address.
-2. Derive scan candidates from the actual active IPv4 LinkAddress prefix, cap the scan size, and keep manual IP/port entry as the reliable fallback. Clearly report unsupported/non-scannable subnet sizes instead of silently assuming /24.
-3. Bind the temporary HTTP server to the selected interface address and build the displayed URL from the exact address and actual port returned by the bound socket.
-4. Add bounded active-client concurrency, per-client read timeout, bounded request-line/header size, exact method/path matching, deterministic error responses, and guaranteed stream/socket closure.
-5. Make server state safely visible across threads; capture the listening socket per server instance; track active client sockets; close all of them on stop; guard callbacks against stop/restart races; ensure a failed or cancelled start cannot leave a bound socket behind.
-6. Preserve the user-started, temporary download flow. Do not expose the APK server as an always-on service. Evaluate a short-lived unpredictable download path/token in addition to interface binding, without adding friction to the existing TV browser flow.
-7. Try a small, documented port candidate list and then an ephemeral port; always publish the actual bound port.
-8. Make scanner completion deterministic: cancel remaining probes at deadline, prevent post-completion device callbacks, and suppress callbacks when the owning Activity is destroyed.
+1. IP discovery now uses the active default Wi-Fi/Ethernet network and its IPv4 LinkAddress. No fabricated fallback address is returned; loopback, link-local, invalid and VPN-default cases are rejected.
+2. Scanner uses the actual subnet prefix, supports bounded ranges up to 512 usable hosts, and clearly directs oversized/unsupported ranges to manual IP/port entry. Probe tasks have a fixed pool, connection timeout, global deadline, cancellation and serialized callback completion.
+3. The APK server binds to the selected LAN IPv4 only. The URL uses the bound socket's actual port.
+4. The HTTP server caps active clients at four, applies a 10-second request read timeout, bounds request headers to 8 KiB, returns explicit HTTP errors, matches GET routes exactly, and closes APK streams and sockets deterministically.
+5. Each server run owns an immutable listening socket and isolated state. Active clients are tracked and closed on stop; accept/stop registration is synchronized; start/stop/restart and callback ownership are guarded.
+6. The user-started temporary download workflow and existing /glass-tv.apk browser route are preserved. The service is not started automatically.
+7. Port selection tries the requested port, documented fallbacks, then an ephemeral port; the published URL always reflects the actual bound port.
+8. Installer Activity cancels scans during teardown and ignores stale UI callbacks. Manual TV IP and ADB port entry remain intact.
+
+**Known limitation retained intentionally:** automatic scan detects legacy ADB TCP port 5555 only. Wireless Debugging pairing/dynamic ports are not discovered; manual IP/port entry remains available. Adding pairing support would be a separate feature, not a safe incidental change to C02.
 
 ## 5. Verification plan
 
-### Source/unit tests
-- IP selection rejects loopback, link-local, down interfaces, IPv6 and hard-coded fallback; chooses among Wi-Fi/Ethernet/VPN/virtual candidates deterministically.
-- Subnet calculations for /24, /23, /25 and unsupported/oversized prefixes; host-range boundaries; no scan beyond configured cap.
-- Server binds only to selected address; QR/manual URL matches bound address and actual port; port collision fallback works.
-- Exact HTTP route/method matching; prefix/suffix and malformed request rejection.
-- Client concurrency ceiling; idle timeout; oversized headers; incomplete download; APK stream/socket cleanup.
-- Stop during accept, stop during download, immediate stop-before-bind, repeated start/stop, and rapid stop/restart.
-- Scanner timeout/cancellation and callback ordering; no callback after completion or Activity destruction.
+### Automated unit tests added
+- IPv4 unsigned-byte conversion and string conversion.
+- Actual subnet network/broadcast calculation for /23 and /25; invalid prefixes/addresses; oversized /22 rejection.
+- Exact GET download and landing-route matching; method and path-prefix/suffix rejection.
+
+### CI coverage
+- Repository CI runs ./gradlew --no-daemon testReleaseUnitTest assembleRelease from the launcher root, plus the repository tools/docs checks.
+- Exact latest C02 head must pass both jobs before C02 is marked CI-verified.
+
+### Runtime acceptance (final integrated device test)
+- Phone and TV on same Wi-Fi; confirm displayed phone IP is the active LAN address.
+- Verify automatic scan on /23 and /24 networks; manual IP fallback on oversized or unsupported subnet.
+- Open the exact server URL from TV browser/Downloader; download a complete APK and verify file size/hash.
+- Confirm a non-selected local interface cannot reach the server.
+- Stop the server during idle and active download; confirm URL becomes unreachable and restart works.
+- Repeat after Wi-Fi disconnect/reconnect and after Activity destruction.
 
 ### Runtime acceptance (final integrated device test)
 - Phone and TV on same Wi-Fi; confirm displayed phone IP is the active LAN address.
@@ -78,11 +88,12 @@ C02 is distinct from C01's launcher avatar/wallpaper/StandBy QR upload servers. 
 - Stop the server during idle and active download; confirm URL becomes unreachable and restart works.
 - Repeat after Wi-Fi disconnect/reconnect and after Activity destruction.
 
-## 6. Audit disposition
+## 6. Current disposition
 
-- C02 source audit: **FINDINGS RECORDED**.
-- Source remediation: **NOT STARTED**.
-- Unit/CI verification: **NOT RUN for C02**.
+- C02 source audit: **COMPLETE**.
+- Findings F01–F07, F09–F10: **REMEDIATION APPLIED**.
+- Finding F08: **KNOWN SCOPE LIMITATION** — legacy ADB TCP/5555 discovery only; manual port entry preserved.
+- Regression tests: **ADDED; CI RESULT PENDING**.
 - Physical phone/TV acceptance: **DEFERRED to final integrated acceptance; not waived**.
 - No APK was published or installed; no device settings were changed.
-- C01 remains separate and unmerged. No source code was changed during this C02 audit.
+- C01 remains separate and unmerged under D-013.
