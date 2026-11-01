@@ -20,9 +20,9 @@
     <string name="vpn_off">VPN nonaktif</string>
     <string name="home_settings">Layar utama bawaan</string>
     <string name="home_settings_help">Pilih layar utama di pengaturan sistem, lalu tekan tombol Home.</string>
-    <string name="input_key_service_description">Membuka pemilih sumber TV dan mengamati perubahan aplikasi di depan agar Glass TV dapat menyesuaikan perilaku Live TV dan HDMI.</string>
+    <string name="input_key_service_description">Membuka pemilih sumber TV dan mengamati perubahan aplikasi di depan agar Glass TV dapat menyesuaikan perilaku Live TV, HDMI, dan Azan.</string>
     <string name="home_key_name">Tombol Home</string>
-    <string name="home_key_description">Menangani tombol Home pada remote yang kompatibel dan membaca dialog daya atau konfirmasi sistem hanya saat Anda meminta tindakan tersebut.</string>
+    <string name="home_key_description">Menangani tombol Home pada remote yang kompatibel dan membaca dialog daya atau konfirmasi sistem untuk tindakan restart, tidur, dan daya.</string>
     <string name="card_prompt_title">Kartu baru dari %1$s</string>
     <string name="card_prompt_body">%1$s dapat menampilkan kartu di layar utama. Jika disembunyikan, ubin aplikasi tetap seperti biasa.</string>
     <string name="card_prompt_names">Nama kartu: %1$s. Nama aplikasi: %2$s.</string>
@@ -414,9 +414,9 @@
     <string name="phone_installer_qr_hint">Pindai QR ini dengan HP Android untuk membuka folder installer resmi.</string>
     <string name="phone_installer_steps">1. Pindai QR menggunakan HP Android.\n2. Unduh glass-tv-installer.apk dari folder release.\n3. Sambungkan HP dan TV ke jaringan Wi-Fi yang sama.\n4. Buka installer, masukkan IP TV atau pindai jaringan, lalu ikuti petunjuk ADB di layar TV.</string>
     <string name="home_key_status_title">Layanan Tombol HOME</string>
-    <string name="home_key_status_summary">Status: %1$s. Dibutuhkan untuk remote tertentu, mulai ulang, dan fungsi daya.</string>
+    <string name="home_key_status_summary">Status: %1$s. Dibutuhkan untuk pemetaan tombol HOME pada remote tertentu, restart, daya, dan tidur otomatis.</string>
     <string name="input_key_status_title">Layanan Tombol INPUT</string>
-    <string name="input_key_status_summary">Status: %1$s. Membuka pemilih sumber HDMI saat tombol Input ditekan.</string>
+    <string name="input_key_status_summary">Status: %1$s. Membuka pemilih HDMI/sumber dan membantu mendeteksi Live TV atau HDMI untuk perilaku Azan.</string>
     <string name="notification_access_title">Akses Notifikasi Now Playing</string>
     <string name="notification_access_summary">Status: %1$s. Izinkan agar informasi musik dapat tampil pada kartu Now Playing.</string>
     <string name="device_service_enabled">Diaktifkan di Android</string>
