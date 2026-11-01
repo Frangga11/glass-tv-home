@@ -44,4 +44,7 @@
     <string name="card_state_new_label">New name</string>
     <string name="tile_move">Pindahkan</string>
     <string name="tile_app_info">Info aplikasi</string>
+    <string name="weather_activity_label">Cuaca &amp; Kualitas Udara</string>
+    <string name="recent_apps_activity_label">Aplikasi Terbaru</string>
+    <string name="media_listener_service_label">Layanan Media Glass TV</string>
 </resources>
