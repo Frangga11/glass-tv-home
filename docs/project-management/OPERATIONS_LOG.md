@@ -293,7 +293,7 @@
 - StandBy photo URI collection and photo-mode enablement now commit atomically in one synchronous SharedPreferences editor operation. Explicit upload outcomes map persistence failure to HTTP 500 and rejected input/collection to HTTP 400; HTTP 200 is reserved for successful persisted state. Duplicate uploads also ensure mode is persisted.
 - On commit failure, retain the uploaded file temporarily because Android may already expose the updated preference map in memory; existing orphan cleanup removes non-durable files after restart. Existing C07 upload/session hardening preserved.
 - Added regression tests for single-commit state persistence, failure propagation, and HTTP status mapping.
-- Exact implementation-head CI #395 / `41310507890`: both Launcher build/unit tests and Lists/tools/docs jobs SUCCESS; app/installer `testReleaseUnitTest` and `assembleRelease` passed.
+- Exact implementation-head CI #396 / `41311199958`: both Launcher build/unit tests and Lists/tools/docs jobs SUCCESS; app/installer `testReleaseUnitTest` and `assembleRelease` passed.
 - APK exact size 1,551,005 bytes; 21,859 bytes below the 1,572,864-byte gate. Size gate passed; manual APK publication skipped.
 - D05 source/CI gates closed. Runtime/process-death/reboot/physical Android TV acceptance remains mandatory in F-stage; no APK installed and no merge performed.
 - Next: D06, following the exact scope in the current roadmap.
