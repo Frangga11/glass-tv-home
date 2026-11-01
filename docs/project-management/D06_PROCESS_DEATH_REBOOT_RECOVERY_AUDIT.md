@@ -1,7 +1,7 @@
 # D06 — Process-death and TV-reboot persistence/recovery audit
 
 **Date:** 1 November 2026  
-**Status:** Source audit and targeted recovery implementation complete; exact-head CI pending. Physical-device acceptance remains deferred to Stage F.  
+**Status:** CLOSED for source audit and exact-head CI. Physical-device acceptance remains deferred to Stage F, not waived.  
 **Branch:** `feature/d06-process-death-recovery`  
 **Parent:** D05 exact head `835986c0e28c50311d4474f1060c73dd56104bf8`  
 **Merge policy:** D-013 — isolated Draft PR; no early merge.
@@ -53,12 +53,12 @@ These JVM tests verify the pure dispatch policy. They do not simulate Android's 
 |---|---|
 | Source ownership/recovery-path audit | PASS |
 | D06-F01 boot alarm recovery | IMPLEMENTED |
-| Pure JVM regression tests | Added; exact-head CI pending |
-| Release build / APK size gate | Exact-head CI pending |
+| Pure JVM regression tests | PASS in exact-head CI #398 |
+| Release build / APK size gate | PASS; APK 1,551,217 bytes, 21,647 bytes below 1,572,864-byte cap |
 | Process-death / force-stop behavior on target TV | Deferred to F-stage |
 | Full TV power-off/reboot and alarm restoration | Deferred to F-stage |
 | Backup/restore, reinstall, OEM D2D behavior | Not promised; outside D06 |
-| APK publication/installation or device mutation | Not performed |
+| APK publication/installation or device mutation | Not performed; manual publication skipped |
 
 Force-stop is intentionally distinct from ordinary process death: Android may suppress app broadcasts until the user launches the app again. The receiver is not direct-boot-aware and runs after normal user unlock; it does not read credential-protected app data before unlock.
 
