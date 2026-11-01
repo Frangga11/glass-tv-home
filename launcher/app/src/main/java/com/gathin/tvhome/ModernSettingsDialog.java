@@ -722,7 +722,7 @@ public final class ModernSettingsDialog {
                     pRow.addView(ivP, ivpLp2);
 
                     TextView tvPName = new TextView(activity);
-                    tvPName.setText(p.name + (profileChildMode ? " (Mode Anak)" : ""));
+                    tvPName.setText(p.name + (profileChildMode ? activity.getString(R.string.child_mode_suffix) : ""));
                     tvPName.setTextSize(13.5f);
                     tvPName.setTextColor(0xFFFFFFFF);
                     tvPName.setTypeface(outfit, isCur ? Typeface.BOLD : Typeface.NORMAL);
@@ -826,7 +826,7 @@ public final class ModernSettingsDialog {
                                     activity.reloadTiles();
                                     activity.updateTopBarUserIcon();
                                     updateSidebarSelection.run();
-                                    Toast.makeText(activity, isChecked ? "✅ Mode Anak diaktifkan!" : "Mode Anak dinonaktifkan", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, isChecked ? R.string.child_mode_enabled : R.string.child_mode_disabled, Toast.LENGTH_SHORT).show();
                                     if (renderRightPane[0] != null) renderRightPane[0].run();
                                 }
 
@@ -924,7 +924,7 @@ public final class ModernSettingsDialog {
                         "Aktifkan atau matikan gerakan zoom dan transisi label saat berpindah aplikasi. Tidak memengaruhi animasi cuaca atau efek kaca.",
                         activity.isIconAnimationsEnabled(), isChecked -> {
                             activity.setIconAnimationsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Animasi ikon diaktifkan." : "Animasi ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, isChecked ? R.string.icon_animation_enabled : R.string.icon_animation_disabled, Toast.LENGTH_SHORT).show();
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -933,7 +933,7 @@ public final class ModernSettingsDialog {
                         "Aktifkan atau matikan material kaca buram, lapisan transparan, dan garis tepi pada dock serta tombol. Penanda fokus remote tetap berfungsi.",
                         activity.isGlassEffectsEnabled(), isChecked -> {
                             activity.setGlassEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Glass Effect diaktifkan." : "Glass Effect dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, isChecked ? R.string.glass_effect_enabled : R.string.glass_effect_disabled, Toast.LENGTH_SHORT).show();
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -942,7 +942,7 @@ public final class ModernSettingsDialog {
                         "Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.",
                         activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
                             activity.setDynamicWeatherEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Animasi cuaca diaktifkan." : "Animasi cuaca dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, isChecked ? R.string.weather_animation_enabled : R.string.weather_animation_disabled, Toast.LENGTH_SHORT).show();
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -951,7 +951,7 @@ public final class ModernSettingsDialog {
                         "Atur cahaya latar dan perpaduan warna yang mengikuti aplikasi saat dipilih. Terpisah dari animasi ikon, Glass Effect, dan animasi cuaca.",
                         activity.isIconGlowEffectsEnabled(), isChecked -> {
                             activity.setIconGlowEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? "Efek cahaya ikon diaktifkan." : "Efek cahaya ikon dinonaktifkan.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, isChecked ? R.string.icon_glow_enabled : R.string.icon_glow_disabled, Toast.LENGTH_SHORT).show();
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -1562,14 +1562,14 @@ public final class ModernSettingsDialog {
         pickerLayout.setBackground(bg);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText(isHideMode ? "👁️ Sembunyikan Aplikasi dari Layar Utama" : "🔒 Kunci Aplikasi dengan PIN 4-Digit");
+        tvTitle.setText(isHideMode ? R.string.hide_apps_title : R.string.lock_apps_title);
         tvTitle.setTextSize(17);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(font, Typeface.BOLD);
         pickerLayout.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText(isHideMode ? "Aplikasi yang dipilih tidak akan ditampilkan di layar utama." : "Aplikasi yang dipilih memerlukan kod PIN untuk dibuka.");
+        tvSub.setText(isHideMode ? R.string.hide_apps_description : R.string.lock_apps_description);
         tvSub.setTextSize(12);
         tvSub.setTextColor(0xFF8E929E);
         tvSub.setTypeface(font, Typeface.NORMAL);
