@@ -99,9 +99,15 @@ public final class AvatarUploadServer {
                         continue;
                     }
                     activeClients.add(client);
-                    Thread worker = new Thread(() -> handle(client), "avatar-upload-client");
-                    worker.setDaemon(true);
-                    worker.start();
+                    try {
+                        Thread worker = new Thread(() -> handle(client), "avatar-upload-client");
+                        worker.setDaemon(true);
+                        worker.start();
+                    } catch (RuntimeException startFailure) {
+                        if (activeClients.remove(client)) activeClientCount.decrementAndGet();
+                        try { client.close(); } catch (Exception ignored) {}
+                        Log.w(TAG, "Cannot start avatar upload worker", startFailure);
+                    }
                 } catch (Exception e) {
                     if (e instanceof SocketTimeoutException) {
                         if (System.currentTimeMillis() >= expiresAt) {
@@ -128,6 +134,7 @@ public final class AvatarUploadServer {
             try { client.close(); } catch (Exception ignored) {}
         }
         activeClients.clear();
+        activeClientCount.set(0);
         server = null;
         boundIp = null;
         port = 0;
@@ -265,8 +272,7 @@ public final class AvatarUploadServer {
         } finally {
             if (temp != null && temp.exists()) temp.delete();
             if (claimed && !uploadSucceeded) uploadClaimed.set(false);
-            activeClients.remove(socket);
-            activeClientCount.decrementAndGet();
+            if (activeClients.remove(socket)) activeClientCount.decrementAndGet();
         }
     }
 
