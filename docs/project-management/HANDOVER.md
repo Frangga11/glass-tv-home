@@ -177,3 +177,14 @@
 - D01-F01–F11 are recorded in `D01_SETTINGS_STORAGE_OWNERSHIP_AUDIT.md`. D01-F11 is the cross-project StandBy upload/persistence consistency defect; D05/D07 must repair it and add regression coverage. Do not re-audit C07 wholesale; preserve C07's verified work and use targeted impact mapping.
 - No source code, stored user data, preference keys, APK, or device settings were changed. No PR merged.
 - **Next action:** verify exact-head CI for `cd710681099faece14905faa244f57245bae84d1`; then close D01 with evidence and start D02.
+
+
+
+## Project D checkpoint — D01 closed, 1 November 2026
+
+- **Next task:** D02. D01 source audit and exact-head CI are complete.
+- D01 branch/head: `feature/d01-config-storage-audit` @ `cd710681099faece14905faa244f57245bae84d1`; Draft PR #25 targets C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`; OPEN/DRAFT/UNMERGED under D-013.
+- Final exact-head CI #375 / `41304411195` and #376 / `41304430928`: both PASS, with both jobs SUCCESS in each run.
+- D01-F01–F11 are recorded in `D01_SETTINGS_STORAGE_OWNERSHIP_AUDIT.md`. D01-F11 remains a downstream repair item for D05/D07; preserve C07's other verified upload/session work.
+- No app source changes, stored data changes, APK publication/installation, merge, or device-setting changes were made during D01.
+- Runtime/process-death/reboot acceptance remains deferred to F-stage and is not waived.
