@@ -377,7 +377,7 @@ public class WallpaperUploadServer {
                         if (listener != null) listener.onUploaded(targetFile);
                     }
                 } else {
-                    String error = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\nInvalid file size";
+                    String error = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n" + localized(R.string.wallpaper_error_invalid_size);
                     out.write(error.getBytes("UTF-8"));
                     out.flush();
                 }
@@ -523,7 +523,7 @@ public class WallpaperUploadServer {
                 + "<button id='send' disabled>" + htmlText(R.string.standby_page_upload_button) + "</button><div id='status'>" + htmlText(R.string.standby_page_no_photo) + "</div>"
                 + "<div id='bar'><div id='fill'></div></div>"
                 + "<small>" + htmlText(R.string.standby_page_storage_note) + " "
-                + " + htmlText(R.string.standby_page_limit_note) + "</small></main><script>"
+                + htmlText(R.string.standby_page_limit_note) + "</small></main><script>"
                 + "const endpoint='" + endpoint + "';const input=document.getElementById('files');"
                 + "const send=document.getElementById('send');const status=document.getElementById('status');"
                 + "const fill=document.getElementById('fill');let files=[];"
