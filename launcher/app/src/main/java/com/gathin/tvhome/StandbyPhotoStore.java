@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -95,19 +96,49 @@ final class StandbyPhotoStore {
         return context.getFilesDir().getUsableSpace() - incomingBytes >= MIN_FREE_BYTES;
     }
 
-    static synchronized boolean addUploadedFile(Context context, File imageFile) {
-        if (context == null || imageFile == null || !imageFile.isFile()) return false;
-        if (!isManagedFile(context, Uri.fromFile(imageFile))) return false;
+    enum UploadResult {
+        ADDED,
+        ALREADY_PRESENT,
+        REJECTED,
+        PERSISTENCE_FAILED
+    }
+
+    static synchronized UploadResult addUploadedFile(Context context, File imageFile) {
+        if (context == null || imageFile == null || !imageFile.isFile()) return UploadResult.REJECTED;
+        if (!isManagedFile(context, Uri.fromFile(imageFile))) return UploadResult.REJECTED;
         List<Uri> uris = getUris(context);
         Uri uploaded = Uri.fromFile(imageFile);
-        if (uris.contains(uploaded)) return true;
-        if (uris.size() >= MAX_PHOTO_COUNT) return false;
-        if (getUploadedBytes(context) + imageFile.length() > MAX_UPLOADED_BYTES) return false;
-        if (context.getFilesDir().getUsableSpace() < MIN_FREE_BYTES) return false;
+        if (uris.contains(uploaded)) return UploadResult.ALREADY_PRESENT;
+        if (uris.size() >= MAX_PHOTO_COUNT) return UploadResult.REJECTED;
+        if (getUploadedBytes(context) + imageFile.length() > MAX_UPLOADED_BYTES) return UploadResult.REJECTED;
+        if (context.getFilesDir().getUsableSpace() < MIN_FREE_BYTES) return UploadResult.REJECTED;
         uris.add(uploaded);
-        if (!saveUris(context, uris)) return false;
-        setPhotoMode(context, true);
-        return true;
+
+        // Collection membership and the mode that consumes it are one durable state transition.
+        String serializedUris = TextUtils.join("\n", toUriStrings(uris));
+        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        return commitUploadedState(preferences, serializedUris)
+                ? UploadResult.ADDED : UploadResult.PERSISTENCE_FAILED;
+    }
+
+    private static List<String> toUriStrings(List<Uri> uris) {
+        List<String> values = new ArrayList<>();
+        Set<String> unique = new HashSet<>();
+        if (uris != null) {
+            for (Uri uri : uris) {
+                if (uri != null && unique.add(uri.toString())) values.add(uri.toString());
+            }
+        }
+        return values;
+    }
+
+    /** Commits the photo collection and its enabling mode through one SharedPreferences write. */
+    static boolean commitUploadedState(SharedPreferences preferences, String serializedUris) {
+        if (preferences == null || serializedUris == null) return false;
+        return preferences.edit()
+                .putString(KEY_URIS, serializedUris)
+                .putBoolean(KEY_MODE, true)
+                .commit();
     }
 
     static boolean isManagedFile(Context context, Uri uri) {
