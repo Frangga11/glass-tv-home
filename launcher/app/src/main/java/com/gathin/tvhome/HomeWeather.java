@@ -111,7 +111,7 @@ final class HomeWeather {
         return new Line(weather, aqi, color, code < 0 ? 0 : icon(code, day));
     }
 
-    private static String describe(int code, boolean isEnglish) {
+    static String describe(int code, boolean isEnglish) {
         if (code == 0) return isEnglish ? "Clear sky" : "Cerah";
         if (code == 1) return isEnglish ? "Mainly clear" : "Umumnya cerah";
         if (code == 2) return isEnglish ? "Partly cloudy" : "Cerah berawan";
@@ -124,7 +124,7 @@ final class HomeWeather {
         return "";
     }
 
-    private static String aqiName(int band, boolean isEnglish) {
+    static String aqiName(int band, boolean isEnglish) {
         if (isEnglish) {
             String[] names = {"Good", "Moderate", "Unhealthy for sensitive groups", "Unhealthy", "Very unhealthy", "Hazardous"};
             return names[Math.max(0, Math.min(names.length - 1, band))];
