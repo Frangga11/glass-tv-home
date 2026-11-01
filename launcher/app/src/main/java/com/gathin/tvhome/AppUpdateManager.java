@@ -50,6 +50,12 @@ public final class AppUpdateManager {
     public static final String KEY_NEW_APK_URL = "new_apk_url";
     public static final String KEY_SKIPPED_VERSION_CODE = "skipped_version_code";
 
+    // Check requests are deliberately shorter than APK downloads; do not alter OTA policy intervals.
+    private static final int CHECK_CONNECT_TIMEOUT_MS = 6000;
+    private static final int CHECK_READ_TIMEOUT_MS = 6000;
+    private static final int DOWNLOAD_CONNECT_TIMEOUT_MS = 10000;
+    private static final int DOWNLOAD_READ_TIMEOUT_MS = 15000;
+
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -139,8 +145,12 @@ public final class AppUpdateManager {
     /**
      * Checks for updates. If manualCheck is true, shows feedback toasts even when up-to-date.
      */
+    private static boolean isActivityUsable(Activity activity) {
+        return activity != null && !activity.isFinishing() && !activity.isDestroyed();
+    }
+
     public static void checkForUpdates(Activity activity, boolean manualCheck) {
-        if (activity == null || activity.isFinishing()) return;
+        if (!isActivityUsable(activity)) return;
 
         if (manualCheck) {
             Toast.makeText(activity, activity.getString(R.string.update_checking), Toast.LENGTH_SHORT).show();
@@ -151,15 +161,18 @@ public final class AppUpdateManager {
                 URL url = new URL(VERSION_URL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(6000);
-                conn.setReadTimeout(6000);
+                conn.setConnectTimeout(CHECK_CONNECT_TIMEOUT_MS);
+                conn.setReadTimeout(CHECK_READ_TIMEOUT_MS);
                 conn.setUseCaches(false);
 
                 int responseCode = conn.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     if (manualCheck) {
-                        mainHandler.post(() -> Toast.makeText(activity, activity.getString(R.string.update_http_failure, responseCode), Toast.LENGTH_SHORT).show());
+                        mainHandler.post(() -> {
+                            if (isActivityUsable(activity)) Toast.makeText(activity, activity.getString(R.string.update_http_failure, responseCode), Toast.LENGTH_SHORT).show();
+                        });
                     }
+                    conn.disconnect();
                     return;
                 }
 
@@ -188,7 +201,7 @@ public final class AppUpdateManager {
                 sp.edit().putLong(KEY_LAST_CHECK, System.currentTimeMillis()).apply();
 
                 mainHandler.post(() -> {
-                    if (activity.isFinishing()) return;
+                    if (!isActivityUsable(activity)) return;
 
                     if (remoteVersionCode > currentVersionCode) {
                         sp.edit()
@@ -221,7 +234,9 @@ public final class AppUpdateManager {
             } catch (Exception e) {
                 Log.e(TAG, "Error checking updates: " + e.getMessage());
                 if (manualCheck) {
-                    mainHandler.post(() -> Toast.makeText(activity, activity.getString(R.string.update_check_error), Toast.LENGTH_SHORT).show());
+                    mainHandler.post(() -> {
+                        if (isActivityUsable(activity)) Toast.makeText(activity, activity.getString(R.string.update_check_error), Toast.LENGTH_SHORT).show();
+                    });
                 }
             }
         });
@@ -299,10 +314,14 @@ public final class AppUpdateManager {
                 URL url = new URL(apkUrl);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(10000);
-                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(DOWNLOAD_CONNECT_TIMEOUT_MS);
+                conn.setReadTimeout(DOWNLOAD_READ_TIMEOUT_MS);
                 conn.connect();
 
+                int responseCode = conn.getResponseCode();
+                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    throw new java.io.IOException("HTTP " + responseCode);
+                }
                 int fileLength = conn.getContentLength();
                 is = conn.getInputStream();
                 fos = new FileOutputStream(apkFile);
@@ -320,21 +339,22 @@ public final class AppUpdateManager {
                     }
                 }
                 fos.flush();
+                fos.getFD().sync();
+                if (total <= 0 || (fileLength > 0 && total != fileLength)) {
+                    throw new java.io.IOException("Unduhan APK tidak lengkap");
+                }
 
                 mainHandler.post(() -> {
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
+                    if (!isActivityUsable(activity)) return;
+                    if (progressDialog.isShowing()) progressDialog.dismiss();
                     installApk(activity, apkFile);
                 });
 
             } catch (Exception e) {
                 Log.e(TAG, "Download error: " + e.getMessage());
                 mainHandler.post(() -> {
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                    Toast.makeText(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG).show();
+                    if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.dismiss();
+                    if (isActivityUsable(activity)) Toast.makeText(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG).show();
                 });
             } finally {
                 try {
@@ -348,7 +368,8 @@ public final class AppUpdateManager {
     }
 
     private static void installApk(Activity activity, File apkFile) {
-        if (!apkFile.exists()) {
+        if (!isActivityUsable(activity)) return;
+        if (!apkFile.exists() || !apkFile.isFile() || apkFile.length() <= 0) {
             Toast.makeText(activity, R.string.update_apk_missing, Toast.LENGTH_SHORT).show();
             return;
         }
