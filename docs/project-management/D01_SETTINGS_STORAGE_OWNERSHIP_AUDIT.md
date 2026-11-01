@@ -19,7 +19,7 @@ D01 is an audit-only step. It does not rename preference files/keys, migrate use
 - `Config` optionally reads `config.json` from `getExternalFilesDir(null)`; the file is an external theme/config overlay, not a SharedPreferences store.
 - User content is stored in app-private `getFilesDir()` directories (profile avatars, custom wallpapers, StandBy photos, and Azan audio).
 - External cache/files are also used for downloaded update/wallpaper assets.
-- The manifest sets `android:allowBackup=false`; SharedPreferences and app-private files therefore must be treated as local app state, not as an OS/cloud backup or reinstall-recovery mechanism. This is a key D06 acceptance constraint.
+- The manifest sets `android:allowBackup=false`. On the current target TV OS (Android 11 / API 30), this disables Android Auto Backup for the app. On Android 12+ / API 31+, some OEMs may still allow device-to-device transfer despite this flag; therefore the flag alone is not a universal D2D exclusion. Treat app state as local and do not promise cloud/reinstall recovery; if D2D exclusion is required, define explicit `dataExtractionRules` and legacy backup rules in a separately reviewed change. D06 must distinguish process death/reboot persistence from backup/restore behavior. Reference: [Android Auto Backup](https://developer.android.com/identity/data/autobackup).
 - No Room, SQLiteOpenHelper, or DataStore owner was identified in the inspected launcher persistence paths.
 
 ## 3. Preference-store ownership inventory
@@ -74,7 +74,8 @@ D01 is an audit-only step. It does not rename preference files/keys, migrate use
 | D01-F07 | MEDIUM | `Config` uses resource defaults plus an optional external-files JSON overlay, loads once at Activity creation, and is not wired as a live mutable settings store. | Do not treat this overlay as the source of Settings UI toggles or migrate it into SharedPreferences without a separate compatibility plan. |
 | D01-F08 | LOW | UI navigation restoration, network-derived caches, update metadata, recent-app history, and user preferences are all persisted through SharedPreferences but have different lifecycle/retention semantics. | D02/D06 must distinguish durable user choices from ephemeral/restorable state and disposable caches. |
 | D01-F09 | HIGH / OUT OF D01 SCOPE | `MainActivity.ensureSystemScreensaverAndSleepSettings()` writes Android System/Secure settings (sleep timeout, screensaver, accessibility/notification listener settings). | These are OS/device settings, not app-owned preferences. D01 does not execute or alter them; carry them to the separately scoped E01/device-settings audit. |
-| D01-F10 | MEDIUM | Manifest sets `android:allowBackup=false`. | App-owned preferences and private files are not an OS backup/restore guarantee; D06 must validate process death/reboot separately and must not imply reinstall recovery. |
+| D01-F10 | MEDIUM | Manifest sets `android:allowBackup=false`; semantics differ by OS generation and OEM. | On the current Android 11/API 30 target, Auto Backup is disabled. On Android 12+/API 31+, some OEMs may still permit device-to-device transfer despite the flag. Do not promise cloud/reinstall recovery or assume universal D2D exclusion; D06 must separately test process death/reboot and document backup/restore limits. If explicit D2D exclusion becomes a requirement, review `dataExtractionRules` plus legacy rules before changing the manifest. |
+| D01-F11 | MEDIUM | `StandbyPhotoStore.addUploadedFile()` commits the photo URI collection, then calls `setPhotoMode(context, true)` but ignores that method's boolean commit result and still returns success. | A failed mode write can leave a saved photo collection while StandBy photo mode remains disabled, so the upload path may report success without the expected visible behavior. D05/D07 must make the collection + mode transition failure-aware and add regression coverage; do not refactor storage in D01. |
 
 ## 6. D01 disposition and guardrails
 
@@ -84,10 +85,10 @@ D01 is an audit-only step. It does not rename preference files/keys, migrate use
 - No candidate APK was published/installed and no physical device setting was changed.
 - Before any later migration, add explicit old-key read/compatibility rules, preserve user data, test interrupted writes and process death, and define rollback.
 - D02 should start with the live-propagation contract and owner map from this audit; D03–D06 should reuse the same storage ownership boundaries; D07 should address cross-store atomicity and concurrency.
-- D01 is source-audit complete only. Runtime/process-death/reboot validation remains deferred to F-stage.
+- D01 is source-audit complete only. Runtime/process-death/reboot validation remains deferred to F-stage. D01-F11 is a concrete source-level persistence consistency defect/risk assigned to D05/D07 for repair and regression coverage; it is not considered resolved by this audit.
 
 ## 7. Verification
 
 - Source base: C07 branch `feature/c07-upload-session-resilience` @ `1cc6d7033daf6f9371805f667467b8860edcfb8f`.
-- Scope reviewed: launcher Java persistence consumers, resource defaults, manifest backup policy, private/external file paths, and Settings/Activity write sites.
+- Scope reviewed: launcher Java persistence consumers, resource defaults, manifest backup policy, private/external file paths, and Settings/Activity write sites. Follow-up quality review also traced `StandbyPhotoStore.addUploadedFile()` commit handling and checked Android's documented API/OEM backup semantics.
 - No source code was changed in this audit-only step. Exact-head CI will validate the audit documentation and branch integrity.
