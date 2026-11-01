@@ -1,7 +1,7 @@
 # C06 — Upload File Validation Audit
 
 **Date:** 1 November 2026  
-**Status:** IMPLEMENTATION COMPLETE — EXACT-HEAD CI PENDING — PHYSICAL ACCEPTANCE DEFERRED  
+**Status:** IMPLEMENTATION COMPLETE — CI #362 PASS ON SOURCE HEAD — PHYSICAL ACCEPTANCE DEFERRED  
 **Branch:** `feature/c06-upload-file-validation`  
 **Parent:** C05 exact head `53cf9a883f061632eb5b51d4b50b828100076acb`  
 **Merge policy:** D-013 — isolated Draft PR; no early merge.
@@ -50,10 +50,12 @@ Existing Avatar size/dimension, StandBy store, wallpaper route, and C01–C05 re
 ## 5. Verification
 
 - Source implementation and focused JVM tests committed to the isolated C06 branch.
-- Exact-head GitHub Actions CI: pending.
+- GitHub Actions CI #362 / run `41291358221` on source head `2d331d873e0336de937e026e08ed347cbf0b5149`: PASS; both `Lists, tools and docs` and `Launcher build and unit tests` jobs succeeded.
+- `testReleaseUnitTest`, `assembleRelease`, read-only APK diagnostics, and the 1.5 MiB size gate passed; manual APK publication was skipped.
+- The PR check on the final documentation-inclusive head remains the authoritative final-head gate.
 - Physical phone-to-TV file-type, MIME, image-decoder, and storage acceptance remains deferred to F-stage and is not waived.
 - No APK publication/installation, merge, or device-setting change.
 
 ## 6. Disposition
 
-C06 implementation is complete pending exact-head CI. Do not mark source/CI gate PASS until both required CI jobs succeed on the final C06 head. PR remains Draft/unmerged under D-013.
+C06 implementation and source-head CI gate are PASS at `2d331d873e0336de937e026e08ed347cbf0b5149`. The final documentation-inclusive PR head must also retain both required CI jobs as PASS before the source/CI gate is closed. PR remains Draft/unmerged under D-013.
