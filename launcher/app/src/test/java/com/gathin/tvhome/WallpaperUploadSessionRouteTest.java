@@ -125,6 +125,7 @@ public class WallpaperUploadSessionRouteTest {
         assertFalse(WallpaperUploadServer.isRequestToPath(
                 "POST " + uploadPath + "/extra HTTP/1.1", "POST", uploadPath));
     }
+
     @Test
     public void standbyUploadMapsPersistenceFailureToServerError() {
         assertEquals(200, WallpaperUploadServer.standbyUploadResponseStatus(
