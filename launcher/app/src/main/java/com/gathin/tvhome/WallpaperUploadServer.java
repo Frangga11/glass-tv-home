@@ -31,6 +31,8 @@ import java.util.UUID;
 
 public class WallpaperUploadServer {
     private static final String TAG = "TvHome.UploadServer";
+    static final long MAX_UPLOAD_BYTES = 60L * 1024L * 1024L;
+    private static final int MAX_ACTIVE_CLIENTS = 4;
 
     public interface UploadListener {
         void onUploaded(File imageFile);
@@ -123,6 +125,36 @@ public class WallpaperUploadServer {
         return getWallpaperPath() + "/upload";
     }
 
+    /**
+     * Accept one unambiguous Content-Length only. This server deliberately does not implement
+     * chunked transfer decoding, so Transfer-Encoding and duplicate/malformed lengths are rejected.
+     */
+    static long parseContentLength(String[] headerLines, long maxBytes) {
+        if (headerLines == null || maxBytes <= 0) return -1L;
+        int count = 0;
+        long length = -1L;
+        for (String line : headerLines) {
+            if (line == null) continue;
+            int separator = line.indexOf(':');
+            if (separator <= 0) continue;
+            String name = line.substring(0, separator).trim().toLowerCase(Locale.ROOT);
+            String value = line.substring(separator + 1).trim();
+            if ("transfer-encoding".equals(name)) return -1L;
+            if (!"content-length".equals(name)) continue;
+            count++;
+            if (count != 1 || value.isEmpty()) return -1L;
+            for (int i = 0; i < value.length(); i++) {
+                if (value.charAt(i) < '0' || value.charAt(i) > '9') return -1L;
+            }
+            try {
+                length = Long.parseLong(value);
+            } catch (NumberFormatException e) {
+                return -1L;
+            }
+        }
+        return count == 1 && length > 0 && length <= maxBytes ? length : -1L;
+    }
+
     static boolean isWallpaperSessionRequest(String requestLine, String sessionPath) {
         return requestLine.startsWith("GET " + sessionPath + " ")
                 || requestLine.startsWith("GET " + sessionPath + "/")
@@ -171,13 +203,33 @@ public class WallpaperUploadServer {
                             client.close();
                             break;
                         }
-                        activeClients.add(client);
-                        if (!running) {
-                            activeClients.remove(client);
-                            client.close();
-                            break;
+                        boolean accepted;
+                        synchronized (activeClients) {
+                            accepted = running && activeClients.size() < MAX_ACTIVE_CLIENTS;
+                            if (accepted) activeClients.add(client);
                         }
-                        new Thread(() -> handleClient(client), "upload-client").start();
+                        if (!accepted) {
+                            try {
+                                byte[] body = "Too many active connections".getBytes("UTF-8");
+                                OutputStream rejectOut = client.getOutputStream();
+                                rejectOut.write(("HTTP/1.1 503 Service Unavailable\\r\\nContent-Type: text/plain; charset=UTF-8\\r\\n"
+                                        + "Content-Length: " + body.length + "\\r\\nCache-Control: no-store\\r\\nConnection: close\\r\\n\\r\\n").getBytes("UTF-8"));
+                                rejectOut.write(body);
+                                rejectOut.flush();
+                            } catch (Exception ignored) {}
+                            try { client.close(); } catch (Exception ignored) {}
+                            if (!running) break;
+                            continue;
+                        }
+                        try {
+                            Thread worker = new Thread(() -> handleClient(client), "upload-client");
+                            worker.setDaemon(true);
+                            worker.start();
+                        } catch (Exception e) {
+                            activeClients.remove(client);
+                            try { client.close(); } catch (Exception ignored) {}
+                            Log.w(TAG, "Cannot start upload client worker", e);
+                        }
                     } catch (Exception e) {
                         if (!running) break;
                         Log.w(TAG, "Accept error: " + e.getMessage());
@@ -313,17 +365,9 @@ public class WallpaperUploadServer {
                 out.write(pageBytes);
                 out.flush();
             } else if (requestLine.startsWith("POST " + getWallpaperUploadPath() + " ")) {
-                long contentLength = 0;
-                for (String line : lines) {
-                    if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
-                        try {
-                            contentLength = Long.parseLong(line.substring(15).trim());
-                        } catch (Exception ignored) {}
-                        break;
-                    }
-                }
+                long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
 
-                if (contentLength > 0 && contentLength < 60 * 1024 * 1024) { // Max 60 MB
+                if (contentLength > 0) {
                     File customDir = new File(context.getFilesDir(), "custom_wallpapers");
                     if (!customDir.exists() && !customDir.mkdirs()) {
                         throw new java.io.IOException("Cannot create wallpaper storage");
@@ -403,18 +447,8 @@ public class WallpaperUploadServer {
     }
 
     private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
-        long contentLength = 0;
-        for (String line : lines) {
-            if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
-                try {
-                    contentLength = Long.parseLong(line.substring(15).trim());
-                } catch (Exception ignored) {
-                    contentLength = -1;
-                }
-                break;
-            }
-        }
-        if (contentLength <= 0 || contentLength > 60L * 1024L * 1024L) {
+        long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
+        if (contentLength <= 0) {
             sendUploadError(out, 400, localized(R.string.standby_error_photo_size));
             return;
         }
