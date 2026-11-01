@@ -1,7 +1,7 @@
 # D02 — Settings Change / Dependent UI Propagation Audit
 
 **Date:** 1 November 2026  
-**Status:** TARGETED SOURCE REPAIR COMPLETE — EXACT-HEAD CI PENDING — DEVICE ACCEPTANCE DEFERRED  
+**Status:** TARGETED SOURCE REPAIR COMPLETE — EXACT-HEAD CI PASS — DEVICE ACCEPTANCE DEFERRED  
 **Branch:** `feature/d02-settings-ui-propagation`  
 **Parent:** D01 exact head `cd710681099faece14905faa244f57245bae84d1`  
 **Merge policy:** D-013 — isolated Draft PR; no early merge.
@@ -78,4 +78,7 @@ A global `SharedPreferences.OnSharedPreferenceChangeListener` or generic event b
 - Parent source: D01 exact head `cd710681099faece14905faa244f57245bae84d1`.
 - Inspected Settings callbacks, MainActivity owner setters and lifecycle refresh, profile/child-mode callbacks, LocationActivity, WeatherActivity, StandbyPhotoStore and wallpaper update paths.
 - Targeted application change: `MainActivity.setStandbyPhotoMode()` now propagates commit failure correctly; localized error string added to default, Indonesian and English resources.
-- No broad state refactor or data migration was performed. Exact-head CI is required for this branch; CI does not substitute for deferred device acceptance.
+- No broad state refactor or data migration was performed.
+- Exact-head CI #380 / run `41305432110` and #381 / run `41305453205` passed on source head `3bb4ae592904a49989fd76d7dabd92ed1cebd94b`; both `Launcher build and unit tests` and `Lists, tools and docs` jobs succeeded in both runs. `testReleaseUnitTest`, `assembleRelease`, APK size diagnostics and the 1.5 MiB size gate passed; manual TV-test APK publication was skipped.
+- Release APK diagnostic: 1,550,617 bytes, 12,247 bytes below the 1,572,864-byte (1.5 MiB) gate. Keep later additions lean; this is a narrow remaining size margin.
+- This report update is documentation-only and must receive exact-head CI on the resulting final branch commit. CI does not substitute for deferred device acceptance.
