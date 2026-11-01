@@ -439,4 +439,30 @@
     <string name="check_updates_summary">Periksa apakah versi terbaru Glass TV Home tersedia.</string>
     <string name="android_settings_title">⚙️ Pengaturan Android</string>
     <string name="android_settings_summary">Buka pengaturan asli Android TV.</string>
+    <string name="unknown_value">Tidak diketahui</string>
+    <string name="search_tab_profile">Profil</string>
+    <string name="search_tab_home">Layar Utama</string>
+    <string name="search_tab_appearance">Tampilan</string>
+    <string name="search_tab_information">Widget &amp; Informasi</string>
+    <string name="search_tab_effects">Animasi &amp; Efek</string>
+    <string name="search_tab_standby">Layar Siaga</string>
+    <string name="search_tab_parental">Pengawasan Orang Tua (di Profil)</string>
+    <string name="search_tab_device">Pengaturan Perangkat</string>
+    <string name="verify_current_pin_title">Verifikasi PIN Saat Ini</string>
+    <string name="verify_current_pin_message">Masukkan PIN keamanan 4 digit saat ini</string>
+    <string name="pin_exactly_four_digits">PIN harus tepat 4 angka</string>
+    <string name="pin_mismatch">PIN tidak sama</string>
+    <string name="verify_parent_pin_title">Verifikasi PIN Orang Tua</string>
+    <string name="verify_parent_pin_message">Masukkan PIN orang tua untuk mengubah daftar aplikasi %1$s</string>
+    <string name="hidden_apps_label">tersembunyi</string>
+    <string name="locked_apps_label">terkunci</string>
+    <string name="default_launcher_success">Setiap kali tombol Home pada remote ditekan, perangkat akan kembali ke Glass TV.</string>
+    <string name="default_launcher_explanation">Peluncur aktif saat ini: %1$s
+
+Sebagian besar Android TV dan Google TV membatasi tombol Home agar tetap membuka layar utama bawaan produsen. Pilih salah satu cara berikut untuk menetapkan Glass TV sebagai peluncur utama:</string>
+    <string name="open_home_picker_title">⚙️ Buka Pengaturan Pemilih Peluncur TV</string>
+    <string name="open_home_picker_summary">Coba buka menu Android untuk memilih Glass TV sebagai peluncur utama (jika didukung TV).</string>
+    <string name="set_home_adb_title">💻 Tetapkan Permanen melalui Perintah ADB (Disarankan)</string>
+    <string name="phone_installer_title">📱 Tanpa PC: Gunakan Aplikasi Telepon (Glass TV Installer)</string>
+    <string name="phone_installer_summary">Pasang release/glass-tv-installer.apk pada telepon Android di jaringan Wi-Fi yang sama untuk mengaktifkan Home secara otomatis dalam satu klik.</string>
 </resources>

@@ -1012,7 +1012,7 @@ public final class ModernSettingsDialog {
                 homeIntent.addCategory(Intent.CATEGORY_HOME);
                 ResolveInfo resolveInfo = activity.getPackageManager().resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY);
                 boolean isDefault = resolveInfo != null && activity.getPackageName().equals(resolveInfo.activityInfo.packageName);
-                String activePkg = resolveInfo != null ? resolveInfo.activityInfo.packageName : "Tidak diketahui";
+                String activePkg = resolveInfo != null ? resolveInfo.activityInfo.packageName : activity.getString(R.string.unknown_value);
 
                 String homeSub = isDefault ? activity.getString(R.string.launcher_is_default) : activity.getString(R.string.launcher_currently_active, activePkg);
                 rightContent.addView(buildCardRow(activity, density, outfit,
@@ -1124,14 +1124,14 @@ public final class ModernSettingsDialog {
                         }
 
                         String[] labels = {
-                                "Profil",
-                                "Layar Utama",
-                                "Tampilan",
-                                "Widget & Informasi",
-                                "Animasi & Efek",
-                                "Layar Siaga",
-                                "Pengawasan Orang Tua (di Profil)",
-                                "Pengaturan Perangkat"
+                                activity.getString(R.string.search_tab_profile),
+                                activity.getString(R.string.search_tab_home),
+                                activity.getString(R.string.search_tab_appearance),
+                                activity.getString(R.string.search_tab_information),
+                                activity.getString(R.string.search_tab_effects),
+                                activity.getString(R.string.search_tab_standby),
+                                activity.getString(R.string.search_tab_parental),
+                                activity.getString(R.string.search_tab_device)
                         };
                         String[] keywords = {
                                 "profil pengguna akun avatar nama",
@@ -1449,8 +1449,8 @@ public final class ModernSettingsDialog {
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
-        ChildModeManager.promptPin(activity, "Verifikasi PIN Saat Ini",
-                "Masukkan PIN keamanan 4 digit saat ini", new ChildModeManager.PinCallback() {
+        ChildModeManager.promptPin(activity, activity.getString(R.string.verify_current_pin_title),
+                activity.getString(R.string.verify_current_pin_message), new ChildModeManager.PinCallback() {
             @Override
             public void onSuccess() {
                 EditText newPin = new EditText(activity);
@@ -1483,12 +1483,12 @@ public final class ModernSettingsDialog {
                     String first = newPin.getText().toString();
                     String second = confirmPin.getText().toString();
                     if (!first.matches("[0-9]{4}")) {
-                        newPin.setError("PIN harus tepat 4 angka");
+                        newPin.setError(activity.getString(R.string.pin_exactly_four_digits));
                         newPin.requestFocus();
                         return;
                     }
                     if (!first.equals(second)) {
-                        confirmPin.setError("PIN tidak sama");
+                        confirmPin.setError(activity.getString(R.string.pin_mismatch));
                         confirmPin.requestFocus();
                         return;
                     }
@@ -1505,8 +1505,8 @@ public final class ModernSettingsDialog {
 
     /** Require parent PIN before changing either the locked-app or hidden-app policy. */
     private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode) {
-        ChildModeManager.promptPin(activity, "Verifikasi PIN Orang Tua",
-                "Masukkan PIN orang tua untuk mengubah daftar aplikasi " + (isHideMode ? "tersembunyi" : "terkunci"),
+        ChildModeManager.promptPin(activity, activity.getString(R.string.verify_parent_pin_title),
+                activity.getString(R.string.verify_parent_pin_message, activity.getString(isHideMode ? R.string.hidden_apps_label : R.string.locked_apps_label)),
                 new ChildModeManager.PinCallback() {
                     @Override public void onSuccess() {
                         showAppLockPickerAuthorized(activity, density, font, isHideMode);
@@ -1726,8 +1726,8 @@ public final class ModernSettingsDialog {
 
         // Option 1: Open TV Settings
         LinearLayout btnSettings = buildCardRow(activity, density, font,
-                "⚙️ Buka Pengaturan Pemilih Peluncur TV",
-                "Coba buka menu Android untuk memilih Glass TV sebagai peluncur utama (jika didukung TV).",
+                activity.getString(R.string.open_home_picker_title),
+                activity.getString(R.string.open_home_picker_summary),
                 () -> {
                     try {
                         Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
@@ -1745,7 +1745,7 @@ public final class ModernSettingsDialog {
 
         // Option 2: ADB Command guidance
         LinearLayout btnAdb = buildCardRow(activity, density, font,
-                "💻 Tetapkan Permanen melalui Perintah ADB (Disarankan)",
+                activity.getString(R.string.set_home_adb_title),
                 "Jalankan arahan ini melalui PC atau asisten pemrograman:\nadb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity" +
                 (isDefault ? "" : "\n\nJika TV masih membatasi tombol Home, nonaktifkan peluncur lama:\nadb shell pm disable-user --user 0 " + activePkg),
                 () -> {
@@ -1755,8 +1755,8 @@ public final class ModernSettingsDialog {
 
         // Option 3: Phone Installer
         LinearLayout btnPhone = buildCardRow(activity, density, font,
-                "📱 Tanpa PC: Gunakan Aplikasi Telefon (Glass TV Installer)",
-                "Pasang release/glass-tv-installer.apk pada telefon Android anda di rangkaian Wi-Fi yang sama untuk aktifkan Home secara automatik dalam 1-klik.",
+                activity.getString(R.string.phone_installer_title),
+                activity.getString(R.string.phone_installer_summary),
                 () -> {
                     Toast.makeText(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT).show();
                 });
