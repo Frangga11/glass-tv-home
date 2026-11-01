@@ -42,7 +42,22 @@ final class HomeWeather {
 
     /** Forgets the line, so a new location is fetched at once instead of the old place's weather showing. */
     static void forget(Context ctx) {
-        prefs(ctx).edit().clear().apply();
+        synchronized (HomeWeather.class) {
+            SharedPreferences preferences = prefs(ctx);
+            long nextGeneration = preferences.getLong("request_generation", 0L) + 1L;
+            preferences.edit().clear().putLong("request_generation", nextGeneration).apply();
+        }
+    }
+
+    static boolean isCurrentRequest(long requestGeneration, long currentGeneration) {
+        return requestGeneration == currentGeneration;
+    }
+
+    private static boolean isCurrentLocation(Context ctx, double lat, double lon) {
+        Location.Zone zone = Location.chosen(ctx);
+        double currentLat = zone != null ? zone.lat : -4.0212;
+        double currentLon = zone != null ? zone.lon : 103.2517;
+        return Double.compare(lat, currentLat) == 0 && Double.compare(lon, currentLon) == 0;
     }
 
     static boolean due(Context ctx) {
@@ -72,6 +87,13 @@ final class HomeWeather {
 
     /** Fetches both parts. Network; never on the UI thread. Returns null when neither could be read. */
     static Line refresh(Context ctx, double lat, double lon) {
+        final long requestGeneration;
+        final String requestLanguage = AppLanguage.getLanguage(ctx);
+        synchronized (HomeWeather.class) {
+            SharedPreferences preferences = prefs(ctx);
+            requestGeneration = preferences.getLong("request_generation", 0L) + 1L;
+            preferences.edit().putLong("request_generation", requestGeneration).apply();
+        }
         String weather = "", aqi = "";
         int color = 0, code = -1;
         boolean day = true;
@@ -99,15 +121,25 @@ final class HomeWeather {
         } catch (Exception e) {
             Log.w(TAG, "Open-Meteo air quality failed: " + e.getMessage());
         }
-        // A failed try waits for the next round too, rather than asking again every minute.
-        SharedPreferences.Editor ed = prefs(ctx).edit().putLong("at", System.currentTimeMillis())
-                .putString("language", AppLanguage.getLanguage(ctx));
-        if (weather.isEmpty() && aqi.isEmpty()) {
-            ed.apply();
-            return null;
+        // Discard a response if a newer refresh or a location/language change superseded it.
+        synchronized (HomeWeather.class) {
+            SharedPreferences preferences = prefs(ctx);
+            long currentGeneration = preferences.getLong("request_generation", 0L);
+            if (!isCurrentRequest(requestGeneration, currentGeneration)
+                    || !requestLanguage.equals(AppLanguage.getLanguage(ctx))
+                    || !isCurrentLocation(ctx, lat, lon)) {
+                return null;
+            }
+            // A failed try waits for the next round too, rather than asking again every minute.
+            SharedPreferences.Editor ed = preferences.edit().putLong("at", System.currentTimeMillis())
+                    .putString("language", requestLanguage);
+            if (weather.isEmpty() && aqi.isEmpty()) {
+                ed.apply();
+                return null;
+            }
+            ed.putString("weather", weather).putString("api", aqi).putInt("api_color", color)
+                    .putInt("icon_code", code).putBoolean("icon_day", day).apply();
         }
-        ed.putString("weather", weather).putString("api", aqi).putInt("api_color", color)
-                .putInt("icon_code", code).putBoolean("icon_day", day).apply();
         return new Line(weather, aqi, color, code < 0 ? 0 : icon(code, day));
     }
 
