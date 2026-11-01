@@ -454,3 +454,22 @@ Evidence: https://github.com/Frangga11/glass-tv-home/actions/runs/41218171447 an
 - Additional parental PIN fallback prompts are now localized. Static resource audit now reports 347 keys in each of default/ID/EN, with no duplicates, key-set differences, placeholder mismatches, or missing R.string references in the audited Java files.
 - Exact-head Actions run is still absent. Do not infer build/test success from static checks.
 - B05 remains IN PROGRESS: broader ModernSettingsDialog copy sweep, app-wide final scan, exact-head CI, API 30/API 33 lifecycle checks, and physical acceptance remain open.
+
+
+## Audit entry — B04/B05 latest static QC — 1 November 2026
+
+**Head:** `f39bf7a7958b57440e5f1e814a585e814b0c9365` | **PR:** #15 (Draft, open, mergeable_state clean).
+
+| Check | Result | Evidence / limit |
+|---|---|---|
+| B04 exact-head CI | PASS | CI #242; physical F02 still pending |
+| Locale key parity | PASS | 444 keys in default/ID/EN; no duplicates or key-set differences |
+| Format placeholder parity | PASS | No mismatches across all 444 keys |
+| Java resource references | PASS | 411 references / 362 unique across 16 changed Java files; zero missing |
+| Layout resource references | PASS | 65 references across 8 changed layouts; zero missing |
+| ModernSettingsDialog copy sweep | PASS for scanned settings UI | Remaining string literals are search aliases, dynamic values, format/units, symbols/branding; full app-wide sweep remains open |
+| Integrated exact-head CI | PENDING | No workflow run and no combined status returned for current head; no build/test pass claim |
+| Locale lifecycle | PENDING | API 30 and API 33+ Activity/DreamService, configuration, dialog/focus persistence not runtime-tested |
+| Physical acceptance | PENDING | F02/F06 on target TV not performed |
+
+No PR merged; no APK published/installed; no device settings changed. Do not mark B05/release complete until CI, lifecycle, and physical gates pass.

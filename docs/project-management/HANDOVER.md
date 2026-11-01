@@ -341,3 +341,13 @@
 - Additional parental PIN fallback prompts are now localized. Static resource audit now reports 347 keys in each of default/ID/EN, with no duplicates, key-set differences, placeholder mismatches, or missing R.string references in the audited Java files.
 - Exact-head Actions run is still absent. Do not infer build/test success from static checks.
 - B05 remains IN PROGRESS: broader ModernSettingsDialog copy sweep, app-wide final scan, exact-head CI, API 30/API 33 lifecycle checks, and physical acceptance remain open.
+
+
+## Resume checkpoint — B04/B05 integration source QC — 1 November 2026
+
+- Resume branch: `integration/b04-b05-reconciled`; exact head `f39bf7a7958b57440e5f1e814a585e814b0c9365`; Draft PR #15.
+- Latest static source/resource QC passed: 444 keys in default/ID/EN; no duplicates/key/placeholder mismatches; 411 Java `R.string` references across 16 changed Java files and 65 layout `@string` references across 8 layouts, all resolved.
+- B04 exact-head CI #242 passed. PR #15 reports `mergeable_state=clean` but remains Draft/unmerged.
+- Do not claim integrated build/test success: no Actions run/status is available for the current integration head. Available GitHub connection can inspect/rerun jobs but exposes no workflow-dispatch action in this session.
+- Remaining: complete app-wide source sweep beyond changed files; review API 30 and API 33+ locale/lifecycle behavior including ClockDream; verify saved Settings tab and D-pad focus after language switch; obtain exact-head CI; perform F02/F06 physical TV acceptance.
+- Keep PR #13/#14/#15 open and Draft. No APK publication/install, device settings changes, or merge until all gates pass and user approves readiness.

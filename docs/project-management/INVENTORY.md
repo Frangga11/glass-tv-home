@@ -286,3 +286,15 @@ GitHub source URLs:
 - Additional parental PIN fallback prompts are now localized. Static resource audit now reports 347 keys in each of default/ID/EN, with no duplicates, key-set differences, placeholder mismatches, or missing R.string references in the audited Java files.
 - Exact-head Actions run is still absent. Do not infer build/test success from static checks.
 - B05 remains IN PROGRESS: broader ModernSettingsDialog copy sweep, app-wide final scan, exact-head CI, API 30/API 33 lifecycle checks, and physical acceptance remain open.
+
+
+## B04/B05 integration source QC — 1 November 2026
+
+**Current integration head:** `f39bf7a7958b57440e5f1e814a585e814b0c9365` (`integration/b04-b05-reconciled`, Draft PR #15).
+
+- B04 source and exact-head CI #242: PASS; physical viewport acceptance F02 remains open.
+- B05 localized remaining ModernSettingsDialog settings content and launcher guidance; 444 aligned resource keys across default/ID/EN.
+- Static checks: zero duplicate keys; zero locale key-set differences; zero placeholder mismatches; 411 Java string-resource references across 16 changed Java files with zero missing; 65 layout string references across 8 changed layouts with zero missing.
+- PR #15 is open/Draft and GitHub currently reports mergeable state `clean`. PR #13 and #14 remain open source references; no merge was performed.
+- Integrated Actions run/status: NOT REPORTED for exact head. Full app-wide source sweep and API 30/API 33+ runtime lifecycle/focus checks remain open. F02/F06 physical acceptance remains mandatory.
+- No APK artifact was published or installed, and no TV settings or packages were changed.

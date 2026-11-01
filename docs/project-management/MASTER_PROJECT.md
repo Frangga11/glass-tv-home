@@ -188,3 +188,16 @@ The Master is the project map. Keep detailed test results in the relevant audit;
 - Additional parental PIN fallback prompts are now localized. Static resource audit now reports 347 keys in each of default/ID/EN, with no duplicates, key-set differences, placeholder mismatches, or missing R.string references in the audited Java files.
 - Exact-head Actions run is still absent. Do not infer build/test success from static checks.
 - B05 remains IN PROGRESS: broader ModernSettingsDialog copy sweep, app-wide final scan, exact-head CI, API 30/API 33 lifecycle checks, and physical acceptance remain open.
+
+
+## B04/B05 source QC update — 1 November 2026
+
+- Latest integration branch: `integration/b04-b05-reconciled`; head `f39bf7a7958b57440e5f1e814a585e814b0c9365`; Draft PR #15 targets the exact B04 head `baf0e7dad2dfa28a9f79c7bb25a58502243f04ae`.
+- B04 exact-head CI #242 remains PASS. PR #15 API state reports `mergeable_state=clean`; PR #13/#14/#15 remain open and unmerged.
+- B05 source migration now covers the previously hardcoded profile, home, wallpaper, standby, device/system, update, parental PIN, and launcher-guidance UI in `ModernSettingsDialog`.
+- Static resource QC: 444 keys in default, `values-id`, and `values-en`; no duplicate keys, no missing/extra locale keys, and no printf-placeholder mismatches.
+- Cross-reference QC across 16 changed Java files: 411 `R.string` references, 362 unique, zero missing. Across 8 changed layout XML files: 65 `@string` references, zero missing; no literal user-facing text remains in those audited layouts.
+- `ModernSettingsDialog` scan found only search keyword aliases, formatting tokens, dynamic device values, and non-linguistic symbols/labels; no remaining Indonesian user-facing copy in the scanned settings panels.
+- Exact-head Actions run and combined status are still absent for `f39bf7a7958b57440e5f1e814a585e814b0c9365`. No Gradle build/test PASS is claimed. The full app-wide source sweep beyond the 16 changed Java files remains open.
+- Runtime gates remain: API 30 locale/context/recreation/focus behavior; API 33+ per-app locale synchronization and configuration lifecycle; DreamService/Activity behavior; F02/F06 physical TV acceptance. No APK publication/installation or TV setting changes.
+- Keep B04/B05 source and integration PRs Draft/unmerged until exact-head CI, lifecycle review, and physical acceptance are complete.
