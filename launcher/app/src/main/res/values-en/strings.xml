@@ -497,7 +497,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="standby_photos_skipped">%1$d photos skipped because the collection limit was reached.</string>
     <string name="wifi_settings_label">Wi-Fi Settings</string>
     <string name="glass_tv_settings_label">Glass TV Settings</string>
-    <string name="restart_tv_requested">Restart command sent to Android TV.</string>
+    <string name="restart_tv_requested">Power menu opened. If the TV does not restart, select Restart manually.</string>
     <string name="restart_tv_failed">Could not restart. Enable the Glass TV accessibility service first.</string>
     <string name="power_menu_opened">Android TV power menu opened. If the TV does not turn off automatically, choose Power off in the system menu. Turning off the physical TV depends on HDMI-CEC.</string>
     <string name="power_menu_failed">Could not send the power command. Check the Glass TV accessibility service and the TV\'s HDMI-CEC setting.</string>
