@@ -3811,7 +3811,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
                 AlertDialog resDialog = new AlertDialog.Builder(MainActivity.this, R.style.Theme_TvHome_GlassDialog)
                         .setTitle(AppLanguage.strCleanCacheDoneTitle(MainActivity.this))
-                        .setMessage(resultMsg + "\\n\\n" + systemStatus
+                        .setMessage(resultMsg + "\n\n" + systemStatus
                                 + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
                         .setPositiveButton(AppLanguage.strDone(MainActivity.this), (d, w) -> d.dismiss())
                         .create();
