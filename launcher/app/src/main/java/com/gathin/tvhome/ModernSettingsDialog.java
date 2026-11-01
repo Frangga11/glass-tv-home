@@ -809,17 +809,17 @@ public final class ModernSettingsDialog {
 
                 // Child Mode belongs with user/profile management, not as a separate navigation destination.
                 // === PARENTAL CONTROLS: GROUPED UNDER PROFILE ===
-                addSectionHeader(rightContent, outfit, "PENGAWASAN ORANG TUA");
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.parent_controls_section));
 
                 boolean isChildOn = ChildModeManager.isChildModeEnabled(activity);
                 Set<String> lockedSet = ChildModeManager.getLockedApps(activity);
                 Set<String> hiddenSet = ChildModeManager.getHiddenApps(activity);
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🛡️ Status Mode Anak",
-                        "Kunci aplikasi dengan PIN 4 digit atau sembunyikan aplikasi dari layar utama",
+                        activity.getString(R.string.child_mode_switch_title),
+                        activity.getString(R.string.child_mode_switch_description),
                         isChildOn, isChecked -> {
-                            ChildModeManager.promptPin(activity, "Sahkan PIN Keselamatan", "Masukkan PIN 4 digit untuk mengubah mode ini", new ChildModeManager.PinCallback() {
+                            ChildModeManager.promptPin(activity, activity.getString(R.string.child_mode_pin_confirm_title), activity.getString(R.string.child_mode_pin_confirm_message), new ChildModeManager.PinCallback() {
                                 @Override
                                 public void onSuccess() {
                                     ChildModeManager.setChildModeEnabled(activity, isChecked);
@@ -854,7 +854,7 @@ public final class ModernSettingsDialog {
 
             } else if (tab == TAB_HOME_SCREEN) {
                 // === TAB 1: HOME SCREEN (CONSOLIDATING CANDY BOX SETTINGS) ===
-                addHeader(rightContent, outfit, "Layar Utama");
+                addHeader(rightContent, outfit, AppLanguage.strHomeScreen(activity));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
                         "Panel Doa Harian & Waktu Salat", "Tampilkan ayat pilihan dan jadwal salat sesuai waktu setempat",
@@ -881,7 +881,7 @@ public final class ModernSettingsDialog {
 
             } else if (tab == TAB_APPEARANCE) {
                 // === TAB 2: APPEARANCE ===
-                addHeader(rightContent, outfit, "Tampilan");
+                addHeader(rightContent, outfit, AppLanguage.strAppearance(activity));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "🖼️ Koleksi Wallpaper", "Pilih Wallpaper Default Kabut Pagi Dempo, koleksi alam, kota, laut, luar angkasa, atau Minimalis OLED.",
@@ -898,7 +898,7 @@ public final class ModernSettingsDialog {
 
             } else if (tab == TAB_STATUS_WEATHER) {
                 // === TAB: WIDGET & INFORMATION ===
-                addHeader(rightContent, outfit, "Widget & Informasi");
+                addHeader(rightContent, outfit, AppLanguage.strStatusBarWeather(activity));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         "📍 Lokasi & Jadwal Salat", "Atur lokasi cuaca dan zona waktu salat untuk Pagar Alam atau wilayah Indonesia lainnya.",
@@ -920,8 +920,8 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, AppLanguage.strVisualEffects(activity));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🎞️ Animasi Ikon & Fokus Aplikasi",
-                        "Aktifkan atau matikan gerakan zoom dan transisi label saat berpindah aplikasi. Tidak memengaruhi animasi cuaca atau efek kaca.",
+                        activity.getString(R.string.icon_animation_setting_title),
+                        activity.getString(R.string.icon_animation_setting_description),
                         activity.isIconAnimationsEnabled(), isChecked -> {
                             activity.setIconAnimationsEnabled(isChecked);
                             Toast.makeText(activity, isChecked ? R.string.icon_animation_enabled : R.string.icon_animation_disabled, Toast.LENGTH_SHORT).show();
@@ -929,8 +929,8 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🪟 Glass Effect",
-                        "Aktifkan atau matikan material kaca buram, lapisan transparan, dan garis tepi pada dock serta tombol. Penanda fokus remote tetap berfungsi.",
+                        activity.getString(R.string.glass_effect_setting_title),
+                        activity.getString(R.string.glass_effect_setting_description),
                         activity.isGlassEffectsEnabled(), isChecked -> {
                             activity.setGlassEffectsEnabled(isChecked);
                             Toast.makeText(activity, isChecked ? R.string.glass_effect_enabled : R.string.glass_effect_disabled, Toast.LENGTH_SHORT).show();
@@ -938,8 +938,8 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "🌧️ Animasi Cuaca pada Wallpaper",
-                        "Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.",
+                        activity.getString(R.string.weather_animation_setting_title),
+                        activity.getString(R.string.weather_animation_setting_description),
                         activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
                             activity.setDynamicWeatherEffectsEnabled(isChecked);
                             Toast.makeText(activity, isChecked ? R.string.weather_animation_enabled : R.string.weather_animation_disabled, Toast.LENGTH_SHORT).show();
@@ -947,8 +947,8 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        "✨ Cahaya Ambient Ikon",
-                        "Atur cahaya latar dan perpaduan warna yang mengikuti aplikasi saat dipilih. Terpisah dari animasi ikon, Glass Effect, dan animasi cuaca.",
+                        activity.getString(R.string.icon_glow_setting_title),
+                        activity.getString(R.string.icon_glow_setting_description),
                         activity.isIconGlowEffectsEnabled(), isChecked -> {
                             activity.setIconGlowEffectsEnabled(isChecked);
                             Toast.makeText(activity, isChecked ? R.string.icon_glow_enabled : R.string.icon_glow_disabled, Toast.LENGTH_SHORT).show();
@@ -957,7 +957,7 @@ public final class ModernSettingsDialog {
 
             } else if (tab == TAB_STANDBY) {
                 // === TAB: STANDBY / PERSONAL PHOTO SCREENSAVER ===
-                addHeader(rightContent, outfit, "Layar Siaga");
+                addHeader(rightContent, outfit, AppLanguage.strStandByMode(activity));
 
                 int photoCount = activity.getStandbyPhotoCount();
                 boolean photoMode = activity.isStandbyPhotoMode();
