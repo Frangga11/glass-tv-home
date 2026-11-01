@@ -456,7 +456,13 @@ public class WallpaperUploadServer {
                                 sendTextResponse(out, 500, "Internal Server Error", "Unable to store uploaded image", null);
                                 return;
                             }
-                            if (listener != null) listener.onUploaded(storedFile);
+                            if (listener != null) {
+                                try {
+                                    listener.onUploaded(storedFile);
+                                } catch (RuntimeException callbackFailure) {
+                                    Log.w(TAG, "Wallpaper upload callback failed after durable save", callbackFailure);
+                                }
+                            }
                         }
                         String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
@@ -579,7 +585,13 @@ public class WallpaperUploadServer {
                 sendUploadError(out, 400, localized(R.string.standby_error_collection_storage));
                 return;
             }
-            if (listener != null) listener.onStandbyUploaded(storedFile);
+            if (listener != null) {
+                try {
+                    listener.onStandbyUploaded(storedFile);
+                } catch (RuntimeException callbackFailure) {
+                    Log.w(TAG, "StandBy upload callback failed after durable save", callbackFailure);
+                }
+            }
         }
 
         String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
@@ -642,7 +654,9 @@ public class WallpaperUploadServer {
                 + "status.textContent='" + jsText(R.string.standby_page_uploading_prefix) + "'+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();activeXhr=xhr;cancel.hidden=false;"
                 + "xhr.open('POST',endpoint,true);xhr.timeout=" + NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS + ";xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
                 + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
-                + "xhr.onload=()=>{activeXhr=null;cancel.hidden=true;if(xhr.status>=200&&xhr.status<300)uploaded++;else failed++;i++;next();};"
+                + "xhr.onload=()=>{activeXhr=null;cancel.hidden=true;if(xhr.status>=200&&xhr.status<300){uploaded++;i++;next();return;}"
+                + "if(xhr.status===410||xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'Upload session unavailable. Create a new QR code if it expired.';send.disabled=false;return;}"
+                + "failed++;i++;next();};"
                 + "xhr.onerror=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_connection_lost_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_connection_lost_suffix) + "';send.disabled=false;};"
                 + "xhr.ontimeout=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_timeout_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_timeout_suffix) + "';send.disabled=false;};"
                 + "xhr.onabort=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.cancel_action) + " — file saat ini dapat dicoba lagi; periksa koleksi sebelum mengulang.';send.disabled=false;};"
