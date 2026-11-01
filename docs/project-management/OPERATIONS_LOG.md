@@ -253,3 +253,13 @@
 - D02 audit report: `D02_SETTINGS_UI_PROPAGATION_AUDIT.md`; source head `3bb4ae592904a49989fd76d7dabd92ed1cebd94b`.
 - Exact-head CI #380 / `41305432110` and #381 / `41305453205` are still in progress. Both documentation/tool jobs passed; launcher build/unit-test job is running. Final D02 closure awaits exact-head CI.
 - D01-F11 remains assigned to D05/D07 for the distinct upload collection/mode atomicity fix and regression coverage. No merge, APK publication/installation, or device setting change.
+
+
+## 2026-11-01 — D02 final exact-head CI closure
+
+- Final D02 branch head `2dbfcc181651184914422ad0697a3c5c27d15614` passed exact-head CI #382 / run `41305782187`.
+- Both `Launcher build and unit tests` and `Lists, tools and docs` jobs succeeded. `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and the 1.5 MiB size gate passed.
+- Release APK diagnostic: 1,550,617 bytes, 12,247 bytes below the 1,572,864-byte cap. Manual APK publication was skipped.
+- D02 source-audit and CI gates are closed. PR #26 remains OPEN/DRAFT/UNMERGED under D-013. No APK installation, device setting changes, or merge.
+- Physical Android TV acceptance remains deferred to F-stage, not waived. D01-F11 remains assigned to D05/D07.
+- Next task: D03 — locked/hidden app count and list refresh in the open Settings pane.
