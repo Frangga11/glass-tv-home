@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Locale;
 
 public class RecentAppsActivity extends Activity implements RecentAppsAdapter.OnRecentAppInteractionListener {
     private static RecentAppsActivity sForegroundInstance = null;
@@ -140,7 +141,9 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
 
     private void updateRamStats() {
         RecentAppsManager.MemoryStats stats = RecentAppsManager.getMemoryStats(this);
-        tvRamText.setText(stats.formattedText);
+        String usedGb = String.format(Locale.US, "%.1f", stats.usedBytes / (1024.0 * 1024.0 * 1024.0));
+        String totalGb = String.format(Locale.US, "%.1f", stats.totalBytes / (1024.0 * 1024.0 * 1024.0));
+        tvRamText.setText(getString(R.string.ram_usage_summary, usedGb, totalGb));
         pbRam.setProgress(stats.percentUsed);
     }
 
