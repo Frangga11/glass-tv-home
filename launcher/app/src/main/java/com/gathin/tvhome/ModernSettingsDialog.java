@@ -1105,6 +1105,12 @@ public final class ModernSettingsDialog {
                 // === TAB: DEVICE SETTINGS (GENERAL + REMOTE + ACCESSIBILITY + TV) ===
                 addHeader(rightContent, outfit, AppLanguage.strDeviceSettings(activity));
 
+                Display display = activity.getWindowManager().getDefaultDisplay();
+                Display.Mode mode = (display != null) ? display.getMode() : null;
+                int physW = (mode != null) ? mode.getPhysicalWidth() : dm.widthPixels;
+                int physH = (mode != null) ? mode.getPhysicalHeight() : dm.heightPixels;
+                float fps = (mode != null) ? mode.getRefreshRate() : 60f;
+
                 addSectionHeader(rightContent, outfit, activity.getString(R.string.device_accessibility_section));
 
                 List<ResolveInfo> homeCandidates = DeviceSettingsStatus.getHomeActivities(activity);
