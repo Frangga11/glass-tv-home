@@ -60,7 +60,7 @@
     <string name="assistant_content_description">Google Assistant</string>
     <string name="user_profile_content_description">Pilih Pengguna &amp; Mode Anak</string>
     <string name="recent_apps_title">Aplikasi Terbaru</string>
-    <string name="recent_apps_ram_usage">RAM digunakan %1$s dari %2$s</string>
+    <string name="recent_apps_ram_usage">Penggunaan RAM</string>
     <string name="recent_apps_empty">Tidak ada aplikasi terbaru yang berjalan</string>
     <string name="recent_apps_hint_close">Tekan ▲ pada aplikasi untuk menutupnya</string>
     <string name="standby_photo_description">Foto latar Layar Siaga</string>
