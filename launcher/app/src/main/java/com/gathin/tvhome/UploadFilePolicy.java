@@ -10,8 +10,7 @@ final class UploadFilePolicy {
     enum ImageFormat {
         JPEG("image/jpeg", "jpg"),
         PNG("image/png", "png"),
-        WEBP("image/webp", "webp"),
-        GIF("image/gif", "gif");
+        WEBP("image/webp", "webp");
 
         final String mimeType;
         final String extension;
@@ -52,11 +51,6 @@ final class UploadFilePolicy {
                 && header[8] == 'W' && header[9] == 'E'
                 && header[10] == 'B' && header[11] == 'P') {
             return ImageFormat.WEBP;
-        }
-        if (offset >= 6 && header[0] == 'G' && header[1] == 'I'
-                && header[2] == 'F' && header[3] == '8'
-                && (header[4] == '7' || header[4] == '9') && header[5] == 'a') {
-            return ImageFormat.GIF;
         }
         return null;
     }
@@ -105,7 +99,7 @@ final class UploadFilePolicy {
         if (!name.matches("[A-Za-z0-9][A-Za-z0-9_-]{0,79}\\.[A-Za-z0-9]{2,5}")) return false;
         String extension = name.substring(name.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
         return "jpg".equals(extension) || "jpeg".equals(extension)
-                || "png".equals(extension) || "webp".equals(extension) || "gif".equals(extension);
+                || "png".equals(extension) || "webp".equals(extension);
     }
 
     /** Resolve only a direct, canonical child of the intended managed directory. */
