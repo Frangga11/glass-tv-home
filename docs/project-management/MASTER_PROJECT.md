@@ -19,3 +19,14 @@
 - App-wide scan: 68 Java files and 17 layout XML files; 21 changed Java files with 534 `R.string` refs and 17 layouts with 71 `@string` refs; zero unresolved references.
 - B04 exact-head CI #242 passed. There is still no Actions run or combined status for the exact integration head. Do not treat `mergeable_state=clean` as a build/test result.
 - Remaining gates are external: integrated CI; API 30/API 33+ runtime lifecycle/focus checks; phone-on-same-Wi-Fi QR upload verification; physical F02/F06 TV acceptance. No APK was published/installed and no TV settings were changed.
+
+
+## B04/B05 cleanup checkpoint — CI and release gates, 1 November 2026
+
+- Current integration head: `5e7481c4902c85352b1ab95b7f1ef41acdf9ed78`; PR #15 is OPEN, Ready for review, mergeable=true, not merged.
+- CI trigger root cause corrected: explicit pull-request activity types now include `ready_for_review`; push trigger covers `integration/**`.
+- Updated B04 base commit was integrated into the B04+B05 branch history with a two-parent merge commit. Source history retained; branch ancestry reconciled.
+- Exact-head CI remains UNVERIFIED: no check runs or combined statuses exist for current integration head. B04 source CI #242 passed, but that is not an integrated-head result.
+- Static localization QC remains: 560 aligned keys; zero duplicates, key parity errors, or placeholder mismatches; 68 Java files and 17 layouts audited; 534 Java and 71 layout resource references with zero unresolved references.
+- Release gates still open: exact-head CI; API 30/API 33+ lifecycle/focus; real phone QR upload over same Wi-Fi; physical TV F02/F06 acceptance. No APK published/installed and no TV settings changed.
+- Do not merge PR #15 until every gate passes. Once these gates are satisfied, close redundant source PR #14 with a superseded note and complete the B04/B05 merge chain cleanly; retain PR #13 as the B04 parent until that chain is merged.
