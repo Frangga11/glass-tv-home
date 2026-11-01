@@ -418,7 +418,7 @@ public class WallpaperUploadServer {
                                         + "." + imageFormat.extension);
                         if (!targetFile.renameTo(storedFile)) {
                             targetFile.delete();
-                            sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_storage), null);
+                            sendTextResponse(out, 500, "Internal Server Error", "Unable to store uploaded image", null);
                             return;
                         }
                         String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
@@ -478,6 +478,10 @@ public class WallpaperUploadServer {
         } catch (Exception ignored) {
             return null;
         }
+    }
+
+    static File resolveWallpaperFile(File customDir, String fileName) {
+        return UploadFilePolicy.resolveDirectChild(customDir, fileName);
     }
 
     private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
@@ -625,9 +629,8 @@ public class WallpaperUploadServer {
     private void serveThumbnail(String fileName, OutputStream out) {
         try {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (!target.exists() || !target.isFile()) {
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
                 sendTextResponse(out, 404, "Not Found", "Not Found", null);
                 return;
             }
@@ -676,7 +679,7 @@ public class WallpaperUploadServer {
         try {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             File[] files = customDir.exists()
-                    ? customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"))
+                    ? customDir.listFiles((dir, name) -> resolveWallpaperFile(dir, name) != null)
                     : new File[0];
             if (files == null) throw new java.io.IOException("Cannot list wallpaper storage");
             JSONArray arr = new JSONArray();
@@ -726,12 +729,11 @@ public class WallpaperUploadServer {
                 return;
             }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            if (safeName.isEmpty()) {
-                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
+                sendSimpleJsonResponse(out, 400, "{\\"status\\":\\"error\\",\\"error\\":\\"invalid_file\\"}");
                 return;
             }
-            File target = new File(customDir, safeName);
             if (!target.isFile()) {
                 sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
                 return;
@@ -755,12 +757,11 @@ public class WallpaperUploadServer {
                 return;
             }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            if (safeName.isEmpty()) {
-                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
+                sendSimpleJsonResponse(out, 400, "{\\"status\\":\\"error\\",\\"error\\":\\"invalid_file\\"}");
                 return;
             }
-            File target = new File(customDir, safeName);
             if (!target.isFile()) {
                 sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
                 return;
@@ -798,7 +799,9 @@ public class WallpaperUploadServer {
                 return;
             }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.exists() ? customDir.listFiles() : new File[0];
+            File[] files = customDir.exists()
+                    ? customDir.listFiles((dir, name) -> resolveWallpaperFile(dir, name) != null)
+                    : new File[0];
             if (files == null) {
                 sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"storage_unavailable\"}");
                 return;
