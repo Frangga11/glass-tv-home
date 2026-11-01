@@ -1,7 +1,7 @@
 # C05 — Shared Upload / Receive-File Pipeline Audit
 
 **Date:** 1 November 2026  
-**Status:** IMPLEMENTATION IN PROGRESS — EXACT-HEAD CI PENDING  
+**Status:** SOURCE / JVM REGRESSION / EXACT-HEAD CI PASS — PHYSICAL ACCEPTANCE DEFERRED  
 **Branch:** `feature/c05-shared-upload-pipeline`  
 **Parent:** C04 exact source head `aad9aeb163b46ff4c13a8d93c160a3eec78f9770`  
 **Merge policy:** D-013 — isolated Draft PR; no early merge.
@@ -44,11 +44,11 @@ Existing C01–C04 route, HTTP, network, and upload tests remain required regres
 ## 5. Verification
 
 - Source changes and focused JVM tests added on the isolated C05 branch.
-- Exact-head GitHub Actions CI: PENDING.
-- Release APK size gate: PENDING; avoid nonessential APK growth.
+- Exact-head GitHub Actions CI #360 / run `41289869814` on `07e827f1ee4dafb435758df279d3d84d52deeb44`: PASS; both `Lists, tools and docs` and `Launcher build and unit tests` jobs succeeded.
+- `testReleaseUnitTest` and `assembleRelease` completed successfully; read-only APK diagnostics and the 1.5 MiB size gate both passed. The workflow did not publish the device-test APK (manual opt-in step skipped).
 - Real phone/TV upload and physical TV acceptance: deferred to F-stage final acceptance, not waived.
 - No APK publication/installation, merge, or device-setting change.
 
 ## 6. Disposition
 
-C05 is not complete until source review, focused and inherited regression tests, exact-head CI, APK-size diagnostics, and documentation checks pass. Do not claim parity or completion based only on the implementation diff.
+C05 source/CI gate is PASS at exact head `07e827f1ee4dafb435758df279d3d84d52deeb44`. Physical phone-to-TV upload acceptance and final integrated cross-module regression remain deferred to F-stage and are not waived. PR remains Draft/unmerged under D-013. No APK publication or installation.
