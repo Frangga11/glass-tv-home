@@ -66,7 +66,7 @@ final class UploadHttpRequest {
 
     private static boolean isHeaderNameCharacter(char ch) {
         return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')
-                || (ch >= '0' && ch <= '9') || "!#$%&'*+-.^_|~".indexOf(ch) >= 0;
+                || (ch >= '0' && ch <= '9') || "!#$%&'*+-.^_|~".indexOf(ch) >= 0 || ch == 96;
     }
 
     private static boolean isMethodToken(String method) {
