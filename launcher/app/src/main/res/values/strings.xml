@@ -297,4 +297,13 @@
     <string name="sound_xbox_option">🟩 Xbox Series X/S (Bunyi Harmonis)</string>
     <string name="sound_off_option">🔇 Matikan Efek Suara</string>
     <string name="azan_audio_selected">Audio dipilih: %1$s</string>
+
+    <string name="locked_app_title">Aplikasi Dikunci</string>
+    <string name="enter_pin_to_open_app">Masukkan PIN 4 digit untuk membuka %1$s</string>
+    <string name="cannot_open_app">Tidak dapat membuka aplikasi.</string>
+    <string name="ram_cleared_all_apps_closed">RAM dibersihkan! Semua aplikasi ditutup.</string>
+    <string name="weather_input_status">🌧️ Input cuaca: %1$s</string>
+    <string name="auto_label">Otomatis</string>
+    <string name="tv_location_status">📍 Lokasi TV: %1$s</string>
+    <string name="custom_location_name">Lokasi khusus</string>
 </resources>
