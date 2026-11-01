@@ -44,6 +44,31 @@ final class UploadHttpRequest {
         return new UploadHttpRequest(method, path, query, version);
     }
 
+    static boolean hasValidHeaders(String[] lines) {
+        if (lines == null || lines.length < 2) return false;
+        for (int i = 1; i < lines.length; i++) {
+            String line = lines[i];
+            if (line == null || line.isEmpty()) continue;
+            if (line.charAt(0) == ' ' || line.charAt(0) == '\t') return false;
+            int colon = line.indexOf(':');
+            if (colon <= 0) return false;
+            for (int j = 0; j < colon; j++) {
+                char ch = line.charAt(j);
+                if (!isHeaderNameCharacter(ch)) return false;
+            }
+            for (int j = colon + 1; j < line.length(); j++) {
+                char ch = line.charAt(j);
+                if ((ch < 0x20 && ch != '\t') || ch == 0x7f) return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isHeaderNameCharacter(char ch) {
+        return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')
+                || (ch >= '0' && ch <= '9') || "!#$%&'*+-.^_|~".indexOf(ch) >= 0;
+    }
+
     private static boolean isMethodToken(String method) {
         if (method.isEmpty()) return false;
         for (int i = 0; i < method.length(); i++) {
