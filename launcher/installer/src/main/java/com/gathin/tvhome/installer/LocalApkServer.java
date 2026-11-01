@@ -248,7 +248,12 @@ public final class LocalApkServer {
                 writeError(out, 404, "Not Found", "Halaman tidak ditemukan.");
             }
         } catch (Exception e) {
-            if (state.running.get()) Log.d(TAG, "Client request ended: " + e.getMessage());
+            if (e instanceof IllegalArgumentException && "HTTP header too large".equals(e.getMessage())) {
+                try { writeError(client.getOutputStream(), 431, "Request Header Fields Too Large", "Header terlalu besar."); }
+                catch (Exception ignored) {}
+            } else if (state.running.get()) {
+                Log.d(TAG, "Client request ended: " + e.getMessage());
+            }
         } finally {
             state.clients.remove(client);
             closeQuietly(client);
