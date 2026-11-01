@@ -925,12 +925,16 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.lock_apps_count, lockedSet.size()),
                         activity.getString(R.string.lock_apps_count_summary),
-                        () -> showAppLockPicker(activity, density, outfit, false)));
+                        () -> showAppLockPicker(activity, density, outfit, false, () -> {
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        })));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.hide_apps_count, hiddenSet.size()),
                         activity.getString(R.string.hide_apps_count_summary),
-                        () -> showAppLockPicker(activity, density, outfit, true)));
+                        () -> showAppLockPicker(activity, density, outfit, true, () -> {
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        })));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.change_pin_title),
@@ -1653,18 +1657,18 @@ public final class ModernSettingsDialog {
     }
 
     /** Require parent PIN before changing either the locked-app or hidden-app policy. */
-    private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode) {
+    private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode, Runnable onFinished) {
         ChildModeManager.promptPin(activity, activity.getString(R.string.verify_parent_pin_title),
                 activity.getString(R.string.verify_parent_pin_message, activity.getString(isHideMode ? R.string.hidden_apps_label : R.string.locked_apps_label)),
                 new ChildModeManager.PinCallback() {
                     @Override public void onSuccess() {
-                        showAppLockPickerAuthorized(activity, density, font, isHideMode);
+                        showAppLockPickerAuthorized(activity, density, font, isHideMode, onFinished);
                     }
                     @Override public void onCancelled() { }
                 });
     }
 
-    private static void showAppLockPickerAuthorized(MainActivity activity, float density, Typeface font, boolean isHideMode) {
+    private static void showAppLockPickerAuthorized(MainActivity activity, float density, Typeface font, boolean isHideMode, Runnable onFinished) {
         PackageManager pm = activity.getPackageManager();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
@@ -1815,7 +1819,6 @@ public final class ModernSettingsDialog {
         btnDone.setOnClickListener(v -> {
             SoundEffects.playSelect();
             if (pickerHolder[0] != null) pickerHolder[0].dismiss();
-            activity.reloadTiles();
         });
 
         pickerLayout.addView(btnDone, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density)));
@@ -1824,6 +1827,13 @@ public final class ModernSettingsDialog {
         pb.setView(pickerLayout);
         AlertDialog d = pb.create();
         pickerHolder[0] = d;
+        d.setOnDismissListener(ignored -> {
+            if (activity.isFinishing() || activity.isDestroyed()) return;
+            // Selection writes are immediate, so every dismissal path (Done or Back)
+            // must refresh both the home tiles and the still-open Settings summary.
+            activity.reloadTiles();
+            if (onFinished != null) onFinished.run();
+        });
         d.show();
 
         Window win = d.getWindow();
