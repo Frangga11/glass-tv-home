@@ -157,7 +157,7 @@
     <string name="update_later_action">⏭️ Lewati / Nanti Saja</string>
     <string name="update_deferred">Pembaruan ditunda. Titik merah 🔴 tetap muncul pada tombol Pengaturan.</string>
     <string name="install_permission_title">⚠️ Izin Instalasi Diperlukan</string>
-    <string name="install_permission_message">Aktifkan 'Allow from this source' agar Glass TV Home dapat memasang pembaruan otomatis.</string>
+    <string name="install_permission_message">Aktifkan opsi Allow from this source agar Glass TV Home dapat memasang pembaruan otomatis.</string>
     <string name="open_settings_action">Buka Pengaturan</string>
     <string name="install_unknown_apps_hint">Buka Pengaturan &gt; Keamanan &gt; Instal aplikasi tidak dikenal</string>
     <string name="download_update_title">📥 Mengunduh Pembaruan (v%1$s)</string>
