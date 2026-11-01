@@ -2794,7 +2794,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             HomeWeather.Line line = HomeWeather.refresh(getApplicationContext(), lat, lon);
             handler.post(() -> {
                 homeWeatherRunning = false;
-                if (line != null && !isDestroyed()) showHomeWeather(line);
+                if (line != null && !isDestroyed()) {
+                    showHomeWeather(line);
+                } else if (!isDestroyed() && HomeWeather.due(this)) {
+                    // A superseded response is intentionally not cached; immediately fetch the current location.
+                    updateHomeWeather();
+                }
             });
         }, "home-weather").start();
     }
