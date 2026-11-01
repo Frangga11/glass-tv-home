@@ -167,3 +167,12 @@ Useful callback requests:
 - [AUDIT_REGISTER.md](AUDIT_REGISTER.md)
 - [OPERATIONS_LOG.md](OPERATIONS_LOG.md)
 - [HANDOVER.md](HANDOVER.md)
+
+
+## 6. Latest execution checkpoint — 1 November 2026
+
+- B04 source + target-metric audit PASS: user-supplied `1920×1080` at `320 dpi` gives `960×540 dp`; no measured source-level clipping defect justified a speculative layout change. F02 physical acceptance remains.
+- B05 remains IN PROGRESS. Draft PR #14 / `feature/b05-id-en-localization` is stacked on B03 exact head `56a4e1995aa8b8600614e6b5c4d4c3` (verify full SHA in PR metadata; expected `56a4e1995aa8b8600614e6b5c4d69d01c530c3`), current source head `cce889f231aeff3a28805fd517853a3f0a91e79c`.
+- Current B05 implementation: 158-key default/ID/EN resource parity; locale config ID/EN; API 26–32 locale context; Android 13+ app locale synchronization; five user-facing Activity wrappers plus ClockDream; Settings reopen using B01 tab/sidebar persistence; eight launcher layout migrations; partial programmatic profile/PIN/weather/update migration; normalization and resource-parity tests.
+- B05 is NOT source/CI complete: Java hardcoded strings remain in MainActivity, ModernSettingsDialog, WeatherActivity dialogs and other dynamic/error/notification paths. No exact-head CI run was available in the latest Actions query.
+- Keep PR #14 Draft/unmerged. No candidate APK publication/installation or TV setting change. Continue B05 string migration, then exact-head CI and source QC; physical language acceptance belongs to F06.
