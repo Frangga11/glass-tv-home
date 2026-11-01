@@ -427,6 +427,7 @@
     <string name="home_candidates_heading">Detected launcher options:</string>
     <string name="home_current_heading">Android HOME resolver result:</string>
     <string name="home_status_unknown">Could not determine</string>
+    <string name="home_refresh_summary">Read the HOME resolver result and launcher candidates again after returning from Android Settings.</string>
     <string name="home_refresh_action">Refresh launcher status</string>
     <string name="adb_command_copied">ADB command copied. Run it from a computer connected to the TV.</string>
     <string name="home_picker_unavailable">Home picker settings are not available on this firmware.</string>
