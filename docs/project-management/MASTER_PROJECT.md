@@ -63,7 +63,7 @@
 - B04/B05 merge gate is complete. Proceed to B06 and B07 from the current B03 continuation head, maintaining CI/static QC at each stage.
 - Final system acceptance still requires Android API 30/33+ lifecycle/configuration, Activity/DreamService recreation and focus/tab retention, real-phone QR upload over same Wi-Fi, and physical TV F02/F06. User deferred these until final overall B-series testing; not waived.
 
-## B06 execution checkpoint — 1 November 2026
+## Historical B06 execution checkpoint — initial baseline (superseded by the latest checkpoint above)
 
 - B04/B05 source + CI gate and merge chain are complete. Current B03 continuation head: `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
 - B06 is now IN PROGRESS on isolated branch `feature/b06-notification-feedback`, based on the current B03 continuation head.
