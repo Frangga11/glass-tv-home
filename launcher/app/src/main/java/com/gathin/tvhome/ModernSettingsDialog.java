@@ -1999,8 +1999,7 @@ public final class ModernSettingsDialog {
 
         LinearLayout btnAdb = buildCardRow(activity, density, font,
                 activity.getString(R.string.set_home_adb_title),
-                activity.getString(R.string.adb_command_guidance,
-                        isDefault ? "" : activity.getString(R.string.disable_old_launcher_hint, activePkg)),
+                activity.getString(R.string.adb_command_guidance),
                 () -> {
                     String command = "adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity";
                     ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
