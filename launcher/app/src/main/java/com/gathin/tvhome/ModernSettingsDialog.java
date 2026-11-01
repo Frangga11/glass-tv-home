@@ -517,7 +517,7 @@ public final class ModernSettingsDialog {
                         SoundEffects.playSelect();
                         // Selecting a built-in avatar replaces a personal photo only after its reference is cleared safely.
                         if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
-                            Toast.makeText(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG).show();
+                            TvFeedback.show(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG);
                             return;
                         }
                         ProfileManager.setAvatarIndex(activity, idx);
@@ -535,7 +535,7 @@ public final class ModernSettingsDialog {
                                     Math.round(32 * density), refreshedChildMode));
                         }
                         activity.updateTopBarUserIcon();
-                        Toast.makeText(activity, activity.getString(R.string.avatar_selected_toast, ProfileManager.AVATAR_NAMES[idx]), Toast.LENGTH_SHORT).show();
+                        TvFeedback.show(activity, activity.getString(R.string.avatar_selected_toast, ProfileManager.AVATAR_NAMES[idx]), Toast.LENGTH_SHORT);
                     });
 
                     avatarRow.addView(frame);
@@ -591,7 +591,7 @@ public final class ModernSettingsDialog {
                 defaultAvatarLp.topMargin = (int) (6 * density);
                 defaultAvatarButton.setOnClickListener(v -> {
                     if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
-                        Toast.makeText(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG).show();
+                        TvFeedback.show(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG);
                         return;
                     }
                     ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
@@ -603,7 +603,7 @@ public final class ModernSettingsDialog {
                                 Math.round(32 * density), restoredChildMode));
                     }
                     activity.updateTopBarUserIcon();
-                    Toast.makeText(activity, R.string.avatar_default_restored, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, R.string.avatar_default_restored, Toast.LENGTH_SHORT);
                 });
                 avatarPhotoActions.addView(defaultAvatarButton, defaultAvatarLp);
                 rightContent.addView(avatarPhotoActions);
@@ -767,7 +767,7 @@ public final class ModernSettingsDialog {
                     pRow.setOnClickListener(v -> {
                         SoundEffects.playSelect();
                         if (isCur) {
-                            Toast.makeText(activity, activity.getString(R.string.profile_already_active, p.name), Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, activity.getString(R.string.profile_already_active, p.name), Toast.LENGTH_SHORT);
                         } else {
                             // Show options: Switch or Delete
                             AlertDialog.Builder ob = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
@@ -826,7 +826,7 @@ public final class ModernSettingsDialog {
                                     activity.reloadTiles();
                                     activity.updateTopBarUserIcon();
                                     updateSidebarSelection.run();
-                                    Toast.makeText(activity, isChecked ? R.string.child_mode_enabled : R.string.child_mode_disabled, Toast.LENGTH_SHORT).show();
+                                    TvFeedback.show(activity, isChecked ? R.string.child_mode_enabled : R.string.child_mode_disabled, Toast.LENGTH_SHORT);
                                     if (renderRightPane[0] != null) renderRightPane[0].run();
                                 }
 
@@ -924,7 +924,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.icon_animation_setting_description),
                         activity.isIconAnimationsEnabled(), isChecked -> {
                             activity.setIconAnimationsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? R.string.icon_animation_enabled : R.string.icon_animation_disabled, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, isChecked ? R.string.icon_animation_enabled : R.string.icon_animation_disabled, Toast.LENGTH_SHORT);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -933,7 +933,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.glass_effect_setting_description),
                         activity.isGlassEffectsEnabled(), isChecked -> {
                             activity.setGlassEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? R.string.glass_effect_enabled : R.string.glass_effect_disabled, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, isChecked ? R.string.glass_effect_enabled : R.string.glass_effect_disabled, Toast.LENGTH_SHORT);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -942,7 +942,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.weather_animation_setting_description),
                         activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
                             activity.setDynamicWeatherEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? R.string.weather_animation_enabled : R.string.weather_animation_disabled, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, isChecked ? R.string.weather_animation_enabled : R.string.weather_animation_disabled, Toast.LENGTH_SHORT);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -951,7 +951,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.icon_glow_setting_description),
                         activity.isIconGlowEffectsEnabled(), isChecked -> {
                             activity.setIconGlowEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? R.string.icon_glow_enabled : R.string.icon_glow_disabled, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, isChecked ? R.string.icon_glow_enabled : R.string.icon_glow_disabled, Toast.LENGTH_SHORT);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -1027,7 +1027,7 @@ public final class ModernSettingsDialog {
                             try {
                                 activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                             } catch (Exception e) {
-                                Toast.makeText(activity, R.string.open_accessibility_settings_hint, Toast.LENGTH_LONG).show();
+                                TvFeedback.show(activity, R.string.open_accessibility_settings_hint, Toast.LENGTH_LONG);
                             }
                         }));
 
@@ -1092,7 +1092,7 @@ public final class ModernSettingsDialog {
                             try {
                                 activity.startActivity(new Intent(Settings.ACTION_SETTINGS));
                             } catch (Exception e) {
-                                Toast.makeText(activity, R.string.android_settings_unavailable, Toast.LENGTH_SHORT).show();
+                                TvFeedback.show(activity, R.string.android_settings_unavailable, Toast.LENGTH_SHORT);
                             }
                         }));
             }
@@ -1119,7 +1119,7 @@ public final class ModernSettingsDialog {
                     .setPositiveButton(R.string.search_action, (dialog, which) -> {
                         String query = searchInput.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
                         if (query.isEmpty()) {
-                            Toast.makeText(activity, R.string.search_keyword_required, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, R.string.search_keyword_required, Toast.LENGTH_SHORT);
                             return;
                         }
 
@@ -1166,7 +1166,7 @@ public final class ModernSettingsDialog {
                         }
 
                         if (resultTabs.isEmpty()) {
-                            Toast.makeText(activity, R.string.settings_search_not_found, Toast.LENGTH_LONG).show();
+                            TvFeedback.show(activity, R.string.settings_search_not_found, Toast.LENGTH_LONG);
                             return;
                         }
                         String[] choices = resultLabels.toArray(new String[0]);
@@ -1494,7 +1494,7 @@ public final class ModernSettingsDialog {
                     }
                     ChildModeManager.setPin(activity, first);
                     dialog.dismiss();
-                    Toast.makeText(activity, R.string.pin_updated, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, R.string.pin_updated, Toast.LENGTH_SHORT);
                 }));
                 dialog.show();
             }
@@ -1737,7 +1737,7 @@ public final class ModernSettingsDialog {
                             Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
                             activity.startActivity(intent);
                         } catch (Exception e2) {
-                            Toast.makeText(activity, R.string.launcher_settings_unsupported, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, R.string.launcher_settings_unsupported, Toast.LENGTH_SHORT);
                         }
                     }
                 });
@@ -1748,7 +1748,7 @@ public final class ModernSettingsDialog {
                 activity.getString(R.string.set_home_adb_title),
                 activity.getString(R.string.adb_command_guidance, isDefault ? "" : activity.getString(R.string.disable_old_launcher_hint, activePkg)),
                 () -> {
-                    Toast.makeText(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG).show();
+                    TvFeedback.show(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG);
                 });
         root.addView(btnAdb);
 
@@ -1757,7 +1757,7 @@ public final class ModernSettingsDialog {
                 activity.getString(R.string.phone_installer_title),
                 activity.getString(R.string.phone_installer_summary),
                 () -> {
-                    Toast.makeText(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT);
                 });
         root.addView(btnPhone);
 
