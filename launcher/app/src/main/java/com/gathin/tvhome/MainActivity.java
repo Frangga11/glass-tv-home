@@ -438,7 +438,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         android.content.SharedPreferences launch = getSharedPreferences("launch", MODE_PRIVATE);
         if (Math.abs(launch.getLong("boot_at", 0) - bootAt) < 60_000) tilesAnimatedOnce = true;
         else launch.edit().putLong("boot_at", bootAt).apply();
-        ensureSystemScreensaverAndSleepSettings();
         root.setBackgroundColor(cfg.backgroundColor);
         config = cfg;
         wallpapers = cfg.wallpapers;
@@ -6173,44 +6172,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
     }
-
-    private void ensureSystemScreensaverAndSleepSettings() {
-        new Thread(() -> {
-            try {
-                android.content.ContentResolver cr = getContentResolver();
-                // 10 minutes idle -> screensaver (600,000 ms)
-                android.provider.Settings.System.putInt(cr, "screen_off_timeout", 600000);
-                // 2 hours after screensaver -> TV off (10m + 2h = 7,800,000 ms)
-                android.provider.Settings.Secure.putInt(cr, "sleep_timeout", 7800000);
-                android.provider.Settings.Secure.putInt(cr, "screensaver_enabled", 1);
-                android.provider.Settings.Secure.putString(cr, "screensaver_components", "com.gathin.tvhome/.ClockDream");
-
-                // Auto-enable HomeKeyService for system actions (restart, sleep, force-stop)
-                String enabledServices = android.provider.Settings.Secure.getString(cr, android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-                String myService = getPackageName() + "/" + HomeKeyService.class.getName();
-                if (enabledServices == null || !enabledServices.contains(myService)) {
-                    String newServices = enabledServices == null || enabledServices.isEmpty() ? myService : enabledServices + ":" + myService;
-                    android.provider.Settings.Secure.putString(cr, android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newServices);
-                    android.provider.Settings.Secure.putInt(cr, android.provider.Settings.Secure.ACCESSIBILITY_ENABLED, 1);
-                }
-
-                // Auto-enable MediaNotificationListener for Now Playing media widget
-                String enabledListeners = android.provider.Settings.Secure.getString(cr, "enabled_notification_listeners");
-                String myListener = getPackageName() + "/" + MediaNotificationListener.class.getName();
-                if (enabledListeners == null || !enabledListeners.contains(myListener)) {
-                    String newListeners = enabledListeners == null || enabledListeners.isEmpty() ? myListener : enabledListeners + ":" + myListener;
-                    try {
-                        android.provider.Settings.Secure.putString(cr, "enabled_notification_listeners", newListeners);
-                    } catch (Exception ignored) {}
-                }
-                try {
-                    Runtime.getRuntime().exec(new String[]{"cmd", "notification", "allow_listener", myListener, "0"});
-                } catch (Exception ignored) {}
-            } catch (Exception ignored) {
-            }
-        }, "system-timeout-sync").start();
-    }
-
 
     /**
      * China-market MIUI TV firmware answers no standard Settings intents at all; open Xiaomi's own
