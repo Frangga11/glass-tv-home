@@ -25,7 +25,10 @@ public class NetworkFeedbackPolicyTest {
     }
 
     @Test
-    public void qrUploadTimeoutIsSharedAndDoesNotRepresentSessionExpiry() {
-        assertTrue(NetworkFeedbackPolicy.UPLOAD_CLIENT_IDLE_TIMEOUT_MS == 90_000);
+    public void uploadTimeoutsRemainSpecificToTheirOperations() {
+        assertTrue(NetworkFeedbackPolicy.AVATAR_UPLOAD_CLIENT_IDLE_TIMEOUT_MS == 90_000);
+        assertTrue(NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS == 30_000);
+        assertTrue(NetworkFeedbackPolicy.AVATAR_UPLOAD_CLIENT_IDLE_TIMEOUT_MS
+                != NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
     }
 }
