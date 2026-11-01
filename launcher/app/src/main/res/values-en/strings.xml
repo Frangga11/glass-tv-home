@@ -165,4 +165,15 @@
     <string name="download_update_error">❌ Update download failed: %1$s</string>
     <string name="update_apk_missing">Update APK file not found.</string>
     <string name="install_update_error">❌ Could not start installation: %1$s</string>
+
+    <string name="weather_location_dialog_title">🌏 Weather Location &amp; Atmosphere</string>
+    <string name="weather_mood_dialog_title">✨ Background Atmosphere</string>
+    <string name="weather_mood_selected">Atmosphere set to: %1$s</string>
+    <string name="weather_mood_auto">Return to live weather data (Auto)</string>
+    <string name="weather_region_picker_title">🌏 Choose Country / Asia Region</string>
+    <string name="weather_region_selected">Region selected: %1$s</string>
+    <string name="weather_no_stations">No weather stations found for %1$s</string>
+    <string name="weather_station_picker_title">📍 Choose City / Station (%1$s)</string>
+    <string name="weather_syncing">Syncing weather for %1$s...</string>
+    <string name="back_action">Back</string>
 </resources>
