@@ -72,4 +72,19 @@ public class WallpaperUploadSessionRouteTest {
         assertTrue(WallpaperUploadServer.parseContentLength(
                 new String[]{"Content-Length: 1", "Transfer-Encoding: chunked"}, 60L) < 0);
     }
+
+    @Test
+    public void matchesExactUploadRouteAndAllowsFilenameQueryParameter() {
+        String uploadPath = SESSION + "/upload";
+        assertTrue(WallpaperUploadServer.isRequestToPath(
+                "POST " + uploadPath + "?name=photo.jpg HTTP/1.1", "POST", uploadPath));
+        assertTrue(WallpaperUploadServer.isRequestToPath(
+                "POST " + uploadPath + " HTTP/1.1", "POST", uploadPath));
+        assertFalse(WallpaperUploadServer.isRequestToPath(
+                "POST " + uploadPath + "evil HTTP/1.1", "POST", uploadPath));
+        assertFalse(WallpaperUploadServer.isRequestToPath(
+                "GET " + uploadPath + "?name=photo.jpg HTTP/1.1", "POST", uploadPath));
+        assertFalse(WallpaperUploadServer.isRequestToPath(
+                "POST " + uploadPath + "/extra HTTP/1.1", "POST", uploadPath));
+    }
 }
