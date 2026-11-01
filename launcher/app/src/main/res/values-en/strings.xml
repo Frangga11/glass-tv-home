@@ -425,7 +425,7 @@
     <string name="screensaver_settings_summary">Configure Android screensaver and screen-off timing. Glass TV will not change these settings silently.</string>
     <string name="home_candidates_summary">Detected Home launcher options: %1$d</string>
     <string name="home_candidates_heading">Detected launcher options:</string>
-    <string name="home_current_heading">Launcher selected by Android:</string>
+    <string name="home_current_heading">Android HOME resolver result:</string>
     <string name="home_status_unknown">Could not determine</string>
     <string name="home_refresh_action">Refresh launcher status</string>
     <string name="adb_command_copied">ADB command copied. Run it from a computer connected to the TV.</string>
@@ -435,8 +435,8 @@
     <string name="device_information_section">DEVICE INFORMATION</string>
     <string name="system_settings_section">SYSTEM SETTINGS</string>
     <string name="system_updates_section">SYSTEM UPDATES</string>
-    <string name="launcher_is_default">Glass TV is active as the default launcher.</string>
-    <string name="launcher_currently_active">Currently active launcher: %1$s</string>
+    <string name="launcher_is_default">Android currently resolves HOME to Glass TV.</string>
+    <string name="launcher_currently_active">Current HOME resolver result: %1$s</string>
     <string name="default_launcher_status_title">🏠 Default Launcher Status &amp; Settings</string>
     <string name="default_launcher_status_summary">%1$s Select to see how to set Glass TV as Home.</string>
     <string name="accessibility_remote_title">♿ Accessibility &amp; Remote Buttons</string>
