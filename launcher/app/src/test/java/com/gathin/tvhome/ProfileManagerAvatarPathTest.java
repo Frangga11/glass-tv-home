@@ -15,8 +15,6 @@ public class ProfileManagerAvatarPathTest {
         assertFalse(ProfileManager.isPrivateAvatarFile(avatarDirectory, new File("/data/user/0/com.gathin.tvhome/files/photo.jpg")));
         assertFalse(ProfileManager.isPrivateAvatarFile(avatarDirectory, null));
     }
-}
-
 
     @Test
     public void customPhotoOverridesBuiltInAvatarSelectionIndicator() {
@@ -33,3 +31,4 @@ public class ProfileManagerAvatarPathTest {
         assertTrue(ProfileManager.isBuiltInAvatarSelected(profile, 2));
         assertFalse(ProfileManager.isBuiltInAvatarSelected(profile, 1));
     }
+}
