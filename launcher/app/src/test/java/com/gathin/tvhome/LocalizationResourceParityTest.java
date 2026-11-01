@@ -9,9 +9,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,10 +53,11 @@ public class LocalizationResourceParityTest {
         return result;
     }
 
-    private static Set<String> placeholders(String value) {
-        Set<String> result = new HashSet<>();
+    private static java.util.List<String> placeholders(String value) {
+        java.util.List<String> result = new ArrayList<>();
         Matcher matcher = FORMAT.matcher(value);
         while (matcher.find()) result.add(matcher.group());
+        Collections.sort(result);
         return result;
     }
 }
