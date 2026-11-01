@@ -5059,14 +5059,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             TvFeedback.show(this, getString(R.string.wallpaper_download_started, displayLabel), Toast.LENGTH_SHORT);
             new Thread(() -> {
-                boolean downloaded = OnlineWallpapers.syncCategory(getApplicationContext(), category);
+                boolean downloaded;
+                try {
+                    downloaded = OnlineWallpapers.syncCategory(getApplicationContext(), category);
+                } catch (Exception e) {
+                    downloaded = false;
+                }
+                final boolean syncSucceeded = downloaded;
                 handler.post(() -> {
-                    if (isDestroyed()) return;
+                    if (isFinishing() || isDestroyed()) return;
                     List<File> fresh = OnlineWallpapers.listByCategory(MainActivity.this, category);
                     if (!fresh.isEmpty()) {
                         wallpapers = fresh;
                         showNextWallpaper(true);
                         startWallpaperRotation();
+                    }
+                    if (syncSucceeded && !fresh.isEmpty()) {
+                        TvFeedback.show(MainActivity.this,
+                                getString(R.string.wallpaper_download_complete, displayLabel, fresh.size()),
+                                Toast.LENGTH_LONG);
+                    } else {
+                        TvFeedback.show(MainActivity.this,
+                                getString(R.string.wallpaper_download_failed, displayLabel),
+                                Toast.LENGTH_LONG);
                     }
                 });
             }, "wall-cat-sync").start();
