@@ -449,9 +449,7 @@ public class WallpaperUploadServer {
                     if (!complete || !validImage) {
                         targetFile.delete();
                         String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
-                        String response = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\n\r\n" + message;
-                        out.write(response.getBytes("UTF-8"));
-                        out.flush();
+                        sendTextResponse(out, 400, "Bad Request", message, null);
                     } else {
                         String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
@@ -467,9 +465,7 @@ public class WallpaperUploadServer {
                         if (listener != null) listener.onUploaded(targetFile);
                     }
                 } else {
-                    String error = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n" + localized(R.string.wallpaper_error_invalid_size);
-                    out.write(error.getBytes("UTF-8"));
-                    out.flush();
+                    sendTextResponse(out, 400, "Bad Request", localized(R.string.wallpaper_error_invalid_size), null);
                 }
             } else {
                 String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
@@ -668,9 +664,7 @@ public class WallpaperUploadServer {
             String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
             File target = new File(customDir, safeName);
             if (!target.exists() || !target.isFile()) {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
                 return;
             }
 
@@ -686,9 +680,7 @@ public class WallpaperUploadServer {
 
             Bitmap bmp = BitmapFactory.decodeFile(target.getAbsolutePath(), opts);
             if (bmp == null) {
-                String err = "HTTP/1.1 500 Error\r\nConnection: close\r\n\r\n";
-                out.write(err.getBytes("UTF-8"));
-                out.flush();
+                sendTextResponse(out, 500, "Internal Server Error", "Thumbnail decode failed", null);
                 return;
             }
 
@@ -708,6 +700,7 @@ public class WallpaperUploadServer {
             out.flush();
         } catch (Exception e) {
             Log.w(TAG, "Thumbnail error: " + e.getMessage());
+            try { sendTextResponse(out, 500, "Internal Server Error", "Thumbnail request failed", null); } catch (Exception ignored) {}
         }
     }
 
@@ -750,6 +743,7 @@ public class WallpaperUploadServer {
             out.flush();
         } catch (Exception e) {
             Log.w(TAG, "List API error: " + e.getMessage());
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
         }
     }
 
