@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -46,7 +47,8 @@ public class WallpaperUploadServer {
     private int port;
     private final UploadListener listener;
     private final boolean standbyOnly;
-    private final String sessionToken = UUID.randomUUID().toString().replace("-", "");
+    private volatile String sessionToken = UUID.randomUUID().toString().replace("-", "");
+    private volatile long sessionExpiresAtMs;
     private ServerSocket serverSocket;
     private String boundIpAddress;
     private volatile boolean running = false;
@@ -168,8 +170,11 @@ public class WallpaperUploadServer {
                 serverSocket = new ServerSocket();
                 serverSocket.setReuseAddress(true);
                 serverSocket.bind(new InetSocketAddress(bindAddress, p));
+                serverSocket.setSoTimeout(10000);
                 boundIpAddress = selectedIp;
                 this.port = serverSocket.getLocalPort();
+                sessionToken = UUID.randomUUID().toString().replace("-", "");
+                sessionExpiresAtMs = System.currentTimeMillis() + NetworkFeedbackPolicy.WALLPAPER_SESSION_LIFETIME_MS;
                 running = true;
                 break;
             } catch (Exception e) {
@@ -223,6 +228,11 @@ public class WallpaperUploadServer {
                             try { client.close(); } catch (Exception ignored) {}
                             Log.w(TAG, "Cannot start upload client worker", e);
                         }
+                    } catch (SocketTimeoutException e) {
+                        if (!isSessionActive()) {
+                            stop();
+                            break;
+                        }
                     } catch (Exception e) {
                         if (!running) break;
                         Log.w(TAG, "Accept error: " + e.getMessage());
@@ -241,8 +251,13 @@ public class WallpaperUploadServer {
         }
     }
 
+    private boolean isSessionActive() {
+        return NetworkFeedbackPolicy.isSessionActive(running, sessionExpiresAtMs, System.currentTimeMillis());
+    }
+
     public synchronized void stop() {
         running = false;
+        sessionExpiresAtMs = 0L;
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
@@ -280,8 +295,10 @@ public class WallpaperUploadServer {
 
     private void handleClient(Socket client) {
         try {
-            client.setSoTimeout(NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS); // Session expiry remains independently enforced.
-            InputStream in = client.getInputStream();
+            long requestDeadline = Math.min(sessionExpiresAtMs,
+                    System.currentTimeMillis() + NetworkFeedbackPolicy.WALLPAPER_UPLOAD_REQUEST_DEADLINE_MS);
+            InputStream in = new UploadDeadlineInputStream(client.getInputStream(), client,
+                    requestDeadline, NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
             OutputStream out = client.getOutputStream();
 
             ByteArrayOutputStream headerBuf = new ByteArrayOutputStream();
@@ -313,6 +330,10 @@ public class WallpaperUploadServer {
                 return;
             }
 
+            if (!isSessionActive()) {
+                sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                return;
+            }
             String requestLine = lines[0];
             UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
             if (request == null) {
@@ -403,23 +424,39 @@ public class WallpaperUploadServer {
                         throw new java.io.IOException("Cannot create wallpaper storage");
                     }
 
+                    if (!isSessionActive()) {
+                        sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                        return;
+                    }
                     File targetFile = File.createTempFile("custom_", ".upload", customDir);
                     boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
-                    UploadFilePolicy.ImageFormat imageFormat = complete
+                    UploadFilePolicy.ImageFormat imageFormat = complete && isSessionActive()
                             ? validateImageFile(targetFile, lines) : null;
 
                     if (!complete || imageFormat == null) {
                         targetFile.delete();
-                        String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
-                        sendTextResponse(out, 400, "Bad Request", message, null);
+                        if (!isSessionActive()) {
+                            sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                        } else {
+                            String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
+                            sendTextResponse(out, 400, "Bad Request", message, null);
+                        }
                     } else {
                         File storedFile = new File(customDir,
                                 targetFile.getName().substring(0, targetFile.getName().length() - ".upload".length())
                                         + "." + imageFormat.extension);
-                        if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
-                            targetFile.delete();
-                            sendTextResponse(out, 500, "Internal Server Error", "Unable to store uploaded image", null);
-                            return;
+                        synchronized (this) {
+                            if (!isSessionActive()) {
+                                targetFile.delete();
+                                sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                                return;
+                            }
+                            if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
+                                targetFile.delete();
+                                sendTextResponse(out, 500, "Internal Server Error", "Unable to store uploaded image", null);
+                                return;
+                            }
+                            if (listener != null) listener.onUploaded(storedFile);
                         }
                         String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
@@ -431,7 +468,6 @@ public class WallpaperUploadServer {
                         out.write(response.getBytes("UTF-8"));
                         out.write(jsonBytes);
                         out.flush();
-                        if (listener != null) listener.onUploaded(storedFile);
                     }
                 } else {
                     sendTextResponse(out, 400, "Bad Request", localized(R.string.wallpaper_error_invalid_size), null);
