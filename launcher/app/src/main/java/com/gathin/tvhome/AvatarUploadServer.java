@@ -52,8 +52,8 @@ public final class AvatarUploadServer {
     }
 
     /** Reuse the existing Wi-Fi/Ethernet-first interface selection used by other QR uploads. */
-    public static String getLocalIpAddress() {
-        return WallpaperUploadServer.getLocalIpAddress();
+    public static String getLocalIpAddress(Context context) {
+        return LocalNetworkAddress.getActiveLanIpv4(context);
     }
 
     public String getUrl() {
@@ -64,7 +64,7 @@ public final class AvatarUploadServer {
         if (running) return true;
         if (System.currentTimeMillis() >= expiresAt) return false;
         try {
-            boundIp = getLocalIpAddress();
+            boundIp = getLocalIpAddress(context);
             if (boundIp == null || boundIp.trim().isEmpty() || "127.0.0.1".equals(boundIp)) return false;
             InetAddress bindAddress = InetAddress.getByName(boundIp);
             int[] ports = new int[]{8080, 8888, 8081, 9090, 0};
