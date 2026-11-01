@@ -411,6 +411,8 @@
     <string name="screensaver_settings_section">TV DISPLAY &amp; SLEEP</string>
     <string name="cache_system_trim_success">App and Android system caches were processed successfully.</string>
     <string name="cache_system_trim_skipped">App cache was cleaned. Android system caches were not trimmed because ADB access is unavailable or was not approved.</string>
+    <string name="phone_installer_qr_hint">Scan this QR code with an Android phone to open the official installer folder.</string>
+    <string name="phone_installer_steps">1. Scan the QR code with an Android phone.\n2. Download glass-tv-installer.apk from the release folder.\n3. Connect the phone and TV to the same Wi-Fi network.\n4. Open the installer, enter the TV IP or scan the network, then follow the ADB instructions shown on the TV.</string>
     <string name="home_key_status_title">HOME Button Service</string>
     <string name="home_key_status_summary">Status: %1$s. Needed by some remotes and for restart and power actions.</string>
     <string name="input_key_status_title">INPUT Button Service</string>
