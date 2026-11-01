@@ -101,8 +101,8 @@ public class WallpaperUploadServer {
     }
 
     /**
-     * Accept one unambiguous Content-Length only. This server deliberately does not implement
-     * chunked transfer decoding, so Transfer-Encoding and duplicate/malformed lengths are rejected.
+     * Accept one unambiguous Content-Length only. Returns -1 for invalid/missing values and
+     * -2 for a valid numeric length above the endpoint limit. Chunked transfer is not supported.
      */
     static long parseContentLength(String[] headerLines, long maxBytes) {
         if (headerLines == null || maxBytes <= 0) return -1L;
@@ -127,25 +127,36 @@ public class WallpaperUploadServer {
                 return -1L;
             }
         }
-        return count == 1 && length > 0 && length <= maxBytes ? length : -1L;
+        if (count != 1 || length <= 0) return -1L;
+        return length > maxBytes ? -2L : length;
     }
 
-    /** Matches an exact HTTP path while allowing a query string (for example ?name=photo.jpg). */
+    /** Matches a fully parsed request against one exact path, ignoring only its query string. */
     static boolean isRequestToPath(String requestLine, String method, String path) {
-        if (requestLine == null || method == null || path == null) return false;
-        String[] parts = requestLine.split(" ");
-        if (parts.length < 3 || !method.equals(parts[0])) return false;
-        String target = parts[1];
-        int queryIndex = target.indexOf('?');
-        if (queryIndex >= 0) target = target.substring(0, queryIndex);
-        return path.equals(target);
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        return request != null && method != null && method.equals(request.method)
+                && request.isPath(path);
+    }
+
+    static String wallpaperAllowedMethods(String requestPath, String sessionPath) {
+        if (requestPath == null || sessionPath == null) return null;
+        if (requestPath.equals(sessionPath)
+                || requestPath.equals(sessionPath + "/thumb")
+                || requestPath.equals(sessionPath + "/api/list")) return "GET, OPTIONS";
+        if (requestPath.equals(sessionPath + "/upload")
+                || requestPath.equals(sessionPath + "/api/select")
+                || requestPath.equals(sessionPath + "/api/delete")
+                || requestPath.equals(sessionPath + "/api/slideshow")
+                || requestPath.equals(sessionPath + "/api/clear")) return "POST, OPTIONS";
+        return null;
     }
 
     static boolean isWallpaperSessionRequest(String requestLine, String sessionPath) {
-        return requestLine.startsWith("GET " + sessionPath + " ")
-                || requestLine.startsWith("GET " + sessionPath + "/")
-                || requestLine.startsWith("POST " + sessionPath + "/")
-                || requestLine.startsWith("OPTIONS " + sessionPath + "/");
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        if (request == null) return false;
+        String allowed = wallpaperAllowedMethods(request.path, sessionPath);
+        return allowed != null && (request.method.equals("OPTIONS")
+                || (allowed.startsWith(request.method + ",") || allowed.equals(request.method)));
     }
 
     public int getPort() {
@@ -278,6 +289,19 @@ public class WallpaperUploadServer {
         Log.i(TAG, "Server stopped");
     }
 
+    private void sendTextResponse(OutputStream out, int status, String reason, String message, String extraHeaders) throws Exception {
+        byte[] body = (message == null ? "" : message).getBytes("UTF-8");
+        String response = "HTTP/1.1 " + status + " " + reason + "\r\n"
+                + "Content-Type: text/plain; charset=UTF-8\r\n"
+                + "Content-Length: " + body.length + "\r\n"
+                + "Cache-Control: no-store\r\n"
+                + (extraHeaders == null ? "" : extraHeaders)
+                + "Connection: close\r\n\r\n";
+        out.write(response.getBytes("UTF-8"));
+        out.write(body);
+        out.flush();
+    }
+
     private void handleClient(Socket client) {
         try {
             client.setSoTimeout(NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS); // Session expiry remains independently enforced.
@@ -286,16 +310,15 @@ public class WallpaperUploadServer {
 
             ByteArrayOutputStream headerBuf = new ByteArrayOutputStream();
             int prev3 = 0, prev2 = 0, prev1 = 0, b;
+            boolean headerComplete = false;
             while ((b = in.read()) != -1) {
                 headerBuf.write(b);
                 if (headerBuf.size() > 16 * 1024) {
-                    byte[] error = "HTTP/1.1 431 Request Header Fields Too Large\r\nConnection: close\r\n\r\n".getBytes("UTF-8");
-                    out.write(error);
-                    out.flush();
-                    client.close();
+                    sendTextResponse(out, 431, "Request Header Fields Too Large", "Request Header Fields Too Large", null);
                     return;
                 }
                 if (prev3 == '\r' && prev2 == '\n' && prev1 == '\r' && b == '\n') {
+                    headerComplete = true;
                     break;
                 }
                 prev3 = prev2;
@@ -303,40 +326,61 @@ public class WallpaperUploadServer {
                 prev1 = b;
             }
 
+            if (!headerComplete) {
+                sendTextResponse(out, 400, "Bad Request", "Incomplete HTTP headers", null);
+                return;
+            }
             String headerText = headerBuf.toString("UTF-8");
             String[] lines = headerText.split("\r\n");
-            if (lines.length == 0 || lines[0].isEmpty()) {
-                client.close();
+            if (lines.length == 0 || lines[0].isEmpty() || !UploadHttpRequest.hasValidHeaders(lines)) {
+                sendTextResponse(out, 400, "Bad Request", "Invalid HTTP request", null);
                 return;
             }
 
             String requestLine = lines[0];
+            UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+            if (request == null) {
+                sendTextResponse(out, 400, "Bad Request", "Invalid HTTP request line", null);
+                return;
+            }
             Log.d(TAG, "Request: " + requestLine);
 
-            boolean standbySessionRoute = requestLine.startsWith("GET " + getStandbyPath() + " ")
-                    || requestLine.startsWith("POST " + getStandbyUploadPath() + " ");
-            boolean wallpaperSessionRoute = isWallpaperSessionRequest(requestLine, getWallpaperPath());
+            boolean standbyPagePath = request.isPath(getStandbyPath());
+            boolean standbyUploadPath = request.isPath(getStandbyUploadPath());
+            boolean standbySessionPath = standbyPagePath || standbyUploadPath;
+            boolean standbyRoute = (standbyPagePath && "GET".equals(request.method))
+                    || (standbyUploadPath && "POST".equals(request.method));
+            String wallpaperAllowed = wallpaperAllowedMethods(request.path, getWallpaperPath());
+            boolean wallpaperSessionPath = request.isWithinPath(getWallpaperPath());
 
-            if (standbyOnly && !standbySessionRoute) {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
-            } else if (!standbyOnly && !wallpaperSessionRoute) {
-                String notFound = "HTTP/1.1 404 Not Found\r\nCache-Control: no-store\r\nConnection: close\r\n\r\nNot Found";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
-            } else if (requestLine.startsWith("OPTIONS")) {
+            if (standbyOnly && !standbySessionPath) {
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
+            } else if (!standbyOnly && !wallpaperSessionPath) {
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
+            } else if (standbyOnly && !standbyRoute) {
+                String allow = standbyPagePath ? "GET" : "POST";
+                sendTextResponse(out, 405, "Method Not Allowed", "Method Not Allowed", "Allow: " + allow + "\r\n");
+            } else if (!standbyOnly && wallpaperAllowed == null) {
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
+            } else if (!standbyOnly && "OPTIONS".equals(request.method)) {
                 String response = "HTTP/1.1 204 No Content\r\n" +
                         "Access-Control-Allow-Origin: *\r\n" +
-                        "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n" +
+                        "Access-Control-Allow-Methods: " + wallpaperAllowed + "\r\n" +
                         "Access-Control-Allow-Headers: Content-Type\r\n" +
                         "Cache-Control: no-store\r\n" +
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
                 out.flush();
+            } else if (!standbyOnly && !wallpaperAllowed.startsWith(request.method + ",")
+                    && !wallpaperAllowed.equals(request.method)) {
+                sendTextResponse(out, 405, "Method Not Allowed", "Method Not Allowed", "Allow: " + wallpaperAllowed.replace(", OPTIONS", "") + "\r\n");
             } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
-                serveThumbnail(fileName, out);
+                if (fileName == null || fileName.trim().isEmpty()) {
+                    sendTextResponse(out, 400, "Bad Request", "Missing or ambiguous file parameter", null);
+                } else {
+                    serveThumbnail(fileName, out);
+                }
             } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/api/list")) {
                 serveApiList(out);
             } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/select")) {
@@ -375,7 +419,9 @@ public class WallpaperUploadServer {
             } else if (isRequestToPath(requestLine, "POST", getWallpaperUploadPath())) {
                 long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
 
-                if (contentLength > 0) {
+                if (contentLength == -2L) {
+                    sendTextResponse(out, 413, "Payload Too Large", "Upload exceeds the allowed size", null);
+                } else if (contentLength > 0) {
                     File customDir = new File(context.getFilesDir(), "custom_wallpapers");
                     if (!customDir.exists() && !customDir.mkdirs()) {
                         throw new java.io.IOException("Cannot create wallpaper storage");
@@ -406,9 +452,7 @@ public class WallpaperUploadServer {
                     if (!complete || !validImage) {
                         targetFile.delete();
                         String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
-                        String response = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\n\r\n" + message;
-                        out.write(response.getBytes("UTF-8"));
-                        out.flush();
+                        sendTextResponse(out, 400, "Bad Request", message, null);
                     } else {
                         String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
@@ -424,14 +468,10 @@ public class WallpaperUploadServer {
                         if (listener != null) listener.onUploaded(targetFile);
                     }
                 } else {
-                    String error = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n" + localized(R.string.wallpaper_error_invalid_size);
-                    out.write(error.getBytes("UTF-8"));
-                    out.flush();
+                    sendTextResponse(out, 400, "Bad Request", localized(R.string.wallpaper_error_invalid_size), null);
                 }
             } else {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
             }
 
             out.close();
@@ -476,6 +516,10 @@ public class WallpaperUploadServer {
 
     private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
         long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
+        if (contentLength == -2L) {
+            sendUploadError(out, 413, localized(R.string.standby_error_photo_size));
+            return;
+        }
         if (contentLength <= 0) {
             sendUploadError(out, 400, localized(R.string.standby_error_photo_size));
             return;
@@ -546,7 +590,7 @@ public class WallpaperUploadServer {
 
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
         byte[] bytes = message.getBytes("UTF-8");
-        String label = status == 500 ? "Internal Server Error" : "Bad Request";
+        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large" : "Bad Request";
         String response = "HTTP/1.1 " + status + " " + label + "\r\n"
                 + "Content-Type: text/plain; charset=UTF-8\r\n"
                 + "Content-Length: " + bytes.length + "\r\n"
@@ -601,20 +645,22 @@ public class WallpaperUploadServer {
     }
 
     private String getQueryParam(String requestLine, String param) {
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        if (request == null || param == null || request.query.isEmpty()) return null;
         try {
-            int qIdx = requestLine.indexOf('?');
-            if (qIdx == -1) return "";
-            int spIdx = requestLine.indexOf(' ', qIdx);
-            String query = spIdx > qIdx ? requestLine.substring(qIdx + 1, spIdx) : requestLine.substring(qIdx + 1);
-            String[] pairs = query.split("&");
-            for (String pair : pairs) {
+            String found = null;
+            for (String pair : request.query.split("&", -1)) {
                 int eq = pair.indexOf('=');
-                if (eq > 0 && pair.substring(0, eq).equals(param)) {
-                    return URLDecoder.decode(pair.substring(eq + 1), "UTF-8");
-                }
+                if (eq <= 0) continue;
+                String name = URLDecoder.decode(pair.substring(0, eq), "UTF-8");
+                if (!param.equals(name)) continue;
+                if (found != null) return null; // Ambiguous duplicate parameter.
+                found = URLDecoder.decode(pair.substring(eq + 1), "UTF-8");
             }
-        } catch (Exception ignored) {}
-        return "";
+            return found;
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private void serveThumbnail(String fileName, OutputStream out) {
@@ -623,9 +669,7 @@ public class WallpaperUploadServer {
             String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
             File target = new File(customDir, safeName);
             if (!target.exists() || !target.isFile()) {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
+                sendTextResponse(out, 404, "Not Found", "Not Found", null);
                 return;
             }
 
@@ -641,15 +685,17 @@ public class WallpaperUploadServer {
 
             Bitmap bmp = BitmapFactory.decodeFile(target.getAbsolutePath(), opts);
             if (bmp == null) {
-                String err = "HTTP/1.1 500 Error\r\nConnection: close\r\n\r\n";
-                out.write(err.getBytes("UTF-8"));
-                out.flush();
+                sendTextResponse(out, 500, "Internal Server Error", "Thumbnail decode failed", null);
                 return;
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+            boolean compressed = bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
             bmp.recycle();
+            if (!compressed) {
+                sendTextResponse(out, 500, "Internal Server Error", "Thumbnail encoding failed", null);
+                return;
+            }
             byte[] bytes = baos.toByteArray();
 
             String response = "HTTP/1.1 200 OK\r\n" +
@@ -663,13 +709,17 @@ public class WallpaperUploadServer {
             out.flush();
         } catch (Exception e) {
             Log.w(TAG, "Thumbnail error: " + e.getMessage());
+            try { sendTextResponse(out, 500, "Internal Server Error", "Thumbnail request failed", null); } catch (Exception ignored) {}
         }
     }
 
     private void serveApiList(OutputStream out) {
         try {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.exists()
+                    ? customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"))
+                    : new File[0];
+            if (files == null) throw new java.io.IOException("Cannot list wallpaper storage");
             JSONArray arr = new JSONArray();
             String activeSingle = context.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE)
                     .getString("custom_single_file", "");
@@ -698,6 +748,7 @@ public class WallpaperUploadServer {
             String response = "HTTP/1.1 200 OK\r\n" +
                     "Content-Type: application/json; charset=UTF-8\r\n" +
                     "Content-Length: " + jsonBytes.length + "\r\n" +
+                    "Cache-Control: no-store\r\n" +
                     "Access-Control-Allow-Origin: *\r\n" +
                     "Connection: close\r\n\r\n";
             out.write(response.getBytes("UTF-8"));
@@ -705,58 +756,120 @@ public class WallpaperUploadServer {
             out.flush();
         } catch (Exception e) {
             Log.w(TAG, "List API error: " + e.getMessage());
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
         }
     }
 
     private void handleApiSelect(String fileName, OutputStream out) {
         try {
+            if (fileName == null || fileName.trim().isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"missing_file\"}");
+                return;
+            }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (target.exists() && listener != null) {
-                listener.onSelected(target);
+            if (safeName.isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
+                return;
             }
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            File target = new File(customDir, safeName);
+            if (!target.isFile()) {
+                sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
+                return;
+            }
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
+            }
+            listener.onSelected(target);
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Select API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void handleApiDelete(String fileName, OutputStream out) {
         try {
+            if (fileName == null || fileName.trim().isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"missing_file\"}");
+                return;
+            }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (target.exists()) {
-                target.delete();
-                if (listener != null) listener.onDeleted(target);
+            if (safeName.isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
+                return;
             }
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            File target = new File(customDir, safeName);
+            if (!target.isFile()) {
+                sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
+                return;
+            }
+            if (!target.delete()) {
+                sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"delete_failed\"}");
+                return;
+            }
+            if (listener != null) listener.onDeleted(target);
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Delete API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void handleApiSlideshow(OutputStream out) {
         try {
-            if (listener != null) listener.onSlideshowMode();
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
+            }
+            listener.onSlideshowMode();
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Slideshow API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void handleApiClear(OutputStream out) {
         try {
-            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles();
-            if (files != null) {
-                for (File f : files) f.delete();
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
             }
-            if (listener != null) listener.onCleared();
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
+            File[] files = customDir.exists() ? customDir.listFiles() : new File[0];
+            if (files == null) {
+                sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"storage_unavailable\"}");
+                return;
+            }
+            for (File file : files) {
+                if (file.isFile() && !file.delete()) {
+                    sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"delete_failed\"}");
+                    return;
+                }
+            }
+            listener.onCleared();
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Clear API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void sendSimpleJsonResponse(OutputStream out, String json) throws Exception {
+        sendSimpleJsonResponse(out, 200, json);
+    }
+
+    private void sendSimpleJsonResponse(OutputStream out, int status, String json) throws Exception {
+        String reason = status == 200 ? "OK" : status == 400 ? "Bad Request"
+                : status == 404 ? "Not Found" : status == 503 ? "Service Unavailable" : "Internal Server Error";
         byte[] bytes = json.getBytes("UTF-8");
-        String response = "HTTP/1.1 200 OK\r\n" +
+        String response = "HTTP/1.1 " + status + " " + reason + "\r\n" +
                 "Content-Type: application/json; charset=UTF-8\r\n" +
                 "Content-Length: " + bytes.length + "\r\n" +
+                "Cache-Control: no-store\r\n" +
                 "Access-Control-Allow-Origin: *\r\n" +
                 "Connection: close\r\n\r\n";
         out.write(response.getBytes("UTF-8"));
@@ -1226,30 +1339,24 @@ public class WallpaperUploadServer {
                 "        .catch(() => {});\n" +
                 "    }\n" +
                 "\n" +
+                "    function postAction(url, onSuccess) {\n" +
+                "      fetch(url, { method: 'POST' })\n" +
+                "        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })\n" +
+                "        .then(() => { loadGallery(); if (onSuccess) onSuccess(); })\n" +
+                "        .catch(() => alert('" + jsText(R.string.wallpaper_page_action_failed) + "'));\n" +
+                "    }\n" +
+                "\n" +
                 "    function selectSingle(fileName) {\n" +
-                "      fetch('" + base + "/api/select?file=' + fileName, { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "        });\n" +
+                "      postAction('" + base + "/api/select?file=' + fileName);\n" +
                 "    }\n" +
                 "\n" +
                 "    function deletePhoto(fileName) {\n" +
                 "      if (!confirm('" + jsText(R.string.wallpaper_page_confirm_delete) + "')) return;\n" +
-                "      fetch('" + base + "/api/delete?file=' + fileName, { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "        });\n" +
+                "      postAction('" + base + "/api/delete?file=' + fileName);\n" +
                 "    }\n" +
                 "\n" +
                 "    function setSlideshow() {\n" +
-                "      fetch('" + base + "/api/slideshow', { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "          alert('" + jsText(R.string.wallpaper_page_slideshow_active) + "');\n" +
-                "        });\n" +
+                "      postAction('" + base + "/api/slideshow', () => alert('" + jsText(R.string.wallpaper_page_slideshow_active) + "'));\n" +
                 "    }\n" +
                 "\n" +
                 "    // Muat galeri foto saat halaman dibuka\n" +
