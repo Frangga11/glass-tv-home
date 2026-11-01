@@ -83,3 +83,15 @@
 - Exact-head CI #298 / `41281838510` was IN PROGRESS at this checkpoint. B07 is not yet marked complete.
 - Final API 30/33+, Activity recreation, physical TV D-pad, and grouped B01–B06 regression remain required; device acceptance is deferred, not waived.
 - Detailed evidence and test matrix: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
+
+
+## B-series source/CI closure checkpoint — 1 November 2026
+
+- B01–B07 source work has exact-head CI evidence recorded in `AUDIT_REGISTER.md`; B07 exact-head run #298 / `41281838510` passed both jobs on `d4eabc48e020ab6cbef54e0f8884cf125eff97ed`.
+- B07 restores the exact Settings sidebar/submenu focus and scroll position using validated focus paths and target signatures, with safe fallback. Four JVM tests pass; release build passes; APK size 1509 KB (<1.5 MiB).
+- Current B07 source PR #17 is OPEN/DRAFT/UNMERGED and stacked on B06 exact head `bc86a250d73a5cbb83250217d42c3c3993cf29d7`.
+- B06 PR #16 and B07 PR #17 remain unmerged by D-013. B01–B03 source PRs remain traceable; B04/B05 integration is already reconciled into the B03 continuation history.
+- **B-series source/CI development is complete enough to proceed to Project C.** This is not the final integrated release or device acceptance.
+- After A–G source work is complete: freeze exact heads, audit combined diff/dependencies, perform grouped integration, run cross-B regression, complete API 30/33+ lifecycle/focus, same-Wi-Fi QR and physical TV acceptance, then seek explicit release approval. Deferred tests are not waived.
+- No APK was published/installed and no device/TV settings were changed.
+- B07 detailed evidence: [B07_MENU_FOCUS_AUDIT.md](B07_MENU_FOCUS_AUDIT.md).
