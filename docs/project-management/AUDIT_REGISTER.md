@@ -41,3 +41,15 @@ No PR merged, no APK published/installed, no device settings changed. Release st
 | Exact integration CI | PENDING | No check runs or combined statuses observed for head `5e7481c4902c85352b1ab95b7f1ef41acdf9ed78`; no integrated CI pass claimed. |
 
 Current PR #15 is OPEN and Ready for review, not merged. Release remains NOT FINAL until CI, runtime, QR network, and physical TV gates pass.
+
+
+## Test scheduling decision — 1 November 2026
+
+| Gate | Timing | Current status |
+|---|---|---|
+| B04/B05 exact-head GitHub Actions CI | Before merging B04/B05 and before B06/B07 | PENDING; no run exists for current head |
+| Android API 30/33+ runtime/lifecycle/focus | Final overall system test after B06/B07 and remaining planned stages | DEFERRED by user; not waived |
+| Phone QR upload over same Wi-Fi | Final overall system test | DEFERRED by user; not waived |
+| Physical TV F02/F06 | Final overall system test | DEFERRED by user; not waived |
+
+Workflow configuration now explicitly supports `ready_for_review` and `integration/**`. Reopening PR #15 did not start a run; manual workflow dispatch is required. Keep APK publication disabled. B04 source CI #242 is not an integrated-head CI result.
