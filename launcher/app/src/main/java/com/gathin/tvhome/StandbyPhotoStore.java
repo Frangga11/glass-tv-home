@@ -169,7 +169,7 @@ final class StandbyPhotoStore {
         UriMergeResult merged = mergeUriValues(current, incoming, MAX_PHOTO_COUNT);
         if (merged.addedCount == 0) return merged;
         SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String serialized = TextUtils.join("\\n", merged.values);
+        String serialized = TextUtils.join("\n", merged.values);
         if (!commitUploadedState(preferences, serialized)) {
             return new UriMergeResult(current, 0, merged.skippedCount);
         }
