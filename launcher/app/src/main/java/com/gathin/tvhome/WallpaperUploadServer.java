@@ -528,6 +528,10 @@ public class WallpaperUploadServer {
             sendUploadError(out, 400, localized(R.string.standby_error_photo_size));
             return;
         }
+        if (!isSessionActive()) {
+            sendUploadError(out, 410, "Upload session expired or closed");
+            return;
+        }
         if (!StandbyPhotoStore.canAcceptUpload(context, contentLength)) {
             sendUploadError(out, 400, localized(R.string.standby_error_collection_full));
             return;
@@ -546,9 +550,13 @@ public class WallpaperUploadServer {
 
         if (!complete || imageFormat == null) {
             targetFile.delete();
-            sendUploadError(out, 400, !complete
-                    ? localized(R.string.wallpaper_error_incomplete_retry)
-                    : localized(R.string.wallpaper_error_unsupported_image));
+            if (!isSessionActive()) {
+                sendUploadError(out, 410, "Upload session expired or closed");
+            } else {
+                sendUploadError(out, 400, !complete
+                        ? localized(R.string.wallpaper_error_incomplete_retry)
+                        : localized(R.string.wallpaper_error_unsupported_image));
+            }
             return;
         }
         File storedFile = new File(standbyDir,
@@ -563,6 +571,7 @@ public class WallpaperUploadServer {
         synchronized (this) {
             if (!isSessionActive() || client.isClosed()) {
                 storedFile.delete();
+                if (!client.isClosed()) sendUploadError(out, 410, "Upload session expired or closed");
                 return;
             }
             if (!StandbyPhotoStore.addUploadedFile(context, storedFile)) {
