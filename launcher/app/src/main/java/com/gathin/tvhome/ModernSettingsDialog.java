@@ -1138,7 +1138,8 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.home_key_status_title),
                         activity.getString(R.string.home_key_status_summary, homeKeyStatus),
-                        () -> openDeviceSettings(activity, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))));
+                        () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
+                                new Intent(Settings.ACTION_SETTINGS))));
 
                 boolean inputKeyEnabled = DeviceSettingsStatus.isAccessibilityServiceEnabled(activity, InputKeyService.class);
                 String inputKeyStatus = activity.getString(inputKeyEnabled
@@ -1155,14 +1156,15 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.notification_access_title),
                         activity.getString(R.string.notification_access_summary, notificationStatus),
-                        () -> openDeviceSettings(activity, new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))));
+                        () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS),
+                                new Intent(Settings.ACTION_SETTINGS))));
 
                 addSectionHeader(rightContent, outfit, activity.getString(R.string.screensaver_settings_section));
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.screensaver_settings_title),
                         activity.getString(R.string.screensaver_settings_summary),
-                        () -> openDeviceSettings(activity, new Intent(Settings.ACTION_DREAM_SETTINGS),
-                                new Intent(Settings.ACTION_DISPLAY_SETTINGS))));
+                        () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_DREAM_SETTINGS),
+                                new Intent(Settings.ACTION_DISPLAY_SETTINGS), new Intent(Settings.ACTION_SETTINGS))));
                 addSectionHeader(rightContent, outfit, activity.getString(R.string.power_maintenance_section));
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.restart_tv_title), activity.getString(R.string.restart_tv_summary),
@@ -2069,6 +2071,12 @@ public final class ModernSettingsDialog {
         }
 
         btnSettings.requestFocus();
+    }
+
+    private static void openDeviceSettingsOrFeedback(Context context, Intent... intents) {
+        if (!openDeviceSettings(context, intents)) {
+            TvFeedback.show(context, R.string.android_settings_unavailable, Toast.LENGTH_LONG);
+        }
     }
 
     private static boolean openDeviceSettings(Context context, Intent... intents) {
