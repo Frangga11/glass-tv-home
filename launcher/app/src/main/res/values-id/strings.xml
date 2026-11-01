@@ -309,4 +309,43 @@
 
     <string name="ram_usage_summary">RAM %1$s GB digunakan dari %2$s GB</string>
     <string name="now_label">Saat ini</string>
+
+    <string name="standby_photo_mode_enabled">Foto pribadi digunakan pada Layar Siaga.</string>
+    <string name="standby_clock_mode_enabled">Tampilan jam bawaan digunakan.</string>
+    <string name="azan_popup_enabled">✅ Popup Azan diaktifkan.</string>
+    <string name="azan_popup_disabled">⭕ Popup Azan dimatikan.</string>
+    <string name="auto_update_status_enabled">✅ Auto-Update: Aktif (%1$s)</string>
+    <string name="auto_update_status_disabled">⭕ Auto-Update: Dimatikan</string>
+    <string name="auto_update_disable_action">❌ Matikan Auto-Update</string>
+    <string name="auto_update_enable_action">⚡ Hidupkan Auto-Update</string>
+    <string name="auto_update_enabled_at">✅ Auto-Update dihidupkan (%1$s)</string>
+    <string name="auto_update_disabled">⭕ Auto-Update dimatikan</string>
+    <string name="now_playing_fallback_title">Lagu sedang diputar</string>
+    <string name="now_playing_fallback_artist">Musik</string>
+    <string name="playback_status_playing">▶ Sedang diputar</string>
+    <string name="playback_status_paused">⏸ Dijeda</string>
+    <string name="wallpaper_shuffle_random">🔀 Mode acak: gambar dipilih secara acak</string>
+    <string name="wallpaper_shuffle_ordered">➡️ Mode berurutan: gambar dipilih sesuai urutan</string>
+    <string name="next_prayer_suffix"> (Berikutnya)</string>
+    <string name="child_mode_enabled">✅ Mode Anak diaktifkan!</string>
+    <string name="child_mode_disabled">Mode Anak dinonaktifkan.</string>
+    <string name="icon_animation_enabled">Animasi ikon diaktifkan.</string>
+    <string name="icon_animation_disabled">Animasi ikon dinonaktifkan.</string>
+    <string name="glass_effect_enabled">Glass Effect diaktifkan.</string>
+    <string name="glass_effect_disabled">Glass Effect dinonaktifkan.</string>
+    <string name="weather_animation_enabled">Animasi cuaca diaktifkan.</string>
+    <string name="weather_animation_disabled">Animasi cuaca dinonaktifkan.</string>
+    <string name="icon_glow_enabled">Efek cahaya ikon diaktifkan.</string>
+    <string name="icon_glow_disabled">Efek cahaya ikon dinonaktifkan.</string>
+    <string name="hide_apps_title">👁️ Sembunyikan Aplikasi dari Layar Utama</string>
+    <string name="lock_apps_title">🔒 Kunci Aplikasi dengan PIN 4 Digit</string>
+    <string name="hide_apps_description">Aplikasi yang dipilih tidak akan ditampilkan di layar utama.</string>
+    <string name="lock_apps_description">Aplikasi yang dipilih memerlukan PIN untuk dibuka.</string>
+    <string name="uv_low">Rendah</string>
+    <string name="uv_moderate">Sedang</string>
+    <string name="uv_high">Tinggi</string>
+    <string name="uv_very_high">Sangat tinggi</string>
+    <string name="precipitation_summary">Saat ini • peluang hujan %1$d%%</string>
+    <string name="limited_visibility">Jarak pandang terbatas</string>
+    <string name="good_visibility">Jarak pandang baik</string>
 </resources>
