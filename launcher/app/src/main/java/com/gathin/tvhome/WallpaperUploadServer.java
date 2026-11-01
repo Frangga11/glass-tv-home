@@ -32,7 +32,7 @@ import java.util.UUID;
 public class WallpaperUploadServer {
     private static final String TAG = "TvHome.UploadServer";
     static final long MAX_UPLOAD_BYTES = 60L * 1024L * 1024L;
-    private static final int MAX_ACTIVE_CLIENTS = 4;
+    private static final int MAX_ACTIVE_CLIENTS = 8; // Allows normal parallel gallery thumbnail requests.
 
     public interface UploadListener {
         void onUploaded(File imageFile);
