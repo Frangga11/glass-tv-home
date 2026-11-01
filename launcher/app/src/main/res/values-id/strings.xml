@@ -25,7 +25,7 @@
     <string name="home_key_description">Membuat tombol Home pada remote membuka launcher ini.</string>
     <string name="card_prompt_title">Kartu baru dari %1$s</string>
     <string name="card_prompt_body">%1$s dapat menampilkan kartu di layar utama. Jika disembunyikan, ubin aplikasi tetap seperti biasa.</string>
-    <string name="card_prompt_names">Nama kartu: '%1$s'. Nama aplikasi: '%2$s'.</string>
+    <string name="card_prompt_names">Nama kartu: %1$s. Nama aplikasi: %2$s.</string>
     <string name="card_prompt_resigned">%1$s diperbarui dengan kunci penandatanganan berbeda. Pilihan sebelumnya tidak berlaku; tentukan ulang untuk kartunya.</string>
     <string name="card_prompt_relabelled">Nama kartu dari %1$s berubah sejak pilihan terakhir. Tentukan ulang pilihan untuk kartu tersebut.</string>
     <string name="card_prompt_hint">Anda dapat mengubahnya nanti: tahan tombol OK pada Pengaturan.</string>
@@ -157,7 +157,7 @@
     <string name="update_later_action">⏭️ Lewati / Nanti Saja</string>
     <string name="update_deferred">Pembaruan ditunda. Titik merah 🔴 tetap muncul pada tombol Pengaturan.</string>
     <string name="install_permission_title">⚠️ Izin Instalasi Diperlukan</string>
-    <string name="install_permission_message">Aktifkan 'Allow from this source' agar Glass TV Home dapat memasang pembaruan otomatis.</string>
+    <string name="install_permission_message">Aktifkan opsi Allow from this source agar Glass TV Home dapat memasang pembaruan otomatis.</string>
     <string name="open_settings_action">Buka Pengaturan</string>
     <string name="install_unknown_apps_hint">Buka Pengaturan &gt; Keamanan &gt; Instal aplikasi tidak dikenal</string>
     <string name="download_update_title">📥 Mengunduh Pembaruan (v%1$s)</string>
