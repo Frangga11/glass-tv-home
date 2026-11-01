@@ -214,11 +214,12 @@ public class WallpaperUploadServer {
         }
 
         try {
+            final ServerSocket listeningSocket = serverSocket;
             serverThread = new Thread(() -> {
                 Log.i(TAG, "Server started successfully on port " + this.port);
-                while (running && serverSocket != null && !serverSocket.isClosed()) {
+                while (running && !listeningSocket.isClosed()) {
                     try {
-                        Socket client = serverSocket.accept();
+                        Socket client = listeningSocket.accept();
                         if (!running) {
                             client.close();
                             break;
