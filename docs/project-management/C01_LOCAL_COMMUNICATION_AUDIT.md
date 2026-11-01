@@ -59,6 +59,8 @@ No QR routes, user-facing screens, file formats, storage directories, upload siz
 - rejection of Transfer-Encoding;
 - existing session route isolation and unsupported method checks;\n- localization resource parity for the new overload response.
 
+Localization static check after the new string was added: **567 keys** in default/ID/EN, zero duplicate keys, identical key sets, and the new overload key present in all three locales.
+
 Existing avatar route, byte-limit, and image-dimension policy tests remain unchanged.
 
 ## 5. Remaining audit boundary
