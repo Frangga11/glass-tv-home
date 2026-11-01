@@ -34,7 +34,7 @@ No QR routes, user-facing screens, file formats, storage directories, upload siz
 | ID | Finding | Risk | Repair |
 |---|---|---|---|
 | C01-F01 | Wallpaper server bound to wildcard interfaces although the QR advertises one selected LAN address | Unnecessary exposure on other interfaces | Bind only to the selected usable IPv4 address; expose that exact bound address and use it when building wallpaper/StandBy QR URLs |
-| C01-F02 | Wallpaper server spawned an unbounded thread for every accepted socket | Resource exhaustion / thread growth | Cap active clients at 4; reject excess connections with HTTP 503; worker threads are daemonized and cleaned up |
+| C01-F02 | Wallpaper server spawned an unbounded thread for every accepted socket | Resource exhaustion / thread growth | Cap active clients at 8 to accommodate parallel gallery thumbnail requests; reject excess connections with HTTP 503; worker threads are daemonized and cleaned up |
 | C01-F03 | Server worker loop referenced the mutable serverSocket field | Stop/restart race could let an old worker observe a newly assigned socket | Capture the listening ServerSocket per server-thread instance |
 | C01-F04 | Wallpaper/StandBy accepted ambiguous Content-Length and did not reject Transfer-Encoding | Ambiguous HTTP body framing | Require exactly one positive decimal Content-Length; reject duplicate, malformed, missing, oversized lengths and all Transfer-Encoding |
 | C01-F05 | Wallpaper/StandBy validated image headers/dimensions but did not confirm a real decode | Truncated/corrupt image could pass initial checks | Validate dimensions and decode a bounded sample before accepting the file |
