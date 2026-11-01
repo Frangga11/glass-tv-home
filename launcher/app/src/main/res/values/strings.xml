@@ -65,4 +65,29 @@
     <string name="recent_apps_hint_close">Tekan ▲ pada aplikasi untuk menutupnya</string>
     <string name="standby_photo_description">Foto latar Layar Siaga</string>
     <string name="standby_return_hint">Tekan tombol apa pun untuk kembali</string>
+
+    <string name="weather_my_location">LOKASI SAYA</string>
+    <string name="weather_drizzle">Gerimis</string>
+    <string name="weather_wind_label">💨  ANGIN</string>
+    <string name="weather_moon_phase_label">🌕  FASE BULAN</string>
+    <string name="weather_sunset_label">🌅  MATAHARI TERBENAM</string>
+    <string name="weather_uv_label">☀️  INDEKS UV</string>
+    <string name="weather_uv_high">Tinggi</string>
+    <string name="weather_uv_description">Perhatikan paparan sinar UV sesuai indeks saat ini.</string>
+    <string name="weather_feels_like_label">🌡️  SUHU TERASA</string>
+    <string name="weather_feels_like_description">Suhu terasa dapat berbeda dari suhu udara aktual.</string>
+    <string name="weather_air_quality_label">🍃  KUALITAS UDARA</string>
+    <string name="weather_air_quality_moderate">Sedang</string>
+    <string name="weather_rainfall_label">💧  CURAH HUJAN</string>
+    <string name="weather_precipitation_chance">Saat ini • peluang hujan</string>
+    <string name="weather_visibility_label">👁️  JARAK PANDANG</string>
+    <string name="weather_visibility_good">Jarak pandang baik</string>
+    <string name="weather_conditions_label">KONDISI CUACA</string>
+    <string name="weather_temperature_c">Suhu (°C)</string>
+    <string name="weather_forecast_7_days">📅  PRAKIRAAN 7 HARI</string>
+    <string name="weather_illustration_label">⛰️  ILUSTRASI CUACA</string>
+    <string name="weather_humidity_label">💧  KELEMBAPAN</string>
+    <string name="weather_humidity_description">Kelembapan relatif saat ini.</string>
+    <string name="weather_pressure_label">⏱️  TEKANAN UDARA</string>
+    <string name="weather_data_source">Model Open-Meteo • estimasi US AQI</string>
 </resources>
