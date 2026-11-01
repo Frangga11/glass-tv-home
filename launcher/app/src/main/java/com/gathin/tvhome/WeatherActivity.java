@@ -143,7 +143,7 @@ public class WeatherActivity extends Activity {
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("🌏 Lokasi & Suasana Cuaca");
+        builder.setTitle(R.string.weather_location_dialog_title);
         builder.setItems(topOptions, (dialog, which) -> {
             dialog.dismiss();
             if (which == 0) {
@@ -154,7 +154,7 @@ public class WeatherActivity extends Activity {
                 showWeatherAnimationPicker();
             }
         });
-        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
 
@@ -171,32 +171,32 @@ public class WeatherActivity extends Activity {
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("✨ Pilihan Suasana Latar Belakang");
+        builder.setTitle(R.string.weather_mood_dialog_title);
         builder.setItems(conditions, (dialog, which) -> {
             dialog.dismiss();
             SharedPreferences.Editor ed = p.edit();
             if (which == 0) {
                 ed.putString("atmosphere_mode", "SUNNY").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Cerah (Sunny)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_clear)), Toast.LENGTH_SHORT).show();
             } else if (which == 1) {
                 ed.putString("atmosphere_mode", "RAIN").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Hujan (Rain)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_rain)), Toast.LENGTH_SHORT).show();
             } else if (which == 2) {
                 ed.putString("atmosphere_mode", "THUNDERSTORM").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Ribut Petir", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_storm)), Toast.LENGTH_SHORT).show();
             } else if (which == 3) {
                 ed.putString("atmosphere_mode", "CLOUDY").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Mendung (Cloudy)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_cloudy)), Toast.LENGTH_SHORT).show();
             } else if (which == 4) {
                 ed.putString("atmosphere_mode", "NIGHT").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Malam (Night)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_night)), Toast.LENGTH_SHORT).show();
             } else {
                 ed.putString("atmosphere_mode", "AUTO").apply();
-                Toast.makeText(this, "Pulih kepada data cuaca sebenar (Auto)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.weather_mood_auto, Toast.LENGTH_SHORT).show();
             }
             populateUi();
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
 
@@ -214,12 +214,12 @@ public class WeatherActivity extends Activity {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("🌏 Pilih Negara / Region Asia");
+        builder.setTitle(R.string.weather_region_picker_title);
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             String chosenRegion = regions.get(which);
             AppLocationManager.setActiveRegion(WeatherActivity.this, chosenRegion);
-            Toast.makeText(WeatherActivity.this, "Region dipilih: " + chosenRegion, Toast.LENGTH_SHORT).show();
+            Toast.makeText(WeatherActivity.this, getString(R.string.weather_region_selected, chosenRegion), Toast.LENGTH_SHORT).show();
             showStationListDialog(chosenRegion);
         });
         builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
@@ -229,7 +229,7 @@ public class WeatherActivity extends Activity {
     private void showStationListDialog(String region) {
         final List<AppLocationManager.Station> stations = AppLocationManager.getStationsForRegion(region);
         if (stations.isEmpty()) {
-            Toast.makeText(this, "Tiada stesen dijumpai bagi " + region, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.weather_no_stations, region), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -245,12 +245,12 @@ public class WeatherActivity extends Activity {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("📍 Pilih Bandar / Stesen (" + region + ")");
+        builder.setTitle(getString(R.string.weather_station_picker_title, region));
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             AppLocationManager.Station picked = stations.get(which);
             AppLocationManager.setStation(WeatherActivity.this, picked);
-            Toast.makeText(WeatherActivity.this, "Menyelaras cuaca " + picked.name + "...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(WeatherActivity.this, getString(R.string.weather_syncing, picked.name), Toast.LENGTH_SHORT).show();
             WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::populateUi);
         });
         builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
