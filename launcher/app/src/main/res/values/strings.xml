@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Home</string>
-    <string name="inputs">Inputs</string>
+    <string name="inputs">Sumber Masukan</string>
     <string name="wifi">Wi-Fi</string>
-    <string name="settings">Settings</string>
-    <string name="choose_input">Inputs</string>
-    <string name="connected">Connected</string>
-    <string name="standby">Standby</string>
-    <string name="not_connected">No device</string>
-    <string name="live_tv">Live TV</string>
-    <string name="no_inputs">No inputs found</string>
+    <string name="settings">Pengaturan</string>
+    <string name="choose_input">Pilih Sumber Masukan</string>
+    <string name="connected">Terhubung</string>
+    <string name="standby">Siaga</string>
+    <string name="not_connected">Tidak ada perangkat</string>
+    <string name="live_tv">Siaran TV</string>
+    <string name="no_inputs">Sumber masukan tidak ditemukan</string>
     <string name="ethernet">Ethernet</string>
-    <string name="offline">Offline</string>
-    <string name="not_available">Not available on this TV</string>
+    <string name="offline">Luring</string>
+    <string name="not_available">Tidak tersedia di TV ini</string>
     <string name="cant_open">Can\'t open %1$s</string>
     <string name="date_format">d MMM yyyy</string>
-    <string name="dream_name">Nightstand Screensaver</string>
+    <string name="dream_name">Tampilan Jam Istirahat</string>
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN off</string>
-    <string name="home_settings">Default home</string>
+    <string name="home_settings">Layar utama bawaan</string>
     <string name="home_settings_help">Choose a home screen in system settings, then press Home.</string>
     <string name="input_key_service_description">Opens the input switcher when the remote\'s Input button is pressed.</string>
-    <string name="home_key_name">Home button</string>
+    <string name="home_key_name">Tombol Home</string>
     <string name="home_key_description">Makes the remote\'s Home button open this launcher.</string>
     <string name="card_prompt_title">New card from %1$s</string>
     <string name="card_prompt_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app\'s normal tile as it is.</string>
@@ -42,6 +42,6 @@
     <string name="card_state_new">New</string>
     <string name="card_state_new_key">New key</string>
     <string name="card_state_new_label">New name</string>
-    <string name="tile_move">Move</string>
-    <string name="tile_app_info">App info</string>
+    <string name="tile_move">Pindahkan</string>
+    <string name="tile_app_info">Info aplikasi</string>
 </resources>

@@ -7,9 +7,8 @@ import java.util.Locale;
 
 /**
  * Multi-language support for Glass TV Home:
- * - Bahasa Melayu (ms) [Default]
+ * - Bahasa Indonesia (id) [Default]
  * - English (en)
- * - Bahasa Indonesia (id)
  */
 final class AppLanguage {
     public static final String LANG_MS = "ms"; // Bahasa Melayu
@@ -39,9 +38,10 @@ final class AppLanguage {
 
     public static void setLanguage(Context ctx, String lang) {
         if (ctx == null || lang == null) return;
+        String normalized = LANG_EN.equalsIgnoreCase(lang) ? LANG_EN : LANG_ID;
         ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()
-                .putString(KEY_LANG, lang)
+                .putString(KEY_LANG, normalized)
                 .apply();
     }
 
@@ -212,7 +212,7 @@ final class AppLanguage {
     public static String strSettingsSearch(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Search";
-            case LANG_ID: return "Cari";
+            case LANG_ID: return "Cari menu";
             case LANG_MS: default: return "Cari";
         }
     }
@@ -284,7 +284,7 @@ final class AppLanguage {
     public static String strStatusBarWeather(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Status Bar & Weather";
-            case LANG_ID: return "Bilah Status & Cuaca";
+            case LANG_ID: return "Widget & Informasi";
             case LANG_MS: default: return "Bar Status & Cuaca";
         }
     }
@@ -292,7 +292,7 @@ final class AppLanguage {
     public static String strStandByMode(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "StandBy Mode";
-            case LANG_ID: return "Mode StandBy";
+            case LANG_ID: return "Layar Siaga";
             case LANG_MS: default: return "Mod StandBy";
         }
     }
@@ -323,6 +323,20 @@ final class AppLanguage {
 
     public static String strTv(Context ctx) {
         return "TV";
+    }
+
+    public static String strDeviceSettings(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Device Settings";
+            case LANG_ID: default: return "Pengaturan Perangkat";
+        }
+    }
+
+    public static String strVisualEffects(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Animations & Effects";
+            case LANG_ID: default: return "Animasi & Efek";
+        }
     }
 
     public static String strBack(Context ctx) {

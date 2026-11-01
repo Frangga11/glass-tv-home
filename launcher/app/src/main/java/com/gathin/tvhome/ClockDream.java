@@ -1,12 +1,14 @@
 package com.gathin.tvhome;
 
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.service.dreams.DreamService;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -34,7 +36,19 @@ public class ClockDream extends DreamService {
     private TextView hijri;
     private TextView prayer;
     private TextView hint;
+    private ImageView photoView;
+    private View photoScrim;
+    private String photoUriShown = "";
     private long dreamStartTime = 0;
+
+    private final Runnable photoTick = new Runnable() {
+        @Override public void run() {
+            if (dreamStartTime > 0) {
+                updatePhoto();
+                handler.postDelayed(this, StandbyPhotoStore.ROTATION_INTERVAL_MS);
+            }
+        }
+    };
 
     private final Runnable tick = new Runnable() {
         @Override
@@ -75,6 +89,8 @@ public class ClockDream extends DreamService {
         hijri = findViewById(R.id.nightstandHijri);
         prayer = findViewById(R.id.nightstandPrayer);
         hint = findViewById(R.id.nightstandHint);
+        photoView = findViewById(R.id.nightstandPhoto);
+        photoScrim = findViewById(R.id.nightstandPhotoScrim);
 
         updateNightstand();
     }
@@ -83,6 +99,7 @@ public class ClockDream extends DreamService {
     public void onDreamingStarted() {
         super.onDreamingStarted();
         dreamStartTime = android.os.SystemClock.elapsedRealtime();
+        updatePhoto();
         if (content != null) {
             content.setAlpha(0f);
             content.post(() -> {
@@ -92,12 +109,17 @@ public class ClockDream extends DreamService {
             });
         }
         handler.postDelayed(tick, MOVE_MS);
+        handler.removeCallbacks(photoTick);
+        handler.postDelayed(photoTick, StandbyPhotoStore.ROTATION_INTERVAL_MS);
     }
 
     @Override
     public void onDreamingStopped() {
         dreamStartTime = 0;
         handler.removeCallbacks(tick);
+        handler.removeCallbacks(photoTick);
+        if (photoView != null) photoView.setImageDrawable(null);
+        photoUriShown = "";
         super.onDreamingStopped();
     }
 
@@ -105,7 +127,49 @@ public class ClockDream extends DreamService {
     public void onDetachedFromWindow() {
         dreamStartTime = 0;
         handler.removeCallbacks(tick);
+        handler.removeCallbacks(photoTick);
+        if (photoView != null) photoView.setImageDrawable(null);
+        photoUriShown = "";
         super.onDetachedFromWindow();
+    }
+
+    private void updatePhoto() {
+        if (photoView == null || photoScrim == null) return;
+        java.util.List<Uri> uris = StandbyPhotoStore.getUris(this);
+        if (!StandbyPhotoStore.isPhotoMode(this) || uris.isEmpty()) {
+            photoView.setImageDrawable(null);
+            photoView.setVisibility(View.GONE);
+            photoScrim.setVisibility(View.GONE);
+            photoUriShown = "";
+            return;
+        }
+
+        int index = StandbyPhotoStore.getCurrentPhotoIndex(uris.size());
+        if (index < 0 || index >= uris.size()) return;
+        Uri uri = uris.get(index);
+        photoView.setVisibility(View.VISIBLE);
+        photoScrim.setVisibility(View.VISIBLE);
+        if (!uri.toString().equals(photoUriShown)) {
+            photoUriShown = uri.toString();
+            StandbyPhotoStore.loadBitmapAsync(this, uri, bitmap -> {
+                if (bitmap == null) {
+                    if (dreamStartTime > 0 && uri.toString().equals(photoUriShown)) {
+                        photoView.setImageDrawable(null);
+                        photoView.setVisibility(View.GONE);
+                        photoScrim.setVisibility(View.GONE);
+                        Log.w(TAG, "Skipping unreadable StandBy photo: " + uri);
+                    }
+                    return;
+                }
+                if (dreamStartTime <= 0 || photoView == null
+                        || !StandbyPhotoStore.isPhotoMode(this)
+                        || !uri.toString().equals(photoUriShown)) {
+                    bitmap.recycle();
+                    return;
+                }
+                photoView.setImageBitmap(bitmap);
+            });
+        }
     }
 
     private void updateNightstand() {

@@ -87,9 +87,9 @@ final class WeeklyAyah {
 
     private WeeklyAyah() {}
 
-    /** Days since 1970 in Malaysian time: the verse changes at midnight. */
+    /** Days since 1970 in Western Indonesian time (WIB): the verse changes at local midnight. */
     static int day() {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Jakarta"));
         return (int) ((c.getTimeInMillis() + c.getTimeZone().getOffset(c.getTimeInMillis())) / 86_400_000L);
     }
 
