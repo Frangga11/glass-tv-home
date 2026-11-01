@@ -206,6 +206,7 @@
     <string name="auto_update_time_selected">Auto-update time set to: %1$s</string>
 
     <string name="standby_photo_required">Choose photos before enabling photo mode.</string>
+    <string name="standby_mode_save_failed">Could not save the Standby mode change. The previous setting remains active.</string>
     <string name="standby_picker_unavailable">The photo picker is not available on this device.</string>
     <string name="standby_clear_failed">Could not clear the photo list. Please try again.</string>
     <string name="standby_list_cleared">The Standby photo list was cleared.</string>

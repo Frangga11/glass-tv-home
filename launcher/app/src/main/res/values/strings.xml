@@ -206,6 +206,7 @@
     <string name="auto_update_time_selected">Waktu pembaruan otomatis diatur ke: %1$s</string>
 
     <string name="standby_photo_required">Pilih foto terlebih dahulu untuk mode foto.</string>
+    <string name="standby_mode_save_failed">Gagal menyimpan perubahan mode Layar Siaga. Pengaturan sebelumnya tetap digunakan.</string>
     <string name="standby_picker_unavailable">Pemilih foto tidak tersedia pada perangkat ini.</string>
     <string name="standby_clear_failed">Gagal mengosongkan daftar foto. Coba lagi.</string>
     <string name="standby_list_cleared">Daftar foto Layar Siaga dikosongkan.</string>
