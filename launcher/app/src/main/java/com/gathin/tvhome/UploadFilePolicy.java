@@ -95,8 +95,8 @@ final class UploadFilePolicy {
     static boolean isSafeStoredImageName(String name) {
         if (name == null || name.length() < 5 || name.length() > 100
                 || name.startsWith(".") || name.contains("..")
-                || name.indexOf('/') >= 0 || name.indexOf('\\\\') >= 0) return false;
-        if (!name.matches("[A-Za-z0-9][A-Za-z0-9_-]{0,79}\\\\.[A-Za-z0-9]{2,5}")) return false;
+                || name.indexOf('/') >= 0 || name.indexOf('\\') >= 0) return false;
+        if (!name.matches("[A-Za-z0-9][A-Za-z0-9_-]{0,79}\\.[A-Za-z0-9]{2,5}")) return false;
         String extension = name.substring(name.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
         return "jpg".equals(extension) || "jpeg".equals(extension)
                 || "png".equals(extension) || "webp".equals(extension) || "gif".equals(extension);
