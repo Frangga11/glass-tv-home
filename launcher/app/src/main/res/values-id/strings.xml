@@ -113,4 +113,10 @@
     <string name="close_all_label">Tutup Semua</string>
     <string name="close_all_description">Tutup semua aplikasi terbaru</string>
     <string name="today_label">Hari ini</string>
+
+    <string name="weather_condition_clear">Cerah</string>
+    <string name="weather_condition_night">Malam Tenang</string>
+    <string name="weather_condition_storm">Ribut Petir</string>
+    <string name="weather_condition_rain">Hujan</string>
+    <string name="weather_condition_cloudy">Mendung</string>
 </resources>
