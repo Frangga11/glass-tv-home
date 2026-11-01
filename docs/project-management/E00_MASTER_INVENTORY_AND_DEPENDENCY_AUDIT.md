@@ -10,7 +10,7 @@
 
 ## 1. Executive disposition
 
-E00 is a documentation and governance reconciliation, not an application refactor. The verified Project D endpoint is D07 at `964163c918e281b68af5cf7114ca56ead2797486`, with PR #31 open, Draft and unmerged. B06–B07, C01–C07 and D01–D07 PRs are also open, Draft and unmerged under D-013. The B04/B05 source integration history is already merged within its earlier chain; this does not mean all B-series work is finally integrated or accepted.
+E00 is a documentation and governance reconciliation, not an application refactor. The verified Project D endpoint is D07 at `964163c918e281b68af5cf7114ca56ead2797486`, with PR #31 open, Draft and unmerged. B01–B03 (#10–#12), B06–B07 (#16–#17), C01–C07 (#18–#24) and D01–D07 (#25–#31) PRs are open, Draft and unmerged under D-013. The B04/B05 source integration history is already merged within its earlier chain; this does not mean all B-series work is finally integrated or accepted.
 
 The E00 document work is prepared on `docs/e00-inventory-reconciliation` for review against `docs/project-master-inventory`. It does not authorize application PR merges, APK publication, installation, or device-setting changes.
 
@@ -19,7 +19,7 @@ The E00 document work is prepared on `docs/e00-inventory-reconciliation` for rev
 | Project | Verified source/PR state | Remaining acceptance |
 |---|---|---|
 | A | A01–A06 recorded DONE; A06 read-only Mi TV Stick snapshot and rollback baseline recorded | E01 resolves the HOME resolver/preferred-activity discrepancy; no device mutation before approved test |
-| B | B01–B07 source/CI work recorded complete; B06 PR #16 and B07 PR #17 open/Draft/unmerged; earlier B04/B05 reconciliation merge chain retained | F-stage integrated navigation, D-pad/focus, lifecycle, localization and device checks |
+| B | B01–B07 source/CI work recorded complete; B01–B03 PR #10–#12 and B06–B07 PR #16–#17 open/Draft/unmerged; B04/B05 PR #13–#15 merged in the earlier reconciliation chain | F-stage integrated navigation, D-pad/focus, lifecycle, localization and device checks |
 | C | C01–C07 source/CI work recorded complete; PR #18–#24 open/Draft/unmerged | F-stage phone-to-TV LAN, QR, upload, retry, expiry, cancellation and storage-isolation acceptance |
 | D | D01–D07 source/CI work recorded complete; PR #25–#31 open/Draft/unmerged | F-stage runtime, profile concurrency, persistence, process-death, force-stop and reboot acceptance |
 | E | E00 inventory/reconciliation in progress; E01–E08 not yet started | Complete source audits/fixes, exact-head CI and cross-project impact records |
@@ -34,11 +34,13 @@ The current remote branch listing returned 36 branches. It includes the immutabl
 
 Verified current Draft PR sequence:
 
+- B01–B03: #10–#12.
+- B04/B05 reconciliation: #13–#15 merged.
 - B06–B07: #16–#17.
 - C01–C07: #18–#24.
 - D01–D07: #25–#31.
 
-All PRs #16–#31 were queried individually on 2 November 2026 and returned OPEN, Draft, not merged. Their source work and exact-head CI evidence are documented in the corresponding PR bodies and audit records. PR #31 identifies D07 final head `964163c918e281b68af5cf7114ca56ead2797486` and exact-final-head CI #404 / run `41313690556` as PASS.
+PR #10–#12 and #16–#31 were queried individually on 2 November 2026 and returned OPEN, Draft, not merged. PR #13–#15 were queried and returned merged. Their source work and exact-head CI evidence are documented in the corresponding PR bodies and audit records. PR #31 identifies D07 final head `964163c918e281b68af5cf7114ca56ead2797486` and exact-final-head CI #404 / run `41313690556` as PASS.
 
 The B04/B05 reconciliation history is not to be rewritten: its earlier merge commits and follow-up CI evidence remain part of the source history. B06 onward remains unmerged under D-013.
 
