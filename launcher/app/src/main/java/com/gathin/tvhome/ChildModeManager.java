@@ -213,7 +213,7 @@ public final class ChildModeManager {
 
         // Title
         TextView tvTitle = new TextView(ctx);
-        tvTitle.setText(title != null ? title : "Keselamatan PIN");
+        tvTitle.setText(title != null ? title : ctx.getString(R.string.security_pin_title));
         tvTitle.setTextSize(19);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(outfit, Typeface.BOLD);
@@ -222,7 +222,7 @@ public final class ChildModeManager {
 
         // Subtitle
         TextView tvSub = new TextView(ctx);
-        tvSub.setText(subtitle != null ? subtitle : "Masukkan PIN 4-digit untuk meneruskan");
+        tvSub.setText(subtitle != null ? subtitle : ctx.getString(R.string.pin_continue_prompt));
         tvSub.setTextSize(13);
         tvSub.setTextColor(0xB3FFFFFF);
         tvSub.setTypeface(outfit, Typeface.NORMAL);
