@@ -222,7 +222,7 @@ public class WeatherActivity extends Activity {
             Toast.makeText(WeatherActivity.this, getString(R.string.weather_region_selected, chosenRegion), Toast.LENGTH_SHORT).show();
             showStationListDialog(chosenRegion);
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
 
@@ -253,7 +253,7 @@ public class WeatherActivity extends Activity {
             Toast.makeText(WeatherActivity.this, getString(R.string.weather_syncing, picked.name), Toast.LENGTH_SHORT).show();
             WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::populateUi);
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
 
