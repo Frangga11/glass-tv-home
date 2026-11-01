@@ -273,3 +273,14 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - Exact-head CI #376 / run `41304430928`: PASS; both jobs SUCCESS. These are two successful runs on the final D01 head.
 - Draft PR #25 remains OPEN/DRAFT/UNMERGED; base is C07 exact head `1cc6d7033daf6f9371805f667467b8860edcfb8f`. No merge performed under D-013.
 - D01 source-audit/CI gate is CLOSED. Runtime/process-death/reboot validation remains deferred to F-stage, not waived. D01-F11 remains assigned to D05/D07 for targeted repair and regression coverage.
+
+
+## Project D execution checkpoint — D02 in progress, 1 November 2026
+
+- D01 is closed for source audit and exact-head CI. D02 is active on isolated branch `feature/d02-settings-ui-propagation`, Draft PR #26, stacked on D01 exact head `cd710681099faece14905faa244f57245bae84d1`.
+- D02 audit report: `D02_SETTINGS_UI_PROPAGATION_AUDIT.md`. The source audit covered Home widgets/effects, prayer panel/Ayah, wallpaper, profile/Child Mode, location/weather, language and cross-Activity return paths.
+- Confirmed D02-F01 and targeted repair: `MainActivity.setStandbyPhotoMode()` now checks the `StandbyPhotoStore.setPhotoMode()` commit result, does not refresh/show success on failure, and emits localized failure feedback. Added matching default/ID/EN resource key. No generic preference listener or broad state refactor.
+- Current D02 head: `3bb4ae592904a49989fd76d7dabd92ed1cebd94b`; PR #26 remains OPEN/DRAFT/UNMERGED under D-013.
+- Exact-head CI #380 / `41305432110` and #381 / `41305453205` are IN PROGRESS on that exact head. Do not close D02 until at least one full run passes both jobs and the final branch/PR head is reverified.
+- D01-F11 remains open for the separate upload metadata/mode atomicity repair and regression tests in D05/D07. No APK publication/installation or device setting change.
+- Next: monitor exact-head CI, inspect any failures, then record final D02 status and proceed to D03.
