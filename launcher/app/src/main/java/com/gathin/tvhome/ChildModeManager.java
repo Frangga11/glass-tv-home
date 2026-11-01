@@ -97,23 +97,29 @@ public final class ChildModeManager {
 
     public static void setChildModeEnabled(Context ctx, boolean enabled) {
         if (ctx == null) return;
-        setChildModeEnabled(ctx, activeProfileId(ctx), enabled);
+        synchronized (ChildModeManager.class) {
+            setChildModeEnabled(ctx, activeProfileId(ctx), enabled);
+        }
     }
 
     public static void setChildModeEnabled(Context ctx, String profileId, boolean enabled) {
         if (ctx == null || profileId == null) return;
-        profilePrefs(ctx).edit().putBoolean(profileKey(profileId, KEY_ENABLED), enabled).apply();
+        synchronized (ChildModeManager.class) {
+            profilePrefs(ctx).edit().putBoolean(profileKey(profileId, KEY_ENABLED), enabled).apply();
+        }
     }
 
     /** Removes only this profile's restrictions; the shared parent PIN is preserved. */
     public static void clearProfileSettings(Context ctx, String profileId) {
         if (ctx == null || profileId == null) return;
-        SharedPreferences sp = profilePrefs(ctx);
-        sp.edit()
-                .remove(profileKey(profileId, KEY_ENABLED))
-                .remove(profileKey(profileId, KEY_LOCKED_APPS))
-                .remove(profileKey(profileId, KEY_HIDDEN_APPS))
-                .apply();
+        synchronized (ChildModeManager.class) {
+            SharedPreferences sp = profilePrefs(ctx);
+            sp.edit()
+                    .remove(profileKey(profileId, KEY_ENABLED))
+                    .remove(profileKey(profileId, KEY_LOCKED_APPS))
+                    .remove(profileKey(profileId, KEY_HIDDEN_APPS))
+                    .apply();
+        }
     }
 
     public static String getPin(Context ctx) {
