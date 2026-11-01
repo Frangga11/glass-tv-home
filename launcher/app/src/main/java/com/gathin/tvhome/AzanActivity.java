@@ -40,6 +40,11 @@ public class AzanActivity extends Activity {
     private boolean shown;
 
     @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Over the screensaver too: turn the screen on and come in front of it.
