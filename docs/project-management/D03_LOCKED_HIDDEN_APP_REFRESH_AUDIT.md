@@ -1,7 +1,7 @@
 # D03 — Locked/Hidden App UI Refresh Audit
 
 Date: 1 November 2026  
-Status: IMPLEMENTED; exact-head CI pending  
+Status: IMPLEMENTED; CI passed on implementation head; final documentation-head CI pending  
 Branch: `feature/d03-locked-app-ui-refresh`  
 Parent: D02 exact head `2dbfcc181651184914422ad0697a3c5c27d15614`
 
@@ -40,7 +40,11 @@ Only `ModernSettingsDialog.java` is changed for application source. No preferenc
 - Source diff from D02 parent: one Java file, 16 additions / 6 deletions.
 - Parent commit: `2dbfcc181651184914422ad0697a3c5c27d15614`.
 - Implementation commit: `8066268d8533bcf44255d1ac2f1598e0f5fa6b99`.
-- Exact-head CI: pending at report creation; do not mark D03 closed until both required workflow jobs succeed on the final head.
+- Implementation-head CI: workflow run #384 / run ID `41306321673`, both jobs PASS on implementation head `2bdb4640c68324d8fd1fa69dcd0728d619a79fe9`.
+- `testReleaseUnitTest` and `assembleRelease`: PASS (`BUILD SUCCESSFUL`).
+- Release APK: `1,550,761 bytes` (1,514 KB), below the `1,572,864-byte` / 1.5 MiB cap by `22,103 bytes`.
+- APK publication step: SKIPPED (manual opt-in not requested).
+- The audit report update creates a new final branch head; exact-head CI must pass on that resulting documentation head before D03 source/CI gates are closed.
 - No APK publication/installation, device setting change, or PR merge.
 - The repository currently has JVM unit tests but no app `androidTest` UI harness. Therefore this Android dialog dismissal behavior is not claimed as physically/regression-tested by a UI test. Final TV acceptance must explicitly cover both Done and Back dismissal, both lock and hide pickers, refreshed counts, and home-tile visibility.
 
