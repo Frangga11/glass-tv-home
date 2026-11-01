@@ -288,4 +288,13 @@
     <string name="city_picker_title">📍 Pilih Kota / Stasiun (%1$s)</string>
     <string name="weather_location_selected">Lokasi: %1$s (%2$s)</string>
     <string name="qr_waiting_for_photo">📡 Menunggu foto dikirim dari ponsel...</string>
+
+    <string name="current_user_content_description">Pengguna saat ini: %1$s%2$s</string>
+    <string name="ota_version_subtitle_dynamic">Glass TV Home v%1$s • Mesin Pembaruan Otomatis (OTA)</string>
+    <string name="coffee_thanks">☕ Terima kasih atas dukungan Anda! (@imsomangge)</string>
+    <string name="sound_ps5_option">🎮 PlayStation 5 (Bunyi Default)</string>
+    <string name="sound_switch_option">🕹️ Nintendo Switch (Klik &amp; Snap Pop)</string>
+    <string name="sound_xbox_option">🟩 Xbox Series X/S (Bunyi Harmonis)</string>
+    <string name="sound_off_option">🔇 Matikan Efek Suara</string>
+    <string name="azan_audio_selected">Audio dipilih: %1$s</string>
 </resources>
