@@ -362,4 +362,7 @@
     <string name="weather_animation_setting_description">Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.</string>
     <string name="icon_glow_setting_title">✨ Cahaya Ambient Ikon</string>
     <string name="icon_glow_setting_description">Atur cahaya latar dan perpaduan warna yang mengikuti aplikasi saat dipilih. Terpisah dari animasi ikon, Glass Effect, dan animasi cuaca.</string>
+
+    <string name="security_pin_title">Keamanan PIN</string>
+    <string name="pin_continue_prompt">Masukkan PIN 4 digit untuk meneruskan.</string>
 </resources>
