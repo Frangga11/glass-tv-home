@@ -288,4 +288,13 @@
     <string name="city_picker_title">📍 Choose City / Station (%1$s)</string>
     <string name="weather_location_selected">Location: %1$s (%2$s)</string>
     <string name="qr_waiting_for_photo">📡 Waiting for a photo from your phone...</string>
+
+    <string name="current_user_content_description">Current user: %1$s%2$s</string>
+    <string name="ota_version_subtitle_dynamic">Glass TV Home v%1$s • Automatic Update Engine (OTA)</string>
+    <string name="coffee_thanks">☕ Thank you for your support! (@imsomangge)</string>
+    <string name="sound_ps5_option">🎮 PlayStation 5 (Default Chime)</string>
+    <string name="sound_switch_option">🕹️ Nintendo Switch (Click &amp; Snap Pop)</string>
+    <string name="sound_xbox_option">🟩 Xbox Series X/S (Warm Harmonic Chime)</string>
+    <string name="sound_off_option">🔇 Turn Sound Effects Off</string>
+    <string name="azan_audio_selected">Selected audio: %1$s</string>
 </resources>
