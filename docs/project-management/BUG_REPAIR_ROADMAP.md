@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01–B03 source QC and exact-head CI pass; B04/B05 source audits underway; device testing deferred to F02  
+**Status:** OFFICIALLY APPROVED — A01–A06 complete; B01–B05 source/CI and integration merge chain complete; B06/B07 next; device testing deferred to final F-stage acceptance  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -176,3 +176,13 @@ Useful callback requests:
 - Current B05 implementation: 158-key default/ID/EN resource parity; locale config ID/EN; API 26–32 locale context; Android 13+ app locale synchronization; five user-facing Activity wrappers plus ClockDream; Settings reopen using B01 tab/sidebar persistence; eight launcher layout migrations; partial programmatic profile/PIN/weather/update migration; normalization and resource-parity tests.
 - B05 is NOT source/CI complete: Java hardcoded strings remain in MainActivity, ModernSettingsDialog, WeatherActivity dialogs and other dynamic/error/notification paths. No exact-head CI run was available in the latest Actions query.
 - Keep PR #14 Draft/unmerged. No candidate APK publication/installation or TV setting change. Continue B05 string migration, then exact-head CI and source QC; physical language acceptance belongs to F06.
+
+
+## 8. Latest execution checkpoint — 1 November 2026 (B04/B05 CI and merge completion)
+
+- B04/B05 exact integration CI PASS on `5932cf60e19640bc5fc648f43105f86c8752813c`, run #244 (`41277076284`); both jobs passed. Follow-up PR #13 exact-head CI PASS on `ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`, run `41277353285`.
+- CI findings fixed: Android string apostrophe escaping across default/ID/EN resources; `AppUpdateManager` localized progress message type; `LocalizationResourceParityTest` placeholder-list type.
+- PR #15 merged to B04 branch (`ec5ff4fce06fe0d2daf0e3fc49fe84fef9ad9838`); PR #13 merged to B03 continuation (`d7b76c4a22c9eadffb8171a616283f3ad647d488`). GitHub also reports PR #14 merged (`73817ce41e4ae5b034922f190052a95ac45886d9`). Current B03 continuation head: `d7b76c4a22c9eadffb8171a616283f3ad647d488`.
+- B04/B05 source + CI gate is complete. B01–B05 still require final integrated/physical acceptance in F; do not mark the entire Stage B exit criteria complete until B06/B07 and final acceptance are done.
+- B06 (notification, success/error, loading and timeout feedback) and B07 (activity/dialog lifecycle and restore menu/subtab/focus) remain NOT STARTED. Start B06 first, then B07, from the current B03 continuation head; keep each work unit isolated and CI-gated.
+- Physical/runtime acceptance remains deferred, not waived: API 30/33+ lifecycle/configuration, Activity/DreamService recreation and focus/tab retention, real-phone QR upload over same Wi-Fi, physical TV F02/F06. No APK was published/installed; `publish_device_apk=false`.
