@@ -38,6 +38,14 @@ public class UploadBodyReaderTest {
     }
 
     @Test
+    public void identifiesTransferEncodingForLegacyEndpointSpecificFeedback() {
+        assertTrue(UploadBodyReader.hasTransferEncoding(
+                new String[]{"Transfer-Encoding: chunked"}));
+        assertFalse(UploadBodyReader.hasTransferEncoding(
+                new String[]{"Content-Length: 3"}));
+    }
+
+    @Test
     public void receivesExactlyDeclaredBytesAndLeavesFollowingBytesUnread() throws Exception {
         File target = File.createTempFile("upload-body-", ".test");
         try {
