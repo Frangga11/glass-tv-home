@@ -127,7 +127,8 @@ public class WallpaperUploadServer {
                 return -1L;
             }
         }
-        return count == 1 && length > 0 && length <= maxBytes ? length : -1L;
+        if (count != 1 || length <= 0) return -1L;
+        return length > maxBytes ? -2L : length;
     }
 
     /** Matches a fully parsed request against one exact path, ignoring only its query string. */
@@ -418,7 +419,9 @@ public class WallpaperUploadServer {
             } else if (isRequestToPath(requestLine, "POST", getWallpaperUploadPath())) {
                 long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
 
-                if (contentLength > 0) {
+                if (contentLength == -2L) {
+                    sendTextResponse(out, 413, "Payload Too Large", "Upload exceeds the allowed size", null);
+                } else if (contentLength > 0) {
                     File customDir = new File(context.getFilesDir(), "custom_wallpapers");
                     if (!customDir.exists() && !customDir.mkdirs()) {
                         throw new java.io.IOException("Cannot create wallpaper storage");
@@ -513,6 +516,10 @@ public class WallpaperUploadServer {
 
     private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
         long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
+        if (contentLength == -2L) {
+            sendUploadError(out, 413, localized(R.string.standby_error_photo_size));
+            return;
+        }
         if (contentLength <= 0) {
             sendUploadError(out, 400, localized(R.string.standby_error_photo_size));
             return;
@@ -583,7 +590,7 @@ public class WallpaperUploadServer {
 
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
         byte[] bytes = message.getBytes("UTF-8");
-        String label = status == 500 ? "Internal Server Error" : "Bad Request";
+        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large" : "Bad Request";
         String response = "HTTP/1.1 " + status + " " + label + "\r\n"
                 + "Content-Type: text/plain; charset=UTF-8\r\n"
                 + "Content-Length: " + bytes.length + "\r\n"
