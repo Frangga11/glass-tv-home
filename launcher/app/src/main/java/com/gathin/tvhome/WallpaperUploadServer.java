@@ -1095,7 +1095,7 @@ public class WallpaperUploadServer {
                 "\n" +
                 "      const xhr = new XMLHttpRequest();\n" +
                 "      xhr.open('POST', '" + getWallpaperUploadPath() + "?name=' + encodeURIComponent(selectedFile.name), true);\n" +
-                "      xhr.timeout = 600000;\\n" +
+                "      xhr.timeout = 600000;\n" +
                 "      xhr.setRequestHeader('Content-Type', selectedFile.type || 'image/jpeg');\n" +
                 "\n" +
                 "      xhr.upload.onprogress = (e) => {\n" +
@@ -1122,7 +1122,7 @@ public class WallpaperUploadServer {
                 "        showError('" + jsText(R.string.wallpaper_page_connection_error) + "');\n" +
                 "      };\n" +
                 "\n" +
-                "      xhr.ontimeout = () => { showError(\'" + jsText(R.string.wallpaper_page_upload_timeout) + "\'); };\\n" +
+                "      xhr.ontimeout = () => { showError(\'" + jsText(R.string.wallpaper_page_upload_timeout) + "\'); };\n" +
                 "      xhr.send(selectedFile);\n" +
                 "    }\n" +
                 "\n" +
