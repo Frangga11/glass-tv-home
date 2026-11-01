@@ -96,3 +96,20 @@ Final B04/B05 integration chain is complete and CI-gated. Runtime/device/QR/phys
 | Device/runtime acceptance | DEFERRED | Final overall acceptance only; not waived and must not be recorded as PASS before performed. |
 
 No B06 source implementation has started. This policy approval and branch setup do not constitute B06 completion or merge readiness.
+
+
+## Deferred grouped merge decision — 1 November 2026
+
+**Decision:** D-013 / policy GTVH-MQP-001 v1.1 — APPROVED / ACTIVE.
+
+| Control | Status | Rule |
+|---|---|---|
+| Stage merges from B06 onward | DEFERRED BY DECISION | No merge to integration while A–G audits/fixes remain active. |
+| Verification during development | REQUIRED | Continue scoped audits, regression tests, static QC, builds, and exact-head CI; only merge is deferred. |
+| Feature branch strategy | REQUIRED | Keep work isolated, traceable, and dependency-ordered; retain Draft PRs as review records. |
+| `integration/b-series` | RESERVED | Final grouped integration/staging destination; do not use as a rolling merge target. |
+| Grouped integration | PENDING | After A–G source work is complete: freeze heads, audit combined diff, merge coherent dependency groups, run exact-head CI and cross-group regression. |
+| Final `main` merge | PENDING | Only after final acceptance and explicit user approval. |
+| Final APK | PENDING | Build from exact approved `main` SHA; record version, artifact, workflow run, and SHA-256. A separately labelled test candidate may be required for physical acceptance. |
+
+This timing decision supersedes the rolling stage-merge schedule previously recorded under D-012. It does not relax any quality gate or waive final device/runtime acceptance.
