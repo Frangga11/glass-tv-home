@@ -594,7 +594,7 @@ public class WallpaperUploadServer {
             }
         }
 
-        String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
+        String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
         byte[] bytes = json.getBytes("UTF-8");
         String response = "HTTP/1.1 200 OK\r\n"
                 + "Content-Type: application/json; charset=UTF-8\r\n"
@@ -655,6 +655,9 @@ public class WallpaperUploadServer {
                 + "xhr.open('POST',endpoint,true);xhr.timeout=" + NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS + ";xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
                 + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
                 + "xhr.onload=()=>{activeXhr=null;cancel.hidden=true;if(xhr.status>=200&&xhr.status<300){uploaded++;i++;next();return;}"
+                + "if(xhr.status===410){status.textContent=xhr.responseText||'Upload session expired. Generate a new QR code on TV.';send.disabled=true;return;}"
+                + "if(xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'Server unavailable. Retry this photo.';send.disabled=false;return;}"
+                + "failed++;i++;next();};"
                 + "if(xhr.status===410){status.textContent=xhr.responseText||'Upload session expired. Scan a new QR code.';send.disabled=true;return;}"
                 + "if(xhr.status===408||xhr.status===429||xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'Upload interrupted. Press retry to resume this photo.';send.disabled=false;return;}"
                 + "failed++;i++;next();};"
