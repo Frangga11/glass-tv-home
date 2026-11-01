@@ -1,9 +1,12 @@
 # E01 — Device Settings and HOME Launcher Audit
 
-**Status:** Source corrections in progress; exact-head CI and device acceptance pending.  
+**Status:** Source audit/corrections complete; exact-head CI passed. Physical-device acceptance remains pending.  
 **Base:** D07 final head `964163c918e281b68af5cf7114ca56ead2797486`.  
 **Branch:** `feature/e01-device-settings-home-control`.  
-**Policy:** Draft / open / unmerged. No canonical integration merge or release approval.
+**Policy:** PR #34 remains Draft / open / unmerged. No canonical integration merge or release approval.
+**Verified source head:** `ac46f8d74172cd63c62b3fbe6e7082e2f3bc4b8b`.
+**CI:** Workflow run `41363727217` — Android release build, unit tests, docs checks and APK budget all PASS.
+**APK diagnostic size:** 1,559,445 bytes; cap 1,572,864 bytes; headroom 13,419 bytes. Diagnostic only; no APK artifact was published.
 
 ## Scope
 
@@ -27,7 +30,7 @@ Audit and improve the complete **Pengaturan Perangkat** tab: HOME launcher selec
 - Reworked the Device tab into clearer sections for HOME/remote/accessibility, display/standby, maintenance, device information, system settings and updates.
 - Added separate live status cards for HomeKeyService, InputKeyService and Now Playing notification access. Each opens the corresponding Android user-managed settings page; no service is enabled by the app.
 - Added a native Android screensaver settings entry with display-settings fallback. Internal Glass TV StandBy behavior remains app-owned and unchanged.
-- Improved HOME dialog with the resolved launcher label, detected HOME candidates, explicit system picker fallback, an ADB command copy action, an in-dialog status refresh action, and a QR-guided phone-installer download flow.
+- Improved HOME dialog with the resolved launcher label, detected HOME candidates, explicit system picker fallback, an ADB command copy action, an in-dialog status refresh action, and a QR-guided phone-installer download flow. ADB guidance is labelled advanced and explicitly warns against manually disabling the stock launcher; the installer is the guarded route.
 - Fixed restart to use the system power dialog instead of misusing accessibility global-action ID 12.
 - Made restart feedback accurately state that the power menu was opened and manual selection may be needed on unsupported firmware.
 - Made manual cache-clean result explicitly report whether Android system caches were actually trimmed.
@@ -44,7 +47,7 @@ Audit and improve the complete **Pengaturan Perangkat** tab: HOME launcher selec
 
 ## Verification and acceptance boundary
 
-- [ ] Exact-head CI: Android build, JVM unit tests, documentation checks.
+- [x] Exact-head CI: Android build, JVM unit tests, documentation checks and APK size budget — PASS at `ac46f8d74172cd63c62b3fbe6e7082e2f3bc4b8b`.
 - [ ] Review HOME query visibility and launcher candidate rendering on Android 11 and newer.
 - [ ] Verify the phone-installer QR destination and downloaded APK version before public release.
 - [ ] Verify HOME picker fallback on OEM firmware; no device HOME default was changed during source work.
@@ -52,6 +55,6 @@ Audit and improve the complete **Pengaturan Perangkat** tab: HOME launcher selec
 - [ ] Verify restart and power menu labels on target TV; unsupported OEM labels must fall back to manual user selection.
 - [ ] Verify cache-clean feedback for both successful ADB trim and unavailable/declined ADB.
 - [ ] Inspect full Device tab and all dialog focus paths with a TV remote; visual/device acceptance remains in Stage F.
-- [ ] Recheck APK size against the existing 1.5 MiB cap.
+- [x] Recheck APK size against the existing 1.5 MiB cap — 1,559,445 bytes, 13,419 bytes below cap.
 
-No TV settings, package states, HOME defaults, APK installation, or physical-device actions were changed or performed as part of this source work. No APK is being published. E01 remains unaccepted until the checks above are completed.
+No TV settings, package states, HOME defaults, APK installation, or physical-device actions were changed or performed as part of this source work. The PR workflow did not publish an APK. E01 source work is ready for the F-stage physical/visual acceptance checks; do not mark the complete project accepted until those checks pass.
