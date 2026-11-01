@@ -348,4 +348,18 @@
     <string name="precipitation_summary">Saat ini • peluang hujan %1$d%%</string>
     <string name="limited_visibility">Jarak pandang terbatas</string>
     <string name="good_visibility">Jarak pandang baik</string>
+
+    <string name="parent_controls_section">PENGAWASAN ORANG TUA</string>
+    <string name="child_mode_switch_title">🛡️ Status Mode Anak</string>
+    <string name="child_mode_switch_description">Kunci aplikasi dengan PIN 4 digit atau sembunyikan aplikasi dari layar utama.</string>
+    <string name="child_mode_pin_confirm_title">Sahkan PIN Keamanan</string>
+    <string name="child_mode_pin_confirm_message">Masukkan PIN 4 digit untuk mengubah mode ini.</string>
+    <string name="icon_animation_setting_title">🎞️ Animasi Ikon &amp; Fokus Aplikasi</string>
+    <string name="icon_animation_setting_description">Aktifkan atau matikan gerakan zoom dan transisi label saat berpindah aplikasi. Tidak memengaruhi animasi cuaca atau efek kaca.</string>
+    <string name="glass_effect_setting_title">🪟 Glass Effect</string>
+    <string name="glass_effect_setting_description">Aktifkan atau matikan material kaca buram, lapisan transparan, dan garis tepi pada dock serta tombol. Penanda fokus remote tetap berfungsi.</string>
+    <string name="weather_animation_setting_title">🌧️ Animasi Cuaca pada Wallpaper</string>
+    <string name="weather_animation_setting_description">Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.</string>
+    <string name="icon_glow_setting_title">✨ Cahaya Ambient Ikon</string>
+    <string name="icon_glow_setting_description">Atur cahaya latar dan perpaduan warna yang mengikuti aplikasi saat dipilih. Terpisah dari animasi ikon, Glass Effect, dan animasi cuaca.</string>
 </resources>
