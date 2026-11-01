@@ -551,7 +551,7 @@ public class WallpaperUploadServer {
 
         File targetFile = File.createTempFile("standby_", ".upload", standbyDir);
         boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
-        UploadFilePolicy.ImageFormat imageFormat = complete
+        UploadFilePolicy.ImageFormat imageFormat = complete && isSessionActive()
                 ? validateImageFile(targetFile, lines) : null;
 
         if (!complete || imageFormat == null) {
