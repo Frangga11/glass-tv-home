@@ -156,7 +156,7 @@ final class StandbyPhotoStore {
         int skipped = 0;
         if (additions != null) {
             for (String value : additions) {
-                if (TextUtils.isEmpty(value) || !unique.add(value)) continue;
+                if (value == null || value.isEmpty() || !unique.add(value)) continue;
                 if (merged.size() >= Math.max(0, limit)) {
                     skipped++;
                     continue;
