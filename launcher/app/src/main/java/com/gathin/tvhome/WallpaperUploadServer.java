@@ -51,6 +51,7 @@ public class WallpaperUploadServer {
     private final boolean standbyOnly;
     private final String sessionToken = UUID.randomUUID().toString().replace("-", "");
     private ServerSocket serverSocket;
+    private String boundIpAddress;
     private volatile boolean running = false;
     private final Set<Socket> activeClients = Collections.synchronizedSet(new java.util.HashSet<>());
     private Thread serverThread;
@@ -163,20 +164,39 @@ public class WallpaperUploadServer {
     }
 
     public int getPort() {
-        if (serverSocket != null && serverSocket.isBound()) {
+        if (serverSocket != null && serverSocket.isBound() && !serverSocket.isClosed()) {
             return serverSocket.getLocalPort();
         }
         return port;
     }
 
+    /** The exact interface address this server is listening on; null when it is not started. */
+    public String getBoundIpAddress() {
+        return boundIpAddress;
+    }
+
     public synchronized boolean start() {
         if (running) return true;
+        String selectedIp = getLocalIpAddress();
+        if (selectedIp == null || selectedIp.trim().isEmpty() || "127.0.0.1".equals(selectedIp)) {
+            Log.e(TAG, "No usable local IPv4 interface for upload server");
+            return false;
+        }
+        final InetAddress bindAddress;
+        try {
+            bindAddress = InetAddress.getByName(selectedIp);
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot resolve local upload interface", e);
+            return false;
+        }
+
         int[] candidatePorts = new int[]{port, 8080, 8888, 8081, 9090, 0};
         for (int p : candidatePorts) {
             try {
                 serverSocket = new ServerSocket();
                 serverSocket.setReuseAddress(true);
-                serverSocket.bind(new InetSocketAddress(p));
+                serverSocket.bind(new InetSocketAddress(bindAddress, p));
+                boundIpAddress = selectedIp;
                 this.port = serverSocket.getLocalPort();
                 running = true;
                 break;
@@ -240,8 +260,10 @@ public class WallpaperUploadServer {
             serverThread.start();
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to launch server thread: " + e.getMessage());
+            Log.e(TAG, "Failed to launch server thread: " + e.getMessage(), e);
             running = false;
+            try { if (serverSocket != null) serverSocket.close(); } catch (Exception ignored) {}
+            boundIpAddress = null;
             return false;
         }
     }
@@ -257,6 +279,7 @@ public class WallpaperUploadServer {
             serverThread.interrupt();
             serverThread = null;
         }
+        boundIpAddress = null;
         synchronized (activeClients) {
             for (Socket client : activeClients) {
                 try {
@@ -392,13 +415,8 @@ public class WallpaperUploadServer {
                         throw e;
                     }
 
-                    // Verify the actual bytes before exposing the file to Home.
-                    BitmapFactory.Options bounds = new BitmapFactory.Options();
-                    bounds.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile(targetFile.getAbsolutePath(), bounds);
-                    boolean validImage = bounds.outWidth > 0 && bounds.outHeight > 0
-                            && bounds.outWidth <= 16384 && bounds.outHeight <= 16384
-                            && (long) bounds.outWidth * (long) bounds.outHeight <= 100_000_000L;
+                    // Verify the actual image can be decoded before exposing it to Home.
+                    boolean validImage = isValidImageFile(targetFile);
 
                     if (!complete || !validImage) {
                         targetFile.delete();
@@ -446,6 +464,31 @@ public class WallpaperUploadServer {
         }
     }
 
+    /** Rejects malformed/truncated image payloads as well as excessive dimensions. */
+    private static boolean isValidImageFile(File file) {
+        if (file == null || !file.isFile()) return false;
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), bounds);
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0
+                || bounds.outWidth > 16384 || bounds.outHeight > 16384
+                || (long) bounds.outWidth * (long) bounds.outHeight > 100_000_000L) {
+            return false;
+        }
+        BitmapFactory.Options verify = new BitmapFactory.Options();
+        int sample = 1;
+        while (bounds.outWidth / (sample * 2) > 512
+                || bounds.outHeight / (sample * 2) > 512) {
+            sample *= 2;
+        }
+        verify.inSampleSize = sample;
+        verify.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap decoded = BitmapFactory.decodeFile(file.getAbsolutePath(), verify);
+        if (decoded == null) return false;
+        decoded.recycle();
+        return true;
+    }
+
     private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
         long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
         if (contentLength <= 0) {
@@ -481,12 +524,7 @@ public class WallpaperUploadServer {
             throw e;
         }
 
-        BitmapFactory.Options bounds = new BitmapFactory.Options();
-        bounds.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(targetFile.getAbsolutePath(), bounds);
-        boolean validImage = bounds.outWidth > 0 && bounds.outHeight > 0
-                && bounds.outWidth <= 16384 && bounds.outHeight <= 16384
-                && (long) bounds.outWidth * (long) bounds.outHeight <= 100_000_000L;
+        boolean validImage = isValidImageFile(targetFile);
 
         if (!complete || !validImage) {
             targetFile.delete();
