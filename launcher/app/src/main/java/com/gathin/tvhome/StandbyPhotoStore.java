@@ -108,7 +108,12 @@ final class StandbyPhotoStore {
         if (!isManagedFile(context, Uri.fromFile(imageFile))) return UploadResult.REJECTED;
         List<Uri> uris = getUris(context);
         Uri uploaded = Uri.fromFile(imageFile);
-        if (uris.contains(uploaded)) return UploadResult.ALREADY_PRESENT;
+        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (uris.contains(uploaded)) {
+            String existingUris = TextUtils.join("\n", toUriStrings(uris));
+            return commitUploadedState(preferences, existingUris)
+                    ? UploadResult.ALREADY_PRESENT : UploadResult.PERSISTENCE_FAILED;
+        }
         if (uris.size() >= MAX_PHOTO_COUNT) return UploadResult.REJECTED;
         if (getUploadedBytes(context) + imageFile.length() > MAX_UPLOADED_BYTES) return UploadResult.REJECTED;
         if (context.getFilesDir().getUsableSpace() < MIN_FREE_BYTES) return UploadResult.REJECTED;
@@ -116,7 +121,6 @@ final class StandbyPhotoStore {
 
         // Collection membership and the mode that consumes it are one durable state transition.
         String serializedUris = TextUtils.join("\n", toUriStrings(uris));
-        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         return commitUploadedState(preferences, serializedUris)
                 ? UploadResult.ADDED : UploadResult.PERSISTENCE_FAILED;
     }
