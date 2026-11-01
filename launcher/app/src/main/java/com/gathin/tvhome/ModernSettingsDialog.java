@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -33,6 +34,8 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.gathin.tvhome.qrcode.QrBitmapUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -2013,7 +2016,7 @@ public final class ModernSettingsDialog {
         LinearLayout btnPhone = buildCardRow(activity, density, font,
                 activity.getString(R.string.phone_installer_title),
                 activity.getString(R.string.phone_installer_summary),
-                () -> TvFeedback.show(activity, R.string.installer_phone_hint, Toast.LENGTH_LONG));
+                () -> showPhoneInstallerDialog(activity, density, font));
         root.addView(btnPhone);
 
         LinearLayout btnRefresh = buildCardRow(activity, density, font,
@@ -2071,6 +2074,68 @@ public final class ModernSettingsDialog {
         }
 
         btnSettings.requestFocus();
+    }
+
+    private static void showPhoneInstallerDialog(MainActivity activity, float density, Typeface font) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        final String downloadPage = "https://github.com/Frangga11/glass-tv-home/tree/main/release";
+
+        LinearLayout content = new LinearLayout(activity);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setGravity(Gravity.CENTER_HORIZONTAL);
+        content.setPadding((int) (24 * density), (int) (18 * density),
+                (int) (24 * density), (int) (10 * density));
+
+        TextView hint = new TextView(activity);
+        hint.setText(R.string.phone_installer_qr_hint);
+        hint.setTextSize(13f);
+        hint.setTextColor(0xFFE2E8F0);
+        hint.setTypeface(font, Typeface.NORMAL);
+        hint.setGravity(Gravity.CENTER);
+        content.addView(hint);
+
+        Bitmap qr = QrBitmapUtil.createQrBitmap(downloadPage, (int) (220 * density));
+        if (qr != null) {
+            ImageView qrView = new ImageView(activity);
+            qrView.setImageBitmap(qr);
+            qrView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            qrView.setBackgroundColor(Color.WHITE);
+            qrView.setPadding((int) (8 * density), (int) (8 * density),
+                    (int) (8 * density), (int) (8 * density));
+            LinearLayout.LayoutParams qrLp = new LinearLayout.LayoutParams(
+                    (int) (236 * density), (int) (236 * density));
+            qrLp.topMargin = (int) (12 * density);
+            qrLp.bottomMargin = (int) (12 * density);
+            content.addView(qrView, qrLp);
+        }
+
+        TextView steps = new TextView(activity);
+        steps.setText(activity.getString(R.string.phone_installer_steps)
+                + "\\n\\n" + downloadPage);
+        steps.setTextSize(12.5f);
+        steps.setTextColor(0xFFCBD5E1);
+        steps.setTypeface(font, Typeface.NORMAL);
+        steps.setLineSpacing(0, 1.15f);
+        content.addView(steps);
+
+        AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                .setTitle(R.string.phone_installer_title)
+                .setView(content)
+                .setPositiveButton(R.string.close_label, (d, which) -> d.dismiss())
+                .create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            int width = Math.min((int) (560 * density),
+                    (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.88f));
+            int height = Math.min((int) (620 * density),
+                    (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
+            window.setLayout(width, height);
+            window.setGravity(Gravity.CENTER);
+        }
+        Button close = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (close != null) close.requestFocus();
     }
 
     private static void openDeviceSettingsOrFeedback(Context context, Intent... intents) {
