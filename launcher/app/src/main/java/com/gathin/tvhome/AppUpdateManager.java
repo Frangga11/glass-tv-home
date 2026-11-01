@@ -340,7 +340,7 @@ public final class AppUpdateManager {
                 }
                 fos.flush();
                 fos.getFD().sync();
-                if (total <= 0 || (fileLength > 0 && total != fileLength)) {
+                if (!NetworkFeedbackPolicy.isCompleteDownload(total, fileLength)) {
                     throw new java.io.IOException("Unduhan APK tidak lengkap");
                 }
 
