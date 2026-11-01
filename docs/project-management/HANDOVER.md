@@ -304,3 +304,32 @@
 3. Verify XML well-formedness, key parity, placeholder parity, and all resource references; inspect AppLanguage/LocaleContext and Activity/DreamService lifecycle behavior.
 4. Trigger exact-head CI (the connected GitHub actions available in this session only exposed run/job inspection, not workflow dispatch). Keep the manual artifact publication input disabled; inspect tests, release build, size guard, and Lists/tools/docs job.
 5. Update PR #14 description and audit/operations records only after evidence. Keep PR Draft/unmerged. No APK publication/install, TV settings change, or physical device testing until A–E and F regression gates are complete and user explicitly approves readiness.
+
+
+## Latest handover — B04/B05 reconciled source checkpoint — 1 November 2026
+
+### Current GitHub state
+- PR #13 B04 head `baf0e7dad2dfa28a9f79c7bb25a58502243f04ae`: exact-head CI #242 PASS; seven-file responsive-layout source scope. F02 physical viewport acceptance remains pending.
+- PR #14 B05 head `04cf544ca240e32a87baef525f266f3d038ff668`: no exact-head CI evidence.
+- Integration branch `integration/b04-b05-reconciled`; current head `9476b4da24efffc328430533c298acdcc6866ab8`; Draft PR #15 targets B04. Two-parent integration commit `73817ce41e4ae5b034922f190052a95ac45886d9` preserves both original histories.
+- B04/B05 overlap manually reconciled in ClockDream, RecentAppsActivity, item_recent_close_all.xml, and view_nightstand.xml. B04-only adapter/helper/tests retained.
+
+### Completed in this checkpoint
+- B04 source review and exact-head CI verification.
+- Selective B04+B05 integration branch and Draft PR #15; no source PR was merged.
+- Additional high-traffic localization fixes in Home, Auto-Update, Adhan popup, media playback, wallpaper shuffle, Child Mode/effect feedback, hide/lock dialog, and Weather UV/precipitation/visibility.
+- Static resource audit: 345 keys in default/ID/EN; identical key sets; no duplicates or placeholder mismatches; no missing R.string references in the three audited Java files.
+
+### Remaining / do not close
+- Complete ModernSettingsDialog hardcoded user-facing text sweep, including profile, wallpaper, StandBy, device/system, OTA, and launcher guidance.
+- Run a complete Java/XML resource-reference scan and validate XML/resource formatting.
+- Exact-head integrated CI is still absent. The connected GitHub actions tools in this session expose run/job inspection and reruns, but no workflow-dispatch action; do not report CI PASS without a real run.
+- Review API 30 locale wrapping and Android 13+ LocaleManager behavior, including Activity/DreamService recreation, dialog state, focus, and persisted Settings tab.
+- Physical TV acceptance remains F02/F06. No APK artifact, installation, TV settings change, or merge has occurred.
+
+### Next resume actions
+1. Continue the remaining ModernSettingsDialog and app-wide hardcoded UI text migration on `integration/b04-b05-reconciled`.
+2. Run full locale key/placeholder/reference audit after the last code edit.
+3. Obtain exact-head CI for current PR #15 and inspect both jobs and logs; resolve all failures before readiness.
+4. Review locale lifecycle/focus behavior on Android 11/API 30 and Android 13+; defer physical acceptance to the approved F stage.
+5. Keep PR #13, #14, and #15 unmerged and Draft until all source/CI/regression gates pass.
