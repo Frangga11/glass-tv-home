@@ -584,7 +584,12 @@ public class WallpaperUploadServer {
                     StandbyPhotoStore.addUploadedFile(context, storedFile);
             int responseStatus = standbyUploadResponseStatus(uploadResult);
             if (responseStatus != 200) {
-                storedFile.delete();
+                // commit() can fail after SharedPreferences updates its in-memory map.
+                // Keep the file on persistence failure so a live URI reference cannot dangle;
+                // cleanupOrphanedUploads() removes it after restart if the write was not durable.
+                if (uploadResult != StandbyPhotoStore.UploadResult.PERSISTENCE_FAILED) {
+                    storedFile.delete();
+                }
                 String message = responseStatus == 500
                         ? localized(R.string.standby_error_storage)
                         : localized(R.string.standby_error_collection_storage);
