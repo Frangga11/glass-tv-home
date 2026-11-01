@@ -49,8 +49,9 @@ final class HomeWeather {
         }
     }
 
-    static boolean isCurrentRequest(long requestGeneration, long currentGeneration) {
-        return requestGeneration == currentGeneration;
+    static boolean isCurrentRequest(long requestGeneration, long currentGeneration,
+                                    boolean sameLocation, boolean sameLanguage) {
+        return requestGeneration == currentGeneration && sameLocation && sameLanguage;
     }
 
     private static boolean isCurrentLocation(Context ctx, double lat, double lon) {
@@ -125,9 +126,8 @@ final class HomeWeather {
         synchronized (HomeWeather.class) {
             SharedPreferences preferences = prefs(ctx);
             long currentGeneration = preferences.getLong("request_generation", 0L);
-            if (!isCurrentRequest(requestGeneration, currentGeneration)
-                    || !requestLanguage.equals(AppLanguage.getLanguage(ctx))
-                    || !isCurrentLocation(ctx, lat, lon)) {
+            if (!isCurrentRequest(requestGeneration, currentGeneration,
+                    isCurrentLocation(ctx, lat, lon), requestLanguage.equals(AppLanguage.getLanguage(ctx)))) {
                 return null;
             }
             // A failed try waits for the next round too, rather than asking again every minute.
