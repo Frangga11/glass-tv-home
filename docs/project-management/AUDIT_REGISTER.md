@@ -79,3 +79,20 @@ Final B04/B05 integration chain is complete and CI-gated. Runtime/device/QR/phys
 - QR upload pages use independent JavaScript status strings in `AvatarUploadServer` and `WallpaperUploadServer`; their success/error/connection-lost states need parity review with native TV feedback.
 - Existing transport timeouts are intentionally varied by operation (e.g. OTA check/download, weather fetches, local upload sockets, cache-cleaner socket stages, and power-action timeout). Do not globally normalize transport timeout values: classify them by operation and only standardize user-visible timeout messaging/cleanup.
 - B06 implementation must preserve Indonesian/English locale context, TV D-pad behavior, focus ownership, and existing feature semantics. Audit asynchronous callback ownership and Activity lifecycle before replacing any feedback surface.
+
+
+## Merge and bug-fix quality policy — 1 November 2026
+
+**Policy:** GTVH-MQP-001 v1.0 — APPROVED / ACTIVE. Canonical details: `MERGE_QUALITY_POLICY.md`.
+
+| Control | Status | Evidence / rule |
+|---|---|---|
+| Rolling integration branch | ESTABLISHED | `integration/b-series` created from `d7b76c4a22c9eadffb8171a616283f3ad647d488`. |
+| B06 branch alignment | PASS | `feature/b06-notification-feedback` was created from the same base SHA; its PR must target `integration/b-series`. |
+| Stage merge gate | ACTIVE | Impact/source audit, regression coverage, static/resource QC, required tests, exact-head CI, PR/diff integrity, and evidence record all required. Missing/stale evidence is NOT PASS. |
+| Final main merge | ACTIVE | Only after full integration/regression, final acceptance, release review, and explicit user approval. |
+| Bug-fix audit method | ACTIVE | Reproduce, fault boundary, impact map, scoped dependency audit, root-cause fix, regression test, exact-head verification, close-loop evidence/rollback. |
+| Audit expansion | ACTIVE | Expand for global/shared foundations, cross-module contracts, common infrastructure, build/resources/permissions, or multi-module regressions; otherwise keep audit scoped to affected dependencies. |
+| Device/runtime acceptance | DEFERRED | Final overall acceptance only; not waived and must not be recorded as PASS before performed. |
+
+No B06 source implementation has started. This policy approval and branch setup do not constitute B06 completion or merge readiness.
