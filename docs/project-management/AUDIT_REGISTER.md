@@ -538,3 +538,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Exact Release APK size: `1,561,889 bytes`; budget: `1,572,864 bytes`; remaining headroom: `10,975 bytes`.
 - The targeted Default reselection hero-shelf fix is included in the tested commit. No APK was published or installed; no physical device acceptance is claimed.
 - E03 source + exact-head CI disposition: **PASS / SOURCE FINAL**. Project F retains physical acceptance: offline cold start/restart, image crop/sharpness, remote/focus, Default/online/place/custom, description toggle, Next/shuffle, QR/StandBy isolation and performance. Preserve D-013: PR #36 remains OPEN/DRAFT/UNMERGED; no early merge or release approval.
+
+
+## E04 — StandBy / Screensaver — 2 Nov 2026
+
+- Confirmed duplicate display-off action in `ClockDream`; repaired by removing the unsupported shell `input keyevent 223` and checking the `HomeKeyService.sleepScreen()` result.
+- Source head `7c5e2677eac1c791675d9f5ef7d736eb47d37aca`; Draft PR #37 OPEN/DRAFT/UNMERGED, stacked on E03 exact head `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`.
+- Exact-head CI PENDING. Device/OEM acceptance remains Project F: DreamService vs internal overlay activation, idle/wake, display lock, remote behavior, 2-hour timeout, upload/retry/rotation, lifecycle and offline behavior.
+- Disposition: NOT FINAL. See `E04_STANDBY_SCREENSAVER_AUDIT.md`.
