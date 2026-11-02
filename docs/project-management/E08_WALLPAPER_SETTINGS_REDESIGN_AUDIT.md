@@ -100,3 +100,11 @@ No physical TV, emulator or real-phone acceptance is claimed here. No merge, APK
 E08 source implementation and exact-head CI: PASS.  
 Project F physical acceptance: PENDING.  
 Grouped integration / merge: DEFERRED until the full A–G sequence and explicit user approval.
+
+
+## Final focus-restoration refinement and exact-head verification — 2 Nov 2026
+- Follow-up audit found that toggling Shuffle rebuilt the status panel and could discard the remote's current focus target. The refreshed Shuffle action now explicitly restores focus to its own control, preserving D-pad continuity.
+- Final source/test head: `dcec6afc805a9d7c78702ad8d51b20b87bd751a3`.
+- Exact-head GitHub Actions CI run #695 / `41470304782`: **SUCCESS**. Launcher build/unit tests, `testReleaseUnitTest`, `assembleRelease`, APK-size diagnostic/guard, and Lists/tools/docs all passed.
+- Final release APK diagnostic: 1,565,417 bytes; cap 1,572,864 bytes; headroom 7,447 bytes. APK publication skipped.
+- The feature branch's later audit-report commit is documentation-only; no application source/resources/tests/build inputs changed after the verified source/test head. Project F acceptance remains pending.
