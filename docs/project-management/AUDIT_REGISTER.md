@@ -546,3 +546,10 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Source head `7c5e2677eac1c791675d9f5ef7d736eb47d37aca`; Draft PR #37 OPEN/DRAFT/UNMERGED, stacked on E03 exact head `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`.
 - Exact-head CI PENDING. Device/OEM acceptance remains Project F: DreamService vs internal overlay activation, idle/wake, display lock, remote behavior, 2-hour timeout, upload/retry/rotation, lifecycle and offline behavior.
 - Disposition: NOT FINAL. See `E04_STANDBY_SCREENSAVER_AUDIT.md`.
+
+
+## E04 follow-up — 2 Nov 2026
+
+- Removed app-owned idle timers and display-off commands from DreamService and MainActivity so Android TV retains native idle/StandBy/screensaver/sleep ownership. Commits `75fa1b1` and `08076bb`.
+- StandBy QR upload/photo storage/display path preserved; no changes to E01/E02/E03 assets or storage.
+- Exact-head CI #629 pending; Project F hardware validation outstanding. E04 NOT FINAL; PR #37 remains Draft/unmerged.
