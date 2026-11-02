@@ -605,3 +605,9 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - C07 owner PR #24 head `442b78c68b1540394d543bab59bddf52f865ccf0` passed #41521013896 (both jobs, 18 Python tests / 1 intentional merge-time README count skip, Android unit tests/build, APK 1,550,949 bytes; no artifact).
 - D01 owner PR #51 head `66352838e6155a42a9ea61477643a238f360434f` passed #41506847521 and its manifest/test contract is mirrored in F02.
 - F02 source, owner synchronization, integrated host validation, and audit documentation are complete. Real device/LAN/OEM acceptance remains Project G. PR #50 remains Draft/open/unmerged by the approved staged-merge policy.
+
+
+## F02 final exact-head CI — 3 November 2026
+- Latest documentation-reconciled F02 head `190b698453a96da8ec2db31da2eefac836849a10` passed #41522215859 (both jobs SUCCESS). Python 42 tests / 1 intentional merge-time README count skip; Android unit tests and release build passed.
+- APK 1,565,713 bytes / 1,572,864-byte cap; 7,151 bytes headroom; size gate passed; no artifact.
+- C07 owner #24 and D01 owner #51 exact-head CI also passed. F02 host exit criteria complete; G-only physical acceptance remains deferred.
