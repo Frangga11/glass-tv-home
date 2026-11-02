@@ -2182,7 +2182,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroShelf != null && isWallpaperDescEnabled()) {
             heroShelf.setVisibility(View.VISIBLE);
         }
-        String[] about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
+        String[] about = WallpaperMetadata.describe(picture);
+        if (about == null) {
+            about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
+        }
         String title = about != null ? titleCase(about[0]) : null;
         String overview = about != null ? about[1] : "";
         String country = about != null && about.length > 2 ? about[2] : "";
@@ -4998,11 +5001,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TvFeedback.show(this, getString(R.string.wallpaper_category_selected, displayLabel), Toast.LENGTH_SHORT);
         if ("Default".equalsIgnoreCase(category)) {
             placesMode = false;
-            if (heroShelf != null) {
-                heroShelf.animate().cancel();
-                heroShelf.setAlpha(0f);
-                heroShelf.setVisibility(View.GONE);
-            }
+            // Keep the existing hero shelf state while the bundled image is re-applied.
+            // setPlace() will update it when the metadata changes; hiding it here first
+            // can leave the shelf invisible when Default is selected again with the same title.
             File bundled = getBundledDefaultWallpaper();
             if (bundled != null) {
                 wallpapers = Collections.singletonList(bundled);
