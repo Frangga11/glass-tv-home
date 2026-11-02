@@ -1,6 +1,5 @@
 package com.gathin.tvhome;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -23,7 +22,7 @@ final class TvDialogStyle {
 
     private TvDialogStyle() { }
 
-    static void apply(AlertDialog dialog, Context context, int maxWidthDp, int maxHeightDp) {
+    static void apply(Dialog dialog, Context context, int maxWidthDp, int maxHeightDp) {
         if (dialog == null || context == null) return;
         Window window = dialog.getWindow();
         if (window == null) return;
