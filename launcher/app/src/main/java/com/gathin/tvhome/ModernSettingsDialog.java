@@ -1913,8 +1913,8 @@ public final class ModernSettingsDialog {
         scroll.setClipToPadding(false);
         scroll.setClipChildren(true);
         scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        scroll.setBackgroundResource(R.drawable.bg_glass_dialog);
-        scroll.setClipToOutline(true);
+        // The dialog window owns the shared opaque glass surface; keep the scrolling content transparent.
+        scroll.setBackgroundColor(Color.TRANSPARENT);
 
         LinearLayout root = new LinearLayout(activity);
         root.setOrientation(LinearLayout.VERTICAL);
