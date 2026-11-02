@@ -626,4 +626,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_download_failed">Gagal mengunduh wallpaper kategori %1$s. Periksa koneksi internet lalu coba lagi.</string>
     <string name="local_upload_error_busy">Layanan upload sedang sibuk. Coba lagi.</string>
     <string name="wallpaper_page_action_failed">Permintaan tidak dapat diproses. Periksa foto lalu coba lagi.</string>
+    <string name="weather_data_unavailable">Data cuaca tidak tersedia</string>
+    <string name="weather_model_reference">Lokasi acuan model: %1$s</string>
+    <string name="weather_data_source">Prakiraan Open-Meteo • model CAMS • estimasi US AQI</string>
 </resources>
