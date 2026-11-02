@@ -281,7 +281,7 @@ public class WeatherActivity extends Activity {
         neatLoc = neatLoc.substring(0, 1).toUpperCase(Locale.ROOT) + neatLoc.substring(1);
         weatherLocation.setText(neatLoc);
 
-        weatherMainTemp.setText(w.temp + "°");
+        weatherMainTemp.setText(w.temp >= -100 && w.temp <= 100 ? w.temp + "°" : "—");
         
         // Display Condition text matching active atmosphere
         if (conditionType == WeatherBackgroundView.ConditionType.SUNNY) {
@@ -296,7 +296,7 @@ public class WeatherActivity extends Activity {
             weatherMainCondition.setText(R.string.weather_condition_cloudy);
         }
 
-        weatherMainSub.setText(String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp));
+        weatherMainSub.setText(w.highTemp >= -100 && w.lowTemp >= -100 ? String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp) : "H:—  L:—");
 
         // 3. Hourly Strip (Apple Weather Conditions Card)
         hourlyContainer.removeAllViews();
@@ -380,7 +380,7 @@ public class WeatherActivity extends Activity {
 
         // 5. Populate Modular Metric Tiles
         if (windCompassView != null) {
-            windCompassView.setWind(w.windSpeed, w.windGust, w.windDirection);
+            windCompassView.setVisibility(w.windSpeed >= 0 ? View.VISIBLE : View.INVISIBLE);\n            if (w.windSpeed >= 0) windCompassView.setWind(w.windSpeed, w.windGust, w.windDirection);
         }
 
         if (sunArcView != null) {
@@ -391,24 +391,24 @@ public class WeatherActivity extends Activity {
         }
 
         if (uvValText != null) {
-            uvValText.setText(String.valueOf(w.uvIndex));
+            uvValText.setText(w.uvIndex >= 0 ? String.valueOf(w.uvIndex) : "—");
         }
         if (uvDescText != null) {
             boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
-            if (w.uvIndex <= 2) uvDescText.setText(R.string.uv_low);
+            if (w.uvIndex < 0) uvDescText.setText("—");\n            else if (w.uvIndex <= 2) uvDescText.setText(R.string.uv_low);
             else if (w.uvIndex <= 5) uvDescText.setText(R.string.uv_moderate);
             else if (w.uvIndex <= 7) uvDescText.setText(R.string.uv_high);
             else uvDescText.setText(R.string.uv_very_high);
         }
 
         if (feelsLikeVal != null) {
-            feelsLikeVal.setText(w.apparentTemp + "°");
+            feelsLikeVal.setText(w.apparentTemp >= -100 && w.apparentTemp <= 100 ? w.apparentTemp + "°" : "—");
         }
 
         // Air Quality
-        if (aqiValue != null) aqiValue.setText(String.valueOf(w.aqi));
+        if (aqiValue != null) aqiValue.setText(w.aqi >= 0 ? String.valueOf(w.aqi) : "—");
         if (aqiStatus != null) aqiStatus.setText(w.aqiStatus);
-        if (aqiBar != null) aqiBar.setAqi(w.aqi);
+        if (aqiBar != null) { if (w.aqi >= 0) aqiBar.setAqi(w.aqi); else aqiBar.setVisibility(View.INVISIBLE); }
         if (aqiStation != null) {
             if (w.stationPlace != null && !w.stationPlace.isEmpty()) {
                 aqiStation.setText(w.stationPlace);
@@ -424,25 +424,25 @@ public class WeatherActivity extends Activity {
 
         // Humidity, precipitation, visibility & pressure
         if (humidityValText != null) {
-            humidityValText.setText(w.humidity + "%");
+            humidityValText.setText(w.humidity >= 0 ? w.humidity + "%" : "—");
         }
         boolean englishMetrics = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
         if (precipitationValue != null) {
-            precipitationValue.setText(String.format(Locale.ROOT, "%.1f mm", w.precipitationMm));
+            precipitationValue.setText(Double.isNaN(w.precipitationMm) ? "—" : String.format(Locale.ROOT, "%.1f mm", w.precipitationMm));
         }
         if (precipitationSub != null) {
-            precipitationSub.setText(getString(R.string.precipitation_summary, w.rainChanceToday));
+            precipitationSub.setText(w.rainChanceToday >= 0 ? getString(R.string.precipitation_summary, w.rainChanceToday) : "—");
         }
         if (visibilityValue != null) {
-            visibilityValue.setText(String.format(Locale.ROOT, "%.1f km", w.visibilityKm));
+            visibilityValue.setText(Double.isNaN(w.visibilityKm) ? "—" : String.format(Locale.ROOT, "%.1f km", w.visibilityKm));
         }
         if (visibilitySub != null) {
-            visibilitySub.setText(w.visibilityKm < 1.0
+            visibilitySub.setText(Double.isNaN(w.visibilityKm) ? "—" : (w.visibilityKm < 1.0
                     ? getString(R.string.limited_visibility)
                     : getString(R.string.good_visibility));
         }
         if (pressureGaugeView != null) {
-            pressureGaugeView.setPressure(w.pressure);
+            pressureGaugeView.setVisibility(w.pressure >= 0 ? View.VISIBLE : View.INVISIBLE);\n            if (w.pressure >= 0) pressureGaugeView.setPressure(w.pressure);
         }
 
         // 6. Footer
