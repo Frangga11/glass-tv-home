@@ -392,3 +392,11 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - APK exact size: 1,565,621 bytes against 1,572,864-byte cap; remaining headroom 7,243 bytes. F02-BUILD-001 remains a P3 watchlist; no required font or wallpaper asset was removed.
 - F02-RES-001 and the supplemental F02-C07-001 upload-commit regression coverage are now HOST/SOURCE VERIFIED on this exact source/test head. Physical concurrent LAN upload, cancellation, expiry, and low-storage behavior remain DEFERRED_TO_G.
 - This entry is a findings-register documentation update; its resulting new F02 head must receive a fresh exact-head CI run. PR #50 remains Draft/open/unmerged. No APK artifact was published, installed, or tested on physical Android TV.
+
+
+### F02-RES-001 cross-session reservation refinement — 3 November 2026
+- Additional lifecycle review confirmed MainActivity reuses one uploadServer field, but a stopped server's worker threads can briefly drain while a replacement QR session is created. Instance-local reservations would not account for those old in-flight writes in the new session's free-space calculation.
+- Refined the reservation ledger to a static process-wide lock and byte counter shared by every WallpaperUploadServer instance. Reservations remain counted until each old/new request reaches its finally path; session checks still reject stopped/expired work.
+- Updated tests/test_upload_storage_reservation.py to require the shared static reservation lock and counter. No change to the 64 MiB margin, per-file limit, StandBy collection cap, or user-visible success behavior.
+- Refinement commit: 8e765719919a07cd225eab81281f92836182f51b; regression-test update: ae5ba8a4438e95e7c4636e5613ccdb2900a5339f.
+- Status: FIX IMPLEMENTED / NEW EXACT-HEAD CI RETEST REQUIRED.
