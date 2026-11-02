@@ -67,3 +67,16 @@ No physical TV, emulator or real-phone acceptance is claimed. No merge, APK publ
 E08 source implementation and exact-head CI: **PASS**.  
 Project F physical acceptance: **PENDING**.  
 Grouped integration/merge: **DEFERRED** pending A–G completion and explicit user approval.
+
+
+## F01 integration repair — 2 Nov 2026
+
+- F01 found that both Quick Control > Wallpaper and Settings > Appearance > Wallpaper called the same compact `WallpaperSettingsDialog`. This contradicted the agreed UX boundary.
+- Repaired the E08 feature branch `feature/e08-wallpaper-settings-redesign` (PR #41 remains Draft/open/unmerged):
+  - Quick Control continues to open the compact three-action Change / Shuffle / Next control center.
+  - Appearance again exposes the fuller three-card management route: Wallpaper collection, Wallpaper interval, and Personal wallpaper manager.
+  - The Appearance actions call dedicated management entry points and keep the Settings surface as the return destination; they do not reopen the Quick Control popup.
+  - Both routes reuse the same existing wallpaper categories, interval/shuffle preferences, custom-photo manager, QR upload, rotation and persistence owners. No duplicate wallpaper engine, preference key, or storage schema was added.
+- Source commits: `6f93c9c8e1ef7ee02876255c2044c760eb3da028` (MainActivity routing) and `1d6fba799012ff0e8dbbfbce5a7fbe4f193e1d0d` (Appearance three-card UI).
+- Exact updated E08 head: `1d6fba799012ff0e8dbbfbce5a7fbe4f193e1d0d`; CI runs #711 and #712 completed PASS. Integrated rehearsal PR #43 is running against current D07; its combined result is recorded in the F01 audit.
+- Physical TV D-pad/focus/Back and 1080p/4K acceptance remain assigned to Project F; no APK installation or device acceptance is claimed.
