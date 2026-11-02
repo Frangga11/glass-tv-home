@@ -422,7 +422,7 @@
     <string name="device_service_enabled">Diaktifkan di Android</string>
     <string name="device_service_disabled">Belum diaktifkan</string>
     <string name="screensaver_settings_title">Screensaver Bawaan Android</string>
-    <string name="screensaver_settings_summary">Pilih dan atur screensaver milik Android/firmware TV. Fitur ini terpisah dari Layar Siaga Glass TV.</string>
+    <string name="screensaver_settings_summary">Atur kapan Android menjalankan screensaver. Glass TV menyediakan ClockDream yang memakai tampilan dan koleksi foto Layar Siaga Glass TV; aktivasi screensaver tetap dikelola Android.</string>
     <string name="display_timeout_title">Waktu Layar Mati</string>
     <string name="display_timeout_summary">Buka pengaturan tampilan Android untuk mencari pengaturan waktu layar mati. Pilihan menu mengikuti firmware TV.</string>
     <string name="home_candidates_summary">Pilihan Home terdeteksi: %1$d</string>
