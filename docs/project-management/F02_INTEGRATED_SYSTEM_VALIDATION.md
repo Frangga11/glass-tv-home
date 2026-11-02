@@ -171,3 +171,30 @@ This is not a full Project F exit: latest documentation/status reconciliation co
 - Extended the storage reservation ledger from per-server-instance state to a process-wide static lock/counter. This accounts for old session workers that are still draining after stop() while MainActivity starts a replacement QR session.
 - The free-space calculation now includes reservations held by all WallpaperUploadServer instances until their request finally blocks release them. Session revocation checks remain per server instance.
 - Updated the source-contract regression test to require the shared ledger. Exact-head CI is required on the latest integration commit.
+
+
+---
+
+## F02 host exit review — superseding disposition — 3 November 2026
+
+The host-side exit gates are now complete. This section supersedes earlier checkpoint notes in this plan that describe exact-head CI or owner retests as pending.
+
+- Exact F02 integration head before this documentation reconciliation: `e190e2863a4aacbe3aba61094fab00572f4b469f`; exact-head CI #41521145454 passed both required jobs.
+- 42 Python tests passed with one documented merge-time-only skip (`test_readme_counts`: README counts are fixed up on merge and strict on main). No product test was skipped or weakened.
+- Android launcher `testReleaseUnitTest` and `assembleRelease` passed. APK size gate passed at 1,565,713 / 1,572,864 bytes (7,151 bytes headroom); no workflow artifact was published.
+- C07 owner PR #24 exact head passed #41521013896 (both jobs; 18 Python tests, one same merge-time-only README count skip; Android tests/build pass; APK 1,550,949 bytes; no artifact).
+- D01 owner PR #51 exact head passed #41506847521 (both jobs); its manifest permission/action and internal-only activity regression contract is present in F02.
+- All F02 host/source findings listed in the final findings-register matrix are OWNER + INTEGRATION HOST VERIFIED. No known blocker/critical source defect or unresolved source integration conflict remains in the audited scope.
+- No APK publication, installation, or physical TV testing occurred.
+
+### Deferred-to-G acceptance is intentionally not a host exit failure
+
+The following cannot be truthfully accepted without the actual Mi TV Stick, remote, phone, local network and firmware: ADB-shell permission compatibility; remote Home/double-press/long-press and Close All; OEM power-menu and accessibility delivery; D-pad focus and visual popup rendering; QR upload across real LAN, disconnect/cancel/expiry/retry; concurrent uploads and low-storage telemetry; wallpaper/avatar/StandBy persistence after process death/reboot; performance and stability.
+
+### Staged PR governance
+
+PR #50 and owner PRs remain Draft/open/unmerged according to the approved rule that Project G performs the final integrated audit and merge. They are not being handed to G as unresolved F02 code defects. Do not merge, publish an APK or perform physical device acceptance in F02.
+
+### Test skip accounting
+
+The only Python skip in the final F02 run is the documented README-count normalization test, intentionally deferred until merge and strict on main. This is not an application behavior test and is not an unexplained skip.
