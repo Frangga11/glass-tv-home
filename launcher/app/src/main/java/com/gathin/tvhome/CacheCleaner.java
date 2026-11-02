@@ -101,8 +101,8 @@ final class CacheCleaner {
                     bytes += deleteDirContents(f);
                     f.delete();
                 } else {
-                    bytes += f.length();
-                    f.delete();
+                    long fileBytes = f.length();
+                    if (f.delete()) bytes += fileBytes;
                 }
             }
         }
@@ -122,7 +122,6 @@ final class CacheCleaner {
         new Thread(() -> {
             long bytesFreed = 0;
             int beforePercent = usedPercent();
-            long freeBefore = getFreeStorageBytes();
             boolean systemTrimmed = false;
             try {
                 // 1. Delete app internal and external cache
@@ -135,8 +134,8 @@ final class CacheCleaner {
                     File[] tmps = onlineDir.listFiles((d, name) -> name.endsWith(".tmp"));
                     if (tmps != null) {
                         for (File f : tmps) {
-                            bytesFreed += f.length();
-                            f.delete();
+                            long tmpBytes = f.length();
+                            if (f.delete()) bytesFreed += tmpBytes;
                         }
                     }
                 }
@@ -157,11 +156,7 @@ final class CacheCleaner {
                 // 4. Force JVM garbage collection
                 System.gc();
 
-                long freeAfter = getFreeStorageBytes();
                 int afterPercent = usedPercent();
-                if (freeAfter > freeBefore) {
-                    bytesFreed = Math.max(bytesFreed, freeAfter - freeBefore);
-                }
 
                 if (callback != null) {
                     long finalFreed = bytesFreed;
