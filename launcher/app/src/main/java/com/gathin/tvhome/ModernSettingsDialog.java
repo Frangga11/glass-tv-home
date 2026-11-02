@@ -1756,6 +1756,7 @@ public final class ModernSettingsDialog {
         Collections.sort(entryList, (a, b) -> a.label.compareToIgnoreCase(b.label));
 
         final Set<String> targetSet = isHideMode ? ChildModeManager.getHiddenApps(activity) : ChildModeManager.getLockedApps(activity);
+        final Set<String> selectedPackages = new HashSet<>(targetSet);
 
         LinearLayout pickerLayout = new LinearLayout(activity);
         pickerLayout.setOrientation(LinearLayout.VERTICAL);
@@ -1781,6 +1782,14 @@ public final class ModernSettingsDialog {
         tvSub.setTypeface(font, Typeface.NORMAL);
         tvSub.setPadding(0, (int) (2 * density), 0, (int) (10 * density));
         pickerLayout.addView(tvSub);
+
+        TextView tvCount = new TextView(activity);
+        tvCount.setText(activity.getString(R.string.app_policy_selected_count, selectedPackages.size()));
+        tvCount.setTextSize(12f);
+        tvCount.setTextColor(0xFF7DD3FC);
+        tvCount.setTypeface(font, Typeface.BOLD);
+        tvCount.setPadding(0, 0, 0, (int) (10 * density));
+        pickerLayout.addView(tvCount);
 
         ScrollView sv = new ScrollView(activity);
         sv.setVerticalScrollBarEnabled(true);
@@ -1826,7 +1835,7 @@ public final class ModernSettingsDialog {
             row.addView(tv, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
             CheckBox cb = new CheckBox(activity);
-            cb.setChecked(targetSet.contains(app.pkg));
+            cb.setChecked(selectedPackages.contains(app.pkg));
             cb.setFocusable(false);
             cb.setClickable(false);
             row.addView(cb);
@@ -1849,6 +1858,9 @@ public final class ModernSettingsDialog {
                 } else {
                     ChildModeManager.setAppLocked(activity, app.pkg, nowChecked);
                 }
+                if (nowChecked) selectedPackages.add(app.pkg);
+                else selectedPackages.remove(app.pkg);
+                tvCount.setText(activity.getString(R.string.app_policy_selected_count, selectedPackages.size()));
             });
 
             LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
