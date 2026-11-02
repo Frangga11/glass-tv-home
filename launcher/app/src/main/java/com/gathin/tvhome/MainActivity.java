@@ -5421,7 +5421,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int padH = Math.round(36 * density);
         int padV = Math.round(28 * density);
         rootLayout.setPadding(padH, padV, padH, padV);
-        rootLayout.setBackgroundColor(0xFF131722);
+        // The shared B01 modal window owns the opaque glass surface.
+        rootLayout.setBackgroundColor(Color.TRANSPARENT);
 
         TextView title = new TextView(this);
         title.setText(titleText);
@@ -5548,16 +5549,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             qrUrlText = null;
         });
         qrUploadDialog.show();
-        Window qrWindow = qrUploadDialog.getWindow();
-        if (qrWindow != null) {
-            qrWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int screenWidth = getResources().getDisplayMetrics().widthPixels;
-            int screenHeight = getResources().getDisplayMetrics().heightPixels;
-            int dialogWidth = Math.min((int) (520 * density), (int) (screenWidth * 0.90f));
-            int dialogHeight = Math.min((int) (620 * density), (int) (screenHeight * 0.90f));
-            qrWindow.setLayout(dialogWidth, dialogHeight);
-            qrWindow.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(qrUploadDialog, this, 520, 620);
         btnClose.requestFocus();
     }
 
