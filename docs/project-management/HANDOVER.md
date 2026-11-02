@@ -631,3 +631,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Earlier F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs before these two latest changes. Do not claim latest head green until runs on exact SHA complete.
 - Previous owner B01 head `10fb9c937a3c5d7fb6331a511f0ba899137b1630` passed both jobs; the newer manifest hardening/test needs owner retest.
 - Keep PR #50 Draft/open/unmerged; no APK publish/install and no physical TV test. Project G must validate remote Home double press, Close All, long press Settings, and ADB permission compatibility.
+
+
+## Latest validated checkpoint — 3 November 2026
+
+- F02 PR #50 integrated head `5dd787ba136dfb070eaa2e833af653e57ec66015`: both CI jobs PASS — #41509632784 Launcher build/unit tests; #41509626957 Lists/tools/docs.
+- B01 PR #10 head `791620ce4628ee9e909af7ce2f4758b6df77afeb`: both jobs PASS — #41509576279. The source then received a comment-only alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f`; run #41509724289 queued at last check.
+- Owner B01 and F02 integration `HomeKeyService.java` now have identical content/blob SHA `b3cd4b2b4092a90f4f1faefb1072c15e2203b314`.
+- F02 findings include: global modal contract; location receiver authorization; AzanActivity and LocationActivity internal-only; Home double-press routing; Force Stop/Home Handler isolation; RecentAppsActivity exported Close All security; invalid restart action ID. Robolectric dialog-window tests and source/unit regression guards pass at F02 head 5dd787b.
+- Continue source audit and retest any new commit at exact SHA. No merge, APK publication/installation, or physical TV test in F.
