@@ -754,3 +754,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - F02-RES-001 process-wide reservation, 64 MiB free-space margin, HTTP 507 boundary, reservation release, and Wallpaper/StandBy shutdown atomicity regression guards are OWNER + INTEGRATION HOST VERIFIED.
 - Host/source scope for F02 is complete. Physical Android TV, real phone/LAN, ADB-shell permission compatibility, low-storage behavior, OEM rendering/focus, and remote/power behavior remain explicitly DEFERRED_TO_G. This is a test boundary, not an unowned source defect.
 - PR #50 and owner PRs remain Draft/open/unmerged under the staged integration decision; no APK artifact publication or device installation occurred.
+
+
+## Final exact-head CI closure — 3 November 2026
+- F02 integration PR #50 head `190b698453a96da8ec2db31da2eefac836849a10` passed exact-head run #41522215859; both required jobs SUCCESS.
+- Python suite: 42 tests, 1 intentional merge-time README-count normalization skip; no failures. Android `testReleaseUnitTest` and `assembleRelease` succeeded.
+- APK diagnostic: 1,565,713 bytes against 1,572,864-byte cap (7,151 bytes headroom); size-budget step SUCCESS. Workflow artifact list empty.
+- C07 owner PR #24 head `442b78c68b1540394d543bab59bddf52f865ccf0` passed #41521013896; D01 owner PR #51 head `66352838e6155a42a9ea61477643a238f360434f` passed #41506847521.
+- F02 host/source gates are complete. Physical TV, phone/LAN, ADB-shell compatibility, low-storage telemetry and OEM/remote acceptance remain DEFERRED_TO_G. No APK publication or installation. PR #50 and owner PRs remain Draft/open/unmerged under staged integration governance.
