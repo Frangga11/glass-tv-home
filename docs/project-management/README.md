@@ -5,10 +5,9 @@
 **Prepared:** 31 October 2026  
 **Repository:** https://github.com/Frangga11/glass-tv-home  
 **Documentation branch:** `docs/project-master-inventory`  
-**Working-code branch under review:** `feature/settings-reorganization-standby-gallery`  
-**Current active wallpaper audit branch:** `fix/wallpaper-qr-session-security`
-**Wallpaper review PR:** https://github.com/Frangga11/glass-tv-home/pull/7
-**Avatar review PR (device acceptance pending):** https://github.com/Frangga11/glass-tv-home/pull/6
+**Current feature branch:** `feature/e02-profile-avatar-lock-ui` (PR #35, Draft/open/unmerged)  
+**Current stage:** E02 Profile — source/CI gate complete; physical acceptance remains in Project F.
+**E02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/35
 
 ## Purpose
 
@@ -23,9 +22,11 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [DECISION_LOG.md](DECISION_LOG.md) | Approved decisions and unresolved choices |
 | [OPERATIONS_LOG.md](OPERATIONS_LOG.md) | Concise chronological change history (third documentation layer) |
 | [AUDIT_REGISTER.md](AUDIT_REGISTER.md) | Defects, risks, verification steps, and closure evidence |
-| [AVATAR_AUDIT.md](AVATAR_AUDIT.md) | Dedicated QR avatar audit, implementation record, and device acceptance checklist |
+| [AVATAR_AUDIT.md](AVATAR_AUDIT.md) | Original QR avatar audit, implementation record, and device acceptance checklist |
+| [E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md](E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md) | E02 profile/avatar/app-lock source audit, corrections, exact-head CI and F-stage acceptance |
 | [DOCUMENTATION_WORKFLOW.md](DOCUMENTATION_WORKFLOW.md) | Mandatory three-layer documentation standard and efficient update rules |
 | [WALLPAPER_AUDIT.md](WALLPAPER_AUDIT.md) | Wallpaper/background audit, source findings, security issue, and acceptance criteria |
+| [E01_DEVICE_SETTINGS_HOME_CONTROL_AUDIT.md](E01_DEVICE_SETTINGS_HOME_CONTROL_AUDIT.md) | E01 Device Settings source audit and exact-head verification |
 | [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md) | B06 notification, Toast, OTA loading, QR progress/timeout audit and exact-head CI evidence |
 | [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
 
@@ -61,4 +62,4 @@ The application source inspected for this draft reports package `com.gathin.tvho
 
 ## Important branch distinction
 
-The settings/gallery branch remains the rollback baseline. Avatar QR replacement is being reviewed in `fix/avatar-qr-upload-single-photo` through draft PR #6. The implementation is not release-approved until CI and actual Mi TV Stick acceptance pass. See AVATAR_AUDIT.md, INVENTORY.md, and AUDIT_REGISTER.md.
+E02 selectively carries the QR avatar implementation into the profile-security baseline and is tracked in Draft PR #35. PR #6 remains a historical isolated source branch and must not be merged independently. E02 source/CI gates pass; actual Mi TV Stick + phone/remote acceptance remains mandatory in Project F. See E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md, AVATAR_AUDIT.md, INVENTORY.md, and AUDIT_REGISTER.md.
