@@ -836,3 +836,13 @@ APK size 1,565,621 bytes; cap 1,572,864 bytes; 7,243 bytes headroom. F02-BUILD-0
 - The initial per-instance reservation implementation passed exact-head CI #41519813674. A further lifecycle audit identified a replacement-session overlap: old worker threads can briefly drain after stop() while a new WallpaperUploadServer instance is started.
 - Refined reservation accounting to a static process-wide lock/counter shared across all server instances; outstanding bytes remain reserved until old/new request finally paths release them. Updated the Python source-contract regression test.
 - Latest F02 head a95b21becad238dd634dda1e79aa9de36d749d8c; CI #41520409999 queued at last poll. Do not mark the refinement PASS until both exact-head jobs complete.
+
+## F02-RES-001 owner and integration retest — 3 November 2026
+
+| Branch / PR | Exact head | CI result | Status |
+|---|---|---|---|
+| C07 owner / #24 | 442b78c68b1540394d543bab59bddf52f865ccf0 | #41520866323 both jobs SUCCESS; 18 Python tests; launcher unit tests/build pass; APK 1,550,949 bytes; manual publication skipped | OWNER HOST PASS |
+| F02 integration / #50 | 2469c0c1d241a00be3e02235e12f3f0f6525deb9 | #41520818608 both jobs SUCCESS; 42 Python tests; launcher unit tests/build pass; APK 1,565,713 bytes; 7,151 bytes headroom | INTEGRATION HOST PASS |
+
+- Both branches now share the process-wide static reservation lock/counter and 64 MiB safety margin. F02 retains the D05 UploadResult adapter; C07 retains its upstream boolean persistence contract.
+- Latest F02 findings-register docs head e190e2863a4aacbe3aba61094fab00572f4b469f; CI #41521145454 queued at last poll. No APK artifacts were produced. Device acceptance remains Project G.
