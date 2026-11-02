@@ -441,3 +441,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Detailed report: [E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md](E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md).
 - Project F still must verify the compact modal on 1080p/4K, D-pad/focus/Back, Glass ON/OFF, category selection, shuffle/interval/Next, QR photo manager and lifecycle persistence. No physical device acceptance or APK installation is claimed.
 - E08 source/UI/CI: PASS. Project F physical acceptance and D-013 grouped integration/merge remain pending.
+
+
+## Project E closure / Project F handover — 2 Nov 2026
+- User-approved milestone: **Project E (E01–E08) closed for feature development and module-level audit**. No further E-module scope is opened unless Project F finds a verified integration defect or the user explicitly reopens scope.
+- Closure does **not** mean physical-device acceptance. Project F owns integrated regression, remote/D-pad/focus/Back behavior, popup/dialog consistency, Glass Effect ON/OFF, 1080p/4K layout, lifecycle, module interaction and device acceptance.
+- Feature PRs remain OPEN/DRAFT/UNMERGED under D-013; no merge or APK installation is authorized by this closure. Current PR chain: #34 E01, #35 E02, #36 E03, #37 E04, #38 E05, #39 E06, #40 E07, #41 E08.
+- Latest observed PR heads: #34 `090a956a9860c82eb36c2d96848d47046fba0f0c`; #35 `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; #36 `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`; #37 `08076bb945a169de198905152a092f419f48aa82`; #38 `6fe89fad078692958db67030329a6de66cd7ae71`; #39 `570b7c83efaec3ac515b78f1c6c119b777fc3b84`; #40 `a0f2b0fff6eef0c42852d21b971904d5acd29d5c`; #41 `8dfdcabd19853a1140724ea68983877af17bed0c`. All are OPEN/DRAFT/UNMERGED at checkpoint.
+- E08 final source/test head `fcd7d8f23a4833830a401652ef269db3282b7300`; exact-head CI #702 / `41473357877` PASS; APK diagnostic 1,562,709 bytes against 1,572,864-byte cap (10,155-byte headroom), publication skipped. PR #41's latest head is report-only after the verified source/test head.
+- E08 UI distinction: Quick Control Wallpaper popup is the compact three-action control center; Appearance > Wallpaper management remains the fuller management route. Shared visual tokens/material rules are reused, not duplicate wallpaper engines. Project F must verify both entry points remain functionally distinct and state-consistent on TV.
+- **Next active stage: Project F.** Start with integration/dependency and combined-diff audit; then CI/regression and physical device acceptance. Retain D-013: grouped integration/merge is deferred to G and requires explicit user approval.
