@@ -388,3 +388,12 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 
 - APK size on c1f2125: 1,565,621 bytes / 1,572,864 cap / 7,243 bytes headroom. P3 watchlist; do not remove required fonts/wallpaper without measured optimization.
 - QR upload storage reservation and explicit upload-shutdown regression coverage passed host CI. Project G still owns physical concurrent LAN, cancellation, expiry and low-storage acceptance.
+
+## F02 process-wide reservation refinement — 3 November 2026
+| Branch / PR | Exact head | CI evidence | Status |
+|---|---|---|---|
+| F02 / #50 | a95b21becad238dd634dda1e79aa9de36d749d8c | #41520409999 queued at last poll | RETEST REQUIRED |
+| Prior per-instance reservation source/test | c1f212585633899d4c1f5327d3a982a9e136e2b7 | #41519813674 both jobs SUCCESS; 42 Python tests; launcher build/unit tests pass | PASS (superseded by process-wide refinement) |
+
+- Reservation accounting now spans all WallpaperUploadServer instances so old workers draining after session stop are included in free-space checks for a replacement session.
+- Project G still owns real concurrent LAN, session replacement, cancellation, and low-storage acceptance.
