@@ -612,3 +612,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - F gates: 1080p/4K device rendering, Arabic glyph/harakat, D-pad/Back/scroll, popup clipping/consistency, offline/stale/location/language, Home/wallpaper/prayer/dock coexistence.
 - Reopen only on reproducible findings and route to B/D/E05 ownership. PR merge/release remains G under D-013. No physical test or APK installation claimed.
 - Evidence: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md).
+
+
+## B03 global Glass Effect fallback — 2 Nov 2026
+- Root cause: disabling decorative glass removed structural surfaces from GlassDrawable pills/menus/anchored popups, DockDecoration tray and app modal dialogs.
+- B03 source branch `feature/b03-dialog-opacity-layering`, PR #12 OPEN/DRAFT/UNMERGED; source head `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`. Shared opaque popup/dock fallback tokens, solid GlassDrawable and dock surfaces, and runtime ON/OFF modal material selection implemented. Added JVM token regression test.
+- Exact-head CI run #685 / `41447473358` queued at documentation checkpoint; do not call B03 CI complete until green.
+- E07 toggle/live-surface invalidation repair is independently source/CI verified on PR #40 head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`, CI #682 / `41446777187` SUCCESS.
+- B03 owns global surface/dialog contract; E07 owns toggle integration; G reconciles shared files during grouped integration; F owns 1080p/4K physical acceptance. No APK install/device test; D-013 unchanged.
+- Evidence: [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md).
