@@ -515,3 +515,12 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - Robolectric API 30 dialog-window tests passed on previous F02 head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`; latest integration retest is still running.
 - RecentAppsActivity's exported ACTION_MAIN filter remains P3 pending external caller contract verification in G.
 - Current status PARTIAL / NOT FINAL. No merge, APK publication/installation, or physical Android TV testing during F02.
+
+
+## F02 additional findings — 3 November 2026
+
+- F02-FUNC-002: Force Stop queue previously cleared the shared HomeKeyService Handler, potentially canceling Home single/double/long-press and power callbacks. Dedicated `forceStopHandler` now owns Force Stop timeouts and queue continuations; regression test added.
+- F02-SEC-004: exported RecentAppsActivity accepted `ACTION_CLOSE_ALL`, which invokes the destructive Close All operation. Set `exported=false` and removed the unnecessary MAIN filter; explicit internal HomeKeyService route retained. Manifest regression test added.
+- B01 latest owner head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; F02 latest head `3ea479d689dc732fe46594a0677d02b7762d7527`. Exact-head CI in progress.
+- Previous F02 checkpoint `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs, but it predates these fixes.
+- Status remains PARTIAL / NOT FINAL; no merge, APK publication/installation, or physical Android TV test.
