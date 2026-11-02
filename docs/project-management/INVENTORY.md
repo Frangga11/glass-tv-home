@@ -243,3 +243,12 @@
 - Full D07+E08 candidate: integration/project-f-staged-full, HEAD 8fe90a9fdd493c5d81ffdacbe16054630a26580a; tree diff against F01 tested candidate 21c2eab34a3356d37d079eba04b281cc2373386d is empty; CI #716 PASS remains applicable.
 - Temporary probes #44–#49 closed without merge. Feature PRs remain subject to D-013; no APK published/installed and no physical TV acceptance.
 - Next: F02 controlled functional regression and Android TV acceptance. The stale parent/base register remains a G-stage reconciliation item.
+
+
+## F02 initial regression inventory — 3 Nov 2026
+- Status: OPEN; entry audit PASS, physical acceptance NOT RUN.
+- Selected candidate `integration/project-f-staged-full` @ `8fe90a9fdd493c5d81ffdacbe16054630a26580a`; exact tree unchanged from F01 tested candidate `21c2eab34a3356d37d079eba04b281cc2373386d` (3 commits ahead, no file changes).
+- Reused exact-tree CI #716: both launcher/build/test and Lists/tools/docs jobs PASS; APK publication skipped.
+- Full candidate retains B03 fallback/dialog policy, B06 feedback components, SettingsFocusPath test coverage and C07 request-deadline/session protection. B-series branch remains a distinct checkpoint; no blind merge/overwrite.
+- Device matrix remains pending: remote/focus/Back; popup/dialog and Glass ON/OFF; profile/security; Weather/AQI; QR upload; wallpaper Quick Control vs Appearance; StandBy; process death/reboot; 1080p/4K.
+- No device APK published/installed; no PR/main/release merge. D-013 active. See `F02_INTEGRATED_FUNCTIONAL_REGRESSION.md`.
