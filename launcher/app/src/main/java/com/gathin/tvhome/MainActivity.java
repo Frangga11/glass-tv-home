@@ -386,6 +386,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (grid != null) grid.invalidateItemDecorations();
         if (enabled && wallBitmap != null) blurBackdrop(wallBitmap);
         if (root != null) root.invalidate();
+        if (openPopup != null && openPopup.getContentView() != null) {
+            openPopup.getContentView().invalidate();
+        }
+        if (openMenu != null) openMenu.invalidate();
     }
 
     public void setWeatherWidgetEnabled(boolean enabled) {
@@ -2874,6 +2878,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     }
                 }
             } catch (Exception ignored) {}
+            weatherOverlayView.setReducedMotion(config != null && config.reducedMotion);
 
             int idx = (wallView != null) ? root.indexOfChild(wallView) + 1 : 0;
             root.addView(weatherOverlayView, idx, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

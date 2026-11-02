@@ -36,6 +36,7 @@ public class WeatherBackgroundView extends View {
 
     private ConditionType currentCondition = ConditionType.CLOUDY;
     private boolean isAnimating = false;
+    private boolean reducedMotion = false;
     private long lastFrameTime = 0;
     private final Random random = new Random();
 
@@ -163,7 +164,29 @@ public class WeatherBackgroundView extends View {
         return lowSpecMode;
     }
 
+    /** Keeps the weather scene visible but stops its continuous frame loop for reduced-motion devices. */
+    public void setReducedMotion(boolean reducedMotion) {
+        if (this.reducedMotion == reducedMotion) return;
+        this.reducedMotion = reducedMotion;
+        rebuildGradientsAndParticles();
+        if (reducedMotion) {
+            stopAnimation();
+        } else if (isAttachedToWindow() && getVisibility() == VISIBLE
+                && currentCondition != ConditionType.NONE) {
+            startAnimation();
+        }
+        invalidate();
+    }
+
+    public boolean isReducedMotion() {
+        return reducedMotion;
+    }
+
     public void startAnimation() {
+        if (reducedMotion) {
+            stopAnimation();
+            return;
+        }
         if (!isAnimating) {
             isAnimating = true;
             lastFrameTime = SystemClock.uptimeMillis();
@@ -266,11 +289,11 @@ public class WeatherBackgroundView extends View {
         if (currentCondition == ConditionType.DRIZZLE || currentCondition == ConditionType.RAIN || currentCondition == ConditionType.THUNDERSTORM) {
             int count;
             if (currentCondition == ConditionType.THUNDERSTORM) {
-                count = lowSpecMode ? 70 : 140;
+                count = (lowSpecMode || reducedMotion) ? 70 : 140;
             } else if (currentCondition == ConditionType.RAIN) {
-                count = lowSpecMode ? 50 : 100;
+                count = (lowSpecMode || reducedMotion) ? 50 : 100;
             } else { // DRIZZLE
-                count = lowSpecMode ? 25 : 50;
+                count = (lowSpecMode || reducedMotion) ? 25 : 50;
             }
 
             for (int i = 0; i < count; i++) {
@@ -310,7 +333,7 @@ public class WeatherBackgroundView extends View {
         // 3. Initialize Stars if night
         stars.clear();
         if (currentCondition == ConditionType.NIGHT) {
-            int starCount = 80;
+            int starCount = (lowSpecMode || reducedMotion) ? 40 : 80;
             for (int i = 0; i < starCount; i++) {
                 Star s = new Star();
                 s.x = random.nextFloat() * cachedW;
@@ -326,7 +349,7 @@ public class WeatherBackgroundView extends View {
         // 4. Initialize Cloud Puffs if cloudy or partly cloudy
         cloudPuffs.clear();
         if (currentCondition == ConditionType.CLOUDY || currentCondition == ConditionType.RAIN) {
-            int puffs = 8;
+            int puffs = (lowSpecMode || reducedMotion) ? 4 : 8;
             for (int i = 0; i < puffs; i++) {
                 CloudPuff p = new CloudPuff();
                 p.x = random.nextFloat() * cachedW;

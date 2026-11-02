@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -31,13 +32,27 @@ final class TvDialogStyle {
         int availableWidth = context.getResources().getDisplayMetrics().widthPixels;
         int availableHeight = context.getResources().getDisplayMetrics().heightPixels;
 
-        window.setBackgroundDrawableResource(R.drawable.bg_glass_dialog);
+        window.setBackgroundDrawable(createDialogSurface(context));
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         window.setDimAmount(DIM_AMOUNT);
         window.setLayout(
                 resolveWidthPx(availableWidth, density, maxWidthDp),
                 resolveHeightPx(availableHeight, density, maxHeightDp));
         window.setGravity(Gravity.CENTER);
+    }
+
+    /** Use the same material policy as GlassDrawable: glass when enabled, solid surface otherwise. */
+    static android.graphics.drawable.Drawable createDialogSurface(Context context) {
+        boolean glassEnabled = context.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE)
+                .getBoolean("glass_effects_enabled", true);
+        if (glassEnabled) return context.getDrawable(R.drawable.bg_glass_dialog);
+        GradientDrawable solid = new GradientDrawable();
+        solid.setShape(GradientDrawable.RECTANGLE);
+        solid.setColor(TvUiTokens.POPUP_SURFACE);
+        solid.setCornerRadius(20f * context.getResources().getDisplayMetrics().density);
+        solid.setStroke(Math.max(1, Math.round(context.getResources().getDisplayMetrics().density)),
+                TvUiTokens.BORDER);
+        return solid;
     }
 
     static void applyCustom(Dialog dialog, Context context, int maxWidthDp, int maxHeightDp,
