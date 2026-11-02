@@ -774,3 +774,16 @@ B01 latest head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; F02 latest head `3ea
 | C07-F08 / F02-C07-001 | Wallpaper select/delete/slideshow/clear routes lacked in-lock session recheck and shared-monitor serialization with `stop()`; added synchronized handlers and explicit HTTP 410 expired-session response; added source regression guard. | FIX COMMITTED / C07 + F02 EXACT-HEAD CI PENDING |
 
 C07 owner PR #24 head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 PR #50 head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`. Physical QR cancellation/revocation acceptance remains Project G.
+
+
+## F02 latest continuation audit — 3 November 2026
+
+| Finding / area | Evidence and remediation | Current status |
+|---|---|---|
+| F02-C07-002 upload deadline monotonicity | C07 owner and F02 use elapsed realtime; injectable timeout controller keeps JVM tests independent of Android Socket stubs. Incorrect expected value 3000 ms corrected to 3500 ms. | C07 owner CI PASS #41512386827; F02 source/test head CI PASS #41512382568; latest docs-only F02 head #b647151 requires retest |
+| C07/D05 StandBy upload contract | F02 retains D05 `UploadResult` persistence-aware response handling together with C07 monotonic deadlines and synchronized mutation/session shutdown. | Intentional downstream integration; do not overwrite with older C07 boolean path |
+| C07-F08 / F02-C07-001 session revocation | Select/delete/slideshow/clear handlers synchronized with stop and recheck active session inside lock; regression test added. | Source integrated; host CI passed at preceding F02 source/test head; phone-to-TV acceptance DEFERRED_TO_G |
+
+Owner exact-head checks: B01 #10 run #41509724289 PASS; C07 #24 run #41512386827 PASS; D05 #29 run #41505852041 PASS; D06 #30 run #41505865772 PASS; D01 #51 run #41506847521 PASS.
+
+F02 remains PARTIAL until exact-head CI on `b64715156e180edc3bfae25bffba6a089544247f` and all remaining F02 gates pass. No physical device test or APK publication is authorized in F.
