@@ -22,6 +22,9 @@ final class GlassDrawable extends Drawable {
     private final float radius;
     private final Backdrop.Fill fill = new Backdrop.Fill();
     private final Paint veil = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /** Opaque fallback surface: disabling decoration must never remove the component surface. */
+    private final Paint solidSurface = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint solidBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final GlassRim rim;
     private final Glider highlight;
     /** Paints the focus shape over the glass (a menu), rather than fading the glass for it (a pill). */
@@ -51,6 +54,10 @@ final class GlassDrawable extends Drawable {
         this.highlight = highlight;
         this.radius = radius;
         veil.setColor(0xFFFFFF | VEIL_ALPHA << 24);
+        solidSurface.setColor(TvUiTokens.POPUP_SURFACE);
+        solidBorder.setColor(TvUiTokens.BORDER);
+        solidBorder.setStyle(Paint.Style.STROKE);
+        solidBorder.setStrokeWidth(1.25f * density);
         rim = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, reach);
     }
 
@@ -60,6 +67,9 @@ final class GlassDrawable extends Drawable {
         boolean glassEnabled = owner.getContext().getSharedPreferences("wallpaper_prefs", android.content.Context.MODE_PRIVATE)
                 .getBoolean("glass_effects_enabled", true);
         if (!glassEnabled) {
+            // Glass is optional decoration, not the panel's structural background.
+            canvas.drawRoundRect(rect, radius, radius, solidSurface);
+            canvas.drawRoundRect(rect, radius, radius, solidBorder);
             if (paintsShape && highlight != null && highlight.isShowing()) {
                 owner.getLocationInWindow(at);
                 highlight.getLocationInWindow(highlightAt);
