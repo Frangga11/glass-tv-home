@@ -273,8 +273,9 @@ final class CacheCleaner {
             0x1a, 0x05, 0x00, 0x04, 0x14};
 
     /**
-     * Runs {@code command} ({@link #COMMAND}, or null to only connect). False when the TV did not let
-     * this app in; IOException when unreachable. {@code mayAsk} false never shows the prompt.
+     * Runs {@code command} ({@link #COMMAND}, or null to only connect). False when the TV does not
+     * authorize the connection or the command omits its success marker; IOException when unreachable.
+     * {@code mayAsk} false never shows the prompt.
      */
     static boolean isTrimSuccessOutput(String output) {
         if (output == null || output.isEmpty()) return false;
