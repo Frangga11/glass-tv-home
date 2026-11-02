@@ -603,3 +603,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - D07 PR #31 exact follow-up head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`, CI #642 PASS.
 - Remaining gates: B shared popup contract audit and Project F physical/integrated 1080p/4K, offline/location/language and remote-navigation acceptance. No APK install, device test, merge or release approval.
 - Detailed report: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md).
+
+
+## E05 source-scope closure — 2 Nov 2026
+- Decision: source implementation CLOSED; Project F physical/integrated acceptance remains OPEN.
+- PR #38 head `6fe89fad078692958db67030329a6de66cd7ae71`, OPEN/DRAFT/UNMERGED. Exact-head CI #663 SUCCESS; both jobs passed; APK publication skipped.
+- Closed: E05 ayah reader/preview, weather/AQI data correctness and cache protections, regression tests, shared B01 popup contract source audit.
+- F gates: 1080p/4K device rendering, Arabic glyph/harakat, D-pad/Back/scroll, popup clipping/consistency, offline/stale/location/language, Home/wallpaper/prayer/dock coexistence.
+- Reopen only on reproducible findings and route to B/D/E05 ownership. PR merge/release remains G under D-013. No physical test or APK installation claimed.
+- Evidence: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md).
