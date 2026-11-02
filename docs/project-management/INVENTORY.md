@@ -339,3 +339,20 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 - The 3000 ms failing test expectation was corrected to 3500 ms; no test was weakened or skipped.
 - F02's `WallpaperUploadServer` deliberately contains D05's `UploadResult` persistence handling plus C07's later monotonic deadline/session revocation changes. This is an intentional dependency-chain integration, not a source-sync defect.
 - All device-dependent checks remain DEFERRED_TO_G.
+
+
+## Latest F02 and owner-branch validation — 3 November 2026
+
+| Branch / PR | Exact head | CI evidence | Status |
+|---|---|---|---|
+| F02 / #50 | `558762994dec05a7ae03a924c33a3ed11665c224` | #41513940620 push: both jobs SUCCESS; #41513947375 PR: substantive steps passed, cleanup pending at last poll | PASS ON PUSH / PR CLEANUP |
+| E01 / #34 | `edd6461c932705a109ed9768649cae7e3c162c59` | #41513716451 both jobs SUCCESS | PASS |
+| C07 / #24 | `80a92264c51631fb107c75f32a3cd8e4b8aa9d9a` | #41512386827 both jobs SUCCESS | PASS |
+| B01 / #10 | `389e289e939276ce9e20d7e6c82c293d3f83c70f` | #41509724289 both jobs SUCCESS | PASS |
+| D05 / #29 | `7f043943ab0c1d2d1217fc56845d81ac7583c96d` | #41505852041 both jobs SUCCESS | PASS |
+| D06 / #30 | `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7` | #41505865772 both jobs SUCCESS | PASS |
+| D01 / #51 | `66352838e6155a42a9ea61477643a238f360434f` | #41506847521 both jobs SUCCESS | PASS |
+
+- InputKeyService manifest correction was proven by regression: test failed on pre-fix F02 checkpoint `fc3e3fe` because exported was false; after setting exported true while retaining BIND_ACCESSIBILITY_SERVICE, run #41513906117 passed both jobs.
+- Latest F02 APK size: 1,564,977 bytes / 1,572,864-byte cap / 7,887-byte headroom. Watchlist only; no current failure.
+- All device-dependent checks remain DEFERRED_TO_G.
