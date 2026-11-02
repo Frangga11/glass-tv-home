@@ -421,8 +421,10 @@
     <string name="notification_access_summary">Status: %1$s. Allow access so music information can appear in the Now Playing card.</string>
     <string name="device_service_enabled">Enabled in Android</string>
     <string name="device_service_disabled">Not enabled</string>
-    <string name="screensaver_settings_title">Screensaver &amp; TV Sleep</string>
-    <string name="screensaver_settings_summary">Configure Android screensaver and screen-off timing. Glass TV will not change these settings silently.</string>
+    <string name="screensaver_settings_title">Android Screensaver</string>
+    <string name="screensaver_settings_summary">Choose and configure the Android/TV firmware screensaver. This is separate from Glass TV StandBy.</string>
+    <string name="display_timeout_title">Screen-Off Timeout</string>
+    <string name="display_timeout_summary">Open Android display settings to find the screen-off timeout option. Available menus depend on TV firmware.</string>
     <string name="home_candidates_summary">Detected Home launcher options: %1$d</string>
     <string name="home_candidates_heading">Detected launcher options:</string>
     <string name="home_current_heading">Android HOME resolver result:</string>
