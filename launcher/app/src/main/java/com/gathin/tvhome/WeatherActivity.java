@@ -19,6 +19,7 @@ import java.util.Locale;
 public class WeatherActivity extends Activity {
 
     private WeatherBackgroundView weatherBgView;
+    private boolean reducedMotion;
     private TextView weatherLocation;
     private View btnChangeLocation;
     private TextView weatherMainTemp;
@@ -60,9 +61,11 @@ public class WeatherActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        reducedMotion = Config.load(this).reducedMotion;
         setContentView(R.layout.activity_weather);
 
         weatherBgView = findViewById(R.id.weatherBgView);
+        if (weatherBgView != null) weatherBgView.setReducedMotion(reducedMotion);
         weatherLocation = findViewById(R.id.weatherLocation);
         btnChangeLocation = findViewById(R.id.btnChangeLocation);
         weatherMainTemp = findViewById(R.id.weatherMainTemp);
@@ -537,7 +540,14 @@ public class WeatherActivity extends Activity {
         v.setOnFocusChangeListener((view, hasFocus) -> {
             float s = hasFocus ? scale : 1.0f;
             float elev = hasFocus ? 6f : 0f;
-            view.animate().scaleX(s).scaleY(s).translationZ(elev).setDuration(140).start();
+            if (reducedMotion) {
+                view.animate().cancel();
+                view.setScaleX(s);
+                view.setScaleY(s);
+                view.setTranslationZ(elev);
+            } else {
+                view.animate().scaleX(s).scaleY(s).translationZ(elev).setDuration(140).start();
+            }
         });
     }
 
@@ -547,7 +557,14 @@ public class WeatherActivity extends Activity {
         card.setClickable(true);
         card.setOnFocusChangeListener((view, hasFocus) -> {
             float elev = hasFocus ? 6f : 0f;
-            view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+            if (reducedMotion) {
+                view.animate().cancel();
+                view.setScaleX(1f);
+                view.setScaleY(1f);
+                view.setTranslationZ(elev);
+            } else {
+                view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+            }
         });
     }
 
