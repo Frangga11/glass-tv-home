@@ -267,3 +267,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Exact Release APK size: `1,561,889 bytes`; budget: `1,572,864 bytes`; remaining headroom: `10,975 bytes`.
 - The targeted Default reselection hero-shelf fix is included in the tested commit. No APK was published or installed; no physical device acceptance is claimed.
 - E03 source + exact-head CI disposition: **PASS / SOURCE FINAL**. Project F retains physical acceptance: offline cold start/restart, image crop/sharpness, remote/focus, Default/online/place/custom, description toggle, Next/shuffle, QR/StandBy isolation and performance. Preserve D-013: PR #36 remains OPEN/DRAFT/UNMERGED; no early merge or release approval.
+
+
+## E04 StandBy / Screensaver — targeted repair checkpoint — 2 Nov 2026
+
+- E04 branch `feature/e04-standby-screensaver`, based on E03 exact head `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`; current source head `7c5e2677eac1c791675d9f5ef7d736eb47d37aca`; Draft PR #37 targets E03 and remains OPEN/DRAFT/UNMERGED under D-013.
+- Confirmed duplicate display-off path in `ClockDream`: `HomeKeyService.sleepScreen()` was followed unconditionally by shell `input keyevent 223`. Removed the unsupported duplicate shell action, checked the Accessibility result, and logged unavailable service state.
+- Shared photo store, QR upload validation/session controls, atomic collection+mode persistence, picker merge and clear semantics were preserved.
+- Exact-head CI is PENDING; no APK publication/install and no physical device acceptance claimed. DreamService/overlay trigger precedence, remote wake, 2-hour sleep and OEM display-lock behavior remain mandatory Project F checks.
+- Detailed report: `E04_STANDBY_SCREENSAVER_AUDIT.md`. E04 is NOT FINAL until exact-head CI and Project F acceptance are complete.
