@@ -307,12 +307,12 @@ public final class ChildModeManager {
                             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                             if (callback != null) callback.onSuccess();
                         } else {
-                            Toast.makeText(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT);
                             pinBuilder.setLength(0);
                             updateDots.run();
                         }
                     } else {
-                        Toast.makeText(ctx, R.string.pin_four_digits, Toast.LENGTH_SHORT).show();
+                        TvFeedback.show(ctx, R.string.pin_four_digits, Toast.LENGTH_SHORT);
                     }
                 } else {
                     if (pinBuilder.length() < 4) {
@@ -324,7 +324,7 @@ public final class ChildModeManager {
                                 if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                                 if (callback != null) callback.onSuccess();
                             } else {
-                                Toast.makeText(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT).show();
+                                TvFeedback.show(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT);
                                 pinBuilder.setLength(0);
                                 updateDots.run();
                             }

@@ -92,7 +92,7 @@ public final class ModernSettingsDialog {
 
         // Dark matte rounded container matching screenshot
         GradientDrawable dialogBg = new GradientDrawable();
-        dialogBg.setColor(0xFF1E2026);
+        dialogBg.setColor(TvUiTokens.SHELL);
         dialogBg.setCornerRadius(24 * density);
         dialogBg.setStroke((int) (1.5f * density), 0xFF2F323B);
         root.setBackground(dialogBg);
@@ -125,7 +125,7 @@ public final class ModernSettingsDialog {
         searchBox.setClickable(true);
 
         GradientDrawable searchBg = new GradientDrawable();
-        searchBg.setColor(0xFF282A33);
+        searchBg.setColor(TvUiTokens.INPUT_SURFACE);
         searchBg.setCornerRadius(10 * density);
         searchBox.setBackground(searchBg);
 
@@ -145,7 +145,7 @@ public final class ModernSettingsDialog {
 
         searchBox.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF353844 : 0xFF282A33);
+            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.INPUT_SURFACE);
             g.setCornerRadius(10 * density);
             if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
             v.setBackground(g);
@@ -517,7 +517,7 @@ public final class ModernSettingsDialog {
                         SoundEffects.playSelect();
                         // Selecting a built-in avatar replaces a personal photo only after its reference is cleared safely.
                         if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
-                            Toast.makeText(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG).show();
+                            TvFeedback.show(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG);
                             return;
                         }
                         ProfileManager.setAvatarIndex(activity, idx);
@@ -535,7 +535,7 @@ public final class ModernSettingsDialog {
                                     Math.round(32 * density), refreshedChildMode));
                         }
                         activity.updateTopBarUserIcon();
-                        Toast.makeText(activity, activity.getString(R.string.avatar_selected_toast, ProfileManager.AVATAR_NAMES[idx]), Toast.LENGTH_SHORT).show();
+                        TvFeedback.show(activity, activity.getString(R.string.avatar_selected_toast, ProfileManager.AVATAR_NAMES[idx]), Toast.LENGTH_SHORT);
                     });
 
                     avatarRow.addView(frame);
@@ -591,7 +591,7 @@ public final class ModernSettingsDialog {
                 defaultAvatarLp.topMargin = (int) (6 * density);
                 defaultAvatarButton.setOnClickListener(v -> {
                     if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
-                        Toast.makeText(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG).show();
+                        TvFeedback.show(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG);
                         return;
                     }
                     ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
@@ -603,7 +603,7 @@ public final class ModernSettingsDialog {
                                 Math.round(32 * density), restoredChildMode));
                     }
                     activity.updateTopBarUserIcon();
-                    Toast.makeText(activity, R.string.avatar_default_restored, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, R.string.avatar_default_restored, Toast.LENGTH_SHORT);
                 });
                 avatarPhotoActions.addView(defaultAvatarButton, defaultAvatarLp);
                 rightContent.addView(avatarPhotoActions);
@@ -767,7 +767,7 @@ public final class ModernSettingsDialog {
                     pRow.setOnClickListener(v -> {
                         SoundEffects.playSelect();
                         if (isCur) {
-                            Toast.makeText(activity, activity.getString(R.string.profile_already_active, p.name), Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, activity.getString(R.string.profile_already_active, p.name), Toast.LENGTH_SHORT);
                         } else {
                             // Show options: Switch or Delete
                             AlertDialog.Builder ob = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
@@ -788,7 +788,8 @@ public final class ModernSettingsDialog {
                                     });
                                 }
                             });
-                            ob.show();
+                            AlertDialog profileActions = ob.show();
+                            TvDialogStyle.apply(profileActions, activity, 520, 0);
                         }
                     });
 
@@ -826,7 +827,7 @@ public final class ModernSettingsDialog {
                                     activity.reloadTiles();
                                     activity.updateTopBarUserIcon();
                                     updateSidebarSelection.run();
-                                    Toast.makeText(activity, isChecked ? R.string.child_mode_enabled : R.string.child_mode_disabled, Toast.LENGTH_SHORT).show();
+                                    TvFeedback.show(activity, isChecked ? R.string.child_mode_enabled : R.string.child_mode_disabled, Toast.LENGTH_SHORT);
                                     if (renderRightPane[0] != null) renderRightPane[0].run();
                                 }
 
@@ -924,7 +925,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.icon_animation_setting_description),
                         activity.isIconAnimationsEnabled(), isChecked -> {
                             activity.setIconAnimationsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? R.string.icon_animation_enabled : R.string.icon_animation_disabled, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, isChecked ? R.string.icon_animation_enabled : R.string.icon_animation_disabled, Toast.LENGTH_SHORT);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -933,7 +934,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.glass_effect_setting_description),
                         activity.isGlassEffectsEnabled(), isChecked -> {
                             activity.setGlassEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? R.string.glass_effect_enabled : R.string.glass_effect_disabled, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, isChecked ? R.string.glass_effect_enabled : R.string.glass_effect_disabled, Toast.LENGTH_SHORT);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -942,7 +943,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.weather_animation_setting_description),
                         activity.isDynamicWeatherEffectsEnabled(), isChecked -> {
                             activity.setDynamicWeatherEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? R.string.weather_animation_enabled : R.string.weather_animation_disabled, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, isChecked ? R.string.weather_animation_enabled : R.string.weather_animation_disabled, Toast.LENGTH_SHORT);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -951,7 +952,7 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.icon_glow_setting_description),
                         activity.isIconGlowEffectsEnabled(), isChecked -> {
                             activity.setIconGlowEffectsEnabled(isChecked);
-                            Toast.makeText(activity, isChecked ? R.string.icon_glow_enabled : R.string.icon_glow_disabled, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, isChecked ? R.string.icon_glow_enabled : R.string.icon_glow_disabled, Toast.LENGTH_SHORT);
                             if (renderRightPane[0] != null) renderRightPane[0].run();
                         }));
 
@@ -1027,7 +1028,7 @@ public final class ModernSettingsDialog {
                             try {
                                 activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                             } catch (Exception e) {
-                                Toast.makeText(activity, R.string.open_accessibility_settings_hint, Toast.LENGTH_LONG).show();
+                                TvFeedback.show(activity, R.string.open_accessibility_settings_hint, Toast.LENGTH_LONG);
                             }
                         }));
 
@@ -1092,7 +1093,7 @@ public final class ModernSettingsDialog {
                             try {
                                 activity.startActivity(new Intent(Settings.ACTION_SETTINGS));
                             } catch (Exception e) {
-                                Toast.makeText(activity, R.string.android_settings_unavailable, Toast.LENGTH_SHORT).show();
+                                TvFeedback.show(activity, R.string.android_settings_unavailable, Toast.LENGTH_SHORT);
                             }
                         }));
             }
@@ -1119,7 +1120,7 @@ public final class ModernSettingsDialog {
                     .setPositiveButton(R.string.search_action, (dialog, which) -> {
                         String query = searchInput.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
                         if (query.isEmpty()) {
-                            Toast.makeText(activity, R.string.search_keyword_required, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, R.string.search_keyword_required, Toast.LENGTH_SHORT);
                             return;
                         }
 
@@ -1166,11 +1167,11 @@ public final class ModernSettingsDialog {
                         }
 
                         if (resultTabs.isEmpty()) {
-                            Toast.makeText(activity, R.string.settings_search_not_found, Toast.LENGTH_LONG).show();
+                            TvFeedback.show(activity, R.string.settings_search_not_found, Toast.LENGTH_LONG);
                             return;
                         }
                         String[] choices = resultLabels.toArray(new String[0]);
-                        new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        AlertDialog resultsDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                                 .setTitle(R.string.settings_search_results)
                                 .setItems(choices, (resultDialog, index) -> {
                                     int selectedTab = resultTabs.get(index);
@@ -1190,11 +1191,14 @@ public final class ModernSettingsDialog {
                                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                                 })
                                 .setNegativeButton(R.string.cancel_action, null)
-                                .show();
+                                .create();
+                        resultsDialog.show();
+                        TvDialogStyle.apply(resultsDialog, activity, 520, 0);
                     })
                     .setNegativeButton(R.string.cancel_action, null)
                     .create();
             searchDialog.show();
+            TvDialogStyle.apply(searchDialog, activity, 520, 0);
             searchInput.requestFocus();
         });
 
@@ -1231,8 +1235,8 @@ public final class ModernSettingsDialog {
     private static void addSectionHeader(LinearLayout root, Typeface font, String title) {
         TextView tv = new TextView(root.getContext());
         tv.setText(title);
-        tv.setTextSize(11.5f);
-        tv.setTextColor(0xFF7DD3FC);
+        tv.setTextSize(TvUiTokens.SECTION_LABEL_SP);
+        tv.setTextColor(TvUiTokens.ACCENT_SECTION);
         tv.setTypeface(font, Typeface.BOLD);
         tv.setLetterSpacing(0.08f);
         tv.setPadding(0, (int) (16 * root.getContext().getResources().getDisplayMetrics().density),
@@ -1243,8 +1247,8 @@ public final class ModernSettingsDialog {
     private static void addHeader(LinearLayout root, Typeface font, String title) {
         TextView tv = new TextView(root.getContext());
         tv.setText(title);
-        tv.setTextSize(24);
-        tv.setTextColor(0xFFFFFFFF);
+        tv.setTextSize(TvUiTokens.PAGE_HEADER_SP);
+        tv.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tv.setTypeface(font, Typeface.BOLD);
         tv.setPadding(0, 0, 0, (int) (14 * root.getContext().getResources().getDisplayMetrics().density));
         root.addView(tv);
@@ -1253,27 +1257,27 @@ public final class ModernSettingsDialog {
     private static LinearLayout buildCardRow(Context ctx, float density, Typeface font, String title, String subtitle, Runnable action) {
         LinearLayout card = new LinearLayout(ctx);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding((int) (16 * density), (int) (10 * density), (int) (16 * density), (int) (10 * density));
+        card.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density));
         card.setFocusable(true);
         card.setClickable(true);
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF272A33);
-        bg.setCornerRadius(12 * density);
+        bg.setColor(TvUiTokens.SURFACE);
+        bg.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
         card.setBackground(bg);
 
         TextView tvTitle = new TextView(ctx);
         tvTitle.setText(title);
-        tvTitle.setTextSize(14f);
-        tvTitle.setTextColor(0xFFFFFFFF);
+        tvTitle.setTextSize(TvUiTokens.CARD_TITLE_SP);
+        tvTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvTitle.setTypeface(font, Typeface.BOLD);
         card.addView(tvTitle);
 
         if (subtitle != null && !subtitle.isEmpty()) {
             TextView tvSub = new TextView(ctx);
             tvSub.setText(subtitle);
-            tvSub.setTextSize(12);
-            tvSub.setTextColor(0xFF8E929E);
+            tvSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+            tvSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
             tvSub.setTypeface(font, Typeface.NORMAL);
             tvSub.setPadding(0, (int) (2 * density), 0, 0);
             card.addView(tvSub);
@@ -1281,11 +1285,11 @@ public final class ModernSettingsDialog {
 
         card.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF353844 : 0xFF272A33);
-            g.setCornerRadius(12 * density);
-            if (hasFocus) g.setStroke((int) (2f * density), 0xFFFFFFFF);
+            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
+            g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(120).start();
         });
 
         card.setOnKeyListener((v, keyCode, event) -> {
@@ -1303,7 +1307,7 @@ public final class ModernSettingsDialog {
         });
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.bottomMargin = (int) (8 * density);
+        lp.bottomMargin = (int) (TvUiTokens.CARD_BOTTOM_MARGIN_DP * density);
         card.setLayoutParams(lp);
         return card;
     }
@@ -1446,6 +1450,7 @@ public final class ModernSettingsDialog {
                 .setNegativeButton(AppLanguage.strCancel(activity), (d, which) -> d.dismiss())
                 .create();
         dialog.show();
+        TvDialogStyle.apply(dialog, activity, 520, 0);
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
@@ -1494,9 +1499,10 @@ public final class ModernSettingsDialog {
                     }
                     ChildModeManager.setPin(activity, first);
                     dialog.dismiss();
-                    Toast.makeText(activity, R.string.pin_updated, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, R.string.pin_updated, Toast.LENGTH_SHORT);
                 }));
                 dialog.show();
+                TvDialogStyle.apply(dialog, activity, 520, 0);
             }
             @Override
             public void onCancelled() {}
@@ -1676,14 +1682,7 @@ public final class ModernSettingsDialog {
         AlertDialog d = pb.create();
         pickerHolder[0] = d;
         d.show();
-
-        Window win = d.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.85f));
-            win.setLayout(dw, ViewGroup.LayoutParams.WRAP_CONTENT);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(d, activity, 520, 0);
     }
 
     private static void showDefaultLauncherDialog(MainActivity activity, float density, Typeface font, boolean isDefault, String activePkg) {
@@ -1737,7 +1736,7 @@ public final class ModernSettingsDialog {
                             Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
                             activity.startActivity(intent);
                         } catch (Exception e2) {
-                            Toast.makeText(activity, R.string.launcher_settings_unsupported, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(activity, R.string.launcher_settings_unsupported, Toast.LENGTH_SHORT);
                         }
                     }
                 });
@@ -1748,7 +1747,7 @@ public final class ModernSettingsDialog {
                 activity.getString(R.string.set_home_adb_title),
                 activity.getString(R.string.adb_command_guidance, isDefault ? "" : activity.getString(R.string.disable_old_launcher_hint, activePkg)),
                 () -> {
-                    Toast.makeText(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG).show();
+                    TvFeedback.show(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG);
                 });
         root.addView(btnAdb);
 
@@ -1757,7 +1756,7 @@ public final class ModernSettingsDialog {
                 activity.getString(R.string.phone_installer_title),
                 activity.getString(R.string.phone_installer_summary),
                 () -> {
-                    Toast.makeText(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT);
                 });
         root.addView(btnPhone);
 
@@ -1796,15 +1795,7 @@ public final class ModernSettingsDialog {
         AlertDialog d = pb.create();
         dialogHolder[0] = d;
         d.show();
-
-        Window win = d.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (620 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.90f));
-            int dh = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
-            win.setLayout(dw, dh);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(d, activity, 620, 520);
 
         btnSettings.requestFocus();
     }

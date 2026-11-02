@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -29,6 +30,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Manages OTA in-app update checks, changelog display, and seamless APK downloading
@@ -49,6 +52,12 @@ public final class AppUpdateManager {
     public static final String KEY_NEW_CHANGELOG = "new_changelog";
     public static final String KEY_NEW_APK_URL = "new_apk_url";
     public static final String KEY_SKIPPED_VERSION_CODE = "skipped_version_code";
+
+    // Check requests are deliberately shorter than APK downloads; do not alter OTA policy intervals.
+    private static final int CHECK_CONNECT_TIMEOUT_MS = 6000;
+    private static final int CHECK_READ_TIMEOUT_MS = 6000;
+    private static final int DOWNLOAD_CONNECT_TIMEOUT_MS = 10000;
+    private static final int DOWNLOAD_READ_TIMEOUT_MS = 15000;
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -139,38 +148,43 @@ public final class AppUpdateManager {
     /**
      * Checks for updates. If manualCheck is true, shows feedback toasts even when up-to-date.
      */
+    private static boolean isActivityUsable(Activity activity) {
+        return activity != null && !activity.isFinishing() && !activity.isDestroyed();
+    }
+
     public static void checkForUpdates(Activity activity, boolean manualCheck) {
-        if (activity == null || activity.isFinishing()) return;
+        if (!isActivityUsable(activity)) return;
 
         if (manualCheck) {
-            Toast.makeText(activity, activity.getString(R.string.update_checking), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, activity.getString(R.string.update_checking), Toast.LENGTH_SHORT);
         }
 
         executor.execute(() -> {
+            HttpURLConnection conn = null;
             try {
                 URL url = new URL(VERSION_URL);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(6000);
-                conn.setReadTimeout(6000);
+                conn.setConnectTimeout(CHECK_CONNECT_TIMEOUT_MS);
+                conn.setReadTimeout(CHECK_READ_TIMEOUT_MS);
                 conn.setUseCaches(false);
 
                 int responseCode = conn.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     if (manualCheck) {
-                        mainHandler.post(() -> Toast.makeText(activity, activity.getString(R.string.update_http_failure, responseCode), Toast.LENGTH_SHORT).show());
+                        mainHandler.post(() -> {
+                            if (isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.update_http_failure, responseCode), Toast.LENGTH_SHORT);
+                        });
                     }
+                    conn.disconnect();
                     return;
                 }
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) sb.append(line);
                 }
-                reader.close();
-                conn.disconnect();
 
                 JSONObject json = new JSONObject(sb.toString());
                 int remoteVersionCode = json.optInt("versionCode", 0);
@@ -188,7 +202,7 @@ public final class AppUpdateManager {
                 sp.edit().putLong(KEY_LAST_CHECK, System.currentTimeMillis()).apply();
 
                 mainHandler.post(() -> {
-                    if (activity.isFinishing()) return;
+                    if (!isActivityUsable(activity)) return;
 
                     if (remoteVersionCode > currentVersionCode) {
                         sp.edit()
@@ -213,7 +227,7 @@ public final class AppUpdateManager {
                             ((MainActivity) activity).updateSettingsBadge();
                         }
                         if (manualCheck) {
-                            Toast.makeText(activity, activity.getString(R.string.update_latest_version, currentVersionName), Toast.LENGTH_LONG).show();
+                            TvFeedback.show(activity, activity.getString(R.string.update_latest_version, currentVersionName), Toast.LENGTH_LONG);
                         }
                     }
                 });
@@ -221,8 +235,12 @@ public final class AppUpdateManager {
             } catch (Exception e) {
                 Log.e(TAG, "Error checking updates: " + e.getMessage());
                 if (manualCheck) {
-                    mainHandler.post(() -> Toast.makeText(activity, activity.getString(R.string.update_check_error), Toast.LENGTH_SHORT).show());
+                    mainHandler.post(() -> {
+                        if (isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.update_check_error), Toast.LENGTH_SHORT);
+                    });
                 }
+            } finally {
+                if (conn != null) conn.disconnect();
             }
         });
     }
@@ -247,11 +265,12 @@ public final class AppUpdateManager {
             SoundEffects.playSelect();
             skipUpdate(activity, remoteVersionCode);
             dialog.dismiss();
-            Toast.makeText(activity, activity.getString(R.string.update_deferred), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, activity.getString(R.string.update_deferred), Toast.LENGTH_SHORT);
         });
 
         AlertDialog dialog = builder.create();
         dialog.show();
+        TvDialogStyle.apply(dialog, activity, 600, 0);
     }
 
     @SuppressWarnings("deprecation")
@@ -268,11 +287,12 @@ public final class AppUpdateManager {
                                 Uri.parse("package:" + activity.getPackageName()));
                         activity.startActivity(intent);
                     } catch (Exception e) {
-                        Toast.makeText(activity, R.string.install_unknown_apps_hint, Toast.LENGTH_LONG).show();
+                        TvFeedback.show(activity, R.string.install_unknown_apps_hint, Toast.LENGTH_LONG);
                     }
                 });
                 permDialog.setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss());
-                permDialog.show();
+                AlertDialog permissionDialog = permDialog.show();
+                TvDialogStyle.apply(permissionDialog, activity, 600, 0);
                 return;
             }
         }
@@ -281,11 +301,19 @@ public final class AppUpdateManager {
         progressDialog.setTitle(activity.getString(R.string.download_update_title, versionName));
         progressDialog.setMessage(activity.getString(R.string.download_update_message));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setIndeterminate(false);
+        progressDialog.setIndeterminate(true); // Remains indeterminate until the server supplies a usable content length.
         progressDialog.setMax(100);
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
+        AtomicBoolean cancelled = new AtomicBoolean(false);
+        AtomicReference<HttpURLConnection> activeConnection = new AtomicReference<>();
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel_action), (dialog, which) -> {
+            cancelled.set(true);
+            HttpURLConnection active = activeConnection.get();
+            if (active != null) active.disconnect();
+        });
         progressDialog.show();
+        TvDialogStyle.apply(progressDialog, activity, 600, 0);
 
         executor.execute(() -> {
             File cacheDir = activity.getExternalCacheDir() != null ? activity.getExternalCacheDir() : activity.getCacheDir();
@@ -296,14 +324,27 @@ public final class AppUpdateManager {
             HttpURLConnection conn = null;
 
             try {
+                if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
+                if (apkFile.exists() && !apkFile.delete()) throw new java.io.IOException("Tidak dapat menyiapkan file pembaruan");
                 URL url = new URL(apkUrl);
                 conn = (HttpURLConnection) url.openConnection();
+                activeConnection.set(conn);
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(10000);
-                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(DOWNLOAD_CONNECT_TIMEOUT_MS);
+                conn.setReadTimeout(DOWNLOAD_READ_TIMEOUT_MS);
+                if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
                 conn.connect();
 
-                int fileLength = conn.getContentLength();
+                int responseCode = conn.getResponseCode();
+                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    throw new java.io.IOException("HTTP " + responseCode);
+                }
+                long fileLength = conn.getContentLengthLong();
+                if (fileLength > 0) {
+                    mainHandler.post(() -> {
+                        if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.setIndeterminate(false);
+                    });
+                }
                 is = conn.getInputStream();
                 fos = new FileOutputStream(apkFile);
 
@@ -312,35 +353,53 @@ public final class AppUpdateManager {
                 int count;
 
                 while ((count = is.read(buffer)) != -1) {
+                    if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
                     total += count;
                     fos.write(buffer, 0, count);
                     if (fileLength > 0) {
-                        int progress = (int) (total * 100 / fileLength);
-                        mainHandler.post(() -> progressDialog.setProgress(progress));
+                        int progress = (int) Math.min(100L, (total * 100L) / fileLength);
+                        mainHandler.post(() -> {
+                            if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.setProgress(progress);
+                        });
                     }
                 }
                 fos.flush();
+                fos.getFD().sync();
+                if (!NetworkFeedbackPolicy.isCompleteDownload(total, fileLength)) {
+                    throw new java.io.IOException("Unduhan APK tidak lengkap");
+                }
+                // Do not let the installer race the worker's still-open file descriptors.
+                fos.close();
+                fos = null;
+                is.close();
+                is = null;
+                conn.disconnect();
+                conn = null;
+                activeConnection.set(null);
 
                 mainHandler.post(() -> {
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
+                    if (!isActivityUsable(activity)) return;
+                    if (progressDialog.isShowing()) progressDialog.dismiss();
+                    if (cancelled.get()) {
+                        if (apkFile.exists() && !apkFile.delete()) Log.w(TAG, "Could not remove cancelled update APK");
+                        return;
                     }
                     installApk(activity, apkFile);
                 });
 
             } catch (Exception e) {
-                Log.e(TAG, "Download error: " + e.getMessage());
+                if (apkFile.exists() && !apkFile.delete()) Log.w(TAG, "Could not remove incomplete update APK");
+                if (!cancelled.get()) Log.e(TAG, "Download error: " + e.getMessage());
                 mainHandler.post(() -> {
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                    Toast.makeText(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG).show();
+                    if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.dismiss();
+                    if (!cancelled.get() && isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG);
                 });
             } finally {
                 try {
                     if (fos != null) fos.close();
                     if (is != null) is.close();
                     if (conn != null) conn.disconnect();
+                    activeConnection.set(null);
                 } catch (Exception ignored) {
                 }
             }
@@ -348,8 +407,9 @@ public final class AppUpdateManager {
     }
 
     private static void installApk(Activity activity, File apkFile) {
-        if (!apkFile.exists()) {
-            Toast.makeText(activity, R.string.update_apk_missing, Toast.LENGTH_SHORT).show();
+        if (!isActivityUsable(activity)) return;
+        if (!apkFile.exists() || !apkFile.isFile() || apkFile.length() <= 0) {
+            TvFeedback.show(activity, R.string.update_apk_missing, Toast.LENGTH_SHORT);
             return;
         }
 
@@ -362,7 +422,7 @@ public final class AppUpdateManager {
             activity.startActivity(intent);
         } catch (Exception e) {
             Log.e(TAG, "Install error: " + e.getMessage());
-            Toast.makeText(activity, activity.getString(R.string.install_update_error, e.getMessage()), Toast.LENGTH_LONG).show();
+            TvFeedback.show(activity, activity.getString(R.string.install_update_error, e.getMessage()), Toast.LENGTH_LONG);
         }
     }
 }
