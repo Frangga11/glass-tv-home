@@ -694,3 +694,29 @@ This result supersedes the preceding note that CI #626 was in progress.
 - PR workflow #41514480902 completed SUCCESS on this exact head: Lists/tools/docs and Launcher build/unit tests both passed. The launcher log confirms release-validation build success, 35 Python tests including the accessibility-service manifest guard, and APK size 1,564,977 bytes against 1,572,864-byte cap (7,887 bytes headroom).
 - Matching push workflow #41514472847 initially failed only because Maven Central returned HTTP 429 while downloading Robolectric `nativeruntime-dist-compat-1.0.16`; this is external dependency rate limiting, not a source/test failure. Only the failed launcher job was re-run (attempt 2); it was still in progress at the time of this note. Lists/tools/docs job passed.
 - PR #50 remains Draft/open/unmerged. No APK publication, installation or physical Android TV testing. Device acceptance remains Project G.
+
+
+## F02 continuation checkpoint — 3 November 2026 (latest)
+
+### Completed in this session
+- Continued F02 source-level audit across Avatar upload, custom Wallpaper upload, StandBy photo persistence, MainActivity modal styling, ModernSettingsDialog, HomeKeyService, and exported Android components.
+- Confirmed the Avatar, custom Wallpaper, and StandBy final commit paths serialize session checks and state/file mutations with server shutdown. Strengthened tests/test_wallpaper_session_shutdown_atomicity.py so both Wallpaper and StandBy upload commit sections are explicitly guarded.
+- Found F02-RES-001: concurrent QR upload clients could overcommit a shared free-space snapshot; custom Wallpaper uploads lacked a free-space guard. Implemented overflow-safe reservation arithmetic, synchronized in-flight byte reservations for custom Wallpaper and StandBy uploads, 64 MiB minimum free-space margin, HTTP 507 Insufficient Storage, and release in all exit paths. Existing per-file limits and StandBy collection caps are unchanged; no arbitrary total wallpaper cap introduced.
+- Added JUnit reservation boundary tests and tests/test_upload_storage_reservation.py source-contract checks. No physical device testing or APK publication performed.
+
+### Current Git state and CI
+- F02 branch: integration/project-f02-system-validation.
+- PR #50 head: c1f212585633899d4c1f5327d3a982a9e136e2b7; base integration/project-f-staged-full; Draft/open/unmerged.
+- Key commits in this continuation: 4e9219f (upload shutdown test hardening), b167fdb (storage reservation production fix), 1b8418a / 27626ff (policy and JUnit tests), 453f9b9 (Python source-contract test), f594d1a / c1f2125 (findings and validation docs).
+- Exact-head CI run #41519813674: Lists/tools/docs SUCCESS; Launcher build/unit tests IN_PROGRESS at last poll. The new storage reservation and upload shutdown findings remain OPEN until both jobs pass on c1f2125.
+- Earlier test-only head 7e18c588374ba90dc4d3d01a608c484dcf194108 passed both jobs in run #41519394898.
+
+### Remaining work
+1. Poll run #41519813674; inspect and correct any test/build/size-gate failure without weakening tests.
+2. If exact-head CI passes, sync final evidence and current APK size/headroom into canonical project docs and F02 handover.
+3. Continue only with remaining source-level risk checks; preserve all owner-branch boundaries and do not merge PR #50.
+4. Project G must verify real TV UI/DPAD/remote behavior, ADB shell permission compatibility, phone-to-TV LAN cancellation/expiry/retry, concurrent uploads, and low-storage behavior.
+
+### Project F boundary
+- No merge, APK artifact publication, installation, or physical Android TV testing during F02.
+- Device-only cases remain DEFERRED_TO_G, never marked PASS based on host CI.
