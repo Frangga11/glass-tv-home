@@ -108,3 +108,25 @@ Grouped integration / merge: DEFERRED until the full A–G sequence and explicit
 - Exact-head GitHub Actions CI run #695 / `41470304782`: **SUCCESS**. Launcher build/unit tests, `testReleaseUnitTest`, `assembleRelease`, APK-size diagnostic/guard, and Lists/tools/docs all passed.
 - Final release APK diagnostic: 1,565,417 bytes; cap 1,572,864 bytes; headroom 7,447 bytes. APK publication skipped.
 - The feature branch's later audit-report commit is documentation-only; no application source/resources/tests/build inputs changed after the verified source/test head. Project F acceptance remains pending.
+
+
+## UI consistency and compact-popup audit — 2 Nov 2026
+
+### Audit result
+- The first E08 control center used a bespoke blue/transparent material and lengthy helper text, unlike the shared Settings card/subtab treatment.
+- The category and interval pickers also used older white-on-focus row styling, two-line explanatory copy, and independently sized dialogs.
+- The uploaded-photo manager and single-photo actions did not consistently use the shared modal viewport/surface contract.
+
+### Corrections
+- Reworked the main control center into a compact 680 × 420 dp maximum modal: one title, three short tabs (Change/Shuffle/Next), concise action labels, and no redundant instructional paragraphs.
+- Reused B01-owned `TvUiTokens` for card surface, focused surface, border, selected state, typography and radius. Focus treatment now follows the same neutral TV Settings language as the shared card rows rather than introducing a new blue button system.
+- Category and interval lists now use the same card surface/focus/selected tokens, compact single-line labels, and no long per-row descriptions. Current selection remains visibly marked.
+- Category, interval, uploaded-photo manager, empty-manager, delete confirmation and single-photo action dialogs now apply the shared `TvDialogStyle` material, dimming, centering and viewport sizing after the existing `styleGlassDialog` typography/list treatment.
+- The three primary actions still route to existing category selection, shuffle/interval preferences and Next rotation. No preference key, storage schema, timer engine, upload flow or wallpaper provider changed.
+- Removed an unnecessary focus override that referenced a view with no generated ID; D-pad traversal remains based on the actual focusable view hierarchy. Shuffle re-render explicitly restores focus to its toggle.
+
+### Final exact-head verification
+- Final source/test head: `fcd7d8f23a4833830a401652ef269db3282b7300`.
+- GitHub Actions run #702 / `41473357877`: **SUCCESS** (launcher unit tests/release build/APK guard and Lists/tools/docs).
+- APK: 1,562,709 bytes; cap 1,572,864; headroom 10,155 bytes. APK publication skipped.
+- No physical TV acceptance is claimed. Project F must verify popup appearance, D-pad/focus/Back, Glass ON/OFF and 1080p/4K, plus all existing wallpaper actions.
