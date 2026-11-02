@@ -128,3 +128,12 @@
 - Implementation head `37dab64cc99f11ef6670840c351f32fe91da6b24` passed exact-head GitHub Actions run #41427317877: launcher build/unit tests/release build/APK-size guard PASS and lists/tools/docs PASS.
 - Current PR #38 head `d1d461c2c08609462354ebebd9dc7ce678e2e049` is a report-only documentation follow-up; application source/resources are unchanged from the tested implementation head.
 - PR #38 remains Draft/open/unmerged. Physical Mi TV Stick/4K UI and remote acceptance remain Project F; no APK install or device test is claimed.
+
+
+## B03 global surface fallback — 2 Nov 2026
+- B03 branch `feature/b03-dialog-opacity-layering`, PR #12 Draft/open/unmerged; current source head `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`.
+- Added shared opaque `POPUP_SURFACE` / `DOCK_SURFACE` tokens, solid OFF-state backgrounds for GlassDrawable and DockDecoration, and OFF-state solid modal background selection in TvDialogStyle. Added `GlassSurfaceFallbackTest` JVM regression test.
+- Exact-head CI #685 / `41447473358` pending at documentation checkpoint.
+- E07 branch PR #40 has matching toggle invalidation integration and exact-head CI #682 / `41446777187` PASS. E07 exact source head: `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`.
+- B03 owns global material contract; E07 owns setting integration; G owns final shared-file reconciliation; F owns 1080p/4K device acceptance. No merge, APK publication/installation or physical TV test.
+- Report: [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md).
