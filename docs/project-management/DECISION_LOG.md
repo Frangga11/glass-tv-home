@@ -210,3 +210,16 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 | F-021 supersession | The earlier provisional instruction to retain RecentAppsActivity's exported MAIN entry is superseded by F-024. | F02 confirmed the exported activity accepted a destructive ACTION_CLOSE_ALL path; it is now internal-only, with explicit in-app HomeKeyService routing preserved. | SUPERSEDED BY F-024 / IMPLEMENTED |
 | F-031 | Reserve upload storage atomically across concurrent Wallpaper and StandBy QR transfers and preserve a 64 MiB free-space margin. | Per-request checks alone can overcommit a shared free-space snapshot; reservations are released in all completion/failure/cancellation paths. Keep existing per-file and StandBy collection limits; do not impose an arbitrary total wallpaper cap. | C07 OWNER + F02 SOURCE/TEST CI PASS #41520866323 / #41520818608 / LATEST F02 DOCS RETEST PENDING #41521145454 |
 | F-032 | Protect both Wallpaper and StandBy upload commit critical sections with explicit regression tests. | The production code already serialized final session checks and persistence with stop(); the earlier test did not independently guard both upload commit paths. | OWNER + INTEGRATION TEST COVERAGE PASS #41520866323 / #41520818608 / LATEST F02 DOCS RETEST PENDING #41521145454 |
+
+
+## F02 final disposition — 3 November 2026
+| Decision | Status |
+|---|---|
+| F-031 process-wide QR upload storage reservation | OWNER + F02 HOST VERIFIED — C07 #41521013896; F02 #41521145454 |
+| F-032 Wallpaper/StandBy commit-vs-stop atomicity regression coverage | OWNER + F02 HOST VERIFIED — C07 #41521013896; F02 #41521145454 |
+| D01 exported receiver authorization + internal-only LocationActivity | OWNER + F02 HOST VERIFIED — #51 run #41506847521; mirrored in F02 #41521145454 |
+| F02 integrated host validation | PASS — exact head `e190e2863a4aacbe3aba61094fab00572f4b469f`, run #41521145454 |
+| Physical Android TV / phone / LAN / ADB / OEM acceptance | DEFERRED_TO_G — cannot be truthfully closed by host CI |
+| APK artifact publication / installation in F02 | NOT PERFORMED — by approved policy |
+
+The remaining Draft/open PRs are intentional staged source/integration records pending Project G final audit and merge. They are not being handed to G as unresolved F02 code defects.
