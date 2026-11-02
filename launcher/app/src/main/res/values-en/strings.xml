@@ -592,4 +592,5 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_download_complete">Downloaded %2$d wallpapers in the %1$s category.</string>
     <string name="wallpaper_download_failed">Could not download wallpapers in the %1$s category. Check your internet connection and try again.</string>
     <string name="local_upload_error_busy">The upload service is busy. Try again.</string>
+    <string name="wallpaper_page_action_failed">The request could not be completed. Check the photo and try again.</string>
 </resources>
