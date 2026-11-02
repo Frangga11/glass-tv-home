@@ -461,3 +461,9 @@ This result supersedes the preceding note that CI #626 was in progress.
 - E04 source branch created from E03 exact head `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`; no rebase required.
 - Repair: removed the duplicate shell display-off command from `ClockDream`; now checks the single supported Accessibility global action. Commit `7c5e2677eac1c791675d9f5ef7d736eb47d37aca`.
 - Draft PR #37 opened against E03. No merge. Exact-head CI pending; physical device acceptance remains Project F. No APK published or installed.
+
+
+## E04 follow-up — 2 Nov 2026
+
+- E04 source commits `75fa1b1` and `08076bb` remove the DreamService two-hour power override and MainActivity 10-minute/2h10m idle-power overrides. Android TV remains owner of native idle transitions.
+- Custom StandBy photo QR upload/store/display remains preserved. Exact-head CI #629 pending; physical acceptance assigned to Project F. No APK publication/install or merge.
