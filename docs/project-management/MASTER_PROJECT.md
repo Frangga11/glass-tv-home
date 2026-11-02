@@ -323,3 +323,14 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Confirmed E05 PR #38 does not change `WeatherAirQuality.java`, `WeatherActivity.java` or `HomeWeather.java`; its ayah-reader CI is not weather/AQI verification.
 - WQ-01–WQ-08 identify E05 data/content, D07 freshness/state, B01–B03 shared popup primitives, F device/integration acceptance and G cross-project closure. No weather API defect is assigned to C01–C07; preserve C07.
 - Source repairs remain OPEN; PR #38 stays Draft/open/unmerged under D-013. See audit report for required sequence and evidence.
+
+
+## E05 weather/AQI source repair — exact-head closure checkpoint, 2 November 2026
+- E05 PR #38 exact source/test head: `6fe89fad078692958db67030329a6de66cd7ae71`; Draft PR remains OPEN/DRAFT/UNMERGED under D-013.
+- Corrected synthetic PM2.5/PM10 and weather/forecast fallbacks; unavailable values remain unavailable. Weather/AQI success timestamps are independent; detailed requests reject superseded generation/location/language responses; cached source data is bound to exact selected coordinates.
+- Corrected forecast UI sentinel rendering and fake temperature-range fallback; neutral visual state is used when weather data is unavailable. AQI location is described as a model reference, and attribution identifies Open-Meteo/CAMS and modelled US AQI (not official Indonesian ISPU).
+- Added three regression tests for weather-cache coordinate matching. Intermediate duplicate string-resource keys were removed from default/ID/EN resources after CI detected them.
+- Exact-head CI run #663 / `41433527557` PASS: launcher unit tests/release build/APK-size guard and Lists/tools/docs both SUCCESS. APK publication skipped.
+- D07 detailed-weather freshness follow-up head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`, CI run #642 PASS. D07 and E05 PRs remain unmerged.
+- Physical 1080p/4K weather presentation, popup focus/Back/scroll and stale/offline/location/language acceptance remain Project F gates. No APK installation or device test claimed.
+- Detailed findings/evidence: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md) and [CROSS_PROJECT_WEATHER_AQI_AUDIT.md](CROSS_PROJECT_WEATHER_AQI_AUDIT.md).
