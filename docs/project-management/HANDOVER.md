@@ -404,3 +404,5 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Audit report: `E05_WIDGETS_INFORMATION_AUDIT.md`. Exact-head CI run #41422241456 is QUEUED; wait for both jobs and verify the final PR head before source closure.
 - Project F still must verify longest Arabic/Indonesian/English verse, no clipped glyphs/marks, shelf/dock clearance, 1920x1080 + 4K, D-pad/Back/scroll, offline/cache/language refresh, prayer zone/date rollover and weather freshness. Deferred, not waived.
 - No APK published/installed, no physical device acceptance, no merge. Next action: monitor CI #41422241456, inspect failures if any, then close source gate only after exact-head PASS.
+
+- Follow-up E05-F02 found the Smart Boost Quick Action bypassed the explicit cache-clean workflow, deleted only top-level cache entries, and always reported success. It now opens the existing confirmation/result flow using `CacheCleaner.cleanNow()`; ID/EN labels now accurately describe cache/storage optimization without promising RAM release. Latest source PR head is being revalidated by exact-head CI.
