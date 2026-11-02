@@ -58,10 +58,12 @@ public class ClockDream extends DreamService {
         public void run() {
             if (dreamStartTime > 0 && android.os.SystemClock.elapsedRealtime() - dreamStartTime >= DREAM_SLEEP_TIMEOUT_MS) {
                 Log.i(TAG, "Screensaver ran for 2 hours: turning off TV display");
-                HomeKeyService.sleepScreen();
-                try {
-                    Runtime.getRuntime().exec("input keyevent 223");
-                } catch (Exception ignored) {
+                // Use the app's supported Accessibility global action only. A shell
+                // keyevent is not a reliable app-level fallback on Android TV and can
+                // issue a second, conflicting power transition.
+                boolean displayLocked = HomeKeyService.sleepScreen();
+                if (!displayLocked) {
+                    Log.w(TAG, "Display lock unavailable: HomeKeyService is not connected or rejected the action");
                 }
                 finish();
                 return;
