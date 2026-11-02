@@ -189,12 +189,15 @@ The following fixes have been implemented on owning source branches and mirrored
 - D01 latest head `66352838e6155a42a9ea61477643a238f360434f`: CI run #41506847521 SUCCESS (both jobs).
 - Status: SOURCE FIX / CI PASS / F02 RETEST PENDING.
 
-### F02-SEC-004 — RecentAppsActivity external entry contract
-- Severity: P3 review item, not yet confirmed as a defect.
-- `.RecentAppsActivity` remains exported with an `ACTION_MAIN` intent filter and no component permission. It is a UI surface, not a data-provider API. Recent Apps can now be opened through the new explicit in-app HomeKeyService route.
-- No in-repository external caller was identified. The public MAIN filter may be a legacy external remote/launcher integration, so it is intentionally not removed or permission-gated without compatibility evidence.
-- Project G must verify whether any OEM launcher, assistant bridge or remote-control integration invokes this component externally. If none does, close by setting exported=false and removing the obsolete filter on its owner branch; if one does, document and narrowly authorize it.
-- Status: OPEN / CONTRACT VERIFICATION DEFERRED_TO_G.
+### F02-SEC-004 — Exported RecentAppsActivity exposes destructive Close All action
+- Severity: P2. Owner: B01 Recent Apps / manifest boundary.
+- Confirmed defect: `.RecentAppsActivity` was exported and handled the explicit action `com.gathin.tvhome.ACTION_CLOSE_ALL` in `onCreate()` by posting `onCloseAllClicked()`. That path calls `RecentAppsManager.closeAll(...)` and can force-stop the apps represented in the recent-app list. Any installed app able to construct an explicit component Intent could launch this destructive action without an app-level permission.
+- No external caller contract was found. HomeKeyService opens RecentAppsActivity through an explicit in-app Intent; Close All is invoked through its in-app UI/global service route.
+- Correction: set `android:exported="false"` and remove the unnecessary MAIN intent filter. Preserve the activity, its internal explicit launch, and its Close All UI behavior.
+- Added `tests/test_recent_apps_manifest_security.py` to assert non-exported/no-filter manifest state and continued explicit in-app HomeKeyService reachability.
+- Owner branch: B01 `feature/b01-global-navigation-retention`, PR #10; mirrored to F02 integration.
+- Exact-head owner/integration CI pending. Project G must confirm the actual double-Home/Close All interaction still works through the internal route.
+- Status: FIX COMMITTED / EXACT-HEAD CI PENDING / DEVICE ACCEPTANCE DEFERRED_TO_G.
 
 ### F02-FUNC-001 — Home double-press Recent Apps routing
 - B01 now implements a 350 ms double-press classifier and 400 ms single-action delay. Single Home returns/dismisses; double Home opens RecentAppsActivity or triggers Close All when already foreground; long Home still opens Settings at 450 ms. Settings-key input cancels any pending Home action to prevent delayed Home from overriding Settings.
@@ -222,3 +225,7 @@ The following fixes have been implemented on owning source branches and mirrored
 - Owner branch: B01 `feature/b01-global-navigation-retention`, PR #10. F02 integration mirrors the fix.
 - B01 exact-head CI run #41508765896 and F02 exact-head CI runs #41508777206/#41508763391 were in progress at checkpoint; previous F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs before this new fix.
 - Status: FIX COMMITTED / EXACT-HEAD OWNER + INTEGRATION CI PENDING / TV ACCESSIBILITY EVENT ACCEPTANCE DEFERRED_TO_G.
+
+
+### Additional security validation
+- The Recent Apps exported entry was not merely a public UI surface: its exported `ACTION_CLOSE_ALL` branch was a remotely triggerable destructive app-stop operation. The manifest boundary was hardened immediately, with the explicit in-app HomeKeyService route retained and a regression test added.
