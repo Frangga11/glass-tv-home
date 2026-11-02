@@ -757,3 +757,11 @@ Latest F02 head `eea920469ffe5bef5ddb14e1dfd66687e82d8fed` is in CI. Do not clos
 | F02-SEC-004 | Exported RecentAppsActivity accepted `ACTION_CLOSE_ALL` and could force-stop recent apps; set `exported=false`, removed MAIN filter, retained explicit internal route, added manifest regression test. | FIX COMMITTED / B01 + F02 EXACT-HEAD CI PENDING |
 
 B01 latest head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; F02 latest head `3ea479d689dc732fe46594a0677d02b7762d7527`. Previous F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs but predates the latest fixes. Keep both findings open until exact-head CI and Project G acceptance pass.
+
+
+## Latest exact-head retest status — 3 November 2026
+
+- F02 integrated head `5dd787ba136dfb070eaa2e833af653e57ec66015`: Launcher build/unit tests run #41509632784 SUCCESS; Lists/tools/docs run #41509626957 SUCCESS.
+- B01 owner head `791620ce4628ee9e909af7ce2f4758b6df77afeb`: both jobs run #41509576279 SUCCESS. Subsequent comment-only alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f` queued for exact-head CI.
+- F02-UI-001, F02-SEC-004, F02-FUNC-002 and F02-PLAT-001 have passed integrated exact-head CI at `5dd787b`; retain G device-only acceptance where applicable.
+- No finding is closed solely on CI: owner responsibility, integrated review and Project G acceptance remain required.
