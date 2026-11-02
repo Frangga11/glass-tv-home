@@ -705,3 +705,12 @@ undefined
 - Full candidate evidence: integration/project-f-staged-full HEAD 8fe90a9fdd493c5d81ffdacbe16054630a26580a; zero file diff versus F01 candidate 21c2eab34a3356d37d079eba04b281cc2373386d; existing CI #716 PASS remains valid.
 - Safety checks: C07 request-deadline stream preserved; D05 atomic StandBy and D07 state/concurrency/freshness retained; E08 compact Quick Control and fuller Appearance wallpaper management remain distinct over shared state. No feature PR/main/release merge, APK publication or installation.
 - Open gate: F02 physical Android TV functional acceptance. Parent/base drift items remain for G-stage grouped reconciliation; D-013 remains binding.
+
+
+## F02-ENTRY-001 — integrated functional regression opening (3 Nov 2026)
+- Status: PASS for entry/source audit only; F02 runtime/device tests remain OPEN.
+- Selected candidate: `integration/project-f-staged-full` @ `8fe90a9fdd493c5d81ffdacbe16054630a26580a`; exact file tree matches F01 candidate `21c2eab34a3356d37d079eba04b281cc2373386d` (3 commits ahead, no file changes).
+- Reused CI #716 / `41470304782`: launcher build/unit tests/release build/APK guard and Lists/tools/docs PASS; publication skipped.
+- Cross-candidate audit: modal/fallback behavior and feedback components align; full candidate preserves SettingsFocusPath tests and request/session deadline policy. Avoid blind overwrite from B-series integration branch.
+- Outstanding: physical D-pad/focus/Back, popup/dialog, Glass ON/OFF, Profile/App Lock/Child Mode, Weather/AQI, QR upload, wallpaper routes, StandBy, process death/reboot and 1080p/4K.
+- No device test APK published/installed, no physical acceptance, no feature/main/release merge. D-013 remains active. Detailed evidence: `F02_INTEGRATED_FUNCTIONAL_REGRESSION.md`.
