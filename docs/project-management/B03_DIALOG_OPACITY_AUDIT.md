@@ -1,12 +1,12 @@
 # B03 — Global Dialog, Popup & Surface Fallback Audit
 
 **Date:** 2 November 2026  
-**Status:** SOURCE REPAIR IMPLEMENTED — EXACT-HEAD CI PENDING — DEVICE ACCEPTANCE PROJECT F  
+**Status:** SOURCE REPAIR AND EXACT-HEAD CI VERIFIED — DEVICE ACCEPTANCE PROJECT F  
 **Owner:** Project B03 (global dialog/popup layering), with E07 toggle integration  
 **Source branch:** `feature/b03-dialog-opacity-layering`  
 **Source PR:** #12 — Draft/open/unmerged  
 **Current source head:** `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`  
-**Exact-head CI:** run #685 / `41447473358` — queued at documentation time  
+**Exact-head CI:** run #685 / `41447473358` — SUCCESS (both jobs passed)  
 **Merge policy:** D-013; no early merge.
 
 ## 1. Trigger and impact
@@ -60,7 +60,7 @@ The B03 branch is the canonical global contract owner; E07's parallel implementa
 | Root cause verified from source | PASS |
 | B03 fallback implementation | IMPLEMENTED |
 | JVM fallback-token regression test | ADDED |
-| Exact-head B03 CI run #685 | PENDING |
+| Exact-head B03 CI run #685 | PASS — both jobs succeeded; unit tests/release build/APK-size guard and Lists/tools/docs |
 | E07 source/CI fallback repair | PASS — PR #40 head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`, run #682 / `41446777187` SUCCESS |
 | 1080p/4K visual and D-pad acceptance | PENDING Project F |
 | Android OS Settings page unchanged | SOURCE SCOPE PRESERVED |
@@ -72,4 +72,12 @@ No APK was published or installed. No physical TV test is claimed.
 
 ## 7. Decision
 
-B03's global surface fallback repair is implemented on its isolated source branch. It is not marked CI-complete until run #685 succeeds, and not device-complete until Project F supplies physical acceptance. PR #12 remains Draft/open/unmerged under D-013.
+B03's global surface fallback repair is implemented and exact-head CI-verified on its isolated source branch. It is not device-complete until Project F supplies physical acceptance. PR #12 remains Draft/open/unmerged under D-013.
+
+
+## Exact-head CI closure — 2 November 2026
+- Source/test head: `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`.
+- CI run #685 / `41447473358`: **SUCCESS**. `Launcher build and unit tests` and `Lists, tools and docs` both passed.
+- Gradle `testReleaseUnitTest` and `assembleRelease` passed; APK-size guard passed; manual APK publication skipped.
+- Release APK diagnostic: 1503 KB, below the 1.5 MiB (1536 KiB) cap.
+- PR #12 remains OPEN/DRAFT/UNMERGED and mergeable. No APK installed and no physical TV acceptance claimed.
