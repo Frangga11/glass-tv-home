@@ -235,43 +235,44 @@ final class WeatherAirQuality {
     /** Formats a clean Spannable UI string for the Home screen: "⛅ 29° Cerah  •  IPU 112 Tidak Sihat" */
     static CharSequence getFormatted(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        int temp = prefs.getInt(KEY_TEMP, 29);
-        int code = prefs.getInt(KEY_CODE, 2);
-        int aqi = prefs.getInt(KEY_AQI, 50);
-
         boolean isEnglish = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(context));
-
-        String icon = getWeatherIcon(code);
-        String condition = getWeatherCondition(code, isEnglish);
-
-        String aqiStatus = prefs.getString(KEY_AQI_STATUS, getAqiStatus(aqi, isEnglish));
-        // Translate status to the Indonesian display language.
-        if (!isEnglish) {
-            aqiStatus = translateAqiStatus(aqiStatus);
+        String weatherJson = prefs.getString(KEY_WEATHER_JSON, null);
+        String aqiJson = prefs.getString(KEY_AQI_JSON, null);
+        String weatherText = isEnglish ? "Weather unavailable" : "Cuaca tidak tersedia";
+        String aqiText = isEnglish ? "US AQI unavailable" : "US AQI tidak tersedia";
+        int aqi = -1;
+        try {
+            if (weatherJson != null) {
+                JSONObject current = new JSONObject(weatherJson).optJSONObject("current");
+                if (current != null) {
+                    int temp = roundedValue(current, "temperature_2m");
+                    int code = intValue(current, "weather_code");
+                    if (temp >= -100 && temp <= 100) {
+                        weatherText = getWeatherIcon(code) + " " + temp + "° " + getWeatherCondition(code, isEnglish);
+                    }
+                }
+            }
+            if (aqiJson != null) {
+                JSONObject current = new JSONObject(aqiJson).optJSONObject("current");
+                if (current != null) aqi = roundedValue(current, "us_aqi");
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Unable to format cached weather/AQI: " + e.getMessage());
         }
-        int aqiColor = getAqiColor(aqi);
+        if (aqi >= 0) aqiText = "US AQI " + aqi + " " + getAqiStatus(aqi, isEnglish);
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
-
-        // Weather: e.g. "⛅ 29° Cerah"
-        int startWeather = sb.length();
-        sb.append(icon).append(" ").append(String.valueOf(temp)).append("° ").append(condition);
-        sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), startWeather, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new StyleSpan(Typeface.BOLD), startWeather, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        // Separator: "  •  "
-        int startDot = sb.length();
+        int weatherStart = sb.length();
+        sb.append(weatherText);
+        sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), weatherStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new StyleSpan(Typeface.BOLD), weatherStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        int separatorStart = sb.length();
         sb.append("  •  ");
-        sb.setSpan(new ForegroundColorSpan(0x80FFFFFF), startDot, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        // Air Quality: "IPU 112 Tidak Sihat"
-        int startAqi = sb.length();
-        boolean isJasSource = prefs.getBoolean(KEY_AQI_IS_JAS, false);
-        String prefix = isJasSource ? "API " : "US AQI ";
-        sb.append(prefix).append(String.valueOf(aqi)).append(" ").append(aqiStatus);
-        sb.setSpan(new ForegroundColorSpan(aqiColor), startAqi, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new StyleSpan(Typeface.BOLD), startAqi, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+        sb.setSpan(new ForegroundColorSpan(0x80FFFFFF), separatorStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        int aqiStart = sb.length();
+        sb.append(aqiText);
+        sb.setSpan(new ForegroundColorSpan(aqi < 0 ? 0xFF9E9E9E : getAqiColor(aqi)), aqiStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new StyleSpan(Typeface.BOLD), aqiStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sb;
     }
 
