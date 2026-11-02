@@ -392,3 +392,5 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Commits `75fa1b1` and `08076bb`: remove app-owned DreamService 2-hour sleep and MainActivity 10-minute/2h10m idle-power triggers. Android TV owns native idle → StandBy/Dream → screensaver → sleep sequence. Manual Nightstand overlay remains; photo pipeline unchanged.
 - CI #629 / `41418393199`: Lists/tools/docs PASS; launcher build/unit tests in progress at checkpoint; APK size gate pending.
 - Next: poll exact-head CI, fix any failures, record APK size; then Project F physical acceptance of native transition timings, DreamService selection/wake, QR upload/cancel/retry, photo rendering/orientation/rotation, lifecycle/offline behavior. Do not claim hardware acceptance or merge before gates. E04 NOT FINAL.
+
+- CI #629 / run `41418393199` completed **SUCCESS** for `08076bb945a169de198905152a092f419f48aa82`; APK 1,561,373 bytes, 11,491-byte headroom. Source-level gates PASS. No APK install or physical acceptance claim. Project F must complete target-device/OEM sequence and photo-flow acceptance before global release/merge.
