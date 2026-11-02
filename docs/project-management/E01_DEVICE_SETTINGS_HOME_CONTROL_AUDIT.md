@@ -79,3 +79,40 @@ A shared `MainActivity.styleDeviceSettingsPopup()` contract now applies the same
 The update-available, install-permission and download-progress windows also use the shared contract when launched from `MainActivity`. Android-owned settings pages (HOME picker, accessibility, notification access, Dream/screensaver and general Settings) are intentionally excluded because their visual presentation belongs to the TV firmware/Android OS, not Glass TV Home.
 
 **Verification boundary:** source-level styling consolidation is committed and the Android build, JVM unit tests, documentation checks and APK budget all pass (workflow `41377496081`, run #460). Stage F target-TV visual/remote testing is still required before acceptance. No device settings, HOME resolver preference, or user data are modified by this styling work.
+
+## Finalization — 2 November 2026
+
+**E01 source-audit status: COMPLETE — ready to proceed to E02.** This closes E01 source implementation and repository-level verification only. Target-TV acceptance remains assigned to Project F; this is not final release approval.
+
+### Final source corrections and cross-project alignment
+
+- Device Settings now presents Android screensaver and Android display/screen-off settings as separate actions. The descriptions explain that Android controls when its DreamService starts, while Glass TV's ClockDream reuses the same nightstand view and StandbyPhotoStore photo collection as Glass TV StandBy. The in-app StandBy trigger remains separate from Android's display timeout.
+- Source-defined timing observed during audit: the in-app overlay starts after 10 minutes idle and its TV-sleep path is 2 hours 10 minutes from last interaction; ClockDream has a 2-hour Dream-session timeout. F must verify these paths do not conflict on the target OEM firmware.
+- Verified the E01 copies of B01's canonical TvDialogStyle.java and TvUiTokens.java are byte-for-byte identical to the current B01 branch blobs (85d67a718523d28a907d6bcd531e205e26507519 and cf91d8da298639fcba1451c777f3ddf603f6703a). E01 adopts the global contract; it does not define a competing popup system.
+- Verified the QR destination on main contains release/glass-tv-installer.apk, release/glass-tv-home.apk, and release/version.json (version 4.0.0). The QR opens the release folder; it does not assert that a particular APK has been installed.
+- Corrected cache-trim success detection. A normal ADB CLSE now counts only as stream closure; the operation is reported successful only when pm trim-caches exits through the success chain and emits the exact __GLASS_TV_SYSTEM_TRIM_OK__ marker. Added CacheCleanerTest for positive, negative, missing-marker and null output cases.
+- The final resource set includes the default values/strings.xml entries as well as Indonesian and English entries. Intermediate CI failures caused by missing default resource entries and an unescaped English apostrophe were corrected before final exact-head verification.
+
+### Exact-head verification
+
+- **Branch head:** 9919dbaa0add6cc7ce2a84332354f46f9cc48d61
+- **CI:** run #602 / 41400508774 — PASS at the exact branch head.
+- Android release build and JVM unit tests — PASS.
+- Lists/tools/docs checks — PASS.
+- Diagnostic APK — **1,560,565 bytes**; budget **1,572,864 bytes**; headroom **12,299 bytes**.
+- Manual TV-test APK publication — skipped; workflow artifact count — **0**.
+- PR #34 remains Draft / open / unmerged, based on D07 exact head 964163c918e281b68af5cf7114ca56ead2797486. No canonical integration merge.
+
+### Remaining acceptance gates — Project F
+
+These are physical/OEM acceptance checks, not blockers to starting E02 source work:
+
+- Reconcile the existing HOME resolver versus preferred-activities discrepancy using read-only device evidence; verify the HOME picker and physical HOME button.
+- Verify actual service status after enabling/disabling HomeKeyService, InputKeyService and notification access through Android Settings.
+- Verify restart/power menu labels and manual fallback on the target TV.
+- Verify cache-trim success and denied/unavailable ADB paths on-device.
+- Scan the QR with a phone and complete the installer flow without changing HOME defaults unless explicitly approved.
+- Inspect all Device Settings popups and the shared Settings shell on the target TV with D-pad/remote: focus order, scroll, clipping, legibility and dimensions.
+- Verify Android DreamService/ClockDream, in-app StandBy overlay and Android display timeout behavior together on the target firmware.
+
+No TV setting, HOME default, package state, user data or installed APK was changed during this source audit. E01 source work is closed for now; F owns the remaining device acceptance.
