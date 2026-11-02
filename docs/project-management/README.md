@@ -120,3 +120,9 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - B01 owner checkpoint `791620ce4628ee9e909af7ce2f4758b6df77afeb`: both jobs PASS (run #41509576279); subsequent comment-only alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f` exact-head CI pending.
 - Integrated fixes now cover modal consistency, Home double press, Force Stop callback isolation, internal-only Recent Apps (including Close All action), and correct Android TV restart action routing.
 - No physical Android TV testing, APK publication/installation, or merge has occurred.
+
+
+### Latest C07/F02 audit finding — 3 November 2026
+- C07 cross-module audit found wallpaper management POST operations (select/delete/slideshow/clear) could race QR-session shutdown after the outer request check. They are now synchronized with server stop and recheck the active session inside the same monitor; revoked operations return HTTP 410.
+- C07 owner PR #24 latest documented head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 PR #50 latest head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`. Both exact-head CI workflows were in progress.
+- Added `tests/test_wallpaper_session_shutdown_atomicity.py`; no upload routes, browser UX, limits, or StandBy persistence semantics changed.
