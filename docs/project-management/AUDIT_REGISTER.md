@@ -457,3 +457,22 @@ Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MA
 - Cache byte totals now count only successfully deleted app-cache/temp files; free-space deltas are no longer attributed to app-cache cleanup. User-facing no-files-removed feedback is neutral. Android system trim success requires the explicit ADB success marker. Regression tests cover marker parsing and actual deleted-byte counting.
 - E01 audit report and PR #34 description updated. PR #34 remains OPEN/DRAFT/UNMERGED under D-013; latest feature branch documentation commit 090a956a9860c82eb36c2d96848d47046fba0f0c.
 - E01 source audit remains COMPLETE; next Stage E task is E02 Profile. F-stage physical/OEM checks remain mandatory and unchanged. No device settings, HOME default, package state, user data or installed APK changed.
+
+
+## E02 — Profile, Avatar & App-Lock UI (2 November 2026)
+
+| Gate | Status | Evidence |
+|---|---|---|
+| Avatar built-in/custom selection | PASS — SOURCE | Seven built-in avatars; separate selected/focus rings; atomic built-in selection + custom-photo reset transaction. |
+| Avatar QR lifecycle | PASS — SOURCE | Profile-scoped route/token, five-minute session, single successful upload, 15 MB cap, image validation, private storage, retry and cleanup safeguards retained. |
+| Profile security/isolation | PASS — SOURCE | Profile-scoped Child Mode/lock/hide state; global PIN; parent-PIN gates for policy editing/deletion and switching away from Child Mode. |
+| App-policy enumeration | PASS — FIXED | Merge Leanback + Launcher categories; package-level deduplication; null label/icon fallback; self package excluded. |
+| Policy counts and dismissal | PASS — FIXED | Counts derive from package sets; live picker count; summary refresh on Done/Back dismissal. |
+| D-pad and modal contract | PASS — SOURCE | Avatar focus ring, app-row/Done focus, PIN keypad, profile options and QR dialogs adopt B01 shared styling/focus contract. |
+| Regression tests | PASS | Package filtering, policy set mutation/count, avatar path/selection, QR route/size/dimensions, profile isolation and PIN-switch tests. |
+| Exact-head CI | PASS | Head `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; run #623 / `41406190380`; both jobs SUCCESS. |
+| APK budget | PASS | 1,561,717 / 1,572,864 bytes; 11,147 bytes headroom. |
+| APK publication / installation | NONE | Manual publication skipped; artifact count 0; no APK installed. |
+| Physical acceptance | DEFERRED, NOT WAIVED | Project F: same-Wi-Fi phone QR, expiry/retry/replace/reset, profile isolation, Child Mode/PIN, D-pad, dialogs and route/storage isolation on Mi TV Stick. |
+
+**Disposition:** E02 source audit and exact-head CI gates are CLOSED. PR #35 remains OPEN/DRAFT/UNMERGED under D-013. Do not treat source closure as physical-device acceptance or release approval.
