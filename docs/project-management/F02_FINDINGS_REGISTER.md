@@ -382,3 +382,13 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - Added JUnit boundary tests to `NetworkFeedbackPolicyTest` and Python source-contract checks in `tests/test_upload_storage_reservation.py`.
 - Production fix commit: `b167fdbee7393727c7b778130ee3ae7aee394cba`; policy/test commits: `1b8418a0d476c240ea0605f30084af04072716ae`, `27626ff64b0a6cfd9a4d7dd6c5b8e654c1c3cb09`; source-contract test: `453f9b9f004accd136d960b392483f7ed2ac4abb`.
 - Status: FIX IMPLEMENTED / EXACT-HEAD CI RETEST PENDING. Device-specific storage telemetry and actual concurrent LAN upload acceptance remain DEFERRED_TO_G.
+
+
+## Exact-head retest — concurrent upload storage and shutdown guards — 3 November 2026
+
+- F02 integration source/test head `c1f212585633899d4c1f5327d3a982a9e136e2b7`: PR workflow #41519813674 completed SUCCESS for both required jobs.
+- Lists/tools/docs suite: 42 Python tests passed. The new storage reservation source-contract tests and both explicit wallpaper/StandBy shutdown critical-section tests passed.
+- Launcher job: `testReleaseUnitTest` and `assembleRelease` completed successfully; release APK diagnostics and the strict 1.5 MiB size guard passed.
+- APK exact size: 1,565,621 bytes against 1,572,864-byte cap; remaining headroom 7,243 bytes. F02-BUILD-001 remains a P3 watchlist; no required font or wallpaper asset was removed.
+- F02-RES-001 and the supplemental F02-C07-001 upload-commit regression coverage are now HOST/SOURCE VERIFIED on this exact source/test head. Physical concurrent LAN upload, cancellation, expiry, and low-storage behavior remain DEFERRED_TO_G.
+- This entry is a findings-register documentation update; its resulting new F02 head must receive a fresh exact-head CI run. PR #50 remains Draft/open/unmerged. No APK artifact was published, installed, or tested on physical Android TV.
