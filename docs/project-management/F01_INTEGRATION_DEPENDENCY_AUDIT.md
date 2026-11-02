@@ -54,8 +54,8 @@ Unified diffs were retrieved for B01–B03 (#10–#12), C01–C07 (#18–#24), D
 
 | Area | Exact source/test head | CI evidence | Result |
 |---|---|---:|---|
-| B01 | `090a956a9860c82eb36c2d96848d47046fba0f0c` (recorded source checkpoint) | #610 | PASS |
-| B02 | `7e8392e1a76223b2c1aef314c10fa54d0b813fdc` | #208 | PASS |
+| B01 | Latest recorded global UI follow-up head not stated in the checkpoint | #563 | PASS |
+| B02 | Latest recorded global UI follow-up head not stated in the checkpoint | #565 | PASS |
 | B03 | `d87ffdf914851b8a1d2c67c2416ac9f5f1309d93` | #687 | PASS |
 | C07 | `1cc6d7033daf6f9371805f667467b8860edcfb8f` | #371 | PASS |
 | D05 | `835986c0e28c50311d4474f1060c73dd56104bf8` | #397 | PASS |
