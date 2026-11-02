@@ -76,3 +76,15 @@
 - Canonical E00 report, roadmap, inventory, audit register, operations log, master project and handover were re-read from `docs/project-master-inventory` after merge.
 - E00 scope is closed: documentation/inventory/dependency reconciliation only. No application source, feature PR, APK, user data, TV setting, installation or physical-device acceptance was changed or claimed.
 - **Next work unit: E01 — Device Settings & Launcher audit.** Begin with exact dependency heads and the A06 read-only HOME resolver/preferred-activity discrepancy. Preserve D-013/D-014; do not merge feature PRs early.
+
+## E01 source inventory checkpoint — 2 November 2026
+
+- Branch: feature/e01-device-settings-home-control; Draft PR #34; base D07 exact head 964163c918e281b68af5cf7114ca56ead2797486; PR remains OPEN/DRAFT/UNMERGED.
+- Exact source head validated: 9919dbaa0add6cc7ce2a84332354f46f9cc48d61. E01 audit documentation follow-up: 7aad9ec4cf015dd415b3c948e2b4f80c1099955c.
+- Added DeviceSettingsStatus.java for read-only HOME candidate/resolver and accessibility/notification status. Removed silent startup writes to screen/sleep/screensaver/accessibility/notification settings and removed WRITE_SECURE_SETTINGS from the manifest.
+- Updated ModernSettingsDialog.java and MainActivity.java for HOME status/candidates, user-managed service settings, separate Android screensaver and display-timeout entries, shared B01 popup contract, restart/power feedback, and cache result feedback. HomeKeyService restart no longer misuses accessibility global-action ID 12.
+- Added TvDialogStyle.java and TvUiTokens.java matching B01 canonical blobs exactly; added TvDialogStyleTest.java and CacheCleanerTest.java.
+- CacheCleaner now requires the explicit pm trim-caches success marker; ADB stream closure alone is not treated as success.
+- QR target on main was checked: release/glass-tv-installer.apk, release/glass-tv-home.apk and release/version.json are present; version metadata reports 4.0.0.
+- Exact-head CI #602 / 41400508774 PASS. Diagnostic APK 1,560,565 bytes; 12,299 bytes below the 1,572,864-byte cap. Artifact count zero; manual TV APK publication skipped.
+- F-stage acceptance remains open: HOME resolver/preferred-activities discrepancy and physical HOME key; service state readback; OEM power labels; actual ADB trim success/failure; phone installer end-to-end; D-pad popup/Settings visual acceptance; ClockDream/StandBy/display timeout behavior. No APK installed and no TV setting changed.
