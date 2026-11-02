@@ -52,6 +52,26 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon testReleaseUnitTest assembleRelease
+      - name: APK size diagnostics (read-only)
+        run: |
+          python3 - <<'PY'
+          import os
+          import zipfile
+
+          apk = "launcher/app/build/outputs/apk/release/app-release.apk"
+          print(f"APK exact size: {os.path.getsize(apk)} bytes")
+          with zipfile.ZipFile(apk) as archive:
+              entries = sorted(
+                  ((item.file_size, item.compress_size, item.filename)
+                   for item in archive.infolist() if not item.is_dir()),
+                  reverse=True,
+              )
+              print("Largest packaged entries (uncompressed / compressed / path):")
+              for raw, packed, name in entries[:30]:
+                  print(f"{raw:>9} / {packed:>9} / {name}")
+              print(f"Total uncompressed entries: {sum(x[0] for x in entries)} bytes")
+              print(f"Total compressed entries:   {sum(x[1] for x in entries)} bytes")
+          PY
       - name: The launcher stays small
         run: |
           size=$(stat -c %s launcher/app/build/outputs/apk/release/app-release.apk)
