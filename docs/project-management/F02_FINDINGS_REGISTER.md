@@ -75,3 +75,21 @@
 3. F02-TEST-001 — establish host-side UI coverage and G-only deferred acceptance cases.
 
 No finding is closed until its owning branch/PR contains the fix, regression evidence, and a successful retest on the integrated F branch.
+
+
+## F02-SEC-002 — Prayer alert activity is externally launchable
+
+- Severity: P2 / Security and user-experience integrity review required.
+- Owning area: Project C/D coordination with Android manifest/security owner.
+- Evidence:
+  - `AndroidManifest.xml` declares `.AzanActivity` with `android:exported="true"` and no intent filter or component-level permission.
+  - The activity reads an incoming `prayer` extra, displays a full-screen/foreground prayer alert card, sets `FLAG_KEEP_SCREEN_ON`, and is configured to show while locked / turn the screen on.
+  - The documented internal alarm flow already has an app-owned `AzanReceiver`; the intended external caller contract for directly starting `AzanActivity` is not documented in the manifest.
+- Risk:
+  - An unrelated installed application may be able to launch the alert activity on demand, interrupting the current screen and keeping the display awake.
+- Required remediation / decision:
+  1. Confirm whether any legitimate external caller needs to start this activity directly.
+  2. If it is internal-only, set `android:exported="false"` and verify the app-owned alarm PendingIntent still launches it.
+  3. If external invocation is required, document and enforce a narrowly scoped authorization contract.
+  4. Add a manifest/component security regression check.
+- Exit evidence: approved caller boundary, manifest verification, and an automated test/check that rejects unintended external launches.
