@@ -145,7 +145,6 @@ final class WallpaperSettingsDialog {
             addAction(page, activity, density,
                     english ? "Set interval" : malay ? "Atur selang" : "Atur interval",
                     () -> dismissAndRun(dialog, actions::openInterval));
-            if (toggle != null) toggle.setNextFocusDownId(page.getChildAt(3).getId());
         } else {
             addHeading(page, activity, english ? "Next wallpaper"
                     : malay ? "Wallpaper seterusnya" : "Wallpaper berikutnya", density);
