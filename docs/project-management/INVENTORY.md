@@ -377,3 +377,14 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 - New tests: JUnit storage reservation boundary cases, Python source-contract tests for both QR upload routes, and stronger upload-shutdown critical-section assertions.
 - Production changes are limited to storage-safety enforcement; existing per-file and StandBy collection limits remain unchanged.
 - Current F02 findings: QR upload shutdown test hardening and storage reservation remain OPEN until exact-head CI passes. Physical LAN/concurrency/low-storage behavior remains DEFERRED_TO_G.
+
+
+## F02 upload storage hardening — exact-head retest — 3 November 2026
+
+| Branch / PR | Exact head | CI evidence | Status |
+|---|---|---|---|
+| F02 source/test / #50 | c1f212585633899d4c1f5327d3a982a9e136e2b7 | #41519813674: both jobs SUCCESS; 42 Python tests; launcher unit tests and release build pass | HOST PASS |
+| F02 findings-register docs head / #50 | 1845635091969c2475bb0d26783bc0f7eb58c1c0 | #41520194974 queued at last poll | RETEST PENDING |
+
+- APK size on c1f2125: 1,565,621 bytes / 1,572,864 cap / 7,243 bytes headroom. P3 watchlist; do not remove required fonts/wallpaper without measured optimization.
+- QR upload storage reservation and explicit upload-shutdown regression coverage passed host CI. Project G still owns physical concurrent LAN, cancellation, expiry and low-storage acceptance.
