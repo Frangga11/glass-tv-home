@@ -135,3 +135,10 @@ Project F does not publish or install the final TV-test APK.
 - F02 intentionally combines C07 upload-session protections with D05's downstream `StandbyPhotoStore.UploadResult` persistence contract. Do not overwrite the D05-aware StandBy upload handler with the older C07 boolean-based handler.
 - B01 #10, D05 #29, D06 #30 and D01 #51 exact-head owner CI runs also passed (see findings register).
 - PR #50 remains Draft/open/unmerged. No APK publication/installation and no physical Android TV testing. All device-dependent acceptance remains DEFERRED_TO_G.
+
+
+## Finding disposition matrix — 3 November 2026
+
+The host-side remediation/test outcomes for F02-UI-001, F02-SEC-001/002/003/004, F02-TEST-001, F02-FUNC-001/002, F02-PLAT-001 and F02-C07-001/002 are recorded in `F02_FINDINGS_REGISTER.md`. The source/test integration checkpoint `ddf130a348182546b28ff59c292c9b5ceebacb2e` passed exact-head push CI #41512382568 (both jobs), including Robolectric API 30 dialog-window tests, all JVM regression tests, release compilation, read-only APK diagnostics and the size budget.
+
+This is not a full Project F exit: latest documentation/status reconciliation commits require a new exact-head CI run, and device-dependent remote/focus/rendering/OEM/ADB/LAN behavior remains DEFERRED_TO_G. PR #50 stays Draft/open/unmerged; no APK publication or physical TV test.
