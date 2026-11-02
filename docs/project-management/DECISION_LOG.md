@@ -193,3 +193,11 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 |---|---|---|---|
 | F-027 | Preserve the D05-aware StandBy upload result adapter in F02; do not replace it with C07's older boolean-based handler. | D05 is downstream of C07 and changes `StandbyPhotoStore.addUploadedFile` to return `UploadResult`; F02 must preserve both atomic persistence semantics and C07 session resilience. | CONFIRMED / INTEGRATED |
 | F-028 | Keep the upload deadline regression assertion at 3500 ms for deadline 6000 ms and fake monotonic time 2500 ms. | The production calculation was correct; the 3000 ms expected value was arithmetic error in the test. Do not weaken or remove the test. | CORRECTED / OWNER + F02 CI PASS BEFORE DOCS-ONLY RETEST |
+
+
+## F02 follow-up decisions — 3 November 2026
+
+| ID | Decision | Rationale / boundary | Status |
+|---|---|---|---|
+| F-029 | AccessibilityService components must be exported for Android system binding and protected by `BIND_ACCESSIBILITY_SERVICE`. | InputKeyService was non-exported, preventing the system from binding it; exported=true does not allow ordinary third-party binding while the system-only permission remains. | IMPLEMENTED / E01 + F02 HOST CI PASS / DEVICE ACCEPTANCE G |
+| F-030 | Treat APK size headroom below 8 KiB as a monitored build-budget risk; do not remove fonts or default wallpaper without measured, quality-safe optimization. | Latest diagnostic is 1,564,977 bytes against 1,572,864-byte cap (7,887 bytes headroom); R8 minify and resource shrinking are already enabled. | WITHIN BUDGET / MONITOR |
