@@ -52,6 +52,18 @@ public class ChildModeManagerStateTest {
         assertEquals(2, current.size());
     }
     @Test
+    public void appPolicyPackageFilterMergesCategoriesWithoutDuplicatesOrSelfPackage() {
+        Set<String> seen = new HashSet<>();
+        assertTrue(ChildModeManager.addAppPolicyPackage(seen, "com.example.tv", "com.gathin.tvhome"));
+        assertTrue(ChildModeManager.addAppPolicyPackage(seen, "com.example.mobile", "com.gathin.tvhome"));
+        assertFalse(ChildModeManager.addAppPolicyPackage(seen, "com.example.tv", "com.gathin.tvhome"));
+        assertFalse(ChildModeManager.addAppPolicyPackage(seen, "com.gathin.tvhome", "com.gathin.tvhome"));
+        assertFalse(ChildModeManager.addAppPolicyPackage(seen, null, "com.gathin.tvhome"));
+        assertFalse(ChildModeManager.addAppPolicyPackage(seen, "   ", "com.gathin.tvhome"));
+        assertEquals(2, seen.size());
+    }
+
+    @Test
     public void appPolicyCountTracksUniquePackageSelections() {
         Set<String> selected = ChildModeManager.updatedPackageSet(
                 Collections.<String>emptySet(), "com.example.one", true);
