@@ -113,3 +113,10 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - New findings fixed in source: Force Stop callback queue isolated from Home/power callbacks; RecentAppsActivity made internal-only after discovering exported ACTION_CLOSE_ALL could trigger Close All from another installed app.
 - Added regression guards for Force Stop/Home handler isolation and Recent Apps manifest boundary. Exact-head CI must pass before closure.
 - Previous F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both CI jobs before these latest fixes.
+
+
+### Latest exact-head validation update — 3 November 2026
+- F02 integration checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015`: both required CI jobs PASS (run #41509632784 Launcher build/unit tests; #41509626957 Lists/tools/docs).
+- B01 owner checkpoint `791620ce4628ee9e909af7ce2f4758b6df77afeb`: both jobs PASS (run #41509576279); subsequent comment-only alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f` exact-head CI pending.
+- Integrated fixes now cover modal consistency, Home double press, Force Stop callback isolation, internal-only Recent Apps (including Close All action), and correct Android TV restart action routing.
+- No physical Android TV testing, APK publication/installation, or merge has occurred.
