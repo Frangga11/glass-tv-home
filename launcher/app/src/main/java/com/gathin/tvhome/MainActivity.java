@@ -3609,7 +3609,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strClose(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleDeviceSettingsPopup(dialog, 520, 0);
+        styleGlassDialog(dialog);
+            TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     void showAzanSettingsDialog() {
@@ -4043,7 +4044,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleDeviceSettingsPopup(dialog, 520, 0);
+        styleGlassDialog(dialog);
+            TvDialogStyle.apply(dialog, this, 520, 0);
         Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (positive != null) positive.requestFocus();
     }
@@ -4063,7 +4065,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleDeviceSettingsPopup(dialog, 520, 0);
+        styleGlassDialog(dialog);
+            TvDialogStyle.apply(dialog, this, 520, 0);
         Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (positive != null) positive.requestFocus();
     }
@@ -4817,7 +4820,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
-        styleDeviceSettingsPopup(dialog, 560, 500);
+        styleGlassDialog(dialog);
+        TvDialogStyle.apply(dialog, this, 560, 500);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -4992,7 +4996,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
-        styleDeviceSettingsPopup(dialog, 560, 500);
+        styleGlassDialog(dialog);
+        TvDialogStyle.apply(dialog, this, 560, 500);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -6020,7 +6025,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .setPositiveButton(R.string.wallpaper_open_qr_action, (d, w) -> showWallpaperUploadQrDialog())
                     .setNegativeButton(R.string.back_action, (d, w) -> showWallpaperDialog())
                     .show();
-            styleDeviceSettingsPopup(dialog, 520, 0);
+            styleGlassDialog(dialog);
+            TvDialogStyle.apply(dialog, this, 520, 0);
             return;
         }
 
@@ -6050,7 +6056,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     })
                     .setNegativeButton(R.string.cancel_action, null)
                     .show();
-            styleDeviceSettingsPopup(dialog, 520, 0);
+            styleGlassDialog(dialog);
+            TvDialogStyle.apply(dialog, this, 520, 0);
         });
 
         SimpleDateFormat sdf = new SimpleDateFormat("d MMM, HH:mm", Locale.getDefault());
@@ -6073,7 +6080,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleDeviceSettingsPopup(dialog, 560, 460);
+        styleGlassDialog(dialog);
+        TvDialogStyle.apply(dialog, this, 560, 460);
     }
 
     private void showSingleCustomActionDialog(File file) {
@@ -6116,7 +6124,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(R.string.cancel_action, null);
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleDeviceSettingsPopup(dialog, 520, 0);
+        styleGlassDialog(dialog);
+            TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showHazeLocationDialog() {
