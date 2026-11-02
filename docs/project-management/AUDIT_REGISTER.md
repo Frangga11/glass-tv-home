@@ -697,3 +697,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - PR #34–#41 remain OPEN/DRAFT/UNMERGED under D-013. No merge, release or physical acceptance is implied by Project E closure.
 - E08 source/test evidence: `fcd7d8f23a4833830a401652ef269db3282b7300`, CI #702 / `41473357877` PASS, APK 1,562,709 bytes / 1,572,864 cap; publication skipped.
 undefined
+
+## F-INT-REVALIDATION-001 — staged source/dependency revalidation (3 Nov 2026)
+- Status: PASS — source-level revalidation and staged integration evidence recorded; physical acceptance remains pending.
+- Policy: re-verify prior audit/dependencies and exact source commits; combine incrementally on integration branches; rerun only changed/unproven tests; finalize with evidence and residual acceptance.
+- B-series evidence: integration/b-series HEAD 9070894fa6d9ef8aec034f46dfe777e866709dfe; PR #48 synthetic merge b25ab78c62493f6e74676b2e321fb7cc39f23449; CI #741 PASS. APK 1506 KiB / 1536 KiB cap; publication skipped.
+- Full candidate evidence: integration/project-f-staged-full HEAD 8fe90a9fdd493c5d81ffdacbe16054630a26580a; zero file diff versus F01 candidate 21c2eab34a3356d37d079eba04b281cc2373386d; existing CI #716 PASS remains valid.
+- Safety checks: C07 request-deadline stream preserved; D05 atomic StandBy and D07 state/concurrency/freshness retained; E08 compact Quick Control and fuller Appearance wallpaper management remain distinct over shared state. No feature PR/main/release merge, APK publication or installation.
+- Open gate: F02 physical Android TV functional acceptance. Parent/base drift items remain for G-stage grouped reconciliation; D-013 remains binding.
