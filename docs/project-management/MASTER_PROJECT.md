@@ -221,3 +221,5 @@
 - **E03 remains IN PROGRESS.** Packaged JPEG replacement with a clean text-free image is not yet committed; duplicate text is not yet considered fixed. Exact-head CI #624 is pending at this checkpoint. No APK publication/installation or device acceptance.
 - Scope protection: no B01 global UI, focus/navigation, shuffle/index/interval, QR upload, StandBy storage, or preference contracts changed. Physical TV/remote/phone acceptance remains in Project F.
 - Full checkpoint: [E03_WALLPAPER_METADATA_AUDIT.md](E03_WALLPAPER_METADATA_AUDIT.md).
+
+- E03 checkpoint update: exact-head CI #624 / run `41408606965` **PASS** on `188bd49269a358ebf53f8ae09056c41a5eb80243`; both jobs passed, release unit tests/build passed. APK 1,561,797 bytes, 11,067 bytes below cap; manual publication skipped. Clean JPEG binary replacement remains outstanding, so E03 remains IN PROGRESS.
