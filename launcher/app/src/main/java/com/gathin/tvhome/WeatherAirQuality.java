@@ -43,6 +43,8 @@ final class WeatherAirQuality {
     private static final String KEY_AQI_DATETIME = "aqi_datetime";
     private static final String KEY_AQI_IS_JAS = "aqi_is_jas";
     private static final String KEY_LAST_UPDATE = "last_update";
+    private static final String KEY_WEATHER_LAST_SUCCESS = "weather_last_success";
+    private static final String KEY_AQI_LAST_SUCCESS = "aqi_last_success";
     private static final String KEY_REQUEST_GENERATION = "request_generation";
     private static final long REFRESH_INTERVAL_MS = 30L * 60 * 1000; // 30 minutes
 
@@ -177,11 +179,12 @@ final class WeatherAirQuality {
 
         new Thread(() -> {
             try {
-                long last = prefs.getLong(KEY_LAST_UPDATE, 0L);
                 long now = System.currentTimeMillis();
-                if (!force && now - last < REFRESH_INTERVAL_MS && prefs.contains(KEY_WEATHER_JSON)) {
-                    return;
-                }
+                long weatherLast = prefs.getLong(KEY_WEATHER_LAST_SUCCESS, 0L);
+                long aqiLast = prefs.getLong(KEY_AQI_LAST_SUCCESS, 0L);
+                boolean weatherFresh = prefs.contains(KEY_WEATHER_JSON) && now - weatherLast < REFRESH_INTERVAL_MS;
+                boolean aqiFresh = prefs.contains(KEY_AQI_JSON) && now - aqiLast < REFRESH_INTERVAL_MS;
+                if (!force && weatherFresh && aqiFresh) return;
 
                 String weatherUrl = String.format(Locale.ROOT,
                         "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,visibility,pressure_msl&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=7",
@@ -209,8 +212,14 @@ final class WeatherAirQuality {
                     }
 
                     SharedPreferences.Editor edit = prefs.edit();
-                    if (wJson != null) edit.putString(KEY_WEATHER_JSON, wJson.toString());
-                    if (aqiJson != null) edit.putString(KEY_AQI_JSON, aqiJson.toString());
+                    if (wJson != null) {
+                        edit.putString(KEY_WEATHER_JSON, wJson.toString())
+                                .putLong(KEY_WEATHER_LAST_SUCCESS, now);
+                    }
+                    if (aqiJson != null) {
+                        edit.putString(KEY_AQI_JSON, aqiJson.toString())
+                                .putLong(KEY_AQI_LAST_SUCCESS, now);
+                    }
                     edit.putString(KEY_AQI_STATION_PLACE, defaultPlace)
                             .putBoolean(KEY_AQI_IS_JAS, false)
                             .putLong(KEY_LAST_UPDATE, now)
