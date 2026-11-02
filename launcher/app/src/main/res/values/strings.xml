@@ -421,8 +421,10 @@
     <string name="notification_access_summary">Status: %1$s. Izinkan agar informasi musik dapat tampil pada kartu Now Playing.</string>
     <string name="device_service_enabled">Diaktifkan di Android</string>
     <string name="device_service_disabled">Belum diaktifkan</string>
-    <string name="screensaver_settings_title">Screensaver &amp; Waktu Tidur TV</string>
-    <string name="screensaver_settings_summary">Atur screensaver bawaan Android dan waktu layar mati. Glass TV tidak akan mengubahnya diam-diam.</string>
+    <string name="screensaver_settings_title">Screensaver Bawaan Android</string>
+    <string name="screensaver_settings_summary">Pilih dan atur screensaver milik Android/firmware TV. Fitur ini terpisah dari Layar Siaga Glass TV.</string>
+    <string name="display_timeout_title">Waktu Layar Mati</string>
+    <string name="display_timeout_summary">Buka pengaturan tampilan Android untuk mencari pengaturan waktu layar mati. Pilihan menu mengikuti firmware TV.</string>
     <string name="home_candidates_summary">Pilihan Home terdeteksi: %1$d</string>
     <string name="home_candidates_heading">Pilihan launcher yang terdeteksi:</string>
     <string name="home_current_heading">Hasil resolver HOME Android:</string>
