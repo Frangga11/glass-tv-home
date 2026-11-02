@@ -142,3 +142,9 @@ Project F does not publish or install the final TV-test APK.
 The host-side remediation/test outcomes for F02-UI-001, F02-SEC-001/002/003/004, F02-TEST-001, F02-FUNC-001/002, F02-PLAT-001 and F02-C07-001/002 are recorded in `F02_FINDINGS_REGISTER.md`. The source/test integration checkpoint `ddf130a348182546b28ff59c292c9b5ceebacb2e` passed exact-head push CI #41512382568 (both jobs), including Robolectric API 30 dialog-window tests, all JVM regression tests, release compilation, read-only APK diagnostics and the size budget.
 
 This is not a full Project F exit: latest documentation/status reconciliation commits require a new exact-head CI run, and device-dependent remote/focus/rendering/OEM/ADB/LAN behavior remains DEFERRED_TO_G. PR #50 stays Draft/open/unmerged; no APK publication or physical TV test.
+
+
+## Additional manifest and build-budget checks — 3 November 2026
+
+- F02-SEC-005: E01 owner corrected InputKeyService manifest export to `true` while retaining `android.permission.BIND_ACCESSIBILITY_SERVICE`; owner source/test CI #41513629734 passed. The same change and regression guard are mirrored into this F02 branch; exact-head retest required. Actual remote Input-button acceptance remains DEFERRED_TO_G.
+- F02-BUILD-001 watchlist: exact F02 source/test build produced a 1,564,981-byte APK against the 1,572,864-byte cap, leaving only 7,883 bytes. R8 minify and resource shrink are already enabled. Largest packaged assets are classes.dex, two font resources, resources.arsc and the default Dempo wallpaper. Do not trade away required fonts/wallpaper quality for an unmeasured size reduction; monitor the cap on every subsequent build.
