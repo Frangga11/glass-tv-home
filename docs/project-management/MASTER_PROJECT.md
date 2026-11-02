@@ -532,3 +532,12 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - B01 PR #10 head `791620ce4628ee9e909af7ce2f4758b6df77afeb`: both jobs PASS — run #41509576279. A subsequent comment-only source alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f` has an exact-head run pending.
 - F02 exact-head green is evidence for the integrated host-side source/test gates, not physical TV readiness. Project G still owns real remote key timing, rendering/focus, OEM power menu, ADB permission and firmware checks.
 - Keep F02 partial until remaining cross-module audits and final F02 exact-head retest are complete.
+
+
+## C07/F02 session-revocation hardening — 3 November 2026
+
+- Finding C07-F08 / F02-C07-001: wallpaper API state-changing routes select/delete/slideshow/clear could continue after QR-session closure because only the outer request dispatcher checked session state.
+- Fixed on C07 owner branch and mirrored to F02: all four mutation methods now share the server monitor with synchronized `stop()`, rechecking active session under lock before mutation/listener callback. Expired/revoked operations return HTTP 410 Gone JSON.
+- Regression guard: `tests/test_wallpaper_session_shutdown_atomicity.py`.
+- C07 PR #24 latest documented head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 PR #50 latest head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`; exact-head CI pending.
+- No upload route/API/browser UX or StandBy storage contract was changed. Physical phone-to-TV cancellation/retry/expiry tests remain Project G.
