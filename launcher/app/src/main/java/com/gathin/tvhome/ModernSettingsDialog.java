@@ -1635,14 +1635,19 @@ public final class ModernSettingsDialog {
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(AppLanguage.strEditName(activity))
                 .setView(container)
-                .setPositiveButton(R.string.save_action, (d, which) -> {
-                    String newName = et.getText().toString().trim();
-                    if (!newName.isEmpty()) {
-                        if (callback != null) callback.onSave(newName);
-                    }
-                })
+                .setPositiveButton(R.string.save_action, null)
                 .setNegativeButton(AppLanguage.strCancel(activity), (d, which) -> d.dismiss())
                 .create();
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String newName = et.getText().toString().trim();
+            if (newName.isEmpty()) {
+                et.setError(activity.getString(R.string.user_name_required));
+                et.requestFocus();
+                return;
+            }
+            dialog.dismiss();
+            if (callback != null) callback.onSave(newName);
+        }));
         dialog.show();
         TvDialogStyle.apply(dialog, activity, 520, 0);
         et.requestFocus();
