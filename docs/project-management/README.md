@@ -146,3 +146,9 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - This ensures the new session accounts for outstanding bytes from the old session until each worker releases its reservation.
 - Latest F02 head a95b21becad238dd634dda1e79aa9de36d749d8c; CI #41520409999 queued at last poll. Earlier per-instance version passed #41519813674, but the latest refinement still requires exact-head CI.
 - PR #50 remains Draft/open/unmerged; no APK publication or physical Android TV test.
+
+### C07/F02 exact-head verification — 3 November 2026
+- C07 owner PR #24 head 442b78c68b1540394d543bab59bddf52f865ccf0 passed both jobs in #41520866323 (18 Python tests, launcher tests/build). APK 1,550,949 bytes; manual publication step skipped; no artifacts.
+- F02 PR #50 source/test head a95b21becad238dd634dda1e79aa9de36d749d8c and findings-register head 2469c0c1d241a00be3e02235e12f3f0f6525deb9 passed #41520409999 and #41520818608 respectively (both jobs; 42 Python tests; launcher tests/build). APK 1,565,713 bytes, 7,151 bytes headroom; no artifacts.
+- Owner and integration now share process-wide QR upload storage reservations; F02 preserves D05 UploadResult persistence adaptation.
+- Latest F02 docs head e190e2863a4aacbe3aba61094fab00572f4b469f; exact-head CI #41521145454 queued at last poll. PRs remain Draft/open/unmerged; no physical TV testing.
