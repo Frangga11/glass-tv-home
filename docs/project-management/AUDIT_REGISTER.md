@@ -564,3 +564,5 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Repair: wider 46% usable column; unlimited natural wrapping for Arabic and translation; remove ellipsis; explicit RTL and high-quality line breaking; retain Arabic font padding; improve font size and line spacing. Files: `MainActivity.java`, `activity_main.xml` on `feature/e05-information-center-ayah`.
 - Verification: source/diff review PASS. Exact-head Actions run #41422241456 queued on PR head `60086e0a2d74b40e124f11caa219a683863e6e08`; CI closure pending.
 - Project F acceptance: longest Arabic/ID/EN content, glyph/harakat clipping, shelf/dock collision, 1920x1080 and 4K, D-pad/scroll/Back, offline/cache/language refresh. No device verification claimed.
+
+- Follow-up E05-F02 found the Smart Boost Quick Action bypassed the explicit cache-clean workflow, deleted only top-level cache entries, and always reported success. It now opens the existing confirmation/result flow using `CacheCleaner.cleanNow()`; ID/EN labels now accurately describe cache/storage optimization without promising RAM release. Latest source PR head is being revalidated by exact-head CI.
