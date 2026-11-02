@@ -31,6 +31,15 @@ class HomeKeyRecentAppsContractTest(unittest.TestCase):
         self.assertIn("KeyEvent.KEYCODE_APP_SWITCH", self.home_service)
         self.assertIn("Live apps disabled per request", self.home_service)
 
+    def test_settings_key_cancels_pending_home_navigation(self):
+        settings_branch = self.home_service.split("if (isSettingsKey(event))", 1)[1].split("int keyCode", 1)[0]
+        self.assertIn("cancelPendingSingleHomeAction();", settings_branch)
+        self.assertIn("homePressTracker.cancel();", settings_branch)
+
+    def test_long_home_still_opens_settings_after_existing_hold_threshold(self):
+        self.assertIn("homeHandler.postDelayed(longPressHomeRunnable, 450);", self.home_service)
+        self.assertIn("openSettingsPopupGlobal();", self.home_service)
+
 
 if __name__ == "__main__":
     unittest.main()
