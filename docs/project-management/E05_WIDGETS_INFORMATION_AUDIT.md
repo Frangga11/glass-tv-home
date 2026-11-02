@@ -85,3 +85,29 @@ The Prayer & Ayah Quick Action used a single AlertDialog message for location, p
 ## Merge/release policy
 
 PR remains Draft/open/unmerged under D-013. Do not merge early. Final source closure requires exact-head CI PASS and all source-level findings closed. Physical acceptance remains with Project F; grouped A–G integration and release approval remain later gates.
+
+
+## Weather/AQI source-data repair checkpoint — 2 Nov 2026
+
+This section supersedes the earlier pending weather/AQI source-repair status above. Cross-project ownership remains defined by `CROSS_PROJECT_WEATHER_AQI_AUDIT.md`.
+
+### E05 weather/AQI corrections implemented
+- Removed fabricated PM2.5/PM10 calculations. Values are parsed only from the Open-Meteo Air Quality response fields `current.pm2_5` and `current.pm10`; missing values remain unavailable.
+- Removed synthetic current weather, AQI, hourly/daily forecast values and hardcoded sunrise/sunset fallback. Missing data is represented as unavailable rather than a plausible-looking number.
+- Weather and AQI successful-cache timestamps are independent. A failed source request does not overwrite that source's last successful JSON or freshness timestamp.
+- Detailed weather requests use generation, selected-coordinate and language guards; superseded responses cannot commit.
+- Weather and AQI cache records now retain their own selected coordinates. A location change cannot render the previous location's cache while the new request is pending or fails.
+- Hourly/daily temperature rows render an unavailable marker instead of `-1°`; forecast range bars are hidden unless valid source min/max values exist. Empty condition icons are hidden. The automatic background uses a neutral cloudy visual when weather data is unavailable; weather text remains the API condition.
+- AQI location is labelled as a model reference, not a physical monitoring station. Attribution identifies Open-Meteo/CAMS and clarifies that the US AQI is a model estimate, not official Indonesian ISPU measurement.
+- WMO handling includes freezing drizzle/rain, snow/snow showers and the corresponding condition icons. The footer uses the API current timestamp, not render time.
+
+### Regression and CI evidence
+- D07 detailed-weather request freshness and E05 integration were tested on D07 PR #31 exact head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`; CI run #642 PASS.
+- E05 PR #38 exact head `6fe89fad078692958db67030329a6de66cd7ae71`; GitHub Actions run #663 PASS: launcher unit tests/release build/APK-size guard and Lists/tools/docs both succeeded. Three additional tests cover exact, changed and non-finite weather-cache coordinates.
+- A duplicate localized resource key was detected by CI on an intermediate head and removed from default/ID/EN resource files. The final exact-head run #663 passed resource merge/build.
+- APK publication step was skipped. No APK was installed and no physical TV test was performed.
+
+### Remaining owner gates
+- E05 source corrections are implemented and exact-head CI passed. Weather/AQI visual acceptance, missing/stale state legibility, source attribution, popup layout and remote navigation remain part of Project F's integrated 1080p/4K acceptance.
+- B01/B02/B03 shared popup primitive audit remains owned by Project B; E05 must consume shared dialog primitives and must not fork global modal styling.
+- PR #38 remains OPEN/DRAFT/UNMERGED under D-013. No grouped merge or release approval is claimed.
