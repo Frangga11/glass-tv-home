@@ -3938,7 +3938,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         dialog.show();
-        styleDeviceSettingsPopup(dialog, 680, 560);
+        styleDeviceSettingsPopup(dialog, 680, 0);
 
         if (btnCheckNow != null) btnCheckNow.requestFocus();
     }
