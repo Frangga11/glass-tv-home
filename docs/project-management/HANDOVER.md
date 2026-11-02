@@ -302,3 +302,17 @@
 - Cache byte totals now count only successfully deleted app-cache/temp files; free-space deltas are no longer attributed to app-cache cleanup. User-facing no-files-removed feedback is neutral. Android system trim success requires the explicit ADB success marker. Regression tests cover marker parsing and actual deleted-byte counting.
 - E01 audit report and PR #34 description updated. PR #34 remains OPEN/DRAFT/UNMERGED under D-013; latest feature branch documentation commit 090a956a9860c82eb36c2d96848d47046fba0f0c.
 - E01 source audit remains COMPLETE; next Stage E task is E02 Profile. F-stage physical/OEM checks remain mandatory and unchanged. No device settings, HOME default, package state, user data or installed APK changed.
+
+
+## Current resume checkpoint — E02 source audit closed, 2 November 2026
+
+- **E02 Profile source audit + exact-head CI: COMPLETE. Next Stage E task: E03.** This closes source/CI work only; Project F still owns physical Mi TV Stick + phone + remote acceptance.
+- E02 feature branch: `feature/e02-profile-avatar-lock-ui`; final head `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; Draft PR #35 targets E01 branch `feature/e01-device-settings-home-control` @ `090a956a9860c82eb36c2d96848d47046fba0f0c`. PR #35 OPEN/DRAFT/UNMERGED under D-013.
+- E02 corrections: merge Leanback + Launcher app queries and deduplicate package policies; defensive label/icon handling; refresh policy counts on Done/Back dismissal; atomically commit built-in avatar index + custom-photo reset.
+- Retained contracts: 7 built-in avatars; profile-scoped custom photo and Child Mode/lock/hide sets; global parent PIN; PIN gates for lock/hide editing, deletion and switching away from Child Mode; five-minute single-success avatar QR session and 15 MB limit; private avatar storage; C07 and D04/D07 protections; B01 global modal/focus contract.
+- Exact-head CI #623 / `41406190380`: both jobs PASS. App/installer release unit tests and Release build PASS; lists/tools/docs PASS.
+- Diagnostic APK 1,561,717 bytes; budget 1,572,864 bytes; headroom 11,147 bytes. Manual publication skipped; artifact count 0.
+- Default PIN `0000` and unlimited retries remain as explicitly approved. Do not force PIN change or introduce lockout.
+- **Project F carry-forward:** same-Wi-Fi QR upload/replacement/retry/expiry/revocation; custom/built-in avatar identity and cleanup across profiles; Child Mode and PIN authorization; lock/hide functionality and counts; D-pad focus, Back/cancel, scroll/clipping and focus return; wallpaper/StandBy/avatar route and storage isolation. Deferred, NOT waived.
+- No APK installed, no TV settings/HOME default changed, no data migration, and no physical acceptance claimed. Do not merge PR #35 early; keep D-013 grouped integration policy.
+- Canonical report: [E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md](E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md).
