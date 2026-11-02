@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnWebServer;
     private Button btnSetHome;
     private TextView tvWebUrl;
+    private TvScanner.ScanHandle scanHandle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Load local IP
         String localIp = TvScanner.getLocalIpAddress(this);
-        tvLocalIp.setText("IP Telefon Anda: " + localIp);
+        tvLocalIp.setText("IP Telefon Anda: " + (localIp == null ? "Tidak tersedia — sambungkan Wi-Fi/Ethernet" : localIp));
 
         // Load saved TV IP
         SharedPreferences sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
             etTvIp.setText(savedIp);
         } else {
             // Suggest subnet IP
-            if (localIp.contains(".")) {
+            if (localIp != null && localIp.contains(".")) {
                 String subnet = localIp.substring(0, localIp.lastIndexOf('.') + 1);
                 etTvIp.setHint(subnet + "xxx");
             }
@@ -119,13 +120,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void scanNetwork() {
+        if (scanHandle != null) scanHandle.cancel();
+        String activeIp = TvScanner.getLocalIpAddress(this);
+        if (activeIp == null) {
+            tvStatus.setText("Status: Tidak ada koneksi Wi-Fi/Ethernet dengan IPv4 aktif. Sambungkan ke jaringan yang sama dengan TV.");
+            return;
+        }
+        int scanHosts = TvScanner.getScanHostCount(this);
+        if (scanHosts < 1 || scanHosts > 512) {
+            tvStatus.setText("Status: Rentang jaringan terlalu besar atau tidak didukung untuk pemindaian otomatis. Masukkan IP dan port TV secara manual.");
+            return;
+        }
         btnScan.setEnabled(false);
         btnScan.setText("🔄 Sedang Mengimbas Rangkaian Wi-Fi...");
         tvStatus.setText("Status: Mencari Android TV di rangkaian tempatan...");
 
-        TvScanner.scan(this, new TvScanner.ScanCallback() {
+        scanHandle = TvScanner.scan(this, new TvScanner.ScanCallback() {
             @Override
             public void onDeviceFound(String ip) {
+                if (isFinishing() || isDestroyed()) return;
                 etTvIp.setText(ip);
                 tvStatus.setText("Status: Android TV dijumpai di " + ip + "!");
                 Toast.makeText(MainActivity.this, "TV dijumpai: " + ip, Toast.LENGTH_SHORT).show();
@@ -133,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onScanFinished(List<String> devices) {
+                if (isFinishing() || isDestroyed()) return;
+                scanHandle = null;
                 btnScan.setEnabled(true);
                 btnScan.setText("🔍 Imbas Android TV di Rangkaian Wi-Fi");
                 if (devices.isEmpty()) {
@@ -237,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onStarted(String url) {
                     runOnUiThread(() -> {
+                        if (isFinishing() || isDestroyed()) return;
                         btnWebServer.setText("⏹️ Hentikan Pelayan");
                         tvWebUrl.setVisibility(View.VISIBLE);
                         tvWebUrl.setText("Taip di TV: " + url);
@@ -248,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onStopped() {
                     runOnUiThread(() -> {
+                        if (isFinishing() || isDestroyed()) return;
                         btnWebServer.setText("🌐 Pelayan Web TV");
                         tvWebUrl.setVisibility(View.GONE);
                     });
@@ -258,7 +275,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        if (scanHandle != null) {
+            scanHandle.cancel();
+            scanHandle = null;
+        }
         LocalApkServer.stop();
+        super.onDestroy();
     }
 }
