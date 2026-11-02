@@ -148,3 +148,16 @@ Implementation checkpoint: `integration/b-series` created from `d7b76c4a22c9eadf
 - Implementation head `37dab64cc99f11ef6670840c351f32fe91da6b24` passed exact-head GitHub Actions run #41427317877: launcher build/unit tests/release build/APK-size guard PASS and lists/tools/docs PASS.
 - Current PR #38 head `d1d461c2c08609462354ebebd9dc7ce678e2e049` is a report-only documentation follow-up; application source/resources are unchanged from the tested implementation head.
 - PR #38 remains Draft/open/unmerged. Physical Mi TV Stick/4K UI and remote acceptance remain Project F; no APK install or device test is claimed.
+
+
+## F02 system-validation decisions — 3 November 2026
+
+| ID | Decision | Rationale / boundary | Status |
+|---|---|---|---|
+| F-014 | Keep Project F and Project G strictly separated: F uses source audits, host-side tests, CI and integrated static validation; physical TV installation/launch/render/focus/network acceptance belongs to G. | Prevent a premature device test from masking missing source/contract defects; device-dependent cases remain DEFERRED_TO_G, never PASS. | APPROVED / ACTIVE |
+| F-015 | The exported LocationBroadcastReceiver requires `android.permission.DUMP`, while preserving its two existing actions and documented ADB shell/system caller route. | Ordinary third-party application UIDs must not be able to change persistent location or test-weather state. Direct third-party assistant apps are not authorized by this contract; any such bridge needs a separate authenticated design. Actual shell permission compatibility is deferred to G. | IMPLEMENTED / CI PASS / G RETEST PENDING |
+| F-016 | AzanActivity is app-internal and must be declared `android:exported="false"`. | Verified app-owned explicit Intent/PendingIntent route through AzanReceiver and Azan.showFullScreenNotification; no external direct-launch contract found. | IMPLEMENTED / OWNER CI PENDING |
+| F-017 | MainActivity's `styleGlassDialog` entry point delegates to B01's shared `TvDialogStyle` contract; sized overload preserves bespoke dimensions after applying common surface/dim/viewport rules. | Avoid parallel dialog implementations; preserve custom geometry and intentional anchored/transparent surfaces as documented exceptions. | IMPLEMENTED / OWNER + INTEGRATION CI PENDING |
+| F-018 | Do not close an F02 finding on code commit or build success alone. | Require source-owner exact-head CI, F02 exact-head CI, regression coverage, cross-branch diff review, and explicit Project G deferral for device-only acceptance. | APPROVED / ACTIVE |
+
+All related PRs remain Draft/open/unmerged. No APK publication, installation, or physical device test is performed during F02.
