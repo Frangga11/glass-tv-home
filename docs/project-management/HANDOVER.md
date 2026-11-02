@@ -651,3 +651,23 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Existing upload commit synchronization, file validation, request limits, browser progress/cancel UX and StandBy persistence behavior are preserved.
 - Previous F02 head `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both CI jobs before this C07 change. Latest F02 exact-head retest mandatory.
 - Do not merge, publish/install APK, or perform physical phone/TV tests in F; C07 phone-to-TV cancellation/retry/expiry acceptance remains G.
+
+
+## Latest handover checkpoint — 3 November 2026
+
+### Last completed work
+- C07 owner branch `feature/c07-upload-session-resilience`, PR #24, head `80a92264c51631fb107c75f32a3cd8e4b8aa9d9a`. Added injectable `SocketTimeoutController` for deterministic JVM tests; production still delegates to `Socket.setSoTimeout`. Corrected test expected remaining timeout to 3500 ms.
+- F02 integration branch `integration/project-f02-system-validation`, PR #50. Source/test checkpoint `ddf130a348182546b28ff59c292c9b5ceebacb2e` passed push CI #41512382568 (both jobs). Findings register and integrated-validation document then updated; latest docs-only head `b64715156e180edc3bfae25bffba6a089544247f` now requires fresh exact-head CI.
+- Owner CI passed: C07 #41512386827; B01 #41509724289; D05 #41505852041; D06 #41505865772; D01 #41506847521.
+- Cross-branch audit confirmed F02's StandBy upload handler correctly combines D05's persistence-aware `UploadResult` API with C07's newer monotonic deadline and session-revocation protections.
+
+### Current status / blockers
+- F02 is NOT FINAL until exact-head CI for `b647151` passes and remaining integrated-system audits are complete.
+- PR #50 remains Draft/open/unmerged. Do not merge, publish APK, install or test on physical Android TV during Project F.
+- Device-only acceptance is DEFERRED_TO_G: actual TV rendering/DPAD focus, remote Home gesture timing, OEM power menu, ADB shell permission behavior, LAN phone-to-TV disconnect/cancel/retry/expiry, and firmware behavior.
+
+### Next work
+1. Poll exact-head CI for F02 head `b64715156e180edc3bfae25bffba6a089544247f` and inspect logs if any job fails.
+2. Continue risk-based F02 source/contract audit without repeating already-passing CI unnecessarily.
+3. Fix findings in owning module branches and mirror into F02; preserve the C07 → D01–D05 dependency chain.
+4. Keep device-only cases explicitly deferred to Project G.
