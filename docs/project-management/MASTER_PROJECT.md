@@ -598,3 +598,10 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - F02 source/test head a95b21becad238dd634dda1e79aa9de36d749d8c passed #41520409999; F02 findings-register head 2469c0c1d241a00be3e02235e12f3f0f6525deb9 passed #41520818608 (both jobs, 42 Python tests, launcher unit tests/release build). APK 1,565,713 bytes; 7,151 bytes headroom.
 - Owner and integration source now both include process-wide storage reservations. F02 preserves the downstream D05 UploadResult adapter; no upstream contract was overwritten.
 - Latest F02 docs head e190e2863a4aacbe3aba61094fab00572f4b469f; exact-head CI #41521145454 queued at last poll. PRs remain Draft/open/unmerged.
+
+## F02 completion status — 3 November 2026
+- Final F02 integration head `e190e2863a4aacbe3aba61094fab00572f4b469f` passed exact-head CI #41521145454 (both required jobs). Python 42 tests / 1 intentional merge-time README count skip; Android unit tests and release build succeeded.
+- APK diagnostic 1,565,713 bytes / 1,572,864-byte budget; 7,151 bytes headroom. No artifact produced.
+- C07 owner PR #24 head `442b78c68b1540394d543bab59bddf52f865ccf0` passed #41521013896 (both jobs, 18 Python tests / 1 intentional merge-time README count skip, Android unit tests/build, APK 1,550,949 bytes; no artifact).
+- D01 owner PR #51 head `66352838e6155a42a9ea61477643a238f360434f` passed #41506847521 and its manifest/test contract is mirrored in F02.
+- F02 source, owner synchronization, integrated host validation, and audit documentation are complete. Real device/LAN/OEM acceptance remains Project G. PR #50 remains Draft/open/unmerged by the approved staged-merge policy.
