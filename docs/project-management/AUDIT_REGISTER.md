@@ -714,3 +714,21 @@ undefined
 - Cross-candidate audit: modal/fallback behavior and feedback components align; full candidate preserves SettingsFocusPath tests and request/session deadline policy. Avoid blind overwrite from B-series integration branch.
 - Outstanding: physical D-pad/focus/Back, popup/dialog, Glass ON/OFF, Profile/App Lock/Child Mode, Weather/AQI, QR upload, wallpaper routes, StandBy, process death/reboot and 1080p/4K.
 - No device test APK published/installed, no physical acceptance, no feature/main/release merge. D-013 remains active. Detailed evidence: `F02_INTEGRATED_FUNCTIONAL_REGRESSION.md`.
+
+
+## Project F02 audit checkpoint — 3 November 2026
+
+**Integration:** `integration/project-f02-system-validation` / PR #50 Draft. Latest documented checkpoint: `1658237bafdb24167391270f3ad8f694751a6c2a`; exact-head CI queued at the time of writing.
+
+| Finding | Root cause / owner | Remediation evidence | Current status / remaining gate |
+|---|---|---|---|
+| F02-UI-001 | D05 Settings search path omitted B01 modal helper; MainActivity style helper changed typography only. B01 owns global contract; D05 consumes it. | D05 restored `TvDialogStyle.apply` for search input/results, synchronized B01 helper and geometry test; B01/MainActivity default and sized `styleGlassDialog` now apply global helper; source-level regression tests added. | FIX COMMITTED / OWNER + F02 EXACT-HEAD CI PENDING. Preserve custom geometry and document intentional PopupWindow/custom transparent Dialog exceptions. |
+| F02-SEC-001 | Exported LocationBroadcastReceiver lacked sender authorization; D01 owns persistent location state, C/D coordinate external entry boundary. | D01 follow-up PR #51 adds `android:permission="android.permission.DUMP"`; both actions preserved; manifest test and trust-boundary doc added. Exact-head CI run #41503670362 PASS on `bbb13dd107c86cda85bd1482c2f050ca69dfc4e2`. | SOURCE CI PASS / ADB shell compatibility DEFERRED_TO_G; direct third-party app callers not authorized. |
+| F02-SEC-002 | AzanActivity was externally launchable though internal explicit PendingIntent path exists. D06 owns prayer recovery manifest dependency. | `.AzanActivity` changed to exported=false; manifest regression test added; AzanReceiver and notification explicit Intent path inspected. | FIX COMMITTED / D06 exact-head CI PENDING. |
+| F02-TEST-001 | No Android instrumentation/UI test source set found. F owns test strategy; B owns stable UI contracts. | Host-side manifest and source-contract tests added; exact-head F02 CI at `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7` passed both jobs before latest modal enforcement. | PARTIAL. Continue Robolectric feasibility assessment; device/firmware/focus/render/ADB acceptance remains G. |
+
+### Exact-head CI and dependency synchronization
+- F02 previous exact head `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7`: both jobs SUCCESS. Latest F02 documentation/source checkpoint is `1658237bafdb24167391270f3ad8f694751a6c2a`; new exact-head CI was queued.
+- First D06 retest failed compilation because its stale source branch lacked the B01 `TvDialogStyle` dependency. The dependency and geometry test were synchronized into D05/D06; no compile/test gate was weakened.
+- D01 PR #51 exact-head CI PASS. B01 PR #10, D05 PR #29 and D06 PR #30 exact-head retests were running at the time of this record.
+- No finding is closed until owner branch CI and latest integrated CI pass. No APK published/installed; no physical TV test; no PR merged.
