@@ -51,5 +51,31 @@ class WallpaperSessionShutdownAtomicityTest(unittest.TestCase):
         self.assertIn("if (!isSessionActive())", self.source)
 
 
+    def test_custom_wallpaper_file_commit_and_callback_are_inside_stop_monitor(self):
+        route = self.source.split(
+            '} else if (isRequestToPath(requestLine, "POST", getWallpaperUploadPath())) {',
+            1,
+        )[1].split("\n            } else {", 1)[0]
+        start = route.index("synchronized (this) {")
+        end = route.index("\n                        }\n                        String json", start)
+        critical_section = route[start:end]
+        self.assertIn("if (!isSessionActive())", critical_section)
+        self.assertIn("targetFile.renameTo(storedFile)", critical_section)
+        self.assertIn("listener.onUploaded(storedFile)", critical_section)
+
+    def test_standby_photo_persistence_commit_is_inside_stop_monitor(self):
+        method = self.source.split(
+            "private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines)",
+            1,
+        )[1].split("\n    private void sendUploadError", 1)[0]
+        start = method.index("synchronized (this) {")
+        end = method.index("\n        }\n\n        String json", start)
+        critical_section = method[start:end]
+        self.assertIn("if (!isSessionActive() || client.isClosed())", critical_section)
+        self.assertIn("StandbyPhotoStore.addUploadedFile(context, storedFile)", critical_section)
+        self.assertIn("listener.onStandbyUploaded(storedFile)", critical_section)
+        self.assertIn("storedFile.delete()", critical_section)
+
+
 if __name__ == "__main__":
     unittest.main()
