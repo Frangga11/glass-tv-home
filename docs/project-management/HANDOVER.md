@@ -465,3 +465,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Feature audit report commit `15840ed1e9a4d7f7bb7e3a013bbebf9c044b8a6a`; exact-head CI run #672 / `41443305464` was in progress when this handover was written.
 - Next: verify both jobs on the final documentation head; inspect any CI failure. Then complete a final source-level review of all four existing Effects-tab switches and update the audit report/PR if scope changes. Do not merge or publish an APK.
 - Project F acceptance required: normal/reduced motion, toggling effects from Settings and returning focus, Home overlay on/off, Weather screen animation pause/resume, low-memory behavior, D-pad focus stability, frame pacing and visual quality on Mi TV Stick 1080p and 4K. Deferred, not waived.
+
+
+## E07 final handover — 2 Nov 2026
+
+- E07 source/CI work is COMPLETE at exact PR head `15840ed1e9a4d7f7bb7e3a013bbebf9c044b8a6a`; CI run #672 / `41443305464` passed both jobs. Diagnostic APK 1,563,885 bytes / 1,572,864-byte cap; 8,979-byte headroom. APK publication skipped.
+- PR #40 remains OPEN/DRAFT/UNMERGED; base E06 head `570b7c83efaec3ac515b78f1c6c119b777fc3b84`; D-013 unchanged. Do not merge.
+- Audit report: `E07_ANIMATIONS_EFFECTS_AUDIT.md` on the feature branch. Canonical master checkpoint updated on `docs/project-master-inventory`.
+- Next feature task: E08 — Wallpaper Settings redesign (Change Wallpaper, Wallpaper Shuffle Interval, Next Wallpaper). Start from E07 exact head and map existing wallpaper state/callbacks before changing UI. Preserve E03/E04/E05 wallpaper, StandBy, upload, rotation, shuffle and interval contracts; no duplicated state or migration without evidence.
+- Project F still owns all device/runtime acceptance, including E07 reduced/normal motion and frame pacing. No APK installation or physical TV test is claimed.
