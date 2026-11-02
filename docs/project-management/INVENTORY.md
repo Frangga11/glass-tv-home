@@ -364,3 +364,16 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 - PR workflow #41514480902 completed SUCCESS on this exact head: Lists/tools/docs and Launcher build/unit tests both passed. The launcher log confirms release-validation build success, 35 Python tests including the accessibility-service manifest guard, and APK size 1,564,977 bytes against 1,572,864-byte cap (7,887 bytes headroom).
 - Matching push workflow #41514472847 initially failed only because Maven Central returned HTTP 429 while downloading Robolectric `nativeruntime-dist-compat-1.0.16`; this is external dependency rate limiting, not a source/test failure. Only the failed launcher job was re-run (attempt 2); it was still in progress at the time of this note. Lists/tools/docs job passed.
 - PR #50 remains Draft/open/unmerged. No APK publication, installation or physical Android TV testing. Device acceptance remains Project G.
+
+
+## F02 continuation validation — 3 November 2026
+
+| Branch / PR | Exact head | CI evidence | Status |
+|---|---|---|---|
+| F02 / #50 | c1f212585633899d4c1f5327d3a982a9e136e2b7 | Run #41519813674: Lists/tools/docs SUCCESS; Launcher build/unit tests IN_PROGRESS at last poll | RETEST IN PROGRESS |
+| F02 prior test-only checkpoint | 7e18c588374ba90dc4d3d01a608c484dcf194108 | Run #41519394898: both jobs SUCCESS | PASS (pre-storage-fix) |
+
+- New F02-RES-001: concurrent QR uploads could overcommit the free-space snapshot; added synchronized byte reservations and a 64 MiB minimum free-space margin for custom Wallpaper and StandBy upload paths. HTTP 507 indicates insufficient storage; reservations release on all exit paths.
+- New tests: JUnit storage reservation boundary cases, Python source-contract tests for both QR upload routes, and stronger upload-shutdown critical-section assertions.
+- Production changes are limited to storage-safety enforcement; existing per-file and StandBy collection limits remain unchanged.
+- Current F02 findings: QR upload shutdown test hardening and storage reservation remain OPEN until exact-head CI passes. Physical LAN/concurrency/low-storage behavior remains DEFERRED_TO_G.
