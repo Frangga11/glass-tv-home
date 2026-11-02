@@ -1,8 +1,8 @@
 package com.gathin.tvhome;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.graphics.BitmapFactory;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
