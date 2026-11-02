@@ -671,3 +671,18 @@ This result supersedes the preceding note that CI #626 was in progress.
 2. Continue risk-based F02 source/contract audit without repeating already-passing CI unnecessarily.
 3. Fix findings in owning module branches and mirror into F02; preserve the C07 → D01–D05 dependency chain.
 4. Keep device-only cases explicitly deferred to Project G.
+
+
+## Latest handover checkpoint — 3 November 2026
+
+### Completed since previous checkpoint
+- Fixed F02-SEC-005 in E01 owner PR #34: `.InputKeyService` now has `android:exported="true"` while retaining `BIND_ACCESSIBILITY_SERVICE`. Regression test first failed on the old manifest and passed after the fix.
+- E01 latest head `edd6461c932705a109ed9768649cae7e3c162c59`, CI #41513716451 both jobs PASS. Mirrored manifest and test to F02.
+- F02 latest head `558762994dec05a7ae03a924c33a3ed11665c224`, push CI #41513940620 both jobs PASS. Matching PR run #41513947375 substantive steps passed; cleanup pending at last poll.
+- Latest F02 diagnostic APK: 1,564,977 bytes, cap 1,572,864, headroom 7,887 bytes. R8 minify/resource shrinking already enabled; monitor without removing required assets.
+- C07, B01, D05, D06 and D01 owner exact-head CI passed (runs recorded in INVENTORY.md).
+
+### Remaining work / boundaries
+- Continue F02 risk-based source/contract audit; F02 is not final until remaining integration checks and G handoff are complete.
+- Project G alone performs physical Android TV testing: InputKeyService listing/enablement and KEYCODE_TV delivery, Home remote timing, visual rendering/DPAD focus, OEM power menu, ADB shell permission, and phone-to-TV upload disconnect/cancel/retry/expiry.
+- PR #50 remains Draft/open/unmerged. Do not merge, publish APK, install or test on physical TV during Project F.
