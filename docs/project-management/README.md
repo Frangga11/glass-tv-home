@@ -97,3 +97,11 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - Earlier F02 exact-head CI on `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7` passed both jobs, but it predates the MainActivity modal enforcement follow-up.
 - No finding is closed until owner-branch and latest F02 integration CI both pass. Device-specific checks remain DEFERRED_TO_G.
 - No PR merged, no APK published/installed, and no physical Android TV test performed.
+
+
+### Latest F02 audit checkpoint — 3 November 2026
+- Latest F02 branch checkpoint: `integration/project-f02-system-validation`, head `eea920469ffe5bef5ddb14e1dfd66687e82d8fed`, PR #50 Draft/open/unmerged; exact-head CI in progress.
+- B01 fixes now include shared MainActivity modal enforcement and restored Home double-press Recent Apps routing; App Switch key remains disabled.
+- D01 receiver authorization and internal-only LocationActivity fixes are CI PASS; D05 and D06 owner-branch retests are CI PASS. B01 latest exact-head CI and F02 latest integrated CI remain pending.
+- F02 Robolectric window tests passed on previous integration head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`; latest head still requires retest.
+- RecentAppsActivity exported ACTION_MAIN entry contract remains a documented P3 review item for Project G; no blind compatibility-breaking change made.
