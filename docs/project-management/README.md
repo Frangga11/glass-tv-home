@@ -140,3 +140,9 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - APK 1,565,621 bytes against 1,572,864-byte cap, leaving 7,243 bytes. Keep build-budget P3 watchlist active.
 - Concurrent QR upload storage reservations and upload-shutdown critical-section tests are HOST/SOURCE VERIFIED; physical behavior remains Project G.
 - New findings-register docs head 1845635091969c2475bb0d26783bc0f7eb58c1c0 has exact-head CI #41520194974 queued at last poll. PR #50 remains Draft/open/unmerged; no APK publication or physical TV test.
+
+### F02 process-wide QR storage reservation refinement — 3 November 2026
+- Changed upload reservation accounting to a static process-wide lock/counter after identifying a narrow overlap where old workers may drain while a replacement QR session starts.
+- This ensures the new session accounts for outstanding bytes from the old session until each worker releases its reservation.
+- Latest F02 head a95b21becad238dd634dda1e79aa9de36d749d8c; CI #41520409999 queued at last poll. Earlier per-instance version passed #41519813674, but the latest refinement still requires exact-head CI.
+- PR #50 remains Draft/open/unmerged; no APK publication or physical Android TV test.
