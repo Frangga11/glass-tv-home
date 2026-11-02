@@ -467,3 +467,5 @@ This result supersedes the preceding note that CI #626 was in progress.
 
 - E04 source commits `75fa1b1` and `08076bb` remove the DreamService two-hour power override and MainActivity 10-minute/2h10m idle-power overrides. Android TV remains owner of native idle transitions.
 - Custom StandBy photo QR upload/store/display remains preserved. Exact-head CI #629 pending; physical acceptance assigned to Project F. No APK publication/install or merge.
+
+- CI #629 / `41418393199` for exact head `08076bb945a169de198905152a092f419f48aa82`: **SUCCESS**. APK 1,561,373 bytes / 1,572,864-byte budget / 11,491-byte headroom. No APK published or installed. E04 source repair and CI PASS; hardware validation remains Project F.
