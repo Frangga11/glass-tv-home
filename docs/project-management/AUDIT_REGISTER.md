@@ -418,3 +418,11 @@ Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MA
 | Runtime / physical TV acceptance | DEFERRED, NOT WAIVED | F-stage must inspect every Settings tab/subtab and representative modal on target Android TV using D-pad/remote: selected vs focused state, focus return, clipping/scrolling, long text, modal bounds, dimming, backdrop, cancellation and action behavior. No APK installed and no physical-TV acceptance claimed. |
 
 **Disposition:** source-level global standardization is implemented and exact-head CI passed for the listed branches. This is not yet a claim of visually perfect or fully accepted UI until F-stage integrated and physical-TV checks pass. Preserve all feature ownership and do not merge early.
+
+
+### D02 modal adoption extension — 2 November 2026
+
+- D02 now includes canonical `TvDialogStyle`, `TvUiTokens` and `TvDialogStyleTest` from B01.
+- Standardized D02 shared AlertDialogs, Now Playing custom modal, card prompt custom modal and QR upload modal. Remaining direct `setLayout` is only the media hub's deliberate 16:9 aspect-ratio layout; it remains centered and retains its own content geometry.
+- D02 latest head `909aaff5709a48cd73924192f462f173fbc4c26a`; CI #587 in progress at checkpoint. D03/D04 dependency ancestry synchronized without changing their feature source trees; CI #588/#589 in progress. All three branches report mergeable. No PR merged.
+- Do not close the source gate until exact-head CI passes. Runtime/physical TV acceptance remains F-stage.
