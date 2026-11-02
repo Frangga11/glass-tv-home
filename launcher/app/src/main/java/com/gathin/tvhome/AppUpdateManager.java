@@ -270,9 +270,7 @@ public final class AppUpdateManager {
 
         AlertDialog dialog = builder.create();
         dialog.show();
-        if (activity instanceof MainActivity) {
-            ((MainActivity) activity).styleDeviceSettingsPopup(dialog, 600, 0);
-        }
+        TvDialogStyle.apply(dialog, activity, 600, 0);
     }
 
     @SuppressWarnings("deprecation")
@@ -295,9 +293,7 @@ public final class AppUpdateManager {
                 permDialog.setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss());
                 AlertDialog permissionDialog = permDialog.create();
                 permissionDialog.show();
-                if (activity instanceof MainActivity) {
-                    ((MainActivity) activity).styleDeviceSettingsPopup(permissionDialog, 560, 0);
-                }
+                TvDialogStyle.apply(permissionDialog, activity, 560, 0);
                 return;
             }
         }
@@ -318,9 +314,7 @@ public final class AppUpdateManager {
             if (active != null) active.disconnect();
         });
         progressDialog.show();
-        if (activity instanceof MainActivity) {
-            ((MainActivity) activity).styleDeviceSettingsPopup(progressDialog, 560, 0);
-        }
+        TvDialogStyle.apply(progressDialog, activity, 560, 0);
 
         executor.execute(() -> {
             File cacheDir = activity.getExternalCacheDir() != null ? activity.getExternalCacheDir() : activity.getCacheDir();
