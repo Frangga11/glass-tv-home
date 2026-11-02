@@ -283,18 +283,9 @@ public class WeatherActivity extends Activity {
 
         weatherMainTemp.setText(w.temp >= -100 && w.temp <= 100 ? w.temp + "°" : "—");
         
-        // Display Condition text matching active atmosphere
-        if (conditionType == WeatherBackgroundView.ConditionType.SUNNY) {
-            weatherMainCondition.setText(R.string.weather_condition_clear);
-        } else if (conditionType == WeatherBackgroundView.ConditionType.NIGHT) {
-            weatherMainCondition.setText(R.string.weather_condition_night);
-        } else if (conditionType == WeatherBackgroundView.ConditionType.THUNDERSTORM) {
-            weatherMainCondition.setText(R.string.weather_condition_storm);
-        } else if (conditionType == WeatherBackgroundView.ConditionType.RAIN) {
-            weatherMainCondition.setText(R.string.weather_condition_rain);
-        } else {
-            weatherMainCondition.setText(R.string.weather_condition_cloudy);
-        }
+        // The selected visual mood may be manual; weather text always reflects API data.
+        weatherMainCondition.setText(w.condition == null || w.condition.isEmpty()
+                ? getString(R.string.weather_data_unavailable) : w.condition);
 
         weatherMainSub.setText(w.highTemp >= -100 && w.lowTemp >= -100 ? String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp) : "H:—  L:—");
 
@@ -311,7 +302,8 @@ public class WeatherActivity extends Activity {
 
             timeView.setText(item.time);
             iconView.setImageResource(getIconDrawable(item.icon, item.time));
-            tempView.setText(item.temp + "°");
+            tempView.setText(item.temp >= -100 && item.temp <= 100 ? item.temp + "°" : "—");
+            if (item.temp < -100 || item.temp > 100) iconView.setVisibility(View.INVISIBLE);
 
             if (item.rainChance > 0) {
                 rainView.setVisibility(View.VISIBLE);
@@ -331,16 +323,14 @@ public class WeatherActivity extends Activity {
 
         // 4. 10-Day Forecast (Apple Weather Vertical List with Temp Spectrum Bar)
         dailyContainer.removeAllViews();
-        int weekMin = 999;
-        int weekMax = -999;
+        int weekMin = Integer.MAX_VALUE;
+        int weekMax = Integer.MIN_VALUE;
         for (WeatherAirQuality.DailyItem d : w.daily) {
-            if (d.minTemp < weekMin) weekMin = d.minTemp;
-            if (d.maxTemp > weekMax) weekMax = d.maxTemp;
+            if (d.minTemp >= -100 && d.minTemp <= 100) weekMin = Math.min(weekMin, d.minTemp);
+            if (d.maxTemp >= -100 && d.maxTemp <= 100) weekMax = Math.max(weekMax, d.maxTemp);
         }
-        if (weekMin == 999) {
-            weekMin = 20;
-            weekMax = 35;
-        }
+        boolean hasWeekRange = weekMin != Integer.MAX_VALUE && weekMax != Integer.MIN_VALUE;
+        if (hasWeekRange && weekMax <= weekMin) weekMax = weekMin + 1;
 
         for (int i = 0; i < w.daily.size(); i++) {
             WeatherAirQuality.DailyItem item = w.daily.get(i);
@@ -364,11 +354,19 @@ public class WeatherActivity extends Activity {
                 }
             }
 
-            minTempView.setText(item.minTemp + "°");
-            maxTempView.setText(item.maxTemp + "°");
+            boolean validDayRange = item.minTemp >= -100 && item.maxTemp <= 100
+                    && item.maxTemp >= item.minTemp;
+            minTempView.setText(validDayRange ? item.minTemp + "°" : "—");
+            maxTempView.setText(validDayRange ? item.maxTemp + "°" : "—");
 
             boolean isToday = (i == 0 || "Today".equalsIgnoreCase(item.day) || "Hari ini".equalsIgnoreCase(item.day));
-            barView.setRange(weekMin, weekMax, item.minTemp, item.maxTemp, isToday ? w.temp : -999);
+            if (hasWeekRange && validDayRange) {
+                barView.setVisibility(View.VISIBLE);
+                barView.setRange(weekMin, weekMax, item.minTemp, item.maxTemp,
+                        isToday && w.temp >= -100 && w.temp <= 100 ? w.temp : -999);
+            } else {
+                barView.setVisibility(View.INVISIBLE);
+            }
 
             if (i == w.daily.size() - 1 && divider != null) {
                 divider.setVisibility(View.GONE);
@@ -413,9 +411,9 @@ public class WeatherActivity extends Activity {
         if (aqiBar != null) { if (w.aqi >= 0) aqiBar.setAqi(w.aqi); else aqiBar.setVisibility(View.INVISIBLE); }
         if (aqiStation != null) {
             if (w.stationPlace != null && !w.stationPlace.isEmpty()) {
-                aqiStation.setText(w.stationPlace);
+                aqiStation.setText(getString(R.string.weather_model_reference, w.stationPlace));
             } else {
-                aqiStation.setText(AppLocationManager.getStationPlace(this));
+                aqiStation.setText(getString(R.string.weather_model_reference, AppLocationManager.getStationPlace(this)));
             }
         }
 
@@ -454,7 +452,7 @@ public class WeatherActivity extends Activity {
             String updated = english ? "Updated" : "Diperbarui";
             String source = w.isJasSource
                     ? (english ? "Jabatan Alam Sekitar (APIMS)" : "JAS Malaysia (APIMS)")
-                    : (english ? "Open-Meteo model • US AQI estimate" : "Model Open-Meteo • estimasi US AQI");
+                    : getString(R.string.weather_data_source);
             weatherFooter.setText(String.format(Locale.ROOT, "%s %s  •  %s", updated, w.updatedTime, source));
         }
     }
