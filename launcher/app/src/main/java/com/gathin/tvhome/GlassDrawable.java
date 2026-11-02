@@ -67,6 +67,9 @@ final class GlassDrawable extends Drawable {
                 .getBoolean("glass_effects_enabled", true);
         if (!glassEnabled) {
             // Decorative glass can be disabled; the component's structural surface cannot.
+            int surfaceAlpha = Math.round(255 * fade);
+            solidSurface.setAlpha(surfaceAlpha);
+            solidBorder.setAlpha(surfaceAlpha);
             canvas.drawRoundRect(rect, radius, radius, solidSurface);
             canvas.drawRoundRect(rect, radius, radius, solidBorder);
             if (paintsShape && highlight != null && highlight.isShowing()) {
