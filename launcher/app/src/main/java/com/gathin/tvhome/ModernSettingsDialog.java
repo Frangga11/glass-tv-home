@@ -2067,7 +2067,6 @@ public final class ModernSettingsDialog {
         dialogHolder[0] = d;
         d.show();
 
-        Window win = d.getWindow();
         activity.styleDeviceSettingsPopup(d, 620, 560);
 
         btnSettings.requestFocus();
