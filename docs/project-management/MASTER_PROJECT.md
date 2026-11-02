@@ -189,3 +189,12 @@
 - Exact source-head CI #602 / 41400508774 PASS: Android release build, JVM unit tests and docs/tools checks. APK 1,560,565 bytes against 1,572,864-byte cap (12,299 bytes headroom); no artifact published; manual TV-test APK step skipped.
 - F-stage still owns HOME resolver/OEM behavior, services readback, power labels, on-device cache ADB result, phone installer flow, remote visual/focus acceptance, and ClockDream/StandBy/display-timeout interaction. No device setting, HOME default, package state, user data or APK installation was changed.
 - The global UI consistency checkpoint recorded elsewhere is cross-project B01 adoption/verification; Stage E02 in the approved roadmap remains the Profile module. Do not conflate those labels.
+
+## E01 final cache-feedback accuracy correction — 2 November 2026
+
+- This later checkpoint supersedes the earlier E01 source head and APK-size figures in this document.
+- Final E01 source head: b6fa70e406afc9f6e81d16a3635a69afc6c4d783; exact-head CI #609 / 41401277076 PASS.
+- Final diagnostic APK: 1,560,609 bytes; 12,255 bytes below the 1,572,864-byte cap. No artifact published; manual TV-test APK step skipped.
+- Cache byte totals now count only successfully deleted app-cache/temp files; free-space deltas are no longer attributed to app-cache cleanup. User-facing no-files-removed feedback is neutral. Android system trim success requires the explicit ADB success marker. Regression tests cover marker parsing and actual deleted-byte counting.
+- E01 audit report and PR #34 description updated. PR #34 remains OPEN/DRAFT/UNMERGED under D-013; latest feature branch documentation commit 090a956a9860c82eb36c2d96848d47046fba0f0c.
+- E01 source audit remains COMPLETE; next Stage E task is E02 Profile. F-stage physical/OEM checks remain mandatory and unchanged. No device settings, HOME default, package state, user data or installed APK changed.
