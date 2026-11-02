@@ -250,14 +250,21 @@ final class WeatherAirQuality {
     }
 
     /** Formats a clean Spannable UI string for the Home screen: "⛅ 29° Cerah  •  IPU 112 Tidak Sihat" */
+    static boolean isSameLocation(double cachedLat, double cachedLon,
+                                   double selectedLat, double selectedLon) {
+        return Double.isFinite(cachedLat) && Double.isFinite(cachedLon)
+                && Double.compare(cachedLat, selectedLat) == 0
+                && Double.compare(cachedLon, selectedLon) == 0;
+    }
+
     private static boolean cacheMatchesLocation(SharedPreferences prefs, String latKey, String lonKey,
                                                 double selectedLat, double selectedLon) {
         try {
             String cachedLat = prefs.getString(latKey, null);
             String cachedLon = prefs.getString(lonKey, null);
             if (cachedLat == null || cachedLon == null) return false;
-            return Double.compare(Double.parseDouble(cachedLat), selectedLat) == 0
-                    && Double.compare(Double.parseDouble(cachedLon), selectedLon) == 0;
+            return isSameLocation(Double.parseDouble(cachedLat), Double.parseDouble(cachedLon),
+                    selectedLat, selectedLon);
         } catch (RuntimeException e) {
             return false;
         }
