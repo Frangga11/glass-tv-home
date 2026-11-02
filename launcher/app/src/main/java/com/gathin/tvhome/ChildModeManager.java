@@ -206,6 +206,12 @@ public final class ChildModeManager {
         preferences.edit().putStringSet(key, updated).apply();
     }
 
+    static boolean addAppPolicyPackage(Set<String> seenPackages, String packageName, String ownPackage) {
+        if (seenPackages == null || packageName == null || packageName.trim().isEmpty()
+                || packageName.equals(ownPackage)) return false;
+        return seenPackages.add(packageName);
+    }
+
     static Set<String> updatedPackageSet(Set<String> current, String packageName, boolean enabled) {
         Set<String> updated = current == null ? new HashSet<>() : new HashSet<>(current);
         if (packageName != null) {
