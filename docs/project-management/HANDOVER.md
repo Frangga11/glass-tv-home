@@ -316,3 +316,15 @@
 - **Project F carry-forward:** same-Wi-Fi QR upload/replacement/retry/expiry/revocation; custom/built-in avatar identity and cleanup across profiles; Child Mode and PIN authorization; lock/hide functionality and counts; D-pad focus, Back/cancel, scroll/clipping and focus return; wallpaper/StandBy/avatar route and storage isolation. Deferred, NOT waived.
 - No APK installed, no TV settings/HOME default changed, no data migration, and no physical acceptance claimed. Do not merge PR #35 early; keep D-013 grouped integration policy.
 - Canonical report: [E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md](E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md).
+
+
+## Resume checkpoint — E03 wallpaper metadata work in progress (2 November 2026)
+
+- Current E03 branch: `feature/e03-wallpaper-clean-metadata`; PR #36 OPEN/DRAFT/UNMERGED; base E02 exact head `3ab9b55f3cfe03ad9841a119590a9183cf114e96`.
+- Confirmed issue: the Default JPEG contains baked-in title/description; the app already has native `heroShelf` metadata UI.
+- Source checkpoint head: `188bd49269a358ebf53f8ae09056c41a5eb80243`. Added exact cached-Default filename metadata provider and fallback to existing online/place metadata providers; tests added for non-leakage to custom/other files.
+- CI #624 / run `41408606965`: lists/tools/docs PASS; launcher build/unit-test was still running at last check.
+- **Blocking:** packaged JPEG is not yet replaced; the clean text-free image binary is not in the branch. Visual issue remains open. Do not merge, publish APK, install APK or mark E03 complete.
+- Preserve B01 UI/focus contract, online/place providers, custom wallpaper suppression, shuffle/index/interval, QR upload and StandBy isolation. Physical checks remain in Project F.
+- Next: finish exact-head CI; commit clean asset; add regression checks for Default/online/custom/description toggle/Next/shuffle/restart; rerun CI and APK-size gate; then visual/device acceptance in F.
+- Canonical report: [E03_WALLPAPER_METADATA_AUDIT.md](E03_WALLPAPER_METADATA_AUDIT.md).
