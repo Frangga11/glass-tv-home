@@ -84,8 +84,8 @@ public class HomeKeyService extends AccessibilityService {
             return false;
         }
         Log.i(TAG, "Requesting Android TV restart");
-        // Accessibility global-action ID 12 is the accessibility-button chooser, not reboot.
-        // Use the visible system power menu on every supported TV.
+        // Accessibility global-action ID 12 is not a reboot action; on Android 12+ it is the
+        // accessibility-button chooser. Use the visible system power menu on every supported TV.
         return service.openPowerDialogAndSelect(POWER_ACTION_RESTART);
     }
 
