@@ -3610,7 +3610,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
-            TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     void showAzanSettingsDialog() {
@@ -4045,7 +4044,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
-            TvDialogStyle.apply(dialog, this, 520, 0);
         Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (positive != null) positive.requestFocus();
     }
@@ -4066,7 +4064,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
-            TvDialogStyle.apply(dialog, this, 520, 0);
         Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (positive != null) positive.requestFocus();
     }
@@ -4839,8 +4836,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
-        styleGlassDialog(dialog);
-        TvDialogStyle.apply(dialog, this, 560, 500);
+        styleGlassDialog(dialog, 560, 500);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -5019,8 +5015,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
-        styleGlassDialog(dialog);
-        TvDialogStyle.apply(dialog, this, 560, 500);
+        styleGlassDialog(dialog, 560, 500);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -5085,7 +5080,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void styleGlassDialog(AlertDialog dialog) {
+        styleGlassDialog(dialog, 520, 0);
+    }
+
+    /** Applies the B01 modal contract before the existing typography/focus styling. */
+    void styleGlassDialog(AlertDialog dialog, int maxWidthDp, int maxHeightDp) {
         if (dialog == null) return;
+        try {
+            TvDialogStyle.apply(dialog, this, maxWidthDp, maxHeightDp);
+        } catch (RuntimeException e) {
+            android.util.Log.w("TvHome.Dialog", "Unable to apply shared modal layout; keeping theme fallback", e);
+        }
         try {
             Typeface outfit = getResources().getFont(R.font.inter);
             TextView titleView = dialog.findViewById(android.R.id.title);
@@ -5158,9 +5163,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * Keep the surface opaque and consistent across confirmation, result, list and custom-view dialogs.
      */
     void styleDeviceSettingsPopup(AlertDialog dialog, int maxWidthDp, int maxHeightDp) {
-        if (dialog == null) return;
-        styleGlassDialog(dialog);
-        TvDialogStyle.apply(dialog, this, maxWidthDp, maxHeightDp);
+        styleGlassDialog(dialog, maxWidthDp, maxHeightDp);
     }
 
     private File getBundledDefaultWallpaper() {
@@ -6055,7 +6058,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     })
                     .show();
             styleGlassDialog(dialog);
-            TvDialogStyle.apply(dialog, this, 520, 0);
             return;
         }
 
@@ -6086,7 +6088,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .setNegativeButton(R.string.cancel_action, null)
                     .show();
             styleGlassDialog(dialog);
-            TvDialogStyle.apply(dialog, this, 520, 0);
         });
 
         SimpleDateFormat sdf = new SimpleDateFormat("d MMM, HH:mm", Locale.getDefault());
@@ -6112,8 +6113,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
-        TvDialogStyle.apply(dialog, this, 560, 460);
+        styleGlassDialog(dialog, 560, 460);
     }
 
     private void showSingleCustomActionDialog(File file, boolean returnToQuickControl) {
@@ -6157,7 +6157,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
-            TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showHazeLocationDialog() {
