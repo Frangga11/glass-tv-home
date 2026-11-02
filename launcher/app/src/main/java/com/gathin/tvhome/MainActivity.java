@@ -1339,13 +1339,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     void setStandbyPhotoMode(boolean enabled) {
         if (enabled && getStandbyPhotoCount() == 0) {
-            Toast.makeText(this, R.string.standby_photo_required, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.standby_photo_required, Toast.LENGTH_LONG);
             return;
         }
         StandbyPhotoStore.setPhotoMode(this, enabled);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
-        Toast.makeText(this, enabled ? R.string.standby_photo_mode_enabled : R.string.standby_clock_mode_enabled, Toast.LENGTH_SHORT).show();
+        TvFeedback.show(this, enabled ? R.string.standby_photo_mode_enabled : R.string.standby_clock_mode_enabled, Toast.LENGTH_SHORT);
     }
 
     void pickStandbyPhotos() {
@@ -1357,14 +1357,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         try {
             startActivityForResult(intent, REQUEST_STANDBY_PHOTOS);
         } catch (Exception e) {
-            Toast.makeText(this, R.string.standby_picker_unavailable, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.standby_picker_unavailable, Toast.LENGTH_LONG);
         }
     }
 
     void clearStandbyPhotos() {
         List<Uri> selectedUris = StandbyPhotoStore.getUris(this);
         if (!StandbyPhotoStore.saveUris(this, Collections.emptyList())) {
-            Toast.makeText(this, R.string.standby_clear_failed, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.standby_clear_failed, Toast.LENGTH_LONG);
             return;
         }
         for (Uri uri : selectedUris) {
@@ -1378,7 +1378,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         StandbyPhotoStore.setPhotoMode(this, false);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
-        Toast.makeText(this, R.string.standby_list_cleared, Toast.LENGTH_SHORT).show();
+        TvFeedback.show(this, R.string.standby_list_cleared, Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -1428,7 +1428,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     ? getString(R.string.standby_collection_limit, StandbyPhotoStore.MAX_PHOTO_COUNT)
                     : (allAlreadySelected ? getString(R.string.standby_photos_already_selected)
                     : getString(R.string.standby_photo_access_error));
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, message, Toast.LENGTH_LONG);
             return;
         }
         // Append new photos so a local/USB selection never replaces earlier QR uploads.
@@ -1452,7 +1452,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             String message = skipped > 0
                     ? getString(R.string.standby_collection_limit, StandbyPhotoStore.MAX_PHOTO_COUNT)
                     : getString(R.string.standby_photos_already_selected);
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, message, Toast.LENGTH_LONG);
             return;
         }
         if (!StandbyPhotoStore.saveUris(this, merged)) {
@@ -1464,7 +1464,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     }
                 }
             }
-            Toast.makeText(this, R.string.standby_save_failed, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.standby_save_failed, Toast.LENGTH_LONG);
             return;
         }
         StandbyPhotoStore.setPhotoMode(this, true);
@@ -1472,7 +1472,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         updateNightstandScreensaver();
         String message = getString(R.string.standby_photos_added, added, merged.size());
         if (skipped > 0) message += " " + getString(R.string.standby_photos_skipped, skipped);
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        TvFeedback.show(this, message, Toast.LENGTH_LONG);
     }
 
     /**
@@ -3280,9 +3280,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             String displayName = SoundEffects.getThemeDisplayName(chosenKey, this);
 
             if (SoundEffects.THEME_OFF.equalsIgnoreCase(chosenKey)) {
-                Toast.makeText(MainActivity.this, R.string.sound_effects_off, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(MainActivity.this, R.string.sound_effects_off, Toast.LENGTH_SHORT);
             } else {
-                Toast.makeText(MainActivity.this, getString(R.string.sound_effects_selected, displayName), Toast.LENGTH_SHORT).show();
+                TvFeedback.show(MainActivity.this, getString(R.string.sound_effects_selected, displayName), Toast.LENGTH_SHORT);
                 // Play sample of the selected theme
                 handler.postDelayed(() -> SoundEffects.playSelect(), 120);
             }
@@ -3326,7 +3326,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             AppLanguage.setLanguage(MainActivity.this, chosenLang);
             WeeklyAyah.setEnglish(MainActivity.this, AppLanguage.LANG_EN.equals(chosenLang));
             WeeklyAyah.clearCache(MainActivity.this);
-            Toast.makeText(MainActivity.this, AppLanguage.strLanguageChangedToast(MainActivity.this, chosenLang), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(MainActivity.this, AppLanguage.strLanguageChangedToast(MainActivity.this, chosenLang), Toast.LENGTH_SHORT);
             if (languageChanged && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 recreate();
             }
@@ -3418,7 +3418,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     Azan.schedule(MainActivity.this, zoneCode);
                     SoundEffects.playSelect();
                     updateMasterTag(masterStatusTag, nowOn);
-                    Toast.makeText(MainActivity.this, nowOn ? R.string.azan_popup_enabled : R.string.azan_popup_disabled, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(MainActivity.this, nowOn ? R.string.azan_popup_enabled : R.string.azan_popup_disabled, Toast.LENGTH_SHORT);
                 }
         );
         updateMasterTag(masterStatusTag, Azan.isMasterEnabled(this));
@@ -3622,7 +3622,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Azan.setSoundChoice(MainActivity.this, chosen);
             SoundEffects.playSelect();
             Azan.fetch(MainActivity.this, chosen);
-            Toast.makeText(MainActivity.this, getString(R.string.azan_audio_selected, Azan.soundLabel(chosen)), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(MainActivity.this, getString(R.string.azan_audio_selected, Azan.soundLabel(chosen)), Toast.LENGTH_SHORT);
             if (onUpdated != null) onUpdated.run();
         });
         builder.setNegativeButton(AppLanguage.strBack(this), (dialog, which) -> dialog.dismiss());
@@ -3756,7 +3756,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 String message = requested
                         ? getString(R.string.restart_tv_requested)
                         : getString(R.string.restart_tv_failed);
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                TvFeedback.show(MainActivity.this, message, Toast.LENGTH_LONG);
             }, 300);
         });
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
@@ -3772,10 +3772,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setPositiveButton(AppLanguage.strTurnOffConfirm(this), (dialog, which) -> {
             dialog.dismiss();
             boolean requested = HomeKeyService.turnOffTv(MainActivity.this);
-            Toast.makeText(MainActivity.this, requested
+            TvFeedback.show(MainActivity.this, requested
                     ? getString(R.string.power_menu_opened)
                     : getString(R.string.power_menu_failed),
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_LONG);
         });
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
@@ -3799,7 +3799,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         builder.setPositiveButton(AppLanguage.strCleanCacheStart(this), (dialog, which) -> {
             dialog.dismiss();
-            Toast.makeText(MainActivity.this, AppLanguage.strCleanCacheToast(MainActivity.this), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(MainActivity.this, AppLanguage.strCleanCacheToast(MainActivity.this), Toast.LENGTH_SHORT);
 
             CacheCleaner.cleanNow(MainActivity.this, (bytesFreed, percentBefore, percentAfter, systemTrimmed) -> {
                 SoundEffects.playSelect();
@@ -3911,7 +3911,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 boolean newMode = !isAuto;
                 AppUpdateManager.setAutoUpdateEnabled(this, newMode);
                 updateStatusUi.run();
-                Toast.makeText(this, newMode ? getString(R.string.auto_update_enabled_at, AppUpdateManager.getAutoUpdateTime(this)) : getString(R.string.auto_update_disabled), Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, newMode ? getString(R.string.auto_update_enabled_at, AppUpdateManager.getAutoUpdateTime(this)) : getString(R.string.auto_update_disabled), Toast.LENGTH_SHORT);
             });
         }
 
@@ -3925,7 +3925,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (imgQrCoffee != null) {
             imgQrCoffee.setOnClickListener(v -> {
                 SoundEffects.playSelect();
-                Toast.makeText(this, R.string.coffee_thanks, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, R.string.coffee_thanks, Toast.LENGTH_SHORT);
             });
         }
 
@@ -3964,7 +3964,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             String chosen = rawTimes[which];
             AppUpdateManager.setAutoUpdateTime(MainActivity.this, chosen);
             AppUpdateManager.setAutoUpdateEnabled(MainActivity.this, true);
-            Toast.makeText(MainActivity.this, getString(R.string.auto_update_time_selected, chosen), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(MainActivity.this, getString(R.string.auto_update_time_selected, chosen), Toast.LENGTH_SHORT);
             showAutoUpdateDialog();
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> {
@@ -4491,7 +4491,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                             handler.removeCallbacks(wallTick);
                             handler.postDelayed(wallTick, wallpaperIntervalMs);
                         }
-                        Toast.makeText(MainActivity.this, R.string.next_wallpaper_toast, Toast.LENGTH_SHORT).show();
+                        TvFeedback.show(MainActivity.this, R.string.next_wallpaper_toast, Toast.LENGTH_SHORT);
                     }
                 } else if ("INTERVAL".equals(chosenKey)) {
                     showWallpaperIntervalDialog();
@@ -4503,7 +4503,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                             .remove("shuffle_cycle")
                             .remove("shuffle_position")
                             .apply();
-                    Toast.makeText(MainActivity.this, newMode ? R.string.wallpaper_shuffle_random : R.string.wallpaper_shuffle_ordered, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(MainActivity.this, newMode ? R.string.wallpaper_shuffle_random : R.string.wallpaper_shuffle_ordered, Toast.LENGTH_SHORT);
                     showWallpaperDialog();
                 } else if ("TOGGLE_DESC".equals(chosenKey)) {
                     boolean current = isWallpaperDescEnabled();
@@ -4515,7 +4515,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                             heroShelf.setAlpha(0f);
                             heroShelf.setVisibility(View.GONE);
                         }
-                        Toast.makeText(MainActivity.this, R.string.wallpaper_description_disabled, Toast.LENGTH_SHORT).show();
+                        TvFeedback.show(MainActivity.this, R.string.wallpaper_description_disabled, Toast.LENGTH_SHORT);
                     } else {
                         if (heroShelf != null && !isCustomWallpaper()) {
                             heroShelf.setVisibility(View.VISIBLE);
@@ -4527,7 +4527,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                                 }
                             }
                         }
-                        Toast.makeText(MainActivity.this, R.string.wallpaper_description_enabled, Toast.LENGTH_SHORT).show();
+                        TvFeedback.show(MainActivity.this, R.string.wallpaper_description_enabled, Toast.LENGTH_SHORT);
                     }
                     showWallpaperDialog();
                 } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
@@ -4746,7 +4746,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 String msg = (chosenMin == 0)
                         ? getString(R.string.wallpaper_auto_change_off)
                         : getString(R.string.wallpaper_auto_change_interval, chosenMin == 60 ? getString(R.string.one_hour_label) : getString(R.string.minutes_label, chosenMin));
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(MainActivity.this, msg, Toast.LENGTH_SHORT);
                 showWallpaperDialog();
             });
 
@@ -4841,7 +4841,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(this, R.string.assistant_unavailable, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, R.string.assistant_unavailable, Toast.LENGTH_SHORT);
         }
     }
 
@@ -4967,7 +4967,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             displayLabel = category;
         }
-        Toast.makeText(this, getString(R.string.wallpaper_category_selected, displayLabel), Toast.LENGTH_SHORT).show();
+        TvFeedback.show(this, getString(R.string.wallpaper_category_selected, displayLabel), Toast.LENGTH_SHORT);
         if ("Default".equalsIgnoreCase(category)) {
             placesMode = false;
             if (heroShelf != null) {
@@ -4987,7 +4987,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     wallView.setImageDrawable(null);
                     wallView.setBackgroundColor(android.graphics.Color.BLACK);
                 }
-                Toast.makeText(this, R.string.default_wallpaper_missing, Toast.LENGTH_LONG).show();
+                TvFeedback.show(this, R.string.default_wallpaper_missing, Toast.LENGTH_LONG);
             }
             handler.removeCallbacks(wallTick);
             return;
@@ -5035,16 +5035,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             showNextWallpaper(true);
             startWallpaperRotation();
         } else {
-            Toast.makeText(this, getString(R.string.wallpaper_download_started, displayLabel), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, getString(R.string.wallpaper_download_started, displayLabel), Toast.LENGTH_SHORT);
             new Thread(() -> {
-                boolean downloaded = OnlineWallpapers.syncCategory(getApplicationContext(), category);
+                boolean downloaded;
+                try {
+                    downloaded = OnlineWallpapers.syncCategory(getApplicationContext(), category);
+                } catch (Exception e) {
+                    downloaded = false;
+                }
+                final boolean syncSucceeded = downloaded;
                 handler.post(() -> {
-                    if (isDestroyed()) return;
+                    if (isFinishing() || isDestroyed()) return;
                     List<File> fresh = OnlineWallpapers.listByCategory(MainActivity.this, category);
                     if (!fresh.isEmpty()) {
                         wallpapers = fresh;
                         showNextWallpaper(true);
                         startWallpaperRotation();
+                    }
+                    if (syncSucceeded && !fresh.isEmpty()) {
+                        TvFeedback.show(MainActivity.this,
+                                getString(R.string.wallpaper_download_complete, displayLabel, fresh.size()),
+                                Toast.LENGTH_LONG);
+                    } else {
+                        TvFeedback.show(MainActivity.this,
+                                getString(R.string.wallpaper_download_failed, displayLabel),
+                                Toast.LENGTH_LONG);
                     }
                 });
             }, "wall-cat-sync").start();
@@ -5209,7 +5224,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             } catch (Exception ignored) {}
             CacheCleaner.maybeRun(getApplicationContext(), 1);
             System.gc();
-            handler.post(() -> Toast.makeText(this, R.string.smart_boost_success, Toast.LENGTH_SHORT).show());
+            handler.post(() -> TvFeedback.show(this, R.string.smart_boost_success, Toast.LENGTH_SHORT));
         }, "gemini-boost").start();
     }
 
@@ -5254,7 +5269,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String ip = AvatarUploadServer.getLocalIpAddress();
         if (ip == null || "127.0.0.1".equals(ip)) {
-            Toast.makeText(this, R.string.tv_network_required, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.tv_network_required, Toast.LENGTH_LONG);
             return;
         }
 
@@ -5270,14 +5285,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     qrStatusText.setTextColor(0xFF4ADE80);
                 }
                 if (qrUrlText != null) qrUrlText.setText(R.string.avatar_photo_saved);
-                Toast.makeText(this, R.string.avatar_photo_replaced, Toast.LENGTH_LONG).show();
+                TvFeedback.show(this, R.string.avatar_photo_replaced, Toast.LENGTH_LONG);
             });
             return saved;
         });
 
         if (!avatarUploadServer.start()) {
             avatarUploadServer = null;
-            Toast.makeText(this, R.string.avatar_server_start_failed, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.avatar_server_start_failed, Toast.LENGTH_LONG);
             return;
         }
         showPhoneUploadQrDialog(getString(R.string.avatar_qr_title),
@@ -5294,13 +5309,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String localIp = WallpaperUploadServer.getLocalIpAddress();
         if (localIp == null || "127.0.0.1".equals(localIp)) {
-            Toast.makeText(this, R.string.tv_network_required, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.tv_network_required, Toast.LENGTH_LONG);
             return;
         }
         uploadServer = new WallpaperUploadServer(this, 8080, createUploadListener());
         if (!uploadServer.start()) {
             uploadServer = null;
-            Toast.makeText(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG);
             return;
         }
         String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getWallpaperPath();
@@ -5318,7 +5333,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String localIp = WallpaperUploadServer.getLocalIpAddress();
         if (localIp == null || "127.0.0.1".equals(localIp)) {
-            Toast.makeText(this, R.string.tv_network_required, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.tv_network_required, Toast.LENGTH_LONG);
             return;
         }
         WallpaperUploadServer.UploadListener listener = new WallpaperUploadServer.UploadListener() {
@@ -5332,7 +5347,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         uploadServer = new WallpaperUploadServer(this, 8080, listener, true);
         if (!uploadServer.start()) {
             uploadServer = null;
-            Toast.makeText(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG);
             return;
         }
         String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getStandbyPath();
@@ -5352,7 +5367,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 avatarUploadServer.stop();
                 avatarUploadServer = null;
             }
-            Toast.makeText(this, R.string.qr_create_failed, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.qr_create_failed, Toast.LENGTH_LONG);
             return;
         }
 
@@ -5540,7 +5555,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void onCustomWallpaperUploaded(File file) {
         runOnUiThread(() -> {
             SoundEffects.playSelect();
-            Toast.makeText(this, R.string.wallpaper_uploaded_from_phone, Toast.LENGTH_LONG).show();
+            TvFeedback.show(this, R.string.wallpaper_uploaded_from_phone, Toast.LENGTH_LONG);
 
             getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
                     .putString("active_category", "Custom")
@@ -5610,7 +5625,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             wallpapers = Collections.singletonList(file);
             getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
             showNextWallpaper(true);
-            Toast.makeText(this, getString(R.string.wallpaper_pinned, file.getName()), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, getString(R.string.wallpaper_pinned, file.getName()), Toast.LENGTH_SHORT);
         });
     }
 
@@ -5638,7 +5653,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
                 showNextWallpaper(true);
                 startWallpaperRotation();
-                Toast.makeText(this, getString(R.string.wallpaper_shuffle_enabled, files.length), Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.wallpaper_shuffle_enabled, files.length), Toast.LENGTH_SHORT);
             } else {
                 switchWallpaperCategory("Natural");
             }
@@ -5665,13 +5680,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     wallpapers = new ArrayList<>(Arrays.asList(files));
                     getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
                     showNextWallpaper(true);
-                    Toast.makeText(this, getString(R.string.wallpaper_deleted_remaining, files.length), Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(this, getString(R.string.wallpaper_deleted_remaining, files.length), Toast.LENGTH_SHORT);
                 } else {
-                    Toast.makeText(this, R.string.wallpaper_all_deleted_default, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(this, R.string.wallpaper_all_deleted_default, Toast.LENGTH_SHORT);
                     switchWallpaperCategory("Natural");
                 }
             } else {
-                Toast.makeText(this, R.string.wallpaper_removed_storage, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, R.string.wallpaper_removed_storage, Toast.LENGTH_SHORT);
             }
         });
     }
@@ -5687,7 +5702,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if ("Custom".equalsIgnoreCase(activeCat)) {
                 switchWallpaperCategory("Natural");
             }
-            Toast.makeText(this, R.string.wallpaper_all_uploaded_deleted, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, R.string.wallpaper_all_uploaded_deleted, Toast.LENGTH_SHORT);
         });
     }
 
@@ -5788,7 +5803,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         }
                     }
                     onCustomWallpaperSelected(file);
-                    Toast.makeText(this, R.string.wallpaper_other_deleted, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(this, R.string.wallpaper_other_deleted, Toast.LENGTH_SHORT);
                     break;
                 case 3: // Back
                     showCustomWallpaperManagerDialog();
@@ -5828,7 +5843,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dialog.dismiss();
             String chosenRegion = regions.get(which);
             AppLocationManager.setActiveRegion(MainActivity.this, chosenRegion);
-            Toast.makeText(MainActivity.this, getString(R.string.weather_region_selected, chosenRegion), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(MainActivity.this, getString(R.string.weather_region_selected, chosenRegion), Toast.LENGTH_SHORT);
             showStationListDialog(chosenRegion);
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> {
@@ -5859,7 +5874,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dialog.dismiss();
             AppLocationManager.Station chosen = stations.get(which);
             AppLocationManager.setStation(MainActivity.this, chosen);
-            Toast.makeText(MainActivity.this, getString(R.string.weather_location_selected, chosen.name, chosen.country), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(MainActivity.this, getString(R.string.weather_location_selected, chosen.name, chosen.country), Toast.LENGTH_SHORT);
             refreshLocationDependentData();
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> {
@@ -6196,7 +6211,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         try {
             startService(i);
         } catch (Exception e) {
-            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, R.string.not_available, Toast.LENGTH_SHORT);
         }
     }
 
@@ -6206,7 +6221,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         try {
             startActivity(i);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, R.string.not_available, Toast.LENGTH_SHORT);
         }
     }
 
@@ -6222,7 +6237,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         } catch (ActivityNotFoundException e) {
             if (inputAction.isEmpty()) {
-                Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, R.string.not_available, Toast.LENGTH_SHORT);
                 return;
             }
         }
@@ -6312,7 +6327,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             addInputRow(rows, close, R.drawable.ic_livetv, getString(R.string.live_tv), -1, () -> open(liveTvIntent));
         }
         if (rows.getChildCount() == 0) {
-            Toast.makeText(this, R.string.no_inputs, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, R.string.no_inputs, Toast.LENGTH_SHORT);
             return;
         }
 
@@ -6598,7 +6613,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void decideCard(Cards.Card card, boolean show) {
         boolean saved = CardFeature.run(() -> Cards.decide(Cards.storeFile(this), card, show), false);
         if (!saved) {
-            Toast.makeText(this, R.string.card_not_saved, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, R.string.card_not_saved, Toast.LENGTH_SHORT);
             promptsPaused = true;
         }
         reloadTiles();
@@ -6607,7 +6622,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Dropdown under the Settings pill (hold OK): every discovered card, its package and key; OK toggles Shown and Hidden. */
     private void showModuleCards() {
         if (cards.isEmpty() || !CardFeature.working()) {
-            Toast.makeText(this, R.string.no_module_cards, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, R.string.no_module_cards, Toast.LENGTH_SHORT);
             return;
         }
         CardFeature.run(() -> {
