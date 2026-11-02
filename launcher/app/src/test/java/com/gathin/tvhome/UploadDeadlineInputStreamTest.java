@@ -2,8 +2,6 @@ package com.gathin.tvhome;
 
 import static org.junit.Assert.assertEquals;
 
-import android.os.SystemClock;
-
 import java.io.ByteArrayInputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -20,30 +18,49 @@ public class UploadDeadlineInputStreamTest {
         }
     }
 
+    private static final class FakeMonotonicClock implements UploadDeadlineInputStream.MonotonicClock {
+        long nowMs;
+
+        FakeMonotonicClock(long nowMs) {
+            this.nowMs = nowMs;
+        }
+
+        @Override
+        public long elapsedRealtime() {
+            return nowMs;
+        }
+    }
+
     @Test
     public void appliesRemainingDeadlineToEachRead() throws Exception {
         TimeoutRecordingSocket socket = new TimeoutRecordingSocket();
+        FakeMonotonicClock clock = new FakeMonotonicClock(1000L);
         UploadDeadlineInputStream input = new UploadDeadlineInputStream(
                 new ByteArrayInputStream(new byte[]{10, 20}), socket,
-                SystemClock.elapsedRealtime() + 5000L, 30000);
+                6000L, 30000, clock);
+
         assertEquals(10, input.read());
+        assertEquals(5000, socket.lastTimeout);
+        clock.nowMs = 2500L;
         assertEquals(20, input.read());
+        assertEquals(3000, socket.lastTimeout);
         assertEquals(-1, input.read());
-        assertTrueBounded(socket.lastTimeout);
     }
 
     @Test(expected = SocketTimeoutException.class)
     public void rejectsReadsAfterAbsoluteDeadline() throws Exception {
         TimeoutRecordingSocket socket = new TimeoutRecordingSocket();
+        FakeMonotonicClock clock = new FakeMonotonicClock(2000L);
         UploadDeadlineInputStream input = new UploadDeadlineInputStream(
                 new ByteArrayInputStream(new byte[]{10}), socket,
-                SystemClock.elapsedRealtime() - 1L, 30000);
+                1999L, 30000, clock);
         input.read();
     }
 
-    private static void assertTrueBounded(int timeout) {
-        if (timeout <= 0 || timeout > 30000) {
-            throw new AssertionError("Read timeout was not bounded: " + timeout);
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void rejectsMissingMonotonicClock() {
+        new UploadDeadlineInputStream(
+                new ByteArrayInputStream(new byte[]{10}), new TimeoutRecordingSocket(),
+                5000L, 30000, null);
     }
 }
