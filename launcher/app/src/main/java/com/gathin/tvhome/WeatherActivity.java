@@ -439,7 +439,7 @@ public class WeatherActivity extends Activity {
         if (visibilitySub != null) {
             visibilitySub.setText(Double.isNaN(w.visibilityKm) ? "—" : (w.visibilityKm < 1.0
                     ? getString(R.string.limited_visibility)
-                    : getString(R.string.good_visibility));
+                    : getString(R.string.good_visibility)));
         }
         if (pressureGaugeView != null) {
             pressureGaugeView.setVisibility(w.pressure >= 0 ? View.VISIBLE : View.INVISIBLE);\n            if (w.pressure >= 0) pressureGaugeView.setPressure(w.pressure);
