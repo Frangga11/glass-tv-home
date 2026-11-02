@@ -541,3 +541,13 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - Regression guard: `tests/test_wallpaper_session_shutdown_atomicity.py`.
 - C07 PR #24 latest documented head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 PR #50 latest head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`; exact-head CI pending.
 - No upload route/API/browser UX or StandBy storage contract was changed. Physical phone-to-TV cancellation/retry/expiry tests remain Project G.
+
+
+## F02 continuation checkpoint — 3 November 2026
+
+- F02 integration branch `integration/project-f02-system-validation`; latest head after findings/validation documentation commits: `b64715156e180edc3bfae25bffba6a089544247f`.
+- Immediately preceding source/test head `ddf130a348182546b28ff59c292c9b5ceebacb2e`: exact-head push CI #41512382568 passed both required jobs. Matching PR run #41512391849 passed all substantive build/test/release-validation/APK-size steps; cleanup was still in progress at last poll. Documentation-only head requires fresh exact-head CI.
+- C07 owner PR #24 head `80a92264c51631fb107c75f32a3cd8e4b8aa9d9a`: run #41512386827 passed both jobs. Corrected one test arithmetic expectation from 3000 to 3500 ms; production calculation was already correct.
+- Verified C07/D05 dependency contract: D05's downstream `UploadResult` persistence adaptation in `WallpaperUploadServer` is intentionally retained in F02 alongside C07's monotonic deadlines and session-shutdown synchronization. Do not overwrite it with C07's older boolean-based StandBy handler.
+- B01 #10 run #41509724289, D05 #29 run #41505852041, D06 #30 run #41505865772, and D01 #51 run #41506847521 passed on their recorded exact heads.
+- Status: F02 still PARTIAL pending exact-head CI on `b647151`, remaining cross-module audits and documented G handoff. No merge, APK publication/installation, or physical Android TV test.
