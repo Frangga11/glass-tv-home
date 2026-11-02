@@ -594,3 +594,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Verified B01 and F02 `HomeKeyService.java` are now byte-identical at blob SHA `b3cd4b2b4092a90f4f1faefb1072c15e2203b314`.
 - F02 findings F02-FUNC-002 (Force Stop/Home handler collision), F02-SEC-004 (exported Recent Apps Close All) and F02-PLAT-001 (invalid restart action ID) fixed and covered by exact F02 CI at 5dd787b.
 - No merge, APK publication/installation, or physical Android TV test.
+
+
+## 3 November 2026 — C07/F02 wallpaper mutation shutdown race
+
+- Cross-module source audit found WallpaperUploadServer's `/api/select`, `/api/delete`, `/api/slideshow`, and `/api/clear` handlers only relied on the outer dispatcher session check. A worker already past that check could mutate wallpaper state/files after the QR server's `stop()` returned.
+- Fixed on C07 owner PR #24 and mirrored to F02: all four handlers now synchronize on the same server monitor as `stop()` and recheck session validity before state/file changes. Revoked sessions return HTTP 410 Gone JSON.
+- Added `tests/test_wallpaper_session_shutdown_atomicity.py` on owner and integration branches.
+- C07 owner head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`; exact-head CI in progress.
+- No API route, payload, upload limit, browser progress/cancel UI, or StandBy persistence behavior was altered.
+- No merge, APK publication/installation, or physical Android TV test.
