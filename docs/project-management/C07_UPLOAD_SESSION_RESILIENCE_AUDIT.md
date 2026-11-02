@@ -58,3 +58,16 @@ Existing C01–C06 endpoint, exact-byte receive, file-policy, Avatar, Wallpaper,
 ## 6. Disposition
 
 C07 implementation and source-head CI are PASS at `496d49d79f6c9a90ac50011e7a596b5b5a2ba6e3`. The final documentation-inclusive PR head must also retain both required CI jobs as PASS before the source/CI gate is closed. PR remains Draft/unmerged under D-013.
+
+
+## 2.1 Additional F02 cross-module finding — mutation APIs versus session shutdown
+
+| ID | Severity | Finding | Impact |
+|---|---|---|---|
+| C07-F08 | MEDIUM | Wallpaper management POST handlers (select, delete, slideshow, clear) checked session validity only in the outer request dispatcher; unlike upload commits, they were not serialized with synchronized `stop()` and did not recheck session state inside their mutation critical section. | A request that passed the initial check could race QR-session closure and still change wallpaper selection or delete/clear files after the session was revoked. |
+
+### Correction
+- Marked `handleApiSelect`, `handleApiDelete`, `handleApiSlideshow`, and `handleApiClear` synchronized on the same server monitor as `stop()`.
+- Each mutation endpoint now rechecks session activity under that monitor before calling its listener or changing files. If shutdown/expiry wins the monitor, the endpoint returns HTTP 410 Gone with a JSON `session_expired` error. If the mutation acquires the monitor first, it completes before `stop()` can return; no mutation continues after shutdown has completed.
+- Added `tests/test_wallpaper_session_shutdown_atomicity.py` to guard synchronized ownership, in-lock session rechecks, explicit 410 response, and preservation of existing upload commit/shutdown synchronization.
+- This does not change the browser API routes, upload payloads, image limits, progress/cancel UI, or StandBy persistence flow.
