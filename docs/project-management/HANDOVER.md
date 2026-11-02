@@ -524,3 +524,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - E08 creates one three-tab wallpaper control center (Change Wallpaper / Shuffle Interval / Next Wallpaper), consolidating Appearance and Quick Control access while reusing existing category, custom-photo, QR, shuffle, interval, decoder and rotation implementations.
 - Canonical report: `E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md`.
 - Stage E source implementation is complete through E08. Next phase is Project F: isolated integration rehearsal, combined-diff/dependency audit and full regression/device acceptance. Keep D-013: do not merge feature PRs early; do not install APK or claim physical acceptance before approved F-stage procedure.
+
+
+## Current resume checkpoint — E08 source/CI final, 2 Nov 2026
+- Final E08 source/test head: `dcec6afc805a9d7c78702ad8d51b20b87bd751a3`; PR #41 OPEN/DRAFT/UNMERGED targets E07 @ `a0f2b0fff6eef0c42852d21b971904d5acd29d5c` under D-013.
+- Exact-head CI #695 / `41470304782` PASS; APK 1,565,417 bytes, 7,447 bytes below the 1.5 MiB cap. Publication skipped.
+- E08 unifies Change Wallpaper / Shuffle Interval / Next Wallpaper in one three-tab control center. Existing category, custom-photo/QR, shuffle, interval, decoder and rotation owners are reused. D-pad focus is retained after Shuffle state refresh.
+- Feature branch latest commit `086ad1d112b346a281c88273fa620e9348d2cccc` is report-only after the verified source/test head.
+- Canonical report: `E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md`.
+- Stage E source implementation is complete through E08. Next phase: Project F integration rehearsal, combined-diff/dependency audit, regression and physical acceptance. Keep D-013; no early merge or APK installation.
