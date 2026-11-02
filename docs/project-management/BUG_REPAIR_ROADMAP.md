@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A01–A06 complete; B/C/D source/CI work complete with F-stage acceptance pending; E00 officially closed; E01 next; device testing deferred to final F-stage acceptance  
+**Status:** OFFICIALLY APPROVED — A01–A06 complete; B/C/D source/CI work complete with F-stage acceptance pending; E00 and E01 source audits complete; E02 next; device testing deferred to final F-stage acceptance  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -91,7 +91,7 @@ A code change or passing CI alone does not close a physical-device acceptance it
 | ID | Module / task | Current status (2 Nov 2026) |
 |---|---|---|
 | E00 | Master inventory, document reconciliation, branch/PR status, and cross-project dependency map | DONE — PR #32 merged and canonical documents re-verified |
-| E01 | Device settings and launcher: default-home dialog, launcher status/help, accessibility, remote actions | NOT STARTED |
+| E01 | Device settings and launcher: default-home dialog, launcher status/help, accessibility, remote actions | DONE — source audit and exact-head CI PASS; physical/OEM acceptance deferred to F |
 | E02 | Profile: avatar QR, built-in avatar selection, focus indicators, app-lock counts and policy UI | NOT STARTED |
 | E03 | Appearance: wallpaper upload, QR flow, photo management, preview, delete and apply | NOT STARTED |
 | E04 | Standby/screensaver: upload, preview, location, gallery visibility, selection and playback | NOT STARTED |
@@ -378,3 +378,13 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - Canonical E00 report, roadmap, inventory, audit register, operations log, master project and handover were re-read from `docs/project-master-inventory` after merge.
 - E00 scope is closed: documentation/inventory/dependency reconciliation only. No application source, feature PR, APK, user data, TV setting, installation or physical-device acceptance was changed or claimed.
 - **Next work unit: E01 — Device Settings & Launcher audit.** Begin with exact dependency heads and the A06 read-only HOME resolver/preferred-activity discrepancy. Preserve D-013/D-014; do not merge feature PRs early.
+
+
+## E01 source-audit closure — 2 November 2026
+
+- E01 source audit and repository-level verification are DONE. Next Stage E task: E02 — Profile.
+- E01 feature branch source head 9919dbaa0add6cc7ce2a84332354f46f9cc48d61; exact-head CI #602 / 41400508774 PASS. Android build, JVM unit tests and docs/tools checks passed.
+- APK diagnostic 1,560,565 bytes; 12,299 bytes below the 1,572,864-byte cap. No artifact published; manual TV-test APK step skipped.
+- E01 PR #34 remains OPEN/DRAFT/UNMERGED under D-013. No feature merge or device test.
+- F-stage still owns physical HOME/OEM resolver, accessibility/notification readback, power labels, cache ADB success/failure, phone installer, D-pad visual/focus, and ClockDream/StandBy/display-timeout interaction.
+- Preserve B01 as owner of global UI tokens/modal contract. E01 adopted the exact B01 TvDialogStyle/TvUiTokens; E02 and later modules must continue to use those shared contracts.
