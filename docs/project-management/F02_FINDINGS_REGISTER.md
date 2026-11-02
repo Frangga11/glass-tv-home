@@ -261,3 +261,14 @@ The following fixes have been implemented on owning source branches and mirrored
 - Owner exact-head CI and latest F02 exact-head CI pending.
 - Physical phone-to-TV cancellation/expiry and network disconnect acceptance remains DEFERRED_TO_G.
 - Status: FIX COMMITTED / OWNER + F02 EXACT-HEAD CI PENDING / DEVICE ACCEPTANCE DEFERRED_TO_G.
+
+
+## F02-C07-002 — Upload session deadlines depended on wall-clock time — 3 November 2026
+
+- Severity: P3 timing correctness / resilience. Owner: C07 upload/session layer.
+- Root cause: Avatar/Wallpaper QR session expiry, per-request deadlines, and per-read deadline checks used `System.currentTimeMillis()`. Android time synchronization or a manual clock adjustment can move this clock forward/backward, prematurely expiring or unintentionally extending an upload session.
+- Correction: switched all Avatar/Wallpaper expiry and request-deadline calculations/checks to `SystemClock.elapsedRealtime()`, including `UploadDeadlineInputStream`. The monotonic clock includes deep sleep and is unaffected by wall-clock/time-zone changes. Timeout durations, QR session lifetime, browser XHR timeout, and HTTP behavior remain unchanged.
+- Added `tests/test_upload_monotonic_deadline_clock.py` to require elapsed-realtime usage and prohibit wall-clock deadline comparisons in all three classes.
+- Owner: C07 PR #24, `feature/c07-upload-session-resilience`; mirrored into F02.
+- Exact-head owner and F02 CI pending.
+- Status: FIX COMMITTED / EXACT-HEAD CI PENDING / PHONE-TO-TV EXPIRY ACCEPTANCE DEFERRED_TO_G.
