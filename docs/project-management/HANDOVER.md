@@ -736,3 +736,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Changed the reservation ledger to a process-wide static lock/counter shared across all WallpaperUploadServer instances. Old and new session reservations remain counted until each request's finally block releases them. Updated the source-contract test accordingly.
 - Latest F02 head a95b21becad238dd634dda1e79aa9de36d749d8c; PR #50 remains Draft/open/unmerged. Exact-head CI run #41520409999 was queued at last poll. The prior instance-local implementation passed #41519813674, but that result does not close the process-wide refinement.
 - No change to 64 MiB margin, per-file size limit, StandBy collection limits, or upload success behavior. No APK publication/installation or physical TV test; Project G retains LAN and low-storage acceptance.
+
+## C07 owner + F02 integration verification — 3 November 2026
+
+- C07 owner PR #24 head 442b78c68b1540394d543bab59bddf52f865ccf0 passed exact-head CI #41520866323: both jobs SUCCESS, 18 Python tests passed, launcher unit tests/release build passed, APK 1,550,949 bytes. The legacy manual APK publication step was SKIPPED for the PR workflow; artifact list empty.
+- F02 PR #50 source/test head a95b21becad238dd634dda1e79aa9de36d749d8c passed #41520409999; exact-head findings-register docs head 2469c0c1d241a00be3e02235e12f3f0f6525deb9 passed #41520818608: both jobs SUCCESS, 42 Python tests, launcher unit tests/release build passed, APK 1,565,713 bytes with 7,151 bytes headroom.
+- C07 owner and F02 integration now contain matching process-wide upload storage reservations and regression guards. F02 intentionally preserves D05's UploadResult adapter; C07 upstream branch keeps its boolean contract.
+- Latest F02 findings-register sync head e190e2863a4aacbe3aba61094fab00572f4b469f; exact-head CI #41521145454 queued at last poll. Keep F02 partial until that docs-only head is green.
+- PR #50 and #24 remain Draft/open/unmerged. No artifact published, no APK installed, no physical TV test. Project G retains real LAN, low-storage and device acceptance.
