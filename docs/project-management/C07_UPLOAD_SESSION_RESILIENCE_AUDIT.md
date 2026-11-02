@@ -84,3 +84,9 @@ C07 implementation and source-head CI are PASS at `496d49d79f6c9a90ac50011e7a596
 - The monotonic clock includes device sleep and is not affected by wall-clock/time-zone changes. All components now calculate and compare these elapsed durations in the same clock domain.
 - Added `tests/test_upload_monotonic_deadline_clock.py` to guard all three deadline-bearing classes against reverting to wall-clock time.
 - Existing timeout durations, session lifetimes, browser XHR timeouts, and expiry response behavior are unchanged.
+
+
+### Monotonic clock test correction
+- The first CI run after replacing production deadlines correctly exposed two stale unit-test inputs that still constructed deadlines with `System.currentTimeMillis()`. The implementation was not reverted.
+- Updated `UploadDeadlineInputStreamTest` to construct its future/expired deadlines with `SystemClock.elapsedRealtime()`, matching the production clock domain.
+- Added source guard `tests/test_upload_monotonic_deadline_clock.py`. Retest required on the latest exact owner and F02 heads.
