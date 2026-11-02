@@ -116,7 +116,8 @@
 
         <receiver
             android:name=".LocationBroadcastReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.DUMP">
             <intent-filter>
                 <action android:name="com.gathin.tvhome.SET_LOCATION" />
                 <action android:name="com.gathin.tvhome.SET_WEATHER" />
@@ -139,7 +140,7 @@
             android:exported="false" />
         <activity
             android:name=".AzanActivity"
-            android:exported="true"
+            android:exported="false"
             android:excludeFromRecents="true"
             android:taskAffinity=""
             android:launchMode="singleTask"
