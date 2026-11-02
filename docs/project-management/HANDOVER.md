@@ -533,3 +533,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Feature branch latest commit `086ad1d112b346a281c88273fa620e9348d2cccc` is report-only after the verified source/test head.
 - Canonical report: `E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md`.
 - Stage E source implementation is complete through E08. Next phase: Project F integration rehearsal, combined-diff/dependency audit, regression and physical acceptance. Keep D-013; no early merge or APK installation.
+
+
+## Current resume checkpoint — E08 compact UI and CI final, 2 Nov 2026
+- Final E08 source/test head: `fcd7d8f23a4833830a401652ef269db3282b7300`; PR #41 OPEN/DRAFT/UNMERGED targets E07 under D-013.
+- Exact-head CI #702 / `41473357877` PASS; APK 1,562,709 bytes, 10,155 bytes below the 1.5 MiB cap. Publication skipped.
+- Popup/subtab styling now follows shared B01 tokens and B01/B03 modal surface/viewport contract. Main Wallpaper Control Center max 680×420 dp; short tabs/action labels; category/interval lists compact and single-line; nested custom-photo dialogs share modal styling.
+- Existing wallpaper actions and storage/QR/rotation owners are unchanged. D-pad focus is restored after Shuffle refresh.
+- Canonical report: `E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md`.
+- Project F remains next: integration rehearsal and physical 1080p/4K/D-pad/Glass ON-OFF acceptance. No early merge or APK install under D-013.
