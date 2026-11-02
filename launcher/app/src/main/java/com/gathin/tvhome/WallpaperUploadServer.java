@@ -781,8 +781,17 @@ public class WallpaperUploadServer {
         }
     }
 
-    private void handleApiSelect(String fileName, OutputStream out) {
+    /** Must be called while holding this server's monitor to serialize mutations with stop(). */
+    private boolean requireActiveSession(OutputStream out) throws Exception {
+        if (isSessionActive()) return true;
+        sendSimpleJsonResponse(out, 410,
+                "{\"status\":\"error\",\"error\":\"session_expired\"}");
+        return false;
+    }
+
+    private synchronized void handleApiSelect(String fileName, OutputStream out) {
         try {
+            if (!requireActiveSession(out)) return;
             if (fileName == null || fileName.trim().isEmpty()) {
                 sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"missing_file\"}");
                 return;
@@ -809,8 +818,9 @@ public class WallpaperUploadServer {
         }
     }
 
-    private void handleApiDelete(String fileName, OutputStream out) {
+    private synchronized void handleApiDelete(String fileName, OutputStream out) {
         try {
+            if (!requireActiveSession(out)) return;
             if (fileName == null || fileName.trim().isEmpty()) {
                 sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"missing_file\"}");
                 return;
@@ -837,8 +847,9 @@ public class WallpaperUploadServer {
         }
     }
 
-    private void handleApiSlideshow(OutputStream out) {
+    private synchronized void handleApiSlideshow(OutputStream out) {
         try {
+            if (!requireActiveSession(out)) return;
             if (listener == null) {
                 sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
                 return;
@@ -851,8 +862,9 @@ public class WallpaperUploadServer {
         }
     }
 
-    private void handleApiClear(OutputStream out) {
+    private synchronized void handleApiClear(OutputStream out) {
         try {
+            if (!requireActiveSession(out)) return;
             if (listener == null) {
                 sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
                 return;
@@ -885,7 +897,8 @@ public class WallpaperUploadServer {
 
     private void sendSimpleJsonResponse(OutputStream out, int status, String json) throws Exception {
         String reason = status == 200 ? "OK" : status == 400 ? "Bad Request"
-                : status == 404 ? "Not Found" : status == 503 ? "Service Unavailable" : "Internal Server Error";
+                : status == 404 ? "Not Found" : status == 410 ? "Gone"
+                : status == 503 ? "Service Unavailable" : "Internal Server Error";
         byte[] bytes = json.getBytes("UTF-8");
         String response = "HTTP/1.1 " + status + " " + reason + "\r\n" +
                 "Content-Type: application/json; charset=UTF-8\r\n" +
