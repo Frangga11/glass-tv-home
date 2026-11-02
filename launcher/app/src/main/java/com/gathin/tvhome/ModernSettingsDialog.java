@@ -606,12 +606,11 @@ public final class ModernSettingsDialog {
 
                     frame.setOnClickListener(v -> {
                         SoundEffects.playSelect();
-                        // Selecting a built-in avatar replaces a personal photo only after its reference is cleared safely.
-                        if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                        // Commit the built-in index and custom-photo reset as one profile transaction.
+                        if (!ProfileManager.selectBuiltInAvatar(activity, activeP.id, idx)) {
                             TvFeedback.show(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG);
                             return;
                         }
-                        ProfileManager.setAvatarIndex(activity, idx);
                         ProfileManager.UserProfile refreshedProfile = ProfileManager.getActiveProfile(activity);
                         for (int k = 0; k < 7; k++) {
                             if (avatarRings[k] != null) {
@@ -1724,14 +1723,18 @@ public final class ModernSettingsDialog {
 
     private static void showAppLockPickerAuthorized(MainActivity activity, float density, Typeface font, boolean isHideMode, Runnable onFinished) {
         PackageManager pm = activity.getPackageManager();
-        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
-        mainIntent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
-        List<ResolveInfo> apps = pm.queryIntentActivities(mainIntent, 0);
-        if (apps == null || apps.isEmpty()) {
-            mainIntent = new Intent(Intent.ACTION_MAIN, null);
-            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-            apps = pm.queryIntentActivities(mainIntent, 0);
-        }
+        // Merge both TV and generic launcher entry points. Some TV apps expose only one
+        // category, so falling back only when Leanback is empty silently omits valid apps.
+        List<ResolveInfo> apps = new ArrayList<>();
+        Intent leanbackIntent = new Intent(Intent.ACTION_MAIN, null);
+        leanbackIntent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
+        List<ResolveInfo> leanbackApps = pm.queryIntentActivities(leanbackIntent, 0);
+        if (leanbackApps != null) apps.addAll(leanbackApps);
+
+        Intent launcherIntent = new Intent(Intent.ACTION_MAIN, null);
+        launcherIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> launcherApps = pm.queryIntentActivities(launcherIntent, 0);
+        if (launcherApps != null) apps.addAll(launcherApps);
 
         String selfPkg = activity.getPackageName();
         class AppEntry {
@@ -1751,11 +1754,13 @@ public final class ModernSettingsDialog {
             for (ResolveInfo ri : apps) {
                 if (ri == null || ri.activityInfo == null) continue;
                 String p = ri.activityInfo.packageName;
-                // App-lock policy is package-scoped, so show one row per package even when an app
-                // exposes multiple Leanback activities.
-                if (p == null || p.equals(selfPkg) || !seenPackages.add(p)) continue;
-                String lbl = ri.loadLabel(pm).toString();
-                entryList.add(new AppEntry(p, lbl, ri.loadIcon(pm)));
+                // Policy is package-scoped: merge Leanback + Launcher entries and show each app once.
+                if (!ChildModeManager.addAppPolicyPackage(seenPackages, p, selfPkg)) continue;
+                CharSequence loadedLabel = ri.loadLabel(pm);
+                String label = loadedLabel != null ? loadedLabel.toString() : p;
+                android.graphics.drawable.Drawable icon = ri.loadIcon(pm);
+                if (icon == null) icon = pm.getDefaultActivityIcon();
+                entryList.add(new AppEntry(p, label, icon));
             }
         }
         Collections.sort(entryList, (a, b) -> a.label.compareToIgnoreCase(b.label));
