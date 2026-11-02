@@ -551,3 +551,15 @@ This result supersedes the preceding note that CI #626 was in progress.
 - E08 visual contract: compact Quick Control wallpaper center vs fuller Appearance wallpaper-management surface; distinct roles, shared underlying state and styling contract. Project F to confirm on physical TV.
 - PR #34–#41 all remain OPEN/DRAFT/UNMERGED under D-013. No merge, APK installation, physical test or release approval was performed by this closure.
 - F entry checklist: dependency/combined-diff audit; verify exact-head CI evidence; integrated build/regression; Android TV 1080p/4K acceptance; D-pad/focus/Back; popup/dialog and Glass ON/OFF; cross-module interactions; lifecycle/persistence; wallpaper QR/upload/delete/shuffle/interval/Next and Wallpaper/StandBy isolation. Any verified defect is routed to its actual owner and rechecked end-to-end.
+
+
+## 3 November 2026 — Project F02 audit and remediation
+
+- Started/continued F02 integrated system validation on `integration/project-f02-system-validation`; PR #50 remains Draft/open/unmerged.
+- Confirmed and fixed D05 Settings search modal contract regression: both search input and results dialogs now use B01 `TvDialogStyle.apply`; added source regression test. Restored the B01 helper dependency into D05/D06 branches after exact-head CI exposed a missing-class compile failure.
+- Expanded B01 global modal enforcement: MainActivity `styleGlassDialog` delegates to a sized overload that applies the shared B01 contract, then preserves typography/focus styling. Custom geometry remains downstream; anchored PopupWindows and transparent custom Dialogs remain documented exceptions.
+- Added MainActivity modal contract regression test. CI caught a test assertion that assumed the integrated-only Device Settings wrapper existed on standalone B01/D05/D06 branches; corrected the test to conditionally verify that optional wrapper rather than weakening core assertions.
+- D01 security follow-up: LocationBroadcastReceiver now requires `android.permission.DUMP`, preserving both existing actions and the documented ADB shell/system caller route. Added manifest regression test and trust-boundary documentation. Exact-head CI passed on `bbb13dd107c86cda85bd1482c2f050ca69dfc4e2`; real TV ADB compatibility remains Project G.
+- D06 security follow-up: AzanActivity changed to `exported=false`; explicit app-owned notification PendingIntent path was verified in source. Added manifest regression test. D06 owner retest pending.
+- F02 integration mirrored all three source fixes and regression tests. Earlier integrated head `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7` passed both jobs; newer head `1658237bafdb24167391270f3ad8f694751a6c2a` queued at this checkpoint.
+- B01/D05/D06 owner-branch exact-head CI was running. No finding closed; no APK published/installed; no physical Android TV test; no PR merged.
