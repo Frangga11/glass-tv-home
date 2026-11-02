@@ -216,6 +216,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static int lastFocused = 0;
     /** App of the last focused tile, so focus follows it when the app list changes. */
     private static String lastFocusedKey;
+    /** Last focused top-bar pill, restored when returning from an external Android screen. */
+    private static boolean lastFocusWasTopPill;
+    private static String lastFocusedTopPillKey;
     private float density;
     /** Module cards (res/values/config.xml, module_cards): discovered on resume, shown only after the owner's Show. */
     private boolean moduleCards;
@@ -406,6 +409,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
         COLUMNS = cfg.columns;
+        android.content.SharedPreferences navigationPrefs =
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE);
+        if (lastFocusedKey == null) {
+            lastFocusedKey = NavigationState.normalizeFocusKey(
+                    navigationPrefs.getString(NavigationState.HOME_FOCUS_KEY, null));
+            lastFocused = Math.max(0, navigationPrefs.getInt(NavigationState.HOME_FOCUS_POSITION, 0));
+        }
+        lastFocusWasTopPill = navigationPrefs.getBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false);
+        lastFocusedTopPillKey = NavigationState.normalizeTopPillKey(
+                navigationPrefs.getString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, null));
         reducedMotion = cfg.reducedMotion;
         liveTvPkg = cfg.liveTvPackage;
         liveTvAction = cfg.liveTvAction;
@@ -971,6 +984,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
+            if (newF != null && isTopPill(newF)) {
+                String pillKey = topPillKeyForView(newF);
+                if (pillKey != null) {
+                    lastFocusWasTopPill = true;
+                    lastFocusedTopPillKey = pillKey;
+                    getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                            .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, true)
+                            .putString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, pillKey).apply();
+                }
+            } else if (newF != null && !onTile) {
+                lastFocusWasTopPill = false;
+                lastFocusedTopPillKey = null;
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                        .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
+                        .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
+            }
             if (!onTile) hideGlass();
             if (!onTile && (newF == null || !(isTopPill(newF) || inMenu(newF)))) glider.hide();
         });
@@ -1580,8 +1609,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             // A package change must not steal focus from a top button or the Inputs popup.
             int pos = adapter.positionOf(returnKey);
-            lastFocused = Math.max(0, Math.min(pos >= 0 ? pos : returnSlot, adapter.getItemCount() - 1));
-            lastFocusedKey = adapter.keyAt(lastFocused);
+            int itemCount = adapter.getItemCount();
+            int resolvedPosition = NavigationState.resolveHomePosition(pos, returnSlot, itemCount);
+            lastFocused = itemCount > 0 ? resolvedPosition : 0;
+            lastFocusedKey = itemCount > 0
+                    ? NavigationState.normalizeFocusKey(adapter.keyAt(lastFocused)) : null;
+            android.content.SharedPreferences.Editor savedFocus =
+                    getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                            .putInt(NavigationState.HOME_FOCUS_POSITION, lastFocused);
+            if (lastFocusedKey != null) savedFocus.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
+            else savedFocus.remove(NavigationState.HOME_FOCUS_KEY);
+            savedFocus.apply();
             if (pos < 0) hideHero();
             // A newly installed app may have brought a card with it.
             tilesReady = true;
@@ -1600,11 +1638,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Read these before reload(): rebinding can move focus to the first tile and overwrite them.
         final String returnKey = lastFocusedKey;
         final int returnSlot = lastFocused;
+        final boolean returnFocusWasTopPill = lastFocusWasTopPill;
+        final String returnTopPillKey = lastFocusedTopPillKey;
         final List<Cards.Card> none = Collections.emptyList();
         cards = moduleCards ? CardFeature.run(() -> Cards.discover(this, hiddenApps, Cards.load(Cards.storeFile(this))), none) : none;
         boolean rebuilt = adapter.reload(cards.isEmpty() ? none : CardFeature.run(() -> Cards.shown(cards), none));
-        lastFocusedKey = returnKey;
-        lastFocused = returnSlot;
+        // RecyclerView rebinding may transiently move focus and fire onTileFocused(). Preserve
+        // the user's top-bar destination across that internal rebuild; it is not a user move.
+        int itemCount = adapter.getItemCount();
+        int foundPosition = adapter.positionOf(returnKey);
+        int safePosition = itemCount > 0
+                ? NavigationState.resolveHomePosition(foundPosition, returnSlot, itemCount) : 0;
+        lastFocused = safePosition;
+        lastFocusedKey = itemCount > 0
+                ? NavigationState.normalizeFocusKey(adapter.keyAt(safePosition)) : null;
+        lastFocusWasTopPill = returnFocusWasTopPill
+                && NavigationState.normalizeTopPillKey(returnTopPillKey) != null;
+        lastFocusedTopPillKey = lastFocusWasTopPill ? returnTopPillKey : null;
+
+        // Restore the complete persisted snapshot after RecyclerView's transient rebind focus events.
+        android.content.SharedPreferences.Editor savedNavigation =
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                        .putInt(NavigationState.HOME_FOCUS_POSITION, lastFocused)
+                        .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, lastFocusWasTopPill);
+        if (lastFocusedKey != null) savedNavigation.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
+        else savedNavigation.remove(NavigationState.HOME_FOCUS_KEY);
+        if (lastFocusedTopPillKey != null) {
+            savedNavigation.putString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, lastFocusedTopPillKey);
+        } else {
+            savedNavigation.remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY);
+        }
+        savedNavigation.apply();
         return rebuilt;
     }
 
@@ -1615,9 +1679,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void restoreFocus() {
         final String returnKey = lastFocusedKey;
         final int returnSlot = lastFocused;
+        final boolean returnFocusWasTopPill = lastFocusWasTopPill;
+        final String returnTopPillKey = lastFocusedTopPillKey;
         grid.post(() -> {
             int pos = adapter.positionOf(returnKey);
-            focusTile(pos >= 0 ? pos : returnSlot);
+            boolean restoredTopPill = false;
+            if (returnFocusWasTopPill) {
+                View pill = findTopPill(returnTopPillKey);
+                restoredTopPill = pill != null && pill.getVisibility() == View.VISIBLE
+                        && pill.isFocusable() && pill.requestFocus();
+                if (!restoredTopPill) {
+                    lastFocusWasTopPill = false;
+                    lastFocusedTopPillKey = null;
+                    getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                            .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
+                            .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
+                }
+            }
+            if (!restoredTopPill) focusTile(pos >= 0 ? pos : returnSlot);
             tilesReady = true;
             resuming = false;
             View now = getCurrentFocus();
@@ -1772,9 +1851,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onTileFocused(int position, View card) {
+        if (adapter == null || card == null || position < 0 || position >= adapter.getItemCount()) return;
         if (!resuming && hasWindowFocus()) SoundEffects.playNav();
         lastFocused = position;
-        lastFocusedKey = adapter.keyAt(position);
+        lastFocusedKey = NavigationState.normalizeFocusKey(adapter.keyAt(position));
+        android.content.SharedPreferences.Editor navigationEdit =
+                getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                        .putInt(NavigationState.HOME_FOCUS_POSITION, lastFocused);
+        if (lastFocusedKey != null) navigationEdit.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
+        else navigationEdit.remove(NavigationState.HOME_FOCUS_KEY);
+        navigationEdit.putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
+                .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
+        lastFocusWasTopPill = false;
+        lastFocusedTopPillKey = null;
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
@@ -1970,6 +2059,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         // The glider replaces the glass selection outright.
         glass.setVisibility(View.GONE);
+    }
+
+    private String topPillKeyForView(View view) {
+        if (view == null) return null;
+        int id = view.getId();
+        if (id == R.id.btnInputs) return "inputs";
+        if (id == R.id.btnWifi) return "wifi";
+        if (id == R.id.btnAssistant) return "assistant";
+        if (id == R.id.btnCandyBox) return "candy_box";
+        if (id == R.id.btnSettings) return "settings";
+        return null;
+    }
+
+    private View findTopPill(String key) {
+        String normalized = NavigationState.normalizeTopPillKey(key);
+        if (normalized == null) return null;
+        int id;
+        switch (normalized) {
+            case "inputs": id = R.id.btnInputs; break;
+            case "wifi": id = R.id.btnWifi; break;
+            case "assistant": id = R.id.btnAssistant; break;
+            case "candy_box": id = R.id.btnCandyBox; break;
+            case "settings": id = R.id.btnSettings; break;
+            default: return null;
+        }
+        return findViewById(id);
     }
 
     private boolean isTopPill(View v) {
@@ -2598,24 +2713,43 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
             if (newState != RecyclerView.SCROLL_STATE_IDLE) return;
             rv.removeOnScrollListener(this);
-            RecyclerView.ViewHolder h = rv.findViewHolderForAdapterPosition(pendingFocus);
-            View target = h != null ? h.itemView.findViewById(R.id.card) : rv.getChildAt(0);
-            if (target != null) target.requestFocus();
+            if (adapter == null) return;
+            if (adapter.getItemCount() == 0) {
+                focusTile(0);
+                return;
+            }
+            int targetPosition = NavigationState.resolveHomePosition(-1, pendingFocus, adapter.getItemCount());
+            RecyclerView.ViewHolder h = rv.findViewHolderForAdapterPosition(targetPosition);
+            View target = h != null ? h.itemView.findViewById(R.id.card) : null;
+            if (target != null && target.isShown() && target.isFocusable() && target.requestFocus()) return;
+            rv.post(() -> focusTile(targetPosition));
         }
     };
 
+    private boolean focusTopBarFallback() {
+        if (btnWifi != null && btnWifi.isShown() && btnWifi.isFocusable() && btnWifi.requestFocus()) {
+            return true;
+        }
+        View settings = findViewById(R.id.btnSettings);
+        return settings != null && settings.isShown() && settings.isFocusable() && settings.requestFocus();
+    }
+
     private void focusTile(int position) {
+        if (adapter == null || grid == null) return;
         if (adapter.getItemCount() == 0) {
-            (btnWifi.getVisibility() == View.VISIBLE ? btnWifi : findViewById(R.id.btnSettings)).requestFocus();
+            focusTopBarFallback();
             return;
         }
-        final int pos = Math.max(0, Math.min(position, adapter.getItemCount() - 1));
+        final int pos = NavigationState.resolveHomePosition(-1, position, adapter.getItemCount());
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         if (vh != null) {
             View card = vh.itemView.findViewById(R.id.card);
-            // Already focused (e.g. back from an app): no focus change fires, so restore the glass by hand.
-            if (card.isFocused()) onTileFocused(pos, card);
-            else card.requestFocus();
+            if (card != null && card.isShown() && card.isFocusable()) {
+                // Already focused (e.g. back from an app): no focus change fires, so restore the glass by hand.
+                if (card.isFocused()) onTileFocused(pos, card);
+                else if (card.requestFocus()) return;
+            }
+            focusTopBarFallback();
             return;
         }
         // Not laid out yet: scroll there, then focus once the scroll settles. One listener at most,

@@ -46,13 +46,13 @@ import java.util.Set;
  */
 public final class ModernSettingsDialog {
 
-    private static final int TAB_PROFILE = 0;
-    private static final int TAB_HOME_SCREEN = 1;
-    private static final int TAB_APPEARANCE = 2;
-    private static final int TAB_STATUS_WEATHER = 3;
-    private static final int TAB_EFFECTS = 4;
-    private static final int TAB_STANDBY = 5;
-    private static final int TAB_DEVICE_SETTINGS = 7;
+    private static final int TAB_PROFILE = NavigationState.TAB_PROFILE;
+    private static final int TAB_HOME_SCREEN = NavigationState.TAB_HOME_SCREEN;
+    private static final int TAB_APPEARANCE = NavigationState.TAB_APPEARANCE;
+    private static final int TAB_STATUS_WEATHER = NavigationState.TAB_STATUS_WEATHER;
+    private static final int TAB_EFFECTS = NavigationState.TAB_EFFECTS;
+    private static final int TAB_STANDBY = NavigationState.TAB_STANDBY;
+    private static final int TAB_DEVICE_SETTINGS = NavigationState.TAB_DEVICE_SETTINGS;
 
     private static Runnable sDpadLeftTarget;
 
@@ -80,7 +80,8 @@ public final class ModernSettingsDialog {
         Typeface outfit = activity.getResources().getFont(R.font.inter);
 
         AlertDialog[] dialogHolder = new AlertDialog[1];
-        int[] activeTab = new int[]{TAB_PROFILE};
+        android.content.SharedPreferences navigationPrefs = activity.getSharedPreferences(NavigationState.PREFS, Context.MODE_PRIVATE);
+        int[] activeTab = new int[]{NavigationState.normalizeSettingsTab(navigationPrefs.getInt(NavigationState.SETTINGS_TAB, TAB_PROFILE))};
 
         // Main Horizontal Container (2 Columns)
         LinearLayout root = new LinearLayout(activity);
@@ -91,7 +92,7 @@ public final class ModernSettingsDialog {
 
         // Dark matte rounded container matching screenshot
         GradientDrawable dialogBg = new GradientDrawable();
-        dialogBg.setColor(0xFF1E2026);
+        dialogBg.setColor(TvUiTokens.SHELL);
         dialogBg.setCornerRadius(24 * density);
         dialogBg.setStroke((int) (1.5f * density), 0xFF2F323B);
         root.setBackground(dialogBg);
@@ -124,7 +125,7 @@ public final class ModernSettingsDialog {
         searchBox.setClickable(true);
 
         GradientDrawable searchBg = new GradientDrawable();
-        searchBg.setColor(0xFF282A33);
+        searchBg.setColor(TvUiTokens.INPUT_SURFACE);
         searchBg.setCornerRadius(10 * density);
         searchBox.setBackground(searchBg);
 
@@ -144,7 +145,7 @@ public final class ModernSettingsDialog {
 
         searchBox.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF353844 : 0xFF282A33);
+            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.INPUT_SURFACE);
             g.setCornerRadius(10 * density);
             if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
             v.setBackground(g);
@@ -280,6 +281,7 @@ public final class ModernSettingsDialog {
         Runnable[] renderRightPane = new Runnable[1];
 
         Runnable updateSidebarSelection = () -> {
+            navigationPrefs.edit().putInt(NavigationState.SETTINGS_TAB, NavigationState.normalizeSettingsTab(activeTab[0])).apply();
             boolean isProfile = (activeTab[0] == TAB_PROFILE);
             GradientDrawable pcBg = new GradientDrawable();
             pcBg.setColor(isProfile ? 0xFF333742 : 0xFF22242D);
@@ -414,6 +416,18 @@ public final class ModernSettingsDialog {
             rLp.bottomMargin = (int) (2 * density);
             menuList.addView(row, rLp);
             item.rowView = row;
+        }
+
+        // Restore the selected Settings destination and its sidebar cursor.
+        if (activeTab[0] == TAB_PROFILE) {
+            activeSidebarView[0] = profileCard;
+        } else {
+            for (NavItem item : navItems) {
+                if (item.tabId == activeTab[0]) {
+                    activeSidebarView[0] = item.rowView;
+                    break;
+                }
+            }
         }
 
         // --- RENDER RIGHT CONTENT PANE ---
@@ -771,7 +785,8 @@ public final class ModernSettingsDialog {
                                     });
                                 }
                             });
-                            ob.show();
+                            AlertDialog profileActions = ob.show();
+                            TvDialogStyle.apply(profileActions, activity, 520, 0);
                         }
                     });
 
@@ -1153,7 +1168,7 @@ public final class ModernSettingsDialog {
                             return;
                         }
                         String[] choices = resultLabels.toArray(new String[0]);
-                        new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        AlertDialog resultsDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                                 .setTitle("Hasil Pencarian")
                                 .setItems(choices, (resultDialog, index) -> {
                                     int selectedTab = resultTabs.get(index);
@@ -1173,11 +1188,14 @@ public final class ModernSettingsDialog {
                                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                                 })
                                 .setNegativeButton("Batal", null)
-                                .show();
+                                .create();
+                        resultsDialog.show();
+                        TvDialogStyle.apply(resultsDialog, activity, 520, 0);
                     })
                     .setNegativeButton("Batal", null)
                     .create();
             searchDialog.show();
+            TvDialogStyle.apply(searchDialog, activity, 520, 0);
             searchInput.requestFocus();
         });
 
@@ -1207,14 +1225,15 @@ public final class ModernSettingsDialog {
             win.setGravity(Gravity.CENTER);
         }
 
-        profileCard.requestFocus();
+        if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+        else profileCard.requestFocus();
     }
 
     private static void addSectionHeader(LinearLayout root, Typeface font, String title) {
         TextView tv = new TextView(root.getContext());
         tv.setText(title);
-        tv.setTextSize(11.5f);
-        tv.setTextColor(0xFF7DD3FC);
+        tv.setTextSize(TvUiTokens.SECTION_LABEL_SP);
+        tv.setTextColor(TvUiTokens.ACCENT_SECTION);
         tv.setTypeface(font, Typeface.BOLD);
         tv.setLetterSpacing(0.08f);
         tv.setPadding(0, (int) (16 * root.getContext().getResources().getDisplayMetrics().density),
@@ -1225,8 +1244,8 @@ public final class ModernSettingsDialog {
     private static void addHeader(LinearLayout root, Typeface font, String title) {
         TextView tv = new TextView(root.getContext());
         tv.setText(title);
-        tv.setTextSize(24);
-        tv.setTextColor(0xFFFFFFFF);
+        tv.setTextSize(TvUiTokens.PAGE_HEADER_SP);
+        tv.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tv.setTypeface(font, Typeface.BOLD);
         tv.setPadding(0, 0, 0, (int) (14 * root.getContext().getResources().getDisplayMetrics().density));
         root.addView(tv);
@@ -1235,27 +1254,27 @@ public final class ModernSettingsDialog {
     private static LinearLayout buildCardRow(Context ctx, float density, Typeface font, String title, String subtitle, Runnable action) {
         LinearLayout card = new LinearLayout(ctx);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding((int) (16 * density), (int) (10 * density), (int) (16 * density), (int) (10 * density));
+        card.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density));
         card.setFocusable(true);
         card.setClickable(true);
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF272A33);
-        bg.setCornerRadius(12 * density);
+        bg.setColor(TvUiTokens.SURFACE);
+        bg.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
         card.setBackground(bg);
 
         TextView tvTitle = new TextView(ctx);
         tvTitle.setText(title);
-        tvTitle.setTextSize(14f);
-        tvTitle.setTextColor(0xFFFFFFFF);
+        tvTitle.setTextSize(TvUiTokens.CARD_TITLE_SP);
+        tvTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvTitle.setTypeface(font, Typeface.BOLD);
         card.addView(tvTitle);
 
         if (subtitle != null && !subtitle.isEmpty()) {
             TextView tvSub = new TextView(ctx);
             tvSub.setText(subtitle);
-            tvSub.setTextSize(12);
-            tvSub.setTextColor(0xFF8E929E);
+            tvSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+            tvSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
             tvSub.setTypeface(font, Typeface.NORMAL);
             tvSub.setPadding(0, (int) (2 * density), 0, 0);
             card.addView(tvSub);
@@ -1263,11 +1282,11 @@ public final class ModernSettingsDialog {
 
         card.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF353844 : 0xFF272A33);
-            g.setCornerRadius(12 * density);
-            if (hasFocus) g.setStroke((int) (2f * density), 0xFFFFFFFF);
+            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
+            g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(120).start();
         });
 
         card.setOnKeyListener((v, keyCode, event) -> {
@@ -1285,7 +1304,7 @@ public final class ModernSettingsDialog {
         });
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.bottomMargin = (int) (8 * density);
+        lp.bottomMargin = (int) (TvUiTokens.CARD_BOTTOM_MARGIN_DP * density);
         card.setLayoutParams(lp);
         return card;
     }
@@ -1425,6 +1444,7 @@ public final class ModernSettingsDialog {
                 .setNegativeButton(AppLanguage.strCancel(activity), (d, which) -> d.dismiss())
                 .create();
         dialog.show();
+        TvDialogStyle.apply(dialog, activity, 520, 0);
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
@@ -1476,6 +1496,7 @@ public final class ModernSettingsDialog {
                     Toast.makeText(activity, "PIN keamanan berhasil diperbarui.", Toast.LENGTH_SHORT).show();
                 }));
                 dialog.show();
+                TvDialogStyle.apply(dialog, activity, 520, 0);
             }
             @Override
             public void onCancelled() {}
@@ -1655,14 +1676,7 @@ public final class ModernSettingsDialog {
         AlertDialog d = pb.create();
         pickerHolder[0] = d;
         d.show();
-
-        Window win = d.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.85f));
-            win.setLayout(dw, ViewGroup.LayoutParams.WRAP_CONTENT);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(d, activity, 520, 0);
     }
 
     private static void showDefaultLauncherDialog(MainActivity activity, float density, Typeface font, boolean isDefault, String activePkg) {
@@ -1776,15 +1790,7 @@ public final class ModernSettingsDialog {
         AlertDialog d = pb.create();
         dialogHolder[0] = d;
         d.show();
-
-        Window win = d.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (620 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.90f));
-            int dh = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
-            win.setLayout(dw, dh);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(d, activity, 620, 520);
 
         btnSettings.requestFocus();
     }
