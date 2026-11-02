@@ -116,3 +116,19 @@ These are physical/OEM acceptance checks, not blockers to starting E02 source wo
 - Verify Android DreamService/ClockDream, in-app StandBy overlay and Android display timeout behavior together on the target firmware.
 
 No TV setting, HOME default, package state, user data or installed APK was changed during this source audit. E01 source work is closed for now; F owns the remaining device acceptance.
+
+## Cache-result accuracy follow-up and final exact-head gate — 2 November 2026
+
+A second-pass review found that the manual cache result still had two over-reporting paths: file sizes were counted even if deletion failed, and unrelated increases in free system storage could be included in the app-cache byte total. Both were corrected.
+
+- App cache and temporary-file bytes are counted only after the corresponding file delete operation succeeds.
+- The free-space delta is no longer added to the app-cache byte total. Before/after storage usage remains shown separately.
+- The result title and Indonesian/English/Malay messages are neutral. They no longer claim that the cache is completely clean when no app cache/temp file was removed.
+- Android system trim status is reported separately and only as command completion when the exact success marker is received; failure/unavailable/unauthorized ADB is described as unconfirmed.
+- CacheCleanerTest now verifies the explicit ADB success marker and byte counts from actual deleted files.
+
+**Final source head:** b6fa70e406afc9f6e81d16a3635a69afc6c4d783  
+**Exact-head CI:** #609 / 41401277076 — PASS. Android release build, app/installer JVM unit tests, docs/tools checks and APK budget all passed.  
+**Diagnostic APK:** 1,560,609 bytes; 12,255 bytes below the 1,572,864-byte cap. No artifact published; manual TV-test APK step skipped.
+
+This correction closes the E01 source-level cache feedback issue. Actual ADB success/denied behavior remains an F-stage device check. E01 source audit remains COMPLETE; E02 is next. PR #34 remains Draft/open/unmerged under D-013.
