@@ -178,3 +178,14 @@
 - D02 exact-head CI #587 PASS; D03 #588 PASS; D04 #589 PASS. All three branches mergeable. No PR merged.
 - B01/B02/B03/B06/B07, C01/C03/C06, D02/D03/D04 and E01 UI source changes have exact-head CI PASS. C02/C04/C05/C07 and D01 were checked and correctly require no additional visual component changes in their current scope.
 - F-stage remains mandatory for integrated Settings tabs/subtabs and remote/modal acceptance; no physical-TV test is claimed.
+
+## E01 source audit closure — 2 November 2026
+
+- E01 source audit and repair work is COMPLETE; next Stage E task is E02 — Profile. Physical Android TV/OEM acceptance remains assigned to F and is not waived.
+- E01 branch: feature/e01-device-settings-home-control. Source head validated by exact-head CI: 9919dbaa0add6cc7ce2a84332354f46f9cc48d61. Documentation-only follow-up commit on the feature branch: 7aad9ec4cf015dd415b3c948e2b4f80c1099955c.
+- Draft PR #34 remains OPEN/DRAFT/UNMERGED, based on D07 exact head 964163c918e281b68af5cf7114ca56ead2797486. D-013 remains binding; no feature merge.
+- E01 removed silent Android system-setting/service writes, improved read-only HOME/service status, separated Android screensaver and display-timeout entry points, corrected restart/power feedback, and hardened cache-trim success verification. The QR target was verified to contain the installer APK and release metadata.
+- E01 adopts B01's canonical TvDialogStyle and TvUiTokens; their blobs match B01 exactly. No competing popup style was introduced.
+- Exact source-head CI #602 / 41400508774 PASS: Android release build, JVM unit tests and docs/tools checks. APK 1,560,565 bytes against 1,572,864-byte cap (12,299 bytes headroom); no artifact published; manual TV-test APK step skipped.
+- F-stage still owns HOME resolver/OEM behavior, services readback, power labels, on-device cache ADB result, phone installer flow, remote visual/focus acceptance, and ClockDream/StandBy/display-timeout interaction. No device setting, HOME default, package state, user data or APK installation was changed.
+- The global UI consistency checkpoint recorded elsewhere is cross-project B01 adoption/verification; Stage E02 in the approved roadmap remains the Profile module. Do not conflate those labels.
