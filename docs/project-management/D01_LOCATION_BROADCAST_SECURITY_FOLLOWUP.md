@@ -19,3 +19,11 @@ This change supports callers running as Android shell/system (including the docu
 
 ## Scope protection
 No receiver logic, AppLocationManager persistence behavior, station matching, prayer-zone behavior, or SET_WEATHER semantics changed. The fix is limited to the Android component sender authorization boundary.
+
+
+## Additional component-boundary correction — LocationActivity
+- Manifest audit found `.LocationActivity` exported despite having no intent filter and no documented external entry contract.
+- In-repository entry points are explicit intents owned by MainActivity. The activity is a location picker, not a public launcher surface.
+- Changed `android:exported` to `false`; internal explicit intents continue to resolve inside the same application.
+- Extended `tests/test_location_broadcast_manifest_security.py` to assert the activity remains non-exported, has no intent filter, and is still referenced by MainActivity.
+- This is a separate F02-SEC-003 remediation carried by the D01 follow-up PR. Exact-head CI is pending after this addition.
