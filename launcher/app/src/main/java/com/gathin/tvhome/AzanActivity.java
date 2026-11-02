@@ -111,12 +111,18 @@ public class AzanActivity extends Activity {
         card.setFocusable(true);
         card.setClickable(true);
         card.setOnClickListener(v -> finish());
+        card.setOnFocusChangeListener((view, hasFocus) -> {
+            glass.setStroke(Math.max(1, dp(hasFocus ? 2f : 1.5f)),
+                    hasFocus ? 0xFF00E5FF : 0x59FFFFFF);
+            glass.invalidateSelf();
+        });
 
         // CRITICAL FIX FOR ISSUE #5:
         // Must call setContentView(card) FIRST so the Window creates and attaches its DecorView.
         // On Android 14 (Chromecast Sabrina, etc.), calling setBackgroundBlurRadius before
         // setContentView dereferences a null DecorView inside PhoneWindow and throws NullPointerException.
         setContentView(card);
+        card.requestFocus();
 
         if (Build.VERSION.SDK_INT >= 31) {
             try {
