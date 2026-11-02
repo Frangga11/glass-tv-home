@@ -1531,8 +1531,8 @@ public final class ModernSettingsDialog {
         if (subtitle != null && !subtitle.isEmpty()) {
             TextView tvSub = new TextView(ctx);
             tvSub.setText(subtitle);
-            tvSub.setTextSize(12);
-            tvSub.setTextColor(0xFF8E929E);
+            tvSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+            tvSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
             tvSub.setTypeface(font, Typeface.NORMAL);
             tvSub.setPadding(0, (int) (2 * density), 0, 0);
             textCol.addView(tvSub);
@@ -1548,11 +1548,13 @@ public final class ModernSettingsDialog {
 
         card.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF353844 : 0xFF272A33);
-            g.setCornerRadius(12 * density);
-            if (hasFocus) g.setStroke((int) (2f * density), 0xFFFFFFFF);
+            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
+            g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
+                    .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
+                    .setDuration(120).start();
         });
 
         card.setOnKeyListener((v, keyCode, event) -> {
@@ -1573,7 +1575,7 @@ public final class ModernSettingsDialog {
         });
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.bottomMargin = (int) (8 * density);
+        lp.bottomMargin = (int) (TvUiTokens.CARD_BOTTOM_MARGIN_DP * density);
         card.setLayoutParams(lp);
         return card;
     }
