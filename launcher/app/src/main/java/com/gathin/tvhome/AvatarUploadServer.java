@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
@@ -33,7 +34,7 @@ public final class AvatarUploadServer {
     private final Listener listener;
     private final String profileId;
     private final String token = UUID.randomUUID().toString().replace("-", "");
-    private final long expiresAt = System.currentTimeMillis() + SESSION_MS;
+    private final long expiresAt = SystemClock.elapsedRealtime() + SESSION_MS;
     private ServerSocket server;
     private Thread thread;
     private volatile boolean running;
@@ -60,7 +61,7 @@ public final class AvatarUploadServer {
 
     public synchronized boolean start() {
         if (running) return true;
-        if (System.currentTimeMillis() >= expiresAt) return false;
+        if (SystemClock.elapsedRealtime() >= expiresAt) return false;
         try {
             boundIp = getLocalIpAddress(context);
             if (boundIp == null || boundIp.trim().isEmpty() || "127.0.0.1".equals(boundIp)) return false;
@@ -122,7 +123,7 @@ public final class AvatarUploadServer {
                     }
                 } catch (Exception e) {
                     if (e instanceof SocketTimeoutException) {
-                        if (System.currentTimeMillis() >= expiresAt) {
+                        if (SystemClock.elapsedRealtime() >= expiresAt) {
                             stop();
                             break;
                         }
@@ -158,7 +159,7 @@ public final class AvatarUploadServer {
         boolean uploadSucceeded = false;
         try (Socket client = socket) {
             long requestDeadline = Math.min(expiresAt,
-                    System.currentTimeMillis() + NetworkFeedbackPolicy.AVATAR_UPLOAD_REQUEST_DEADLINE_MS);
+                    SystemClock.elapsedRealtime() + NetworkFeedbackPolicy.AVATAR_UPLOAD_REQUEST_DEADLINE_MS);
             InputStream in = new UploadDeadlineInputStream(client.getInputStream(), client,
                     requestDeadline, NetworkFeedbackPolicy.AVATAR_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
             OutputStream out = client.getOutputStream();
@@ -178,7 +179,7 @@ public final class AvatarUploadServer {
             if (lines.length == 0 || !UploadHttpRequest.hasValidHeaders(lines)) {
                 respond(out, 400, localized(R.string.avatar_error_invalid_request)); return;
             }
-            if (System.currentTimeMillis() >= expiresAt || !running) {
+            if (SystemClock.elapsedRealtime() >= expiresAt || !running) {
                 respond(out, 410, localized(R.string.avatar_error_session_expired)); return;
             }
             UploadHttpRequest request = UploadHttpRequest.parse(lines[0]);
@@ -258,12 +259,12 @@ public final class AvatarUploadServer {
                 return;
             }
             temp = storedAvatar;
-            if (!running || System.currentTimeMillis() > expiresAt) { respond(out, 410, localized(R.string.avatar_error_session_expired_short)); return; }
+            if (!running || SystemClock.elapsedRealtime() > expiresAt) { respond(out, 410, localized(R.string.avatar_error_session_expired_short)); return; }
             File delivered = temp;
             boolean accepted;
             synchronized (this) {
                 // stop() uses the same monitor: a closed/revoked QR session cannot commit afterwards.
-                if (!running || System.currentTimeMillis() >= expiresAt) {
+                if (!running || SystemClock.elapsedRealtime() >= expiresAt) {
                     respond(out, 410, localized(R.string.avatar_error_session_closed));
                     return;
                 }
