@@ -542,3 +542,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Existing wallpaper actions and storage/QR/rotation owners are unchanged. D-pad focus is restored after Shuffle refresh.
 - Canonical report: `E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md`.
 - Project F remains next: integration rehearsal and physical 1080p/4K/D-pad/Glass ON-OFF acceptance. No early merge or APK install under D-013.
+
+
+## Project E closed — resume at Project F — 2 Nov 2026
+- User explicitly closed Project E discussion and approved E01–E08 feature-development closure. Do not continue cosmetic or speculative E work absent a verified F-stage defect or explicit user reopening.
+- Project F starts with: (1) map PR dependency chain #34→#35→#36→#37→#38→#39→#40→#41 and inspect combined diffs/shared-file collisions; (2) verify source/test evidence against exact heads; (3) run integrated CI and regression gates; (4) prepare and execute controlled Android TV acceptance only after software gates pass.
+- Required device matrix: 1080p and 4K; D-pad navigation/focus visibility/OK/Back; dialogs/popups and focus restoration; Glass Effect ON/OFF including live toggle; Home/Profile/Appearance/StandBy/Widgets/Wallpaper/Animations interactions; app lifecycle and persisted state; QR/custom wallpaper upload and delete; shuffle/interval/Next; wallpaper versus StandBy storage isolation; low-memory/reduced-motion behavior.
+- Specific E08 UX acceptance: Quick Control > Wallpaper is a compact three-action center (Change/Shuffle/Next); Settings > Appearance > Wallpaper management is a separate, fuller management surface. They must remain visually distinct in purpose, share the same underlying wallpaper state, and not duplicate engines or preferences.
+- No TV test has been claimed or performed in this closure. Do not install APK until F's software gates and approved device procedure are ready. Do not merge feature PRs; D-013 reserves grouped integration/merge for G after all gates and explicit user approval.
+- PR #34–#41 are OPEN/DRAFT/UNMERGED. E08 source/test head `fcd7d8f23a4833830a401652ef269db3282b7300`, exact-head CI #702 / `41473357877` PASS; APK 1,562,709 bytes / 1,572,864 cap, publication skipped. Latest PR #41 head `8dfdcabd19853a1140724ea68983877af17bed0c` is report-only after that tested source head.
