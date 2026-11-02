@@ -858,3 +858,13 @@ APK size 1,565,621 bytes; cap 1,572,864 bytes; 7,243 bytes headroom. F02-BUILD-0
 - F02-RES-001 and upload shutdown atomicity are owner + integration host verified. Process-wide reservation protects concurrent and overlapping old/new QR sessions with a 64 MiB minimum free-space margin; 507 is returned when reservation cannot be made.
 - F02 host/source exit criteria are complete. Physical device/LAN/OEM acceptance remains Project G; no artifact publication or APK installation was performed.
 - Draft/open/unmerged PR state is intentional under the staged integration policy, not an outstanding F02 source defect.
+
+
+## Final F02 exact-head confirmation — 3 November 2026
+| Branch / PR | Exact head | CI result | Status |
+|---|---|---|---|
+| F02 integration / #50 | `190b698453a96da8ec2db31da2eefac836849a10` | #41522215859 both jobs SUCCESS; 42 Python tests (1 intentional merge-time README count skip); Android unit tests/release build pass; APK 1,565,713 bytes; 7,151 bytes headroom; no artifact | HOST EXIT PASS |
+| C07 owner / #24 | `442b78c68b1540394d543bab59bddf52f865ccf0` | #41521013896 both jobs SUCCESS; 18 Python tests (1 intentional merge-time README count skip); Android tests/build pass; APK 1,550,949 bytes; no artifact | OWNER HOST PASS |
+| D01 security owner / #51 | `66352838e6155a42a9ea61477643a238f360434f` | #41506847521 both jobs SUCCESS | OWNER HOST PASS |
+
+Physical device/LAN/ADB/OEM acceptance is DEFERRED_TO_G. No APK publication or installation. Staged PRs remain open and unmerged by policy.
