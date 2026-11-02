@@ -5271,18 +5271,101 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showPrayerAndAyahDialog(String town) {
         WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
-        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : getString(R.string.no_daily_ayah);
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(false);
+        scroll.setVerticalScrollBarEnabled(true);
+        scroll.setFocusable(true);
+        scroll.setFocusableInTouchMode(true);
+
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(Math.round(24 * density), Math.round(18 * density),
+                Math.round(24 * density), Math.round(18 * density));
+
+        TextView summary = new TextView(this);
+        summary.setText(getString(R.string.prayer_summary_body, town, PrayerTimes.getHijriDate(),
+                PrayerTimes.getNextPrayerSummary(this), ""));
+        summary.setTextColor(0xFFEFFFFFF);
+        summary.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+        summary.setTypeface(getResources().getFont(R.font.inter));
+        summary.setLineSpacing(Math.round(3 * density), 1.12f);
+        content.addView(summary, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        if (ayah != null && ayah.arabic != null && !ayah.arabic.trim().isEmpty()) {
+            TextView arabic = new TextView(this);
+            arabic.setText(ayah.arabic.trim());
+            arabic.setTextColor(0xFFFFC56B);
+            arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25f);
+            arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
+            arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
+            arabic.setGravity(Gravity.END);
+            arabic.setIncludeFontPadding(true);
+            arabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+            arabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+            arabic.setLineSpacing(Math.round(5 * density), 1.12f);
+            arabic.setMaxLines(Integer.MAX_VALUE);
+            arabic.setEllipsize(null);
+            LinearLayout.LayoutParams arabicLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            arabicLp.topMargin = Math.round(12 * density);
+            content.addView(arabic, arabicLp);
+
+            TextView translation = new TextView(this);
+            String translated = ayah.translation(AppLanguage.getLanguage(this));
+            translation.setText(translated != null ? translated.trim() : "");
+            translation.setTextColor(0xFFF0F0F0);
+            translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+            translation.setTypeface(getResources().getFont(R.font.inter));
+            translation.setGravity(Gravity.START);
+            translation.setLineSpacing(Math.round(3 * density), 1.15f);
+            translation.setMaxLines(Integer.MAX_VALUE);
+            translation.setEllipsize(null);
+            LinearLayout.LayoutParams translationLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            translationLp.topMargin = Math.round(12 * density);
+            content.addView(translation, translationLp);
+
+            TextView reference = new TextView(this);
+            reference.setText(ayah.reference);
+            reference.setTextColor(0xFFB9C5D3);
+            reference.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            reference.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+            LinearLayout.LayoutParams referenceLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            referenceLp.topMargin = Math.round(10 * density);
+            content.addView(reference, referenceLp);
+        } else {
+            TextView empty = new TextView(this);
+            empty.setText(R.string.no_daily_ayah);
+            empty.setTextColor(0xFFEFFFFFF);
+            empty.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+            content.addView(empty);
+        }
+
+        scroll.addView(content);
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(R.string.prayer_summary_title)
-                .setMessage(getString(R.string.prayer_summary_body, town, PrayerTimes.getHijriDate(), PrayerTimes.getNextPrayerSummary(this), ayahTxt))
+                .setView(scroll)
                 .setPositiveButton(R.string.close_label, null)
-                .show();
+                .create();
+        dialog.show();
         styleGlassDialog(dialog);
         if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (440 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.70f));
+            int w = Math.min((int) (620 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (560 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.72f));
             dialog.getWindow().setLayout(w, h);
         }
+        scroll.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                    && !scroll.canScrollVertically(1)) {
+                Button close = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                if (close != null) close.requestFocus();
+                return true;
+            }
+            return false;
+        });
+        scroll.requestFocus();
     }
 
     /** Starts a short-lived, profile-scoped QR upload session for exactly one avatar photo. */
