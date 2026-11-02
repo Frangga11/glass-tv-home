@@ -61,7 +61,7 @@ public class WeatherActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        reducedMotion = Config.load(this).reducedMotion;
+        reducedMotion = Config.isReducedMotion(this);
         setContentView(R.layout.activity_weather);
 
         weatherBgView = findViewById(R.id.weatherBgView);
