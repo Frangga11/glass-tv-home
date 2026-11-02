@@ -148,3 +148,11 @@ This is not a full Project F exit: latest documentation/status reconciliation co
 
 - F02-SEC-005: E01 owner corrected InputKeyService manifest export to `true` while retaining `android.permission.BIND_ACCESSIBILITY_SERVICE`; owner source/test CI #41513629734 passed. The same change and regression guard are mirrored into this F02 branch; exact-head retest required. Actual remote Input-button acceptance remains DEFERRED_TO_G.
 - F02-BUILD-001 watchlist: exact F02 source/test build produced a 1,564,981-byte APK against the 1,572,864-byte cap, leaving only 7,883 bytes. R8 minify and resource shrink are already enabled. Largest packaged assets are classes.dex, two font resources, resources.arsc and the default Dempo wallpaper. Do not trade away required fonts/wallpaper quality for an unmeasured size reduction; monitor the cap on every subsequent build.
+
+
+## QR upload shutdown commit guard — 3 November 2026
+
+- Final risk-based source audit traced the stop/revoke boundary through Avatar upload, custom Wallpaper upload, and StandBy photo persistence.
+- Each final mutation/commit path performs its session check and durable state/callback operation while holding the same server monitor used by `stop()`; the StandBy persistence-failure retention policy remains intact.
+- Added explicit regression assertions for the custom Wallpaper rename/callback and StandBy store/callback critical sections in `tests/test_wallpaper_session_shutdown_atomicity.py`. This closes a test-coverage gap; no production behavior was changed.
+- The new exact-head CI run must pass before this supplemental gate is marked complete. Real phone-to-TV cancellation, Wi-Fi loss, expiry and retry remain DEFERRED_TO_G.
