@@ -298,3 +298,16 @@ No merge or device test has been performed.
 | Prior integrated checkpoint | `c9496d4e051980e640bc269ffce695b95ba71ad4` | BOTH CI JOBS PASS; predates latest fixes |
 
 No merge or physical device test performed.
+
+
+## Exact-head validation snapshot — 3 November 2026
+
+| Branch / PR | Exact head | CI evidence | Status |
+|---|---|---|---|
+| F02 / #50 | `5dd787ba136dfb070eaa2e833af653e57ec66015` | #41509632784 Launcher PASS; #41509626957 Lists/tools/docs PASS | BOTH PASS |
+| B01 / #10 | `791620ce4628ee9e909af7ce2f4758b6df77afeb` | #41509576279 both jobs PASS | BOTH PASS; subsequent comment-only SHA retest pending |
+| D05 / #29 | `7f043943ab0c1d2d1217fc56845d81ac7583c96d` | #41505852041 both jobs PASS | PASS |
+| D06 / #30 | `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7` | #41505865772 both jobs PASS | PASS |
+| D01 / #51 | `66352838e6155a42a9ea61477643a238f360434f` | #41506847521 both jobs PASS | PASS |
+
+F02 head `5dd787b` includes the latest integrated callback-isolation, Recent Apps manifest hardening, Home gesture and power-action regression tests. A newer F02 documentation-only checkpoint is queued for exact-head retest.
