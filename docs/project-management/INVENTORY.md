@@ -285,3 +285,16 @@ No branch was merged. Source branches remain preserved. No physical Android TV t
 | Open residual review | `.RecentAppsActivity` exported ACTION_MAIN filter | P3 external caller contract verification deferred to G |
 
 No merge or device test has been performed.
+
+
+## F02 latest follow-up inventory — 3 November 2026
+
+| Item | Branch / head / PR | Status |
+|---|---|---|
+| B01 global navigation/security fixes | `feature/b01-global-navigation-retention` / `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d` / PR #10 | CI IN PROGRESS |
+| F02 integrated system validation | `integration/project-f02-system-validation` / `3ea479d689dc732fe46594a0677d02b7762d7527` / PR #50 | CI IN PROGRESS |
+| Force Stop/Home Handler isolation | `forceStopHandler` separated from `homeHandler`; test `test_home_key_force_stop_handler_isolation.py` | FIX COMMITTED / CI PENDING |
+| Recent Apps external-entry hardening | `RecentAppsActivity exported=false`, no intent filter; test `test_recent_apps_manifest_security.py` | FIX COMMITTED / CI PENDING |
+| Prior integrated checkpoint | `c9496d4e051980e640bc269ffce695b95ba71ad4` | BOTH CI JOBS PASS; predates latest fixes |
+
+No merge or physical device test performed.
