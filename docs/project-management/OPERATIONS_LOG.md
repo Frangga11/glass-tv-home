@@ -365,3 +365,12 @@
 - D02 exact-head CI #587 PASS; D03 #588 PASS; D04 #589 PASS. All three branches mergeable. No PR merged.
 - B01/B02/B03/B06/B07, C01/C03/C06, D02/D03/D04 and E01 UI source changes have exact-head CI PASS. C02/C04/C05/C07 and D01 were checked and correctly require no additional visual component changes in their current scope.
 - F-stage remains mandatory for integrated Settings tabs/subtabs and remote/modal acceptance; no physical-TV test is claimed.
+
+## 2026-11-02 — E01 Device Settings source audit and finalization
+
+- Audited the full Device Settings tab and its app-owned popup inventory. Removed silent Android system-setting/accessibility/notification writes; improved read-only HOME/service status; corrected restart action; retained user-managed native settings.
+- Adopted B01's exact canonical TvDialogStyle/TvUiTokens for Settings and app-owned modal windows. Split Android screensaver and display-timeout controls; clarified that ClockDream shares the StandBy view/photo collection while Android owns Dream activation.
+- Verified QR target assets on main. Fixed cache-trim false-success behavior by requiring the explicit pm trim-caches success marker; added CacheCleanerTest.
+- Exact source head 9919dbaa0add6cc7ce2a84332354f46f9cc48d61; CI #602 / 41400508774 PASS. APK 1,560,565 bytes, 12,299 bytes below budget; artifact count zero and manual TV-test APK publication skipped.
+- E01 audit report and PR #34 description updated. PR #34 remains Draft/open/unmerged; no canonical integration merge.
+- E01 source audit closed; next task Stage E02 Profile. Physical/OEM acceptance carried to F: HOME resolver/button, service readback, power labels, cache ADB outcomes, phone installer, D-pad visual/focus, and DreamService/StandBy/display timeout. No TV settings, HOME default, package state, user data or installed APK changed.
