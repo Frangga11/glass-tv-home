@@ -4690,17 +4690,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
         layout.addView(titleView);
 
-        // Header Subtitle
-        TextView subView = new TextView(this);
-        subView.setText(AppLanguage.strWallpaperDialogSub(this));
-        subView.setTextSize(13.5f);
-        subView.setTextColor(0xE6FFFFFF);
-        subView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-        subView.setFontVariationSettings("'wght' 600");
-        subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-        subView.setPadding(0, (int) (3 * density), 0, (int) (12 * density));
-        layout.addView(subView);
-
         ScrollView scroll = new ScrollView(this);
         scroll.setVerticalScrollBarEnabled(false);
         LinearLayout list = new LinearLayout(this);
@@ -4748,6 +4737,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TextView rowTitle = new TextView(this);
             rowTitle.setText(opt.title);
             rowTitle.setTextSize(TvUiTokens.CARD_TITLE_SP);
+            rowTitle.setSingleLine(true);
+            rowTitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
             rowTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
             rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
@@ -4765,18 +4756,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 topRow.addView(activeTag);
             }
             row.addView(topRow);
-
-            TextView rowSub = new TextView(this);
-            rowSub.setText(opt.subtitle);
-            rowSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
-            rowSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
-            rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-            rowSub.setFontVariationSettings("'wght' 600");
-            
-            rowSub.setSingleLine(true);
-            rowSub.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            rowSub.setPadding(0, (int) (2 * density), 0, 0);
-            row.addView(rowSub);
 
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
@@ -4900,17 +4879,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
         layout.addView(titleView);
 
-        // Header Subtitle
-        TextView subView = new TextView(this);
-        subView.setText(AppLanguage.strWallpaperIntervalSub(this));
-        subView.setTextSize(13.5f);
-        subView.setTextColor(0xE6FFFFFF);
-        subView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-        subView.setFontVariationSettings("'wght' 600");
-        subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-        subView.setPadding(0, (int) (3 * density), 0, (int) (12 * density));
-        layout.addView(subView);
-
         ScrollView scroll = new ScrollView(this);
         scroll.setVerticalScrollBarEnabled(false);
         LinearLayout list = new LinearLayout(this);
@@ -4957,6 +4925,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TextView rowTitle = new TextView(this);
             rowTitle.setText(opt.title);
             rowTitle.setTextSize(TvUiTokens.CARD_TITLE_SP);
+            rowTitle.setSingleLine(true);
+            rowTitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
             rowTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
             rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
@@ -4974,18 +4944,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 topRow.addView(activeTag);
             }
             row.addView(topRow);
-
-            TextView rowSub = new TextView(this);
-            rowSub.setText(opt.subtitle);
-            rowSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
-            rowSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
-            rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-            rowSub.setFontVariationSettings("'wght' 600");
-            
-            rowSub.setSingleLine(true);
-            rowSub.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            rowSub.setPadding(0, (int) (2 * density), 0, 0);
-            row.addView(rowSub);
 
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
@@ -6062,7 +6020,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .setPositiveButton(R.string.wallpaper_open_qr_action, (d, w) -> showWallpaperUploadQrDialog())
                     .setNegativeButton(R.string.back_action, (d, w) -> showWallpaperDialog())
                     .show();
-            styleGlassDialog(dialog);
+            styleDeviceSettingsPopup(dialog, 520, 0);
             return;
         }
 
@@ -6092,7 +6050,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     })
                     .setNegativeButton(R.string.cancel_action, null)
                     .show();
-            styleGlassDialog(dialog);
+            styleDeviceSettingsPopup(dialog, 520, 0);
         });
 
         SimpleDateFormat sdf = new SimpleDateFormat("d MMM, HH:mm", Locale.getDefault());
@@ -6115,12 +6073,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (440 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.70f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        styleDeviceSettingsPopup(dialog, 560, 460);
     }
 
     private void showSingleCustomActionDialog(File file) {
@@ -6163,7 +6116,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(R.string.cancel_action, null);
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 520, 0);
     }
 
     private void showHazeLocationDialog() {
