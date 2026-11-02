@@ -374,3 +374,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Exact Release APK size: `1,561,889 bytes`; budget: `1,572,864 bytes`; remaining headroom: `10,975 bytes`.
 - The targeted Default reselection hero-shelf fix is included in the tested commit. No APK was published or installed; no physical device acceptance is claimed.
 - E03 source + exact-head CI disposition: **PASS / SOURCE FINAL**. Project F retains physical acceptance: offline cold start/restart, image crop/sharpness, remote/focus, Default/online/place/custom, description toggle, Next/shuffle, QR/StandBy isolation and performance. Preserve D-013: PR #36 remains OPEN/DRAFT/UNMERGED; no early merge or release approval.
+
+
+## Handover — E04 StandBy / Screensaver — 2 Nov 2026
+
+- Current task: E04 source audit/repair. Branch `feature/e04-standby-screensaver`, head `7c5e2677eac1c791675d9f5ef7d736eb47d37aca`, base E03 exact head `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`.
+- Draft PR #37: https://github.com/Frangga11/glass-tv-home/pull/37 — OPEN/DRAFT/UNMERGED under D-013.
+- One confirmed issue repaired: duplicate `HomeKeyService.sleepScreen()` plus shell `input keyevent 223` in `ClockDream`; now one supported Accessibility action with result logging.
+- Preserve existing StandBy upload/session validation, shared store, atomic collection/mode persistence, picker merge, clear ordering and photo rotation.
+- **Next:** obtain exact-head CI for `7c5e2677eac1c791675d9f5ef7d736eb47d37aca`; inspect failures if any. Then complete source/CI closure. Project F must physically test DreamService/overlay precedence, remote wake, 10-minute idle, 2-hour sleep, display-lock/OEM behavior, process lifecycle, QR upload/cancel/retry and photo rotation/orientation/offline behavior.
+- E04 is NOT FINAL. No APK published/installed, no device acceptance, no merge. Keep D-013 grouped merge policy.
