@@ -92,3 +92,9 @@ A follow-up integration audit found that disabling the decorative glass material
 - Release APK: 1,564,137 bytes; cap 1,572,864 bytes; headroom 8,727 bytes. Publication skipped.
 - B03 counterpart source head `d87ffdf914851b8a1d2c67c2416ac9f5f1309d93`; exact-head CI #687 / `41447950284`: **SUCCESS**, both jobs passed; release APK diagnostic 1503 KB.
 - No preference keys, geometry, D-pad behavior or callbacks changed. F physical acceptance remains pending.
+
+
+## Documentation-only branch head after verified source — 2 Nov 2026
+- Verified source/test head remains `6dc39d76e3c897e841854f425d549dbfebf1025c`, exact-head CI #688 / `41447965099` SUCCESS.
+- Current PR #40 branch head is `fa222bafad93c87fea1120e78aeccad5445fe935`; this is the audit-report-only follow-up. It does not change application source, resources, tests or build configuration. Do not misrepresent the docs-only head as the code head tested by #688.
+- PR #40 remains OPEN/DRAFT/UNMERGED under D-013.
