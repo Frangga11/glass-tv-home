@@ -516,3 +516,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - GlassDrawable solid OFF fallback preserves fade alpha, so popup transition behavior is retained. Custom-content dialogs with explicit root backgrounds remain content-owned; `TvDialogStyle.applyCustom()` is intentionally transparent and does not overwrite those surfaces.
 - Remaining gate is Project F physical test only: glass ON/OFF, top pills, Wi-Fi/Quick Settings menus, anchored PopupWindow, shared modal dialogs, dock, D-pad/focus, Back/dismiss, live toggle, 1080p and 4K. No APK installation or physical test claimed.
 - Full test matrix and source details: [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md) and [E07_ANIMATIONS_EFFECTS_AUDIT.md](E07_ANIMATIONS_EFFECTS_AUDIT.md).
+
+
+## Current resume checkpoint — E08 source/CI closed, 2 Nov 2026
+- E08 source/test head `b386986f08951c4dcf12ba8d72638b091a264803`; Draft PR #41 targets E07 @ `a0f2b0fff6eef0c42852d21b971904d5acd29d5c`, remains OPEN/DRAFT/UNMERGED under D-013.
+- Exact-head CI #693 / `41469544565` PASS; APK 1,565,397 bytes, 7,467 bytes below 1.5 MiB cap. Publication skipped.
+- E08 creates one three-tab wallpaper control center (Change Wallpaper / Shuffle Interval / Next Wallpaper), consolidating Appearance and Quick Control access while reusing existing category, custom-photo, QR, shuffle, interval, decoder and rotation implementations.
+- Canonical report: `E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md`.
+- Stage E source implementation is complete through E08. Next phase is Project F: isolated integration rehearsal, combined-diff/dependency audit and full regression/device acceptance. Keep D-013: do not merge feature PRs early; do not install APK or claim physical acceptance before approved F-stage procedure.
