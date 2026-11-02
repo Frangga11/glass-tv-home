@@ -640,3 +640,14 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Owner B01 and F02 integration `HomeKeyService.java` now have identical content/blob SHA `b3cd4b2b4092a90f4f1faefb1072c15e2203b314`.
 - F02 findings include: global modal contract; location receiver authorization; AzanActivity and LocationActivity internal-only; Home double-press routing; Force Stop/Home Handler isolation; RecentAppsActivity exported Close All security; invalid restart action ID. Robolectric dialog-window tests and source/unit regression guards pass at F02 head 5dd787b.
 - Continue source audit and retest any new commit at exact SHA. No merge, APK publication/installation, or physical TV test in F.
+
+
+## C07/F02 latest continuation checkpoint — 3 November 2026
+
+- C07 owner PR #24 branch `feature/c07-upload-session-resilience`, documented head `12b1f431f7687023727983089ea03eda0f97a73d`; exact-head CI in progress.
+- F02 integration PR #50 branch `integration/project-f02-system-validation`, latest head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`; exact-head CI in progress.
+- New finding C07-F08/F02-C07-001: wallpaper management mutation APIs select/delete/slideshow/clear were not synchronized with `stop()` and did not recheck session state after dispatch. Fixed by synchronized methods sharing the server monitor and in-lock active-session recheck; HTTP 410 Gone response on revoked session.
+- Added `tests/test_wallpaper_session_shutdown_atomicity.py` to owner and F02.
+- Existing upload commit synchronization, file validation, request limits, browser progress/cancel UX and StandBy persistence behavior are preserved.
+- Previous F02 head `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both CI jobs before this C07 change. Latest F02 exact-head retest mandatory.
+- Do not merge, publish/install APK, or perform physical phone/TV tests in F; C07 phone-to-TV cancellation/retry/expiry acceptance remains G.
