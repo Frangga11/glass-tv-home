@@ -584,3 +584,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Latest B01 owner head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; latest F02 integration head `3ea479d689dc732fe46594a0677d02b7762d7527`. Both exact-head CI in progress.
 - Prior F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs before these fixes; it is not evidence for the latest SHA.
 - No merge, APK publication/installation, or physical Android TV test.
+
+
+## 3 November 2026 — F02 exact-head pass and restart action consistency
+
+- F02 integration head `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both CI jobs: run #41509632784 Launcher build/unit tests; run #41509626957 Lists/tools/docs.
+- B01 owner head `791620ce4628ee9e909af7ce2f4758b6df77afeb` passed both jobs (run #41509576279). A later comment-only alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f` has a queued exact-head retest.
+- Cross-branch source audit found B01 still claimed AccessibilityService action ID 12 was reboot, while F02 had already removed that invalid call. Backported the correct existing system power-menu path to B01 and added `test_home_key_power_action_contract.py` to owner and integration.
+- Verified B01 and F02 `HomeKeyService.java` are now byte-identical at blob SHA `b3cd4b2b4092a90f4f1faefb1072c15e2203b314`.
+- F02 findings F02-FUNC-002 (Force Stop/Home handler collision), F02-SEC-004 (exported Recent Apps Close All) and F02-PLAT-001 (invalid restart action ID) fixed and covered by exact F02 CI at 5dd787b.
+- No merge, APK publication/installation, or physical Android TV test.
