@@ -165,3 +165,9 @@ This is not a full Project F exit: latest documentation/status reconciliation co
 - The existing per-file upload size, StandBy collection count/byte limits, and wallpaper collection behavior are unchanged. No arbitrary total wallpaper cap was added. A 64 MiB free-space safety margin is retained; insufficient space returns HTTP 507, while expired sessions remain HTTP 410.
 - Added JVM boundary tests and source-contract regression checks. Exact-head CI is required before marking this gate PASS.
 - Physical concurrent LAN uploads, cancellation and low-storage behavior on target Android TV remain DEFERRED_TO_G.
+
+
+### Reservation scope across replacement QR sessions — 3 November 2026
+- Extended the storage reservation ledger from per-server-instance state to a process-wide static lock/counter. This accounts for old session workers that are still draining after stop() while MainActivity starts a replacement QR session.
+- The free-space calculation now includes reservations held by all WallpaperUploadServer instances until their request finally blocks release them. Session revocation checks remain per server instance.
+- Updated the source-contract regression test to require the shared ledger. Exact-head CI is required on the latest integration commit.
