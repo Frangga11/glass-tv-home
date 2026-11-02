@@ -95,7 +95,6 @@
     <string name="weather_humidity_label">💧  KELEMBAPAN</string>
     <string name="weather_humidity_description">Kelembapan relatif saat ini.</string>
     <string name="weather_pressure_label">⏱️  TEKANAN UDARA</string>
-    <string name="weather_data_source">Model Open-Meteo • estimasi US AQI</string>
 
     <string name="media_now_playing">SEDANG DIPUTAR</string>
     <string name="media_spotify">SPOTIFY</string>
