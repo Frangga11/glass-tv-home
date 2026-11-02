@@ -436,3 +436,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - F: integrated 1080p/4K, offline/location/language, popup/D-pad/Back/scroll acceptance. G: close and reconcile all owner findings before D-013 grouped merge.
 - C is not assigned; direct Open-Meteo HTTPS fetches are separate from the local QR upload stack. Preserve C07.
 - No repairs have yet been committed for WQ-01–WQ-08; do not infer completion from E05 ayah-reader CI.
+
+
+## E05 Weather/AQI repair handover — 2 Nov 2026
+- Current E05 PR #38 head: `6fe89fad078692958db67030329a6de66cd7ae71`; exact-head CI run #663 PASS (launcher tests/release build/APK-size guard and Lists/tools/docs). PR remains Draft/open/unmerged.
+- Weather/AQI source repairs are implemented: actual CAMS PM fields only; no synthetic current/forecast values; separate successful-cache timestamps; generation/location/language guards; cache bound to selected coordinates; unavailable UI states; no fake forecast range; neutral automatic background when source unavailable; model-reference and Open-Meteo/CAMS attribution.
+- Three new JVM tests cover exact, changed and non-finite coordinate cache checks. Intermediate duplicate localized source labels were removed; final CI passed resource merge.
+- D07 PR #31 detailed-weather freshness extension passed CI #642 on `7ce92d30911288eed98aa2e7b36eaf9942d0c355`.
+- Next: perform a scoped shared-popup audit against B01/B02/B03 canonical modal/focus contract; do not fork global dialog styling in E05. Then close remaining source-level findings and hand physical 1080p/4K, offline/stale, location/language, D-pad/Back/scroll and popup checks to Project F.
+- No APK publication/installation, physical TV acceptance, merge, or release approval has occurred. Preserve D-013 grouped merge timing and C07 upload resilience.
+- Evidence: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md), [CROSS_PROJECT_WEATHER_AQI_AUDIT.md](CROSS_PROJECT_WEATHER_AQI_AUDIT.md).
