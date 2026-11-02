@@ -593,3 +593,18 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Next: obtain a controlled TV-test APK from the selected frozen candidate, then record physical PASS/FAIL/BLOCKED evidence for D-pad/focus/Back, dialogs, Glass ON/OFF, profile/security, Weather/AQI, phone QR upload, wallpaper route/state, StandBy, process death/reboot and 1080p/4K.
 - No APK has been published or installed; no physical acceptance is claimed. No feature PR or main/release merge. D-013 remains binding.
 - Full test matrix and decision record: `F02_INTEGRATED_FUNCTIONAL_REGRESSION.md`.
+
+
+## Current resume checkpoint — Project F02 cross-module remediation, 3 November 2026
+
+- Active integration branch: `integration/project-f02-system-validation`; Draft PR #50 targets `integration/project-f-staged-full`. Latest documented F02 head: `1658237bafdb24167391270f3ad8f694751a6c2a`; exact-head CI was queued.
+- Keep PR #50 Draft/open/unmerged. No APK publication, installation, physical Android TV testing, or merge to main.
+- Findings and owners:
+  - F02-UI-001: B01 owns global modal styling; D05 introduced a regression in Settings search dialog calls. Fixed on B01/D05 and mirrored to F02. MainActivity `styleGlassDialog` now delegates to `TvDialogStyle.apply`, retaining custom dimensions after helper application.
+  - F02-SEC-001: D01 follow-up PR #51 adds `android.permission.DUMP` to LocationBroadcastReceiver while preserving both actions. Exact-head CI passed on `bbb13dd107c86cda85bd1482c2f050ca69dfc4e2`; ADB shell compatibility remains Project G.
+  - F02-SEC-002: D06 PR #30 changes AzanActivity to exported=false; app-owned explicit Intent/PendingIntent path verified in source. Exact-head CI retest pending.
+  - F02-TEST-001: no instrumentation source set found; host-side regression tests added; Robolectric feasibility still to assess. Real TV focus/render/firmware checks remain G.
+- Latest source checkpoints: B01 PR #10 `b1c23024d0de740c36e1794ab775fdc43c7a3a20`; D05 PR #29 `7f043943ab0c1d2d1217fc56845d81ac7583c96d`; D06 PR #30 `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7`; D01 PR #51 `bbb13dd107c86cda85bd1482c2f050ca69dfc4e2`.
+- CI state at checkpoint: B01, D05, D06 owner retests running; F02 latest head queued. Earlier F02 head `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7` passed both CI jobs but predates MainActivity global modal enforcement.
+- Important discovered dependency issue: first D06 retest failed because the stale branch did not contain the B01 `TvDialogStyle` class. The class/test were added to D05 and D06; the subsequent exact-head retest must pass before declaring fixed.
+- Next: poll exact-head Actions for B01/D05/D06/F02; inspect failures and repair them without bypassing tests; update F02_FINDINGS_REGISTER.md and this handover with the final SHAs/results; continue test-harness audit. Do not move device tests into F.
