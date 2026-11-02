@@ -206,6 +206,11 @@ public final class AvatarUploadServer {
                 respond(out, 400, localized(R.string.avatar_error_incomplete));
                 return;
             }
+            UploadFilePolicy.ImageFormat imageFormat = UploadFilePolicy.detectImageFormat(temp);
+            if (imageFormat == null || !UploadFilePolicy.hasCompatibleContentType(lines, imageFormat)) {
+                respond(out, 415, localized(R.string.avatar_error_unsupported_image));
+                return;
+            }
             BitmapFactory.Options bounds = new BitmapFactory.Options();
             bounds.inJustDecodeBounds = true;
             BitmapFactory.decodeFile(temp.getAbsolutePath(), bounds);
@@ -224,6 +229,14 @@ public final class AvatarUploadServer {
                 respond(out, 415, localized(R.string.avatar_error_corrupt_image)); return;
             }
             verifiedBitmap.recycle();
+            File storedAvatar = new File(dir,
+                    temp.getName().substring(0, temp.getName().length() - ".upload".length())
+                            + "." + imageFormat.extension);
+            if (storedAvatar.exists() || !temp.renameTo(storedAvatar)) {
+                respond(out, 500, localized(R.string.avatar_error_storage));
+                return;
+            }
+            temp = storedAvatar;
             if (!running || System.currentTimeMillis() > expiresAt) { respond(out, 410, localized(R.string.avatar_error_session_expired_short)); return; }
             File delivered = temp;
             boolean accepted;
@@ -282,7 +295,7 @@ public final class AvatarUploadServer {
                 + "main{max-width:460px;margin:auto;background:#172235;padding:24px;border-radius:20px}button,input{width:100%;padding:14px;margin:12px 0}"
                 + "button{background:#7dd3fc;border:0;border-radius:12px;font-weight:700}#s{color:#bae6fd}</style>"
                 + "<main><h2>📷 " + localized(R.string.avatar_upload_heading) + "</h2><p>" + localized(R.string.avatar_upload_intro) + "</p>"
-                + "<input id='f' type='file' accept='image/*'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
+                + "<input id='f' type='file' accept='image/jpeg,image/png,image/webp'><button id='b' disabled>" + localized(R.string.avatar_upload_button) + "</button><p id='s'>" + localized(R.string.avatar_upload_limit) + "</p></main>"
                 + "<script>const f=document.getElementById('f'),b=document.getElementById('b'),s=document.getElementById('s');"
                 + "f.onchange=()=>b.disabled=!f.files.length;b.onclick=()=>{const x=f.files[0];if(!x)return;b.disabled=true;s.textContent='" + localized(R.string.avatar_upload_sending) + "';"
                 + "const r=new XMLHttpRequest();r.open('POST','" + endpoint + "');r.timeout=" + NetworkFeedbackPolicy.AVATAR_BROWSER_UPLOAD_TIMEOUT_MS + ";r.setRequestHeader('Content-Type',x.type||'application/octet-stream');"

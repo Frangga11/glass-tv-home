@@ -115,8 +115,9 @@ final class StandbyPhotoStore {
         try {
             File directory = new File(context.getFilesDir(), "standby_photos").getCanonicalFile();
             File candidate = new File(uri.getPath()).getCanonicalFile();
-            String prefix = directory.getPath() + File.separator;
-            return candidate.getPath().startsWith(prefix) && candidate.isFile();
+            return directory.equals(candidate.getParentFile())
+                    && UploadFilePolicy.isSafeStoredImageName(candidate.getName())
+                    && candidate.isFile();
         } catch (Exception ignored) {
             return false;
         }

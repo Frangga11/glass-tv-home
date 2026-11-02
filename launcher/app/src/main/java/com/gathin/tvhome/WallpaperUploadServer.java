@@ -403,18 +403,25 @@ public class WallpaperUploadServer {
                         throw new java.io.IOException("Cannot create wallpaper storage");
                     }
 
-                    File targetFile = File.createTempFile("custom_", ".jpg", customDir);
+                    File targetFile = File.createTempFile("custom_", ".upload", customDir);
                     boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
+                    UploadFilePolicy.ImageFormat imageFormat = complete
+                            ? validateImageFile(targetFile, lines) : null;
 
-                    // Verify the actual image can be decoded before exposing it to Home.
-                    boolean validImage = isValidImageFile(targetFile);
-
-                    if (!complete || !validImage) {
+                    if (!complete || imageFormat == null) {
                         targetFile.delete();
                         String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
                         sendTextResponse(out, 400, "Bad Request", message, null);
                     } else {
-                        String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
+                        File storedFile = new File(customDir,
+                                targetFile.getName().substring(0, targetFile.getName().length() - ".upload".length())
+                                        + "." + imageFormat.extension);
+                        if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
+                            targetFile.delete();
+                            sendTextResponse(out, 500, "Internal Server Error", "Unable to store uploaded image", null);
+                            return;
+                        }
+                        String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
                         String response = "HTTP/1.1 200 OK\r\n" +
                                 "Content-Type: application/json; charset=UTF-8\r\n" +
@@ -424,8 +431,7 @@ public class WallpaperUploadServer {
                         out.write(response.getBytes("UTF-8"));
                         out.write(jsonBytes);
                         out.flush();
-
-                        if (listener != null) listener.onUploaded(targetFile);
+                        if (listener != null) listener.onUploaded(storedFile);
                     }
                 } else {
                     sendTextResponse(out, 400, "Bad Request", localized(R.string.wallpaper_error_invalid_size), null);
@@ -449,29 +455,31 @@ public class WallpaperUploadServer {
         }
     }
 
-    /** Rejects malformed/truncated image payloads as well as excessive dimensions. */
-    private static boolean isValidImageFile(File file) {
-        if (file == null || !file.isFile()) return false;
-        BitmapFactory.Options bounds = new BitmapFactory.Options();
-        bounds.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(file.getAbsolutePath(), bounds);
-        if (bounds.outWidth <= 0 || bounds.outHeight <= 0
-                || bounds.outWidth > 16384 || bounds.outHeight > 16384
-                || (long) bounds.outWidth * (long) bounds.outHeight > 100_000_000L) {
-            return false;
+    /** Rejects unsupported signatures/MIME, malformed images and excessive dimensions. */
+    private static UploadFilePolicy.ImageFormat validateImageFile(File file, String[] headers) {
+        try {
+            UploadFilePolicy.ImageFormat format = UploadFilePolicy.detectImageFormat(file);
+            if (format == null || !UploadFilePolicy.hasCompatibleContentType(headers, format)) return null;
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(file.getAbsolutePath(), bounds);
+            if (!UploadFilePolicy.isValidWallpaperImageDimensions(bounds.outWidth, bounds.outHeight)) return null;
+            BitmapFactory.Options verify = new BitmapFactory.Options();
+            int sample = 1;
+            while (bounds.outWidth / sample > 512 || bounds.outHeight / sample > 512) sample *= 2;
+            verify.inSampleSize = sample;
+            verify.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap decoded = BitmapFactory.decodeFile(file.getAbsolutePath(), verify);
+            if (decoded == null) return null;
+            decoded.recycle();
+            return format;
+        } catch (Exception ignored) {
+            return null;
         }
-        BitmapFactory.Options verify = new BitmapFactory.Options();
-        int sample = 1;
-        while (bounds.outWidth / sample > 512
-                || bounds.outHeight / sample > 512) {
-            sample *= 2;
-        }
-        verify.inSampleSize = sample;
-        verify.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap decoded = BitmapFactory.decodeFile(file.getAbsolutePath(), verify);
-        if (decoded == null) return false;
-        decoded.recycle();
-        return true;
+    }
+
+    static File resolveWallpaperFile(File customDir, String fileName) {
+        return UploadFilePolicy.resolveDirectChild(customDir, fileName);
     }
 
     private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
@@ -495,26 +503,34 @@ public class WallpaperUploadServer {
             return;
         }
 
-        File targetFile = File.createTempFile("standby_", ".jpg", standbyDir);
+        File targetFile = File.createTempFile("standby_", ".upload", standbyDir);
         boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
+        UploadFilePolicy.ImageFormat imageFormat = complete
+                ? validateImageFile(targetFile, lines) : null;
 
-        boolean validImage = isValidImageFile(targetFile);
-
-        if (!complete || !validImage) {
+        if (!complete || imageFormat == null) {
             targetFile.delete();
             sendUploadError(out, 400, !complete
                     ? localized(R.string.wallpaper_error_incomplete_retry)
                     : localized(R.string.wallpaper_error_unsupported_image));
             return;
         }
+        File storedFile = new File(standbyDir,
+                targetFile.getName().substring(0, targetFile.getName().length() - ".upload".length())
+                        + "." + imageFormat.extension);
+        if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
+            targetFile.delete();
+            sendUploadError(out, 500, localized(R.string.standby_error_storage));
+            return;
+        }
 
         synchronized (activeClients) {
             if (!running || client.isClosed()) {
-                targetFile.delete();
+                storedFile.delete();
                 return;
             }
-            if (!StandbyPhotoStore.addUploadedFile(context, targetFile)) {
-                targetFile.delete();
+            if (!StandbyPhotoStore.addUploadedFile(context, storedFile)) {
+                storedFile.delete();
                 sendUploadError(out, 400, localized(R.string.standby_error_collection_storage));
                 return;
             }
@@ -530,7 +546,7 @@ public class WallpaperUploadServer {
         out.write(response.getBytes("UTF-8"));
         out.write(bytes);
         out.flush();
-        if (listener != null) listener.onStandbyUploaded(targetFile);
+        if (listener != null) listener.onStandbyUploaded(storedFile);
     }
 
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
@@ -565,7 +581,7 @@ public class WallpaperUploadServer {
                 + "margin-top:18px;line-height:1.5}"
                 + "</style></head><body><main class='card'><h1>" + htmlText(R.string.standby_page_heading) + "</h1>"
                 + "<p>" + htmlText(R.string.standby_page_intro) + "</p>"
-                + "<label class='drop'>" + htmlText(R.string.standby_page_choose_photos) + "<br><br><input id='files' type='file' accept='image/*' multiple></label>"
+                + "<label class='drop'>" + htmlText(R.string.standby_page_choose_photos) + "<br><br><input id='files' type='file' accept='image/jpeg,image/png,image/webp' multiple></label>"
                 + "<button id='send' disabled>" + htmlText(R.string.standby_page_upload_button) + "</button><div id='status'>" + htmlText(R.string.standby_page_no_photo) + "</div>"
                 + "<div id='bar'><div id='fill'></div></div>"
                 + "<small>" + htmlText(R.string.standby_page_storage_note) + " "
@@ -611,9 +627,8 @@ public class WallpaperUploadServer {
     private void serveThumbnail(String fileName, OutputStream out) {
         try {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (!target.exists() || !target.isFile()) {
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
                 sendTextResponse(out, 404, "Not Found", "Not Found", null);
                 return;
             }
@@ -662,7 +677,7 @@ public class WallpaperUploadServer {
         try {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             File[] files = customDir.exists()
-                    ? customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"))
+                    ? customDir.listFiles((dir, name) -> resolveWallpaperFile(dir, name) != null)
                     : new File[0];
             if (files == null) throw new java.io.IOException("Cannot list wallpaper storage");
             JSONArray arr = new JSONArray();
@@ -712,12 +727,11 @@ public class WallpaperUploadServer {
                 return;
             }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            if (safeName.isEmpty()) {
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
                 sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
                 return;
             }
-            File target = new File(customDir, safeName);
             if (!target.isFile()) {
                 sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
                 return;
@@ -741,12 +755,11 @@ public class WallpaperUploadServer {
                 return;
             }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            if (safeName.isEmpty()) {
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
                 sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
                 return;
             }
-            File target = new File(customDir, safeName);
             if (!target.isFile()) {
                 sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
                 return;
@@ -784,7 +797,9 @@ public class WallpaperUploadServer {
                 return;
             }
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.exists() ? customDir.listFiles() : new File[0];
+            File[] files = customDir.exists()
+                    ? customDir.listFiles((dir, name) -> resolveWallpaperFile(dir, name) != null)
+                    : new File[0];
             if (files == null) {
                 sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"storage_unavailable\"}");
                 return;
@@ -1140,7 +1155,7 @@ public class WallpaperUploadServer {
                 "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">" + htmlText(R.string.wallpaper_page_change_photo) + "</button>\n" +
                 "    </div>\n" +
                 "\n" +
-                "    <input type=\"file\" id=\"file-input\" accept=\"image/*\">\n" +
+                "    <input type=\"file\" id=\"file-input\" accept=\"image/jpeg,image/png,image/webp\">\n" +
                 "\n" +
                 "    <button class=\"btn-submit\" id=\"btn-submit\" disabled onclick=\"uploadImage()\">\n" +
                 "      <span>" + htmlText(R.string.wallpaper_page_upload_button) + "</span>\n" +
