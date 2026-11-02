@@ -58,3 +58,15 @@ Audit and improve the complete **Pengaturan Perangkat** tab: HOME launcher selec
 - [x] Recheck APK size against the existing 1.5 MiB cap — 1,559,445 bytes, 13,419 bytes below cap.
 
 No TV settings, package states, HOME defaults, APK installation, or physical-device actions were changed or performed as part of this source work. The PR workflow did not publish an APK. E01 source work is ready for the F-stage physical/visual acceptance checks; do not mark the complete project accepted until those checks pass.
+
+## Follow-up — HOME launcher popup opacity and layout hardening (2 Nov 2026)
+
+A focused source audit of `showDefaultLauncherDialog()` found that the custom popup content had an opaque inner panel, but the enclosing `AlertDialog` window and `ScrollView` were explicitly assigned transparent backgrounds. This left an avoidable OEM/theme-dependent risk of the launcher showing through around or behind the popup, matching the previously reported visual concern.
+
+Correction on the E01 branch:
+- Give the popup scroll surface and dialog window explicit opaque dark backgrounds (`#1E2026`) with a consistent rounded outline and border.
+- Keep the content column transparent over the opaque scroll surface so the full panel remains visually continuous.
+- Clip the scroll surface to its rounded outline, keep child content clipped, disable overscroll glow, and preserve fill-viewport behavior.
+- Retain the existing bounded dialog dimensions, scroll support, and initial focus on the system HOME picker action.
+
+**Verification boundary:** source correction committed as `c56c0a800b43768756905dfc76daaa2e6015ffb1`. Exact-head CI run `41376900940` is pending at the time of this audit update. The source change removes the explicit transparent surfaces, but visual acceptance on the target TV (including D-pad focus, clipped corners, and long-content scrolling) still requires Stage F device verification. No launcher default or device setting was changed.
