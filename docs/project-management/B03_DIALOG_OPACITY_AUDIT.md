@@ -5,8 +5,8 @@
 **Owner:** Project B03 (global dialog/popup layering), with E07 toggle integration  
 **Source branch:** `feature/b03-dialog-opacity-layering`  
 **Source PR:** #12 — Draft/open/unmerged  
-**Current source head:** `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`  
-**Exact-head CI:** run #685 / `41447473358` — SUCCESS (both jobs passed)  
+**Current source head:** `d87ffdf914851b8a1d2c67c2416ac9f5f1309d93`  
+**Exact-head CI:** run #687 / `41447950284` — SUCCESS (both jobs passed)  
 **Merge policy:** D-013; no early merge.
 
 ## 1. Trigger and impact
@@ -35,7 +35,7 @@ Glass Effect is a decorative material choice, not a dependency of layout or UI s
 ## 4. B03 implementation
 
 - Added shared opaque fallback tokens `POPUP_SURFACE` and `DOCK_SURFACE` to `TvUiTokens`; the existing shared `BORDER` token is reused.
-- `GlassDrawable` now paints a rounded solid popup/pill surface and border before retaining its existing focus-shape behavior when glass is OFF.
+- `GlassDrawable` now paints a rounded solid popup/pill surface and border before retaining its existing focus-shape behavior when glass is OFF. The fallback fill/border also follows the existing fade alpha so popup opening/closing transitions remain intact.
 - `DockDecoration` now paints the solid dock tray, shadow and border in OFF mode while preserving the existing D-pad focus shape.
 - `TvDialogStyle` now chooses the existing glass dialog resource when ON and a rounded solid surface using the same shared tokens when OFF.
 - Added `GlassSurfaceFallbackTest`, a JVM regression guard for opaque popup/dock/border tokens and distinct popup/dock materials. The test uses pure bit checks and does not depend on Android framework stubs.
@@ -60,7 +60,7 @@ The B03 branch is the canonical global contract owner; E07's parallel implementa
 | Root cause verified from source | PASS |
 | B03 fallback implementation | IMPLEMENTED |
 | JVM fallback-token regression test | ADDED |
-| Exact-head B03 CI run #685 | PASS — both jobs succeeded; unit tests/release build/APK-size guard and Lists/tools/docs |
+| Exact-head B03 CI run #687 | PASS — both jobs succeeded; unit tests/release build/APK-size guard and Lists/tools/docs |
 | E07 source/CI fallback repair | PASS — PR #40 head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`, run #682 / `41446777187` SUCCESS |
 | 1080p/4K visual and D-pad acceptance | PENDING Project F |
 | Android OS Settings page unchanged | SOURCE SCOPE PRESERVED |
@@ -76,8 +76,10 @@ B03's global surface fallback repair is implemented and exact-head CI-verified o
 
 
 ## Exact-head CI closure — 2 November 2026
-- Source/test head: `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`.
-- CI run #685 / `41447473358`: **SUCCESS**. `Launcher build and unit tests` and `Lists, tools and docs` both passed.
+- Source/test head: `d87ffdf914851b8a1d2c67c2416ac9f5f1309d93`.
+- CI run #687 / `41447950284`: **SUCCESS**. `Launcher build and unit tests` and `Lists, tools and docs` both passed.
 - Gradle `testReleaseUnitTest` and `assembleRelease` passed; APK-size guard passed; manual APK publication skipped.
 - Release APK diagnostic: 1503 KB, below the 1.5 MiB (1536 KiB) cap.
 - PR #12 remains OPEN/DRAFT/UNMERGED and mergeable. No APK installed and no physical TV acceptance claimed.
+
+- Follow-up refinement: the OFF-state solid surface and border now honor GlassDrawable's existing fade alpha, preserving popup open/close animation. This exact refinement is included in the tested head above.
