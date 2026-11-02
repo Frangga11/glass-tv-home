@@ -566,3 +566,5 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Project F acceptance: longest Arabic/ID/EN content, glyph/harakat clipping, shelf/dock collision, 1920x1080 and 4K, D-pad/scroll/Back, offline/cache/language refresh. No device verification claimed.
 
 - Follow-up E05-F02 found the Smart Boost Quick Action bypassed the explicit cache-clean workflow, deleted only top-level cache entries, and always reported success. It now opens the existing confirmation/result flow using `CacheCleaner.cleanNow()`; ID/EN labels now accurately describe cache/storage optimization without promising RAM release. Latest source PR head is being revalidated by exact-head CI.
+
+- Follow-up E05-F03: Prayer & Ayah Quick Action now uses a dedicated scrollable dialog with separate RTL Arabic, translation and reference surfaces; no line cap/ellipsis, Quran font padding, and D-pad scroll-to-Close handling. Latest feature head is `7b8a5a7ce8c2f372d5d6a262847adf408d666033`; exact-head CI must be checked for this final documentation/source head.
