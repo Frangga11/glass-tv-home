@@ -154,7 +154,7 @@ These are per-branch source/test checks. They do not independently prove the ful
 
 The dependency and ownership audit is complete. All module-level CI evidence checked is green. The PR chain is currently reported mergeable, and the isolated rehearsal has produced a successful CI run, with two additional runs still in progress.
 
-**F01 remains OPEN until runs #709/#710 are final and their results are checked.** After that, close the rehearsal PR without merging, return it to Draft if still open, and hand the branch-drift register to Project F02/G for dependency-ordered grouped integration. Do not treat this as approval to merge or release.
+**Superseded by the final closure below:** runs #709/#710 and #716 are PASS; rehearsal PRs #42/#43 are closed without merge; F01 is CLOSED — PASS. Dependency/base-drift reconciliation remains a G grouped-integration requirement.
 
 
 ## F01 FINAL CLOSURE — 2 November 2026
