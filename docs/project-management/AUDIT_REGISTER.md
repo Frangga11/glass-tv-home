@@ -476,3 +476,19 @@ Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MA
 | Physical acceptance | DEFERRED, NOT WAIVED | Project F: same-Wi-Fi phone QR, expiry/retry/replace/reset, profile isolation, Child Mode/PIN, D-pad, dialogs and route/storage isolation on Mi TV Stick. |
 
 **Disposition:** E02 source audit and exact-head CI gates are CLOSED. PR #35 remains OPEN/DRAFT/UNMERGED under D-013. Do not treat source closure as physical-device acceptance or release approval.
+
+
+## E03 — Appearance & Wallpaper (checkpoint 2 November 2026)
+
+| Gate | Status | Evidence |
+|---|---|---|
+| Root-cause identification | PASS | Default JPEG contains baked-in copy; existing native hero metadata shelf confirmed. |
+| Default-only metadata provider | IMPLEMENTED | `WallpaperMetadata` matches exact cached Default filename only. |
+| Existing online/place fallback | PRESERVED | `setPlace()` falls back to existing PlaceWallpapers/OnlineWallpapers providers. |
+| Metadata isolation tests | ADDED | Default, null, custom, other and backup filename cases. |
+| Clean packaged image replacement | BLOCKED / NOT COMMITTED | Existing JPEG still contains text; do not claim visual issue resolved. |
+| Exact-head CI #624 | PENDING | Head `188bd49269a358ebf53f8ae09056c41a5eb80243`; launcher job still running at checkpoint. |
+| APK budget / publication | NOT FINAL | Final asset not present; no artifact publication or installation. |
+| Physical acceptance | DEFERRED, NOT WAIVED | Project F: visual crop, TV/remote, Next/shuffle/restart, QR and StandBy isolation. |
+
+**Disposition:** E03 is IN PROGRESS. PR #36 OPEN/DRAFT/UNMERGED under D-013. No merge or release approval.
