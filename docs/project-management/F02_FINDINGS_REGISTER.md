@@ -410,3 +410,12 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - F02-RES-001 process-wide reservation refinement is now HOST/SOURCE VERIFIED. The 64 MiB free-space margin is preserved across replacement QR sessions while old workers drain. Physical concurrent LAN, low-storage telemetry and cancellation behavior remain DEFERRED_TO_G.
 - The owner C07 branch has also received the corresponding policy, server reservation, JUnit and Python regression changes; owner PR #24 exact-head CI is pending. Do not close the cross-project finding until owner-branch retest passes.
 - PR #50 remains Draft/open/unmerged. No APK publication, installation, or physical Android TV testing.
+
+
+## Owner-branch synchronization and latest exact-head confirmation — 3 November 2026
+
+- C07 owner PR #24 branch `feature/c07-upload-session-resilience`, head `442b78c68b1540394d543bab59bddf52f865ccf0`: exact-head CI #41520866323 completed SUCCESS for both jobs. Its Python suite passed 18 tests, including the new process-wide reservation and upload-shutdown guards; launcher unit tests and release build passed; APK size 1,550,949 bytes against 1,572,864-byte cap. The legacy manual APK-publication step was SKIPPED on this pull_request event; workflow artifacts list is empty.
+- F02 integration PR #50 head `2469c0c1d241a00be3e02235e12f3f0f6525deb9`: exact-head CI #41520818608 completed SUCCESS for both jobs. Its Python suite passed 42 tests; launcher unit tests and release build passed; APK size 1,565,713 bytes against 1,572,864-byte cap (7,151 bytes headroom). Workflow artifacts list is empty.
+- C07 owner source and F02 integration now contain the same process-wide reservation policy and regression coverage. F02 intentionally retains D05's downstream StandBy UploadResult persistence adapter; C07 owner branch retains its upstream boolean-based contract. No D05 behavior was overwritten.
+- F02-RES-001 and upload-shutdown regression coverage are OWNER + INTEGRATION HOST VERIFIED. Device-side low-storage, concurrent LAN, cancellation/expiry/retry, and OEM behavior remain DEFERRED_TO_G.
+- This findings-register update creates a new docs-only F02 head and requires one final exact-head CI retest. PR #50 and PR #24 remain Draft/open/unmerged; no APK artifact was published, installed, or tested on physical Android TV.
