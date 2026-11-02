@@ -29,7 +29,19 @@ The Home layout limited Arabic to one line and translation to two lines, both wi
 
 **Files:** `MainActivity.java`, `activity_main.xml`.
 
-### Existing behavior verified by source inspection
+#### E05-F02 — Smart Boost Quick Action bypassed the full cache-clean workflow (FIXED)
+
+The old action deleted only immediate children of the app cache directory, ignored nested directories and deletion results, invoked the periodic `maybeRun()` scheduler rather than the explicit clean-now operation, then always reported success. This did not match the button's advertised purpose.
+
+**Correction**
+- Routed the Quick Action into the existing confirmed `showCleanTvCacheDialog()` workflow.
+- Reused `CacheCleaner.cleanNow()`, which handles internal/external app cache, temporary downloads, optional system cache trim and a truthful completion report.
+- Removed the duplicate one-off cleanup implementation.
+- Clarified Indonesian and English action labels to describe cache cleaning/storage optimization rather than promising RAM release.
+
+**Files:** `MainActivity.java`, default/ID/EN `strings.xml`.
+
+## Existing behavior verified by source inspection
 
 - WeeklyAyah cycles through a fixed 52-verse list, caches Arabic plus Malay, English and Indonesian translations, and returns the last cached verse when a network refresh is unavailable.
 - Weather and US AQI are independently requested from Open-Meteo; the UI labels AQI as a model estimate, not official Indonesian ISPU station data.
