@@ -409,8 +409,8 @@
     <string name="standby_preview_title">🌙 Pratinjau Layar Siaga Sekarang</string>
     <string name="standby_preview_summary">Lihat pratinjau jam atau foto pribadi di dalam aplikasi sesuai mode yang dipilih.</string>
     <string name="screensaver_settings_section">TAMPILAN &amp; SIAGA TV</string>
-    <string name="cache_system_trim_success">Cache aplikasi dan cache sistem Android berhasil diproses.</string>
-    <string name="cache_system_trim_skipped">Cache aplikasi dibersihkan. Cache sistem Android belum diproses karena akses ADB tidak tersedia atau belum diizinkan.</string>
+    <string name="cache_system_trim_success">Perintah pembersihan cache sistem Android berhasil dijalankan.</string>
+    <string name="cache_system_trim_skipped">Pembersihan cache sistem Android tidak dapat dikonfirmasi karena akses ADB tidak tersedia, belum diizinkan, atau perintah gagal.</string>
     <string name="phone_installer_qr_hint">Pindai QR ini dengan HP Android untuk membuka folder installer resmi.</string>
     <string name="phone_installer_steps">1. Pindai QR menggunakan HP Android.\n2. Unduh glass-tv-installer.apk dari folder release.\n3. Sambungkan HP dan TV ke jaringan Wi-Fi yang sama.\n4. Buka installer, masukkan IP TV atau pindai jaringan, lalu ikuti petunjuk ADB di layar TV.</string>
     <string name="home_key_status_title">Layanan Tombol HOME</string>
