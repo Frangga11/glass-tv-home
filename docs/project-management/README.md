@@ -133,3 +133,10 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - Added F02-RES-001 storage-safety correction: synchronized concurrent upload byte reservations, overflow-safe capacity arithmetic, 64 MiB minimum free-space margin, HTTP 507 for insufficient space, and guaranteed reservation release. Existing upload-size and StandBy collection limits remain unchanged; no arbitrary custom-wallpaper total cap added.
 - Added JUnit boundary tests and Python source-contract tests. F02 PR #50 head c1f212585633899d4c1f5327d3a982a9e136e2b7; CI #41519813674 Lists/tools/docs SUCCESS, Launcher build/unit tests IN_PROGRESS at last poll.
 - Keep F02 partial until exact-head CI completes. PR #50 remains Draft/open/unmerged; no APK publication/installation or physical Android TV test. Device acceptance remains Project G.
+
+
+### F02 upload storage hardening — 3 November 2026
+- F02 source/test head c1f212585633899d4c1f5327d3a982a9e136e2b7 passed exact-head PR CI #41519813674: both jobs SUCCESS; 42 Python tests, Launcher unit tests and release validation build passed.
+- APK 1,565,621 bytes against 1,572,864-byte cap, leaving 7,243 bytes. Keep build-budget P3 watchlist active.
+- Concurrent QR upload storage reservations and upload-shutdown critical-section tests are HOST/SOURCE VERIFIED; physical behavior remains Project G.
+- New findings-register docs head 1845635091969c2475bb0d26783bc0f7eb58c1c0 has exact-head CI #41520194974 queued at last poll. PR #50 remains Draft/open/unmerged; no APK publication or physical TV test.
