@@ -966,14 +966,14 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, AppLanguage.strHomeScreen(activity));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        activity.getString(R.string.daily_prayer_panel_title), activity.getString(R.string.daily_prayer_panel_summary),
+                        AppLanguage.strDailyPrayerPanelTitle(activity), AppLanguage.strDailyPrayerPanelSummary(activity),
                         activity.isIslamicShelfEnabled(), isChecked -> {
                             activity.setIslamicShelfEnabled(isChecked);
                         }));
 
                 boolean ayahShown = WeeklyAyah.shown(activity);
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        activity.getString(R.string.daily_ayah_title), activity.getString(R.string.daily_ayah_summary),
+                        AppLanguage.strDailyAyahTitle(activity), AppLanguage.strDailyAyahSummary(activity),
                         ayahShown, isChecked -> {
                             WeeklyAyah.setShown(activity, isChecked);
                             activity.showAyah(WeeklyAyah.last(activity));
@@ -981,11 +981,11 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.interface_sound_title), activity.getString(R.string.interface_sound_summary),
+                        AppLanguage.strInterfaceSoundTitle(activity), AppLanguage.strInterfaceSoundSummary(activity),
                         activity::showSoundEffectsDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.azan_settings_title), activity.getString(R.string.azan_settings_summary),
+                        AppLanguage.strAzanSettingsTitle(activity), AppLanguage.strAzanSettingsSummary(activity),
                         activity::showAzanSettingsDialog));
 
             } else if (tab == TAB_APPEARANCE) {
