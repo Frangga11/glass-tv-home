@@ -593,3 +593,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Confirmed issues: synthetic PM concentrations, synthetic weather/forecast fallback, inaccurate update timestamp/success semantics, aggregate US AQI mislabel risk, metric/timezone semantics, separate Home/detail caches, CAMS model limitations/attribution, incomplete popup content/behavior audit.
 - Owners: E05 (data semantics and weather-specific UI), D07 (freshness/concurrency contract), B01/B02/B03 (shared modal/focus primitives), F (physical/integrated acceptance), G (cross-project closure). C01–C07 are not owners for Open-Meteo fetches; preserve C07.
 - Status: findings recorded; source repairs not yet implemented; PR #38 remains Draft/open/unmerged.
+
+
+## E05 weather/AQI repair verification — 2 Nov 2026
+- PR #38 remains OPEN/DRAFT/UNMERGED. Exact head: `6fe89fad078692958db67030329a6de66cd7ae71`.
+- CI run #663 (`41433527557`) PASS: launcher unit tests/release build/APK-size guard and Lists/tools/docs both passed. APK publication skipped.
+- Corrections: actual CAMS PM2.5/PM10 only; no synthetic weather/forecast fallback; independent successful-cache timestamps; request generation/location/language guards; cache bound to selected coordinates; unavailable forecast values and neutral no-data state; corrected AQI model-reference and attribution labels.
+- Three new JVM tests cover cache coordinate match, mismatch and invalid coordinates. Duplicate localized resource keys found by an intermediate CI run were removed; final resource merge/build passed.
+- D07 PR #31 exact follow-up head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`, CI #642 PASS.
+- Remaining gates: B shared popup contract audit and Project F physical/integrated 1080p/4K, offline/location/language and remote-navigation acceptance. No APK install, device test, merge or release approval.
+- Detailed report: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md).
