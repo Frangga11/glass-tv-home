@@ -1314,7 +1314,7 @@ public final class ModernSettingsDialog {
                             return;
                         }
                         String[] choices = resultLabels.toArray(new String[0]);
-                        new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        AlertDialog resultsDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                                 .setTitle(R.string.settings_search_results)
                                 .setItems(choices, (resultDialog, index) -> {
                                     int selectedTab = resultTabs.get(index);
@@ -1334,11 +1334,14 @@ public final class ModernSettingsDialog {
                                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                                 })
                                 .setNegativeButton(R.string.cancel_action, null)
-                                .show();
+                                .create();
+                        resultsDialog.show();
+                        TvDialogStyle.apply(resultsDialog, activity, 520, 0);
                     })
                     .setNegativeButton(R.string.cancel_action, null)
                     .create();
             searchDialog.show();
+            TvDialogStyle.apply(searchDialog, activity, 520, 0);
             searchInput.requestFocus();
         });
 
