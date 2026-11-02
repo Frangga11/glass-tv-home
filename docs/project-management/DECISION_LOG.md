@@ -179,3 +179,6 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 |---|---|---|---|
 | F-023 | Force Stop orchestration must use a dedicated Handler, separate from Home gesture and power-action callbacks. | `removeCallbacksAndMessages(null)` on a shared Handler cancels unrelated navigation/timeout work. | IMPLEMENTED / CI PENDING |
 | F-024 | RecentAppsActivity is internal-only; remove its exported MAIN entry. | Exported `ACTION_CLOSE_ALL` invoked destructive app-stop behavior and could be explicitly launched by another installed app. Preserve explicit in-app HomeKeyService route. | IMPLEMENTED / CI PENDING |
+
+
+| F-025 | Restart requests must use the existing visible system power-menu selection path; never treat AccessibilityService global action ID 12 as reboot. | ID 12 is the accessibility-button chooser, not reboot. Preserve existing vendor-label matching and timeout fallback. | IMPLEMENTED / F02 CI PASS / B01 comment-aligned exact-head retest pending |
