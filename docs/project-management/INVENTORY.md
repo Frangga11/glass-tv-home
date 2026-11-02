@@ -356,3 +356,11 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 - InputKeyService manifest correction was proven by regression: test failed on pre-fix F02 checkpoint `fc3e3fe` because exported was false; after setting exported true while retaining BIND_ACCESSIBILITY_SERVICE, run #41513906117 passed both jobs.
 - Latest F02 APK size: 1,564,977 bytes / 1,572,864-byte cap / 7,887-byte headroom. Watchlist only; no current failure.
 - All device-dependent checks remain DEFERRED_TO_G.
+
+
+## 3 November 2026 — latest F02 exact-head verification
+
+- F02 PR #50 latest head: `91ae962bae04914a3888210e5f997b24151d5a62` (findings-register documentation-only commit; no source/test changes after head `5587629`).
+- PR workflow #41514480902 completed SUCCESS on this exact head: Lists/tools/docs and Launcher build/unit tests both passed. The launcher log confirms release-validation build success, 35 Python tests including the accessibility-service manifest guard, and APK size 1,564,977 bytes against 1,572,864-byte cap (7,887 bytes headroom).
+- Matching push workflow #41514472847 initially failed only because Maven Central returned HTTP 429 while downloading Robolectric `nativeruntime-dist-compat-1.0.16`; this is external dependency rate limiting, not a source/test failure. Only the failed launcher job was re-run (attempt 2); it was still in progress at the time of this note. Lists/tools/docs job passed.
+- PR #50 remains Draft/open/unmerged. No APK publication, installation or physical Android TV testing. Device acceptance remains Project G.
