@@ -211,3 +211,13 @@
 - Parent PIN default `0000` and unlimited retries remain by explicit user decision; no forced PIN change or throttling was added.
 - No APK installed, no device setting/HOME default changed, no data migration and no physical-device acceptance claimed.
 - Full evidence and F-stage checklist: [E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md](E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md).
+
+
+## E03 wallpaper metadata checkpoint — 2 November 2026
+
+- E03 has started on isolated branch `feature/e03-wallpaper-clean-metadata`, based on E02 exact head `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; PR #36 is OPEN/DRAFT/UNMERGED under D-013.
+- Confirmed issue: Kabut Pagi Dempo title/description are baked into the packaged JPEG while the launcher already has a native hero metadata shelf.
+- Added isolated `WallpaperMetadata` lookup for the exact cached Default filename and routed `setPlace()` through it with original online/place provider fallback. Added focused unit tests for strict non-leakage to custom/other/backup filenames.
+- **E03 remains IN PROGRESS.** Packaged JPEG replacement with a clean text-free image is not yet committed; duplicate text is not yet considered fixed. Exact-head CI #624 is pending at this checkpoint. No APK publication/installation or device acceptance.
+- Scope protection: no B01 global UI, focus/navigation, shuffle/index/interval, QR upload, StandBy storage, or preference contracts changed. Physical TV/remote/phone acceptance remains in Project F.
+- Full checkpoint: [E03_WALLPAPER_METADATA_AUDIT.md](E03_WALLPAPER_METADATA_AUDIT.md).
