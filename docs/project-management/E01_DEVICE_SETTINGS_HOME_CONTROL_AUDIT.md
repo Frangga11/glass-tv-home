@@ -70,3 +70,13 @@ Correction on the E01 branch:
 - Retain the existing bounded dialog dimensions, scroll support, and initial focus on the system HOME picker action.
 
 **Verification boundary:** source correction committed as `c56c0a800b43768756905dfc76daaa2e6015ffb1`. Exact-head CI run `41376900940` is pending at the time of this audit update. The source change removes the explicit transparent surfaces, but visual acceptance on the target TV (including D-pad focus, clipped corners, and long-content scrolling) still requires Stage F device verification. No launcher default or device setting was changed.
+
+## Follow-up — shared Device Settings popup visual system (2 Nov 2026)
+
+A tab-level popup inventory covered the app-owned windows reachable from Device Settings: HOME launcher status/details and phone-installer QR; restart and power confirmations; cache confirmation and result; language selection; OTA control and schedule; update-available, install-permission and download-progress dialogs.
+
+A shared `MainActivity.styleDeviceSettingsPopup()` contract now applies the same opaque `bg_glass_dialog` surface, centered placement, 0.68 dim amount, bounded screen-relative width, shared typography/list styling and consistent dialog sizing. The HOME and phone-installer custom dialogs use the same shared window surface; the OTA custom layout no longer paints a second nested glass panel. Existing per-dialog content, action labels, callbacks, state changes and focus targets are retained; primary confirmation actions receive focus where appropriate.
+
+The update-available, install-permission and download-progress windows also use the shared contract when launched from `MainActivity`. Android-owned settings pages (HOME picker, accessibility, notification access, Dream/screensaver and general Settings) are intentionally excluded because their visual presentation belongs to the TV firmware/Android OS, not Glass TV Home.
+
+**Verification boundary:** source-level styling consolidation is committed on the E01 branch. Exact latest-head CI and Stage F target-TV visual/remote testing are still required before acceptance. No device settings, HOME resolver preference, or user data are modified by this styling work.
