@@ -5,13 +5,6 @@ on:
     branches: [main, 'integration/**']
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  workflow_dispatch:
-    inputs:
-      publish_device_apk:
-        description: "Publish the final TV-test APK only after all audits and fixes are approved"
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -47,12 +40,12 @@ jobs:
         with:
           packages: platforms;android-34 build-tools;34.0.0
       - uses: gradle/actions/setup-gradle@v4
-      - name: Unit tests and release build
+      - name: Unit tests and release build (validation only)
         working-directory: launcher
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon testReleaseUnitTest assembleRelease
-      - name: APK size diagnostics (read-only)
+      - name: APK size diagnostics (read-only; no artifact publication)
         run: |
           python3 - <<'PY'
           import os
@@ -72,18 +65,10 @@ jobs:
               print(f"Total uncompressed entries: {sum(x[0] for x in entries)} bytes")
               print(f"Total compressed entries:   {sum(x[1] for x in entries)} bytes")
           PY
-      - name: The launcher stays small
+      - name: Enforce release APK size budget (validation only)
         run: |
           size=$(stat -c %s launcher/app/build/outputs/apk/release/app-release.apk)
           echo "release APK: $((size / 1024)) KB"
           # The bundled Default wallpaper adds an intentional ~226 KiB JPEG asset.
           # Keep the complete release APK below 1.5 MiB while retaining headroom.
           test "$size" -lt 1572864 || { echo "APK exceeds the 1.5 MiB budget"; exit 1; }
-      - name: Publish final TV-test APK (manual opt-in only)
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_device_apk == true
-        uses: actions/upload-artifact@v4
-        with:
-          name: glass-tv-home-pagar-alam-release
-          path: launcher/app/build/outputs/apk/release/app-release.apk
-          if-no-files-found: error
-          retention-days: 14
