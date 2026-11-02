@@ -443,6 +443,13 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
         if (isSettingsKey(event)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                homeHandler.removeCallbacks(longPressHomeRunnable);
+                cancelPendingSingleHomeAction();
+                homePressTracker.cancel();
+                secondHomeTapInProgress = false;
+                isHomeLongPressed = false;
+            }
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
                 startActivity(new Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
