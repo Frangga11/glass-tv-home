@@ -229,3 +229,15 @@ The following fixes have been implemented on owning source branches and mirrored
 
 ### Additional security validation
 - The Recent Apps exported entry was not merely a public UI surface: its exported `ACTION_CLOSE_ALL` branch was a remotely triggerable destructive app-stop operation. The manifest boundary was hardened immediately, with the explicit in-app HomeKeyService route retained and a regression test added.
+
+
+## F02-PLAT-001 — Invalid AccessibilityService action ID used for restart — 3 November 2026
+
+- Severity: P2 platform-action defect. Owner: B01 / HomeKeyService power-action entry.
+- Cross-branch audit found the B01 source branch still called `performGlobalAction(12)` when requesting Android TV restart, with a comment claiming ID 12 was reboot. In the F02 integration source, this call had already been corrected: ID 12 is the accessibility-button chooser, not a reboot action. Keeping the source branch stale would reintroduce the invalid action when branches are reconciled.
+- Correction in B01 owner branch: removed the invalid global-action call and consistently use the existing visible system power-menu flow via `openPowerDialogAndSelect(POWER_ACTION_RESTART)`. This preserves the existing power menu selection/fallback design rather than inventing a new reboot mechanism.
+- Added `tests/test_home_key_power_action_contract.py` to assert restart never calls action ID 12 and the 12-second power-menu timeout remains registered/cleared through the power-action handler.
+- F02 integration already had the corrected source implementation; mirrored the regression test so the integration gate protects it.
+- Owner B01 PR #10 latest retest pending; F02 latest retest pending.
+- Physical vendor power-menu labels and restart acceptance remain DEFERRED_TO_G.
+- Status: OWNER SOURCE FIX + REGRESSION TEST COMMITTED / EXACT-HEAD CI PENDING / TV POWER-MENU ACCEPTANCE DEFERRED_TO_G.
