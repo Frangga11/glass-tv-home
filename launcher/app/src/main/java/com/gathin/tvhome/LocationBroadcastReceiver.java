@@ -34,7 +34,7 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
                 final Context localizedContext = LocaleContext.wrap(context);
                 main.runOnUiThread(() -> {
                     main.setTestWeatherOverride(finalCond);
-                    Toast.makeText(localizedContext, localizedContext.getString(R.string.weather_input_status, finalCond != null ? finalCond : localizedContext.getString(R.string.auto_label)), Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(localizedContext, localizedContext.getString(R.string.weather_input_status, finalCond != null ? finalCond : localizedContext.getString(R.string.auto_label)), Toast.LENGTH_SHORT);
                 });
             }
             return;
@@ -73,7 +73,7 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
             final String name = matched.getDisplayName();
             final Context localizedContext = LocaleContext.wrap(context);
             new Handler(Looper.getMainLooper()).post(() -> {
-                Toast.makeText(localizedContext, localizedContext.getString(R.string.tv_location_status, name), Toast.LENGTH_LONG).show();
+                TvFeedback.show(localizedContext, localizedContext.getString(R.string.tv_location_status, name), Toast.LENGTH_LONG);
             });
         } else if (lat != 0.0 && lon != 0.0) {
             PrayerTimes.clearManualZone(context);
@@ -81,7 +81,7 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
             AppLocationManager.setCustomLocation(context, "CUSTOM", customName, customName, lat, lon);
             new Handler(Looper.getMainLooper()).post(() -> {
                 Context localizedContext = LocaleContext.wrap(context);
-                Toast.makeText(localizedContext, localizedContext.getString(R.string.tv_location_status, customName), Toast.LENGTH_LONG).show();
+                TvFeedback.show(localizedContext, localizedContext.getString(R.string.tv_location_status, customName), Toast.LENGTH_LONG);
             });
         } else {
             Log.w(TAG, "No matching station found for: query=" + query + ", stationId=" + stationId);
