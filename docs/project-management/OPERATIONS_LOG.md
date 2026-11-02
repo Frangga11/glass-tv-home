@@ -396,3 +396,14 @@
 - APK 1,561,717 bytes; 1,572,864-byte cap; 11,147 bytes headroom. Manual publication skipped; artifact count 0.
 - E02 source/CI gate closed. Project F retains all physical Mi TV/phone/remote acceptance. No APK installed, no TV settings/HOME default changed, no user data migrated.
 - Full audit: [E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md](E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md).
+
+
+## 2026-11-02 — E03 Default wallpaper / metadata checkpoint
+
+- Audited the packaged Default asset and `MainActivity.setPlace()`: the JPEG contains embedded title/description while the launcher already provides a native `heroShelf` metadata UI.
+- Created isolated E03 branch `feature/e03-wallpaper-clean-metadata` from E02 exact head `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; PR #36 opened Draft against E02, not merged.
+- Added exact-filename metadata provider for cached Default asset; preserved existing online/place providers as fallback. Added targeted isolation unit tests.
+- CI run #624 / `41408606965` started on head `188bd49269a358ebf53f8ae09056c41a5eb80243`; lists/tools/docs job passed, launcher build/unit-test job was still in progress at this checkpoint.
+- A clean text-free image concept was generated for review, but the binary replacement has NOT been committed. Current JPEG remains unchanged and visual duplicate-text issue is still open. Do not publish/install APK or claim E03 complete.
+- No change to B01 global UI, D-pad, shuffle/index/interval, QR upload, StandBy storage or user preferences. Physical TV/phone/remote acceptance remains in Project F.
+- Full checkpoint: [E03_WALLPAPER_METADATA_AUDIT.md](E03_WALLPAPER_METADATA_AUDIT.md).
