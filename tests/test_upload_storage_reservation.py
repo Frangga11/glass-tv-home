@@ -22,9 +22,11 @@ class UploadStorageReservationTest(unittest.TestCase):
 
     def test_server_reserves_against_shared_minimum_free_space(self):
         self.assertIn("MIN_FREE_UPLOAD_BYTES = 64L * 1024L * 1024L", self.server)
-        self.assertIn("private long reservedUploadBytes;", self.server)
-        self.assertIn("private synchronized boolean reserveUploadStorage(long incomingBytes)", self.server)
-        self.assertIn("private synchronized void releaseUploadStorage(long reservedBytes)", self.server)
+        self.assertIn("private static final Object UPLOAD_STORAGE_LOCK", self.server)
+        self.assertIn("private static long reservedUploadBytes;", self.server)
+        self.assertIn("synchronized (UPLOAD_STORAGE_LOCK)", self.server)
+        self.assertIn("private boolean reserveUploadStorage(long incomingBytes)", self.server)
+        self.assertIn("private void releaseUploadStorage(long reservedBytes)", self.server)
 
     def test_custom_wallpaper_upload_reserves_and_releases_bytes(self):
         route = self.server.split(
