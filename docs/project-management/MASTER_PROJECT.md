@@ -570,3 +570,12 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - PR workflow #41514480902 completed SUCCESS on this exact head: Lists/tools/docs and Launcher build/unit tests both passed. The launcher log confirms release-validation build success, 35 Python tests including the accessibility-service manifest guard, and APK size 1,564,977 bytes against 1,572,864-byte cap (7,887 bytes headroom).
 - Matching push workflow #41514472847 initially failed only because Maven Central returned HTTP 429 while downloading Robolectric `nativeruntime-dist-compat-1.0.16`; this is external dependency rate limiting, not a source/test failure. Only the failed launcher job was re-run (attempt 2); it was still in progress at the time of this note. Lists/tools/docs job passed.
 - PR #50 remains Draft/open/unmerged. No APK publication, installation or physical Android TV testing. Device acceptance remains Project G.
+
+
+## F02 continuation — upload shutdown and storage safety — 3 November 2026
+
+- Final QR-session audit verified Avatar, custom Wallpaper, and StandBy commit callbacks are guarded by the same server monitor as stop/revocation. The regression suite was strengthened to explicitly protect the Wallpaper rename/callback and StandBy persistence/callback critical sections.
+- New finding F02-RES-001: up to eight QR clients could upload concurrently against a per-request free-space snapshot; custom Wallpaper lacked a minimum-free-space guard. Added overflow-safe reservation policy and synchronized in-flight byte reservations for both custom Wallpaper and StandBy uploads. The policy preserves 64 MiB free, returns HTTP 507 when space is insufficient, and releases reservations in finally paths. Existing 60 MiB per-file limits and StandBy 100-photo / 512 MiB collection policy remain unchanged; no total custom-wallpaper cap introduced.
+- Added JUnit boundary tests and Python source-contract regression tests. Production behavior changes are limited to refusing uploads that would breach the free-space safety margin; no UI, image-quality, persistence, or collection semantics were otherwise changed.
+- F02 PR #50 exact head c1f212585633899d4c1f5327d3a982a9e136e2b7; CI run #41519813674 Lists/tools/docs SUCCESS, Launcher build/unit tests IN_PROGRESS at last poll. F02 remains PARTIAL pending exact-head CI and G handoff.
+- Keep PR #50 Draft/open/unmerged. No APK publication/installation or physical TV testing during Project F. Project G owns actual low-storage/concurrent-LAN behavior and all OEM/remote/display acceptance.
