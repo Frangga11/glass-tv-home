@@ -48,9 +48,7 @@ final class WallpaperSettingsDialog {
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(dp(density, 18), dp(density, 14), dp(density, 18), dp(density, 8));
 
-        TextView title = label(activity,
-                english ? "Wallpaper" : malay ? "Wallpaper" : "Wallpaper",
-                18, true);
+        TextView title = label(activity, "Wallpaper", 18, true);
         root.addView(title);
 
         LinearLayout tabs = new LinearLayout(activity);
@@ -132,7 +130,7 @@ final class WallpaperSettingsDialog {
             status.setPadding(0, 0, 0, dp(density, 12));
             page.addView(status);
 
-            TextView toggle = addAction(page, activity, density,
+            addAction(page, activity, density,
                     actions.isShuffleEnabled()
                             ? (english ? "Turn Shuffle OFF" : malay ? "Matikan Shuffle" : "Matikan Shuffle")
                             : (english ? "Turn Shuffle ON" : malay ? "Hidupkan Shuffle" : "Aktifkan Shuffle"),
