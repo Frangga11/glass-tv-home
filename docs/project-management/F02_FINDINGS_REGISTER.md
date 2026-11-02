@@ -329,3 +329,23 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - The current F02 head after this status-register documentation update must be revalidated on exact SHA. Documentation-only changes do not inherit the prior green result.
 - No physical Android TV behavior is marked PASS. PR #50 remains Draft/open/unmerged; no APK artifact is published or installed.
 - F02 remains PARTIAL until latest exact-head CI, remaining risk-based source/contract audits, and G handoff evidence are complete.
+
+
+## F02-SEC-005 — InputKeyService cannot be system-bound while non-exported — 3 November 2026
+
+- Severity: P2 functional / platform integration defect. Owner: Project E01 (Device Settings and remote Input action), with F manifest regression coverage.
+- Evidence: `.InputKeyService` extends `AccessibilityService`, declares the `android.accessibilityservice.AccessibilityService` intent action, and is enabled only through the opt-in installer flag `INPUT_KEY_SERVICE=1` / Windows `-InputKeyService`. Its manifest had `android:exported="false"` while `HomeKeyService` correctly used `exported="true"`.
+- Android's service manifest contract states that a non-exported service can be started/bound only by the same app or same user ID; an AccessibilityService must be discoverable and bindable by the Android system. Keep `android.permission.BIND_ACCESSIBILITY_SERVICE` as the system-only binding restriction.
+- Owner correction: E01 PR #34 changes only InputKeyService to `android:exported="true"`; keeps the BIND permission, metadata, and opt-in installer behavior. Owner source/test head `2ab1b231a94bbd079b1c52413c4a10c108c28ce5`: CI run #41513629734 SUCCESS (both jobs). E01 audit-document follow-up head `edd6461c932705a109ed9768649cae7e3c162c59`: exact-head CI run #41513716451 pending at checkpoint.
+- Added `tests/test_accessibility_service_manifest_security.py` on E01 and mirrored it into F02. It asserts every manifest service handling the AccessibilityService action is exported and protected by BIND_ACCESSIBILITY_SERVICE, including HomeKeyService and InputKeyService.
+- F02 integration now includes the same manifest correction and regression test; exact-head F02 CI is required before closing.
+- Project G must verify InputKeyService appears in Android Accessibility Settings, can be enabled/disabled, and maps KEYCODE_TV to the input switcher on target firmware. Host CI cannot prove OEM binding or remote delivery.
+- Status: OWNER SOURCE/TEST CI PASS / F02 FIX MIRRORED / F02 EXACT-HEAD RETEST PENDING / DEVICE ACCEPTANCE DEFERRED_TO_G.
+
+## F02-BUILD-001 — APK size budget has minimal headroom — 3 November 2026
+
+- Severity: P3 build-budget watchlist; not a current CI failure.
+- Exact F02 source/test head `ddf130a348182546b28ff59c292c9b5ceebacb2e` and docs/status head `99489d954bc32ba449028c8512181d9ca1b375e6` both built a release-validation APK of 1,564,981 bytes against the strict 1,572,864-byte cap: 7,883 bytes remaining (about 0.5%). The size diagnostic and cap both passed.
+- R8 minification and resource shrinking are already enabled. Largest compressed entries include `classes.dex` (349,533 bytes), `res/SR.ttf` (200,452 bytes), `assets/kabut-pagi-dempo.jpg` (230,997 bytes), `resources.arsc` (170,696 bytes), and `res/rU.ttf` (77,642 bytes).
+- No low-risk asset/font removal is authorized from size diagnostics alone: wallpaper and typeface quality/localization are product assets. Monitor every subsequent exact-head build; if the cap is crossed, profile resource/code contribution and propose a measured optimization without degrading visuals or removing required features.
+- Status: WITHIN BUDGET / LOW HEADROOM / MONITOR THROUGH PROJECT G.
