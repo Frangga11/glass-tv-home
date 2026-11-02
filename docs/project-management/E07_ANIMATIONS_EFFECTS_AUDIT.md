@@ -70,7 +70,9 @@ A follow-up integration audit found that disabling the decorative glass material
 
 ### Current source checkpoint
 - Branch: `feature/e07-animation-effects`
-- Latest source/test commit: `3c508ebafac379853ee26591f51cdb86c5fd3519`.
-- Added `GlassFallbackSurfaceTest` to guard opaque popup/dock fallback tokens.
+- Latest source/test commit: `ba1ec225450a75aff52f34aa20ce2b2b37665cea`.
+- Added `GlassFallbackSurfaceTest` to guard opaque popup/dock fallback tokens using pure bit checks (no Android framework stubs).
+- Exact-head CI run #681 / `41446456934`: SUCCESS; Launcher build and unit tests, Lists/tools/docs, release APK build and APK size guard all passed.
+- Release APK: `1,564,117 bytes`; budget `1,572,864 bytes`; remaining headroom `8,747 bytes`.
+- APK publication skipped. No APK installation or physical TV test is claimed.
 - PR #40 remains Draft/open/unmerged under D-013.
-- Exact-head CI for the source/test commit: run #678 / `41446149526`; queued at documentation update time. The final documentation commit will receive its own CI run.
