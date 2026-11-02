@@ -732,3 +732,18 @@ undefined
 - First D06 retest failed compilation because its stale source branch lacked the B01 `TvDialogStyle` dependency. The dependency and geometry test were synchronized into D05/D06; no compile/test gate was weakened.
 - D01 PR #51 exact-head CI PASS. B01 PR #10, D05 PR #29 and D06 PR #30 exact-head retests were running at the time of this record.
 - No finding is closed until owner branch CI and latest integrated CI pass. No APK published/installed; no physical TV test; no PR merged.
+
+
+## Latest F02 audit findings — 3 November 2026
+
+| Finding | Remediation / evidence | Status |
+|---|---|---|
+| F02-UI-001 | B01 MainActivity `styleGlassDialog` delegates to sized `TvDialogStyle.apply`; D05 search input/results dialogs restored; D05/D06 dependency sync and source tests. D05 CI #41505852041 PASS; D06 CI #41505865772 PASS. | OWNER FIXES PASS / B01 + LATEST F02 RETEST PENDING |
+| F02-SEC-001 | D01 adds `android.permission.DUMP` to LocationBroadcastReceiver, preserves both actions; ADB shell compatibility deferred to G. | D01 CI #41506847521 PASS / G RETEST PENDING |
+| F02-SEC-002 | D06 AzanActivity `exported=false`; internal explicit PendingIntent path verified. | D06 CI #41505865772 PASS |
+| F02-SEC-003 | D01 sets LocationActivity `exported=false`; no intent filter; MainActivity explicit launch retained. | D01 latest CI #41506847521 PASS |
+| F02-SEC-004 | RecentAppsActivity remains exported with ACTION_MAIN; no in-repo external caller found. Keep pending contract verification rather than break possible OEM/assistant integration. | P3 OPEN / PROJECT G REVIEW |
+| F02-FUNC-001 | B01 adds HomeKeyPressTracker and explicit double-Home routing; single Home and long-press Settings preserved; App Switch remains disabled. | B01 + F02 latest exact-head CI PENDING / REMOTE ACCEPTANCE G |
+| F02-TEST-001 | Robolectric API 30 tests added for actual dialog Window attributes; passed on previous F02 head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`. | LATEST F02 RETEST PENDING / DEVICE TEST G |
+
+Latest F02 head `eea920469ffe5bef5ddb14e1dfd66687e82d8fed` is in CI. Do not close any item until latest owner/integration gates and required G evidence are complete.
