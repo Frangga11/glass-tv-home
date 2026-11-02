@@ -426,3 +426,5 @@ Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MA
 - Standardized D02 shared AlertDialogs, Now Playing custom modal, card prompt custom modal and QR upload modal. Remaining direct `setLayout` is only the media hub's deliberate 16:9 aspect-ratio layout; it remains centered and retains its own content geometry.
 - D02 latest head `909aaff5709a48cd73924192f462f173fbc4c26a`; CI #587 in progress at checkpoint. D03/D04 dependency ancestry synchronized without changing their feature source trees; CI #588/#589 in progress. All three branches report mergeable. No PR merged.
 - Do not close the source gate until exact-head CI passes. Runtime/physical TV acceptance remains F-stage.
+
+- D02 exact-head CI #587 / `41397018968`: **PASS** (launcher build/unit tests and docs/tools jobs both succeeded).
