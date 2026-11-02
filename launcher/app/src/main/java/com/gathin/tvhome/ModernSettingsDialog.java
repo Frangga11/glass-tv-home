@@ -785,7 +785,8 @@ public final class ModernSettingsDialog {
                                     });
                                 }
                             });
-                            ob.show();
+                            AlertDialog profileActions = ob.show();
+                            TvDialogStyle.apply(profileActions, activity, 520, 0);
                         }
                     });
 
@@ -1192,6 +1193,7 @@ public final class ModernSettingsDialog {
                     .setNegativeButton("Batal", null)
                     .create();
             searchDialog.show();
+            TvDialogStyle.apply(searchDialog, activity, 520, 0);
             searchInput.requestFocus();
         });
 
@@ -1440,6 +1442,7 @@ public final class ModernSettingsDialog {
                 .setNegativeButton(AppLanguage.strCancel(activity), (d, which) -> d.dismiss())
                 .create();
         dialog.show();
+        TvDialogStyle.apply(dialog, activity, 520, 0);
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
@@ -1491,6 +1494,7 @@ public final class ModernSettingsDialog {
                     Toast.makeText(activity, "PIN keamanan berhasil diperbarui.", Toast.LENGTH_SHORT).show();
                 }));
                 dialog.show();
+                TvDialogStyle.apply(dialog, activity, 520, 0);
             }
             @Override
             public void onCancelled() {}
@@ -1670,14 +1674,7 @@ public final class ModernSettingsDialog {
         AlertDialog d = pb.create();
         pickerHolder[0] = d;
         d.show();
-
-        Window win = d.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.85f));
-            win.setLayout(dw, ViewGroup.LayoutParams.WRAP_CONTENT);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(d, activity, 520, 0);
     }
 
     private static void showDefaultLauncherDialog(MainActivity activity, float density, Typeface font, boolean isDefault, String activePkg) {
@@ -1791,15 +1788,7 @@ public final class ModernSettingsDialog {
         AlertDialog d = pb.create();
         dialogHolder[0] = d;
         d.show();
-
-        Window win = d.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (620 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.90f));
-            int dh = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
-            win.setLayout(dw, dh);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(d, activity, 620, 520);
 
         btnSettings.requestFocus();
     }
