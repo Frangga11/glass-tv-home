@@ -1908,17 +1908,12 @@ public final class ModernSettingsDialog {
         // Keep the entire popup surface opaque. Previously the AlertDialog window and ScrollView
         // were explicitly transparent, which could expose the launcher behind the content on
         // some TV themes/OEM builds and recreate the "see-through" appearance.
-        GradientDrawable panelBg = new GradientDrawable();
-        panelBg.setColor(0xFF1E2026);
-        panelBg.setCornerRadius(18 * density);
-        panelBg.setStroke(Math.max(1, (int) (1.5f * density)), 0xFF3B414D);
-
         ScrollView scroll = new ScrollView(activity);
         scroll.setFillViewport(true);
         scroll.setClipToPadding(false);
         scroll.setClipChildren(true);
         scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        scroll.setBackground(panelBg);
+        scroll.setBackgroundResource(R.drawable.bg_glass_dialog);
         scroll.setClipToOutline(true);
 
         LinearLayout root = new LinearLayout(activity);
@@ -2073,21 +2068,7 @@ public final class ModernSettingsDialog {
         d.show();
 
         Window win = d.getWindow();
-        if (win != null) {
-            // Opaque window background is intentional: do not let the TV launcher bleed
-            // through around/behind the custom popup content.
-            GradientDrawable windowBg = new GradientDrawable();
-            windowBg.setColor(0xFF1E2026);
-            windowBg.setCornerRadius(18 * density);
-            windowBg.setStroke(Math.max(1, (int) (1.5f * density)), 0xFF3B414D);
-            win.setBackgroundDrawable(windowBg);
-            win.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            win.setDimAmount(0.68f);
-            int dw = Math.min((int) (620 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.90f));
-            int dh = Math.min((int) (560 * density), (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
-            win.setLayout(dw, dh);
-            win.setGravity(Gravity.CENTER);
-        }
+        activity.styleDeviceSettingsPopup(d, 620, 560);
 
         btnSettings.requestFocus();
     }
@@ -2140,16 +2121,7 @@ public final class ModernSettingsDialog {
                 .setPositiveButton(R.string.close_label, (d, which) -> d.dismiss())
                 .create();
         dialog.show();
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int width = Math.min((int) (560 * density),
-                    (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.88f));
-            int height = Math.min((int) (620 * density),
-                    (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
-            window.setLayout(width, height);
-            window.setGravity(Gravity.CENTER);
-        }
+        activity.styleDeviceSettingsPopup(dialog, 560, 620);
         Button close = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (close != null) close.requestFocus();
     }
