@@ -428,3 +428,4 @@ Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MA
 - Do not close the source gate until exact-head CI passes. Runtime/physical TV acceptance remains F-stage.
 
 - D02 exact-head CI #587 / `41397018968`: **PASS** (launcher build/unit tests and docs/tools jobs both succeeded).
+- D03 exact-head CI #588 / `41397040661`: **PASS** (both jobs succeeded); D04 exact-head CI #589 / `41397065406`: **PASS** (both jobs succeeded).
