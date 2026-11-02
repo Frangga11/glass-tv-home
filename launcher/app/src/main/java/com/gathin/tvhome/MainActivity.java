@@ -2874,6 +2874,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     }
                 }
             } catch (Exception ignored) {}
+            weatherOverlayView.setReducedMotion(config != null && config.reducedMotion);
 
             int idx = (wallView != null) ? root.indexOfChild(wallView) + 1 : 0;
             root.addView(weatherOverlayView, idx, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
