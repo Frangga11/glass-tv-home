@@ -575,3 +575,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Temporary rehearsal PR #42/#43 closed without merge. E08 feature PR #41 remains OPEN/DRAFT/UNMERGED; all feature PRs remain under D-013. No APK published/installed and no physical TV acceptance claimed.
 - Parent/base drift on #11/#12/#17/#18/#19/#21/#24/#29/#34 is documented; preserve newer target branch changes during G's grouped integration.
 - **Next stage: F02** — integrated functional regression and controlled Android TV acceptance. Do not merge feature PRs or publish/install APK without the D-013/G approval sequence.
+
+
+## F/G staged revalidation checkpoint — handover to F02 (3 Nov 2026)
+- Apply the new mandatory sequence: verify prior audit/dependency map; confirm exact source HEADs; combine incrementally on integration branches; test only changed/unproven areas; then finalize with commit/test evidence.
+- B-series candidate is integration/b-series HEAD 9070894fa6d9ef8aec034f46dfe777e866709dfe; CI run #741 PASS (launcher unit tests/release build, tools/docs and APK size guard). APK 1506 KiB / 1536 KiB cap; publication skipped.
+- Full D07+E08 candidate is integration/project-f-staged-full HEAD 8fe90a9fdd493c5d81ffdacbe16054630a26580a; exact file tree matches the F01 tested synthetic candidate 21c2eab34a3356d37d079eba04b281cc2373386d; CI #716 PASS is reused because no source-tree change occurred.
+- C07 upload request-deadline handling remains intact; D05 atomic StandBy persistence, D07 state/concurrency/freshness and E08 distinct wallpaper routes remain in the tested candidate.
+- PRs #44–#49 closed without merge; no feature PR, main or release branch merged. No APK publication/installation or physical TV acceptance.
+- Next: F02 — controlled Android TV functional acceptance: remote/D-pad and focus restoration, Back/Close paths, popup consistency, Glass ON/OFF, 1080p/4K, Profile/App Lock/Child Mode, Weather/AQI, phone-to-TV QR upload, wallpaper route/state, StandBy persistence, process death and reboot recovery. Reopen a module owner only for a reproducible defect; preserve D-013.
