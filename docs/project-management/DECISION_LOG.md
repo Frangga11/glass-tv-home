@@ -171,3 +171,11 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 | F-020 | LocationActivity is internal-only and declared non-exported. | No intent filter or external caller contract; MainActivity retains explicit in-app launch. | IMPLEMENTED / D01 CI PASS |
 | F-021 | Keep RecentAppsActivity's exported ACTION_MAIN entry pending external contract verification; do not remove it blindly. | No in-repository external caller found, but it may be a legacy OEM/assistant/remote entry. Project G must verify; if unused, harden to non-exported. | OPEN / G CONTRACT REVIEW |
 | F-022 | Use Robolectric host tests for actual AlertDialog Window attributes, in addition to source-level guards. | Improves CI proof of centering, dimming and viewport sizing without pretending to validate TV firmware/remote rendering. | IMPLEMENTED / PREVIOUS F02 CI PASS / LATEST RETEST PENDING |
+
+
+## F02 follow-up decisions — 3 November 2026
+
+| ID | Decision | Rationale / boundary | Status |
+|---|---|---|---|
+| F-023 | Force Stop orchestration must use a dedicated Handler, separate from Home gesture and power-action callbacks. | `removeCallbacksAndMessages(null)` on a shared Handler cancels unrelated navigation/timeout work. | IMPLEMENTED / CI PENDING |
+| F-024 | RecentAppsActivity is internal-only; remove its exported MAIN entry. | Exported `ACTION_CLOSE_ALL` invoked destructive app-stop behavior and could be explicitly launched by another installed app. Preserve explicit in-app HomeKeyService route. | IMPLEMENTED / CI PENDING |
