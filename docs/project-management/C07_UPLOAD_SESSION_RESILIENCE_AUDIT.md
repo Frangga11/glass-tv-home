@@ -71,3 +71,16 @@ C07 implementation and source-head CI are PASS at `496d49d79f6c9a90ac50011e7a596
 - Each mutation endpoint now rechecks session activity under that monitor before calling its listener or changing files. If shutdown/expiry wins the monitor, the endpoint returns HTTP 410 Gone with a JSON `session_expired` error. If the mutation acquires the monitor first, it completes before `stop()` can return; no mutation continues after shutdown has completed.
 - Added `tests/test_wallpaper_session_shutdown_atomicity.py` to guard synchronized ownership, in-lock session rechecks, explicit 410 response, and preservation of existing upload commit/shutdown synchronization.
 - This does not change the browser API routes, upload payloads, image limits, progress/cancel UI, or StandBy persistence flow.
+
+
+## 2.2 Additional deadline correctness finding — wall-clock adjustment
+
+| ID | Severity | Finding | Impact |
+|---|---|---|---|
+| C07-F09 | LOW | Avatar/Wallpaper session expiry and per-request deadlines used `System.currentTimeMillis()`, a wall clock that can jump when Android synchronizes time or the user changes the clock. | A backward clock adjustment could extend a QR/upload deadline; a forward adjustment could expire an otherwise valid upload early. |
+
+### Correction
+- Switched Avatar and Wallpaper session-expiry timestamps, request-deadline construction/checks, and per-read deadline enforcement to `SystemClock.elapsedRealtime()`.
+- The monotonic clock includes device sleep and is not affected by wall-clock/time-zone changes. All components now calculate and compare these elapsed durations in the same clock domain.
+- Added `tests/test_upload_monotonic_deadline_clock.py` to guard all three deadline-bearing classes against reverting to wall-clock time.
+- Existing timeout durations, session lifetimes, browser XHR timeouts, and expiry response behavior are unchanged.
