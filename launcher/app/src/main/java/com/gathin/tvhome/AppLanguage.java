@@ -302,6 +302,70 @@ final class AppLanguage {
         }
     }
 
+    public static String strDailyPrayerPanelTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Daily Prayer & Prayer Times Panel";
+            case LANG_ID: return "Panel Doa Harian & Waktu Salat";
+            case LANG_MS: default: return "Panel Doa Harian & Waktu Solat";
+        }
+    }
+
+    public static String strDailyPrayerPanelSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Show the selected verse and local prayer timetable";
+            case LANG_ID: return "Tampilkan ayat pilihan dan jadwal salat setempat";
+            case LANG_MS: default: return "Paparkan ayat pilihan dan jadual solat tempatan";
+        }
+    }
+
+    public static String strDailyAyahTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Daily Verses & Prayers";
+            case LANG_ID: return "Ayat & Doa Harian";
+            case LANG_MS: default: return "Ayat & Doa Harian";
+        }
+    }
+
+    public static String strDailyAyahSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Show a selected Quran verse and daily prayer above the prayer timetable";
+            case LANG_ID: return "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat";
+            case LANG_MS: default: return "Paparkan ayat Al-Quran dan doa harian di atas jadual solat";
+        }
+    }
+
+    public static String strInterfaceSoundTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Interface Sound Effects";
+            case LANG_ID: return "Efek Suara Antarmuka";
+            case LANG_MS: default: return "Kesan Bunyi Antaramuka";
+        }
+    }
+
+    public static String strInterfaceSoundSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Choose a sound profile or turn interface sounds off";
+            case LANG_ID: return "Pilih profil suara atau matikan suara antarmuka";
+            case LANG_MS: default: return "Pilih profil bunyi atau matikan bunyi antaramuka";
+        }
+    }
+
+    public static String strAzanSettingsTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Azan Settings";
+            case LANG_ID: return "Pengaturan Azan";
+            case LANG_MS: default: return "Tetapan Azan";
+        }
+    }
+
+    public static String strAzanSettingsSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Configure azan audio and prayer-time reminders";
+            case LANG_ID: return "Atur audio azan dan pengingat waktu salat";
+            case LANG_MS: default: return "Konfigurasikan audio azan dan peringatan waktu solat";
+        }
+    }
+
     public static String strAppearance(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Appearance";
