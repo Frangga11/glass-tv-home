@@ -1,6 +1,6 @@
 # E01 — Device Settings and HOME Launcher Audit
 
-**Status:** Source audit/corrections complete; exact-head CI passed. Physical-device acceptance remains pending.  
+**Status:** Source corrections and popup visual unification implemented; latest exact-head CI pending. Physical-device acceptance remains pending.  
 **Base:** D07 final head `964163c918e281b68af5cf7114ca56ead2797486`.  
 **Branch:** `feature/e01-device-settings-home-control`.  
 **Policy:** PR #34 remains Draft / open / unmerged. No canonical integration merge or release approval.
