@@ -142,7 +142,7 @@ public class WeatherActivity extends Activity {
                 getString(R.string.weather_set_background_mood)
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(R.string.weather_location_dialog_title);
         builder.setItems(topOptions, (dialog, which) -> {
             dialog.dismiss();
@@ -155,7 +155,9 @@ public class WeatherActivity extends Activity {
             }
         });
         builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showWeatherAnimationPicker() {
@@ -170,7 +172,7 @@ public class WeatherActivity extends Activity {
                 getString(R.string.weather_restore_live)
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(R.string.weather_mood_dialog_title);
         builder.setItems(conditions, (dialog, which) -> {
             dialog.dismiss();
@@ -197,7 +199,9 @@ public class WeatherActivity extends Activity {
             populateUi();
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showAsiaCountryDialog() {
@@ -213,7 +217,7 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(R.string.weather_region_picker_title);
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
@@ -223,7 +227,9 @@ public class WeatherActivity extends Activity {
             showStationListDialog(chosenRegion);
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showStationListDialog(String region) {
@@ -244,7 +250,7 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(getString(R.string.weather_station_picker_title, region));
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
@@ -254,7 +260,9 @@ public class WeatherActivity extends Activity {
             WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::populateUi);
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void populateUi() {

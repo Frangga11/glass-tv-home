@@ -438,7 +438,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         android.content.SharedPreferences launch = getSharedPreferences("launch", MODE_PRIVATE);
         if (Math.abs(launch.getLong("boot_at", 0) - bootAt) < 60_000) tilesAnimatedOnce = true;
         else launch.edit().putLong("boot_at", bootAt).apply();
-        ensureSystemScreensaverAndSleepSettings();
         root.setBackgroundColor(cfg.backgroundColor);
         config = cfg;
         wallpapers = cfg.wallpapers;
@@ -3330,7 +3329,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strClose(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 520, 0);
     }
 
     void showAzanSettingsDialog() {
@@ -3764,7 +3763,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 520, 0);
+        Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (positive != null) positive.requestFocus();
     }
 
     void showTurnOffDialog() {
@@ -3782,7 +3783,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 520, 0);
+        Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (positive != null) positive.requestFocus();
     }
 
     void showCleanTvCacheDialog() {
@@ -3807,14 +3810,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 SoundEffects.playSelect();
                 String freedStr = android.text.format.Formatter.formatFileSize(MainActivity.this, bytesFreed);
                 String resultMsg = AppLanguage.strCleanCacheDoneMsg(MainActivity.this, freedStr, bytesFreed > 0);
+                String systemStatus = getString(systemTrimmed
+                        ? R.string.cache_system_trim_success : R.string.cache_system_trim_skipped);
 
                 AlertDialog resDialog = new AlertDialog.Builder(MainActivity.this, R.style.Theme_TvHome_GlassDialog)
                         .setTitle(AppLanguage.strCleanCacheDoneTitle(MainActivity.this))
-                        .setMessage(resultMsg + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
+                        .setMessage(resultMsg + "\n\n" + systemStatus
+                                + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
                         .setPositiveButton(AppLanguage.strDone(MainActivity.this), (d, w) -> d.dismiss())
                         .create();
                 resDialog.show();
-                styleGlassDialog(resDialog);
+                styleDeviceSettingsPopup(resDialog, 600, 0);
                 Button btnOk = resDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                 if (btnOk != null) btnOk.requestFocus();
             });
@@ -3822,7 +3828,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 600, 0);
         Button btnPos = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (btnPos != null) btnPos.requestFocus();
     }
@@ -3932,15 +3938,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         dialog.show();
-        styleGlassDialog(dialog);
-
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setBackgroundDrawableResource(android.R.color.transparent);
-            int width = Math.min((int) (680 * density), (int) (getResources().getDisplayMetrics().widthPixels * 0.85f));
-            window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
-            window.setGravity(Gravity.CENTER);
-        }
+        styleDeviceSettingsPopup(dialog, 680, 0);
 
         if (btnCheckNow != null) btnCheckNow.requestFocus();
     }
@@ -3981,7 +3979,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 600, 480);
     }
 
     private void updateNowPlayingUi(NowPlayingManager.MediaInfo info) {
@@ -4929,6 +4927,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 });
             }
         } catch (Exception ignored) {}
+    }
+
+
+
+    /**
+     * Shared visual contract for app-owned popups opened from the Device Settings tab.
+     * Keep the surface opaque and consistent across confirmation, result, list and custom-view dialogs.
+     */
+    void styleDeviceSettingsPopup(AlertDialog dialog, int maxWidthDp, int maxHeightDp) {
+        if (dialog == null) return;
+        styleGlassDialog(dialog);
+        TvDialogStyle.apply(dialog, this, maxWidthDp, maxHeightDp);
     }
 
     private File getBundledDefaultWallpaper() {
@@ -6174,50 +6184,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void ensureSystemScreensaverAndSleepSettings() {
-        new Thread(() -> {
-            try {
-                android.content.ContentResolver cr = getContentResolver();
-                // 10 minutes idle -> screensaver (600,000 ms)
-                android.provider.Settings.System.putInt(cr, "screen_off_timeout", 600000);
-                // 2 hours after screensaver -> TV off (10m + 2h = 7,800,000 ms)
-                android.provider.Settings.Secure.putInt(cr, "sleep_timeout", 7800000);
-                android.provider.Settings.Secure.putInt(cr, "screensaver_enabled", 1);
-                android.provider.Settings.Secure.putString(cr, "screensaver_components", "com.gathin.tvhome/.ClockDream");
-
-                // Auto-enable HomeKeyService for system actions (restart, sleep, force-stop)
-                String enabledServices = android.provider.Settings.Secure.getString(cr, android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-                String myService = getPackageName() + "/" + HomeKeyService.class.getName();
-                if (enabledServices == null || !enabledServices.contains(myService)) {
-                    String newServices = enabledServices == null || enabledServices.isEmpty() ? myService : enabledServices + ":" + myService;
-                    android.provider.Settings.Secure.putString(cr, android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newServices);
-                    android.provider.Settings.Secure.putInt(cr, android.provider.Settings.Secure.ACCESSIBILITY_ENABLED, 1);
-                }
-
-                // Auto-enable MediaNotificationListener for Now Playing media widget
-                String enabledListeners = android.provider.Settings.Secure.getString(cr, "enabled_notification_listeners");
-                String myListener = getPackageName() + "/" + MediaNotificationListener.class.getName();
-                if (enabledListeners == null || !enabledListeners.contains(myListener)) {
-                    String newListeners = enabledListeners == null || enabledListeners.isEmpty() ? myListener : enabledListeners + ":" + myListener;
-                    try {
-                        android.provider.Settings.Secure.putString(cr, "enabled_notification_listeners", newListeners);
-                    } catch (Exception ignored) {}
-                }
-                try {
-                    Runtime.getRuntime().exec(new String[]{"cmd", "notification", "allow_listener", myListener, "0"});
-                } catch (Exception ignored) {}
-            } catch (Exception ignored) {
-            }
-        }, "system-timeout-sync").start();
-    }
-
-
     /**
      * China-market MIUI TV firmware answers no standard Settings intents at all; open Xiaomi's own
      * settings app (com.xiaomi.mitv.settings) there, so the Settings and Wi-Fi pills keep working.
      * On firmware with a standard settings handler the behaviour is unchanged.
      */
-    private Intent systemIntent(String standardAction) {
+    Intent systemIntent(String standardAction) {
         Intent i = new Intent(standardAction);
         if (i.resolveActivity(getPackageManager()) != null) return i;
         i = new Intent().setComponent(new ComponentName(
