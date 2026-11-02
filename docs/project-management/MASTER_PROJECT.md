@@ -458,3 +458,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Main hotspots: `MainActivity.java`; Wallpaper/Avatar upload servers; `TvDialogStyle`/`TvUiTokens`; `ModernSettingsDialog`; weather/profile state; `StandbyPhotoStore`; localized string resources and CI workflow.
 - Exact-source CI evidence for E01–E08 is PASS, including E04 CI #629. B01/B02/B03, C07, D05 and D07 checkpoints sampled in the F01 audit also PASS. See `F01_INTEGRATION_DEPENDENCY_AUDIT.md` for SHAs and evidence.
 - Keep PRs Draft/open/unmerged under D-013. No merge, combined APK publication/installation, or physical TV test was performed. F01 remains open until frozen-head semantic diff and isolated combined software-gate evidence are complete.
+
+
+## F01 expanded dependency audit — 2 Nov 2026
+- Expanded F01 coverage to B01–B07, C01–C07, D01–D07 and E01–E08. B04/B05/PR15 are already merged pre-D-013; B-series integration CI #257 PASS. B06/B07 and the other post-D-013 feature PRs remain Draft/open/unmerged.
+- Latest module source/test CI records checked are green, including E01–E08 #610/#623/#626/#629/#663/#668/#691/#703 and B/C/D chains. Per-module CI is not integrated acceptance.
+- Parent/base drift was identified on PRs #11, #12, #17, #18, #19, #21, #24, #29 and #34. GitHub reports them mergeable; the newer base changes must be preserved by dependency-ordered grouped integration and cross-group regression.
+- Isolated rehearsal branch `integration/f01-rehearsal-only` and Draft PR #42 combine E01–E08 with latest D07 without merging. CI #708 PASS; #709/#710 pending at checkpoint. No APK published/installed or physical TV test.
+- F01 remains open until #709/#710 final results are verified. D-013 remains binding; no feature PR merge or release approval.
