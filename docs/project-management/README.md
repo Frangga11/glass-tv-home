@@ -126,3 +126,10 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - C07 cross-module audit found wallpaper management POST operations (select/delete/slideshow/clear) could race QR-session shutdown after the outer request check. They are now synchronized with server stop and recheck the active session inside the same monitor; revoked operations return HTTP 410.
 - C07 owner PR #24 latest documented head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 PR #50 latest head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`. Both exact-head CI workflows were in progress.
 - Added `tests/test_wallpaper_session_shutdown_atomicity.py`; no upload routes, browser UX, limits, or StandBy persistence semantics changed.
+
+
+### F02 continuation checkpoint — 3 November 2026
+- Final QR upload audit confirmed Avatar, custom Wallpaper and StandBy commit operations are serialized with session shutdown; explicit regression guards now cover both Wallpaper and StandBy upload commit sections.
+- Added F02-RES-001 storage-safety correction: synchronized concurrent upload byte reservations, overflow-safe capacity arithmetic, 64 MiB minimum free-space margin, HTTP 507 for insufficient space, and guaranteed reservation release. Existing upload-size and StandBy collection limits remain unchanged; no arbitrary custom-wallpaper total cap added.
+- Added JUnit boundary tests and Python source-contract tests. F02 PR #50 head c1f212585633899d4c1f5327d3a982a9e136e2b7; CI #41519813674 Lists/tools/docs SUCCESS, Launcher build/unit tests IN_PROGRESS at last poll.
+- Keep F02 partial until exact-head CI completes. PR #50 remains Draft/open/unmerged; no APK publication/installation or physical Android TV test. Device acceptance remains Project G.
