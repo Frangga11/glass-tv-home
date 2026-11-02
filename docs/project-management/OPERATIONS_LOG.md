@@ -453,3 +453,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Exact Release APK size: `1,561,889 bytes`; budget: `1,572,864 bytes`; remaining headroom: `10,975 bytes`.
 - The targeted Default reselection hero-shelf fix is included in the tested commit. No APK was published or installed; no physical device acceptance is claimed.
 - E03 source + exact-head CI disposition: **PASS / SOURCE FINAL**. Project F retains physical acceptance: offline cold start/restart, image crop/sharpness, remote/focus, Default/online/place/custom, description toggle, Next/shuffle, QR/StandBy isolation and performance. Preserve D-013: PR #36 remains OPEN/DRAFT/UNMERGED; no early merge or release approval.
+
+
+## E04 execution checkpoint — 2 Nov 2026
+
+- Audited `StandbyPhotoStore`, `ClockDream`, `WallpaperUploadServer`, `AndroidManifest` and the relevant `MainActivity` photo/mode paths.
+- E04 source branch created from E03 exact head `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`; no rebase required.
+- Repair: removed the duplicate shell display-off command from `ClockDream`; now checks the single supported Accessibility global action. Commit `7c5e2677eac1c791675d9f5ef7d736eb47d37aca`.
+- Draft PR #37 opened against E03. No merge. Exact-head CI pending; physical device acceptance remains Project F. No APK published or installed.
