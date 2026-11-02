@@ -151,7 +151,7 @@
         <!-- Where the TV is: JAKIM zone for Waktu Solat & Open-Meteo town for weather -->
         <activity
             android:name=".LocationActivity"
-            android:exported="true"
+            android:exported="false"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.TvHome" />
         <!-- Home button for remotes that send KEYCODE_ALL_APPS (Xiaomi). Opt-in: HOME_KEY_SERVICE=1
