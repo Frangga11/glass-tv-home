@@ -3106,6 +3106,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         header.addView(heading, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
+        AlertDialog[] dialogHolder = new AlertDialog[1];
         TextView close = new TextView(this);
         close.setText("×");
         close.setTextColor(0xFFFFFFFF);
@@ -3115,7 +3116,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         close.setClickable(true);
         close.setContentDescription(getString(R.string.daily_ayah_close));
         GradientDrawable closeBg = new GradientDrawable();
-        closeBg.setColor(0x334FFFFFFF);
+        closeBg.setColor(0x33FFFFFF);
         closeBg.setShape(GradientDrawable.OVAL);
         closeBg.setStroke(Math.max(1, Math.round(density)), 0x66FFFFFF);
         close.setBackground(closeBg);
@@ -3126,7 +3127,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         close.setOnFocusChangeListener((v, focused) -> {
             GradientDrawable state = new GradientDrawable();
             state.setShape(GradientDrawable.OVAL);
-            state.setColor(focused ? 0x667DD3FC : 0x334FFFFFFF);
+            state.setColor(focused ? 0x667DD3FC : 0x33FFFFFF);
             state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
                     focused ? 0xFF7DD3FC : 0x66FFFFFF);
             v.setBackground(state);
@@ -3242,7 +3243,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         panel.addView(closeAction, closeLp);
 
-        AlertDialog[] dialogHolder = new AlertDialog[1];
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setView(panel)
                 .create();
