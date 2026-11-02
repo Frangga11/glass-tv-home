@@ -70,6 +70,7 @@ A follow-up integration audit found that disabling the decorative glass material
 
 ### Current source checkpoint
 - Branch: `feature/e07-animation-effects`
-- Commit: `74f7e795046880b413a581d1f001f46512a5d058`
+- Latest source/test commit: `3c508ebafac379853ee26591f51cdb86c5fd3519`.
+- Added `GlassFallbackSurfaceTest` to guard opaque popup/dock fallback tokens.
 - PR #40 remains Draft/open/unmerged under D-013.
-- Exact-head CI: run #676 / `41446050321`; pending at documentation update time.
+- Exact-head CI for the source/test commit: run #678 / `41446149526`; queued at documentation update time. The final documentation commit will receive its own CI run.
