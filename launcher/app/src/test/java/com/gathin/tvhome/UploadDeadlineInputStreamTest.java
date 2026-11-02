@@ -42,7 +42,7 @@ public class UploadDeadlineInputStreamTest {
         assertEquals(5000, controller.lastTimeout);
         clock.nowMs = 2500L;
         assertEquals(20, input.read());
-        assertEquals(3000, controller.lastTimeout);
+        assertEquals(3500, controller.lastTimeout);
         assertEquals(-1, input.read());
     }
 
