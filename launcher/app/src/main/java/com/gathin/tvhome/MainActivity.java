@@ -4570,6 +4570,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 || "Custom".equalsIgnoreCase(category);
     }
 
+    /** Compact three-action control center used by Quick Control. */
     void showWallpaperDialog() {
         WallpaperSettingsDialog.show(this, new WallpaperSettingsDialog.Actions() {
             @Override public void openCollection() { showWallpaperCollectionDialog(); }
@@ -4581,6 +4582,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override public String intervalSummary() { return getWallpaperIntervalSummary(); }
             @Override public void toggleShuffle() { toggleWallpaperShuffleFromSettings(); }
         });
+    }
+
+    /** Full Appearance > Wallpaper management entry points; they never reopen Quick Control. */
+    void showWallpaperCollectionManagementDialog() {
+        showWallpaperCollectionDialog(false);
+    }
+
+    void showWallpaperIntervalManagementDialog() {
+        showWallpaperIntervalDialog(false);
+    }
+
+    void showCustomWallpaperManagerManagementDialog() {
+        showCustomWallpaperManagerDialog(false);
     }
 
     private void toggleWallpaperShuffleFromSettings() {
@@ -4614,6 +4628,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private void showWallpaperCollectionDialog() {
+        showWallpaperCollectionDialog(true);
+    }
+
+    private void showWallpaperCollectionDialog(boolean returnToQuickControl) {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] customFiles = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
         int customCount = (customFiles != null) ? customFiles.length : 0;
@@ -4793,9 +4811,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         }
                         TvFeedback.show(MainActivity.this, R.string.wallpaper_description_enabled, Toast.LENGTH_SHORT);
                     }
-                    showWallpaperDialog();
+                    if (returnToQuickControl) showWallpaperDialog();
+                    else showWallpaperCollectionDialog(false);
                 } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
-                    showCustomWallpaperManagerDialog();
+                    showCustomWallpaperManagerDialog(returnToQuickControl);
                 } else {
                     switchWallpaperCategory(chosenKey);
                 }
@@ -4831,6 +4850,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void showWallpaperIntervalDialog() {
+        showWallpaperIntervalDialog(true);
+    }
+
+    private void showWallpaperIntervalDialog(boolean returnToQuickControl) {
         SoundEffects.playSelect();
         class IntervalOption {
             final int minutes;
@@ -4971,7 +4994,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         ? getString(R.string.wallpaper_auto_change_off)
                         : getString(R.string.wallpaper_auto_change_interval, chosenMin == 60 ? getString(R.string.one_hour_label) : getString(R.string.minutes_label, chosenMin));
                 TvFeedback.show(MainActivity.this, msg, Toast.LENGTH_SHORT);
-                showWallpaperDialog();
+                if (returnToQuickControl) showWallpaperDialog();
             });
 
             LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -4991,7 +5014,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setView(layout);
         builder.setNegativeButton(AppLanguage.strBack(this), (d, w) -> {
             d.dismiss();
-            showWallpaperDialog();
+            if (returnToQuickControl) showWallpaperDialog();
         });
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
@@ -6016,6 +6039,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void showCustomWallpaperManagerDialog() {
+        showCustomWallpaperManagerDialog(true);
+    }
+
+    private void showCustomWallpaperManagerDialog(boolean returnToQuickControl) {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
         if (files == null || files.length == 0) {
@@ -6023,7 +6050,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .setTitle(R.string.wallpaper_manage_title)
                     .setMessage(R.string.wallpaper_manage_empty)
                     .setPositiveButton(R.string.wallpaper_open_qr_action, (d, w) -> showWallpaperUploadQrDialog())
-                    .setNegativeButton(R.string.back_action, (d, w) -> showWallpaperDialog())
+                    .setNegativeButton(R.string.back_action, (d, w) -> {
+                        if (returnToQuickControl) showWallpaperDialog();
+                    })
                     .show();
             styleGlassDialog(dialog);
             TvDialogStyle.apply(dialog, this, 520, 0);
@@ -6067,7 +6096,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             boolean isCurrent = isSingleMode && f.getName().equals(singleFile);
             String prefix = isCurrent ? getString(R.string.wallpaper_pinned_prefix) : "🖼️ ";
             items.add(prefix + f.getName() + " (" + sizeStr + " • " + sdf.format(new Date(f.lastModified())) + ")");
-            actions.add(() -> showSingleCustomActionDialog(f));
+            actions.add(() -> showSingleCustomActionDialog(f, returnToQuickControl));
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
@@ -6077,14 +6106,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 actions.get(which).run();
             }
         });
-        builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.close_label, (dialog, which) -> {
+            dialog.dismiss();
+            if (returnToQuickControl) showWallpaperDialog();
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
         TvDialogStyle.apply(dialog, this, 560, 460);
     }
 
-    private void showSingleCustomActionDialog(File file) {
+    private void showSingleCustomActionDialog(File file, boolean returnToQuickControl) {
         String[] actions = {
                 getString(R.string.wallpaper_pin_single),
                 getString(R.string.wallpaper_delete_one),
@@ -6117,7 +6149,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     TvFeedback.show(this, R.string.wallpaper_other_deleted, Toast.LENGTH_SHORT);
                     break;
                 case 3: // Back
-                    showCustomWallpaperManagerDialog();
+                    showCustomWallpaperManagerDialog(returnToQuickControl);
                     break;
             }
         });
