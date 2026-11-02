@@ -159,3 +159,21 @@ The following fixes have been implemented on owning source branches and mirrored
 - This complements the source-level modal contract guards and existing pure JVM geometry tests. It does not claim actual TV rendering, remote focus behavior, OEM window policy, HDMI/display scaling, or firmware compatibility.
 - Exact-head CI for the Robolectric dependency/test is pending. If dependency resolution or tests fail, fix the cause or remove only the experimental test with documented rationale; never skip or weaken it to obtain green CI.
 - Status: PARTIAL / ROBOLECTRIC EXACT-HEAD CI PENDING / DEVICE ACCEPTANCE DEFERRED_TO_G.
+
+
+## F02-FUNC-001 — Home double-press Recent Apps routing — 3 November 2026
+
+- Severity: P2 functional regression. Owner: B01 global navigation / HomeKeyService.
+- Reproduction from source contract: HomeKeyService intercepts both `KEYCODE_HOME` and `KEYCODE_ALL_APPS`, consumes each key event, and previously executed the single-Home action immediately on every ACTION_UP. It therefore never routed a double-press to RecentAppsActivity; while Recent Apps was foreground, the first Home release dismissed it before its own double-press-to-Close-All handler could receive the second key.
+- This contradicted the product guide/RecentAppsActivity contract: double Home outside Recent Apps opens the deck; double Home inside it runs Close All. The dedicated `KEYCODE_APP_SWITCH` remains disabled per the existing request and is not repurposed.
+- B01 correction: added Android-free `HomeKeyPressTracker` with a 350 ms double-press window and 400 ms single-action delay. HomeKeyService now resolves:
+  - single Home outside Recent Apps → return to Home after the double-press window;
+  - double Home outside Recent Apps → explicitly launch RecentAppsActivity;
+  - single Home inside Recent Apps → dismiss to Home after the window;
+  - double Home inside Recent Apps → invoke `triggerCloseAllFromGlobal()`;
+  - long Home → preserve the existing 450 ms Settings-popup behavior and cancel pending single/double state.
+- Cancellation, long-press and service lifecycle cleanup are included. The app-switch key remains consumed as before.
+- Added `HomeKeyPressTrackerTest.java` for first/single/double/late/cancel timing boundaries and `tests/test_home_key_recent_apps_contract.py` for service routing and policy guard.
+- Source branch: `feature/b01-global-navigation-retention`; PR #10. F02 integration mirrors the change.
+- Exact-head CI and physical remote acceptance: PENDING. Timing and OEM key-event delivery remain DEFERRED_TO_G.
+- Status: FIX COMMITTED / OWNER + F02 CI PENDING / DEVICE REMOTE ACCEPTANCE DEFERRED_TO_G.
