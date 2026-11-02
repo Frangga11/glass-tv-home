@@ -4873,7 +4873,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void styleGlassDialog(AlertDialog dialog) {
+        styleGlassDialog(dialog, 520, 0);
+    }
+
+    /** Applies the B01 modal contract before the existing typography/focus styling. */
+    void styleGlassDialog(AlertDialog dialog, int maxWidthDp, int maxHeightDp) {
         if (dialog == null) return;
+        try {
+            TvDialogStyle.apply(dialog, this, maxWidthDp, maxHeightDp);
+        } catch (RuntimeException e) {
+            android.util.Log.w("TvHome.Dialog", "Unable to apply shared modal layout; keeping theme fallback", e);
+        }
         try {
             Typeface outfit = getResources().getFont(R.font.inter);
             TextView titleView = dialog.findViewById(android.R.id.title);
