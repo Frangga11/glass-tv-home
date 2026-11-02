@@ -27,6 +27,8 @@ public class HomeKeyService extends AccessibilityService {
     private static final String TAG = "TvHome.HomeKey";
     private static HomeKeyService instance;
     private final Handler homeHandler = new Handler(Looper.getMainLooper());
+    // Isolate force-stop queue timeouts from Home-key and power-action gesture callbacks.
+    private final Handler forceStopHandler = new Handler(Looper.getMainLooper());
 
     private String targetForceStopPackage = null;
     private final Queue<String> forceStopQueue = new LinkedList<>();
@@ -59,6 +61,7 @@ public class HomeKeyService extends AccessibilityService {
     public void onDestroy() {
         homeHandler.removeCallbacks(longPressHomeRunnable);
         homeHandler.removeCallbacks(powerActionTimeout);
+        forceStopHandler.removeCallbacksAndMessages(null);
         cancelPendingSingleHomeAction();
         homePressTracker.cancel();
         secondHomeTapInProgress = false;
@@ -225,14 +228,14 @@ public class HomeKeyService extends AccessibilityService {
             startActivity(intent);
 
             // Safety timeout: if window doesn't respond or already stopped within 400ms, proceed to next
-            homeHandler.removeCallbacksAndMessages(null);
-            homeHandler.postDelayed(() -> {
+            forceStopHandler.removeCallbacksAndMessages(null);
+            forceStopHandler.postDelayed(() -> {
                 if (isProcessingForceStop) {
                     isProcessingForceStop = false;
                     isWaitingForConfirmDialog = false;
                     targetForceStopPackage = null;
                     performGlobalAction(GLOBAL_ACTION_BACK);
-                    homeHandler.postDelayed(this::processNextForceStop, 80);
+                    forceStopHandler.postDelayed(this::processNextForceStop, 80);
                 }
             }, 400);
         } catch (Exception e) {
@@ -302,9 +305,9 @@ public class HomeKeyService extends AccessibilityService {
                     isProcessingForceStop = false;
                     isWaitingForConfirmDialog = false;
                     targetForceStopPackage = null;
-                    homeHandler.removeCallbacksAndMessages(null);
+                    forceStopHandler.removeCallbacksAndMessages(null);
                     performGlobalAction(GLOBAL_ACTION_BACK);
-                    homeHandler.postDelayed(this::processNextForceStop, 80);
+                    forceStopHandler.postDelayed(this::processNextForceStop, 80);
                     return;
                 }
             }
@@ -338,9 +341,9 @@ public class HomeKeyService extends AccessibilityService {
                         isProcessingForceStop = false;
                         isWaitingForConfirmDialog = false;
                         targetForceStopPackage = null;
-                        homeHandler.removeCallbacksAndMessages(null);
+                        forceStopHandler.removeCallbacksAndMessages(null);
                         performGlobalAction(GLOBAL_ACTION_BACK);
-                        homeHandler.postDelayed(this::processNextForceStop, 80);
+                        forceStopHandler.postDelayed(this::processNextForceStop, 80);
                         return;
                     }
                 }
