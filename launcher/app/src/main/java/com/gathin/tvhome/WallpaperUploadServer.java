@@ -31,6 +31,8 @@ import java.util.UUID;
 
 public class WallpaperUploadServer {
     private static final String TAG = "TvHome.UploadServer";
+    static final long MAX_UPLOAD_BYTES = 60L * 1024L * 1024L;
+    private static final int MAX_ACTIVE_CLIENTS = 8; // Allows normal parallel gallery thumbnail requests.
 
     public interface UploadListener {
         void onUploaded(File imageFile);
@@ -49,6 +51,7 @@ public class WallpaperUploadServer {
     private final boolean standbyOnly;
     private final String sessionToken = UUID.randomUUID().toString().replace("-", "");
     private ServerSocket serverSocket;
+    private String boundIpAddress;
     private volatile boolean running = false;
     private final Set<Socket> activeClients = Collections.synchronizedSet(new java.util.HashSet<>());
     private Thread serverThread;
@@ -123,6 +126,47 @@ public class WallpaperUploadServer {
         return getWallpaperPath() + "/upload";
     }
 
+    /**
+     * Accept one unambiguous Content-Length only. This server deliberately does not implement
+     * chunked transfer decoding, so Transfer-Encoding and duplicate/malformed lengths are rejected.
+     */
+    static long parseContentLength(String[] headerLines, long maxBytes) {
+        if (headerLines == null || maxBytes <= 0) return -1L;
+        int count = 0;
+        long length = -1L;
+        for (String line : headerLines) {
+            if (line == null) continue;
+            int separator = line.indexOf(':');
+            if (separator <= 0) continue;
+            String name = line.substring(0, separator).trim().toLowerCase(Locale.ROOT);
+            String value = line.substring(separator + 1).trim();
+            if ("transfer-encoding".equals(name)) return -1L;
+            if (!"content-length".equals(name)) continue;
+            count++;
+            if (count != 1 || value.isEmpty()) return -1L;
+            for (int i = 0; i < value.length(); i++) {
+                if (value.charAt(i) < '0' || value.charAt(i) > '9') return -1L;
+            }
+            try {
+                length = Long.parseLong(value);
+            } catch (NumberFormatException e) {
+                return -1L;
+            }
+        }
+        return count == 1 && length > 0 && length <= maxBytes ? length : -1L;
+    }
+
+    /** Matches an exact HTTP path while allowing a query string (for example ?name=photo.jpg). */
+    static boolean isRequestToPath(String requestLine, String method, String path) {
+        if (requestLine == null || method == null || path == null) return false;
+        String[] parts = requestLine.split(" ");
+        if (parts.length < 3 || !method.equals(parts[0])) return false;
+        String target = parts[1];
+        int queryIndex = target.indexOf('?');
+        if (queryIndex >= 0) target = target.substring(0, queryIndex);
+        return path.equals(target);
+    }
+
     static boolean isWallpaperSessionRequest(String requestLine, String sessionPath) {
         return requestLine.startsWith("GET " + sessionPath + " ")
                 || requestLine.startsWith("GET " + sessionPath + "/")
@@ -131,20 +175,39 @@ public class WallpaperUploadServer {
     }
 
     public int getPort() {
-        if (serverSocket != null && serverSocket.isBound()) {
+        if (serverSocket != null && serverSocket.isBound() && !serverSocket.isClosed()) {
             return serverSocket.getLocalPort();
         }
         return port;
     }
 
+    /** The exact interface address this server is listening on; null when it is not started. */
+    public String getBoundIpAddress() {
+        return boundIpAddress;
+    }
+
     public synchronized boolean start() {
         if (running) return true;
+        String selectedIp = getLocalIpAddress();
+        if (selectedIp == null || selectedIp.trim().isEmpty() || "127.0.0.1".equals(selectedIp)) {
+            Log.e(TAG, "No usable local IPv4 interface for upload server");
+            return false;
+        }
+        final InetAddress bindAddress;
+        try {
+            bindAddress = InetAddress.getByName(selectedIp);
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot resolve local upload interface", e);
+            return false;
+        }
+
         int[] candidatePorts = new int[]{port, 8080, 8888, 8081, 9090, 0};
         for (int p : candidatePorts) {
             try {
                 serverSocket = new ServerSocket();
                 serverSocket.setReuseAddress(true);
-                serverSocket.bind(new InetSocketAddress(p));
+                serverSocket.bind(new InetSocketAddress(bindAddress, p));
+                boundIpAddress = selectedIp;
                 this.port = serverSocket.getLocalPort();
                 running = true;
                 break;
@@ -162,22 +225,43 @@ public class WallpaperUploadServer {
         }
 
         try {
+            final ServerSocket listeningSocket = serverSocket;
             serverThread = new Thread(() -> {
                 Log.i(TAG, "Server started successfully on port " + this.port);
-                while (running && serverSocket != null && !serverSocket.isClosed()) {
+                while (running && !listeningSocket.isClosed()) {
                     try {
-                        Socket client = serverSocket.accept();
+                        Socket client = listeningSocket.accept();
                         if (!running) {
                             client.close();
                             break;
                         }
-                        activeClients.add(client);
-                        if (!running) {
+                        boolean accepted;
+                        synchronized (activeClients) {
+                            accepted = running && activeClients.size() < MAX_ACTIVE_CLIENTS;
+                            if (accepted) activeClients.add(client);
+                        }
+                        if (!accepted) {
+                            try {
+                                byte[] body = localized(R.string.local_upload_error_busy).getBytes("UTF-8");
+                                OutputStream rejectOut = client.getOutputStream();
+                                rejectOut.write(("HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain; charset=UTF-8\r\n"
+                                        + "Content-Length: " + body.length + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes("UTF-8"));
+                                rejectOut.write(body);
+                                rejectOut.flush();
+                            } catch (Exception ignored) {}
+                            try { client.close(); } catch (Exception ignored) {}
+                            if (!running) break;
+                            continue;
+                        }
+                        try {
+                            Thread worker = new Thread(() -> handleClient(client), "upload-client");
+                            worker.setDaemon(true);
+                            worker.start();
+                        } catch (Exception e) {
                             activeClients.remove(client);
-                            client.close();
-                            break;
+                            try { client.close(); } catch (Exception ignored) {}
+                            Log.w(TAG, "Cannot start upload client worker", e);
                         }
-                        new Thread(() -> handleClient(client), "upload-client").start();
                     } catch (Exception e) {
                         if (!running) break;
                         Log.w(TAG, "Accept error: " + e.getMessage());
@@ -188,8 +272,10 @@ public class WallpaperUploadServer {
             serverThread.start();
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to launch server thread: " + e.getMessage());
+            Log.e(TAG, "Failed to launch server thread: " + e.getMessage(), e);
             running = false;
+            try { if (serverSocket != null) serverSocket.close(); } catch (Exception ignored) {}
+            boundIpAddress = null;
             return false;
         }
     }
@@ -205,6 +291,7 @@ public class WallpaperUploadServer {
             serverThread.interrupt();
             serverThread = null;
         }
+        boundIpAddress = null;
         synchronized (activeClients) {
             for (Socket client : activeClients) {
                 try {
@@ -273,22 +360,22 @@ public class WallpaperUploadServer {
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
                 out.flush();
-            } else if (requestLine.startsWith("GET " + getWallpaperPath() + "/thumb")) {
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
                 serveThumbnail(fileName, out);
-            } else if (requestLine.startsWith("GET " + getWallpaperPath() + "/api/list")) {
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/api/list")) {
                 serveApiList(out);
-            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/select")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/select")) {
                 String fileName = getQueryParam(requestLine, "file");
                 handleApiSelect(fileName, out);
-            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/delete")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/delete")) {
                 String fileName = getQueryParam(requestLine, "file");
                 handleApiDelete(fileName, out);
-            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/slideshow")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/slideshow")) {
                 handleApiSlideshow(out);
-            } else if (requestLine.startsWith("POST " + getWallpaperPath() + "/api/clear")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/clear")) {
                 handleApiClear(out);
-            } else if (standbyOnly && requestLine.startsWith("GET " + getStandbyPath() + " ")) {
+            } else if (standbyOnly && isRequestToPath(requestLine, "GET", getStandbyPath())) {
                 byte[] pageBytes = getStandbyHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n"
                         + "Content-Type: text/html; charset=UTF-8\r\n"
@@ -298,10 +385,9 @@ public class WallpaperUploadServer {
                 out.write(response.getBytes("UTF-8"));
                 out.write(pageBytes);
                 out.flush();
-            } else if (standbyOnly && requestLine.startsWith("POST " + getStandbyUploadPath() + " ")) {
+            } else if (standbyOnly && isRequestToPath(requestLine, "POST", getStandbyUploadPath())) {
                 handleStandbyUpload(client, in, out, lines);
-            } else if (requestLine.startsWith("GET " + getWallpaperPath() + " HTTP/")
-                    || requestLine.startsWith("GET " + getWallpaperPath() + "?")) {
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath())) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/html; charset=UTF-8\r\n" +
@@ -312,18 +398,10 @@ public class WallpaperUploadServer {
                 out.write(response.getBytes("UTF-8"));
                 out.write(pageBytes);
                 out.flush();
-            } else if (requestLine.startsWith("POST " + getWallpaperUploadPath() + " ")) {
-                long contentLength = 0;
-                for (String line : lines) {
-                    if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
-                        try {
-                            contentLength = Long.parseLong(line.substring(15).trim());
-                        } catch (Exception ignored) {}
-                        break;
-                    }
-                }
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperUploadPath())) {
+                long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
 
-                if (contentLength > 0 && contentLength < 60 * 1024 * 1024) { // Max 60 MB
+                if (contentLength > 0) {
                     File customDir = new File(context.getFilesDir(), "custom_wallpapers");
                     if (!customDir.exists() && !customDir.mkdirs()) {
                         throw new java.io.IOException("Cannot create wallpaper storage");
@@ -348,13 +426,8 @@ public class WallpaperUploadServer {
                         throw e;
                     }
 
-                    // Verify the actual bytes before exposing the file to Home.
-                    BitmapFactory.Options bounds = new BitmapFactory.Options();
-                    bounds.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile(targetFile.getAbsolutePath(), bounds);
-                    boolean validImage = bounds.outWidth > 0 && bounds.outHeight > 0
-                            && bounds.outWidth <= 16384 && bounds.outHeight <= 16384
-                            && (long) bounds.outWidth * (long) bounds.outHeight <= 100_000_000L;
+                    // Verify the actual image can be decoded before exposing it to Home.
+                    boolean validImage = isValidImageFile(targetFile);
 
                     if (!complete || !validImage) {
                         targetFile.delete();
@@ -402,19 +475,34 @@ public class WallpaperUploadServer {
         }
     }
 
-    private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
-        long contentLength = 0;
-        for (String line : lines) {
-            if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
-                try {
-                    contentLength = Long.parseLong(line.substring(15).trim());
-                } catch (Exception ignored) {
-                    contentLength = -1;
-                }
-                break;
-            }
+    /** Rejects malformed/truncated image payloads as well as excessive dimensions. */
+    private static boolean isValidImageFile(File file) {
+        if (file == null || !file.isFile()) return false;
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), bounds);
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0
+                || bounds.outWidth > 16384 || bounds.outHeight > 16384
+                || (long) bounds.outWidth * (long) bounds.outHeight > 100_000_000L) {
+            return false;
         }
-        if (contentLength <= 0 || contentLength > 60L * 1024L * 1024L) {
+        BitmapFactory.Options verify = new BitmapFactory.Options();
+        int sample = 1;
+        while (bounds.outWidth / sample > 512
+                || bounds.outHeight / sample > 512) {
+            sample *= 2;
+        }
+        verify.inSampleSize = sample;
+        verify.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap decoded = BitmapFactory.decodeFile(file.getAbsolutePath(), verify);
+        if (decoded == null) return false;
+        decoded.recycle();
+        return true;
+    }
+
+    private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
+        long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
+        if (contentLength <= 0) {
             sendUploadError(out, 400, localized(R.string.standby_error_photo_size));
             return;
         }
@@ -447,12 +535,7 @@ public class WallpaperUploadServer {
             throw e;
         }
 
-        BitmapFactory.Options bounds = new BitmapFactory.Options();
-        bounds.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(targetFile.getAbsolutePath(), bounds);
-        boolean validImage = bounds.outWidth > 0 && bounds.outHeight > 0
-                && bounds.outWidth <= 16384 && bounds.outHeight <= 16384
-                && (long) bounds.outWidth * (long) bounds.outHeight <= 100_000_000L;
+        boolean validImage = isValidImageFile(targetFile);
 
         if (!complete || !validImage) {
             targetFile.delete();
