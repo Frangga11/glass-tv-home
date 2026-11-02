@@ -615,3 +615,14 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Confirmed owner CI: B01 #10 head `389e289e939276ce9e20d7e6c82c293d3f83c70f` run #41509724289 PASS; D05 #29 #41505852041 PASS; D06 #30 #41505865772 PASS; D01 #51 #41506847521 PASS.
 - Updated F02 findings register and integrated validation document. F02 new docs-only head `b64715156e180edc3bfae25bffba6a089544247f`; exact-head CI retest required.
 - Updated PR #24 and #50 bodies with current evidence. Both remain Draft/open/unmerged. No APK publication/installation or physical Android TV testing.
+
+
+## 3 November 2026 — InputKeyService manifest audit, fix and F02 retest
+
+- Full F02 manifest inventory found `.InputKeyService` extends AccessibilityService and declares the AccessibilityService intent action but was marked `android:exported="false"`, despite the opt-in installer enabling it through INPUT_KEY_SERVICE=1 / -InputKeyService. Android's service contract restricts non-exported services to same-app/same-user binding, so the system could not bind it.
+- Fixed on E01 owner PR #34: changed InputKeyService to exported=true; retained the system-only `android.permission.BIND_ACCESSIBILITY_SERVICE` permission, service metadata and opt-in behavior. Added `tests/test_accessibility_service_manifest_security.py` to require every AccessibilityService action component to be exported and permission-protected.
+- Regression proof: F02 test-only commit `fc3e3fede83144c80781ce72378f9d4bab5c8df3` failed exactly because InputKeyService exported was false. After manifest correction, F02 PR run #41513906117 on `5a01785cfd4ab81e816a955bd7647c0e766c6b2f` passed both jobs; 35 Python tests passed including the new guard.
+- E01 latest head `edd6461c932705a109ed9768649cae7e3c162c59`: run #41513716451 both jobs PASS.
+- F02 latest head `558762994dec05a7ae03a924c33a3ed11665c224`: push run #41513940620 both jobs PASS; matching PR run #41513947375 had all substantive steps pass and cleanup pending at last poll.
+- F02 APK size measured 1,564,977 bytes against 1,572,864-byte budget; headroom 7,887 bytes. R8 minify and resource shrinking are enabled. Keep as a P3 watchlist; do not remove wallpaper/font assets without quality-safe profiling.
+- InputKeyService visibility, user enable/disable and KEYCODE_TV delivery on actual OEM firmware remain DEFERRED_TO_G. No physical device testing, APK publication or merge.
