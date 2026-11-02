@@ -4717,20 +4717,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             row.setOrientation(LinearLayout.VERTICAL);
             row.setFocusable(true);
             row.setClickable(true);
-            row.setPadding((int) (16 * density), (int) (9 * density), (int) (16 * density), (int) (9 * density));
+            row.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (8 * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (8 * density));
+            row.setSelected(isActive);
 
             StateListDrawable bg = new StateListDrawable();
-            GradientDrawable on = new GradientDrawable();
-            on.setColor(0xFFFFFFFF);
-            on.setCornerRadius(10 * density);
-            GradientDrawable off = new GradientDrawable();
-            off.setColor(isActive ? 0x334A90E2 : 0x1AFFFFFF);
-            if (isActive) {
-                off.setStroke((int) (1.8f * density), 0xFF38BDF8);
-            }
-            off.setCornerRadius(10 * density);
-            bg.addState(new int[]{android.R.attr.state_focused}, on);
-            bg.addState(new int[]{}, off);
+            GradientDrawable focused = new GradientDrawable();
+            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
+            focused.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            focused.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
+            GradientDrawable selected = new GradientDrawable();
+            selected.setColor(TvUiTokens.NAV_ITEM_SELECTED);
+            selected.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            selected.setStroke(Math.max(1, (int) density), TvUiTokens.NAV_SELECTION_BORDER);
+            GradientDrawable normal = new GradientDrawable();
+            normal.setColor(TvUiTokens.SURFACE);
+            normal.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            normal.setStroke(Math.max(1, (int) density), TvUiTokens.BORDER);
+            bg.addState(new int[]{android.R.attr.state_focused}, focused);
+            bg.addState(new int[]{android.R.attr.state_selected}, selected);
+            bg.addState(new int[]{}, normal);
             row.setBackground(bg);
 
             // Row horizontal container for Title + Active tag
@@ -4740,11 +4747,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             TextView rowTitle = new TextView(this);
             rowTitle.setText(opt.title);
-            rowTitle.setTextSize(16);
-            rowTitle.setTextColor(0xFFFFFFFF);
+            rowTitle.setTextSize(TvUiTokens.CARD_TITLE_SP);
+            rowTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
             rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
-            rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+            
             topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
             TextView activeTag = null;
@@ -4761,37 +4768,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             TextView rowSub = new TextView(this);
             rowSub.setText(opt.subtitle);
-            rowSub.setTextSize(13);
-            rowSub.setTextColor(0xD9FFFFFF);
+            rowSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+            rowSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
             rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowSub.setFontVariationSettings("'wght' 600");
-            rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+            
+            rowSub.setSingleLine(true);
+            rowSub.setEllipsize(android.text.TextUtils.TruncateAt.END);
             rowSub.setPadding(0, (int) (2 * density), 0, 0);
             row.addView(rowSub);
 
-            final TextView finalRowTitle = rowTitle;
-            final TextView finalRowSub = rowSub;
-            final TextView finalActiveTag = activeTag;
             row.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    finalRowTitle.setTextColor(0xFF0F172A);
-                    finalRowTitle.setShadowLayer(0, 0, 0, 0);
-                    finalRowSub.setTextColor(0xFF334155);
-                    finalRowSub.setShadowLayer(0, 0, 0, 0);
-                    if (finalActiveTag != null) {
-                        finalActiveTag.setTextColor(0xFF0284C7);
-                        finalActiveTag.setShadowLayer(0, 0, 0, 0);
-                    }
-                } else {
-                    finalRowTitle.setTextColor(0xFFFFFFFF);
-                    finalRowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-                    finalRowSub.setTextColor(0xD9FFFFFF);
-                    finalRowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-                    if (finalActiveTag != null) {
-                        finalActiveTag.setTextColor(0xFF38BDF8);
-                        finalActiveTag.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-                    }
-                }
+                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
+                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(100).start();
             });
 
             final String chosenKey = opt.key;
@@ -4836,14 +4825,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             if (isActive && viewToFocus[0] == null) {
                 viewToFocus[0] = row;
-                rowTitle.setTextColor(0xFF0F172A);
-                rowTitle.setShadowLayer(0, 0, 0, 0);
-                rowSub.setTextColor(0xFF334155);
-                rowSub.setShadowLayer(0, 0, 0, 0);
-                if (activeTag != null) {
-                    activeTag.setTextColor(0xFF0284C7);
-                    activeTag.setShadowLayer(0, 0, 0, 0);
-                }
+
             }
         }
 
@@ -4856,13 +4838,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
-        styleGlassDialog(dialog);
-
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (470 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.85f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        styleDeviceSettingsPopup(dialog, 560, 500);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -4951,20 +4927,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             row.setOrientation(LinearLayout.VERTICAL);
             row.setFocusable(true);
             row.setClickable(true);
-            row.setPadding((int) (16 * density), (int) (9 * density), (int) (16 * density), (int) (9 * density));
+            row.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (8 * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (8 * density));
+            row.setSelected(isActive);
 
             StateListDrawable bg = new StateListDrawable();
-            GradientDrawable on = new GradientDrawable();
-            on.setColor(0xFFFFFFFF);
-            on.setCornerRadius(10 * density);
-            GradientDrawable off = new GradientDrawable();
-            off.setColor(isActive ? 0x334A90E2 : 0x1AFFFFFF);
-            if (isActive) {
-                off.setStroke((int) (1.8f * density), 0xFF38BDF8);
-            }
-            off.setCornerRadius(10 * density);
-            bg.addState(new int[]{android.R.attr.state_focused}, on);
-            bg.addState(new int[]{}, off);
+            GradientDrawable focused = new GradientDrawable();
+            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
+            focused.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            focused.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
+            GradientDrawable selected = new GradientDrawable();
+            selected.setColor(TvUiTokens.NAV_ITEM_SELECTED);
+            selected.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            selected.setStroke(Math.max(1, (int) density), TvUiTokens.NAV_SELECTION_BORDER);
+            GradientDrawable normal = new GradientDrawable();
+            normal.setColor(TvUiTokens.SURFACE);
+            normal.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            normal.setStroke(Math.max(1, (int) density), TvUiTokens.BORDER);
+            bg.addState(new int[]{android.R.attr.state_focused}, focused);
+            bg.addState(new int[]{android.R.attr.state_selected}, selected);
+            bg.addState(new int[]{}, normal);
             row.setBackground(bg);
 
             LinearLayout topRow = new LinearLayout(this);
@@ -4973,11 +4956,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             TextView rowTitle = new TextView(this);
             rowTitle.setText(opt.title);
-            rowTitle.setTextSize(16);
-            rowTitle.setTextColor(0xFFFFFFFF);
+            rowTitle.setTextSize(TvUiTokens.CARD_TITLE_SP);
+            rowTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
             rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
-            rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+            
             topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
             TextView activeTag = null;
@@ -4994,37 +4977,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             TextView rowSub = new TextView(this);
             rowSub.setText(opt.subtitle);
-            rowSub.setTextSize(13);
-            rowSub.setTextColor(0xD9FFFFFF);
+            rowSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+            rowSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
             rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowSub.setFontVariationSettings("'wght' 600");
-            rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
+            
+            rowSub.setSingleLine(true);
+            rowSub.setEllipsize(android.text.TextUtils.TruncateAt.END);
             rowSub.setPadding(0, (int) (2 * density), 0, 0);
             row.addView(rowSub);
 
-            final TextView finalRowTitle = rowTitle;
-            final TextView finalRowSub = rowSub;
-            final TextView finalActiveTag = activeTag;
             row.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    finalRowTitle.setTextColor(0xFF0F172A);
-                    finalRowTitle.setShadowLayer(0, 0, 0, 0);
-                    finalRowSub.setTextColor(0xFF334155);
-                    finalRowSub.setShadowLayer(0, 0, 0, 0);
-                    if (finalActiveTag != null) {
-                        finalActiveTag.setTextColor(0xFF0284C7);
-                        finalActiveTag.setShadowLayer(0, 0, 0, 0);
-                    }
-                } else {
-                    finalRowTitle.setTextColor(0xFFFFFFFF);
-                    finalRowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-                    finalRowSub.setTextColor(0xD9FFFFFF);
-                    finalRowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-                    if (finalActiveTag != null) {
-                        finalActiveTag.setTextColor(0xFF38BDF8);
-                        finalActiveTag.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-                    }
-                }
+                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
+                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(100).start();
             });
 
             final int chosenMin = opt.minutes;
@@ -5053,14 +5018,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             if (isActive && viewToFocus[0] == null) {
                 viewToFocus[0] = row;
-                rowTitle.setTextColor(0xFF0F172A);
-                rowTitle.setShadowLayer(0, 0, 0, 0);
-                rowSub.setTextColor(0xFF334155);
-                rowSub.setShadowLayer(0, 0, 0, 0);
-                if (activeTag != null) {
-                    activeTag.setTextColor(0xFF0284C7);
-                    activeTag.setShadowLayer(0, 0, 0, 0);
-                }
+
             }
         }
 
@@ -5076,13 +5034,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
-        styleGlassDialog(dialog);
-
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (470 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.85f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        styleDeviceSettingsPopup(dialog, 560, 500);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
