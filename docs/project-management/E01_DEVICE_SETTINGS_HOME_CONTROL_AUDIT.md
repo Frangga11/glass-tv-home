@@ -132,3 +132,14 @@ A second-pass review found that the manual cache result still had two over-repor
 **Diagnostic APK:** 1,560,609 bytes; 12,255 bytes below the 1,572,864-byte cap. No artifact published; manual TV-test APK step skipped.
 
 This correction closes the E01 source-level cache feedback issue. Actual ADB success/denied behavior remains an F-stage device check. E01 source audit remains COMPLETE; E02 is next. PR #34 remains Draft/open/unmerged under D-013.
+
+
+## F02 cross-module finding — InputKeyService system binding — 3 November 2026
+
+- Finding: `InputKeyService` extends Android `AccessibilityService`, declares the `android.accessibilityservice.AccessibilityService` intent action, and is explicitly enabled by the installer only when `INPUT_KEY_SERVICE=1` (or the Windows `-InputKeyService` switch).
+- Root cause: the manifest marked `.InputKeyService` as `android:exported="false"`. Android documents that a non-exported service can be started/bound only by the same app or same user ID; the Android system process must be able to bind an accessibility service. The required `android.permission.BIND_ACCESSIBILITY_SERVICE` remains the system-only binding gate.
+- Correction on E01 owner branch: changed only InputKeyService to `android:exported="true"`; retained `android.permission.BIND_ACCESSIBILITY_SERVICE`, service metadata and opt-in installer behavior. This does not grant ordinary third-party apps permission to bind.
+- Added `tests/test_accessibility_service_manifest_security.py`: every manifest service handling the AccessibilityService action must be exported and protected by BIND_ACCESSIBILITY_SERVICE; explicitly checks HomeKeyService and InputKeyService.
+- Owner branch `feature/e01-device-settings-home-control`, PR #34, latest head `2ab1b231a94bbd079b1c52413c4a10c108c28ce5`. Exact-head CI run #41513629734 is queued/in progress; do not close until both jobs pass.
+- Project G must verify InputKeyService appears in Android Accessibility Settings, can be enabled/disabled, and maps KEYCODE_TV to the TV input switcher on target firmware. Host CI cannot prove OEM binding or remote delivery.
+- Status: SOURCE FIX + REGRESSION TEST COMMITTED / OWNER CI PENDING / DEVICE ACCEPTANCE DEFERRED_TO_G.
