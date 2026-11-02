@@ -14,6 +14,9 @@ final class TvUiTokens {
     static final int TEXT_SECONDARY = 0xFF8E929E;
     static final int ACCENT_SECTION = 0xFF7DD3FC;
     static final int BORDER = 0xFF2F323B;
+    /** Opaque material fallbacks used when decorative glass is disabled. */
+    static final int POPUP_SURFACE = 0xFF272A33;
+    static final int DOCK_SURFACE = 0xFF1E2026;
     static final int FOCUS_BORDER = 0xFFFFFFFF;
     static final int NAV_PROFILE_SELECTED = 0xFF333742;
     static final int NAV_PROFILE_IDLE = 0xFF22242D;
