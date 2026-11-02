@@ -608,3 +608,16 @@ This result supersedes the preceding note that CI #626 was in progress.
 - CI state at checkpoint: B01, D05, D06 owner retests running; F02 latest head queued. Earlier F02 head `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7` passed both CI jobs but predates MainActivity global modal enforcement.
 - Important discovered dependency issue: first D06 retest failed because the stale branch did not contain the B01 `TvDialogStyle` class. The class/test were added to D05 and D06; the subsequent exact-head retest must pass before declaring fixed.
 - Next: poll exact-head Actions for B01/D05/D06/F02; inspect failures and repair them without bypassing tests; update F02_FINDINGS_REGISTER.md and this handover with the final SHAs/results; continue test-harness audit. Do not move device tests into F.
+
+
+## Latest resume point — Project F02, 3 November 2026
+
+- F02 branch `integration/project-f02-system-validation`, PR #50 Draft/open/unmerged, latest documented head `eea920469ffe5bef5ddb14e1dfd66687e82d8fed`; exact-head CI in progress.
+- B01 branch `feature/b01-global-navigation-retention`, PR #10, latest head `867c7a9d0977e21b69c8078a400458b00ba2d2dd`; exact-head CI in progress.
+- D05 PR #29 head `7f043943ab0c1d2d1217fc56845d81ac7583c96d` CI PASS; D06 PR #30 head `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7` CI PASS; D01 PR #51 head `66352838e6155a42a9ea61477643a238f360434f` CI PASS.
+- F02 fixes: global modal enforcement; D05 Settings search dialog restore; LocationBroadcastReceiver sender permission; AzanActivity internal-only; LocationActivity internal-only; HomeKeyService double Home routing; Robolectric API 30 dialog-window tests.
+- Latest Home-key logic: 350 ms double-press window, 400 ms single-action delay, single Home returns/dismisses, double Home opens Recent Apps or triggers Close All, long Home retains Settings popup. Dedicated App Switch remains disabled. Settings-key input cancels pending Home actions.
+- Residual P3: RecentAppsActivity remains exported with ACTION_MAIN; no in-repository external caller found, but verify OEM/assistant/remote contract in G before hardening.
+- ADB shell permission compatibility, real remote event timing, focus/render/OEM behavior remain DEFERRED_TO_G.
+- Robolectric window tests passed on previous F02 head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`; latest F02 exact head still pending.
+- Next: poll B01 #10 and F02 #50 exact-head CI; fix any failure without skipping/weakening tests; update docs and findings with final SHA/run IDs; continue source audit. Do not merge, publish/install APK, or test on TV during F.
