@@ -49,6 +49,12 @@
     <string name="media_listener_service_label">Layanan Media Glass TV</string>
 
     <string name="daily_prayer_label">DOA HARIAN  •  AYAT PILIHAN</string>
+    <string name="daily_ayah_popup_title">Daily Verse</string>
+    <string name="daily_ayah_open">READ FULL VERSE  ›</string>
+    <string name="daily_ayah_meaning_label">MEANING</string>
+    <string name="daily_ayah_close">Close</string>
+    <string name="daily_ayah_navigation_hint">Use the directional buttons to scroll.</string>
+    <string name="daily_ayah_translation_unavailable">Translation is not available.</string>
     <string name="prayer_subuh">Subuh</string>
     <string name="prayer_sunrise">Terbit</string>
     <string name="prayer_dhuhr">Dzuhur</string>
@@ -89,7 +95,7 @@
     <string name="weather_humidity_label">💧  KELEMBAPAN</string>
     <string name="weather_humidity_description">Kelembapan relatif saat ini.</string>
     <string name="weather_pressure_label">⏱️  TEKANAN UDARA</string>
-    <string name="weather_data_source">Model Open-Meteo • estimasi US AQI</string>
+
 
     <string name="media_now_playing">SEDANG DIPUTAR</string>
     <string name="media_spotify">SPOTIFY</string>
@@ -186,7 +192,7 @@
     <string name="info_center_subtitle">Ringkasan sistem dan pintasan tindakan cepat</string>
     <string name="info_system_summary">📋 Ringkasan Sistem:\n• Salat berikutnya: %1$s (%2$s)\n• Cuaca &amp; kualitas udara (US AQI): %3$s\n• Perangkat: status sistem dan pengelolaan memori</string>
     <string name="info_actions_title">Tindakan Cepat:</string>
-    <string name="info_action_smart_boost">🚀 Optimalkan TV (Bebaskan Memori &amp; Bersihkan Cache)</string>
+    <string name="info_action_smart_boost">🚀 Bersihkan Cache TV &amp; Optimalkan Penyimpanan</string>
     <string name="info_action_weather">🌦️ Informasi Cuaca &amp; Kualitas Udara</string>
     <string name="info_action_prayer">🕌 Jadwal Salat &amp; Ayat Pilihan Hari Ini</string>
     <string name="info_action_tips">💡 Tips &amp; Panduan Kontrol TV</string>
@@ -620,4 +626,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_download_failed">Gagal mengunduh wallpaper kategori %1$s. Periksa koneksi internet lalu coba lagi.</string>
     <string name="local_upload_error_busy">Layanan upload sedang sibuk. Coba lagi.</string>
     <string name="wallpaper_page_action_failed">Permintaan tidak dapat diproses. Periksa foto lalu coba lagi.</string>
+    <string name="weather_data_unavailable">Data cuaca tidak tersedia</string>
+    <string name="weather_model_reference">Lokasi acuan model: %1$s</string>
+    <string name="weather_data_source">Prakiraan Open-Meteo • model CAMS • estimasi US AQI</string>
 </resources>

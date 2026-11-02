@@ -102,6 +102,7 @@
             android:layout_marginBottom="8dp"
             android:orientation="vertical"
             android:gravity="end"
+            android:padding="6dp"
             android:visibility="gone">
 
             <TextView
@@ -134,8 +135,10 @@
                 android:textSize="15sp"
                 android:fontFamily="@font/amiri_quran"
                 android:lineSpacingExtra="2dp"
-                android:maxLines="1"
-                android:singleLine="true"
+                android:breakStrategy="high_quality"
+                android:hyphenationFrequency="none"
+                android:includeFontPadding="true"
+                android:maxLines="2"
                 android:ellipsize="end"
                 android:shadowColor="#99000000"
                 android:shadowDx="0"
@@ -153,13 +156,31 @@
                 android:textSize="11sp"
                 android:fontFamily="@font/inter"
                 android:fontVariationSettings="'wght' 400"
-                android:lineSpacingExtra="1dp"
+                android:lineSpacingExtra="2dp"
+                android:breakStrategy="high_quality"
+                android:hyphenationFrequency="none"
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:shadowColor="#99000000"
                 android:shadowDx="0"
                 android:shadowDy="1"
                 android:shadowRadius="3" />
+
+            <TextView
+                android:id="@+id/ayahOpenHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/daily_ayah_open"
+                android:textColor="#FFEAF7FF"
+                android:textSize="10sp"
+                android:fontFamily="@font/inter"
+                android:fontVariationSettings="'wght' 700"
+                android:includeFontPadding="false" />
         </LinearLayout>
 
         <!-- Waktu Solat Header (e.g. WAKTU SOLAT • 11 JAMADILAWAL 1448H) -->

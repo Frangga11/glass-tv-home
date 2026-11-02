@@ -49,6 +49,12 @@
     <string name="media_listener_service_label">Glass TV Media Listener</string>
 
     <string name="daily_prayer_label">DAILY PRAYER  •  VERSE OF THE DAY</string>
+    <string name="daily_ayah_popup_title">Ayat Harian</string>
+    <string name="daily_ayah_open">BACA AYAT LENGKAP  ›</string>
+    <string name="daily_ayah_meaning_label">MAKSUDNYA</string>
+    <string name="daily_ayah_close">Tutup</string>
+    <string name="daily_ayah_navigation_hint">Gunakan butang arah untuk menatal bacaan.</string>
+    <string name="daily_ayah_translation_unavailable">Terjemahan belum tersedia.</string>
     <string name="prayer_subuh">Fajr</string>
     <string name="prayer_sunrise">Sunrise</string>
     <string name="prayer_dhuhr">Dhuhr</string>
@@ -89,7 +95,7 @@
     <string name="weather_humidity_label">💧  HUMIDITY</string>
     <string name="weather_humidity_description">Current relative humidity.</string>
     <string name="weather_pressure_label">⏱️  AIR PRESSURE</string>
-    <string name="weather_data_source">Open-Meteo model • US AQI estimate</string>
+
 
     <string name="media_now_playing">NOW PLAYING</string>
     <string name="media_spotify">SPOTIFY</string>
@@ -186,7 +192,7 @@
     <string name="info_center_subtitle">System overview and quick action shortcuts</string>
     <string name="info_system_summary">📋 System Overview:\n• Next prayer: %1$s (%2$s)\n• Weather &amp; air quality (US AQI): %3$s\n• Device: system status and memory management</string>
     <string name="info_actions_title">Quick Actions:</string>
-    <string name="info_action_smart_boost">🚀 Smart Boost TV (Free Memory &amp; Clear Cache)</string>
+    <string name="info_action_smart_boost">🚀 Clean TV Cache &amp; Optimize Storage</string>
     <string name="info_action_weather">🌦️ Weather &amp; Air Quality</string>
     <string name="info_action_prayer">🕌 Prayer Times &amp; Daily Verse</string>
     <string name="info_action_tips">💡 TV Control Tips &amp; Guide</string>
@@ -620,4 +626,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_download_failed">Could not download wallpapers in the %1$s category. Check your internet connection and try again.</string>
     <string name="local_upload_error_busy">The upload service is busy. Try again.</string>
     <string name="wallpaper_page_action_failed">The request could not be completed. Check the photo and try again.</string>
+    <string name="weather_data_unavailable">Weather data unavailable</string>
+    <string name="weather_model_reference">Model reference: %1$s</string>
+    <string name="weather_data_source">Open-Meteo forecast • CAMS model • US AQI estimate</string>
 </resources>
