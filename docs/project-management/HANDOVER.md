@@ -454,3 +454,14 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Route any reproducible defect to its owner: B shared modal primitives, D freshness/state, E05 module-specific UI/content. No E05 popup-style fork.
 - No APK install, physical device test or release approval is claimed. D-013 remains in force; grouped merge only at final G closure.
 - Detailed record: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md).
+
+
+## Handover — E07 Animations & Visual Effects — 2 Nov 2026
+
+- E06 is source/CI complete at `570b7c83efaec3ac515b78f1c6c119b777fc3b84`; PR #39 remains Draft/open/unmerged under D-013. F physical acceptance remains pending.
+- E07 branch: `feature/e07-animation-effects`; parent E06 exact head `570b7c83efaec3ac515b78f1c6c119b777fc3b84`; Draft PR #40 targets E06 and remains open/unmerged.
+- Repaired reduced-motion behavior in Home weather overlay and full Weather screen. Weather screen focus transitions now snap under reduced motion. The full Weather screen uses the existing 1.5 GiB low-memory threshold; rain/star/cloud particle counts are reduced in low-memory/reduced-motion mode. Existing visual effect preferences and callbacks remain unchanged.
+- Code checkpoint `da3135796156c26dd20795931eae15caa83458e9`: exact-head CI run #671 / `41443003016` PASS; APK diagnostic 1,563,885 bytes, 8,979 bytes under the 1.5 MiB budget. APK publication skipped.
+- Feature audit report commit `15840ed1e9a4d7f7bb7e3a013bbebf9c044b8a6a`; exact-head CI run #672 / `41443305464` was in progress when this handover was written.
+- Next: verify both jobs on the final documentation head; inspect any CI failure. Then complete a final source-level review of all four existing Effects-tab switches and update the audit report/PR if scope changes. Do not merge or publish an APK.
+- Project F acceptance required: normal/reduced motion, toggling effects from Settings and returning focus, Home overlay on/off, Weather screen animation pause/resume, low-memory behavior, D-pad focus stability, frame pacing and visual quality on Mi TV Stick 1080p and 4K. Deferred, not waived.
