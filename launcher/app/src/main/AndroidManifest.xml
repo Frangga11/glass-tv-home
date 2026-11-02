@@ -92,15 +92,11 @@
         <activity
             android:name=".RecentAppsActivity"
             android:label="Recent Apps"
-            android:exported="true"
+            android:exported="false"
             android:excludeFromRecents="true"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.TvHome.Translucent"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".HomeSettingsActivity"
