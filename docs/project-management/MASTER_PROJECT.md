@@ -493,3 +493,14 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - Compared with `integration/b-series` HEAD `9070894fa6d9ef8aec034f46dfe777e866709dfe`, the full candidate retains identical fallback values and modal behavior, exact TvFeedback/FeedbackPolicy files, plus SettingsFocusPath tests and stronger upload request/session deadline policy. Do not overwrite the full candidate with the B-series branch blindly.
 - Physical tests remain NOT RUN: D-pad/Back/focus, dialogs, Glass ON/OFF, Profile/App Lock/Child Mode, Weather/AQI, phone QR upload, wallpaper route/state, StandBy, process death/reboot and 1080p/4K.
 - No APK publication/installation or feature/main/release merge. D-013 remains binding. Detailed matrix: `F02_INTEGRATED_FUNCTIONAL_REGRESSION.md`.
+
+
+## Project F02 current checkpoint — 3 November 2026
+
+- Project F02 is the active stage: controlled integration, system-level static review, host-side regression testing, CI, and readiness evidence. Project G retains all physical Android TV installation, launch, remote/focus, rendering, network/ADB compatibility, and final APK acceptance.
+- F02 branch: `integration/project-f02-system-validation`; Draft PR #50; latest documented checkpoint `1658237bafdb24167391270f3ad8f694751a6c2a`. Exact-head CI was queued when this record was written.
+- Cross-module fixes are being carried by their source owners: B01 modal enforcement; D05 Settings search dialog dependency repair; D01 sender authorization for LocationBroadcastReceiver; D06 AzanActivity internal-only boundary.
+- A previous D06 retest correctly failed compilation because the branch lacked the B01 helper dependency. The dependency and its geometry test were synchronized; no test or compile gate was bypassed.
+- D01 follow-up PR #51 exact-head CI passed on `bbb13dd107c86cda85bd1482c2f050ca69dfc4e2`. B01/D05/D06 owner-branch retests were running; see F02_FINDINGS_REGISTER.md for exact IDs and statuses.
+- Current status: PARTIAL / NOT FINAL. No finding closes on code commit or successful build alone; require owner exact-head CI, integrated exact-head CI, regression evidence, and explicit Project G deferrals.
+- No APK publication/installation, physical Android TV testing, or merge to main is authorized during F02.
