@@ -551,3 +551,14 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - Verified C07/D05 dependency contract: D05's downstream `UploadResult` persistence adaptation in `WallpaperUploadServer` is intentionally retained in F02 alongside C07's monotonic deadlines and session-shutdown synchronization. Do not overwrite it with C07's older boolean-based StandBy handler.
 - B01 #10 run #41509724289, D05 #29 run #41505852041, D06 #30 run #41505865772, and D01 #51 run #41506847521 passed on their recorded exact heads.
 - Status: F02 still PARTIAL pending exact-head CI on `b647151`, remaining cross-module audits and documented G handoff. No merge, APK publication/installation, or physical Android TV test.
+
+
+## F02 latest integrated checkpoint — 3 November 2026
+
+- F02 branch `integration/project-f02-system-validation`, PR #50, latest head `558762994dec05a7ae03a924c33a3ed11665c224`.
+- Exact-head push CI #41513940620: both Lists/tools/docs and Launcher build/unit tests SUCCESS. Matching PR run #41513947375: both jobs' substantive steps passed; final Gradle cleanup was still running at last poll.
+- Preceding F02 source/test head `5a01785cfd4ab81e816a955bd7647c0e766c6b2f` passed PR CI #41513906117 (both jobs). Its Python suite ran 35 tests, including the new AccessibilityService manifest guard.
+- New F02-SEC-005: InputKeyService had `exported=false` despite being an opt-in AccessibilityService. E01 owner PR #34 changed it to `exported=true` while retaining system-only `BIND_ACCESSIBILITY_SERVICE`; latest E01 head `edd6461c932705a109ed9768649cae7e3c162c59`, run #41513716451 PASS. The new guard first failed before the manifest fix, then passed after.
+- F02 APK diagnostic: 1,564,977 bytes against 1,572,864-byte cap; 7,887 bytes headroom. R8 minify/resource shrink already enabled; monitor size without degrading fonts or default wallpaper.
+- C07 owner PR #24 #41512386827 PASS; B01 #10 #41509724289 PASS; D05 #29 #41505852041 PASS; D06 #30 #41505865772 PASS; D01 #51 #41506847521 PASS.
+- F02 remains PARTIAL pending remaining cross-module audits and G handoff. PR #50 remains Draft/open/unmerged. No APK publication/installation or physical Android TV test.
