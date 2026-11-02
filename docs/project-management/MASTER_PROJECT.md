@@ -345,3 +345,14 @@ This result supersedes the preceding note that CI #626 was in progress.
 - D07 exact follow-up head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`, CI #642 PASS.
 - PR #38 remains Draft/open/unmerged under D-013. Grouped merge and release remain Project G gates. No APK installation or physical test is claimed.
 - Detailed closure and F test matrix: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md).
+
+
+## E06 source/CI closure and E07 start — 2 November 2026
+
+- E06 Home Screen source audit and implementation are complete. PR #39 remains OPEN/DRAFT/UNMERGED under D-013; exact feature head `570b7c83efaec3ac515b78f1c6c119b777fc3b84`, exact-head CI run #667 / `41441963766` PASS. Four retained Home Screen controls and callbacks remain intact; ID/EN localization and shared B UI tokens are aligned. Five future feature candidates remain deferred. Physical acceptance belongs to F.
+- E07 is active on isolated branch `feature/e07-animation-effects`, based on E06 exact head `570b7c83efaec3ac515b78f1c6c119b777fc3b84`; Draft PR #40 targets E06 and remains OPEN/DRAFT/UNMERGED.
+- E07 audits the existing Animations & Visual Effects controls (icon animation, glass effect, wallpaper weather animation, icon ambient glow), reduced-motion behavior, rendering cost, lifecycle, and remote focus. No new effect or preference was introduced.
+- Confirmed and repaired reduced-motion gaps in Home weather overlay and full Weather screen; Weather screen focus transitions now snap under reduced motion. Added lightweight reduced-motion config lookup, reused the existing 1.5 GiB low-memory threshold, and reduced rain/star/cloud particle density in low-memory/reduced-motion mode.
+- Code checkpoint `da3135796156c26dd20795931eae15caa83458e9`; exact-head CI run #671 / `41443003016` PASS on both jobs. Diagnostic APK 1,563,885 bytes against 1,572,864-byte budget; 8,979-byte headroom; publication skipped.
+- Feature-branch audit report follow-up commit `15840ed1e9a4d7f7bb7e3a013bbebf9c044b8a6a`; exact-head documentation CI is in progress at this checkpoint. Do not mark latest documentation head green until both jobs pass.
+- F owns device acceptance: reduced/normal motion, settings toggles, Home↔Weather transitions, pause/resume, low-memory rendering, D-pad focus, 1080p/4K visuals and frame pacing. No APK installed or physical TV test claimed. D-013 remains in force.
