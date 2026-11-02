@@ -424,7 +424,7 @@
     <string name="screensaver_settings_title">Screensaver Bawaan Android</string>
     <string name="screensaver_settings_summary">Atur kapan Android menjalankan screensaver. Glass TV menyediakan ClockDream yang memakai tampilan dan koleksi foto Layar Siaga Glass TV; aktivasi screensaver tetap dikelola Android.</string>
     <string name="display_timeout_title">Waktu Layar Mati</string>
-    <string name="display_timeout_summary">Buka pengaturan tampilan Android untuk mencari pengaturan waktu layar mati. Pilihan menu mengikuti firmware TV.</string>
+    <string name="display_timeout_summary">Buka pengaturan tampilan Android untuk mencari waktu layar mati. Pengaturan ini tidak mengubah pemicu internal Layar Siaga Glass TV; menu yang tersedia mengikuti firmware TV.</string>
     <string name="home_candidates_summary">Pilihan Home terdeteksi: %1$d</string>
     <string name="home_candidates_heading">Pilihan launcher yang terdeteksi:</string>
     <string name="home_current_heading">Hasil resolver HOME Android:</string>
