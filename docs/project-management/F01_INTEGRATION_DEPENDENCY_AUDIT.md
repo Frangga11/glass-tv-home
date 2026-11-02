@@ -185,3 +185,34 @@ The dependency and ownership audit is complete. All module-level CI evidence che
 - No feature PR was merged. No APK was published or installed. No physical Android TV test, 1080p/4K acceptance, phone upload acceptance or reboot acceptance is claimed.
 - D-013 remains binding: grouped integration/merge is reserved for Project G after all applicable F gates and explicit user approval.
 - **Next stage:** F02 — integrated functional regression and controlled Android TV acceptance. F02 must use the verified F01 candidate lineage and test remote/D-pad/focus/Back, popup/dialog consistency, Glass ON/OFF, Wallpaper vs Appearance route distinction, profile/app-lock, Weather/AQI, QR upload, StandBy persistence/lifecycle, 1080p/4K and recovery.
+
+
+## Post-F01 revalidation and staged integration — 3 Nov 2026
+
+### Governing execution policy for Projects F and G
+The user established the following mandatory sequence:
+1. Re-verify the prior audit and dependency map against the live repository.
+2. Confirm every source PR HEAD still matches the audited source commit; inspect any moved HEAD or stale parent/base.
+3. Combine in controlled stages on integration branches only.
+4. Re-run tests only for changed code, changed dependencies, or behavior that has not yet been proven. Reuse exact-tree CI evidence where the tree is unchanged.
+5. Finalize only after recording branch/commit, merge evidence, tests, residual risks and acceptance boundaries.
+
+Feature PRs are not to be merged into main/release before the Project G gate and explicit approval. A mergeability indicator alone is not sufficient evidence of a safe combine.
+
+### Revalidation and staged branch results
+- Re-read the live PR metadata and current branch heads for B01–B07, C01–C07, D01–D07 and E01–E08. The earlier base-drift register remains relevant; stale PR base metadata is not treated as proof that the current source tree is synchronized.
+- integration/b-series was advanced from the reconciled B04/B05 checkpoint to current B03, then B06 was reconciled into it. B03's Glass OFF/fallback surface contract was retained; B06 feedback behavior, policy, localized strings and tests were included.
+- The staged B-series candidate is at HEAD 9070894fa6d9ef8aec034f46dfe777e866709dfe. CI-only PR #48 synthetic merge b25ab78c62493f6e74676b2e321fb7cc39f23449, run #741, PASS: launcher unit tests/release build, tools/docs checks and APK size guard. APK reported as 1506 KiB against a 1536 KiB (1.5 MiB) cap. Publication was skipped.
+- The full D07+E08 candidate from F01 remains represented by integration/project-f-staged-full at HEAD 8fe90a9fdd493c5d81ffdacbe16054630a26580a. Its source tree was compared with the F01 synthetic candidate 21c2eab34a3356d37d079eba04b281cc2373386d; the file diff is empty. Therefore the existing exact-tree CI #716 PASS remains applicable and was not needlessly repeated.
+- Cross-checks confirmed that the full candidate contains the current B06 Settings navigation token usage, B06 feedback call-site behavior (zero direct Toast.makeText calls in the 12 audited caller files), B06 policy/test coverage, and the B03 fallback tokens. The fuller C07 UploadDeadlineInputStream request-deadline path remains intact; no weaker B06 socket-only path was copied over it.
+- D05 atomic StandBy URI mutation and D07 concurrency/freshness behavior remain part of the previously CI-tested full candidate. E08's distinct Quick Control and Appearance wallpaper routes remain in the same candidate tree.
+
+### Temporary integration probes and disposition
+- PRs #44, #45, #46, #47, #48 and #49 were closed without merge after their respective base-ordering, mergeability or CI-only purpose was completed. PR #43 also remains closed without merge.
+- No feature PR was merged by this revalidation. No main/release branch was changed. No APK was published or installed.
+- The source PR parent/base drift register (#11, #12, #17, #18, #19, #21, #24, #29 and #34) remains a G-stage reconciliation item; do not rewrite or force-sync feature branches merely to make metadata look current.
+
+### Final status and remaining acceptance
+- F01 revalidation and staged source integration: PASS.
+- F02 remains pending: controlled physical Android TV acceptance, including D-pad/focus/Back, dialog/popup behavior, Glass ON/OFF, 1080p/4K, profile/app lock/child mode, Weather/AQI, phone-to-TV QR upload, StandBy persistence, process death and reboot recovery.
+- No physical device acceptance is claimed. D-013 remains binding; final grouped merge/release remains a Project G action after F gates and explicit approval.
