@@ -575,3 +575,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Robolectric API 30 tests for AlertDialog window layout/dim behavior passed on prior F02 head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`; latest head retest pending.
 - Latest B01 #10 head `867c7a9d0977e21b69c8078a400458b00ba2d2dd` and F02 #50 head `eea920469ffe5bef5ddb14e1dfd66687e82d8fed` were in CI. D05 #29, D06 #30 and D01 #51 exact-head CI passed.
 - No merge, APK publication/installation, or physical Android TV test.
+
+
+## 3 November 2026 — F02 continued audit: callback isolation and Recent Apps security
+
+- Found shared Handler collision in HomeKeyService: Force Stop queue called `removeCallbacksAndMessages(null)` on the Handler also scheduling Home single/double/long-press and power-action timeout callbacks. Fixed in B01 and F02 by introducing `forceStopHandler`; all Force Stop timeout/continuation work now uses that dedicated queue, and onDestroy cleans it. Added `test_home_key_force_stop_handler_isolation.py`.
+- Exported-component audit revisited RecentAppsActivity. Source showed its exported explicit `ACTION_CLOSE_ALL` path posts `onCloseAllClicked()`, which can force-stop the recent apps. This is a confirmed P2 security defect, not merely a compatibility review. Set `android:exported=false`, removed unnecessary MAIN intent filter, retained HomeKeyService explicit in-app launch, and added `test_recent_apps_manifest_security.py`.
+- Latest B01 owner head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; latest F02 integration head `3ea479d689dc732fe46594a0677d02b7762d7527`. Both exact-head CI in progress.
+- Prior F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs before these fixes; it is not evidence for the latest SHA.
+- No merge, APK publication/installation, or physical Android TV test.
