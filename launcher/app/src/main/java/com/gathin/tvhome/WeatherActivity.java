@@ -137,7 +137,7 @@ public class WeatherActivity extends Activity {
                 "✨ Tetapkan Suasana Latar Cuaca (Cerah, Hujan, Ribut, Malam)"
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle("🌏 Lokasi & Suasana Cuaca");
         builder.setItems(topOptions, (dialog, which) -> {
             dialog.dismiss();
@@ -150,7 +150,9 @@ public class WeatherActivity extends Activity {
             }
         });
         builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showWeatherAnimationPicker() {
@@ -165,7 +167,7 @@ public class WeatherActivity extends Activity {
                 "🔄 Pulihkan kepada Cuaca Semasa Sebenar (Auto)"
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle("✨ Pilihan Suasana Latar Belakang");
         builder.setItems(conditions, (dialog, which) -> {
             dialog.dismiss();
@@ -192,7 +194,9 @@ public class WeatherActivity extends Activity {
             populateUi();
         });
         builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showAsiaCountryDialog() {
@@ -208,7 +212,7 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle("🌏 Pilih Negara / Region Asia");
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
@@ -218,7 +222,9 @@ public class WeatherActivity extends Activity {
             showStationListDialog(chosenRegion);
         });
         builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showStationListDialog(String region) {
@@ -239,7 +245,7 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle("📍 Pilih Bandar / Stesen (" + region + ")");
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
@@ -249,7 +255,9 @@ public class WeatherActivity extends Activity {
             WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::populateUi);
         });
         builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void populateUi() {
