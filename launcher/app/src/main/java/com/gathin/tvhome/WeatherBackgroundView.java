@@ -333,7 +333,7 @@ public class WeatherBackgroundView extends View {
         // 3. Initialize Stars if night
         stars.clear();
         if (currentCondition == ConditionType.NIGHT) {
-            int starCount = 80;
+            int starCount = (lowSpecMode || reducedMotion) ? 40 : 80;
             for (int i = 0; i < starCount; i++) {
                 Star s = new Star();
                 s.x = random.nextFloat() * cachedW;
@@ -349,7 +349,7 @@ public class WeatherBackgroundView extends View {
         // 4. Initialize Cloud Puffs if cloudy or partly cloudy
         cloudPuffs.clear();
         if (currentCondition == ConditionType.CLOUDY || currentCondition == ConditionType.RAIN) {
-            int puffs = 8;
+            int puffs = (lowSpecMode || reducedMotion) ? 4 : 8;
             for (int i = 0; i < puffs; i++) {
                 CloudPuff p = new CloudPuff();
                 p.x = random.nextFloat() * cachedW;
