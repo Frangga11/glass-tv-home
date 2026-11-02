@@ -156,3 +156,12 @@ This is not a full Project F exit: latest documentation/status reconciliation co
 - Each final mutation/commit path performs its session check and durable state/callback operation while holding the same server monitor used by `stop()`; the StandBy persistence-failure retention policy remains intact.
 - Added explicit regression assertions for the custom Wallpaper rename/callback and StandBy store/callback critical sections in `tests/test_wallpaper_session_shutdown_atomicity.py`. This closes a test-coverage gap; no production behavior was changed.
 - The new exact-head CI run must pass before this supplemental gate is marked complete. Real phone-to-TV cancellation, Wi-Fi loss, expiry and retry remain DEFERRED_TO_G.
+
+
+## Concurrent QR upload storage protection — 3 November 2026
+
+- Risk-based audit found that the StandBy free-space check was per-request rather than reservation-based, while the custom Wallpaper endpoint had no equivalent free-space margin. With up to eight active clients, concurrent requests could overcommit the same available-space snapshot.
+- Added a shared overflow-safe storage-reservation policy and synchronized in-flight byte reservations in WallpaperUploadServer. Both custom Wallpaper and StandBy upload paths reserve declared bytes before writing and release reservations in all exit paths.
+- The existing per-file upload size, StandBy collection count/byte limits, and wallpaper collection behavior are unchanged. No arbitrary total wallpaper cap was added. A 64 MiB free-space safety margin is retained; insufficient space returns HTTP 507, while expired sessions remain HTTP 410.
+- Added JVM boundary tests and source-contract regression checks. Exact-head CI is required before marking this gate PASS.
+- Physical concurrent LAN uploads, cancellation and low-storage behavior on target Android TV remain DEFERRED_TO_G.
