@@ -543,3 +543,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Detailed report: [E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md](E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md).
 - Project F still must verify the compact modal on 1080p/4K, D-pad/focus/Back, Glass ON/OFF, category selection, shuffle/interval/Next, QR photo manager and lifecycle persistence. No physical device acceptance or APK installation is claimed.
 - E08 source/UI/CI: PASS. Project F physical acceptance and D-013 grouped integration/merge remain pending.
+
+
+## Decision / checkpoint: Project E closed, Project F next — 2 Nov 2026
+- User decision: close Project E discussion and finalize E01–E08 feature-development stage. Project F is the next active stage.
+- E08 source/UI/CI final: source/test head `fcd7d8f23a4833830a401652ef269db3282b7300`; CI #702 / `41473357877` PASS; APK 1,562,709 bytes with 10,155 bytes headroom under 1,572,864-byte cap; APK publication skipped. Latest PR #41 head `8dfdcabd19853a1140724ea68983877af17bed0c` is documentation-only after tested source/test head.
+- E08 visual contract: compact Quick Control wallpaper center vs fuller Appearance wallpaper-management surface; distinct roles, shared underlying state and styling contract. Project F to confirm on physical TV.
+- PR #34–#41 all remain OPEN/DRAFT/UNMERGED under D-013. No merge, APK installation, physical test or release approval was performed by this closure.
+- F entry checklist: dependency/combined-diff audit; verify exact-head CI evidence; integrated build/regression; Android TV 1080p/4K acceptance; D-pad/focus/Back; popup/dialog and Glass ON/OFF; cross-module interactions; lifecycle/persistence; wallpaper QR/upload/delete/shuffle/interval/Next and Wallpaper/StandBy isolation. Any verified defect is routed to its actual owner and rechecked end-to-end.
