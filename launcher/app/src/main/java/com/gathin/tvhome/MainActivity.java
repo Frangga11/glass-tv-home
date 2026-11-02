@@ -5167,8 +5167,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Action 1: Smart Boost
         addInfoActionItem(actionList, getString(R.string.info_action_smart_boost), () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-            SoundEffects.playSelect();
-            smartBoostTv();
+            showCleanTvCacheDialog();
         });
 
         // Action 2: Cuaca & Kualitas Udara
@@ -5240,21 +5239,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.bottomMargin = (int) (6 * density);
         container.addView(btn, lp);
-    }
-
-    private void smartBoostTv() {
-        new Thread(() -> {
-            try {
-                File cache = getCacheDir();
-                if (cache != null && cache.isDirectory()) {
-                    File[] files = cache.listFiles();
-                    if (files != null) for (File f : files) f.delete();
-                }
-            } catch (Exception ignored) {}
-            CacheCleaner.maybeRun(getApplicationContext(), 1);
-            System.gc();
-            handler.post(() -> TvFeedback.show(this, R.string.smart_boost_success, Toast.LENGTH_SHORT));
-        }, "gemini-boost").start();
     }
 
     private void showTvTipsDialog() {
