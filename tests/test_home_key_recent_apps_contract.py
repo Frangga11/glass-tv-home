@@ -25,6 +25,7 @@ class HomeKeyRecentAppsContractTest(unittest.TestCase):
     def test_single_home_still_returns_home_or_dismisses_recent_apps(self):
         self.assertIn("RecentAppsActivity.dismissFromGlobal()", self.home_service)
         self.assertIn("Intent.CATEGORY_HOME", self.home_service)
+        self.assertIn("HomeKeyPressTracker.DOUBLE_PRESS_WINDOW_MS", self.recent_apps)
 
     def test_app_switch_key_remains_disabled_by_existing_policy(self):
         self.assertIn("KeyEvent.KEYCODE_APP_SWITCH", self.home_service)
