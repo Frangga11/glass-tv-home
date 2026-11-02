@@ -186,7 +186,7 @@
     <string name="info_center_subtitle">System overview and quick action shortcuts</string>
     <string name="info_system_summary">📋 System Overview:\n• Next prayer: %1$s (%2$s)\n• Weather &amp; air quality (US AQI): %3$s\n• Device: system status and memory management</string>
     <string name="info_actions_title">Quick Actions:</string>
-    <string name="info_action_smart_boost">🚀 Smart Boost TV (Free Memory &amp; Clear Cache)</string>
+    <string name="info_action_smart_boost">🚀 Clean TV Cache &amp; Optimize Storage</string>
     <string name="info_action_weather">🌦️ Weather &amp; Air Quality</string>
     <string name="info_action_prayer">🕌 Prayer Times &amp; Daily Verse</string>
     <string name="info_action_tips">💡 TV Control Tips &amp; Guide</string>
