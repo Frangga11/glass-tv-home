@@ -202,6 +202,11 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 | F-029 | AccessibilityService components must be exported for Android system binding and protected by `BIND_ACCESSIBILITY_SERVICE`. | InputKeyService was non-exported, preventing the system from binding it; exported=true does not allow ordinary third-party binding while the system-only permission remains. | IMPLEMENTED / E01 + F02 HOST CI PASS / DEVICE ACCEPTANCE G |
 | F-030 | Treat APK size headroom below 8 KiB as a monitored build-budget risk; do not remove fonts or default wallpaper without measured, quality-safe optimization. | Latest diagnostic is 1,564,977 bytes against 1,572,864-byte cap (7,887 bytes headroom); R8 minify and resource shrinking are already enabled. | WITHIN BUDGET / MONITOR |
 
+
+## F02 upload-session and storage safety decisions — 3 November 2026
+
+| ID | Decision | Rationale / boundary | Status |
+|---|---|---|---|
 | F-021 supersession | The earlier provisional instruction to retain RecentAppsActivity's exported MAIN entry is superseded by F-024. | F02 confirmed the exported activity accepted a destructive ACTION_CLOSE_ALL path; it is now internal-only, with explicit in-app HomeKeyService routing preserved. | SUPERSEDED BY F-024 / IMPLEMENTED |
 | F-031 | Reserve upload storage atomically across concurrent Wallpaper and StandBy QR transfers and preserve a 64 MiB free-space margin. | Per-request checks alone can overcommit a shared free-space snapshot; reservations are released in all completion/failure/cancellation paths. Keep existing per-file and StandBy collection limits; do not impose an arbitrary total wallpaper cap. | INITIAL IMPLEMENTATION CI PASS #41519813674 / PROCESS-WIDE REFINEMENT CI PENDING #41520409999 |
 | F-032 | Protect both Wallpaper and StandBy upload commit critical sections with explicit regression tests. | The production code already serialized final session checks and persistence with stop(); the earlier test did not independently guard both upload commit paths. | TEST COVERAGE PASS #41519813674 / LATEST SOURCE-TEST RETEST PENDING #41520409999 |
