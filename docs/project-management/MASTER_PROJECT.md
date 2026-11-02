@@ -579,3 +579,11 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - Added JUnit boundary tests and Python source-contract regression tests. Production behavior changes are limited to refusing uploads that would breach the free-space safety margin; no UI, image-quality, persistence, or collection semantics were otherwise changed.
 - F02 PR #50 exact head c1f212585633899d4c1f5327d3a982a9e136e2b7; CI run #41519813674 Lists/tools/docs SUCCESS, Launcher build/unit tests IN_PROGRESS at last poll. F02 remains PARTIAL pending exact-head CI and G handoff.
 - Keep PR #50 Draft/open/unmerged. No APK publication/installation or physical TV testing during Project F. Project G owns actual low-storage/concurrent-LAN behavior and all OEM/remote/display acceptance.
+
+
+## F02 upload storage hardening — exact-head result — 3 November 2026
+
+- F02 source/test head c1f212585633899d4c1f5327d3a982a9e136e2b7 passed exact-head PR CI #41519813674 (both jobs). Lists/tools/docs passed 42 Python tests; Launcher unit tests and release validation build passed.
+- Release APK diagnostic: 1,565,621 bytes against 1,572,864-byte cap; 7,243 bytes headroom. Keep F02-BUILD-001 as P3 watchlist.
+- New QR storage reservation policy and upload shutdown test hardening are host/source verified. Real low-storage/concurrent LAN behavior remains Project G.
+- Latest F02 docs-only head 1845635091969c2475bb0d26783bc0f7eb58c1c0; CI #41520194974 queued at last poll. PR #50 remains Draft/open/unmerged; no APK publication or physical TV test.
