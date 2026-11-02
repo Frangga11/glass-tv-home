@@ -446,3 +446,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Next: perform a scoped shared-popup audit against B01/B02/B03 canonical modal/focus contract; do not fork global dialog styling in E05. Then close remaining source-level findings and hand physical 1080p/4K, offline/stale, location/language, D-pad/Back/scroll and popup checks to Project F.
 - No APK publication/installation, physical TV acceptance, merge, or release approval has occurred. Preserve D-013 grouped merge timing and C07 upload resilience.
 - Evidence: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md), [CROSS_PROJECT_WEATHER_AQI_AUDIT.md](CROSS_PROJECT_WEATHER_AQI_AUDIT.md).
+
+
+## E05 final handover to Project F — 2 Nov 2026
+- E05 source scope is CLOSED. PR #38 exact head `6fe89fad078692958db67030329a6de66cd7ae71`; CI #663 SUCCESS on both jobs. PR remains Draft/open/unmerged.
+- F acceptance matrix: Mi TV Stick 1080p and 4K; long Arabic verse glyph/harakat and translation scrolling; D-pad focus/Back/Escape; popup geometry/clipping; weather/AQI missing/offline/stale and location/language transitions; Home shelf/wallpaper/prayer/dock coexistence.
+- Route any reproducible defect to its owner: B shared modal primitives, D freshness/state, E05 module-specific UI/content. No E05 popup-style fork.
+- No APK install, physical device test or release approval is claimed. D-013 remains in force; grouped merge only at final G closure.
+- Detailed record: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md).
