@@ -45,6 +45,10 @@ final class WeatherAirQuality {
     private static final String KEY_LAST_UPDATE = "last_update";
     private static final String KEY_WEATHER_LAST_SUCCESS = "weather_last_success";
     private static final String KEY_AQI_LAST_SUCCESS = "aqi_last_success";
+    private static final String KEY_WEATHER_LAT = "weather_cache_lat";
+    private static final String KEY_WEATHER_LON = "weather_cache_lon";
+    private static final String KEY_AQI_LAT = "aqi_cache_lat";
+    private static final String KEY_AQI_LON = "aqi_cache_lon";
     private static final String KEY_REQUEST_GENERATION = "request_generation";
     private static final long REFRESH_INTERVAL_MS = 30L * 60 * 1000; // 30 minutes
 
@@ -214,11 +218,15 @@ final class WeatherAirQuality {
                     SharedPreferences.Editor edit = prefs.edit();
                     if (wJson != null) {
                         edit.putString(KEY_WEATHER_JSON, wJson.toString())
-                                .putLong(KEY_WEATHER_LAST_SUCCESS, now);
+                                .putLong(KEY_WEATHER_LAST_SUCCESS, now)
+                                .putString(KEY_WEATHER_LAT, Double.toString(lat))
+                                .putString(KEY_WEATHER_LON, Double.toString(lon));
                     }
                     if (aqiJson != null) {
                         edit.putString(KEY_AQI_JSON, aqiJson.toString())
-                                .putLong(KEY_AQI_LAST_SUCCESS, now);
+                                .putLong(KEY_AQI_LAST_SUCCESS, now)
+                                .putString(KEY_AQI_LAT, Double.toString(lat))
+                                .putString(KEY_AQI_LON, Double.toString(lon));
                     }
                     edit.putString(KEY_AQI_STATION_PLACE, defaultPlace)
                             .putBoolean(KEY_AQI_IS_JAS, false)
@@ -242,11 +250,28 @@ final class WeatherAirQuality {
     }
 
     /** Formats a clean Spannable UI string for the Home screen: "⛅ 29° Cerah  •  IPU 112 Tidak Sihat" */
+    private static boolean cacheMatchesLocation(SharedPreferences prefs, String latKey, String lonKey,
+                                                double selectedLat, double selectedLon) {
+        try {
+            String cachedLat = prefs.getString(latKey, null);
+            String cachedLon = prefs.getString(lonKey, null);
+            if (cachedLat == null || cachedLon == null) return false;
+            return Double.compare(Double.parseDouble(cachedLat), selectedLat) == 0
+                    && Double.compare(Double.parseDouble(cachedLon), selectedLon) == 0;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     static CharSequence getFormatted(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         boolean isEnglish = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(context));
         String weatherJson = prefs.getString(KEY_WEATHER_JSON, null);
         String aqiJson = prefs.getString(KEY_AQI_JSON, null);
+        double selectedLat = AppLocationManager.getLatitude(context);
+        double selectedLon = AppLocationManager.getLongitude(context);
+        if (!cacheMatchesLocation(prefs, KEY_WEATHER_LAT, KEY_WEATHER_LON, selectedLat, selectedLon)) weatherJson = null;
+        if (!cacheMatchesLocation(prefs, KEY_AQI_LAT, KEY_AQI_LON, selectedLat, selectedLon)) aqiJson = null;
         String weatherText = isEnglish ? "Weather unavailable" : "Cuaca tidak tersedia";
         String aqiText = isEnglish ? "US AQI unavailable" : "US AQI tidak tersedia";
         int aqi = -1;
@@ -290,6 +315,10 @@ final class WeatherAirQuality {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String wStr = prefs.getString(KEY_WEATHER_JSON, null);
         String aStr = prefs.getString(KEY_AQI_JSON, null);
+        double selectedLat = AppLocationManager.getLatitude(context);
+        double selectedLon = AppLocationManager.getLongitude(context);
+        if (!cacheMatchesLocation(prefs, KEY_WEATHER_LAT, KEY_WEATHER_LON, selectedLat, selectedLon)) wStr = null;
+        if (!cacheMatchesLocation(prefs, KEY_AQI_LAT, KEY_AQI_LON, selectedLat, selectedLon)) aStr = null;
 
         int temp = -1, apparentTemp = -1, code = -1, highTemp = -1, lowTemp = -1;
         int humidity = -1, windSpeed = -1, pressure = -1, windGust = -1, uvIndex = -1, rainChanceToday = -1;
