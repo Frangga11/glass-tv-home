@@ -311,3 +311,15 @@ No merge or physical device test performed.
 | D01 / #51 | `66352838e6155a42a9ea61477643a238f360434f` | #41506847521 both jobs PASS | PASS |
 
 F02 head `5dd787b` includes the latest integrated callback-isolation, Recent Apps manifest hardening, Home gesture and power-action regression tests. A newer F02 documentation-only checkpoint is queued for exact-head retest.
+
+
+## C07/F02 session revocation audit — 3 November 2026
+
+| Item | Branch / head / PR | Status |
+|---|---|---|
+| C07 upload/session owner | `feature/c07-upload-session-resilience` / `12b1f431f7687023727983089ea03eda0f97a73d` / PR #24 | CI IN PROGRESS |
+| F02 integration | `integration/project-f02-system-validation` / `081496ca93fd0526025a21ce7cd0e3d7f9c3364a` / PR #50 | CI IN PROGRESS |
+| Wallpaper mutation shutdown guard | synchronized select/delete/slideshow/clear handlers with in-lock active-session recheck; HTTP 410 on revoked session | FIX COMMITTED / CI PENDING |
+| Regression guard | `tests/test_wallpaper_session_shutdown_atomicity.py` | ADDED / CI PENDING |
+
+Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both jobs before the latest C07 fix.
