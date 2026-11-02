@@ -384,3 +384,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Preserve existing StandBy upload/session validation, shared store, atomic collection/mode persistence, picker merge, clear ordering and photo rotation.
 - **Next:** obtain exact-head CI for `7c5e2677eac1c791675d9f5ef7d736eb47d37aca`; inspect failures if any. Then complete source/CI closure. Project F must physically test DreamService/overlay precedence, remote wake, 10-minute idle, 2-hour sleep, display-lock/OEM behavior, process lifecycle, QR upload/cancel/retry and photo rotation/orientation/offline behavior.
 - E04 is NOT FINAL. No APK published/installed, no device acceptance, no merge. Keep D-013 grouped merge policy.
+
+
+## Handover — E04 native idle preservation — 2 Nov 2026
+
+- E04 source branch `feature/e04-standby-screensaver`, current head `08076bb945a169de198905152a092f419f48aa82`; PR #37 OPEN/DRAFT/UNMERGED, base E03 exact head `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`.
+- Commits `75fa1b1` and `08076bb`: remove app-owned DreamService 2-hour sleep and MainActivity 10-minute/2h10m idle-power triggers. Android TV owns native idle → StandBy/Dream → screensaver → sleep sequence. Manual Nightstand overlay remains; photo pipeline unchanged.
+- CI #629 / `41418393199`: Lists/tools/docs PASS; launcher build/unit tests in progress at checkpoint; APK size gate pending.
+- Next: poll exact-head CI, fix any failures, record APK size; then Project F physical acceptance of native transition timings, DreamService selection/wake, QR upload/cancel/retry, photo rendering/orientation/rotation, lifecycle/offline behavior. Do not claim hardware acceptance or merge before gates. E04 NOT FINAL.
