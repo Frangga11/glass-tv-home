@@ -586,3 +586,10 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Implementation head `37dab64cc99f11ef6670840c351f32fe91da6b24` passed exact-head GitHub Actions run #41427317877: launcher build/unit tests/release build/APK-size guard PASS and lists/tools/docs PASS.
 - Current PR #38 head `d1d461c2c08609462354ebebd9dc7ce678e2e049` is a report-only documentation follow-up; application source/resources are unchanged from the tested implementation head.
 - PR #38 remains Draft/open/unmerged. Physical Mi TV Stick/4K UI and remote acceptance remain Project F; no APK install or device test is claimed.
+
+
+## Cross-project Weather/AQI and popup findings — 2 Nov 2026
+- WQ-01–WQ-08 and ownership/verification criteria are recorded in `CROSS_PROJECT_WEATHER_AQI_AUDIT.md`.
+- Confirmed issues: synthetic PM concentrations, synthetic weather/forecast fallback, inaccurate update timestamp/success semantics, aggregate US AQI mislabel risk, metric/timezone semantics, separate Home/detail caches, CAMS model limitations/attribution, incomplete popup content/behavior audit.
+- Owners: E05 (data semantics and weather-specific UI), D07 (freshness/concurrency contract), B01/B02/B03 (shared modal/focus primitives), F (physical/integrated acceptance), G (cross-project closure). C01–C07 are not owners for Open-Meteo fetches; preserve C07.
+- Status: findings recorded; source repairs not yet implemented; PR #38 remains Draft/open/unmerged.

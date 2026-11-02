@@ -316,3 +316,10 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Implementation head `37dab64cc99f11ef6670840c351f32fe91da6b24` passed exact-head GitHub Actions run #41427317877: launcher build/unit tests/release build/APK-size guard PASS and lists/tools/docs PASS.
 - Current PR #38 head `d1d461c2c08609462354ebebd9dc7ce678e2e049` is a report-only documentation follow-up; application source/resources are unchanged from the tested implementation head.
 - PR #38 remains Draft/open/unmerged. Physical Mi TV Stick/4K UI and remote acceptance remain Project F; no APK install or device test is claimed.
+
+
+## Cross-project weather/AQI and popup ownership audit — 2 Nov 2026
+- Audit and owner matrix: `CROSS_PROJECT_WEATHER_AQI_AUDIT.md`.
+- Confirmed E05 PR #38 does not change `WeatherAirQuality.java`, `WeatherActivity.java` or `HomeWeather.java`; its ayah-reader CI is not weather/AQI verification.
+- WQ-01–WQ-08 identify E05 data/content, D07 freshness/state, B01–B03 shared popup primitives, F device/integration acceptance and G cross-project closure. No weather API defect is assigned to C01–C07; preserve C07.
+- Source repairs remain OPEN; PR #38 stays Draft/open/unmerged under D-013. See audit report for required sequence and evidence.

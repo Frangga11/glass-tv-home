@@ -426,3 +426,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Implementation head `37dab64cc99f11ef6670840c351f32fe91da6b24` passed exact-head GitHub Actions run #41427317877: launcher build/unit tests/release build/APK-size guard PASS and lists/tools/docs PASS.
 - Current PR #38 head `d1d461c2c08609462354ebebd9dc7ce678e2e049` is a report-only documentation follow-up; application source/resources are unchanged from the tested implementation head.
 - PR #38 remains Draft/open/unmerged. Physical Mi TV Stick/4K UI and remote acceptance remain Project F; no APK install or device test is claimed.
+
+
+## Cross-project handover — Weather/AQI & popups — 2 Nov 2026
+- Resume with `CROSS_PROJECT_WEATHER_AQI_AUDIT.md`.
+- D07 owner: inspect detailed WeatherAirQuality request generation/location/language freshness and per-source cache success/stale semantics; D01/D02 only if settings storage/propagation root cause is demonstrated.
+- B01/B02/B03 owners: cross-check weather popups against canonical tokens/modal/focus/opacity contract; repair shared primitives only in B.
+- E05 owner: correct weather/AQI API values, missing/stale presentation, labels, timestamps, source attribution and weather-specific popup content after dependency handover.
+- F: integrated 1080p/4K, offline/location/language, popup/D-pad/Back/scroll acceptance. G: close and reconcile all owner findings before D-013 grouped merge.
+- C is not assigned; direct Open-Meteo HTTPS fetches are separate from the local QR upload stack. Preserve C07.
+- No repairs have yet been committed for WQ-01–WQ-08; do not infer completion from E05 ayah-reader CI.
