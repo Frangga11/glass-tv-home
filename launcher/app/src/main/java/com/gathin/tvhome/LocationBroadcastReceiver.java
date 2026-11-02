@@ -31,9 +31,10 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
             MainActivity main = MainActivity.getInstance();
             if (main != null) {
                 final String finalCond = cond;
+                final Context localizedContext = LocaleContext.wrap(context);
                 main.runOnUiThread(() -> {
                     main.setTestWeatherOverride(finalCond);
-                    Toast.makeText(context, "🌧️ Weather Input: " + (finalCond != null ? finalCond : "Auto"), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(localizedContext, localizedContext.getString(R.string.weather_input_status, finalCond != null ? finalCond : localizedContext.getString(R.string.auto_label)), Toast.LENGTH_SHORT).show();
                 });
             }
             return;
@@ -70,15 +71,17 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
             PrayerTimes.clearManualZone(context);
             AppLocationManager.setStation(context, matched);
             final String name = matched.getDisplayName();
+            final Context localizedContext = LocaleContext.wrap(context);
             new Handler(Looper.getMainLooper()).post(() -> {
-                Toast.makeText(context, "📍 Lokasi TV: " + name, Toast.LENGTH_LONG).show();
+                Toast.makeText(localizedContext, localizedContext.getString(R.string.tv_location_status, name), Toast.LENGTH_LONG).show();
             });
         } else if (lat != 0.0 && lon != 0.0) {
             PrayerTimes.clearManualZone(context);
-            String customName = query != null ? query : "Lokasi Tersuai";
+            String customName = query != null ? query : LocaleContext.wrap(context).getString(R.string.custom_location_name);
             AppLocationManager.setCustomLocation(context, "CUSTOM", customName, customName, lat, lon);
             new Handler(Looper.getMainLooper()).post(() -> {
-                Toast.makeText(context, "📍 Lokasi TV: " + customName, Toast.LENGTH_LONG).show();
+                Context localizedContext = LocaleContext.wrap(context);
+                Toast.makeText(localizedContext, localizedContext.getString(R.string.tv_location_status, customName), Toast.LENGTH_LONG).show();
             });
         } else {
             Log.w(TAG, "No matching station found for: query=" + query + ", stationId=" + stationId);

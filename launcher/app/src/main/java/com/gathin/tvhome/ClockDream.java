@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.service.dreams.DreamService;
+import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.ViewGroup;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -70,6 +73,11 @@ public class ClockDream extends DreamService {
     };
 
     @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
+
+    @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         setInteractive(false);   // Any key wakes the TV back to where it was
@@ -92,6 +100,7 @@ public class ClockDream extends DreamService {
         photoView = findViewById(R.id.nightstandPhoto);
         photoScrim = findViewById(R.id.nightstandPhotoScrim);
 
+        applyResponsiveBounds();
         updateNightstand();
     }
 
@@ -172,6 +181,37 @@ public class ClockDream extends DreamService {
         }
     }
 
+    /** Keeps the clock/ and supporting text inside narrow TV viewports without changing the
+     * 110sp design size on normal widescreen displays. */
+    private void applyResponsiveBounds() {
+        if (content == null) return;
+        android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int contentWidth = TvResponsiveLayout.nightstandContentWidthPx(metrics.widthPixels);
+        ViewGroup.LayoutParams contentParams = content.getLayoutParams();
+        if (contentParams != null) {
+            contentParams.width = contentWidth;
+            content.setLayoutParams(contentParams);
+        }
+
+        if (clock != null) {
+            clock.setMaxWidth(TvResponsiveLayout.nightstandClockMaxWidthPx(metrics.widthPixels, metrics.density));
+            clock.setSingleLine(true);
+            clock.setEllipsize(TextUtils.TruncateAt.END);
+            clock.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                    TvResponsiveLayout.nightstandClockTextSizeSp(metrics.widthPixels, metrics.density));
+        }
+        setSingleLineMaxWidth(date, contentWidth);
+        setSingleLineMaxWidth(hijri, contentWidth);
+        setSingleLineMaxWidth(prayer, contentWidth);
+        setSingleLineMaxWidth(hint, contentWidth);
+    }
+
+    private static void setSingleLineMaxWidth(TextView view, int maxWidthPx) {
+        if (view == null) return;
+        view.setMaxWidth(Math.max(1, maxWidthPx));
+        view.setSingleLine(true);
+        view.setEllipsize(TextUtils.TruncateAt.END);
+    }
     private void updateNightstand() {
         if (content == null) return;
 

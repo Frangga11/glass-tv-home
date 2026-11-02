@@ -110,7 +110,7 @@ public class RadarMapView extends View {
         paint.setFakeBoldText(false);
         paint.setTextSize(6.5f * d);
         paint.setColor(0xFFB6C9D8);
-        canvas.drawText("ILUSTRASI CUACA • BUKAN RADAR LANGSUNG", cx, h - 8f * d, paint);
+        canvas.drawText(getContext().getString(R.string.weather_radar_illustration_label), cx, h - 8f * d, paint);
 
         canvas.restore();
     }

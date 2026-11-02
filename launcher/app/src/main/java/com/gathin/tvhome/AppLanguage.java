@@ -23,26 +23,55 @@ final class AppLanguage {
     public static String getLanguage(Context ctx) {
         if (ctx == null) return LANG_ID;
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+
+        // On Android 13+, a language selected in Android's per-app settings is authoritative.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            android.app.LocaleManager localeManager =
+                    (android.app.LocaleManager) ctx.getSystemService(Context.LOCALE_SERVICE);
+            android.os.LocaleList appLocales = localeManager == null ? null : localeManager.getApplicationLocales();
+            if (appLocales != null && !appLocales.isEmpty()) {
+                String platformLanguage = normalizeLanguage(appLocales.get(0).getLanguage());
+                String saved = prefs.getString(KEY_LANG, LANG_ID);
+                if (!platformLanguage.equals(saved)) {
+                    prefs.edit().putString(KEY_LANG, platformLanguage).apply();
+                }
+                return platformLanguage;
+            }
+        }
+
         String selected = prefs.getString(KEY_LANG, LANG_ID);
-        // This build is localized for Indonesia; migrate the former Malay default and saved setting.
-        if (selected == null || LANG_MS.equalsIgnoreCase(selected)) {
-            prefs.edit().putString(KEY_LANG, LANG_ID).apply();
-            return LANG_ID;
+        String normalized = normalizeLanguage(selected);
+        if (!normalized.equals(selected)) {
+            // Migrate the former Malay preference and canonicalize/reject unsupported values.
+            prefs.edit().putString(KEY_LANG, normalized).apply();
         }
-        if (!LANG_ID.equalsIgnoreCase(selected) && !LANG_EN.equalsIgnoreCase(selected)) {
-            prefs.edit().putString(KEY_LANG, LANG_ID).apply();
-            return LANG_ID;
-        }
-        return selected;
+        return normalized;
+    }
+
+    static String normalizeLanguage(String language) {
+        return LANG_EN.equalsIgnoreCase(language) ? LANG_EN : LANG_ID;
     }
 
     public static void setLanguage(Context ctx, String lang) {
         if (ctx == null || lang == null) return;
-        String normalized = LANG_EN.equalsIgnoreCase(lang) ? LANG_EN : LANG_ID;
+        String normalized = normalizeLanguage(lang);
         ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()
                 .putString(KEY_LANG, normalized)
                 .apply();
+
+        // Keep Android 13+ system per-app language settings aligned with the launcher's selector.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            android.app.LocaleManager localeManager =
+                    (android.app.LocaleManager) ctx.getSystemService(Context.LOCALE_SERVICE);
+            if (localeManager != null) {
+                android.os.LocaleList current = localeManager.getApplicationLocales();
+                String currentTags = current == null ? "" : current.toLanguageTags();
+                if (!normalized.equalsIgnoreCase(currentTags)) {
+                    localeManager.setApplicationLocales(android.os.LocaleList.forLanguageTags(normalized));
+                }
+            }
+        }
     }
 
     public static String getLanguageDisplayName(Context ctx) {

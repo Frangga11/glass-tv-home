@@ -15,7 +15,7 @@
         android:layout_marginStart="64dp"
         android:layout_marginTop="40dp"
         android:fontFamily="@font/inter"
-        android:text="Recent Apps"
+        android:text="@string/recent_apps_title"
         android:textColor="#FFFFFFFF"
         android:textSize="28sp"
         android:textStyle="bold" />
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter"
-            android:text="RAM 1.8 GB used of 2.3 GB"
+            android:text="@string/recent_apps_ram_usage"
             android:textColor="#FFE2E8F0"
             android:textSize="14sp" />
 
@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:fontFamily="@font/inter"
-        android:text="No recent apps running"
+        android:text="@string/recent_apps_empty"
         android:textColor="#88FFFFFF"
         android:textSize="18sp"
         android:visibility="gone" />
@@ -85,7 +85,7 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="40dp"
         android:fontFamily="@font/inter"
-        android:text="Press ▲ on an app to close it"
+        android:text="@string/recent_apps_hint_close"
         android:textColor="#90FFFFFF"
         android:textSize="14sp" />
 

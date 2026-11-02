@@ -49,7 +49,7 @@
                     android:includeFontPadding="false"
                     android:letterSpacing="0.12"
                     android:singleLine="true"
-                    android:text="LOKASI SAYA"
+                    android:text="@string/weather_my_location"
                     android:textAllCaps="true"
                     android:textColor="#C8DCF8"
                     android:textSize="10sp" />
@@ -101,7 +101,7 @@
                     android:shadowDy="2"
                     android:shadowRadius="5"
                     android:singleLine="true"
-                    android:text="Gerimis"
+                    android:text="@string/weather_drizzle"
                     android:textColor="#F1F5F9"
                     android:textSize="13sp" />
 
@@ -172,7 +172,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="💨  ANGIN"
+                                android:text="@string/weather_wind_label"
                                 android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
@@ -200,7 +200,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="🌕  FASE BULAN"
+                                android:text="@string/weather_moon_phase_label"
                                 android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
@@ -237,7 +237,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="🌅  MATAHARI TERBENAM"
+                                android:text="@string/weather_sunset_label"
                                 android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
@@ -276,7 +276,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="☀️  INDEKS UV"
+                                android:text="@string/weather_uv_label"
                                 android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
@@ -305,7 +305,7 @@
                                     android:fontFamily="@font/inter"
                                     android:fontVariationSettings="'wght' 600"
                                     android:includeFontPadding="false"
-                                    android:text="Tinggi"
+                                    android:text="@string/weather_uv_high"
                                     android:textColor="#F59E0B"
                                     android:textSize="10sp" />
                             </LinearLayout>
@@ -324,7 +324,7 @@
                                 android:fontVariationSettings="'wght' 400"
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
-                                android:text="Perhatikan paparan sinar UV sesuai indeks saat ini."
+                                android:text="@string/weather_uv_description"
                                 android:textColor="#CBD5E1"
                                 android:textSize="8sp" />
                         </LinearLayout>
@@ -356,7 +356,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="🌡️  SUHU TERASA"
+                                android:text="@string/weather_feels_like_label"
                                 android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
@@ -380,7 +380,7 @@
                                 android:fontVariationSettings="'wght' 400"
                                 android:includeFontPadding="false"
                                 android:maxLines="2"
-                                android:text="Suhu terasa dapat berbeda dari suhu udara aktual."
+                                android:text="@string/weather_feels_like_description"
                                 android:textColor="#CBD5E1"
                                 android:textSize="8sp" />
                         </LinearLayout>
@@ -403,7 +403,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="🍃  KUALITAS UDARA"
+                                android:text="@string/weather_air_quality_label"
                                 android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
@@ -432,7 +432,7 @@
                                     android:fontFamily="@font/inter"
                                     android:fontVariationSettings="'wght' 600"
                                     android:includeFontPadding="false"
-                                    android:text="Sedang"
+                                    android:text="@string/weather_air_quality_moderate"
                                     android:textColor="#FFFFFF"
                                     android:textSize="10sp" />
                             </LinearLayout>
@@ -484,7 +484,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="💧  CURAH HUJAN"
+                                android:text="@string/weather_rainfall_label"
                                 android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
@@ -509,7 +509,7 @@
                                 android:fontVariationSettings="'wght' 400"
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
-                                android:text="Saat ini • peluang hujan"
+                                android:text="@string/weather_precipitation_chance"
                                 android:textColor="#CBD5E1"
                                 android:textSize="8sp" />
                         </LinearLayout>
@@ -532,7 +532,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="👁️  JARAK PANDANG"
+                                android:text="@string/weather_visibility_label"
                                 android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
@@ -557,7 +557,7 @@
                                 android:fontVariationSettings="'wght' 400"
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
-                                android:text="Jarak pandang baik"
+                                android:text="@string/weather_visibility_good"
                                 android:textColor="#CBD5E1"
                                 android:textSize="8sp" />
                         </LinearLayout>
@@ -598,7 +598,7 @@
                                 android:fontFamily="@font/inter"
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
-                                android:text="KONDISI CUACA"
+                                android:text="@string/weather_conditions_label"
                                 android:textColor="#FFFFFF"
                                 android:textSize="12.5sp" />
 
@@ -609,7 +609,7 @@
                                 android:fontFamily="@font/inter"
                                 android:fontVariationSettings="'wght' 500"
                                 android:includeFontPadding="false"
-                                android:text="Suhu (°C)"
+                                android:text="@string/weather_temperature_c"
                                 android:textColor="#94A3B8"
                                 android:textSize="10sp" />
 
@@ -711,7 +711,7 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="📅  PRAKIRAAN 7 HARI"
+                                android:text="@string/weather_forecast_7_days"
                                 android:textColor="#94A3B8"
                                 android:textSize="10sp" />
 
@@ -753,7 +753,7 @@
                                     android:includeFontPadding="false"
                                     android:letterSpacing="0.08"
                                     android:singleLine="true"
-                                    android:text="⛰️  ILUSTRASI CUACA"
+                                    android:text="@string/weather_illustration_label"
                                     android:textColor="#94A3B8"
                                     android:textSize="10sp" />
 
@@ -790,7 +790,7 @@
                                         android:includeFontPadding="false"
                                         android:letterSpacing="0.08"
                                         android:singleLine="true"
-                                        android:text="💧  KELEMBAPAN"
+                                        android:text="@string/weather_humidity_label"
                                         android:textColor="#94A3B8"
                                         android:textSize="9sp" />
 
@@ -814,7 +814,7 @@
                                         android:fontVariationSettings="'wght' 400"
                                         android:includeFontPadding="false"
                                         android:singleLine="true"
-                                        android:text="Kelembapan relatif saat ini."
+                                        android:text="@string/weather_humidity_description"
                                         android:textColor="#CBD5E1"
                                         android:textSize="8sp" />
                                 </LinearLayout>
@@ -837,7 +837,7 @@
                                         android:includeFontPadding="false"
                                         android:letterSpacing="0.08"
                                         android:singleLine="true"
-                                        android:text="⏱️  TEKANAN UDARA"
+                                        android:text="@string/weather_pressure_label"
                                         android:textColor="#94A3B8"
                                         android:textSize="9sp" />
 
@@ -863,7 +863,7 @@
                 android:gravity="center"
                 android:letterSpacing="0.04"
                 android:singleLine="true"
-                android:text="Model Open-Meteo • estimasi US AQI"
+                android:text="@string/weather_data_source"
                 android:textColor="#40FFFFFF"
                 android:textSize="9sp" />
         </LinearLayout>

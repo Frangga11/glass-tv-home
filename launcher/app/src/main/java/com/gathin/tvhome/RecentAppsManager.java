@@ -53,7 +53,6 @@ public class RecentAppsManager {
         public final long usedBytes;
         public final long availBytes;
         public final int percentUsed;
-        public final String formattedText;
 
         public MemoryStats(long totalBytes, long availBytes) {
             this.totalBytes = totalBytes;
@@ -61,9 +60,6 @@ public class RecentAppsManager {
             this.usedBytes = Math.max(0, totalBytes - availBytes);
             this.percentUsed = totalBytes > 0 ? (int) ((usedBytes * 100) / totalBytes) : 0;
 
-            double usedGb = usedBytes / (1024.0 * 1024.0 * 1024.0);
-            double totalGb = totalBytes / (1024.0 * 1024.0 * 1024.0);
-            this.formattedText = String.format(Locale.US, "RAM %.1f GB used of %.1f GB", usedGb, totalGb);
         }
     }
 

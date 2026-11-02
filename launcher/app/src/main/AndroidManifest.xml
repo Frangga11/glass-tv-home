@@ -78,7 +78,7 @@
 
         <activity
             android:name=".WeatherActivity"
-            android:label="Weather &amp; Air Quality"
+            android:label="@string/weather_activity_label"
             android:exported="true"
             android:excludeFromRecents="false"
             android:screenOrientation="landscape"
@@ -91,7 +91,7 @@
 
         <activity
             android:name=".RecentAppsActivity"
-            android:label="Recent Apps"
+            android:label="@string/recent_apps_activity_label"
             android:exported="true"
             android:excludeFromRecents="true"
             android:screenOrientation="landscape"
@@ -182,7 +182,7 @@
 
         <service
             android:name=".MediaNotificationListener"
-            android:label="Glass TV Media Listener"
+            android:label="@string/media_listener_service_label"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
             android:exported="true">
             <intent-filter>

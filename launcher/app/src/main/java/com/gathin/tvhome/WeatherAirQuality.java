@@ -358,7 +358,7 @@ final class WeatherAirQuality {
                         int len = Math.min(7, days.length());
                         for (int i = 0; i < len; i++) {
                             String dayStr = days.optString(i, "");
-                            String dayLabel = i == 0 ? "Today" : formatDayName(dayStr);
+                            String dayLabel = i == 0 ? context.getString(R.string.today_label) : formatDayName(dayStr, AppLanguage.getLanguage(context));
                             int c = dailyCodes != null ? dailyCodes.optInt(i, 2) : 2;
                             int mx = maxTemps != null ? (int) Math.round(maxTemps.optDouble(i, 31.0)) : 31;
                             int mn = minTemps != null ? (int) Math.round(minTemps.optDouble(i, 24.0)) : 24;
@@ -384,7 +384,7 @@ final class WeatherAirQuality {
                             if (tStr.contains("T")) {
                                 int hour = Integer.parseInt(tStr.substring(tStr.indexOf('T') + 1, tStr.indexOf(':')));
                                 if (count > 0 || hour >= currentHour) {
-                                    String label = count == 0 ? "Now" : formatHourLabel(hour);
+                                    String label = count == 0 ? context.getString(R.string.now_label) : formatHourLabel(hour);
                                     int t = (int) Math.round(temps.optDouble(i, 28.0));
                                     int c = codes != null ? codes.optInt(i, 2) : 2;
                                     int r = rains != null ? rains.optInt(i, 30) : 30;
@@ -469,12 +469,12 @@ final class WeatherAirQuality {
         return "6:54 AM";
     }
 
-    private static String formatDayName(String ymd) {
+    private static String formatDayName(String ymd, String language) {
         try {
             SimpleDateFormat inFmt = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
             Date d = inFmt.parse(ymd);
             if (d != null) {
-                SimpleDateFormat outFmt = new SimpleDateFormat("EEE", Locale.getDefault());
+                SimpleDateFormat outFmt = new SimpleDateFormat("EEE", Locale.forLanguageTag(language));
                 return outFmt.format(d);
             }
         } catch (Exception ignored) {

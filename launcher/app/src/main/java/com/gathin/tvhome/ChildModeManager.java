@@ -213,7 +213,7 @@ public final class ChildModeManager {
 
         // Title
         TextView tvTitle = new TextView(ctx);
-        tvTitle.setText(title != null ? title : "Keselamatan PIN");
+        tvTitle.setText(title != null ? title : ctx.getString(R.string.security_pin_title));
         tvTitle.setTextSize(19);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(outfit, Typeface.BOLD);
@@ -222,7 +222,7 @@ public final class ChildModeManager {
 
         // Subtitle
         TextView tvSub = new TextView(ctx);
-        tvSub.setText(subtitle != null ? subtitle : "Masukkan PIN 4-digit untuk meneruskan");
+        tvSub.setText(subtitle != null ? subtitle : ctx.getString(R.string.pin_continue_prompt));
         tvSub.setTextSize(13);
         tvSub.setTextColor(0xB3FFFFFF);
         tvSub.setTypeface(outfit, Typeface.NORMAL);
@@ -307,12 +307,12 @@ public final class ChildModeManager {
                             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                             if (callback != null) callback.onSuccess();
                         } else {
-                            Toast.makeText(ctx, "❌ PIN salah. Sila cuba lagi.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT).show();
                             pinBuilder.setLength(0);
                             updateDots.run();
                         }
                     } else {
-                        Toast.makeText(ctx, "Sila masukkan 4 digit PIN", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, R.string.pin_four_digits, Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     if (pinBuilder.length() < 4) {
@@ -324,7 +324,7 @@ public final class ChildModeManager {
                                 if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                                 if (callback != null) callback.onSuccess();
                             } else {
-                                Toast.makeText(ctx, "❌ PIN salah. Sila cuba lagi.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT).show();
                                 pinBuilder.setLength(0);
                                 updateDots.run();
                             }
@@ -346,7 +346,7 @@ public final class ChildModeManager {
 
         // Cancel Button
         Button btnCancel = new Button(ctx);
-        btnCancel.setText("Batal");
+        btnCancel.setText(R.string.cancel_action);
         btnCancel.setTextSize(13);
         btnCancel.setTypeface(outfit, Typeface.NORMAL);
         btnCancel.setTextColor(0xAAFFFFFF);
