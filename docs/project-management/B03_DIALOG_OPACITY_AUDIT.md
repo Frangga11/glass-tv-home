@@ -2,7 +2,7 @@
 
 **Date:** 2 November 2026  
 **Status:** SOURCE REPAIR AND EXACT-HEAD CI VERIFIED — DEVICE ACCEPTANCE PROJECT F  
-**Owner:** Project B03 (global dialog/popup layering), with E07 toggle integration  
+**Owner:** B01 (shared token catalog), B03 (global dialog/popup layering), with E07 toggle integration  
 **Source branch:** `feature/b03-dialog-opacity-layering`  
 **Source PR:** #12 — Draft/open/unmerged  
 **Current source head:** `d87ffdf914851b8a1d2c67c2416ac9f5f1309d93`  
@@ -23,7 +23,7 @@ Glass Effect is a decorative material choice, not a dependency of layout or UI s
 - **Glass OFF:** render a solid opaque surface with a shared border and the same geometry.
 - Preserve component bounds, corner radius, row spacing, typography, icons, focus feedback, D-pad navigation, callbacks and state.
 - Do not restyle Android OS-owned Settings pages; this contract applies to app-owned UI only.
-- All fallback colors are shared `TvUiTokens`; components must not invent near-duplicate local colors.
+- B01 owns the `TvUiTokens` catalog and its color/geometry consistency. B03 owns the dialog/popup material policy and consumes the B01 tokens; additions to the catalog must be reconciled with B01 during grouped integration. Components must not invent near-duplicate local colors.
 
 ## 3. Root cause
 
@@ -34,7 +34,7 @@ Glass Effect is a decorative material choice, not a dependency of layout or UI s
 
 ## 4. B03 implementation
 
-- Added shared opaque fallback tokens `POPUP_SURFACE` and `DOCK_SURFACE` to `TvUiTokens`; the existing shared `BORDER` token is reused.
+- Extended the B01-owned shared `TvUiTokens` catalog with opaque `POPUP_SURFACE` and `DOCK_SURFACE` fallback entries; the existing shared `BORDER` token is reused. B01 remains owner of the token catalog; B03 consumes these entries for the global dialog/popup surface policy.
 - `GlassDrawable` now paints a rounded solid popup/pill surface and border before retaining its existing focus-shape behavior when glass is OFF. The fallback fill/border also follows the existing fade alpha so popup opening/closing transitions remain intact.
 - `DockDecoration` now paints the solid dock tray, shadow and border in OFF mode while preserving the existing D-pad focus shape.
 - `TvDialogStyle` now chooses the existing glass dialog resource when ON and a rounded solid surface using the same shared tokens when OFF.
@@ -45,7 +45,8 @@ Glass Effect is a decorative material choice, not a dependency of layout or UI s
 
 | Responsibility | Owner | Required action |
 |---|---|---|
-| Global tokens and fallback material contract | B01 / B03 | Keep one shared palette and common app-owned popup/dialog surface behavior |
+| Shared token catalog | B01 | Own the canonical `TvUiTokens` palette and reconcile the two new opaque fallback entries |
+| Global dialog/popup material policy | B03 | Apply the shared tokens consistently to app-owned pills, popup menus, anchored popups, dock and modal dialogs |
 | Glass toggle, live popup invalidation and effects settings behavior | E07 | Preserve the current preference/callback and refresh visible surfaces when toggled |
 | Module-specific content and layout | E01–E08 as applicable | Consume shared primitives; no module-specific global popup fork |
 | Full integration, source reconciliation and release acceptance | G | Reconcile the B03 and E07 source histories; resolve shared-file overlaps before grouped merge |
@@ -72,7 +73,7 @@ No APK was published or installed. No physical TV test is claimed.
 
 ## 7. Decision
 
-B03's global surface fallback repair is implemented and exact-head CI-verified on its isolated source branch. It is not device-complete until Project F supplies physical acceptance. PR #12 remains Draft/open/unmerged under D-013.
+B03's global surface fallback repair is implemented and exact-head CI-verified on its isolated source branch; the two new fallback color entries are an extension to the B01-owned token catalog, not a transfer of token ownership. It is not device-complete until Project F supplies physical acceptance. PR #12 remains Draft/open/unmerged under D-013.
 
 
 ## Exact-head CI closure — 2 November 2026
