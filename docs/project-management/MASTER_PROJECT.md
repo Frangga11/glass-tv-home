@@ -284,3 +284,5 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Removed app-owned idle/power timers from `ClockDream` and `MainActivity`; retained manual Nightstand overlay and shared photo pipeline. Commits `75fa1b1` and `08076bb` on E04 branch.
 - QR upload/store/decoder paths remain isolated and preserved. E01/E02/E03 boundaries and Project F hardware acceptance are recorded in `E04_STANDBY_SCREENSAVER_AUDIT.md`.
 - Exact-head CI #629 pending at this checkpoint; no APK install, no hardware acceptance, no merge. E04 remains NOT FINAL.
+
+- E04 exact-head CI #629 / run `41418393199` on `08076bb945a169de198905152a092f419f48aa82`: **SUCCESS**. Release APK 1,561,373 bytes; 1,572,864-byte budget; 11,491-byte headroom. No APK publication/install. Project F physical acceptance still pending.
