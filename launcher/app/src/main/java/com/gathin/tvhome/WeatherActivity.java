@@ -53,6 +53,11 @@ public class WeatherActivity extends Activity {
     private TextView weatherFooter;
 
     @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
@@ -132,13 +137,13 @@ public class WeatherActivity extends Activity {
     private void showLocationPickerDialog() {
         String activeRegion = AppLocationManager.getActiveRegion(this);
         CharSequence[] topOptions = new CharSequence[]{
-                "📍 Pilih Bandar / Stesen (" + activeRegion + ")",
-                "🌏 Tukar Negara / Region Asia (Default: Indonesia)",
-                "✨ Tetapkan Suasana Latar Cuaca (Cerah, Hujan, Ribut, Malam)"
+                getString(R.string.weather_pick_city_station, activeRegion),
+                getString(R.string.weather_change_asia_region),
+                getString(R.string.weather_set_background_mood)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("🌏 Lokasi & Suasana Cuaca");
+        builder.setTitle(R.string.weather_location_dialog_title);
         builder.setItems(topOptions, (dialog, which) -> {
             dialog.dismiss();
             if (which == 0) {
@@ -149,7 +154,7 @@ public class WeatherActivity extends Activity {
                 showWeatherAnimationPicker();
             }
         });
-        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
         TvDialogStyle.apply(dialog, this, 520, 0);
@@ -159,41 +164,41 @@ public class WeatherActivity extends Activity {
         SharedPreferences p = getSharedPreferences("app_weather_prefs", MODE_PRIVATE);
 
         CharSequence[] conditions = new CharSequence[]{
-                "☀️ Tetapkan Cerah / Sunny (Pantulan suria, lens flare & cahaya)",
-                "🌧️ Tetapkan Hujan / Rain (Titisan hujan & percikan air)",
-                "⛈️ Tetapkan Ribut Petir / Thunderstorm (Kilat menyambar & hujan)",
-                "⛅ Tetapkan Mendung / Cloudy (Awan berarak di langit)",
-                "🌙 Tetapkan Malam / Night (Bintang berkelip & sinaran bulan)",
-                "🔄 Pulihkan kepada Cuaca Semasa Sebenar (Auto)"
+                getString(R.string.weather_set_sunny),
+                getString(R.string.weather_set_rain),
+                getString(R.string.weather_set_storm),
+                getString(R.string.weather_set_cloudy),
+                getString(R.string.weather_set_night),
+                getString(R.string.weather_restore_live)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("✨ Pilihan Suasana Latar Belakang");
+        builder.setTitle(R.string.weather_mood_dialog_title);
         builder.setItems(conditions, (dialog, which) -> {
             dialog.dismiss();
             SharedPreferences.Editor ed = p.edit();
             if (which == 0) {
                 ed.putString("atmosphere_mode", "SUNNY").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Cerah (Sunny)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_clear)), Toast.LENGTH_SHORT).show();
             } else if (which == 1) {
                 ed.putString("atmosphere_mode", "RAIN").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Hujan (Rain)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_rain)), Toast.LENGTH_SHORT).show();
             } else if (which == 2) {
                 ed.putString("atmosphere_mode", "THUNDERSTORM").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Ribut Petir", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_storm)), Toast.LENGTH_SHORT).show();
             } else if (which == 3) {
                 ed.putString("atmosphere_mode", "CLOUDY").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Mendung (Cloudy)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_cloudy)), Toast.LENGTH_SHORT).show();
             } else if (which == 4) {
                 ed.putString("atmosphere_mode", "NIGHT").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Malam (Night)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_night)), Toast.LENGTH_SHORT).show();
             } else {
                 ed.putString("atmosphere_mode", "AUTO").apply();
-                Toast.makeText(this, "Pulih kepada data cuaca sebenar (Auto)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.weather_mood_auto, Toast.LENGTH_SHORT).show();
             }
             populateUi();
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
         TvDialogStyle.apply(dialog, this, 520, 0);
@@ -213,15 +218,15 @@ public class WeatherActivity extends Activity {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("🌏 Pilih Negara / Region Asia");
+        builder.setTitle(R.string.weather_region_picker_title);
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             String chosenRegion = regions.get(which);
             AppLocationManager.setActiveRegion(WeatherActivity.this, chosenRegion);
-            Toast.makeText(WeatherActivity.this, "Region dipilih: " + chosenRegion, Toast.LENGTH_SHORT).show();
+            Toast.makeText(WeatherActivity.this, getString(R.string.weather_region_selected, chosenRegion), Toast.LENGTH_SHORT).show();
             showStationListDialog(chosenRegion);
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
         TvDialogStyle.apply(dialog, this, 520, 0);
@@ -230,7 +235,7 @@ public class WeatherActivity extends Activity {
     private void showStationListDialog(String region) {
         final List<AppLocationManager.Station> stations = AppLocationManager.getStationsForRegion(region);
         if (stations.isEmpty()) {
-            Toast.makeText(this, "Tiada stesen dijumpai bagi " + region, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.weather_no_stations, region), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -246,15 +251,15 @@ public class WeatherActivity extends Activity {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("📍 Pilih Bandar / Stesen (" + region + ")");
+        builder.setTitle(getString(R.string.weather_station_picker_title, region));
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             AppLocationManager.Station picked = stations.get(which);
             AppLocationManager.setStation(WeatherActivity.this, picked);
-            Toast.makeText(WeatherActivity.this, "Menyelaras cuaca " + picked.name + "...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(WeatherActivity.this, getString(R.string.weather_syncing, picked.name), Toast.LENGTH_SHORT).show();
             WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::populateUi);
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
         TvDialogStyle.apply(dialog, this, 520, 0);
@@ -280,15 +285,15 @@ public class WeatherActivity extends Activity {
         
         // Display Condition text matching active atmosphere
         if (conditionType == WeatherBackgroundView.ConditionType.SUNNY) {
-            weatherMainCondition.setText("Cerah");
+            weatherMainCondition.setText(R.string.weather_condition_clear);
         } else if (conditionType == WeatherBackgroundView.ConditionType.NIGHT) {
-            weatherMainCondition.setText("Malam Tenang");
+            weatherMainCondition.setText(R.string.weather_condition_night);
         } else if (conditionType == WeatherBackgroundView.ConditionType.THUNDERSTORM) {
-            weatherMainCondition.setText("Ribut Petir");
+            weatherMainCondition.setText(R.string.weather_condition_storm);
         } else if (conditionType == WeatherBackgroundView.ConditionType.RAIN) {
-            weatherMainCondition.setText("Hujan");
+            weatherMainCondition.setText(R.string.weather_condition_rain);
         } else {
-            weatherMainCondition.setText("Mendung");
+            weatherMainCondition.setText(R.string.weather_condition_cloudy);
         }
 
         weatherMainSub.setText(String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp));
@@ -382,7 +387,7 @@ public class WeatherActivity extends Activity {
             sunArcView.setTimes(w.sunrise, w.sunset);
         }
         if (sunsetText != null) {
-            sunsetText.setText(w.sunset != null ? w.sunset : "6:57 PM");
+            sunsetText.setText(w.sunset != null ? w.sunset : "—");
         }
 
         if (uvValText != null) {
@@ -390,10 +395,10 @@ public class WeatherActivity extends Activity {
         }
         if (uvDescText != null) {
             boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
-            if (w.uvIndex <= 2) uvDescText.setText(english ? "Low" : "Rendah");
-            else if (w.uvIndex <= 5) uvDescText.setText(english ? "Moderate" : "Sedang");
-            else if (w.uvIndex <= 7) uvDescText.setText(english ? "High" : "Tinggi");
-            else uvDescText.setText(english ? "Very High" : "Sangat Tinggi");
+            if (w.uvIndex <= 2) uvDescText.setText(R.string.uv_low);
+            else if (w.uvIndex <= 5) uvDescText.setText(R.string.uv_moderate);
+            else if (w.uvIndex <= 7) uvDescText.setText(R.string.uv_high);
+            else uvDescText.setText(R.string.uv_very_high);
         }
 
         if (feelsLikeVal != null) {
@@ -426,16 +431,15 @@ public class WeatherActivity extends Activity {
             precipitationValue.setText(String.format(Locale.ROOT, "%.1f mm", w.precipitationMm));
         }
         if (precipitationSub != null) {
-            precipitationSub.setText((englishMetrics ? "Now" : "Saat ini") + " • "
-                    + (englishMetrics ? "rain chance " : "peluang hujan ") + w.rainChanceToday + "%");
+            precipitationSub.setText(getString(R.string.precipitation_summary, w.rainChanceToday));
         }
         if (visibilityValue != null) {
             visibilityValue.setText(String.format(Locale.ROOT, "%.1f km", w.visibilityKm));
         }
         if (visibilitySub != null) {
             visibilitySub.setText(w.visibilityKm < 1.0
-                    ? (englishMetrics ? "Limited visibility" : "Jarak pandang terbatas")
-                    : (englishMetrics ? "Good visibility" : "Jarak pandang baik"));
+                    ? getString(R.string.limited_visibility)
+                    : getString(R.string.good_visibility));
         }
         if (pressureGaugeView != null) {
             pressureGaugeView.setPressure(w.pressure);
