@@ -212,3 +212,10 @@
 - E08 exact source/test head `fcd7d8f23a4833830a401652ef269db3282b7300`; CI #702 / `41473357877` PASS; APK 1,562,709 bytes / 1,572,864 cap / 10,155 bytes headroom; publication skipped. PR #41 latest head is documentation-only after that source/test head.
 - Project F must validate the complete integrated chain, shared UI/popup contract, D-pad/focus/Back, Glass ON/OFF, 1080p/4K, all module interactions, lifecycle/persistence and wallpaper management versus Quick Control distinction. No physical acceptance claimed yet.
 - Do not merge or install APK during closure. G owns grouped final reconciliation/package; merge only after full gates and explicit approval.
+
+
+## Project F01 — integration/dependency audit checkpoint (2 Nov 2026)
+- Status: IN PROGRESS; source-diff/dependency mapping completed, combined integration build and runtime validation not yet executed.
+- Audited B01–B03 (#10–#12), C01–C07 (#18–#24), D01–D07 (#25–#31), and E01–E08 (#34–#41) diffs. Shared-file hotspots and ownership contracts are recorded in `F01_INTEGRATION_DEPENDENCY_AUDIT.md`.
+- Exact-head CI evidence checked: E01 #609, E02 #623, E03 #626, E04 #629, E05 #663, E06 #668, E07 #688, E08 #702 — all PASS on the recorded source/test SHAs. B01/B02/B03, C07, D05 and D07 checkpoints also sampled as PASS.
+- PRs remain Draft/open/unmerged under D-013. No APK published/installed and no physical acceptance claimed.
