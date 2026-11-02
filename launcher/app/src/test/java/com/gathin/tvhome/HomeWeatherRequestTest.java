@@ -28,4 +28,25 @@ public class HomeWeatherRequestTest {
     }
 
 
+
+    @Test
+    public void detailedWeatherCurrentGenerationMayCommit() {
+        assertTrue(WeatherAirQuality.isCurrentRequest(11L, 11L, true, true));
+    }
+
+    @Test
+    public void detailedWeatherRejectsOlderGeneration() {
+        assertFalse(WeatherAirQuality.isCurrentRequest(10L, 11L, true, true));
+    }
+
+    @Test
+    public void detailedWeatherRejectsChangedLocation() {
+        assertFalse(WeatherAirQuality.isCurrentRequest(11L, 11L, false, true));
+    }
+
+    @Test
+    public void detailedWeatherRejectsChangedLanguage() {
+        assertFalse(WeatherAirQuality.isCurrentRequest(11L, 11L, true, false));
+    }
+
 }
