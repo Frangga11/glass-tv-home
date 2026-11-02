@@ -2984,41 +2984,42 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         int usable = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
-        int islamicMaxWidth = Math.round(usable * 0.38f);
+        // Give the verse a wider column and let both scripts wrap naturally. The shelf is positioned
+        // above the dock from its measured height, so additional lines move it upward instead of
+        // covering the app grid.
+        int islamicMaxWidth = Math.round(usable * 0.46f);
         boolean is4K = (getResources().getDisplayMetrics().widthPixels >= 3840 || getResources().getDisplayMetrics().heightPixels >= 2160);
 
         if (ayahLabel != null) {
             ayahLabel.setText(AppLanguage.getAyahLabel(this, a.reference));
-            ayahLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 12f : 10f);
+            ayahLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 13f : 11f);
         }
         if (ayahArabic != null) {
             String text = a.arabic.trim();
             ayahArabic.setMaxWidth(islamicMaxWidth);
-            ayahArabic.setSingleLine(true);
-            ayahArabic.setMaxLines(1);
-            ayahArabic.setEllipsize(TextUtils.TruncateAt.END);
-
-            float baseSp = is4K ? 18f : 14.5f;
-            android.text.TextPaint paint = new android.text.TextPaint(ayahArabic.getPaint());
-            paint.setTextSize(baseSp * getResources().getDisplayMetrics().scaledDensity);
-            float textWidth = paint.measureText(text);
-
-            float targetSp = baseSp;
-            float maxAllowed = islamicMaxWidth * 0.95f;
-            while (textWidth > maxAllowed && targetSp > 11.5f) {
-                targetSp -= 0.5f;
-                paint.setTextSize(targetSp * getResources().getDisplayMetrics().scaledDensity);
-                textWidth = paint.measureText(text);
-            }
-            ayahArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, targetSp);
+            ayahArabic.setSingleLine(false);
+            ayahArabic.setMaxLines(Integer.MAX_VALUE);
+            ayahArabic.setEllipsize(null);
+            ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL);
+            ayahArabic.setIncludeFontPadding(true);
+            ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+            ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+            ayahArabic.setLineSpacing(Math.round(3 * density), 1.08f);
+            ayahArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 21f : 17f);
             ayahArabic.setText(text);
         }
         if (ayahText != null) {
             ayahText.setMaxWidth(islamicMaxWidth);
+            ayahText.setSingleLine(false);
+            ayahText.setMaxLines(Integer.MAX_VALUE);
+            ayahText.setEllipsize(null);
+            ayahText.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+            ayahText.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+            ayahText.setLineSpacing(Math.round(2 * density), 1.12f);
             String lang = AppLanguage.getLanguage(this);
             String tr = a.translation(lang);
             ayahText.setText(tr != null ? tr.trim() : "");
-            ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 12.5f : 10.5f);
+            ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 15f : 12.5f);
             ayahText.setVisibility(tr != null && !tr.trim().isEmpty() ? View.VISIBLE : View.GONE);
         }
         ayahBlock.setVisibility(View.VISIBLE);
