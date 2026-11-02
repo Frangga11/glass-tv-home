@@ -328,3 +328,5 @@
 - Preserve B01 UI/focus contract, online/place providers, custom wallpaper suppression, shuffle/index/interval, QR upload and StandBy isolation. Physical checks remain in Project F.
 - Next: finish exact-head CI; commit clean asset; add regression checks for Default/online/custom/description toggle/Next/shuffle/restart; rerun CI and APK-size gate; then visual/device acceptance in F.
 - Canonical report: [E03_WALLPAPER_METADATA_AUDIT.md](E03_WALLPAPER_METADATA_AUDIT.md).
+
+- CI #624 / `41408606965` subsequently completed **PASS** on `188bd49269a358ebf53f8ae09056c41a5eb80243`; APK 1,561,797 bytes (11,067 bytes below cap); publication skipped. This does not close E03 because the clean JPEG binary is still not committed and visual regressions remain outstanding.
