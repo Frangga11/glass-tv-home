@@ -474,3 +474,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Audit report: `E07_ANIMATIONS_EFFECTS_AUDIT.md` on the feature branch. Canonical master checkpoint updated on `docs/project-master-inventory`.
 - Next feature task: E08 — Wallpaper Settings redesign (Change Wallpaper, Wallpaper Shuffle Interval, Next Wallpaper). Start from E07 exact head and map existing wallpaper state/callbacks before changing UI. Preserve E03/E04/E05 wallpaper, StandBy, upload, rotation, shuffle and interval contracts; no duplicated state or migration without evidence.
 - Project F still owns all device/runtime acceptance, including E07 reduced/normal motion and frame pacing. No APK installation or physical TV test is claimed.
+
+
+## Cross-project handover — Glass Effect OFF global surface fallback — 2 Nov 2026
+- Root cause repaired in both owning layers. B03 global contract source: branch `feature/b03-dialog-opacity-layering`, PR #12, head `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`; exact-head CI #685 / `41447473358` pending at this checkpoint. B03 adds shared opaque popup/dock tokens, solid OFF fallback for GlassDrawable and DockDecoration, and modal material selection in TvDialogStyle; JVM regression test added.
+- E07 toggle integration source: PR #40 head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`; exact-head CI #682 / `41446777187` PASS. The preference toggle refreshes active app-owned popup surfaces. Both PRs remain Draft/open/unmerged under D-013.
+- Next source action: verify B03 exact-head CI #685; repair any CI findings; update report and PR #12. During G grouped integration, reconcile B03 and E07 overlapping shared files deliberately (do not blindly merge or duplicate styling). Preserve same visual contract and all existing E07 preference keys/callbacks.
+- Project F must test glass ON/OFF on 1080p and 4K: top pills, Wi-Fi and Quick Settings menus, anchored PopupWindow, modal dialogs, dock tray, focus/D-pad, Back/dismiss and toggling while popup is open. Android OS-owned Settings remains OS-controlled.
+- No APK published/installed and no physical acceptance claimed. Full evidence: [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md).
