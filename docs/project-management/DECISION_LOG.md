@@ -185,3 +185,11 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 
 
 | F-026 | Wallpaper QR-session management mutations (select/delete/slideshow/clear) must be serialized with server shutdown and recheck session validity inside the same monitor. | Prevent an already-dispatched request from mutating wallpaper state/files after QR-session revocation; preserve existing API routes and UI. | IMPLEMENTED / C07 + F02 EXACT-HEAD CI PENDING |
+
+
+## F02 continuation decisions — 3 November 2026
+
+| ID | Decision | Rationale / boundary | Status |
+|---|---|---|---|
+| F-027 | Preserve the D05-aware StandBy upload result adapter in F02; do not replace it with C07's older boolean-based handler. | D05 is downstream of C07 and changes `StandbyPhotoStore.addUploadedFile` to return `UploadResult`; F02 must preserve both atomic persistence semantics and C07 session resilience. | CONFIRMED / INTEGRATED |
+| F-028 | Keep the upload deadline regression assertion at 3500 ms for deadline 6000 ms and fake monotonic time 2500 ms. | The production calculation was correct; the 3000 ms expected value was arithmetic error in the test. Do not weaken or remove the test. | CORRECTED / OWNER + F02 CI PASS BEFORE DOCS-ONLY RETEST |
