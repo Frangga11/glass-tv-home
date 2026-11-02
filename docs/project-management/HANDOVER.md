@@ -720,3 +720,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 ### Project F boundary
 - No merge, APK artifact publication, installation, or physical Android TV testing during F02.
 - Device-only cases remain DEFERRED_TO_G, never marked PASS based on host CI.
+
+
+## F02 exact-head upload storage retest — 3 November 2026
+
+- F02 source/test head c1f212585633899d4c1f5327d3a982a9e136e2b7 passed PR CI #41519813674: both required jobs SUCCESS.
+- Lists/tools/docs: 42 Python tests passed, including all five new upload-storage reservation source-contract checks and both new shutdown critical-section checks.
+- Launcher: testReleaseUnitTest and assembleRelease passed; APK size diagnostics and 1.5 MiB guard passed. APK 1,565,621 bytes / 1,572,864 cap / 7,243 bytes headroom.
+- F02-RES-001 and supplemental upload shutdown coverage are HOST/SOURCE VERIFIED. Storage remains a P3 budget watchlist; no asset quality tradeoff made.
+- F02 findings-register documentation update produced new head 1845635091969c2475bb0d26783bc0f7eb58c1c0. Exact-head CI run #41520194974 was queued at last poll; keep F02 partial until it completes.
+- PR #50 remains Draft/open/unmerged. No APK artifact publication, installation, or physical Android TV testing. Project G owns LAN concurrency, low-storage, cancellation and device acceptance.
