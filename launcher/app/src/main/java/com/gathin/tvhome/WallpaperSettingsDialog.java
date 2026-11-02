@@ -151,6 +151,9 @@ final class WallpaperSettingsDialog {
                     () -> {
                         actions.toggleShuffle();
                         render(activity, actions, dialog, page, tabs, TAB_SHUFFLE, density, english, malay);
+                        // Re-rendering the status copy must not discard the remote's focus target.
+                        View toggle = page.getChildAt(2);
+                        if (toggle != null) toggle.requestFocus();
                     });
             addAction(page, activity, density,
                     english ? "Change Shuffle Interval" : malay ? "Ubah Selang Shuffle" : "Atur Interval Shuffle",
