@@ -126,3 +126,12 @@ The following fixes have been implemented on owning source branches and mirrored
 - All three regression tests are mirrored into this F02 branch and must pass on its exact final head.
 - No finding closes on source commit alone. Require source-branch CI, F02 integrated CI, diff review, and explicit G deferrals where host CI cannot prove device behavior.
 - Project F still does not install, launch, or test on Android TV and does not publish APK artifacts.
+
+
+### Cross-branch dependency QC — 3 November 2026
+- The first D06 CI retest after restoring the modal calls failed at Java compilation because the D05/D06 source branches were based on a D04 checkpoint that predates the B01-owned `TvDialogStyle` class. The compiler reported `cannot find symbol TvDialogStyle` at the two restored calls.
+- This was a real dependency-sync defect, not a reason to remove the calls or weaken the test.
+- Corrective action: explicitly synchronized the B01-owned `TvDialogStyle.java` and its geometry unit test into both D05 and D06 source branches. The pre-existing `bg_glass_dialog` drawable was verified present. The integration branch already contained the current helper.
+- D05 source retest head: `39f2f208fe0ea1c1973c299af9e9661913c0089f` — CI in progress at last check.
+- D06 source retest head: `caa0fd85f19aea5e6bdacb84068c69681acfa984` — CI queued at last check.
+- F02 integration exact head `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7`: both required jobs passed, including all three new regression guards. This does not replace the owner-branch exact-head gates.
