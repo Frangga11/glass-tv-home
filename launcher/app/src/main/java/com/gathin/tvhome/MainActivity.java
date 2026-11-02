@@ -3500,7 +3500,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strTurnOff(this), -1, this::showTurnOffDialog);
         addSeparator(rows);
         addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strCleanCache(this), -1, this::showCleanTvCacheDialog);
-        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperIntervalDialog);
+        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperDialog);
 
         addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, this::showLanguageDialog);
 
@@ -4568,6 +4568,45 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void showWallpaperDialog() {
+        WallpaperSettingsDialog.show(this, new WallpaperSettingsDialog.Actions() {
+            @Override public void openCollection() { showWallpaperCollectionDialog(); }
+            @Override public void openInterval() { showWallpaperIntervalDialog(); }
+            @Override public void showNext() { showNextWallpaperFromSettings(); }
+            @Override public boolean isShuffleEnabled() {
+                return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
+            }
+            @Override public String intervalSummary() { return getWallpaperIntervalSummary(); }
+            @Override public void toggleShuffle() { toggleWallpaperShuffleFromSettings(); }
+        });
+    }
+
+    private void toggleWallpaperShuffleFromSettings() {
+        android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+        boolean enabled = !prefs.getBoolean("shuffle_mode", true);
+        prefs.edit().putBoolean("shuffle_mode", enabled).remove("shuffle_cycle")
+                .remove("shuffle_position").apply();
+        if (wallpapers != null && !wallpapers.isEmpty()) {
+            showNextWallpaper(true);
+            startWallpaperRotation();
+        }
+        TvFeedback.show(this, enabled ? R.string.wallpaper_shuffle_random : R.string.wallpaper_shuffle_ordered,
+                Toast.LENGTH_SHORT);
+    }
+
+    private void showNextWallpaperFromSettings() {
+        if (wallpapers == null || wallpapers.isEmpty()) {
+            TvFeedback.show(this, R.string.default_wallpaper_missing, Toast.LENGTH_SHORT);
+            return;
+        }
+        showNextWallpaper(true);
+        if (wallpaperIntervalMs > 0 && wallpapers.size() >= 2) {
+            handler.removeCallbacks(wallTick);
+            handler.postDelayed(wallTick, wallpaperIntervalMs);
+        }
+        TvFeedback.show(this, R.string.next_wallpaper_toast, Toast.LENGTH_SHORT);
+    }
+
+    private void showWallpaperCollectionDialog() {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
         File[] customFiles = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
         int customCount = (customFiles != null) ? customFiles.length : 0;
@@ -4625,31 +4664,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 : (AppLanguage.LANG_EN.equals(curLang) ? "Upload personal photos via phone" : (AppLanguage.LANG_ID.equals(curLang) ? "Unggah foto pribadi lewat ponsel" : "Muat naik foto peribadi melalui telefon"));
         options.add(new WallpaperOption("MANAGE_CUSTOM", tCst, sCst));
 
-        int curInterval = getWallpaperIntervalMinutes();
-        String intervalText = AppLanguage.strWallpaperIntervalText(this, curInterval);
-
-        boolean isShuffle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
         boolean isDescOn = isWallpaperDescEnabled();
-
-        String tInt = (AppLanguage.LANG_EN.equals(curLang) ? "⏱️ Shuffle Interval: " : (AppLanguage.LANG_ID.equals(curLang) ? "⏱️ Interval Shuffle: " : "⏱️ Selang Masa Shuffle: ")) + intervalText;
-        String sInt = AppLanguage.LANG_EN.equals(curLang) ? "Choose wallpaper change frequency (5 min, 10 min, etc.)" : (AppLanguage.LANG_ID.equals(curLang) ? "Pilih frekuensi pergantian wallpaper (5 mnt, 10 mnt, dll)" : "Pilih kekerapan pertukaran wallpaper (5 min, 10 min, dll)");
-        options.add(new WallpaperOption("INTERVAL", tInt, sInt));
-
-        String tShf = AppLanguage.LANG_EN.equals(curLang) ? ("🔀 Play Order: " + (isShuffle ? "Random (Shuffle ON)" : "Sequential")) : (AppLanguage.LANG_ID.equals(curLang) ? ("🔀 Urutan Tampil: " + (isShuffle ? "Acak (Shuffle ON)" : "Berurutan (Sequential)")) : ("🔀 Mod Susunan: " + (isShuffle ? "Rawak (Shuffle ON)" : "Berurutan (Sequential)")));
-        String sShf = isShuffle
-                ? (AppLanguage.LANG_EN.equals(curLang) ? "Photos picked randomly without repeats" : (AppLanguage.LANG_ID.equals(curLang) ? "Gambar dipilih acak tanpa berulang" : "Gambar dipilih secara rawak tanpa mengulang"))
-                : (AppLanguage.LANG_EN.equals(curLang) ? "Photos cycle through catalog order" : (AppLanguage.LANG_ID.equals(curLang) ? "Gambar bertukar sesuai urutan katalog" : "Gambar bertukar mengikut urutan katalog"));
-        options.add(new WallpaperOption("TOGGLE_SHUFFLE", tShf, sShf));
 
         String tDsc = (AppLanguage.LANG_EN.equals(curLang) ? "🏷️ Image Title & Info: " : (AppLanguage.LANG_ID.equals(curLang) ? "🏷️ Info & Deskripsi Gambar: " : "🏷️ Info & Deskripsi Gambar: ")) + (isDescOn ? (AppLanguage.LANG_EN.equals(curLang) ? "ON" : (AppLanguage.LANG_ID.equals(curLang) ? "Aktif (ON)" : "Dihidupkan (ON)")) : (AppLanguage.LANG_EN.equals(curLang) ? "OFF" : (AppLanguage.LANG_ID.equals(curLang) ? "Mati (OFF)" : "Dimatikan (OFF)")));
         String sDsc = isDescOn
                 ? (AppLanguage.LANG_EN.equals(curLang) ? "Display title and description on home screen" : (AppLanguage.LANG_ID.equals(curLang) ? "Tampilkan judul dan deskripsi gambar di layar utama" : "Paparkan tajuk dan penerangan gambar di skrin utama"))
                 : (AppLanguage.LANG_EN.equals(curLang) ? "Hide text for a clean screen display" : (AppLanguage.LANG_ID.equals(curLang) ? "Sembunyikan teks untuk tampilan layar bersih" : "Sembunyikan teks untuk paparan skrin bersih (Clean Look)"));
         options.add(new WallpaperOption("TOGGLE_DESC", tDsc, sDsc));
-
-        String tNxt = AppLanguage.LANG_EN.equals(curLang) ? "⏭️ Change Wallpaper Now" : (AppLanguage.LANG_ID.equals(curLang) ? "⏭️ Ganti Gambar Sekarang" : "⏭️ Tukar Gambar Sekarang");
-        String sNxt = AppLanguage.LANG_EN.equals(curLang) ? "Cycle and display next wallpaper immediately" : (AppLanguage.LANG_ID.equals(curLang) ? "Putar dan tampilkan gambar berikutnya sekarang juga" : "Putar dan paparkan gambar seterusnya serta-merta");
-        options.add(new WallpaperOption("NEXT", tNxt, sNxt));
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -4773,28 +4794,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             row.setOnClickListener(v -> {
                 if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                 SoundEffects.playSelect();
-                if ("NEXT".equals(chosenKey)) {
-                    if (wallpapers != null && !wallpapers.isEmpty()) {
-                        showNextWallpaper(true);
-                        if (wallpaperIntervalMs > 0 && wallpapers.size() >= 2) {
-                            handler.removeCallbacks(wallTick);
-                            handler.postDelayed(wallTick, wallpaperIntervalMs);
-                        }
-                        TvFeedback.show(MainActivity.this, R.string.next_wallpaper_toast, Toast.LENGTH_SHORT);
-                    }
-                } else if ("INTERVAL".equals(chosenKey)) {
-                    showWallpaperIntervalDialog();
-                } else if ("TOGGLE_SHUFFLE".equals(chosenKey)) {
-                    boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
-                    boolean newMode = !current;
-                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
-                            .putBoolean("shuffle_mode", newMode)
-                            .remove("shuffle_cycle")
-                            .remove("shuffle_position")
-                            .apply();
-                    TvFeedback.show(MainActivity.this, newMode ? R.string.wallpaper_shuffle_random : R.string.wallpaper_shuffle_ordered, Toast.LENGTH_SHORT);
-                    showWallpaperDialog();
-                } else if ("TOGGLE_DESC".equals(chosenKey)) {
+                if ("TOGGLE_DESC".equals(chosenKey)) {
                     boolean current = isWallpaperDescEnabled();
                     boolean newMode = !current;
                     setWallpaperDescEnabled(newMode);
