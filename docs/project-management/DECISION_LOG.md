@@ -223,3 +223,8 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 | APK artifact publication / installation in F02 | NOT PERFORMED — by approved policy |
 
 The remaining Draft/open PRs are intentional staged source/integration records pending Project G final audit and merge. They are not being handed to G as unresolved F02 code defects.
+
+
+## F02 final exact-head CI evidence — 3 November 2026
+- F02 head `190b698453a96da8ec2db31da2eefac836849a10` passed run #41522215859; both jobs SUCCESS, 42 Python tests / 1 intentional merge-time README count skip, Android unit tests and release build passed, APK 1,565,713 bytes with 7,151 bytes headroom; no artifact.
+- C07 owner #24 and D01 owner #51 exact-head CI passed. Host/source exit criteria are complete; physical acceptance is DEFERRED_TO_G.
