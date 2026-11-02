@@ -2182,7 +2182,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroShelf != null && isWallpaperDescEnabled()) {
             heroShelf.setVisibility(View.VISIBLE);
         }
-        String[] about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
+        String[] about = WallpaperMetadata.describe(picture);
+        if (about == null) {
+            about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
+        }
         String title = about != null ? titleCase(about[0]) : null;
         String overview = about != null ? about[1] : "";
         String country = about != null && about.length > 2 ? about[2] : "";
