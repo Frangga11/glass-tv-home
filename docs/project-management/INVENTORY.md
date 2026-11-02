@@ -219,3 +219,10 @@
 - Audited B01–B03 (#10–#12), C01–C07 (#18–#24), D01–D07 (#25–#31), and E01–E08 (#34–#41) diffs. Shared-file hotspots and ownership contracts are recorded in `F01_INTEGRATION_DEPENDENCY_AUDIT.md`.
 - Exact-head CI evidence checked: E01 #609, E02 #623, E03 #626, E04 #629, E05 #663, E06 #668, E07 #688, E08 #702 — all PASS on the recorded source/test SHAs. B01/B02/B03, C07, D05 and D07 checkpoints also sampled as PASS.
 - PRs remain Draft/open/unmerged under D-013. No APK published/installed and no physical acceptance claimed.
+
+
+## F01 expanded dependency audit — 2 Nov 2026
+- Coverage expanded to B01–B07, C01–C07, D01–D07 and E01–E08. B04/B05/PR15 already merged before D-013; B-series integration CI #254/#257 PASS. B06/B07 remain Draft/open/unmerged.
+- Current source/test CI checks across B/C/D/E branches are PASS; detailed run numbers and exact branch heads are in `F01_INTEGRATION_DEPENDENCY_AUDIT.md`.
+- Parent/base drift register: PR #11/#12/#17/#18/#19/#21/#24/#29/#34. All currently mergeable, but newer parent changes require preservation and integrated regression during grouped integration.
+- Isolated branch `integration/f01-rehearsal-only`, Draft PR #42 against current D07, is mergeable. CI #708 PASS; #709/#710 pending at this checkpoint. No merge, APK publication/installation or physical acceptance.
