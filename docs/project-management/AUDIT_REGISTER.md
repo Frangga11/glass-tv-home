@@ -402,3 +402,19 @@ Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MA
 - Canonical E00 report, roadmap, inventory, audit register, operations log, master project and handover were re-read from `docs/project-master-inventory` after merge.
 - E00 scope is closed: documentation/inventory/dependency reconciliation only. No application source, feature PR, APK, user data, TV setting, installation or physical-device acceptance was changed or claimed.
 - **Next work unit: E01 — Device Settings & Launcher audit.** Begin with exact dependency heads and the A06 read-only HOME resolver/preferred-activity discrepancy. Preserve D-013/D-014; do not merge feature PRs early.
+
+
+## E02 global Settings UI and modal consistency audit — 2 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Global ownership | PASS | B01 owns canonical visual tokens and modal window contract; B02/B03 own global focus/dialog behavior; B04–B07 and D/E feature owners adopt the shared contract; F verifies integrated UI; G closes cross-project findings. |
+| Canonical visual tokens | PASS | `TvUiTokens.java` blob `cf91d8da298639fcba1451c777f3ddf603f6703a` is byte-identical on B01, B02, B03, B06, B07, D03, D04 and E01 branches. Covers Settings shell/surfaces, sidebar tabs, selected state, card/switch rows, typography, spacing, focus scale and navigation geometry. |
+| Canonical modal contract | PASS | `TvDialogStyle.java` blob `85d67a718523d28a907d6bcd531e205e26507519` is byte-identical on B01, B02, B03, B06, B07, D03, D04, E01 and C01/C03/C06 branches. Covers AlertDialog/custom Dialog/ProgressDialog surface, dimming, centering and viewport bounds. |
+| Settings tabs/subtabs | SOURCE PASS | Sidebar/profile tabs, shared card rows, switch rows, search input and main Settings shell now consume canonical tokens/window helper on B01/B02/B03/B06/B07/D03/D04/E01. Owner-specific tab content remains intact. |
+| Cross-project popup adoption | SOURCE PASS | WeatherActivity, UserSwitchDialog and AppUpdateManager dialogs standardized across B-series and D/E feature branches; C01/C03/C06 QR/upload custom windows use the same modal contract. C02 installer screen contains no AlertDialog/Dialog/PopupWindow/ProgressDialog; feedback is inline. |
+| Exact-head CI | PASS | B01 #563; B02 #565; B03 #567; B06 #569; B07 #571; D03 #574; D04 #576. E01 #578 PASS after completion. All affected PRs reported mergeable after B02→B03 and B06→B07 dependency sync. |
+| PR / merge | OPEN / DRAFT / UNMERGED | No feature PR merged. Continue D-013 grouped integration at F/G; exact heads must be rechecked before merge. |
+| Runtime / physical TV acceptance | DEFERRED, NOT WAIVED | F-stage must inspect every Settings tab/subtab and representative modal on target Android TV using D-pad/remote: selected vs focused state, focus return, clipping/scrolling, long text, modal bounds, dimming, backdrop, cancellation and action behavior. No APK installed and no physical-TV acceptance claimed. |
+
+**Disposition:** source-level global standardization is implemented and exact-head CI passed for the listed branches. This is not yet a claim of visually perfect or fully accepted UI until F-stage integrated and physical-TV checks pass. Preserve all feature ownership and do not merge early.
