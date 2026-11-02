@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.view.Gravity;
@@ -207,6 +206,12 @@ public final class ChildModeManager {
         preferences.edit().putStringSet(key, updated).apply();
     }
 
+    static boolean addAppPolicyPackage(Set<String> seenPackages, String packageName, String ownPackage) {
+        if (seenPackages == null || packageName == null || packageName.trim().isEmpty()
+                || packageName.equals(ownPackage)) return false;
+        return seenPackages.add(packageName);
+    }
+
     static Set<String> updatedPackageSet(Set<String> current, String packageName, boolean enabled) {
         Set<String> updated = current == null ? new HashSet<>() : new HashSet<>(current);
         if (packageName != null) {
@@ -404,12 +409,7 @@ public final class ChildModeManager {
             if (callback != null) callback.onCancelled();
         });
         dialog.show();
-
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int w = (int) (340 * density);
-            dialog.getWindow().setLayout(w, LinearLayout.LayoutParams.WRAP_CONTENT);
-        }
+        TvDialogStyle.applyCustom(dialog, ctx, 380, 0, 0.68f);
 
         if (firstKey != null) firstKey.requestFocus();
     }

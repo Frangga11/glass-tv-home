@@ -19,6 +19,7 @@ import java.util.Locale;
 public class WeatherActivity extends Activity {
 
     private WeatherBackgroundView weatherBgView;
+    private boolean reducedMotion;
     private TextView weatherLocation;
     private View btnChangeLocation;
     private TextView weatherMainTemp;
@@ -60,9 +61,23 @@ public class WeatherActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        reducedMotion = Config.isReducedMotion(this);
         setContentView(R.layout.activity_weather);
 
         weatherBgView = findViewById(R.id.weatherBgView);
+        if (weatherBgView != null) {
+            weatherBgView.setReducedMotion(reducedMotion);
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                if (am != null) {
+                    am.getMemoryInfo(mi);
+                    if (mi.totalMem <= 1610612736L) weatherBgView.setLowSpecMode(true);
+                }
+            } catch (Exception ignored) {
+                // Keep the normal visual mode when device memory information is unavailable.
+            }
+        }
         weatherLocation = findViewById(R.id.weatherLocation);
         btnChangeLocation = findViewById(R.id.btnChangeLocation);
         weatherMainTemp = findViewById(R.id.weatherMainTemp);
@@ -142,7 +157,7 @@ public class WeatherActivity extends Activity {
                 getString(R.string.weather_set_background_mood)
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(R.string.weather_location_dialog_title);
         builder.setItems(topOptions, (dialog, which) -> {
             dialog.dismiss();
@@ -155,7 +170,9 @@ public class WeatherActivity extends Activity {
             }
         });
         builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showWeatherAnimationPicker() {
@@ -170,7 +187,7 @@ public class WeatherActivity extends Activity {
                 getString(R.string.weather_restore_live)
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(R.string.weather_mood_dialog_title);
         builder.setItems(conditions, (dialog, which) -> {
             dialog.dismiss();
@@ -197,7 +214,9 @@ public class WeatherActivity extends Activity {
             populateUi();
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showAsiaCountryDialog() {
@@ -213,7 +232,7 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(R.string.weather_region_picker_title);
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
@@ -223,7 +242,9 @@ public class WeatherActivity extends Activity {
             showStationListDialog(chosenRegion);
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showStationListDialog(String region) {
@@ -244,7 +265,7 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(getString(R.string.weather_station_picker_title, region));
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
@@ -254,7 +275,9 @@ public class WeatherActivity extends Activity {
             WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::populateUi);
         });
         builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void populateUi() {
@@ -529,7 +552,14 @@ public class WeatherActivity extends Activity {
         v.setOnFocusChangeListener((view, hasFocus) -> {
             float s = hasFocus ? scale : 1.0f;
             float elev = hasFocus ? 6f : 0f;
-            view.animate().scaleX(s).scaleY(s).translationZ(elev).setDuration(140).start();
+            if (reducedMotion) {
+                view.animate().cancel();
+                view.setScaleX(s);
+                view.setScaleY(s);
+                view.setTranslationZ(elev);
+            } else {
+                view.animate().scaleX(s).scaleY(s).translationZ(elev).setDuration(140).start();
+            }
         });
     }
 
@@ -539,7 +569,14 @@ public class WeatherActivity extends Activity {
         card.setClickable(true);
         card.setOnFocusChangeListener((view, hasFocus) -> {
             float elev = hasFocus ? 6f : 0f;
-            view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+            if (reducedMotion) {
+                view.animate().cancel();
+                view.setScaleX(1f);
+                view.setScaleY(1f);
+                view.setTranslationZ(elev);
+            } else {
+                view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+            }
         });
     }
 

@@ -239,6 +239,42 @@ public final class ProfileManager {
         }
     }
 
+    /** Atomically select a built-in avatar and clear the profile's custom-photo reference. */
+    public static synchronized boolean selectBuiltInAvatar(Context context, String profileId, int avatarIndex) {
+        if (context == null || profileId == null || avatarIndex < 0 || avatarIndex >= AVATAR_RES_IDS.length) {
+            return false;
+        }
+        List<UserProfile> list = getAllProfiles(context);
+        UserProfile target = null;
+        for (UserProfile profile : list) {
+            if (profileId.equals(profile.id)) {
+                target = profile;
+                break;
+            }
+        }
+        if (target == null) return false;
+
+        String oldPath = target.customAvatarPath;
+        int oldIndex = target.avatarIndex;
+        target.customAvatarPath = null;
+        target.avatarIndex = avatarIndex;
+        JSONArray arr = new JSONArray();
+        for (UserProfile profile : list) arr.put(profile.toJson());
+        SharedPreferences.Editor editor = getPrefs(context).edit()
+                .putString(KEY_PROFILES_JSON, arr.toString());
+        String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
+        if (profileId.equals(activeId)) editor.putInt(KEY_LEGACY_AVATAR, avatarIndex);
+        if (!editor.commit()) {
+            target.customAvatarPath = oldPath;
+            target.avatarIndex = oldIndex;
+            return false;
+        }
+
+        if (oldPath != null) deleteAvatarIfUnreferenced(context, list, profileId, oldPath);
+        cleanupOrphanedAvatarUploads(context);
+        return true;
+    }
+
     public static synchronized boolean clearCustomAvatar(Context context, String profileId) {
         if (context == null || profileId == null) return false;
         List<UserProfile> list = getAllProfiles(context);

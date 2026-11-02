@@ -20,9 +20,9 @@
     <string name="vpn_off">VPN nonaktif</string>
     <string name="home_settings">Layar utama bawaan</string>
     <string name="home_settings_help">Pilih layar utama di pengaturan sistem, lalu tekan tombol Home.</string>
-    <string name="input_key_service_description">Membuka pemilih sumber masukan saat tombol Input pada remote ditekan.</string>
+    <string name="input_key_service_description">Membuka pemilih sumber TV dan mengamati perubahan aplikasi di depan agar Glass TV dapat menyesuaikan perilaku Live TV, HDMI, dan Azan.</string>
     <string name="home_key_name">Tombol Home</string>
-    <string name="home_key_description">Membuat tombol Home pada remote membuka launcher ini.</string>
+    <string name="home_key_description">Menangani tombol Home pada remote yang kompatibel dan membaca dialog daya atau konfirmasi sistem untuk tindakan restart, tidur, dan daya.</string>
     <string name="card_prompt_title">Kartu baru dari %1$s</string>
     <string name="card_prompt_body">%1$s dapat menampilkan kartu di layar utama. Jika disembunyikan, ubin aplikasi tetap seperti biasa.</string>
     <string name="card_prompt_names">Nama kartu: %1$s. Nama aplikasi: %2$s.</string>
@@ -49,6 +49,12 @@
     <string name="media_listener_service_label">Layanan Media Glass TV</string>
 
     <string name="daily_prayer_label">DOA HARIAN  •  AYAT PILIHAN</string>
+    <string name="daily_ayah_popup_title">Daily Verse</string>
+    <string name="daily_ayah_open">READ FULL VERSE  ›</string>
+    <string name="daily_ayah_meaning_label">MEANING</string>
+    <string name="daily_ayah_close">Close</string>
+    <string name="daily_ayah_navigation_hint">Use the directional buttons to scroll.</string>
+    <string name="daily_ayah_translation_unavailable">Translation is not available.</string>
     <string name="prayer_subuh">Subuh</string>
     <string name="prayer_sunrise">Terbit</string>
     <string name="prayer_dhuhr">Dzuhur</string>
@@ -186,7 +192,7 @@
     <string name="info_center_subtitle">Ringkasan sistem dan pintasan tindakan cepat</string>
     <string name="info_system_summary">📋 Ringkasan Sistem:\n• Salat berikutnya: %1$s (%2$s)\n• Cuaca &amp; kualitas udara (US AQI): %3$s\n• Perangkat: status sistem dan pengelolaan memori</string>
     <string name="info_actions_title">Tindakan Cepat:</string>
-    <string name="info_action_smart_boost">🚀 Optimalkan TV (Bebaskan Memori &amp; Bersihkan Cache)</string>
+    <string name="info_action_smart_boost">🚀 Bersihkan Cache TV &amp; Optimalkan Penyimpanan</string>
     <string name="info_action_weather">🌦️ Informasi Cuaca &amp; Kualitas Udara</string>
     <string name="info_action_prayer">🕌 Jadwal Salat &amp; Ayat Pilihan Hari Ini</string>
     <string name="info_action_tips">💡 Tips &amp; Panduan Kontrol TV</string>
@@ -370,9 +376,11 @@
     <string name="add_profile_card_title">➕ Tambah Profil Baru</string>
     <string name="add_profile_card_summary">Buat profil untuk anggota keluarga atau anak</string>
     <string name="lock_apps_count">🔒 Kunci Aplikasi dengan PIN (%1$d aplikasi)</string>
-    <string name="lock_apps_count_summary">Pilih aplikasi yang memerlukan PIN 4 digit untuk dibuka</string>
+    <string name="lock_apps_count_summary">Jumlah aturan PIN yang tersimpan. Aturan berlaku saat Mode Anak aktif.</string>
     <string name="hide_apps_count">👁️ Sembunyikan Aplikasi (%1$d aplikasi)</string>
-    <string name="hide_apps_count_summary">Pilih aplikasi yang disembunyikan dari dok dan kisi layar utama</string>
+    <string name="hide_apps_count_summary">Jumlah aturan sembunyikan yang tersimpan. Aturan berlaku saat Mode Anak aktif.</string>
+    <string name="app_picker_empty">Tidak ada aplikasi TV yang dapat diatur.</string>
+    <string name="app_policy_selected_count">%1$d aplikasi dipilih</string>
     <string name="change_pin_title">🔢 Ubah PIN Keamanan</string>
     <string name="change_pin_summary">Ubah PIN kontrol orang tua 4 digit (PIN saat ini: %1$s)</string>
     <string name="default_pin_label">0000 [Bawaan]</string>
@@ -408,13 +416,38 @@
     <string name="standby_clear_summary">Hapus daftar foto pribadi dari Layar Siaga. Foto asli di penyimpanan tidak ikut dihapus.</string>
     <string name="standby_preview_title">🌙 Pratinjau Layar Siaga Sekarang</string>
     <string name="standby_preview_summary">Lihat pratinjau jam atau foto pribadi di dalam aplikasi sesuai mode yang dipilih.</string>
-    <string name="device_accessibility_section">KONTROL &amp; AKSESIBILITAS</string>
+    <string name="screensaver_settings_section">TAMPILAN &amp; SIAGA TV</string>
+    <string name="cache_system_trim_success">Perintah pembersihan cache sistem Android berhasil dijalankan.</string>
+    <string name="cache_system_trim_skipped">Pembersihan cache sistem Android tidak dapat dikonfirmasi karena akses ADB tidak tersedia, belum diizinkan, atau perintah gagal.</string>
+    <string name="phone_installer_qr_hint">Pindai QR ini dengan HP Android untuk membuka folder installer resmi.</string>
+    <string name="phone_installer_steps">1. Pindai QR menggunakan HP Android.\n2. Unduh glass-tv-installer.apk dari folder release.\n3. Sambungkan HP dan TV ke jaringan Wi-Fi yang sama.\n4. Buka installer, masukkan IP TV atau pindai jaringan, lalu ikuti petunjuk ADB di layar TV.</string>
+    <string name="home_key_status_title">Layanan Tombol HOME</string>
+    <string name="home_key_status_summary">Status: %1$s. Dibutuhkan untuk pemetaan tombol HOME pada remote tertentu, restart, daya, dan tidur otomatis.</string>
+    <string name="input_key_status_title">Layanan Tombol INPUT</string>
+    <string name="input_key_status_summary">Status: %1$s. Membuka pemilih HDMI/sumber dan membantu mendeteksi Live TV atau HDMI untuk perilaku Azan.</string>
+    <string name="notification_access_title">Akses Notifikasi Now Playing</string>
+    <string name="notification_access_summary">Status: %1$s. Izinkan agar informasi musik dapat tampil pada kartu Now Playing.</string>
+    <string name="device_service_enabled">Diaktifkan di Android</string>
+    <string name="device_service_disabled">Belum diaktifkan</string>
+    <string name="screensaver_settings_title">Screensaver Bawaan Android</string>
+    <string name="screensaver_settings_summary">Atur kapan Android menjalankan screensaver. Glass TV menyediakan ClockDream yang memakai tampilan dan koleksi foto Layar Siaga Glass TV; aktivasi screensaver tetap dikelola Android.</string>
+    <string name="display_timeout_title">Waktu Layar Mati</string>
+    <string name="display_timeout_summary">Buka pengaturan tampilan Android untuk mencari waktu layar mati. Pengaturan ini tidak mengubah pemicu internal Layar Siaga Glass TV; menu yang tersedia mengikuti firmware TV.</string>
+    <string name="home_candidates_summary">Pilihan Home terdeteksi: %1$d</string>
+    <string name="home_candidates_heading">Pilihan launcher yang terdeteksi:</string>
+    <string name="home_current_heading">Hasil resolver HOME Android:</string>
+    <string name="home_status_unknown">Belum dapat dipastikan</string>
+    <string name="home_refresh_summary">Baca ulang hasil resolver HOME dan daftar launcher setelah kembali dari Pengaturan Android.</string>
+    <string name="home_refresh_action">Periksa ulang status launcher</string>
+    <string name="adb_command_copied">Perintah ADB disalin. Jalankan dari komputer yang terhubung ke TV.</string>
+    <string name="home_picker_unavailable">Pengaturan pemilih Home tidak tersedia pada firmware ini.</string>
+    <string name="device_accessibility_section">KONTROL HOME, REMOTE &amp; AKSESIBILITAS</string>
     <string name="power_maintenance_section">DAYA &amp; PEMELIHARAAN</string>
     <string name="device_information_section">INFORMASI PERANGKAT</string>
     <string name="system_settings_section">PENGATURAN SISTEM</string>
     <string name="system_updates_section">PEMBARUAN SISTEM</string>
-    <string name="launcher_is_default">Glass TV aktif sebagai peluncur utama.</string>
-    <string name="launcher_currently_active">Peluncur aktif saat ini: %1$s</string>
+    <string name="launcher_is_default">Android saat ini mengarahkan HOME ke Glass TV.</string>
+    <string name="launcher_currently_active">Hasil resolver HOME saat ini: %1$s</string>
     <string name="default_launcher_status_title">🏠 Status &amp; Pengaturan Peluncur Utama</string>
     <string name="default_launcher_status_summary">%1$s Pilih untuk melihat cara menetapkan Glass TV sebagai Home.</string>
     <string name="accessibility_remote_title">♿ Aksesibilitas &amp; Tombol Remote</string>
@@ -459,15 +492,14 @@
     <string name="locked_apps_label">terkunci</string>
     <string name="open_home_picker_title">⚙️ Buka Pengaturan Pemilih Peluncur TV</string>
     <string name="open_home_picker_summary">Coba buka menu Android untuk memilih Glass TV sebagai peluncur utama (jika didukung TV).</string>
-    <string name="set_home_adb_title">💻 Tetapkan Permanen melalui Perintah ADB (Disarankan)</string>
+    <string name="set_home_adb_title">Salin Perintah ADB (Lanjutan)</string>
     <string name="phone_installer_title">📱 Tanpa PC: Gunakan Aplikasi Telepon (Glass TV Installer)</string>
     <string name="phone_installer_summary">Pasang release/glass-tv-installer.apk pada telepon Android di jaringan Wi-Fi yang sama untuk mengaktifkan Home secara otomatis dalam satu klik.</string>
-    <string name="default_launcher_success">✅ Berhasil! Glass TV Home kini menjadi peluncur utama perangkat Anda. Setiap kali tombol Home pada remote ditekan, perangkat akan kembali ke Glass TV.</string>
+    <string name="default_launcher_success">Glass TV Home saat ini dipilih Android sebagai peluncur HOME. Uji tombol Home pada remote untuk memastikan firmware TV benar-benar mengarah ke Glass TV.</string>
     <string name="default_launcher_explanation">⚠️ Peluncur aktif saat ini: %1$s
 
 Sebagian besar Android TV dan Google TV membatasi tombol Home agar tetap membuka layar utama bawaan produsen. Pilih salah satu cara berikut untuk menetapkan Glass TV sebagai peluncur utama:</string>
-    <string name="adb_command_guidance">Jalankan perintah ini melalui PC atau asisten pemrograman:
-adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity%1$s</string>
+    <string name="adb_command_guidance">Perintah ini hanya menetapkan preferensi HOME. Firmware tertentu dapat tetap memilih launcher bawaan. Jangan nonaktifkan launcher bawaan secara manual; gunakan installer Glass TV yang memiliki pemeriksaan dan rollback.</string>
     <string name="disable_old_launcher_hint">
 
 Jika TV masih membatasi tombol Home, nonaktifkan peluncur lama:
@@ -479,7 +511,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="standby_photos_skipped">%1$d foto dilewati karena batas koleksi.</string>
     <string name="wifi_settings_label">Pengaturan Wi-Fi</string>
     <string name="glass_tv_settings_label">Pengaturan Glass TV</string>
-    <string name="restart_tv_requested">Perintah mulai ulang dikirim ke Android TV.</string>
+    <string name="restart_tv_requested">Menu daya dibuka. Jika TV tidak mulai ulang, pilih Restart secara manual.</string>
     <string name="restart_tv_failed">Tidak dapat memulai ulang. Aktifkan layanan aksesibilitas Glass TV terlebih dahulu.</string>
     <string name="power_menu_opened">Menu daya Android TV dibuka. Jika tidak mati otomatis, pilih Matikan / Power off pada menu sistem. Mematikan TV fisik bergantung pada HDMI-CEC.</string>
     <string name="power_menu_failed">Tidak dapat mengirim perintah daya. Periksa layanan aksesibilitas Glass TV dan HDMI-CEC TV.</string>

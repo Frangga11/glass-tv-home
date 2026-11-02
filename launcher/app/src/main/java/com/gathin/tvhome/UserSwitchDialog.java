@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -285,15 +284,7 @@ public final class UserSwitchDialog {
         dialogHolder[0] = dialog;
         dialog.show();
 
-        Window win = dialog.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            win.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            win.setDimAmount(0.65f);
-            int w = Math.min((int) (580 * density), (int) (dm.widthPixels * 0.85f));
-            win.setLayout(w, ViewGroup.LayoutParams.WRAP_CONTENT);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(dialog, activity, 580, 0, 0.68f);
 
         profRow.getChildAt(0).requestFocus();
     }
@@ -330,7 +321,7 @@ public final class UserSwitchDialog {
                 activity.getString(R.string.parent_pin_delete_message, profileName),
                 new ChildModeManager.PinCallback() {
                     @Override public void onSuccess() {
-                        new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        AlertDialog deleteDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                                 .setTitle(activity.getString(R.string.delete_profile_title, profileName))
                                 .setMessage(R.string.delete_profile_message)
                                 .setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss())
@@ -344,7 +335,9 @@ public final class UserSwitchDialog {
                                     } else {
                                         TvFeedback.show(activity, R.string.profile_delete_failed, Toast.LENGTH_LONG);
                                     }
-                                }).show();
+                                }).create();
+                        deleteDialog.show();
+                        TvDialogStyle.apply(deleteDialog, activity, 520, 0);
                     }
                     @Override public void onCancelled() { }
                 });
@@ -542,12 +535,6 @@ public final class UserSwitchDialog {
         dHolder[0] = d;
         d.show();
 
-        Window w = d.getWindow();
-        if (w != null) {
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.85f));
-            w.setLayout(dw, ViewGroup.LayoutParams.WRAP_CONTENT);
-            w.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(d, activity, 520, 0, 0.68f);
     }
 }

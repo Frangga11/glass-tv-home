@@ -298,7 +298,71 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Home Screen";
             case LANG_ID: return "Layar Utama";
-            case LANG_MS: default: return "Skrin Utama";
+            default: return "Layar Utama";
+        }
+    }
+
+    public static String strDailyPrayerPanelTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Daily Prayer & Prayer Times Panel";
+            case LANG_ID: return "Panel Doa Harian & Waktu Salat";
+            default: return "Panel Doa Harian & Waktu Salat";
+        }
+    }
+
+    public static String strDailyPrayerPanelSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Show the selected verse and local prayer timetable";
+            case LANG_ID: return "Tampilkan ayat pilihan dan jadwal salat setempat";
+            default: return "Tampilkan ayat pilihan dan jadwal salat setempat";
+        }
+    }
+
+    public static String strDailyAyahTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Daily Verses & Prayers";
+            case LANG_ID: return "Ayat & Doa Harian";
+            default: return "Ayat & Doa Harian";
+        }
+    }
+
+    public static String strDailyAyahSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Show a selected Quran verse and daily prayer above the prayer timetable";
+            case LANG_ID: return "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat";
+            default: return "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat";
+        }
+    }
+
+    public static String strInterfaceSoundTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Interface Sound Effects";
+            case LANG_ID: return "Efek Suara Antarmuka";
+            default: return "Efek Suara Antarmuka";
+        }
+    }
+
+    public static String strInterfaceSoundSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Choose a sound profile or turn interface sounds off";
+            case LANG_ID: return "Pilih profil suara atau matikan suara antarmuka";
+            default: return "Pilih profil suara atau matikan suara antarmuka";
+        }
+    }
+
+    public static String strAzanSettingsTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Azan Settings";
+            case LANG_ID: return "Pengaturan Azan";
+            default: return "Pengaturan Azan";
+        }
+    }
+
+    public static String strAzanSettingsSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Configure azan audio and prayer-time reminders";
+            case LANG_ID: return "Atur audio azan dan pengingat waktu salat";
+            default: return "Atur audio azan dan pengingat waktu salat";
         }
     }
 
@@ -602,9 +666,9 @@ final class AppLanguage {
 
     public static String strCleanCacheDoneTitle(Context ctx) {
         switch (getLanguage(ctx)) {
-            case LANG_EN: return "✨ Cleaning Complete";
-            case LANG_ID: return "✨ Pembersihan Selesai";
-            case LANG_MS: default: return "✨ Pembersihan Selesai";
+            case LANG_EN: return "Cache Cleaning Result";
+            case LANG_ID: return "Hasil Pembersihan Cache";
+            case LANG_MS: default: return "Hasil Pembersihan Cache";
         }
     }
 
@@ -612,17 +676,17 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN:
                 return hasFreed
-                        ? "✅ Successfully cleaned " + freedStr + " of cache files!\nTV storage is now lighter and smoother."
-                        : "✅ TV cache is already completely clean.\nTV storage and memory are at optimal levels.";
+                        ? "Removed " + freedStr + " of app cache and temporary files."
+                        : "No app cache or temporary files were removed. There may be nothing to clear, or some files could not be removed.";
             case LANG_ID:
                 return hasFreed
-                        ? "✅ Berhasil membersihkan " + freedStr + " file cache!\nPenyimpanan TV kini lebih lega dan lancar."
-                        : "✅ Cache TV sudah bersih sepenuhnya.\nPenyimpanan dan memori TV berada pada tingkat optimal.";
+                        ? "Berhasil menghapus file cache aplikasi dan file sementara sebesar " + freedStr + "."
+                        : "Tidak ada file cache aplikasi atau sementara yang berhasil dihapus. Bisa jadi tidak ada file yang perlu dibersihkan, atau sebagian file tidak dapat dihapus.";
             case LANG_MS:
             default:
                 return hasFreed
-                        ? "✅ Berjaya membersihkan " + freedStr + " fail cache!\nStoran TV kini lebih ringan dan lancar."
-                        : "✅ Cache TV telah dibersihkan sepenuhnya.\nStoran dan memori TV berada pada tahap optimum.";
+                        ? "Berjaya memadam fail cache aplikasi dan fail sementara sebanyak " + freedStr + "."
+                        : "Tiada fail cache aplikasi atau sementara yang berjaya dipadam. Mungkin tiada fail untuk dibersihkan, atau sebahagian fail tidak dapat dipadam.";
         }
     }
 
