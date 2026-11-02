@@ -820,3 +820,14 @@ F02 latest head `558762994dec05a7ae03a924c33a3ed11665c224`: push CI #41513940620
 - Current exact head: c1f212585633899d4c1f5327d3a982a9e136e2b7.
 - CI run #41519813674: Lists/tools/docs job SUCCESS; Launcher build/unit-test job still IN_PROGRESS at last poll. Do not close the new findings until both jobs complete successfully on this exact head.
 - No APK artifact publication, installation, or physical Android TV testing. Phone-to-TV LAN cancellation, expiry, concurrent throughput, and low-storage behavior remain DEFERRED_TO_G.
+
+
+## F02 exact-head upload storage retest — 3 November 2026
+
+| Finding | Exact-head evidence | Status |
+|---|---|---|
+| F02-RES-001 concurrent QR upload storage | F02 source/test head c1f212585633899d4c1f5327d3a982a9e136e2b7 passed PR CI #41519813674. New reservation policy, JUnit boundary tests and Python source-contract tests passed. | HOST/SOURCE PASS / DEVICE ACCEPTANCE DEFERRED_TO_G |
+| F02-C07-001 upload commit shutdown coverage | Same exact-head run passed explicit tests for custom Wallpaper rename/callback and StandBy persistence/callback critical sections. | HOST/SOURCE PASS / DEVICE ACCEPTANCE DEFERRED_TO_G |
+| F02-TEST-002 reservation regression coverage | 42 Python tests passed; Launcher testReleaseUnitTest passed. | HOST TEST PASS |
+
+APK size 1,565,621 bytes; cap 1,572,864 bytes; 7,243 bytes headroom. F02-BUILD-001 remains a P3 watchlist. Current F02 docs-only head 1845635091969c2475bb0d26783bc0f7eb58c1c0; CI #41520194974 queued at last poll. PR #50 remains Draft/open/unmerged; no APK publication or physical device testing.
