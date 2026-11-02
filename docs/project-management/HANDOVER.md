@@ -730,3 +730,9 @@ This result supersedes the preceding note that CI #626 was in progress.
 - F02-RES-001 and supplemental upload shutdown coverage are HOST/SOURCE VERIFIED. Storage remains a P3 budget watchlist; no asset quality tradeoff made.
 - F02 findings-register documentation update produced new head 1845635091969c2475bb0d26783bc0f7eb58c1c0. Exact-head CI run #41520194974 was queued at last poll; keep F02 partial until it completes.
 - PR #50 remains Draft/open/unmerged. No APK artifact publication, installation, or physical Android TV testing. Project G owns LAN concurrency, low-storage, cancellation and device acceptance.
+
+## F02 process-wide reservation refinement — 3 November 2026
+- Follow-up lifecycle review found that stopped WallpaperUploadServer workers can briefly drain while a replacement QR server instance is started. Per-instance reservation accounting would not include those residual writes in the replacement session's free-space calculation.
+- Changed the reservation ledger to a process-wide static lock/counter shared across all WallpaperUploadServer instances. Old and new session reservations remain counted until each request's finally block releases them. Updated the source-contract test accordingly.
+- Latest F02 head a95b21becad238dd634dda1e79aa9de36d749d8c; PR #50 remains Draft/open/unmerged. Exact-head CI run #41520409999 was queued at last poll. The prior instance-local implementation passed #41519813674, but that result does not close the process-wide refinement.
+- No change to 64 MiB margin, per-file size limit, StandBy collection limits, or upload success behavior. No APK publication/installation or physical TV test; Project G retains LAN and low-storage acceptance.
