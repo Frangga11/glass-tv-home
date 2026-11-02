@@ -3329,7 +3329,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strClose(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 520, 0);
     }
 
     void showAzanSettingsDialog() {
@@ -3763,7 +3763,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 520, 0);
+        Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (positive != null) positive.requestFocus();
     }
 
     void showTurnOffDialog() {
@@ -3781,7 +3783,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 520, 0);
+        Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (positive != null) positive.requestFocus();
     }
 
     void showCleanTvCacheDialog() {
@@ -3816,7 +3820,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         .setPositiveButton(AppLanguage.strDone(MainActivity.this), (d, w) -> d.dismiss())
                         .create();
                 resDialog.show();
-                styleGlassDialog(resDialog);
+                styleDeviceSettingsPopup(resDialog, 600, 0);
                 Button btnOk = resDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                 if (btnOk != null) btnOk.requestFocus();
             });
@@ -3824,7 +3828,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 600, 0);
         Button btnPos = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (btnPos != null) btnPos.requestFocus();
     }
@@ -3934,15 +3938,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         dialog.show();
-        styleGlassDialog(dialog);
-
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setBackgroundDrawableResource(android.R.color.transparent);
-            int width = Math.min((int) (680 * density), (int) (getResources().getDisplayMetrics().widthPixels * 0.85f));
-            window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
-            window.setGravity(Gravity.CENTER);
-        }
+        styleDeviceSettingsPopup(dialog, 680, 560);
 
         if (btnCheckNow != null) btnCheckNow.requestFocus();
     }
@@ -3983,7 +3979,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 600, 480);
     }
 
     private void updateNowPlayingUi(NowPlayingManager.MediaInfo info) {
@@ -4931,6 +4927,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 });
             }
         } catch (Exception ignored) {}
+    }
+
+
+
+    /**
+     * Shared visual contract for app-owned popups opened from the Device Settings tab.
+     * Keep the surface opaque and consistent across confirmation, result, list and custom-view dialogs.
+     */
+    void styleDeviceSettingsPopup(AlertDialog dialog, int maxWidthDp, int maxHeightDp) {
+        if (dialog == null) return;
+        styleGlassDialog(dialog);
+        Window window = dialog.getWindow();
+        if (window == null) return;
+        try {
+            window.setBackgroundDrawableResource(R.drawable.bg_glass_dialog);
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            window.setDimAmount(0.68f);
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int width = Math.min((int) (Math.max(420, maxWidthDp) * density), (int) (dm.widthPixels * 0.88f));
+            int height = maxHeightDp > 0
+                    ? Math.min((int) (maxHeightDp * density), (int) (dm.heightPixels * 0.88f))
+                    : ViewGroup.LayoutParams.WRAP_CONTENT;
+            window.setLayout(width, height);
+            window.setGravity(Gravity.CENTER);
+        } catch (Exception e) {
+            android.util.Log.w("TvHome", "Could not apply Device Settings popup style", e);
+        }
     }
 
     private File getBundledDefaultWallpaper() {
