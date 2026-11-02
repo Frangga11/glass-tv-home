@@ -3,7 +3,7 @@
 **Date:** 2 November 2026  
 **Branch:** `feature/e05-information-center-ayah`  
 **Base:** E04 exact head `08076bb945a169de198905152a092f419f48aa82`  
-**Status:** Source audit and targeted correction committed; exact-head CI and Project F device acceptance pending.
+**Status:** E05-F01 through E05-F04 source corrections committed. Exact-head CI PASS on code head `37dab64cc99f11ef6670840c351f32fe91da6b24` (run #41427317877); Project F physical-device acceptance remains pending.
 
 ## Scope audited
 
@@ -79,8 +79,8 @@ The Home shelf now treats the daily ayah as a compact, explicitly labeled previe
 
 ## Verification
 
-- Source inspection and targeted diff review completed.\n- E05-F04 reader implementation committed; exact-head CI must pass before source gate closure.
-- Exact-head GitHub Actions CI: PENDING at report creation; must pass both launcher build/unit tests and lists/tools/docs.
+- Source inspection and targeted diff review completed.\n- E05-F04 reader implementation committed and exact-head CI passed on the implementation head noted above.
+- Exact-head GitHub Actions CI: PASS on `37dab64cc99f11ef6670840c351f32fe91da6b24`, run #41427317877. Both `Launcher build and unit tests` (including release build, unit tests and APK-size guard) and `Lists, tools and docs` completed successfully. Re-run CI for any subsequent feature-branch commit.
 - Physical 1920x1080 Mi TV Stick rendering, long-verse clipping, D-pad/Back/scroll behavior, and performance remain Project F acceptance items. They are deferred, not waived.
 - No APK publication/installation, physical device test, feature merge, or release approval is claimed.
 
