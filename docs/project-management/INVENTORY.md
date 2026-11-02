@@ -252,3 +252,20 @@
 - Full candidate retains B03 fallback/dialog policy, B06 feedback components, SettingsFocusPath test coverage and C07 request-deadline/session protection. B-series branch remains a distinct checkpoint; no blind merge/overwrite.
 - Device matrix remains pending: remote/focus/Back; popup/dialog and Glass ON/OFF; profile/security; Weather/AQI; QR upload; wallpaper Quick Control vs Appearance; StandBy; process death/reboot; 1080p/4K.
 - No device APK published/installed; no PR/main/release merge. D-013 active. See `F02_INTEGRATED_FUNCTIONAL_REGRESSION.md`.
+
+
+## Project F02 source and validation inventory — 3 November 2026
+
+| Area | Current source / evidence | Status |
+|---|---|---|
+| F02 validation branch | `integration/project-f02-system-validation`, PR #50 Draft; checkpoint `1658237bafdb24167391270f3ad8f694751a6c2a` | IN PROGRESS |
+| F02 test policy | `F02_INTEGRATED_SYSTEM_VALIDATION.md` | ACTIVE; physical tests deferred to G |
+| Findings register | `F02_FINDINGS_REGISTER.md` | OPEN / RETEST PENDING |
+| B01 modal owner | `feature/b01-global-navigation-retention`, PR #10; latest test checkpoint `b1c23024d0de740c36e1794ab775fdc43c7a3a20` | CI IN PROGRESS |
+| D05 modal regression | `feature/d05-standby-photo-atomic-persistence`, PR #29; latest checkpoint `7f043943ab0c1d2d1217fc56845d81ac7583c96d` | CI IN PROGRESS |
+| D06 Azan export boundary | `feature/d06-process-death-recovery`, PR #30; latest checkpoint `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7` | CI IN PROGRESS |
+| D01 broadcast authorization | `fix/d01-location-broadcast-authorization`, PR #51; head `bbb13dd107c86cda85bd1482c2f050ca69dfc4e2` | CI PASS; ADB compatibility DEFERRED_TO_G |
+| Regression tests | `tests/test_dialog_modal_contract.py`, `tests/test_main_activity_modal_contract.py`, `tests/test_location_broadcast_manifest_security.py`, `tests/test_prayer_component_manifest_security.py` | ADDED; exact-head CI gates apply |
+| CI workflow | `.github/workflows/ci.yml` | Release compilation validation-only; no APK publication |
+
+No branch was merged. Source branches remain preserved. No physical Android TV test or APK installation/publication was performed.
