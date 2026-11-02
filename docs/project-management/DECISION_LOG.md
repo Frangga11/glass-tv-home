@@ -161,3 +161,13 @@ Implementation checkpoint: `integration/b-series` created from `d7b76c4a22c9eadf
 | F-018 | Do not close an F02 finding on code commit or build success alone. | Require source-owner exact-head CI, F02 exact-head CI, regression coverage, cross-branch diff review, and explicit Project G deferral for device-only acceptance. | APPROVED / ACTIVE |
 
 All related PRs remain Draft/open/unmerged. No APK publication, installation, or physical device test is performed during F02.
+
+
+## F02 follow-up decisions — 3 November 2026
+
+| ID | Decision | Rationale / boundary | Status |
+|---|---|---|---|
+| F-019 | B01 HomeKeyService must preserve single Home, double Home Recent Apps, double Home Close All, and long-press Settings as distinct gestures. | HomeKeyService consumes key events; immediate single-Home handling previously prevented the documented double-press gesture. Use a 350 ms double threshold and 400 ms delayed single action; retain disabled KEYCODE_APP_SWITCH policy. Project G verifies real remote timing. | IMPLEMENTED / LATEST CI PENDING |
+| F-020 | LocationActivity is internal-only and declared non-exported. | No intent filter or external caller contract; MainActivity retains explicit in-app launch. | IMPLEMENTED / D01 CI PASS |
+| F-021 | Keep RecentAppsActivity's exported ACTION_MAIN entry pending external contract verification; do not remove it blindly. | No in-repository external caller found, but it may be a legacy OEM/assistant/remote entry. Project G must verify; if unused, harden to non-exported. | OPEN / G CONTRACT REVIEW |
+| F-022 | Use Robolectric host tests for actual AlertDialog Window attributes, in addition to source-level guards. | Improves CI proof of centering, dimming and viewport sizing without pretending to validate TV firmware/remote rendering. | IMPLEMENTED / PREVIOUS F02 CI PASS / LATEST RETEST PENDING |
