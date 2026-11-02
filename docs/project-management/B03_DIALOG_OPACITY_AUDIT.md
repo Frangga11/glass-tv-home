@@ -84,3 +84,9 @@ B03's global surface fallback repair is implemented and exact-head CI-verified o
 - PR #12 remains OPEN/DRAFT/UNMERGED and mergeable. No APK installed and no physical TV acceptance claimed.
 
 - Follow-up refinement: the OFF-state solid surface and border now honor GlassDrawable's existing fade alpha, preserving popup open/close animation. This exact refinement is included in the tested head above.
+
+
+## Custom-content dialog boundary — source audit clarification
+- The shared Glass ON/OFF material selector is applied by `TvDialogStyle.apply()` to the shared modal shell, while `TvDialogStyle.applyCustom()` intentionally leaves the content root's background under that component's ownership.
+- Current custom-dialog callers were inspected: the daily-ayah reader supplies its own rounded gradient panel; Settings picker content supplies its own background; profile-switch content supplies its own rounded root surface. These are not empty/transparent panels and are not silently overwritten by the global glass toggle.
+- Therefore the OFF fallback covers shared GlassDrawable-backed pills/menus/anchored popups/dock and shared modal shells. Explicit custom-content surfaces remain their own design material unless a later product decision makes them follow the global toggle. No evidence of the original disappearing-background defect was found in these custom roots.
