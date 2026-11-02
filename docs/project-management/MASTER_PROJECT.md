@@ -451,3 +451,10 @@ This result supersedes the preceding note that CI #626 was in progress.
 - E08 final source/test head `fcd7d8f23a4833830a401652ef269db3282b7300`; exact-head CI #702 / `41473357877` PASS; APK diagnostic 1,562,709 bytes against 1,572,864-byte cap (10,155-byte headroom), publication skipped. PR #41's latest head is report-only after the verified source/test head.
 - E08 UI distinction: Quick Control Wallpaper popup is the compact three-action control center; Appearance > Wallpaper management remains the fuller management route. Shared visual tokens/material rules are reused, not duplicate wallpaper engines. Project F must verify both entry points remain functionally distinct and state-consistent on TV.
 - **Next active stage: Project F.** Start with integration/dependency and combined-diff audit; then CI/regression and physical device acceptance. Retain D-013: grouped integration/merge is deferred to G and requires explicit user approval.
+
+
+## Project F01 — integration/dependency audit checkpoint (2 Nov 2026)
+- F01 is IN PROGRESS. Source diffs and dependency mapping have been reviewed across B01–B03, C01–C07, D01–D07 and E01–E08. This is not yet a combined integration build or runtime acceptance.
+- Main hotspots: `MainActivity.java`; Wallpaper/Avatar upload servers; `TvDialogStyle`/`TvUiTokens`; `ModernSettingsDialog`; weather/profile state; `StandbyPhotoStore`; localized string resources and CI workflow.
+- Exact-source CI evidence for E01–E08 is PASS, including E04 CI #629. B01/B02/B03, C07, D05 and D07 checkpoints sampled in the F01 audit also PASS. See `F01_INTEGRATION_DEPENDENCY_AUDIT.md` for SHAs and evidence.
+- Keep PRs Draft/open/unmerged under D-013. No merge, combined APK publication/installation, or physical TV test was performed. F01 remains open until frozen-head semantic diff and isolated combined software-gate evidence are complete.
