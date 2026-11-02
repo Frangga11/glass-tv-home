@@ -111,3 +111,36 @@ This section supersedes the earlier pending weather/AQI source-repair status abo
 - E05 source corrections are implemented and exact-head CI passed. Weather/AQI visual acceptance, missing/stale state legibility, source attribution, popup layout and remote navigation remain part of Project F's integrated 1080p/4K acceptance.
 - B01/B02/B03 shared popup primitive audit remains owned by Project B; E05 must consume shared dialog primitives and must not fork global modal styling.
 - PR #38 remains OPEN/DRAFT/UNMERGED under D-013. No grouped merge or release approval is claimed.
+
+
+## E05 source-scope finalization and Project F handover — 2 Nov 2026
+
+**Decision: E05 implementation/source scope CLOSED; physical acceptance transferred to Project F.** This is not a release or merge approval.
+
+### Final source verification
+- PR #38 head is exactly `6fe89fad078692958db67030329a6de66cd7ae71`; PR is OPEN, DRAFT, UNMERGED, with base `feature/e04-standby-screensaver`.
+- Exact-head GitHub Actions run #663 (`41433527557`) completed SUCCESS. Both jobs passed: launcher unit tests/release build/APK-size diagnostics/size guard, and Lists/tools/docs. Manual APK publication was SKIPPED.
+- PR file audit: 9 changed files (MainActivity, WeatherActivity, WeatherAirQuality, activity_main layout, default/ID/EN strings, HomeWeatherRequestTest and this audit report); 36 commits; no submitted review records. This is a scope snapshot, not proof of device acceptance.
+- WeatherActivity popup audit: all four AlertDialogs use B01-owned `TvDialogStyle.apply(...)`; no competing E05 modal geometry/dimming implementation found. Shared popup styling remains B-owned.
+- D07 detailed-weather freshness follow-up exact head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`, CI run #642 PASS.
+
+### What is closed
+- E05 ayah preview/reader implementation and source-level integration.
+- Weather/AQI data semantics, no-fabrication behavior, per-source cache success timestamps, generation/location/language guards, coordinate-bound cache, unavailable UI, WMO conditions and Open-Meteo/CAMS model attribution.
+- Regression tests and exact-head CI for the current PR head.
+- Source-level check that E05 consumes the shared B01 popup contract.
+
+### What is explicitly transferred to Project F (not an E05 source blocker)
+1. Physical Mi TV Stick 1920x1080 and 4K acceptance.
+2. D-pad focus order, Back/Escape, scroll, long-verse wrapping, Arabic glyph/harakat integrity and repeated open/close.
+3. Weather/AQI offline/stale behavior, location/language changes and missing-data legibility.
+4. Popup dimensions, clipping, visual consistency, and interaction on actual TV remotes.
+5. Home shelf, wallpaper, prayer timetable, dock and app-grid coexistence.
+
+If F discovers a reproducible defect, return it to the owning source project (B for shared modal primitives, D for state/freshness, E05 for module-specific content/UI); do not reopen unrelated completed work or fork shared UI styling.
+
+### Closure boundaries
+- E05 is **source-complete and CI-verified**, not physically accepted and not release-ready.
+- PR #38 remains Draft/open/unmerged under D-013. Do not merge this PR independently; grouped A–G merge and final release remain Project G gates.
+- No APK publication/installation or physical device test is claimed.
+- Preserve C07 upload resilience and all cross-project ownership decisions.
