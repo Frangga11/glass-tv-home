@@ -93,3 +93,36 @@ No finding is closed until its owning branch/PR contains the fix, regression evi
   3. If external invocation is required, document and enforce a narrowly scoped authorization contract.
   4. Add a manifest/component security regression check.
 - Exit evidence: approved caller boundary, manifest verification, and an automated test/check that rejects unintended external launches.
+
+
+## Remediation update — 3 November 2026
+
+The following fixes have been implemented on owning source branches and mirrored into the F02 validation branch. They remain **OPEN / RETEST PENDING** until exact-head CI and integrated regression evidence are available.
+
+### F02-UI-001 — Shared Settings search modal contract
+- Root cause confirmed by ancestry comparison: the D03/D04 versions applied `TvDialogStyle.apply` to both Settings search dialogs; the D05 revision changed the result dialog to a builder-chained `.show()` and removed the shared style call from the search-input dialog.
+- Owner correction: D05 source branch `feature/d05-standby-photo-atomic-persistence`, follow-up head `8b08076d11569ca91557d25e9d5e58965f2f2de0`, tracked in Draft PR #29.
+- Restored `create → show → TvDialogStyle.apply` for results and applied the same shared contract to the search-input dialog. Search behavior, tab routing, focus restoration and state handling are unchanged.
+- Added `tests/test_dialog_modal_contract.py`; mirrored to F02 integration.
+- D06 dependent branch synchronized at `6ed01d737ff23ce9721dcf92bf48af99794eb3e7`.
+- Status: FIX COMMITTED / CI AND INTEGRATED RETEST PENDING.
+
+### F02-SEC-001 — Location broadcast sender authorization
+- Owner follow-up branch: `fix/d01-location-broadcast-authorization`, head `bbb13dd107c86cda85bd1482c2f050ca69dfc4e2`, Draft PR #51 targeting the D01 branch.
+- Added `android:permission="android.permission.DUMP"` to the exported `LocationBroadcastReceiver`. Both existing actions remain present; receiver logic and persistent state handling are unchanged.
+- This preserves the documented ADB shell/system caller route while denying ordinary third-party app UIDs. Any direct third-party assistant integration is outside this trust contract and must use an authenticated, separately reviewed bridge.
+- Added `tests/test_location_broadcast_manifest_security.py` and documented the boundary in `D01_LOCATION_BROADCAST_SECURITY_FOLLOWUP.md`.
+- Actual ADB-shell compatibility on target TV firmware: DEFERRED_TO_G.
+- Status: FIX COMMITTED / CI AND DEVICE-COMPATIBILITY RETEST PENDING.
+
+### F02-SEC-002 — Prayer alert activity export
+- Owner branch: `feature/d06-process-death-recovery`, head `6ed01d737ff23ce9721dcf92bf48af99794eb3e7`, Draft PR #30.
+- Changed `.AzanActivity` to `android:exported="false"`. The app-owned explicit intent path from `AzanReceiver` and full-screen notification remains unchanged.
+- Added `tests/test_prayer_component_manifest_security.py` covering AzanActivity, AzanReceiver and AzanBootReceiver manifest boundaries.
+- No prayer alarm scheduling, wake-lock, timing, or recovery policy was changed.
+- Status: FIX COMMITTED / CI AND INTEGRATED RETEST PENDING.
+
+### Integrated validation rule
+- All three regression tests are mirrored into this F02 branch and must pass on its exact final head.
+- No finding closes on source commit alone. Require source-branch CI, F02 integrated CI, diff review, and explicit G deferrals where host CI cannot prove device behavior.
+- Project F still does not install, launch, or test on Android TV and does not publish APK artifacts.
