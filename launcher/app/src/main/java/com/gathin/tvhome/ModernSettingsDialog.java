@@ -2120,7 +2120,7 @@ public final class ModernSettingsDialog {
                 .setPositiveButton(R.string.close_label, (d, which) -> d.dismiss())
                 .create();
         dialog.show();
-        activity.styleDeviceSettingsPopup(dialog, 560, 620);
+        activity.styleDeviceSettingsPopup(dialog, 560, 0);
         Button close = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (close != null) close.requestFocus();
     }
