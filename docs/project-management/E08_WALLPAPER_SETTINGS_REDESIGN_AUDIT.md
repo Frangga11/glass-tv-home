@@ -80,3 +80,10 @@ Grouped integration/merge: **DEFERRED** pending A–G completion and explicit us
 - Source commits: `6f93c9c8e1ef7ee02876255c2044c760eb3da028` (MainActivity routing) and `1d6fba799012ff0e8dbbfbce5a7fbe4f193e1d0d` (Appearance three-card UI).
 - Exact updated E08 head: `1d6fba799012ff0e8dbbfbce5a7fbe4f193e1d0d`; CI runs #711 and #712 completed PASS. Integrated rehearsal PR #43 is running against current D07; its combined result is recorded in the F01 audit.
 - Physical TV D-pad/focus/Back and 1080p/4K acceptance remain assigned to Project F; no APK installation or device acceptance is claimed.
+
+
+## F01 final verification addendum — 2 Nov 2026
+- The F01 repair restored the three full Appearance management cards and kept Quick Control's compact three-action dialog separate.
+- Exact E08 source head `1d6fba799012ff0e8dbbfbce5a7fbe4f193e1d0d`: CI #711/#712 PASS.
+- Final combined rehearsal PR #43 synthetic merge `21c2eab34a3356d37d079eba04b281cc2373386d`: CI #716 PASS; APK 1,563,769 bytes / 1,572,864-byte cap / 9,095-byte headroom; manual publication skipped.
+- PR #43 closed without merge. Physical 1080p/4K and D-pad/Back acceptance remain F02.
