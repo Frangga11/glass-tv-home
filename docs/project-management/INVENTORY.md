@@ -204,3 +204,11 @@
 - Detailed report: [E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md](E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md).
 - Project F still must verify the compact modal on 1080p/4K, D-pad/focus/Back, Glass ON/OFF, category selection, shuffle/interval/Next, QR photo manager and lifecycle persistence. No physical device acceptance or APK installation is claimed.
 - E08 source/UI/CI: PASS. Project F physical acceptance and D-013 grouped integration/merge remain pending.
+
+
+## Project E closure / Project F handover — 2 Nov 2026
+- E01–E08 feature development and module-level audit are closed by user approval. Any further E changes require a verified Project F integration defect or explicit scope reopening.
+- PR chain #34–#41 remains OPEN/DRAFT/UNMERGED under D-013. Latest observed heads: #34 `090a956a9860c82eb36c2d96848d47046fba0f0c`; #35 `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; #36 `e085f8aed6fdc85b4793b76bb26ab8543b26b2cf`; #37 `08076bb945a169de198905152a092f419f48aa82`; #38 `6fe89fad078692958db67030329a6de66cd7ae71`; #39 `570b7c83efaec3ac515b78f1c6c119b777fc3b84`; #40 `a0f2b0fff6eef0c42852d21b971904d5acd29d5c`; #41 `8dfdcabd19853a1140724ea68983877af17bed0c`.
+- E08 exact source/test head `fcd7d8f23a4833830a401652ef269db3282b7300`; CI #702 / `41473357877` PASS; APK 1,562,709 bytes / 1,572,864 cap / 10,155 bytes headroom; publication skipped. PR #41 latest head is documentation-only after that source/test head.
+- Project F must validate the complete integrated chain, shared UI/popup contract, D-pad/focus/Back, Glass ON/OFF, 1080p/4K, all module interactions, lifecycle/persistence and wallpaper management versus Quick Control distinction. No physical acceptance claimed yet.
+- Do not merge or install APK during closure. G owns grouped final reconciliation/package; merge only after full gates and explicit approval.
