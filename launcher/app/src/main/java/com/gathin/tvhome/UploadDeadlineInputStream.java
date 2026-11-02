@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import java.io.FilterInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -26,7 +27,7 @@ final class UploadDeadlineInputStream extends FilterInputStream {
 
     private void applyReadDeadline() throws IOException {
         int timeout = NetworkFeedbackPolicy.boundedReadTimeoutMs(
-                deadlineAtMs, idleTimeoutMs, System.currentTimeMillis());
+                deadlineAtMs, idleTimeoutMs, SystemClock.elapsedRealtime());
         if (timeout <= 0) throw new SocketTimeoutException("Upload request deadline exceeded");
         socket.setSoTimeout(timeout);
     }
