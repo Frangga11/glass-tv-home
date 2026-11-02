@@ -374,6 +374,7 @@
     <string name="hide_apps_count">👁️ Hide Apps (%1$d apps)</string>
     <string name="hide_apps_count_summary">Saved hide rules. They take effect while Child Mode is enabled.</string>
     <string name="app_picker_empty">No TV apps are available to configure.</string>
+    <string name="app_policy_selected_count">%1$d apps selected</string>
     <string name="change_pin_title">🔢 Change Security PIN</string>
     <string name="change_pin_summary">Change the 4-digit parental control PIN (current PIN: %1$s)</string>
     <string name="default_pin_label">0000 [Default]</string>
