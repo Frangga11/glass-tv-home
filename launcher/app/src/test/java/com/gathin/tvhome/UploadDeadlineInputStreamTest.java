@@ -2,6 +2,8 @@ package com.gathin.tvhome;
 
 import static org.junit.Assert.assertEquals;
 
+import android.os.SystemClock;
+
 import java.io.ByteArrayInputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -23,7 +25,7 @@ public class UploadDeadlineInputStreamTest {
         TimeoutRecordingSocket socket = new TimeoutRecordingSocket();
         UploadDeadlineInputStream input = new UploadDeadlineInputStream(
                 new ByteArrayInputStream(new byte[]{10, 20}), socket,
-                System.currentTimeMillis() + 5000L, 30000);
+                SystemClock.elapsedRealtime() + 5000L, 30000);
         assertEquals(10, input.read());
         assertEquals(20, input.read());
         assertEquals(-1, input.read());
@@ -35,7 +37,7 @@ public class UploadDeadlineInputStreamTest {
         TimeoutRecordingSocket socket = new TimeoutRecordingSocket();
         UploadDeadlineInputStream input = new UploadDeadlineInputStream(
                 new ByteArrayInputStream(new byte[]{10}), socket,
-                System.currentTimeMillis() - 1L, 30000);
+                SystemClock.elapsedRealtime() - 1L, 30000);
         input.read();
     }
 
