@@ -504,3 +504,14 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - D01 follow-up PR #51 exact-head CI passed on `bbb13dd107c86cda85bd1482c2f050ca69dfc4e2`. B01/D05/D06 owner-branch retests were running; see F02_FINDINGS_REGISTER.md for exact IDs and statuses.
 - Current status: PARTIAL / NOT FINAL. No finding closes on code commit or successful build alone; require owner exact-head CI, integrated exact-head CI, regression evidence, and explicit Project G deferrals.
 - No APK publication/installation, physical Android TV testing, or merge to main is authorized during F02.
+
+
+## Latest Project F02 checkpoint — 3 November 2026
+
+- F02 integration head `eea920469ffe5bef5ddb14e1dfd66687e82d8fed`, PR #50 Draft/open/unmerged; exact-head CI in progress.
+- B01 global modal enforcement and Home double-press routing are implemented; HomeKeyPressTracker uses a 350 ms double-press window and 400 ms single-action delay. Single Home, double Home, long-press Settings and disabled App Switch policy are preserved.
+- D01 LocationBroadcastReceiver requires `android.permission.DUMP`; LocationActivity is now non-exported. D01 latest exact-head CI PASS.
+- D05 Settings modal contract and D06 AzanActivity non-exported fixes have owner-branch exact-head CI PASS.
+- Robolectric API 30 dialog-window tests passed on previous F02 head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`; latest integration retest is still running.
+- RecentAppsActivity's exported ACTION_MAIN filter remains P3 pending external caller contract verification in G.
+- Current status PARTIAL / NOT FINAL. No merge, APK publication/installation, or physical Android TV testing during F02.
