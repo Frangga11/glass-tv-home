@@ -1905,18 +1905,26 @@ public final class ModernSettingsDialog {
         }
         boolean isDefault = activity.getPackageName().equals(activePkg);
 
+        // Keep the entire popup surface opaque. Previously the AlertDialog window and ScrollView
+        // were explicitly transparent, which could expose the launcher behind the content on
+        // some TV themes/OEM builds and recreate the "see-through" appearance.
+        GradientDrawable panelBg = new GradientDrawable();
+        panelBg.setColor(0xFF1E2026);
+        panelBg.setCornerRadius(18 * density);
+        panelBg.setStroke(Math.max(1, (int) (1.5f * density)), 0xFF3B414D);
+
         ScrollView scroll = new ScrollView(activity);
         scroll.setFillViewport(true);
+        scroll.setClipToPadding(false);
+        scroll.setClipChildren(true);
+        scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        scroll.setBackground(panelBg);
+        scroll.setClipToOutline(true);
 
         LinearLayout root = new LinearLayout(activity);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding((int) (24 * density), (int) (20 * density), (int) (24 * density), (int) (20 * density));
-
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF1E2026);
-        bg.setCornerRadius(18 * density);
-        bg.setStroke((int) (1.5f * density), 0xFF2F323B);
-        root.setBackground(bg);
+        root.setBackgroundColor(Color.TRANSPARENT);
 
         TextView tvTitle = new TextView(activity);
         tvTitle.setText(R.string.set_default_home_title);
@@ -2055,7 +2063,8 @@ public final class ModernSettingsDialog {
         closeLp.topMargin = (int) (12 * density);
         root.addView(btnClose, closeLp);
 
-        scroll.addView(root);
+        scroll.addView(root, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         AlertDialog.Builder pb = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
         pb.setView(scroll);
@@ -2065,7 +2074,15 @@ public final class ModernSettingsDialog {
 
         Window win = d.getWindow();
         if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            // Opaque window background is intentional: do not let the TV launcher bleed
+            // through around/behind the custom popup content.
+            GradientDrawable windowBg = new GradientDrawable();
+            windowBg.setColor(0xFF1E2026);
+            windowBg.setCornerRadius(18 * density);
+            windowBg.setStroke(Math.max(1, (int) (1.5f * density)), 0xFF3B414D);
+            win.setBackgroundDrawable(windowBg);
+            win.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            win.setDimAmount(0.68f);
             int dw = Math.min((int) (620 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.90f));
             int dh = Math.min((int) (560 * density), (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.88f));
             win.setLayout(dw, dh);
