@@ -424,7 +424,7 @@
     <string name="screensaver_settings_title">Android Screensaver</string>
     <string name="screensaver_settings_summary">Configure when Android starts its screensaver. Glass TV provides ClockDream, which uses the same StandBy display and photo collection; Android still controls when the screensaver starts.</string>
     <string name="display_timeout_title">Screen-Off Timeout</string>
-    <string name="display_timeout_summary">Open Android display settings to find the screen-off timeout. This does not change Glass TV's internal StandBy trigger; available menus depend on TV firmware.</string>
+    <string name="display_timeout_summary">Open Android display settings to find the screen-off timeout. This does not change Glass TV\'s internal StandBy trigger; available menus depend on TV firmware.</string>
     <string name="home_candidates_summary">Detected Home launcher options: %1$d</string>
     <string name="home_candidates_heading">Detected launcher options:</string>
     <string name="home_current_heading">Android HOME resolver result:</string>
