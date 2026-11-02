@@ -1,12 +1,12 @@
 # E01 — Device Settings and HOME Launcher Audit
 
-**Status:** Source corrections and popup visual unification implemented; latest exact-head CI pending. Physical-device acceptance remains pending.  
+**Status:** Source corrections and popup visual unification implemented; Android build, unit tests, docs checks and APK budget PASS. Physical-device visual acceptance remains pending.  
 **Base:** D07 final head `964163c918e281b68af5cf7114ca56ead2797486`.  
 **Branch:** `feature/e01-device-settings-home-control`.  
 **Policy:** PR #34 remains Draft / open / unmerged. No canonical integration merge or release approval.
-**Verified source head:** `ac46f8d74172cd63c62b3fbe6e7082e2f3bc4b8b`.
-**CI:** Workflow run `41363727217` — Android release build, unit tests, docs checks and APK budget all PASS.
-**APK diagnostic size:** 1,559,445 bytes; cap 1,572,864 bytes; headroom 13,419 bytes. Diagnostic only; no APK artifact was published.
+**Verified source head:** `dc1edd222b6a6a3aaa1a7010090a034510c12b5f` (popup source changes); validation workflow `41377496081` / run #460 at `99512b0960cce08e3ce1b6b0f2d9c3af3461d4d1` passed with the same source tree. The final branch commit after that is documentation-only.
+**CI:** Android release build, JVM unit tests, docs checks and APK size budget — PASS.
+**APK diagnostic size:** 1,559,641 bytes; cap 1,572,864 bytes; headroom 13,223 bytes. Diagnostic only; APK publishing skipped; no artifact published.
 
 ## Scope
 
@@ -47,7 +47,7 @@ Audit and improve the complete **Pengaturan Perangkat** tab: HOME launcher selec
 
 ## Verification and acceptance boundary
 
-- [x] Exact-head CI: Android build, JVM unit tests, documentation checks and APK size budget — PASS at `ac46f8d74172cd63c62b3fbe6e7082e2f3bc4b8b`.
+- [x] Android release build, JVM unit tests, documentation checks and APK size budget — PASS for the complete popup source changes (workflow `41377496081`, run #460).
 - [ ] Review HOME query visibility and launcher candidate rendering on Android 11 and newer.
 - [ ] Verify the phone-installer QR destination and downloaded APK version before public release.
 - [ ] Verify HOME picker fallback on OEM firmware; no device HOME default was changed during source work.
@@ -55,7 +55,7 @@ Audit and improve the complete **Pengaturan Perangkat** tab: HOME launcher selec
 - [ ] Verify restart and power menu labels on target TV; unsupported OEM labels must fall back to manual user selection.
 - [ ] Verify cache-clean feedback for both successful ADB trim and unavailable/declined ADB.
 - [ ] Inspect full Device tab and all dialog focus paths with a TV remote; visual/device acceptance remains in Stage F.
-- [x] Recheck APK size against the existing 1.5 MiB cap — 1,559,445 bytes, 13,419 bytes below cap.
+- [x] Recheck APK size against the existing 1.5 MiB cap — 1,559,641 bytes, 13,223 bytes below cap.
 
 No TV settings, package states, HOME defaults, APK installation, or physical-device actions were changed or performed as part of this source work. The PR workflow did not publish an APK. E01 source work is ready for the F-stage physical/visual acceptance checks; do not mark the complete project accepted until those checks pass.
 
@@ -64,12 +64,11 @@ No TV settings, package states, HOME defaults, APK installation, or physical-dev
 A focused source audit of `showDefaultLauncherDialog()` found that the custom popup content had an opaque inner panel, but the enclosing `AlertDialog` window and `ScrollView` were explicitly assigned transparent backgrounds. This left an avoidable OEM/theme-dependent risk of the launcher showing through around or behind the popup, matching the previously reported visual concern.
 
 Correction on the E01 branch:
-- Give the popup scroll surface and dialog window explicit opaque dark backgrounds (`#1E2026`) with a consistent rounded outline and border.
-- Keep the content column transparent over the opaque scroll surface so the full panel remains visually continuous.
-- Clip the scroll surface to its rounded outline, keep child content clipped, disable overscroll glow, and preserve fill-viewport behavior.
+- Use the shared `bg_glass_dialog` as the opaque dialog-window surface; the scroll content remains transparent so it reveals the window surface rather than exposing the launcher.
+- Keep child clipping, disable overscroll glow, and preserve fill-viewport behavior.
 - Retain the existing bounded dialog dimensions, scroll support, and initial focus on the system HOME picker action.
 
-**Verification boundary:** source correction committed as `c56c0a800b43768756905dfc76daaa2e6015ffb1`. Exact-head CI run `41376900940` is pending at the time of this audit update. The source change removes the explicit transparent surfaces, but visual acceptance on the target TV (including D-pad focus, clipped corners, and long-content scrolling) still requires Stage F device verification. No launcher default or device setting was changed.
+**Verification boundary:** popup opacity correction is included in the validated source tree (workflow `41377496081`, run #460: PASS). Visual acceptance on the target TV (including D-pad focus, corner clipping and long-content scrolling) still requires Stage F device verification. No launcher default or device setting was changed.
 
 ## Follow-up — shared Device Settings popup visual system (2 Nov 2026)
 
@@ -79,4 +78,4 @@ A shared `MainActivity.styleDeviceSettingsPopup()` contract now applies the same
 
 The update-available, install-permission and download-progress windows also use the shared contract when launched from `MainActivity`. Android-owned settings pages (HOME picker, accessibility, notification access, Dream/screensaver and general Settings) are intentionally excluded because their visual presentation belongs to the TV firmware/Android OS, not Glass TV Home.
 
-**Verification boundary:** source-level styling consolidation is committed on the E01 branch. Exact latest-head CI and Stage F target-TV visual/remote testing are still required before acceptance. No device settings, HOME resolver preference, or user data are modified by this styling work.
+**Verification boundary:** source-level styling consolidation is committed and the Android build, JVM unit tests, documentation checks and APK budget all pass (workflow `41377496081`, run #460). Stage F target-TV visual/remote testing is still required before acceptance. No device settings, HOME resolver preference, or user data are modified by this styling work.
