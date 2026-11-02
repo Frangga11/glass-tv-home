@@ -558,3 +558,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Important owner contracts: B03 global Glass OFF surface policy / E07 live toggle invalidation; C07 upload session resilience / D05 atomic StandBy persistence / D07 concurrent content-store writes; D07 weather freshness / E05 weather presentation. Preserve these contracts.
 - F01 remains IN PROGRESS: no frozen-head combined diff, integrated build, full integrated regression, APK publication/installation or physical TV test has yet been completed. PRs remain Draft/open/unmerged under D-013. No merge before G and explicit approval.
 - Next: freeze exact branch heads, inspect the combined semantic diff, then run isolated software integration gates. Route confirmed defects to the owning project; do not invent conflicts from file overlap.
+
+
+## Project F01 expanded checkpoint — 2 Nov 2026
+- F01 now includes complete B01–B07, C01–C07, D01–D07 and E01–E08 dependency mapping. B04/B05/PR15 are already merged pre-D-013; B06/B07 remain Draft/open/unmerged. All current source/test CI checkpoints sampled across B/C/D/E are PASS.
+- Parent/base drift exists on PRs #11, #12, #17, #18, #19, #21, #24, #29 and #34. GitHub currently reports them mergeable; do not infer integration from that status. Preserve newer target-branch changes when grouped integration is done.
+- B01 canonical tokens are byte-identical in B01/B02/B07/D04 and E01–E06. B03/E07/E08 token files differ only in comments in the compared lines; no executable-code delta found. B03 owns global fallback policy; E07 owns toggle/invalidation.
+- Isolated branch `integration/f01-rehearsal-only` and Draft PR #42 test E01–E08 against current D07. PR #42 is mergeable; CI #708 PASS, #709/#710 in progress. No feature PR merged; no APK published/installed; no physical TV acceptance.
+- F01 remains open pending #709/#710 final result. Rehearsal PR #42 must be closed without merge after evidence capture. D-013 remains binding.
