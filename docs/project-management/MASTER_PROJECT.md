@@ -484,3 +484,12 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - Full D07+E08 candidate: integration/project-f-staged-full HEAD 8fe90a9fdd493c5d81ffdacbe16054630a26580a; tree identical to F01 synthetic candidate 21c2eab34a3356d37d079eba04b281cc2373386d; existing CI #716 PASS remains valid.
 - Temporary PRs #44–#49 were closed without merge. No feature PR or main/release branch was merged/modified.
 - F01 revalidation: PASS. Next stage remains F02 — integrated functional regression and controlled Android TV acceptance; physical device acceptance is not claimed.
+
+
+## Project F02 opening checkpoint — 3 Nov 2026
+- F02 OPEN. Entry/source audit PASS; functional and physical acceptance are not yet passed.
+- Selected candidate: `integration/project-f-staged-full` HEAD `8fe90a9fdd493c5d81ffdacbe16054630a26580a`. Live comparison against F01 tested candidate `21c2eab34a3356d37d079eba04b281cc2373386d` shows 3 commits ahead, 0 behind, no changed files; exact-tree CI #716 is reusable.
+- CI #716 / `41470304782`: launcher build/unit tests/release build/APK guard and Lists/tools/docs jobs SUCCESS; manual APK publication SKIPPED.
+- Compared with `integration/b-series` HEAD `9070894fa6d9ef8aec034f46dfe777e866709dfe`, the full candidate retains identical fallback values and modal behavior, exact TvFeedback/FeedbackPolicy files, plus SettingsFocusPath tests and stronger upload request/session deadline policy. Do not overwrite the full candidate with the B-series branch blindly.
+- Physical tests remain NOT RUN: D-pad/Back/focus, dialogs, Glass ON/OFF, Profile/App Lock/Child Mode, Weather/AQI, phone QR upload, wallpaper route/state, StandBy, process death/reboot and 1080p/4K.
+- No APK publication/installation or feature/main/release merge. D-013 remains binding. Detailed matrix: `F02_INTEGRATED_FUNCTIONAL_REGRESSION.md`.
