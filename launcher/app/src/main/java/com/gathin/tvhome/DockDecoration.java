@@ -19,6 +19,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final float density;
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint trayShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint solidTrayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint solidTrayBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final GlassRim edge;
     private Glider glider;
     private final int[] at = new int[2], gliderAt = new int[2];
@@ -34,6 +36,10 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         // Same glass as the top-bar pills (GlassDrawable): an even veil and a shining edge.
         band.setColor(0x12FFFFFF);
         trayShadowPaint.setColor(0x38000000);
+        solidTrayPaint.setColor(TvUiTokens.DOCK_SURFACE);
+        solidTrayBorder.setColor(TvUiTokens.BORDER);
+        solidTrayBorder.setStyle(Paint.Style.STROKE);
+        solidTrayBorder.setStrokeWidth(1.5f * density);
         trayShadowPaint.setMaskFilter(new android.graphics.BlurMaskFilter(14f * density, android.graphics.BlurMaskFilter.Blur.NORMAL));
         edge = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, 0.5f);
     }
@@ -81,7 +87,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         boolean glassEnabled = parent.getContext().getSharedPreferences("wallpaper_prefs", android.content.Context.MODE_PRIVATE)
                 .getBoolean("glass_effects_enabled", true);
         if (!glassEnabled) {
-            // Keep D-pad focus feedback, but remove the glass material itself.
+            // Preserve the dock tray geometry and contrast; remove only the glass material.
+            RectF solidShadow = new RectF(rect);
+            solidShadow.offset(0, 4f * density);
+            c.drawRoundRect(solidShadow, radius, radius, trayShadowPaint);
+            c.drawRoundRect(rect, radius, radius, solidTrayPaint);
+            c.drawRoundRect(rect, radius, radius, solidTrayBorder);
+            // Keep D-pad focus feedback.
             if (glider != null && glider.isShowing()) {
                 parent.getLocationInWindow(at);
                 glider.getLocationInWindow(gliderAt);
