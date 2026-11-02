@@ -787,3 +787,13 @@ C07 owner PR #24 head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 PR #50 hea
 Owner exact-head checks: B01 #10 run #41509724289 PASS; C07 #24 run #41512386827 PASS; D05 #29 run #41505852041 PASS; D06 #30 run #41505865772 PASS; D01 #51 run #41506847521 PASS.
 
 F02 remains PARTIAL until exact-head CI on `b64715156e180edc3bfae25bffba6a089544247f` and all remaining F02 gates pass. No physical device test or APK publication is authorized in F.
+
+
+## Latest F02 security and build audit — 3 November 2026
+
+| Finding | Evidence / remediation | Status |
+|---|---|---|
+| F02-SEC-005 InputKeyService system binding | E01 changed `.InputKeyService` to exported=true while retaining `android.permission.BIND_ACCESSIBILITY_SERVICE`; added test requiring every AccessibilityService action to be exported and system-permission protected. Regression failed before the manifest fix and passed afterward. | OWNER E01 #41513716451 PASS / F02 #41513906117 PASS / KEYCODE_TV ACCEPTANCE DEFERRED_TO_G |
+| F02-BUILD-001 APK headroom | APK 1,564,977 bytes against 1,572,864-byte cap, 7,887 bytes remaining. R8 minify/shrinkResources already enabled; biggest compressed entries include DEX, two font resources, resources.arsc and the default Dempo wallpaper. | WITHIN BUDGET / P3 WATCHLIST |
+
+F02 latest head `558762994dec05a7ae03a924c33a3ed11665c224`: push CI #41513940620 passed both jobs. PR CI #41513947375 substantive steps passed; final cleanup pending at last poll. No device test or APK publication.
