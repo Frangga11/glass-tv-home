@@ -301,9 +301,9 @@ public class WeatherActivity extends Activity {
             TextView tempView = v.findViewById(R.id.hourlyTemp);
 
             timeView.setText(item.time);
-            iconView.setImageResource(getIconDrawable(item.icon, item.time));
+            if (item.icon == null || item.icon.isEmpty()) iconView.setVisibility(View.INVISIBLE);
+            else iconView.setImageResource(getIconDrawable(item.icon, item.time));
             tempView.setText(item.temp >= -100 && item.temp <= 100 ? item.temp + "°" : "—");
-            if (item.temp < -100 || item.temp > 100) iconView.setVisibility(View.INVISIBLE);
 
             if (item.rainChance > 0) {
                 rainView.setVisibility(View.VISIBLE);
@@ -344,7 +344,8 @@ public class WeatherActivity extends Activity {
             View divider = v.findViewById(R.id.dailyDivider);
 
             dayView.setText(item.day);
-            iconView.setImageResource(getIconDrawable(item.icon, "12:00"));
+            if (item.icon == null || item.icon.isEmpty()) iconView.setVisibility(View.INVISIBLE);
+            else iconView.setImageResource(getIconDrawable(item.icon, "12:00"));
             if (rainView != null) {
                 if (item.rainChance > 0) {
                     rainView.setVisibility(View.VISIBLE);
@@ -472,6 +473,10 @@ public class WeatherActivity extends Activity {
 
         String cond = (w.condition != null) ? w.condition.toLowerCase(Locale.ROOT) : "";
         String icon = (w.icon != null) ? w.icon : "";
+        if (w.temp < -100 || cond.isEmpty() || cond.contains("unavailable")
+                || cond.contains("tidak tersedia")) {
+            return WeatherBackgroundView.ConditionType.CLOUDY;
+        }
 
         // Thunderstorm codes: 95, 96, 99
         if (cond.contains("thunder") || cond.contains("storm") || cond.contains("ribut") || icon.contains("⛈")) {
