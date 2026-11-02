@@ -98,3 +98,9 @@ A follow-up integration audit found that disabling the decorative glass material
 - Verified source/test head remains `6dc39d76e3c897e841854f425d549dbfebf1025c`, exact-head CI #688 / `41447965099` SUCCESS.
 - Current PR #40 branch head is `fa222bafad93c87fea1120e78aeccad5445fe935`; this is the audit-report-only follow-up. It does not change application source, resources, tests or build configuration. Do not misrepresent the docs-only head as the code head tested by #688.
 - PR #40 remains OPEN/DRAFT/UNMERGED under D-013.
+
+
+## Custom-content dialog boundary — source audit clarification
+- The shared Glass ON/OFF material selector is applied by `TvDialogStyle.apply()` to the shared modal shell, while `TvDialogStyle.applyCustom()` intentionally leaves the content root's background under that component's ownership.
+- Current custom-dialog callers were inspected: the daily-ayah reader supplies its own rounded gradient panel; Settings picker content supplies its own background; profile-switch content supplies its own rounded root surface. These are not empty/transparent panels and are not silently overwritten by the global glass toggle.
+- Therefore the OFF fallback covers shared GlassDrawable-backed pills/menus/anchored popups/dock and shared modal shells. Explicit custom-content surfaces remain their own design material unless a later product decision makes them follow the global toggle. No evidence of the original disappearing-background defect was found in these custom roots.
