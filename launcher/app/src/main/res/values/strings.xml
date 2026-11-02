@@ -374,6 +374,7 @@
     <string name="hide_apps_count">👁️ Sembunyikan Aplikasi (%1$d aplikasi)</string>
     <string name="hide_apps_count_summary">Jumlah aturan sembunyikan yang tersimpan. Aturan berlaku saat Mode Anak aktif.</string>
     <string name="app_picker_empty">Tidak ada aplikasi TV yang dapat diatur.</string>
+    <string name="app_policy_selected_count">%1$d aplikasi dipilih</string>
     <string name="change_pin_title">🔢 Ubah PIN Keamanan</string>
     <string name="change_pin_summary">Ubah PIN kontrol orang tua 4 digit (PIN saat ini: %1$s)</string>
     <string name="default_pin_label">0000 [Bawaan]</string>
