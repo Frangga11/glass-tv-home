@@ -56,8 +56,9 @@ public class WallpaperUploadServer {
     private volatile boolean running = false;
     private final Set<Socket> activeClients = Collections.synchronizedSet(new java.util.HashSet<>());
     private Thread serverThread;
-    // Reservations prevent parallel QR uploads from collectively consuming the system's safety margin.
-    private long reservedUploadBytes;
+    // Shared across server instances so a newly opened QR session accounts for draining old sessions.
+    private static final Object UPLOAD_STORAGE_LOCK = new Object();
+    private static long reservedUploadBytes;
 
     public WallpaperUploadServer(Context context, int port, UploadListener listener) {
         this(context, port, listener, false);
@@ -259,18 +260,22 @@ public class WallpaperUploadServer {
         return NetworkFeedbackPolicy.isSessionActive(running, sessionExpiresAtMs, SystemClock.elapsedRealtime());
     }
 
-    private synchronized boolean reserveUploadStorage(long incomingBytes) {
-        if (!isSessionActive()) return false;
-        long usableBytes = context.getFilesDir().getUsableSpace();
-        if (!NetworkFeedbackPolicy.canReserveUploadStorage(
-                usableBytes, reservedUploadBytes, incomingBytes, MIN_FREE_UPLOAD_BYTES)) return false;
-        reservedUploadBytes += incomingBytes;
-        return true;
+    private boolean reserveUploadStorage(long incomingBytes) {
+        synchronized (UPLOAD_STORAGE_LOCK) {
+            if (!isSessionActive()) return false;
+            long usableBytes = context.getFilesDir().getUsableSpace();
+            if (!NetworkFeedbackPolicy.canReserveUploadStorage(
+                    usableBytes, reservedUploadBytes, incomingBytes, MIN_FREE_UPLOAD_BYTES)) return false;
+            reservedUploadBytes += incomingBytes;
+            return true;
+        }
     }
 
-    private synchronized void releaseUploadStorage(long reservedBytes) {
+    private void releaseUploadStorage(long reservedBytes) {
         if (reservedBytes <= 0L) return;
-        reservedUploadBytes = Math.max(0L, reservedUploadBytes - reservedBytes);
+        synchronized (UPLOAD_STORAGE_LOCK) {
+            reservedUploadBytes = Math.max(0L, reservedUploadBytes - reservedBytes);
+        }
     }
 
     public synchronized void stop() {
