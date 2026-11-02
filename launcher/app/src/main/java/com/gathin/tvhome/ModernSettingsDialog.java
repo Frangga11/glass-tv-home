@@ -364,9 +364,9 @@ public final class ModernSettingsDialog {
             navigationPrefs.edit().putInt(NavigationState.SETTINGS_TAB, NavigationState.normalizeSettingsTab(activeTab[0])).apply();
             boolean isProfile = (activeTab[0] == TAB_PROFILE);
             GradientDrawable pcBg = new GradientDrawable();
-            pcBg.setColor(isProfile ? 0xFF333742 : 0xFF22242D);
-            pcBg.setCornerRadius(12 * density);
-            if (isProfile) pcBg.setStroke((int) (1.5f * density), 0x55FFFFFF);
+            pcBg.setColor(isProfile ? TvUiTokens.NAV_PROFILE_SELECTED : TvUiTokens.NAV_PROFILE_IDLE);
+            pcBg.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            if (isProfile) pcBg.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
             profileCard.setBackground(pcBg);
 
             ProfileManager.UserProfile sidebarActive = ProfileManager.getActiveProfile(activity);
@@ -378,9 +378,9 @@ public final class ModernSettingsDialog {
                 if (item.rowView == null) continue;
                 boolean isSelected = (activeTab[0] == item.tabId);
                 GradientDrawable rbg = new GradientDrawable();
-                rbg.setColor(isSelected ? 0xFF30333D : Color.TRANSPARENT);
-                rbg.setCornerRadius(10 * density);
-                if (isSelected) rbg.setStroke((int) (1 * density), 0x44FFFFFF);
+                rbg.setColor(isSelected ? TvUiTokens.NAV_ITEM_SELECTED : Color.TRANSPARENT);
+                rbg.setCornerRadius(TvUiTokens.NAV_ROW_RADIUS_DP * density);
+                if (isSelected) rbg.setStroke((int) (1 * density), TvUiTokens.NAV_SELECTION_BORDER);
                 item.rowView.setBackground(rbg);
             }
         };
@@ -433,7 +433,7 @@ public final class ModernSettingsDialog {
             LinearLayout row = new LinearLayout(activity);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(Gravity.CENTER_VERTICAL);
-            row.setPadding((int) (10 * density), (int) (4 * density), (int) (10 * density), (int) (4 * density));
+            row.setPadding((int) (TvUiTokens.NAV_ROW_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.NAV_ROW_PADDING_VERTICAL_DP * density), (int) (TvUiTokens.NAV_ROW_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.NAV_ROW_PADDING_VERTICAL_DP * density));
             row.setFocusable(true);
             row.setClickable(true);
 
@@ -441,24 +441,24 @@ public final class ModernSettingsDialog {
             FrameLayout iconSquircle = new FrameLayout(activity);
             GradientDrawable sqBg = new GradientDrawable();
             sqBg.setColor(item.squircleBg);
-            sqBg.setCornerRadius(8 * density);
+            sqBg.setCornerRadius(TvUiTokens.NAV_ICON_RADIUS_DP * density);
             iconSquircle.setBackground(sqBg);
 
             ImageView iv = new ImageView(activity);
             iv.setImageResource(item.iconRes);
-            iv.setColorFilter(0xFFFFFFFF);
-            FrameLayout.LayoutParams ivLp = new FrameLayout.LayoutParams((int) (15 * density), (int) (15 * density), Gravity.CENTER);
+            iv.setColorFilter(TvUiTokens.NAV_ICON_TINT);
+            FrameLayout.LayoutParams ivLp = new FrameLayout.LayoutParams((int) (TvUiTokens.NAV_ICON_GLYPH_DP * density), (int) (TvUiTokens.NAV_ICON_GLYPH_DP * density), Gravity.CENTER);
             iconSquircle.addView(iv, ivLp);
 
-            LinearLayout.LayoutParams sqLp = new LinearLayout.LayoutParams((int) (26 * density), (int) (26 * density));
-            sqLp.setMarginEnd((int) (10 * density));
+            LinearLayout.LayoutParams sqLp = new LinearLayout.LayoutParams((int) (TvUiTokens.NAV_ICON_CONTAINER_DP * density), (int) (TvUiTokens.NAV_ICON_CONTAINER_DP * density));
+            sqLp.setMarginEnd((int) (TvUiTokens.NAV_ICON_MARGIN_END_DP * density));
             row.addView(iconSquircle, sqLp);
 
             // Label
             TextView lbl = new TextView(activity);
             lbl.setText(item.label);
-            lbl.setTextSize(13f);
-            lbl.setTextColor(0xFFE2E8F0);
+            lbl.setTextSize(TvUiTokens.NAV_ITEM_TEXT_SP);
+            lbl.setTextColor(TvUiTokens.NAV_ITEM_TEXT);
             lbl.setTypeface(outfit, Typeface.NORMAL);
             row.addView(lbl);
 
@@ -469,7 +469,7 @@ public final class ModernSettingsDialog {
                     updateSidebarSelection.run();
                     if (renderRightPane[0] != null) renderRightPane[0].run();
                 }
-                v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+                v.animate().scaleX(hasFocus ? TvUiTokens.NAV_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.NAV_FOCUS_SCALE : 1.0f).setDuration(120).start();
             });
 
             row.setOnKeyListener((v, keyCode, event) -> {
@@ -492,8 +492,8 @@ public final class ModernSettingsDialog {
                 if (renderRightPane[0] != null) renderRightPane[0].run();
             });
 
-            LinearLayout.LayoutParams rLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density));
-            rLp.bottomMargin = (int) (2 * density);
+            LinearLayout.LayoutParams rLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.NAV_ROW_HEIGHT_DP * density));
+            rLp.bottomMargin = (int) (TvUiTokens.NAV_ROW_BOTTOM_MARGIN_DP * density);
             menuList.addView(row, rLp);
             item.rowView = row;
         }
