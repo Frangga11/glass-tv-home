@@ -28,7 +28,6 @@ public class ClockDream extends DreamService {
 
     private static final String TAG = "TvHome.ClockDream";
     private static final long MOVE_MS = 60_000L;
-    private static final long DREAM_SLEEP_TIMEOUT_MS = 2L * 60 * 60 * 1000L; // 2 hours
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
@@ -42,11 +41,11 @@ public class ClockDream extends DreamService {
     private ImageView photoView;
     private View photoScrim;
     private String photoUriShown = "";
-    private long dreamStartTime = 0;
+    private boolean dreamActive = false;
 
     private final Runnable photoTick = new Runnable() {
         @Override public void run() {
-            if (dreamStartTime > 0) {
+            if (dreamActive) {
                 updatePhoto();
                 handler.postDelayed(this, StandbyPhotoStore.ROTATION_INTERVAL_MS);
             }
@@ -56,16 +55,6 @@ public class ClockDream extends DreamService {
     private final Runnable tick = new Runnable() {
         @Override
         public void run() {
-            if (dreamStartTime > 0 && android.os.SystemClock.elapsedRealtime() - dreamStartTime >= DREAM_SLEEP_TIMEOUT_MS) {
-                Log.i(TAG, "Screensaver ran for 2 hours: turning off TV display");
-                HomeKeyService.sleepScreen();
-                try {
-                    Runtime.getRuntime().exec("input keyevent 223");
-                } catch (Exception ignored) {
-                }
-                finish();
-                return;
-            }
             updateNightstand();
             moveClock();
             handler.postDelayed(this, MOVE_MS);
@@ -107,7 +96,7 @@ public class ClockDream extends DreamService {
     @Override
     public void onDreamingStarted() {
         super.onDreamingStarted();
-        dreamStartTime = android.os.SystemClock.elapsedRealtime();
+        dreamActive = true;
         updatePhoto();
         if (content != null) {
             content.setAlpha(0f);
@@ -124,7 +113,7 @@ public class ClockDream extends DreamService {
 
     @Override
     public void onDreamingStopped() {
-        dreamStartTime = 0;
+        dreamActive = false;
         handler.removeCallbacks(tick);
         handler.removeCallbacks(photoTick);
         if (photoView != null) photoView.setImageDrawable(null);
@@ -134,7 +123,7 @@ public class ClockDream extends DreamService {
 
     @Override
     public void onDetachedFromWindow() {
-        dreamStartTime = 0;
+        dreamActive = false;
         handler.removeCallbacks(tick);
         handler.removeCallbacks(photoTick);
         if (photoView != null) photoView.setImageDrawable(null);
@@ -162,7 +151,7 @@ public class ClockDream extends DreamService {
             photoUriShown = uri.toString();
             StandbyPhotoStore.loadBitmapAsync(this, uri, bitmap -> {
                 if (bitmap == null) {
-                    if (dreamStartTime > 0 && uri.toString().equals(photoUriShown)) {
+                    if (dreamActive && uri.toString().equals(photoUriShown)) {
                         photoView.setImageDrawable(null);
                         photoView.setVisibility(View.GONE);
                         photoScrim.setVisibility(View.GONE);
@@ -170,7 +159,7 @@ public class ClockDream extends DreamService {
                     }
                     return;
                 }
-                if (dreamStartTime <= 0 || photoView == null
+                if (!dreamActive || photoView == null
                         || !StandbyPhotoStore.isPhotoMode(this)
                         || !uri.toString().equals(photoUriShown)) {
                     bitmap.recycle();

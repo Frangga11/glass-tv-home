@@ -262,9 +262,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Pictures of places are on (see PlaceWallpapers); they are dimmed behind the tiles. */
     private boolean placesMode;
     private volatile boolean placesRefreshRunning;
-    private static final long SCREENSAVER_TIMEOUT_MS = 10L * 60 * 1000L; // 10 minutes idle -> screensaver
-    private static final long TV_SLEEP_TIMEOUT_MS = SCREENSAVER_TIMEOUT_MS + (2L * 60 * 60 * 1000L); // 2 hours later -> TV off
-    private long lastUserInteraction = android.os.SystemClock.elapsedRealtime();
     private boolean screensaverActive = false;
     private View screensaverView;
     private String standbyPhotoUriShown = "";
@@ -340,7 +337,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             updateIslamicShelf();
             refreshPlacesIfDue();
             refreshOnlineWallpapersIfDue();
-            checkInactivity();
+            refreshManualNightstand();
             handler.postDelayed(this, MINUTE_MS);
         }
     };
@@ -2568,12 +2565,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
         if (screensaverActive) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 dismissScreensaver();
@@ -6018,14 +6013,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rows.addView(row);
     }
 
-    private void checkInactivity() {
-        if (!hasWindowFocus() || isFinishing() || isDestroyed()) return;
-        long idleMs = android.os.SystemClock.elapsedRealtime() - lastUserInteraction;
-        if (idleMs >= TV_SLEEP_TIMEOUT_MS) {
-            turnOffTv();
-        } else if (idleMs >= SCREENSAVER_TIMEOUT_MS && !screensaverActive) {
-            showNightstandScreensaver();
-        } else if (screensaverActive && screensaverView != null) {
+    /** Refreshes only the manually opened in-launcher nightstand; Android owns idle transitions. */
+    private void refreshManualNightstand() {
+        if (screensaverActive && screensaverView != null && !isFinishing() && !isDestroyed()) {
             updateNightstandScreensaver();
         }
     }
@@ -6156,25 +6146,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!screensaverActive || screensaverView == null) return;
         screensaverActive = false;
         handler.removeCallbacks(standbyPhotoTick);
-        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
         screensaverView.animate().alpha(0f).setDuration(350).withEndAction(() -> {
             if (!screensaverActive && screensaverView != null) {
                 screensaverView.setVisibility(View.GONE);
             }
         }).start();
         android.util.Log.i("TvHome", "Nightstand screensaver dismissed");
-    }
-
-    private void turnOffTv() {
-        android.util.Log.i("TvHome", "TV idle: 10m screensaver + 2h timeout reached, putting TV to sleep");
-        boolean ok = HomeKeyService.sleepScreen();
-        if (!ok) {
-            try {
-                Runtime.getRuntime().exec("input keyevent 223");
-            } catch (Exception e) {
-                android.util.Log.w("TvHome", "Failed to send sleep keyevent: " + e);
-            }
-        }
     }
 
     /**
