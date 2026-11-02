@@ -151,3 +151,11 @@ The following fixes have been implemented on owning source branches and mirrored
 - D06 exact-head CI: running on `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7`.
 - F02 integration exact head: `b7ff46edd7fa628c541df0b5a8f51d6613c9e8af`; both CI jobs running.
 - Status for F02-UI-001: FIX COMMITTED / EXACT-HEAD OWNER + INTEGRATION CI PENDING. No closure claimed.
+
+
+### F02-TEST-001 — Host-side UI verification improvement — 3 November 2026
+- Added Robolectric 4.14.1 as a `testImplementation` dependency only and enabled Android resources for local JVM tests; no runtime/APK dependency is introduced.
+- Added `TvDialogStyleRobolectricTest.java` to instantiate real AlertDialog windows under API 30 Robolectric and assert shared modal centering, dim-behind flag/amount, viewport-bounded width, wrap-content height, custom height/width bounds, and dim clamping.
+- This complements the source-level modal contract guards and existing pure JVM geometry tests. It does not claim actual TV rendering, remote focus behavior, OEM window policy, HDMI/display scaling, or firmware compatibility.
+- Exact-head CI for the Robolectric dependency/test is pending. If dependency resolution or tests fail, fix the cause or remove only the experimental test with documented rationale; never skip or weaken it to obtain green CI.
+- Status: PARTIAL / ROBOLECTRIC EXACT-HEAD CI PENDING / DEVICE ACCEPTANCE DEFERRED_TO_G.
