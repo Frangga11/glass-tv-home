@@ -41,6 +41,19 @@ The old action deleted only immediate children of the app cache directory, ignor
 
 **Files:** `MainActivity.java`, default/ID/EN `strings.xml`.
 
+### E05-F03 — Prayer/Ayah detail dialog mixed RTL Arabic into one generic message (FIXED)
+
+The Prayer & Ayah Quick Action used a single AlertDialog message for location, prayer summary, Arabic, translation and reference. Although the message was scrollable, Arabic had no dedicated RTL text surface or typography controls.
+
+**Correction**
+- Replaced the mixed message with a dedicated scrollable content layout.
+- Separated context, Arabic, translation and reference into distinct text views.
+- Arabic uses RTL direction, Quran font, full wrapping, no ellipsis, high-quality line breaking and font padding for Quranic marks.
+- Translation is separately wrapped and scrollable; D-pad down at the end moves focus to Close.
+- Dialog size increased within safe display bounds.
+
+**File:** `MainActivity.java`.
+
 ## Existing behavior verified by source inspection
 
 - WeeklyAyah cycles through a fixed 52-verse list, caches Arabic plus Malay, English and Indonesian translations, and returns the last cached verse when a network refresh is unavailable.
@@ -59,7 +72,7 @@ The old action deleted only immediate children of the app cache directory, ignor
 
 ## Project F acceptance cases
 
-1. Render the longest Arabic verse in the configured cycle; verify every glyph, harakat and final word is visible.
+1. Render the longest Arabic verse in the Home shelf and Prayer/Ayah dialog; verify every glyph, harakat and final word is visible.
 2. Render the longest Indonesian and English translations; verify the final punctuation and reference remain visible.
 3. Verify wrapping at 1920x1080 and a 4K display profile.
 4. Verify prayer timetable remains visible and the shelf does not cover the dock/app grid.
