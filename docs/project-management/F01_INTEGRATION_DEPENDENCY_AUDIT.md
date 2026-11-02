@@ -91,3 +91,67 @@ CI evidence above validates the listed exact source/test commits only. It does n
 ## Safety / release boundary
 
 No feature PR was merged. No APK was published or installed. No physical-device acceptance or release approval is claimed.
+
+
+## F01 expanded dependency audit — 2 Nov 2026
+
+### Complete B-series coverage
+
+F01 also reviewed B04–B07 and the earlier B04/B05 integration history, in addition to B01–B03.
+
+- PR #13 B04, PR #14 B05, and PR #15 B04/B05 reconciliation are already MERGED (pre-D-013). The reconciled B04/B05 branch is an ancestor of `integration/b-series`; the B-series integration checkpoint is CI #257 PASS.
+- PR #16 B06 and PR #17 B07 remain OPEN/DRAFT/UNMERGED under D-013.
+- B01/B02/B03/B06/B07 current branch-head CI: #563/#565/#687/#569/#571 — PASS. B04/B05 reconciliation CI #254 — PASS.
+- B01 canonical `TvDialogStyle` and `TvUiTokens` blobs are identical in B01, B02, B07 and D04 branches. E01–E06 consume the same B01 blobs. B03 and E07/E08 have small comment-only differences in the two shared files; line comparison found no executable-code difference. B03 remains owner of global fallback policy; E07 remains owner of live Glass Effect toggle/invalidation.
+
+### Parent/base drift register
+
+The following PRs target the correct dependency branch but their recorded PR base SHA is older than the current target branch head. GitHub currently reports these PRs as mergeable; that is not a substitute for a combined integration build. Their latest parent changes must be preserved by dependency-ordered grouped integration and re-tested.
+
+| PR | Target branch | Recorded base SHA | Current target HEAD | Assessment |
+|---|---|---|---|---|
+| #11 B02 | B01 | `bf899c7c0300a40ad47f2d34c6cf0275c6bacdc5` | `d31a90e27d61ab26b57edac74769ef0cc266ae27` | Base advanced; shared Settings/tokens changes require semantic reconciliation. |
+| #12 B03 | B02 | `48cb89a1c4138e7521c7991d31a9eb981f773f2a` | `c746063cb08ed393d69fe5634dd241baff61a873` | Base advanced; shared dialog/tokens changes require semantic reconciliation. |
+| #17 B07 | B06 | `eb6c56e515dbde9c3621f12018e0c416dc5247bb` | `5b2f10095bd542f71829665422a36db79d7413f4` | B06 added two Settings/tokens commits after B07's recorded base. |
+| #18 C01 | B07 | `3fcbf8d52d0baafe76d8239a5e5dab7634d0850e` | `f62bdc5d98046590e69a27bb935102afa95dc71c` | Base advanced; C01 must be reconciled with current B07 UI/focus baseline. |
+| #19 C02 | C01 | `bba0801c9eb61ab27ae5046379c7a50aabebf570` | `8a3a981f097ea21be3b87580acabb69caa1b8fad` | Base advanced; preserve current C01 QR entry/feedback and route contracts. |
+| #21 C04 | C03 | `d266287df287167e5a8e73fd675b51759b580ed6` | `0599ceb01a5522ff5840d29e58ecab4a970e8843` | Base advanced; preserve current network verification changes. |
+| #24 C07 | C06 | `e74b6466c058ec930aa92c8db9603b11cf96a185` | `2bf119da458278e17d8aac6fc125824886bfe37c` | Base advanced; C07 upload resilience must be combined with current C06 file validation and shared UI baseline. |
+| #29 D05 | D04 | `ad69d229a6b3cd6ca1810a595597dc88481c3ebd` | `302a3aa1a7fa06e7f9d11beaee8055bf2d3735fe` | Base advanced; D05 atomic StandBy persistence must preserve D04 profile/avatar state and shared UI changes. |
+| #34 E01 | D07 | `964163c918e281b68af5cf7114ca56ead2797486` | `7ce92d30911288eed98aa2e7b36eaf9942d0c355` | Base advanced with D07 Weather/AQI source/test changes; must retain these while integrating E modules. |
+
+Other PR parent snapshots inspected (#10, #13–#16, #20, #22–#23, #25–#28, #30–#31, #35–#41) match their recorded target dependency heads at the current checkpoint. PR #13–#15 are already merged; #16–#17 and #10–#12, #18–#12, #24–#41 remain under the D-013 boundary as applicable.
+
+### Current source/test CI checkpoint
+
+Latest branch-head or final source/test CI records checked on 2 Nov 2026:
+
+| Group | Module/checkpoint | CI run | Result |
+|---|---|---:|---|
+| B | B01 / B02 / B03 | #563 / #565 / #687 | PASS |
+| B | B04+B05 reconciliation / integration/b-series | #254 / #257 | PASS |
+| B | B06 / B07 | #569 / #571 | PASS |
+| C | C01 / C02 / C03 / C04 | #549 / #333–#334 / #550 / #355 | PASS |
+| C | C05 / C06 / C07 | #361 / #551 / #371 | PASS |
+| D | D01 / D02 / D03 / D04 | #375–#376 / #587 / #588 / #589 | PASS |
+| D | D05 / D06 / D07 | #397 / #399 / #642 | PASS |
+| E | E01 / E02 / E03 / E04 | #610 / #623 / #626 / #629 | PASS |
+| E | E05 / E06 / E07 / E08 | #663 / #668 / #691 / #703 | PASS |
+
+These are per-branch source/test checks. They do not independently prove the full product integration.
+
+### Isolated F01 rehearsal
+
+- Created isolated branch `integration/f01-rehearsal-only` from the synthetic PR #41 merge candidate; no feature branch or canonical integration branch was modified.
+- Created Draft PR #42, base `feature/d07-concurrent-profile-content-state`, head `integration/f01-rehearsal-only`, to test the complete E01–E08 candidate against the latest D07 baseline.
+- PR #42 current mergeability was recomputed as **MERGEABLE**. It remains a rehearsal-only PR; do not merge.
+- CI run #708 completed successfully: launcher unit tests/release build, read-only APK diagnostics, APK size guard, tools/docs checks all PASS; manual APK publication step SKIPPED.
+- CI runs #709 and #710 were IN PROGRESS at the time of this report update. Their final result must be recorded before closing F01.
+- The synthetic merge candidate combines the E01–E08 feature chain with current D07. It is an isolated rehearsal, not a merge to `integration/b-series` or `main`.
+- No APK artifact was published or installed. No physical Android TV acceptance was performed.
+
+### F01 disposition
+
+The dependency and ownership audit is complete. All module-level CI evidence checked is green. The PR chain is currently reported mergeable, and the isolated rehearsal has produced a successful CI run, with two additional runs still in progress.
+
+**F01 remains OPEN until runs #709/#710 are final and their results are checked.** After that, close the rehearsal PR without merging, return it to Draft if still open, and hand the branch-drift register to Project F02/G for dependency-ordered grouped integration. Do not treat this as approval to merge or release.
