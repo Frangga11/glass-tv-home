@@ -334,3 +334,14 @@ This result supersedes the preceding note that CI #626 was in progress.
 - D07 detailed-weather freshness follow-up head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`, CI run #642 PASS. D07 and E05 PRs remain unmerged.
 - Physical 1080p/4K weather presentation, popup focus/Back/scroll and stale/offline/location/language acceptance remain Project F gates. No APK installation or device test claimed.
 - Detailed findings/evidence: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md) and [CROSS_PROJECT_WEATHER_AQI_AUDIT.md](CROSS_PROJECT_WEATHER_AQI_AUDIT.md).
+
+
+## E05 source-scope closure — 2 November 2026
+- **Decision:** E05 implementation/source scope CLOSED; physical acceptance transferred to Project F. This is not merge/release approval.
+- PR #38 exact head `6fe89fad078692958db67030329a6de66cd7ae71`, OPEN/DRAFT/UNMERGED; exact-head Actions run #663 (`41433527557`) SUCCESS. Both launcher tests/release/APK-size guard and Lists/tools/docs passed; APK publication skipped.
+- E05 ayah preview/reader, Weather/AQI source corrections, cache freshness/location isolation, regression tests and B01 shared popup contract source audit are closed at source level.
+- Project F owns physical 1080p/4K acceptance: Arabic glyph/harakat and long text, D-pad/Back/scroll, popup clipping/consistency, weather offline/stale/location/language behavior, and Home/wallpaper/prayer/dock coexistence.
+- If F finds reproducible defects, route to B (shared modal), D (state/freshness) or E05 (module content/UI). Do not duplicate global styling.
+- D07 exact follow-up head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`, CI #642 PASS.
+- PR #38 remains Draft/open/unmerged under D-013. Grouped merge and release remain Project G gates. No APK installation or physical test is claimed.
+- Detailed closure and F test matrix: [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md).
