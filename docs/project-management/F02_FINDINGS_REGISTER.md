@@ -211,3 +211,14 @@ The following fixes have been implemented on owning source branches and mirrored
 - D01 #51 latest head `66352838e6155a42a9ea61477643a238f360434f`: run #41506847521 SUCCESS.
 - F02 previous head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`: run #41507621908 SUCCESS; latest head `8dde2c1ba84050abae6b99e0eb30661ca59f4c93`: queued.
 - Robolectric API 30 window tests passed on the previous F02 head; latest head retest remains mandatory.
+
+
+## F02-FUNC-002 — Force Stop queue can cancel unrelated global gesture callbacks — 3 November 2026
+
+- Severity: P2 cross-feature reliability defect. Owner: B01 / HomeKeyService shared event scheduling.
+- Root cause: `HomeKeyService` used one main-thread `homeHandler` for Home single/double/long-press gestures, power-action timeout, and Force Stop queue orchestration. Three Force Stop paths called `homeHandler.removeCallbacksAndMessages(null)`, which clears every callback posted to that Handler—not only Force Stop work. A Force Stop operation could silently cancel a pending Home single/double gesture, the 450 ms long-press Settings popup, or the power-action timeout.
+- Correction: introduced a dedicated `forceStopHandler`. All Force Stop timeout and queue-continuation callbacks now use it; its broad callback cleanup is scoped to Force Stop only. The Home gesture and power-action callbacks remain on `homeHandler`. Both handlers are explicitly cleaned up in `onDestroy()`.
+- Added `tests/test_home_key_force_stop_handler_isolation.py` to guard the separate Handler, prohibit broad clearing of `homeHandler`, verify Force Stop scheduling uses its own Handler, and verify lifecycle cleanup.
+- Owner branch: B01 `feature/b01-global-navigation-retention`, PR #10. F02 integration mirrors the fix.
+- B01 exact-head CI run #41508765896 and F02 exact-head CI runs #41508777206/#41508763391 were in progress at checkpoint; previous F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs before this new fix.
+- Status: FIX COMMITTED / EXACT-HEAD OWNER + INTEGRATION CI PENDING / TV ACCESSIBILITY EVENT ACCEPTANCE DEFERRED_TO_G.
