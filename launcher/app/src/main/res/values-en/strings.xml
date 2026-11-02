@@ -20,9 +20,9 @@
     <string name="vpn_off">VPN off</string>
     <string name="home_settings">Default home screen</string>
     <string name="home_settings_help">Choose a home screen in system settings, then press Home.</string>
-    <string name="input_key_service_description">Opens the input switcher when the remote\'s Input button is pressed.</string>
+    <string name="input_key_service_description">Opens the TV input switcher and observes foreground-app changes so Glass TV can adapt its Live TV, HDMI and Azan behavior.</string>
     <string name="home_key_name">Home button</string>
-    <string name="home_key_description">Makes the remote\'s Home button open this launcher.</string>
+    <string name="home_key_description">Handles the Home key on compatible remotes and reads system power or confirmation dialogs for restart, sleep and power actions.</string>
     <string name="card_prompt_title">New card from %1$s</string>
     <string name="card_prompt_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app\'s normal tile as it is.</string>
     <string name="card_prompt_names">The card is named \'%1$s\'. The app is \'%2$s\'.</string>
@@ -408,13 +408,36 @@
     <string name="standby_clear_summary">Remove the personal photo list from Standby. Original files in storage are not deleted.</string>
     <string name="standby_preview_title">🌙 Preview Standby Now</string>
     <string name="standby_preview_summary">Preview the clock or personal photos in the app according to the selected mode.</string>
-    <string name="device_accessibility_section">CONTROLS &amp; ACCESSIBILITY</string>
+    <string name="screensaver_settings_section">TV DISPLAY &amp; SLEEP</string>
+    <string name="cache_system_trim_success">App and Android system caches were processed successfully.</string>
+    <string name="cache_system_trim_skipped">App cache was cleaned. Android system caches were not trimmed because ADB access is unavailable or was not approved.</string>
+    <string name="phone_installer_qr_hint">Scan this QR code with an Android phone to open the official installer folder.</string>
+    <string name="phone_installer_steps">1. Scan the QR code with an Android phone.\n2. Download glass-tv-installer.apk from the release folder.\n3. Connect the phone and TV to the same Wi-Fi network.\n4. Open the installer, enter the TV IP or scan the network, then follow the ADB instructions shown on the TV.</string>
+    <string name="home_key_status_title">HOME Button Service</string>
+    <string name="home_key_status_summary">Status: %1$s. Needed for HOME mapping on some remotes, restart, power and automatic sleep.</string>
+    <string name="input_key_status_title">INPUT Button Service</string>
+    <string name="input_key_status_summary">Status: %1$s. Opens the HDMI/source picker and helps detect Live TV or HDMI for Azan behavior.</string>
+    <string name="notification_access_title">Now Playing Notification Access</string>
+    <string name="notification_access_summary">Status: %1$s. Allow access so music information can appear in the Now Playing card.</string>
+    <string name="device_service_enabled">Enabled in Android</string>
+    <string name="device_service_disabled">Not enabled</string>
+    <string name="screensaver_settings_title">Screensaver &amp; TV Sleep</string>
+    <string name="screensaver_settings_summary">Configure Android screensaver and screen-off timing. Glass TV will not change these settings silently.</string>
+    <string name="home_candidates_summary">Detected Home launcher options: %1$d</string>
+    <string name="home_candidates_heading">Detected launcher options:</string>
+    <string name="home_current_heading">Android HOME resolver result:</string>
+    <string name="home_status_unknown">Could not determine</string>
+    <string name="home_refresh_summary">Read the HOME resolver result and launcher candidates again after returning from Android Settings.</string>
+    <string name="home_refresh_action">Refresh launcher status</string>
+    <string name="adb_command_copied">ADB command copied. Run it from a computer connected to the TV.</string>
+    <string name="home_picker_unavailable">Home picker settings are not available on this firmware.</string>
+    <string name="device_accessibility_section">HOME, REMOTE &amp; ACCESSIBILITY</string>
     <string name="power_maintenance_section">POWER &amp; MAINTENANCE</string>
     <string name="device_information_section">DEVICE INFORMATION</string>
     <string name="system_settings_section">SYSTEM SETTINGS</string>
     <string name="system_updates_section">SYSTEM UPDATES</string>
-    <string name="launcher_is_default">Glass TV is active as the default launcher.</string>
-    <string name="launcher_currently_active">Currently active launcher: %1$s</string>
+    <string name="launcher_is_default">Android currently resolves HOME to Glass TV.</string>
+    <string name="launcher_currently_active">Current HOME resolver result: %1$s</string>
     <string name="default_launcher_status_title">🏠 Default Launcher Status &amp; Settings</string>
     <string name="default_launcher_status_summary">%1$s Select to see how to set Glass TV as Home.</string>
     <string name="accessibility_remote_title">♿ Accessibility &amp; Remote Buttons</string>
@@ -459,15 +482,14 @@
     <string name="locked_apps_label">locked</string>
     <string name="open_home_picker_title">⚙️ Open TV Launcher Picker Settings</string>
     <string name="open_home_picker_summary">Try opening Android settings to select Glass TV as the default launcher (if supported by the TV).</string>
-    <string name="set_home_adb_title">💻 Set Permanently with an ADB Command (Recommended)</string>
+    <string name="set_home_adb_title">Copy ADB Command (Advanced)</string>
     <string name="phone_installer_title">📱 No PC: Use the Phone App (Glass TV Installer)</string>
     <string name="phone_installer_summary">Install release/glass-tv-installer.apk on an Android phone connected to the same Wi-Fi network to enable Home automatically in one tap.</string>
-    <string name="default_launcher_success">✅ Success! Glass TV Home is now the device\'s default launcher. Pressing the remote\'s Home button will return to Glass TV.</string>
+    <string name="default_launcher_success">Android currently resolves HOME to Glass TV Home. Test the remote\'s Home button to confirm the TV firmware actually routes to Glass TV.</string>
     <string name="default_launcher_explanation">⚠️ Currently active launcher: %1$s
 
 Most Android TV and Google TV devices restrict the Home button to the manufacturer\'s built-in home screen. Choose one of the following methods to set Glass TV as the default launcher:</string>
-    <string name="adb_command_guidance">Run this command from a PC or ADB tool:
-adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity%1$s</string>
+    <string name="adb_command_guidance">This command only sets the HOME preference. Some firmware may still choose the stock launcher. Do not disable the stock launcher manually; use the Glass TV installer, which includes health checks and rollback.</string>
     <string name="disable_old_launcher_hint">
 
 If the TV still restricts the Home button, disable the previous launcher:
@@ -479,7 +501,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="standby_photos_skipped">%1$d photos skipped because the collection limit was reached.</string>
     <string name="wifi_settings_label">Wi-Fi Settings</string>
     <string name="glass_tv_settings_label">Glass TV Settings</string>
-    <string name="restart_tv_requested">Restart command sent to Android TV.</string>
+    <string name="restart_tv_requested">Power menu opened. If the TV does not restart, select Restart manually.</string>
     <string name="restart_tv_failed">Could not restart. Enable the Glass TV accessibility service first.</string>
     <string name="power_menu_opened">Android TV power menu opened. If the TV does not turn off automatically, choose Power off in the system menu. Turning off the physical TV depends on HDMI-CEC.</string>
     <string name="power_menu_failed">Could not send the power command. Check the Glass TV accessibility service and the TV\'s HDMI-CEC setting.</string>
