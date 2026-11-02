@@ -469,3 +469,10 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Custom StandBy photo QR upload/store/display remains preserved. Exact-head CI #629 pending; physical acceptance assigned to Project F. No APK publication/install or merge.
 
 - CI #629 / `41418393199` for exact head `08076bb945a169de198905152a092f419f48aa82`: **SUCCESS**. APK 1,561,373 bytes / 1,572,864-byte budget / 11,491-byte headroom. No APK published or installed. E04 source repair and CI PASS; hardware validation remains Project F.
+
+## 2 Nov 2026 — Global Glass Effect OFF surface repair
+- Identified cross-project root cause: decorative glass OFF state omitted structural surfaces across pills, Home menus, anchored popups, dock and app dialogs.
+- Implemented B03 global fallback policy on `feature/b03-dialog-opacity-layering` (PR #12, head `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`): shared opaque popup/dock tokens, solid GlassDrawable and DockDecoration fallback, runtime modal material choice, and JVM token regression test. Exact-head CI #685 queued at checkpoint.
+- E07 live-toggle integration independently passed exact-head CI #682 / `41446777187` at head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`. Existing preference and callback retained; active app-owned popups are invalidated after change.
+- Ownership: B03 global policy; E07 toggle integration; G grouped source reconciliation; F physical acceptance. D-013 preserved; no merge or APK publication/install. F 1080p/4K TV test remains pending.
+- Report: [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md).
