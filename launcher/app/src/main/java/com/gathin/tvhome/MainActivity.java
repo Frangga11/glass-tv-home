@@ -4938,22 +4938,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     void styleDeviceSettingsPopup(AlertDialog dialog, int maxWidthDp, int maxHeightDp) {
         if (dialog == null) return;
         styleGlassDialog(dialog);
-        Window window = dialog.getWindow();
-        if (window == null) return;
-        try {
-            window.setBackgroundDrawableResource(R.drawable.bg_glass_dialog);
-            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            window.setDimAmount(0.68f);
-            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-            int width = Math.min((int) (Math.max(420, maxWidthDp) * density), (int) (dm.widthPixels * 0.88f));
-            int height = maxHeightDp > 0
-                    ? Math.min((int) (maxHeightDp * density), (int) (dm.heightPixels * 0.88f))
-                    : ViewGroup.LayoutParams.WRAP_CONTENT;
-            window.setLayout(width, height);
-            window.setGravity(Gravity.CENTER);
-        } catch (Exception e) {
-            android.util.Log.w("TvHome", "Could not apply Device Settings popup style", e);
-        }
+        TvDialogStyle.apply(dialog, this, maxWidthDp, maxHeightDp);
     }
 
     private File getBundledDefaultWallpaper() {
