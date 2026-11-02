@@ -621,3 +621,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - ADB shell permission compatibility, real remote event timing, focus/render/OEM behavior remain DEFERRED_TO_G.
 - Robolectric window tests passed on previous F02 head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`; latest F02 exact head still pending.
 - Next: poll B01 #10 and F02 #50 exact-head CI; fix any failure without skipping/weakening tests; update docs and findings with final SHA/run IDs; continue source audit. Do not merge, publish/install APK, or test on TV during F.
+
+
+## Latest continuation point — F02, 3 November 2026
+
+- B01 PR #10 owner head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; F02 PR #50 integration head `3ea479d689dc732fe46594a0677d02b7762d7527`. Both latest exact-head CI workflows were in progress at the last check.
+- New B01/F02 fix 1: dedicated `forceStopHandler` prevents Force Stop queue cleanup from canceling Home gesture and power-action callbacks. Regression test: `tests/test_home_key_force_stop_handler_isolation.py`.
+- New B01/F02 fix 2: `RecentAppsActivity` was exported and accepted `ACTION_CLOSE_ALL`, which could trigger destructive app-stop behavior from an external explicit Intent. Manifest now sets `exported=false` and removes its unnecessary MAIN filter; HomeKeyService explicit in-app route remains. Regression test: `tests/test_recent_apps_manifest_security.py`.
+- Earlier F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs before these two latest changes. Do not claim latest head green until runs on exact SHA complete.
+- Previous owner B01 head `10fb9c937a3c5d7fb6331a511f0ba899137b1630` passed both jobs; the newer manifest hardening/test needs owner retest.
+- Keep PR #50 Draft/open/unmerged; no APK publish/install and no physical TV test. Project G must validate remote Home double press, Close All, long press Settings, and ADB permission compatibility.
