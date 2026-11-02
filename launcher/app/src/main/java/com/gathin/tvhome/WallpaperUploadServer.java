@@ -32,6 +32,7 @@ public class WallpaperUploadServer {
     private static final String TAG = "TvHome.UploadServer";
     static final long MAX_UPLOAD_BYTES = 60L * 1024L * 1024L;
     private static final int MAX_ACTIVE_CLIENTS = 8; // Allows normal parallel gallery thumbnail requests.
+    private static final long MIN_FREE_UPLOAD_BYTES = 64L * 1024L * 1024L;
 
     public interface UploadListener {
         void onUploaded(File imageFile);
@@ -55,6 +56,9 @@ public class WallpaperUploadServer {
     private volatile boolean running = false;
     private final Set<Socket> activeClients = Collections.synchronizedSet(new java.util.HashSet<>());
     private Thread serverThread;
+    // Shared across server instances so a replacement QR session accounts for draining old sessions.
+    private static final Object UPLOAD_STORAGE_LOCK = new Object();
+    private static long reservedUploadBytes;
 
     public WallpaperUploadServer(Context context, int port, UploadListener listener) {
         this(context, port, listener, false);
@@ -256,6 +260,24 @@ public class WallpaperUploadServer {
         return NetworkFeedbackPolicy.isSessionActive(running, sessionExpiresAtMs, SystemClock.elapsedRealtime());
     }
 
+    private boolean reserveUploadStorage(long incomingBytes) {
+        synchronized (UPLOAD_STORAGE_LOCK) {
+            if (!isSessionActive()) return false;
+            long usableBytes = context.getFilesDir().getUsableSpace();
+            if (!NetworkFeedbackPolicy.canReserveUploadStorage(
+                    usableBytes, reservedUploadBytes, incomingBytes, MIN_FREE_UPLOAD_BYTES)) return false;
+            reservedUploadBytes += incomingBytes;
+            return true;
+        }
+    }
+
+    private void releaseUploadStorage(long reservedBytes) {
+        if (reservedBytes <= 0L) return;
+        synchronized (UPLOAD_STORAGE_LOCK) {
+            reservedUploadBytes = Math.max(0L, reservedUploadBytes - reservedBytes);
+        }
+    }
+
     public synchronized void stop() {
         running = false;
         sessionExpiresAtMs = 0L;
@@ -295,6 +317,7 @@ public class WallpaperUploadServer {
     }
 
     private void handleClient(Socket client) {
+        long reservedStorageBytes = 0L;
         try {
             long requestDeadline = Math.min(sessionExpiresAtMs,
                     SystemClock.elapsedRealtime() + NetworkFeedbackPolicy.WALLPAPER_UPLOAD_REQUEST_DEADLINE_MS);
@@ -402,7 +425,19 @@ public class WallpaperUploadServer {
                 out.write(pageBytes);
                 out.flush();
             } else if (standbyOnly && isRequestToPath(requestLine, "POST", getStandbyUploadPath())) {
-                handleStandbyUpload(client, in, out, lines);
+                long incomingBytes = parseContentLength(lines, MAX_UPLOAD_BYTES);
+                if (incomingBytes > 0L && !reserveUploadStorage(incomingBytes)) {
+                    if (!isSessionActive()) sendUploadError(out, 410, "Upload session expired or closed");
+                    else sendUploadError(out, 507, "Insufficient storage; keep at least 64 MiB free");
+                } else if (incomingBytes > 0L) {
+                    try {
+                        handleStandbyUpload(client, in, out, lines);
+                    } finally {
+                        releaseUploadStorage(incomingBytes);
+                    }
+                } else {
+                    handleStandbyUpload(client, in, out, lines);
+                }
             } else if (isRequestToPath(requestLine, "GET", getWallpaperPath())) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n" +
@@ -420,6 +455,12 @@ public class WallpaperUploadServer {
                 if (contentLength == -2L) {
                     sendTextResponse(out, 413, "Payload Too Large", "Upload exceeds the allowed size", null);
                 } else if (contentLength > 0) {
+                    if (!reserveUploadStorage(contentLength)) {
+                        if (!isSessionActive()) sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
+                        else sendTextResponse(out, 507, "Insufficient Storage", "Keep at least 64 MiB of device storage free", null);
+                        return;
+                    }
+                    reservedStorageBytes = contentLength;
                     File customDir = new File(context.getFilesDir(), "custom_wallpapers");
                     if (!customDir.exists() && !customDir.mkdirs()) {
                         throw new java.io.IOException("Cannot create wallpaper storage");
@@ -490,6 +531,7 @@ public class WallpaperUploadServer {
             Log.w(TAG, "Client handle exception: " + e.getMessage());
             try { client.close(); } catch (Exception ignored) {}
         } finally {
+            releaseUploadStorage(reservedStorageBytes);
             activeClients.remove(client);
             try {
                 if (!client.isClosed()) client.close();
@@ -609,7 +651,8 @@ public class WallpaperUploadServer {
 
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
         byte[] bytes = message.getBytes("UTF-8");
-        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large" : status == 410 ? "Gone" : "Bad Request";
+        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large"
+                : status == 410 ? "Gone" : status == 507 ? "Insufficient Storage" : "Bad Request";
         String response = "HTTP/1.1 " + status + " " + label + "\r\n"
                 + "Content-Type: text/plain; charset=UTF-8\r\n"
                 + "Content-Length: " + bytes.length + "\r\n"
