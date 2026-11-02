@@ -65,7 +65,19 @@ public class WeatherActivity extends Activity {
         setContentView(R.layout.activity_weather);
 
         weatherBgView = findViewById(R.id.weatherBgView);
-        if (weatherBgView != null) weatherBgView.setReducedMotion(reducedMotion);
+        if (weatherBgView != null) {
+            weatherBgView.setReducedMotion(reducedMotion);
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                if (am != null) {
+                    am.getMemoryInfo(mi);
+                    if (mi.totalMem <= 1610612736L) weatherBgView.setLowSpecMode(true);
+                }
+            } catch (Exception ignored) {
+                // Keep the normal visual mode when device memory information is unavailable.
+            }
+        }
         weatherLocation = findViewById(R.id.weatherLocation);
         btnChangeLocation = findViewById(R.id.btnChangeLocation);
         weatherMainTemp = findViewById(R.id.weatherMainTemp);
