@@ -15,7 +15,7 @@ public class GlassFallbackSurfaceTest {
     @Test
     public void dockFallbackIsOpaqueAndUsesSharedBorder() {
         assertEquals(255, (TvUiTokens.DOCK_SURFACE >>> 24));
-        assertEquals(255, Color.alpha(TvUiTokens.BORDER));
+        assertEquals(255, (TvUiTokens.BORDER >>> 24));
     }
 
     @Test
