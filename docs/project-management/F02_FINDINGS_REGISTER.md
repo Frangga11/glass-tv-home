@@ -358,3 +358,16 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - F02-SEC-005 is now HOST/SOURCE VERIFIED: regression failed before the InputKeyService manifest correction and passed after it. E01 owner PR #34 latest head `edd6461c932705a109ed9768649cae7e3c162c59`, run #41513716451 both jobs SUCCESS. Device KEYCODE_TV and system service binding acceptance remains DEFERRED_TO_G.
 - Latest F02 APK measurement from the corrected source/test checkpoint: 1,564,977 bytes against 1,572,864-byte cap; 7,887 bytes headroom. F02-BUILD-001 remains a P3 watchlist, not a CI blocker.
 - PR #50 remains Draft/open/unmerged. No APK artifact publication, install, or physical Android TV test.
+
+
+## Additional QR upload shutdown audit — 3 November 2026
+
+- Scope: final risk-based review of C07 upload-session revocation across Avatar, Wallpaper, and StandBy persistence paths.
+- Source review confirms Avatar upload serializes its final listener commit with `stop()` under the same server monitor and rejects a stopped/expired session before callback delivery.
+- Source review confirms custom Wallpaper upload serializes the final session check, temporary-file rename, and upload callback under the WallpaperUploadServer monitor shared with `stop()`.
+- Source review confirms StandBy upload serializes its final session/client check, `StandbyPhotoStore.addUploadedFile` persistence, and listener callback under that same monitor; rejected commits delete the newly stored file unless persistence failure requires retaining it to avoid dangling live references.
+- The earlier regression test asserted generic synchronization but did not independently guard both Wallpaper and StandBy upload commit blocks. Added two explicit source-contract tests in `tests/test_wallpaper_session_shutdown_atomicity.py` to protect these critical sections.
+- No production Java behavior was changed: this is a test-coverage hardening change only.
+- New test commit: `4e9219f7445dd48347ff3a1fb419d485eae24b00`.
+- Status: SOURCE AUDIT PASS / REGRESSION COVERAGE ADDED / EXACT-HEAD CI RETEST PENDING.
+- Project G still owns physical phone-to-TV cancellation, network disconnect, expiry, and reconnection acceptance.
