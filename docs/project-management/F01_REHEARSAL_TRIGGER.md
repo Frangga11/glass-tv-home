@@ -7,3 +7,5 @@
 - Workflow dispatch/publish input is not used. The CI workflow's push trigger runs the launcher unit tests, release build, APK size guard, and repository checks. The manual APK artifact publication step is not eligible on a push event.
 - Known limitation: the PR #41 merge candidate inherits the current E07/E08 branch chain but does not by itself prove every upstream base-branch update has been reconciled into the chain. F01's parent-branch drift register remains applicable.
 - No APK is published or installed. No physical TV acceptance is claimed.
+
+- F01 follow-up: a second documentation-only commit is used to ensure the draft PR receives a synchronize event; source files remain unchanged by this trigger.
