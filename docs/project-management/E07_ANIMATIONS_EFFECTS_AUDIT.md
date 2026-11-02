@@ -70,10 +70,10 @@ A follow-up integration audit found that disabling the decorative glass material
 
 ### Current source checkpoint
 - Branch: `feature/e07-animation-effects`
-- Latest source/test commit: `ba1ec225450a75aff52f34aa20ce2b2b37665cea`.
+- Latest source/test commit: `6dc39d76e3c897e841854f425d549dbfebf1025c`.
 - Added `GlassFallbackSurfaceTest` to guard opaque popup/dock fallback tokens using pure bit checks (no Android framework stubs).
-- Exact-head CI run #681 / `41446456934`: SUCCESS; Launcher build and unit tests, Lists/tools/docs, release APK build and APK size guard all passed.
-- Release APK: `1,564,117 bytes`; budget `1,572,864 bytes`; remaining headroom `8,747 bytes`.
+- Exact-head CI run #688 / `41447965099`: SUCCESS; Launcher build and unit tests, Lists/tools/docs, release APK build and APK size guard all passed.
+- Release APK: `1,564,137 bytes`; budget `1,572,864 bytes`; remaining headroom `8,727 bytes`.
 - APK publication skipped. No APK installation or physical TV test is claimed.
 - PR #40 remains Draft/open/unmerged under D-013.
 
@@ -84,3 +84,11 @@ A follow-up integration audit found that disabling the decorative glass material
 - E07 retains toggle-specific integration: invalidate the active app-owned PopupWindow and Home popup when the preference changes, preserving existing keys/callbacks. E07 exact PR head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`; exact-head CI #682 / `41446777187` PASS.
 - Shared classes are semantically aligned across B03 and E07. G must perform the final exact-content reconciliation during grouped integration; do not merge early or duplicate global styling.
 - PR #40 remains Draft/open/unmerged under D-013. Project F still owns glass ON/OFF visual and D-pad acceptance at 1080p and 4K. No APK installation or physical TV test is claimed.
+
+
+## Glass OFF transition refinement — exact-head CI — 2 Nov 2026
+- Both B03 and E07 fallback surfaces now apply the existing GlassDrawable fade alpha to the solid fallback fill and border. This preserves the current Home menu fade/unfold transition when Glass Effect is OFF; the opaque surface is still fully present at the settled state.
+- E07 source head `6dc39d76e3c897e841854f425d549dbfebf1025c`; exact-head CI #688 / `41447965099`: **SUCCESS**, both jobs passed.
+- Release APK: 1,564,137 bytes; cap 1,572,864 bytes; headroom 8,727 bytes. Publication skipped.
+- B03 counterpart source head `d87ffdf914851b8a1d2c67c2416ac9f5f1309d93`; exact-head CI #687 / `41447950284`: **SUCCESS**, both jobs passed; release APK diagnostic 1503 KB.
+- No preference keys, geometry, D-pad behavior or callbacks changed. F physical acceptance remains pending.
