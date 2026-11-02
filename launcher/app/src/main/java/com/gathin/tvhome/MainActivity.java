@@ -665,7 +665,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             prayerHeader = findViewById(R.id.prayerHeader);
 
             int uWidth = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
-            int iMaxWidth = Math.round(uWidth * 0.38f);
+            int iMaxWidth = Math.round(uWidth * 0.46f);
             if (ayahArabic != null) ayahArabic.setMaxWidth(iMaxWidth);
             if (ayahText != null) ayahText.setMaxWidth(iMaxWidth);
 
