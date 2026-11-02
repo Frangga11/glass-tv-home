@@ -276,3 +276,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Shared photo store, QR upload validation/session controls, atomic collection+mode persistence, picker merge and clear semantics were preserved.
 - Exact-head CI is PENDING; no APK publication/install and no physical device acceptance claimed. DreamService/overlay trigger precedence, remote wake, 2-hour sleep and OEM display-lock behavior remain mandatory Project F checks.
 - Detailed report: `E04_STANDBY_SCREENSAVER_AUDIT.md`. E04 is NOT FINAL until exact-head CI and Project F acceptance are complete.
+
+
+## E04 follow-up — native idle ownership — 2 Nov 2026
+
+- User reaffirmed that Android TV's native idle → StandBy/Dream → screensaver → sleep/power-off sequence must remain intact; custom photos are the only feature extension.
+- Removed app-owned idle/power timers from `ClockDream` and `MainActivity`; retained manual Nightstand overlay and shared photo pipeline. Commits `75fa1b1` and `08076bb` on E04 branch.
+- QR upload/store/decoder paths remain isolated and preserved. E01/E02/E03 boundaries and Project F hardware acceptance are recorded in `E04_STANDBY_SCREENSAVER_AUDIT.md`.
+- Exact-head CI #629 pending at this checkpoint; no APK install, no hardware acceptance, no merge. E04 remains NOT FINAL.
