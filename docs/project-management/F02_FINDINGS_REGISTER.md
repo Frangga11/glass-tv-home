@@ -400,3 +400,13 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - Updated tests/test_upload_storage_reservation.py to require the shared static reservation lock and counter. No change to the 64 MiB margin, per-file limit, StandBy collection cap, or user-visible success behavior.
 - Refinement commit: 8e765719919a07cd225eab81281f92836182f51b; regression-test update: ae5ba8a4438e95e7c4636e5613ccdb2900a5339f.
 - Status: FIX IMPLEMENTED / NEW EXACT-HEAD CI RETEST REQUIRED.
+
+
+## Process-wide QR storage reservation exact-head retest — 3 November 2026
+
+- F02 latest source/test head `a95b21becad238dd634dda1e79aa9de36d749d8c`: PR workflow #41520409999 completed SUCCESS for both required jobs.
+- The 42-test Python suite passed, including the new source guard requiring the process-wide static reservation lock/counter and the custom Wallpaper / StandBy commit-shutdown guards.
+- Launcher `testReleaseUnitTest` and `assembleRelease` passed. Release APK exact size: 1,565,713 bytes against 1,572,864-byte cap; 7,151 bytes headroom. APK size guard passed; no artifact was published.
+- F02-RES-001 process-wide reservation refinement is now HOST/SOURCE VERIFIED. The 64 MiB free-space margin is preserved across replacement QR sessions while old workers drain. Physical concurrent LAN, low-storage telemetry and cancellation behavior remain DEFERRED_TO_G.
+- The owner C07 branch has also received the corresponding policy, server reservation, JUnit and Python regression changes; owner PR #24 exact-head CI is pending. Do not close the cross-project finding until owner-branch retest passes.
+- PR #50 remains Draft/open/unmerged. No APK publication, installation, or physical Android TV testing.
