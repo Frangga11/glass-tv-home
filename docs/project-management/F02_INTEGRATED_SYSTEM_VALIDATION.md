@@ -115,3 +115,11 @@ Project F does not publish or install the final TV-test APK.
 - Robolectric is `testImplementation` only; it must not enter the release APK. Android resources are enabled only for local JVM unit tests.
 - These tests supplement source-level modal-contract regression tests. They are not a substitute for Project G acceptance of actual TV renderer, remote/DPAD focus, OEM window policy, HDMI/display scaling, firmware and ADB shell behavior.
 - The new dependency and tests must pass the exact F02 head CI; no test may be skipped or softened to obtain a green run.
+
+
+## Home-key / Recent Apps routing regression gate — 3 November 2026
+
+- HomeKeyService intercepts HOME/ALL_APPS key events. Its former immediate ACTION_UP behavior prevented the documented double-press HOME gesture from reaching RecentAppsActivity.
+- B01 now uses a pure-Java HomeKeyPressTracker (350 ms double-press threshold, 400 ms single-action delay) and routes single/double/long Home without changing the existing disabled KEYCODE_APP_SWITCH policy.
+- Host-side unit tests cover timing boundaries, expiry, cancellation and double-press classification; a source-contract test guards RecentApps launch, Close All routing and single-Home behavior.
+- Project G must still verify real remote key timing, OEM accessibility filter delivery, single-Home latency, double-press deck launch, double-press Close All and long-press Settings coexistence. Host CI is not device acceptance.
