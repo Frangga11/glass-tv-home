@@ -123,3 +123,15 @@ Project F does not publish or install the final TV-test APK.
 - B01 now uses a pure-Java HomeKeyPressTracker (350 ms double-press threshold, 400 ms single-action delay) and routes single/double/long Home without changing the existing disabled KEYCODE_APP_SWITCH policy.
 - Host-side unit tests cover timing boundaries, expiry, cancellation and double-press classification; a source-contract test guards RecentApps launch, Close All routing and single-Home behavior.
 - Project G must still verify real remote key timing, OEM accessibility filter delivery, single-Home latency, double-press deck launch, double-press Close All and long-press Settings coexistence. Host CI is not device acceptance.
+
+
+## Exact-head retest checkpoint — 3 November 2026
+
+- F02 integration branch `integration/project-f02-system-validation`, head `ddf130a348182546b28ff59c292c9b5ceebacb2e`.
+- Exact-head push CI run #41512382568: Lists/tools/docs SUCCESS; Launcher build/unit tests SUCCESS. Release compilation was validation-only; read-only APK diagnostics and the 1.5 MiB size gate passed. No APK artifact was published.
+- Matching PR CI run #41512391849: Lists/tools/docs SUCCESS; launcher unit tests, release build, APK diagnostics and size gate all completed successfully; final job cleanup remained in progress at the checkpoint.
+- C07 owner PR #24 head `80a92264c51631fb107c75f32a3cd8e4b8aa9d9a`, run #41512386827: both jobs SUCCESS.
+- The last C07/F02 upload deadline failure was a bad test expectation (3000 ms instead of 3500 ms for 6000 ms deadline at 2500 ms elapsed). Corrected on owner and integration branches; no test weakened.
+- F02 intentionally combines C07 upload-session protections with D05's downstream `StandbyPhotoStore.UploadResult` persistence contract. Do not overwrite the D05-aware StandBy upload handler with the older C07 boolean-based handler.
+- B01 #10, D05 #29, D06 #30 and D01 #51 exact-head owner CI runs also passed (see findings register).
+- PR #50 remains Draft/open/unmerged. No APK publication/installation and no physical Android TV testing. All device-dependent acceptance remains DEFERRED_TO_G.
