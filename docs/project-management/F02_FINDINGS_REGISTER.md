@@ -272,3 +272,10 @@ The following fixes have been implemented on owning source branches and mirrored
 - Owner: C07 PR #24, `feature/c07-upload-session-resilience`; mirrored into F02.
 - Exact-head owner and F02 CI pending.
 - Status: FIX COMMITTED / EXACT-HEAD CI PENDING / PHONE-TO-TV EXPIRY ACCEPTANCE DEFERRED_TO_G.
+
+
+### C07 monotonic-clock retest correction — 3 November 2026
+- First CI after production clock conversion correctly failed two existing `UploadDeadlineInputStreamTest` cases because the test fixtures still created deadlines using `System.currentTimeMillis()` while production now compares `SystemClock.elapsedRealtime()`.
+- Corrected the fixtures to use the same monotonic clock domain; no test was removed or weakened.
+- Added source guard `tests/test_upload_monotonic_deadline_clock.py` to prohibit wall-clock deadline comparisons in AvatarUploadServer, WallpaperUploadServer and UploadDeadlineInputStream.
+- Latest owner and F02 exact-head retests pending after this test correction.
