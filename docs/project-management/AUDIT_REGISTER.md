@@ -492,3 +492,5 @@ Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MA
 | Physical acceptance | DEFERRED, NOT WAIVED | Project F: visual crop, TV/remote, Next/shuffle/restart, QR and StandBy isolation. |
 
 **Disposition:** E03 is IN PROGRESS. PR #36 OPEN/DRAFT/UNMERGED under D-013. No merge or release approval.
+
+- CI update: exact-head CI #624 / `41408606965` **PASS** on `188bd49269a358ebf53f8ae09056c41a5eb80243`; both required jobs passed. APK 1,561,797 bytes / 1,572,864 cap / 11,067 bytes headroom; publication skipped. Clean asset replacement remains BLOCKED / NOT COMMITTED; E03 not closed.
