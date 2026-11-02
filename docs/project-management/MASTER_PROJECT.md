@@ -587,3 +587,8 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - Release APK diagnostic: 1,565,621 bytes against 1,572,864-byte cap; 7,243 bytes headroom. Keep F02-BUILD-001 as P3 watchlist.
 - New QR storage reservation policy and upload shutdown test hardening are host/source verified. Real low-storage/concurrent LAN behavior remains Project G.
 - Latest F02 docs-only head 1845635091969c2475bb0d26783bc0f7eb58c1c0; CI #41520194974 queued at last poll. PR #50 remains Draft/open/unmerged; no APK publication or physical TV test.
+
+## F02 process-wide upload reservation refinement — 3 November 2026
+- Lifecycle review found that old upload workers may briefly drain after stop() while MainActivity starts a replacement QR server. Per-instance storage reservations would miss those residual writes.
+- Reservation lock/counter is now static and process-wide across WallpaperUploadServer instances; each reservation remains held until the request finally path releases it. Source-contract regression test updated.
+- Earlier source/test head c1f212585633899d4c1f5327d3a982a9e136e2b7 passed CI #41519813674, but the latest refinement head a95b21becad238dd634dda1e79aa9de36d749d8c requires exact-head CI #41520409999 (queued at last poll). F02 remains partial.
