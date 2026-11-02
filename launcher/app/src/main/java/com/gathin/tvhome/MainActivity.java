@@ -3630,13 +3630,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         d.show();
         styleGlassDialog(d);
 
-        if (d.getWindow() != null) {
-            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-            int w = Math.min((int) (540 * density), (int) (dm.widthPixels * 0.75f));
-            int h = Math.min((int) (400 * density), (int) (dm.heightPixels * 0.72f));
-            d.getWindow().setLayout(w, h);
-            d.getWindow().setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(d, this, 540, 400);
     }
 
     private void updateMasterTag(TextView tag, boolean on) {
@@ -3938,13 +3932,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.show();
         styleGlassDialog(dialog);
 
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setBackgroundDrawableResource(android.R.color.transparent);
-            int width = Math.min((int) (680 * density), (int) (getResources().getDisplayMetrics().widthPixels * 0.85f));
-            window.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT);
-            window.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(dialog, this, 680, 0, 0.68f);
 
         if (btnCheckNow != null) btnCheckNow.requestFocus();
     }
@@ -4577,11 +4565,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.show();
         styleGlassDialog(dialog);
 
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (470 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.85f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        TvDialogStyle.apply(dialog, this, 520, 470);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -4797,11 +4781,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.show();
         styleGlassDialog(dialog);
 
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (470 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.85f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        TvDialogStyle.apply(dialog, this, 520, 470);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -5182,11 +5162,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.show();
         styleGlassDialog(dialog);
 
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (480 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.75f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        TvDialogStyle.apply(dialog, this, 520, 480);
         if (actionList.getChildCount() > 0) {
             actionList.getChildAt(0).requestFocus();
         }
@@ -5244,11 +5220,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setPositiveButton(R.string.understand_action, null)
                 .show();
         styleGlassDialog(dialog);
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (430 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.68f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        TvDialogStyle.apply(dialog, this, 520, 430);
     }
 
     private void showWeatherSummaryDialog(String town, String wxStr) {
@@ -5258,11 +5230,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setPositiveButton(R.string.ok_action, null)
                 .show();
         styleGlassDialog(dialog);
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (430 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.68f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        TvDialogStyle.apply(dialog, this, 520, 430);
     }
 
     private void showPrayerAndAyahDialog(String town) {
@@ -5274,11 +5242,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setPositiveButton(R.string.close_label, null)
                 .show();
         styleGlassDialog(dialog);
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (440 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.70f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        TvDialogStyle.apply(dialog, this, 520, 440);
     }
 
     /** Starts a short-lived, profile-scoped QR upload session for exactly one avatar photo. */
@@ -5791,11 +5755,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
-        if (dialog.getWindow() != null) {
-            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
-            int h = Math.min((int) (440 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.70f));
-            dialog.getWindow().setLayout(w, h);
-        }
+        TvDialogStyle.apply(dialog, this, 520, 440);
     }
 
     private void showSingleCustomActionDialog(File file) {
