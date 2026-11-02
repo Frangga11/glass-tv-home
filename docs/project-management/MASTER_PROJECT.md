@@ -198,3 +198,16 @@
 - Cache byte totals now count only successfully deleted app-cache/temp files; free-space deltas are no longer attributed to app-cache cleanup. User-facing no-files-removed feedback is neutral. Android system trim success requires the explicit ADB success marker. Regression tests cover marker parsing and actual deleted-byte counting.
 - E01 audit report and PR #34 description updated. PR #34 remains OPEN/DRAFT/UNMERGED under D-013; latest feature branch documentation commit 090a956a9860c82eb36c2d96848d47046fba0f0c.
 - E01 source audit remains COMPLETE; next Stage E task is E02 Profile. F-stage physical/OEM checks remain mandatory and unchanged. No device settings, HOME default, package state, user data or installed APK changed.
+
+
+## E02 Profile source audit closure — 2 November 2026
+
+- **E02 source audit and exact-head CI are COMPLETE.** Next Stage E task: E03. Physical Mi TV/phone/remote acceptance remains mandatory in Project F; it is deferred, not waived.
+- Feature branch `feature/e02-profile-avatar-lock-ui`; final source head `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; Draft PR #35 targets E01 branch `feature/e01-device-settings-home-control` @ `090a956a9860c82eb36c2d96848d47046fba0f0c`. PR #35 remains OPEN/DRAFT/UNMERGED under D-013.
+- E02 retained profile-scoped avatar/Child Mode/lock/hide state, global parent PIN, child-profile switch/delete authorization, QR upload/session/storage safeguards, and B01 global modal/focus contracts.
+- Corrected app-policy enumeration to merge LEANBACK_LAUNCHER + LAUNCHER results, deduplicate by package, and handle null labels/icons. Picker count now refreshes on every dismissal path. Built-in avatar index and custom-photo reference are committed atomically.
+- Exact-head CI #623 / `41406190380`: both Android build/unit-test and lists/tools/docs jobs PASS. App and installer release unit tests and Release build PASS.
+- Diagnostic APK: 1,561,717 bytes; cap 1,572,864 bytes; headroom 11,147 bytes. Manual artifact publication skipped; artifact count zero.
+- Parent PIN default `0000` and unlimited retries remain by explicit user decision; no forced PIN change or throttling was added.
+- No APK installed, no device setting/HOME default changed, no data migration and no physical-device acceptance claimed.
+- Full evidence and F-stage checklist: [E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md](E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md).
