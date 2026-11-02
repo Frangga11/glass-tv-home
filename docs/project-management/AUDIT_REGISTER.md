@@ -846,3 +846,15 @@ APK size 1,565,621 bytes; cap 1,572,864 bytes; 7,243 bytes headroom. F02-BUILD-0
 
 - Both branches now share the process-wide static reservation lock/counter and 64 MiB safety margin. F02 retains the D05 UploadResult adapter; C07 retains its upstream boolean persistence contract.
 - Latest F02 findings-register docs head e190e2863a4aacbe3aba61094fab00572f4b469f; CI #41521145454 queued at last poll. No APK artifacts were produced. Device acceptance remains Project G.
+
+## Final F02 host audit — 3 November 2026
+
+| Branch / PR | Exact head | CI | Host result |
+|---|---|---|---|
+| F02 integration / #50 | `e190e2863a4aacbe3aba61094fab00572f4b469f` | #41521145454 — both jobs SUCCESS | 42 Python tests (1 intentional merge-time README count skip); Android unit tests and release build pass; APK 1,565,713 bytes; 7,151 bytes below cap; no artifact |
+| C07 owner / #24 | `442b78c68b1540394d543bab59bddf52f865ccf0` | #41521013896 — both jobs SUCCESS | 18 Python tests (1 intentional merge-time README count skip); Android unit tests and release build pass; APK 1,550,949 bytes; no artifact |
+| D01 security owner / #51 | `66352838e6155a42a9ea61477643a238f360434f` | #41506847521 — both jobs SUCCESS | Receiver permission/action and internal LocationActivity manifest regression guards pass; mirrored into F02 |
+
+- F02-RES-001 and upload shutdown atomicity are owner + integration host verified. Process-wide reservation protects concurrent and overlapping old/new QR sessions with a 64 MiB minimum free-space margin; 507 is returned when reservation cannot be made.
+- F02 host/source exit criteria are complete. Physical device/LAN/OEM acceptance remains Project G; no artifact publication or APK installation was performed.
+- Draft/open/unmerged PR state is intentional under the staged integration policy, not an outstanding F02 source defect.
