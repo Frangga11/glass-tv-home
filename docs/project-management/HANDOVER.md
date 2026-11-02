@@ -552,3 +552,10 @@ This result supersedes the preceding note that CI #626 was in progress.
 - No TV test has been claimed or performed in this closure. Do not install APK until F's software gates and approved device procedure are ready. Do not merge feature PRs; D-013 reserves grouped integration/merge for G after all gates and explicit user approval.
 - PR #34–#41 are OPEN/DRAFT/UNMERGED. E08 source/test head `fcd7d8f23a4833830a401652ef269db3282b7300`, exact-head CI #702 / `41473357877` PASS; APK 1,562,709 bytes / 1,572,864 cap, publication skipped. Latest PR #41 head `8dfdcabd19853a1140724ea68983877af17bed0c` is report-only after that tested source head.
 undefined
+
+## Project F01 — current checkpoint (2 Nov 2026)
+- F01 source-diff/dependency scan has reviewed B01–B03, C01–C07, D01–D07 and E01–E08 PR diffs. The highest-risk semantic hotspots are `MainActivity.java`, QR upload servers, global dialog/token primitives, Settings dialog, weather/profile state, StandBy persistence and localized resources.
+- E01–E08 exact source/test CI checkpoints all PASS, including E04 #629. B01/B02/B03, C07, D05 and D07 evidence sampled in F01 also PASS. Exact SHAs and PR overlap map are in `F01_INTEGRATION_DEPENDENCY_AUDIT.md`.
+- Important owner contracts: B03 global Glass OFF surface policy / E07 live toggle invalidation; C07 upload session resilience / D05 atomic StandBy persistence / D07 concurrent content-store writes; D07 weather freshness / E05 weather presentation. Preserve these contracts.
+- F01 remains IN PROGRESS: no frozen-head combined diff, integrated build, full integrated regression, APK publication/installation or physical TV test has yet been completed. PRs remain Draft/open/unmerged under D-013. No merge before G and explicit approval.
+- Next: freeze exact branch heads, inspect the combined semantic diff, then run isolated software integration gates. Route confirmed defects to the owning project; do not invent conflicts from file overlap.
