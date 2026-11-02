@@ -805,3 +805,18 @@ F02 latest head `558762994dec05a7ae03a924c33a3ed11665c224`: push CI #41513940620
 - PR workflow #41514480902 completed SUCCESS on this exact head: Lists/tools/docs and Launcher build/unit tests both passed. The launcher log confirms release-validation build success, 35 Python tests including the accessibility-service manifest guard, and APK size 1,564,977 bytes against 1,572,864-byte cap (7,887 bytes headroom).
 - Matching push workflow #41514472847 initially failed only because Maven Central returned HTTP 429 while downloading Robolectric `nativeruntime-dist-compat-1.0.16`; this is external dependency rate limiting, not a source/test failure. Only the failed launcher job was re-run (attempt 2); it was still in progress at the time of this note. Lists/tools/docs job passed.
 - PR #50 remains Draft/open/unmerged. No APK publication, installation or physical Android TV testing. Device acceptance remains Project G.
+
+
+## F02 final risk-based audit continuation — 3 November 2026
+
+| Finding | Evidence / corrective action | Status |
+|---|---|---|
+| F02-C07-001 upload/session shutdown coverage | Source audit traced Avatar, custom Wallpaper, and StandBy commit paths. All final session checks and mutation/callback commits are serialized with the server stop monitor. Added explicit regression assertions for custom Wallpaper rename/callback and StandBy persistence/callback blocks in tests/test_wallpaper_session_shutdown_atomicity.py. | SOURCE PASS / TEST HARDENING ADDED / EXACT-HEAD CI PENDING |
+| F02-RES-001 concurrent QR upload storage | Custom Wallpaper upload had no free-space margin; StandBy checked free space per request without reserving against concurrent clients. Added overflow-safe reservation policy, synchronized per-server in-flight byte reservations, 64 MiB minimum free-space margin, HTTP 507 response, and finally-based reservation release. Existing file/collection limits and wallpaper collection behavior remain unchanged. | FIX IMPLEMENTED / EXACT-HEAD CI PENDING |
+| F02-TEST-002 reservation regression coverage | Added JUnit boundary tests to NetworkFeedbackPolicyTest and Python source-contract tests in tests/test_upload_storage_reservation.py; expanded shutdown tests to guard both upload commit paths. | TESTS ADDED / EXACT-HEAD CI PENDING |
+
+### Current integration evidence
+- F02 branch: integration/project-f02-system-validation; PR #50 remains Draft/open/unmerged.
+- Current exact head: c1f212585633899d4c1f5327d3a982a9e136e2b7.
+- CI run #41519813674: Lists/tools/docs job SUCCESS; Launcher build/unit-test job still IN_PROGRESS at last poll. Do not close the new findings until both jobs complete successfully on this exact head.
+- No APK artifact publication, installation, or physical Android TV testing. Phone-to-TV LAN cancellation, expiry, concurrent throughput, and low-storage behavior remain DEFERRED_TO_G.
