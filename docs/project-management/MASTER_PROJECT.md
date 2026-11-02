@@ -474,3 +474,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Final integrated rehearsal PR #43 CI #716 PASS on synthetic merge `21c2eab34a3356d37d079eba04b281cc2373386d`; unit tests, release build, docs/tools and APK guard PASS. APK 1,563,769 bytes / 1,572,864 cap / 9,095-byte headroom; publication skipped.
 - PR #42/#43 closed without merge; PR #41 remains Draft/open/unmerged. No feature PR merge, APK publication/installation or physical TV test. D-013 remains binding.
 - **Next: F02** integrated functional regression and controlled Android TV acceptance.
+
+
+## Project F/G execution policy update — 3 Nov 2026
+The mandatory execution sequence is: (1) re-verify prior audits/dependency mapping against live GitHub state; (2) verify exact source HEADs and parent/base ancestry; (3) combine in controlled stages on integration branches; (4) rerun only changed, dependency-affected or previously unproven tests; (5) finalize with exact branch/commit, test evidence and residual acceptance boundaries. Mergeability alone is not a safety gate. Feature PRs remain unmerged until Project G and explicit approval.
+
+### Revalidation checkpoint
+- B-series staged integration: integration/b-series HEAD 9070894fa6d9ef8aec034f46dfe777e866709dfe; CI-only PR #48 / run #741 PASS. APK size guard PASS at 1506 KiB / 1536 KiB cap; publication skipped.
+- Full D07+E08 candidate: integration/project-f-staged-full HEAD 8fe90a9fdd493c5d81ffdacbe16054630a26580a; tree identical to F01 synthetic candidate 21c2eab34a3356d37d079eba04b281cc2373386d; existing CI #716 PASS remains valid.
+- Temporary PRs #44–#49 were closed without merge. No feature PR or main/release branch was merged/modified.
+- F01 revalidation: PASS. Next stage remains F02 — integrated functional regression and controlled Android TV acceptance; physical device acceptance is not claimed.
