@@ -744,3 +744,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - C07 owner and F02 integration now contain matching process-wide upload storage reservations and regression guards. F02 intentionally preserves D05's UploadResult adapter; C07 upstream branch keeps its boolean contract.
 - Latest F02 findings-register sync head e190e2863a4aacbe3aba61094fab00572f4b469f; exact-head CI #41521145454 queued at last poll. Keep F02 partial until that docs-only head is green.
 - PR #50 and #24 remain Draft/open/unmerged. No artifact published, no APK installed, no physical TV test. Project G retains real LAN, low-storage and device acceptance.
+
+## F02 final host-validation checkpoint — 3 November 2026
+- F02 integration PR #50 exact head `e190e2863a4aacbe3aba61094fab00572f4b469f` passed exact-head CI run #41521145454: Lists/tools/docs and Launcher build/unit tests both SUCCESS.
+- Python suite: 42 tests, 1 intentional skip (`test_readme_counts`, merge-time README count normalization); no failures. Android `testReleaseUnitTest` and `assembleRelease` succeeded.
+- Release APK diagnostic: 1,565,713 bytes against 1,572,864-byte cap (7,151 bytes headroom). Size gate passed. Workflow artifacts list is empty; no APK was published or installed.
+- C07 owner PR #24 exact head `442b78c68b1540394d543bab59bddf52f865ccf0` also passed run #41521013896: both jobs SUCCESS; 18 Python tests, 1 intentional merge-time README count skip; Android unit tests/release build passed; APK 1,550,949 bytes; artifacts empty.
+- D01 security follow-up PR #51 head `66352838e6155a42a9ea61477643a238f360434f` passed run #41506847521. Its exported receiver permission/action guard and internal-only LocationActivity contract are present identically in F02 integration manifest/test sources.
+- F02-RES-001 process-wide reservation, 64 MiB free-space margin, HTTP 507 boundary, reservation release, and Wallpaper/StandBy shutdown atomicity regression guards are OWNER + INTEGRATION HOST VERIFIED.
+- Host/source scope for F02 is complete. Physical Android TV, real phone/LAN, ADB-shell permission compatibility, low-storage behavior, OEM rendering/focus, and remote/power behavior remain explicitly DEFERRED_TO_G. This is a test boundary, not an unowned source defect.
+- PR #50 and owner PRs remain Draft/open/unmerged under the staged integration decision; no APK artifact publication or device installation occurred.
