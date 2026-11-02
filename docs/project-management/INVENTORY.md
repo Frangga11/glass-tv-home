@@ -269,3 +269,19 @@
 | CI workflow | `.github/workflows/ci.yml` | Release compilation validation-only; no APK publication |
 
 No branch was merged. Source branches remain preserved. No physical Android TV test or APK installation/publication was performed.
+
+
+## Latest Project F02 inventory — 3 November 2026
+
+| Item | Branch / head / PR | Status |
+|---|---|---|
+| F02 integrated validation | `integration/project-f02-system-validation` / `eea920469ffe5bef5ddb14e1dfd66687e82d8fed` / PR #50 | CI IN PROGRESS |
+| B01 global modal + Home-key routing | `feature/b01-global-navigation-retention` / `867c7a9d0977e21b69c8078a400458b00ba2d2dd` / PR #10 | CI IN PROGRESS |
+| D05 Settings modal repair | `feature/d05-standby-photo-atomic-persistence` / `7f043943ab0c1d2d1217fc56845d81ac7583c96d` / PR #29 | CI PASS |
+| D06 AzanActivity export boundary | `feature/d06-process-death-recovery` / `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7` / PR #30 | CI PASS |
+| D01 receiver + LocationActivity security | `fix/d01-location-broadcast-authorization` / `66352838e6155a42a9ea61477643a238f360434f` / PR #51 | CI PASS |
+| Host-side UI tests | `TvDialogStyleRobolectricTest.java`, `HomeKeyPressTrackerTest.java` | Robolectric/window tests passed at previous F02 head; latest retest pending |
+| Source regression guards | `tests/test_dialog_modal_contract.py`, `tests/test_main_activity_modal_contract.py`, `tests/test_home_key_recent_apps_contract.py`, `tests/test_location_broadcast_manifest_security.py`, `tests/test_prayer_component_manifest_security.py` | Added; latest F02 CI pending |
+| Open residual review | `.RecentAppsActivity` exported ACTION_MAIN filter | P3 external caller contract verification deferred to G |
+
+No merge or device test has been performed.
