@@ -349,3 +349,12 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - R8 minification and resource shrinking are already enabled. Largest compressed entries include `classes.dex` (349,533 bytes), `res/SR.ttf` (200,452 bytes), `assets/kabut-pagi-dempo.jpg` (230,997 bytes), `resources.arsc` (170,696 bytes), and `res/rU.ttf` (77,642 bytes).
 - No low-risk asset/font removal is authorized from size diagnostics alone: wallpaper and typeface quality/localization are product assets. Monitor every subsequent exact-head build; if the cap is crossed, profile resource/code contribution and propose a measured optimization without degrading visuals or removing required features.
 - Status: WITHIN BUDGET / LOW HEADROOM / MONITOR THROUGH PROJECT G.
+
+
+## Final exact-head retest for this checkpoint — 3 November 2026
+
+- F02 PR #50 head `558762994dec05a7ae03a924c33a3ed11665c224`: push CI run #41513940620 completed SUCCESS for both required jobs; matching PR run #41513947375 also completed SUCCESS for both jobs.
+- The source/test checkpoint immediately before the latest documentation sync, `5a01785cfd4ab81e816a955bd7647c0e766c6b2f`, passed PR CI #41513906117. The Lists/tools/docs job ran 35 Python tests; the new AccessibilityService manifest regression test passed. Launcher unit tests, release validation build, APK diagnostics and size cap passed.
+- F02-SEC-005 is now HOST/SOURCE VERIFIED: regression failed before the InputKeyService manifest correction and passed after it. E01 owner PR #34 latest head `edd6461c932705a109ed9768649cae7e3c162c59`, run #41513716451 both jobs SUCCESS. Device KEYCODE_TV and system service binding acceptance remains DEFERRED_TO_G.
+- Latest F02 APK measurement from the corrected source/test checkpoint: 1,564,977 bytes against 1,572,864-byte cap; 7,887 bytes headroom. F02-BUILD-001 remains a P3 watchlist, not a CI blocker.
+- PR #50 remains Draft/open/unmerged. No APK artifact publication, install, or physical Android TV test.
