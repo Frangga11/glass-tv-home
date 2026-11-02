@@ -107,3 +107,11 @@ Project G receives:
 - device acceptance checklist for the target Android TV hardware.
 
 Project F does not publish or install the final TV-test APK.
+
+
+## Host-side UI test layer — 3 November 2026
+
+- Host-side test coverage now includes Robolectric API 30 window tests for the B01 shared dialog contract. Assertions cover centering, dim-behind flag/amount, width viewport bound, wrap-content height, custom dimensions, and dim clamping.
+- Robolectric is `testImplementation` only; it must not enter the release APK. Android resources are enabled only for local JVM unit tests.
+- These tests supplement source-level modal-contract regression tests. They are not a substitute for Project G acceptance of actual TV renderer, remote/DPAD focus, OEM window policy, HDMI/display scaling, firmware and ADB shell behavior.
+- The new dependency and tests must pass the exact F02 head CI; no test may be skipped or softened to obtain a green run.
