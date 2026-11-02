@@ -249,3 +249,15 @@ The following fixes have been implemented on owning source branches and mirrored
 - B01 owner PR #10 head `791620ce4628ee9e909af7ce2f4758b6df77afeb`: run #41509576279 SUCCESS on both jobs, including the Force Stop/Home isolation and restart action-ID tests. The owner branch then received a comment-only alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f`; exact-head CI run #41509724289 was still in progress.
 - B01 owner source and F02 integrated `HomeKeyService.java` now have identical file content/blob SHA `b3cd4b2b4092a90f4f1faefb1072c15e2203b314`.
 - F02-SEC-004, F02-FUNC-002 and F02-PLAT-001 integrated retests: PASS at the exact F02 head above. B01 latest comment-only exact-head CI pending; real remote/power-menu behavior remains DEFERRED_TO_G.
+
+
+## F02-C07-001 — Wallpaper management API mutation can race QR-session shutdown — 3 November 2026
+
+- Severity: P2 integrity / session-revocation race. Owner: C07 upload/session resilience.
+- Root cause: WallpaperUploadServer serialized final wallpaper/StandBy upload commits with synchronized `stop()`, but the separate management POST handlers for `/api/select`, `/api/delete`, `/api/slideshow`, and `/api/clear` only relied on the outer request-dispatch session check. A worker that passed that check could continue selecting/deleting/clearing after the QR session was revoked.
+- Correction: C07 now makes all four mutation handlers synchronized on the same server monitor as `stop()` and rechecks session validity inside the critical section before any listener callback or file/state mutation. Shutdown that acquires the monitor first returns HTTP 410 Gone; a mutation that acquires it first completes before stop returns. This closes the race without changing API routes, payloads, upload limits, browser progress/cancel UX, or StandBy persistence.
+- Added `tests/test_wallpaper_session_shutdown_atomicity.py` to guard shared monitor use, in-lock session rechecks, explicit 410 JSON response, and preservation of upload commit serialization.
+- Owner branch: `feature/c07-upload-session-resilience`, PR #24. F02 integration mirrors the fix/test.
+- Owner exact-head CI and latest F02 exact-head CI pending.
+- Physical phone-to-TV cancellation/expiry and network disconnect acceptance remains DEFERRED_TO_G.
+- Status: FIX COMMITTED / OWNER + F02 EXACT-HEAD CI PENDING / DEVICE ACCEPTANCE DEFERRED_TO_G.
