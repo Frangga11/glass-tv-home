@@ -1,6 +1,6 @@
 # E07 — Animations & Visual Effects Audit
 
-**Status:** Source audit and targeted repairs complete; exact-head CI passed on the code checkpoint. Documentation follow-up CI pending. Physical TV acceptance remains assigned to Project F.
+**Status:** Glass ON/OFF surface fallback repair implemented; exact-head CI verification pending. Physical TV acceptance remains assigned to Project F.
 
 ## Scope
 Audit the existing Animations & Visual Effects settings and the visual effects they control. Preserve the four existing controls and their preference keys:
@@ -45,3 +45,31 @@ The work also checks the shared Home/Weather screen motion policy, rendering cos
 - Parent: E06 exact head `570b7c83efaec3ac515b78f1c6c119b777fc3b84`
 - Code checkpoint: `da3135796156c26dd20795931eae15caa83458e9`
 - PR #40: Draft, open, unmerged under D-013.
+
+
+## Cross-project defect — Glass Effect OFF surface fallback
+A follow-up integration audit found that disabling the decorative glass material also removed structural surfaces from app-owned UI:
+- `GlassDrawable` returned without painting a fallback surface, affecting top-bar pills, Home popup menus (including Wi-Fi and Quick Settings), and anchored PopupWindows.
+- `DockDecoration` returned before painting the dock tray.
+- `TvDialogStyle` always applied the glass dialog resource, independent of the setting.
+- The setting callback invalidated the Home root but did not explicitly invalidate an already-open anchored PopupWindow.
+
+### Repair implemented
+- Added shared solid fallback surface tokens to `TvUiTokens`.
+- `GlassDrawable` now paints an opaque rounded surface and border when glass is OFF, then preserves its existing focus-shape behavior.
+- `DockDecoration` now paints a solid tray, shadow and border when glass is OFF, retaining D-pad focus feedback.
+- `TvDialogStyle` now selects the glass resource when enabled and a rounded solid fallback when disabled.
+- Toggling the setting invalidates the active app-owned PopupWindow and Home popup menu as well as the root and dock decorations.
+- No preference keys, callbacks, popup geometry, row layout, navigation, or Android OS Settings surfaces were changed.
+
+### Ownership / acceptance
+- Project B owns the global surface/dialog contract and must reconcile these fallback tokens/policies into the canonical B foundation.
+- E07 owns the Glass Effect toggle integration and visual behavior on the existing app surfaces.
+- Project F owns device acceptance: glass ON/OFF, Wi-Fi and Quick Settings menus, anchored popups, modal dialogs, dock/top pills, focus traversal, 1080p and 4K.
+- No APK installation or physical TV test was performed in this source-repair step.
+
+### Current source checkpoint
+- Branch: `feature/e07-animation-effects`
+- Commit: `74f7e795046880b413a581d1f001f46512a5d058`
+- PR #40 remains Draft/open/unmerged under D-013.
+- Exact-head CI: run #676 / `41446050321`; pending at documentation update time.
