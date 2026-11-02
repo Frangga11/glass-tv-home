@@ -260,7 +260,11 @@ public final class ProfileManager {
         target.avatarIndex = avatarIndex;
         JSONArray arr = new JSONArray();
         for (UserProfile profile : list) arr.put(profile.toJson());
-        if (!getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit()) {
+        SharedPreferences.Editor editor = getPrefs(context).edit()
+                .putString(KEY_PROFILES_JSON, arr.toString());
+        String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
+        if (profileId.equals(activeId)) editor.putInt(KEY_LEGACY_AVATAR, avatarIndex);
+        if (!editor.commit()) {
             target.customAvatarPath = oldPath;
             target.avatarIndex = oldIndex;
             return false;
@@ -268,12 +272,6 @@ public final class ProfileManager {
 
         if (oldPath != null) deleteAvatarIfUnreferenced(context, list, profileId, oldPath);
         cleanupOrphanedAvatarUploads(context);
-        String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
-        if (profileId.equals(activeId)) {
-            getPrefs(context).edit()
-                    .putInt(KEY_LEGACY_AVATAR, avatarIndex)
-                    .apply();
-        }
         return true;
     }
 
