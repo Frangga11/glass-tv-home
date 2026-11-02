@@ -688,3 +688,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Detailed report: [E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md](E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md).
 - Project F still must verify the compact modal on 1080p/4K, D-pad/focus/Back, Glass ON/OFF, category selection, shuffle/interval/Next, QR photo manager and lifecycle persistence. No physical device acceptance or APK installation is claimed.
 - E08 source/UI/CI: PASS. Project F physical acceptance and D-013 grouped integration/merge remain pending.
+
+
+## Project E closure gate — 2 Nov 2026
+- Decision: E01–E08 module development/audit closed by user approval; Project F becomes the active workstream.
+- Residual status is **integration/device verification**, not an open E-module feature task. Project F must reopen a specific E owner only if a reproducible cross-module defect is found; preserve owner boundaries and avoid speculative refactors.
+- E08: compact Quick Control Wallpaper center and fuller Appearance > Wallpaper management are distinct entry points over shared state/engine. Project F to verify distinct purpose, consistent state, Glass ON/OFF, modal size, D-pad/Back and 1080p/4K.
+- PR #34–#41 remain OPEN/DRAFT/UNMERGED under D-013. No merge, release or physical acceptance is implied by Project E closure.
+- E08 source/test evidence: `fcd7d8f23a4833830a401652ef269db3282b7300`, CI #702 / `41473357877` PASS, APK 1,562,709 bytes / 1,572,864 cap; publication skipped.
