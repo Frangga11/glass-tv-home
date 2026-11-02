@@ -356,3 +356,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Code checkpoint `da3135796156c26dd20795931eae15caa83458e9`; exact-head CI run #671 / `41443003016` PASS on both jobs. Diagnostic APK 1,563,885 bytes against 1,572,864-byte budget; 8,979-byte headroom; publication skipped.
 - Feature-branch audit report follow-up commit `15840ed1e9a4d7f7bb7e3a013bbebf9c044b8a6a`; exact-head documentation CI is in progress at this checkpoint. Do not mark latest documentation head green until both jobs pass.
 - F owns device acceptance: reduced/normal motion, settings toggles, Home↔Weather transitions, pause/resume, low-memory rendering, D-pad focus, 1080p/4K visuals and frame pacing. No APK installed or physical TV test claimed. D-013 remains in force.
+
+
+## E07 final source/CI checkpoint — 2 November 2026
+
+- E07 exact PR head `15840ed1e9a4d7f7bb7e3a013bbebf9c044b8a6a`; Draft PR #40 targets E06 head `570b7c83efaec3ac515b78f1c6c119b777fc3b84`, remains OPEN/DRAFT/UNMERGED under D-013. GitHub reports mergeable/clean; no merge authorization is implied.
+- Exact-head CI run #672 / `41443305464`: PASS. Both launcher build/unit tests and lists/tools/docs jobs succeeded. Release build and APK-size gate passed.
+- Exact diagnostic APK size: 1,563,885 bytes; cap 1,572,864 bytes; headroom 8,979 bytes. APK publication skipped; no APK installed.
+- Source repair: reduced-motion behavior now stops continuous weather frame scheduling while preserving a static scene on Home and Weather screen; Weather screen focus transitions snap in reduced-motion mode. Full Weather screen now applies existing 1.5 GiB low-memory threshold and reduced rain/star/cloud particle density. Existing Effects-tab preference keys/callbacks and Project B focus/UI contracts preserved.
+- E07 source and exact-head CI are COMPLETE. Project F device acceptance remains mandatory: normal/reduced motion, toggle/focus behavior, Home overlay and Weather screen lifecycle, low-memory behavior, D-pad focus, 1080p/4K visuals and frame pacing. No physical TV acceptance is claimed.
