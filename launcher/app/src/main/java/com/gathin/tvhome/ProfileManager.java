@@ -271,7 +271,7 @@ public final class ProfileManager {
         String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
         if (profileId.equals(activeId)) {
             getPrefs(context).edit()
-                    .putString(KEY_LEGACY_AVATAR, String.valueOf(avatarIndex))
+                    .putInt(KEY_LEGACY_AVATAR, avatarIndex)
                     .apply();
         }
         return true;
