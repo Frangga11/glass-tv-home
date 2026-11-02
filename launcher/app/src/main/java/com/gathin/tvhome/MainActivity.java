@@ -5285,7 +5285,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TextView summary = new TextView(this);
         summary.setText(getString(R.string.prayer_summary_body, town, PrayerTimes.getHijriDate(),
                 PrayerTimes.getNextPrayerSummary(this), ""));
-        summary.setTextColor(0xFFEFFFFFF);
+        summary.setTextColor(0xFFEFEFEF);
         summary.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
         summary.setTypeface(getResources().getFont(R.font.inter));
         summary.setLineSpacing(Math.round(3 * density), 1.12f);
@@ -5338,7 +5338,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             TextView empty = new TextView(this);
             empty.setText(R.string.no_daily_ayah);
-            empty.setTextColor(0xFFEFFFFFF);
+            empty.setTextColor(0xFFEFEFEF);
             empty.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
             content.addView(empty);
         }
