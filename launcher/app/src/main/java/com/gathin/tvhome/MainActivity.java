@@ -4100,12 +4100,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View panel = getLayoutInflater().inflate(R.layout.dialog_media_hub, root, false);
         dialog.setContentView(panel);
 
+        TvDialogStyle.applyCustom(dialog, this, 480, 0, 0.68f);
         Window w = dialog.getWindow();
         if (w != null) {
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int maxWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.90f);
-            w.setLayout(Math.min((int) (480 * density), maxWidth), ViewGroup.LayoutParams.WRAP_CONTENT);
-            w.setDimAmount(0.65f);
             w.setFlags(android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
@@ -4870,6 +4867,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     void styleGlassDialog(AlertDialog dialog) {
         if (dialog == null) return;
+        TvDialogStyle.apply(dialog, this, 600, 0);
         try {
             Typeface outfit = getResources().getFont(R.font.inter);
             TextView titleView = dialog.findViewById(android.R.id.title);
@@ -5527,16 +5525,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             qrUrlText = null;
         });
         qrUploadDialog.show();
-        Window qrWindow = qrUploadDialog.getWindow();
-        if (qrWindow != null) {
-            qrWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int screenWidth = getResources().getDisplayMetrics().widthPixels;
-            int screenHeight = getResources().getDisplayMetrics().heightPixels;
-            int dialogWidth = Math.min((int) (520 * density), (int) (screenWidth * 0.90f));
-            int dialogHeight = Math.min((int) (620 * density), (int) (screenHeight * 0.90f));
-            qrWindow.setLayout(dialogWidth, dialogHeight);
-            qrWindow.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.apply(qrUploadDialog, this, 520, 620);
         btnClose.requestFocus();
     }
 
@@ -6614,13 +6603,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(panel);
         dialog.setCanceledOnTouchOutside(false);
-        Window w = dialog.getWindow();
-        if (w != null) {
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int maxWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.90f);
-            w.setLayout(Math.min((int) (440 * density), maxWidth), ViewGroup.LayoutParams.WRAP_CONTENT);
-            w.setDimAmount(0.6f);
-        }
+        TvDialogStyle.applyCustom(dialog, this, 440, 0, 0.68f);
         // One decision per prompt: the buttons and Back (cancel) all end here.
         final boolean[] decided = {false};
         View.OnClickListener choose = v -> {
