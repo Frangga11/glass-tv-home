@@ -747,3 +747,13 @@ undefined
 | F02-TEST-001 | Robolectric API 30 tests added for actual dialog Window attributes; passed on previous F02 head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`. | LATEST F02 RETEST PENDING / DEVICE TEST G |
 
 Latest F02 head `eea920469ffe5bef5ddb14e1dfd66687e82d8fed` is in CI. Do not close any item until latest owner/integration gates and required G evidence are complete.
+
+
+## F02 additional confirmed defects — 3 November 2026
+
+| Finding | Root cause / fix | Status |
+|---|---|---|
+| F02-FUNC-002 | Shared HomeKeyService Handler used broad `removeCallbacksAndMessages(null)` for Force Stop; separated into dedicated `forceStopHandler`, added source regression guard. | FIX COMMITTED / B01 + F02 EXACT-HEAD CI PENDING |
+| F02-SEC-004 | Exported RecentAppsActivity accepted `ACTION_CLOSE_ALL` and could force-stop recent apps; set `exported=false`, removed MAIN filter, retained explicit internal route, added manifest regression test. | FIX COMMITTED / B01 + F02 EXACT-HEAD CI PENDING |
+
+B01 latest head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; F02 latest head `3ea479d689dc732fe46594a0677d02b7762d7527`. Previous F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs but predates the latest fixes. Keep both findings open until exact-head CI and Project G acceptance pass.
