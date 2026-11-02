@@ -380,7 +380,8 @@ public class WeatherActivity extends Activity {
 
         // 5. Populate Modular Metric Tiles
         if (windCompassView != null) {
-            windCompassView.setVisibility(w.windSpeed >= 0 ? View.VISIBLE : View.INVISIBLE);\n            if (w.windSpeed >= 0) windCompassView.setWind(w.windSpeed, w.windGust, w.windDirection);
+            windCompassView.setVisibility(w.windSpeed >= 0 ? View.VISIBLE : View.INVISIBLE);
+            if (w.windSpeed >= 0) windCompassView.setWind(w.windSpeed, w.windGust, w.windDirection);
         }
 
         if (sunArcView != null) {
@@ -395,7 +396,8 @@ public class WeatherActivity extends Activity {
         }
         if (uvDescText != null) {
             boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
-            if (w.uvIndex < 0) uvDescText.setText("—");\n            else if (w.uvIndex <= 2) uvDescText.setText(R.string.uv_low);
+            if (w.uvIndex < 0) uvDescText.setText("—");
+            else if (w.uvIndex <= 2) uvDescText.setText(R.string.uv_low);
             else if (w.uvIndex <= 5) uvDescText.setText(R.string.uv_moderate);
             else if (w.uvIndex <= 7) uvDescText.setText(R.string.uv_high);
             else uvDescText.setText(R.string.uv_very_high);
@@ -442,7 +444,8 @@ public class WeatherActivity extends Activity {
                     : getString(R.string.good_visibility)));
         }
         if (pressureGaugeView != null) {
-            pressureGaugeView.setVisibility(w.pressure >= 0 ? View.VISIBLE : View.INVISIBLE);\n            if (w.pressure >= 0) pressureGaugeView.setPressure(w.pressure);
+            pressureGaugeView.setVisibility(w.pressure >= 0 ? View.VISIBLE : View.INVISIBLE);
+            if (w.pressure >= 0) pressureGaugeView.setPressure(w.pressure);
         }
 
         // 6. Footer
