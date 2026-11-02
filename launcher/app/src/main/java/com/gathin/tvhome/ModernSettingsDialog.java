@@ -39,6 +39,7 @@ import com.gathin.tvhome.qrcode.QrBitmapUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -891,7 +892,9 @@ public final class ModernSettingsDialog {
                                     });
                                 }
                             });
-                            ob.show();
+                            AlertDialog optionsDialog = ob.create();
+                            optionsDialog.show();
+                            TvDialogStyle.apply(optionsDialog, activity, 480, 0);
                         }
                     });
 
@@ -1641,6 +1644,8 @@ public final class ModernSettingsDialog {
                 .setNegativeButton(AppLanguage.strCancel(activity), (d, which) -> d.dismiss())
                 .create();
         dialog.show();
+        TvDialogStyle.apply(dialog, activity, 520, 0);
+        et.requestFocus();
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
@@ -1692,6 +1697,8 @@ public final class ModernSettingsDialog {
                     TvFeedback.show(activity, R.string.pin_updated, Toast.LENGTH_SHORT);
                 }));
                 dialog.show();
+                TvDialogStyle.apply(dialog, activity, 520, 0);
+                newPin.requestFocus();
             }
             @Override
             public void onCancelled() {}
@@ -1734,10 +1741,14 @@ public final class ModernSettingsDialog {
         }
 
         List<AppEntry> entryList = new ArrayList<>();
+        Set<String> seenPackages = new HashSet<>();
         if (apps != null) {
             for (ResolveInfo ri : apps) {
+                if (ri == null || ri.activityInfo == null) continue;
                 String p = ri.activityInfo.packageName;
-                if (p.equals(selfPkg)) continue;
+                // App-lock policy is package-scoped, so show one row per package even when an app
+                // exposes multiple Leanback activities.
+                if (p == null || p.equals(selfPkg) || !seenPackages.add(p)) continue;
                 String lbl = ri.loadLabel(pm).toString();
                 entryList.add(new AppEntry(p, lbl, ri.loadIcon(pm)));
             }
@@ -1775,6 +1786,18 @@ public final class ModernSettingsDialog {
         sv.setVerticalScrollBarEnabled(true);
         LinearLayout list = new LinearLayout(activity);
         list.setOrientation(LinearLayout.VERTICAL);
+        if (entryList.isEmpty()) {
+            TextView empty = new TextView(activity);
+            empty.setText(R.string.app_picker_empty);
+            empty.setTextSize(13f);
+            empty.setTextColor(0xFFCBD5E1);
+            empty.setTypeface(font, Typeface.NORMAL);
+            empty.setGravity(Gravity.CENTER);
+            empty.setPadding(0, (int) (20 * density), 0, (int) (20 * density));
+            empty.setFocusable(false);
+            list.addView(empty, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
 
         for (AppEntry app : entryList) {
             LinearLayout row = new LinearLayout(activity);
@@ -1844,6 +1867,8 @@ public final class ModernSettingsDialog {
         btnDone.setTextSize(13.5f);
         btnDone.setTextColor(0xFFFFFFFF);
         btnDone.setTypeface(font, Typeface.BOLD);
+        btnDone.setFocusable(true);
+        btnDone.setClickable(true);
 
         GradientDrawable btnBg = new GradientDrawable();
         btnBg.setColor(0xFF10B981);
@@ -1877,14 +1902,9 @@ public final class ModernSettingsDialog {
             if (onFinished != null) onFinished.run();
         });
         d.show();
-
-        Window win = d.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.85f));
-            win.setLayout(dw, ViewGroup.LayoutParams.WRAP_CONTENT);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(d, activity, 520, 0, 0.68f);
+        if (entryList.isEmpty()) btnDone.requestFocus();
+        else if (list.getChildCount() > 0) list.getChildAt(0).requestFocus();
     }
 
     private static void showDefaultLauncherDialog(MainActivity activity, float density, Typeface font) {
