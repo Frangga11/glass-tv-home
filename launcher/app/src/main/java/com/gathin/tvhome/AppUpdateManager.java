@@ -270,6 +270,7 @@ public final class AppUpdateManager {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+        TvDialogStyle.apply(dialog, activity, 600, 0);
     }
 
     @SuppressWarnings("deprecation")
@@ -290,7 +291,8 @@ public final class AppUpdateManager {
                     }
                 });
                 permDialog.setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss());
-                permDialog.show();
+                AlertDialog permissionDialog = permDialog.show();
+                TvDialogStyle.apply(permissionDialog, activity, 600, 0);
                 return;
             }
         }
@@ -311,6 +313,7 @@ public final class AppUpdateManager {
             if (active != null) active.disconnect();
         });
         progressDialog.show();
+        TvDialogStyle.apply(progressDialog, activity, 600, 0);
 
         executor.execute(() -> {
             File cacheDir = activity.getExternalCacheDir() != null ? activity.getExternalCacheDir() : activity.getCacheDir();

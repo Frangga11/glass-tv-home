@@ -285,15 +285,7 @@ public final class UserSwitchDialog {
         dialogHolder[0] = dialog;
         dialog.show();
 
-        Window win = dialog.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            win.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            win.setDimAmount(0.65f);
-            int w = Math.min((int) (580 * density), (int) (dm.widthPixels * 0.85f));
-            win.setLayout(w, ViewGroup.LayoutParams.WRAP_CONTENT);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(dialog, activity, 580, 0, 0.68f);
 
         profRow.getChildAt(0).requestFocus();
     }
@@ -542,12 +534,6 @@ public final class UserSwitchDialog {
         dHolder[0] = d;
         d.show();
 
-        Window w = d.getWindow();
-        if (w != null) {
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.85f));
-            w.setLayout(dw, ViewGroup.LayoutParams.WRAP_CONTENT);
-            w.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(d, activity, 520, 0, 0.68f);
     }
 }
