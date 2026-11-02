@@ -566,3 +566,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - B01 canonical tokens are byte-identical in B01/B02/B07/D04 and E01–E06. B03/E07/E08 token files differ only in comments in the compared lines; no executable-code delta found. B03 owns global fallback policy; E07 owns toggle/invalidation.
 - Isolated branch `integration/f01-rehearsal-only` and Draft PR #42 test E01–E08 against current D07. PR #42 is mergeable; CI #708 PASS, #709/#710 in progress. No feature PR merged; no APK published/installed; no physical TV acceptance.
 - F01 remains open pending #709/#710 final result. Rehearsal PR #42 must be closed without merge after evidence capture. D-013 remains binding.
+
+
+## F01 closed — handover to F02 (2 Nov 2026)
+- F01 dependency/source integration audit is **CLOSED — PASS**. The complete B01–B07/C01–C07/D01–D07/E01–E08 dependency map and base-drift register are in `F01_INTEGRATION_DEPENDENCY_AUDIT.md`.
+- F01 caught and repaired the E08 wallpaper route mismatch: Quick Control > Wallpaper is compact Change/Shuffle/Next; Settings > Appearance > Wallpaper is the fuller Collection/Interval/Personal Wallpaper Manager route. Both use the same state/engine. E08 updated head `1d6fba799012ff0e8dbbfbce5a7fbe4f193e1d0d`, CI #711/#712 PASS.
+- Final combined rehearsal PR #43 against current D07 passed CI #716 on synthetic merge `21c2eab34a3356d37d079eba04b281cc2373386d`. Unit tests/release build/tools/docs/APK guard PASS; APK 1,563,769 bytes / cap 1,572,864 / headroom 9,095 bytes; manual publish skipped.
+- Temporary rehearsal PR #42/#43 closed without merge. E08 feature PR #41 remains OPEN/DRAFT/UNMERGED; all feature PRs remain under D-013. No APK published/installed and no physical TV acceptance claimed.
+- Parent/base drift on #11/#12/#17/#18/#19/#21/#24/#29/#34 is documented; preserve newer target branch changes during G's grouped integration.
+- **Next stage: F02** — integrated functional regression and controlled Android TV acceptance. Do not merge feature PRs or publish/install APK without the D-013/G approval sequence.
