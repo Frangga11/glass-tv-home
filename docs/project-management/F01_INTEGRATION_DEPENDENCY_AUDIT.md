@@ -2,7 +2,7 @@
 
 **Checkpoint:** 2 November 2026  
 **Stage:** Project F / F01  
-**Status:** IN PROGRESS — source-diff and dependency mapping completed; combined integration build and runtime validation not yet executed.  
+**Status:** CLOSED — PASS (isolated combined source integration build and unit-test gate completed; physical-device acceptance remains pending in later F stages).  
 **Repository:** `Frangga11/glass-tv-home`  
 **Documentation branch:** `docs/project-master-inventory`
 
@@ -76,7 +76,7 @@ CI evidence above validates the listed exact source/test commits only. It does n
 - The highest integration concentration is `MainActivity.java`; the next are the upload server pair, global UI/dialog primitives, Settings dialog, weather/profile state and StandBy storage.
 - Many overlapping files are expected because branches are dependency-ordered and sequential. The next step is a frozen-head semantic combined-diff review, not blind conflict resolution.
 - All E01–E08 source/test checkpoints listed above have a passing exact-head CI record. E04 CI #629 is confirmed PASS.
-- No combined integration build, full integrated regression, Android TV installation, 1080p/4K visual acceptance, phone-to-TV QR acceptance or reboot test was executed in this F01 audit.
+- Isolated combined integration build and unit-test gate completed via Draft rehearsal PR #43; CI #716 PASS on synthetic merge commit `21c2eab34a3356d37d079eba04b281cc2373386d`. Full physical-device regression, Android TV installation, 1080p/4K visual acceptance, phone-to-TV QR acceptance and reboot test remain for later F-stage acceptance.
 - PR #34–#41 and the relevant B/C/D feature PRs remain Draft/open/unmerged under D-013.
 - No source defect is declared solely from the diff overlap. A specific owner repair is opened only after a reproducible semantic mismatch or failing test is identified.
 
@@ -155,3 +155,33 @@ These are per-branch source/test checks. They do not independently prove the ful
 The dependency and ownership audit is complete. All module-level CI evidence checked is green. The PR chain is currently reported mergeable, and the isolated rehearsal has produced a successful CI run, with two additional runs still in progress.
 
 **F01 remains OPEN until runs #709/#710 are final and their results are checked.** After that, close the rehearsal PR without merging, return it to Draft if still open, and hand the branch-drift register to Project F02/G for dependency-ordered grouped integration. Do not treat this as approval to merge or release.
+
+
+## F01 FINAL CLOSURE — 2 November 2026
+
+**Disposition: F01 CLOSED — PASS (source integration and dependency audit).**
+
+### Integrated candidate and CI evidence
+
+- First rehearsal PR #42 (E01–E08 against current D07) completed CI #709 and #710 PASS. It exposed the E08 wallpaper entry-point mismatch described below. PR #42 was closed without merge.
+- F01 verified and repaired the E08 ownership/UX defect on the existing E08 feature branch. Exact updated E08 head: `1d6fba799012ff0e8dbbfbce5a7fbe4f193e1d0d`; exact-head CI #711 and #712 PASS.
+- Final rehearsal PR #43 combined the updated E01–E08 feature chain against current D07 head `7ce92d30911288eed98aa2e7b36eaf9942d0c355`. GitHub synthetic merge candidate: `21c2eab34a3356d37d079eba04b281cc2373386d`.
+- Integrated CI #716: **PASS**. GitHub Actions checked out `refs/remotes/pull/43/merge`; `testReleaseUnitTest`, `assembleRelease`, tools/docs tests, read-only APK diagnostics and APK size guard all passed.
+- Diagnostic release APK: **1,563,769 bytes**; cap **1,572,864 bytes**; headroom **9,095 bytes**. Manual publication step **SKIPPED**.
+- PR #43 was closed without merge after evidence capture. PR #42 was also closed without merge. PR #41 remains OPEN/DRAFT/UNMERGED under D-013.
+
+### Verified E08 wallpaper entry-point repair
+
+- Quick Control > Wallpaper remains the compact Change / Shuffle / Next control center.
+- Settings > Appearance > Wallpaper is restored as the fuller management route with separate Collection, Interval and Personal Wallpaper Manager cards.
+- Appearance management entry points keep the Settings surface as the return destination; they do not reopen the compact Quick Control popup.
+- Both routes reuse the same wallpaper preferences, category selection, custom-photo manager, QR upload, shuffle/interval behavior, rotation and persistence. No duplicate engine, preference key or storage schema was added.
+- Canonical E08 audit addendum is recorded in `E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md`.
+
+### Final boundaries and handover
+
+- B01–B07, C01–C07, D01–D07 and E01–E08 dependency ownership and shared-file hotspots are mapped. All current module/source checkpoints sampled in F01 have passing CI evidence.
+- Parent/base drift on PRs #11, #12, #17, #18, #19, #21, #24, #29 and #34 remains documented. The PRs are currently mergeable, but grouped integration must preserve the newer target-branch changes and rerun cross-group regression.
+- No feature PR was merged. No APK was published or installed. No physical Android TV test, 1080p/4K acceptance, phone upload acceptance or reboot acceptance is claimed.
+- D-013 remains binding: grouped integration/merge is reserved for Project G after all applicable F gates and explicit user approval.
+- **Next stage:** F02 — integrated functional regression and controlled Android TV acceptance. F02 must use the verified F01 candidate lineage and test remote/D-pad/focus/Back, popup/dialog consistency, Glass ON/OFF, Wallpaper vs Appearance route distinction, profile/app-lock, Weather/AQI, QR upload, StandBy persistence/lifecycle, 1080p/4K and recovery.
