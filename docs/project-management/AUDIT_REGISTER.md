@@ -621,3 +621,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - E07 toggle/live-surface invalidation repair is independently source/CI verified on PR #40 head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`, CI #682 / `41446777187` SUCCESS.
 - B03 owns global surface/dialog contract; E07 owns toggle integration; G reconciles shared files during grouped integration; F owns 1080p/4K physical acceptance. No APK install/device test; D-013 unchanged.
 - Evidence: [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md).
+
+
+## B03 exact-head verification update — 2 Nov 2026
+- Supersedes the earlier pending-CI checkpoint: B03 source/test head `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`, exact-head CI run #685 / `41447473358` **SUCCESS**. Both Launcher build/unit tests/release build/APK-size guard and Lists/tools/docs passed.
+- Release APK diagnostic: 1503 KB (<1.5 MiB / 1536 KiB); APK publication skipped. PR #12 remains OPEN/DRAFT/UNMERGED and mergeable.
+- E07 exact-head CI run #682 / `41446777187` also **SUCCESS** on head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`; toggle/live-popup invalidation integration is source/CI verified.
+- Source-level global fallback contract is now verified in both owner branches. G must reconcile shared-file overlap at grouped integration; F must still perform physical 1080p/4K visual and D-pad acceptance. No APK installed or device test claimed.
+- Detailed matrix: [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md).
