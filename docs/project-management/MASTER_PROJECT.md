@@ -365,3 +365,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Exact diagnostic APK size: 1,563,885 bytes; cap 1,572,864 bytes; headroom 8,979 bytes. APK publication skipped; no APK installed.
 - Source repair: reduced-motion behavior now stops continuous weather frame scheduling while preserving a static scene on Home and Weather screen; Weather screen focus transitions snap in reduced-motion mode. Full Weather screen now applies existing 1.5 GiB low-memory threshold and reduced rain/star/cloud particle density. Existing Effects-tab preference keys/callbacks and Project B focus/UI contracts preserved.
 - E07 source and exact-head CI are COMPLETE. Project F device acceptance remains mandatory: normal/reduced motion, toggle/focus behavior, Home overlay and Weather screen lifecycle, low-memory behavior, D-pad focus, 1080p/4K visuals and frame pacing. No physical TV acceptance is claimed.
+
+
+## B03/E07 cross-project repair — Glass Effect OFF fallback — 2 November 2026
+- Follow-up audit established that Glass Effect OFF removed structural surfaces, not merely blur, from app-owned top pills, Home popup menus, anchored PopupWindows, dock tray and modal dialogs.
+- Global contract: glass ON uses existing frosted material; glass OFF uses an opaque shared solid surface. Geometry, radius, row layout, text/icons, focus, D-pad and callbacks remain invariant. Android OS-owned Settings pages are outside this app-owned surface contract.
+- B03 owns global shared tokens and fallback primitives. Implemented on `feature/b03-dialog-opacity-layering`, PR #12, head `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`: shared POPUP_SURFACE/DOCK_SURFACE tokens, solid GlassDrawable and dock tray fallback, runtime modal material selection, and JVM fallback-token test. Exact-head CI #685 / `41447473358` was queued at checkpoint.
+- E07 owns preference/toggle integration and live popup invalidation. E07 PR #40 head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`, exact-head CI #682 / `41446777187` SUCCESS. APK diagnostic 1,564,117 bytes / 1,572,864 cap / 8,747 bytes headroom; APK publication skipped.
+- PR #12 and #40 remain Draft/open/unmerged under D-013. G must reconcile duplicate shared-file changes by content and verify the combined exact head before grouped merge. F still owns physical 1080p/4K popup, dialog, dock, focus and repeated toggle acceptance. No APK installation or physical TV test claimed.
+- Detailed source contract and test matrix: [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md).
