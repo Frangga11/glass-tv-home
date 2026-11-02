@@ -323,3 +323,19 @@ F02 head `5dd787b` includes the latest integrated callback-isolation, Recent App
 | Regression guard | `tests/test_wallpaper_session_shutdown_atomicity.py` | ADDED / CI PENDING |
 
 Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both jobs before the latest C07 fix.
+
+
+## Current F02/owner branch validation snapshot — 3 November 2026
+
+| Branch / PR | Exact head | CI evidence | Status |
+|---|---|---|---|
+| F02 / #50 | `b64715156e180edc3bfae25bffba6a089544247f` | New docs-only head; exact-head CI queued after preceding source/test head `ddf130a` passed run #41512382568 (both jobs) | RETEST REQUIRED |
+| C07 / #24 | `80a92264c51631fb107c75f32a3cd8e4b8aa9d9a` | #41512386827 both jobs SUCCESS | PASS |
+| B01 / #10 | `389e289e939276ce9e20d7e6c82c293d3f83c70f` | #41509724289 SUCCESS | PASS |
+| D05 / #29 | `7f043943ab0c1d2d1217fc56845d81ac7583c96d` | #41505852041 SUCCESS | PASS |
+| D06 / #30 | `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7` | #41505865772 SUCCESS | PASS |
+| D01 / #51 | `66352838e6155a42a9ea61477643a238f360434f` | #41506847521 SUCCESS | PASS |
+
+- The 3000 ms failing test expectation was corrected to 3500 ms; no test was weakened or skipped.
+- F02's `WallpaperUploadServer` deliberately contains D05's `UploadResult` persistence handling plus C07's later monotonic deadline/session revocation changes. This is an intentional dependency-chain integration, not a source-sync defect.
+- All device-dependent checks remain DEFERRED_TO_G.
