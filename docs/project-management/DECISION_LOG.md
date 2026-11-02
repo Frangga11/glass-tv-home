@@ -228,3 +228,38 @@ The remaining Draft/open PRs are intentional staged source/integration records p
 ## F02 final exact-head CI evidence — 3 November 2026
 - F02 head `190b698453a96da8ec2db31da2eefac836849a10` passed run #41522215859; both jobs SUCCESS, 42 Python tests / 1 intentional merge-time README count skip, Android unit tests and release build passed, APK 1,565,713 bytes with 7,151 bytes headroom; no artifact.
 - C07 owner #24 and D01 owner #51 exact-head CI passed. Host/source exit criteria are complete; physical acceptance is DEFERRED_TO_G.
+
+
+---
+
+## CHECKPOINT RESMI — PROJECT F02 DITUTUP (3 November 2026)
+
+**ID:** GTVH-F02-CP-2026-11-03  
+**Keputusan:** F02 HOST VALIDATION = PARIPURNA / HOST EXIT PASS.  
+**Batas:** keputusan ini tidak menyatakan penerimaan perangkat fisik atau merge final.
+
+### Bukti final yang menjadi acuan tunggal
+- Integrasi F02: branch `integration/project-f02-system-validation`, PR #50, exact head `190b698453a96da8ec2db31da2eefac836849a10`; CI #41522215859 — kedua job wajib SUCCESS.
+- Python: 42 test, 1 skip yang disengaja untuk `test_readme_counts` (normalisasi hitungan README saat merge dan tetap strict pada main). Tidak ada kegagalan atau test perilaku aplikasi yang dilewati.
+- Android: `testReleaseUnitTest` dan `assembleRelease` SUCCESS.
+- APK diagnostik: 1,565,713 byte dari batas 1,572,864 byte; sisa 7,151 byte. Size gate SUCCESS. Daftar artifact workflow kosong; APK tidak dipublikasikan maupun dipasang.
+- C07 owner PR #24: head `442b78c68b1540394d543bab59bddf52f865ccf0`, CI #41521013896 kedua job SUCCESS.
+- D01 owner PR #51: head `66352838e6155a42a9ea61477643a238f360434f`, CI #41506847521 kedua job SUCCESS.
+- Status PR saat checkpoint: #50, #24, #51 semuanya OPEN / DRAFT / UNMERGED. Ini disengaja sesuai tata kelola integrasi bertahap; bukan defect yang ditinggalkan.
+
+### Cakupan yang dinyatakan selesai
+Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner branch dan integration branch, regression checks, build/unit tests host, APK size gate, serta rekonsiliasi dokumentasi telah selesai. Tidak ada blocker sumber kritis yang diketahui tersisa dalam lingkup audit F02.
+
+### Wajib dibawa ke Project G — belum diuji dan tidak boleh diberi status PASS
+1. Penerimaan Mi TV Stick/firmware nyata: tampilan UI, popup, D-pad/focus, remote Home/double-press/long-press, Recent Apps/Close All, OEM power menu, dan AccessibilityService.
+2. Kompatibilitas izin ADB shell, termasuk `android.permission.DUMP`.
+3. QR transfer telepon-ke-TV melalui LAN nyata: disconnect, cancel, expiry, retry, concurrency, dan telemetry low-storage.
+4. Persistensi wallpaper/avatar/StandBy setelah process death/reboot serta performa dan stabilitas perangkat.
+
+### Keputusan tata kelola dan batas kerja
+- PR #50/#24/#51 tidak di-merge pada F02. Project G melakukan final integrated audit, pemeriksaan dependency/branch-head, lalu merge sesuai urutan yang disetujui.
+- Tidak ada APK release yang dipublikasikan/dipasang dan tidak ada uji fisik TV pada F02.
+- Headroom APK 7,151 byte dicatat sebagai P3 watchlist; jangan mengorbankan font atau wallpaper tanpa optimasi terukur yang menjaga kualitas.
+- Checkpoint ini mengungguli catatan historis yang masih menyebut CI/retet pending untuk pekerjaan yang sama. Catatan lama dipertahankan sebagai jejak kronologis, bukan status aktif.
+
+**Status serah terima:** F02 ditutup pada sisi host/source. Kandidat integrasi diserahkan ke Project G untuk final audit, penerimaan perangkat nyata, dan merge — bukan untuk mengulang pekerjaan perbaikan F02 yang telah terverifikasi.
