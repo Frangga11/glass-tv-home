@@ -407,3 +407,5 @@
 - A clean text-free image concept was generated for review, but the binary replacement has NOT been committed. Current JPEG remains unchanged and visual duplicate-text issue is still open. Do not publish/install APK or claim E03 complete.
 - No change to B01 global UI, D-pad, shuffle/index/interval, QR upload, StandBy storage or user preferences. Physical TV/phone/remote acceptance remains in Project F.
 - Full checkpoint: [E03_WALLPAPER_METADATA_AUDIT.md](E03_WALLPAPER_METADATA_AUDIT.md).
+
+- CI #624 / run `41408606965` completed **PASS** on exact source head `188bd49269a358ebf53f8ae09056c41a5eb80243`; both jobs passed, including `testReleaseUnitTest` and Release build. APK 1,561,797 bytes; 11,067 bytes below 1,572,864 cap. Manual publication skipped. Clean JPEG binary replacement remains uncommitted; E03 remains open.
