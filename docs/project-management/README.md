@@ -24,6 +24,7 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [AUDIT_REGISTER.md](AUDIT_REGISTER.md) | Defects, risks, verification steps, and closure evidence |
 | [AVATAR_AUDIT.md](AVATAR_AUDIT.md) | Original QR avatar audit, implementation record, and device acceptance checklist |
 | [E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md](E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md) | E02 profile/avatar/app-lock source audit, corrections, exact-head CI and F-stage acceptance |
+| [E05_WIDGETS_INFORMATION_AUDIT.md](E05_WIDGETS_INFORMATION_AUDIT.md) | E05 widget/information center audit, ayah no-truncation repair, and F-stage acceptance |
 | [DOCUMENTATION_WORKFLOW.md](DOCUMENTATION_WORKFLOW.md) | Mandatory three-layer documentation standard and efficient update rules |
 | [WALLPAPER_AUDIT.md](WALLPAPER_AUDIT.md) | Wallpaper/background audit, source findings, security issue, and acceptance criteria |
 | [E01_DEVICE_SETTINGS_HOME_CONTROL_AUDIT.md](E01_DEVICE_SETTINGS_HOME_CONTROL_AUDIT.md) | E01 Device Settings source audit and exact-head verification |
