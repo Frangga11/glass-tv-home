@@ -83,3 +83,7 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - Implementation head `37dab64cc99f11ef6670840c351f32fe91da6b24` passed exact-head GitHub Actions run #41427317877: launcher build/unit tests/release build/APK-size guard PASS and lists/tools/docs PASS.
 - Current PR #38 head `d1d461c2c08609462354ebebd9dc7ce678e2e049` is a report-only documentation follow-up; application source/resources are unchanged from the tested implementation head.
 - PR #38 remains Draft/open/unmerged. Physical Mi TV Stick/4K UI and remote acceptance remain Project F; no APK install or device test is claimed.
+
+
+## E08 audit report
+- [E08 Wallpaper Settings Redesign Audit](E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md) — unified three-tab wallpaper control center, existing-state reuse, exact-head CI and Project F acceptance matrix.
