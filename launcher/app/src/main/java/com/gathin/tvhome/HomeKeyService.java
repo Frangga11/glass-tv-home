@@ -27,6 +27,8 @@ public class HomeKeyService extends AccessibilityService {
     private static final String TAG = "TvHome.HomeKey";
     private static HomeKeyService instance;
     private final Handler homeHandler = new Handler(Looper.getMainLooper());
+    // Isolate force-stop queue timeouts from Home-key and power-action gesture callbacks.
+    private final Handler forceStopHandler = new Handler(Looper.getMainLooper());
 
     private String targetForceStopPackage = null;
     private final Queue<String> forceStopQueue = new LinkedList<>();
@@ -57,6 +59,12 @@ public class HomeKeyService extends AccessibilityService {
 
     @Override
     public void onDestroy() {
+        homeHandler.removeCallbacks(longPressHomeRunnable);
+        homeHandler.removeCallbacks(powerActionTimeout);
+        forceStopHandler.removeCallbacksAndMessages(null);
+        cancelPendingSingleHomeAction();
+        homePressTracker.cancel();
+        secondHomeTapInProgress = false;
         if (instance == this) instance = null;
         super.onDestroy();
     }
@@ -76,8 +84,8 @@ public class HomeKeyService extends AccessibilityService {
             return false;
         }
         Log.i(TAG, "Requesting Android TV restart");
-        // GLOBAL_ACTION_REBOOT is available from Android 11 (API 30).
-        if (android.os.Build.VERSION.SDK_INT >= 30 && service.performGlobalAction(12)) return true;
+        // Accessibility global-action ID 12 is not a reboot action; on Android 12+ it is the
+        // accessibility-button chooser. Use the visible system power menu on every supported TV.
         return service.openPowerDialogAndSelect(POWER_ACTION_RESTART);
     }
 
@@ -220,14 +228,14 @@ public class HomeKeyService extends AccessibilityService {
             startActivity(intent);
 
             // Safety timeout: if window doesn't respond or already stopped within 400ms, proceed to next
-            homeHandler.removeCallbacksAndMessages(null);
-            homeHandler.postDelayed(() -> {
+            forceStopHandler.removeCallbacksAndMessages(null);
+            forceStopHandler.postDelayed(() -> {
                 if (isProcessingForceStop) {
                     isProcessingForceStop = false;
                     isWaitingForConfirmDialog = false;
                     targetForceStopPackage = null;
                     performGlobalAction(GLOBAL_ACTION_BACK);
-                    homeHandler.postDelayed(this::processNextForceStop, 80);
+                    forceStopHandler.postDelayed(this::processNextForceStop, 80);
                 }
             }, 400);
         } catch (Exception e) {
@@ -297,9 +305,9 @@ public class HomeKeyService extends AccessibilityService {
                     isProcessingForceStop = false;
                     isWaitingForConfirmDialog = false;
                     targetForceStopPackage = null;
-                    homeHandler.removeCallbacksAndMessages(null);
+                    forceStopHandler.removeCallbacksAndMessages(null);
                     performGlobalAction(GLOBAL_ACTION_BACK);
-                    homeHandler.postDelayed(this::processNextForceStop, 80);
+                    forceStopHandler.postDelayed(this::processNextForceStop, 80);
                     return;
                 }
             }
@@ -333,9 +341,9 @@ public class HomeKeyService extends AccessibilityService {
                         isProcessingForceStop = false;
                         isWaitingForConfirmDialog = false;
                         targetForceStopPackage = null;
-                        homeHandler.removeCallbacksAndMessages(null);
+                        forceStopHandler.removeCallbacksAndMessages(null);
                         performGlobalAction(GLOBAL_ACTION_BACK);
-                        homeHandler.postDelayed(this::processNextForceStop, 80);
+                        forceStopHandler.postDelayed(this::processNextForceStop, 80);
                         return;
                     }
                 }
@@ -346,14 +354,72 @@ public class HomeKeyService extends AccessibilityService {
     }
 
     private boolean isHomeLongPressed = false;
+    private boolean secondHomeTapInProgress = false;
+    private final HomeKeyPressTracker homePressTracker = new HomeKeyPressTracker();
+    private Runnable pendingSingleHomeAction;
+
     private final Runnable longPressHomeRunnable = new Runnable() {
         @Override
         public void run() {
             isHomeLongPressed = true;
+            secondHomeTapInProgress = false;
+            homePressTracker.cancel();
+            cancelPendingSingleHomeAction();
             Log.i(TAG, "Hold Home button detected -> Opening Settings Popup globally");
             openSettingsPopupGlobal();
         }
     };
+
+    private void cancelPendingSingleHomeAction() {
+        if (pendingSingleHomeAction != null) {
+            homeHandler.removeCallbacks(pendingSingleHomeAction);
+            pendingSingleHomeAction = null;
+        }
+    }
+
+    private void schedulePendingSingleHomeAction(long delayMs) {
+        cancelPendingSingleHomeAction();
+        pendingSingleHomeAction = () -> {
+            pendingSingleHomeAction = null;
+            long now = SystemClock.uptimeMillis();
+            if (homePressTracker.consumeExpiredSingle(now)) {
+                performSingleHomeAction();
+            } else if (homePressTracker.hasPendingPress()) {
+                schedulePendingSingleHomeAction(homePressTracker.remainingSingleDelay(now));
+            }
+        };
+        homeHandler.postDelayed(pendingSingleHomeAction, Math.max(1L, delayMs));
+    }
+
+    private void performSingleHomeAction() {
+        if (RecentAppsActivity.isForeground()) {
+            RecentAppsActivity.dismissFromGlobal();
+            return;
+        }
+        Intent home = new Intent(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_HOME)
+                .setPackage(getPackageName())
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        try {
+            startActivity(home);
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to return to Home after a single press", e);
+        }
+    }
+
+    private void performDoubleHomeAction() {
+        if (RecentAppsActivity.isForeground()) {
+            RecentAppsActivity.triggerCloseAllFromGlobal();
+            return;
+        }
+        Intent recentApps = new Intent(this, RecentAppsActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        try {
+            startActivity(recentApps);
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to open Recent Apps after a double Home press", e);
+        }
+    }
 
     public static void openSettingsPopupGlobal() {
         if (instance == null) return;
@@ -380,6 +446,13 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
         if (isSettingsKey(event)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                homeHandler.removeCallbacks(longPressHomeRunnable);
+                cancelPendingSingleHomeAction();
+                homePressTracker.cancel();
+                secondHomeTapInProgress = false;
+                isHomeLongPressed = false;
+            }
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
                 startActivity(new Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
@@ -388,16 +461,19 @@ public class HomeKeyService extends AccessibilityService {
 
         int keyCode = event.getKeyCode();
         if (keyCode == KeyEvent.KEYCODE_APP_SWITCH) {
-            return true; // Live apps disabled per request
+            return true; // Live apps disabled per request; double Home remains the supported Recent Apps gesture.
         }
-
         if (keyCode != KeyEvent.KEYCODE_ALL_APPS && keyCode != KeyEvent.KEYCODE_HOME) return false;
 
+        long now = SystemClock.uptimeMillis();
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (event.isLongPress() || (event.getFlags() & KeyEvent.FLAG_LONG_PRESS) != 0 || event.getRepeatCount() > 0) {
                 if (!isHomeLongPressed) {
                     isHomeLongPressed = true;
+                    secondHomeTapInProgress = false;
                     homeHandler.removeCallbacks(longPressHomeRunnable);
+                    homePressTracker.cancel();
+                    cancelPendingSingleHomeAction();
                     openSettingsPopupGlobal();
                 }
                 return true;
@@ -405,35 +481,54 @@ public class HomeKeyService extends AccessibilityService {
             if (event.getRepeatCount() == 0) {
                 isHomeLongPressed = false;
                 homeHandler.removeCallbacks(longPressHomeRunnable);
+                secondHomeTapInProgress = homePressTracker.isSecondPressCandidate(now);
+                if (secondHomeTapInProgress) {
+                    // Hold the first single-press action until this candidate is released or long-pressed.
+                    cancelPendingSingleHomeAction();
+                }
                 homeHandler.postDelayed(longPressHomeRunnable, 450);
             }
             return true;
         }
 
-        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+        if (event.getAction() == KeyEvent.ACTION_UP) {
             homeHandler.removeCallbacks(longPressHomeRunnable);
             if (isHomeLongPressed) {
                 isHomeLongPressed = false;
+                secondHomeTapInProgress = false;
+                homePressTracker.cancel();
+                cancelPendingSingleHomeAction();
                 return true;
             }
-            // Single Home press: return to Home
-            if (RecentAppsActivity.isForeground()) {
-                RecentAppsActivity.dismissFromGlobal();
+            if (event.isCanceled()) {
+                if (secondHomeTapInProgress) {
+                    secondHomeTapInProgress = false;
+                    schedulePendingSingleHomeAction(homePressTracker.remainingSingleDelay(now));
+                }
+                return true;
+            }
+
+            secondHomeTapInProgress = false;
+            HomeKeyPressTracker.ReleaseResult result = homePressTracker.registerShortRelease(now);
+            if (result == HomeKeyPressTracker.ReleaseResult.DOUBLE_PRESS) {
+                cancelPendingSingleHomeAction();
+                performDoubleHomeAction();
             } else {
-                Intent home = new Intent(Intent.ACTION_MAIN)
-                        .addCategory(Intent.CATEGORY_HOME)
-                        .setPackage(getPackageName())
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                try {
-                    startActivity(home);
-                } catch (Exception ignored) {}
+                if (result == HomeKeyPressTracker.ReleaseResult.EXPIRED_SINGLE_AND_PENDING) {
+                    // The previous press exceeded the double-press window; resolve it before queuing this one.
+                    performSingleHomeAction();
+                }
+                schedulePendingSingleHomeAction(HomeKeyPressTracker.SINGLE_PRESS_DELAY_MS);
             }
             return true;
         }
         return true;
     }
-
     @Override
     public void onInterrupt() {
+        homeHandler.removeCallbacks(longPressHomeRunnable);
+        cancelPendingSingleHomeAction();
+        homePressTracker.cancel();
+        secondHomeTapInProgress = false;
     }
 }

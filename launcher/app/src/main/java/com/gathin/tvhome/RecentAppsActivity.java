@@ -245,7 +245,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
         if (code == KeyEvent.KEYCODE_HOME || code == KeyEvent.KEYCODE_ALL_APPS) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 long now = SystemClock.uptimeMillis();
-                if (now - lastHomePressTime < 450) {
+                if (now - lastHomePressTime <= HomeKeyPressTracker.DOUBLE_PRESS_WINDOW_MS) {
                     // Double press Home in Recent Apps -> Trigger Close All!
                     lastHomePressTime = 0;
                     onCloseAllClicked();
