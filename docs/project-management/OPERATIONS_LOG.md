@@ -383,3 +383,16 @@
 - Cache byte totals now count only successfully deleted app-cache/temp files; free-space deltas are no longer attributed to app-cache cleanup. User-facing no-files-removed feedback is neutral. Android system trim success requires the explicit ADB success marker. Regression tests cover marker parsing and actual deleted-byte counting.
 - E01 audit report and PR #34 description updated. PR #34 remains OPEN/DRAFT/UNMERGED under D-013; latest feature branch documentation commit 090a956a9860c82eb36c2d96848d47046fba0f0c.
 - E01 source audit remains COMPLETE; next Stage E task is E02 Profile. F-stage physical/OEM checks remain mandatory and unchanged. No device settings, HOME default, package state, user data or installed APK changed.
+
+
+## 2026-11-02 — E02 Profile, Avatar & App-Lock source audit
+
+- Continued E02 on isolated branch `feature/e02-profile-avatar-lock-ui`, based on E01 exact branch baseline. PR #35 remains Draft/open/unmerged; no grouped integration or main merge.
+- Audited profile avatar selection/QR, profile switch/delete/PIN gates, Child Mode, app-lock/hidden-app lists and counts, D-pad focus, and B01 modal adoption.
+- Fixed app-policy enumeration to merge Leanback and generic Launcher categories, deduplicate package-level entries, exclude the launcher itself and tolerate null app labels/icons. Added regression coverage for package filter edge cases.
+- Fixed a transactional gap in built-in avatar selection: selected avatar index and custom-photo reference reset now commit together; on persistence failure the old in-memory selection/reference is restored.
+- Verified picker summary refresh on all dismiss paths including Back, profile-scoped policy state, avatar upload route/session/storage safeguards, and shared B01 dialog contract.
+- Final source head `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; exact-head CI #623 / `41406190380` PASS. Android app/installer release unit tests and Release build passed; lists/tools/docs job passed.
+- APK 1,561,717 bytes; 1,572,864-byte cap; 11,147 bytes headroom. Manual publication skipped; artifact count 0.
+- E02 source/CI gate closed. Project F retains all physical Mi TV/phone/remote acceptance. No APK installed, no TV settings/HOME default changed, no user data migrated.
+- Full audit: [E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md](E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md).
