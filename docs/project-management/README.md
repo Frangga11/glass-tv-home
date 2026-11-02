@@ -105,3 +105,11 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - D01 receiver authorization and internal-only LocationActivity fixes are CI PASS; D05 and D06 owner-branch retests are CI PASS. B01 latest exact-head CI and F02 latest integrated CI remain pending.
 - F02 Robolectric window tests passed on previous integration head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`; latest head still requires retest.
 - RecentAppsActivity exported ACTION_MAIN entry contract remains a documented P3 review item for Project G; no blind compatibility-breaking change made.
+
+
+### F02 follow-up checkpoint — 3 November 2026
+- B01 latest owner head: `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`, PR #10; exact-head CI in progress.
+- F02 latest integration head: `3ea479d689dc732fe46594a0677d02b7762d7527`, PR #50; exact-head CI in progress.
+- New findings fixed in source: Force Stop callback queue isolated from Home/power callbacks; RecentAppsActivity made internal-only after discovering exported ACTION_CLOSE_ALL could trigger Close All from another installed app.
+- Added regression guards for Force Stop/Home handler isolation and Recent Apps manifest boundary. Exact-head CI must pass before closure.
+- Previous F02 head `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both CI jobs before these latest fixes.
