@@ -1,7 +1,10 @@
 package com.gathin.tvhome;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -34,6 +37,22 @@ final class TvDialogStyle {
         window.setDimAmount(DIM_AMOUNT);
         window.setLayout(
                 resolveWidthPx(availableWidth, density, maxWidthDp),
+                resolveHeightPx(availableHeight, density, maxHeightDp));
+        window.setGravity(Gravity.CENTER);
+    }
+
+    static void applyCustom(Dialog dialog, Context context, int maxWidthDp, int maxHeightDp,
+                            float dimAmount) {
+        if (dialog == null || context == null) return;
+        Window window = dialog.getWindow();
+        if (window == null) return;
+        float density = context.getResources().getDisplayMetrics().density;
+        int availableWidth = context.getResources().getDisplayMetrics().widthPixels;
+        int availableHeight = context.getResources().getDisplayMetrics().heightPixels;
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setDimAmount(Math.max(0f, Math.min(1f, dimAmount)));
+        window.setLayout(resolveWidthPx(availableWidth, density, maxWidthDp),
                 resolveHeightPx(availableHeight, density, maxHeightDp));
         window.setGravity(Gravity.CENTER);
     }
