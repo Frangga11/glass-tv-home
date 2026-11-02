@@ -602,9 +602,9 @@ final class AppLanguage {
 
     public static String strCleanCacheDoneTitle(Context ctx) {
         switch (getLanguage(ctx)) {
-            case LANG_EN: return "✨ Cleaning Complete";
-            case LANG_ID: return "✨ Pembersihan Selesai";
-            case LANG_MS: default: return "✨ Pembersihan Selesai";
+            case LANG_EN: return "Cache Cleaning Result";
+            case LANG_ID: return "Hasil Pembersihan Cache";
+            case LANG_MS: default: return "Hasil Pembersihan Cache";
         }
     }
 
@@ -612,17 +612,17 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN:
                 return hasFreed
-                        ? "✅ Successfully cleaned " + freedStr + " of cache files!\nTV storage is now lighter and smoother."
-                        : "✅ TV cache is already completely clean.\nTV storage and memory are at optimal levels.";
+                        ? "Removed " + freedStr + " of app cache and temporary files."
+                        : "No app cache or temporary files were removed. There may be nothing to clear, or some files could not be removed.";
             case LANG_ID:
                 return hasFreed
-                        ? "✅ Berhasil membersihkan " + freedStr + " file cache!\nPenyimpanan TV kini lebih lega dan lancar."
-                        : "✅ Cache TV sudah bersih sepenuhnya.\nPenyimpanan dan memori TV berada pada tingkat optimal.";
+                        ? "Berhasil menghapus file cache aplikasi dan file sementara sebesar " + freedStr + "."
+                        : "Tidak ada file cache aplikasi atau sementara yang berhasil dihapus. Bisa jadi tidak ada file yang perlu dibersihkan, atau sebagian file tidak dapat dihapus.";
             case LANG_MS:
             default:
                 return hasFreed
-                        ? "✅ Berjaya membersihkan " + freedStr + " fail cache!\nStoran TV kini lebih ringan dan lancar."
-                        : "✅ Cache TV telah dibersihkan sepenuhnya.\nStoran dan memori TV berada pada tahap optimum.";
+                        ? "Berjaya memadam fail cache aplikasi dan fail sementara sebanyak " + freedStr + "."
+                        : "Tiada fail cache aplikasi atau sementara yang berjaya dipadam. Mungkin tiada fail untuk dibersihkan, atau sebahagian fail tidak dapat dipadam.";
         }
     }
 
