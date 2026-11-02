@@ -524,3 +524,11 @@ The mandatory execution sequence is: (1) re-verify prior audits/dependency mappi
 - B01 latest owner head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; F02 latest head `3ea479d689dc732fe46594a0677d02b7762d7527`. Exact-head CI in progress.
 - Previous F02 checkpoint `c9496d4e051980e640bc269ffce695b95ba71ad4` passed both jobs, but it predates these fixes.
 - Status remains PARTIAL / NOT FINAL; no merge, APK publication/installation, or physical Android TV test.
+
+
+## Exact-head CI results — 3 November 2026
+
+- F02 PR #50 head `5dd787ba136dfb070eaa2e833af653e57ec66015`: both CI jobs PASS — run #41509632784 Launcher build/unit tests; run #41509626957 Lists/tools/docs.
+- B01 PR #10 head `791620ce4628ee9e909af7ce2f4758b6df77afeb`: both jobs PASS — run #41509576279. A subsequent comment-only source alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f` has an exact-head run pending.
+- F02 exact-head green is evidence for the integrated host-side source/test gates, not physical TV readiness. Project G still owns real remote key timing, rendering/focus, OEM power menu, ADB permission and firmware checks.
+- Keep F02 partial until remaining cross-module audits and final F02 exact-head retest are complete.
