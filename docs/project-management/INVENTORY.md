@@ -226,3 +226,12 @@
 - Current source/test CI checks across B/C/D/E branches are PASS; detailed run numbers and exact branch heads are in `F01_INTEGRATION_DEPENDENCY_AUDIT.md`.
 - Parent/base drift register: PR #11/#12/#17/#18/#19/#21/#24/#29/#34. All currently mergeable, but newer parent changes require preservation and integrated regression during grouped integration.
 - Isolated branch `integration/f01-rehearsal-only`, Draft PR #42 against current D07, is mergeable. CI #708 PASS; #709/#710 pending at this checkpoint. No merge, APK publication/installation or physical acceptance.
+
+
+## Project F01 final inventory — 2 Nov 2026
+- Status: **CLOSED — PASS** for source/dependency audit and isolated combined build/test.
+- Complete B01–B07/C01–C07/D01–D07/E01–E08 dependency map, shared-file hotspots and stale-parent register are in `F01_INTEGRATION_DEPENDENCY_AUDIT.md`.
+- Verified/fixed E08 wallpaper entry-point mismatch. Quick Control remains compact; Appearance restores full Collection/Interval/Personal Wallpaper Manager cards. E08 head `1d6fba799012ff0e8dbbfbce5a7fbe4f193e1d0d`, CI #711/#712 PASS.
+- Final combined rehearsal PR #43 CI #716 PASS on merge candidate `21c2eab34a3356d37d079eba04b281cc2373386d`; APK 1,563,769 bytes, 9,095 bytes below cap; publication skipped.
+- PR #42/#43 closed without merge; PR #41 remains Draft/open/unmerged. No APK install or physical acceptance. D-013 unchanged.
+- Next workstream: **F02** integrated functional regression and controlled Android TV acceptance.
