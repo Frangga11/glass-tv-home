@@ -555,3 +555,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Exact-head CI #629 pending; Project F hardware validation outstanding. E04 NOT FINAL; PR #37 remains Draft/unmerged.
 
 - E04 exact-head CI #629 passed on source head `08076bb945a169de198905152a092f419f48aa82`; APK 1,561,373 bytes, headroom 11,491 bytes. Source-level gates PASS; Project F device acceptance remains pending.
+
+## E05-F01 — Daily ayah and translation truncation — 2 Nov 2026
+
+- Severity: user-visible content integrity / readability. Owner: Project E05.
+- Evidence: `activity_main.xml` limited Arabic to one line and translation to two lines with end ellipsis; `MainActivity.showAyah()` re-applied one-line Arabic and ellipsis at runtime and shrank font based on unwrapped text width.
+- Root cause: fixed line caps and ellipsizing in both layout and runtime renderer; narrow content column.
+- Repair: wider 46% usable column; unlimited natural wrapping for Arabic and translation; remove ellipsis; explicit RTL and high-quality line breaking; retain Arabic font padding; improve font size and line spacing. Files: `MainActivity.java`, `activity_main.xml` on `feature/e05-information-center-ayah`.
+- Verification: source/diff review PASS. Exact-head Actions run #41422241456 queued on PR head `60086e0a2d74b40e124f11caa219a683863e6e08`; CI closure pending.
+- Project F acceptance: longest Arabic/ID/EN content, glyph/harakat clipping, shelf/dock collision, 1920x1080 and 4K, D-pad/scroll/Back, offline/cache/language refresh. No device verification claimed.
