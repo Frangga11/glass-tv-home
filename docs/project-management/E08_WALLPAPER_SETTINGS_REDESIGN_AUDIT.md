@@ -35,7 +35,7 @@ The problem was fragmented access:
 - Shuffle reuses the existing `shuffle_mode`, `shuffle_cycle`, `shuffle_position`, and `shuffle_last_file` preferences, plus the existing interval picker. Toggling shuffle does not unexpectedly replace the displayed image.
 - Next reuses the existing asynchronous decoder, current wallpaper list, index persistence and timer rescheduling. A one-image collection returns a clear message rather than pretending to advance.
 - The zero-minute interval is labelled accurately as manual-only/no automatic change; it does not falsely claim to disable shuffle order.
-- Appearance exposes one unified wallpaper entry; Quick Control opens the same control center. Custom-photo manager remains reachable through collection selection.
+- Pre-F01 baseline finding: Appearance exposed one unified wallpaper entry and Quick Control opened the same control center. This was identified as a requirement mismatch and repaired in the F01 addendum below.
 - Existing QR upload, deletion, slideshow, category, description, metadata, cache, network and rotation behavior are preserved.
 - No new engine, preference store/key, storage schema, network route, timer implementation or UI dependency was added.
 
