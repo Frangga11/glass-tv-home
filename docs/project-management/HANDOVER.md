@@ -283,3 +283,13 @@
 - Canonical E00 report, roadmap, inventory, audit register, operations log, master project and handover were re-read from `docs/project-master-inventory` after merge.
 - E00 scope is closed: documentation/inventory/dependency reconciliation only. No application source, feature PR, APK, user data, TV setting, installation or physical-device acceptance was changed or claimed.
 - **Next work unit: E01 — Device Settings & Launcher audit.** Begin with exact dependency heads and the A06 read-only HOME resolver/preferred-activity discrepancy. Preserve D-013/D-014; do not merge feature PRs early.
+
+## Current resume checkpoint — E01 source audit closed, 2 November 2026
+
+- **Next task: Stage E02 — Profile** (avatar QR, built-in avatar selection, focus indicators, app-lock counts and policy UI). The separate cross-project global UI consistency checkpoint is not the Stage E02 Profile module.
+- **E01 source audit:** COMPLETE. Feature branch feature/e01-device-settings-home-control; source head validated at 9919dbaa0add6cc7ce2a84332354f46f9cc48d61; documentation-only feature-branch follow-up 7aad9ec4cf015dd415b3c948e2b4f80c1099955c. Draft PR #34 remains OPEN/DRAFT/UNMERGED, based on D07 exact head 964163c918e281b68af5cf7114ca56ead2797486.
+- **Exact-head CI:** #602 / 41400508774 PASS. Android release build, JVM unit tests and lists/tools/docs checks passed. Diagnostic APK 1,560,565 bytes; 12,299 bytes below the 1,572,864-byte budget. No artifact published; manual TV-test APK step skipped.
+- E01 removed silent Android system-setting/service writes; added read-only HOME/service status; split Android screensaver and display-timeout settings; corrected restart/power feedback; required an explicit ADB success marker before claiming system cache trim success; verified the installer QR target assets exist on main.
+- E01 uses the exact B01 canonical TvDialogStyle/TvUiTokens. Do not create a competing modal or Settings style in E02; adopt B01's shared global contracts.
+- **F-stage carry-forward:** HOME resolver/preferred-activities discrepancy and physical HOME key; service readback; OEM restart/power labels; actual ADB cache trim success/denied path; phone installer scan/install; remote D-pad visual/focus acceptance; ClockDream/StandBy/display-timeout interaction. These are deferred, not waived, and do not block E02 source audit.
+- Keep D-013: PR #34 and all feature PRs stay Draft/open/unmerged until A–G source audits/fixes and grouped integration gates are complete. No APK installed, no TV settings or HOME default changed.
