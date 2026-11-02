@@ -304,3 +304,28 @@ The following fixes have been implemented on owning source branches and mirrored
 - D06 PR #30 head `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7`: run #41505865772 SUCCESS.
 - D01 follow-up PR #51 head `66352838e6155a42a9ea61477643a238f360434f`: run #41506847521 SUCCESS.
 - Host CI results do not replace Project G acceptance of real Android TV rendering, DPAD/remote timing, OEM power menu, ADB permission behavior, phone-to-TV LAN disconnect/cancel/retry/expiry, or firmware behavior.
+
+
+## Authoritative finding status reconciliation — 3 November 2026
+
+This table supersedes earlier per-section statements marked “CI pending” where newer exact-head evidence below exists. It does not waive any Project G acceptance.
+
+| Finding | Host/source remediation evidence | Current disposition |
+|---|---|---|
+| F02-UI-001 Global modal contract | B01 shared dialog helper/MainActivity enforcement; D05 Settings search dialog calls restored; modal contract source tests and Robolectric API 30 window tests pass on F02 source/test head `ddf130a`. B01 #10 run #41509724289 and D05 #29 run #41505852041 passed. | HOST CONTRACT PASS / G VISUAL + DPAD ACCEPTANCE DEFERRED |
+| F02-SEC-001 Location broadcast authorization | D01 #51 applies `android.permission.DUMP`; manifest regression test and owner CI #41506847521 pass; F02 source/test CI #41512382568 pass. | MANIFEST/HOST PASS / G ADB-SHELL COMPATIBILITY DEFERRED |
+| F02-SEC-002 AzanActivity external launch | D06 #30 sets internal-only component; manifest security regression and owner CI #41505865772 pass; F02 source/test CI pass. | MANIFEST/HOST PASS / G INTERNAL ALARM ACCEPTANCE DEFERRED |
+| F02-TEST-001 Host UI coverage | Robolectric 4.14.1 API 30 AlertDialog window tests run in the launcher JVM test suite; F02 release unit-test/build job passed. | HOST UI WINDOW TEST PASS / PHYSICAL RENDERING + FOCUS DEFERRED |
+| F02-FUNC-001 Home double-press routing | B01 #10 timing/routing regression tests and source guard pass in owner CI #41509724289 and F02 source/test CI. | HOST ROUTING PASS / G REMOTE TIMING DEFERRED |
+| F02-SEC-003 LocationActivity export | D01 #51 sets non-exported; manifest guard and owner CI #41506847521 pass; F02 source/test CI pass. | MANIFEST/HOST PASS |
+| F02-SEC-004 RecentAppsActivity exported Close All | Non-exported manifest and internal route guard pass in B01 owner CI #41509724289 and F02 source/test CI. | MANIFEST/HOST PASS / G REAL REMOTE CLOSE-ALL DEFERRED |
+| F02-FUNC-002 Force Stop/Home Handler collision | Dedicated Force Stop Handler isolation and lifecycle cleanup regression guard pass in B01 owner CI and F02 source/test CI. | HOST REGRESSION PASS / G ACCESSIBILITY EVENT ACCEPTANCE DEFERRED |
+| F02-PLAT-001 Invalid restart action ID | B01 uses visible system power-menu path, removes invalid global action ID 12; owner CI #41509724289 and F02 source/test CI pass. | SOURCE/HOST PASS / G OEM POWER-MENU ACCEPTANCE DEFERRED |
+| F02-C07-001 QR mutation versus session shutdown | Synchronized select/delete/slideshow/clear handlers share stop monitor and recheck active session; C07 owner CI #41512386827 and F02 source/test CI pass. | SOURCE/HOST PASS / G PHONE-TO-TV REVOCATION ACCEPTANCE DEFERRED |
+| F02-C07-002 Monotonic upload deadline | Injectable timeout controller, monotonic clock and corrected 3500 ms test expectation; C07 owner CI #41512386827 and F02 source/test CI pass. | SOURCE/HOST PASS / G NETWORK/DEVICE ACCEPTANCE DEFERRED |
+
+### Current integrated evidence and exit condition
+- F02 source/test head `ddf130a348182546b28ff59c292c9b5ceebacb2e`: exact-head push CI #41512382568 passed both required jobs. Matching PR run #41512391849 passed all substantive test/build/size-gate steps; cleanup was in progress at last poll.
+- The current F02 head after this status-register documentation update must be revalidated on exact SHA. Documentation-only changes do not inherit the prior green result.
+- No physical Android TV behavior is marked PASS. PR #50 remains Draft/open/unmerged; no APK artifact is published or installed.
+- F02 remains PARTIAL until latest exact-head CI, remaining risk-based source/contract audits, and G handoff evidence are complete.
