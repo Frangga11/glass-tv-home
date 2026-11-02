@@ -371,3 +371,14 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - New test commit: `4e9219f7445dd48347ff3a1fb419d485eae24b00`.
 - Status: SOURCE AUDIT PASS / REGRESSION COVERAGE ADDED / EXACT-HEAD CI RETEST PENDING.
 - Project G still owns physical phone-to-TV cancellation, network disconnect, expiry, and reconnection acceptance.
+
+
+## F02-RES-001 — Concurrent QR uploads could consume the device storage safety margin — 3 November 2026
+
+- Severity: P2 reliability / storage-exhaustion risk. Owner: Project C07 upload server, coordinated with D05 StandBy persistence.
+- Evidence: Wallpaper and StandBy endpoints accept up to 60 MiB per request and up to eight active clients. StandBy already checked the 64 MiB minimum-free-space margin per request, but checks were not reserved atomically across concurrent uploads. The custom Wallpaper endpoint had no equivalent free-space guard. Parallel uploads could therefore each pass an individual check against the same available-space snapshot and collectively reduce free storage below the intended safety margin.
+- Correction: added overflow-safe `NetworkFeedbackPolicy.canReserveUploadStorage` arithmetic and synchronized per-server byte reservations. Both custom Wallpaper and StandBy upload paths reserve the declared body size before writing and release the reservation in `finally`, including failure, cancellation and session shutdown. The existing 60 MiB per-file limit and StandBy 100-photo / 512 MiB collection policy remain unchanged. No arbitrary wallpaper count or total-storage cap was introduced.
+- Insufficient storage is returned as HTTP 507; expired/revoked sessions continue to return HTTP 410. The reservation preserves at least 64 MiB free based on the current usable-space snapshot while accounting for other in-flight uploads.
+- Added JUnit boundary tests to `NetworkFeedbackPolicyTest` and Python source-contract checks in `tests/test_upload_storage_reservation.py`.
+- Production fix commit: `b167fdbee7393727c7b778130ee3ae7aee394cba`; policy/test commits: `1b8418a0d476c240ea0605f30084af04072716ae`, `27626ff64b0a6cfd9a4d7dd6c5b8e654c1c3cb09`; source-contract test: `453f9b9f004accd136d960b392483f7ed2ac4abb`.
+- Status: FIX IMPLEMENTED / EXACT-HEAD CI RETEST PENDING. Device-specific storage telemetry and actual concurrent LAN upload acceptance remain DEFERRED_TO_G.
