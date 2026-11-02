@@ -1,6 +1,6 @@
 # E07 — Animations & Visual Effects Audit
 
-**Status:** Glass ON/OFF surface fallback repair implemented; exact-head CI verification pending. Physical TV acceptance remains assigned to Project F.
+**Status:** Glass ON/OFF surface fallback repair and exact-head CI verified; B03 global contract synchronized. Physical TV acceptance remains assigned to Project F.
 
 ## Scope
 Audit the existing Animations & Visual Effects settings and the visual effects they control. Preserve the four existing controls and their preference keys:
@@ -76,3 +76,11 @@ A follow-up integration audit found that disabling the decorative glass material
 - Release APK: `1,564,117 bytes`; budget `1,572,864 bytes`; remaining headroom `8,747 bytes`.
 - APK publication skipped. No APK installation or physical TV test is claimed.
 - PR #40 remains Draft/open/unmerged under D-013.
+
+
+## Project B03 global contract synchronization — 2 Nov 2026
+- Project B03 now owns the canonical shared fallback policy on `feature/b03-dialog-opacity-layering`, PR #12, exact source/test head `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`; exact-head CI #685 / `41447473358` PASS.
+- B03 source covers shared POPUP_SURFACE/DOCK_SURFACE tokens, solid OFF-state GlassDrawable and DockDecoration surfaces, and the shared modal material choice in TvDialogStyle. Regression test `GlassSurfaceFallbackTest` passed.
+- E07 retains toggle-specific integration: invalidate the active app-owned PopupWindow and Home popup when the preference changes, preserving existing keys/callbacks. E07 exact PR head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`; exact-head CI #682 / `41446777187` PASS.
+- Shared classes are semantically aligned across B03 and E07. G must perform the final exact-content reconciliation during grouped integration; do not merge early or duplicate global styling.
+- PR #40 remains Draft/open/unmerged under D-013. Project F still owns glass ON/OFF visual and D-pad acceptance at 1080p and 4K. No APK installation or physical TV test is claimed.
