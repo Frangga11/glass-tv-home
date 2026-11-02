@@ -563,3 +563,15 @@ This result supersedes the preceding note that CI #626 was in progress.
 - D06 security follow-up: AzanActivity changed to `exported=false`; explicit app-owned notification PendingIntent path was verified in source. Added manifest regression test. D06 owner retest pending.
 - F02 integration mirrored all three source fixes and regression tests. Earlier integrated head `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7` passed both jobs; newer head `1658237bafdb24167391270f3ad8f694751a6c2a` queued at this checkpoint.
 - B01/D05/D06 owner-branch exact-head CI was running. No finding closed; no APK published/installed; no physical Android TV test; no PR merged.
+
+
+## 3 November 2026 — Additional F02 findings and fixes
+
+- Extended exported-component audit: set LocationActivity non-exported (no external intent filter; explicit MainActivity intent retained). D01 follow-up PR #51 latest head `66352838e6155a42a9ea61477643a238f360434f` CI PASS.
+- Found a Home-key functional regression: HomeKeyService consumed every Home key release as a single press, preventing documented double-Home Recent Apps routing. B01 added HomeKeyPressTracker (350 ms double window, 400 ms single delay), explicit RecentAppsActivity launch, Close All routing when already foreground, and preserved 450 ms long-press Settings. App Switch remains disabled.
+- Unified RecentAppsActivity fallback threshold with HomeKeyPressTracker. Added JVM timing tests and Python source-contract guard.
+- Settings-key input now cancels pending Home gesture actions to prevent delayed Home navigation overriding Settings.
+- Added P3 review item: RecentAppsActivity remains exported with ACTION_MAIN; no in-repository external caller found, but external OEM/assistant/remote compatibility must be verified in Project G before changing the contract.
+- Robolectric API 30 tests for AlertDialog window layout/dim behavior passed on prior F02 head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`; latest head retest pending.
+- Latest B01 #10 head `867c7a9d0977e21b69c8078a400458b00ba2d2dd` and F02 #50 head `eea920469ffe5bef5ddb14e1dfd66687e82d8fed` were in CI. D05 #29, D06 #30 and D01 #51 exact-head CI passed.
+- No merge, APK publication/installation, or physical Android TV test.
