@@ -520,21 +520,32 @@ final class WeatherAirQuality {
             case 51:
             case 53:
             case 55:
-                return isEnglish ? "Light drizzle" : "Gerimis ringan";
+            case 56:
+            case 57:
+                return isEnglish ? "Drizzle / Freezing drizzle" : "Gerimis / gerimis beku";
             case 61:
             case 63:
             case 65:
-                return isEnglish ? "Rain" : "Hujan";
+            case 66:
+            case 67:
+                return isEnglish ? "Rain / Freezing rain" : "Hujan / hujan beku";
+            case 71:
+            case 73:
+            case 75:
+            case 77:
+                return isEnglish ? "Snow / Snow grains" : "Salju";
             case 80:
             case 81:
             case 82:
-                return isEnglish ? "Heavy rain" : "Hujan lebat";
+            case 85:
+            case 86:
+                return isEnglish ? "Heavy showers / Snow showers" : "Hujan lebat / hujan salju";
             case 95:
             case 96:
             case 99:
                 return isEnglish ? "Thunderstorm" : "Badai petir";
             default:
-                return isEnglish ? "Fair" : "Cerah";
+                return isEnglish ? "Unavailable" : "Tidak tersedia";
         }
     }
 
@@ -553,21 +564,32 @@ final class WeatherAirQuality {
             case 51:
             case 53:
             case 55:
+            case 56:
+            case 57:
                 return "🌦️";
             case 61:
             case 63:
             case 65:
+            case 66:
+            case 67:
                 return "🌧️";
+            case 71:
+            case 73:
+            case 75:
+            case 77:
+                return "❄️";
             case 80:
             case 81:
             case 82:
+            case 85:
+            case 86:
                 return "⛈️";
             case 95:
             case 96:
             case 99:
                 return "⚡";
             default:
-                return "⛅";
+                return "";
         }
     }
 
