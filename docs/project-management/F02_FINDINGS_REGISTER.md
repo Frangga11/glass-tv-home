@@ -241,3 +241,11 @@ The following fixes have been implemented on owning source branches and mirrored
 - Owner B01 PR #10 latest retest pending; F02 latest retest pending.
 - Physical vendor power-menu labels and restart acceptance remain DEFERRED_TO_G.
 - Status: OWNER SOURCE FIX + REGRESSION TEST COMMITTED / EXACT-HEAD CI PENDING / TV POWER-MENU ACCEPTANCE DEFERRED_TO_G.
+
+
+### Exact-head retest results — 3 November 2026
+- F02 integration PR #50 head `5dd787ba136dfb070eaa2e833af653e57ec66015`: Actions run #41509632784 (Launcher build/unit tests) SUCCESS and run #41509626957 (Lists/tools/docs) SUCCESS.
+- The F02 exact-head run includes the new Force Stop/Home Handler isolation test, RecentAppsActivity internal-only manifest test, Home-key timing/routing tests, power-action contract test, manifest security tests, and Robolectric window tests.
+- B01 owner PR #10 head `791620ce4628ee9e909af7ce2f4758b6df77afeb`: run #41509576279 SUCCESS on both jobs, including the Force Stop/Home isolation and restart action-ID tests. The owner branch then received a comment-only alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f`; exact-head CI run #41509724289 was still in progress.
+- B01 owner source and F02 integrated `HomeKeyService.java` now have identical file content/blob SHA `b3cd4b2b4092a90f4f1faefb1072c15e2203b314`.
+- F02-SEC-004, F02-FUNC-002 and F02-PLAT-001 integrated retests: PASS at the exact F02 head above. B01 latest comment-only exact-head CI pending; real remote/power-menu behavior remains DEFERRED_TO_G.
