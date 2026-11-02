@@ -279,3 +279,28 @@ The following fixes have been implemented on owning source branches and mirrored
 - Corrected the fixtures to use the same monotonic clock domain; no test was removed or weakened.
 - Added source guard `tests/test_upload_monotonic_deadline_clock.py` to prohibit wall-clock deadline comparisons in AvatarUploadServer, WallpaperUploadServer and UploadDeadlineInputStream.
 - Latest owner and F02 exact-head retests pending after this test correction.
+
+
+## C07/F02 upload deadline retest and dependency-chain reconciliation — 3 November 2026
+
+### F02-C07-002 — monotonic upload deadline verification
+- The first CI after introducing the injectable `SocketTimeoutController` still failed one assertion in `UploadDeadlineInputStreamTest.appliesRemainingDeadlineToEachRead`.
+- Exact failure: the test expected 3000 ms at fake monotonic time 2500 ms with an absolute deadline of 6000 ms. The production policy correctly computes 3500 ms (`6000 - 2500`); this was a test arithmetic error, not a production defect.
+- Corrected the assertion to 3500 ms on C07 owner and F02 integration branches. No production behavior changed; no test was skipped, removed, or weakened.
+- C07 owner PR #24 head `80a92264c51631fb107c75f32a3cd8e4b8aa9d9a`: CI run #41512386827 SUCCESS (Launcher build/unit tests and Lists/tools/docs).
+- F02 PR #50 head `ddf130a348182546b28ff59c292c9b5ceebacb2e`: push CI run #41512382568 SUCCESS (both required jobs). PR CI run #41512391849: both substantive job steps passed, including release build, APK diagnostics and size budget; final job cleanup was still in progress at this checkpoint.
+- The injectable timeout seam remains: production delegates to `Socket.setSoTimeout`; JVM tests use a fake controller and monotonic clock.
+- Status: SOURCE FIX / OWNER CI PASS / F02 PUSH CI PASS / PHYSICAL NETWORK ACCEPTANCE DEFERRED_TO_G.
+
+### C07 ↔ D05 dependency-chain reconciliation — intentional source divergence
+- C07 PR #24 is based on C06 and owns upload-session resilience. D05 PR #29 is a downstream dependency and owns atomic StandBy photo persistence.
+- D05 changes `StandbyPhotoStore.addUploadedFile` from a boolean result to `UploadResult` and adapts the StandBy upload response path in `WallpaperUploadServer`, preserving files on persistence failure so live URI references do not dangle.
+- F02 integration contains that D05 `UploadResult` adapter while also retaining the later C07 monotonic deadlines and synchronized QR-session mutation/shutdown protections. The C07↔F02 file difference is therefore an expected downstream contract adaptation, not a missing C07 fix.
+- Do not copy the older C07 boolean-based StandBy block over the F02/D05 implementation. Preserve the dependency order C07 → D01–D05 and the F02 combined behavior.
+- D05 PR #29 exact head `7f043943ab0c1d2d1217fc56845d81ac7583c96d`: CI run #41505852041 SUCCESS. F02 exact-head validation is recorded above.
+
+### Other owner-branch exact-head checks — 3 November 2026
+- B01 PR #10 head `389e289e939276ce9e20d7e6c82c293d3f83c70f`: run #41509724289 SUCCESS.
+- D06 PR #30 head `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7`: run #41505865772 SUCCESS.
+- D01 follow-up PR #51 head `66352838e6155a42a9ea61477643a238f360434f`: run #41506847521 SUCCESS.
+- Host CI results do not replace Project G acceptance of real Android TV rendering, DPAD/remote timing, OEM power menu, ADB permission behavior, phone-to-TV LAN disconnect/cancel/retry/expiry, or firmware behavior.
