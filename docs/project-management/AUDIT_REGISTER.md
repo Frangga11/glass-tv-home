@@ -429,3 +429,22 @@ Detailed scope, protected contracts, E01–E08 findings and limitations: [E00_MA
 
 - D02 exact-head CI #587 / `41397018968`: **PASS** (launcher build/unit tests and docs/tools jobs both succeeded).
 - D03 exact-head CI #588 / `41397040661`: **PASS** (both jobs succeeded); D04 exact-head CI #589 / `41397065406`: **PASS** (both jobs succeeded).
+
+## E01 Device Settings and HOME control — source audit closure, 2 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| Silent system-setting mutation | PASS — FIXED | Removed startup writes to screen_off_timeout, sleep_timeout, screensaver, accessibility and notification-listener settings; removed WRITE_SECURE_SETTINGS declaration. |
+| HOME status and candidate list | SOURCE PASS | Read-only resolver/candidate status, refresh action and safe native picker/ADB guidance. Existing resolver versus preferred-activities discrepancy remains an F-stage read-only device check. |
+| Accessibility and notification services | SOURCE PASS | Status reads are read-only; enabling/disabling remains user-controlled in Android Settings. |
+| Android screensaver vs display timeout | SOURCE PASS | Separate Device Settings entries; ClockDream reuses Glass TV StandBy view/photo collection while Android controls Dream activation. In-app StandBy trigger remains separate from Android display timeout. |
+| Restart and power actions | SOURCE PASS | Removed misuse of Accessibility global-action ID 12; visible system power menu and manual fallback retained. OEM labels require F-stage verification. |
+| Cache trim success reporting | PASS — FIXED | ADB stream close is not success. pm trim-caches must emit exact success marker; CacheCleanerTest covers positive, negative, missing-marker and null outputs. Actual TV ADB success/denied path remains F-stage. |
+| Popup/global Settings adoption | PASS — SOURCE | E01 TvDialogStyle and TvUiTokens blobs are byte-identical to B01 canonical branch. All app-owned Device Settings dialogs use the shared modal contract; Android-owned settings pages remain native. |
+| Installer QR destination | PASS — STATIC | main/release contains glass-tv-installer.apk, glass-tv-home.apk and version.json (4.0.0). Real phone scan/install flow remains F-stage. |
+| Exact-head CI | PASS | E01 source head 9919dbaa0add6cc7ce2a84332354f46f9cc48d61; CI #602 / 41400508774; both jobs SUCCESS. |
+| APK size budget | PASS | 1,560,565 bytes / 1,572,864-byte cap; 12,299 bytes headroom. |
+| APK publication / device mutation | NONE | Artifact count 0; manual TV-test APK step skipped. No installation, HOME default change, package-state change or TV setting mutation. |
+| Physical/OEM acceptance | DEFERRED, NOT WAIVED | F-stage: HOME discrepancy/button, service readback, restart/power labels, cache ADB outcomes, QR installer, D-pad visual/focus, and ClockDream/StandBy/display timeout interaction. |
+
+**Disposition:** E01 source audit and repository-level verification are COMPLETE; proceed to Stage E02 Profile source work. PR #34 remains OPEN/DRAFT/UNMERGED under D-013. Do not treat source closure as physical-device acceptance or release approval.
