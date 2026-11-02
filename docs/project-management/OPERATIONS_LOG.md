@@ -626,3 +626,11 @@ This result supersedes the preceding note that CI #626 was in progress.
 - F02 latest head `558762994dec05a7ae03a924c33a3ed11665c224`: push run #41513940620 both jobs PASS; matching PR run #41513947375 had all substantive steps pass and cleanup pending at last poll.
 - F02 APK size measured 1,564,977 bytes against 1,572,864-byte budget; headroom 7,887 bytes. R8 minify and resource shrinking are enabled. Keep as a P3 watchlist; do not remove wallpaper/font assets without quality-safe profiling.
 - InputKeyService visibility, user enable/disable and KEYCODE_TV delivery on actual OEM firmware remain DEFERRED_TO_G. No physical device testing, APK publication or merge.
+
+
+## 3 November 2026 — latest F02 exact-head verification
+
+- F02 PR #50 latest head: `91ae962bae04914a3888210e5f997b24151d5a62` (findings-register documentation-only commit; no source/test changes after head `5587629`).
+- PR workflow #41514480902 completed SUCCESS on this exact head: Lists/tools/docs and Launcher build/unit tests both passed. The launcher log confirms release-validation build success, 35 Python tests including the accessibility-service manifest guard, and APK size 1,564,977 bytes against 1,572,864-byte cap (7,887 bytes headroom).
+- Matching push workflow #41514472847 initially failed only because Maven Central returned HTTP 429 while downloading Robolectric `nativeruntime-dist-compat-1.0.16`; this is external dependency rate limiting, not a source/test failure. Only the failed launcher job was re-run (attempt 2); it was still in progress at the time of this note. Lists/tools/docs job passed.
+- PR #50 remains Draft/open/unmerged. No APK publication, installation or physical Android TV testing. Device acceptance remains Project G.
