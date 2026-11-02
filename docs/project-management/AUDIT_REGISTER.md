@@ -765,3 +765,12 @@ B01 latest head `a1e743ad88c28ca3a9602dfc9d0b5da16e46285d`; F02 latest head `3ea
 - B01 owner head `791620ce4628ee9e909af7ce2f4758b6df77afeb`: both jobs run #41509576279 SUCCESS. Subsequent comment-only alignment commit `389e289e939276ce9e20d7e6c82c293d3f83c70f` queued for exact-head CI.
 - F02-UI-001, F02-SEC-004, F02-FUNC-002 and F02-PLAT-001 have passed integrated exact-head CI at `5dd787b`; retain G device-only acceptance where applicable.
 - No finding is closed solely on CI: owner responsibility, integrated review and Project G acceptance remain required.
+
+
+## C07/F02 latest finding — 3 November 2026
+
+| Finding | Root cause / fix | Status |
+|---|---|---|
+| C07-F08 / F02-C07-001 | Wallpaper select/delete/slideshow/clear routes lacked in-lock session recheck and shared-monitor serialization with `stop()`; added synchronized handlers and explicit HTTP 410 expired-session response; added source regression guard. | FIX COMMITTED / C07 + F02 EXACT-HEAD CI PENDING |
+
+C07 owner PR #24 head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 PR #50 head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`. Physical QR cancellation/revocation acceptance remains Project G.
