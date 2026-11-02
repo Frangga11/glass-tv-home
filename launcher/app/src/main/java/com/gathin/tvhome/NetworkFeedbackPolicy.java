@@ -24,6 +24,15 @@ final class NetworkFeedbackPolicy {
         return running && expiresAtMs > 0L && nowMs < expiresAtMs;
     }
 
+    static boolean canReserveUploadStorage(long usableBytes, long reservedBytes,
+                                           long incomingBytes, long minimumFreeBytes) {
+        if (usableBytes < 0L || reservedBytes < 0L || incomingBytes <= 0L
+                || minimumFreeBytes < 0L || reservedBytes > usableBytes) return false;
+        long availableAfterReservations = usableBytes - reservedBytes;
+        return availableAfterReservations >= minimumFreeBytes
+                && incomingBytes <= availableAfterReservations - minimumFreeBytes;
+    }
+
     static boolean isCompleteDownload(long receivedBytes, long declaredBytes) {
         return receivedBytes > 0 && (declaredBytes < 0 || receivedBytes == declaredBytes);
     }
