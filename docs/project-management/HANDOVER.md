@@ -584,3 +584,12 @@ This result supersedes the preceding note that CI #626 was in progress.
 - C07 upload request-deadline handling remains intact; D05 atomic StandBy persistence, D07 state/concurrency/freshness and E08 distinct wallpaper routes remain in the tested candidate.
 - PRs #44–#49 closed without merge; no feature PR, main or release branch merged. No APK publication/installation or physical TV acceptance.
 - Next: F02 — controlled Android TV functional acceptance: remote/D-pad and focus restoration, Back/Close paths, popup consistency, Glass ON/OFF, 1080p/4K, Profile/App Lock/Child Mode, Weather/AQI, phone-to-TV QR upload, wallpaper route/state, StandBy persistence, process death and reboot recovery. Reopen a module owner only for a reproducible defect; preserve D-013.
+
+
+## F02 opening / first audit handover — 3 Nov 2026
+- F02 is OPEN. Entry audit and candidate verification PASS; functional regression and physical acceptance remain pending.
+- Use `integration/project-f-staged-full` HEAD `8fe90a9fdd493c5d81ffdacbe16054630a26580a`. The live ref is 3 commits ahead of F01 tested candidate `21c2eab34a3356d37d079eba04b281cc2373386d` with no file changes; CI #716 / `41470304782` remains exact-tree evidence (both jobs PASS, APK publication skipped).
+- Do not merge/overwrite from `integration/b-series` without semantic review. The selected full candidate includes SettingsFocusPath + JVM coverage and stronger NetworkFeedbackPolicy deadline/session controls absent from that checkpoint; common modal/fallback behavior and feedback files were cross-checked.
+- Next: obtain a controlled TV-test APK from the selected frozen candidate, then record physical PASS/FAIL/BLOCKED evidence for D-pad/focus/Back, dialogs, Glass ON/OFF, profile/security, Weather/AQI, phone QR upload, wallpaper route/state, StandBy, process death/reboot and 1080p/4K.
+- No APK has been published or installed; no physical acceptance is claimed. No feature PR or main/release merge. D-013 remains binding.
+- Full test matrix and decision record: `F02_INTEGRATED_FUNCTIONAL_REGRESSION.md`.
