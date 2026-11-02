@@ -4585,10 +4585,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         boolean enabled = !prefs.getBoolean("shuffle_mode", true);
         prefs.edit().putBoolean("shuffle_mode", enabled).remove("shuffle_cycle")
                 .remove("shuffle_position").apply();
-        if (wallpapers != null && !wallpapers.isEmpty()) {
-            showNextWallpaper(true);
-            startWallpaperRotation();
-        }
         TvFeedback.show(this, enabled ? R.string.wallpaper_shuffle_random : R.string.wallpaper_shuffle_ordered,
                 Toast.LENGTH_SHORT);
     }
@@ -4596,6 +4592,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void showNextWallpaperFromSettings() {
         if (wallpapers == null || wallpapers.isEmpty()) {
             TvFeedback.show(this, R.string.default_wallpaper_missing, Toast.LENGTH_SHORT);
+            return;
+        }
+        if (wallpapers.size() < 2) {
+            String language = AppLanguage.getLanguage(this);
+            String message = AppLanguage.LANG_EN.equals(language) ? "Only one wallpaper is available in this collection."
+                    : AppLanguage.LANG_ID.equals(language) ? "Koleksi ini hanya memiliki satu wallpaper."
+                    : "Koleksi ini hanya mempunyai satu wallpaper.";
+            TvFeedback.show(this, message, Toast.LENGTH_SHORT);
             return;
         }
         showNextWallpaper(true);
@@ -4901,7 +4905,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 AppLanguage.LANG_EN.equals(curLang) ? "⏱️ 1 Hour (60 Minutes)" : (AppLanguage.LANG_ID.equals(curLang) ? "⏱️ 1 Jam (60 Menit)" : "⏱️ 1 Jam (60 Minit)"),
                 AppLanguage.LANG_EN.equals(curLang) ? "One wallpaper per hour" : (AppLanguage.LANG_ID.equals(curLang) ? "Satu wallpaper setiap jam" : "Satu gambar bagi setiap jam")));
         options.add(new IntervalOption(0,
-                AppLanguage.LANG_EN.equals(curLang) ? "⏸️ Manual Only (Turn Off Shuffle)" : (AppLanguage.LANG_ID.equals(curLang) ? "⏸️ Manual Saja (Matikan Shuffle)" : "⏸️ Manual Sahaja (Matikan Shuffle)"),
+                AppLanguage.LANG_EN.equals(curLang) ? "⏸️ Manual Only (No Auto Change)" : (AppLanguage.LANG_ID.equals(curLang) ? "⏸️ Manual Saja (Tanpa Pergantian Otomatis)" : "⏸️ Manual Sahaja (Tanpa Pertukaran Automatik)"),
                 AppLanguage.LANG_EN.equals(curLang) ? "Keep current wallpaper • No automatic change" : (AppLanguage.LANG_ID.equals(curLang) ? "Pertahankan gambar saat ini • Tidak berganti otomatis" : "Kekalkan gambar semasa • Tiada pertukaran automatik")));
 
         int currentMin = getWallpaperIntervalMinutes();
