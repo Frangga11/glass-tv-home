@@ -419,3 +419,39 @@ This table supersedes earlier per-section statements marked “CI pending” whe
 - C07 owner source and F02 integration now contain the same process-wide reservation policy and regression coverage. F02 intentionally retains D05's downstream StandBy UploadResult persistence adapter; C07 owner branch retains its upstream boolean-based contract. No D05 behavior was overwritten.
 - F02-RES-001 and upload-shutdown regression coverage are OWNER + INTEGRATION HOST VERIFIED. Device-side low-storage, concurrent LAN, cancellation/expiry/retry, and OEM behavior remain DEFERRED_TO_G.
 - This findings-register update creates a new docs-only F02 head and requires one final exact-head CI retest. PR #50 and PR #24 remain Draft/open/unmerged; no APK artifact was published, installed, or tested on physical Android TV.
+
+
+---
+
+## Superseding F02 final host disposition — 3 November 2026
+
+This section is authoritative over all earlier historical statements in this register that say an owner/integration retest is pending. Those statements accurately describe earlier checkpoints only; they are superseded by the exact-head evidence below.
+
+| Finding / gate | Final host evidence | Current disposition |
+|---|---|---|
+| F02-UI-001 global modal contract | B01/D05 owner corrections and integrated MainActivity/shared-dialog contract; Robolectric API 30 dialog-window tests plus source regression checks included in F02 head | HOST VERIFIED; physical visual/focus acceptance DEFERRED_TO_G |
+| F02-SEC-001 location broadcast authorization | D01 owner PR #51 run #41506847521; receiver remains exported with android.permission.DUMP and both actions; LocationActivity is internal-only; same manifest/test contract is in F02 | OWNER + F02 HOST VERIFIED; actual ADB-shell compatibility DEFERRED_TO_G |
+| F02-SEC-002 AzanActivity external launch | D06 owner correction and manifest regression guard mirrored into F02; exact integrated validation included in successful F02 CI | HOST VERIFIED; actual alarm/notification launch on TV DEFERRED_TO_G |
+| F02-SEC-004 Recent Apps exported destructive action | RecentAppsActivity non-exported; internal explicit launch retained; manifest/source regression guard included in successful F02 CI | HOST VERIFIED; remote Close All behavior DEFERRED_TO_G |
+| F02-FUNC-001 Home double-press routing | B01 owner implementation and timing/source regression guards included in successful F02 CI | HOST VERIFIED; physical remote timing/OEM event delivery DEFERRED_TO_G |
+| F02-FUNC-002 Force Stop/Home handler collision | Dedicated Force Stop Handler isolation and regression guard included in successful F02 CI | HOST VERIFIED; real accessibility event acceptance DEFERRED_TO_G |
+| F02-PLAT-001 restart action ID | Invalid global action ID removed; visible power-menu flow and regression guard included in successful F02 CI | HOST VERIFIED; OEM power-menu behavior DEFERRED_TO_G |
+| F02-C07-001 QR mutation vs shutdown | All four Wallpaper mutation routes synchronize with stop and recheck session; owner/integration CI passed | OWNER + F02 HOST VERIFIED; phone/LAN cancellation and revocation DEFERRED_TO_G |
+| F02-C07-002 monotonic upload deadlines | elapsedRealtime production path, injectable timeout controller, corrected arithmetic fixtures; owner/integration CI passed | OWNER + F02 HOST VERIFIED; real network timeout behavior DEFERRED_TO_G |
+| F02-C07-003 upload commit atomicity | Avatar, Wallpaper rename/callback and StandBy persistence/callback guarded against stop; explicit regression coverage included | OWNER + F02 HOST VERIFIED; physical cancellation/expiry/retry DEFERRED_TO_G |
+| F02-RES-001 concurrent upload storage | Overflow-safe process-wide reservation lock/counter across server instances, 64 MiB minimum free-space margin, HTTP 507 on reservation failure, release in finally paths; C07 owner and F02 integration passed | OWNER + F02 HOST VERIFIED; physical low-storage/concurrent LAN telemetry DEFERRED_TO_G |
+| F02-BUILD-001 APK budget | F02 exact-head APK diagnostic 1,565,713 bytes / 1,572,864-byte cap; 7,151 bytes headroom; size gate passed | PASS; P3 watchlist only, not a blocker |
+
+### Exact-head CI evidence
+
+- F02 PR #50 integration head `e190e2863a4aacbe3aba61094fab00572f4b469f`: run #41521145454; Lists/tools/docs and Launcher build/unit tests both SUCCESS.
+- F02 Python suite: 42 tests, 1 intentional skip for `test_readme_counts` because README counts are normalized at merge and strict only on main. No test failure or disabled product test.
+- Android `testReleaseUnitTest` and `assembleRelease`: SUCCESS.
+- APK exact size: 1,565,713 bytes; cap 1,572,864 bytes; 7,151 bytes headroom. Size gate passed. Workflow artifact list empty.
+- C07 owner PR #24 head `442b78c68b1540394d543bab59bddf52f865ccf0`: run #41521013896; both jobs SUCCESS; 18 Python tests, 1 same intentional README count skip; Android unit tests/release build passed; APK 1,550,949 bytes; artifact list empty.
+- D01 owner PR #51 head `66352838e6155a42a9ea61477643a238f360434f`: run #41506847521; both jobs SUCCESS.
+- No APK was published or installed. No physical Android TV test was performed.
+
+### Exit decision
+
+F02 source audit, defect remediation, owner-branch synchronization, integrated host regression, release compilation, APK budget gate, and documentation audit are COMPLETE at the evidence above. There is no known open F02 source blocker in the reviewed scope. Device-dependent acceptance remains explicitly DEFERRED_TO_G and belongs to Project G; it must not be represented as passed by host CI. Draft/open/unmerged PRs remain under the previously approved staged integration policy and are not unowned F02 code defects.
