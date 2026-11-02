@@ -394,3 +394,13 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Next: poll exact-head CI, fix any failures, record APK size; then Project F physical acceptance of native transition timings, DreamService selection/wake, QR upload/cancel/retry, photo rendering/orientation/rotation, lifecycle/offline behavior. Do not claim hardware acceptance or merge before gates. E04 NOT FINAL.
 
 - CI #629 / run `41418393199` completed **SUCCESS** for `08076bb945a169de198905152a092f419f48aa82`; APK 1,561,373 bytes, 11,491-byte headroom. Source-level gates PASS. No APK install or physical acceptance claim. Project F must complete target-device/OEM sequence and photo-flow acceptance before global release/merge.
+
+## Resume checkpoint — E05 source audit and ayah display repair (2 November 2026)
+
+- Active branch: `feature/e05-information-center-ayah`; Draft PR #38 targets E04 branch `feature/e04-standby-screensaver`; PR OPEN/DRAFT/UNMERGED under D-013.
+- Base E04 exact head: `08076bb945a169de198905152a092f419f48aa82`. Current E05 PR head: `60086e0a2d74b40e124f11caa219a683863e6e08`.
+- E05-F01 fixed: Arabic ayah and translation no longer have one-line/two-line limits or end ellipsis; both wrap naturally, with wider column, RTL/high-quality Arabic line breaking, Arabic font padding and larger TV-readable type.
+- Source audit covered WeeklyAyah cache/translations, PrayerTimes location time zones/fallback, HomeWeather/Open-Meteo/modelled US AQI/D07 freshness, and Information Center/four Quick Actions. No unrelated store, QR, prayer calculation or global UI refactor.
+- Audit report: `E05_WIDGETS_INFORMATION_AUDIT.md`. Exact-head CI run #41422241456 is QUEUED; wait for both jobs and verify the final PR head before source closure.
+- Project F still must verify longest Arabic/Indonesian/English verse, no clipped glyphs/marks, shelf/dock clearance, 1920x1080 + 4K, D-pad/Back/scroll, offline/cache/language refresh, prayer zone/date rollover and weather freshness. Deferred, not waived.
+- No APK published/installed, no physical device acceptance, no merge. Next action: monitor CI #41422241456, inspect failures if any, then close source gate only after exact-head PASS.
