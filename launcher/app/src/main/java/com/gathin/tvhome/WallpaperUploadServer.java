@@ -219,7 +219,7 @@ public class WallpaperUploadServer {
 
     private void handleClient(Socket client) {
         try {
-            client.setSoTimeout(30000); // 30 seconds timeout
+            client.setSoTimeout(NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS); // Session expiry remains independently enforced.
             InputStream in = client.getInputStream();
             OutputStream out = client.getOutputStream();
 
@@ -534,11 +534,12 @@ public class WallpaperUploadServer {
                 + "fill.style.width='100%';input.value='';files=[];send.disabled=true;return;}const file=files[i];"
                 + "if(file.size>60*1024*1024){failed++;i++;next();return;}"
                 + "status.textContent='" + jsText(R.string.standby_page_uploading_prefix) + "'+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();"
-                + "xhr.open('POST',endpoint,true);xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
+                + "xhr.open('POST',endpoint,true);xhr.timeout=" + NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS + ";xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
                 + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;"
                 + "fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
                 + "xhr.onload=()=>{if(xhr.status>=200&&xhr.status<300)uploaded++;else failed++;i++;next();};"
                 + "xhr.onerror=()=>{status.textContent='" + jsText(R.string.standby_page_connection_lost_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_connection_lost_suffix) + "';send.disabled=false;};"
+                + "xhr.ontimeout=()=>{status.textContent='" + jsText(R.string.standby_page_timeout_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_timeout_suffix) + "';send.disabled=false;};"
                 + "xhr.send(file);};next();});</script></body></html>";
     }
 
@@ -1094,6 +1095,7 @@ public class WallpaperUploadServer {
                 "\n" +
                 "      const xhr = new XMLHttpRequest();\n" +
                 "      xhr.open('POST', '" + getWallpaperUploadPath() + "?name=' + encodeURIComponent(selectedFile.name), true);\n" +
+                "      xhr.timeout = " + NetworkFeedbackPolicy.WALLPAPER_BROWSER_UPLOAD_TIMEOUT_MS + ";\n" +
                 "      xhr.setRequestHeader('Content-Type', selectedFile.type || 'image/jpeg');\n" +
                 "\n" +
                 "      xhr.upload.onprogress = (e) => {\n" +
@@ -1112,7 +1114,8 @@ public class WallpaperUploadServer {
                 "          statusMsg.style.display = 'block';\n" +
                 "          loadGallery();\n" +
                 "        } else {\n" +
-                "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + xhr.statusText);\n" +
+                "          const detail = (xhr.responseText || xhr.statusText || '').trim();\n" +
+                "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + detail);\n" +
                 "        }\n" +
                 "      };\n" +
                 "\n" +
@@ -1120,6 +1123,7 @@ public class WallpaperUploadServer {
                 "        showError('" + jsText(R.string.wallpaper_page_connection_error) + "');\n" +
                 "      };\n" +
                 "\n" +
+                "      xhr.ontimeout = () => { showError('" + jsText(R.string.wallpaper_page_upload_timeout) + "'); };\n" +
                 "      xhr.send(selectedFile);\n" +
                 "    }\n" +
                 "\n" +

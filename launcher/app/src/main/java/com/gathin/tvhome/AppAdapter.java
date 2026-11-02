@@ -429,7 +429,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             RecentAppsManager.recordAppLaunch(ctx, e.pkg);
             ctx.startActivity(i);
         } catch (Exception ex) {
-            Toast.makeText(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT);
         }
     }
 

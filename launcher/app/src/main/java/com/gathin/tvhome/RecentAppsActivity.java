@@ -191,7 +191,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
                             startActivity(item.launchIntent);
                             finish();
                         } catch (ActivityNotFoundException e) {
-                            Toast.makeText(RecentAppsActivity.this, R.string.cannot_open_app, Toast.LENGTH_SHORT).show();
+                            TvFeedback.show(RecentAppsActivity.this, R.string.cannot_open_app, Toast.LENGTH_SHORT);
                         }
                     }
 
@@ -205,7 +205,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
                 startActivity(item.launchIntent);
                 finish();
             } catch (ActivityNotFoundException e) {
-                Toast.makeText(this, R.string.cannot_open_app, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, R.string.cannot_open_app, Toast.LENGTH_SHORT);
             }
         }
     }
@@ -243,7 +243,7 @@ public class RecentAppsActivity extends Activity implements RecentAppsAdapter.On
                     adapter.clearAll();
                     updateRamStats();
                     showEmptyState();
-                    Toast.makeText(this, R.string.ram_cleared_all_apps_closed, Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(this, R.string.ram_cleared_all_apps_closed, Toast.LENGTH_SHORT);
                     new Handler(Looper.getMainLooper()).postDelayed(this::finish, 650);
                 })
                 .start();

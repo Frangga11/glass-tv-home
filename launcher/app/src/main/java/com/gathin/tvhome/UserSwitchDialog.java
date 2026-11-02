@@ -180,7 +180,7 @@ public final class UserSwitchDialog {
             itemCol.setOnClickListener(v -> {
                 SoundEffects.playSelect();
                 if (isActive) {
-                    Toast.makeText(activity, activity.getString(R.string.profile_already_active, prof.name), Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, activity.getString(R.string.profile_already_active, prof.name), Toast.LENGTH_SHORT);
                     return;
                 }
 
@@ -285,15 +285,7 @@ public final class UserSwitchDialog {
         dialogHolder[0] = dialog;
         dialog.show();
 
-        Window win = dialog.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            win.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            win.setDimAmount(0.65f);
-            int w = Math.min((int) (580 * density), (int) (dm.widthPixels * 0.85f));
-            win.setLayout(w, ViewGroup.LayoutParams.WRAP_CONTENT);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(dialog, activity, 580, 0, 0.68f);
 
         profRow.getChildAt(0).requestFocus();
     }
@@ -337,12 +329,12 @@ public final class UserSwitchDialog {
                                 .setPositiveButton(R.string.delete_action, (d, w) -> {
                                     boolean deleted = ProfileManager.deleteProfile(activity, profileId);
                                     if (deleted) {
-                                        Toast.makeText(activity, activity.getString(R.string.profile_deleted, profileName), Toast.LENGTH_SHORT).show();
+                                        TvFeedback.show(activity, activity.getString(R.string.profile_deleted, profileName), Toast.LENGTH_SHORT);
                                         if (afterDelete != null) afterDelete.run();
                                         activity.reloadTiles();
                                         activity.updateTopBarUserIcon();
                                     } else {
-                                        Toast.makeText(activity, R.string.profile_delete_failed, Toast.LENGTH_LONG).show();
+                                        TvFeedback.show(activity, R.string.profile_delete_failed, Toast.LENGTH_LONG);
                                     }
                                 }).show();
                     }
@@ -355,9 +347,9 @@ public final class UserSwitchDialog {
         ProfileManager.setActiveProfile(activity, prof.id);
         activity.reloadTiles();
         activity.updateTopBarUserIcon();
-        Toast.makeText(activity, activity.getString(R.string.profile_active_message, prof.name,
+        TvFeedback.show(activity, activity.getString(R.string.profile_active_message, prof.name,
                 ChildModeManager.isChildModeEnabled(activity, prof.id) ? activity.getString(R.string.child_mode_suffix) : ""),
-                Toast.LENGTH_SHORT).show();
+                Toast.LENGTH_SHORT);
         if (dialog != null) dialog.dismiss();
     }
 
@@ -521,12 +513,12 @@ public final class UserSwitchDialog {
         btnSave.setOnClickListener(v -> {
             String name = et.getText().toString().trim();
             if (name.isEmpty()) {
-                Toast.makeText(activity, R.string.user_name_required, Toast.LENGTH_SHORT).show();
+                TvFeedback.show(activity, R.string.user_name_required, Toast.LENGTH_SHORT);
                 return;
             }
             SoundEffects.playSelect();
             ProfileManager.addProfile(activity, name, chosenAvatar[0], cbChild.isChecked());
-            Toast.makeText(activity, activity.getString(R.string.profile_created, name), Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, activity.getString(R.string.profile_created, name), Toast.LENGTH_SHORT);
             if (dHolder[0] != null) dHolder[0].dismiss();
             if (onAdded != null) onAdded.run();
         });
@@ -542,12 +534,6 @@ public final class UserSwitchDialog {
         dHolder[0] = d;
         d.show();
 
-        Window w = d.getWindow();
-        if (w != null) {
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.85f));
-            w.setLayout(dw, ViewGroup.LayoutParams.WRAP_CONTENT);
-            w.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(d, activity, 520, 0, 0.68f);
     }
 }
