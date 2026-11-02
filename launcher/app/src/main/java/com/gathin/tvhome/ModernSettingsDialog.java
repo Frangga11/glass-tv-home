@@ -1168,6 +1168,11 @@ public final class ModernSettingsDialog {
                         activity.getString(R.string.screensaver_settings_summary),
                         () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_DREAM_SETTINGS),
                                 new Intent(Settings.ACTION_DISPLAY_SETTINGS), new Intent(Settings.ACTION_SETTINGS))));
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.display_timeout_title),
+                        activity.getString(R.string.display_timeout_summary),
+                        () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_DISPLAY_SETTINGS),
+                                new Intent(Settings.ACTION_SETTINGS))));
                 addSectionHeader(rightContent, outfit, activity.getString(R.string.power_maintenance_section));
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.restart_tv_title), activity.getString(R.string.restart_tv_summary),
