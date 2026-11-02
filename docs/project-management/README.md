@@ -64,3 +64,15 @@ The application source inspected for this draft reports package `com.gathin.tvho
 ## Important branch distinction
 
 E02 selectively carries the QR avatar implementation into the profile-security baseline and is tracked in Draft PR #35. PR #6 remains a historical isolated source branch and must not be merged independently. E02 source/CI gates pass; actual Mi TV Stick + phone/remote acceptance remains mandatory in Project F. See E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md, AVATAR_AUDIT.md, INVENTORY.md, and AUDIT_REGISTER.md.
+
+
+## E05-F04 checkpoint — centered daily-ayah glass reader (2 Nov 2026)
+- Feature branch: `feature/e05-information-center-ayah`; PR #38 remains Draft/open/unmerged under D-013.
+- Latest feature head: `37dab64cc99f11ef6670840c351f32fe91da6b24`.
+- Added a bounded Home ayah preview (two lines per script plus explicit “Baca ayat lengkap” affordance) and a centered full-verse reader. Target geometry is 72% display width × 63% display height (about 45.4% of screen area), using the shared B01 `TvDialogStyle.applyCustom` contract. Full Arabic RTL and selected-language translation wrap and scroll inside the reader; the Home shelf/prayer table do not grow with full verse length.
+- D-pad OK/Enter opens; D-pad scrolls; Close, Back/Escape and close-focus transitions are wired. Wallpaper and prayer layout remain visually unverified on physical TV and are Project F acceptance items.
+- No qari audio, TTS, audio dependency, permission, or audio network path was added; audio remains out of scope for this roadmap.
+- Changed feature files: `MainActivity.java`, `activity_main.xml`, default/ID/EN `strings.xml`, and `E05_WIDGETS_INFORMATION_AUDIT.md`.
+- Exact-head Actions run #41427317877 for the feature head is currently in progress; Lists/tools/docs passed, Launcher build/unit tests still running at this checkpoint. Do not claim CI PASS until the run completes successfully.
+- No APK publication/installation, physical-device test, merge, or release approval is claimed.
+- Next: inspect exact-head CI result; fix any failures; Project F must verify 1920×1080 and 4K sizing, Arabic glyph/harakat integrity, long translation scrolling, wallpaper visibility, prayer timetable stability, D-pad/Back and repeated open/close.
