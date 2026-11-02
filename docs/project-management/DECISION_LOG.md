@@ -182,3 +182,6 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 
 
 | F-025 | Restart requests must use the existing visible system power-menu selection path; never treat AccessibilityService global action ID 12 as reboot. | ID 12 is the accessibility-button chooser, not reboot. Preserve existing vendor-label matching and timeout fallback. | IMPLEMENTED / F02 CI PASS / B01 comment-aligned exact-head retest pending |
+
+
+| F-026 | Wallpaper QR-session management mutations (select/delete/slideshow/clear) must be serialized with server shutdown and recheck session validity inside the same monitor. | Prevent an already-dispatched request from mutating wallpaper state/files after QR-session revocation; preserve existing API routes and UI. | IMPLEMENTED / C07 + F02 EXACT-HEAD CI PENDING |
