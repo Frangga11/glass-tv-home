@@ -186,7 +186,7 @@
     <string name="info_center_subtitle">Ringkasan sistem dan pintasan tindakan cepat</string>
     <string name="info_system_summary">📋 Ringkasan Sistem:\n• Salat berikutnya: %1$s (%2$s)\n• Cuaca &amp; kualitas udara (US AQI): %3$s\n• Perangkat: status sistem dan pengelolaan memori</string>
     <string name="info_actions_title">Tindakan Cepat:</string>
-    <string name="info_action_smart_boost">🚀 Optimalkan TV (Bebaskan Memori &amp; Bersihkan Cache)</string>
+    <string name="info_action_smart_boost">🚀 Bersihkan Cache TV &amp; Optimalkan Penyimpanan</string>
     <string name="info_action_weather">🌦️ Informasi Cuaca &amp; Kualitas Udara</string>
     <string name="info_action_prayer">🕌 Jadwal Salat &amp; Ayat Pilihan Hari Ini</string>
     <string name="info_action_tips">💡 Tips &amp; Panduan Kontrol TV</string>
