@@ -135,3 +135,19 @@ The following fixes have been implemented on owning source branches and mirrored
 - D05 source retest head: `39f2f208fe0ea1c1973c299af9e9661913c0089f` — CI in progress at last check.
 - D06 source retest head: `caa0fd85f19aea5e6bdacb84068c69681acfa984` — CI queued at last check.
 - F02 integration exact head `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7`: both required jobs passed, including all three new regression guards. This does not replace the owner-branch exact-head gates.
+
+
+### MainActivity modal inventory and enforcement — 3 November 2026
+- Cross-file inventory covered `MainActivity`, `ModernSettingsDialog`, `UserSwitchDialog`, and `WeatherActivity`.
+- Found that MainActivity's `styleGlassDialog` applied typography/list styling only. Several call sites relied on local/manual window sizing and therefore did not necessarily receive the B01 shared surface, dim and viewport-bound contract.
+- B01 owner fix: `styleGlassDialog(dialog)` now delegates to `styleGlassDialog(dialog, 520, 0)`; the sized overload applies `TvDialogStyle.apply` with a guarded fallback before the existing typography/list styling.
+- Integrated MainActivity retains explicit custom geometry after the shared helper. Custom 16:9 Azan sizing, weather/prayer summary sizing and wallpaper selector sizing are preserved; they are not replaced with a generic width/height.
+- Device Settings wrapper now delegates to the sized overload, avoiding a second independent style implementation.
+- Mirrored into D05/D06 dependent source branches and F02 integration. Added `tests/test_main_activity_modal_contract.py` to guard default delegation and sized application.
+- Intentional non-AlertDialog exceptions identified: anchored `PopupWindow` menus (their own anchored-glass contract), the custom module-card prompt `Dialog` (custom transparent surface/focus pair), and profile-switch custom transparent surfaces using `TvDialogStyle.applyCustom`. These must remain documented exceptions, not be mechanically restyled.
+- `WeatherActivity` dialogs use `TvDialogStyle.apply`; `ModernSettingsDialog` search/result, profile and custom picker paths use the shared helper or the MainActivity Device Settings wrapper; `UserSwitchDialog` uses shared/custom helper paths.
+- B01 exact-head CI: running on `b1c23024d0de740c36e1794ab775fdc43c7a3a20`.
+- D05 exact-head CI: running on `7f043943ab0c1d2d1217fc56845d81ac7583c96d`.
+- D06 exact-head CI: running on `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7`.
+- F02 integration exact head: `b7ff46edd7fa628c541df0b5a8f51d6613c9e8af`; both CI jobs running.
+- Status for F02-UI-001: FIX COMMITTED / EXACT-HEAD OWNER + INTEGRATION CI PENDING. No closure claimed.
