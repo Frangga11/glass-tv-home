@@ -604,3 +604,14 @@ This result supersedes the preceding note that CI #626 was in progress.
 - C07 owner head `12b1f431f7687023727983089ea03eda0f97a73d`; F02 head `081496ca93fd0526025a21ce7cd0e3d7f9c3364a`; exact-head CI in progress.
 - No API route, payload, upload limit, browser progress/cancel UI, or StandBy persistence behavior was altered.
 - No merge, APK publication/installation, or physical Android TV test.
+
+
+## 3 November 2026 — F02 upload deadline retest and dependency reconciliation
+
+- Polled C07 owner and F02 integration CI after the injectable socket timeout seam. Failure in `UploadDeadlineInputStreamTest.appliesRemainingDeadlineToEachRead` was isolated to line 45: deadline 6000 ms minus fake monotonic time 2500 ms equals 3500 ms, not the asserted 3000 ms.
+- Corrected the expected value to 3500 ms in C07 owner branch and F02 integration. Production timeout logic unchanged; no tests removed or weakened.
+- C07 owner PR #24 head `80a92264c51631fb107c75f32a3cd8e4b8aa9d9a`: CI run #41512386827 SUCCESS, both jobs. F02 source/test head `ddf130a348182546b28ff59c292c9b5ceebacb2e`: push run #41512382568 SUCCESS, both jobs. Matching PR run #41512391849 had all substantive steps pass; final cleanup still running at last poll.
+- Cross-branch diff review found F02's `WallpaperUploadServer` differs from C07 owner only in the downstream D05 StandBy persistence adapter: D05 changes `StandbyPhotoStore.addUploadedFile` to return `UploadResult`, and the F02 handler preserves the stored file on persistence failure to avoid dangling live URI references. F02 retains C07's monotonic deadline and synchronized session-mutation fixes. This is expected dependency integration; do not copy the older C07 boolean handler over it.
+- Confirmed owner CI: B01 #10 head `389e289e939276ce9e20d7e6c82c293d3f83c70f` run #41509724289 PASS; D05 #29 #41505852041 PASS; D06 #30 #41505865772 PASS; D01 #51 #41506847521 PASS.
+- Updated F02 findings register and integrated validation document. F02 new docs-only head `b64715156e180edc3bfae25bffba6a089544247f`; exact-head CI retest required.
+- Updated PR #24 and #50 bodies with current evidence. Both remain Draft/open/unmerged. No APK publication/installation or physical Android TV testing.
