@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -174,7 +175,7 @@ public class WallpaperUploadServer {
                 boundIpAddress = selectedIp;
                 this.port = serverSocket.getLocalPort();
                 sessionToken = UUID.randomUUID().toString().replace("-", "");
-                sessionExpiresAtMs = System.currentTimeMillis() + NetworkFeedbackPolicy.WALLPAPER_SESSION_LIFETIME_MS;
+                sessionExpiresAtMs = SystemClock.elapsedRealtime() + NetworkFeedbackPolicy.WALLPAPER_SESSION_LIFETIME_MS;
                 running = true;
                 break;
             } catch (Exception e) {
@@ -252,7 +253,7 @@ public class WallpaperUploadServer {
     }
 
     private boolean isSessionActive() {
-        return NetworkFeedbackPolicy.isSessionActive(running, sessionExpiresAtMs, System.currentTimeMillis());
+        return NetworkFeedbackPolicy.isSessionActive(running, sessionExpiresAtMs, SystemClock.elapsedRealtime());
     }
 
     public synchronized void stop() {
@@ -296,7 +297,7 @@ public class WallpaperUploadServer {
     private void handleClient(Socket client) {
         try {
             long requestDeadline = Math.min(sessionExpiresAtMs,
-                    System.currentTimeMillis() + NetworkFeedbackPolicy.WALLPAPER_UPLOAD_REQUEST_DEADLINE_MS);
+                    SystemClock.elapsedRealtime() + NetworkFeedbackPolicy.WALLPAPER_UPLOAD_REQUEST_DEADLINE_MS);
             InputStream in = new UploadDeadlineInputStream(client.getInputStream(), client,
                     requestDeadline, NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
             OutputStream out = client.getOutputStream();
