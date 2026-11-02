@@ -995,7 +995,17 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.wallpaper_collection_title),
                         activity.getString(R.string.wallpaper_collection_summary),
-                        activity::showWallpaperDialog));
+                        activity::showWallpaperCollectionManagementDialog));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.wallpaper_interval_title),
+                        activity.getString(R.string.wallpaper_interval_summary),
+                        activity::showWallpaperIntervalManagementDialog));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.wallpaper_manage_title_card),
+                        activity.getString(R.string.wallpaper_manage_summary_card),
+                        activity::showCustomWallpaperManagerManagementDialog));
 
             } else if (tab == TAB_STATUS_WEATHER) {
                 // === TAB: WIDGET & INFORMATION ===
