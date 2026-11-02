@@ -41,3 +41,11 @@ Preserve Android TV's native idle, StandBy/Dream, screensaver, sleep and display
 
 ## Disposition
 **SOURCE REPAIR COMMITTED; NOT FINAL YET.** Exact-head CI #629 and Project F hardware acceptance are outstanding. Do not call E04 paripurna until those gates pass.
+
+
+## Exact-head CI #629 — 2 Nov 2026
+
+- Tested source head: `08076bb945a169de198905152a092f419f48aa82`.
+- CI #629 / run `41418393199`: **SUCCESS**. Launcher build/unit tests and Lists/tools/docs both passed; Release APK diagnostics and size gate passed. Manual TV-test APK publication was skipped by policy.
+- Exact Release APK: **1,561,373 bytes**; budget: 1,572,864 bytes; headroom: **11,491 bytes**.
+- Source-level repair + exact-head CI: **PASS**. No APK installed and no physical acceptance claimed. Project F device/OEM validation remains a required integration gate. PR #37 remains OPEN/DRAFT/UNMERGED under D-013.
