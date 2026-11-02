@@ -831,3 +831,8 @@ F02 latest head `558762994dec05a7ae03a924c33a3ed11665c224`: push CI #41513940620
 | F02-TEST-002 reservation regression coverage | 42 Python tests passed; Launcher testReleaseUnitTest passed. | HOST TEST PASS |
 
 APK size 1,565,621 bytes; cap 1,572,864 bytes; 7,243 bytes headroom. F02-BUILD-001 remains a P3 watchlist. Current F02 docs-only head 1845635091969c2475bb0d26783bc0f7eb58c1c0; CI #41520194974 queued at last poll. PR #50 remains Draft/open/unmerged; no APK publication or physical device testing.
+
+### F02-RES-001 process-wide reservation refinement — 3 November 2026
+- The initial per-instance reservation implementation passed exact-head CI #41519813674. A further lifecycle audit identified a replacement-session overlap: old worker threads can briefly drain after stop() while a new WallpaperUploadServer instance is started.
+- Refined reservation accounting to a static process-wide lock/counter shared across all server instances; outstanding bytes remain reserved until old/new request finally paths release them. Updated the Python source-contract regression test.
+- Latest F02 head a95b21becad238dd634dda1e79aa9de36d749d8c; CI #41520409999 queued at last poll. Do not mark the refinement PASS until both exact-head jobs complete.
