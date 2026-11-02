@@ -177,3 +177,37 @@ The following fixes have been implemented on owning source branches and mirrored
 - Source branch: `feature/b01-global-navigation-retention`; PR #10. F02 integration mirrors the change.
 - Exact-head CI and physical remote acceptance: PENDING. Timing and OEM key-event delivery remain DEFERRED_TO_G.
 - Status: FIX COMMITTED / OWNER + F02 CI PENDING / DEVICE REMOTE ACCEPTANCE DEFERRED_TO_G.
+
+
+## Additional manifest and interaction audit — 3 November 2026
+
+### F02-SEC-003 — LocationActivity exported without an external contract
+- Severity: P3. Owner: D01 location module.
+- Manifest audit found `.LocationActivity` exported although it has no intent filter and is reached by explicit MainActivity intents only.
+- Changed to `android:exported="false"` on D01 follow-up PR #51 and mirrored into F02. The internal explicit-intent route remains valid.
+- Extended `tests/test_location_broadcast_manifest_security.py` to assert non-exported state, no intent filter, and an in-app MainActivity reference.
+- D01 latest head `66352838e6155a42a9ea61477643a238f360434f`: CI run #41506847521 SUCCESS (both jobs).
+- Status: SOURCE FIX / CI PASS / F02 RETEST PENDING.
+
+### F02-SEC-004 — RecentAppsActivity external entry contract
+- Severity: P3 review item, not yet confirmed as a defect.
+- `.RecentAppsActivity` remains exported with an `ACTION_MAIN` intent filter and no component permission. It is a UI surface, not a data-provider API. Recent Apps can now be opened through the new explicit in-app HomeKeyService route.
+- No in-repository external caller was identified. The public MAIN filter may be a legacy external remote/launcher integration, so it is intentionally not removed or permission-gated without compatibility evidence.
+- Project G must verify whether any OEM launcher, assistant bridge or remote-control integration invokes this component externally. If none does, close by setting exported=false and removing the obsolete filter on its owner branch; if one does, document and narrowly authorize it.
+- Status: OPEN / CONTRACT VERIFICATION DEFERRED_TO_G.
+
+### F02-FUNC-001 — Home double-press Recent Apps routing
+- B01 now implements a 350 ms double-press classifier and 400 ms single-action delay. Single Home returns/dismisses; double Home opens RecentAppsActivity or triggers Close All when already foreground; long Home still opens Settings at 450 ms. Settings-key input cancels any pending Home action to prevent delayed Home from overriding Settings.
+- `RecentAppsActivity` fallback uses the same `HomeKeyPressTracker.DOUBLE_PRESS_WINDOW_MS` threshold. The dedicated App Switch key remains disabled per existing policy.
+- B01 branch `feature/b01-global-navigation-retention`, PR #10; F02 mirrors the change. Added pure JVM tracker tests and source contract tests.
+- F02 previous head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2` passed both CI jobs before the latest timing/Settings-key refinements. Latest F02 head `8dde2c1ba84050abae6b99e0eb30661ca59f4c93` is queued.
+- B01 latest head `867c7a9d0977e21b69c8078a400458b00ba2d2dd` is in CI.
+- Status: FIX COMMITTED / LATEST OWNER + F02 CI PENDING / REMOTE ACCEPTANCE DEFERRED_TO_G.
+
+### Latest CI snapshot
+- B01 #10 latest head `867c7a9d0977e21b69c8078a400458b00ba2d2dd`: run #41507890630 in progress.
+- D05 #29 head `7f043943ab0c1d2d1217fc56845d81ac7583c96d`: run #41505852041 SUCCESS.
+- D06 #30 head `1bb6ce9bf04d72f3fe33b4e1630af561e99fe0f7`: run #41505865772 SUCCESS.
+- D01 #51 latest head `66352838e6155a42a9ea61477643a238f360434f`: run #41506847521 SUCCESS.
+- F02 previous head `5f6b0c60949c1284e0e904e614e85c2e0ca657f2`: run #41507621908 SUCCESS; latest head `8dde2c1ba84050abae6b99e0eb30661ca59f4c93`: queued.
+- Robolectric API 30 window tests passed on the previous F02 head; latest head retest remains mandatory.
