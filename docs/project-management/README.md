@@ -5,9 +5,9 @@
 **Prepared:** 31 October 2026  
 **Repository:** https://github.com/Frangga11/glass-tv-home  
 **Documentation branch:** `docs/project-master-inventory`  
-**Current feature branch:** `feature/e02-profile-avatar-lock-ui` (PR #35, Draft/open/unmerged)  
-**Current stage:** E02 Profile — source/CI gate complete; physical acceptance remains in Project F.
-**E02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/35
+**Current feature branch:** `integration/project-f02-system-validation` (PR #50, Draft/open/unmerged)  
+**Current stage:** Project F02 — integrated system validation in progress; physical Android TV acceptance remains reserved for Project G.
+**F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
 ## Purpose
 
@@ -87,3 +87,13 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 
 ## E08 audit report
 - [E08 Wallpaper Settings Redesign Audit](E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md) — unified three-tab wallpaper control center, existing-state reuse, exact-head CI and Project F acceptance matrix.
+
+
+## Current Project F02 checkpoint — 3 November 2026
+
+- Integration branch: `integration/project-f02-system-validation`; PR #50 remains Draft/open/unmerged.
+- Latest checkpoint recorded: `1658237bafdb24167391270f3ad8f694751a6c2a`. Exact-head CI was queued at the time of this documentation update.
+- Three cross-module fixes are under owner-branch retest: D05/B01 modal contract, D01 location broadcast authorization, and D06 AzanActivity export boundary. D01 follow-up PR #51 exact-head CI passed; B01 #10, D05 #29, D06 #30 exact-head retests were still running.
+- Earlier F02 exact-head CI on `27ecd5e4e5e283f5d1675cb28a75b2f1cbb0a6c7` passed both jobs, but it predates the MainActivity modal enforcement follow-up.
+- No finding is closed until owner-branch and latest F02 integration CI both pass. Device-specific checks remain DEFERRED_TO_G.
+- No PR merged, no APK published/installed, and no physical Android TV test performed.
