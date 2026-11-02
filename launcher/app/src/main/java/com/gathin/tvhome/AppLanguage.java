@@ -298,7 +298,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Home Screen";
             case LANG_ID: return "Layar Utama";
-            case LANG_MS: default: return "Skrin Utama";
+            default: return "Layar Utama";
         }
     }
 
@@ -306,7 +306,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Daily Prayer & Prayer Times Panel";
             case LANG_ID: return "Panel Doa Harian & Waktu Salat";
-            case LANG_MS: default: return "Panel Doa Harian & Waktu Solat";
+            default: return "Panel Doa Harian & Waktu Salat";
         }
     }
 
@@ -314,7 +314,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Show the selected verse and local prayer timetable";
             case LANG_ID: return "Tampilkan ayat pilihan dan jadwal salat setempat";
-            case LANG_MS: default: return "Paparkan ayat pilihan dan jadual solat tempatan";
+            default: return "Tampilkan ayat pilihan dan jadwal salat setempat";
         }
     }
 
@@ -322,7 +322,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Daily Verses & Prayers";
             case LANG_ID: return "Ayat & Doa Harian";
-            case LANG_MS: default: return "Ayat & Doa Harian";
+            default: return "Ayat & Doa Harian";
         }
     }
 
@@ -330,7 +330,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Show a selected Quran verse and daily prayer above the prayer timetable";
             case LANG_ID: return "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat";
-            case LANG_MS: default: return "Paparkan ayat Al-Quran dan doa harian di atas jadual solat";
+            default: return "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat";
         }
     }
 
@@ -338,7 +338,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Interface Sound Effects";
             case LANG_ID: return "Efek Suara Antarmuka";
-            case LANG_MS: default: return "Kesan Bunyi Antaramuka";
+            default: return "Efek Suara Antarmuka";
         }
     }
 
@@ -346,7 +346,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Choose a sound profile or turn interface sounds off";
             case LANG_ID: return "Pilih profil suara atau matikan suara antarmuka";
-            case LANG_MS: default: return "Pilih profil bunyi atau matikan bunyi antaramuka";
+            default: return "Pilih profil suara atau matikan suara antarmuka";
         }
     }
 
@@ -354,7 +354,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Azan Settings";
             case LANG_ID: return "Pengaturan Azan";
-            case LANG_MS: default: return "Tetapan Azan";
+            default: return "Pengaturan Azan";
         }
     }
 
@@ -362,7 +362,7 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Configure azan audio and prayer-time reminders";
             case LANG_ID: return "Atur audio azan dan pengingat waktu salat";
-            case LANG_MS: default: return "Konfigurasikan audio azan dan peringatan waktu solat";
+            default: return "Atur audio azan dan pengingat waktu salat";
         }
     }
 
