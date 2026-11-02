@@ -397,3 +397,13 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 
 - Reservation accounting now spans all WallpaperUploadServer instances so old workers draining after session stop are included in free-space checks for a replacement session.
 - Project G still owns real concurrent LAN, session replacement, cancellation, and low-storage acceptance.
+
+## F02-RES-001 owner/integration verification — 3 November 2026
+
+| Branch / PR | Exact head | CI evidence | APK / artifact status |
+|---|---|---|---|
+| C07 owner / #24 | 442b78c68b1540394d543bab59bddf52f865ccf0 | #41520866323 both jobs SUCCESS; 18 Python tests; launcher unit tests/build PASS | 1,550,949 bytes; manual publish skipped; no artifacts |
+| F02 integration / #50 | 2469c0c1d241a00be3e02235e12f3f0f6525deb9 | #41520818608 both jobs SUCCESS; 42 Python tests; launcher unit tests/build PASS | 1,565,713 bytes; 7,151-byte headroom; no artifacts |
+| F02 latest docs head / #50 | e190e2863a4aacbe3aba61094fab00572f4b469f | #41521145454 queued at last poll | RETEST PENDING |
+
+- Storage reservation and upload-shutdown coverage are now owner + integration host verified. Physical LAN concurrency, low-storage, cancellation and expiry remain Project G.
