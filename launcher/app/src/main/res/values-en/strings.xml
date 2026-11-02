@@ -49,6 +49,12 @@
     <string name="media_listener_service_label">Glass TV Media Listener</string>
 
     <string name="daily_prayer_label">DAILY PRAYER  •  VERSE OF THE DAY</string>
+    <string name="daily_ayah_popup_title">Ayat Harian</string>
+    <string name="daily_ayah_open">BACA AYAT LENGKAP  ›</string>
+    <string name="daily_ayah_meaning_label">MAKSUDNYA</string>
+    <string name="daily_ayah_close">Tutup</string>
+    <string name="daily_ayah_navigation_hint">Gunakan butang arah untuk menatal bacaan.</string>
+    <string name="daily_ayah_translation_unavailable">Terjemahan belum tersedia.</string>
     <string name="prayer_subuh">Fajr</string>
     <string name="prayer_sunrise">Sunrise</string>
     <string name="prayer_dhuhr">Dhuhr</string>

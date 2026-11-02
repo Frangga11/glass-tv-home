@@ -54,6 +54,20 @@ The Prayer & Ayah Quick Action used a single AlertDialog message for location, p
 
 **File:** `MainActivity.java`.
 
+### E05-F04 — Bounded Home preview and centered full-verse glass reader (IMPLEMENTED; CI/visual acceptance pending)
+
+The Home shelf now treats the daily ayah as a compact, explicitly labeled preview. Arabic and translation are each limited to two preview lines; the full source text remains available from the focused/clickable ayah card through a dedicated reader dialog.
+
+**Correction**
+- Added a visible “Read full verse” affordance and D-pad OK/Enter activation to the Home ayah card.
+- Added a centered, translucent glass reader with Arabic RTL typography, complete translation, reference, and independent vertical scrolling.
+- Reader target geometry is 72% of display width by 63% of display height (about 45.4% of screen area), bounded by the shared B01 dialog viewport resolver and centered by the shared dialog style.
+- Reader content does not resize the Home Islamic shelf; prayer timetable remains in its existing anchored layout.
+- Added explicit close control, Back/Escape dismissal, D-pad scrolling and focus transitions to/from Close.
+- No audio, TTS, qari playback, new network calls, audio dependencies or audio permissions were introduced.
+
+**Files:** `MainActivity.java`, `activity_main.xml`, default/ID/EN `strings.xml`.
+
 ## Existing behavior verified by source inspection
 
 - WeeklyAyah cycles through a fixed 52-verse list, caches Arabic plus Malay, English and Indonesian translations, and returns the last cached verse when a network refresh is unavailable.
@@ -65,7 +79,7 @@ The Prayer & Ayah Quick Action used a single AlertDialog message for location, p
 
 ## Verification
 
-- Source inspection and targeted diff review completed.
+- Source inspection and targeted diff review completed.\n- E05-F04 reader implementation committed; exact-head CI must pass before source gate closure.
 - Exact-head GitHub Actions CI: PENDING at report creation; must pass both launcher build/unit tests and lists/tools/docs.
 - Physical 1920x1080 Mi TV Stick rendering, long-verse clipping, D-pad/Back/scroll behavior, and performance remain Project F acceptance items. They are deferred, not waived.
 - No APK publication/installation, physical device test, feature merge, or release approval is claimed.
@@ -75,7 +89,7 @@ The Prayer & Ayah Quick Action used a single AlertDialog message for location, p
 1. Render the longest Arabic verse in the Home shelf and Prayer/Ayah dialog; verify every glyph, harakat and final word is visible.
 2. Render the longest Indonesian and English translations; verify the final punctuation and reference remain visible.
 3. Verify wrapping at 1920x1080 and a 4K display profile.
-4. Verify prayer timetable remains visible and the shelf does not cover the dock/app grid.
+4. Verify long verse content cannot expand the Home preview or displace the prayer timetable; verify the centered reader overlays without permanently changing Home geometry.\n5. Verify reader size/centering at approximately 45% screen area on 1920x1080 and 4K, including maximum available safe bounds.
 5. Verify wallpaper hero content and Islamic shelf coexist without collision.
 6. Verify language change, offline cache fallback, next-day refresh, and return from Weather/Prayer dialogs.
 7. Verify D-pad focus, Back, scrolling and remote operation.

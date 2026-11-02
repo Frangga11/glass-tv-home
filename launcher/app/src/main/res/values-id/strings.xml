@@ -49,6 +49,12 @@
     <string name="media_listener_service_label">Layanan Media Glass TV</string>
 
     <string name="daily_prayer_label">DOA HARIAN  •  AYAT PILIHAN</string>
+    <string name="daily_ayah_popup_title">Daily Verse</string>
+    <string name="daily_ayah_open">READ FULL VERSE  ›</string>
+    <string name="daily_ayah_meaning_label">MEANING</string>
+    <string name="daily_ayah_close">Close</string>
+    <string name="daily_ayah_navigation_hint">Use the directional buttons to scroll.</string>
+    <string name="daily_ayah_translation_unavailable">Translation is not available.</string>
     <string name="prayer_subuh">Subuh</string>
     <string name="prayer_sunrise">Terbit</string>
     <string name="prayer_dhuhr">Dzuhur</string>

@@ -199,6 +199,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private View islamicShelf;
     private View ayahBlock;
     private TextView ayahLabel, ayahArabic, ayahText, prayerHeader;
+    private TextView ayahOpenHint;
     private boolean ayahRunning;
     private boolean homeWeatherRunning;
     private TextView lblSubuh, lblSyuruk, lblZohor, lblAsar, lblMaghrib, lblIsyak;
@@ -662,7 +663,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ayahLabel = findViewById(R.id.ayahLabel);
             ayahArabic = findViewById(R.id.ayahArabic);
             ayahText = findViewById(R.id.ayahText);
+            ayahOpenHint = findViewById(R.id.ayahOpenHint);
             prayerHeader = findViewById(R.id.prayerHeader);
+
+            if (ayahBlock != null) {
+                ayahBlock.setFocusable(true);
+                ayahBlock.setClickable(true);
+                ayahBlock.setOnClickListener(v -> showDailyAyahDialog());
+                ayahBlock.setOnKeyListener((v, keyCode, event) -> {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN
+                            && (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        showDailyAyahDialog();
+                        return true;
+                    }
+                    return false;
+                });
+                ayahBlock.setOnFocusChangeListener((v, hasFocus) -> {
+                    GradientDrawable focusSurface = new GradientDrawable();
+                    focusSurface.setColor(hasFocus ? 0x553B5872 : 0x00000000);
+                    focusSurface.setCornerRadius(10 * density);
+                    focusSurface.setStroke(Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
+                            hasFocus ? 0xFF7DD3FC : 0x22FFFFFF);
+                    v.setBackground(focusSurface);
+                    if (hasFocus) SoundEffects.playNav();
+                });
+            }
+            if (ayahOpenHint != null) {
+                ayahOpenHint.setText(R.string.daily_ayah_open);
+                GradientDrawable hintBg = new GradientDrawable();
+                hintBg.setColor(0x334B6680);
+                hintBg.setCornerRadius(8 * density);
+                hintBg.setStroke(Math.max(1, Math.round(density)), 0x557DD3FC);
+                ayahOpenHint.setBackground(hintBg);
+            }
 
             int uWidth = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
             int iMaxWidth = Math.round(uWidth * 0.46f);
@@ -2978,51 +3011,294 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ayahBlock.setVisibility(View.GONE);
             return;
         }
-        if (a == null || a.arabic == null || a.arabic.isEmpty()) {
+        if (a == null || a.arabic == null || a.arabic.trim().isEmpty()) {
             ayahBlock.setVisibility(View.GONE);
             return;
         }
 
         int usable = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
-        // Give the verse a wider column and let both scripts wrap naturally. The shelf is positioned
-        // above the dock from its measured height, so additional lines move it upward instead of
-        // covering the app grid.
         int islamicMaxWidth = Math.round(usable * 0.46f);
-        boolean is4K = (getResources().getDisplayMetrics().widthPixels >= 3840 || getResources().getDisplayMetrics().heightPixels >= 2160);
+        boolean is4K = (getResources().getDisplayMetrics().widthPixels >= 3840
+                || getResources().getDisplayMetrics().heightPixels >= 2160);
 
         if (ayahLabel != null) {
             ayahLabel.setText(AppLanguage.getAyahLabel(this, a.reference));
             ayahLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 13f : 11f);
         }
         if (ayahArabic != null) {
-            String text = a.arabic.trim();
             ayahArabic.setMaxWidth(islamicMaxWidth);
             ayahArabic.setSingleLine(false);
-            ayahArabic.setMaxLines(Integer.MAX_VALUE);
-            ayahArabic.setEllipsize(null);
+            ayahArabic.setMaxLines(2);
+            ayahArabic.setEllipsize(TextUtils.TruncateAt.END);
             ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL);
             ayahArabic.setIncludeFontPadding(true);
             ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
             ayahArabic.setLineSpacing(Math.round(3 * density), 1.08f);
             ayahArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 21f : 17f);
-            ayahArabic.setText(text);
+            ayahArabic.setText(a.arabic.trim());
         }
         if (ayahText != null) {
             ayahText.setMaxWidth(islamicMaxWidth);
             ayahText.setSingleLine(false);
-            ayahText.setMaxLines(Integer.MAX_VALUE);
-            ayahText.setEllipsize(null);
+            ayahText.setMaxLines(2);
+            ayahText.setEllipsize(TextUtils.TruncateAt.END);
             ayahText.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahText.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
             ayahText.setLineSpacing(Math.round(2 * density), 1.12f);
-            String lang = AppLanguage.getLanguage(this);
-            String tr = a.translation(lang);
+            String tr = a.translation(AppLanguage.getLanguage(this));
             ayahText.setText(tr != null ? tr.trim() : "");
             ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 15f : 12.5f);
             ayahText.setVisibility(tr != null && !tr.trim().isEmpty() ? View.VISIBLE : View.GONE);
         }
         ayahBlock.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Opens the complete daily verse in a centered, bounded glass reader. The Home shelf remains a
+     * deliberately short preview, so verse length cannot resize or displace the prayer timetable.
+     */
+    private void showDailyAyahDialog() {
+        if (isFinishing() || isDestroyed()) return;
+        WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
+        if (ayah == null || ayah.arabic == null || ayah.arabic.trim().isEmpty()) {
+            TvFeedback.show(this, R.string.no_daily_ayah, Toast.LENGTH_SHORT);
+            return;
+        }
+
+        LinearLayout panel = new LinearLayout(this);
+        panel.setOrientation(LinearLayout.VERTICAL);
+        panel.setGravity(Gravity.CENTER_HORIZONTAL);
+        panel.setPadding(Math.round(24 * density), Math.round(18 * density),
+                Math.round(24 * density), Math.round(18 * density));
+        panel.setClipToPadding(false);
+        panel.setClipChildren(false);
+
+        GradientDrawable glassSurface = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{0xE62B3B50, 0xD91B2638, 0xE6222D40});
+        glassSurface.setCornerRadius(24 * density);
+        glassSurface.setStroke(Math.max(1, Math.round(1.5f * density)), 0x77FFFFFF);
+        panel.setBackground(glassSurface);
+
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+
+        LinearLayout heading = new LinearLayout(this);
+        heading.setOrientation(LinearLayout.VERTICAL);
+        TextView title = new TextView(this);
+        title.setText(R.string.daily_ayah_popup_title);
+        title.setTextColor(0xFFFFFFFF);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+        title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        title.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+        heading.addView(title);
+
+        TextView reference = new TextView(this);
+        reference.setText(ayah.reference != null ? ayah.reference : "");
+        reference.setTextColor(0xD9FFFFFF);
+        reference.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
+        reference.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
+        LinearLayout.LayoutParams refLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        refLp.topMargin = Math.round(3 * density);
+        heading.addView(reference, refLp);
+        header.addView(heading, new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        TextView close = new TextView(this);
+        close.setText("×");
+        close.setTextColor(0xFFFFFFFF);
+        close.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28f);
+        close.setGravity(Gravity.CENTER);
+        close.setFocusable(true);
+        close.setClickable(true);
+        close.setContentDescription(getString(R.string.daily_ayah_close));
+        GradientDrawable closeBg = new GradientDrawable();
+        closeBg.setColor(0x334FFFFFFF);
+        closeBg.setShape(GradientDrawable.OVAL);
+        closeBg.setStroke(Math.max(1, Math.round(density)), 0x66FFFFFF);
+        close.setBackground(closeBg);
+        close.setOnClickListener(v -> {
+            SoundEffects.playSelect();
+            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+        });
+        close.setOnFocusChangeListener((v, focused) -> {
+            GradientDrawable state = new GradientDrawable();
+            state.setShape(GradientDrawable.OVAL);
+            state.setColor(focused ? 0x667DD3FC : 0x334FFFFFFF);
+            state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
+                    focused ? 0xFF7DD3FC : 0x66FFFFFF);
+            v.setBackground(state);
+            if (focused) SoundEffects.playNav();
+        });
+        header.addView(close, new LinearLayout.LayoutParams(
+                Math.round(46 * density), Math.round(46 * density)));
+        panel.addView(header);
+
+        View divider = new View(this);
+        divider.setBackgroundColor(0x55FFFFFF);
+        LinearLayout.LayoutParams dividerLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, Math.round(density)));
+        dividerLp.topMargin = Math.round(12 * density);
+        dividerLp.bottomMargin = Math.round(12 * density);
+        panel.addView(divider, dividerLp);
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(false);
+        scroll.setVerticalScrollBarEnabled(true);
+        scroll.setFocusable(true);
+        scroll.setFocusableInTouchMode(true);
+        scroll.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+
+        LinearLayout body = new LinearLayout(this);
+        body.setOrientation(LinearLayout.VERTICAL);
+        body.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        TextView arabic = new TextView(this);
+        arabic.setText(ayah.arabic.trim());
+        arabic.setTextColor(0xFFFFD38A);
+        arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                getResources().getDisplayMetrics().widthPixels >= 3840 ? 34f : 28f);
+        arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
+        arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
+        arabic.setGravity(Gravity.CENTER);
+        arabic.setIncludeFontPadding(true);
+        arabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+        arabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+        arabic.setLineSpacing(Math.round(7 * density), 1.16f);
+        arabic.setMaxLines(Integer.MAX_VALUE);
+        arabic.setEllipsize(null);
+        body.addView(arabic, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        TextView meaningLabel = new TextView(this);
+        meaningLabel.setText(R.string.daily_ayah_meaning_label);
+        meaningLabel.setTextColor(0xFFFFD38A);
+        meaningLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
+        meaningLabel.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        LinearLayout.LayoutParams meaningLabelLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        meaningLabelLp.topMargin = Math.round(18 * density);
+        body.addView(meaningLabel, meaningLabelLp);
+
+        TextView translation = new TextView(this);
+        String translated = ayah.translation(AppLanguage.getLanguage(this));
+        translation.setText(translated != null && !translated.trim().isEmpty()
+                ? translated.trim() : getString(R.string.daily_ayah_translation_unavailable));
+        translation.setTextColor(0xF2FFFFFF);
+        translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
+        translation.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
+        translation.setGravity(Gravity.START);
+        translation.setLineSpacing(Math.round(5 * density), 1.18f);
+        translation.setMaxLines(Integer.MAX_VALUE);
+        translation.setEllipsize(null);
+        LinearLayout.LayoutParams translationLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        translationLp.topMargin = Math.round(6 * density);
+        body.addView(translation, translationLp);
+
+        TextView footerHint = new TextView(this);
+        footerHint.setText(R.string.daily_ayah_navigation_hint);
+        footerHint.setTextColor(0xBFFFFFFF);
+        footerHint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
+        footerHint.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams hintLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        hintLp.topMargin = Math.round(10 * density);
+        body.addView(footerHint, hintLp);
+
+        scroll.addView(body, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        panel.addView(scroll, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        LinearLayout.LayoutParams closeLp = new LinearLayout.LayoutParams(
+                Math.round(150 * density), Math.round(42 * density));
+        closeLp.gravity = Gravity.CENTER_HORIZONTAL;
+        closeLp.topMargin = Math.round(12 * density);
+        TextView closeAction = new TextView(this);
+        closeAction.setText(R.string.daily_ayah_close);
+        closeAction.setTextColor(0xFFFFFFFF);
+        closeAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
+        closeAction.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        closeAction.setGravity(Gravity.CENTER);
+        closeAction.setFocusable(true);
+        closeAction.setClickable(true);
+        GradientDrawable actionBg = new GradientDrawable();
+        actionBg.setColor(0x334B6680);
+        actionBg.setCornerRadius(10 * density);
+        actionBg.setStroke(Math.max(1, Math.round(density)), 0x557DD3FC);
+        closeAction.setBackground(actionBg);
+        closeAction.setOnClickListener(v -> dialogHolder[0].dismiss());
+        closeAction.setOnFocusChangeListener((v, focused) -> {
+            GradientDrawable state = new GradientDrawable();
+            state.setColor(focused ? 0x667DD3FC : 0x334B6680);
+            state.setCornerRadius(10 * density);
+            state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
+                    focused ? 0xFF7DD3FC : 0x557DD3FC);
+            v.setBackground(state);
+            if (focused) SoundEffects.playNav();
+        });
+        panel.addView(closeAction, closeLp);
+
+        AlertDialog[] dialogHolder = new AlertDialog[1];
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                .setView(panel)
+                .create();
+        dialogHolder[0] = dialog;
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setOnKeyListener((d, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                d.dismiss();
+                return true;
+            }
+            return false;
+        });
+        dialog.show();
+
+        int widthDp = Math.max(360, Math.round(
+                getResources().getDisplayMetrics().widthPixels * 0.72f / density));
+        int heightDp = Math.max(240, Math.round(
+                getResources().getDisplayMetrics().heightPixels * 0.63f / density));
+        TvDialogStyle.applyCustom(dialog, this, widthDp, heightDp, 0.30f);
+
+        scroll.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (scroll.canScrollVertically(1)) {
+                    scroll.smoothScrollBy(0, Math.max(1, scroll.getHeight() * 2 / 3));
+                } else {
+                    closeAction.requestFocus();
+                }
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                if (scroll.canScrollVertically(-1)) {
+                    scroll.smoothScrollBy(0, -Math.max(1, scroll.getHeight() * 2 / 3));
+                } else {
+                    close.requestFocus();
+                }
+                return true;
+            }
+            return false;
+        });
+        close.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                scroll.requestFocus();
+                return true;
+            }
+            return false;
+        });
+        closeAction.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                scroll.requestFocus();
+                return true;
+            }
+            return false;
+        });
+        scroll.requestFocus();
     }
 
     private void updateDateAndPeriod() {
