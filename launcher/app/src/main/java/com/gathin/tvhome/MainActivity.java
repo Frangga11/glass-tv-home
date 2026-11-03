@@ -4226,11 +4226,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showUpdateTimePickerDialog() {
         final String[] times = new String[]{
-                "🌙 03:30 AM (Cadangan Terbaik: Waktu Tidur & Subuh)",
-                "🌙 04:00 AM (Awal Pagi)",
-                "🌙 05:00 AM (Subuh)",
-                "☀️ 12:00 PM (Tengah Hari)",
-                "🌃 02:00 AM (Tengah Malam)"
+                getString(R.string.auto_update_time_0330_option),
+                getString(R.string.auto_update_time_0400_option),
+                getString(R.string.auto_update_time_0500_option),
+                getString(R.string.auto_update_time_1200_option),
+                getString(R.string.auto_update_time_0200_option)
         };
         final String[] rawTimes = new String[]{
                 "03:30 AM", "04:00 AM", "05:00 AM", "12:00 PM", "02:00 AM"
@@ -4377,10 +4377,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         Window w = dialog.getWindow();
         if (w != null) {
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int maxWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.90f);
-            w.setLayout(Math.min((int) (480 * density), maxWidth), ViewGroup.LayoutParams.WRAP_CONTENT);
-            w.setDimAmount(0.65f);
             w.setFlags(android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         }
@@ -4461,6 +4457,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (btnCloseDialog != null) btnCloseDialog.setOnFocusChangeListener(btnFocus);
 
         dialog.show();
+        TvDialogStyle.applyCustom(dialog, this, 480, 0, 0.65f);
         if (btnPlayPause != null) {
             btnPlayPause.requestFocus();
         }
@@ -6956,13 +6953,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(panel);
         dialog.setCanceledOnTouchOutside(false);
-        Window w = dialog.getWindow();
-        if (w != null) {
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int maxWidth = (int) (getResources().getDisplayMetrics().widthPixels * 0.90f);
-            w.setLayout(Math.min((int) (440 * density), maxWidth), ViewGroup.LayoutParams.WRAP_CONTENT);
-            w.setDimAmount(0.6f);
-        }
+
         // One decision per prompt: the buttons and Back (cancel) all end here.
         final boolean[] decided = {false};
         View.OnClickListener choose = v -> {
@@ -6990,6 +6981,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         show.setOnKeyListener(keys);
         cardPrompt = dialog;
         dialog.show();
+        TvDialogStyle.applyCustom(dialog, this, 440, 0, 0.6f);
         keep.requestFocus();
     }
 
