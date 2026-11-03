@@ -88,4 +88,9 @@ No stage was added, removed, reduced, or reordered. This approved five-stage roa
 
 ## 7. Next checkpoint
 
-G01 host/source bug-resolution audit is PASS and complete. Proceed to G02 only as the next approved stage: build the final tested APK from the approved, traceable candidate; do not install it on the TV until G03 and explicit user readiness approval.
+G01 defect-resolution subgate is PASS, but G01 project-wide branch reconciliation remains OPEN/BLOCKING. Do not start G02 until B-series and F07 have been reconciled on an isolated candidate, all required owner heads have an explicit disposition, and exact-head integrated CI plus cross-group regression pass. G03 remains the physical Mi TV Stick installation/acceptance gate and requires explicit readiness approval.
+
+
+## G01 branch-reconciliation status correction — 3 November 2026
+
+The source/host bug-resolution review remains PASS. The project-wide G01 gate is NOT CLOSED because the live compare found that `integration/b-series` @ `9070894fa6d9ef8aec034f46dfe777e866709dfe` and the F07 candidate @ `976e068d48ecc1ede2811ac455372395d382ba76` are diverged, with 26 shared-file differences. The five-stage Project G roadmap is unchanged; G02 is blocked pending a clean isolated combined candidate and exact-head integrated CI. See `G01_BRANCH_RECONCILIATION_ADDENDUM.md`.
