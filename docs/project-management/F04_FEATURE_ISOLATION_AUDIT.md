@@ -87,7 +87,13 @@ The following remain NOT VERIFIED, not PASS:
 5. Wallpaper/StandBy/Avatar UI rendering, focus and Back behavior on physical 1080p and 4K screens.
 6. Real-device low-storage and filesystem deletion-failure behavior.
 
-## 7. Decision
+## 7. Integration branch correction
+
+- The first F04 draft PR #52 was closed as superseded after the base-branch comparison showed that its starting point was behind the approved F02/F03 integration head. No merge occurred.
+- Canonical F04 integration is PR #53 on `integration/project-f04-feature-isolation-v2`, created from the exact approved base `2ede452b3137580bd51088661f80b6d0eeac7f4b`. A follow-up compare confirmed the branch is ahead of that base with no behind commits.
+- During cross-branch reconciliation, full-file copies from owner branches were rejected when they would overwrite F02-specific B01 modal or D05 upload-result contracts. The integration was restored from the approved F02 base and only scoped changes were applied. Exact-head CI then passed.
+
+## 8. Decision
 
 - **Source isolation audit:** PASS.
 - **F04-WALL-001:** repaired on owner branches and mirrored into F04; exact-head CI pending at this checkpoint.
