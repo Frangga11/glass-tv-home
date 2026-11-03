@@ -155,9 +155,9 @@ Implementation checkpoint: `integration/b-series` created from `d7b76c4a22c9eadf
 | ID | Decision | Rationale / boundary | Status |
 |---|---|---|---|
 | F-014 | Keep Project F and Project G strictly separated: F uses source audits, host-side tests, CI and integrated static validation; physical TV installation/launch/render/focus/network acceptance belongs to G. | Prevent a premature device test from masking missing source/contract defects; device-dependent cases remain DEFERRED_TO_G, never PASS. | APPROVED / ACTIVE |
-| F-015 | The exported LocationBroadcastReceiver requires `android.permission.DUMP`, while preserving its two existing actions and documented ADB shell/system caller route. | Ordinary third-party application UIDs must not be able to change persistent location or test-weather state. Direct third-party assistant apps are not authorized by this contract; any such bridge needs a separate authenticated design. Actual shell permission compatibility is deferred to G. | IMPLEMENTED / CI PASS / G RETEST PENDING |
-| F-016 | AzanActivity is app-internal and must be declared `android:exported="false"`. | Verified app-owned explicit Intent/PendingIntent route through AzanReceiver and Azan.showFullScreenNotification; no external direct-launch contract found. | IMPLEMENTED / OWNER CI PENDING |
-| F-017 | MainActivity's `styleGlassDialog` entry point delegates to B01's shared `TvDialogStyle` contract; sized overload preserves bespoke dimensions after applying common surface/dim/viewport rules. | Avoid parallel dialog implementations; preserve custom geometry and intentional anchored/transparent surfaces as documented exceptions. | IMPLEMENTED / OWNER + INTEGRATION CI PENDING |
+| F-015 | The exported LocationBroadcastReceiver requires `android.permission.DUMP`, while preserving its two existing actions and documented ADB shell/system caller route. | Ordinary third-party application UIDs must not be able to change persistent location or test-weather state. Direct third-party assistant apps are not authorized by this contract; any such bridge needs a separate authenticated design. Actual shell permission compatibility is deferred to G. | IMPLEMENTED / OWNER + F02 EXACT-HEAD CI PASS / G03 ADB-SHELL ACCEPTANCE PENDING |
+| F-016 | AzanActivity is app-internal and must be declared `android:exported="false"`. | Verified app-owned explicit Intent/PendingIntent route through AzanReceiver and Azan.showFullScreenNotification; no external direct-launch contract found. | IMPLEMENTED / OWNER + F02 EXACT-HEAD CI PASS / G03 REBOOT ACCEPTANCE PENDING |
+| F-017 | MainActivity's `styleGlassDialog` entry point delegates to B01's shared `TvDialogStyle` contract; sized overload preserves bespoke dimensions after applying common surface/dim/viewport rules. | Avoid parallel dialog implementations; preserve custom geometry and intentional anchored/transparent surfaces as documented exceptions. | IMPLEMENTED / B01 + F02 EXACT-HEAD CI PASS / G03 TV RENDERING PENDING |
 | F-018 | Do not close an F02 finding on code commit or build success alone. | Require source-owner exact-head CI, F02 exact-head CI, regression coverage, cross-branch diff review, and explicit Project G deferral for device-only acceptance. | APPROVED / ACTIVE |
 
 All related PRs remain Draft/open/unmerged. No APK publication, installation, or physical device test is performed during F02.
@@ -167,24 +167,24 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 
 | ID | Decision | Rationale / boundary | Status |
 |---|---|---|---|
-| F-019 | B01 HomeKeyService must preserve single Home, double Home Recent Apps, double Home Close All, and long-press Settings as distinct gestures. | HomeKeyService consumes key events; immediate single-Home handling previously prevented the documented double-press gesture. Use a 350 ms double threshold and 400 ms delayed single action; retain disabled KEYCODE_APP_SWITCH policy. Project G verifies real remote timing. | IMPLEMENTED / LATEST CI PENDING |
+| F-019 | B01 HomeKeyService must preserve single Home, double Home Recent Apps, double Home Close All, and long-press Settings as distinct gestures. | HomeKeyService consumes key events; immediate single-Home handling previously prevented the documented double-press gesture. Use a 350 ms double threshold and 400 ms delayed single action; retain disabled KEYCODE_APP_SWITCH policy. Project G verifies real remote timing. | IMPLEMENTED / B01 + F02 EXACT-HEAD CI PASS / G03 REMOTE TIMING PENDING |
 | F-020 | LocationActivity is internal-only and declared non-exported. | No intent filter or external caller contract; MainActivity retains explicit in-app launch. | IMPLEMENTED / D01 CI PASS |
-| F-021 | Keep RecentAppsActivity's exported ACTION_MAIN entry pending external contract verification; do not remove it blindly. | No in-repository external caller found, but it may be a legacy OEM/assistant/remote entry. Project G must verify; if unused, harden to non-exported. | OPEN / G CONTRACT REVIEW |
-| F-022 | Use Robolectric host tests for actual AlertDialog Window attributes, in addition to source-level guards. | Improves CI proof of centering, dimming and viewport sizing without pretending to validate TV firmware/remote rendering. | IMPLEMENTED / PREVIOUS F02 CI PASS / LATEST RETEST PENDING |
+| F-021 | Keep RecentAppsActivity's exported ACTION_MAIN entry pending external contract verification; do not remove it blindly. | No in-repository external caller found, but it may be a legacy OEM/assistant/remote entry. Project G must verify; if unused, harden to non-exported. | SUPERSEDED BY F-024 / NO SEPARATE ACTION |
+| F-022 | Use Robolectric host tests for actual AlertDialog Window attributes, in addition to source-level guards. | Improves CI proof of centering, dimming and viewport sizing without pretending to validate TV firmware/remote rendering. | IMPLEMENTED / F02 ROBOLECTRIC + EXACT-HEAD CI PASS / G03 TV RENDERING PENDING |
 
 
 ## F02 follow-up decisions — 3 November 2026
 
 | ID | Decision | Rationale / boundary | Status |
 |---|---|---|---|
-| F-023 | Force Stop orchestration must use a dedicated Handler, separate from Home gesture and power-action callbacks. | `removeCallbacksAndMessages(null)` on a shared Handler cancels unrelated navigation/timeout work. | IMPLEMENTED / CI PENDING |
-| F-024 | RecentAppsActivity is internal-only; remove its exported MAIN entry. | Exported `ACTION_CLOSE_ALL` invoked destructive app-stop behavior and could be explicitly launched by another installed app. Preserve explicit in-app HomeKeyService route. | IMPLEMENTED / CI PENDING |
+| F-023 | Force Stop orchestration must use a dedicated Handler, separate from Home gesture and power-action callbacks. | `removeCallbacksAndMessages(null)` on a shared Handler cancels unrelated navigation/timeout work. | IMPLEMENTED / B01 + F02 EXACT-HEAD CI PASS / G03 DEVICE ACCEPTANCE PENDING |
+| F-024 | RecentAppsActivity is internal-only; remove its exported MAIN entry. | Exported `ACTION_CLOSE_ALL` invoked destructive app-stop behavior and could be explicitly launched by another installed app. Preserve explicit in-app HomeKeyService route. | IMPLEMENTED / B01 + F02 MANIFEST REGRESSION + EXACT-HEAD CI PASS / G03 REMOTE ACCEPTANCE PENDING |
 
 
-| F-025 | Restart requests must use the existing visible system power-menu selection path; never treat AccessibilityService global action ID 12 as reboot. | ID 12 is the accessibility-button chooser, not reboot. Preserve existing vendor-label matching and timeout fallback. | IMPLEMENTED / F02 CI PASS / B01 comment-aligned exact-head retest pending |
+| F-025 | Restart requests must use the existing visible system power-menu selection path; never treat AccessibilityService global action ID 12 as reboot. | ID 12 is the accessibility-button chooser, not reboot. Preserve existing vendor-label matching and timeout fallback. | IMPLEMENTED / B01 + F02 EXACT-HEAD CI PASS / G03 OEM POWER-MENU ACCEPTANCE PENDING |
 
 
-| F-026 | Wallpaper QR-session management mutations (select/delete/slideshow/clear) must be serialized with server shutdown and recheck session validity inside the same monitor. | Prevent an already-dispatched request from mutating wallpaper state/files after QR-session revocation; preserve existing API routes and UI. | IMPLEMENTED / C07 + F02 EXACT-HEAD CI PENDING |
+| F-026 | Wallpaper QR-session management mutations (select/delete/slideshow/clear) must be serialized with server shutdown and recheck session validity inside the same monitor. | Prevent an already-dispatched request from mutating wallpaper state/files after QR-session revocation; preserve existing API routes and UI. | IMPLEMENTED / C07 + F02 EXACT-HEAD CI PASS / G03 PHONE-LAN ACCEPTANCE PENDING |
 
 
 ## F02 continuation decisions — 3 November 2026
@@ -192,7 +192,7 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 | ID | Decision | Rationale / boundary | Status |
 |---|---|---|---|
 | F-027 | Preserve the D05-aware StandBy upload result adapter in F02; do not replace it with C07's older boolean-based handler. | D05 is downstream of C07 and changes `StandbyPhotoStore.addUploadedFile` to return `UploadResult`; F02 must preserve both atomic persistence semantics and C07 session resilience. | CONFIRMED / INTEGRATED |
-| F-028 | Keep the upload deadline regression assertion at 3500 ms for deadline 6000 ms and fake monotonic time 2500 ms. | The production calculation was correct; the 3000 ms expected value was arithmetic error in the test. Do not weaken or remove the test. | CORRECTED / OWNER + F02 CI PASS BEFORE DOCS-ONLY RETEST |
+| F-028 | Keep the upload deadline regression assertion at 3500 ms for deadline 6000 ms and fake monotonic time 2500 ms. | The production calculation was correct; the 3000 ms expected value was arithmetic error in the test. Do not weaken or remove the test. | CORRECTED / C07 + F02 EXACT-HEAD CI PASS |
 
 
 ## F02 follow-up decisions — 3 November 2026
@@ -208,8 +208,8 @@ All related PRs remain Draft/open/unmerged. No APK publication, installation, or
 | ID | Decision | Rationale / boundary | Status |
 |---|---|---|---|
 | F-021 supersession | The earlier provisional instruction to retain RecentAppsActivity's exported MAIN entry is superseded by F-024. | F02 confirmed the exported activity accepted a destructive ACTION_CLOSE_ALL path; it is now internal-only, with explicit in-app HomeKeyService routing preserved. | SUPERSEDED BY F-024 / IMPLEMENTED |
-| F-031 | Reserve upload storage atomically across concurrent Wallpaper and StandBy QR transfers and preserve a 64 MiB free-space margin. | Per-request checks alone can overcommit a shared free-space snapshot; reservations are released in all completion/failure/cancellation paths. Keep existing per-file and StandBy collection limits; do not impose an arbitrary total wallpaper cap. | C07 OWNER + F02 SOURCE/TEST CI PASS #41520866323 / #41520818608 / LATEST F02 DOCS RETEST PENDING #41521145454 |
-| F-032 | Protect both Wallpaper and StandBy upload commit critical sections with explicit regression tests. | The production code already serialized final session checks and persistence with stop(); the earlier test did not independently guard both upload commit paths. | OWNER + INTEGRATION TEST COVERAGE PASS #41520866323 / #41520818608 / LATEST F02 DOCS RETEST PENDING #41521145454 |
+| F-031 | Reserve upload storage atomically across concurrent Wallpaper and StandBy QR transfers and preserve a 64 MiB free-space margin. | Per-request checks alone can overcommit a shared free-space snapshot; reservations are released in all completion/failure/cancellation paths. Keep existing per-file and StandBy collection limits; do not impose an arbitrary total wallpaper cap. | IMPLEMENTED / C07 + F02 EXACT-HEAD CI PASS / G03 LOW-STORAGE ACCEPTANCE PENDING |
+| F-032 | Protect both Wallpaper and StandBy upload commit critical sections with explicit regression tests. | The production code already serialized final session checks and persistence with stop(); the earlier test did not independently guard both upload commit paths. | IMPLEMENTED / C07 + F02 EXACT-HEAD CI PASS / G03 DEVICE ACCEPTANCE PENDING |
 
 
 ## F02 final disposition — 3 November 2026
@@ -273,3 +273,12 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Project G is authorized to begin final branch/dependency reconciliation, isolated staged integration, integrated regression, gated Mi TV Stick acceptance, and final merge/release review.
 - D-013 remains unchanged and binding: no early merge; preserve owner branches; no APK installation/device changes before explicit readiness approval; no final merge/release without explicit user approval.
 - Frozen F07 baseline: `integration/project-f07-performance-stability` @ `976e068d48ecc1ede2811ac455372395d382ba76`; PR #56 Draft/open/unmerged; CI #41568715178 both required jobs SUCCESS.
+
+
+## D-016 — G01 final bug resolution checkpoint (3 November 2026)
+
+- User-approved Project G scope is exactly five stages: G01 final bug resolution; G02 final tested APK build; G03 Mi TV Stick installation test; G04 final GitHub documentation; G05 final ChatGPT memory/handover. The overall A–G roadmap remains 47 items, unchanged.
+- G01 cross-audited the remaining high-risk source contracts and their owner branches against F02/F06/F07 integration evidence. Root causes, owner fixes, regression tests, exact heads and CI run IDs are recorded in G01_FINAL_BUG_RESOLUTION_AUDIT.md.
+- B01 PR #10, C07 #24, D05 #29, D06 #30, E01 #34, E08 #41, F02 #50, D01 #51, F06 #55 and F07 #56 exact-head runs all have both required jobs SUCCESS. F02 #41523201383, F06 #41566633872 and F07 #41568721270 are the latest recorded integration gates.
+- No new reproducible host/source defect was found; no speculative production change was made. Stale “CI pending” labels for findings verified by these exact-head runs are superseded by the G01 audit. F-021 is superseded by F-024.
+- Device-only acceptance remains G03; no APK publication/installation, merge, HOME-default change, ADB/device mutation or TV setting change was performed.
