@@ -1,6 +1,6 @@
 # Glass TV
 
- > **Project status (3 Nov 2026):** Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PASS, but project-wide branch reconciliation remains OPEN/BLOCKING: current B-series and F07 integration candidates have diverged, with 26 shared-file differences requiring semantic reconciliation. G02 final APK build is blocked until a clean isolated combined candidate passes exact-head integrated CI. No feature PR/main merge, APK publication/installation, or TV state change has occurred.n audit is PASS; next is G02 — Final Tested APK Build. No APK has been published or installed; Mi TV Stick acceptance remains a G03 gate.
+> **Project status (3 Nov 2026):** Project F is closed at HOST/SOURCE EXIT PASS. G01 semantic reconciliation is complete and merged into the isolated `integration/b-series` branch at `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`. Exact merge-commit CI #41583505195 passed both required jobs, 99 Python tests, Android launcher/installer unit tests, release validation build, and APK size gate (1,571,293 / 1,572,864 bytes). No APK artifact was published or installed. G02 final tested APK build is ready to start; G03 Mi TV Stick acceptance remains pending. `main` is untouched; its only main-only change enabling manual workflow_dispatch APK publishing is intentionally excluded pending G03 and explicit release approval.
 
 **Make your Android TV or Google TV fast and ad-free again: strip out the bloat and ads, free up memory,
 and come home to just your apps, with a new place to visit behind them every week.**
