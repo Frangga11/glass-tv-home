@@ -748,3 +748,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Candidate is a descendant of B-series (compare: ahead 644 / behind 0); Draft PR #58 is open and GitHub reports mergeable=true. PR #57 remains the historical unmergeable diagnostic gate.
 - Candidate exact-head CI #41583215114 (push) and #41583248216 (pull_request) was still running at this checkpoint. Do not mark G01 complete until exact-head required jobs and cross-group review pass.
 - No feature owner branch or `main` was rewritten/merged. No APK published/installed; no TV settings changed. G02 remains blocked; G03 physical Mi TV Stick acceptance remains separate.
+
+
+### G01 merge completed — 3 November 2026
+
+- PR #58 merged into `integration/b-series` at `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`. PR #58 is CLOSED/MERGED; PR #57 was superseded and closed after its F07 head became an ancestor of the accepted candidate.
+- Final merge tree is identical to the exact-head CI-verified candidate tree `a016951e69d99603a2a90722420cfe118c93eed1`; no source drift was introduced by the merge.
+- Exact merge-commit CI #41583505195: both required jobs SUCCESS; 99 Python tests all OK; Android launcher/installer unit tests PASS; release validation build SUCCESS; APK diagnostic 1,571,293 / 1,572,864 bytes; no workflow artifacts.
+- Reviewed the only main-only commit: `6eaf787c56226606b1d2e650c59540c553756c62` adds manual workflow_dispatch APK publishing. Deliberately excluded from integration for release safety. `main` remains untouched.
+- G01 source/host integration gate is PASS. G02 final tested APK candidate is ready to start from exact merge commit `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`. No APK published/installed; G03 physical Mi TV Stick acceptance not started.
