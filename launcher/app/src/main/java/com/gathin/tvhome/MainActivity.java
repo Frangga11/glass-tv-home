@@ -5866,6 +5866,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             public void onCleared() {
                 onCustomWallpaperCleared();
             }
+
+            @Override
+            public void onClearFailed() {
+                onCustomWallpaperDeleteFailed();
+            }
         };
     }
 
