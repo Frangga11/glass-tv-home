@@ -264,3 +264,12 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Checkpoint ini mengungguli catatan historis yang masih menyebut CI/retet pending untuk pekerjaan yang sama. Catatan lama dipertahankan sebagai jejak kronologis, bukan status aktif.
 
 **Status serah terima:** F02 ditutup pada sisi host/source dan dokumen pada exact head #50 telah lulus CI. Kandidat integrasi diserahkan ke Project G untuk final audit, penerimaan perangkat nyata, dan merge — bukan untuk mengulang pekerjaan perbaikan F02 yang telah terverifikasi.
+
+
+## D-015 — Formal Project F closure and Project G handover (3 November 2026)
+
+- User explicitly approved official closure of Project F and directed synchronized documentation for Project G.
+- Project F is CLOSED at HOST/SOURCE EXIT PASS for F01–F07. Real-device and full integrated acceptance are explicitly not implied.
+- Project G is authorized to begin final branch/dependency reconciliation, isolated staged integration, integrated regression, gated Mi TV Stick acceptance, and final merge/release review.
+- D-013 remains unchanged and binding: no early merge; preserve owner branches; no APK installation/device changes before explicit readiness approval; no final merge/release without explicit user approval.
+- Frozen F07 baseline: `integration/project-f07-performance-stability` @ `976e068d48ecc1ede2811ac455372395d382ba76`; PR #56 Draft/open/unmerged; CI #41568715178 both required jobs SUCCESS.
