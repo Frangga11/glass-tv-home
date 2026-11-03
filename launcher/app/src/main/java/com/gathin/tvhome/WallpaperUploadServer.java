@@ -387,7 +387,7 @@ public class WallpaperUploadServer {
             while ((b = in.read()) != -1) {
                 headerBuf.write(b);
                 if (headerBuf.size() > 16 * 1024) {
-                    sendTextResponse(out, 431, "Request Header Fields Too Large", localized(R.string.upload_error_request_too_large), null);
+                    sendTextResponse(out, 431, "Request Header Fields Too Large", localized(R.string.avatar_error_header_too_large), null);
                     return;
                 }
                 if (prev3 == '\r' && prev2 == '\n' && prev1 == '\r' && b == '\n') {
@@ -400,24 +400,24 @@ public class WallpaperUploadServer {
             }
 
             if (!headerComplete) {
-                sendTextResponse(out, 400, "Bad Request", localized(R.string.upload_error_incomplete_headers), null);
+                sendTextResponse(out, 400, "Bad Request", localized(R.string.avatar_error_invalid_request), null);
                 return;
             }
             String headerText = headerBuf.toString("UTF-8");
             String[] lines = headerText.split("\r\n");
             if (lines.length == 0 || lines[0].isEmpty() || !UploadHttpRequest.hasValidHeaders(lines)) {
-                sendTextResponse(out, 400, "Bad Request", localized(R.string.upload_error_invalid_request), null);
+                sendTextResponse(out, 400, "Bad Request", localized(R.string.avatar_error_invalid_request), null);
                 return;
             }
 
             if (!isSessionActive()) {
-                sendTextResponse(out, 410, "Gone", localized(R.string.upload_error_session_expired), null);
+                sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
                 return;
             }
             String requestLine = lines[0];
             UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
             if (request == null) {
-                sendTextResponse(out, 400, "Bad Request", localized(R.string.upload_error_invalid_request_line), null);
+                sendTextResponse(out, 400, "Bad Request", localized(R.string.avatar_error_invalid_request), null);
                 return;
             }
             Log.d(TAG, "Request: " + requestLine);
@@ -431,14 +431,14 @@ public class WallpaperUploadServer {
             boolean wallpaperSessionPath = request.isWithinPath(getWallpaperPath());
 
             if (standbyOnly && !standbySessionPath) {
-                sendTextResponse(out, 404, "Not Found", localized(R.string.upload_error_not_found), null);
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
             } else if (!standbyOnly && !wallpaperSessionPath) {
-                sendTextResponse(out, 404, "Not Found", localized(R.string.upload_error_not_found), null);
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
             } else if (standbyOnly && !standbyRoute) {
                 String allow = standbyPagePath ? "GET" : "POST";
-                sendTextResponse(out, 405, "Method Not Allowed", localized(R.string.upload_error_method_not_allowed), "Allow: " + allow + "\r\n");
+                sendTextResponse(out, 405, "Method Not Allowed", localized(R.string.avatar_error_invalid_request), "Allow: " + allow + "\r\n");
             } else if (!standbyOnly && wallpaperAllowed == null) {
-                sendTextResponse(out, 404, "Not Found", localized(R.string.upload_error_not_found), null);
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
             } else if (!standbyOnly && "OPTIONS".equals(request.method)) {
                 String response = "HTTP/1.1 204 No Content\r\n" +
                         "Access-Control-Allow-Origin: *\r\n" +
@@ -450,11 +450,11 @@ public class WallpaperUploadServer {
                 out.flush();
             } else if (!standbyOnly && !wallpaperAllowed.startsWith(request.method + ",")
                     && !wallpaperAllowed.equals(request.method)) {
-                sendTextResponse(out, 405, "Method Not Allowed", localized(R.string.upload_error_method_not_allowed), "Allow: " + wallpaperAllowed.replace(", OPTIONS", "") + "\r\n");
+                sendTextResponse(out, 405, "Method Not Allowed", localized(R.string.avatar_error_invalid_request), "Allow: " + wallpaperAllowed.replace(", OPTIONS", "") + "\r\n");
             } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
                 if (fileName == null || fileName.trim().isEmpty()) {
-                    sendTextResponse(out, 400, "Bad Request", localized(R.string.upload_error_file_parameter), null);
+                    sendTextResponse(out, 400, "Bad Request", localized(R.string.avatar_error_invalid_request), null);
                 } else {
                     serveThumbnail(fileName, out);
                 }
@@ -483,7 +483,7 @@ public class WallpaperUploadServer {
             } else if (standbyOnly && isRequestToPath(requestLine, "POST", getStandbyUploadPath())) {
                 long incomingBytes = parseContentLength(lines, MAX_UPLOAD_BYTES);
                 if (incomingBytes > 0L && !reserveUploadStorage(incomingBytes)) {
-                    if (!isSessionActive()) sendUploadError(out, 410, localized(R.string.upload_error_session_expired));
+                    if (!isSessionActive()) sendUploadError(out, 410, localized(R.string.avatar_error_session_expired));
                     else sendUploadError(out, 507, localized(R.string.wallpaper_error_low_storage));
                 } else if (incomingBytes > 0L) {
                     try {
@@ -512,7 +512,7 @@ public class WallpaperUploadServer {
                     sendTextResponse(out, 413, "Payload Too Large", localized(R.string.wallpaper_error_size_limit), null);
                 } else if (contentLength > 0) {
                     if (!reserveUploadStorage(contentLength)) {
-                        if (!isSessionActive()) sendTextResponse(out, 410, "Gone", localized(R.string.upload_error_session_expired), null);
+                        if (!isSessionActive()) sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
                         else sendTextResponse(out, 507, "Insufficient Storage", localized(R.string.wallpaper_error_low_storage), null);
                         return;
                     }
@@ -523,7 +523,7 @@ public class WallpaperUploadServer {
                     }
 
                     if (!isSessionActive()) {
-                        sendTextResponse(out, 410, "Gone", localized(R.string.upload_error_session_expired), null);
+                        sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
                         return;
                     }
                     File targetFile;
@@ -539,7 +539,7 @@ public class WallpaperUploadServer {
                     if (!complete || imageFormat == null) {
                         targetFile.delete();
                         if (!isSessionActive()) {
-                            sendTextResponse(out, 410, "Gone", localized(R.string.upload_error_session_expired), null);
+                            sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
                         } else {
                             String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
                             sendTextResponse(out, 400, "Bad Request", message, null);
@@ -551,7 +551,7 @@ public class WallpaperUploadServer {
                         synchronized (this) {
                             if (!isSessionActive()) {
                                 targetFile.delete();
-                                sendTextResponse(out, 410, "Gone", localized(R.string.upload_error_session_expired), null);
+                                sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
                                 return;
                             }
                             if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
@@ -582,7 +582,7 @@ public class WallpaperUploadServer {
                     sendTextResponse(out, 400, "Bad Request", localized(R.string.wallpaper_error_invalid_size), null);
                 }
             } else {
-                sendTextResponse(out, 404, "Not Found", localized(R.string.upload_error_not_found), null);
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
             }
 
             out.close();
@@ -645,7 +645,7 @@ public class WallpaperUploadServer {
             return;
         }
         if (!isSessionActive()) {
-            sendUploadError(out, 410, localized(R.string.upload_error_session_expired));
+            sendUploadError(out, 410, localized(R.string.avatar_error_session_expired));
             return;
         }
         if (!StandbyPhotoStore.canAcceptUpload(context, contentLength)) {
@@ -667,7 +667,7 @@ public class WallpaperUploadServer {
         if (!complete || imageFormat == null) {
             targetFile.delete();
             if (!isSessionActive()) {
-                sendUploadError(out, 410, localized(R.string.upload_error_session_expired));
+                sendUploadError(out, 410, localized(R.string.avatar_error_session_expired));
             } else {
                 sendUploadError(out, 400, !complete
                         ? localized(R.string.wallpaper_error_incomplete_retry)
@@ -687,7 +687,7 @@ public class WallpaperUploadServer {
         synchronized (this) {
             if (!isSessionActive() || client.isClosed()) {
                 storedFile.delete();
-                if (!client.isClosed()) sendUploadError(out, 410, localized(R.string.upload_error_session_expired));
+                if (!client.isClosed()) sendUploadError(out, 410, localized(R.string.avatar_error_session_expired));
                 return;
             }
             StandbyPhotoStore.UploadResult uploadResult =
@@ -783,8 +783,8 @@ public class WallpaperUploadServer {
                 + "xhr.open('POST',endpoint,true);xhr.timeout=" + NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS + ";xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
                 + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
                 + "xhr.onload=()=>{activeXhr=null;cancel.hidden=true;if(xhr.status>=200&&xhr.status<300){uploaded++;i++;next();return;}"
-                + "if(xhr.status===410){status.textContent=xhr.responseText||'" + jsText(R.string.standby_page_session_expired) + "';send.disabled=true;return;}"
-                + "if(xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'" + jsText(R.string.standby_page_server_unavailable) + "';send.disabled=false;return;}"
+                + "if(xhr.status===410){status.textContent=xhr.responseText||'" + jsText(R.string.avatar_error_session_expired) + "';send.disabled=true;return;}"
+                + "if(xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'" + jsText(R.string.local_upload_error_busy) + "';send.disabled=false;return;}"
                 + "failed++;i++;next();};"
                 + "xhr.onerror=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_connection_lost_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_connection_lost_suffix) + "';send.disabled=false;};"
                 + "xhr.ontimeout=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_timeout_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_timeout_suffix) + "';send.disabled=false;};"
@@ -818,7 +818,7 @@ public class WallpaperUploadServer {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
             File target = resolveWallpaperFile(customDir, fileName);
             if (target == null) {
-                sendTextResponse(out, 404, "Not Found", localized(R.string.upload_error_not_found), null);
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
                 return;
             }
 
@@ -834,7 +834,7 @@ public class WallpaperUploadServer {
 
             Bitmap bmp = BitmapFactory.decodeFile(target.getAbsolutePath(), opts);
             if (bmp == null) {
-                sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_thumbnail_decode), null);
+                sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_thumbnail_request), null);
                 return;
             }
 
@@ -842,7 +842,7 @@ public class WallpaperUploadServer {
             boolean compressed = bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
             bmp.recycle();
             if (!compressed) {
-                sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_thumbnail_encode), null);
+                sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_thumbnail_request), null);
                 return;
             }
             byte[] bytes = baos.toByteArray();
@@ -1461,7 +1461,7 @@ public class WallpaperUploadServer {
                 "          statusMsg.style.display = 'block';\n" +
                 "          loadGallery();\n" +
                 "        } else {\n" +
-                "          const detail = (xhr.responseText || '" + jsText(R.string.wallpaper_page_server_error_fallback) + "').trim();\n" +
+                "          const detail = (xhr.responseText || '" + jsText(R.string.wallpaper_page_action_failed) + "').trim();\n" +
                 "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + detail);\n" +
                 "          if (xhr.status === 410) btnSubmit.disabled = true;\n" +
                 "        }\n" +
