@@ -869,3 +869,16 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - **F06 HOST/SOURCE EXIT PASS.** No physical TV test, language-switch runtime test, phone/LAN upload acceptance, APK installation or merge is claimed.
 - Next: Project F07 per the approved roadmap. Keep all Project G physical acceptance gates open: Android 11 and Android 13+ language switching, Home/settings/subtab/popup rendering, D-pad/focus, mobile QR upload/LAN and OEM behavior.
 - Detailed evidence: `F06_LOCALIZATION_UI_AUDIT.md`. Preserve the same Trigger → Input → Verification → Work → Decision → Output → QC → Final/Not Final discipline.
+
+
+## Current resume checkpoint — Project F07 Performance & Stability — 3 November 2026
+
+- F07 PR #56: Draft/open/unmerged under D-013. Branch `integration/project-f07-performance-stability`; base F06 exact head `487099013e6d9bd65cc07d72e760b1e14ab1f091`; final F07 exact head `976e068d48ecc1ede2811ac455372395d382ba76`.
+- Compare: 19 commits ahead / 0 behind; ten changed paths.
+- Exact-head CI #41568715178 both jobs SUCCESS. Python 99 tests PASS. Launcher and installer `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size enforcement PASS.
+- APK 1,571,293 bytes / 1,572,864-byte cap / 1,571-byte headroom. Workflow artifact list empty; no APK publication or installation.
+- F07 fixed weather frame shader allocation and ripple churn, wallpaper and QR preview UI-thread decode, stale bitmap/lifecycle handling, Now Playing main-thread Binder polling, Backdrop OOM/partial-array handling, StandBy unbounded decode queue, forced GC, and Online Wallpapers aggregate storage (512 MiB cap).
+- **F07 HOST/SOURCE EXIT PASS. Overall performance acceptance remains PARTIAL.** No physical TV test or actual RAM/FPS/ANR/thermal/long-run metric is claimed.
+- No merge, APK publication/installation or TV setting change. Keep PR #56 Draft/open/unmerged until Project G final integrated audit and explicit merge approval.
+- Next: Project G — reconcile exact owner/integration heads and dependencies, audit the complete candidate diff, resolve cross-project regressions, group merges under D-013, and only after explicit readiness approval produce one labelled TV-test APK for target Mi TV Stick profiling/soak. Device matrix: Home/Settings/D-pad/Back, weather, wallpaper 1080p/4K and rapid switching, Now Playing, StandBy/DreamService, low-storage, network failure, process death/reboot and long-run memory/thermal stability.
+- Detailed evidence: `F07_PERFORMANCE_STABILITY_AUDIT.md`. Preserve Trigger → Input → Verification → Work → Decision → Output → QC → Final/Not Final.
