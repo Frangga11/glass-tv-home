@@ -109,6 +109,12 @@ class F07PerformanceStabilityContractTest(unittest.TestCase):
         self.assertIn("new java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy()", source)
         self.assertIn("THREAD_PRIORITY_BACKGROUND", source)
 
+    def test_online_wallpaper_cache_has_an_aggregate_storage_budget(self):
+        source = (JAVA / "OnlineWallpapers.java").read_text(encoding="utf-8")
+        self.assertIn("MAX_CACHE_BYTES = 512L * 1024L * 1024L", source)
+        self.assertIn("pruneCache(dir, MAX_CACHE_FILES, MAX_CACHE_BYTES)", source)
+        self.assertIn("totalBytes <= byteBudget", source)
+
     def test_cache_cleanup_does_not_force_global_garbage_collection(self):
         source = (JAVA / "CacheCleaner.java").read_text(encoding="utf-8")
         self.assertNotIn("System.gc()", source)
