@@ -856,3 +856,16 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - F05-WALL-001 stale Custom pin recovery and F05-WALL-002 abandoned QR temp-upload cleanup are fixed on their owner branches, mirrored to F05, and cross-audited. Scoped source/test blocks match exactly. All workflow artifact lists empty; no APK published/installed.
 - PR #24, #41 and #54 remain Draft/open/unmerged. **F05 HOST/SOURCE EXIT PASS.** No physical force-stop/process-death/reboot test is claimed. Project G must perform real Mi TV Stick reboot/alarm, StandBy/DreamService, phone/LAN and filesystem acceptance.
 - **Resume next at Project F06 — Localization.** Preserve the same owner-first repair, exact-head CI, cross-audit, staged integration and documentation checkpoint rules.
+
+
+## Current resume checkpoint — Project F06 Localization & Global UI — 3 November 2026
+
+- F06 integration PR #55: Draft/open/unmerged; branch `integration/project-f06-localization`; base F05 exact head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; final F06 exact head `487099013e6d9bd65cc07d72e760b1e14ab1f091`.
+- Compare: 29 commits ahead / 0 behind, nine changed paths. PR remains mergeable and intentionally unmerged under D-013.
+- Exact-head CI #41566633872: both required jobs SUCCESS. Python 89 tests / 1 intentional README-count skip. Android `testReleaseUnitTest`, `assembleRelease`, diagnostics and APK size gate PASS.
+- APK 1,569,397 bytes / 1,572,864-byte cap / 3,467-byte headroom. Artifact list empty; no APK publication or installation.
+- Resource sets: 615 keys each in default/Indonesian/English; no duplicates, key mismatches, placeholder mismatches or empty strings.
+- F06 fixes dynamic bilingual labels, swapped daily-ayah locale values, Indonesian Glass Effect title, two custom dialogs that bypassed the shared modal contract, QR upload server/browser error text, gallery date locale and thumbnail accessibility label. Resource duplication was consolidated without removing visible coverage.
+- **F06 HOST/SOURCE EXIT PASS.** No physical TV test, language-switch runtime test, phone/LAN upload acceptance, APK installation or merge is claimed.
+- Next: Project F07 per the approved roadmap. Keep all Project G physical acceptance gates open: Android 11 and Android 13+ language switching, Home/settings/subtab/popup rendering, D-pad/focus, mobile QR upload/LAN and OEM behavior.
+- Detailed evidence: `F06_LOCALIZATION_UI_AUDIT.md`. Preserve the same Trigger → Input → Verification → Work → Decision → Output → QC → Final/Not Final discipline.
