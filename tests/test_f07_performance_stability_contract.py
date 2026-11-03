@@ -59,6 +59,17 @@ class F07PerformanceStabilityContractTest(unittest.TestCase):
         self.assertIn("readyBitmap.recycle()", helper)
         self.assertIn("readyBlur.recycle()", helper)
 
+    def test_qr_wallpaper_preview_decode_is_off_the_ui_thread(self):
+        source = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        upload_callback = method_body(source, "private void onCustomWallpaperUploaded(")
+        self.assertIn("queueWallpaperThumbnail(file)", upload_callback)
+        self.assertNotIn("decodeWallpaper(file)", upload_callback)
+        preview = method_body(source, "private void queueWallpaperThumbnail(")
+        self.assertIn("wallDecoder.execute", preview)
+        self.assertIn("wallpaperThumbnailGeneration.incrementAndGet()", preview)
+        self.assertIn("qrUploadDialog.isShowing()", preview)
+        self.assertIn("thumb.recycle()", preview)
+
     def test_wallpaper_selection_uses_latest_request_worker(self):
         source = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         body = method_body(source, "private void showNextWallpaper(")
