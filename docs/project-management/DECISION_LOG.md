@@ -294,3 +294,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Targeted F07 checks are positive for HomeKeyService, C07 monotonic deadline/session/storage safeguards, manifest security declarations, dialog and upload regression tests. But source hashes differ on several owner/integration files, including manifest, RecentAppsActivity, WallpaperUploadServer, AvatarUploadServer, MainActivity, locale resources and ProfileManager; these require 3-way semantic reconciliation, not blind overwrite.
 - G01 defect-resolution subgate PASS; G01 project-wide combine/reconciliation OPEN/BLOCKING. G02 is not ready. No feature PR or main branch merged; D-013 remains binding.
 - Next work: freeze all required owner heads; reconcile B-series with F07 on an isolated candidate; run exact-head integrated CI and cross-group regression; only then build the G02 candidate APK. G03 physical acceptance remains separate.
+
+
+## D-017 — G01 full branch reconciliation is a pre-G02 gate (3 November 2026)
+
+- User requested a fresh project-wide integration/synchronization audit and asked whether combine/merge is required before final APK build.
+- Decision: yes, a coherent combined integration candidate is mandatory before G02. It must be built on an isolated branch and pass exact-head integrated CI plus cross-group regression. This is not a merge to `main`.
+- Live GitHub inventory #1–#56: merged #1/#13–#15/#32–#33; closed without merge #42–#49 and superseded #52; open/unmerged #2–#12/#16–#31/#34–#41/#50–#51/#53–#56.
+- F07 is linear from F-staged-full (173 ahead/0 behind), through #50→#53→#54→#55→#56. However, `integration/b-series` @ `9070894fa6d9ef8aec034f46dfe777e866709dfe` is not in that lineage. It diverges from F-staged-full/F07; compare evidence and 26 shared paths are recorded in `G01_BRANCH_RECONCILIATION_ADDENDUM.md`.
+- G01 source-defect audit PASS does not close project-wide G01. Branch reconciliation is OPEN/BLOCKING until all owner heads are frozen and included/superseded/excluded with evidence, B-series/F07 are semantically reconciled on an isolated candidate, and exact-head integrated CI/regression pass.
+- No feature PR or `main` merge was performed. Owner branches and current integration branches remain unchanged. No APK publication/installation or device setting change occurred.
+- D-013 remains binding: preserve owner branches, merge in coherent dependency groups only after audit, do not merge to `main` or release without final acceptance and explicit user approval.
