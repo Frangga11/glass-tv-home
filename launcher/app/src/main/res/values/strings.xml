@@ -95,7 +95,7 @@
     <string name="weather_humidity_label">💧  KELEMBAPAN</string>
     <string name="weather_humidity_description">Kelembapan relatif saat ini.</string>
     <string name="weather_pressure_label">⏱️  TEKANAN UDARA</string>
-    <string name="weather_data_source">Model Open-Meteo • estimasi US AQI</string>
+    <string name="weather_data_source">Prakiraan Open-Meteo • model CAMS • estimasi US AQI</string>
 
     <string name="media_now_playing">SEDANG DIPUTAR</string>
     <string name="media_spotify">SPOTIFY</string>
@@ -639,4 +639,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="local_upload_error_busy">Layanan unggahan sedang sibuk. Coba lagi.</string>
     <string name="wallpaper_page_action_failed">Permintaan tidak dapat diproses. Periksa foto lalu coba lagi.</string>
     <string name="wallpaper_delete_failed">Tidak dapat menghapus satu atau beberapa gambar. Periksa penyimpanan lalu coba lagi.</string>
+    <string name="weather_data_unavailable">Data cuaca tidak tersedia</string>
+    <string name="weather_model_reference">Lokasi acuan model: %1$s</string>
 </resources>
