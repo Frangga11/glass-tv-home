@@ -448,3 +448,19 @@ See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
 - E08 owner PR #41 exact head `edd24d72256d06da4578971ea7bac1802746a3a6` passed run #41562661052: both jobs SUCCESS; 15 tests / 1 intentional skip; APK 1,564,197 bytes.
 - F05-WALL-001 and F05-WALL-002 are owner-fixed, mirrored and source-cross-audited. PR #24/#41/#54 remain Draft/open/unmerged. **F05 HOST/SOURCE EXIT PASS**; physical device acceptance remains Project G.
 - Next host/source stage: F06 Localization. See `F05_PERSISTENCE_RECOVERY_AUDIT.md`.
+
+
+## Project F06 — Bilingual localization and global UI inventory — 3 November 2026
+
+| Surface | Contract / verification | Result |
+|---|---|---|
+| Language selection | ID/EN only; Android 13+ per-app LocaleManager; API 26–32 LocaleContext wrapper | PASS (source/CI) |
+| Home, settings, tabs/subtabs | Dynamic labels and resource references checked; no known hardcoded language-only schedule copy remains | PASS (source/CI) |
+| Android modal dialogs | MainActivity standard/custom dialogs use TvDialogStyle; Settings uses TvUiTokens and shared modal helpers | PASS (source/CI) |
+| Weather summary | High/low labels use bilingual resource formatting | PASS |
+| Avatar QR page | HTML lang, localized page/status/errors; method-error body uses canonical localized copy | PASS (source) |
+| Wallpaper/StandBy QR pages | Localized server error bodies, fallback text, cancellation, gallery dates and thumbnail alt label | PASS (source/CI) |
+| Resource parity | 615 keys in default/ID/EN; no duplicates, key or placeholder mismatch, or empty strings | PASS |
+| Release build / APK budget | CI #41566633872; APK 1,569,397 B / 3,467 B headroom | PASS |
+
+F06 integration PR #55 remains Draft/open/unmerged under D-013. Physical language switching, D-pad/focus, popup rendering, phone/LAN upload and OEM/browser acceptance remain Project G gates. See `F06_LOCALIZATION_UI_AUDIT.md`.
