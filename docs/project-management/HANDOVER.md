@@ -968,3 +968,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **G02:** READY TO START from the accepted integration commit. Build and retain a traceable TV-test candidate only; do not publish or install without the approved G02/G03 process.
 - **G03:** physical Mi TV Stick acceptance not started. No APK installed and no TV settings changed.
 - **Next session:** begin G02 from `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`; do not re-open G01 unless new reproducible regression evidence appears.
+
+## Latest resume checkpoint — G01 re-audit complete, 3 November 2026
+
+- **Current phase:** Project G; G01 source/host re-audit is PASS. G02 is READY TO START, not yet started.
+- **Integration branch/head:** `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- **Merged PR:** #59; PR #58 remains the earlier B-series/F07 reconciliation merge. Owner branches remain preserved.
+- **Exact tested tree:** candidate `9f2da8f39a20c8e8cc43ac0ff7e42d7a82b34676`; merge commit comparison has zero changed files.
+- **CI:** #41586223809 / run #1177 SUCCESS. 109 Python tests, one intentional skip; launcher/installer unit tests and release validation build PASS.
+- **APK diagnostic:** 1,572,293 bytes / 1,572,864 cap / 571 bytes headroom. No artifact, publication or installation. Treat the margin as narrow; avoid further code growth before G02 without a measured need.
+- **G01 corrections:** E05 location-scoped weather/AQI cache and API-backed display restored; F07 reduced-motion/low-memory preserved; F06 high/low localization preserved; E08 delete-failure regression test restored.
+- **G02 next:** build/record the traceable APK from exact merge commit `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; capture APK size and SHA-256. Do not publish/install until the approved G02/G03 process.
+- **G03:** physical Mi TV Stick acceptance not started; remote/D-pad, OEM, QR/LAN, storage, process death/reboot, RAM/FPS/ANR/thermal/soak remain untested.
+- **G04–G05:** final documentation closure and continuity handover remain pending. `main` untouched; no device state changed.
