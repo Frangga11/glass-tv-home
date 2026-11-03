@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -196,10 +197,20 @@ final class Backdrop {
      */
     static void update(Bitmap wallpaper, int screenW, int screenH, int multiply, Executor worker, Handler main) {
         if (wallpaper == null || screenW <= 0 || screenH <= 0) return;
-        worker.execute(() -> {
-            Bitmap small = render(wallpaper, screenW, screenH, multiply);
-            main.post(() -> present(small, 0));
-        });
+        try {
+            worker.execute(() -> {
+                Bitmap small;
+                try {
+                    small = render(wallpaper, screenW, screenH, multiply);
+                } catch (OutOfMemoryError | RuntimeException e) {
+                    Log.w("TvHome.Backdrop", "Skipping wallpaper blur because the TV is low on memory", e);
+                    return;
+                }
+                if (small != null) main.post(() -> present(small, 0));
+            });
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+            Log.d("TvHome.Backdrop", "Blur worker is no longer accepting work");
+        }
     }
 
     /**
@@ -209,7 +220,12 @@ final class Backdrop {
      */
     static Bitmap blur(Bitmap wallpaper, int screenW, int screenH, int multiply) {
         if (wallpaper == null || screenW <= 0 || screenH <= 0) return null;
-        return render(wallpaper, screenW, screenH, multiply);
+        try {
+            return render(wallpaper, screenW, screenH, multiply);
+        } catch (OutOfMemoryError | RuntimeException e) {
+            Log.w("TvHome.Backdrop", "Skipping precomputed blur because the TV is low on memory", e);
+            return null;
+        }
     }
 
     /**
