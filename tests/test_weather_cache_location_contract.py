@@ -31,7 +31,7 @@ class WeatherCacheLocationContractTest(unittest.TestCase):
         self.assertIn("cacheMatchesLocation(prefs, KEY_AQI_LAT, KEY_AQI_LON", method)
 
     def test_only_successful_source_responses_advance_their_own_cache_metadata(self):
-        method = self.source.split("private void syncInternal", 1)[1].split(
+        method = self.source.split("private static void syncInternal", 1)[1].split(
             "static boolean isCurrentRequest", 1
         )[0]
         self.assertIn("if (wJson != null)", method)
