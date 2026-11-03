@@ -555,3 +555,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - GitHub reports `mergeable=false`; PR #57 is OPEN/DRAFT/UNMERGED. Compare view: 639 commits / 123 changed files. Do not merge or force-push around the conflict.
 - The 26 shared B-series/F-staged-full paths require three-way semantic resolution. No conflict was resolved by wholesale side selection. Owner branches remain unchanged.
 - G01 overall remains OPEN/BLOCKING for branch reconciliation; source-defect subgate remains PASS. G02 APK build is blocked pending clean combined candidate and exact-head integrated CI. `main` is untouched.
+
+
+## Final G01 integration inventory — 3 November 2026
+
+- Canonical combined code branch: `integration/b-series`.
+- Accepted integration head: `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`.
+- Source lineage includes the B-series history, F02–F07 integration lineage, and corrected F06 localization commit.
+- PR #58 is merged; PR #57 is superseded/closed.
+- 26 shared paths have documented semantic dispositions. Both `GlassSurfaceFallbackTest.java` and `GlassFallbackSurfaceTest.java` remain in the tree.
+- Corrected English/Indonesian Daily Verse copy and explicit regression assertions are included.
+- Exact merge-commit CI #41583505195: PASS; 99 Python tests all OK; Android launcher/installer unit tests and release validation build PASS; APK 1,571,293 bytes under 1,572,864-byte cap; no workflow artifacts.
+- `main` remains separate and untouched. Its manual APK-publishing workflow-dispatch commit is deliberately excluded.
+- G01: PASS. G02: ready to start. G03: physical Mi TV Stick acceptance pending.
