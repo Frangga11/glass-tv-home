@@ -332,7 +332,7 @@ public final class AvatarUploadServer {
     }
 
     private void respondMethodNotAllowed(OutputStream out, String allowed) throws Exception {
-        byte[] body = "Method Not Allowed".getBytes(StandardCharsets.UTF_8);
+        byte[] body = localized(R.string.upload_error_method_not_allowed).getBytes(StandardCharsets.UTF_8);
         out.write(("HTTP/1.1 405 Method Not Allowed\r\n"
                 + "Content-Type: text/plain; charset=UTF-8\r\n"
                 + "Content-Length: " + body.length + "\r\n"
