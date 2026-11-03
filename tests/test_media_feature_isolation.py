@@ -186,5 +186,15 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         self.assertIn("StandbyPhotoStore.getCurrentPhotoIndex(uris.size())", overlay)
 
 
+    def test_single_wallpaper_delete_checks_file_delete_result(self):
+        single_delete = self.main.split(
+            "case 1: // Delete this", 1
+        )[1].split(
+            "case 2: // Keep this, delete others", 1
+        )[0]
+        self.assertIn("if (!file.exists() || file.delete())", single_delete)
+        self.assertIn("R.string.wallpaper_delete_failed", single_delete)
+
+
 if __name__ == "__main__":
     unittest.main()
