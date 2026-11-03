@@ -38,6 +38,8 @@ public class WallpaperUploadServer {
         default void onSelected(File file) {}
         default void onSlideshowMode() {}
         default void onCleared() {}
+        /** Called when a bulk clear partially fails so the owner can reconcile stale selections. */
+        default void onClearFailed() {}
         default void onStandbyUploaded(File imageFile) {}
     }
 
