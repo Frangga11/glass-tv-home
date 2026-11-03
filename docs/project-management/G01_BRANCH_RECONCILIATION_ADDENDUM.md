@@ -2,7 +2,7 @@
 
 **Checkpoint:** GTVH-G01-BRANCH-RECON-2026-11-03  
 **Date:** 3 November 2026 (WIB)  
-**Disposition:** SOURCE-FIX AUDIT PASS; FINAL COMBINE/BRANCH RECONCILIATION OPEN — G02 BLOCKED  
+**Disposition:** G01 COVERAGE RE-AUDIT PASS; PR #59 MERGED INTO `integration/b-series`; G02 READY TO START  
 **Canonical docs branch:** `docs/project-master-inventory`
 
 ## 1. Why this addendum exists
@@ -223,3 +223,30 @@ F06 exact-head CI on `2c369a0a48c77bb3bf023c292892541306e535a3`: run #4158279665
 - G02 final tested APK candidate: **READY TO START** from the exact integration merge commit; no APK has yet been published or installed.
 - G03 physical Mi TV Stick acceptance: NOT STARTED; remains a separate device-only gate.
 - No merge to `main`; no TV setting changes.
+
+## 11. Project-wide coverage re-audit and second isolated merge — 3 November 2026
+
+### Legacy and roadmap coverage
+- Approved roadmap remains 47 work items; E00 is a governance/inventory control, not an extra counted item.
+- PR #2–#5 and #7–#8 ancestry is represented in the integration lineage. PR #6 is not merged as a whole branch; its avatar upload was selectively consolidated through PR #9's stronger profile-security implementation.
+- The legacy `indonesia-pagar-alam` branch was checked: Azan, Location, PrayerTimes and WallpaperShuffle files match the combined tree. The combined tree has newer Android per-app language support, Indonesian localization, Malay-category retirement and bounded online-wallpaper cache.
+- B/C/D/E owner branch tips that diverged by ancestry were reviewed as semantic deltas, not assumed missing. Candidate retains advanced F07 decode queues/shader reuse, D05 bounded StandBy decode, D06 boot recovery, D04 profile UUID/atomic built-in-avatar selection, C07 monotonic deadlines/storage reservation and shared UI contracts.
+- The 26-path B-series/F07 disposition remains the controlling overlap matrix.
+
+### Newly discovered gaps and resolution
+- E05 current owner head `6fe89fad078692958db67030329a6de66cd7ae71` had location-aware per-source weather/AQI cache ownership not present in the prior candidate. Restored owner implementation and coordinate tests; retained F07 low-memory/reduced-motion behavior and F06 localized high/low summary.
+- E08 source already contained truthful delete-failure handling and QR clear-failure callback, but its regression test was absent from the prior candidate. Added the owner regression test.
+- First re-audit CI attempt #41586083313 failed on a source-contract anchor and F06 localized high/low assertion. Both were corrected; no failure remains in the final tested head.
+
+### Final candidate and merge
+- Re-audit PR #59 merged to `integration/b-series` at `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- Tested head `9f2da8f39a20c8e8cc43ac0ff7e42d7a82b34676`; merge commit comparison: one commit ahead, zero file changes (identical tree).
+- CI #41586223809 / run #1177 SUCCESS, both required jobs; 109 Python tests / one intentional skip; Android launcher/installer tests and release validation build PASS.
+- APK 1,572,293 bytes / 1,572,864 cap / 571 bytes headroom. No artifacts or publication.
+- Main-only commit `6eaf787c56226606b1d2e650c59540c553756c62` remains deliberately excluded; `main` untouched.
+
+### Final gate
+- G01: PASS.
+- G02: READY TO START from `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- G03–G05: NOT STARTED.
+- Physical TV/phone/OEM acceptance remains G03; no APK installation/publication or TV state change has occurred.
