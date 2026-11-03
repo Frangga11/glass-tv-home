@@ -73,6 +73,42 @@ public class WallpaperUploadServer {
         this.standbyOnly = standbyOnly;
     }
 
+    /**
+     * Removes abandoned custom-wallpaper upload parts after process death. Active uploads are
+     * younger than the ten-minute request deadline and are retained; committed images are never
+     * selected by this suffix/prefix filter.
+     */
+    static void cleanupOrphanedCustomWallpaperUploads(Context context) {
+        if (context == null) return;
+        File directory = new File(context.getFilesDir(), "custom_wallpapers");
+        if (!directory.exists()) return;
+        File[] partials = directory.listFiles(
+                (dir, name) -> name.startsWith("custom_") && name.endsWith(".upload"));
+        if (partials == null) {
+            Log.w(TAG, "Unable to inspect custom wallpaper upload directory during recovery");
+            return;
+        }
+
+        long cutoff = System.currentTimeMillis() - 10L * 60L * 1000L;
+        try {
+            File canonicalDirectory = directory.getCanonicalFile();
+            for (File partial : partials) {
+                try {
+                    if (!partial.isFile() || partial.lastModified() >= cutoff) continue;
+                    File canonicalPartial = partial.getCanonicalFile();
+                    if (!canonicalDirectory.equals(canonicalPartial.getParentFile())) continue;
+                    if (!canonicalPartial.delete() && canonicalPartial.exists()) {
+                        Log.w(TAG, "Unable to remove abandoned wallpaper upload: " + partial.getName());
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, "Unable to inspect abandoned wallpaper upload", e);
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Unable to resolve custom wallpaper directory during recovery", e);
+        }
+    }
+
     private String localized(int resourceId) {
         return LocaleContext.wrap(context).getString(resourceId);
     }
