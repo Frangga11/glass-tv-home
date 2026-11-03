@@ -96,6 +96,7 @@ The following remain NOT VERIFIED, not PASS:
 ## 8. Decision
 
 - **Source isolation audit:** PASS.
-- **F04-WALL-001:** repaired on owner branches and mirrored into F04; exact-head CI pending at this checkpoint.
-- **Overall F04:** PARTIAL / NOT FINAL until latest F04 and owner CI finish green.
+- **F04-WALL-001:** repaired on C07/E08 owner branches, mirrored into F04, and verified by owner + integration exact-head CI.
+- **F04 HOST/SOURCE EXIT:** PASS. All source, regression, build and APK-budget checks are complete.
+- **Overall product acceptance:** remains PARTIAL until Project G performs the explicitly deferred real-device, phone/LAN, OEM and remote acceptance. F05 separately owns force-stop/process-death/reboot persistence.
 - Keep PR #24, #41 and #53 Draft/open/unmerged. Do not publish/install APK or perform TV settings changes in Project F.
