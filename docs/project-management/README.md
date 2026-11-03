@@ -5,8 +5,8 @@
 **Prepared:** 31 October 2026  
 **Repository:** https://github.com/Frangga11/glass-tv-home  
 **Documentation branch:** `docs/project-master-inventory`  
-**Current feature branch:** `integration/project-f02-system-validation` (PR #50, Draft/open/unmerged)  
-**Current stage:** Project F03 — QR communication feasibility audit; host/source PASS, real-device acceptance reserved for Project G.
+**Current feature branch:** `integration/project-f04-feature-isolation-v2` (PR #53, Draft/open/unmerged)  
+**Current stage:** Project F04 — Avatar/Wallpaper/StandBy feature-isolation audit; host/source CI PASS, physical acceptance reserved for Project G.
 **F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
 ## Purpose
