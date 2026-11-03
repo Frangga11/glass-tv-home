@@ -660,3 +660,11 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Overall F04 remains PARTIAL pending owner CI and Project G device acceptance. PR #24/#41/#53 remain Draft/open/unmerged; no APK publication/install or physical TV testing.
 - Project G retains phone/LAN, OEM DreamService, remote/focus, 1080p/4K, and actual filesystem/network failure acceptance. F05 retains process-death/force-stop/reboot persistence.
 - Full evidence: `F04_FEATURE_ISOLATION_AUDIT.md`; resume instructions: `HANDOVER.md`.
+
+
+## F04 owner-branch verification update — 3 November 2026
+
+- C07 owner PR #24 head `b7a40fdc2c52268ec69c95731983d2f95024eb57` passed exact-head CI #41560200291 (both jobs; 21 Python tests / 1 intentional skip; APK 1,550,961 bytes; no publication).
+- E08 owner PR #41 head `c613e3c5f593556748d1593d23f2899ecee36e4a` passed exact-head CI #41560600033 (both jobs; 11 Python tests / 1 intentional skip; APK 1,564,089 bytes; no publication).
+- Latest F04 test-only head `6ffc8b4c253beb2662d6978ba38033039c3c53f9` passed Lists/tools/docs with 65 Python tests / 1 intentional skip in #41560811925. Android build and size gate remain in progress; previous source head `e895ee590a607a8194b2037585ed47f2cf464961` passed both jobs and APK budget.
+- F04-WALL-001 is fixed and owner-synchronized. Keep F04 PARTIAL until latest test-only exact-head CI is green. PR #24/#41/#53 remain Draft/open/unmerged; no physical TV test or APK publication.
