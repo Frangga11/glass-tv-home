@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** OFFICIALLY APPROVED — A01–A06 complete; B/C/D source/CI work complete with F-stage acceptance pending; E00 and E01 source audits complete; E02 next; device testing deferred to final F-stage acceptance  
+**Status:** PROJECT F OFFICIALLY CLOSED (F01–F07 HOST/SOURCE EXIT PASS); PROJECT G READY FOR FINAL INTEGRATION AND DEVICE ACCEPTANCEnce pending; E00 and E01 source audits complete; E02 next; device testing deferred to final F-stage acceptance  
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
@@ -438,3 +438,41 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - F07 repairs per-frame weather shader allocations, ripple churn, UI-thread wallpaper/QR preview decoding, stale wallpaper task handling, main-thread Now Playing Binder polling, Backdrop OOM/partial-array handling, unbounded StandBy decode queue, forced System.gc(), and online wallpaper cache aggregate storage growth (512 MiB cap).
 - **F07 HOST/SOURCE EXIT PASS; overall performance acceptance PARTIAL.** Real Mi TV Stick RAM/FPS/frame time/ANR/crash/thermal/long-run soak and phone/LAN acceptance remain Project G. No APK publication/installation, no physical test, no merge.
 - F07 full evidence: `F07_PERFORMANCE_STABILITY_AUDIT.md`; resume point and next work: Project G final integrated audit under D-013.
+
+
+## OFFICIAL PROJECT F CLOSURE & PROJECT G HANDOVER — 3 NOVEMBER 2026
+
+**Checkpoint ID:** GTVH-F-CLOSE-2026-11-03  
+**Project F disposition:** CLOSED — HOST/SOURCE EXIT PASS (F01–F07)  
+**Project G disposition:** READY FOR EXECUTION — FINAL INTEGRATION, DEVICE ACCEPTANCE & RELEASE GATES  
+**Approval:** User explicitly declared Project F officially closed and directed synchronized documentation for Project G.
+
+### Frozen Project F baseline
+- F07 integration branch: `integration/project-f07-performance-stability`
+- F07 exact source/test HEAD: `976e068d48ecc1ede2811ac455372395d382ba76`
+- F07 base F06 HEAD: `487099013e6d9bd65cc07d72e760b1e14ab1f091`
+- F07 Draft PR #56: OPEN / DRAFT / UNMERGED; preserve under D-013.
+- Exact-head CI #41568715178: both required jobs SUCCESS; Python 99/99; launcher and installer unit tests PASS; release build, APK diagnostics and size gate PASS.
+- Diagnostic APK size: 1,571,293 bytes / 1,572,864-byte cap / 1,571-byte headroom. Workflow artifact list empty; no APK published or installed.
+- F01–F07 are closed for their approved host/source scope. This is not a claim of full real-device acceptance.
+
+### Explicit boundary carried into Project G
+No physical Mi TV Stick profiling or soak was performed during F. No measured FPS/frame time, RAM/PSS, ANR/crash rate, thermal behavior, OEM/remote behavior, phone-to-TV LAN QR acceptance, or reboot/process-death acceptance is claimed. These are mandatory Project G evidence, not waived items.
+
+### Project G execution order
+1. **G01 — Baseline & dependency reconciliation:** enumerate every owner branch, exact head SHA, PR base/head, dependency order and existing CI evidence; identify stale or divergent branches before combining anything.
+2. **G02 — Controlled integration:** construct a separate integration candidate; preserve all feature-owner branches; integrate in approved dependency order; record every conflict and its owner; no direct main merge.
+3. **G03 — Full integrated audit & regression:** inspect the complete combined diff and cross-module contracts; run source/security/resource checks, all Python and Android unit/Robolectric suites, installer tests, release build and APK budget; repair at the responsible owner branch and replay the exact integration head.
+4. **G04 — Device-test readiness decision:** publish a labelled, traceable candidate only after source/integration gates pass and obtain explicit user approval before any TV installation or settings change.
+5. **G05 — Physical acceptance & soak:** on the Mi TV Stick / Android TV 11 baseline, test Home/navigation/D-pad/Back, dialogs/focus, profile/app lock/kids mode, QR phone/LAN flows, wallpaper/1080p/4K, weather, Now Playing, StandBy/DreamService, low storage/network interruption, process death/force-stop/reboot, crash/ANR/logcat, memory trend, frame timing and thermal/long-run stability.
+6. **G06 — Final decision & release:** reconcile all findings, verify documentation and exact commit ancestry, present evidence and residual risks; merge to main, publish release APK or change protected branch state only after explicit user approval. No automatic merge/release.
+
+### Non-negotiable governance
+- D-013 remains binding: owner branches are preserved; integration is isolated and staged; findings are fixed at the owning source; no early merge; final merge is a Project G decision requiring explicit approval.
+- No unapproved APK install, HOME-default change, ADB/device setting change, data wipe, or package-state mutation.
+- Never label device-only gates PASS without device evidence. A successful CI build is not a substitute for real-device acceptance.
+- Maintain the workflow Trigger → Input → Verification → Work → Decision Point → Output → Quality Check → Final/Not Final.
+- At each Project G session end, update HANDOVER, OPERATIONS_LOG, MASTER, INVENTORY, AUDIT_REGISTER, DECISION_LOG and roadmap; keep README status accurate.
+
+### Project F closure decision
+Project F is formally closed at HOST/SOURCE EXIT PASS for F01–F07. The remaining physical and final integration obligations are transferred to Project G with explicit gates above. PR #56 and all owner PRs remain unmerged; the F07 baseline is frozen as evidence, not promoted to main.
