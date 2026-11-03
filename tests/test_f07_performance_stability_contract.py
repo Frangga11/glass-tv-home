@@ -68,6 +68,8 @@ class F07PerformanceStabilityContractTest(unittest.TestCase):
         self.assertIn("wallDecoder.execute", preview)
         self.assertIn("wallpaperThumbnailGeneration.incrementAndGet()", preview)
         self.assertIn("qrUploadDialog.isShowing()", preview)
+        self.assertIn("generation != wallpaperThumbnailGeneration.get()", preview)
+        self.assertIn("wallpaperThumbnailGeneration.incrementAndGet()", source)
         self.assertIn("thumb.recycle()", preview)
 
     def test_wallpaper_selection_uses_latest_request_worker(self):
