@@ -34,6 +34,39 @@ class F06LocalizationUiContractTest(unittest.TestCase):
         )
         self.assertNotIn('"H:%d°  L:%d°"', source)
 
+    def test_known_locale_copy_is_correctly_assigned(self):
+        def read_value(locale, key):
+            root = ET.parse(RES / locale / "strings.xml").getroot()
+            for node in root.findall("string"):
+                if node.attrib.get("name") == key:
+                    return node.text or ""
+            self.fail(f"Missing {key} in {locale}")
+
+        self.assertEqual(
+            "Gunakan tombol arah untuk menggulir bacaan.",
+            read_value("values-id", "daily_ayah_navigation_hint"),
+        )
+        self.assertEqual(
+            "Use the directional buttons to scroll the reading.",
+            read_value("values-en", "daily_ayah_navigation_hint"),
+        )
+        self.assertEqual("Tutup", read_value("values-id", "daily_ayah_close"))
+        self.assertEqual("Close", read_value("values-en", "daily_ayah_close"))
+        self.assertEqual("🪟 Efek Kaca", read_value("values-id", "glass_effect_setting_title"))
+
+    def test_app_language_selector_and_platform_locale_are_bilingual(self):
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        language = (JAVA / "AppLanguage.java").read_text(encoding="utf-8")
+        self.assertIn("AppLanguage.LANG_ID", main)
+        self.assertIn("AppLanguage.LANG_EN", main)
+        self.assertIn("localeManager.getApplicationLocales()", language)
+        self.assertIn("localeManager.setApplicationLocales", language)
+        self.assertRegex(
+            language,
+            r"static String normalizeLanguage\(String language\)\s*\{\s*"
+            r"return LANG_EN\.equalsIgnoreCase\(language\) \? LANG_EN : LANG_ID;",
+        )
+
     def test_only_indonesian_and_english_are_advertised(self):
         locale_config = ET.parse(RES / "xml" / "locales_config.xml").getroot()
         android_name = "{http://schemas.android.com/apk/res/android}name"
