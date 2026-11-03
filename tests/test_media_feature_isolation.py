@@ -233,5 +233,22 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         self.assertIn('getSharedPreferences("wallpaper_prefs"', self.main)
 
 
+    def test_wallpaper_api_partial_clear_notifies_owner_to_reconcile_state(self):
+        clear = self.wallpaper.split(
+            "private synchronized void handleApiClear(OutputStream out)", 1
+        )[1].split(
+            "private void sendSimpleJsonResponse(", 1
+        )[0]
+        listener = self.main.split(
+            "private WallpaperUploadServer.UploadListener createUploadListener()", 1
+        )[1].split(
+            "private void onStandbyPhotoUploaded(File file)", 1
+        )[0]
+        self.assertIn("listener.onClearFailed()", clear)
+        self.assertIn("listener.onCleared()", clear)
+        self.assertIn("onClearFailed()", listener)
+        self.assertIn("onCustomWallpaperDeleteFailed()", listener)
+
+
 if __name__ == "__main__":
     unittest.main()
