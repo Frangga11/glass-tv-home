@@ -877,7 +877,7 @@ public class WallpaperUploadServer {
 
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
-                SimpleDateFormat sdf = new SimpleDateFormat("d MMM, HH:mm", Locale.getDefault());
+                SimpleDateFormat sdf = new SimpleDateFormat("d MMM, HH:mm", Locale.forLanguageTag(AppLanguage.getLanguage(context)));
                 for (File f : files) {
                     JSONObject obj = new JSONObject();
                     obj.put("name", f.getName());
@@ -1501,7 +1501,7 @@ public class WallpaperUploadServer {
                 "          for (const item of items) {\n" +
                 "            const enc = encodeURIComponent(item.name);\n" +
                 "            html += '<div class=\"photo-row' + (item.active ? ' active' : '') + '\">' +\n" +
-                "              '<img class=\"photo-thumb\" src=\"" + base + "/thumb?file=' + enc + '\" alt=\"thumb\">' +\n" +
+                "              '<img class=\"photo-thumb\" src=\"" + base + "/thumb?file=' + enc + '\" alt=\"" + htmlText(R.string.wallpaper_page_thumbnail_alt) + "\">' +\n" +
                 "              '<div class=\"photo-meta\">' +\n" +
                 "                '<div class=\"photo-name\">' + (item.active ? '✨ ' : '') + item.name + '</div>' +\n" +
                 "                '<div class=\"photo-sub\">' + item.date + ' • ' + item.size + '</div>' +\n" +
