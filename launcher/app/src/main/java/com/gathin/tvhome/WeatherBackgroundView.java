@@ -76,6 +76,7 @@ public class WeatherBackgroundView extends View {
         int alpha;
     }
     private final List<SplashRipple> ripples = new ArrayList<>();
+    private final List<SplashRipple> ripplePool = new ArrayList<>(16);
 
     // Stars
     private static class Star {
@@ -291,6 +292,7 @@ public class WeatherBackgroundView extends View {
         // 2. Initialize Rain drops if drizzle, rain or storm
         rainDrops.clear();
         ripples.clear();
+        ripplePool.clear();
         if (currentCondition == ConditionType.DRIZZLE || currentCondition == ConditionType.RAIN || currentCondition == ConditionType.THUNDERSTORM) {
             int count;
             if (currentCondition == ConditionType.THUNDERSTORM) {
@@ -527,7 +529,8 @@ public class WeatherBackgroundView extends View {
             if (drop.y > cachedH) {
                 // Occasional splash ripple on screen bottom floor
                 if (ripples.size() < 16 && random.nextFloat() < 0.25f) {
-                    SplashRipple r = new SplashRipple();
+                    SplashRipple r = ripplePool.isEmpty() ? new SplashRipple()
+                            : ripplePool.remove(ripplePool.size() - 1);
                     r.x = drop.x;
                     r.y = cachedH - (random.nextFloat() * 30f);
                     r.radius = 1f;
@@ -549,6 +552,7 @@ public class WeatherBackgroundView extends View {
             float progress = r.radius / r.maxRadius;
             if (progress >= 1.0f) {
                 ripples.remove(i);
+                if (ripplePool.size() < 16) ripplePool.add(r);
             } else {
                 int currentAlpha = (int) (r.alpha * (1f - progress));
                 ripplePaint.setColor(Color.argb(currentAlpha, 220, 240, 255));
