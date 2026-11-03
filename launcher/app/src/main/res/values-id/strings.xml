@@ -648,6 +648,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="standby_page_server_unavailable">Server tidak tersedia. Coba unggah foto ini lagi.</string>
     <string name="standby_page_cancelled_retry">Unggahan dibatalkan. Foto ini dapat dicoba lagi; periksa koleksi sebelum mengulang.</string>
     <string name="wallpaper_page_server_error_fallback">Server mengembalikan kesalahan. Silakan coba lagi.</string>
+    <string name="wallpaper_page_thumbnail_alt">Pratinjau foto</string>
     <string name="local_upload_error_busy">Layanan unggahan sedang sibuk. Coba lagi.</string>
     <string name="wallpaper_page_action_failed">Permintaan tidak dapat diproses. Periksa foto lalu coba lagi.</string>
     <string name="wallpaper_delete_failed">Tidak dapat menghapus satu atau beberapa gambar. Periksa penyimpanan lalu coba lagi.</string>
