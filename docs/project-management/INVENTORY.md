@@ -423,4 +423,19 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 **Owner synchronization:** C07 PR #24 head `b7a40fdc2c52268ec69c95731983d2f95024eb57` passed #41560200291 (both jobs, 21 tests / 1 intentional skip; APK 1,550,961 bytes). E08 PR #41 head `c613e3c5f593556748d1593d23f2899ecee36e4a` passed #41560600033 (both jobs, 11 tests / 1 intentional skip; APK 1,564,089 bytes). Owner synchronization HOST/CI PASS. F04 HOST/SOURCE EXIT PASS; only physical Project G acceptance and F05 persistence lifecycle validation remain.
 
 See `F04_FEATURE_ISOLATION_AUDIT.md` for full evidence, repaired F04-WALL-001 and Project G gates.
-undefined
+
+
+## Project F05 — Persistence & Recovery inventory — 3 November 2026
+
+| Component | Recovery contract | Current result |
+|---|---|---|
+| Profile / Avatar | Profile JSON stores custom avatar path; replacement persists reference before old-file cleanup; startup removes orphaned/stale uploads | PASS (source contract) |
+| Wallpaper selection | Startup validates pinned custom file; clears stale pin; empty Custom collection returns to Natural; unreadable directory preserves saved state | FIXED / OWNER + F05 SOURCE VERIFIED |
+| Wallpaper QR temp uploads | Private `custom_*.upload` parts are registered while active; startup removes unowned parts only; worker finally unregisters/deletes incomplete temp file | FIXED / OWNER + F05 SOURCE VERIFIED; Android CI pending |
+| StandBy | Photo URI collection and mode are one synchronous commit; clear persists empty state before file deletion; startup orphan cleanup; both renderers share store | PASS (source contract) |
+| Home / Settings navigation | Home focus and Settings tab restore through NavigationState preference keys | PASS (source contract) |
+| Prayer alarms | Non-exported BOOT_COMPLETED receiver delegates to existing Azan scheduling policy; backup remains disabled | PASS (source contract); real reboot DEFERRED_TO_G |
+
+F05 integration PR #54 is Draft/open/unmerged, based on F04 exact head `6ffc8b4c253beb2662d6978ba38033039c3c53f9`; current head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`, 14 commits ahead / 0 behind. Latest F05 run #41563437433 passed 80 Python tests (1 intentional skip); Android unit/release build and APK size gate are pending. Actual force-stop, process-death and reboot acceptance remains Project G.
+
+See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
