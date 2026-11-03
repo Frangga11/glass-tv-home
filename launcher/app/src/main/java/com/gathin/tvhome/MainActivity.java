@@ -1189,8 +1189,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final long generation = wallpaperThumbnailGeneration.incrementAndGet();
         try {
             wallDecoder.execute(() -> {
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperThumbnailGeneration.get()) return;
                 android.graphics.Bitmap thumb = decodeWallpaper(file);
                 if (thumb == null) return;
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperThumbnailGeneration.get()) {
+                    if (!thumb.isRecycled()) thumb.recycle();
+                    return;
+                }
                 boolean posted = handler.post(() -> {
                     if (isDestroyed() || generation != wallpaperThumbnailGeneration.get()
                             || qrImageView != target || qrUploadDialog == null || !qrUploadDialog.isShowing()) {
@@ -5937,6 +5944,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         btnClose.setOnClickListener(v -> qrUploadDialog.dismiss());
         qrUploadDialog.setOnDismissListener(dialog -> {
+            wallpaperThumbnailGeneration.incrementAndGet();
             if (uploadServer != null) {
                 uploadServer.stop();
                 uploadServer = null;
