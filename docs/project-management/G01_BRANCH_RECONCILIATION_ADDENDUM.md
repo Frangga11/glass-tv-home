@@ -119,3 +119,73 @@ A Draft PR was opened to expose the GitHub synthetic integration result without 
 - **G02 final APK build:** NOT AUTHORIZED/NOT READY until the final isolated combined candidate has passed exact-head integrated CI.
 - **G03 physical acceptance:** not started. No APK was published or installed and no TV/device state was changed.
 - **No feature PR or main branch was merged in this checkpoint.** This preserves D-013 and the user's branch-ownership policy.
+
+
+## 9. Semantic reconciliation checkpoint — 3 November 2026
+
+**Disposition:** 26-path semantic review completed; isolated candidate created; exact-head candidate CI pending at checkpoint. G01 remains OPEN until the candidate CI and final cross-group review pass.
+
+### Candidate refs and Git ancestry
+- Candidate branch: `integration/g01-reconciled-candidate-20261103`
+- Candidate exact head: `6ebd6284fcb21a74fed2a769868e91bc69ef7ae3`
+- Candidate PR: #58, base `integration/b-series`, Draft/open/unmerged; GitHub reports `mergeable=true`.
+- Candidate commit has three parents: F07 integration head `28e841a3475c144dd5ec85afb0976278274c2b5f`, B-series `9070894fa6d9ef8aec034f46dfe777e866709dfe`, and corrected F06 `2c369a0a48c77bb3bf023c292892541306e535a3`.
+- Compare candidate against B-series: ahead 644 / behind 0; merge base is the exact B-series head. The branch is therefore a descendant of the B-series base and no longer has the original branch divergence.
+- PR #57 remains a historical diagnostic conflict gate (mergeable=false); PR #58 is the new semantic reconciliation review surface. Neither is merged.
+
+### 26-path semantic disposition
+
+| # | Path | Reconciliation decision | Root-cause / regression guard |
+|---:|---|---|---|
+| 1 | `AppAdapter.java` | Retain F07/B-equivalent `TvFeedback.show` delivery. | Centralizes feedback delivery; same changed behavior in both branches. |
+| 2 | `AppUpdateManager.java` | Retain F07 OTA implementation. | Preserves request/download timeouts, cancellation, HTTP status validation, complete-file check and sync/close ordering. Dialog width 560dp vs B-series 600dp is a presentation choice; verify on target TV. |
+| 3 | `AvatarUploadServer.java` | Retain F07 implementation. | Preserves upload progress/timeout feedback and strengthens session expiry with monotonic elapsed time, per-request deadline, active-client accounting and cancellation handling. |
+| 4 | `ChildModeManager.java` | Retain F07 implementation. | Includes B-series feedback call sites and adds synchronized profile-scoped state mutation/read paths; reduces profile-switch and concurrent preference races. |
+| 5 | `DockDecoration.java` | Retain shared solid fallback drawing. | Both branches retain opaque tray, border, shadow and D-pad focus; only comment wording differs. |
+| 6 | `FeedbackPolicy.java` | Retain identical shared helper. | Pure policy functions are unchanged between branches; covered by FeedbackPolicyTest. |
+| 7 | `GlassDrawable.java` | Retain shared opaque fallback. | Both versions preserve panel surface/border when glass decoration is disabled; only comment wording differs. |
+| 8 | `HomeSettingsActivity.java` | Retain shared `TvFeedback` migration. | Same feedback behavior in both branches. |
+| 9 | `LocationBroadcastReceiver.java` | Retain shared `TvFeedback` migration. | Same localized status delivery; manifest permission hardening remains in F07 candidate. |
+| 10 | `MainActivity.java` | Retain F07 integration version. | Preserves B-series feedback and adds D05/D07-safe StandBy collection operations, context-aware LAN address use, orphan-upload recovery and newer wallpaper/profile lifecycle behavior. |
+| 11 | `ModernSettingsDialog.java` | Retain F07 integration version. | Includes B01 visual tokens/dialog contract plus focus path, tab/scroll retention and safer settings/installer/ADB flows. Replaced B-series toast fallbacks with `openDeviceSettingsOrFeedback`, phone-installer dialog and clipboard feedback. Profile dialog width differs; device visual acceptance remains open. |
+| 12 | `NetworkFeedbackPolicy.java` | Retain F07 superset. | Keeps B-series timeout/download checks and adds monotonic session deadlines and shared upload-storage reservation policy. |
+| 13 | `RecentAppsActivity.java` | Retain F07 version. | Preserves B-series `TvFeedback` and uses the shared HomeKeyPressTracker double-press window. |
+| 14 | `TvDialogStyle.java` | Retain shared B01 modal contract. | Geometry, dimming and glass-off solid surface policy retained; only documentation comment differs. |
+| 15 | `TvFeedback.java` | Retain identical shared helper. | Main-thread delivery and Activity lifecycle guard are the same in both branches. |
+| 16 | `TvUiTokens.java` | Retain shared token values. | Same visual token values; comment wording differs only. |
+| 17 | `UserSwitchDialog.java` | Retain F07 version. | Preserves B-series feedback/modal adoption and keeps profile actions aligned with the shared dialog contract. |
+| 18 | `WallpaperUploadServer.java` | Retain F07 implementation. | Preserves B-series upload timeout/error UX and adds monotonic session/request deadlines, bounded clients, strict request framing, storage reservations, shutdown synchronization, partial-failure reporting and orphan upload cleanup. |
+| 19 | `WeatherActivity.java` | Retain F07 implementation. | Includes shared modal/feedback behavior and adds reduced-motion and low-spec device behavior. |
+| 20 | `values-en/strings.xml` | Retain F07 resource set with corrected Daily Verse copy. | Corrected English title/open/meaning/unavailable strings; test now checks actual values, not only key parity. |
+| 21 | `values-id/strings.xml` | Retain F07 resource set with corrected Daily Verse copy. | Corrected Indonesian title/open/meaning/unavailable strings; test now checks actual values, not only key parity. |
+| 22 | `values/strings.xml` | Retain Indonesian default fallback and all shared keys. | Default locale copy remains Indonesian; key and placeholder parity remain under F06 tests. |
+| 23 | `FeedbackPolicyTest.java` | Retain shared test. | Same normalization, empty-message and Activity-lifecycle assertions. |
+| 24 | `GlassSurfaceFallbackTest.java` | Preserve B-series test in candidate. | B-only path is not present in F07; candidate includes it. F07's distinct `GlassFallbackSurfaceTest.java` is also retained rather than silently deleting either project's coverage. |
+| 25 | `NetworkFeedbackPolicyTest.java` | Retain F07 superset. | Contains B-series download/timeout assertions plus expanded deadline and storage-reservation boundary tests. |
+| 26 | `TvDialogStyleTest.java` | Retain shared test. | Same width/height/WRAP_CONTENT geometry assertions. |
+
+### Concrete defect found and corrected
+The previous F06 gate checked locale key parity and a few sample strings, but did not validate all Daily Verse locale assignments. Four values were reversed/mixed:
+- English resource had Indonesian title, action, meaning and unavailable text.
+- Indonesian resource had English title, action, meaning and unavailable text.
+
+Corrections were committed on F06 at:
+- `60a63edcb84d94c19340dd1cdf2aaf49d6e726f6` — English resources.
+- `f1dc301b5110ba2c2bf380ea6128368aa992b475` — Indonesian resources.
+- `2c369a0a48c77bb3bf023c292892541306e535a3` — semantic locale assertions.
+
+F06 exact-head CI on `2c369a0a48c77bb3bf023c292892541306e535a3`: run #41582796654, both required jobs SUCCESS; Python 89 tests / 1 intentional README-count skip; Android unit tests and release validation build PASS; APK 1,569,397 bytes / 1,572,864-byte cap; workflow artifacts empty.
+
+### Candidate construction and checks
+- Candidate tree uses the reviewed F07 implementation as the first-parent tree, adds B-series-only `GlassSurfaceFallbackTest.java`, and overlays corrected F06 locale resources and regression test.
+- Candidate branch content spot-check confirms both fallback tests exist, English/Indonesian Daily Verse values are correctly assigned, and the upload monotonic deadline/storage reservation and Settings focus-retention implementations are present.
+- A heuristic full-resource scan found no other obvious Indonesian phrases in English resources; three English terms in Indonesian strings are intentional technical/proper-name references (Open-Meteo, Allow from this source, US AQI).
+- Candidate exact-head CI run #41583215114 (push) and #41583248216 (pull_request) was still running at this checkpoint. Do not mark G01 PASS until both required jobs on exact candidate SHA `6ebd6284fcb21a74fed2a769868e91bc69ef7ae3` finish successfully and cross-group review is complete.
+
+### Current gate
+- 26-path semantic disposition: COMPLETE at source review level; candidate tree created.
+- PR #58 mergeable: TRUE; Draft/open/unmerged.
+- Candidate exact-head CI: PENDING.
+- G01 overall: OPEN pending exact-head CI and final review.
+- G02: BLOCKED until G01 closes.
+- No merge to `main`, no APK publication/installation, and no physical TV setting changes.
