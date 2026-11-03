@@ -418,8 +418,8 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 | StandBy renderers | MainActivity overlay + ClockDream | Both consume the same StandbyPhotoStore collection | Physical visual/rotation/remote checks in G |
 | Wallpaper entry surfaces | MainActivity + ModernSettingsDialog + E08 | Quick Control remains compact Change/Shuffle/Next; Appearance retains distinct Collection/Interval/Personal Manager cards | Physical D-pad/focus/Back checks in G |
 
-**F04 integration checkpoint:** branch `integration/project-f04-feature-isolation-v2`, PR #53, head `e895ee590a607a8194b2037585ed47f2cf464961`; exact-head CI #41560230282 PASS (63 Python tests / 1 intentional skip; Android unit tests/release build/APK size guard pass). APK 1,566,045 bytes, 6,819-byte headroom; no artifact.
+**F04 integration checkpoint:** source head `e895ee590a607a8194b2037585ed47f2cf464961` passed #41560230282 (63 Python tests / 1 intentional skip; Android unit/release build and APK size gate PASS). APK 1,566,045 bytes, 6,819-byte headroom; no artifact. Latest test-only head `6ffc8b4c253beb2662d6978ba38033039c3c53f9` Lists/tools/docs PASS (65 tests / 1 intentional skip) in #41560811925; Android exact-head retest pending.
 
-**Open owner synchronization:** C07 PR #24 head `b7a40fdc2c52268ec69c95731983d2f95024eb57` and E08 PR #41 head `717cb37ab888b095fec6a83a192f81708739199b`; Lists/tools/docs pass, Android jobs pending at last poll. Keep F04 overall PARTIAL until owner exact-head CI is green.
+**Owner synchronization:** C07 PR #24 head `b7a40fdc2c52268ec69c95731983d2f95024eb57` passed #41560200291 (both jobs, 21 tests / 1 intentional skip; APK 1,550,961 bytes). E08 PR #41 head `c613e3c5f593556748d1593d23f2899ecee36e4a` passed #41560600033 (both jobs, 11 tests / 1 intentional skip; APK 1,564,089 bytes). Owner synchronization HOST/CI PASS; only latest F04 test-only exact-head Android retest remains.
 
 See `F04_FEATURE_ISOLATION_AUDIT.md` for full evidence, repaired F04-WALL-001 and Project G gates.
