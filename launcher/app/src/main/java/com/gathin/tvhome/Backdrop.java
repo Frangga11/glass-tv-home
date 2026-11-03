@@ -76,6 +76,11 @@ final class Backdrop {
 
     /** Where the coloured copies are made, and where they are handed back. Main thread. */
     static void setWorker(Executor worker, Handler main) {
+        if (tintWorker != worker) {
+            // shutdownNow() can discard queued tint jobs without running their completion callback.
+            // Clear their in-flight markers so a new Home instance can rebuild the cache.
+            tinting.clear();
+        }
         tintWorker = worker;
         tintMain = main;
         requestTints();
