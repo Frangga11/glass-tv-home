@@ -1,11 +1,11 @@
 # F04 — Avatar, Wallpaper & StandBy Feature Isolation Audit
 
 **Date:** 3 November 2026  
-**Status:** SOURCE AUDIT PASS WITH ONE REPAIRED FINDING; latest exact-head CI is pending.  
+**Status:** SOURCE AUDIT PASS; C07/E08 owner exact-head CI PASS; latest F04 test-only head CI is pending.  
 **Integration PR:** #53 — Draft/open/unmerged  
 **Integration branch:** `integration/project-f04-feature-isolation-v2`  
 **Base:** `integration/project-f02-system-validation` at `2ede452b3137580bd51088661f80b6d0eeac7f4b`  
-**Latest recorded F04 head:** `e895ee590a607a8194b2037585ed47f2cf464961`
+**Latest recorded F04 head:** `6ffc8b4c253beb2662d6978ba38033039c3c53f9`
 
 ## 1. Objective and boundary
 
@@ -60,7 +60,7 @@ Added:
 - `tests/test_media_feature_isolation.py`: storage-root isolation, profile-bound Avatar callback, safe replacement/cleanup, StandBy storage and renderer sharing, QR route/server lifecycle separation, Quick Control versus Appearance separation, Wallpaper deletion-result handling and partial-state reconciliation.
 - `tests/test_wallpaper_api_clear_failure.py`: C07 API clear failure callback, HTTP error result and directory-boundary guards.
 
-**Latest observed Python result:** F04 Lists/tools/docs job on head `e895ee590a607a8194b2037585ed47f2cf464961` passed **63 tests, 1 intentional skip** (README count normalization on integration branches). C07 owner test job passed **21 tests, 1 intentional skip**. Android unit/release build jobs were still in progress at the time of this checkpoint; do not mark the latest F04 head CI fully green until both required jobs finish successfully.
+**Latest observed Python result:** F04 Lists/tools/docs job on latest test-only head `6ffc8b4c253beb2662d6978ba38033039c3c53f9` passed **65 tests, 1 intentional skip** (README count normalization on integration branches). C07 owner exact-head CI #41560200291 passed **21 tests, 1 intentional skip** and both required jobs. E08 owner exact-head CI #41560600033 passed **11 tests, 1 intentional skip** and both required jobs. F04 latest-head Android unit/release build is still running; do not close F04 until run #41560811925 completes both jobs.
 
 Earlier intermediate CI failures were used as regression signals:
 - A too-strict test assertion was corrected to match the guarded `exists() && !delete()` contract.
@@ -71,9 +71,9 @@ Earlier intermediate CI failures were used as regression signals:
 
 | Workstream | Branch / PR | Head | CI state |
 |---|---|---|---|
-| C07 owner partial-clear repair | `feature/c07-upload-session-resilience`, PR #24 | `b7a40fdc2c52268ec69c95731983d2f95024eb57` | Lists/tools/docs PASS (21 tests, 1 intentional skip); Android build pending |
-| E08 owner delete reliability repair | `feature/e08-wallpaper-settings-redesign`, PR #41 | `717cb37ab888b095fec6a83a192f81708739199b` | Lists/tools/docs PASS; Android build pending |
-| F04 integrated audit | `integration/project-f04-feature-isolation-v2`, PR #53 | `e895ee590a607a8194b2037585ed47f2cf464961` | Lists/tools/docs PASS (63 tests, 1 intentional skip); Android build pending |
+| C07 owner partial-clear repair | `feature/c07-upload-session-resilience`, PR #24 | `b7a40fdc2c52268ec69c95731983d2f95024eb57` | Exact-head CI #41560200291 PASS (both jobs; 21 tests, 1 intentional skip; APK 1,550,961 bytes) |
+| E08 owner delete reliability repair | `feature/e08-wallpaper-settings-redesign`, PR #41 | `c613e3c5f593556748d1593d23f2899ecee36e4a` | Exact-head CI #41560600033 PASS (both jobs; 11 tests, 1 intentional skip; APK 1,564,089 bytes) |
+| F04 integrated audit | `integration/project-f04-feature-isolation-v2`, PR #53 | `6ffc8b4c253beb2662d6978ba38033039c3c53f9` | Lists/tools/docs PASS (65 tests, 1 intentional skip); exact-head Android build pending in #41560811925 |
 
 All three PRs remain Draft/open/unmerged under D-013. No APK publication or installation occurred.
 
