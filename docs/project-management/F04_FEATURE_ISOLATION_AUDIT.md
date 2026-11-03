@@ -100,3 +100,32 @@ The following remain NOT VERIFIED, not PASS:
 - **F04 HOST/SOURCE EXIT:** PASS. All source, regression, build and APK-budget checks are complete.
 - **Overall product acceptance:** remains PARTIAL until Project G performs the explicitly deferred real-device, phone/LAN, OEM and remote acceptance. F05 separately owns force-stop/process-death/reboot persistence.
 - Keep PR #24, #41 and #53 Draft/open/unmerged. Do not publish/install APK or perform TV settings changes in Project F.
+
+
+## 9. Re-verification after network interruption — 3 November 2026, 08:41 WIB
+
+A fresh read-only audit was performed after the network interruption. No source edits were made during this re-verification.
+
+### Repository / branch integrity
+- Canonical integration PR #53 remains in the open Draft set. Owner PR #24 (C07) and #41 (E08) also remain open Draft; none is merged.
+- F04 branch `integration/project-f04-feature-isolation-v2` compares against approved F02/F03 base `integration/project-f02-system-validation` at `2ede452b3137580bd51088661f80b6d0eeac7f4b`: **21 commits ahead, 0 behind**.
+- The F04 compare lists exactly seven changed paths: `MainActivity.java`, `WallpaperUploadServer.java`, three localized `strings.xml` files, and the two F04 regression-test files. No unrelated module files are changed in this F04 delta.
+
+### Latest exact-head CI recheck
+| Branch / PR | Exact head | Latest observed run | Lists/tools/docs | Android build / size | APK |
+|---|---|---|---|---|---:|
+| C07 / #24 | `b7a40fdc2c52268ec69c95731983d2f95024eb57` | #41560247050 | PASS — 21 tests, 1 intentional skip | PASS | 1,550,961 bytes |
+| E08 / #41 | `c613e3c5f593556748d1593d23f2899ecee36e4a` | #41560595614 | PASS — 11 tests, 1 intentional skip | PASS | 1,564,089 bytes |
+| F04 / #53 | `6ffc8b4c253beb2662d6978ba38033039c3c53f9` | #41560815870 | PASS — 65 tests, 1 intentional skip | PASS | 1,566,045 bytes |
+
+All jobs in all three latest runs completed SUCCESS. The APK size ceiling remains 1,572,864 bytes; F04 headroom is 6,819 bytes. Artifact lists for the three latest runs are empty; manual publication/install was not performed.
+
+### Source spot-checks
+- Re-read the F04 integration `WallpaperUploadServer.handleApiClear`: it remains scoped to `custom_wallpapers`, attempts all eligible deletions, invokes `onClearFailed()` on partial failure, and returns HTTP 500; it invokes `onCleared()`/HTTP 200 only on complete success.
+- Re-read the E08/F04 UI paths: single delete checks the delete result; delete-all checks every file and calls the reconciliation handler on partial failure; keep-one/delete-others checks each deletion and reports failure; the QR API callback is wired to the same UI reconciliation handler.
+- Verified localized failure feedback exists in default, Indonesian and English resources and is byte-identical between the E08 owner branch and F04 integration.
+- F04 regression files contain 20 media-isolation source-contract tests plus 3 QR API clear-failure tests. The full CI suite count is 65, with one intentional README-count normalization skip.
+- Re-read the F04 compare and source contracts: separate Avatar/Wallpaper/StandBy storage roots, profile-scoped Avatar replacement, separate Wallpaper/StandBy routes and server modes, StandBy shared store/renderers, and distinct Quick Control/Appearance entry surfaces remain covered.
+
+### Re-verification decision
+**F04 HOST/SOURCE EXIT remains PASS. No new reproducible source blocker was found.** This recheck confirms the prior exact-head CI evidence; it does not represent a new physical device test or a fresh CI execution initiated after the interruption. Phone/LAN/OEM/DreamService/remote/1080p/4K and actual filesystem/network failure acceptance remain NOT VERIFIED and reserved for Project G. Force-stop/process-death/reboot persistence remains F05.
