@@ -82,6 +82,7 @@ class F06LocalizationUiContractTest(unittest.TestCase):
             "standby_page_server_unavailable",
             "standby_page_cancelled_retry",
             "wallpaper_page_server_error_fallback",
+            "wallpaper_page_thumbnail_alt",
         ):
             self.assertIn(f"R.string.{key}", wallpaper)
         self.assertNotIn("Upload session expired or closed", wallpaper)
