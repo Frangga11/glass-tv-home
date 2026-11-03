@@ -927,12 +927,12 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 | Quick Control vs Appearance Wallpaper | PASS (source contract) | Compact three-action Quick Control surface remains distinct from Appearance Collection/Interval/Personal Manager cards; shared underlying state retained |
 | F04-WALL-001 local deletion false-success | FIXED / HOST VERIFIED | E08 owner branch checks single/bulk delete outcomes, adds localized failure feedback, refreshes remaining collection and clears stale pin state |
 | F04-WALL-001 QR API partial clear | FIXED / HOST VERIFIED | C07 owner adds `onClearFailed`, attempts remaining deletions, returns HTTP 500 and asks owner UI to reconcile |
-| F04 source head CI | PASS | PR #53 source head `e895ee590a607a8194b2037585ed47f2cf464961`; run #41560230282 both jobs SUCCESS; 63 Python tests / 1 intentional skip; APK 1,566,045 bytes, 6,819-byte headroom |
+| F04 prior source head CI | PASS | PR #53 source head `e895ee590a607a8194b2037585ed47f2cf464961`; run #41560230282 both jobs SUCCESS; 63 tests / 1 intentional skip; APK 1,566,045 bytes |
 | F04 APK budget | PASS | 1,566,045 bytes / 1,572,864-byte cap / 6,819-byte headroom; no artifact published |
 | C07 owner exact-head CI | PASS | PR #24 head `b7a40fdc2c52268ec69c95731983d2f95024eb57`; run #41560200291 both jobs SUCCESS; 21 tests / 1 intentional skip; APK 1,550,961 bytes |
 | E08 owner exact-head CI | PASS | PR #41 head `c613e3c5f593556748d1593d23f2899ecee36e4a`; run #41560600033 both jobs SUCCESS; 11 tests / 1 intentional skip; APK 1,564,089 bytes |
 | Project G phone/LAN/OEM/TV acceptance | DEFERRED, NOT PASS | Real QR, remote/focus, 1080p/4K, DreamService, low-storage and network failure behavior |
 | F05 process-death/reboot persistence | DEFERRED | Dedicated F05 scope; not waived |
 
-**F04 decision at this checkpoint:** source audit and C07/E08 owner HOST/CI PASS. Latest test-only F04 head `6ffc8b4c253beb2662d6978ba38033039c3c53f9` Lists/tools/docs PASS (65 tests / 1 intentional skip) in run #41560811925; Android build/size gate is still pending. Overall F04 PARTIAL until latest exact-head integration CI and later Project G device gates pass. PR #24, #41 and #53 remain Draft/open/unmerged. No APK publication/installation.
+**F04 decision:** HOST/SOURCE EXIT PASS. C07/E08 owner exact-head CI and F04 integration exact-head CI all passed. Overall product acceptance remains PARTIAL until Project G phone/LAN/OEM/TV gates are completed; F05 owns force-stop/process-death/reboot persistence. PR #24, #41 and #53 remain Draft/open/unmerged. No APK publication/installation.
 See `F04_FEATURE_ISOLATION_AUDIT.md` and `HANDOVER.md`.
