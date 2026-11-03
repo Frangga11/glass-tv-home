@@ -987,3 +987,21 @@ See `F04_FEATURE_ISOLATION_AUDIT.md` and `HANDOVER.md`.
 
 **Decision: F05 HOST/SOURCE EXIT PASS.** PR #24/#41/#54 remain Draft/open/unmerged under D-013. No APK publication/installation or physical TV acceptance. Next host/source workstream: F06 Localization.
 See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
+
+
+## Project F06 — Localization & Global UI final audit — 3 November 2026
+
+| Gate / finding | Exact evidence | Result |
+|---|---|---|
+| F06 integration ancestry | PR #55; base F05 head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; F06 head `487099013e6d9bd65cc07d72e760b1e14ab1f091`; 29 ahead / 0 behind | PASS |
+| Locale resource structure | 615 keys each in default/ID/EN; zero duplicates, missing keys, placeholder mismatches or empty values | PASS |
+| Platform language path | locales_config id/en; LocaleManager API 33+; LocaleContext API 26–32; visible Activities and ClockDream wrapper guards | PASS (source/CI) |
+| Dynamic labels | Update schedule, weather high/low, daily-ayah labels and Glass Effect title corrected | FIXED |
+| Global modal contract | Now Playing and card prompt now use TvDialogStyle.applyCustom; existing standard and Settings modal helpers retained | FIXED |
+| QR upload localization | Avatar/Wallpaper/StandBy error bodies and browser fallbacks use canonical localized resources; gallery date/thumbnail alt localized | FIXED |
+| Exact-head CI | #41566633872, exact head `487099013e6d9bd65cc07d72e760b1e14ab1f091`; both jobs SUCCESS; 89 Python tests / 1 intentional skip | PASS |
+| Android build and APK budget | testReleaseUnitTest + assembleRelease PASS; APK 1,569,397 B / 3,467 B headroom | PASS |
+| Artifact/publication | Workflow artifact list empty; no APK publication/installation | PASS |
+| Physical TV/phone/LAN/OEM | Not exercised in F06 | DEFERRED_TO_G |
+
+**Decision: F06 HOST/SOURCE EXIT PASS.** PR #55 remains Draft/open/unmerged. Full evidence: `F06_LOCALIZATION_UI_AUDIT.md`.
