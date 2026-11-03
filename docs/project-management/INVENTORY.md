@@ -464,3 +464,22 @@ See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
 | Release build / APK budget | CI #41566633872; APK 1,569,397 B / 3,467 B headroom | PASS |
 
 F06 integration PR #55 remains Draft/open/unmerged under D-013. Physical language switching, D-pad/focus, popup rendering, phone/LAN upload and OEM/browser acceptance remain Project G gates. See `F06_LOCALIZATION_UI_AUDIT.md`.
+
+
+## Project F07 — Performance, memory, stability and storage inventory — 3 November 2026
+
+| Surface | Source/CI contract | Result |
+|---|---|---|
+| Weather animation | Sun/moon/cloud radial shaders cached across frames; ripple pool capped at 16 | PASS (Robolectric + source guard) |
+| Wallpaper startup/change | Background decode; generation-based stale request rejection; stale bitmap release | PASS |
+| QR wallpaper preview | Background decode; preview invalidated on dismiss/new request | PASS |
+| Now Playing | MediaSession/notification Binder polling on dedicated single-thread worker; refresh coalescing | PASS (source/CI) |
+| Backdrop blur | OOM/runtime/rejected-worker handling; both scratch arrays recover after partial allocation | PASS |
+| StandBy photo decode | One background worker, bounded queue of two, discard-oldest policy | PASS |
+| Cache cleanup | No forced System.gc(); existing cache deletion semantics preserved | PASS |
+| Online wallpaper storage | 150-file ceiling plus 512 MiB aggregate cache cap; oldest-first pruning and companion metadata cleanup | PASS (JUnit) |
+| Python source-contract suite | 99 tests | PASS |
+| Android launcher/installer unit tests | `testReleaseUnitTest` both modules | PASS |
+| Release/APK gate | CI #41568715178; APK 1,571,293 B / 1,571 B headroom | PASS |
+
+F07 PR #56 is Draft/open/unmerged. Host/source exit is PASS; real Mi TV Stick RAM/FPS/frame-time/ANR/thermal/soak profiling and physical interaction acceptance remain Project G. See `F07_PERFORMANCE_STABILITY_AUDIT.md`.
