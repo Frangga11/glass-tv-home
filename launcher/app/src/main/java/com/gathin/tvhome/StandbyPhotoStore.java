@@ -32,11 +32,18 @@ final class StandbyPhotoStore {
     static final long MAX_UPLOADED_BYTES = 512L * 1024L * 1024L;
     private static final long MIN_FREE_BYTES = 64L * 1024L * 1024L;
 
-    private static final ExecutorService DECODE_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r, "standby-photo-decoder");
-        thread.setDaemon(true);
-        return thread;
-    });
+    // Only the current slide and a small number of in-flight requests are useful. A bounded
+    // queue prevents slow removable/content-provider reads from accumulating stale decode work.
+    private static final ExecutorService DECODE_EXECUTOR = new java.util.concurrent.ThreadPoolExecutor(
+            1, 1, 0L, java.util.concurrent.TimeUnit.MILLISECONDS,
+            new java.util.concurrent.ArrayBlockingQueue<>(2), r -> {
+                Thread thread = new Thread(() -> {
+                    android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+                    r.run();
+                }, "standby-photo-decoder");
+                thread.setDaemon(true);
+                return thread;
+            }, new java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy());
 
     interface BitmapCallback {
         void onLoaded(Bitmap bitmap);
