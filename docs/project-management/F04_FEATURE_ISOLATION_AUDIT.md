@@ -1,7 +1,7 @@
 # F04 — Avatar, Wallpaper & StandBy Feature Isolation Audit
 
 **Date:** 3 November 2026  
-**Status:** SOURCE AUDIT PASS; C07/E08 owner exact-head CI PASS; latest F04 test-only head CI is pending.  
+**Status:** F04 HOST/SOURCE EXIT PASS; C07/E08 owner exact-head CI PASS; physical acceptance remains deferred to Project G.  
 **Integration PR:** #53 — Draft/open/unmerged  
 **Integration branch:** `integration/project-f04-feature-isolation-v2`  
 **Base:** `integration/project-f02-system-validation` at `2ede452b3137580bd51088661f80b6d0eeac7f4b`  
@@ -60,7 +60,7 @@ Added:
 - `tests/test_media_feature_isolation.py`: storage-root isolation, profile-bound Avatar callback, safe replacement/cleanup, StandBy storage and renderer sharing, QR route/server lifecycle separation, Quick Control versus Appearance separation, Wallpaper deletion-result handling and partial-state reconciliation.
 - `tests/test_wallpaper_api_clear_failure.py`: C07 API clear failure callback, HTTP error result and directory-boundary guards.
 
-**Latest observed Python result:** F04 Lists/tools/docs job on latest test-only head `6ffc8b4c253beb2662d6978ba38033039c3c53f9` passed **65 tests, 1 intentional skip** (README count normalization on integration branches). C07 owner exact-head CI #41560200291 passed **21 tests, 1 intentional skip** and both required jobs. E08 owner exact-head CI #41560600033 passed **11 tests, 1 intentional skip** and both required jobs. F04 latest-head Android unit/release build is still running; do not close F04 until run #41560811925 completes both jobs.
+**Latest observed Python and Android result:** F04 integration head `6ffc8b4c253beb2662d6978ba38033039c3c53f9` passed exact-head CI #41560811925 (both required jobs): **65 Python tests, 1 intentional skip**; Android `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size gate PASS. APK **1,566,045 bytes** against 1,572,864-byte cap (6,819-byte headroom); workflow artifacts empty and publication skipped. C07 owner exact-head CI #41560200291 passed both jobs (21 tests / 1 intentional skip; APK 1,550,961 bytes). E08 owner exact-head CI #41560600033 passed both jobs (11 tests / 1 intentional skip; APK 1,564,089 bytes).
 
 Earlier intermediate CI failures were used as regression signals:
 - A too-strict test assertion was corrected to match the guarded `exists() && !delete()` contract.
@@ -73,7 +73,7 @@ Earlier intermediate CI failures were used as regression signals:
 |---|---|---|---|
 | C07 owner partial-clear repair | `feature/c07-upload-session-resilience`, PR #24 | `b7a40fdc2c52268ec69c95731983d2f95024eb57` | Exact-head CI #41560200291 PASS (both jobs; 21 tests, 1 intentional skip; APK 1,550,961 bytes) |
 | E08 owner delete reliability repair | `feature/e08-wallpaper-settings-redesign`, PR #41 | `c613e3c5f593556748d1593d23f2899ecee36e4a` | Exact-head CI #41560600033 PASS (both jobs; 11 tests, 1 intentional skip; APK 1,564,089 bytes) |
-| F04 integrated audit | `integration/project-f04-feature-isolation-v2`, PR #53 | `6ffc8b4c253beb2662d6978ba38033039c3c53f9` | Lists/tools/docs PASS (65 tests, 1 intentional skip); exact-head Android build pending in #41560811925 |
+| F04 integrated audit | `integration/project-f04-feature-isolation-v2`, PR #53 | `6ffc8b4c253beb2662d6978ba38033039c3c53f9` | Exact-head CI #41560811925 PASS (both jobs; 65 tests / 1 intentional skip; APK 1,566,045 bytes) |
 
 All three PRs remain Draft/open/unmerged under D-013. No APK publication or installation occurred.
 
