@@ -972,3 +972,18 @@ See `F04_FEATURE_ISOLATION_AUDIT.md` and `HANDOVER.md`.
 | Actual force-stop/process-death/reboot and OEM acceptance | Physical Mi TV Stick not tested | DEFERRED_TO_G |
 
 **F05 decision:** IN PROGRESS; no exit claimed. Do not merge or publish/install an APK. See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
+
+
+## Project F05 final host/source exit — 3 November 2026
+
+| Gate / finding | Exact evidence | Result |
+|---|---|---|
+| F05-WALL-001 stale Custom Wallpaper pin | E08 PR #41 head `edd24d72256d06da4578971ea7bac1802746a3a6`; CI #41562661052 both jobs SUCCESS; 15 tests / 1 skip; APK 1,564,197 B | FIXED / OWNER HOST-CI PASS |
+| F05-WALL-002 orphan QR upload parts | C07 PR #24 head `2315f12472f469843c1441ad7d01c6898858c4c5`; CI #41563429553 both jobs SUCCESS; 23 tests / 1 skip; APK 1,551,661 B | FIXED / OWNER HOST-CI PASS |
+| F05 integration | PR #54 head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; CI #41563437433 both jobs SUCCESS; 80 tests / 1 skip; APK 1,566,861 B / 6,003 B headroom | PASS |
+| Owner/integration synchronization | E08 recovery helper/tests byte-identical; C07 cleanup/registry/tests byte-identical; startup call present | PASS |
+| Artifact/publication | C07/E08/F05 artifact lists empty; publication skipped | PASS |
+| Force-stop/process-death/reboot, alarm, StandBy/DreamService, phone/LAN/OEM | No physical device test in F05 | DEFERRED_TO_G |
+
+**Decision: F05 HOST/SOURCE EXIT PASS.** PR #24/#41/#54 remain Draft/open/unmerged under D-013. No APK publication/installation or physical TV acceptance. Next host/source workstream: F06 Localization.
+See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
