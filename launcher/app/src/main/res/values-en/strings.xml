@@ -209,7 +209,12 @@
     <string name="sound_effects_off">🔇 Sound effects turned off</string>
     <string name="sound_effects_selected">🔊 Sound effects: %1$s</string>
     <string name="auto_update_schedule_title">⏱️ Choose Daily Auto-Update Time</string>
-    <string name="auto_update_time_selected">Auto-update time set to: %1$s</string>
+    <string name="auto_update_time_selected">Automatic update time set to: %1$s</string>
+    <string name="auto_update_time_0330_option">🌙 03:30 AM (Best time: overnight &amp; Fajr)</string>
+    <string name="auto_update_time_0400_option">🌙 04:00 AM (Early morning)</string>
+    <string name="auto_update_time_0500_option">🌙 05:00 AM (Fajr)</string>
+    <string name="auto_update_time_1200_option">☀️ 12:00 PM (Midday)</string>
+    <string name="auto_update_time_0200_option">🌃 02:00 AM (Midnight)</string>
 
     <string name="standby_photo_required">Choose photos before enabling photo mode.</string>
     <string name="standby_mode_save_failed">Could not save the Standby mode change. The previous setting remains active.</string>
@@ -353,6 +358,7 @@
     <string name="uv_high">High</string>
     <string name="uv_very_high">Very high</string>
     <string name="precipitation_summary">Now • rain chance %1$d%%</string>
+    <string name="weather_high_low_summary">High: %1$d°  Low: %2$d°</string>
     <string name="limited_visibility">Limited visibility</string>
     <string name="good_visibility">Good visibility</string>
 
