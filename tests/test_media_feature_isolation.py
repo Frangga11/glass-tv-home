@@ -155,5 +155,36 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         self.assertIn("if (screensaverActive) updateNightstandScreensaver()", method)
 
 
+    def test_bulk_wallpaper_cleanup_checks_delete_failures_before_success_feedback(self):
+        delete_all = self.main.split(
+            ".setPositiveButton(R.string.delete_all_action, (d, w) -> {", 1
+        )[1].split(
+            ".setNegativeButton(R.string.cancel_action, null)", 1
+        )[0]
+        keep_one = self.main.split(
+            "case 2: // Keep this, delete others", 1
+        )[1].split(
+            "case 3: // Back", 1
+        )[0]
+        self.assertIn("if (!f.delete())", delete_all)
+        self.assertIn("onCustomWallpaperCleared()", delete_all)
+        self.assertIn("if (!f.delete())", keep_one)
+        self.assertIn("onCustomWallpaperSelected(file)", keep_one)
+
+    def test_both_standby_renderers_share_the_same_private_photo_store(self):
+        dream = (JAVA / "ClockDream.java").read_text(encoding="utf-8")
+        self.assertIn("StandbyPhotoStore.getUris(this)", dream)
+        self.assertIn("StandbyPhotoStore.isPhotoMode(this)", dream)
+        self.assertIn("StandbyPhotoStore.getCurrentPhotoIndex(uris.size())", dream)
+        overlay = self.main.split(
+            "private void updateNightstandPhoto()", 1
+        )[1].split(
+            "private void dismissScreensaver()", 1
+        )[0]
+        self.assertIn("StandbyPhotoStore.getUris(this)", overlay)
+        self.assertIn("StandbyPhotoStore.isPhotoMode(this)", overlay)
+        self.assertIn("StandbyPhotoStore.getCurrentPhotoIndex(uris.size())", overlay)
+
+
 if __name__ == "__main__":
     unittest.main()
