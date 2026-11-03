@@ -5,8 +5,8 @@
 **Prepared:** 31 October 2026  
 **Repository:** https://github.com/Frangga11/glass-tv-home  
 **Documentation branch:** `docs/project-master-inventory`  
-**Current feature branch:** `integration/project-f04-feature-isolation-v2` (PR #53, Draft/open/unmerged)  
-**Current stage:** Project F04 — Avatar/Wallpaper/StandBy HOST/SOURCE EXIT PASS; F05 is next, physical acceptance remains reserved for Project G.
+**Current project checkpoint:** Project F officially CLOSED (F01–F07 HOST/SOURCE EXIT PASS); Project G READY TO START at G01.ntegration/project-f04-feature-isolation-v2` (PR #53, Draft/open/unmerged)  
+**Current stage:** Project G — final branch/dependency reconciliation, controlled integration, full regression, and gated physical-device acceptance.ndBy HOST/SOURCE EXIT PASS; F05 is next, physical acceptance remains reserved for Project G.
 **F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
 ## Purpose
@@ -32,7 +32,7 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md) | B06 notification, Toast, OTA loading, QR progress/timeout audit and exact-head CI evidence |
 | [F03_QR_COMMUNICATION_FEASIBILITY.md](F03_QR_COMMUNICATION_FEASIBILITY.md) | F03 QR communication/upload feasibility evidence, CI, findings, and Project G device gates |
 | [F04_FEATURE_ISOLATION_AUDIT.md](F04_FEATURE_ISOLATION_AUDIT.md) | F04 Avatar, Wallpaper and StandBy source isolation, repairs, CI and Project G gates |
-| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
+| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |\n| [F07_PERFORMANCE_STABILITY_AUDIT.md](F07_PERFORMANCE_STABILITY_AUDIT.md) | Final F07 performance, memory, stability and storage host/source evidence |\n| [PROJECT_G_READINESS_CHECKPOINT.md](PROJECT_G_READINESS_CHECKPOINT.md) | Official Project F closure, Project G work packages, device gates and governance |
 
 ## Documentation architecture
 
@@ -154,3 +154,7 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 - F02 PR #50 source/test head a95b21becad238dd634dda1e79aa9de36d749d8c and findings-register head 2469c0c1d241a00be3e02235e12f3f0f6525deb9 passed #41520409999 and #41520818608 respectively (both jobs; 42 Python tests; launcher tests/build). APK 1,565,713 bytes, 7,151 bytes headroom; no artifacts.
 - Owner and integration now share process-wide QR upload storage reservations; F02 preserves D05 UploadResult persistence adaptation.
 - Latest F02 docs head e190e2863a4aacbe3aba61094fab00572f4b469f; exact-head CI #41521145454 queued at last poll. PRs remain Draft/open/unmerged; no physical TV testing.
+
+## Official transition — 3 November 2026
+
+Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G is ready to begin at G01. The frozen F07 candidate is `integration/project-f07-performance-stability` @ `976e068d48ecc1ede2811ac455372395d382ba76`; PR #56 remains Draft/open/unmerged. Physical Mi TV Stick acceptance and full integrated regression remain Project G obligations. See [PROJECT_G_READINESS_CHECKPOINT.md](PROJECT_G_READINESS_CHECKPOINT.md).
