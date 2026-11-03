@@ -302,7 +302,11 @@ public class WeatherActivity extends Activity {
         weatherMainCondition.setText(w.condition == null || w.condition.isEmpty()
                 ? getString(R.string.weather_data_unavailable) : w.condition);
 
-        weatherMainSub.setText(w.highTemp >= -100 && w.lowTemp >= -100 ? String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp) : "H:—  L:—");
+        if (w.highTemp >= -100 && w.lowTemp >= -100) {
+            weatherMainSub.setText(getString(R.string.weather_high_low_summary, w.highTemp, w.lowTemp));
+        } else {
+            weatherMainSub.setText(getString(R.string.weather_data_unavailable));
+        }
 
         // 3. Hourly Strip (Apple Weather Conditions Card)
         hourlyContainer.removeAllViews();
