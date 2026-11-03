@@ -19,6 +19,7 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         cls.wallpaper = (JAVA / "WallpaperUploadServer.java").read_text(encoding="utf-8")
         cls.standby = (JAVA / "StandbyPhotoStore.java").read_text(encoding="utf-8")
         cls.metadata = (JAVA / "WallpaperMetadata.java").read_text(encoding="utf-8")
+        cls.main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
 
     def test_each_feature_uses_a_distinct_private_storage_root(self):
         self.assertIn('new File(context.getFilesDir(), "profile_avatars")', self.avatar)
@@ -102,6 +103,56 @@ class MediaFeatureIsolationTest(unittest.TestCase):
     def test_bundled_default_metadata_does_not_capture_custom_wallpapers(self):
         self.assertIn('private static final String DEFAULT_DEMPO_FILE = "kabut-pagi-dempo-default.jpg";', self.metadata)
         self.assertIn('if (picture == null || !DEFAULT_DEMPO_FILE.equals(picture.getName())) return null;', self.metadata)
+
+
+    def test_avatar_qr_callback_targets_the_captured_profile_id(self):
+        method = self.main.split(
+            "void showAvatarUploadQrDialog(String profileId, Runnable onUpdated)", 1
+        )[1].split(
+            "void showWallpaperUploadQrDialog()", 1
+        )[0]
+        self.assertIn("new AvatarUploadServer(this, profileId, file ->", method)
+        self.assertIn("ProfileManager.replaceCustomAvatar(this, profileId, file)", method)
+        self.assertNotIn("ProfileManager.getActiveProfile(this)", method)
+
+    def test_wallpaper_and_standby_qr_sessions_use_separate_server_modes(self):
+        wallpaper = self.main.split(
+            "void showWallpaperUploadQrDialog()", 1
+        )[1].split(
+            "void showStandbyUploadQrDialog()", 1
+        )[0]
+        standby = self.main.split(
+            "void showStandbyUploadQrDialog()", 1
+        )[1].split(
+            "void showPhoneUploadQrDialog(", 1
+        )[0]
+        self.assertIn("new WallpaperUploadServer(this, 8080, createUploadListener())", wallpaper)
+        self.assertIn("uploadServer.getWallpaperPath()", wallpaper)
+        self.assertIn("new WallpaperUploadServer(this, 8080, listener, true)", standby)
+        self.assertIn("uploadServer.getStandbyPath()", standby)
+        self.assertIn("onStandbyUploaded(File imageFile)", standby)
+        self.assertIn("onStandbyPhotoUploaded(imageFile)", standby)
+
+    def test_shared_qr_dialog_dismissal_stops_both_server_types(self):
+        method = self.main.split(
+            "void showPhoneUploadQrDialog(", 1
+        )[1].split(
+            "private WallpaperUploadServer.UploadListener createUploadListener()", 1
+        )[0]
+        dismiss = method.split("setOnDismissListener(", 1)[1]
+        self.assertIn("uploadServer.stop()", dismiss)
+        self.assertIn("avatarUploadServer.stop()", dismiss)
+        self.assertIn("uploadServer = null", dismiss)
+        self.assertIn("avatarUploadServer = null", dismiss)
+
+    def test_standby_ui_refresh_requires_durable_collection_membership(self):
+        method = self.main.split(
+            "private void onStandbyPhotoUploaded(File file)", 1
+        )[1].split(
+            "private void onCustomWallpaperUploaded(File file)", 1
+        )[0]
+        self.assertIn("StandbyPhotoStore.getUris(this).contains(Uri.fromFile(file))", method)
+        self.assertIn("if (screensaverActive) updateNightstandScreensaver()", method)
 
 
 if __name__ == "__main__":
