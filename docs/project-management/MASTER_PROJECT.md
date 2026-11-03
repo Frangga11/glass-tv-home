@@ -706,3 +706,15 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - **Decision: F05 HOST/SOURCE EXIT PASS.** No remaining reproducible host/source blocker. Real force-stop/process-death/reboot, prayer alarm restoration, StandBy/DreamService, phone/LAN and OEM behavior remain DEFERRED_TO_G. No APK publication/installation or physical TV testing.
 - **Next host/source workstream: Project F06 — Localization.** Project G retains the physical acceptance gates.
 - Full evidence: `F05_PERSISTENCE_RECOVERY_AUDIT.md`; resume instructions: `HANDOVER.md`.
+
+
+## PROJECT F06 — LOCALIZATION & GLOBAL UI CONSISTENCY — FINAL HOST/SOURCE CHECKPOINT (3 November 2026)
+
+- F06 integration PR #55, branch `integration/project-f06-localization`, remains Draft/open/unmerged under D-013. Base is F05 exact head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; F06 exact head `487099013e6d9bd65cc07d72e760b1e14ab1f091`; compare 29 commits ahead / 0 behind, nine changed paths.
+- Exact-head CI #41566633872: both required jobs SUCCESS. Python suite 89 tests / 1 intentional README-count skip; Android `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size gate PASS.
+- APK 1,569,397 bytes / 1,572,864-byte cap / 3,467-byte headroom. Workflow artifacts empty; no APK publication or installation.
+- Three canonical resource sets (`values`, `values-id`, `values-en`) contain 615 keys each, with zero duplicates, key-set mismatches, placeholder mismatches or empty strings. Android locale config advertises only `id` and `en`; API 33+ LocaleManager and API 26–32 LocaleContext paths are source-guarded across visible Activities and StandBy DreamService.
+- F06 fixed hardcoded Indonesian schedule labels, weather H/L abbreviations, reversed daily-ayah translations, untranslated Indonesian Glass Effect title, two custom dialogs bypassing the global modal contract, and QR upload/browser error fallbacks, gallery date locale and thumbnail accessibility label. Equivalent error text was consolidated onto canonical localized resources to recover APK headroom.
+- **Decision: F06 HOST/SOURCE EXIT PASS.** PR #55 stays Draft/open/unmerged. No merge, APK publication/installation, device setting changes or physical TV testing.
+- Project G retains physical Android 11/13+ language switching, rendered UI/popup/D-pad, phone/LAN QR and mobile browser acceptance. Next host/source work unit: Project F07.
+- Full evidence: `F06_LOCALIZATION_UI_AUDIT.md`; resume instructions: `HANDOVER.md`.
