@@ -718,3 +718,14 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - **Decision: F06 HOST/SOURCE EXIT PASS.** PR #55 stays Draft/open/unmerged. No merge, APK publication/installation, device setting changes or physical TV testing.
 - Project G retains physical Android 11/13+ language switching, rendered UI/popup/D-pad, phone/LAN QR and mobile browser acceptance. Next host/source work unit: Project F07.
 - Full evidence: `F06_LOCALIZATION_UI_AUDIT.md`; resume instructions: `HANDOVER.md`.
+
+
+## PROJECT F07 — PERFORMANCE, CRASH, FREEZE, RAM & STABILITY — HOST/SOURCE CHECKPOINT (3 November 2026)
+
+- F07 integration PR #56 remains Draft/open/unmerged under D-013. Branch `integration/project-f07-performance-stability`; base F06 exact head `487099013e6d9bd65cc07d72e760b1e14ab1f091`; F07 exact head `976e068d48ecc1ede2811ac455372395d382ba76`; compare 19 ahead / 0 behind, ten changed paths.
+- Exact-head CI #41568715178 both required jobs SUCCESS. Python suite 99 tests, all PASS. Launcher and installer `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size enforcement PASS.
+- APK 1,571,293 bytes / 1,572,864-byte cap / 1,571-byte headroom. Workflow artifact list empty; no APK published or installed.
+- F07 repairs: weather per-frame RadialGradient allocations and ripple object churn; MainActivity fallback and QR preview UI-thread image decode; stale wallpaper task/bitmap lifecycle; main-thread Now Playing Binder polling; Backdrop OOM and partial work-array recovery; unbounded StandBy photo decode queue; forced `System.gc()`; and Online Wallpapers count-only cache with new 512 MiB aggregate budget.
+- **Decision: F07 HOST/SOURCE EXIT PASS; overall performance acceptance PARTIAL.** No physical Mi TV Stick profiling/soak, no FPS/RAM/ANR/thermal measurement, no APK publication/installation, no merge or device setting change.
+- Project G must measure actual target-device performance and long-run stability after explicit approval for one labelled TV-test APK. PR #56 stays Draft/open/unmerged. Next workstream: Project G final integrated audit under D-013.
+- Full evidence: `F07_PERFORMANCE_STABILITY_AUDIT.md`; roadmap status: `BUG_REPAIR_ROADMAP.md`; resume: `HANDOVER.md`.
