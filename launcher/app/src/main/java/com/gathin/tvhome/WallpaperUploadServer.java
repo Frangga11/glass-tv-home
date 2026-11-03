@@ -61,6 +61,8 @@ public class WallpaperUploadServer {
     // Shared across server instances so a newly opened QR session accounts for draining old sessions.
     private static final Object UPLOAD_STORAGE_LOCK = new Object();
     private static long reservedUploadBytes;
+    private static final Set<String> ACTIVE_CUSTOM_WALLPAPER_UPLOADS =
+            Collections.synchronizedSet(new java.util.HashSet<>());
 
     public WallpaperUploadServer(Context context, int port, UploadListener listener) {
         this(context, port, listener, false);
@@ -71,6 +73,57 @@ public class WallpaperUploadServer {
         this.port = port;
         this.listener = listener;
         this.standbyOnly = standbyOnly;
+    }
+
+    /**
+     * Removes abandoned custom-wallpaper upload parts after process death. Files still owned by
+     * a live upload worker are protected by the process-local registry; a killed process loses
+     * that registry, making its remaining .upload files recoverable on the next launch.
+     */
+    static void cleanupOrphanedCustomWallpaperUploads(Context context) {
+        if (context == null) return;
+        File directory = new File(context.getFilesDir(), "custom_wallpapers");
+        if (!directory.exists()) return;
+        synchronized (ACTIVE_CUSTOM_WALLPAPER_UPLOADS) {
+            File[] partials = directory.listFiles(
+                    (dir, name) -> name.startsWith("custom_") && name.endsWith(".upload"));
+            if (partials == null) {
+                Log.w(TAG, "Unable to inspect custom wallpaper upload directory during recovery");
+                return;
+            }
+            try {
+                File canonicalDirectory = directory.getCanonicalFile();
+                for (File partial : partials) {
+                    try {
+                        String path = canonicalPath(partial);
+                        if (ACTIVE_CUSTOM_WALLPAPER_UPLOADS.contains(path)) continue;
+                        File canonicalPartial = new File(path);
+                        if (!canonicalDirectory.equals(canonicalPartial.getParentFile())
+                                || !canonicalPartial.isFile()) continue;
+                        if (!canonicalPartial.delete() && canonicalPartial.exists()) {
+                            Log.w(TAG, "Unable to remove abandoned wallpaper upload: " + partial.getName());
+                        }
+                    } catch (Exception e) {
+                        Log.w(TAG, "Unable to inspect abandoned wallpaper upload", e);
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Unable to resolve custom wallpaper directory during recovery", e);
+            }
+        }
+    }
+
+    private static String canonicalPath(File file) {
+        try { return file.getCanonicalPath(); }
+        catch (Exception ignored) { return file.getAbsolutePath(); }
+    }
+
+    private static void registerActiveCustomWallpaperUpload(File file) {
+        if (file != null) ACTIVE_CUSTOM_WALLPAPER_UPLOADS.add(canonicalPath(file));
+    }
+
+    private static void unregisterActiveCustomWallpaperUpload(File file) {
+        if (file != null) ACTIVE_CUSTOM_WALLPAPER_UPLOADS.remove(canonicalPath(file));
     }
 
     private String localized(int resourceId) {
@@ -320,6 +373,7 @@ public class WallpaperUploadServer {
 
     private void handleClient(Socket client) {
         long reservedStorageBytes = 0L;
+        File wallpaperUploadTempFile = null;
         try {
             long requestDeadline = Math.min(sessionExpiresAtMs,
                     SystemClock.elapsedRealtime() + NetworkFeedbackPolicy.WALLPAPER_UPLOAD_REQUEST_DEADLINE_MS);
@@ -472,7 +526,12 @@ public class WallpaperUploadServer {
                         sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
                         return;
                     }
-                    File targetFile = File.createTempFile("custom_", ".upload", customDir);
+                    File targetFile;
+                    synchronized (ACTIVE_CUSTOM_WALLPAPER_UPLOADS) {
+                        targetFile = File.createTempFile("custom_", ".upload", customDir);
+                        wallpaperUploadTempFile = targetFile;
+                        registerActiveCustomWallpaperUpload(targetFile);
+                    }
                     boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
                     UploadFilePolicy.ImageFormat imageFormat = complete && isSessionActive()
                             ? validateImageFile(targetFile, lines) : null;
@@ -533,6 +592,12 @@ public class WallpaperUploadServer {
             Log.w(TAG, "Client handle exception: " + e.getMessage());
             try { client.close(); } catch (Exception ignored) {}
         } finally {
+            if (wallpaperUploadTempFile != null) {
+                unregisterActiveCustomWallpaperUpload(wallpaperUploadTempFile);
+                if (wallpaperUploadTempFile.exists() && !wallpaperUploadTempFile.delete()) {
+                    Log.w(TAG, "Unable to remove incomplete wallpaper upload: " + wallpaperUploadTempFile.getName());
+                }
+            }
             releaseUploadStorage(reservedStorageBytes);
             activeClients.remove(client);
             try {
