@@ -846,3 +846,13 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Next: complete C07 owner and F05 exact-head Android CI/size gates; inspect logs and APK artifact lists; rerun only failed jobs for external dependency throttling; cross-check owner/integration source equality; then update final audit register and checkpoint.
 - Do not merge, publish/install APK, or test the TV in F05. Real force-stop/process-death/reboot, DreamService/OEM, alarm restore and filesystem acceptance remain Project G.
 - Detailed evidence: `F05_PERSISTENCE_RECOVERY_AUDIT.md`.
+
+
+## F05 host/source exit closure — 3 November 2026
+
+- F05 integration PR #54 exact head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; run #41563437433 both jobs SUCCESS. Python: 80 tests / 1 intentional README-count skip. Android unit tests/release build and APK size gate PASS; APK 1,566,861 bytes / 6,003-byte headroom; artifacts empty.
+- C07 owner PR #24 exact head `2315f12472f469843c1441ad7d01c6898858c4c5`, run #41563429553 both jobs SUCCESS; 23 tests / 1 intentional skip; APK 1,551,661 bytes / 21,203-byte headroom.
+- E08 owner PR #41 exact head `edd24d72256d06da4578971ea7bac1802746a3a6`, run #41562661052 both jobs SUCCESS; 15 tests / 1 intentional skip; APK 1,564,197 bytes / 8,667-byte headroom.
+- F05-WALL-001 stale Custom pin recovery and F05-WALL-002 abandoned QR temp-upload cleanup are fixed on their owner branches, mirrored to F05, and cross-audited. Scoped source/test blocks match exactly. All workflow artifact lists empty; no APK published/installed.
+- PR #24, #41 and #54 remain Draft/open/unmerged. **F05 HOST/SOURCE EXIT PASS.** No physical force-stop/process-death/reboot test is claimed. Project G must perform real Mi TV Stick reboot/alarm, StandBy/DreamService, phone/LAN and filesystem acceptance.
+- **Resume next at Project F06 — Localization.** Preserve the same owner-first repair, exact-head CI, cross-audit, staged integration and documentation checkpoint rules.
