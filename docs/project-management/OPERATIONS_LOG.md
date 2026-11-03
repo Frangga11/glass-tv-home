@@ -1,7 +1,7 @@
 # Glass TV Home — Operational Log
 
 **Version:** 1.0  
-**Updated:** 1 November 2026  
+**Updated:** 3 November 2026  
 **Rule:** concise events only. Detailed findings and test matrices remain in the relevant audit.
 
 | Date | Work item | Branch / PR / evidence | Event and result | Next action |
