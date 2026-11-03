@@ -693,3 +693,16 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Cross-feature source guards cover Avatar/Profile, StandBy atomic collection/mode persistence, Home focus/Settings tab, wallpaper startup recovery, QR temp-upload cleanup, and prayer alarm BOOT_COMPLETED recovery.
 - F05 remains IN PROGRESS until both owner/integration Android exact-head CI and APK size gates pass. Actual force-stop/process-death/reboot and OEM behavior remain Project G device gates. No APK publication/installation, no device setting changes, no merge.
 - Full evidence: `F05_PERSISTENCE_RECOVERY_AUDIT.md`; resume instructions: `HANDOVER.md`.
+
+
+## PROJECT F05 HOST/SOURCE EXIT — FINAL CHECKPOINT (3 November 2026)
+
+- F05 integration PR #54, branch `integration/project-f05-persistence-recovery`, exact head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; exact-head CI #41563437433 both required jobs SUCCESS.
+- Python suite: 80 tests, 1 intentional README-count skip. Android `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size gate PASS.
+- APK: 1,566,861 bytes / 1,572,864-byte cap / 6,003-byte headroom. Artifact list empty; no APK publication or installation.
+- F05-WALL-001 fixed on E08 owner PR #41 head `edd24d72256d06da4578971ea7bac1802746a3a6`; exact CI #41562661052 both jobs SUCCESS; 15 tests / 1 intentional skip; APK 1,564,197 bytes.
+- F05-WALL-002 fixed on C07 owner PR #24 head `2315f12472f469843c1441ad7d01c6898858c4c5`; exact CI #41563429553 both jobs SUCCESS; 23 tests / 1 intentional skip; APK 1,551,661 bytes.
+- Owner/integration cross-audit confirms the E08 startup-reconciliation helper and tests, and the C07 active-upload registry/orphan cleanup and tests, are synchronized byte-for-byte in F05. PR #24/#41/#54 remain Draft/open/unmerged.
+- **Decision: F05 HOST/SOURCE EXIT PASS.** No remaining reproducible host/source blocker. Real force-stop/process-death/reboot, prayer alarm restoration, StandBy/DreamService, phone/LAN and OEM behavior remain DEFERRED_TO_G. No APK publication/installation or physical TV testing.
+- **Next host/source workstream: Project F06 — Localization.** Project G retains the physical acceptance gates.
+- Full evidence: `F05_PERSISTENCE_RECOVERY_AUDIT.md`; resume instructions: `HANDOVER.md`.
