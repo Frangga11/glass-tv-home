@@ -459,7 +459,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroName != null) heroName.setMaxWidth(heroNameMaxWidth);
         if (heroDesc != null) heroDesc.setMaxWidth(heroMaxWidth);
 
-        String activeCat = getActiveWallpaperCategory();
+        String activeCat = reconcileActiveWallpaperCategoryForStartup();
         if ("Default".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File defaultWallpaper = getBundledDefaultWallpaper();
@@ -4553,6 +4553,48 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!isSupportedWallpaperCategory(category)) {
             category = "Default";
             prefs.edit().putString("active_category", category).apply();
+        }
+        return category;
+    }
+
+    /**
+     * Reconciles durable Custom-wallpaper preferences with the private files that survived
+     * process death or an interrupted delete before the collection is rendered.
+     */
+    private String reconcileActiveWallpaperCategoryForStartup() {
+        android.content.SharedPreferences prefs =
+                getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+        String category = getActiveWallpaperCategory();
+        if (!"Custom".equalsIgnoreCase(category)) return category;
+
+        File customDir = new File(getFilesDir(), "custom_wallpapers");
+        File[] files = customDir.exists()
+                ? customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name))
+                : new File[0];
+        // A null listing from an existing directory is an I/O/permission error, not proof that
+        // the collection is empty. Preserve the user's saved selection until it can be inspected.
+        if (customDir.exists() && files == null) return category;
+
+        if (files == null || files.length == 0) {
+            prefs.edit().putString("active_category", "Natural")
+                    .putBoolean("custom_single_mode", false)
+                    .remove("custom_single_file")
+                    .apply();
+            return "Natural";
+        }
+
+        boolean singleMode = prefs.getBoolean("custom_single_mode", false);
+        String singleFile = prefs.getString("custom_single_file", null);
+        if (singleMode) {
+            File selected = singleFile != null && UploadFilePolicy.isSafeStoredImageName(singleFile)
+                    ? new File(customDir, singleFile) : null;
+            if (selected == null || !selected.isFile() || selected.length() <= 0) {
+                prefs.edit().putBoolean("custom_single_mode", false)
+                        .remove("custom_single_file")
+                        .apply();
+            }
+        } else if (singleFile != null) {
+            prefs.edit().remove("custom_single_file").apply();
         }
         return category;
     }
