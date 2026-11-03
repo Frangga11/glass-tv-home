@@ -100,7 +100,7 @@ class PersistenceRecoveryContractTest(unittest.TestCase):
         self.assertIn("navigationPrefs.getInt(NavigationState.SETTINGS_TAB", self.settings)
         self.assertIn("putInt(NavigationState.SETTINGS_TAB", self.settings)
         focus = self.main.split("public void onTileFocused(", 1)[1].split(
-            "// tile rect in root coordinates", 1
+            "// Tile rect in root coordinates", 1
         )[0]
         self.assertIn("navigationEdit.apply()", focus)
 
