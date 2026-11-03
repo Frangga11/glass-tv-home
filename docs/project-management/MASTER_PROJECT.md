@@ -809,3 +809,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact merge-commit CI #41583505195: both jobs SUCCESS; 99 Python tests all OK; launcher/installer Android unit tests PASS; release validation build SUCCESS; APK diagnostic 1,571,293 / 1,572,864 bytes; no artifacts.
 - The one main-only commit enabling manual APK publishing is intentionally excluded. `main` remains untouched.
 - G02 final tested APK build is READY TO START from the accepted integration commit. G03 physical Mi TV Stick acceptance remains pending; no APK has been published/installed and no device setting changed.
+
+## Latest G01 coverage re-audit — 3 November 2026
+
+- Re-audited the full A–G roadmap coverage and owner-branch deltas before allowing G02.
+- Confirmed legacy PR #2–#5/#7–#8 ancestry in the integration lineage; PR #6 was selectively superseded through PR #9, not merged wholesale.
+- Reconciled the 26 shared B-series/F07 paths; candidate retains stronger F07 bounded queues, shader reuse, upload deadlines/storage reservation and lifecycle/persistence behavior.
+- Reopened E05 after finding stale-location weather/AQI cache risk and non-API-backed condition text in the prior candidate. Restored per-source timestamps and coordinate ownership, retained API-backed weather display, preserved F07 reduced-motion/low-memory behavior and F06 localized high/low labels.
+- Restored the missing E08 wallpaper-delete failure regression test.
+- PR #59 merged to `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. Tested tree `9f2da8f39a20c8e8cc43ac0ff7e42d7a82b34676` is identical to merge tree (zero file delta).
+- CI #41586223809 / run #1177 SUCCESS: 109 Python tests / 1 intentional skip; Android unit tests/release build PASS; APK 1,572,293 bytes, 571-byte headroom; no artifacts.
+- G01 PASS; G02 READY; G03–G05 pending. `main` untouched; no APK publication/installation or TV setting changes.
