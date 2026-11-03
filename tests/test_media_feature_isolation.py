@@ -20,6 +20,7 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         cls.standby = (JAVA / "StandbyPhotoStore.java").read_text(encoding="utf-8")
         cls.metadata = (JAVA / "WallpaperMetadata.java").read_text(encoding="utf-8")
         cls.main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        cls.settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
 
     def test_each_feature_uses_a_distinct_private_storage_root(self):
         self.assertIn('new File(context.getFilesDir(), "profile_avatars")', self.avatar)
@@ -208,6 +209,28 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         self.assertIn('remove("custom_single_file")', method)
         self.assertIn("wallpapers = new ArrayList<>(Arrays.asList(remaining))", method)
         self.assertIn("R.string.wallpaper_delete_failed", method)
+
+
+    def test_quick_control_and_appearance_keep_distinct_wallpaper_surfaces(self):
+        quick = self.main.split(
+            "void showWallpaperDialog()", 1
+        )[1].split(
+            "void showWallpaperCollectionManagementDialog()", 1
+        )[0]
+        appearance = self.settings.split(
+            "// === TAB 2: APPEARANCE ===", 1
+        )[1].split(
+            "} else if (tab == TAB_STATUS_WEATHER)", 1
+        )[0]
+        self.assertIn("WallpaperSettingsDialog.show(this", quick)
+        self.assertIn("openCollection()", quick)
+        self.assertIn("openInterval()", quick)
+        self.assertIn("showNext()", quick)
+        self.assertIn("showWallpaperCollectionManagementDialog", appearance)
+        self.assertIn("showWallpaperIntervalManagementDialog", appearance)
+        self.assertIn("showCustomWallpaperManagerManagementDialog", appearance)
+        self.assertNotIn("showWallpaperDialog()", appearance)
+        self.assertIn('getSharedPreferences("wallpaper_prefs"', self.main)
 
 
 if __name__ == "__main__":
