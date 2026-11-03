@@ -439,3 +439,12 @@ See `F04_FEATURE_ISOLATION_AUDIT.md` for full evidence, repaired F04-WALL-001 an
 F05 integration PR #54 is Draft/open/unmerged, based on F04 exact head `6ffc8b4c253beb2662d6978ba38033039c3c53f9`; current head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`, 14 commits ahead / 0 behind. Latest F05 run #41563437433 passed 80 Python tests (1 intentional skip); Android unit/release build and APK size gate are pending. Actual force-stop, process-death and reboot acceptance remains Project G.
 
 See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
+
+
+### F05 host/source exit closure — 3 November 2026
+
+- F05 integration PR #54 exact head `1048b0b68ae5ab5a2ad867183236b514e0c691fa` passed run #41563437433: both jobs SUCCESS; 80 tests / 1 intentional skip; APK 1,566,861 bytes / 6,003-byte headroom; no artifacts.
+- C07 owner PR #24 exact head `2315f12472f469843c1441ad7d01c6898858c4c5` passed run #41563429553: both jobs SUCCESS; 23 tests / 1 intentional skip; APK 1,551,661 bytes.
+- E08 owner PR #41 exact head `edd24d72256d06da4578971ea7bac1802746a3a6` passed run #41562661052: both jobs SUCCESS; 15 tests / 1 intentional skip; APK 1,564,197 bytes.
+- F05-WALL-001 and F05-WALL-002 are owner-fixed, mirrored and source-cross-audited. PR #24/#41/#54 remain Draft/open/unmerged. **F05 HOST/SOURCE EXIT PASS**; physical device acceptance remains Project G.
+- Next host/source stage: F06 Localization. See `F05_PERSISTENCE_RECOVERY_AUDIT.md`.
