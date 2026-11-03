@@ -153,9 +153,8 @@ final class CacheCleaner {
                     Log.i(TAG, "system trim-caches skipped/failed: " + e);
                 }
 
-                // 4. Force JVM garbage collection
-                System.gc();
-
+                // File deletion releases storage immediately; let ART schedule memory reclamation
+                // naturally instead of forcing a stop-the-world collection during launcher use.
                 int afterPercent = usedPercent();
 
                 if (callback != null) {

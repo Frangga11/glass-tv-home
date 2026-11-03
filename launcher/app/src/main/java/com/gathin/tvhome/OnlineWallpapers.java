@@ -37,6 +37,8 @@ final class OnlineWallpapers {
     private static final String PREF_LAST_SYNC = "last_sync_time";
     private static final long REFRESH_INTERVAL_MS = 6L * 60 * 60 * 1000; // 6 hours
     private static final int MAX_CACHE_FILES = 150;
+    // Bound total on-disk cache as well as file count: 150 x 25 MB could otherwise approach 3.75 GB.
+    static final long MAX_CACHE_BYTES = 512L * 1024L * 1024L;
     private static final int MAX_IMAGE_BYTES = 25 * 1024 * 1024; // 25 MB limit per 4K/8K image
 
     static class WallpaperItem {
@@ -540,20 +542,34 @@ final class OnlineWallpapers {
     }
 
     private static void pruneCache(File dir) {
-        File[] files = dir.listFiles((d, name) -> name.endsWith(".jpg"));
-        if (files == null || files.length <= MAX_CACHE_FILES) return;
+        pruneCache(dir, MAX_CACHE_FILES, MAX_CACHE_BYTES);
+    }
 
+    /** Removes oldest cached images until both the file-count and aggregate-byte budgets are met. */
+    static void pruneCache(File dir, int maxFiles, long maxBytes) {
+        File[] files = dir != null ? dir.listFiles((d, name) -> name.endsWith(".jpg")) : null;
+        if (files == null) return;
         List<File> list = new ArrayList<>();
         Collections.addAll(list, files);
-        // Sort oldest first
         Collections.sort(list, (a, b) -> Long.compare(a.lastModified(), b.lastModified()));
 
-        int toRemove = list.size() - MAX_CACHE_FILES;
-        for (int i = 0; i < toRemove; i++) {
-            File f = list.get(i);
-            File txt = new File(dir, f.getName().replace(".jpg", ".txt"));
-            f.delete();
-            if (txt.exists()) txt.delete();
+        long totalBytes = 0L;
+        for (File file : list) {
+            long length = Math.max(0L, file.length());
+            totalBytes = Long.MAX_VALUE - totalBytes < length ? Long.MAX_VALUE : totalBytes + length;
+        }
+        int remaining = list.size();
+        int fileBudget = Math.max(0, maxFiles);
+        long byteBudget = Math.max(0L, maxBytes);
+        for (File file : list) {
+            if (remaining <= fileBudget && totalBytes <= byteBudget) break;
+            long length = Math.max(0L, file.length());
+            if (file.delete()) {
+                remaining--;
+                totalBytes = Math.max(0L, totalBytes - length);
+                File metadata = new File(dir, file.getName().substring(0, file.getName().length() - 4) + ".txt");
+                if (metadata.exists()) metadata.delete();
+            }
         }
     }
 }

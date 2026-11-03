@@ -252,6 +252,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long wallpaperIntervalMs;
     /** Decodes the next picture off the main thread, so a switch never stutters the D-pad animations. */
     private final java.util.concurrent.ExecutorService wallDecoder = java.util.concurrent.Executors.newSingleThreadExecutor();
+    /** Latest-request token prevents stale wallpaper decodes from replacing newer selections. */
+    private final java.util.concurrent.atomic.AtomicLong wallpaperRequestGeneration = new java.util.concurrent.atomic.AtomicLong();
+    private final java.util.concurrent.atomic.AtomicLong wallpaperThumbnailGeneration = new java.util.concurrent.atomic.AtomicLong();
     private long wallShownAt;
     private android.widget.ImageView wallView;
     private android.graphics.Bitmap wallBitmap;
@@ -519,7 +522,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
-        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat) && !"Default".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat) && !"Default".equalsIgnoreCase(activeCat)) {
+            queueWallpaperDecode(cfg.wallpaper, false, false, false);
+        }
         else if ("Minimalist".equalsIgnoreCase(activeCat) || "Default".equalsIgnoreCase(activeCat)) {
             // Never fall back to a theme/legacy wallpaper when Default's bundled asset is unavailable.
             root.setBackgroundColor(android.graphics.Color.BLACK);
@@ -1125,6 +1130,90 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /**
+     * Decode and optionally blur away from the UI thread. A generation token coalesces rapid
+     * selection changes: stale queued work exits before decoding and stale completed bitmaps are
+     * released rather than being posted to a destroyed or superseded Home screen.
+     */
+    private void queueWallpaperDecode(File file, boolean fade, boolean prepareBlur, boolean updatePlace) {
+        if (file == null) return;
+        final long generation = wallpaperRequestGeneration.incrementAndGet();
+        final android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
+        final int screenW = metrics.widthPixels;
+        final int screenH = metrics.heightPixels;
+        final int multiply = placesMode ? 0xFF7A7A7A : 0;
+        try {
+            wallDecoder.execute(() -> {
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperRequestGeneration.get()) return;
+                android.graphics.Bitmap bmp = decodeWallpaper(file);
+                if (bmp == null) {
+                    android.util.Log.w("TvHome", "Wallpaper decode failed: " + file.getName());
+                    return;
+                }
+                android.graphics.Bitmap blur = null;
+                if (prepareBlur && isGlassEffectsEnabled()) {
+                    blur = Backdrop.blur(bmp, screenW, screenH, multiply);
+                }
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperRequestGeneration.get()) {
+                    if (!bmp.isRecycled()) bmp.recycle();
+                    if (blur != null && !blur.isRecycled()) blur.recycle();
+                    return;
+                }
+                final android.graphics.Bitmap readyBitmap = bmp;
+                final android.graphics.Bitmap readyBlur = blur;
+                boolean posted = handler.post(() -> {
+                    if (isDestroyed() || generation != wallpaperRequestGeneration.get()) {
+                        if (!readyBitmap.isRecycled()) readyBitmap.recycle();
+                        if (readyBlur != null && !readyBlur.isRecycled()) readyBlur.recycle();
+                        return;
+                    }
+                    setWallpaper(readyBitmap, fade, readyBlur);
+                    if (updatePlace) setPlace(file);
+                });
+                if (!posted) {
+                    if (!readyBitmap.isRecycled()) readyBitmap.recycle();
+                    if (readyBlur != null && !readyBlur.isRecycled()) readyBlur.recycle();
+                }
+            });
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+            android.util.Log.w("TvHome", "Wallpaper decode skipped because Home is shutting down", e);
+        }
+    }
+
+    /** Loads the QR-upload preview off the UI thread and discards it if the dialog/request is stale. */
+    private void queueWallpaperThumbnail(File file) {
+        final ImageView target = qrImageView;
+        if (file == null || target == null) return;
+        final long generation = wallpaperThumbnailGeneration.incrementAndGet();
+        try {
+            wallDecoder.execute(() -> {
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperThumbnailGeneration.get()) return;
+                android.graphics.Bitmap thumb = decodeWallpaper(file);
+                if (thumb == null) return;
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperThumbnailGeneration.get()) {
+                    if (!thumb.isRecycled()) thumb.recycle();
+                    return;
+                }
+                boolean posted = handler.post(() -> {
+                    if (isDestroyed() || generation != wallpaperThumbnailGeneration.get()
+                            || qrImageView != target || qrUploadDialog == null || !qrUploadDialog.isShowing()) {
+                        if (!thumb.isRecycled()) thumb.recycle();
+                        return;
+                    }
+                    target.setImageBitmap(thumb);
+                    target.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                });
+                if (!posted && !thumb.isRecycled()) thumb.recycle();
+            });
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+            android.util.Log.d("TvHome", "Wallpaper preview skipped because Home is shutting down");
+        }
+    }
+
     /** Puts a picture behind everything, cross-fading from the previous one when asked. */
     private void setWallpaper(android.graphics.Bitmap bmp, boolean fade) {
         setWallpaper(bmp, fade, null);
@@ -1272,20 +1361,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // or it would name the next place over the last one's picture while that one decodes.
         if (placeName == null) setPlace(file);
         final boolean firstPicture = wallBitmap == null;
-        wallDecoder.execute(() -> {
-            android.graphics.Bitmap bmp = decodeWallpaper(file);
-            // After the first picture, the blur is made here, before the picture is shown, so the glass
-            // changes with the wallpaper rather than after it. The first picture of a fresh start does
-            // not wait for its blur: Home is held for it, and the glass catches up a moment later.
-            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-            android.graphics.Bitmap blur = firstPicture ? null
-                    : Backdrop.blur(bmp, dm.widthPixels, dm.heightPixels, placesMode ? 0xFF7A7A7A : 0);
-            handler.post(() -> {
-                if (isDestroyed()) return;
-                setWallpaper(bmp, fade, blur);
-                setPlace(file);
-            });
-        });
+        queueWallpaperDecode(file, fade, !firstPicture, true);
     }
 
     /** Switches to the next picture every wallpaper interval while Home is in front. */
@@ -1789,6 +1865,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             NowPlayingManager.unregisterListener(nowPlayingListener);
         }
         SoundEffects.release();
+        wallpaperRequestGeneration.incrementAndGet();
+        wallpaperThumbnailGeneration.incrementAndGet();
+        handler.removeCallbacksAndMessages(null);
         wallDecoder.shutdownNow();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -5865,6 +5944,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         btnClose.setOnClickListener(v -> qrUploadDialog.dismiss());
         qrUploadDialog.setOnDismissListener(dialog -> {
+            wallpaperThumbnailGeneration.incrementAndGet();
             if (uploadServer != null) {
                 uploadServer.stop();
                 uploadServer = null;
@@ -5969,15 +6049,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 qrUrlText.setText(getString(R.string.wallpaper_active_file, file.getName()));
                 qrUrlText.setTextColor(0xFF4ADE80);
             }
-            if (qrImageView != null) {
-                try {
-                    Bitmap thumb = decodeWallpaper(file);
-                    if (thumb != null) {
-                        qrImageView.setImageBitmap(thumb);
-                        qrImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    }
-                } catch (Exception ignored) {}
-            }
+            queueWallpaperThumbnail(file);
 
             handler.postDelayed(() -> {
                 if (qrUploadDialog != null && qrUploadDialog.isShowing()) {

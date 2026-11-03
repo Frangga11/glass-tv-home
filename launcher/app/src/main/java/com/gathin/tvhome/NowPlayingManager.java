@@ -27,6 +27,10 @@ import android.view.KeyEvent;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Manages active music playback detection strictly for Spotify and YouTube Music.
@@ -92,11 +96,19 @@ public final class NowPlayingManager {
     }
 
     private static final List<Listener> listeners = new CopyOnWriteArrayList<>();
-    private static MediaInfo currentInfo = new MediaInfo(false, "", "", "", "", null, null);
+    private static volatile MediaInfo currentInfo = new MediaInfo(false, "", "", "", "", null, null);
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
     private static MediaSessionManager.OnActiveSessionsChangedListener sessionsListener;
-    private static Context appContext;
-    private static MediaController trackedController;
+    private static volatile Context appContext;
+    private static volatile MediaController trackedController;
+    /** Binder/session and notification queries stay off the main thread and collapse overlapping polls. */
+    private static final ExecutorService MEDIA_WORKER = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "now-playing-worker");
+        thread.setDaemon(true);
+        return thread;
+    });
+    private static final AtomicBoolean refreshQueued = new AtomicBoolean();
+    private static final AtomicBoolean refreshAgain = new AtomicBoolean();
 
     private static final MediaController.Callback controllerCallback = new MediaController.Callback() {
         @Override
@@ -176,7 +188,33 @@ public final class NowPlayingManager {
         }
     }
 
-    public static synchronized void updateCurrentMedia(Context context) {
+    public static void updateCurrentMedia(Context context) {
+        if (context == null) return;
+        final Context app = context.getApplicationContext();
+        appContext = app;
+        if (!refreshQueued.compareAndSet(false, true)) {
+            refreshAgain.set(true);
+            return;
+        }
+        try {
+            MEDIA_WORKER.execute(() -> {
+                try {
+                    do {
+                        refreshAgain.set(false);
+                        refreshCurrentMedia(app);
+                    } while (refreshAgain.getAndSet(false));
+                } finally {
+                    refreshQueued.set(false);
+                    if (refreshAgain.get()) updateCurrentMedia(app);
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            refreshQueued.set(false);
+            Log.w(TAG, "Media refresh worker rejected a request", e);
+        }
+    }
+
+    private static synchronized void refreshCurrentMedia(Context context) {
         if (context == null) return;
         if (appContext == null) appContext = context.getApplicationContext();
 
