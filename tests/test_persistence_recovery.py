@@ -35,7 +35,7 @@ class PersistenceRecoveryContractTest(unittest.TestCase):
         self.assertIn('obj.put("customAvatarPath", customAvatarPath)', self.profile)
         self.assertIn('obj.optString("customAvatarPath", null)', self.profile)
         self.assertIn('sp.getString(KEY_PROFILES_JSON, null)', self.profile)
-        self.assertIn('sp.getString(KEY_ACTIVE_PROFILE_ID, null)', self.profile)
+        self.assertIn('getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, null)', self.profile)
 
     def test_avatar_replacement_persists_new_reference_before_old_file_cleanup(self):
         method = self.profile.split(
@@ -102,7 +102,7 @@ class PersistenceRecoveryContractTest(unittest.TestCase):
         focus = self.main.split("public void onTileFocused(", 1)[1].split(
             "// Tile rect in root coordinates", 1
         )[0]
-        self.assertIn("navigationEdit.apply()", focus)
+        self.assertIn(".remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply()", focus)
 
     def test_normal_boot_restores_prayer_alarm_without_enabling_backup(self):
         permissions = {
