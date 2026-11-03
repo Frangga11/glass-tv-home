@@ -903,13 +903,13 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 ### Explicit boundary carried into Project G
 No physical Mi TV Stick profiling or soak was performed during F. No measured FPS/frame time, RAM/PSS, ANR/crash rate, thermal behavior, OEM/remote behavior, phone-to-TV LAN QR acceptance, or reboot/process-death acceptance is claimed. These are mandatory Project G evidence, not waived items.
 
-### Project G execution order
-1. **G01 — Baseline & dependency reconciliation:** enumerate every owner branch, exact head SHA, PR base/head, dependency order and existing CI evidence; identify stale or divergent branches before combining anything.
-2. **G02 — Controlled integration:** construct a separate integration candidate; preserve all feature-owner branches; integrate in approved dependency order; record every conflict and its owner; no direct main merge.
-3. **G03 — Full integrated audit & regression:** inspect the complete combined diff and cross-module contracts; run source/security/resource checks, all Python and Android unit/Robolectric suites, installer tests, release build and APK budget; repair at the responsible owner branch and replay the exact integration head.
-4. **G04 — Device-test readiness decision:** publish a labelled, traceable candidate only after source/integration gates pass and obtain explicit user approval before any TV installation or settings change.
-5. **G05 — Physical acceptance & soak:** on the Mi TV Stick / Android TV 11 baseline, test Home/navigation/D-pad/Back, dialogs/focus, profile/app lock/kids mode, QR phone/LAN flows, wallpaper/1080p/4K, weather, Now Playing, StandBy/DreamService, low storage/network interruption, process death/force-stop/reboot, crash/ANR/logcat, memory trend, frame timing and thermal/long-run stability.
-6. **G06 — Final decision & release:** reconcile all findings, verify documentation and exact commit ancestry, present evidence and residual risks; merge to main, publish release APK or change protected branch state only after explicit user approval. No automatic merge/release.
+### Official Project G roadmap — approved v1.0 (3 November 2026)
+Project G contains exactly five stages. The overall A–G roadmap remains 47 work items; do not add, remove, reduce, or reorder any item.
+1. **G01 — Penyelesaian Bug Terakhir (Final Bug Resolution).**
+2. **G02 — Build APK Final yang Sudah Teruji (Final Tested APK Build).**
+3. **G03 — Uji Instalasi pada Mi TV Stick (Mi TV Stick Installation Test).**
+4. **G04 — Finalisasi Dokumentasi GitHub (Final GitHub Documentation).**
+5. **G05 — Finalisasi Memory dan Handover ChatGPT (Final ChatGPT Memory/Handover).**
 
 ### Non-negotiable governance
 - D-013 remains binding: owner branches are preserved; integration is isolated and staged; findings are fixed at the owning source; no early merge; final merge is a Project G decision requiring explicit approval.
@@ -923,4 +923,16 @@ Project F is formally closed at HOST/SOURCE EXIT PASS for F01–F07. The remaini
 
 
 ## Immediate resume instruction
-Start Project G with G01 only. Do not jump directly to merge, APK installation or device changes. First fetch and reconcile the current exact owner-branch/PR heads and dependency chain against the frozen F07 candidate; the G readiness checkpoint is the governing handover.
+Start Project G with G01 — Penyelesaian Bug Terakhir only. Audit and close remaining source/host defects at their owning branches with root-cause fixes, cross-audit, regression and exact-head evidence. G02 is the final tested APK build; G03 is Mi TV Stick installation/physical acceptance and requires explicit readiness approval. Do not merge, publish/install APK, or change device settings without the required approval.
+
+
+## G01 final bug resolution checkpoint — 3 November 2026
+
+- **Disposition:** HOST/SOURCE DEFECT AUDIT PASS; no newly reproducible source defect found in the remaining high-risk contracts. No speculative production edit was made.
+- **Evidence:** `docs/project-management/G01_FINAL_BUG_RESOLUTION_AUDIT.md` records the root-cause review, owner PR exact heads, associated exact-head GitHub Actions runs, both required jobs, regression protection, and deferred device gates.
+- **Verified contracts:** B01 Home gestures/Force Stop/power routing/Recent Apps manifest; D01 receiver authorization; D05/D06 persistence and recovery; C07 QR deadlines, session-stop atomicity and shared storage reservation; E01 AccessibilityService binding; E08 wallpaper recovery; F02 cross-module dialog/security/upload regressions; F06 localization; F07 performance/memory hardening.
+- **Latest F07 evidence:** PR #56 exact head `976e068d48ecc1ede2811ac455372395d382ba76`; CI run #41568721270, both required jobs SUCCESS; 99 Python tests; launcher/installer unit tests, release build and APK budget PASS; diagnostic APK 1,571,293 / 1,572,864 bytes; artifact list empty.
+- **Governance:** all owner PRs remain Draft/open/unmerged under D-013. No APK publication/installation, merge, HOME-default change, ADB/device mutation, or TV setting change.
+- **Not passed:** real Mi TV Stick remote/OEM/UI, ADB-shell permission, phone/LAN QR, low-storage, process-death/reboot, RAM/FPS/ANR/thermal/soak acceptance remain G03 device gates.
+- **Next approved stage:** G02 final tested APK build. TV installation remains G03 and requires explicit readiness approval.
+
