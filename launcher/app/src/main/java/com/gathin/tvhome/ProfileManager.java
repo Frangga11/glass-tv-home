@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.List;
 
 /**
@@ -407,7 +408,8 @@ public final class ProfileManager {
     public static synchronized UserProfile addProfile(Context context, String name, int avatarIndex, boolean isChild) {
         if (context == null) return null;
         List<UserProfile> list = getAllProfiles(context);
-        String id = "user_" + System.currentTimeMillis();
+        // Millisecond timestamps can collide when profile-create actions arrive together.
+        String id = "user_" + UUID.randomUUID().toString();
         UserProfile newProf = new UserProfile(id, name, avatarIndex, isChild);
         list.add(newProf);
         saveProfiles(context, list);
