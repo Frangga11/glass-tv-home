@@ -21,7 +21,7 @@ class WallpaperUploadOrphanCleanupTest(unittest.TestCase):
         content = on_create.index("setContentView(R.layout.activity_main)")
         self.assertLess(cleanup, content)
 
-    def test_cleanup_only_targets_stale_private_custom_wallpaper_upload_parts(self):
+    def test_cleanup_only_targets_unowned_private_custom_wallpaper_upload_parts(self):
         self.assertIn("static void cleanupOrphanedCustomWallpaperUploads(Context context)", self.server)
         method = self.server.split(
             "static void cleanupOrphanedCustomWallpaperUploads(Context context)", 1
@@ -30,11 +30,13 @@ class WallpaperUploadOrphanCleanupTest(unittest.TestCase):
         )[0]
         self.assertIn('new File(context.getFilesDir(), "custom_wallpapers")', method)
         self.assertIn('name.startsWith("custom_") && name.endsWith(".upload")', method)
-        self.assertIn("10L * 60L * 1000L", method)
-        self.assertIn("partial.lastModified() >= cutoff", method)
+        self.assertIn("ACTIVE_CUSTOM_WALLPAPER_UPLOADS.contains(path)", method)
         self.assertIn("canonicalPartial.getParentFile()", method)
         self.assertIn("canonicalDirectory", method)
         self.assertIn("canonicalPartial.delete()", method)
+        self.assertIn("registerActiveCustomWallpaperUpload(targetFile)", self.server)
+        self.assertIn("unregisterActiveCustomWallpaperUpload(wallpaperUploadTempFile)", self.server)
+        self.assertNotIn("System.currentTimeMillis()", self.server)
 
 
 if __name__ == "__main__":
