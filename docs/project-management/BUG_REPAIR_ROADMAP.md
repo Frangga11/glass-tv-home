@@ -3,7 +3,7 @@
 **Roadmap ID:** GTVH-BRR-001  
 **Version:** 1.0  
 **Approved:** 1 November 2026  
-**Status:** PROJECT F OFFICIALLY CLOSED (F01–F07 HOST/SOURCE EXIT PASS); PROJECT G READY FOR FINAL INTEGRATION AND DEVICE ACCEPTANCEnce pending; E00 and E01 source audits complete; E02 next; device testing deferred to final F-stage acceptance  
+**Status:** PROJECT F OFFICIALLY CLOSED (F01–F07 HOST/SOURCE EXIT PASS); PROJECT G READY TO START — G01 BRANCH/DEPENDENCY RECONCILIATION
 **Target test device:** Mi TV Stick, Android TV 11 / API 30 (revalidate live before release)
 
 ## 1. Governance
