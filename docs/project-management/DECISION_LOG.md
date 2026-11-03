@@ -313,3 +313,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - GitHub reports `mergeable=false`; PR #57 is OPEN/DRAFT/UNMERGED. Compare view: 639 commits / 123 changed files. Do not merge or force-push around the conflict.
 - The 26 shared B-series/F-staged-full paths require three-way semantic resolution. No conflict was resolved by wholesale side selection. Owner branches remain unchanged.
 - G01 overall remains OPEN/BLOCKING for branch reconciliation; source-defect subgate remains PASS. G02 APK build is blocked pending clean combined candidate and exact-head integrated CI. `main` is untouched.
+
+## D-018 — G01 project-wide coverage re-audit and second isolated merge (3 November 2026)
+
+- User directed a fresh audit of whole-project coverage, then conflict resolution, then a complete audit of the combined result before G02.
+- Reopened G01 because current E05 owner changes were not fully represented in the previous combined tree and the E08 deletion-failure regression test was absent.
+- Decision: restore E05 location-scoped weather/AQI cache ownership and API-backed weather text; preserve F07 reduced-motion/low-memory behavior and F06 localized high/low labels; restore E08 delete-failure regression coverage.
+- PR #59 was merged only into isolated `integration/b-series` at `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. Tested head `9f2da8f39a20c8e8cc43ac0ff7e42d7a82b34676` and merge commit have identical trees (zero file delta).
+- Exact tested-tree CI #41586223809 / run #1177 passed both jobs: 109 Python tests / one intentional skip; Android launcher/installer unit tests and release validation build PASS. APK 1,572,293 bytes / 1,572,864 cap / 571-byte headroom; no artifact/publication.
+- G01 is PASS; G02 is READY TO START from the merge commit. G03 physical Mi TV Stick acceptance remains pending. D-013 remains binding: preserve owner branches, no main merge/release or TV installation without explicit approval. `main` remains untouched.
