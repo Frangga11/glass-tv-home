@@ -67,6 +67,30 @@ class F06LocalizationUiContractTest(unittest.TestCase):
             r"return LANG_EN\.equalsIgnoreCase\(language\) \? LANG_EN : LANG_ID;",
         )
 
+    def test_qr_upload_error_and_fallback_copy_is_locale_backed(self):
+        wallpaper = (JAVA / "WallpaperUploadServer.java").read_text(encoding="utf-8")
+        avatar = (JAVA / "AvatarUploadServer.java").read_text(encoding="utf-8")
+        for key in (
+            "upload_error_session_expired",
+            "wallpaper_error_low_storage",
+            "wallpaper_error_size_limit",
+            "wallpaper_error_store_failed",
+            "wallpaper_error_thumbnail_decode",
+            "wallpaper_error_thumbnail_encode",
+            "wallpaper_error_thumbnail_request",
+            "standby_page_session_expired",
+            "standby_page_server_unavailable",
+            "standby_page_cancelled_retry",
+            "wallpaper_page_server_error_fallback",
+        ):
+            self.assertIn(f"R.string.{key}", wallpaper)
+        self.assertNotIn("Upload session expired or closed", wallpaper)
+        self.assertNotIn("Server unavailable. Retry this photo.", wallpaper)
+        self.assertNotIn("file saat ini dapat dicoba lagi", wallpaper)
+        self.assertNotIn("xhr.statusText", wallpaper)
+        self.assertIn("localized(R.string.upload_error_method_not_allowed)", avatar)
+        self.assertNotIn('byte[] body = "Method Not Allowed"', avatar)
+
     def test_only_indonesian_and_english_are_advertised(self):
         locale_config = ET.parse(RES / "xml" / "locales_config.xml").getroot()
         android_name = "{http://schemas.android.com/apk/res/android}name"
