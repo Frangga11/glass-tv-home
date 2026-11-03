@@ -103,7 +103,16 @@ The targeted spot-check is positive, but it does not close all 26 shared-file di
 5. Freeze the final candidate SHA only when every required source branch has an explicit included/superseded/excluded disposition and the integrated CI is green.
 6. G02 can then build a traceable tested candidate APK. G03 is the actual Mi TV Stick installation/acceptance gate. Merge to `main` and create the final release build only after G03 acceptance and explicit user approval.
 
-## 7. Current decision
+## 7. Draft integration PR #57 — conflict gate
+
+A Draft PR was opened to expose the GitHub synthetic integration result without merging or changing either source branch:
+- PR #57: `integration/project-f07-performance-stability` → `integration/b-series`.
+- Exact base: `9070894fa6d9ef8aec034f46dfe777e866709dfe`.
+- Exact head: `976e068d48ecc1ede2811ac455372395d382ba76`.
+- GitHub reports **mergeable=false**. The PR is Draft/open/unmerged; 639 commits and 123 changed files are in its compare view. This is a hard stop for merge, not a warning to bypass.
+- No conflict resolution was attempted by choosing one side wholesale. The 26 shared paths require three-way, behavior-level reconciliation and regression checks. PR #57 is only a diagnostic integration gate; it is not approved for merge.
+
+## 8. Current decision
 
 - **G01 defect-resolution subgate:** PASS for the previously audited source/host defects.
 - **G01 project-wide integration reconciliation:** OPEN / BLOCKING. The B-series and F07 candidates are diverged; 26 overlapping paths need semantic reconciliation.
