@@ -407,3 +407,19 @@ Previous F02 checkpoint `5dd787ba136dfb070eaa2e833af653e57ec66015` passed both j
 | F02 latest docs head / #50 | e190e2863a4aacbe3aba61094fab00572f4b469f | #41521145454 queued at last poll | RETEST PENDING |
 
 - Storage reservation and upload-shutdown coverage are now owner + integration host verified. Physical LAN concurrency, low-storage, cancellation and expiry remain Project G.
+
+## Project F04 current inventory — 3 November 2026
+
+| Component | Current source owner | F04 source result | Remaining boundary |
+|---|---|---|---|
+| Profile Avatar QR / replacement / cleanup | E02 + C07 communication contracts | Profile ID is captured by the QR flow; private avatar root and reference-aware cleanup verified | Real phone/profile/remote acceptance in G |
+| Wallpaper QR / custom collection / manager | C07 upload server + existing Wallpaper UI (E08 surface) | Separate private root and route; delete failures now surfaced and remaining state reconciled | Real phone/LAN and filesystem failure acceptance in G |
+| StandBy QR / collection / photo mode | C07 upload server + D05 persistence adapter | Separate private root/preferences; durable photo+mode commit; UI membership confirmation | DreamService/OEM/screen-off/reboot acceptance in G; persistence lifecycle in F05/G |
+| StandBy renderers | MainActivity overlay + ClockDream | Both consume the same StandbyPhotoStore collection | Physical visual/rotation/remote checks in G |
+| Wallpaper entry surfaces | MainActivity + ModernSettingsDialog + E08 | Quick Control remains compact Change/Shuffle/Next; Appearance retains distinct Collection/Interval/Personal Manager cards | Physical D-pad/focus/Back checks in G |
+
+**F04 integration checkpoint:** branch `integration/project-f04-feature-isolation-v2`, PR #53, head `e895ee590a607a8194b2037585ed47f2cf464961`; exact-head CI #41560230282 PASS (63 Python tests / 1 intentional skip; Android unit tests/release build/APK size guard pass). APK 1,566,045 bytes, 6,819-byte headroom; no artifact.
+
+**Open owner synchronization:** C07 PR #24 head `b7a40fdc2c52268ec69c95731983d2f95024eb57` and E08 PR #41 head `717cb37ab888b095fec6a83a192f81708739199b`; Lists/tools/docs pass, Android jobs pending at last poll. Keep F04 overall PARTIAL until owner exact-head CI is green.
+
+See `F04_FEATURE_ISOLATION_AUDIT.md` for full evidence, repaired F04-WALL-001 and Project G gates.
