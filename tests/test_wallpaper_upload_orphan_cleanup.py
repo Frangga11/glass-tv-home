@@ -30,10 +30,12 @@ class WallpaperUploadOrphanCleanupTest(unittest.TestCase):
         )[0]
         self.assertIn('new File(context.getFilesDir(), "custom_wallpapers")', method)
         self.assertIn('name.startsWith("custom_") && name.endsWith(".upload")', method)
+        self.assertIn("synchronized (ACTIVE_CUSTOM_WALLPAPER_UPLOADS)", method)
         self.assertIn("ACTIVE_CUSTOM_WALLPAPER_UPLOADS.contains(path)", method)
         self.assertIn("canonicalPartial.getParentFile()", method)
         self.assertIn("canonicalDirectory", method)
         self.assertIn("canonicalPartial.delete()", method)
+        self.assertIn("synchronized (ACTIVE_CUSTOM_WALLPAPER_UPLOADS)", self.server)
         self.assertIn("registerActiveCustomWallpaperUpload(targetFile)", self.server)
         self.assertIn("unregisterActiveCustomWallpaperUpload(wallpaperUploadTempFile)", self.server)
         self.assertNotIn("System.currentTimeMillis()", self.server)
