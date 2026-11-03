@@ -274,7 +274,7 @@ final class Backdrop {
                 out = spare;
                 spare = null;
             }
-            if (pixels == null || pixels.length != w * h) {
+            if (pixels == null || scratch == null || pixels.length != w * h || scratch.length != w * h) {
                 pixels = new int[w * h];
                 scratch = new int[w * h];
             }
