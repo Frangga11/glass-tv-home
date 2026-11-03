@@ -1,7 +1,7 @@
 # F05 — Persistence & Recovery Audit
 
 **Date:** 3 November 2026  
-**Status:** IN PROGRESS — no F05 exit decision yet.  
+**Status:** HOST/SOURCE EXIT PASS — physical acceptance remains DEFERRED_TO_G.  
 **Integration branch:** `integration/project-f05-persistence-recovery`  
 **Integration PR:** #54 — Draft / open / unmerged  
 **Approved base:** F04 branch `integration/project-f04-feature-isolation-v2`, exact head `6ffc8b4c253beb2662d6978ba38033039c3c53f9`  
@@ -21,7 +21,7 @@ Host/source tests do not simulate Android force-stop, process death, or a real T
 | Cross-feature persistence source guards | F05 PR #54 run #41563437433: 80 Python tests, 1 intentional README-count skip | PASS |
 | F05 Android unit/release build and APK budget | Run #41563437433 | IN PROGRESS at checkpoint |
 | E08 owner fix for F05-WALL-001 | PR #41 head `edd24d72256d06da4578971ea7bac1802746a3a6`, run #41562661052; both jobs SUCCESS; 15 tests / 1 intentional skip; APK 1,564,197 bytes / 1,572,864-byte cap / 8,667-byte headroom | PASS |
-| C07 owner fix for F05-WALL-002 | PR #24 head `2315f12472f469843c1441ad7d01c6898858c4c5`, run #41563429553; Lists/tools/docs SUCCESS (23 tests / 1 intentional skip); Android build still running | PARTIAL |
+| C07 owner fix for F05-WALL-002 | PR #24 head `2315f12472f469843c1441ad7d01c6898858c4c5`, run #41563429553; both jobs SUCCESS; 23 tests / 1 intentional skip; APK 1,551,661 bytes / 21,203-byte headroom | PASS |
 
 No workflow artifact was published; no APK was installed. All source PRs remain Draft/open/unmerged.
 
@@ -61,13 +61,12 @@ The owner source and regression test are mirrored into F05. Owner Python regress
 
 These are source-contract checks, not device acceptance.
 
-## 5. Required remaining gates
+## 5. Final host/source exit and Project G handoff
 
-1. Complete C07 owner exact-head Android build and APK-size gate.
-2. Complete F05 exact-head Android unit tests, release build, and APK-size gate.
-3. Recheck PR #24, #41, and #54 remain Draft/open/unmerged; verify exact branch heads and scoped file deltas.
-4. Audit all F05 tests and source changes after CI; repair any reproducible finding on its owner branch, then mirror and retest.
-5. Update the final F05 evidence/checkpoint only after all host/source gates are green.
-6. Carry force-stop, process-death, normal reboot, alarm restoration, StandBy/DreamService restart, and filesystem recovery to Project G for actual Mi TV Stick acceptance.
+- C07 owner PR #24 exact head `2315f12472f469843c1441ad7d01c6898858c4c5`, run #41563429553: both required jobs SUCCESS; 23 Python tests / 1 intentional skip; Android unit tests/release build and APK budget PASS; APK 1,551,661 bytes / 21,203-byte headroom; artifacts empty and publication skipped.
+- E08 owner PR #41 exact head `edd24d72256d06da4578971ea7bac1802746a3a6`, run #41562661052: both required jobs SUCCESS; 15 Python tests / 1 intentional skip; APK 1,564,197 bytes / 8,667-byte headroom; artifacts empty and publication skipped.
+- F05 integration PR #54 exact head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`, run #41563437433: both required jobs SUCCESS; 80 Python tests / 1 intentional skip; Android `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size gate PASS; APK 1,566,861 bytes / 6,003-byte headroom; artifact list empty.
+- Owner/integration source cross-audit confirms F05-WALL-001 startup reconciliation helper and regression tests are byte-identical between E08 and F05; F05-WALL-002 cleanup method, active-upload registration/finally cleanup and regression tests are byte-identical between C07 and F05. Launcher startup invokes the cleanup method in both owner and integration source.
+- PR #24, #41 and #54 remain Draft/open/unmerged. No APK publication/installation, device setting changes, or physical TV testing.
 
-**Decision at this checkpoint:** F05 is active and partially verified. F05-WALL-001 is owner + integration source/CI verified. F05-WALL-002 source repair and regression are in place; C07 owner and F05 integration Android CI are still pending. No F05 exit or overall product acceptance is claimed.
+**Decision: F05 HOST/SOURCE EXIT PASS.** No remaining reproducible host/source blocker. This does not claim actual force-stop, process-death, reboot, alarm restoration, StandBy/DreamService, phone/LAN or OEM acceptance. Carry those device-only gates to Project G for real Mi TV Stick validation.
