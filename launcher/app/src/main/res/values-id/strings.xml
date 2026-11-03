@@ -210,6 +210,11 @@
     <string name="sound_effects_selected">🔊 Efek suara: %1$s</string>
     <string name="auto_update_schedule_title">⏱️ Pilih Waktu Pembaruan Otomatis Harian</string>
     <string name="auto_update_time_selected">Waktu pembaruan otomatis diatur ke: %1$s</string>
+    <string name="auto_update_time_0330_option">🌙 03:30 AM (Waktu terbaik: tidur &amp; Subuh)</string>
+    <string name="auto_update_time_0400_option">🌙 04:00 AM (Dini hari)</string>
+    <string name="auto_update_time_0500_option">🌙 05:00 AM (Subuh)</string>
+    <string name="auto_update_time_1200_option">☀️ 12:00 PM (Tengah hari)</string>
+    <string name="auto_update_time_0200_option">🌃 02:00 AM (Tengah malam)</string>
 
     <string name="standby_photo_required">Pilih foto terlebih dahulu untuk mode foto.</string>
     <string name="standby_mode_save_failed">Gagal menyimpan perubahan mode Layar Siaga. Pengaturan sebelumnya tetap digunakan.</string>
@@ -353,6 +358,7 @@
     <string name="uv_high">Tinggi</string>
     <string name="uv_very_high">Sangat tinggi</string>
     <string name="precipitation_summary">Saat ini • peluang hujan %1$d%%</string>
+    <string name="weather_high_low_summary">Tertinggi: %1$d°  Terendah: %2$d°</string>
     <string name="limited_visibility">Jarak pandang terbatas</string>
     <string name="good_visibility">Jarak pandang baik</string>
 
