@@ -305,3 +305,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - G01 source-defect audit PASS does not close project-wide G01. Branch reconciliation is OPEN/BLOCKING until all owner heads are frozen and included/superseded/excluded with evidence, B-series/F07 are semantically reconciled on an isolated candidate, and exact-head integrated CI/regression pass.
 - No feature PR or `main` merge was performed. Owner branches and current integration branches remain unchanged. No APK publication/installation or device setting change occurred.
 - D-013 remains binding: preserve owner branches, merge in coherent dependency groups only after audit, do not merge to `main` or release without final acceptance and explicit user approval.
+
+
+### PR #57 integration conflict gate — 3 November 2026
+
+- Draft PR #57 opened from `integration/project-f07-performance-stability` @ `976e068d48ecc1ede2811ac455372395d382ba76` into `integration/b-series` @ `9070894fa6d9ef8aec034f46dfe777e866709dfe`.
+- GitHub reports `mergeable=false`; PR #57 is OPEN/DRAFT/UNMERGED. Compare view: 639 commits / 123 changed files. Do not merge or force-push around the conflict.
+- The 26 shared B-series/F-staged-full paths require three-way semantic resolution. No conflict was resolved by wholesale side selection. Owner branches remain unchanged.
+- G01 overall remains OPEN/BLOCKING for branch reconciliation; source-defect subgate remains PASS. G02 APK build is blocked pending clean combined candidate and exact-head integrated CI. `main` is untouched.
