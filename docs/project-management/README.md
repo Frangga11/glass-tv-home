@@ -30,7 +30,9 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [E01_DEVICE_SETTINGS_HOME_CONTROL_AUDIT.md](E01_DEVICE_SETTINGS_HOME_CONTROL_AUDIT.md) | E01 Device Settings source audit and exact-head verification |
 | [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md) | B03 global app-owned dialog/popup surface contract and Glass Effect OFF solid fallback |
 | [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md) | B06 notification, Toast, OTA loading, QR progress/timeout audit and exact-head CI evidence |
-| [F03_QR_COMMUNICATION_FEASIBILITY.md](F03_QR_COMMUNICATION_FEASIBILITY.md) | F03 QR communication/upload feasibility evidence, CI, findings, and Project G device gates |\n| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
+| [F03_QR_COMMUNICATION_FEASIBILITY.md](F03_QR_COMMUNICATION_FEASIBILITY.md) | F03 QR communication/upload feasibility evidence, CI, findings, and Project G device gates |
+| [F04_FEATURE_ISOLATION_AUDIT.md](F04_FEATURE_ISOLATION_AUDIT.md) | F04 Avatar, Wallpaper and StandBy source isolation, repairs, CI and Project G gates |
+| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
 
 ## Documentation architecture
 
