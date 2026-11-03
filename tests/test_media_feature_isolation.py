@@ -250,5 +250,33 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         self.assertIn("onCustomWallpaperDeleteFailed()", listener)
 
 
+    def test_avatar_cleanup_preserves_custom_photo_shared_by_another_profile(self):
+        cleanup = self.profiles.split(
+            "private static void deleteAvatarIfUnreferenced(", 1
+        )[1].split(
+            "public static synchronized void cleanupOrphanedAvatarUploads(", 1
+        )[0]
+        self.assertIn("profile.id.equals(excludedProfileId)", cleanup)
+        self.assertIn("candidate.equals(new File(profile.customAvatarPath).getCanonicalFile())", cleanup)
+        self.assertLess(cleanup.index("return;"), cleanup.index("candidate.delete()"))
+
+    def test_standby_clear_commits_empty_state_before_deleting_managed_photos(self):
+        clear = self.standby.split(
+            "static synchronized List<Uri> clearCollectionAndMode(", 1
+        )[1].split(
+            "private static List<String> toUriStrings(", 1
+        )[0]
+        self.assertIn("commitClearedState(preferences)", clear)
+        self.assertLess(clear.index("commitClearedState(preferences)"), clear.index("clearUploadedFiles(context)"))
+        self.assertIn("if (!saved) return null", clear)
+        main_clear = self.main.split(
+            "void clearStandbyPhotos()", 1
+        )[1].split(
+            "protected void onActivityResult(", 1
+        )[0]
+        self.assertIn('if ("file".equalsIgnoreCase(uri.getScheme())) continue;', main_clear)
+        self.assertIn("releasePersistableUriPermission", main_clear)
+
+
 if __name__ == "__main__":
     unittest.main()
