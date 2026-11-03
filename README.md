@@ -1,5 +1,7 @@
 # Glass TV
 
+> **Project status (3 Nov 2026):** Project F is closed at HOST/SOURCE EXIT PASS. Project G is active at G01 — Final Bug Resolution; no APK has been published or installed, and Mi TV Stick acceptance remains a G03 gate.
+
 **Make your Android TV or Google TV fast and ad-free again: strip out the bloat and ads, free up memory,
 and come home to just your apps, with a new place to visit behind them every week.**
 
