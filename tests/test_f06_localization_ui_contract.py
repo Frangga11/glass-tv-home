@@ -71,17 +71,17 @@ class F06LocalizationUiContractTest(unittest.TestCase):
         wallpaper = (JAVA / "WallpaperUploadServer.java").read_text(encoding="utf-8")
         avatar = (JAVA / "AvatarUploadServer.java").read_text(encoding="utf-8")
         for key in (
-            "upload_error_session_expired",
+            "avatar_error_header_too_large",
+            "avatar_error_invalid_request",
+            "avatar_error_session_expired",
+            "avatar_error_not_found",
+            "local_upload_error_busy",
             "wallpaper_error_low_storage",
             "wallpaper_error_size_limit",
             "wallpaper_error_store_failed",
-            "wallpaper_error_thumbnail_decode",
-            "wallpaper_error_thumbnail_encode",
             "wallpaper_error_thumbnail_request",
-            "standby_page_session_expired",
-            "standby_page_server_unavailable",
             "standby_page_cancelled_retry",
-            "wallpaper_page_server_error_fallback",
+            "wallpaper_page_action_failed",
             "wallpaper_page_thumbnail_alt",
         ):
             self.assertIn(f"R.string.{key}", wallpaper)
@@ -91,7 +91,7 @@ class F06LocalizationUiContractTest(unittest.TestCase):
         self.assertNotIn("xhr.statusText", wallpaper)
         self.assertIn("Locale.forLanguageTag(AppLanguage.getLanguage(context))", wallpaper)
         self.assertIn("htmlText(R.string.wallpaper_page_thumbnail_alt)", wallpaper)
-        self.assertIn("localized(R.string.upload_error_method_not_allowed)", avatar)
+        self.assertIn("localized(R.string.avatar_error_invalid_request)", avatar)
         self.assertNotIn('byte[] body = "Method Not Allowed"', avatar)
 
     def test_only_indonesian_and_english_are_advertised(self):
