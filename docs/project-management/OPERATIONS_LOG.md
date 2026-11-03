@@ -738,3 +738,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - GitHub reports `mergeable=false`; PR #57 is OPEN/DRAFT/UNMERGED. Compare view: 639 commits / 123 changed files. Do not merge or force-push around the conflict.
 - The 26 shared B-series/F-staged-full paths require three-way semantic resolution. No conflict was resolved by wholesale side selection. Owner branches remain unchanged.
 - G01 overall remains OPEN/BLOCKING for branch reconciliation; source-defect subgate remains PASS. G02 APK build is blocked pending clean combined candidate and exact-head integrated CI. `main` is untouched.
+
+
+### G01 semantic reconciliation candidate — 3 November 2026
+
+- Compared B-series and F07 from common ancestor `d7b76c4a22c9eadffb8171a616283f3ad647d488`; reviewed the 26 shared paths by owner contract and behavior. F07 was retained where it is the advanced implementation; B-only `GlassSurfaceFallbackTest.java` was preserved alongside F07's distinct fallback test.
+- Found a real F06 localization defect: Daily Verse title/action/meaning/unavailable copy was reversed between `values-en` and `values-id`. Corrected on F06 and added explicit semantic value assertions. F06 exact-head run #41582796654 PASS (89 Python tests / 1 intentional README-count skip; Android unit tests and release validation build PASS; APK 1,569,397 bytes; no artifacts).
+- Created isolated three-parent candidate `integration/g01-reconciled-candidate-20261103` @ `6ebd6284fcb21a74fed2a769868e91bc69ef7ae3`; parents are F07 `28e841a3475c144dd5ec85afb0976278274c2b5f`, B-series `9070894fa6d9ef8aec034f46dfe777e866709dfe`, corrected F06 `2c369a0a48c77bb3bf023c292892541306e535a3`.
+- Candidate is a descendant of B-series (compare: ahead 644 / behind 0); Draft PR #58 is open and GitHub reports mergeable=true. PR #57 remains the historical unmergeable diagnostic gate.
+- Candidate exact-head CI #41583215114 (push) and #41583248216 (pull_request) was still running at this checkpoint. Do not mark G01 complete until exact-head required jobs and cross-group review pass.
+- No feature owner branch or `main` was rewritten/merged. No APK published/installed; no TV settings changed. G02 remains blocked; G03 physical Mi TV Stick acceptance remains separate.
