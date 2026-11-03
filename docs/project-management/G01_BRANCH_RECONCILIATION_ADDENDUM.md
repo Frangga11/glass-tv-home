@@ -189,3 +189,37 @@ F06 exact-head CI on `2c369a0a48c77bb3bf023c292892541306e535a3`: run #4158279665
 - G01 overall: OPEN pending exact-head CI and final review.
 - G02: BLOCKED until G01 closes.
 - No merge to `main`, no APK publication/installation, and no physical TV setting changes.
+
+
+## 10. Integration merge and exact merge-commit acceptance — 3 November 2026
+
+### Combine/merge result
+- PR #58 (`integration/g01-reconciled-candidate-20261103` → `integration/b-series`) was merged successfully.
+- Final integration merge commit: `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`.
+- PR #58 state: CLOSED / MERGED. The accepted merge commit has parents B-series `9070894fa6d9ef8aec034f46dfe777e866709dfe` and reconciled candidate `6ebd6284fcb21a74fed2a769868e91bc69ef7ae3`.
+- Candidate and final merge commit have identical Git tree SHA `a016951e69d99603a2a90722420cfe118c93eed1`; the merge commit introduces no source-tree drift from the CI-verified candidate.
+- PR #57 was closed/superseded; its F07 head is included as an ancestor of the accepted candidate.
+
+### Exact merge-commit CI — PASS
+- Run #41583505195 on exact merge commit `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`: completed SUCCESS.
+- Both required jobs SUCCESS: Launcher build and unit tests; Lists, tools and docs.
+- Python suite: 99 tests, all OK.
+- Android launcher and installer unit tests: PASS; release validation build: BUILD SUCCESSFUL.
+- APK diagnostic: 1,571,293 bytes / 1,572,864-byte cap (1,571 bytes headroom).
+- Workflow artifacts: empty. No APK published or installed.
+
+### Main-branch divergence reviewed
+- Compare `main` → `integration/b-series` remains diverged (integration has the project history; main has one commit not present in integration).
+- The only main-only commit is `6eaf787c56226606b1d2e650c59540c553756c62`, message `ci: enable manual workflow dispatch from default branch`; it adds a manual `workflow_dispatch` input for publishing the TV-test APK.
+- This is intentionally NOT copied into the integration branch because the accepted CI workflow is validation-only and has no artifact publication path. This is a deliberate release-safety exclusion, not an unresolved source conflict. Do not merge this main-only manual-publish change into the candidate before G03 acceptance and explicit release approval.
+- `main` remains untouched.
+
+### Final gate disposition
+- 26-path semantic reconciliation: PASS.
+- Isolated candidate exact-head CI: PASS.
+- Integration merge into `integration/b-series`: PASS at `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`.
+- Exact merge-commit CI: PASS.
+- G01 source/host integration gate: **PASS**.
+- G02 final tested APK candidate: **READY TO START** from the exact integration merge commit; no APK has yet been published or installed.
+- G03 physical Mi TV Stick acceptance: NOT STARTED; remains a separate device-only gate.
+- No merge to `main`; no TV setting changes.
