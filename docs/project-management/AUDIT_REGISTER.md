@@ -936,3 +936,21 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 
 **F04 decision:** HOST/SOURCE EXIT PASS. C07/E08 owner exact-head CI and F04 integration exact-head CI all passed. Overall product acceptance remains PARTIAL until Project G phone/LAN/OEM/TV gates are completed; F05 owns force-stop/process-death/reboot persistence. PR #24, #41 and #53 remain Draft/open/unmerged. No APK publication/installation.
 See `F04_FEATURE_ISOLATION_AUDIT.md` and `HANDOVER.md`.
+
+
+## F04 re-verification after network interruption — 3 November 2026, 08:41 WIB
+
+| Check | Rechecked evidence | Result |
+|---|---|---|
+| PR governance | #24, #41, #53 are in the open Draft PR set; no merge | PASS |
+| Integration ancestry | F04 branch 21 ahead / 0 behind F02 base 2ede452b3137580bd51088661f80b6d0eeac7f4b | PASS |
+| F04 change scope | Seven files only: MainActivity, WallpaperUploadServer, three locale strings, two test files | PASS |
+| C07 owner exact head | CI #41560247050; 21 tests / 1 intentional skip; APK 1,550,961 B; both jobs success | PASS |
+| E08 owner exact head | CI #41560595614; 11 tests / 1 intentional skip; APK 1,564,089 B; both jobs success | PASS |
+| F04 integration exact head | CI #41560815870; 65 tests / 1 intentional skip; APK 1,566,045 B; both jobs success | PASS |
+| Artifact/publication check | All three latest run artifact lists empty; publication skipped | PASS |
+| Delete failure recovery | UI single/bulk deletion checks outcomes; QR API partial clear invokes callback and HTTP 500; localized feedback aligned | PASS (source/CI) |
+| Physical phone/LAN/OEM/remote | Not exercised by host CI | DEFERRED_TO_G |
+| Force-stop/process-death/reboot persistence | Outside F04; F05 scope | DEFERRED_TO_F05 |
+
+**Decision:** F04 HOST/SOURCE EXIT remains PASS. This was a read-only re-verification of existing exact-head CI, not a new CI run or physical acceptance. No new source defect found and no code change required.
