@@ -954,3 +954,21 @@ See `F04_FEATURE_ISOLATION_AUDIT.md` and `HANDOVER.md`.
 | Force-stop/process-death/reboot persistence | Outside F04; F05 scope | DEFERRED_TO_F05 |
 
 **Decision:** F04 HOST/SOURCE EXIT remains PASS. This was a read-only re-verification of existing exact-head CI, not a new CI run or physical acceptance. No new source defect found and no code change required.
+
+
+## Project F05 — Persistence & Recovery checkpoint — 3 November 2026
+
+| Gate / finding | Owner / evidence | Result at checkpoint |
+|---|---|---|
+| F05 integration ancestry | PR #54, head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; 14 ahead / 0 behind F04; five files | PASS |
+| Avatar/Profile JSON + replacement ordering | ProfileManager source guards; startup cleanup | PASS (source contract) |
+| StandBy collection/mode atomicity + clear ordering | StandbyPhotoStore JVM/source guards; both renderers use same store | PASS (source contract) |
+| Home focus + Settings tab persistence | NavigationState/MainActivity/ModernSettingsDialog source guards | PASS (source contract) |
+| Prayer alarm normal-boot restoration | non-exported AzanBootReceiver, BOOT_COMPLETED policy, allowBackup=false | PASS (source contract); device reboot DEFERRED_TO_G |
+| F05-WALL-001 stale Custom single-file pin | E08 PR #41 head `edd24d72256d06da4578971ea7bac1802746a3a6`, CI #41562661052 both jobs SUCCESS; 15 tests / 1 skip; APK 1,564,197 B | FIXED / OWNER HOST-CI PASS |
+| F05-WALL-002 orphan custom wallpaper upload parts | C07 PR #24 head `2315f12472f469843c1441ad7d01c6898858c4c5`, CI #41563429553; 23 tests / 1 skip PASS; Android build running | SOURCE FIXED / OWNER CI PARTIAL |
+| F05 integrated source suite | PR #54 run #41563437433; 80 tests / 1 intentional skip PASS | PASS |
+| F05 Android unit/release build + APK budget | PR #54 run #41563437433 | IN PROGRESS |
+| Actual force-stop/process-death/reboot and OEM acceptance | Physical Mi TV Stick not tested | DEFERRED_TO_G |
+
+**F05 decision:** IN PROGRESS; no exit claimed. Do not merge or publish/install an APK. See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
