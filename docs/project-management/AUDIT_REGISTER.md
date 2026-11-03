@@ -904,3 +904,14 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Checkpoint ini mengungguli catatan historis yang masih menyebut CI/retet pending untuk pekerjaan yang sama. Catatan lama dipertahankan sebagai jejak kronologis, bukan status aktif.
 
 **Status serah terima:** F02 ditutup pada sisi host/source dan dokumen pada exact head #50 telah lulus CI. Kandidat integrasi diserahkan ke Project G untuk final audit, penerimaan perangkat nyata, dan merge — bukan untuk mengulang pekerjaan perbaikan F02 yang telah terverifikasi.
+
+## F03 — QR communication feasibility checkpoint (3 November 2026)
+
+| Area | Evidence | Disposition |
+|---|---|---|
+| C01–C06 QR server/network/HTTP/body/file validation | Owner exact-head CI evidence recorded in F03_QR_COMMUNICATION_FEASIBILITY.md; C01 #549, C02 #333, C03 #338/#550, C04 #355, C05 #361, C06 #363/#551 passed. | HOST CI PASS |
+| C07 disconnect/retry/expiry/cancellation | Owner PR #24 head 442b78c68b1540394d543bab59bddf52f865ccf0; CI #41521013896 both jobs SUCCESS. | OWNER HOST PASS |
+| Integrated F02 candidate | PR #50 head 2ede452b3137580bd51088661f80b6d0eeac7f4b; run #41523201383 both jobs SUCCESS; 42 Python tests (one intentional merge-time README normalization skip), Android unit tests/release build and APK size gate PASS; no artifacts. | INTEGRATED HOST PASS |
+| Physical QR/LAN acceptance | Real phone + Mi TV Stick scan/upload, retry/cancel/expiry, concurrency, low storage and process-death/reboot persistence not executed in Project F. | DEFERRED_TO_G; NOT PASS |
+
+**F03 decision:** HOST/SOURCE FEASIBILITY PASS; overall F03 PARTIAL pending Project G device acceptance. No new source blocker identified. Do not merge staged PRs or publish/install APK. See F03_QR_COMMUNICATION_FEASIBILITY.md and HANDOVER for the full gate list.
