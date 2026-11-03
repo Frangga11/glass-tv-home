@@ -254,6 +254,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private final java.util.concurrent.ExecutorService wallDecoder = java.util.concurrent.Executors.newSingleThreadExecutor();
     /** Latest-request token prevents stale wallpaper decodes from replacing newer selections. */
     private final java.util.concurrent.atomic.AtomicLong wallpaperRequestGeneration = new java.util.concurrent.atomic.AtomicLong();
+    private final java.util.concurrent.atomic.AtomicLong wallpaperThumbnailGeneration = new java.util.concurrent.atomic.AtomicLong();
     private long wallShownAt;
     private android.widget.ImageView wallView;
     private android.graphics.Bitmap wallBitmap;
@@ -1181,6 +1182,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /** Loads the QR-upload preview off the UI thread and discards it if the dialog/request is stale. */
+    private void queueWallpaperThumbnail(File file) {
+        final ImageView target = qrImageView;
+        if (file == null || target == null) return;
+        final long generation = wallpaperThumbnailGeneration.incrementAndGet();
+        try {
+            wallDecoder.execute(() -> {
+                android.graphics.Bitmap thumb = decodeWallpaper(file);
+                if (thumb == null) return;
+                boolean posted = handler.post(() -> {
+                    if (isDestroyed() || generation != wallpaperThumbnailGeneration.get()
+                            || qrImageView != target || qrUploadDialog == null || !qrUploadDialog.isShowing()) {
+                        if (!thumb.isRecycled()) thumb.recycle();
+                        return;
+                    }
+                    target.setImageBitmap(thumb);
+                    target.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                });
+                if (!posted && !thumb.isRecycled()) thumb.recycle();
+            });
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+            android.util.Log.d("TvHome", "Wallpaper preview skipped because Home is shutting down");
+        }
+    }
+
     /** Puts a picture behind everything, cross-fading from the previous one when asked. */
     private void setWallpaper(android.graphics.Bitmap bmp, boolean fade) {
         setWallpaper(bmp, fade, null);
@@ -1833,6 +1859,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         SoundEffects.release();
         wallpaperRequestGeneration.incrementAndGet();
+        wallpaperThumbnailGeneration.incrementAndGet();
         handler.removeCallbacksAndMessages(null);
         wallDecoder.shutdownNow();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
@@ -6014,15 +6041,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 qrUrlText.setText(getString(R.string.wallpaper_active_file, file.getName()));
                 qrUrlText.setTextColor(0xFF4ADE80);
             }
-            if (qrImageView != null) {
-                try {
-                    Bitmap thumb = decodeWallpaper(file);
-                    if (thumb != null) {
-                        qrImageView.setImageBitmap(thumb);
-                        qrImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    }
-                } catch (Exception ignored) {}
-            }
+            queueWallpaperThumbnail(file);
 
             handler.postDelayed(() -> {
                 if (qrUploadDialog != null && qrUploadDialog.isShowing()) {
