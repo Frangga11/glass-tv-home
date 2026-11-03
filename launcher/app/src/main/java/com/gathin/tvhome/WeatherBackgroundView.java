@@ -52,6 +52,8 @@ public class WeatherBackgroundView extends View {
 
     // Gradients
     private LinearGradient bgGradient;
+    private RadialGradient sunRadial;
+    private RadialGradient moonRadial;
     private int cachedW = 0;
     private int cachedH = 0;
 
@@ -91,6 +93,8 @@ public class WeatherBackgroundView extends View {
         float rx, ry;
         float speed;
         int alpha;
+        RadialGradient gradient;
+        final android.graphics.Matrix shaderMatrix = new android.graphics.Matrix();
     }
     private final List<CloudPuff> cloudPuffs = new ArrayList<>();
 
@@ -282,6 +286,7 @@ public class WeatherBackgroundView extends View {
                 break;
         }
         bgPaint.setShader(bgGradient);
+        rebuildAtmosphereShaders();
 
         // 2. Initialize Rain drops if drizzle, rain or storm
         rainDrops.clear();
@@ -358,6 +363,10 @@ public class WeatherBackgroundView extends View {
                 p.ry = (cachedH * 0.16f) + (random.nextFloat() * (cachedH * 0.18f));
                 p.speed = 0.25f + (random.nextFloat() * 0.45f);
                 p.alpha = 15 + random.nextInt(25);
+                p.gradient = new RadialGradient(
+                        0f, 0f, Math.max(p.rx, p.ry),
+                        new int[]{Color.argb(p.alpha, 255, 255, 255), Color.argb(0, 255, 255, 255)},
+                        new float[]{0f, 1f}, Shader.TileMode.CLAMP);
                 cloudPuffs.add(p);
             }
         }
@@ -365,6 +374,23 @@ public class WeatherBackgroundView extends View {
         nextLightningTime = SystemClock.uptimeMillis() + 4000 + random.nextInt(5000);
         lightningAlpha = 0f;
         hasActiveBolt = false;
+    }
+
+    /** Static radial shaders are built when the viewport/condition changes, never per animation frame. */
+    private void rebuildAtmosphereShaders() {
+        if (cachedW <= 0 || cachedH <= 0) {
+            sunRadial = null;
+            moonRadial = null;
+            return;
+        }
+        sunRadial = new RadialGradient(
+                cachedW * 0.35f, cachedH * 0.05f, cachedW * 0.40f,
+                new int[]{0xAAFFFFFF, 0x44FFE082, 0x15FFB300, 0x001E88E5},
+                new float[]{0f, 0.25f, 0.55f, 1f}, Shader.TileMode.CLAMP);
+        moonRadial = new RadialGradient(
+                cachedW * 0.85f, cachedH * 0.14f, cachedW * 0.15f,
+                new int[]{0x35E0F2FE, 0x1590CAF9, 0x000D1728},
+                new float[]{0f, 0.45f, 1f}, Shader.TileMode.CLAMP);
     }
 
     @Override
@@ -421,13 +447,7 @@ public class WeatherBackgroundView extends View {
         // Animated sun core glow
         float pulse = (float) Math.sin(sunPulseTime * 1.2f) * 0.05f;
         float coreRadius = cachedW * (0.35f + pulse);
-        RadialGradient sunRadial = new RadialGradient(
-                sunCenterX, sunCenterY, coreRadius,
-                new int[]{0xAAFFFFFF, 0x44FFE082, 0x15FFB300, 0x001E88E5},
-                new float[]{0f, 0.25f, 0.55f, 1f},
-                Shader.TileMode.CLAMP
-        );
-        sunGlowPaint.setShader(sunRadial);
+        if (sunRadial != null) sunGlowPaint.setShader(sunRadial);
         canvas.drawCircle(sunCenterX, sunCenterY, coreRadius, sunGlowPaint);
 
         // Optical Lens Flare Rings & Disks (Apple Weather style)
@@ -455,13 +475,7 @@ public class WeatherBackgroundView extends View {
         float moonX = cachedW * 0.85f;
         float moonY = cachedH * 0.14f;
         float moonRadius = cachedW * 0.15f;
-        RadialGradient moonRadial = new RadialGradient(
-                moonX, moonY, moonRadius,
-                new int[]{0x35E0F2FE, 0x1590CAF9, 0x000D1728},
-                new float[]{0f, 0.45f, 1f},
-                Shader.TileMode.CLAMP
-        );
-        sunGlowPaint.setShader(moonRadial);
+        if (moonRadial != null) sunGlowPaint.setShader(moonRadial);
         canvas.drawCircle(moonX, moonY, moonRadius, sunGlowPaint);
 
         // Twinkling Stars
@@ -481,13 +495,11 @@ public class WeatherBackgroundView extends View {
                 p.x = -p.rx;
             }
 
-            RadialGradient cloudGrad = new RadialGradient(
-                    p.x, p.y, Math.max(p.rx, p.ry),
-                    new int[]{Color.argb(p.alpha, 255, 255, 255), Color.argb(0, 255, 255, 255)},
-                    new float[]{0f, 1f},
-                    Shader.TileMode.CLAMP
-            );
-            cloudPaint.setShader(cloudGrad);
+            if (p.gradient != null) {
+                p.shaderMatrix.setTranslate(p.x, p.y);
+                p.gradient.setLocalMatrix(p.shaderMatrix);
+                cloudPaint.setShader(p.gradient);
+            }
             canvas.drawOval(p.x - p.rx, p.y - p.ry, p.x + p.rx, p.y + p.ry, cloudPaint);
         }
     }
