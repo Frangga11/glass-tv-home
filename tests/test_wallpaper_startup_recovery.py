@@ -38,7 +38,7 @@ class WallpaperStartupRecoveryTest(unittest.TestCase):
         method = self.startup_helper()
         self.assertIn("UploadFilePolicy.isSafeStoredImageName(singleFile)", method)
         self.assertIn("selected.isFile()", method)
-        self.assertIn("selected.length() > 0", method)
+        self.assertIn("selected.length() <= 0", method)
         self.assertIn('.putBoolean("custom_single_mode", false)', method)
         self.assertIn('.remove("custom_single_file")', method)
 
