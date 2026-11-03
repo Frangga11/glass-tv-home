@@ -6,7 +6,7 @@
 **Repository:** https://github.com/Frangga11/glass-tv-home  
 **Documentation branch:** `docs/project-master-inventory`  
 **Current feature branch:** `integration/project-f04-feature-isolation-v2` (PR #53, Draft/open/unmerged)  
-**Current stage:** Project F04 — Avatar/Wallpaper/StandBy feature-isolation audit; host/source CI PASS, physical acceptance reserved for Project G.
+**Current stage:** Project F04 — Avatar/Wallpaper/StandBy HOST/SOURCE EXIT PASS; F05 is next, physical acceptance remains reserved for Project G.
 **F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
 ## Purpose
