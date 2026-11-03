@@ -1113,3 +1113,23 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Physical Mi TV Stick acceptance | PENDING | G03 device-only test; not claimed by host CI |
 
 **G01 overall: PASS. G02 final tested APK build: READY TO START from `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`. G03 remains pending.**
+
+## G01 project-wide coverage re-audit — 3 November 2026
+
+| Audit | Result | Evidence / boundary |
+|---|---|---|
+| A–G roadmap coverage | PASS | 47 approved items mapped; E00 is governance inventory, not an extra counted item |
+| Legacy PR #2–#9 baseline | PASS | PR #2–#5/#7–#8 ancestry represented; PR #6 selectively superseded through PR #9; no blind old-branch merge |
+| Legacy Pagar Alam branch | PASS | Core Location/Azan/PrayerTimes/WallpaperShuffle match; newer language/location/cache implementations retained in candidate |
+| B-series/F07 26-path overlap | PASS | Semantic matrix in G01 addendum; F07 bounded/performance/lifecycle implementations retained where superior |
+| E05 location-aware weather/AQI cache | FIXED + PASS | Per-source success timestamps/coordinates; stale location rejected in Home and dashboard; owner CI #41433527557 PASS |
+| E05 weather presentation/localization | FIXED + PASS | API condition remains authoritative; F07 reduced-motion/low-memory retained; F06 high/low resource labels restored |
+| E08 deletion-failure regression | FIXED + PASS | Restored owner test for single/bulk/keep-one/partial failure and QR callback; all tests pass |
+| PR #59 isolated integration merge | PASS | Merged at `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; tree identical to tested head |
+| Exact tested-tree CI | PASS | #41586223809 / run #1177, both jobs SUCCESS; 109 Python tests / 1 intentional skip; Android unit tests/build PASS |
+| APK budget | PASS — NARROW MARGIN | 1,572,293 / 1,572,864 bytes; 571 bytes headroom; G02 watch item |
+| Artifact/publication | PASS (none) | No workflow artifact; publication skipped |
+| Main branch | PASS — UNTOUCHED | One main-only manual APK-publish workflow commit remains excluded |
+| Physical Mi TV Stick acceptance | PENDING | G03 device-only acceptance; not claimed by host CI |
+
+**G01: PASS. G02: READY TO START from `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. G03–G05: NOT STARTED.**
