@@ -823,3 +823,13 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - F04 report: `F04_FEATURE_ISOLATION_AUDIT.md`; regression tests: `tests/test_media_feature_isolation.py` and `tests/test_wallpaper_api_clear_failure.py`.
 - F04 HOST/SOURCE EXIT PASS. C07 and E08 owner exact-head CI and F04 integration exact-head CI are all green. Physical phone/LAN/OEM/remote/StandBy acceptance remains DEFERRED_TO_G. F05 owns force-stop/process-death/reboot persistence validation. Next host/source workstream: proceed to F05.
 - PR #24, #41, #53 remain Draft/open/unmerged under D-013. No APK publication/installation or physical TV test. Next action: begin F05 persistence, force-stop and reboot validation.
+
+
+### Post-network-interruption F04 re-verification — 3 November 2026, 08:41 WIB
+
+- Re-read live GitHub state. PR #24 (C07), #41 (E08), and #53 (F04) are all present in the open Draft PR set; none is merged.
+- F04 integration remains 21 commits ahead / 0 behind approved base integration/project-f02-system-validation at 2ede452b3137580bd51088661f80b6d0eeac7f4b. Its seven-file delta is limited to MainActivity, WallpaperUploadServer, three locale resources, and two F04 test files.
+- Latest exact-head CI runs rechecked: C07 #41560247050 (21 tests / 1 intentional skip; Android build and size PASS; APK 1,550,961 bytes); E08 #41560595614 (11 tests / 1 intentional skip; Android build and size PASS; APK 1,564,089 bytes); F04 #41560815870 (65 tests / 1 intentional skip; Android build and size PASS; APK 1,566,045 bytes). All jobs SUCCESS; all three artifact lists empty.
+- Source spot-check confirms QR API clear failure callback/HTTP 500 and wallpaper UI delete-failure reconciliation; three locale strings are aligned. No new reproducible source blocker.
+- This was a read-only re-verification of existing exact-head runs, not a new CI execution or physical-device test. F04 HOST/SOURCE EXIT remains PASS. Project G device acceptance and F05 process-death/force-stop/reboot validation remain open by design.
+- No code changes were needed. Resume at F05 after user approval; retain PR #24/#41/#53 Draft/open/unmerged.
