@@ -2,10 +2,10 @@
 
 **Checkpoint:** GTVH-G01-2026-11-03  
 **Date:** 3 November 2026 (WIB)  
-**Disposition:** HOST/SOURCE DEFECT AUDIT PASS — no newly reproducible source defect found  
+**Disposition:** G01 FULL PASS — source defect resolution, 26-path semantic reconciliation, isolated integration merge, and exact merge-commit CI verified  
 **Canonical documentation branch:** `docs/project-master-inventory`  
-**Frozen F07 reference:** `integration/project-f07-performance-stability` @ `976e068d48ecc1ede2811ac455372395d382ba76`  
-**Release/device boundary:** no merge, APK publication/installation, or TV setting change performed.
+**Accepted integration commit:** `integration/b-series` @ `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`  
+**Release/device boundary:** integration-only merge completed; `main` untouched; no APK publication/installation or TV setting change performed.
 
 ## 1. Scope and method
 
@@ -94,3 +94,14 @@ G01 defect-resolution subgate is PASS, but G01 project-wide branch reconciliatio
 ## G01 branch-reconciliation status correction — 3 November 2026
 
 The source/host bug-resolution review remains PASS. The project-wide G01 gate is NOT CLOSED because the live compare found that `integration/b-series` @ `9070894fa6d9ef8aec034f46dfe777e866709dfe` and the F07 candidate @ `976e068d48ecc1ede2811ac455372395d382ba76` are diverged, with 26 shared-file differences. The five-stage Project G roadmap is unchanged; G02 is blocked pending a clean isolated combined candidate and exact-head integrated CI. See `G01_BRANCH_RECONCILIATION_ADDENDUM.md`.
+
+
+## 8. G01 final integration acceptance — 3 November 2026
+
+- B-series and F07 were semantically reconciled across all 26 shared paths. F07 implementations were retained where they contain later lifecycle, persistence, timeout, concurrency, or performance hardening; B-series-only fallback test coverage was preserved.
+- A real F06 defect was corrected: four Daily Verse values had been assigned to the wrong language resources. Explicit semantic locale assertions were added; F06 exact-head CI passed.
+- Reconciled candidate PR #58 was merged into `integration/b-series` at exact commit `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`. Candidate and merge commit share identical tree SHA `a016951e69d99603a2a90722420cfe118c93eed1`.
+- Exact merge-commit CI #41583505195: both required jobs SUCCESS; Python 99 tests all OK; Android launcher/installer unit tests PASS; release validation build SUCCESS; APK diagnostic 1,571,293 bytes / 1,572,864-byte budget; no workflow artifacts.
+- Main-only commit `6eaf787c56226606b1d2e650c59540c553756c62` enables manual workflow_dispatch APK publishing. It was intentionally excluded from integration to preserve the validation-only release gate.
+- G01 source/host integration gate: **PASS**. G02 final tested APK build: **READY TO START** from `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`. G03 physical Mi TV Stick acceptance: NOT STARTED.
+- No merge to `main`, no APK publication/installation, and no TV setting changes.
