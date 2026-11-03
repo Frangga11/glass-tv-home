@@ -58,7 +58,7 @@ public class WallpaperUploadServer {
     private volatile boolean running = false;
     private final Set<Socket> activeClients = Collections.synchronizedSet(new java.util.HashSet<>());
     private Thread serverThread;
-    // Shared across server instances so a replacement QR session accounts for draining old sessions.
+    // Shared across server instances so a newly opened QR session accounts for draining old sessions.
     private static final Object UPLOAD_STORAGE_LOCK = new Object();
     private static long reservedUploadBytes;
 
@@ -625,9 +625,20 @@ public class WallpaperUploadServer {
                 if (!client.isClosed()) sendUploadError(out, 410, "Upload session expired or closed");
                 return;
             }
-            if (!StandbyPhotoStore.addUploadedFile(context, storedFile)) {
-                storedFile.delete();
-                sendUploadError(out, 400, localized(R.string.standby_error_collection_storage));
+            StandbyPhotoStore.UploadResult uploadResult =
+                    StandbyPhotoStore.addUploadedFile(context, storedFile);
+            int responseStatus = standbyUploadResponseStatus(uploadResult);
+            if (responseStatus != 200) {
+                // commit() can fail after SharedPreferences updates its in-memory map.
+                // Keep the file on persistence failure so a live URI reference cannot dangle;
+                // cleanupOrphanedUploads() removes it after restart if the write was not durable.
+                if (uploadResult != StandbyPhotoStore.UploadResult.PERSISTENCE_FAILED) {
+                    storedFile.delete();
+                }
+                String message = responseStatus == 500
+                        ? localized(R.string.standby_error_storage)
+                        : localized(R.string.standby_error_collection_storage);
+                sendUploadError(out, responseStatus, message);
                 return;
             }
             if (listener != null) {
@@ -649,6 +660,12 @@ public class WallpaperUploadServer {
         out.write(response.getBytes("UTF-8"));
         out.write(bytes);
         out.flush();
+    }
+
+    static int standbyUploadResponseStatus(StandbyPhotoStore.UploadResult result) {
+        if (result == StandbyPhotoStore.UploadResult.ADDED
+                || result == StandbyPhotoStore.UploadResult.ALREADY_PRESENT) return 200;
+        return result == StandbyPhotoStore.UploadResult.PERSISTENCE_FAILED ? 500 : 400;
     }
 
     private void sendUploadError(OutputStream out, int status, String message) throws Exception {
