@@ -568,3 +568,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact merge-commit CI #41583505195: PASS; 99 Python tests all OK; Android launcher/installer unit tests and release validation build PASS; APK 1,571,293 bytes under 1,572,864-byte cap; no workflow artifacts.
 - `main` remains separate and untouched. Its manual APK-publishing workflow-dispatch commit is deliberately excluded.
 - G01: PASS. G02: ready to start. G03: physical Mi TV Stick acceptance pending.
+
+## Current integrated source inventory — 3 November 2026
+
+- Integration branch: `integration/b-series`.
+- Latest merge commit: `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- Tested candidate: `9f2da8f39a20c8e8cc43ac0ff7e42d7a82b34676`; merge tree comparison reports zero changed files.
+- Coverage re-audit: A01–A06 baseline retained; B01–B07, C01–C07, D01–D07, E01–E08 source/CI coverage present; F01–F07 host/source exit pass; G01 pass.
+- E05 weather/AQI cache now has per-source success timestamps and per-source cached coordinates; both Home summary and Weather dashboard reject stale-location cache. API condition text remains data-backed; F07 reduced-motion/low-memory behavior and F06 localized high/low labels are preserved.
+- E08 deletion-failure regression test is now included alongside existing startup recovery, QR API clear-failure and upload cleanup guards.
+- Legacy Pagar Alam branch review: Location, Azan, PrayerTimes and WallpaperShuffle files match; combined tree has newer language handling, localized location setup, retired Malay category and bounded online wallpaper cache.
+- Exact tested-tree CI #41586223809: 109 Python tests / 1 intentional skip; Android unit tests/release validation PASS; APK diagnostic 1,572,293 bytes / 1,572,864-byte cap; no artifacts.
+- Physical acceptance is not in this inventory pass; G03 remains pending.
