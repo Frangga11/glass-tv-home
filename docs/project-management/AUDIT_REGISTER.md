@@ -1096,3 +1096,20 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - GitHub reports `mergeable=false`; PR #57 is OPEN/DRAFT/UNMERGED. Compare view: 639 commits / 123 changed files. Do not merge or force-push around the conflict.
 - The 26 shared B-series/F-staged-full paths require three-way semantic resolution. No conflict was resolved by wholesale side selection. Owner branches remain unchanged.
 - G01 overall remains OPEN/BLOCKING for branch reconciliation; source-defect subgate remains PASS. G02 APK build is blocked pending clean combined candidate and exact-head integrated CI. `main` is untouched.
+
+
+## G01 integrated quality gate — 3 November 2026
+
+| Gate | Result | Evidence / boundary |
+|---|---|---|
+| 26-path B-series/F07 semantic reconciliation | PASS | Per-file disposition in `G01_BRANCH_RECONCILIATION_ADDENDUM.md`; no wholesale ours/theirs resolution |
+| F06 semantic locale defect | FIXED + PASS | Four Daily Verse strings corrected; explicit locale assertions added; F06 exact-head CI #41582796654 passed |
+| Candidate exact-head CI | PASS | PR #58 candidate SHA `6ebd6284fcb21a74fed2a769868e91bc69ef7ae3`; run #41583248216 both jobs SUCCESS |
+| Integration merge | PASS | PR #58 merged into `integration/b-series` at `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832` |
+| Exact merge-commit CI | PASS | Run #41583505195 both jobs SUCCESS; 99 Python tests all OK; Android launcher/installer unit tests PASS; release validation build SUCCESS |
+| APK budget | PASS | Diagnostic 1,571,293 bytes / 1,572,864-byte cap; 1,571 bytes headroom |
+| Artifact publication | PASS (none) | Workflow artifact list empty; no APK published or installed |
+| Main branch protection | PASS | `main` untouched; manual workflow-dispatch APK-publish commit deliberately excluded |
+| Physical Mi TV Stick acceptance | PENDING | G03 device-only test; not claimed by host CI |
+
+**G01 overall: PASS. G02 final tested APK build: READY TO START from `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`. G03 remains pending.**
