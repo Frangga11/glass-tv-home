@@ -4,9 +4,9 @@
 **Initial release:** v0.1-draft  
 **Prepared:** 31 October 2026  
 **Repository:** https://github.com/Frangga11/glass-tv-home  
+**Current project checkpoint:** Project F officially CLOSED (F01–F07 HOST/SOURCE EXIT PASS); Project G READY TO START at G01.
+**Current stage:** Project G — final branch/dependency reconciliation, controlled integration, full regression, and gated physical-device acceptance.
 **Documentation branch:** `docs/project-master-inventory`  
-**Current project checkpoint:** Project F officially CLOSED (F01–F07 HOST/SOURCE EXIT PASS); Project G READY TO START at G01.ntegration/project-f04-feature-isolation-v2` (PR #53, Draft/open/unmerged)  
-**Current stage:** Project G — final branch/dependency reconciliation, controlled integration, full regression, and gated physical-device acceptance.ndBy HOST/SOURCE EXIT PASS; F05 is next, physical acceptance remains reserved for Project G.
 **F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
 ## Purpose
