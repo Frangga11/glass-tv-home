@@ -657,3 +657,14 @@ This result supersedes the preceding note that CI #626 was in progress.
 - Re-read current source and compared owner/integration snippets: E08 startup selection recovery helper and tests match exactly; C07 wallpaper upload orphan cleanup, active registry, worker-finally cleanup and tests match exactly. MainActivity startup invokes the C07 cleanup method in both owner and F05 integration.
 - Rechecked PR governance: #24, #41 and #54 are all open Draft PRs, none merged. No APK publication/installation, device setting changes, or physical TV tests.
 - **F05 HOST/SOURCE EXIT PASS.** No remaining reproducible host/source blocker. Force-stop/process-death/reboot, prayer alarm restoration, StandBy/DreamService, phone/LAN and OEM acceptance remain Project G. Next host/source stage: F06 Localization.
+
+
+## 3 November 2026 — Project F07 performance, stability and storage audit
+
+- Started isolated F07 branch `integration/project-f07-performance-stability` from F06 exact head `487099013e6d9bd65cc07d72e760b1e14ab1f091`. Final source/test head `976e068d48ecc1ede2811ac455372395d382ba76`; PR #56 Draft/open/unmerged; compare 19 ahead / 0 behind, ten changed paths.
+- Audit found per-frame RadialGradient allocation in weather animation, repeated rain ripple allocation, MainActivity fallback and QR preview bitmap decode on UI thread, Now Playing Binder/notification polling on main thread, unbounded StandBy decode queue, Backdrop OOM/partial-array recovery weakness, forced System.gc(), and count-only online wallpaper cache.
+- Repairs: cached sun/moon/cloud shaders and matrices; 16-object ripple pool; background wallpaper and QR preview decode with latest-generation guards and stale bitmap release; dedicated coalesced Now Playing worker; Backdrop OOM/rejected-worker protection and scratch-array recovery; bounded two-item StandBy decode queue at background priority; removed forced GC; Online Wallpapers cache now capped at 150 files and 512 MiB total with oldest-first pruning and metadata cleanup.
+- Added Python F07 source-contract guards, Robolectric weather rendering/shader-reuse tests, and OnlineWallpapers byte/count pruning JUnit tests.
+- Exact-head Actions #41568715178 on `976e068d48ecc1ede2811ac455372395d382ba76`: Lists/tools/docs and Launcher build/unit tests jobs SUCCESS. Python 99 tests PASS; launcher and installer `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size guard PASS. APK 1,571,293 bytes / 1,572,864-byte cap / 1,571-byte headroom. Artifact list empty.
+- **F07 HOST/SOURCE EXIT PASS; overall device performance acceptance PARTIAL.** No APK published/installed, no TV settings changed, no physical test or device metrics claimed. Mi TV Stick RAM/FPS/frame-time/ANR/crash/thermal/long-run soak is deferred to Project G after explicit TV-test APK readiness approval.
+- Full report: `F07_PERFORMANCE_STABILITY_AUDIT.md`. Next workstream: Project G final integrated audit and D-013 staged integration/merge process.
