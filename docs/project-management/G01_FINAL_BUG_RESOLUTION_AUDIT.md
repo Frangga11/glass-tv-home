@@ -88,4 +88,4 @@ No stage was added, removed, reduced, or reordered. This approved five-stage roa
 
 ## 7. Next checkpoint
 
-G01 host/source bug-resolution audit is ready for closure review. Proceed to G02 only as the next approved stage: build the final tested APK from the approved, traceable candidate; do not install it on the TV until G03 and explicit user readiness approval.
+G01 host/source bug-resolution audit is PASS and complete. Proceed to G02 only as the next approved stage: build the final tested APK from the approved, traceable candidate; do not install it on the TV until G03 and explicit user readiness approval.
