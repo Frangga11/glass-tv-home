@@ -291,8 +291,9 @@ public final class AppUpdateManager {
                     }
                 });
                 permDialog.setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss());
-                AlertDialog permissionDialog = permDialog.show();
-                TvDialogStyle.apply(permissionDialog, activity, 600, 0);
+                AlertDialog permissionDialog = permDialog.create();
+                permissionDialog.show();
+                TvDialogStyle.apply(permissionDialog, activity, 560, 0);
                 return;
             }
         }
@@ -313,7 +314,7 @@ public final class AppUpdateManager {
             if (active != null) active.disconnect();
         });
         progressDialog.show();
-        TvDialogStyle.apply(progressDialog, activity, 600, 0);
+        TvDialogStyle.apply(progressDialog, activity, 560, 0);
 
         executor.execute(() -> {
             File cacheDir = activity.getExternalCacheDir() != null ? activity.getExternalCacheDir() : activity.getCacheDir();

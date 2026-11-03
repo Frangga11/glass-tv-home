@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -31,11 +32,18 @@ final class StandbyPhotoStore {
     static final long MAX_UPLOADED_BYTES = 512L * 1024L * 1024L;
     private static final long MIN_FREE_BYTES = 64L * 1024L * 1024L;
 
-    private static final ExecutorService DECODE_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r, "standby-photo-decoder");
-        thread.setDaemon(true);
-        return thread;
-    });
+    // Only the current slide and a small number of in-flight requests are useful. A bounded
+    // queue prevents slow removable/content-provider reads from accumulating stale decode work.
+    private static final ExecutorService DECODE_EXECUTOR = new java.util.concurrent.ThreadPoolExecutor(
+            1, 1, 0L, java.util.concurrent.TimeUnit.MILLISECONDS,
+            new java.util.concurrent.ArrayBlockingQueue<>(2), r -> {
+                Thread thread = new Thread(() -> {
+                    android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+                    r.run();
+                }, "standby-photo-decoder");
+                thread.setDaemon(true);
+                return thread;
+            }, new java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy());
 
     interface BitmapCallback {
         void onLoaded(Bitmap bitmap);
@@ -43,14 +51,14 @@ final class StandbyPhotoStore {
 
     private StandbyPhotoStore() {}
 
-    static List<Uri> getUris(Context context) {
+    static synchronized List<Uri> getUris(Context context) {
         List<Uri> result = new ArrayList<>();
         if (context == null) return result;
         String raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_URIS, "");
         if (TextUtils.isEmpty(raw)) return result;
         Set<String> unique = new HashSet<>();
         for (String value : raw.split("\\n")) {
-            if (TextUtils.isEmpty(value) || !unique.add(value)) continue;
+            if (value == null || value.isEmpty() || !unique.add(value)) continue;
             try {
                 Uri uri = Uri.parse(value);
                 if (uri != null) result.add(uri);
@@ -60,7 +68,7 @@ final class StandbyPhotoStore {
         return result;
     }
 
-    static boolean saveUris(Context context, List<Uri> uris) {
+    static synchronized boolean saveUris(Context context, List<Uri> uris) {
         if (context == null) return false;
         List<String> values = new ArrayList<>();
         Set<String> unique = new HashSet<>();
@@ -95,19 +103,128 @@ final class StandbyPhotoStore {
         return context.getFilesDir().getUsableSpace() - incomingBytes >= MIN_FREE_BYTES;
     }
 
-    static synchronized boolean addUploadedFile(Context context, File imageFile) {
-        if (context == null || imageFile == null || !imageFile.isFile()) return false;
-        if (!isManagedFile(context, Uri.fromFile(imageFile))) return false;
+    enum UploadResult {
+        ADDED,
+        ALREADY_PRESENT,
+        REJECTED,
+        PERSISTENCE_FAILED
+    }
+
+    static synchronized UploadResult addUploadedFile(Context context, File imageFile) {
+        if (context == null || imageFile == null || !imageFile.isFile()) return UploadResult.REJECTED;
+        if (!isManagedFile(context, Uri.fromFile(imageFile))) return UploadResult.REJECTED;
         List<Uri> uris = getUris(context);
         Uri uploaded = Uri.fromFile(imageFile);
-        if (uris.contains(uploaded)) return true;
-        if (uris.size() >= MAX_PHOTO_COUNT) return false;
-        if (getUploadedBytes(context) + imageFile.length() > MAX_UPLOADED_BYTES) return false;
-        if (context.getFilesDir().getUsableSpace() < MIN_FREE_BYTES) return false;
+        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        if (uris.contains(uploaded)) {
+            String existingUris = TextUtils.join("\n", toUriStrings(uris));
+            return commitUploadedState(preferences, existingUris)
+                    ? UploadResult.ALREADY_PRESENT : UploadResult.PERSISTENCE_FAILED;
+        }
+        if (uris.size() >= MAX_PHOTO_COUNT) return UploadResult.REJECTED;
+        if (getUploadedBytes(context) + imageFile.length() > MAX_UPLOADED_BYTES) return UploadResult.REJECTED;
+        if (context.getFilesDir().getUsableSpace() < MIN_FREE_BYTES) return UploadResult.REJECTED;
         uris.add(uploaded);
-        if (!saveUris(context, uris)) return false;
-        setPhotoMode(context, true);
-        return true;
+
+        // Collection membership and the mode that consumes it are one durable state transition.
+        String serializedUris = TextUtils.join("\n", toUriStrings(uris));
+        return commitUploadedState(preferences, serializedUris)
+                ? UploadResult.ADDED : UploadResult.PERSISTENCE_FAILED;
+    }
+
+    static final class UriMergeResult {
+        final List<String> values;
+        final int addedCount;
+        final int skippedCount;
+        final boolean persisted;
+
+        UriMergeResult(List<String> values, int addedCount, int skippedCount) {
+            this(values, addedCount, skippedCount, true);
+        }
+
+        UriMergeResult(List<String> values, int addedCount, int skippedCount, boolean persisted) {
+            this.values = values;
+            this.addedCount = addedCount;
+            this.skippedCount = skippedCount;
+            this.persisted = persisted;
+        }
+    }
+
+    /** Merges a picker result against the latest collection, not a stale UI snapshot. */
+    static synchronized UriMergeResult mergeUriValues(List<String> current, List<String> additions, int limit) {
+        List<String> merged = new ArrayList<>();
+        Set<String> unique = new HashSet<>();
+        if (current != null) {
+            for (String value : current) {
+                if (value != null && !value.isEmpty() && unique.add(value)) merged.add(value);
+            }
+        }
+        int added = 0;
+        int skipped = 0;
+        if (additions != null) {
+            for (String value : additions) {
+                if (value == null || value.isEmpty() || !unique.add(value)) continue;
+                if (merged.size() >= Math.max(0, limit)) {
+                    skipped++;
+                    continue;
+                }
+                merged.add(value);
+                added++;
+            }
+        }
+        return new UriMergeResult(merged, added, skipped);
+    }
+
+    static synchronized UriMergeResult appendUris(Context context, List<Uri> additions) {
+        if (context == null) return new UriMergeResult(new ArrayList<>(), 0, 0, false);
+        List<String> current = toUriStrings(getUris(context));
+        List<String> incoming = toUriStrings(additions);
+        UriMergeResult merged = mergeUriValues(current, incoming, MAX_PHOTO_COUNT);
+        if (merged.addedCount == 0) return merged;
+        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String serialized = TextUtils.join("\n", merged.values);
+        if (!commitUploadedState(preferences, serialized)) {
+            return new UriMergeResult(current, 0, merged.skippedCount, false);
+        }
+        return merged;
+    }
+
+    static boolean commitClearedState(SharedPreferences preferences) {
+        return preferences != null && preferences.edit()
+                .putString(KEY_URIS, "")
+                .putBoolean(KEY_MODE, false)
+                .commit();
+    }
+
+    /** Clears collection membership and photo mode as one durable transition. */
+    static synchronized List<Uri> clearCollectionAndMode(Context context) {
+        if (context == null) return null;
+        List<Uri> previousUris = getUris(context);
+        SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        boolean saved = commitClearedState(preferences);
+        if (!saved) return null;
+        clearUploadedFiles(context);
+        return previousUris;
+    }
+
+    private static List<String> toUriStrings(List<Uri> uris) {
+        List<String> values = new ArrayList<>();
+        Set<String> unique = new HashSet<>();
+        if (uris != null) {
+            for (Uri uri : uris) {
+                if (uri != null && unique.add(uri.toString())) values.add(uri.toString());
+            }
+        }
+        return values;
+    }
+
+    /** Commits the photo collection and its enabling mode through one SharedPreferences write. */
+    static boolean commitUploadedState(SharedPreferences preferences, String serializedUris) {
+        if (preferences == null || serializedUris == null) return false;
+        return preferences.edit()
+                .putString(KEY_URIS, serializedUris)
+                .putBoolean(KEY_MODE, true)
+                .commit();
     }
 
     static boolean isManagedFile(Context context, Uri uri) {
@@ -115,8 +232,9 @@ final class StandbyPhotoStore {
         try {
             File directory = new File(context.getFilesDir(), "standby_photos").getCanonicalFile();
             File candidate = new File(uri.getPath()).getCanonicalFile();
-            String prefix = directory.getPath() + File.separator;
-            return candidate.getPath().startsWith(prefix) && candidate.isFile();
+            return directory.equals(candidate.getParentFile())
+                    && UploadFilePolicy.isSafeStoredImageName(candidate.getName())
+                    && candidate.isFile();
         } catch (Exception ignored) {
             return false;
         }
@@ -145,7 +263,7 @@ final class StandbyPhotoStore {
         }
     }
 
-    static void clearUploadedFiles(Context context) {
+    static synchronized void clearUploadedFiles(Context context) {
         if (context == null) return;
         File directory = new File(context.getFilesDir(), "standby_photos");
         File[] files = directory.listFiles();
@@ -163,7 +281,7 @@ final class StandbyPhotoStore {
                 .getBoolean(KEY_MODE, false);
     }
 
-    static boolean setPhotoMode(Context context, boolean enabled) {
+    static synchronized boolean setPhotoMode(Context context, boolean enabled) {
         if (context == null) return false;
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putBoolean(KEY_MODE, enabled).commit();

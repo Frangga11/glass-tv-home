@@ -87,7 +87,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         boolean glassEnabled = parent.getContext().getSharedPreferences("wallpaper_prefs", android.content.Context.MODE_PRIVATE)
                 .getBoolean("glass_effects_enabled", true);
         if (!glassEnabled) {
-            // Preserve the dock tray geometry and contrast; remove only the glass material.
+            // Keep the dock tray's structure and contrast; only remove the glass treatment.
             RectF solidShadow = new RectF(rect);
             solidShadow.offset(0, 4f * density);
             c.drawRoundRect(solidShadow, radius, radius, trayShadowPaint);

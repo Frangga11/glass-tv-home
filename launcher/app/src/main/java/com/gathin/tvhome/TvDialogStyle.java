@@ -3,8 +3,8 @@ package com.gathin.tvhome;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -41,7 +41,7 @@ final class TvDialogStyle {
         window.setGravity(Gravity.CENTER);
     }
 
-    /** Select the shared modal material according to the decorative Glass Effect preference. */
+    /** Use the same material policy as GlassDrawable: glass when enabled, solid surface otherwise. */
     static android.graphics.drawable.Drawable createDialogSurface(Context context) {
         boolean glassEnabled = context.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE)
                 .getBoolean("glass_effects_enabled", true);

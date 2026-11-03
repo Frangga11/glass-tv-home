@@ -43,6 +43,7 @@ final class WeatherAirQuality {
     private static final String KEY_AQI_DATETIME = "aqi_datetime";
     private static final String KEY_AQI_IS_JAS = "aqi_is_jas";
     private static final String KEY_LAST_UPDATE = "last_update";
+    private static final String KEY_REQUEST_GENERATION = "request_generation";
     private static final long REFRESH_INTERVAL_MS = 30L * 60 * 1000; // 30 minutes
 
     static class HourlyItem {
@@ -161,84 +162,62 @@ final class WeatherAirQuality {
     }
 
     private static void syncInternal(Context context, Runnable onUpdated, boolean force) {
+        final Context appContext = context.getApplicationContext();
+        final SharedPreferences prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        final double lat = AppLocationManager.getLatitude(appContext);
+        final double lon = AppLocationManager.getLongitude(appContext);
+        final String stationId = AppLocationManager.getStationId(appContext);
+        final String defaultPlace = AppLocationManager.getStationPlace(appContext);
+        final String requestLanguage = AppLanguage.getLanguage(appContext);
+        final long requestGeneration;
+        synchronized (WeatherAirQuality.class) {
+            requestGeneration = prefs.getLong(KEY_REQUEST_GENERATION, 0L) + 1L;
+            prefs.edit().putLong(KEY_REQUEST_GENERATION, requestGeneration).apply();
+        }
+
         new Thread(() -> {
             try {
-                SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-                long last = prefs.getLong(KEY_LAST_UPDATE, 0);
+                long last = prefs.getLong(KEY_LAST_UPDATE, 0L);
                 long now = System.currentTimeMillis();
                 if (!force && now - last < REFRESH_INTERVAL_MS && prefs.contains(KEY_WEATHER_JSON)) {
-                    return; // Cache is still fresh
+                    return;
                 }
 
-                double lat = AppLocationManager.getLatitude(context);
-                double lon = AppLocationManager.getLongitude(context);
-                String stationId = AppLocationManager.getStationId(context);
-                String defaultPlace = AppLocationManager.getStationPlace(context);
-
-                // 1. Fetch Complete Weather Forecast (Open-Meteo)
-                String weatherTimezone = "auto";
                 String weatherUrl = String.format(Locale.ROOT,
-                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,visibility,pressure_msl&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=%s&forecast_days=7",
-                        lat, lon, weatherTimezone);
+                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,visibility,pressure_msl&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=7",
+                        lat, lon);
                 JSONObject wJson = fetchJson(weatherUrl);
 
-                int temp = 29;
-                int code = 2; // Partly cloudy
-                int pressure = 1013;
-                float windDirection = 0f;
-                int windGust = 0;
-                double precipitationMm = 0.0;
-                double visibilityKm = 10.0;
-                if (wJson != null && wJson.has("current")) {
-                    JSONObject curr = wJson.getJSONObject("current");
-                    temp = (int) Math.round(curr.optDouble("temperature_2m", 29.0));
-                    code = curr.optInt("weather_code", 2);
-                    pressure = (int) Math.round(curr.optDouble("pressure_msl", 1013.0));
-                    windDirection = (float) curr.optDouble("wind_direction_10m", 0.0);
-                    windGust = (int) Math.round(curr.optDouble("wind_gusts_10m", 0.0));
-                    precipitationMm = curr.optDouble("precipitation", 0.0);
-                    visibilityKm = curr.optDouble("visibility", 10000.0) / 1000.0;
-                }
-
-                // Use one consistent, location-based AQI source for every supported region.
-                boolean isEnglish = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(context));
-                int aqi = 50;
-                String aqiStatus = isEnglish ? "Moderate" : "Sedang";
-                String aqiParam = "PM2.5";
-                String aqiPlace = defaultPlace;
-                String aqiDateTime = "";
-                boolean isJas = false;
-
                 String aqiUrl = String.format(Locale.ROOT,
-                        "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=%.4f&longitude=%.4f&current=pm2_5,pm10,us_aqi",
+                        "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=%.4f&longitude=%.4f&current=pm2_5,pm10,us_aqi&timezone=auto",
                         lat, lon);
-                JSONObject fallbackAqiJson = fetchJson(aqiUrl);
-                if (fallbackAqiJson != null && fallbackAqiJson.has("current")) {
-                        JSONObject curr = fallbackAqiJson.getJSONObject("current");
-                        aqi = curr.optInt("us_aqi", 50);
-                        double pm25 = curr.optDouble("pm2_5", 15.0);
-                        if (aqi <= 0 && pm25 > 0) {
-                            aqi = (int) Math.round(pm25 * 2.1);
-                        }
-                        aqiStatus = getAqiStatus(aqi, isEnglish);
+                JSONObject aqiJson = fetchJson(aqiUrl);
+
+                // A response may commit only while its generation, coordinates and language remain current.
+                synchronized (WeatherAirQuality.class) {
+                    long currentGeneration = prefs.getLong(KEY_REQUEST_GENERATION, 0L);
+                    boolean sameLocation = Double.compare(lat, AppLocationManager.getLatitude(appContext)) == 0
+                            && Double.compare(lon, AppLocationManager.getLongitude(appContext)) == 0;
+                    boolean sameLanguage = requestLanguage.equals(AppLanguage.getLanguage(appContext));
+                    if (!isCurrentRequest(requestGeneration, currentGeneration, sameLocation, sameLanguage)) {
+                        Log.i(TAG, "Discarded superseded weather/AQI response");
+                        return;
+                    }
+                    if (wJson == null && aqiJson == null) {
+                        Log.w(TAG, "Weather and AQI refresh failed; keeping previous cache and timestamps");
+                        return;
+                    }
+
+                    SharedPreferences.Editor edit = prefs.edit();
+                    if (wJson != null) edit.putString(KEY_WEATHER_JSON, wJson.toString());
+                    if (aqiJson != null) edit.putString(KEY_AQI_JSON, aqiJson.toString());
+                    edit.putString(KEY_AQI_STATION_PLACE, defaultPlace)
+                            .putBoolean(KEY_AQI_IS_JAS, false)
+                            .putLong(KEY_LAST_UPDATE, now)
+                            .apply();
                 }
 
-                SharedPreferences.Editor edit = prefs.edit();
-                if (wJson != null) edit.putString(KEY_WEATHER_JSON, wJson.toString());
-                if (fallbackAqiJson != null) edit.putString(KEY_AQI_JSON, fallbackAqiJson.toString());
-                edit.putInt(KEY_TEMP, temp)
-                    .putInt(KEY_CODE, code)
-                    .putInt(KEY_AQI, aqi)
-                    .putString(KEY_AQI_STATUS, aqiStatus)
-                    .putString(KEY_AQI_PARAM, aqiParam)
-                    .putString(KEY_AQI_STATION_PLACE, aqiPlace)
-                    .putString(KEY_AQI_DATETIME, aqiDateTime)
-                    .putBoolean(KEY_AQI_IS_JAS, isJas)
-                    .putLong(KEY_LAST_UPDATE, now)
-                    .apply();
-
-                Log.i(TAG, "Full weather & AQI synced successfully (US AQI=" + aqi + ")");
-
+                Log.i(TAG, "Weather/AQI response committed for " + stationId);
                 if (onUpdated != null) {
                     new Handler(Looper.getMainLooper()).post(onUpdated);
                 }
@@ -246,6 +225,11 @@ final class WeatherAirQuality {
                 Log.w(TAG, "Weather/AQI sync error: " + e.getMessage());
             }
         }, "weather-aqi-sync").start();
+    }
+
+    static boolean isCurrentRequest(long requestGeneration, long currentGeneration,
+                                    boolean sameLocation, boolean sameLanguage) {
+        return requestGeneration == currentGeneration && sameLocation && sameLanguage;
     }
 
     /** Formats a clean Spannable UI string for the Home screen: "⛅ 29° Cerah  •  IPU 112 Tidak Sihat" */

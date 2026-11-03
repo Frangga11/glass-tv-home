@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.view.Gravity;
@@ -97,23 +96,29 @@ public final class ChildModeManager {
 
     public static void setChildModeEnabled(Context ctx, boolean enabled) {
         if (ctx == null) return;
-        setChildModeEnabled(ctx, activeProfileId(ctx), enabled);
+        synchronized (ChildModeManager.class) {
+            setChildModeEnabled(ctx, activeProfileId(ctx), enabled);
+        }
     }
 
     public static void setChildModeEnabled(Context ctx, String profileId, boolean enabled) {
         if (ctx == null || profileId == null) return;
-        profilePrefs(ctx).edit().putBoolean(profileKey(profileId, KEY_ENABLED), enabled).apply();
+        synchronized (ChildModeManager.class) {
+            profilePrefs(ctx).edit().putBoolean(profileKey(profileId, KEY_ENABLED), enabled).apply();
+        }
     }
 
     /** Removes only this profile's restrictions; the shared parent PIN is preserved. */
     public static void clearProfileSettings(Context ctx, String profileId) {
         if (ctx == null || profileId == null) return;
-        SharedPreferences sp = profilePrefs(ctx);
-        sp.edit()
-                .remove(profileKey(profileId, KEY_ENABLED))
-                .remove(profileKey(profileId, KEY_LOCKED_APPS))
-                .remove(profileKey(profileId, KEY_HIDDEN_APPS))
-                .apply();
+        synchronized (ChildModeManager.class) {
+            SharedPreferences sp = profilePrefs(ctx);
+            sp.edit()
+                    .remove(profileKey(profileId, KEY_ENABLED))
+                    .remove(profileKey(profileId, KEY_LOCKED_APPS))
+                    .remove(profileKey(profileId, KEY_HIDDEN_APPS))
+                    .apply();
+        }
     }
 
     public static String getPin(Context ctx) {
@@ -142,43 +147,77 @@ public final class ChildModeManager {
     }
 
     public static boolean isAppLocked(Context ctx, String pkg) {
-        if (ctx == null || pkg == null || !isChildModeEnabled(ctx)) return false;
-        return getLockedApps(ctx).contains(pkg);
+        if (ctx == null || pkg == null) return false;
+        String profileId = activeProfileId(ctx);
+        return isChildModeEnabled(ctx, profileId) && getLockedApps(ctx, profileId).contains(pkg);
     }
 
     public static void setAppLocked(Context ctx, String pkg, boolean locked) {
         if (ctx == null || pkg == null) return;
-        SharedPreferences sp = profilePrefs(ctx);
-        String key = profileKey(activeProfileId(ctx), KEY_LOCKED_APPS);
-        Set<String> set = new HashSet<>(sp.getStringSet(key, new HashSet<>()));
-        if (locked) set.add(pkg); else set.remove(pkg);
-        sp.edit().putStringSet(key, set).apply();
+        synchronized (ChildModeManager.class) {
+            String profileId = activeProfileId(ctx);
+            updatePackageMembership(profilePrefs(ctx), profileId, KEY_LOCKED_APPS, pkg, locked);
+        }
     }
 
     public static Set<String> getLockedApps(Context ctx) {
-        if (ctx == null) return new HashSet<>();
-        return new HashSet<>(profilePrefs(ctx).getStringSet(
-                profileKey(activeProfileId(ctx), KEY_LOCKED_APPS), new HashSet<>()));
+        return ctx == null ? new HashSet<>() : getLockedApps(ctx, activeProfileId(ctx));
+    }
+
+    static Set<String> getLockedApps(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return new HashSet<>();
+        synchronized (ChildModeManager.class) {
+            return new HashSet<>(profilePrefs(ctx).getStringSet(
+                    profileKey(profileId, KEY_LOCKED_APPS), new HashSet<>()));
+        }
     }
 
     public static boolean isAppHidden(Context ctx, String pkg) {
-        if (ctx == null || pkg == null || !isChildModeEnabled(ctx)) return false;
-        return getHiddenApps(ctx).contains(pkg);
+        if (ctx == null || pkg == null) return false;
+        String profileId = activeProfileId(ctx);
+        return isChildModeEnabled(ctx, profileId) && getHiddenApps(ctx, profileId).contains(pkg);
     }
 
     public static void setAppHidden(Context ctx, String pkg, boolean hidden) {
         if (ctx == null || pkg == null) return;
-        SharedPreferences sp = profilePrefs(ctx);
-        String key = profileKey(activeProfileId(ctx), KEY_HIDDEN_APPS);
-        Set<String> set = new HashSet<>(sp.getStringSet(key, new HashSet<>()));
-        if (hidden) set.add(pkg); else set.remove(pkg);
-        sp.edit().putStringSet(key, set).apply();
+        synchronized (ChildModeManager.class) {
+            String profileId = activeProfileId(ctx);
+            updatePackageMembership(profilePrefs(ctx), profileId, KEY_HIDDEN_APPS, pkg, hidden);
+        }
     }
 
     public static Set<String> getHiddenApps(Context ctx) {
-        if (ctx == null) return new HashSet<>();
-        return new HashSet<>(profilePrefs(ctx).getStringSet(
-                profileKey(activeProfileId(ctx), KEY_HIDDEN_APPS), new HashSet<>()));
+        return ctx == null ? new HashSet<>() : getHiddenApps(ctx, activeProfileId(ctx));
+    }
+
+    static Set<String> getHiddenApps(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return new HashSet<>();
+        synchronized (ChildModeManager.class) {
+            return new HashSet<>(profilePrefs(ctx).getStringSet(
+                    profileKey(profileId, KEY_HIDDEN_APPS), new HashSet<>()));
+        }
+    }
+
+    private static void updatePackageMembership(SharedPreferences preferences, String profileId,
+                                                String keyName, String packageName, boolean enabled) {
+        String key = profileKey(profileId, keyName);
+        Set<String> current = new HashSet<>(preferences.getStringSet(key, new HashSet<>()));
+        Set<String> updated = updatedPackageSet(current, packageName, enabled);
+        preferences.edit().putStringSet(key, updated).apply();
+    }
+
+    static boolean addAppPolicyPackage(Set<String> seenPackages, String packageName, String ownPackage) {
+        if (seenPackages == null || packageName == null || packageName.trim().isEmpty()
+                || packageName.equals(ownPackage)) return false;
+        return seenPackages.add(packageName);
+    }
+
+    static Set<String> updatedPackageSet(Set<String> current, String packageName, boolean enabled) {
+        Set<String> updated = current == null ? new HashSet<>() : new HashSet<>(current);
+        if (packageName != null) {
+            if (enabled) updated.add(packageName); else updated.remove(packageName);
+        }
+        return updated;
     }
 
     /**
@@ -370,12 +409,7 @@ public final class ChildModeManager {
             if (callback != null) callback.onCancelled();
         });
         dialog.show();
-
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int w = (int) (340 * density);
-            dialog.getWindow().setLayout(w, LinearLayout.LayoutParams.WRAP_CONTENT);
-        }
+        TvDialogStyle.applyCustom(dialog, ctx, 380, 0, 0.68f);
 
         if (firstKey != null) firstKey.requestFocus();
     }

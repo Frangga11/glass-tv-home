@@ -2,10 +2,13 @@ package com.gathin.tvhome;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -18,6 +21,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -30,8 +35,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gathin.tvhome.qrcode.QrBitmapUtil;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -55,6 +63,77 @@ public final class ModernSettingsDialog {
     private static final int TAB_DEVICE_SETTINGS = NavigationState.TAB_DEVICE_SETTINGS;
 
     private static Runnable sDpadLeftTarget;
+    private static final String PREF_SETTINGS_FOCUS_AREA = "settings_focus_area";
+    private static final String PREF_SETTINGS_FOCUS_PATH = "settings_focus_path";
+    private static final String PREF_SETTINGS_FOCUS_TAB = "settings_focus_tab";
+    private static final String PREF_SETTINGS_FOCUS_SIGNATURE = "settings_focus_signature";
+    private static final String PREF_SETTINGS_LEFT_SCROLL = "settings_left_scroll";
+
+    private static String rightScrollKey(int tab) {
+        return "settings_right_scroll_" + NavigationState.normalizeSettingsTab(tab);
+    }
+
+    private static boolean isDescendantOf(ViewGroup ancestor, View view) {
+        if (ancestor == null || view == null) return false;
+        View current = view;
+        while (current != null) {
+            if (current == ancestor) return true;
+            ViewParent parent = current.getParent();
+            current = parent instanceof View ? (View) parent : null;
+        }
+        return false;
+    }
+
+    private static String focusPath(ViewGroup ancestor, View target) {
+        if (ancestor == null || target == null || target == ancestor) return null;
+        ArrayList<Integer> reversed = new ArrayList<>();
+        View current = target;
+        while (current != ancestor) {
+            ViewParent parent = current.getParent();
+            if (!(parent instanceof ViewGroup)) return null;
+            ViewGroup group = (ViewGroup) parent;
+            int index = group.indexOfChild(current);
+            if (index < 0) return null;
+            reversed.add(index);
+            current = group;
+        }
+        int[] indexes = new int[reversed.size()];
+        for (int i = 0; i < reversed.size(); i++) {
+            indexes[i] = reversed.get(reversed.size() - 1 - i);
+        }
+        return SettingsFocusPath.encode(indexes);
+    }
+
+    private static String focusSignature(View target) {
+        if (target == null) return "";
+        String label = "";
+        if (target instanceof EditText) {
+            CharSequence hint = ((EditText) target).getHint();
+            if (hint != null) label = hint.toString();
+        } else if (target instanceof TextView) {
+            CharSequence text = ((TextView) target).getText();
+            if (text != null) label = text.toString();
+        }
+        if (label.isEmpty() && target.getContentDescription() != null) {
+            label = target.getContentDescription().toString();
+        }
+        if (label.length() > 160) label = label.substring(0, 160);
+        return target.getClass().getName() + "#" + target.getId() + "#" + label;
+    }
+
+    private static View resolveFocusPath(ViewGroup root, String encodedPath, String signature) {
+        int[] indexes = SettingsFocusPath.decode(encodedPath);
+        if (root == null || indexes == null || signature == null || signature.isEmpty()) return null;
+        View current = root;
+        for (int index : indexes) {
+            if (!(current instanceof ViewGroup)) return null;
+            ViewGroup group = (ViewGroup) current;
+            if (index < 0 || index >= group.getChildCount()) return null;
+            current = group.getChildAt(index);
+        }
+        return current.isFocusable() && current.isEnabled() && current.isShown()
+                && signature.equals(focusSignature(current)) ? current : null;
+    }
 
     private static boolean focusRightPane(ViewGroup container) {
         if (container == null) return false;
@@ -279,6 +358,8 @@ public final class ModernSettingsDialog {
         navItems.add(new NavItem(TAB_DEVICE_SETTINGS, deviceLabel, R.drawable.ic_tv_display, 0xFF374151));
 
         Runnable[] renderRightPane = new Runnable[1];
+        int[] lastRenderedTab = new int[]{activeTab[0]};
+        boolean[] hasRenderedPane = new boolean[]{false};
 
         Runnable updateSidebarSelection = () -> {
             navigationPrefs.edit().putInt(NavigationState.SETTINGS_TAB, NavigationState.normalizeSettingsTab(activeTab[0])).apply();
@@ -432,8 +513,18 @@ public final class ModernSettingsDialog {
 
         // --- RENDER RIGHT CONTENT PANE ---
         renderRightPane[0] = () -> {
+            if (hasRenderedPane[0]) {
+                navigationPrefs.edit()
+                        .putInt(rightScrollKey(lastRenderedTab[0]), rightScroll.getScrollY())
+                        .apply();
+            }
+            int tab = NavigationState.normalizeSettingsTab(activeTab[0]);
+            activeTab[0] = tab;
+            lastRenderedTab[0] = tab;
+            hasRenderedPane[0] = true;
             rightContent.removeAllViews();
-            int tab = activeTab[0];
+            rightScroll.post(() -> rightScroll.scrollTo(0,
+                    Math.max(0, navigationPrefs.getInt(rightScrollKey(tab), 0))));
 
             if (tab == TAB_PROFILE) {
                 // === TAB 0: PROFILES & MULTI-USER MANAGEMENT ===
@@ -487,7 +578,7 @@ public final class ModernSettingsDialog {
                     ringBg.setColor(Color.TRANSPARENT);
                     ringBg.setStroke((int) (3f * density), 0xFFFFFFFF);
                     ring.setBackground(ringBg);
-                    ring.setVisibility(idx == activeAvatar ? View.VISIBLE : View.GONE);
+                    ring.setVisibility(ProfileManager.isBuiltInAvatarSelected(activeP, idx) ? View.VISIBLE : View.GONE);
                     frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
                     // Inner Avatar Circle ImageView
                     ImageView img = new ImageView(activity);
@@ -515,18 +606,18 @@ public final class ModernSettingsDialog {
 
                     frame.setOnClickListener(v -> {
                         SoundEffects.playSelect();
-                        // Selecting a built-in avatar replaces a personal photo only after its reference is cleared safely.
-                        if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
+                        // Commit the built-in index and custom-photo reset as one profile transaction.
+                        if (!ProfileManager.selectBuiltInAvatar(activity, activeP.id, idx)) {
                             TvFeedback.show(activity, R.string.avatar_delete_failed, Toast.LENGTH_LONG);
                             return;
                         }
-                        ProfileManager.setAvatarIndex(activity, idx);
+                        ProfileManager.UserProfile refreshedProfile = ProfileManager.getActiveProfile(activity);
                         for (int k = 0; k < 7; k++) {
                             if (avatarRings[k] != null) {
-                                avatarRings[k].setVisibility(k == idx ? View.VISIBLE : View.GONE);
+                                avatarRings[k].setVisibility(ProfileManager.isBuiltInAvatarSelected(refreshedProfile, k)
+                                        ? View.VISIBLE : View.GONE);
                             }
                         }
-                        ProfileManager.UserProfile refreshedProfile = ProfileManager.getActiveProfile(activity);
                         boolean refreshedChildMode = ChildModeManager.isChildModeEnabled(activity, refreshedProfile.id);
                         profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
                                 Math.round(38 * density), refreshedChildMode));
@@ -569,6 +660,12 @@ public final class ModernSettingsDialog {
                         activeProfileListAvatar[0].setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
                                 Math.round(32 * density), updatedChildMode));
                     }
+                    for (int k = 0; k < 7; k++) {
+                        if (avatarRings[k] != null) {
+                            avatarRings[k].setVisibility(ProfileManager.isBuiltInAvatarSelected(updated, k)
+                                    ? View.VISIBLE : View.GONE);
+                        }
+                    }
                 }));
                 avatarPhotoActions.addView(uploadAvatarButton, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
@@ -601,6 +698,12 @@ public final class ModernSettingsDialog {
                     if (activeProfileListAvatar[0] != null) {
                         activeProfileListAvatar[0].setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
                                 Math.round(32 * density), restoredChildMode));
+                    }
+                    for (int k = 0; k < 7; k++) {
+                        if (avatarRings[k] != null) {
+                            avatarRings[k].setVisibility(ProfileManager.isBuiltInAvatarSelected(restored, k)
+                                    ? View.VISIBLE : View.GONE);
+                        }
                     }
                     activity.updateTopBarUserIcon();
                     TvFeedback.show(activity, R.string.avatar_default_restored, Toast.LENGTH_SHORT);
@@ -788,8 +891,9 @@ public final class ModernSettingsDialog {
                                     });
                                 }
                             });
-                            AlertDialog profileActions = ob.show();
-                            TvDialogStyle.apply(profileActions, activity, 520, 0);
+                            AlertDialog optionsDialog = ob.create();
+                            optionsDialog.show();
+                            TvDialogStyle.apply(optionsDialog, activity, 480, 0);
                         }
                     });
 
@@ -841,12 +945,16 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.lock_apps_count, lockedSet.size()),
                         activity.getString(R.string.lock_apps_count_summary),
-                        () -> showAppLockPicker(activity, density, outfit, false)));
+                        () -> showAppLockPicker(activity, density, outfit, false, () -> {
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        })));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.hide_apps_count, hiddenSet.size()),
                         activity.getString(R.string.hide_apps_count_summary),
-                        () -> showAppLockPicker(activity, density, outfit, true)));
+                        () -> showAppLockPicker(activity, density, outfit, true, () -> {
+                            if (renderRightPane[0] != null) renderRightPane[0].run();
+                        })));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.change_pin_title),
@@ -858,14 +966,14 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, AppLanguage.strHomeScreen(activity));
 
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        activity.getString(R.string.daily_prayer_panel_title), activity.getString(R.string.daily_prayer_panel_summary),
+                        AppLanguage.strDailyPrayerPanelTitle(activity), AppLanguage.strDailyPrayerPanelSummary(activity),
                         activity.isIslamicShelfEnabled(), isChecked -> {
                             activity.setIslamicShelfEnabled(isChecked);
                         }));
 
                 boolean ayahShown = WeeklyAyah.shown(activity);
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
-                        activity.getString(R.string.daily_ayah_title), activity.getString(R.string.daily_ayah_summary),
+                        AppLanguage.strDailyAyahTitle(activity), AppLanguage.strDailyAyahSummary(activity),
                         ayahShown, isChecked -> {
                             WeeklyAyah.setShown(activity, isChecked);
                             activity.showAyah(WeeklyAyah.last(activity));
@@ -873,11 +981,11 @@ public final class ModernSettingsDialog {
                         }));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.interface_sound_title), activity.getString(R.string.interface_sound_summary),
+                        AppLanguage.strInterfaceSoundTitle(activity), AppLanguage.strInterfaceSoundSummary(activity),
                         activity::showSoundEffectsDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.azan_settings_title), activity.getString(R.string.azan_settings_summary),
+                        AppLanguage.strAzanSettingsTitle(activity), AppLanguage.strAzanSettingsSummary(activity),
                         activity::showAzanSettingsDialog));
 
             } else if (tab == TAB_APPEARANCE) {
@@ -885,17 +993,19 @@ public final class ModernSettingsDialog {
                 addHeader(rightContent, outfit, AppLanguage.strAppearance(activity));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.wallpaper_collection_title), activity.getString(R.string.wallpaper_collection_summary),
-                        activity::showWallpaperDialog));
+                        activity.getString(R.string.wallpaper_collection_title),
+                        activity.getString(R.string.wallpaper_collection_summary),
+                        activity::showWallpaperCollectionManagementDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.wallpaper_interval_title), activity.getString(R.string.wallpaper_interval_summary),
-                        activity::showWallpaperIntervalDialog));
+                        activity.getString(R.string.wallpaper_interval_title),
+                        activity.getString(R.string.wallpaper_interval_summary),
+                        activity::showWallpaperIntervalManagementDialog));
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.wallpaper_manage_title_card),
                         activity.getString(R.string.wallpaper_manage_summary_card),
-                        activity::showCustomWallpaperManagerDialog));
+                        activity::showCustomWallpaperManagerManagementDialog));
 
             } else if (tab == TAB_STATUS_WEATHER) {
                 // === TAB: WIDGET & INFORMATION ===
@@ -1002,36 +1112,71 @@ public final class ModernSettingsDialog {
                 // === TAB: DEVICE SETTINGS (GENERAL + REMOTE + ACCESSIBILITY + TV) ===
                 addHeader(rightContent, outfit, AppLanguage.strDeviceSettings(activity));
 
-                addSectionHeader(rightContent, outfit, activity.getString(R.string.device_accessibility_section));
                 Display display = activity.getWindowManager().getDefaultDisplay();
                 Display.Mode mode = (display != null) ? display.getMode() : null;
                 int physW = (mode != null) ? mode.getPhysicalWidth() : dm.widthPixels;
                 int physH = (mode != null) ? mode.getPhysicalHeight() : dm.heightPixels;
                 float fps = (mode != null) ? mode.getRefreshRate() : 60f;
 
-                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-                homeIntent.addCategory(Intent.CATEGORY_HOME);
-                ResolveInfo resolveInfo = activity.getPackageManager().resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                boolean isDefault = resolveInfo != null && activity.getPackageName().equals(resolveInfo.activityInfo.packageName);
-                String activePkg = resolveInfo != null ? resolveInfo.activityInfo.packageName : activity.getString(R.string.unknown_value);
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.device_accessibility_section));
 
-                String homeSub = isDefault ? activity.getString(R.string.launcher_is_default) : activity.getString(R.string.launcher_currently_active, activePkg);
+                List<ResolveInfo> homeCandidates = DeviceSettingsStatus.getHomeActivities(activity);
+                ResolveInfo resolvedHome = DeviceSettingsStatus.getResolvedHome(activity);
+                String activePkg = resolvedHome != null && resolvedHome.activityInfo != null
+                        ? resolvedHome.activityInfo.packageName : "";
+                String activeLabel = DeviceSettingsStatus.getDisplayLabel(activity.getPackageManager(), resolvedHome);
+                if (activeLabel == null || activeLabel.isEmpty()) {
+                    activeLabel = activity.getString(R.string.home_status_unknown);
+                }
+                boolean isDefault = activity.getPackageName().equals(activePkg);
+                String homeSub = isDefault
+                        ? activity.getString(R.string.launcher_is_default)
+                        : activity.getString(R.string.launcher_currently_active, activeLabel);
+                homeSub += "\n" + activity.getString(R.string.home_candidates_summary, homeCandidates.size());
+
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.default_launcher_status_title), activity.getString(R.string.default_launcher_status_summary, homeSub),
-                        () -> showDefaultLauncherDialog(activity, density, outfit, isDefault, activePkg)));
+                        activity.getString(R.string.default_launcher_status_title),
+                        activity.getString(R.string.default_launcher_status_summary, homeSub),
+                        () -> showDefaultLauncherDialog(activity, density, outfit)));
 
+                boolean homeKeyEnabled = DeviceSettingsStatus.isAccessibilityServiceEnabled(activity, HomeKeyService.class);
+                String homeKeyStatus = activity.getString(homeKeyEnabled
+                        ? R.string.device_service_enabled : R.string.device_service_disabled);
                 rightContent.addView(buildCardRow(activity, density, outfit,
-                        activity.getString(R.string.accessibility_remote_title),
-                        activity.getString(R.string.accessibility_remote_summary),
-                        () -> {
-                            SoundEffects.playSelect();
-                            try {
-                                activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                            } catch (Exception e) {
-                                TvFeedback.show(activity, R.string.open_accessibility_settings_hint, Toast.LENGTH_LONG);
-                            }
-                        }));
+                        activity.getString(R.string.home_key_status_title),
+                        activity.getString(R.string.home_key_status_summary, homeKeyStatus),
+                        () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
+                                new Intent(Settings.ACTION_SETTINGS))));
 
+                boolean inputKeyEnabled = DeviceSettingsStatus.isAccessibilityServiceEnabled(activity, InputKeyService.class);
+                String inputKeyStatus = activity.getString(inputKeyEnabled
+                        ? R.string.device_service_enabled : R.string.device_service_disabled);
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.input_key_status_title),
+                        activity.getString(R.string.input_key_status_summary, inputKeyStatus),
+                        () -> openDeviceSettings(activity, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))));
+
+                boolean notificationAccessEnabled = DeviceSettingsStatus.isNotificationListenerEnabled(
+                        activity, MediaNotificationListener.class);
+                String notificationStatus = activity.getString(notificationAccessEnabled
+                        ? R.string.device_service_enabled : R.string.device_service_disabled);
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.notification_access_title),
+                        activity.getString(R.string.notification_access_summary, notificationStatus),
+                        () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS),
+                                new Intent(Settings.ACTION_SETTINGS))));
+
+                addSectionHeader(rightContent, outfit, activity.getString(R.string.screensaver_settings_section));
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.screensaver_settings_title),
+                        activity.getString(R.string.screensaver_settings_summary),
+                        () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_DREAM_SETTINGS),
+                                new Intent(Settings.ACTION_DISPLAY_SETTINGS), new Intent(Settings.ACTION_SETTINGS))));
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.display_timeout_title),
+                        activity.getString(R.string.display_timeout_summary),
+                        () -> openDeviceSettingsOrFeedback(activity, new Intent(Settings.ACTION_DISPLAY_SETTINGS),
+                                new Intent(Settings.ACTION_SETTINGS))));
                 addSectionHeader(rightContent, outfit, activity.getString(R.string.power_maintenance_section));
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.restart_tv_title), activity.getString(R.string.restart_tv_summary),
@@ -1090,9 +1235,7 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.android_settings_title), activity.getString(R.string.android_settings_summary),
                         () -> {
-                            try {
-                                activity.startActivity(new Intent(Settings.ACTION_SETTINGS));
-                            } catch (Exception e) {
+                            if (!openDeviceSettings(activity, activity.systemIntent(Settings.ACTION_SETTINGS))) {
                                 TvFeedback.show(activity, R.string.android_settings_unavailable, Toast.LENGTH_SHORT);
                             }
                         }));
@@ -1214,13 +1357,77 @@ public final class ModernSettingsDialog {
         builder.setView(root);
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
-        dialog.setOnDismissListener(d -> sDpadLeftTarget = null);
+        final ViewTreeObserver.OnGlobalFocusChangeListener[] focusListener =
+                new ViewTreeObserver.OnGlobalFocusChangeListener[1];
+        dialog.setOnDismissListener(d -> {
+            if (focusListener[0] != null && root.getViewTreeObserver().isAlive()) {
+                root.getViewTreeObserver().removeOnGlobalFocusChangeListener(focusListener[0]);
+            }
+            sDpadLeftTarget = null;
+        });
         dialog.show();
+
+        // Keep a validated path into the active pane so a recreated Settings dialog can return
+        // to the last control. If the content has changed, restoration falls back to the sidebar.
+        focusListener[0] = (oldFocus, newFocus) -> {
+            if (newFocus == null) return;
+            if (isDescendantOf(rightContent, newFocus)) {
+                String path = focusPath(rightContent, newFocus);
+                if (path != null) {
+                    navigationPrefs.edit()
+                            .putString(PREF_SETTINGS_FOCUS_AREA, "right")
+                            .putString(PREF_SETTINGS_FOCUS_PATH, path)
+                            .putString(PREF_SETTINGS_FOCUS_SIGNATURE, focusSignature(newFocus))
+                            .putInt(PREF_SETTINGS_FOCUS_TAB, activeTab[0])
+                            .putInt(rightScrollKey(activeTab[0]), rightScroll.getScrollY())
+                            .apply();
+                }
+            } else if (isDescendantOf(leftCol, newFocus)) {
+                String path = focusPath(leftCol, newFocus);
+                if (path != null) {
+                    navigationPrefs.edit()
+                            .putString(PREF_SETTINGS_FOCUS_AREA, "sidebar")
+                            .putString(PREF_SETTINGS_FOCUS_PATH, path)
+                            .putString(PREF_SETTINGS_FOCUS_SIGNATURE, focusSignature(newFocus))
+                            .putInt(PREF_SETTINGS_FOCUS_TAB, activeTab[0])
+                            .putInt(PREF_SETTINGS_LEFT_SCROLL, leftScroll.getScrollY())
+                            .apply();
+                }
+            }
+        };
+        root.getViewTreeObserver().addOnGlobalFocusChangeListener(focusListener[0]);
 
         TvDialogStyle.apply(dialog, activity, 1000, 580);
 
-        if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
-        else profileCard.requestFocus();
+        leftScroll.post(() -> leftScroll.scrollTo(0,
+                Math.max(0, navigationPrefs.getInt(PREF_SETTINGS_LEFT_SCROLL, 0))));
+        String savedFocusArea = navigationPrefs.getString(PREF_SETTINGS_FOCUS_AREA, "sidebar");
+        int savedFocusTab = navigationPrefs.getInt(PREF_SETTINGS_FOCUS_TAB, -1);
+        String savedFocusPath = navigationPrefs.getString(PREF_SETTINGS_FOCUS_PATH, null);
+        String savedFocusSignature = navigationPrefs.getString(PREF_SETTINGS_FOCUS_SIGNATURE, null);
+        if (savedFocusTab == activeTab[0] && "right".equals(savedFocusArea)) {
+            root.post(() -> {
+                rightScroll.scrollTo(0, Math.max(0, navigationPrefs.getInt(rightScrollKey(activeTab[0]), 0)));
+                rightScroll.post(() -> {
+                    View restored = resolveFocusPath(rightContent, savedFocusPath, savedFocusSignature);
+                    if (restored != null && restored.requestFocus()) return;
+                    if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+                    else profileCard.requestFocus();
+                });
+            });
+        } else if (savedFocusTab == activeTab[0] && "sidebar".equals(savedFocusArea)) {
+            root.post(() -> {
+                View restored = resolveFocusPath(leftCol, savedFocusPath, savedFocusSignature);
+                if (restored != null && restored.requestFocus()) return;
+                if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+                else profileCard.requestFocus();
+            });
+        } else {
+            root.post(() -> {
+                if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+                else profileCard.requestFocus();
+            });
+        }
     }
 
     private static void addSectionHeader(LinearLayout root, Typeface font, String title) {
@@ -1329,8 +1536,8 @@ public final class ModernSettingsDialog {
         if (subtitle != null && !subtitle.isEmpty()) {
             TextView tvSub = new TextView(ctx);
             tvSub.setText(subtitle);
-            tvSub.setTextSize(12);
-            tvSub.setTextColor(0xFF8E929E);
+            tvSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+            tvSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
             tvSub.setTypeface(font, Typeface.NORMAL);
             tvSub.setPadding(0, (int) (2 * density), 0, 0);
             textCol.addView(tvSub);
@@ -1346,11 +1553,13 @@ public final class ModernSettingsDialog {
 
         card.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF353844 : 0xFF272A33);
-            g.setCornerRadius(12 * density);
-            if (hasFocus) g.setStroke((int) (2f * density), 0xFFFFFFFF);
+            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
+            g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
+                    .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
+                    .setDuration(120).start();
         });
 
         card.setOnKeyListener((v, keyCode, event) -> {
@@ -1371,7 +1580,7 @@ public final class ModernSettingsDialog {
         });
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.bottomMargin = (int) (8 * density);
+        lp.bottomMargin = (int) (TvUiTokens.CARD_BOTTOM_MARGIN_DP * density);
         card.setLayoutParams(lp);
         return card;
     }
@@ -1432,16 +1641,22 @@ public final class ModernSettingsDialog {
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(AppLanguage.strEditName(activity))
                 .setView(container)
-                .setPositiveButton(R.string.save_action, (d, which) -> {
-                    String newName = et.getText().toString().trim();
-                    if (!newName.isEmpty()) {
-                        if (callback != null) callback.onSave(newName);
-                    }
-                })
+                .setPositiveButton(R.string.save_action, null)
                 .setNegativeButton(AppLanguage.strCancel(activity), (d, which) -> d.dismiss())
                 .create();
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String newName = et.getText().toString().trim();
+            if (newName.isEmpty()) {
+                et.setError(activity.getString(R.string.user_name_required));
+                et.requestFocus();
+                return;
+            }
+            dialog.dismiss();
+            if (callback != null) callback.onSave(newName);
+        }));
         dialog.show();
         TvDialogStyle.apply(dialog, activity, 520, 0);
+        et.requestFocus();
     }
 
     private static void showChangePinDialog(MainActivity activity, float density, Typeface font) {
@@ -1494,6 +1709,7 @@ public final class ModernSettingsDialog {
                 }));
                 dialog.show();
                 TvDialogStyle.apply(dialog, activity, 520, 0);
+                newPin.requestFocus();
             }
             @Override
             public void onCancelled() {}
@@ -1501,27 +1717,31 @@ public final class ModernSettingsDialog {
     }
 
     /** Require parent PIN before changing either the locked-app or hidden-app policy. */
-    private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode) {
+    private static void showAppLockPicker(MainActivity activity, float density, Typeface font, boolean isHideMode, Runnable onFinished) {
         ChildModeManager.promptPin(activity, activity.getString(R.string.verify_parent_pin_title),
                 activity.getString(R.string.verify_parent_pin_message, activity.getString(isHideMode ? R.string.hidden_apps_label : R.string.locked_apps_label)),
                 new ChildModeManager.PinCallback() {
                     @Override public void onSuccess() {
-                        showAppLockPickerAuthorized(activity, density, font, isHideMode);
+                        showAppLockPickerAuthorized(activity, density, font, isHideMode, onFinished);
                     }
                     @Override public void onCancelled() { }
                 });
     }
 
-    private static void showAppLockPickerAuthorized(MainActivity activity, float density, Typeface font, boolean isHideMode) {
+    private static void showAppLockPickerAuthorized(MainActivity activity, float density, Typeface font, boolean isHideMode, Runnable onFinished) {
         PackageManager pm = activity.getPackageManager();
-        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
-        mainIntent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
-        List<ResolveInfo> apps = pm.queryIntentActivities(mainIntent, 0);
-        if (apps == null || apps.isEmpty()) {
-            mainIntent = new Intent(Intent.ACTION_MAIN, null);
-            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-            apps = pm.queryIntentActivities(mainIntent, 0);
-        }
+        // Merge both TV and generic launcher entry points. Some TV apps expose only one
+        // category, so falling back only when Leanback is empty silently omits valid apps.
+        List<ResolveInfo> apps = new ArrayList<>();
+        Intent leanbackIntent = new Intent(Intent.ACTION_MAIN, null);
+        leanbackIntent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
+        List<ResolveInfo> leanbackApps = pm.queryIntentActivities(leanbackIntent, 0);
+        if (leanbackApps != null) apps.addAll(leanbackApps);
+
+        Intent launcherIntent = new Intent(Intent.ACTION_MAIN, null);
+        launcherIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> launcherApps = pm.queryIntentActivities(launcherIntent, 0);
+        if (launcherApps != null) apps.addAll(launcherApps);
 
         String selfPkg = activity.getPackageName();
         class AppEntry {
@@ -1536,17 +1756,24 @@ public final class ModernSettingsDialog {
         }
 
         List<AppEntry> entryList = new ArrayList<>();
+        Set<String> seenPackages = new HashSet<>();
         if (apps != null) {
             for (ResolveInfo ri : apps) {
+                if (ri == null || ri.activityInfo == null) continue;
                 String p = ri.activityInfo.packageName;
-                if (p.equals(selfPkg)) continue;
-                String lbl = ri.loadLabel(pm).toString();
-                entryList.add(new AppEntry(p, lbl, ri.loadIcon(pm)));
+                // Policy is package-scoped: merge Leanback + Launcher entries and show each app once.
+                if (!ChildModeManager.addAppPolicyPackage(seenPackages, p, selfPkg)) continue;
+                CharSequence loadedLabel = ri.loadLabel(pm);
+                String label = loadedLabel != null ? loadedLabel.toString() : p;
+                android.graphics.drawable.Drawable icon = ri.loadIcon(pm);
+                if (icon == null) icon = pm.getDefaultActivityIcon();
+                entryList.add(new AppEntry(p, label, icon));
             }
         }
         Collections.sort(entryList, (a, b) -> a.label.compareToIgnoreCase(b.label));
 
         final Set<String> targetSet = isHideMode ? ChildModeManager.getHiddenApps(activity) : ChildModeManager.getLockedApps(activity);
+        final Set<String> selectedPackages = new HashSet<>(targetSet);
 
         LinearLayout pickerLayout = new LinearLayout(activity);
         pickerLayout.setOrientation(LinearLayout.VERTICAL);
@@ -1573,10 +1800,30 @@ public final class ModernSettingsDialog {
         tvSub.setPadding(0, (int) (2 * density), 0, (int) (10 * density));
         pickerLayout.addView(tvSub);
 
+        TextView tvCount = new TextView(activity);
+        tvCount.setText(activity.getString(R.string.app_policy_selected_count, selectedPackages.size()));
+        tvCount.setTextSize(12f);
+        tvCount.setTextColor(0xFF7DD3FC);
+        tvCount.setTypeface(font, Typeface.BOLD);
+        tvCount.setPadding(0, 0, 0, (int) (10 * density));
+        pickerLayout.addView(tvCount);
+
         ScrollView sv = new ScrollView(activity);
         sv.setVerticalScrollBarEnabled(true);
         LinearLayout list = new LinearLayout(activity);
         list.setOrientation(LinearLayout.VERTICAL);
+        if (entryList.isEmpty()) {
+            TextView empty = new TextView(activity);
+            empty.setText(R.string.app_picker_empty);
+            empty.setTextSize(13f);
+            empty.setTextColor(0xFFCBD5E1);
+            empty.setTypeface(font, Typeface.NORMAL);
+            empty.setGravity(Gravity.CENTER);
+            empty.setPadding(0, (int) (20 * density), 0, (int) (20 * density));
+            empty.setFocusable(false);
+            list.addView(empty, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
 
         for (AppEntry app : entryList) {
             LinearLayout row = new LinearLayout(activity);
@@ -1605,7 +1852,7 @@ public final class ModernSettingsDialog {
             row.addView(tv, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
             CheckBox cb = new CheckBox(activity);
-            cb.setChecked(targetSet.contains(app.pkg));
+            cb.setChecked(selectedPackages.contains(app.pkg));
             cb.setFocusable(false);
             cb.setClickable(false);
             row.addView(cb);
@@ -1628,6 +1875,9 @@ public final class ModernSettingsDialog {
                 } else {
                     ChildModeManager.setAppLocked(activity, app.pkg, nowChecked);
                 }
+                if (nowChecked) selectedPackages.add(app.pkg);
+                else selectedPackages.remove(app.pkg);
+                tvCount.setText(activity.getString(R.string.app_policy_selected_count, selectedPackages.size()));
             });
 
             LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -1646,6 +1896,8 @@ public final class ModernSettingsDialog {
         btnDone.setTextSize(13.5f);
         btnDone.setTextColor(0xFFFFFFFF);
         btnDone.setTypeface(font, Typeface.BOLD);
+        btnDone.setFocusable(true);
+        btnDone.setClickable(true);
 
         GradientDrawable btnBg = new GradientDrawable();
         btnBg.setColor(0xFF10B981);
@@ -1663,7 +1915,6 @@ public final class ModernSettingsDialog {
         btnDone.setOnClickListener(v -> {
             SoundEffects.playSelect();
             if (pickerHolder[0] != null) pickerHolder[0].dismiss();
-            activity.reloadTiles();
         });
 
         pickerLayout.addView(btnDone, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density)));
@@ -1672,26 +1923,48 @@ public final class ModernSettingsDialog {
         pb.setView(pickerLayout);
         AlertDialog d = pb.create();
         pickerHolder[0] = d;
+        d.setOnDismissListener(ignored -> {
+            if (activity.isFinishing() || activity.isDestroyed()) return;
+            // Selection writes are immediate, so every dismissal path (Done or Back)
+            // must refresh both the home tiles and the still-open Settings summary.
+            activity.reloadTiles();
+            if (onFinished != null) onFinished.run();
+        });
         d.show();
-        TvDialogStyle.apply(d, activity, 520, 0);
+        TvDialogStyle.applyCustom(d, activity, 520, 0, 0.68f);
+        if (entryList.isEmpty()) btnDone.requestFocus();
+        else if (list.getChildCount() > 0) list.getChildAt(0).requestFocus();
     }
 
-    private static void showDefaultLauncherDialog(MainActivity activity, float density, Typeface font, boolean isDefault, String activePkg) {
-        if (activity == null || activity.isFinishing()) return;
+    private static void showDefaultLauncherDialog(MainActivity activity, float density, Typeface font) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
         SoundEffects.playSelect();
 
+        List<ResolveInfo> candidates = DeviceSettingsStatus.getHomeActivities(activity);
+        ResolveInfo resolvedHome = DeviceSettingsStatus.getResolvedHome(activity);
+        String activePkg = resolvedHome != null && resolvedHome.activityInfo != null
+                ? resolvedHome.activityInfo.packageName : "";
+        String activeLabel = DeviceSettingsStatus.getDisplayLabel(activity.getPackageManager(), resolvedHome);
+        if (activeLabel == null || activeLabel.isEmpty()) {
+            activeLabel = activity.getString(R.string.home_status_unknown);
+        }
+        boolean isDefault = activity.getPackageName().equals(activePkg);
+
+        // Keep the entire popup surface opaque. Previously the AlertDialog window and ScrollView
+        // were explicitly transparent, which could expose the launcher behind the content on
+        // some TV themes/OEM builds and recreate the "see-through" appearance.
         ScrollView scroll = new ScrollView(activity);
         scroll.setFillViewport(true);
+        scroll.setClipToPadding(false);
+        scroll.setClipChildren(true);
+        scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        // The dialog window owns the shared opaque glass surface; keep the scrolling content transparent.
+        scroll.setBackgroundColor(Color.TRANSPARENT);
 
         LinearLayout root = new LinearLayout(activity);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding((int) (24 * density), (int) (20 * density), (int) (24 * density), (int) (20 * density));
-
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF1E2026);
-        bg.setCornerRadius(18 * density);
-        bg.setStroke((int) (1.5f * density), 0xFF2F323B);
-        root.setBackground(bg);
+        root.setBackgroundColor(Color.TRANSPARENT);
 
         TextView tvTitle = new TextView(activity);
         tvTitle.setText(R.string.set_default_home_title);
@@ -1702,56 +1975,107 @@ public final class ModernSettingsDialog {
         root.addView(tvTitle);
 
         TextView tvDesc = new TextView(activity);
-        String desc = isDefault
+        tvDesc.setText(isDefault
                 ? activity.getString(R.string.default_launcher_success)
-                : activity.getString(R.string.default_launcher_explanation, activePkg);
-        tvDesc.setText(desc);
+                : activity.getString(R.string.default_launcher_explanation, activeLabel));
         tvDesc.setTextSize(13f);
         tvDesc.setTextColor(isDefault ? 0xFF34D399 : 0xFFCBD5E1);
         tvDesc.setTypeface(font, Typeface.NORMAL);
-        tvDesc.setPadding(0, 0, 0, (int) (16 * density));
+        tvDesc.setLineSpacing(0, 1.15f);
+        tvDesc.setPadding(0, 0, 0, (int) (12 * density));
         root.addView(tvDesc);
+
+        TextView currentHeading = new TextView(activity);
+        currentHeading.setText(R.string.home_current_heading);
+        currentHeading.setTextSize(12f);
+        currentHeading.setTextColor(0xFF38BDF8);
+        currentHeading.setTypeface(font, Typeface.BOLD);
+        root.addView(currentHeading);
+
+        TextView currentValue = new TextView(activity);
+        currentValue.setText(activeLabel + (activePkg.isEmpty() ? "" : "  •  " + activePkg));
+        currentValue.setTextSize(12.5f);
+        currentValue.setTextColor(0xFFE2E8F0);
+        currentValue.setTypeface(font, Typeface.NORMAL);
+        currentValue.setPadding(0, (int) (3 * density), 0, (int) (10 * density));
+        root.addView(currentValue);
+
+        TextView candidatesHeading = new TextView(activity);
+        candidatesHeading.setText(R.string.home_candidates_heading);
+        candidatesHeading.setTextSize(12f);
+        candidatesHeading.setTextColor(0xFF38BDF8);
+        candidatesHeading.setTypeface(font, Typeface.BOLD);
+        root.addView(candidatesHeading);
+
+        if (candidates.isEmpty()) {
+            TextView none = new TextView(activity);
+            none.setText(R.string.home_status_unknown);
+            none.setTextSize(12.5f);
+            none.setTextColor(0xFFCBD5E1);
+            none.setPadding(0, (int) (3 * density), 0, (int) (10 * density));
+            root.addView(none);
+        } else {
+            for (ResolveInfo candidate : candidates) {
+                String label = DeviceSettingsStatus.getDisplayLabel(activity.getPackageManager(), candidate);
+                String pkg = candidate.activityInfo != null ? candidate.activityInfo.packageName : "";
+                TextView item = new TextView(activity);
+                boolean isSelectedHome = !activePkg.isEmpty() && activePkg.equals(pkg);
+                item.setText((isSelectedHome ? "✓ " : "• ") + label + "  (" + pkg + ")");
+                item.setTextSize(12.5f);
+                item.setTextColor(isSelectedHome ? 0xFF34D399 : 0xFFCBD5E1);
+                item.setTypeface(font, Typeface.NORMAL);
+                item.setPadding((int) (4 * density), (int) (3 * density), 0, (int) (3 * density));
+                root.addView(item);
+            }
+        }
 
         AlertDialog[] dialogHolder = new AlertDialog[1];
 
-        // Option 1: Open TV Settings
         LinearLayout btnSettings = buildCardRow(activity, density, font,
                 activity.getString(R.string.open_home_picker_title),
                 activity.getString(R.string.open_home_picker_summary),
                 () -> {
-                    try {
-                        Intent intent = new Intent(Settings.ACTION_HOME_SETTINGS);
-                        activity.startActivity(intent);
-                    } catch (Exception e1) {
-                        try {
-                            Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
-                            activity.startActivity(intent);
-                        } catch (Exception e2) {
-                            TvFeedback.show(activity, R.string.launcher_settings_unsupported, Toast.LENGTH_SHORT);
-                        }
+                    boolean opened = openDeviceSettings(activity, new Intent(Settings.ACTION_HOME_SETTINGS),
+                            new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS));
+                    if (!opened) {
+                        TvFeedback.show(activity, R.string.home_picker_unavailable, Toast.LENGTH_LONG);
+                    } else if (dialogHolder[0] != null) {
+                        dialogHolder[0].dismiss();
                     }
                 });
         root.addView(btnSettings);
 
-        // Option 2: ADB Command guidance
         LinearLayout btnAdb = buildCardRow(activity, density, font,
                 activity.getString(R.string.set_home_adb_title),
-                activity.getString(R.string.adb_command_guidance, isDefault ? "" : activity.getString(R.string.disable_old_launcher_hint, activePkg)),
+                activity.getString(R.string.adb_command_guidance),
                 () -> {
-                    TvFeedback.show(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG);
+                    String command = "adb shell cmd package set-home-activity com.gathin.tvhome/.MainActivity";
+                    try {
+                        ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                        if (clipboard == null) throw new IllegalStateException("Clipboard unavailable");
+                        clipboard.setPrimaryClip(ClipData.newPlainText("Glass TV HOME command", command));
+                        TvFeedback.show(activity, R.string.adb_command_copied, Toast.LENGTH_LONG);
+                    } catch (Exception unavailable) {
+                        TvFeedback.show(activity, R.string.adb_home_command_hint, Toast.LENGTH_LONG);
+                    }
                 });
         root.addView(btnAdb);
 
-        // Option 3: Phone Installer
         LinearLayout btnPhone = buildCardRow(activity, density, font,
                 activity.getString(R.string.phone_installer_title),
                 activity.getString(R.string.phone_installer_summary),
-                () -> {
-                    TvFeedback.show(activity, R.string.installer_phone_hint, Toast.LENGTH_SHORT);
-                });
+                () -> showPhoneInstallerDialog(activity, density, font));
         root.addView(btnPhone);
 
-        // Close button
+        LinearLayout btnRefresh = buildCardRow(activity, density, font,
+                activity.getString(R.string.home_refresh_action),
+                activity.getString(R.string.home_refresh_summary),
+                () -> {
+                    if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+                    showDefaultLauncherDialog(activity, density, font);
+                });
+        root.addView(btnRefresh);
+
         Button btnClose = new Button(activity);
         btnClose.setText(R.string.close_label);
         btnClose.setTextColor(0xFFFFFFFF);
@@ -1779,16 +2103,89 @@ public final class ModernSettingsDialog {
         closeLp.topMargin = (int) (12 * density);
         root.addView(btnClose, closeLp);
 
-        scroll.addView(root);
+        scroll.addView(root, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         AlertDialog.Builder pb = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
         pb.setView(scroll);
         AlertDialog d = pb.create();
         dialogHolder[0] = d;
         d.show();
-        TvDialogStyle.apply(d, activity, 620, 520);
+
+        activity.styleDeviceSettingsPopup(d, 620, 560);
 
         btnSettings.requestFocus();
+    }
+
+    private static void showPhoneInstallerDialog(MainActivity activity, float density, Typeface font) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        final String downloadPage = "https://github.com/Frangga11/glass-tv-home/tree/main/release";
+
+        LinearLayout content = new LinearLayout(activity);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setGravity(Gravity.CENTER_HORIZONTAL);
+        content.setPadding((int) (24 * density), (int) (18 * density),
+                (int) (24 * density), (int) (10 * density));
+
+        TextView hint = new TextView(activity);
+        hint.setText(R.string.phone_installer_qr_hint);
+        hint.setTextSize(13f);
+        hint.setTextColor(0xFFE2E8F0);
+        hint.setTypeface(font, Typeface.NORMAL);
+        hint.setGravity(Gravity.CENTER);
+        content.addView(hint);
+
+        Bitmap qr = QrBitmapUtil.createQrBitmap(downloadPage, (int) (220 * density));
+        if (qr != null) {
+            ImageView qrView = new ImageView(activity);
+            qrView.setImageBitmap(qr);
+            qrView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            qrView.setBackgroundColor(Color.WHITE);
+            qrView.setPadding((int) (8 * density), (int) (8 * density),
+                    (int) (8 * density), (int) (8 * density));
+            LinearLayout.LayoutParams qrLp = new LinearLayout.LayoutParams(
+                    (int) (236 * density), (int) (236 * density));
+            qrLp.topMargin = (int) (12 * density);
+            qrLp.bottomMargin = (int) (12 * density);
+            content.addView(qrView, qrLp);
+        }
+
+        TextView steps = new TextView(activity);
+        steps.setText(activity.getString(R.string.phone_installer_steps)
+                + "\n\n" + downloadPage);
+        steps.setTextSize(12.5f);
+        steps.setTextColor(0xFFCBD5E1);
+        steps.setTypeface(font, Typeface.NORMAL);
+        steps.setLineSpacing(0, 1.15f);
+        content.addView(steps);
+
+        AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                .setTitle(R.string.phone_installer_title)
+                .setView(content)
+                .setPositiveButton(R.string.close_label, (d, which) -> d.dismiss())
+                .create();
+        dialog.show();
+        activity.styleDeviceSettingsPopup(dialog, 560, 0);
+        Button close = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (close != null) close.requestFocus();
+    }
+
+    private static void openDeviceSettingsOrFeedback(Context context, Intent... intents) {
+        if (!openDeviceSettings(context, intents)) {
+            TvFeedback.show(context, R.string.android_settings_unavailable, Toast.LENGTH_LONG);
+        }
+    }
+
+    private static boolean openDeviceSettings(Context context, Intent... intents) {
+        for (Intent intent : intents) {
+            try {
+                context.startActivity(intent);
+                return true;
+            } catch (Exception ignored) {
+                // Try the next firmware-compatible settings action.
+            }
+        }
+        return false;
     }
 
     interface EditNameCallback {

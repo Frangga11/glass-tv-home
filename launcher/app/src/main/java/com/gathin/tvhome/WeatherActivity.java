@@ -19,6 +19,7 @@ import java.util.Locale;
 public class WeatherActivity extends Activity {
 
     private WeatherBackgroundView weatherBgView;
+    private boolean reducedMotion;
     private TextView weatherLocation;
     private View btnChangeLocation;
     private TextView weatherMainTemp;
@@ -60,9 +61,23 @@ public class WeatherActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        reducedMotion = Config.isReducedMotion(this);
         setContentView(R.layout.activity_weather);
 
         weatherBgView = findViewById(R.id.weatherBgView);
+        if (weatherBgView != null) {
+            weatherBgView.setReducedMotion(reducedMotion);
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                if (am != null) {
+                    am.getMemoryInfo(mi);
+                    if (mi.totalMem <= 1610612736L) weatherBgView.setLowSpecMode(true);
+                }
+            } catch (Exception ignored) {
+                // Keep the normal visual mode when device memory information is unavailable.
+            }
+        }
         weatherLocation = findViewById(R.id.weatherLocation);
         btnChangeLocation = findViewById(R.id.btnChangeLocation);
         weatherMainTemp = findViewById(R.id.weatherMainTemp);
@@ -296,7 +311,7 @@ public class WeatherActivity extends Activity {
             weatherMainCondition.setText(R.string.weather_condition_cloudy);
         }
 
-        weatherMainSub.setText(String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp));
+        weatherMainSub.setText(getString(R.string.weather_high_low_summary, w.highTemp, w.lowTemp));
 
         // 3. Hourly Strip (Apple Weather Conditions Card)
         hourlyContainer.removeAllViews();
@@ -537,7 +552,14 @@ public class WeatherActivity extends Activity {
         v.setOnFocusChangeListener((view, hasFocus) -> {
             float s = hasFocus ? scale : 1.0f;
             float elev = hasFocus ? 6f : 0f;
-            view.animate().scaleX(s).scaleY(s).translationZ(elev).setDuration(140).start();
+            if (reducedMotion) {
+                view.animate().cancel();
+                view.setScaleX(s);
+                view.setScaleY(s);
+                view.setTranslationZ(elev);
+            } else {
+                view.animate().scaleX(s).scaleY(s).translationZ(elev).setDuration(140).start();
+            }
         });
     }
 
@@ -547,7 +569,14 @@ public class WeatherActivity extends Activity {
         card.setClickable(true);
         card.setOnFocusChangeListener((view, hasFocus) -> {
             float elev = hasFocus ? 6f : 0f;
-            view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+            if (reducedMotion) {
+                view.animate().cancel();
+                view.setScaleX(1f);
+                view.setScaleY(1f);
+                view.setTranslationZ(elev);
+            } else {
+                view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+            }
         });
     }
 

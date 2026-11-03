@@ -199,6 +199,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private View islamicShelf;
     private View ayahBlock;
     private TextView ayahLabel, ayahArabic, ayahText, prayerHeader;
+    private TextView ayahOpenHint;
     private boolean ayahRunning;
     private boolean homeWeatherRunning;
     private TextView lblSubuh, lblSyuruk, lblZohor, lblAsar, lblMaghrib, lblIsyak;
@@ -251,6 +252,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long wallpaperIntervalMs;
     /** Decodes the next picture off the main thread, so a switch never stutters the D-pad animations. */
     private final java.util.concurrent.ExecutorService wallDecoder = java.util.concurrent.Executors.newSingleThreadExecutor();
+    /** Latest-request token prevents stale wallpaper decodes from replacing newer selections. */
+    private final java.util.concurrent.atomic.AtomicLong wallpaperRequestGeneration = new java.util.concurrent.atomic.AtomicLong();
+    private final java.util.concurrent.atomic.AtomicLong wallpaperThumbnailGeneration = new java.util.concurrent.atomic.AtomicLong();
     private long wallShownAt;
     private android.widget.ImageView wallView;
     private android.graphics.Bitmap wallBitmap;
@@ -262,9 +266,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Pictures of places are on (see PlaceWallpapers); they are dimmed behind the tiles. */
     private boolean placesMode;
     private volatile boolean placesRefreshRunning;
-    private static final long SCREENSAVER_TIMEOUT_MS = 10L * 60 * 1000L; // 10 minutes idle -> screensaver
-    private static final long TV_SLEEP_TIMEOUT_MS = SCREENSAVER_TIMEOUT_MS + (2L * 60 * 60 * 1000L); // 2 hours later -> TV off
-    private long lastUserInteraction = android.os.SystemClock.elapsedRealtime();
     private boolean screensaverActive = false;
     private View screensaverView;
     private String standbyPhotoUriShown = "";
@@ -340,7 +341,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             updateIslamicShelf();
             refreshPlacesIfDue();
             refreshOnlineWallpapersIfDue();
-            checkInactivity();
+            refreshManualNightstand();
             handler.postDelayed(this, MINUTE_MS);
         }
     };
@@ -388,6 +389,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (grid != null) grid.invalidateItemDecorations();
         if (enabled && wallBitmap != null) blurBackdrop(wallBitmap);
         if (root != null) root.invalidate();
+        if (openPopup != null && openPopup.getContentView() != null) {
+            openPopup.getContentView().invalidate();
+        }
+        if (openMenu != null) openMenu.invalidate();
     }
 
     public void setWeatherWidgetEnabled(boolean enabled) {
@@ -406,6 +411,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StandbyPhotoStore.cleanupOrphanedUploads(this);
+        WallpaperUploadServer.cleanupOrphanedCustomWallpaperUploads(this);
         ProfileManager.cleanupOrphanedAvatarUploads(this);
         sInstance = new java.lang.ref.WeakReference<>(this);
         SoundEffects.init(this);
@@ -438,7 +444,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         android.content.SharedPreferences launch = getSharedPreferences("launch", MODE_PRIVATE);
         if (Math.abs(launch.getLong("boot_at", 0) - bootAt) < 60_000) tilesAnimatedOnce = true;
         else launch.edit().putLong("boot_at", bootAt).apply();
-        ensureSystemScreensaverAndSleepSettings();
         root.setBackgroundColor(cfg.backgroundColor);
         config = cfg;
         wallpapers = cfg.wallpapers;
@@ -458,7 +463,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroName != null) heroName.setMaxWidth(heroNameMaxWidth);
         if (heroDesc != null) heroDesc.setMaxWidth(heroMaxWidth);
 
-        String activeCat = getActiveWallpaperCategory();
+        String activeCat = reconcileActiveWallpaperCategoryForStartup();
         if ("Default".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File defaultWallpaper = getBundledDefaultWallpaper();
@@ -467,7 +472,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else if ("Custom".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             boolean singleMode = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("custom_single_mode", false);
             String singleFile = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("custom_single_file", null);
             if (singleMode && singleFile != null) {
@@ -517,7 +522,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         if (!wallpapers.isEmpty()) showNextWallpaper(false);
-        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat) && !"Default".equalsIgnoreCase(activeCat)) setWallpaper(decodeWallpaper(cfg.wallpaper), false);
+        else if (cfg.wallpaper != null && !placesMode && !"Minimalist".equalsIgnoreCase(activeCat) && !"Default".equalsIgnoreCase(activeCat)) {
+            queueWallpaperDecode(cfg.wallpaper, false, false, false);
+        }
         else if ("Minimalist".equalsIgnoreCase(activeCat) || "Default".equalsIgnoreCase(activeCat)) {
             // Never fall back to a theme/legacy wallpaper when Default's bundled asset is unavailable.
             root.setBackgroundColor(android.graphics.Color.BLACK);
@@ -666,10 +673,42 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ayahLabel = findViewById(R.id.ayahLabel);
             ayahArabic = findViewById(R.id.ayahArabic);
             ayahText = findViewById(R.id.ayahText);
+            ayahOpenHint = findViewById(R.id.ayahOpenHint);
             prayerHeader = findViewById(R.id.prayerHeader);
 
+            if (ayahBlock != null) {
+                ayahBlock.setFocusable(true);
+                ayahBlock.setClickable(true);
+                ayahBlock.setOnClickListener(v -> showDailyAyahDialog());
+                ayahBlock.setOnKeyListener((v, keyCode, event) -> {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN
+                            && (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        showDailyAyahDialog();
+                        return true;
+                    }
+                    return false;
+                });
+                ayahBlock.setOnFocusChangeListener((v, hasFocus) -> {
+                    GradientDrawable focusSurface = new GradientDrawable();
+                    focusSurface.setColor(hasFocus ? 0x553B5872 : 0x00000000);
+                    focusSurface.setCornerRadius(10 * density);
+                    focusSurface.setStroke(Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
+                            hasFocus ? 0xFF7DD3FC : 0x22FFFFFF);
+                    v.setBackground(focusSurface);
+                    if (hasFocus) SoundEffects.playNav();
+                });
+            }
+            if (ayahOpenHint != null) {
+                ayahOpenHint.setText(R.string.daily_ayah_open);
+                GradientDrawable hintBg = new GradientDrawable();
+                hintBg.setColor(0x334B6680);
+                hintBg.setCornerRadius(8 * density);
+                hintBg.setStroke(Math.max(1, Math.round(density)), 0x557DD3FC);
+                ayahOpenHint.setBackground(hintBg);
+            }
+
             int uWidth = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
-            int iMaxWidth = Math.round(uWidth * 0.38f);
+            int iMaxWidth = Math.round(uWidth * 0.46f);
             if (ayahArabic != null) ayahArabic.setMaxWidth(iMaxWidth);
             if (ayahText != null) ayahText.setMaxWidth(iMaxWidth);
 
@@ -1091,6 +1130,90 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /**
+     * Decode and optionally blur away from the UI thread. A generation token coalesces rapid
+     * selection changes: stale queued work exits before decoding and stale completed bitmaps are
+     * released rather than being posted to a destroyed or superseded Home screen.
+     */
+    private void queueWallpaperDecode(File file, boolean fade, boolean prepareBlur, boolean updatePlace) {
+        if (file == null) return;
+        final long generation = wallpaperRequestGeneration.incrementAndGet();
+        final android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
+        final int screenW = metrics.widthPixels;
+        final int screenH = metrics.heightPixels;
+        final int multiply = placesMode ? 0xFF7A7A7A : 0;
+        try {
+            wallDecoder.execute(() -> {
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperRequestGeneration.get()) return;
+                android.graphics.Bitmap bmp = decodeWallpaper(file);
+                if (bmp == null) {
+                    android.util.Log.w("TvHome", "Wallpaper decode failed: " + file.getName());
+                    return;
+                }
+                android.graphics.Bitmap blur = null;
+                if (prepareBlur && isGlassEffectsEnabled()) {
+                    blur = Backdrop.blur(bmp, screenW, screenH, multiply);
+                }
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperRequestGeneration.get()) {
+                    if (!bmp.isRecycled()) bmp.recycle();
+                    if (blur != null && !blur.isRecycled()) blur.recycle();
+                    return;
+                }
+                final android.graphics.Bitmap readyBitmap = bmp;
+                final android.graphics.Bitmap readyBlur = blur;
+                boolean posted = handler.post(() -> {
+                    if (isDestroyed() || generation != wallpaperRequestGeneration.get()) {
+                        if (!readyBitmap.isRecycled()) readyBitmap.recycle();
+                        if (readyBlur != null && !readyBlur.isRecycled()) readyBlur.recycle();
+                        return;
+                    }
+                    setWallpaper(readyBitmap, fade, readyBlur);
+                    if (updatePlace) setPlace(file);
+                });
+                if (!posted) {
+                    if (!readyBitmap.isRecycled()) readyBitmap.recycle();
+                    if (readyBlur != null && !readyBlur.isRecycled()) readyBlur.recycle();
+                }
+            });
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+            android.util.Log.w("TvHome", "Wallpaper decode skipped because Home is shutting down", e);
+        }
+    }
+
+    /** Loads the QR-upload preview off the UI thread and discards it if the dialog/request is stale. */
+    private void queueWallpaperThumbnail(File file) {
+        final ImageView target = qrImageView;
+        if (file == null || target == null) return;
+        final long generation = wallpaperThumbnailGeneration.incrementAndGet();
+        try {
+            wallDecoder.execute(() -> {
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperThumbnailGeneration.get()) return;
+                android.graphics.Bitmap thumb = decodeWallpaper(file);
+                if (thumb == null) return;
+                if (Thread.currentThread().isInterrupted()
+                        || generation != wallpaperThumbnailGeneration.get()) {
+                    if (!thumb.isRecycled()) thumb.recycle();
+                    return;
+                }
+                boolean posted = handler.post(() -> {
+                    if (isDestroyed() || generation != wallpaperThumbnailGeneration.get()
+                            || qrImageView != target || qrUploadDialog == null || !qrUploadDialog.isShowing()) {
+                        if (!thumb.isRecycled()) thumb.recycle();
+                        return;
+                    }
+                    target.setImageBitmap(thumb);
+                    target.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                });
+                if (!posted && !thumb.isRecycled()) thumb.recycle();
+            });
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+            android.util.Log.d("TvHome", "Wallpaper preview skipped because Home is shutting down");
+        }
+    }
+
     /** Puts a picture behind everything, cross-fading from the previous one when asked. */
     private void setWallpaper(android.graphics.Bitmap bmp, boolean fade) {
         setWallpaper(bmp, fade, null);
@@ -1238,20 +1361,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // or it would name the next place over the last one's picture while that one decodes.
         if (placeName == null) setPlace(file);
         final boolean firstPicture = wallBitmap == null;
-        wallDecoder.execute(() -> {
-            android.graphics.Bitmap bmp = decodeWallpaper(file);
-            // After the first picture, the blur is made here, before the picture is shown, so the glass
-            // changes with the wallpaper rather than after it. The first picture of a fresh start does
-            // not wait for its blur: Home is held for it, and the glass catches up a moment later.
-            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-            android.graphics.Bitmap blur = firstPicture ? null
-                    : Backdrop.blur(bmp, dm.widthPixels, dm.heightPixels, placesMode ? 0xFF7A7A7A : 0);
-            handler.post(() -> {
-                if (isDestroyed()) return;
-                setWallpaper(bmp, fade, blur);
-                setPlace(file);
-            });
-        });
+        queueWallpaperDecode(file, fade, !firstPicture, true);
     }
 
     /** Switches to the next picture every wallpaper interval while Home is in front. */
@@ -1337,15 +1447,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return StandbyPhotoStore.isPhotoMode(this);
     }
 
-    void setStandbyPhotoMode(boolean enabled) {
+    boolean setStandbyPhotoMode(boolean enabled) {
         if (enabled && getStandbyPhotoCount() == 0) {
             TvFeedback.show(this, R.string.standby_photo_required, Toast.LENGTH_LONG);
-            return;
+            return false;
         }
-        StandbyPhotoStore.setPhotoMode(this, enabled);
+        if (!StandbyPhotoStore.setPhotoMode(this, enabled)) {
+            TvFeedback.show(this, R.string.standby_mode_save_failed, Toast.LENGTH_LONG);
+            return false;
+        }
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
         TvFeedback.show(this, enabled ? R.string.standby_photo_mode_enabled : R.string.standby_clock_mode_enabled, Toast.LENGTH_SHORT);
+        return true;
     }
 
     void pickStandbyPhotos() {
@@ -1362,20 +1476,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void clearStandbyPhotos() {
-        List<Uri> selectedUris = StandbyPhotoStore.getUris(this);
-        if (!StandbyPhotoStore.saveUris(this, Collections.emptyList())) {
+        List<Uri> selectedUris = StandbyPhotoStore.clearCollectionAndMode(this);
+        if (selectedUris == null) {
             TvFeedback.show(this, R.string.standby_clear_failed, Toast.LENGTH_LONG);
             return;
         }
         for (Uri uri : selectedUris) {
-            if (StandbyPhotoStore.isManagedFile(this, uri)) continue;
+            // Managed QR photos are file:// URIs and their files were removed by the store.
+            if ("file".equalsIgnoreCase(uri.getScheme())) continue;
             try {
                 getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } catch (Exception ignored) {
             }
         }
-        StandbyPhotoStore.clearUploadedFiles(this);
-        StandbyPhotoStore.setPhotoMode(this, false);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
         TvFeedback.show(this, R.string.standby_list_cleared, Toast.LENGTH_SHORT);
@@ -1431,23 +1544,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TvFeedback.show(this, message, Toast.LENGTH_LONG);
             return;
         }
-        // Append new photos so a local/USB selection never replaces earlier QR uploads.
-        List<Uri> merged = StandbyPhotoStore.getUris(this);
-        int added = 0;
-        int skipped = skippedByLimit;
+        // Merge against the latest persisted collection inside StandbyPhotoStore's
+        // serialized mutation boundary; an upload may have completed while the picker was open.
+        StandbyPhotoStore.UriMergeResult update = StandbyPhotoStore.appendUris(this, granted);
+        List<Uri> finalUris = StandbyPhotoStore.getUris(this);
         for (Uri uri : granted) {
-            if (merged.contains(uri)) continue;
-            if (merged.size() >= StandbyPhotoStore.MAX_PHOTO_COUNT) {
-                skipped++;
+            if (!finalUris.contains(uri)) {
                 try {
                     getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } catch (Exception ignored) {
                 }
-                continue;
             }
-            merged.add(uri);
-            added++;
         }
+        if (!update.persisted) {
+            TvFeedback.show(this, R.string.standby_save_failed, Toast.LENGTH_LONG);
+            return;
+        }
+        int added = update.addedCount;
+        int skipped = skippedByLimit + update.skippedCount;
         if (added == 0) {
             String message = skipped > 0
                     ? getString(R.string.standby_collection_limit, StandbyPhotoStore.MAX_PHOTO_COUNT)
@@ -1455,22 +1569,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TvFeedback.show(this, message, Toast.LENGTH_LONG);
             return;
         }
-        if (!StandbyPhotoStore.saveUris(this, merged)) {
-            for (Uri uri : granted) {
-                if (!StandbyPhotoStore.getUris(this).contains(uri)) {
-                    try {
-                        getContentResolver().releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-            TvFeedback.show(this, R.string.standby_save_failed, Toast.LENGTH_LONG);
-            return;
-        }
-        StandbyPhotoStore.setPhotoMode(this, true);
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
-        String message = getString(R.string.standby_photos_added, added, merged.size());
+        String message = getString(R.string.standby_photos_added, added, finalUris.size());
         if (skipped > 0) message += " " + getString(R.string.standby_photos_skipped, skipped);
         TvFeedback.show(this, message, Toast.LENGTH_LONG);
     }
@@ -1764,6 +1865,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             NowPlayingManager.unregisterListener(nowPlayingListener);
         }
         SoundEffects.release();
+        wallpaperRequestGeneration.incrementAndGet();
+        wallpaperThumbnailGeneration.incrementAndGet();
+        handler.removeCallbacksAndMessages(null);
         wallDecoder.shutdownNow();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -2192,7 +2296,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroShelf != null && isWallpaperDescEnabled()) {
             heroShelf.setVisibility(View.VISIBLE);
         }
-        String[] about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
+        String[] about = WallpaperMetadata.describe(picture);
+        if (about == null) {
+            about = placesMode ? PlaceWallpapers.describe(picture) : OnlineWallpapers.describe(picture);
+        }
         String title = about != null ? titleCase(about[0]) : null;
         String overview = about != null ? about[1] : "";
         String country = about != null && about.length > 2 ? about[2] : "";
@@ -2575,12 +2682,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
         if (screensaverActive) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 dismissScreensaver();
@@ -2804,7 +2909,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             HomeWeather.Line line = HomeWeather.refresh(getApplicationContext(), lat, lon);
             handler.post(() -> {
                 homeWeatherRunning = false;
-                if (line != null && !isDestroyed()) showHomeWeather(line);
+                if (line != null && !isDestroyed()) {
+                    showHomeWeather(line);
+                } else if (!isDestroyed() && HomeWeather.due(this)) {
+                    // A superseded response is intentionally not cached; immediately fetch the current location.
+                    updateHomeWeather();
+                }
             });
         }, "home-weather").start();
     }
@@ -2848,6 +2958,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     }
                 }
             } catch (Exception ignored) {}
+            weatherOverlayView.setReducedMotion(config != null && config.reducedMotion);
 
             int idx = (wallView != null) ? root.indexOfChild(wallView) + 1 : 0;
             root.addView(weatherOverlayView, idx, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -2985,50 +3096,294 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ayahBlock.setVisibility(View.GONE);
             return;
         }
-        if (a == null || a.arabic == null || a.arabic.isEmpty()) {
+        if (a == null || a.arabic == null || a.arabic.trim().isEmpty()) {
             ayahBlock.setVisibility(View.GONE);
             return;
         }
 
         int usable = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
-        int islamicMaxWidth = Math.round(usable * 0.38f);
-        boolean is4K = (getResources().getDisplayMetrics().widthPixels >= 3840 || getResources().getDisplayMetrics().heightPixels >= 2160);
+        int islamicMaxWidth = Math.round(usable * 0.46f);
+        boolean is4K = (getResources().getDisplayMetrics().widthPixels >= 3840
+                || getResources().getDisplayMetrics().heightPixels >= 2160);
 
         if (ayahLabel != null) {
             ayahLabel.setText(AppLanguage.getAyahLabel(this, a.reference));
-            ayahLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 12f : 10f);
+            ayahLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 13f : 11f);
         }
         if (ayahArabic != null) {
-            String text = a.arabic.trim();
             ayahArabic.setMaxWidth(islamicMaxWidth);
-            ayahArabic.setSingleLine(true);
-            ayahArabic.setMaxLines(1);
+            ayahArabic.setSingleLine(false);
+            ayahArabic.setMaxLines(2);
             ayahArabic.setEllipsize(TextUtils.TruncateAt.END);
-
-            float baseSp = is4K ? 18f : 14.5f;
-            android.text.TextPaint paint = new android.text.TextPaint(ayahArabic.getPaint());
-            paint.setTextSize(baseSp * getResources().getDisplayMetrics().scaledDensity);
-            float textWidth = paint.measureText(text);
-
-            float targetSp = baseSp;
-            float maxAllowed = islamicMaxWidth * 0.95f;
-            while (textWidth > maxAllowed && targetSp > 11.5f) {
-                targetSp -= 0.5f;
-                paint.setTextSize(targetSp * getResources().getDisplayMetrics().scaledDensity);
-                textWidth = paint.measureText(text);
-            }
-            ayahArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, targetSp);
-            ayahArabic.setText(text);
+            ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL);
+            ayahArabic.setIncludeFontPadding(true);
+            ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+            ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+            ayahArabic.setLineSpacing(Math.round(3 * density), 1.08f);
+            ayahArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 21f : 17f);
+            ayahArabic.setText(a.arabic.trim());
         }
         if (ayahText != null) {
             ayahText.setMaxWidth(islamicMaxWidth);
-            String lang = AppLanguage.getLanguage(this);
-            String tr = a.translation(lang);
+            ayahText.setSingleLine(false);
+            ayahText.setMaxLines(2);
+            ayahText.setEllipsize(TextUtils.TruncateAt.END);
+            ayahText.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+            ayahText.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+            ayahText.setLineSpacing(Math.round(2 * density), 1.12f);
+            String tr = a.translation(AppLanguage.getLanguage(this));
             ayahText.setText(tr != null ? tr.trim() : "");
-            ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 12.5f : 10.5f);
+            ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 15f : 12.5f);
             ayahText.setVisibility(tr != null && !tr.trim().isEmpty() ? View.VISIBLE : View.GONE);
         }
         ayahBlock.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Opens the complete daily verse in a centered, bounded glass reader. The Home shelf remains a
+     * deliberately short preview, so verse length cannot resize or displace the prayer timetable.
+     */
+    private void showDailyAyahDialog() {
+        if (isFinishing() || isDestroyed()) return;
+        WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
+        if (ayah == null || ayah.arabic == null || ayah.arabic.trim().isEmpty()) {
+            TvFeedback.show(this, R.string.no_daily_ayah, Toast.LENGTH_SHORT);
+            return;
+        }
+
+        LinearLayout panel = new LinearLayout(this);
+        panel.setOrientation(LinearLayout.VERTICAL);
+        panel.setGravity(Gravity.CENTER_HORIZONTAL);
+        panel.setPadding(Math.round(24 * density), Math.round(18 * density),
+                Math.round(24 * density), Math.round(18 * density));
+        panel.setClipToPadding(false);
+        panel.setClipChildren(false);
+
+        GradientDrawable glassSurface = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                new int[]{0xE62B3B50, 0xD91B2638, 0xE6222D40});
+        glassSurface.setCornerRadius(24 * density);
+        glassSurface.setStroke(Math.max(1, Math.round(1.5f * density)), 0x77FFFFFF);
+        panel.setBackground(glassSurface);
+
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+
+        LinearLayout heading = new LinearLayout(this);
+        heading.setOrientation(LinearLayout.VERTICAL);
+        TextView title = new TextView(this);
+        title.setText(R.string.daily_ayah_popup_title);
+        title.setTextColor(0xFFFFFFFF);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+        title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        title.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+        heading.addView(title);
+
+        TextView reference = new TextView(this);
+        reference.setText(ayah.reference != null ? ayah.reference : "");
+        reference.setTextColor(0xD9FFFFFF);
+        reference.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
+        reference.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
+        LinearLayout.LayoutParams refLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        refLp.topMargin = Math.round(3 * density);
+        heading.addView(reference, refLp);
+        header.addView(heading, new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        AlertDialog[] dialogHolder = new AlertDialog[1];
+        TextView close = new TextView(this);
+        close.setText("×");
+        close.setTextColor(0xFFFFFFFF);
+        close.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28f);
+        close.setGravity(Gravity.CENTER);
+        close.setFocusable(true);
+        close.setClickable(true);
+        close.setContentDescription(getString(R.string.daily_ayah_close));
+        GradientDrawable closeBg = new GradientDrawable();
+        closeBg.setColor(0x33FFFFFF);
+        closeBg.setShape(GradientDrawable.OVAL);
+        closeBg.setStroke(Math.max(1, Math.round(density)), 0x66FFFFFF);
+        close.setBackground(closeBg);
+        close.setOnClickListener(v -> {
+            SoundEffects.playSelect();
+            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+        });
+        close.setOnFocusChangeListener((v, focused) -> {
+            GradientDrawable state = new GradientDrawable();
+            state.setShape(GradientDrawable.OVAL);
+            state.setColor(focused ? 0x667DD3FC : 0x33FFFFFF);
+            state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
+                    focused ? 0xFF7DD3FC : 0x66FFFFFF);
+            v.setBackground(state);
+            if (focused) SoundEffects.playNav();
+        });
+        header.addView(close, new LinearLayout.LayoutParams(
+                Math.round(46 * density), Math.round(46 * density)));
+        panel.addView(header);
+
+        View divider = new View(this);
+        divider.setBackgroundColor(0x55FFFFFF);
+        LinearLayout.LayoutParams dividerLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, Math.round(density)));
+        dividerLp.topMargin = Math.round(12 * density);
+        dividerLp.bottomMargin = Math.round(12 * density);
+        panel.addView(divider, dividerLp);
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(false);
+        scroll.setVerticalScrollBarEnabled(true);
+        scroll.setFocusable(true);
+        scroll.setFocusableInTouchMode(true);
+        scroll.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+
+        LinearLayout body = new LinearLayout(this);
+        body.setOrientation(LinearLayout.VERTICAL);
+        body.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        TextView arabic = new TextView(this);
+        arabic.setText(ayah.arabic.trim());
+        arabic.setTextColor(0xFFFFD38A);
+        arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                getResources().getDisplayMetrics().widthPixels >= 3840 ? 34f : 28f);
+        arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
+        arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
+        arabic.setGravity(Gravity.CENTER);
+        arabic.setIncludeFontPadding(true);
+        arabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+        arabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+        arabic.setLineSpacing(Math.round(7 * density), 1.16f);
+        arabic.setMaxLines(Integer.MAX_VALUE);
+        arabic.setEllipsize(null);
+        body.addView(arabic, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        TextView meaningLabel = new TextView(this);
+        meaningLabel.setText(R.string.daily_ayah_meaning_label);
+        meaningLabel.setTextColor(0xFFFFD38A);
+        meaningLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
+        meaningLabel.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        LinearLayout.LayoutParams meaningLabelLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        meaningLabelLp.topMargin = Math.round(18 * density);
+        body.addView(meaningLabel, meaningLabelLp);
+
+        TextView translation = new TextView(this);
+        String translated = ayah.translation(AppLanguage.getLanguage(this));
+        translation.setText(translated != null && !translated.trim().isEmpty()
+                ? translated.trim() : getString(R.string.daily_ayah_translation_unavailable));
+        translation.setTextColor(0xF2FFFFFF);
+        translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
+        translation.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
+        translation.setGravity(Gravity.START);
+        translation.setLineSpacing(Math.round(5 * density), 1.18f);
+        translation.setMaxLines(Integer.MAX_VALUE);
+        translation.setEllipsize(null);
+        LinearLayout.LayoutParams translationLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        translationLp.topMargin = Math.round(6 * density);
+        body.addView(translation, translationLp);
+
+        TextView footerHint = new TextView(this);
+        footerHint.setText(R.string.daily_ayah_navigation_hint);
+        footerHint.setTextColor(0xBFFFFFFF);
+        footerHint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
+        footerHint.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams hintLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        hintLp.topMargin = Math.round(10 * density);
+        body.addView(footerHint, hintLp);
+
+        scroll.addView(body, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        panel.addView(scroll, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        LinearLayout.LayoutParams closeLp = new LinearLayout.LayoutParams(
+                Math.round(150 * density), Math.round(42 * density));
+        closeLp.gravity = Gravity.CENTER_HORIZONTAL;
+        closeLp.topMargin = Math.round(12 * density);
+        TextView closeAction = new TextView(this);
+        closeAction.setText(R.string.daily_ayah_close);
+        closeAction.setTextColor(0xFFFFFFFF);
+        closeAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
+        closeAction.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        closeAction.setGravity(Gravity.CENTER);
+        closeAction.setFocusable(true);
+        closeAction.setClickable(true);
+        GradientDrawable actionBg = new GradientDrawable();
+        actionBg.setColor(0x334B6680);
+        actionBg.setCornerRadius(10 * density);
+        actionBg.setStroke(Math.max(1, Math.round(density)), 0x557DD3FC);
+        closeAction.setBackground(actionBg);
+        closeAction.setOnClickListener(v -> dialogHolder[0].dismiss());
+        closeAction.setOnFocusChangeListener((v, focused) -> {
+            GradientDrawable state = new GradientDrawable();
+            state.setColor(focused ? 0x667DD3FC : 0x334B6680);
+            state.setCornerRadius(10 * density);
+            state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
+                    focused ? 0xFF7DD3FC : 0x557DD3FC);
+            v.setBackground(state);
+            if (focused) SoundEffects.playNav();
+        });
+        panel.addView(closeAction, closeLp);
+
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                .setView(panel)
+                .create();
+        dialogHolder[0] = dialog;
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setOnKeyListener((d, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                d.dismiss();
+                return true;
+            }
+            return false;
+        });
+        dialog.show();
+
+        int widthDp = Math.max(360, Math.round(
+                getResources().getDisplayMetrics().widthPixels * 0.72f / density));
+        int heightDp = Math.max(240, Math.round(
+                getResources().getDisplayMetrics().heightPixels * 0.63f / density));
+        TvDialogStyle.applyCustom(dialog, this, widthDp, heightDp, 0.30f);
+
+        scroll.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (scroll.canScrollVertically(1)) {
+                    scroll.smoothScrollBy(0, Math.max(1, scroll.getHeight() * 2 / 3));
+                } else {
+                    closeAction.requestFocus();
+                }
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                if (scroll.canScrollVertically(-1)) {
+                    scroll.smoothScrollBy(0, -Math.max(1, scroll.getHeight() * 2 / 3));
+                } else {
+                    close.requestFocus();
+                }
+                return true;
+            }
+            return false;
+        });
+        close.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                scroll.requestFocus();
+                return true;
+            }
+            return false;
+        });
+        closeAction.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                scroll.requestFocus();
+                return true;
+            }
+            return false;
+        });
+        scroll.requestFocus();
     }
 
     private void updateDateAndPeriod() {
@@ -3225,7 +3580,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strTurnOff(this), -1, this::showTurnOffDialog);
         addSeparator(rows);
         addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strCleanCache(this), -1, this::showCleanTvCacheDialog);
-        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperIntervalDialog);
+        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperDialog);
 
         addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, this::showLanguageDialog);
 
@@ -3630,7 +3985,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         d.show();
         styleGlassDialog(d);
 
-        TvDialogStyle.apply(d, this, 540, 400);
+        if (d.getWindow() != null) {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int w = Math.min((int) (540 * density), (int) (dm.widthPixels * 0.75f));
+            int h = Math.min((int) (400 * density), (int) (dm.heightPixels * 0.72f));
+            d.getWindow().setLayout(w, h);
+            d.getWindow().setGravity(Gravity.CENTER);
+        }
     }
 
     private void updateMasterTag(TextView tag, boolean on) {
@@ -3763,6 +4124,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
+        Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (positive != null) positive.requestFocus();
     }
 
     void showTurnOffDialog() {
@@ -3781,6 +4144,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialog.show();
         styleGlassDialog(dialog);
+        Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (positive != null) positive.requestFocus();
     }
 
     void showCleanTvCacheDialog() {
@@ -3805,14 +4170,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 SoundEffects.playSelect();
                 String freedStr = android.text.format.Formatter.formatFileSize(MainActivity.this, bytesFreed);
                 String resultMsg = AppLanguage.strCleanCacheDoneMsg(MainActivity.this, freedStr, bytesFreed > 0);
+                String systemStatus = getString(systemTrimmed
+                        ? R.string.cache_system_trim_success : R.string.cache_system_trim_skipped);
 
                 AlertDialog resDialog = new AlertDialog.Builder(MainActivity.this, R.style.Theme_TvHome_GlassDialog)
                         .setTitle(AppLanguage.strCleanCacheDoneTitle(MainActivity.this))
-                        .setMessage(resultMsg + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
+                        .setMessage(resultMsg + "\n\n" + systemStatus
+                                + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
                         .setPositiveButton(AppLanguage.strDone(MainActivity.this), (d, w) -> d.dismiss())
                         .create();
                 resDialog.show();
-                styleGlassDialog(resDialog);
+                styleDeviceSettingsPopup(resDialog, 600, 0);
                 Button btnOk = resDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                 if (btnOk != null) btnOk.requestFocus();
             });
@@ -3820,7 +4188,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setNegativeButton(AppLanguage.strCancel(this), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 600, 0);
         Button btnPos = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (btnPos != null) btnPos.requestFocus();
     }
@@ -3930,20 +4298,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         dialog.show();
-        styleGlassDialog(dialog);
-
-        TvDialogStyle.applyCustom(dialog, this, 680, 0, 0.68f);
+        styleDeviceSettingsPopup(dialog, 680, 0);
 
         if (btnCheckNow != null) btnCheckNow.requestFocus();
     }
 
     private void showUpdateTimePickerDialog() {
         final String[] times = new String[]{
-                "🌙 03:30 AM (Cadangan Terbaik: Waktu Tidur & Subuh)",
-                "🌙 04:00 AM (Awal Pagi)",
-                "🌙 05:00 AM (Subuh)",
-                "☀️ 12:00 PM (Tengah Hari)",
-                "🌃 02:00 AM (Tengah Malam)"
+                getString(R.string.auto_update_time_0330_option),
+                getString(R.string.auto_update_time_0400_option),
+                getString(R.string.auto_update_time_0500_option),
+                getString(R.string.auto_update_time_1200_option),
+                getString(R.string.auto_update_time_0200_option)
         };
         final String[] rawTimes = new String[]{
                 "03:30 AM", "04:00 AM", "05:00 AM", "12:00 PM", "02:00 AM"
@@ -3973,7 +4339,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
+        styleDeviceSettingsPopup(dialog, 600, 480);
     }
 
     private void updateNowPlayingUi(NowPlayingManager.MediaInfo info) {
@@ -4088,7 +4454,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View panel = getLayoutInflater().inflate(R.layout.dialog_media_hub, root, false);
         dialog.setContentView(panel);
 
-        TvDialogStyle.applyCustom(dialog, this, 480, 0, 0.68f);
         Window w = dialog.getWindow();
         if (w != null) {
             w.setFlags(android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
@@ -4171,6 +4536,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (btnCloseDialog != null) btnCloseDialog.setOnFocusChangeListener(btnFocus);
 
         dialog.show();
+        TvDialogStyle.applyCustom(dialog, this, 480, 0, 0.65f);
         if (btnPlayPause != null) {
             btnPlayPause.requestFocus();
         }
@@ -4268,6 +4634,48 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return category;
     }
 
+    /**
+     * Reconciles durable Custom-wallpaper preferences with the private files that survived
+     * process death or an interrupted delete before the collection is rendered.
+     */
+    private String reconcileActiveWallpaperCategoryForStartup() {
+        android.content.SharedPreferences prefs =
+                getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+        String category = getActiveWallpaperCategory();
+        if (!"Custom".equalsIgnoreCase(category)) return category;
+
+        File customDir = new File(getFilesDir(), "custom_wallpapers");
+        File[] files = customDir.exists()
+                ? customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name))
+                : new File[0];
+        // A null listing from an existing directory is an I/O/permission error, not proof that
+        // the collection is empty. Preserve the user's saved selection until it can be inspected.
+        if (customDir.exists() && files == null) return category;
+
+        if (files == null || files.length == 0) {
+            prefs.edit().putString("active_category", "Natural")
+                    .putBoolean("custom_single_mode", false)
+                    .remove("custom_single_file")
+                    .apply();
+            return "Natural";
+        }
+
+        boolean singleMode = prefs.getBoolean("custom_single_mode", false);
+        String singleFile = prefs.getString("custom_single_file", null);
+        if (singleMode) {
+            File selected = singleFile != null && UploadFilePolicy.isSafeStoredImageName(singleFile)
+                    ? new File(customDir, singleFile) : null;
+            if (selected == null || !selected.isFile() || selected.length() <= 0) {
+                prefs.edit().putBoolean("custom_single_mode", false)
+                        .remove("custom_single_file")
+                        .apply();
+            }
+        } else if (singleFile != null) {
+            prefs.edit().remove("custom_single_file").apply();
+        }
+        return category;
+    }
+
     private boolean isSupportedWallpaperCategory(String category) {
         return "Default".equalsIgnoreCase(category)
                 || "Natural".equalsIgnoreCase(category)
@@ -4278,9 +4686,70 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 || "Custom".equalsIgnoreCase(category);
     }
 
+    /** Compact three-action control center used by Quick Control. */
     void showWallpaperDialog() {
+        WallpaperSettingsDialog.show(this, new WallpaperSettingsDialog.Actions() {
+            @Override public void openCollection() { showWallpaperCollectionDialog(); }
+            @Override public void openInterval() { showWallpaperIntervalDialog(); }
+            @Override public void showNext() { showNextWallpaperFromSettings(); }
+            @Override public boolean isShuffleEnabled() {
+                return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
+            }
+            @Override public String intervalSummary() { return getWallpaperIntervalSummary(); }
+            @Override public void toggleShuffle() { toggleWallpaperShuffleFromSettings(); }
+        });
+    }
+
+    /** Full Appearance > Wallpaper management entry points; they never reopen Quick Control. */
+    void showWallpaperCollectionManagementDialog() {
+        showWallpaperCollectionDialog(false);
+    }
+
+    void showWallpaperIntervalManagementDialog() {
+        showWallpaperIntervalDialog(false);
+    }
+
+    void showCustomWallpaperManagerManagementDialog() {
+        showCustomWallpaperManagerDialog(false);
+    }
+
+    private void toggleWallpaperShuffleFromSettings() {
+        android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+        boolean enabled = !prefs.getBoolean("shuffle_mode", true);
+        prefs.edit().putBoolean("shuffle_mode", enabled).remove("shuffle_cycle")
+                .remove("shuffle_position").apply();
+        TvFeedback.show(this, enabled ? R.string.wallpaper_shuffle_random : R.string.wallpaper_shuffle_ordered,
+                Toast.LENGTH_SHORT);
+    }
+
+    private void showNextWallpaperFromSettings() {
+        if (wallpapers == null || wallpapers.isEmpty()) {
+            TvFeedback.show(this, R.string.default_wallpaper_missing, Toast.LENGTH_SHORT);
+            return;
+        }
+        if (wallpapers.size() < 2) {
+            String language = AppLanguage.getLanguage(this);
+            String message = AppLanguage.LANG_EN.equals(language) ? "Only one wallpaper is available in this collection."
+                    : AppLanguage.LANG_ID.equals(language) ? "Koleksi ini hanya memiliki satu wallpaper."
+                    : "Koleksi ini hanya mempunyai satu wallpaper.";
+            TvFeedback.show(this, message, Toast.LENGTH_SHORT);
+            return;
+        }
+        showNextWallpaper(true);
+        if (wallpaperIntervalMs > 0 && wallpapers.size() >= 2) {
+            handler.removeCallbacks(wallTick);
+            handler.postDelayed(wallTick, wallpaperIntervalMs);
+        }
+        TvFeedback.show(this, R.string.next_wallpaper_toast, Toast.LENGTH_SHORT);
+    }
+
+    private void showWallpaperCollectionDialog() {
+        showWallpaperCollectionDialog(true);
+    }
+
+    private void showWallpaperCollectionDialog(boolean returnToQuickControl) {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
-        File[] customFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+        File[] customFiles = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
         int customCount = (customFiles != null) ? customFiles.length : 0;
 
         String currentKey = getActiveWallpaperCategory();
@@ -4336,31 +4805,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 : (AppLanguage.LANG_EN.equals(curLang) ? "Upload personal photos via phone" : (AppLanguage.LANG_ID.equals(curLang) ? "Unggah foto pribadi lewat ponsel" : "Muat naik foto peribadi melalui telefon"));
         options.add(new WallpaperOption("MANAGE_CUSTOM", tCst, sCst));
 
-        int curInterval = getWallpaperIntervalMinutes();
-        String intervalText = AppLanguage.strWallpaperIntervalText(this, curInterval);
-
-        boolean isShuffle = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
         boolean isDescOn = isWallpaperDescEnabled();
-
-        String tInt = (AppLanguage.LANG_EN.equals(curLang) ? "⏱️ Shuffle Interval: " : (AppLanguage.LANG_ID.equals(curLang) ? "⏱️ Interval Shuffle: " : "⏱️ Selang Masa Shuffle: ")) + intervalText;
-        String sInt = AppLanguage.LANG_EN.equals(curLang) ? "Choose wallpaper change frequency (5 min, 10 min, etc.)" : (AppLanguage.LANG_ID.equals(curLang) ? "Pilih frekuensi pergantian wallpaper (5 mnt, 10 mnt, dll)" : "Pilih kekerapan pertukaran wallpaper (5 min, 10 min, dll)");
-        options.add(new WallpaperOption("INTERVAL", tInt, sInt));
-
-        String tShf = AppLanguage.LANG_EN.equals(curLang) ? ("🔀 Play Order: " + (isShuffle ? "Random (Shuffle ON)" : "Sequential")) : (AppLanguage.LANG_ID.equals(curLang) ? ("🔀 Urutan Tampil: " + (isShuffle ? "Acak (Shuffle ON)" : "Berurutan (Sequential)")) : ("🔀 Mod Susunan: " + (isShuffle ? "Rawak (Shuffle ON)" : "Berurutan (Sequential)")));
-        String sShf = isShuffle
-                ? (AppLanguage.LANG_EN.equals(curLang) ? "Photos picked randomly without repeats" : (AppLanguage.LANG_ID.equals(curLang) ? "Gambar dipilih acak tanpa berulang" : "Gambar dipilih secara rawak tanpa mengulang"))
-                : (AppLanguage.LANG_EN.equals(curLang) ? "Photos cycle through catalog order" : (AppLanguage.LANG_ID.equals(curLang) ? "Gambar bertukar sesuai urutan katalog" : "Gambar bertukar mengikut urutan katalog"));
-        options.add(new WallpaperOption("TOGGLE_SHUFFLE", tShf, sShf));
 
         String tDsc = (AppLanguage.LANG_EN.equals(curLang) ? "🏷️ Image Title & Info: " : (AppLanguage.LANG_ID.equals(curLang) ? "🏷️ Info & Deskripsi Gambar: " : "🏷️ Info & Deskripsi Gambar: ")) + (isDescOn ? (AppLanguage.LANG_EN.equals(curLang) ? "ON" : (AppLanguage.LANG_ID.equals(curLang) ? "Aktif (ON)" : "Dihidupkan (ON)")) : (AppLanguage.LANG_EN.equals(curLang) ? "OFF" : (AppLanguage.LANG_ID.equals(curLang) ? "Mati (OFF)" : "Dimatikan (OFF)")));
         String sDsc = isDescOn
                 ? (AppLanguage.LANG_EN.equals(curLang) ? "Display title and description on home screen" : (AppLanguage.LANG_ID.equals(curLang) ? "Tampilkan judul dan deskripsi gambar di layar utama" : "Paparkan tajuk dan penerangan gambar di skrin utama"))
                 : (AppLanguage.LANG_EN.equals(curLang) ? "Hide text for a clean screen display" : (AppLanguage.LANG_ID.equals(curLang) ? "Sembunyikan teks untuk tampilan layar bersih" : "Sembunyikan teks untuk paparan skrin bersih (Clean Look)"));
         options.add(new WallpaperOption("TOGGLE_DESC", tDsc, sDsc));
-
-        String tNxt = AppLanguage.LANG_EN.equals(curLang) ? "⏭️ Change Wallpaper Now" : (AppLanguage.LANG_ID.equals(curLang) ? "⏭️ Ganti Gambar Sekarang" : "⏭️ Tukar Gambar Sekarang");
-        String sNxt = AppLanguage.LANG_EN.equals(curLang) ? "Cycle and display next wallpaper immediately" : (AppLanguage.LANG_ID.equals(curLang) ? "Putar dan tampilkan gambar berikutnya sekarang juga" : "Putar dan paparkan gambar seterusnya serta-merta");
-        options.add(new WallpaperOption("NEXT", tNxt, sNxt));
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -4375,17 +4826,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         titleView.setFontVariationSettings("'wght' 700");
         titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
         layout.addView(titleView);
-
-        // Header Subtitle
-        TextView subView = new TextView(this);
-        subView.setText(AppLanguage.strWallpaperDialogSub(this));
-        subView.setTextSize(13.5f);
-        subView.setTextColor(0xE6FFFFFF);
-        subView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-        subView.setFontVariationSettings("'wght' 600");
-        subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-        subView.setPadding(0, (int) (3 * density), 0, (int) (12 * density));
-        layout.addView(subView);
 
         ScrollView scroll = new ScrollView(this);
         scroll.setVerticalScrollBarEnabled(false);
@@ -4403,20 +4843,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             row.setOrientation(LinearLayout.VERTICAL);
             row.setFocusable(true);
             row.setClickable(true);
-            row.setPadding((int) (16 * density), (int) (9 * density), (int) (16 * density), (int) (9 * density));
+            row.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (8 * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (8 * density));
+            row.setSelected(isActive);
 
             StateListDrawable bg = new StateListDrawable();
-            GradientDrawable on = new GradientDrawable();
-            on.setColor(0xFFFFFFFF);
-            on.setCornerRadius(10 * density);
-            GradientDrawable off = new GradientDrawable();
-            off.setColor(isActive ? 0x334A90E2 : 0x1AFFFFFF);
-            if (isActive) {
-                off.setStroke((int) (1.8f * density), 0xFF38BDF8);
-            }
-            off.setCornerRadius(10 * density);
-            bg.addState(new int[]{android.R.attr.state_focused}, on);
-            bg.addState(new int[]{}, off);
+            GradientDrawable focused = new GradientDrawable();
+            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
+            focused.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            focused.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
+            GradientDrawable selected = new GradientDrawable();
+            selected.setColor(TvUiTokens.NAV_ITEM_SELECTED);
+            selected.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            selected.setStroke(Math.max(1, (int) density), TvUiTokens.NAV_SELECTION_BORDER);
+            GradientDrawable normal = new GradientDrawable();
+            normal.setColor(TvUiTokens.SURFACE);
+            normal.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            normal.setStroke(Math.max(1, (int) density), TvUiTokens.BORDER);
+            bg.addState(new int[]{android.R.attr.state_focused}, focused);
+            bg.addState(new int[]{android.R.attr.state_selected}, selected);
+            bg.addState(new int[]{}, normal);
             row.setBackground(bg);
 
             // Row horizontal container for Title + Active tag
@@ -4426,11 +4873,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             TextView rowTitle = new TextView(this);
             rowTitle.setText(opt.title);
-            rowTitle.setTextSize(16);
-            rowTitle.setTextColor(0xFFFFFFFF);
+            rowTitle.setTextSize(TvUiTokens.CARD_TITLE_SP);
+            rowTitle.setSingleLine(true);
+            rowTitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            rowTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
             rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
-            rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+            
             topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
             TextView activeTag = null;
@@ -4445,67 +4894,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             row.addView(topRow);
 
-            TextView rowSub = new TextView(this);
-            rowSub.setText(opt.subtitle);
-            rowSub.setTextSize(13);
-            rowSub.setTextColor(0xD9FFFFFF);
-            rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-            rowSub.setFontVariationSettings("'wght' 600");
-            rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-            rowSub.setPadding(0, (int) (2 * density), 0, 0);
-            row.addView(rowSub);
-
-            final TextView finalRowTitle = rowTitle;
-            final TextView finalRowSub = rowSub;
-            final TextView finalActiveTag = activeTag;
             row.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    finalRowTitle.setTextColor(0xFF0F172A);
-                    finalRowTitle.setShadowLayer(0, 0, 0, 0);
-                    finalRowSub.setTextColor(0xFF334155);
-                    finalRowSub.setShadowLayer(0, 0, 0, 0);
-                    if (finalActiveTag != null) {
-                        finalActiveTag.setTextColor(0xFF0284C7);
-                        finalActiveTag.setShadowLayer(0, 0, 0, 0);
-                    }
-                } else {
-                    finalRowTitle.setTextColor(0xFFFFFFFF);
-                    finalRowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-                    finalRowSub.setTextColor(0xD9FFFFFF);
-                    finalRowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-                    if (finalActiveTag != null) {
-                        finalActiveTag.setTextColor(0xFF38BDF8);
-                        finalActiveTag.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-                    }
-                }
+                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
+                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(100).start();
             });
 
             final String chosenKey = opt.key;
             row.setOnClickListener(v -> {
                 if (dialogHolder[0] != null) dialogHolder[0].dismiss();
                 SoundEffects.playSelect();
-                if ("NEXT".equals(chosenKey)) {
-                    if (wallpapers != null && !wallpapers.isEmpty()) {
-                        showNextWallpaper(true);
-                        if (wallpaperIntervalMs > 0 && wallpapers.size() >= 2) {
-                            handler.removeCallbacks(wallTick);
-                            handler.postDelayed(wallTick, wallpaperIntervalMs);
-                        }
-                        TvFeedback.show(MainActivity.this, R.string.next_wallpaper_toast, Toast.LENGTH_SHORT);
-                    }
-                } else if ("INTERVAL".equals(chosenKey)) {
-                    showWallpaperIntervalDialog();
-                } else if ("TOGGLE_SHUFFLE".equals(chosenKey)) {
-                    boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("shuffle_mode", true);
-                    boolean newMode = !current;
-                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
-                            .putBoolean("shuffle_mode", newMode)
-                            .remove("shuffle_cycle")
-                            .remove("shuffle_position")
-                            .apply();
-                    TvFeedback.show(MainActivity.this, newMode ? R.string.wallpaper_shuffle_random : R.string.wallpaper_shuffle_ordered, Toast.LENGTH_SHORT);
-                    showWallpaperDialog();
-                } else if ("TOGGLE_DESC".equals(chosenKey)) {
+                if ("TOGGLE_DESC".equals(chosenKey)) {
                     boolean current = isWallpaperDescEnabled();
                     boolean newMode = !current;
                     setWallpaperDescEnabled(newMode);
@@ -4529,9 +4927,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         }
                         TvFeedback.show(MainActivity.this, R.string.wallpaper_description_enabled, Toast.LENGTH_SHORT);
                     }
-                    showWallpaperDialog();
+                    if (returnToQuickControl) showWallpaperDialog();
+                    else showWallpaperCollectionDialog(false);
                 } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
-                    showCustomWallpaperManagerDialog();
+                    showCustomWallpaperManagerDialog(returnToQuickControl);
                 } else {
                     switchWallpaperCategory(chosenKey);
                 }
@@ -4543,14 +4942,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             if (isActive && viewToFocus[0] == null) {
                 viewToFocus[0] = row;
-                rowTitle.setTextColor(0xFF0F172A);
-                rowTitle.setShadowLayer(0, 0, 0, 0);
-                rowSub.setTextColor(0xFF334155);
-                rowSub.setShadowLayer(0, 0, 0, 0);
-                if (activeTag != null) {
-                    activeTag.setTextColor(0xFF0284C7);
-                    activeTag.setShadowLayer(0, 0, 0, 0);
-                }
+
             }
         }
 
@@ -4563,9 +4955,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
-        styleGlassDialog(dialog);
-
-        TvDialogStyle.apply(dialog, this, 520, 470);
+        styleGlassDialog(dialog, 560, 500);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -4575,6 +4965,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void showWallpaperIntervalDialog() {
+        showWallpaperIntervalDialog(true);
+    }
+
+    private void showWallpaperIntervalDialog(boolean returnToQuickControl) {
         SoundEffects.playSelect();
         class IntervalOption {
             final int minutes;
@@ -4608,7 +5002,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 AppLanguage.LANG_EN.equals(curLang) ? "⏱️ 1 Hour (60 Minutes)" : (AppLanguage.LANG_ID.equals(curLang) ? "⏱️ 1 Jam (60 Menit)" : "⏱️ 1 Jam (60 Minit)"),
                 AppLanguage.LANG_EN.equals(curLang) ? "One wallpaper per hour" : (AppLanguage.LANG_ID.equals(curLang) ? "Satu wallpaper setiap jam" : "Satu gambar bagi setiap jam")));
         options.add(new IntervalOption(0,
-                AppLanguage.LANG_EN.equals(curLang) ? "⏸️ Manual Only (Turn Off Shuffle)" : (AppLanguage.LANG_ID.equals(curLang) ? "⏸️ Manual Saja (Matikan Shuffle)" : "⏸️ Manual Sahaja (Matikan Shuffle)"),
+                AppLanguage.LANG_EN.equals(curLang) ? "⏸️ Manual Only (No Auto Change)" : (AppLanguage.LANG_ID.equals(curLang) ? "⏸️ Manual Saja (Tanpa Pergantian Otomatis)" : "⏸️ Manual Sahaja (Tanpa Pertukaran Automatik)"),
                 AppLanguage.LANG_EN.equals(curLang) ? "Keep current wallpaper • No automatic change" : (AppLanguage.LANG_ID.equals(curLang) ? "Pertahankan gambar saat ini • Tidak berganti otomatis" : "Kekalkan gambar semasa • Tiada pertukaran automatik")));
 
         int currentMin = getWallpaperIntervalMinutes();
@@ -4627,17 +5021,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
         layout.addView(titleView);
 
-        // Header Subtitle
-        TextView subView = new TextView(this);
-        subView.setText(AppLanguage.strWallpaperIntervalSub(this));
-        subView.setTextSize(13.5f);
-        subView.setTextColor(0xE6FFFFFF);
-        subView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-        subView.setFontVariationSettings("'wght' 600");
-        subView.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-        subView.setPadding(0, (int) (3 * density), 0, (int) (12 * density));
-        layout.addView(subView);
-
         ScrollView scroll = new ScrollView(this);
         scroll.setVerticalScrollBarEnabled(false);
         LinearLayout list = new LinearLayout(this);
@@ -4654,20 +5037,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             row.setOrientation(LinearLayout.VERTICAL);
             row.setFocusable(true);
             row.setClickable(true);
-            row.setPadding((int) (16 * density), (int) (9 * density), (int) (16 * density), (int) (9 * density));
+            row.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (8 * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (8 * density));
+            row.setSelected(isActive);
 
             StateListDrawable bg = new StateListDrawable();
-            GradientDrawable on = new GradientDrawable();
-            on.setColor(0xFFFFFFFF);
-            on.setCornerRadius(10 * density);
-            GradientDrawable off = new GradientDrawable();
-            off.setColor(isActive ? 0x334A90E2 : 0x1AFFFFFF);
-            if (isActive) {
-                off.setStroke((int) (1.8f * density), 0xFF38BDF8);
-            }
-            off.setCornerRadius(10 * density);
-            bg.addState(new int[]{android.R.attr.state_focused}, on);
-            bg.addState(new int[]{}, off);
+            GradientDrawable focused = new GradientDrawable();
+            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
+            focused.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            focused.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
+            GradientDrawable selected = new GradientDrawable();
+            selected.setColor(TvUiTokens.NAV_ITEM_SELECTED);
+            selected.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            selected.setStroke(Math.max(1, (int) density), TvUiTokens.NAV_SELECTION_BORDER);
+            GradientDrawable normal = new GradientDrawable();
+            normal.setColor(TvUiTokens.SURFACE);
+            normal.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+            normal.setStroke(Math.max(1, (int) density), TvUiTokens.BORDER);
+            bg.addState(new int[]{android.R.attr.state_focused}, focused);
+            bg.addState(new int[]{android.R.attr.state_selected}, selected);
+            bg.addState(new int[]{}, normal);
             row.setBackground(bg);
 
             LinearLayout topRow = new LinearLayout(this);
@@ -4676,11 +5066,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             TextView rowTitle = new TextView(this);
             rowTitle.setText(opt.title);
-            rowTitle.setTextSize(16);
-            rowTitle.setTextColor(0xFFFFFFFF);
+            rowTitle.setTextSize(TvUiTokens.CARD_TITLE_SP);
+            rowTitle.setSingleLine(true);
+            rowTitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            rowTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
             rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowTitle.setFontVariationSettings("'wght' 700");
-            rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
+            
             topRow.addView(rowTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
             TextView activeTag = null;
@@ -4695,39 +5087,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             row.addView(topRow);
 
-            TextView rowSub = new TextView(this);
-            rowSub.setText(opt.subtitle);
-            rowSub.setTextSize(13);
-            rowSub.setTextColor(0xD9FFFFFF);
-            rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-            rowSub.setFontVariationSettings("'wght' 600");
-            rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-            rowSub.setPadding(0, (int) (2 * density), 0, 0);
-            row.addView(rowSub);
-
-            final TextView finalRowTitle = rowTitle;
-            final TextView finalRowSub = rowSub;
-            final TextView finalActiveTag = activeTag;
             row.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    finalRowTitle.setTextColor(0xFF0F172A);
-                    finalRowTitle.setShadowLayer(0, 0, 0, 0);
-                    finalRowSub.setTextColor(0xFF334155);
-                    finalRowSub.setShadowLayer(0, 0, 0, 0);
-                    if (finalActiveTag != null) {
-                        finalActiveTag.setTextColor(0xFF0284C7);
-                        finalActiveTag.setShadowLayer(0, 0, 0, 0);
-                    }
-                } else {
-                    finalRowTitle.setTextColor(0xFFFFFFFF);
-                    finalRowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-                    finalRowSub.setTextColor(0xD9FFFFFF);
-                    finalRowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-                    if (finalActiveTag != null) {
-                        finalActiveTag.setTextColor(0xFF38BDF8);
-                        finalActiveTag.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
-                    }
-                }
+                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
+                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(100).start();
             });
 
             final int chosenMin = opt.minutes;
@@ -4747,7 +5109,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         ? getString(R.string.wallpaper_auto_change_off)
                         : getString(R.string.wallpaper_auto_change_interval, chosenMin == 60 ? getString(R.string.one_hour_label) : getString(R.string.minutes_label, chosenMin));
                 TvFeedback.show(MainActivity.this, msg, Toast.LENGTH_SHORT);
-                showWallpaperDialog();
+                if (returnToQuickControl) showWallpaperDialog();
             });
 
             LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -4756,14 +5118,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             if (isActive && viewToFocus[0] == null) {
                 viewToFocus[0] = row;
-                rowTitle.setTextColor(0xFF0F172A);
-                rowTitle.setShadowLayer(0, 0, 0, 0);
-                rowSub.setTextColor(0xFF334155);
-                rowSub.setShadowLayer(0, 0, 0, 0);
-                if (activeTag != null) {
-                    activeTag.setTextColor(0xFF0284C7);
-                    activeTag.setShadowLayer(0, 0, 0, 0);
-                }
+
             }
         }
 
@@ -4774,14 +5129,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         builder.setView(layout);
         builder.setNegativeButton(AppLanguage.strBack(this), (d, w) -> {
             d.dismiss();
-            showWallpaperDialog();
+            if (returnToQuickControl) showWallpaperDialog();
         });
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
         dialog.show();
-        styleGlassDialog(dialog);
-
-        TvDialogStyle.apply(dialog, this, 520, 470);
+        styleGlassDialog(dialog, 560, 500);
 
         if (viewToFocus[0] != null) {
             viewToFocus[0].requestFocus();
@@ -4846,8 +5199,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void styleGlassDialog(AlertDialog dialog) {
+        styleGlassDialog(dialog, 520, 0);
+    }
+
+    /** Applies the B01 modal contract before the existing typography/focus styling. */
+    void styleGlassDialog(AlertDialog dialog, int maxWidthDp, int maxHeightDp) {
         if (dialog == null) return;
-        TvDialogStyle.apply(dialog, this, 600, 0);
+        try {
+            TvDialogStyle.apply(dialog, this, maxWidthDp, maxHeightDp);
+        } catch (RuntimeException e) {
+            android.util.Log.w("TvHome.Dialog", "Unable to apply shared modal layout; keeping theme fallback", e);
+        }
         try {
             Typeface outfit = getResources().getFont(R.font.inter);
             TextView titleView = dialog.findViewById(android.R.id.title);
@@ -4913,6 +5275,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (Exception ignored) {}
     }
 
+
+
+    /**
+     * Shared visual contract for app-owned popups opened from the Device Settings tab.
+     * Keep the surface opaque and consistent across confirmation, result, list and custom-view dialogs.
+     */
+    void styleDeviceSettingsPopup(AlertDialog dialog, int maxWidthDp, int maxHeightDp) {
+        styleGlassDialog(dialog, maxWidthDp, maxHeightDp);
+    }
+
     private File getBundledDefaultWallpaper() {
         // The APK asset is the single source of truth. Never reuse an unverified legacy cache.
         File target = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg");
@@ -4970,11 +5342,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TvFeedback.show(this, getString(R.string.wallpaper_category_selected, displayLabel), Toast.LENGTH_SHORT);
         if ("Default".equalsIgnoreCase(category)) {
             placesMode = false;
-            if (heroShelf != null) {
-                heroShelf.animate().cancel();
-                heroShelf.setAlpha(0f);
-                heroShelf.setVisibility(View.GONE);
-            }
+            // Keep the existing hero shelf state while the bundled image is re-applied.
+            // setPlace() will update it when the metadata changes; hiding it here first
+            // can leave the shelf invisible when Default is selected again with the same title.
             File bundled = getBundledDefaultWallpaper();
             if (bundled != null) {
                 wallpapers = Collections.singletonList(bundled);
@@ -5008,7 +5378,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 heroShelf.setVisibility(View.GONE);
             }
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
                 wallpapers = new ArrayList<>(Arrays.asList(files));
@@ -5142,8 +5512,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Action 1: Smart Boost
         addInfoActionItem(actionList, getString(R.string.info_action_smart_boost), () -> {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-            SoundEffects.playSelect();
-            smartBoostTv();
+            showCleanTvCacheDialog();
         });
 
         // Action 2: Cuaca & Kualitas Udara
@@ -5177,7 +5546,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.show();
         styleGlassDialog(dialog);
 
-        TvDialogStyle.apply(dialog, this, 520, 480);
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (480 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.75f));
+            dialog.getWindow().setLayout(w, h);
+        }
         if (actionList.getChildCount() > 0) {
             actionList.getChildAt(0).requestFocus();
         }
@@ -5213,21 +5586,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         container.addView(btn, lp);
     }
 
-    private void smartBoostTv() {
-        new Thread(() -> {
-            try {
-                File cache = getCacheDir();
-                if (cache != null && cache.isDirectory()) {
-                    File[] files = cache.listFiles();
-                    if (files != null) for (File f : files) f.delete();
-                }
-            } catch (Exception ignored) {}
-            CacheCleaner.maybeRun(getApplicationContext(), 1);
-            System.gc();
-            handler.post(() -> TvFeedback.show(this, R.string.smart_boost_success, Toast.LENGTH_SHORT));
-        }, "gemini-boost").start();
-    }
-
     private void showTvTipsDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(R.string.tv_tips_title)
@@ -5235,7 +5593,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setPositiveButton(R.string.understand_action, null)
                 .show();
         styleGlassDialog(dialog);
-        TvDialogStyle.apply(dialog, this, 520, 430);
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (430 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.68f));
+            dialog.getWindow().setLayout(w, h);
+        }
     }
 
     private void showWeatherSummaryDialog(String town, String wxStr) {
@@ -5245,19 +5607,110 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .setPositiveButton(R.string.ok_action, null)
                 .show();
         styleGlassDialog(dialog);
-        TvDialogStyle.apply(dialog, this, 520, 430);
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (520 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (430 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.68f));
+            dialog.getWindow().setLayout(w, h);
+        }
     }
 
     private void showPrayerAndAyahDialog(String town) {
         WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
-        String ayahTxt = (ayah != null) ? (ayah.arabic + "\n\n\"" + ayah.translation(AppLanguage.getLanguage(this)) + "\"\n(" + ayah.reference + ")") : getString(R.string.no_daily_ayah);
+        ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(false);
+        scroll.setVerticalScrollBarEnabled(true);
+        scroll.setFocusable(true);
+        scroll.setFocusableInTouchMode(true);
+
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(Math.round(24 * density), Math.round(18 * density),
+                Math.round(24 * density), Math.round(18 * density));
+
+        TextView summary = new TextView(this);
+        summary.setText(getString(R.string.prayer_summary_body, town, PrayerTimes.getHijriDate(),
+                PrayerTimes.getNextPrayerSummary(this), ""));
+        summary.setTextColor(0xFFEFEFEF);
+        summary.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+        summary.setTypeface(getResources().getFont(R.font.inter));
+        summary.setLineSpacing(Math.round(3 * density), 1.12f);
+        content.addView(summary, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        if (ayah != null && ayah.arabic != null && !ayah.arabic.trim().isEmpty()) {
+            TextView arabic = new TextView(this);
+            arabic.setText(ayah.arabic.trim());
+            arabic.setTextColor(0xFFFFC56B);
+            arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25f);
+            arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
+            arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
+            arabic.setGravity(Gravity.END);
+            arabic.setIncludeFontPadding(true);
+            arabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
+            arabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+            arabic.setLineSpacing(Math.round(5 * density), 1.12f);
+            arabic.setMaxLines(Integer.MAX_VALUE);
+            arabic.setEllipsize(null);
+            LinearLayout.LayoutParams arabicLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            arabicLp.topMargin = Math.round(12 * density);
+            content.addView(arabic, arabicLp);
+
+            TextView translation = new TextView(this);
+            String translated = ayah.translation(AppLanguage.getLanguage(this));
+            translation.setText(translated != null ? translated.trim() : "");
+            translation.setTextColor(0xFFF0F0F0);
+            translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+            translation.setTypeface(getResources().getFont(R.font.inter));
+            translation.setGravity(Gravity.START);
+            translation.setLineSpacing(Math.round(3 * density), 1.15f);
+            translation.setMaxLines(Integer.MAX_VALUE);
+            translation.setEllipsize(null);
+            LinearLayout.LayoutParams translationLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            translationLp.topMargin = Math.round(12 * density);
+            content.addView(translation, translationLp);
+
+            TextView reference = new TextView(this);
+            reference.setText(ayah.reference);
+            reference.setTextColor(0xFFB9C5D3);
+            reference.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            reference.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+            LinearLayout.LayoutParams referenceLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            referenceLp.topMargin = Math.round(10 * density);
+            content.addView(reference, referenceLp);
+        } else {
+            TextView empty = new TextView(this);
+            empty.setText(R.string.no_daily_ayah);
+            empty.setTextColor(0xFFEFEFEF);
+            empty.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+            content.addView(empty);
+        }
+
+        scroll.addView(content);
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(R.string.prayer_summary_title)
-                .setMessage(getString(R.string.prayer_summary_body, town, PrayerTimes.getHijriDate(), PrayerTimes.getNextPrayerSummary(this), ayahTxt))
+                .setView(scroll)
                 .setPositiveButton(R.string.close_label, null)
-                .show();
+                .create();
+        dialog.show();
         styleGlassDialog(dialog);
-        TvDialogStyle.apply(dialog, this, 520, 440);
+        if (dialog.getWindow() != null) {
+            int w = Math.min((int) (620 * density), getResources().getDisplayMetrics().widthPixels - (int) (120 * density));
+            int h = Math.min((int) (560 * density), (int) (getResources().getDisplayMetrics().heightPixels * 0.72f));
+            dialog.getWindow().setLayout(w, h);
+        }
+        scroll.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                    && !scroll.canScrollVertically(1)) {
+                Button close = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                if (close != null) close.requestFocus();
+                return true;
+            }
+            return false;
+        });
+        scroll.requestFocus();
     }
 
     /** Starts a short-lived, profile-scoped QR upload session for exactly one avatar photo. */
@@ -5267,7 +5720,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (uploadServer != null) { uploadServer.stop(); uploadServer = null; }
         if (avatarUploadServer != null) { avatarUploadServer.stop(); avatarUploadServer = null; }
 
-        String ip = AvatarUploadServer.getLocalIpAddress();
+        String ip = AvatarUploadServer.getLocalIpAddress(this);
         if (ip == null || "127.0.0.1".equals(ip)) {
             TvFeedback.show(this, R.string.tv_network_required, Toast.LENGTH_LONG);
             return;
@@ -5307,7 +5760,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             uploadServer = null;
         }
 
-        String localIp = WallpaperUploadServer.getLocalIpAddress();
+        String localIp = WallpaperUploadServer.getLocalIpAddress(this);
         if (localIp == null || "127.0.0.1".equals(localIp)) {
             TvFeedback.show(this, R.string.tv_network_required, Toast.LENGTH_LONG);
             return;
@@ -5318,7 +5771,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TvFeedback.show(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG);
             return;
         }
-        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getWallpaperPath();
+        String uploadUrl = "http://" + uploadServer.getBoundIpAddress() + ":" + uploadServer.getPort() + uploadServer.getWallpaperPath();
         showPhoneUploadQrDialog(getString(R.string.wallpaper_qr_title),
                 getString(R.string.wallpaper_qr_instructions),
                 uploadUrl);
@@ -5331,7 +5784,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             uploadServer = null;
         }
 
-        String localIp = WallpaperUploadServer.getLocalIpAddress();
+        String localIp = WallpaperUploadServer.getLocalIpAddress(this);
         if (localIp == null || "127.0.0.1".equals(localIp)) {
             TvFeedback.show(this, R.string.tv_network_required, Toast.LENGTH_LONG);
             return;
@@ -5350,7 +5803,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             TvFeedback.show(this, R.string.local_upload_server_start_failed, Toast.LENGTH_LONG);
             return;
         }
-        String uploadUrl = "http://" + localIp + ":" + uploadServer.getPort() + uploadServer.getStandbyPath();
+        String uploadUrl = "http://" + uploadServer.getBoundIpAddress() + ":" + uploadServer.getPort() + uploadServer.getStandbyPath();
         showPhoneUploadQrDialog(getString(R.string.standby_qr_title),
                 getString(R.string.standby_qr_instructions),
                 uploadUrl);
@@ -5377,7 +5830,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int padH = Math.round(36 * density);
         int padV = Math.round(28 * density);
         rootLayout.setPadding(padH, padV, padH, padV);
-        rootLayout.setBackgroundColor(0xFF131722);
+        // The shared B01 modal window owns the opaque glass surface.
+        rootLayout.setBackgroundColor(Color.TRANSPARENT);
 
         TextView title = new TextView(this);
         title.setText(titleText);
@@ -5490,6 +5944,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         btnClose.setOnClickListener(v -> qrUploadDialog.dismiss());
         qrUploadDialog.setOnDismissListener(dialog -> {
+            wallpaperThumbnailGeneration.incrementAndGet();
             if (uploadServer != null) {
                 uploadServer.stop();
                 uploadServer = null;
@@ -5534,6 +5989,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             public void onCleared() {
                 onCustomWallpaperCleared();
             }
+
+            @Override
+            public void onClearFailed() {
+                onCustomWallpaperDeleteFailed();
+            }
         };
     }
 
@@ -5570,7 +6030,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 heroShelf.setVisibility(View.GONE);
             }
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
                 wallpapers = new ArrayList<>(Arrays.asList(files));
@@ -5589,15 +6049,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 qrUrlText.setText(getString(R.string.wallpaper_active_file, file.getName()));
                 qrUrlText.setTextColor(0xFF4ADE80);
             }
-            if (qrImageView != null) {
-                try {
-                    Bitmap thumb = decodeWallpaper(file);
-                    if (thumb != null) {
-                        qrImageView.setImageBitmap(thumb);
-                        qrImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    }
-                } catch (Exception ignored) {}
-            }
+            queueWallpaperThumbnail(file);
 
             handler.postDelayed(() -> {
                 if (qrUploadDialog != null && qrUploadDialog.isShowing()) {
@@ -5646,7 +6098,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
 
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
                 wallpapers = new ArrayList<>(Arrays.asList(files));
@@ -5671,7 +6123,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
 
             File customDir = new File(getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
             String activeCat = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getString("active_category", "Natural");
 
             if ("Custom".equalsIgnoreCase(activeCat)) {
@@ -5691,6 +6143,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
     }
 
+    /** Reconcile the active custom-wallpaper view when a bulk delete only partly succeeds. */
+    private void onCustomWallpaperDeleteFailed() {
+        runOnUiThread(() -> {
+            android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+            prefs.edit().putBoolean("custom_single_mode", false).remove("custom_single_file").apply();
+
+            String activeCat = prefs.getString("active_category", "Natural");
+            if ("Custom".equalsIgnoreCase(activeCat)) {
+                File customDir = new File(getFilesDir(), "custom_wallpapers");
+                File[] remaining = customDir.listFiles(
+                        (dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
+                if (remaining == null) {
+                    switchWallpaperCategory("Natural");
+                } else if (remaining.length == 0) {
+                    onCustomWallpaperCleared();
+                    return;
+                } else {
+                    Arrays.sort(remaining, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                    wallpapers = new ArrayList<>(Arrays.asList(remaining));
+                    placesMode = false;
+                    if (heroShelf != null) {
+                        heroShelf.animate().cancel();
+                        heroShelf.setAlpha(0f);
+                        heroShelf.setVisibility(View.GONE);
+                    }
+                    getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                    showNextWallpaper(true);
+                }
+            }
+            TvFeedback.show(this, R.string.wallpaper_delete_failed, Toast.LENGTH_LONG);
+        });
+    }
+
     private void onCustomWallpaperCleared() {
         runOnUiThread(() -> {
             getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
@@ -5707,14 +6192,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     void showCustomWallpaperManagerDialog() {
+        showCustomWallpaperManagerDialog(true);
+    }
+
+    private void showCustomWallpaperManagerDialog(boolean returnToQuickControl) {
         File customDir = new File(getFilesDir(), "custom_wallpapers");
-        File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+        File[] files = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
         if (files == null || files.length == 0) {
             AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                     .setTitle(R.string.wallpaper_manage_title)
                     .setMessage(R.string.wallpaper_manage_empty)
                     .setPositiveButton(R.string.wallpaper_open_qr_action, (d, w) -> showWallpaperUploadQrDialog())
-                    .setNegativeButton(R.string.back_action, (d, w) -> showWallpaperDialog())
+                    .setNegativeButton(R.string.back_action, (d, w) -> {
+                        if (returnToQuickControl) showWallpaperDialog();
+                    })
                     .show();
             styleGlassDialog(dialog);
             return;
@@ -5741,8 +6232,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .setTitle(R.string.delete_all_wallpapers_title)
                     .setMessage(getString(R.string.delete_all_wallpapers_message, files.length))
                     .setPositiveButton(R.string.delete_all_action, (d, w) -> {
-                        for (File f : files) f.delete();
-                        onCustomWallpaperCleared();
+                        boolean allDeleted = true;
+                        for (File f : files) {
+                            if (f.exists() && !f.delete()) allDeleted = false;
+                        }
+                        if (allDeleted) onCustomWallpaperCleared();
+                        else onCustomWallpaperDeleteFailed();
                     })
                     .setNegativeButton(R.string.cancel_action, null)
                     .show();
@@ -5756,7 +6251,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             boolean isCurrent = isSingleMode && f.getName().equals(singleFile);
             String prefix = isCurrent ? getString(R.string.wallpaper_pinned_prefix) : "🖼️ ";
             items.add(prefix + f.getName() + " (" + sizeStr + " • " + sdf.format(new Date(f.lastModified())) + ")");
-            actions.add(() -> showSingleCustomActionDialog(f));
+            actions.add(() -> showSingleCustomActionDialog(f, returnToQuickControl));
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
@@ -5766,14 +6261,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 actions.get(which).run();
             }
         });
-        builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(R.string.close_label, (dialog, which) -> {
+            dialog.dismiss();
+            if (returnToQuickControl) showWallpaperDialog();
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
-        styleGlassDialog(dialog);
-        TvDialogStyle.apply(dialog, this, 520, 440);
+        styleGlassDialog(dialog, 560, 460);
     }
 
-    private void showSingleCustomActionDialog(File file) {
+    private void showSingleCustomActionDialog(File file, boolean returnToQuickControl) {
         String[] actions = {
                 getString(R.string.wallpaper_pin_single),
                 getString(R.string.wallpaper_delete_one),
@@ -5789,24 +6286,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     onCustomWallpaperSelected(file);
                     break;
                 case 1: // Delete this
-                    file.delete();
-                    onCustomWallpaperDeleted(file);
+                    if (!file.exists() || file.delete()) {
+                        onCustomWallpaperDeleted(file);
+                    } else {
+                        TvFeedback.show(this, R.string.wallpaper_delete_failed, Toast.LENGTH_LONG);
+                    }
                     break;
                 case 2: // Keep this, delete others
                     File customDir = new File(getFilesDir(), "custom_wallpapers");
-                    File[] allFiles = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+                    File[] allFiles = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
+                    boolean allDeleted = allFiles != null;
                     if (allFiles != null) {
                         for (File f : allFiles) {
-                            if (!f.getName().equals(file.getName())) {
-                                f.delete();
+                            if (!f.getName().equals(file.getName()) && f.exists() && !f.delete()) {
+                                allDeleted = false;
                             }
                         }
                     }
                     onCustomWallpaperSelected(file);
-                    TvFeedback.show(this, R.string.wallpaper_other_deleted, Toast.LENGTH_SHORT);
+                    TvFeedback.show(this, allDeleted
+                            ? R.string.wallpaper_other_deleted
+                            : R.string.wallpaper_delete_failed, Toast.LENGTH_LONG);
                     break;
                 case 3: // Back
-                    showCustomWallpaperManagerDialog();
+                    showCustomWallpaperManagerDialog(returnToQuickControl);
                     break;
             }
         });
@@ -5968,14 +6471,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rows.addView(row);
     }
 
-    private void checkInactivity() {
-        if (!hasWindowFocus() || isFinishing() || isDestroyed()) return;
-        long idleMs = android.os.SystemClock.elapsedRealtime() - lastUserInteraction;
-        if (idleMs >= TV_SLEEP_TIMEOUT_MS) {
-            turnOffTv();
-        } else if (idleMs >= SCREENSAVER_TIMEOUT_MS && !screensaverActive) {
-            showNightstandScreensaver();
-        } else if (screensaverActive && screensaverView != null) {
+    /** Refreshes only the manually opened in-launcher nightstand; Android owns idle transitions. */
+    private void refreshManualNightstand() {
+        if (screensaverActive && screensaverView != null && !isFinishing() && !isDestroyed()) {
             updateNightstandScreensaver();
         }
     }
@@ -6106,7 +6604,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!screensaverActive || screensaverView == null) return;
         screensaverActive = false;
         handler.removeCallbacks(standbyPhotoTick);
-        lastUserInteraction = android.os.SystemClock.elapsedRealtime();
         screensaverView.animate().alpha(0f).setDuration(350).withEndAction(() -> {
             if (!screensaverActive && screensaverView != null) {
                 screensaverView.setVisibility(View.GONE);
@@ -6115,62 +6612,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         android.util.Log.i("TvHome", "Nightstand screensaver dismissed");
     }
 
-    private void turnOffTv() {
-        android.util.Log.i("TvHome", "TV idle: 10m screensaver + 2h timeout reached, putting TV to sleep");
-        boolean ok = HomeKeyService.sleepScreen();
-        if (!ok) {
-            try {
-                Runtime.getRuntime().exec("input keyevent 223");
-            } catch (Exception e) {
-                android.util.Log.w("TvHome", "Failed to send sleep keyevent: " + e);
-            }
-        }
-    }
-
-    private void ensureSystemScreensaverAndSleepSettings() {
-        new Thread(() -> {
-            try {
-                android.content.ContentResolver cr = getContentResolver();
-                // 10 minutes idle -> screensaver (600,000 ms)
-                android.provider.Settings.System.putInt(cr, "screen_off_timeout", 600000);
-                // 2 hours after screensaver -> TV off (10m + 2h = 7,800,000 ms)
-                android.provider.Settings.Secure.putInt(cr, "sleep_timeout", 7800000);
-                android.provider.Settings.Secure.putInt(cr, "screensaver_enabled", 1);
-                android.provider.Settings.Secure.putString(cr, "screensaver_components", "com.gathin.tvhome/.ClockDream");
-
-                // Auto-enable HomeKeyService for system actions (restart, sleep, force-stop)
-                String enabledServices = android.provider.Settings.Secure.getString(cr, android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-                String myService = getPackageName() + "/" + HomeKeyService.class.getName();
-                if (enabledServices == null || !enabledServices.contains(myService)) {
-                    String newServices = enabledServices == null || enabledServices.isEmpty() ? myService : enabledServices + ":" + myService;
-                    android.provider.Settings.Secure.putString(cr, android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, newServices);
-                    android.provider.Settings.Secure.putInt(cr, android.provider.Settings.Secure.ACCESSIBILITY_ENABLED, 1);
-                }
-
-                // Auto-enable MediaNotificationListener for Now Playing media widget
-                String enabledListeners = android.provider.Settings.Secure.getString(cr, "enabled_notification_listeners");
-                String myListener = getPackageName() + "/" + MediaNotificationListener.class.getName();
-                if (enabledListeners == null || !enabledListeners.contains(myListener)) {
-                    String newListeners = enabledListeners == null || enabledListeners.isEmpty() ? myListener : enabledListeners + ":" + myListener;
-                    try {
-                        android.provider.Settings.Secure.putString(cr, "enabled_notification_listeners", newListeners);
-                    } catch (Exception ignored) {}
-                }
-                try {
-                    Runtime.getRuntime().exec(new String[]{"cmd", "notification", "allow_listener", myListener, "0"});
-                } catch (Exception ignored) {}
-            } catch (Exception ignored) {
-            }
-        }, "system-timeout-sync").start();
-    }
-
-
     /**
      * China-market MIUI TV firmware answers no standard Settings intents at all; open Xiaomi's own
      * settings app (com.xiaomi.mitv.settings) there, so the Settings and Wi-Fi pills keep working.
      * On firmware with a standard settings handler the behaviour is unchanged.
      */
-    private Intent systemIntent(String standardAction) {
+    Intent systemIntent(String standardAction) {
         Intent i = new Intent(standardAction);
         if (i.resolveActivity(getPackageManager()) != null) return i;
         i = new Intent().setComponent(new ComponentName(
@@ -6578,7 +7025,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(panel);
         dialog.setCanceledOnTouchOutside(false);
-        TvDialogStyle.applyCustom(dialog, this, 440, 0, 0.68f);
+
         // One decision per prompt: the buttons and Back (cancel) all end here.
         final boolean[] decided = {false};
         View.OnClickListener choose = v -> {
@@ -6606,6 +7053,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         show.setOnKeyListener(keys);
         cardPrompt = dialog;
         dialog.show();
+        TvDialogStyle.applyCustom(dialog, this, 440, 0, 0.6f);
         keep.requestFocus();
     }
 

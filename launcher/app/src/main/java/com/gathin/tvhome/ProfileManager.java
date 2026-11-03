@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.List;
 
 /**
@@ -130,6 +131,13 @@ public final class ProfileManager {
         }
     }
 
+    /** Built-in avatar selection is inactive while a custom photo overrides it. */
+    static boolean isBuiltInAvatarSelected(UserProfile profile, int avatarIndex) {
+        return profile != null
+                && (profile.customAvatarPath == null || profile.customAvatarPath.trim().isEmpty())
+                && profile.avatarIndex == avatarIndex;
+    }
+
     /** Returns the active profile image, preferring its private locally stored photo. */
     public static Drawable getAvatarDrawable(Context context, UserProfile profile, int sizePx, boolean isChild) {
         if (context == null || profile == null || sizePx <= 0) return null;
@@ -229,6 +237,42 @@ public final class ProfileManager {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /** Atomically select a built-in avatar and clear the profile's custom-photo reference. */
+    public static synchronized boolean selectBuiltInAvatar(Context context, String profileId, int avatarIndex) {
+        if (context == null || profileId == null || avatarIndex < 0 || avatarIndex >= AVATAR_RES_IDS.length) {
+            return false;
+        }
+        List<UserProfile> list = getAllProfiles(context);
+        UserProfile target = null;
+        for (UserProfile profile : list) {
+            if (profileId.equals(profile.id)) {
+                target = profile;
+                break;
+            }
+        }
+        if (target == null) return false;
+
+        String oldPath = target.customAvatarPath;
+        int oldIndex = target.avatarIndex;
+        target.customAvatarPath = null;
+        target.avatarIndex = avatarIndex;
+        JSONArray arr = new JSONArray();
+        for (UserProfile profile : list) arr.put(profile.toJson());
+        SharedPreferences.Editor editor = getPrefs(context).edit()
+                .putString(KEY_PROFILES_JSON, arr.toString());
+        String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
+        if (profileId.equals(activeId)) editor.putInt(KEY_LEGACY_AVATAR, avatarIndex);
+        if (!editor.commit()) {
+            target.customAvatarPath = oldPath;
+            target.avatarIndex = oldIndex;
+            return false;
+        }
+
+        if (oldPath != null) deleteAvatarIfUnreferenced(context, list, profileId, oldPath);
+        cleanupOrphanedAvatarUploads(context);
+        return true;
     }
 
     public static synchronized boolean clearCustomAvatar(Context context, String profileId) {
@@ -400,7 +444,8 @@ public final class ProfileManager {
     public static synchronized UserProfile addProfile(Context context, String name, int avatarIndex, boolean isChild) {
         if (context == null) return null;
         List<UserProfile> list = getAllProfiles(context);
-        String id = "user_" + System.currentTimeMillis();
+        // Millisecond timestamps can collide when profile-create actions arrive together.
+        String id = "user_" + UUID.randomUUID().toString();
         UserProfile newProf = new UserProfile(id, name, avatarIndex, isChild);
         list.add(newProf);
         saveProfiles(context, list);

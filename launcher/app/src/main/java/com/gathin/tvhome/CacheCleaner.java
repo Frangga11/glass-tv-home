@@ -7,6 +7,7 @@ import android.os.StatFs;
 import android.util.Base64;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -48,8 +49,10 @@ final class CacheCleaner {
     static final int DEFAULT_DAYS = 15;
     /** How long Home must sit on screen before it cleans, so it never runs while someone is busy. */
     static final long IDLE_MS = 20_000;
-    /** The one command this ever sends. */
-    private static final String COMMAND = "shell:pm trim-caches 999999999999";
+    /** Printed only when pm trim-caches exits successfully. A closed ADB stream alone is not success. */
+    private static final String TRIM_SUCCESS_MARKER = "__GLASS_TV_SYSTEM_TRIM_OK__";
+    /** The one command this ever sends; && prevents a success marker after a failed trim. */
+    private static final String COMMAND = "shell:pm trim-caches 999999999999 && echo " + TRIM_SUCCESS_MARKER;
     private static final long DAY_MS = 24L * 60 * 60 * 1000;
     /** Storage this full cleans early: apps start failing well before Android itself steps in. */
     private static final int FULL_PERCENT = 80;
@@ -98,8 +101,8 @@ final class CacheCleaner {
                     bytes += deleteDirContents(f);
                     f.delete();
                 } else {
-                    bytes += f.length();
-                    f.delete();
+                    long fileBytes = f.length();
+                    if (f.delete()) bytes += fileBytes;
                 }
             }
         }
@@ -119,7 +122,6 @@ final class CacheCleaner {
         new Thread(() -> {
             long bytesFreed = 0;
             int beforePercent = usedPercent();
-            long freeBefore = getFreeStorageBytes();
             boolean systemTrimmed = false;
             try {
                 // 1. Delete app internal and external cache
@@ -132,8 +134,8 @@ final class CacheCleaner {
                     File[] tmps = onlineDir.listFiles((d, name) -> name.endsWith(".tmp"));
                     if (tmps != null) {
                         for (File f : tmps) {
-                            bytesFreed += f.length();
-                            f.delete();
+                            long tmpBytes = f.length();
+                            if (f.delete()) bytesFreed += tmpBytes;
                         }
                     }
                 }
@@ -151,14 +153,9 @@ final class CacheCleaner {
                     Log.i(TAG, "system trim-caches skipped/failed: " + e);
                 }
 
-                // 4. Force JVM garbage collection
-                System.gc();
-
-                long freeAfter = getFreeStorageBytes();
+                // File deletion releases storage immediately; let ART schedule memory reclamation
+                // naturally instead of forcing a stop-the-world collection during launcher use.
                 int afterPercent = usedPercent();
-                if (freeAfter > freeBefore) {
-                    bytesFreed = Math.max(bytesFreed, freeAfter - freeBefore);
-                }
 
                 if (callback != null) {
                     long finalFreed = bytesFreed;
@@ -270,9 +267,18 @@ final class CacheCleaner {
             0x1a, 0x05, 0x00, 0x04, 0x14};
 
     /**
-     * Runs {@code command} ({@link #COMMAND}, or null to only connect). False when the TV did not let
-     * this app in; IOException when unreachable. {@code mayAsk} false never shows the prompt.
+     * Runs {@code command} ({@link #COMMAND}, or null to only connect). False when the TV does not
+     * authorize the connection or the command omits its success marker; IOException when unreachable.
+     * {@code mayAsk} false never shows the prompt.
      */
+    static boolean isTrimSuccessOutput(String output) {
+        if (output == null || output.isEmpty()) return false;
+        for (String line : output.split("\\r?\\n")) {
+            if (TRIM_SUCCESS_MARKER.equals(line.trim())) return true;
+        }
+        return false;
+    }
+
     private static boolean shell(Context ctx, boolean mayAsk, String command) throws Exception {
         KeyPair keys = keys(ctx);
         try (Socket socket = new Socket()) {
@@ -300,16 +306,22 @@ final class CacheCleaner {
             if (m.cmd != CNXN) return false;
             if (command == null) return true;
 
-            // Trimming can take a while on a slow TV.
+            // Trimming can take a while on a slow TV. Capture its output: a normal ADB CLSE only
+            // confirms that the stream ended, not that pm trim-caches succeeded.
             socket.setSoTimeout(120_000);
+            ByteArrayOutputStream commandOutput = new ByteArrayOutputStream();
             send(out, OPEN, 1, 0, (command + "\0").getBytes(StandardCharsets.US_ASCII));
             while (true) {
                 m = read(in);
                 if (m.cmd == WRTE) {
+                    if (commandOutput.size() < 65_536 && m.data != null) {
+                        int keep = Math.min(m.data.length, 65_536 - commandOutput.size());
+                        commandOutput.write(m.data, 0, keep);
+                    }
                     send(out, OKAY, 1, m.arg0, null);
                 } else if (m.cmd == CLSE) {
                     send(out, CLSE, 1, m.arg0, null);
-                    return true;
+                    return isTrimSuccessOutput(new String(commandOutput.toByteArray(), StandardCharsets.UTF_8));
                 }
             }
         }

@@ -22,6 +22,7 @@ final class GlassDrawable extends Drawable {
     private final float radius;
     private final Backdrop.Fill fill = new Backdrop.Fill();
     private final Paint veil = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /** Opaque fallback surface: disabling decoration must never remove the component surface. */
     private final Paint solidSurface = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final GlassRim rim;
@@ -66,7 +67,7 @@ final class GlassDrawable extends Drawable {
         boolean glassEnabled = owner.getContext().getSharedPreferences("wallpaper_prefs", android.content.Context.MODE_PRIVATE)
                 .getBoolean("glass_effects_enabled", true);
         if (!glassEnabled) {
-            // Decorative glass can be disabled; the component's structural surface cannot.
+            // Glass is optional decoration, not the panel's structural background.
             int surfaceAlpha = Math.round(255 * fade);
             solidSurface.setAlpha(surfaceAlpha);
             solidBorder.setAlpha(surfaceAlpha);

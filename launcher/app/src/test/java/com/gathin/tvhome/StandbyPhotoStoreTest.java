@@ -1,8 +1,17 @@
 package com.gathin.tvhome;
 
+import android.content.SharedPreferences;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class StandbyPhotoStoreTest {
 
@@ -45,4 +54,107 @@ public class StandbyPhotoStoreTest {
         assertEquals(1, StandbyPhotoStore.calculateInSampleSize(0, 4000, 1920, 1080));
         assertEquals(1, StandbyPhotoStore.calculateInSampleSize(4000, 3000, 0, 1080));
     }
+
+    @Test
+    public void pickerMergePreservesLatestQrEntriesAndDeduplicatesUris() {
+        StandbyPhotoStore.UriMergeResult merged = StandbyPhotoStore.mergeUriValues(
+                java.util.Arrays.asList("content://local/one", "file:///standby_photos/qr.jpg"),
+                java.util.Arrays.asList("content://local/two", "file:///standby_photos/qr.jpg"),
+                10);
+
+        assertEquals(1, merged.addedCount);
+        assertEquals(0, merged.skippedCount);
+        assertEquals(java.util.Arrays.asList(
+                "content://local/one",
+                "file:///standby_photos/qr.jpg",
+                "content://local/two"), merged.values);
+    }
+
+    @Test
+    public void pickerMergeEnforcesLimitAgainstLatestCollection() {
+        StandbyPhotoStore.UriMergeResult merged = StandbyPhotoStore.mergeUriValues(
+                java.util.Arrays.asList("one", "two", "three"),
+                java.util.Arrays.asList("four", "five"),
+                4);
+
+        assertEquals(1, merged.addedCount);
+        assertEquals(1, merged.skippedCount);
+        assertEquals(java.util.Arrays.asList("one", "two", "three", "four"), merged.values);
+    }
+
+    @Test
+    public void uploadedCollectionAndPhotoModeUseOnePreferenceCommit() {
+        Map<String, Object> values = new HashMap<>();
+        int[] commits = {0};
+        SharedPreferences preferences = recordingPreferences(true, values, commits);
+
+        assertTrue(StandbyPhotoStore.commitUploadedState(preferences, "file:///standby_photos/photo.jpg"));
+
+        assertEquals("file:///standby_photos/photo.jpg", values.get("photo_uris"));
+        assertEquals(Boolean.TRUE, values.get("display_mode"));
+        assertEquals(1, commits[0]);
+    }
+
+    @Test
+    public void clearedCollectionAndPhotoModeUseOnePreferenceCommit() {
+        Map<String, Object> values = new HashMap<>();
+        int[] commits = {0};
+        SharedPreferences preferences = recordingPreferences(true, values, commits);
+
+        assertTrue(StandbyPhotoStore.commitClearedState(preferences));
+
+        assertEquals("", values.get("photo_uris"));
+        assertEquals(Boolean.FALSE, values.get("display_mode"));
+        assertEquals(1, commits[0]);
+    }
+
+    @Test
+    public void failedClearCommitDoesNotReportSuccess() {
+        Map<String, Object> values = new HashMap<>();
+        int[] commits = {0};
+        SharedPreferences preferences = recordingPreferences(false, values, commits);
+
+        assertFalse(StandbyPhotoStore.commitClearedState(preferences));
+        assertEquals(1, commits[0]);
+    }
+
+    @Test
+    public void uploadedStateReportsPreferenceCommitFailure() {
+        Map<String, Object> values = new HashMap<>();
+        int[] commits = {0};
+        SharedPreferences preferences = recordingPreferences(false, values, commits);
+
+        assertFalse(StandbyPhotoStore.commitUploadedState(preferences, "file:///standby_photos/photo.jpg"));
+        assertEquals("file:///standby_photos/photo.jpg", values.get("photo_uris"));
+        assertEquals(Boolean.TRUE, values.get("display_mode"));
+        assertEquals(1, commits[0]);
+    }
+
+    private static SharedPreferences recordingPreferences(
+            boolean commitResult, Map<String, Object> values, int[] commits) {
+        final SharedPreferences.Editor[] editorHolder = new SharedPreferences.Editor[1];
+        InvocationHandler editorHandler = (proxy, method, args) -> {
+            String name = method.getName();
+            if ("putString".equals(name) || "putBoolean".equals(name)) {
+                values.put((String) args[0], args[1]);
+                return editorHolder[0];
+            }
+            if ("commit".equals(name)) {
+                commits[0]++;
+                return commitResult;
+            }
+            if ("apply".equals(name) || "clear".equals(name) || "remove".equals(name)
+                    || name.startsWith("put")) return editorHolder[0];
+            return null;
+        };
+        editorHolder[0] = (SharedPreferences.Editor) Proxy.newProxyInstance(
+                SharedPreferences.Editor.class.getClassLoader(),
+                new Class<?>[]{SharedPreferences.Editor.class}, editorHandler);
+        InvocationHandler preferencesHandler = (proxy, method, args) ->
+                "edit".equals(method.getName()) ? editorHolder[0] : null;
+        return (SharedPreferences) Proxy.newProxyInstance(
+                SharedPreferences.class.getClassLoader(),
+                new Class<?>[]{SharedPreferences.class}, preferencesHandler);
+    }
+
 }
