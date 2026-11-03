@@ -41,8 +41,8 @@ class F07PerformanceStabilityContractTest(unittest.TestCase):
     def test_rain_ripples_reuse_a_bounded_object_pool(self):
         source = (JAVA / "WeatherBackgroundView.java").read_text(encoding="utf-8")
         body = method_body(source, "private void drawRainAndRipples(")
-        self.assertNotIn("new SplashRipple()", body)
-        self.assertIn("ripplePool.isEmpty()", body)
+        self.assertIn("ripplePool.isEmpty() ? new SplashRipple()", body)
+        self.assertIn("ripplePool.size() < 16", body)
         self.assertIn("ripplePool.size() < 16", body)
 
     def test_wallpaper_fallback_decode_never_runs_inline_on_home_thread(self):
