@@ -49,12 +49,12 @@
     <string name="media_listener_service_label">Layanan Media Glass TV</string>
 
     <string name="daily_prayer_label">DOA HARIAN  •  AYAT PILIHAN</string>
-    <string name="daily_ayah_popup_title">Daily Verse</string>
-    <string name="daily_ayah_open">READ FULL VERSE  ›</string>
-    <string name="daily_ayah_meaning_label">MEANING</string>
+    <string name="daily_ayah_popup_title">Ayat Harian</string>
+    <string name="daily_ayah_open">BACA AYAT LENGKAP  ›</string>
+    <string name="daily_ayah_meaning_label">MAKSUDNYA</string>
     <string name="daily_ayah_close">Tutup</string>
     <string name="daily_ayah_navigation_hint">Gunakan tombol arah untuk menggulir bacaan.</string>
-    <string name="daily_ayah_translation_unavailable">Translation is not available.</string>
+    <string name="daily_ayah_translation_unavailable">Terjemahan belum tersedia.</string>
     <string name="prayer_subuh">Subuh</string>
     <string name="prayer_sunrise">Terbit</string>
     <string name="prayer_dhuhr">Dzuhur</string>
