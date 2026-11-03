@@ -49,12 +49,12 @@
     <string name="media_listener_service_label">Glass TV Media Listener</string>
 
     <string name="daily_prayer_label">DAILY PRAYER  •  VERSE OF THE DAY</string>
-    <string name="daily_ayah_popup_title">Ayat Harian</string>
-    <string name="daily_ayah_open">BACA AYAT LENGKAP  ›</string>
-    <string name="daily_ayah_meaning_label">MAKSUDNYA</string>
-    <string name="daily_ayah_close">Tutup</string>
-    <string name="daily_ayah_navigation_hint">Gunakan butang arah untuk menatal bacaan.</string>
-    <string name="daily_ayah_translation_unavailable">Terjemahan belum tersedia.</string>
+    <string name="daily_ayah_popup_title">Daily Verse</string>
+    <string name="daily_ayah_open">READ FULL VERSE  ›</string>
+    <string name="daily_ayah_meaning_label">MEANING</string>
+    <string name="daily_ayah_close">Close</string>
+    <string name="daily_ayah_navigation_hint">Use the directional buttons to scroll the reading.</string>
+    <string name="daily_ayah_translation_unavailable">Translation is not available.</string>
     <string name="prayer_subuh">Fajr</string>
     <string name="prayer_sunrise">Sunrise</string>
     <string name="prayer_dhuhr">Dhuhr</string>
@@ -209,7 +209,12 @@
     <string name="sound_effects_off">🔇 Sound effects turned off</string>
     <string name="sound_effects_selected">🔊 Sound effects: %1$s</string>
     <string name="auto_update_schedule_title">⏱️ Choose Daily Auto-Update Time</string>
-    <string name="auto_update_time_selected">Auto-update time set to: %1$s</string>
+    <string name="auto_update_time_selected">Automatic update time set to: %1$s</string>
+    <string name="auto_update_time_0330_option">🌙 03:30 AM (Best time: overnight &amp; Fajr)</string>
+    <string name="auto_update_time_0400_option">🌙 04:00 AM (Early morning)</string>
+    <string name="auto_update_time_0500_option">🌙 05:00 AM (Fajr)</string>
+    <string name="auto_update_time_1200_option">☀️ 12:00 PM (Midday)</string>
+    <string name="auto_update_time_0200_option">🌃 02:00 AM (Midnight)</string>
 
     <string name="standby_photo_required">Choose photos before enabling photo mode.</string>
     <string name="standby_mode_save_failed">Could not save the Standby mode change. The previous setting remains active.</string>
@@ -353,6 +358,7 @@
     <string name="uv_high">High</string>
     <string name="uv_very_high">Very high</string>
     <string name="precipitation_summary">Now • rain chance %1$d%%</string>
+    <string name="weather_high_low_summary">High: %1$d°  Low: %2$d°</string>
     <string name="limited_visibility">Limited visibility</string>
     <string name="good_visibility">Good visibility</string>
 
@@ -624,6 +630,12 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="standby_page_timeout_suffix"> photos have already been saved. Check Wi-Fi and select the remaining photos again.</string>
     <string name="wallpaper_download_complete">Downloaded %2$d wallpapers in the %1$s category.</string>
     <string name="wallpaper_download_failed">Could not download wallpapers in the %1$s category. Check your internet connection and try again.</string>
+    <string name="wallpaper_error_size_limit">The upload exceeds the allowed size limit.</string>
+    <string name="wallpaper_error_low_storage">Keep at least 64 MiB of free device storage.</string>
+    <string name="wallpaper_error_store_failed">The photo could not be saved to TV storage.</string>
+    <string name="wallpaper_error_thumbnail_request">The photo preview could not be loaded.</string>
+    <string name="standby_page_cancelled_retry">Upload cancelled. You can retry this photo; check the collection before uploading again.</string>
+    <string name="wallpaper_page_thumbnail_alt">Photo preview</string>
     <string name="local_upload_error_busy">The upload service is busy. Try again.</string>
     <string name="wallpaper_page_action_failed">The request could not be completed. Check the photo and try again.</string>
     <string name="wallpaper_delete_failed">Could not delete one or more images. Check storage and try again.</string>

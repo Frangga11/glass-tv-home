@@ -311,7 +311,7 @@ public class WeatherActivity extends Activity {
             weatherMainCondition.setText(R.string.weather_condition_cloudy);
         }
 
-        weatherMainSub.setText(String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp));
+        weatherMainSub.setText(getString(R.string.weather_high_low_summary, w.highTemp, w.lowTemp));
 
         // 3. Hourly Strip (Apple Weather Conditions Card)
         hourlyContainer.removeAllViews();

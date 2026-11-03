@@ -42,6 +42,26 @@ class MainActivityModalContractTest(unittest.TestCase):
             ),
         )
 
+    def test_now_playing_custom_dialog_uses_global_modal_contract(self):
+        self.assertRegex(
+            self.source,
+            re.compile(
+                r"private void showNowPlayingDialog\(\)\s*\{[\s\S]*?"
+                r"dialog\.show\(\);\s*"
+                r"TvDialogStyle\.applyCustom\(dialog,\s*this,\s*480,\s*0,\s*0\.65f\);",
+            ),
+        )
+
+    def test_card_prompt_custom_dialog_uses_global_modal_contract(self):
+        self.assertRegex(
+            self.source,
+            re.compile(
+                r"private void showCardPromptNow\(\)\s*\{[\s\S]*?"
+                r"dialog\.show\(\);\s*"
+                r"TvDialogStyle\.applyCustom\(dialog,\s*this,\s*440,\s*0,\s*0\.6f\);",
+            ),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

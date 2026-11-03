@@ -210,6 +210,11 @@
     <string name="sound_effects_selected">🔊 Efek suara: %1$s</string>
     <string name="auto_update_schedule_title">⏱️ Pilih Waktu Pembaruan Otomatis Harian</string>
     <string name="auto_update_time_selected">Waktu pembaruan otomatis diatur ke: %1$s</string>
+    <string name="auto_update_time_0330_option">🌙 03:30 AM (Waktu terbaik: tidur &amp; Subuh)</string>
+    <string name="auto_update_time_0400_option">🌙 04:00 AM (Dini hari)</string>
+    <string name="auto_update_time_0500_option">🌙 05:00 AM (Subuh)</string>
+    <string name="auto_update_time_1200_option">☀️ 12:00 PM (Tengah hari)</string>
+    <string name="auto_update_time_0200_option">🌃 02:00 AM (Tengah malam)</string>
 
     <string name="standby_photo_required">Pilih foto terlebih dahulu untuk mode foto.</string>
     <string name="standby_mode_save_failed">Gagal menyimpan perubahan mode Layar Siaga. Pengaturan sebelumnya tetap digunakan.</string>
@@ -353,6 +358,7 @@
     <string name="uv_high">Tinggi</string>
     <string name="uv_very_high">Sangat tinggi</string>
     <string name="precipitation_summary">Saat ini • peluang hujan %1$d%%</string>
+    <string name="weather_high_low_summary">Tertinggi: %1$d°  Terendah: %2$d°</string>
     <string name="limited_visibility">Jarak pandang terbatas</string>
     <string name="good_visibility">Jarak pandang baik</string>
 
@@ -363,7 +369,7 @@
     <string name="child_mode_pin_confirm_message">Masukkan PIN 4 digit untuk mengubah mode ini.</string>
     <string name="icon_animation_setting_title">🎞️ Animasi Ikon &amp; Fokus Aplikasi</string>
     <string name="icon_animation_setting_description">Aktifkan atau matikan gerakan zoom dan transisi label saat berpindah aplikasi. Tidak memengaruhi animasi cuaca atau efek kaca.</string>
-    <string name="glass_effect_setting_title">🪟 Glass Effect</string>
+    <string name="glass_effect_setting_title">🪟 Efek Kaca</string>
     <string name="glass_effect_setting_description">Aktifkan atau matikan material kaca buram, lapisan transparan, dan garis tepi pada dock serta tombol. Penanda fokus remote tetap berfungsi.</string>
     <string name="weather_animation_setting_title">🌧️ Animasi Cuaca pada Wallpaper</string>
     <string name="weather_animation_setting_description">Tampilkan efek gerimis, hujan, dan petir di atas wallpaper saat kondisi cuaca sesuai.</string>
@@ -624,7 +630,13 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="standby_page_timeout_suffix"> foto sudah tersimpan. Periksa Wi-Fi lalu pilih ulang foto yang belum terkirim.</string>
     <string name="wallpaper_download_complete">Berhasil mengunduh wallpaper kategori %1$s (%2$d foto).</string>
     <string name="wallpaper_download_failed">Gagal mengunduh wallpaper kategori %1$s. Periksa koneksi internet lalu coba lagi.</string>
-    <string name="local_upload_error_busy">Layanan upload sedang sibuk. Coba lagi.</string>
+    <string name="wallpaper_error_size_limit">Ukuran unggahan melebihi batas yang diizinkan.</string>
+    <string name="wallpaper_error_low_storage">Sediakan setidaknya 64 MiB ruang penyimpanan kosong di perangkat.</string>
+    <string name="wallpaper_error_store_failed">Foto tidak dapat disimpan ke penyimpanan TV.</string>
+    <string name="wallpaper_error_thumbnail_request">Pratinjau foto tidak dapat dimuat.</string>
+    <string name="standby_page_cancelled_retry">Unggahan dibatalkan. Foto ini dapat dicoba lagi; periksa koleksi sebelum mengulang.</string>
+    <string name="wallpaper_page_thumbnail_alt">Pratinjau foto</string>
+    <string name="local_upload_error_busy">Layanan unggahan sedang sibuk. Coba lagi.</string>
     <string name="wallpaper_page_action_failed">Permintaan tidak dapat diproses. Periksa foto lalu coba lagi.</string>
     <string name="wallpaper_delete_failed">Tidak dapat menghapus satu atau beberapa gambar. Periksa penyimpanan lalu coba lagi.</string>
 </resources>
