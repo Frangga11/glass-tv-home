@@ -40,6 +40,8 @@ public class WallpaperUploadServer {
         default void onSelected(File file) {}
         default void onSlideshowMode() {}
         default void onCleared() {}
+        /** Called when a bulk clear partially fails so the owner can reconcile stale selections. */
+        default void onClearFailed() {}
         default void onStandbyUploaded(File imageFile) {}
     }
 
@@ -938,11 +940,18 @@ public class WallpaperUploadServer {
                 sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"storage_unavailable\"}");
                 return;
             }
+            boolean deletionFailed = false;
             for (File file : files) {
-                if (file.isFile() && !file.delete()) {
-                    sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"delete_failed\"}");
-                    return;
+                if (file.isFile() && !file.delete()) deletionFailed = true;
+            }
+            if (deletionFailed) {
+                try {
+                    listener.onClearFailed();
+                } catch (RuntimeException callbackFailure) {
+                    Log.w(TAG, "Clear failure callback failed", callbackFailure);
                 }
+                sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"delete_failed\"}");
+                return;
             }
             listener.onCleared();
             sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
