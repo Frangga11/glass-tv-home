@@ -647,3 +647,16 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Checkpoint ini mengungguli catatan historis yang masih menyebut CI/retet pending untuk pekerjaan yang sama. Catatan lama dipertahankan sebagai jejak kronologis, bukan status aktif.
 
 **Status serah terima:** F02 ditutup pada sisi host/source dan dokumen pada exact head #50 telah lulus CI. Kandidat integrasi diserahkan ke Project G untuk final audit, penerimaan perangkat nyata, dan merge — bukan untuk mengulang pekerjaan perbaikan F02 yang telah terverifikasi.
+
+
+## CHECKPOINT PROJECT F04 — HOST/SOURCE INTEGRATION (3 November 2026)
+
+- F04 integration branch `integration/project-f04-feature-isolation-v2`, PR #53 Draft/open/unmerged; exact head `e895ee590a607a8194b2037585ed47f2cf464961`.
+- Exact-head CI #41560230282 passed both required jobs. Python suite: 63 tests, 1 intentional skip for merge-time README count normalization. Android `testReleaseUnitTest`, `assembleRelease`, APK diagnostic and 1.5 MiB size guard passed.
+- Release APK diagnostic: 1,566,045 bytes / 1,572,864-byte limit / 6,819-byte headroom. No artifact was published and no APK was installed.
+- F04 verified private storage separation, profile-bound Avatar QR, route/server lifecycle isolation, durable StandBy collection+mode commit, shared StandBy renderer store, distinct Quick Control vs Appearance wallpaper surfaces, and scoped destructive cleanup.
+- F04-WALL-001 (ignored wallpaper delete failures) was repaired on E08 owner branch and mirrored into F04. C07 QR API partial-clear failure now notifies owner UI and returns HTTP 500; owner and integration source changes are separated and cross-checked.
+- C07 owner PR #24 and E08 owner PR #41 exact-head CI were still pending Android build completion at this checkpoint. Do not close F04 until both owner heads pass.
+- Overall F04 remains PARTIAL pending owner CI and Project G device acceptance. PR #24/#41/#53 remain Draft/open/unmerged; no APK publication/install or physical TV testing.
+- Project G retains phone/LAN, OEM DreamService, remote/focus, 1080p/4K, and actual filesystem/network failure acceptance. F05 retains process-death/force-stop/reboot persistence.
+- Full evidence: `F04_FEATURE_ISOLATION_AUDIT.md`; resume instructions: `HANDOVER.md`.
