@@ -166,9 +166,9 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         )[1].split(
             "case 3: // Back", 1
         )[0]
-        self.assertIn("if (!f.delete())", delete_all)
+        self.assertIn("f.exists() && !f.delete()", delete_all)
         self.assertIn("onCustomWallpaperCleared()", delete_all)
-        self.assertIn("if (!f.delete())", keep_one)
+        self.assertIn("f.exists() && !f.delete()", keep_one)
         self.assertIn("onCustomWallpaperSelected(file)", keep_one)
 
     def test_both_standby_renderers_share_the_same_private_photo_store(self):
@@ -194,6 +194,20 @@ class MediaFeatureIsolationTest(unittest.TestCase):
         )[0]
         self.assertIn("if (!file.exists() || file.delete())", single_delete)
         self.assertIn("R.string.wallpaper_delete_failed", single_delete)
+
+
+    def test_partial_wallpaper_delete_refreshes_remaining_custom_files(self):
+        method = self.main.split(
+            "private void onCustomWallpaperDeleteFailed()", 1
+        )[1].split(
+            "private void onCustomWallpaperCleared()", 1
+        )[0]
+        self.assertIn('"custom_wallpapers"', method)
+        self.assertIn("listFiles(", method)
+        self.assertIn('putBoolean("custom_single_mode", false)', method)
+        self.assertIn('remove("custom_single_file")', method)
+        self.assertIn("wallpapers = new ArrayList<>(Arrays.asList(remaining))", method)
+        self.assertIn("R.string.wallpaper_delete_failed", method)
 
 
 if __name__ == "__main__":
