@@ -2,9 +2,9 @@
 
 **Checkpoint:** GTVH-G01-2026-11-03  
 **Date:** 3 November 2026 (WIB)  
-**Disposition:** G01 FULL PASS — source defect resolution, 26-path semantic reconciliation, isolated integration merge, and exact merge-commit CI verified  
+**Disposition:** G01 FULL PASS AFTER PROJECT-WIDE COVERAGE RE-AUDIT — E05/E08 gaps corrected; PR #59 merged; exact tested tree CI verified  
 **Canonical documentation branch:** `docs/project-master-inventory`  
-**Accepted integration commit:** `integration/b-series` @ `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`  
+**Latest accepted integration commit:** `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d` (PR #59 re-audit merge; tested tree identical to `9f2da8f39a20c8e8cc43ac0ff7e42d7a82b34676`)  
 **Release/device boundary:** integration-only merge completed; `main` untouched; no APK publication/installation or TV setting change performed.
 
 ## 1. Scope and method
@@ -105,3 +105,27 @@ The source/host bug-resolution review remains PASS. The project-wide G01 gate is
 - Main-only commit `6eaf787c56226606b1d2e650c59540c553756c62` enables manual workflow_dispatch APK publishing. It was intentionally excluded from integration to preserve the validation-only release gate.
 - G01 source/host integration gate: **PASS**. G02 final tested APK build: **READY TO START** from `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`. G03 physical Mi TV Stick acceptance: NOT STARTED.
 - No merge to `main`, no APK publication/installation, and no TV setting changes.
+
+## 9. Project-wide coverage re-audit and final G01 closure — 3 November 2026
+
+The user requested a fresh whole-project coverage audit before G02, followed by conflict resolution and a post-combine audit. G01 was reopened for this re-audit; the earlier PASS is superseded by the findings below.
+
+### Findings and corrections
+- E05: the prior combined tree could retain weather/AQI cache data from a previous selected location. The owner branch's location-aware cache was restored: independent weather/AQI success timestamps, per-source coordinate metadata, stale-location rejection in Home and Weather dashboard, and finite-coordinate checks.
+- E05: API condition text is kept independent of manual background mood. F07 reduced-motion and low-memory behavior is preserved; F06 localized high/low summary is restored through the shared resource key.
+- E08: restored the missing deletion-failure regression test for single delete, bulk delete, keep-one/delete-others, partial-state reconciliation and QR API clear-failure callback.
+- No wholesale resource snapshot was copied from E05 because it predates F06 language corrections.
+
+### Combined result
+- Re-audit correction PR #59 merged into `integration/b-series` at `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- Tested PR head: `9f2da8f39a20c8e8cc43ac0ff7e42d7a82b34676`. Merge commit is one commit ahead with zero changed files; tested tree is unchanged.
+- Exact tested-tree CI #41586223809 / run #1177 SUCCESS: both jobs. Lists/tools/docs: 109 tests, one intentional skip. Android launcher/installer unit tests and release validation build PASS.
+- APK diagnostic 1,572,293 bytes / 1,572,864-byte cap / 571-byte headroom. Gate passes, margin narrow. No artifacts/publication/installation.
+- E05 owner head `6fe89fad078692958db67030329a6de66cd7ae71`, owner CI #41433527557: both jobs SUCCESS.
+- `main` remains untouched; main-only manual APK-publish workflow commit remains excluded.
+
+### Final disposition
+- G01 source/host coverage re-audit: **PASS**.
+- G02: **READY TO START** from `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- G03 physical Mi TV Stick acceptance: **NOT STARTED**.
+- No APK published/installed and no TV setting/device state changed.
