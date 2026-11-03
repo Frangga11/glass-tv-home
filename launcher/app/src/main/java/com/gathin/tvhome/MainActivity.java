@@ -6023,6 +6023,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
     }
 
+    /** Reconcile the active custom-wallpaper view when a bulk delete only partly succeeds. */
+    private void onCustomWallpaperDeleteFailed() {
+        runOnUiThread(() -> {
+            android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
+            prefs.edit().putBoolean("custom_single_mode", false).remove("custom_single_file").apply();
+
+            String activeCat = prefs.getString("active_category", "Natural");
+            if ("Custom".equalsIgnoreCase(activeCat)) {
+                File customDir = new File(getFilesDir(), "custom_wallpapers");
+                File[] remaining = customDir.listFiles(
+                        (dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
+                if (remaining == null) {
+                    switchWallpaperCategory("Natural");
+                } else if (remaining.length == 0) {
+                    onCustomWallpaperCleared();
+                    return;
+                } else {
+                    Arrays.sort(remaining, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+                    wallpapers = new ArrayList<>(Arrays.asList(remaining));
+                    placesMode = false;
+                    if (heroShelf != null) {
+                        heroShelf.animate().cancel();
+                        heroShelf.setAlpha(0f);
+                        heroShelf.setVisibility(View.GONE);
+                    }
+                    getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                    showNextWallpaper(true);
+                }
+            }
+            TvFeedback.show(this, R.string.wallpaper_delete_failed, Toast.LENGTH_LONG);
+        });
+    }
+
     private void onCustomWallpaperCleared() {
         runOnUiThread(() -> {
             getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit()
@@ -6080,8 +6113,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .setTitle(R.string.delete_all_wallpapers_title)
                     .setMessage(getString(R.string.delete_all_wallpapers_message, files.length))
                     .setPositiveButton(R.string.delete_all_action, (d, w) -> {
-                        for (File f : files) f.delete();
-                        onCustomWallpaperCleared();
+                        boolean allDeleted = true;
+                        for (File f : files) {
+                            if (f.exists() && !f.delete()) allDeleted = false;
+                        }
+                        if (allDeleted) onCustomWallpaperCleared();
+                        else onCustomWallpaperDeleteFailed();
                     })
                     .setNegativeButton(R.string.cancel_action, null)
                     .show();
@@ -6132,21 +6169,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     onCustomWallpaperSelected(file);
                     break;
                 case 1: // Delete this
-                    file.delete();
-                    onCustomWallpaperDeleted(file);
+                    if (!file.exists() || file.delete()) {
+                        onCustomWallpaperDeleted(file);
+                    } else {
+                        TvFeedback.show(this, R.string.wallpaper_delete_failed, Toast.LENGTH_LONG);
+                    }
                     break;
                 case 2: // Keep this, delete others
                     File customDir = new File(getFilesDir(), "custom_wallpapers");
                     File[] allFiles = customDir.listFiles((dir, name) -> UploadFilePolicy.isSafeStoredImageName(name));
+                    boolean allDeleted = allFiles != null;
                     if (allFiles != null) {
                         for (File f : allFiles) {
-                            if (!f.getName().equals(file.getName())) {
-                                f.delete();
+                            if (!f.getName().equals(file.getName()) && f.exists() && !f.delete()) {
+                                allDeleted = false;
                             }
                         }
                     }
                     onCustomWallpaperSelected(file);
-                    TvFeedback.show(this, R.string.wallpaper_other_deleted, Toast.LENGTH_SHORT);
+                    TvFeedback.show(this, allDeleted
+                            ? R.string.wallpaper_other_deleted
+                            : R.string.wallpaper_delete_failed, Toast.LENGTH_LONG);
                     break;
                 case 3: // Back
                     showCustomWallpaperManagerDialog(returnToQuickControl);
