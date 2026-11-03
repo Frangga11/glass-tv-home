@@ -681,3 +681,15 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - **Decision: F04 HOST/SOURCE EXIT PASS.** The feature isolation audit and owner synchronization are complete. PR #24/#41/#53 remain Draft/open/unmerged under D-013. No physical device test or APK publication.
 - Project G still owns real phone/LAN, OEM DreamService, D-pad/focus, 1080p/4K and actual filesystem/network failure acceptance. F05 owns force-stop/process-death/reboot persistence validation.
 - **Next host/source workstream: Project F05.**
+
+
+## CHECKPOINT PROJECT F05 — PERSISTENCE & RECOVERY (3 November 2026)
+
+- F05 integration PR #54, branch `integration/project-f05-persistence-recovery`, is Draft/open/unmerged and based on approved F04 exact head `6ffc8b4c253beb2662d6978ba38033039c3c53f9`.
+- Current F05 integration head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; compare with F04: 14 commits ahead / 0 behind, five scoped paths.
+- F05 host/source suite on run #41563437433: 80 Python tests, 1 intentional README-count skip; Lists/tools/docs PASS. Android unit/release build and APK budget are still running.
+- F05-WALL-001 repaired on E08 owner PR #41 head `edd24d72256d06da4578971ea7bac1802746a3a6`; exact-head run #41562661052 both jobs SUCCESS, 15 Python tests / 1 intentional skip, APK 1,564,197 bytes / 8,667-byte headroom. Repair is mirrored in F05.
+- F05-WALL-002 repaired on C07 owner PR #24: startup cleanup for orphaned `custom_*.upload` parts uses a process-local active-upload registry, canonical private-path checks, and finally cleanup. Latest owner head `2315f12472f469843c1441ad7d01c6898858c4c5`; run #41563429553 Lists/tools/docs PASS (23 tests / 1 intentional skip), Android build still running. Mirrored into F05.
+- Cross-feature source guards cover Avatar/Profile, StandBy atomic collection/mode persistence, Home focus/Settings tab, wallpaper startup recovery, QR temp-upload cleanup, and prayer alarm BOOT_COMPLETED recovery.
+- F05 remains IN PROGRESS until both owner/integration Android exact-head CI and APK size gates pass. Actual force-stop/process-death/reboot and OEM behavior remain Project G device gates. No APK publication/installation, no device setting changes, no merge.
+- Full evidence: `F05_PERSISTENCE_RECOVERY_AUDIT.md`; resume instructions: `HANDOVER.md`.
