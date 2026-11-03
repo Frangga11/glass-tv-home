@@ -483,3 +483,5 @@ F06 integration PR #55 remains Draft/open/unmerged under D-013. Physical languag
 | Release/APK gate | CI #41568715178; APK 1,571,293 B / 1,571 B headroom | PASS |
 
 F07 PR #56 is Draft/open/unmerged. Host/source exit is PASS; real Mi TV Stick RAM/FPS/frame-time/ANR/thermal/soak profiling and physical interaction acceptance remain Project G. See `F07_PERFORMANCE_STABILITY_AUDIT.md`.
+
+- F07 exact integration head: `976e068d48ecc1ede2811ac455372395d382ba76`; base F06 head: `487099013e6d9bd65cc07d72e760b1e14ab1f091`; PR #56 Draft/open/unmerged; CI #41568715178 PASS; APK 1,571,293 B / 1,571 B headroom. Full report: `F07_PERFORMANCE_STABILITY_AUDIT.md`.
