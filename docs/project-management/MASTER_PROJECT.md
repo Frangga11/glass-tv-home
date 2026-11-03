@@ -668,3 +668,16 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - E08 owner PR #41 head `c613e3c5f593556748d1593d23f2899ecee36e4a` passed exact-head CI #41560600033 (both jobs; 11 Python tests / 1 intentional skip; APK 1,564,089 bytes; no publication).
 - Latest F04 test-only head `6ffc8b4c253beb2662d6978ba38033039c3c53f9` passed Lists/tools/docs with 65 Python tests / 1 intentional skip in #41560811925. Android build and size gate remain in progress; previous source head `e895ee590a607a8194b2037585ed47f2cf464961` passed both jobs and APK budget.
 - F04-WALL-001 is fixed and owner-synchronized. Keep F04 PARTIAL until latest test-only exact-head CI is green. PR #24/#41/#53 remain Draft/open/unmerged; no physical TV test or APK publication.
+
+
+## PROJECT F04 HOST/SOURCE EXIT — FINAL CHECKPOINT (3 November 2026)
+
+- F04 integration PR #53, branch `integration/project-f04-feature-isolation-v2`, exact head `6ffc8b4c253beb2662d6978ba38033039c3c53f9`.
+- Exact-head CI #41560811925: both required jobs SUCCESS. Lists/tools/docs: 65 Python tests / 1 intentional README-count skip. Android `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size gate PASS.
+- APK diagnostic: 1,566,045 bytes / 1,572,864-byte cap / 6,819-byte headroom. Workflow artifact list empty; no APK publication or installation.
+- C07 owner PR #24 head `b7a40fdc2c52268ec69c95731983d2f95024eb57` passed #41560200291 (both jobs, 21 tests / 1 intentional skip; APK 1,550,961 bytes).
+- E08 owner PR #41 head `c613e3c5f593556748d1593d23f2899ecee36e4a` passed #41560600033 (both jobs, 11 tests / 1 intentional skip; APK 1,564,089 bytes).
+- F04-WALL-001 (Wallpaper deletion false-success and partial QR API clear reconciliation) fixed on C07/E08 owner branches, mirrored to F04 and verified by exact-head CI.
+- **Decision: F04 HOST/SOURCE EXIT PASS.** The feature isolation audit and owner synchronization are complete. PR #24/#41/#53 remain Draft/open/unmerged under D-013. No physical device test or APK publication.
+- Project G still owns real phone/LAN, OEM DreamService, D-pad/focus, 1080p/4K and actual filesystem/network failure acceptance. F05 owns force-stop/process-death/reboot persistence validation.
+- **Next host/source workstream: Project F05.**
