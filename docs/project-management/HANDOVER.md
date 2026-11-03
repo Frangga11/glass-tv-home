@@ -798,3 +798,16 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Checkpoint ini mengungguli catatan historis yang masih menyebut CI/retet pending untuk pekerjaan yang sama. Catatan lama dipertahankan sebagai jejak kronologis, bukan status aktif.
 
 **Status serah terima:** F02 ditutup pada sisi host/source dan dokumen pada exact head #50 telah lulus CI. Kandidat integrasi diserahkan ke Project G untuk final audit, penerimaan perangkat nyata, dan merge — bukan untuk mengulang pekerjaan perbaikan F02 yang telah terverifikasi.
+
+## F03 QR communication feasibility checkpoint — 3 November 2026
+
+- F03 scope: QR communication and upload across Avatar, Wallpaper and StandBy (C01–C07): active LAN IP, server binding, routes, body framing, file validation, retry, timeout, expiry, cancellation, persistence boundary and storage pressure.
+- Decision: HOST/SOURCE FEASIBILITY PASS; OVERALL F03 PARTIAL. No new source blocker identified in the reviewed scope. This is not physical device acceptance.
+- No dedicated F03 source branch/PR exists; the integrated candidate used for host evidence is integration/project-f02-system-validation, PR #50, exact checkpoint 2ede452b3137580bd51088661f80b6d0eeac7f4b.
+- Exact integrated CI run #41523201383 completed SUCCESS; both required jobs passed. 42 Python tests (one intentional merge-time README count normalization skip), Android unit tests and release validation build passed. APK diagnostic 1,565,713 bytes / 1,572,864-byte cap (7,151 bytes headroom). Artifact list empty.
+- C07 owner PR #24 head 442b78c68b1540394d543bab59bddf52f865ccf0 CI #41521013896 completed SUCCESS; both jobs passed; artifact list empty.
+- Targeted regression-source review: test_upload_storage_reservation.py, test_wallpaper_session_shutdown_atomicity.py, and test_upload_monotonic_deadline_clock.py. Reservation guard covers process-wide accounting, 64 MiB free-space margin, HTTP 507 and release; shutdown guard covers HTTP 410 and synchronized mutation/commit callbacks; deadline guard enforces elapsed realtime.
+- C01–C07 owner CI evidence and scope details are recorded in F03_QR_COMMUNICATION_FEASIBILITY.md.
+- Deferred to G, NOT PASS: real QR scan/phone browser over Mi TV Stick LAN; disconnect/retry/cancel/expiry/reconnect on-device; concurrent/low-storage behavior; Avatar/Wallpaper/StandBy persistence/isolation after process death/reboot; real browser/OEM/network-interface behavior.
+- All source PRs remain staged Draft/open/unmerged. No APK publication/installation, physical TV test, or device setting change. Do not repeat source work absent a reproducible new finding.
+- Next: retain these five device acceptance groups for Project G; continue remaining Project F validation without promoting device-only gates to PASS.
