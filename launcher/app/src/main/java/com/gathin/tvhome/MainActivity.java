@@ -406,6 +406,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StandbyPhotoStore.cleanupOrphanedUploads(this);
+        WallpaperUploadServer.cleanupOrphanedCustomWallpaperUploads(this);
         ProfileManager.cleanupOrphanedAvatarUploads(this);
         sInstance = new java.lang.ref.WeakReference<>(this);
         SoundEffects.init(this);
