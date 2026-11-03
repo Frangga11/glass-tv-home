@@ -84,30 +84,32 @@ public class WallpaperUploadServer {
         if (context == null) return;
         File directory = new File(context.getFilesDir(), "custom_wallpapers");
         if (!directory.exists()) return;
-        File[] partials = directory.listFiles(
-                (dir, name) -> name.startsWith("custom_") && name.endsWith(".upload"));
-        if (partials == null) {
-            Log.w(TAG, "Unable to inspect custom wallpaper upload directory during recovery");
-            return;
-        }
-        try {
-            File canonicalDirectory = directory.getCanonicalFile();
-            for (File partial : partials) {
-                try {
-                    String path = canonicalPath(partial);
-                    if (ACTIVE_CUSTOM_WALLPAPER_UPLOADS.contains(path)) continue;
-                    File canonicalPartial = new File(path);
-                    if (!canonicalDirectory.equals(canonicalPartial.getParentFile())
-                            || !canonicalPartial.isFile()) continue;
-                    if (!canonicalPartial.delete() && canonicalPartial.exists()) {
-                        Log.w(TAG, "Unable to remove abandoned wallpaper upload: " + partial.getName());
-                    }
-                } catch (Exception e) {
-                    Log.w(TAG, "Unable to inspect abandoned wallpaper upload", e);
-                }
+        synchronized (ACTIVE_CUSTOM_WALLPAPER_UPLOADS) {
+            File[] partials = directory.listFiles(
+                    (dir, name) -> name.startsWith("custom_") && name.endsWith(".upload"));
+            if (partials == null) {
+                Log.w(TAG, "Unable to inspect custom wallpaper upload directory during recovery");
+                return;
             }
-        } catch (Exception e) {
-            Log.w(TAG, "Unable to resolve custom wallpaper directory during recovery", e);
+            try {
+                File canonicalDirectory = directory.getCanonicalFile();
+                for (File partial : partials) {
+                    try {
+                        String path = canonicalPath(partial);
+                        if (ACTIVE_CUSTOM_WALLPAPER_UPLOADS.contains(path)) continue;
+                        File canonicalPartial = new File(path);
+                        if (!canonicalDirectory.equals(canonicalPartial.getParentFile())
+                                || !canonicalPartial.isFile()) continue;
+                        if (!canonicalPartial.delete() && canonicalPartial.exists()) {
+                            Log.w(TAG, "Unable to remove abandoned wallpaper upload: " + partial.getName());
+                        }
+                    } catch (Exception e) {
+                        Log.w(TAG, "Unable to inspect abandoned wallpaper upload", e);
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Unable to resolve custom wallpaper directory during recovery", e);
+            }
         }
     }
 
@@ -524,9 +526,12 @@ public class WallpaperUploadServer {
                         sendTextResponse(out, 410, "Gone", "Upload session expired or closed", null);
                         return;
                     }
-                    File targetFile = File.createTempFile("custom_", ".upload", customDir);
-                    wallpaperUploadTempFile = targetFile;
-                    registerActiveCustomWallpaperUpload(targetFile);
+                    File targetFile;
+                    synchronized (ACTIVE_CUSTOM_WALLPAPER_UPLOADS) {
+                        targetFile = File.createTempFile("custom_", ".upload", customDir);
+                        wallpaperUploadTempFile = targetFile;
+                        registerActiveCustomWallpaperUpload(targetFile);
+                    }
                     boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
                     UploadFilePolicy.ImageFormat imageFormat = complete && isSessionActive()
                             ? validateImageFile(targetFile, lines) : null;
