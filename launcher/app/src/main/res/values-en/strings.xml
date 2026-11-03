@@ -648,6 +648,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="standby_page_server_unavailable">The server is unavailable. Please retry this photo.</string>
     <string name="standby_page_cancelled_retry">Upload cancelled. You can retry this photo; check the collection before uploading again.</string>
     <string name="wallpaper_page_server_error_fallback">The server returned an error. Please try again.</string>
+    <string name="wallpaper_page_thumbnail_alt">Photo preview</string>
     <string name="local_upload_error_busy">The upload service is busy. Try again.</string>
     <string name="wallpaper_page_action_failed">The request could not be completed. Check the photo and try again.</string>
     <string name="wallpaper_delete_failed">Could not delete one or more images. Check storage and try again.</string>
