@@ -833,3 +833,16 @@ Audit sumber lintas modul, perbaikan temuan pada lingkup F02, sinkronisasi owner
 - Source spot-check confirms QR API clear failure callback/HTTP 500 and wallpaper UI delete-failure reconciliation; three locale strings are aligned. No new reproducible source blocker.
 - This was a read-only re-verification of existing exact-head runs, not a new CI execution or physical-device test. F04 HOST/SOURCE EXIT remains PASS. Project G device acceptance and F05 process-death/force-stop/reboot validation remain open by design.
 - No code changes were needed. Resume at F05 after user approval; retain PR #24/#41/#53 Draft/open/unmerged.
+
+
+## Current resume checkpoint — Project F05 Persistence & Recovery — 3 November 2026
+
+- F05 integration PR #54, branch `integration/project-f05-persistence-recovery`, Draft/open/unmerged; base is F04 integration exact head `6ffc8b4c253beb2662d6978ba38033039c3c53f9`.
+- Current F05 head `1048b0b68ae5ab5a2ad867183236b514e0c691fa`; 14 commits ahead / 0 behind F04, five changed paths only.
+- F05 PR run #41563437433: Lists/tools/docs PASS, 80 Python tests / 1 intentional README-count skip; Android unit/release build and size gate in progress.
+- F05-WALL-001: E08 owner PR #41 head `edd24d72256d06da4578971ea7bac1802746a3a6`, exact CI #41562661052 both jobs SUCCESS; 15 tests / 1 intentional skip; APK 1,564,197 bytes, 8,667-byte headroom. Startup now clears stale single-file pin and falls back to Natural only when Custom collection is genuinely empty; unreadable directory preserves state.
+- F05-WALL-002: C07 owner PR #24 head `2315f12472f469843c1441ad7d01c6898858c4c5`, run #41563429553 Lists/tools/docs PASS (23 tests / 1 intentional skip), Android build in progress. Cleanup targets only orphaned private `custom_*.upload` parts, skips active worker files via synchronized process-local registry, and cleans incomplete temp files in worker finally. Mirrored to F05.
+- F05 cross-feature suite verifies Avatar/Profile serialization and replacement ordering, StandBy atomic commit/clear/cleanup and shared renderers, navigation/settings state, Wallpaper selection recovery, and prayer alarm boot receiver boundary.
+- Next: complete C07 owner and F05 exact-head Android CI/size gates; inspect logs and APK artifact lists; rerun only failed jobs for external dependency throttling; cross-check owner/integration source equality; then update final audit register and checkpoint.
+- Do not merge, publish/install APK, or test the TV in F05. Real force-stop/process-death/reboot, DreamService/OEM, alarm restore and filesystem acceptance remain Project G.
+- Detailed evidence: `F05_PERSISTENCE_RECOVERY_AUDIT.md`.
