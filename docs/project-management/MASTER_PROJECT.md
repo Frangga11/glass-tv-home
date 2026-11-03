@@ -799,3 +799,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - GitHub reports `mergeable=false`; PR #57 is OPEN/DRAFT/UNMERGED. Compare view: 639 commits / 123 changed files. Do not merge or force-push around the conflict.
 - The 26 shared B-series/F-staged-full paths require three-way semantic resolution. No conflict was resolved by wholesale side selection. Owner branches remain unchanged.
 - G01 overall remains OPEN/BLOCKING for branch reconciliation; source-defect subgate remains PASS. G02 APK build is blocked pending clean combined candidate and exact-head integrated CI. `main` is untouched.
+
+
+## G01 integrated acceptance checkpoint — 3 November 2026
+
+- G01 is now **FULL PASS**: source defect resolution, 26-path B-series/F07 semantic reconciliation, isolated merge, and exact merge-commit CI.
+- Accepted integration branch: `integration/b-series` @ `f6f1f05b7a560381b8bb423eaa707a1d6d0e8832`.
+- PR #58 merged successfully; PR #57 was superseded by the accepted candidate and closed.
+- Exact merge-commit CI #41583505195: both jobs SUCCESS; 99 Python tests all OK; launcher/installer Android unit tests PASS; release validation build SUCCESS; APK diagnostic 1,571,293 / 1,572,864 bytes; no artifacts.
+- The one main-only commit enabling manual APK publishing is intentionally excluded. `main` remains untouched.
+- G02 final tested APK build is READY TO START from the accepted integration commit. G03 physical Mi TV Stick acceptance remains pending; no APK has been published/installed and no device setting changed.
