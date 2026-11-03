@@ -95,7 +95,7 @@
     <string name="weather_humidity_label">💧  HUMIDITY</string>
     <string name="weather_humidity_description">Current relative humidity.</string>
     <string name="weather_pressure_label">⏱️  AIR PRESSURE</string>
-    <string name="weather_data_source">Open-Meteo model • US AQI estimate</string>
+    <string name="weather_data_source">Open-Meteo forecast • CAMS model • US AQI estimate</string>
 
     <string name="media_now_playing">NOW PLAYING</string>
     <string name="media_spotify">SPOTIFY</string>
@@ -639,4 +639,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="local_upload_error_busy">The upload service is busy. Try again.</string>
     <string name="wallpaper_page_action_failed">The request could not be completed. Check the photo and try again.</string>
     <string name="wallpaper_delete_failed">Could not delete one or more images. Check storage and try again.</string>
+    <string name="weather_data_unavailable">Weather data unavailable</string>
+    <string name="weather_model_reference">Model reference: %1$s</string>
 </resources>
