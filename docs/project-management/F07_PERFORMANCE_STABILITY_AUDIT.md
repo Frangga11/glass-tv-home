@@ -98,3 +98,8 @@ No physical result is claimed by F07. Device acceptance is pending Project G.
 **Overall performance acceptance remains PARTIAL until Project G device profiling and soak testing.** Keep PR #56 Draft/open/unmerged until grouped Project G final audit and explicit merge approval.
 
 Next: Project G final integration audit, exact branch-head/dependency reconciliation, staged group merges only after approval, then one approved TV-test APK and measured target-device acceptance. Full F-series integration is not proven by independent PR CI alone.
+
+
+## Formal closure and handover — 3 November 2026
+
+Project F was formally closed by explicit user direction after the F07 host/source exit decision. F01–F07 are closed for their approved host/source scope. The F07 candidate remains frozen at `976e068d48ecc1ede2811ac455372395d382ba76`; PR #56 remains Draft/open/unmerged under D-013. This closure does not convert the deferred Mi TV Stick performance, thermal, LAN/QR or long-run soak tests into PASS. Those obligations transfer to Project G. See `PROJECT_G_READINESS_CHECKPOINT.md` and `HANDOVER.md` for the authorized G01–G06 sequence and explicit approval gates.
