@@ -6,7 +6,7 @@
 **Repository:** https://github.com/Frangga11/glass-tv-home  
 **Documentation branch:** `docs/project-master-inventory`  
 **Current feature branch:** `integration/project-f02-system-validation` (PR #50, Draft/open/unmerged)  
-**Current stage:** Project F02 — integrated system validation in progress; physical Android TV acceptance remains reserved for Project G.
+**Current stage:** Project F03 — QR communication feasibility audit; host/source PASS, real-device acceptance reserved for Project G.
 **F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
 ## Purpose
@@ -30,7 +30,7 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [E01_DEVICE_SETTINGS_HOME_CONTROL_AUDIT.md](E01_DEVICE_SETTINGS_HOME_CONTROL_AUDIT.md) | E01 Device Settings source audit and exact-head verification |
 | [B03_DIALOG_OPACITY_AUDIT.md](B03_DIALOG_OPACITY_AUDIT.md) | B03 global app-owned dialog/popup surface contract and Glass Effect OFF solid fallback |
 | [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md) | B06 notification, Toast, OTA loading, QR progress/timeout audit and exact-head CI evidence |
-| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
+| [F03_QR_COMMUNICATION_FEASIBILITY.md](F03_QR_COMMUNICATION_FEASIBILITY.md) | F03 QR communication/upload feasibility evidence, CI, findings, and Project G device gates |\n| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
 
 ## Documentation architecture
 
