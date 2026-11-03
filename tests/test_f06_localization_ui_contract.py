@@ -88,6 +88,8 @@ class F06LocalizationUiContractTest(unittest.TestCase):
         self.assertNotIn("Server unavailable. Retry this photo.", wallpaper)
         self.assertNotIn("file saat ini dapat dicoba lagi", wallpaper)
         self.assertNotIn("xhr.statusText", wallpaper)
+        self.assertIn("Locale.forLanguageTag(AppLanguage.getLanguage(context))", wallpaper)
+        self.assertIn("htmlText(R.string.wallpaper_page_thumbnail_alt)", wallpaper)
         self.assertIn("localized(R.string.upload_error_method_not_allowed)", avatar)
         self.assertNotIn('byte[] body = "Method Not Allowed"', avatar)
 
