@@ -104,15 +104,15 @@ A code change or passing CI alone does not close a physical-device acceptance it
 
 ### Stage F — Integration and full regression testing
 
-| ID | Task | Current status (2 Nov 2026) |
+| ID | Task | Current status (3 Nov 2026) |
 |---|---|---|
-| F01 | Prepare isolated integration candidate and audit shared dependencies (no canonical feature merge) | NOT STARTED |
-| F02 | Test remote navigation, focus, back behavior, and retained cursor position | NOT STARTED |
-| F03 | Test QR generation, phone connection, upload, expiry, and cancellation | NOT STARTED |
-| F04 | Test avatar, wallpaper, and standby image flows and verify store separation | NOT STARTED |
-| F05 | Test settings/profile/photo persistence after close, force-stop, and reboot | NOT STARTED |
-| F06 | Test Indonesian and English across screens, dialogs, and dynamic errors | NOT STARTED |
-| F07 | Test performance, crashes, freezes, memory use, and long-running behavior on Mi TV Stick | NOT STARTED |
+| F01 | Prepare isolated integration candidate and audit shared dependencies (no canonical feature merge) | HOST/SOURCE EXIT PASS; staged candidate remains unmerged |
+| F02 | Test remote navigation, focus, back behavior, and retained cursor position | HOST/SOURCE EXIT PASS; physical D-pad/Back acceptance DEFERRED_TO_G |
+| F03 | Test QR generation, phone connection, upload, expiry, and cancellation | HOST/SOURCE EXIT PASS; real phone/LAN acceptance DEFERRED_TO_G |
+| F04 | Test avatar, wallpaper, and standby image flows and verify store separation | HOST/SOURCE EXIT PASS; physical/OEM acceptance DEFERRED_TO_G |
+| F05 | Test settings/profile/photo persistence after close, force-stop, and reboot | HOST/SOURCE EXIT PASS; real process-death/reboot acceptance DEFERRED_TO_G |
+| F06 | Test Indonesian and English across screens, dialogs, and dynamic errors | HOST/SOURCE EXIT PASS; runtime language/display acceptance DEFERRED_TO_G |
+| F07 | Test performance, crashes, freezes, memory use, and long-running behavior on Mi TV Stick | HOST/SOURCE EXIT PASS; Mi TV Stick profiling/soak DEFERRED_TO_G pending explicit TV-test APK approval |
 
 ### Stage G — Finalization and release
 
@@ -428,3 +428,13 @@ B06 is **DONE for source implementation, static QC, and exact-head CI**. The ini
 - Implementation head `37dab64cc99f11ef6670840c351f32fe91da6b24` passed exact-head GitHub Actions run #41427317877: launcher build/unit tests/release build/APK-size guard PASS and lists/tools/docs PASS.
 - Current PR #38 head `d1d461c2c08609462354ebebd9dc7ce678e2e049` is a report-only documentation follow-up; application source/resources are unchanged from the tested implementation head.
 - PR #38 remains Draft/open/unmerged. Physical Mi TV Stick/4K UI and remote acceptance remain Project F; no APK install or device test is claimed.
+
+
+## 3 November 2026 — Project F07 host/source checkpoint
+
+- F07 integration PR #56, branch `integration/project-f07-performance-stability`, exact head `976e068d48ecc1ede2811ac455372395d382ba76`, based on F06 exact head `487099013e6d9bd65cc07d72e760b1e14ab1f091`; compare 19 ahead / 0 behind, ten scoped paths.
+- Exact-head CI #41568715178 both required jobs SUCCESS: 99 Python tests PASS; launcher and installer `testReleaseUnitTest`, `assembleRelease`, APK diagnostics and size gate PASS.
+- APK 1,571,293 bytes / 1,572,864-byte cap / 1,571-byte headroom; workflow artifact list empty.
+- F07 repairs per-frame weather shader allocations, ripple churn, UI-thread wallpaper/QR preview decoding, stale wallpaper task handling, main-thread Now Playing Binder polling, Backdrop OOM/partial-array handling, unbounded StandBy decode queue, forced System.gc(), and online wallpaper cache aggregate storage growth (512 MiB cap).
+- **F07 HOST/SOURCE EXIT PASS; overall performance acceptance PARTIAL.** Real Mi TV Stick RAM/FPS/frame time/ANR/crash/thermal/long-run soak and phone/LAN acceptance remain Project G. No APK publication/installation, no physical test, no merge.
+- F07 full evidence: `F07_PERFORMANCE_STABILITY_AUDIT.md`; resume point and next work: Project G final integrated audit under D-013.
