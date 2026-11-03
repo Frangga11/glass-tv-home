@@ -49,4 +49,18 @@ public class HomeWeatherRequestTest {
         assertFalse(WeatherAirQuality.isCurrentRequest(11L, 11L, true, false));
     }
 
+    @Test
+    public void detailedWeatherCacheAcceptsExactSelectedCoordinates() {
+        assertTrue(WeatherAirQuality.isSameLocation(-6.2088, 106.8456, -6.2088, 106.8456));
+    }
+
+    @Test
+    public void detailedWeatherCacheRejectsDifferentSelectedCoordinates() {
+        assertFalse(WeatherAirQuality.isSameLocation(-6.2088, 106.8456, -7.2575, 112.7521));
+    }
+
+    @Test
+    public void detailedWeatherCacheRejectsNonFiniteCoordinates() {
+        assertFalse(WeatherAirQuality.isSameLocation(Double.NaN, 106.8456, -6.2088, 106.8456));
+    }
 }
