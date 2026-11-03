@@ -1005,3 +1005,24 @@ See `F05_PERSISTENCE_RECOVERY_AUDIT.md` and `HANDOVER.md`.
 | Physical TV/phone/LAN/OEM | Not exercised in F06 | DEFERRED_TO_G |
 
 **Decision: F06 HOST/SOURCE EXIT PASS.** PR #55 remains Draft/open/unmerged. Full evidence: `F06_LOCALIZATION_UI_AUDIT.md`.
+
+
+## Project F07 — Performance, stability and storage final host/source audit — 3 November 2026
+
+| Gate / finding | Exact evidence | Result |
+|---|---|---|
+| F07 integration ancestry | PR #56; base F06 head `487099013e6d9bd65cc07d72e760b1e14ab1f091`; F07 head `976e068d48ecc1ede2811ac455372395d382ba76`; 19 ahead / 0 behind; ten paths | PASS |
+| Weather per-frame allocation | Cached radial shaders and reusable cloud matrices; bounded ripple pool | FIXED / ROBOLECTRIC PASS |
+| Wallpaper/QR preview UI decode | Both decode paths use worker; stale results released; dismiss invalidates preview | FIXED / SOURCE PASS |
+| Now Playing Binder calls | Session/notification queries moved off main thread; coalesced single-worker refresh | FIXED / SOURCE PASS |
+| Backdrop memory pressure | OOM/runtime/rejected-worker guards; partial array recovery | FIXED / SOURCE PASS |
+| StandBy decode queue | One background worker, bounded queue 2 | FIXED / SOURCE PASS |
+| Cache cleanup | Forced System.gc removed | FIXED |
+| Online wallpaper disk budget | 150 files and 512 MiB total; oldest-first pruning, metadata cleanup | FIXED / JUNIT PASS |
+| Python regression suite | Exact-head run #41568715178; 99 tests | PASS |
+| Launcher + installer unit tests | `testReleaseUnitTest` both modules | PASS |
+| Release/APK budget | `assembleRelease` PASS; 1,571,293 B / 1,572,864 B cap / 1,571 B headroom | PASS |
+| Artifact/publication | Workflow artifacts empty; no APK publication/installation | PASS |
+| Physical Mi TV Stick profiling | No device test in F07; no FPS/RAM/ANR/thermal/soak data claimed | DEFERRED_TO_G |
+
+**Decision: F07 HOST/SOURCE EXIT PASS; overall performance acceptance PARTIAL pending Project G.** PR #56 remains Draft/open/unmerged. Full evidence: `F07_PERFORMANCE_STABILITY_AUDIT.md`.
