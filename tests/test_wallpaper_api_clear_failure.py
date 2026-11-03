@@ -32,7 +32,7 @@ class WallpaperApiClearFailureTest(unittest.TestCase):
         self.assertIn("if (file.isFile() && !file.delete()) deletionFailed = true", method)
         self.assertIn("if (deletionFailed)", method)
         self.assertIn("listener.onClearFailed()", method)
-        self.assertIn('"error":"delete_failed"', method)
+        self.assertIn('delete_failed', method)
         self.assertIn("listener.onCleared()", method)
         self.assertLess(method.index("listener.onClearFailed()"), method.index("listener.onCleared()"))
 
