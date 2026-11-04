@@ -1050,3 +1050,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Full source audit and ordered implementation sequence: [E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md](E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md).
 - No merge, integration/main update, APK publication, installation, ADB or Mi TV Stick evaluation performed. G03 remains explicitly deferred by the user.
 - **Disposition: BELUM FINAL.** Next work is E02-A..E and E06-A..F on their owner branches; then reconcile dependency bases, run combined integration tests and exact-head CI. Do not mark either feature ready on the basis of CI alone.
+
+
+## E02 implementation follow-up — 5 November 2026
+
+- Implemented bounded still-frame GIF result previews in PR #62, including HTTPS/GIPHY host checks, 1 MiB response cap, MIME/dimension validation, 3-worker preview pool, holder recycling cancellation and stale-binding guards.
+- Added dialog selection guards for closed/interrupted work and active-profile identity; updated GIF drawable to stop frame scheduling when hidden/detached.
+- CI #1201 exposed a missing `java.io.File` import; corrected on the owner branch. Latest head `dafcaf8a6dd8003300aca155d3c02395f1a28165`; CI #1203 / run `41895682457` is still in progress. Do not claim this head passes until both jobs complete.
+- E02 still requires shared connection cancellation/disconnect, live GIF preview validation, lifecycle/profile/storage/DPAD/memory tests and GIPHY policy verification. E06 has not received source implementation changes in this pass; separate Dock architecture/UI/navigation remains open.
+- Overall E02/E06: **BELUM FINAL**.
