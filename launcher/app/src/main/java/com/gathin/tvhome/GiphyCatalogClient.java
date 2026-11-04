@@ -66,7 +66,7 @@ final class GiphyCatalogClient {
             throw new IllegalArgumentException("Invalid GIF selection");
         File dir=new File(context.getFilesDir(),"profile_avatars").getCanonicalFile();
         if(!dir.exists() && !dir.mkdirs()) throw new IOException("Avatar storage unavailable");
-        File staged=File.createTempFile("giphy_"+profileId+"_",".upload",dir).getCanonicalFile();
+        File staged=File.createTempFile("giphy_"+profileId+"_",".gif",dir).getCanonicalFile();
         if(!ProfileManager.isPrivateAvatarFile(dir,staged)) throw new IOException("Invalid avatar path");
         HttpURLConnection c=open(asset.downloadUrl,"image/gif,application/octet-stream;q=0.8");
         boolean ok=false;
