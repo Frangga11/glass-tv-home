@@ -388,3 +388,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Target E06 currently uses a single RecyclerView/GridLayoutManager and shared COLUMNS for grid geometry, Dock membership, sizing, decoration and focus. Therefore an orientation toggle on the existing layout manager is unsafe. Decision: separate Dock presentation from the main app grid, backed by one authoritative ordered app model; capacity controls visible Dock slots only, overflow remains in the grid, and orientation/capacity do not change app-grid columns or app ordering.
 - Simulate the six combinations (2 orientations × 3 capacities) at 1920×1080 and supported density profiles, then validate focus, scroll, reorder, app cards, top-bar transitions, localization, unit/source contracts and exact-head CI. Device acceptance remains separate.
 - Status: architecture updated and documented; source implementation and executable visual preview not yet completed. No merge, APK publication/installation, or TV setting changes.
+
+
+### D-018 — G03 installation and device-mutation readiness gate reaffirmed (5 November 2026)
+
+- G02 candidate artifact #13210715335 is retrievable and integrity-verified; exact extracted APK SHA-256 is `dc85fcd590eb2c52eb367d0bc9d4f67735cb94ef1cbf6f2b80b86f0de36de0dd`.
+- G03 physical acceptance requires a connected Mi TV Stick and explicit user readiness approval before APK installation, package replacement, HOME/default-launcher change, ADB setting change, permission change or user-data mutation.
+- Proceed autonomously with non-mutating audit, artifact verification, test preparation and documentation. Do not infer device-mutation approval from a general instruction to continue project work.
+- G03 remains NOT FINAL until physical evidence and full acceptance matrix are complete.
