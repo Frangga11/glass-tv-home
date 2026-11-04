@@ -620,4 +620,22 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_download_failed">Gagal mengunduh wallpaper kategori %1$s. Periksa koneksi internet lalu coba lagi.</string>
     <string name="local_upload_error_busy">Layanan upload sedang sibuk. Coba lagi.</string>
     <string name="wallpaper_page_action_failed">Permintaan tidak dapat diproses. Periksa foto lalu coba lagi.</string>
+
+    <string name="giphy_avatar_title">Cari GIF Animasi untuk Avatar</string>
+    <string name="giphy_avatar_intro">Pilih GIF dari katalog GIPHY untuk profil aktif. Hasil pencarian dibatasi untuk konten umum.</string>
+    <string name="giphy_search_hint">Cari GIF, misalnya: kucing, anime, olahraga</string>
+    <string name="giphy_search_action">Cari</string>
+    <string name="giphy_search_prompt">Masukkan kata kunci lalu pilih Cari.</string>
+    <string name="giphy_key_missing">Integrasi GIPHY belum dikonfigurasi. Tambahkan GIPHY_API_KEY pada konfigurasi build.</string>
+    <string name="giphy_search_loading">Sedang mencari GIF…</string>
+    <string name="giphy_search_empty">Tidak ada GIF yang cocok. Coba kata kunci lain.</string>
+    <string name="giphy_search_count">%1$d GIF ditemukan. Pilih salah satu untuk avatar.</string>
+    <string name="giphy_rate_limited">Batas permintaan GIPHY tercapai. Coba lagi nanti.</string>
+    <string name="giphy_search_failed">Pencarian gagal. Periksa koneksi internet lalu coba lagi.</string>
+    <string name="giphy_select_gif">Pilih GIF ini</string>
+    <string name="giphy_avatar_saving">Mengunduh dan menyimpan GIF…</string>
+    <string name="giphy_avatar_saved">GIF berhasil dipasang sebagai avatar profil.</string>
+    <string name="giphy_avatar_save_failed">GIF gagal disimpan. Avatar sebelumnya tetap digunakan.</string>
+    <string name="giphy_powered_by">Powered By GIPHY</string>
+
 </resources>
