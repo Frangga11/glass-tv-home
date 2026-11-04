@@ -29,13 +29,12 @@ Both PRs are OPEN, Draft, unmerged. E02 targets `feature/e02-profile-avatar-lock
 - Platform `Movie` drawable is used for GIF playback without adding a decoder dependency.
 
 ### Open defects / gaps
-1. Result cells are text-only; `previewUrl` is collected but not rendered. Thumbnail/animated preview is a core user-visible requirement and is not implemented.
-2. Search worker uses `shutdownNow()` on dismiss, but the blocking `HttpURLConnection` is not explicitly disconnected/cancelled. Generation checks prevent stale UI updates, but do not guarantee network cancellation or prevent queued selection work from committing after dismissal.
-3. Selection worker has no explicit cancellation/commit gate tied to dialog lifecycle. A request already in progress can outlive the dialog.
-4. `AnimatedGifDrawable` schedules itself every 33 ms while drawing and has a `stop()` method, but the current integration does not show a reliable lifecycle owner that calls `stop()` when an avatar drawable is replaced/detached. This risks unnecessary frame callbacks after profile/avatar changes.
-5. GIF decode/playback and malformed/large animation behavior need source-level tests and memory bounds; current CI success alone does not establish safe TV playback.
-6. DPAD navigation, focus restoration, empty/error/loading states with preview cells, attribution visibility at actual dialog bounds, profile switch during search/selection, storage replacement/rollback and previous-avatar preservation need explicit regression coverage.
-7. Provider terms/rating and attribution requirements must be verified against current GIPHY requirements before feature-ready; do not assume a G-rated query alone establishes all policy compliance.
+1. Result cells now render bounded asynchronous image previews from `previewUrl`, with HTTPS/GIPHY host checks, 1 MiB response cap, image MIME and dimension checks, worker pool bound (3), holder recycling cancellation, and stale-binding/generation checks. Preview is a still frame, not a live animation.
+2. Dialog selection is guarded against closure/interruption and active-profile change before commit. However, preview/search/download connections are not all owned by a shared cancellation token; cancelling a Future does not guarantee immediate socket disconnect while blocked in I/O.
+3. `AnimatedGifDrawable` now unschedules callbacks when hidden or detached (`setVisible` / `setCallback(null)`) and only schedules while visible with a callback. Device/profile lifecycle still needs runtime verification.
+4. GIF decode/playback and malformed/large animation behavior need source-level tests and memory bounds; current CI alone does not establish safe TV playback.
+5. DPAD navigation, focus restoration, empty/error/loading states with preview cells, attribution visibility at actual dialog bounds, profile switch during search/selection, storage replacement/rollback and previous-avatar preservation need explicit regression coverage.
+6. Provider terms/rating and attribution requirements must be verified against current GIPHY requirements before feature-ready; do not assume a G-rated query alone establishes all policy compliance.
 
 ### Required implementation sequence
 E02-A: define a cancellable request handle/token that owns and disconnects active connections; suppress commit after cancellation/dismissal/profile change.
@@ -81,7 +80,7 @@ E06-F: run exact-head CI, integration conflict audit and APK budget check.
 - Physical Mi TV Stick evaluation remains deferred until the user explicitly announces that phase.
 
 ## Quality disposition
-- E02 isolated-head build and unit tests: PASS (CI #1200, both required jobs).
+- E02 isolated-head CI #1200 passed on the prior head; new implementation commits are `9a92d8b73cfd39e799cd87a24d163e48732b3b23`, `9a32149b68239911020e2de2e5503a8d21d34cd1`, and `dafcaf8a6dd8003300aca155d3c02395f1a28165`. CI #1201 exposed a missing `java.io.File` import; that compile defect was fixed. Latest CI #1203 / run `41895682457` is IN PROGRESS at this checkpoint; do not call the new head PASS until both jobs succeed.
 - E06 isolated-head build and unit tests: PASS (CI #1198, both required jobs).
 - E02 feature acceptance: FAIL / INCOMPLETE (no thumbnails; cancellation/lifecycle and regression coverage incomplete).
 - E06 feature acceptance: FAIL / INCOMPLETE (preference model only; rendering, settings and navigation not implemented).
