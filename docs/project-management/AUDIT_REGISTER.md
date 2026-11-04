@@ -1178,3 +1178,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Local handoff file: `Glass-TV-Home-G02-Final.apk` (1,572,293 bytes; SHA-256 above). No TV/device installation or physical acceptance testing has been performed. No GitHub Release or public release was created.
 - Build-only PR #61 was closed unmerged after artifact retrieval. It must not be merged into integration. `main` and all launcher source branches remain untouched.
 - **G02 disposition: HOST BUILD + ARTIFACT PASS.** G03 physical Mi TV Stick acceptance remains pending and is a separate gate. APK signature verification/device compatibility have not been independently established by this host-side artifact check.
+
+
+## G03-DEV-001 — Physical acceptance preflight (5 November 2026)
+
+- **Status:** PREFLIGHT VERIFIED; DEVICE EXECUTION BLOCKED / OPEN.
+- **Input:** integration `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; G02 artifact #13210715335 from run #1185.
+- **Checks:** live branch ref exact; both G02 CI jobs success; artifact not expired; downloaded ZIP digest matches GitHub artifact digest; extracted APK size 1,572,293 bytes and SHA-256 match prior handover; ZIP integrity and AndroidManifest/classes.dex/resources.arsc presence pass.
+- **Root blocker:** execution host has no adb/apksigner/aapt/zipalign and no connected Mi TV Stick; cannot obtain physical evidence. Governance separately requires explicit readiness approval before installation or device/package/ADB mutation.
+- **Risk:** artifact expires 10 Nov 2026 06:37:50 UTC; retrieve/retain the canonical artifact before expiry if test is delayed.
+- **No mutation:** no install, package replacement, HOME/default change, ADB setting, permission, data wipe or device change.
+- **Evidence and matrix:** [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md).
+- **Closure criteria:** explicit readiness approval, live device baseline, install/rollback evidence, full physical test matrix, logs/metrics, defect fixes at owner branches and exact-head retest. Host CI is not device PASS.
