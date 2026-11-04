@@ -187,3 +187,11 @@ The project can establish a distinctive original implementation, design language
 - E06 PR #63 exact head `446b94945e683e87901fd5d44e3f40688ede2ace`, workflow run #1187 / ID `41890170063`: both required jobs succeeded (`Lists, tools and docs`; `Launcher build and unit tests`). This validates only the preference-model foundation, not Dock UI behavior.
 - E02 initial run #1186 failed because AGP disabled generated BuildConfig by default. Corrected by enabling `android.buildFeatures.buildConfig true` in commit `a03242376f98f6e32adeec0425ed3c138eb8535c`.
 - E02 later run #1196 / ID `41890645498` on current implementation at the time of polling: docs/tools job succeeded; launcher build job was still in progress. Earlier intermediate commit run #1192 succeeded, but it predates the full UI/resource integration and is not a substitute for latest-head CI.
+## Implementation slice 3 — integration fixes and preference tests
+
+- Fixed the latest E02 UI compile error in `GiphyAvatarDialog.java`: `TextView.setText` conditional now returns a consistent `CharSequence` type. Commit `c49080c6c52657432043b3950b86238d1a6694a4`.
+- E02 PR #62 now includes the GIPHY picker entry in Profile settings, Indonesian/English resources, attribution label, profile-safe GIF storage and platform animated-avatar rendering. It remains incomplete because results are title tiles without animated image thumbnails/previews and no physical playback test has been performed.
+- E06 `DockPreferences` now exposes deterministic capacity/orientation normalization and bounds checks (commit `442bda52c392d47fdb7f2483b7a1ad26c1b58001`); added `DockPreferencesStateTest` covering valid/invalid capacity, orientation fallback and Dock position bounds (commit `ecdeb0eba9fc7a574f1a6c9930205517687cd922`).
+- E06 PR #63 test-bearing head `ecdeb0eba9fc7a574f1a6c9930205517687cd922`, CI run #1198 / ID `41890835096`: docs/tools job PASS; Android build/unit-test job IN PROGRESS at last poll. Initial model-only run #1187 remains PASS.
+- E02 PR #62 current head `c49080c6c52657432043b3950b86238d1a6694a4`, CI run #1199 / ID `41890891814`: docs/tools job PASS; Android build/unit-test job IN PROGRESS at last poll.
+- Both PRs remain Draft and unmerged. Main and existing owner branches remain untouched; no artifact publication, APK installation or TV settings change.
