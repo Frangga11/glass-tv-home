@@ -113,3 +113,40 @@ The project can establish a distinctive original implementation, design language
 - Application source changes: NOT YET MADE.
 - Tests/CI: NOT YET RUN.
 - Device acceptance: DEFERRED to the project's approved final device gate.
+
+## User direction update — reuse upstream provider, global UI/localization, Dock orientation
+
+**Update:** 5 November 2026, after direct user clarification.
+
+### GIF provider decision
+
+- Reuse the upstream GIPHY integration flow and provider/catalog (search endpoint, result model, media URL selection and selection callback) as the functional baseline. Do not rebuild a second GIF catalog or invent a new provider backend.
+- Clarification: this is not a bundled/local developer-owned GIF database. The inspected upstream code calls GIPHY's hosted API; therefore results and media remain dependent on GIPHY service, API key, network, rate limits and provider terms.
+- Retain only provider/data behavior that fits our base. Replace upstream presentation and lifecycle code with Glass TV global components/contracts: B01 modal/dialog, global focus/D-pad, B06 loading/error/empty feedback, B07 focus restoration, and global localization resources (Indonesian + English). Avoid hard-coded text and ad-hoc colors/styles.
+- Reuse target E02 profile identity and storage (`profile_avatars` + `ProfileManager.replaceCustomAvatar`); do not adopt upstream's `files/avatars` path or its embedded key. The upstream key is not ours to copy. GIPHY's required attribution and API-key configuration remain mandatory gates.
+- Provider adaptation must preserve upstream search/trending behavior only where supported by the pinned source; do not claim a private database or offline catalog. Cache selected assets locally only for profile display/offline rendering.
+
+### Dock orientation decision and simulation
+
+- New user-approved setting: Dock orientation = **Vertical** or **Horizontal**. Keep capacity as a separate setting: **4 / 5 / 6**, default **5**. Both preferences persist independently.
+- Vertical means one column/rail with D-pad Up/Down traversal and vertical overflow scrolling. Horizontal means one row with D-pad Left/Right traversal and horizontal overflow scrolling.
+- Existing E06 base is a single `RecyclerView` + `GridLayoutManager`; its Dock is currently the first horizontal grid row. `COLUMNS` is simultaneously used for grid span count, Dock threshold, tile sizing, decoration, top-button alignment, focus calculations and move/reorder logic. A simple orientation flag or changing `GridLayoutManager` orientation would corrupt app-grid layout and focus semantics.
+- **Simulation outcome:** implement Dock as a logically separate presentation/adapter/container while retaining one authoritative ordered app model. Keep the main app grid as a grid. Dock capacity determines visible Dock slots; overflow stays available in the app grid and no app is deleted/hidden/reordered. Vertical and horizontal modes change only Dock presentation and directional focus/scroll mapping. This decouples Dock capacity from app-grid column count and avoids upstream coupling.
+- Keep selected app/focus identity stable when orientation/capacity changes; preserve explicit app order; prevent duplicate/vanishing apps while moving between Dock and grid; test boundary navigation, long-press reorder, app cards and top-bar transitions.
+- **Simulation dimensions:** baseline TV viewport 1920×1080 (Mi TV Stick); compare vertical rail and horizontal tray at capacities 4, 5, 6. Check safe margins, tile/icon legibility, focus/glass bounds, visible overflow affordance, top shelf alignment and available grid area. The current single-grid implementation is not yet a visual/device simulation; this is an architecture and interaction simulation contract pending executable preview and host tests.
+- This layout separation is a scoped E06 refactor required by the new two-axis Dock controls; it must be isolated on the E06 feature branch and regression-tested, not mixed into unrelated modules.
+
+### Revised implementation sequence
+
+1. E02: import/adapt upstream GIPHY provider/data flow; replace UI with Glass TV global UI and localization; route selected media into E02's private avatar transaction.
+2. E06: separate Dock presentation from the main app grid; add persisted orientation and capacity settings; adapt focus, reorder and overflow behavior.
+3. Build a reproducible preview/simulation for both orientations × capacities 4/5/6 at 1080p and supported density profiles; then run unit/source-contract, integration and exact-head CI.
+4. Physical Mi TV Stick acceptance remains the final device gate. No APK install or TV settings change before explicit approval.
+
+## Revised status
+
+- Upstream provider/data flow reuse: APPROVED.
+- Glass TV global UI + localization adaptation: REQUIRED.
+- Dock orientation vertical/horizontal: APPROVED.
+- Independent Dock capacity 4/5/6: APPROVED; default 5.
+- Source implementation, executable preview, tests and CI: NOT YET COMPLETE.
