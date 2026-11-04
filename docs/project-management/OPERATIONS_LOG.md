@@ -825,3 +825,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Created [E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md](E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md) with exact refs, verified checks, root architecture issue, implementation order and acceptance criteria.
 - No source mutation, PR merge, integration/main update, APK publication/install, ADB or device evaluation performed in this audit pass. G03 remains deferred until user announces device-evaluation phase.
 - **Disposition: both isolated-head CI gates PASS; both feature acceptance gates OPEN / BELUM FINAL; combined integration validation NOT RUN.**
+
+## 5 November 2026 — E02 code remediation
+
+- Replaced text-only GIF result tiles with bounded asynchronous still-frame thumbnails; added safe image URL/content checks, response/dimension bounds, bounded preview executor, holder recycling cancellation and stale-result guards.
+- Guarded GIF avatar commit against dialog closure/interruption and active-profile switch; GIF drawable now stops scheduled frame callbacks when hidden/detached.
+- CI #1201 failed at Java compilation because the rewritten dialog lacked `java.io.File` import. Root cause identified from job log and corrected. New exact head `dafcaf8a6dd8003300aca155d3c02395f1a28165`; CI #1203 / run `41895682457` queued/running, final result pending.
+- No E06 implementation commit made in this pass. E06 remains an architectural refactor, not a preference-only patch. No PR merge/integration/main/device mutation.
