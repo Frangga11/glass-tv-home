@@ -51,11 +51,6 @@ final class AnimatedGifDrawable extends Drawable implements Runnable {
         if(getCallback()!=null) scheduleSelf(this,SystemClock.uptimeMillis()+33);
     }
     @Override public void run() { if(running && isVisible() && getCallback()!=null) invalidateSelf(); }
-    @Override public void setCallback(Callback callback) {
-        if(callback==null) unscheduleSelf(this);
-        super.setCallback(callback);
-        if(callback==null) startedAt=0;
-    }
     @Override public boolean setVisible(boolean visible,boolean restart) {
         boolean changed=super.setVisible(visible,restart);
         if(!visible) unscheduleSelf(this);
