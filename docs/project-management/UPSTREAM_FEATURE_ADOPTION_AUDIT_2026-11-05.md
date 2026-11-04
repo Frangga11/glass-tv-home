@@ -172,3 +172,18 @@ The project can establish a distinctive original implementation, design language
 - PR #62 head `37a11b7b59e186377eaa5977584e945ead85e0fe`, workflow run #1186 / ID `41890161400`: queued then in progress at last poll; docs/tools job succeeded; Android build job still running. No CI PASS claim.
 - PR #63 head `446b94945e683e87901fd5d44e3f40688ede2ace`, workflow run #1187 / ID `41890170063`: docs/tools job succeeded; Android build job still running at last poll. No CI PASS claim.
 - No merge, release artifact publication, APK installation or TV setting changes.
+## Implementation slice 2 — E02 UI and animated-avatar playback
+
+- Added `AnimatedGifDrawable.java` using Android's platform `Movie` decoder (no new third-party decoder dependency), commit `06325e6dfa9e5835e3dc7bfd1baf8c3002e5628d`; corrected Drawable lifecycle annotation in `d88afa4bdbd3bc84da90c2b4340395028a3469ec`.
+- Updated `ProfileManager.getAvatarDrawable` to detect the staged `.gif` extension and return the animated drawable while preserving the profile ring; commit `e296f30669d79e712d7559ec3b880cdbd5c5a251`.
+- Staged GIF downloads now retain a `.gif` extension so the existing private profile store can identify the animated asset; commit `7a66358988a26e1329d1d591defe8389cc08480f`.
+- Added `GiphyAvatarDialog.java` as the Glass TV dialog shell around the provider adapter, commit `d3f7dcb9094ccef98227707596ed28ec5caa7b45`; dialog close after successful transaction corrected in `029326d44b6e7b2f8b409343f724dae2bdaadc45`.
+- Added Indonesian and English strings for the GIPHY picker, loading/empty/error/rate-limit/success states and attribution; commits `e48676433e07de2afc7c7ea14a55bb8f50a6c7de` and `c462e35edbafaf3252513cdf1c2fe9b57504ed98`.
+- Added the GIF action to the existing Profile settings avatar actions, preserving QR upload and built-in avatar controls; commit `2ae8a8557c953528286ba44f3a5227d3410b5bfa`.
+- Remaining E02 gaps: visual GIF thumbnails/previews in the search result grid, stronger active HTTP cancellation (stale results are suppressed and the worker is shut down on dismissal), end-to-end test coverage for GIF animation on target Android TV, and explicit attribution/legal/provider policy review. UI currently lists selectable results by title rather than showing thumbnail previews.
+
+### Updated CI status
+
+- E06 PR #63 exact head `446b94945e683e87901fd5d44e3f40688ede2ace`, workflow run #1187 / ID `41890170063`: both required jobs succeeded (`Lists, tools and docs`; `Launcher build and unit tests`). This validates only the preference-model foundation, not Dock UI behavior.
+- E02 initial run #1186 failed because AGP disabled generated BuildConfig by default. Corrected by enabling `android.buildFeatures.buildConfig true` in commit `a03242376f98f6e32adeec0425ed3c138eb8535c`.
+- E02 later run #1196 / ID `41890645498` on current implementation at the time of polling: docs/tools job succeeded; launcher build job was still in progress. Earlier intermediate commit run #1192 succeeded, but it predates the full UI/resource integration and is not a substitute for latest-head CI.
