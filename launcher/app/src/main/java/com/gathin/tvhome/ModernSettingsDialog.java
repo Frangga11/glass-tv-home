@@ -670,6 +670,40 @@ public final class ModernSettingsDialog {
                 avatarPhotoActions.addView(uploadAvatarButton, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
 
+                Button gifAvatarButton = new Button(activity);
+                gifAvatarButton.setText(R.string.giphy_avatar_title);
+                gifAvatarButton.setTextColor(0xFFFFFFFF);
+                gifAvatarButton.setTextSize(13);
+                gifAvatarButton.setAllCaps(false);
+                gifAvatarButton.setFocusable(true);
+                GradientDrawable gifAvatarBg = new GradientDrawable();
+                gifAvatarBg.setColor(0xFF4C397E);
+                gifAvatarBg.setCornerRadius(10 * density);
+                gifAvatarButton.setBackground(gifAvatarBg);
+                TvFocusIndicator.applyRoundedTextFocus(gifAvatarButton, density, 10f,
+                        0xFF4C397E, 0xFF5A438E, 0xFF6A519E, 0xFFFFFFFF,
+                        0xFFFFFFFF, 0xFFFFFFFF, 1.025f);
+                LinearLayout.LayoutParams gifAvatarLp = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density));
+                gifAvatarLp.topMargin = (int) (6 * density);
+                gifAvatarButton.setOnClickListener(v -> GiphyAvatarDialog.show(activity, activeP.id, () -> {
+                    ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
+                    boolean updatedChildMode = ChildModeManager.isChildModeEnabled(activity, updated.id);
+                    profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
+                            Math.round(38 * density), updatedChildMode));
+                    if (activeProfileListAvatar[0] != null) {
+                        activeProfileListAvatar[0].setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
+                                Math.round(32 * density), updatedChildMode));
+                    }
+                    for (int k = 0; k < 7; k++) {
+                        if (avatarRings[k] != null) {
+                            avatarRings[k].setVisibility(ProfileManager.isBuiltInAvatarSelected(updated, k)
+                                    ? View.VISIBLE : View.GONE);
+                        }
+                    }
+                }));
+                avatarPhotoActions.addView(gifAvatarButton, gifAvatarLp);
+
                 Button defaultAvatarButton = new Button(activity);
                 defaultAvatarButton.setText(R.string.avatar_use_default_action);
                 defaultAvatarButton.setTextColor(0xFFCBD5E1);
