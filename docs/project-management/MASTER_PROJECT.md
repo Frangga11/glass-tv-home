@@ -865,3 +865,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Local handoff file: `Glass-TV-Home-G02-Final.apk` (1,572,293 bytes; SHA-256 above). No TV/device installation or physical acceptance testing has been performed. No GitHub Release or public release was created.
 - Build-only PR #61 was closed unmerged after artifact retrieval. It must not be merged into integration. `main` and all launcher source branches remain untouched.
 - **G02 disposition: HOST BUILD + ARTIFACT PASS.** G03 physical Mi TV Stick acceptance remains pending and is a separate gate. APK signature verification/device compatibility have not been independently established by this host-side artifact check.
+
+
+## G03 device acceptance preflight — 5 November 2026
+
+- G01 HOST/SOURCE PASS and G02 HOST BUILD + ARTIFACT PASS remain the documented entry gates.
+- G03 preflight revalidated live integration SHA `562cde0751de93748eb4e0d4cdece4fa1672ac4d`, run #1185 with both jobs SUCCESS, and available artifact ID `13210715335`.
+- Downloaded artifact digest matches GitHub SHA-256 `669491bfc7c9f5279ecc6c30915e4a340aa492bee21531db203036caf8651c81`; extracted APK is 1,572,293 bytes with SHA-256 `dc85fcd590eb2c52eb367d0bc9d4f67735cb94ef1cbf6f2b80b86f0de36de0dd`; archive integrity PASS.
+- Physical Mi TV Stick acceptance is not performed: host lacks ADB/signature tools and no TV is connected. Installation and device/package/ADB changes require explicit readiness approval.
+- G03 remains OPEN/BLOCKED, not PASS. See [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md). Artifact expiry: 10 November 2026 06:37:50 UTC.
