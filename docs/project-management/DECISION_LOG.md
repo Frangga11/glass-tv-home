@@ -367,3 +367,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Local handoff file: `Glass-TV-Home-G02-Final.apk` (1,572,293 bytes; SHA-256 above). No TV/device installation or physical acceptance testing has been performed. No GitHub Release or public release was created.
 - Build-only PR #61 was closed unmerged after artifact retrieval. It must not be merged into integration. `main` and all launcher source branches remain untouched.
 - **G02 disposition: HOST BUILD + ARTIFACT PASS.** G03 physical Mi TV Stick acceptance remains pending and is a separate gate. APK signature verification/device compatibility have not been independently established by this host-side artifact check.
+
+
+## D-019 — Upstream GIF avatar search and Dock capacity adoption (5 November 2026)
+
+- User approved adoption of exactly two upstream capabilities: animated GIF search for profile avatars and configurable Dock capacity 4/5/6 (default 5). All other upstream features remain excluded.
+- Upstream audit pinned `aqmangge/glass-tv-home` main HEAD `23064ec34ed597ce8bb044b3732f45be93e38324`.
+- GIF source audit found a hard-coded GIPHY API key, raw per-request Threads, silent error swallowing, direct final-file writes without visible atomic/size/type validation, no conservative rating parameter in the inspected query, and a storage path incompatible with E02's hardened `profile_avatars` store. Do not copy or reuse the upstream key or storage path. Require GIPHY attribution and compliant provider configuration.
+- Official GIPHY docs checked: Search API requires an API key and client-side search; beta keys are limited to 100 API calls/searches per hour; conspicuous Powered By GIPHY attribution is required. Production implementation must include safe rating, bounded requests/downloads, cancellation/stale-response protection, atomic private-profile storage, and localized failure states.
+- Dock source audit found upstream's `setDockColumns` changes both Dock capacity and global grid column count. Target E06 currently also uses one `COLUMNS` value for grid geometry and Dock threshold. Preserve single-row Dock geometry and explicitly account for the effect on app-grid density; verify DPAD, focus, order, alignment and persistence.
+- Ownership: GIF search remains in E02; Dock capacity remains in E06. Isolated branches created: `feature/e02-giphy-avatar-search-v1` from `feature/e02-profile-avatar-lock-ui`, and `feature/e06-dock-capacity-control-v1` from `feature/e06-home-screen-subtabs`. Existing owner branches, PRs, integration branch and `main` are unchanged.
+- Detailed audit: `UPSTREAM_FEATURE_ADOPTION_AUDIT_2026-11-05.md`; approved scope: `UPSTREAM_FEATURE_ADOPTION_GIF_DOCK.md`.
+- Status at this checkpoint: source audit PRELIMINARY PASS; architecture/adaptation contract defined; isolated work branches created; application source implementation, tests and CI NOT YET COMPLETE. No APK publication/installation, merge, or TV setting changes.
+- Patent wording means establish original project-specific design/implementation and preserve evidence. No patentability or legal exclusivity is claimed; formal filing requires separate novelty/prior-art and legal review.
