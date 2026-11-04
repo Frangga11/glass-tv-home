@@ -6,6 +6,10 @@ android {
     namespace 'com.gathin.tvhome'
     compileSdk 34
 
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
         applicationId 'com.gathin.tvhome'
         minSdk 26
