@@ -1199,3 +1199,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #62 and #63 remain OPEN/Draft/unmerged; their bases are diverged from current integration. No combined integration validation.
 - Audit detail and closure criteria: [E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md](E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md).
 - **Status: OPEN / BELUM FINAL.**
+
+
+## E02 remediation checkpoint — 5 November 2026
+
+- New preview UI and drawable lifecycle safeguards committed to E02 owner branch. Compile failure in intermediate CI #1201 was traced to missing `java.io.File` import and fixed.
+- Current E02 head: `dafcaf8a6dd8003300aca155d3c02395f1a28165`; CI #1203 / run `41895682457` pending at audit time.
+- Remaining E02 acceptance: cancellable/disconnectable HTTP request ownership, true animated preview or explicit product decision for still previews, tests for DPAD/profile-switch/storage rollback/memory and provider policy compliance.
+- E06 still OPEN: separate Dock container/adapter, independent orientation, capacity slots, overflow, settings UI, focus/navigation and six-layout simulations not implemented.
+- Overall status **OPEN / BELUM FINAL**.
