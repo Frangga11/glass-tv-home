@@ -96,7 +96,7 @@ final class GiphyAvatarDialog {
                         if(!dialog.isShowing()||generation.get()!=request)return;
                         progress.setVisibility(View.GONE); search.setEnabled(true);
                         adapter.submit(found);
-                        status.setText(found.isEmpty()?R.string.giphy_search_empty:activity.getString(R.string.giphy_search_count,found.size()));
+                        status.setText(found.isEmpty()?activity.getString(R.string.giphy_search_empty):activity.getString(R.string.giphy_search_count,found.size()));
                         if(!found.isEmpty() && results.getChildCount()==0) results.requestFocus();
                     });
                 } catch(Exception error) {
