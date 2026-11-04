@@ -1,7 +1,7 @@
 # Project G — Final Integration & Device Acceptance Readiness
 
 **Checkpoint ID:** GTVH-G-READY-2026-11-03  
-**Status:** READY TO START — G01 BASELINE/DEPENDENCY RECONCILIATION ONLY  
+**Status:** G01 PASS; G02 PASS; G03 PREFLIGHT VERIFIED / PHYSICAL ACCEPTANCE BLOCKED — NOT FINAL  
 **Project F:** Officially closed at HOST/SOURCE EXIT PASS (F01–F07)  
 **Frozen F07 candidate:** `integration/project-f07-performance-stability` @ `976e068d48ecc1ede2811ac455372395d382ba76`  
 **F07 PR:** #56 — Draft / Open / Unmerged  
@@ -76,8 +76,8 @@ Record evidence, not impressions:
 6. Use Trigger → Input → Verification → Work → Decision Point → Output → Quality Check → Final/Not Final.
 7. End every session by syncing HANDOVER, OPERATIONS_LOG, MASTER_PROJECT, INVENTORY, DECISION_LOG, AUDIT_REGISTER and roadmap.
 
-## Current decision
-Project G is ready to begin at G01. This checkpoint does not authorize merging, producing/installing a TV-test APK, or modifying the physical TV. The immediate next action is live repository reconciliation of all owner branches and PR dependencies against the frozen F-series evidence.
+## Historical current decision (superseded)
+The original G01-start decision above is retained for audit history. The controlling current decision is the 5 November 2026 addendum: G01 and G02 are complete at their defined host/source and artifact gates; G03 physical Mi TV Stick acceptance is current and remains OPEN/BLOCKED pending explicit readiness approval and device connection.
 
 
 ## Superseding roadmap/status correction — 5 November 2026
