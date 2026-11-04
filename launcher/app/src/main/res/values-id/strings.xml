@@ -370,9 +370,11 @@
     <string name="add_profile_card_title">➕ Tambah Profil Baru</string>
     <string name="add_profile_card_summary">Buat profil untuk anggota keluarga atau anak</string>
     <string name="lock_apps_count">🔒 Kunci Aplikasi dengan PIN (%1$d aplikasi)</string>
-    <string name="lock_apps_count_summary">Pilih aplikasi yang memerlukan PIN 4 digit untuk dibuka</string>
+    <string name="lock_apps_count_summary">Jumlah aturan PIN yang tersimpan. Aturan berlaku saat Mode Anak aktif.</string>
     <string name="hide_apps_count">👁️ Sembunyikan Aplikasi (%1$d aplikasi)</string>
-    <string name="hide_apps_count_summary">Pilih aplikasi yang disembunyikan dari dok dan kisi layar utama</string>
+    <string name="hide_apps_count_summary">Jumlah aturan sembunyikan yang tersimpan. Aturan berlaku saat Mode Anak aktif.</string>
+    <string name="app_picker_empty">Tidak ada aplikasi TV yang dapat diatur.</string>
+    <string name="app_policy_selected_count">%1$d aplikasi dipilih</string>
     <string name="change_pin_title">🔢 Ubah PIN Keamanan</string>
     <string name="change_pin_summary">Ubah PIN kontrol orang tua 4 digit (PIN saat ini: %1$s)</string>
     <string name="default_pin_label">0000 [Bawaan]</string>

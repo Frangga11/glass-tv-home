@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -322,7 +321,7 @@ public final class UserSwitchDialog {
                 activity.getString(R.string.parent_pin_delete_message, profileName),
                 new ChildModeManager.PinCallback() {
                     @Override public void onSuccess() {
-                        new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        AlertDialog deleteDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                                 .setTitle(activity.getString(R.string.delete_profile_title, profileName))
                                 .setMessage(R.string.delete_profile_message)
                                 .setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss())
@@ -336,7 +335,9 @@ public final class UserSwitchDialog {
                                     } else {
                                         TvFeedback.show(activity, R.string.profile_delete_failed, Toast.LENGTH_LONG);
                                     }
-                                }).show();
+                                }).create();
+                        deleteDialog.show();
+                        TvDialogStyle.apply(deleteDialog, activity, 520, 0);
                     }
                     @Override public void onCancelled() { }
                 });
