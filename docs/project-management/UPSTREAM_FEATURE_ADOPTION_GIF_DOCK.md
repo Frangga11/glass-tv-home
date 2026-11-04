@@ -33,7 +33,7 @@ The supplied screenshot labels the GIF search provider as **Giphy**. The upstrea
 - Save the selected GIF to the active profile only after explicit confirmation; never overwrite another profile's avatar.
 - Persist a stable provider asset reference and a locally cached asset where appropriate; handle cache eviction/offline startup without a broken avatar.
 - Bound image dimensions, decoded memory, download size, and concurrent requests for low-memory Android TV devices.
-- Keep provider credentials out of source control and the APK; audit API key handling, attribution, terms, privacy, content filtering, and rate limits before selecting the production integration.
+- Never commit our GIPHY key to source control or copy the upstream developer's key. Because GIPHY's documented Search flow is client-side, a client API key shipped in the APK must be treated as public/extractable rather than secret; use a project-owned key with provider-approved restrictions, quota monitoring and rotation. Do not promise that an APK-embedded client key is confidential. Audit attribution, terms, privacy, content filtering, and rate limits before production.
 - Preserve existing avatar options, QR upload, profile isolation, localization, DPAD/Back behavior, and persistence/recovery contracts.
 - Support Indonesian and English.
 
