@@ -150,3 +150,25 @@ The project can establish a distinctive original implementation, design language
 - Dock orientation vertical/horizontal: APPROVED.
 - Independent Dock capacity 4/5/6: APPROVED; default 5.
 - Source implementation, executable preview, tests and CI: NOT YET COMPLETE.
+## Implementation slice 1 — 5 November 2026
+
+### E02 provider foundation
+
+- Added `GiphyCatalogClient.java` on `feature/e02-giphy-avatar-search-v1`, commit `37a11b7b59e186377eaa5977584e945ead85e0fe`.
+- Added Gradle injection for project-owned `GIPHY_API_KEY` from Gradle property or environment variable; commit `6cb40d98fa152f6322eb6c6bacc96f4805259c76`. No key value is committed. Reminder: a client-side API key distributed in an APK is extractable/public.
+- Provider adapter supports G-rated search, query bound, result cap, bounded JSON response, HTTPS and GIPHY media host checks, bounded 8 MiB download, MIME and GIF signature checks, and profile-private `.upload` staging. The caller must complete the existing `ProfileManager.replaceCustomAvatar` transaction.
+- Draft PR #62 opened against the E02 owner branch: https://github.com/Frangga11/glass-tv-home/pull/62.
+- Not yet integrated: user-facing GIF picker UI, GIPHY attribution in UI, preview animation, animated avatar playback, localization, request cancellation/stale-result suppression, and profile refresh callback. Therefore this is a provider foundation only, not a complete feature.
+
+### E06 Dock preference foundation
+
+- Added `DockPreferences.java` on `feature/e06-dock-capacity-control-v1`, commit `446b94945e683e87901fd5d44e3f40688ede2ace`.
+- Model persists orientation (`VERTICAL`/`HORIZONTAL`) and capacity (4/5/6; default 5) independently, and intentionally does not touch `MainActivity.COLUMNS`.
+- Draft PR #63 opened against E06 owner branch: https://github.com/Frangga11/glass-tv-home/pull/63.
+- Not yet integrated: separate Dock container/adapter, UI settings, scroll/focus/reorder wiring, overflow handling, executable preview/simulation and localization. The preference model alone does not change the current launcher display.
+
+### CI status at checkpoint
+
+- PR #62 head `37a11b7b59e186377eaa5977584e945ead85e0fe`, workflow run #1186 / ID `41890161400`: queued then in progress at last poll; docs/tools job succeeded; Android build job still running. No CI PASS claim.
+- PR #63 head `446b94945e683e87901fd5d44e3f40688ede2ace`, workflow run #1187 / ID `41890170063`: docs/tools job succeeded; Android build job still running at last poll. No CI PASS claim.
+- No merge, release artifact publication, APK installation or TV setting changes.
