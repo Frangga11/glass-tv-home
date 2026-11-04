@@ -147,6 +147,11 @@ public final class ProfileManager {
                 File photo = new File(profile.customAvatarPath);
                 if (isPrivateAvatarFile(avatarDir, photo) && photo.getCanonicalFile().isFile()
                         && photo.getCanonicalFile().length() > 0) {
+                    if (photo.getName().toLowerCase(java.util.Locale.ROOT).endsWith(".gif")) {
+                        AnimatedGifDrawable animated = AnimatedGifDrawable.fromFile(photo,
+                                context.getResources().getDisplayMetrics().density, isChild);
+                        if (animated != null) return animated;
+                    }
                     BitmapFactory.Options bounds = new BitmapFactory.Options();
                     bounds.inJustDecodeBounds = true;
                     BitmapFactory.decodeFile(photo.getAbsolutePath(), bounds);
