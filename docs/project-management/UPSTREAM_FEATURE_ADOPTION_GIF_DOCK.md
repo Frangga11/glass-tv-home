@@ -63,3 +63,13 @@ No changes to wallpaper, weather/AQI, UI animations, UI sounds, prayer settings,
 ## Current disposition
 
 The user has approved the two-feature scope. This document records the decision and acceptance contract only. **No application source code has been changed and neither feature is claimed implemented or tested yet.**
+
+## User clarification — implementation style and Dock orientation (5 November 2026)
+
+- Reuse the upstream GIPHY provider/catalog and data flow as the functional baseline; do not rebuild a separate GIF database/provider. The inspected upstream is an API client to GIPHY, not a bundled developer-owned database.
+- Keep provider/data behavior; replace presentation with Glass TV global UI, shared focus/dialog/feedback behavior and Indonesian/English localization. Integrate selected media into E02's existing private profile-avatar storage/transaction. Do not copy the upstream embedded API key or parallel storage path; retain required GIPHY attribution and provider-policy compliance.
+- Add independent Dock settings: **orientation Vertical / Horizontal** and **capacity 4 / 5 / 6** (default 5).
+- Vertical = one-column Dock rail navigated/scrollable Up/Down. Horizontal = one-row Dock tray navigated/scrollable Left/Right.
+- Keep the app grid as a grid and Dock as its own presentation surface, backed by one ordered app model. Capacity/orientation must not change the app-grid column count, delete apps, reorder apps, or hide overflow. Preserve stable focus and long-press reorder behavior.
+- A separate Dock presentation is required because the current E06 single-RecyclerView implementation couples Dock membership and grid geometry. Do not implement orientation by merely changing the current GridLayoutManager orientation.
+- Verify 1080p/4K, density, focus, scroll, app-card and reorder behavior in an executable preview and exact-head CI before device acceptance.
