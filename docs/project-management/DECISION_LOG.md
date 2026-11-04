@@ -396,3 +396,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - G03 physical acceptance requires a connected Mi TV Stick and explicit user readiness approval before APK installation, package replacement, HOME/default-launcher change, ADB setting change, permission change or user-data mutation.
 - Proceed autonomously with non-mutating audit, artifact verification, test preparation and documentation. Do not infer device-mutation approval from a general instruction to continue project work.
 - G03 remains NOT FINAL until physical evidence and full acceptance matrix are complete.
+
+
+## D-021 — E02/E06 feature acceptance gates and implementation order (5 November 2026)
+
+- E02 PR #62 exact-head CI #1200 and E06 PR #63 exact-head CI #1198 each passed both required jobs. These are source/build test gates only, not feature-complete acceptance.
+- E02 cannot close until animated result previews are rendered; HTTP work is cancellable/disconnected; selection commits are guarded against dialog dismissal/profile changes; GIF drawable scheduling has a reliable stop lifecycle; DPAD, storage rollback, memory, localization, attribution and profile-switch regressions are covered.
+- E06 cannot close until Dock presentation is structurally separated from the main app grid. One authoritative ordered app model feeds independent Dock and app-grid adapters; orientation controls Dock row/rail only; capacity controls visible Dock slots only; overflow remains reachable. Settings UI, focus/DPAD/scroll/reorder/restoration and all six orientation/capacity combinations must be validated.
+- Existing branches are materially diverged from current integration. Do not merge Draft PR #62/#63 or combine their heads until dependency bases are reconciled and owner-branch fixes are validated.
+- Ownership remains E02 and E06 respectively. Preserve source branches and fix regressions on their owning branches. Main/integration remain untouched until approved Project G integration sequence.
+- G03 physical Mi TV Stick acceptance is explicitly out of scope until user announces that evaluation phase.
+- Full acceptance checklist: [E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md](E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md).
+- Status: **BELUM FINAL**.
