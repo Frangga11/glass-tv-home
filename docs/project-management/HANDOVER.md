@@ -1039,3 +1039,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - G03 matrix, blocker and evidence checklist: [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md).
 - **Decision:** device mutation remains gated by explicit readiness approval under the approved governance. User's instruction to continue routine technical work does not waive this gate. G03 remains OPEN/BLOCKED; do not claim device PASS.
 - Next: after explicit installation/readiness authorization and device connection, capture device identity/build/resolution/density/free storage and rollback baseline; then execute G03 matrix, capture logs/screenshots/metrics, route defects to owning branches, rerun exact-head CI and retest.
+
+
+## E02 GIF avatar + E06 Dock handover — 5 November 2026
+
+- Current feature heads: E02 PR #62 / `ea9415ec3f63f599872a5c3acda153e30f84e200`; E06 PR #63 / `ecdeb0eba9fc7a574f1a6c9930205517687cd922`. Both are OPEN Draft and unmerged.
+- Exact-head CI: E02 run #1200 (ID `41891880056`) both required jobs SUCCESS; E06 run #1198 (ID `41890835096`) both required jobs SUCCESS. This is isolated-head build/test evidence only.
+- E02 remains incomplete: GIF result grid has text tiles, not animated thumbnails; request cancellation does not explicitly disconnect active HTTP connections; selection commit is not fully gated on dialog/profile lifecycle; drawable stop lifecycle is not wired; DPAD/storage/profile-switch/memory regression coverage is incomplete.
+- E06 remains incomplete: only independent preference model + normalization tests exist. Current MainActivity still shares one `COLUMNS` between grid columns, Dock threshold, AppAdapter and DockDecoration. Separate Dock view/adapter, orientation-specific layouts, overflow, settings UI, focus graph/scroll/reorder and six-combination simulation are not implemented.
+- Full source audit and ordered implementation sequence: [E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md](E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md).
+- No merge, integration/main update, APK publication, installation, ADB or Mi TV Stick evaluation performed. G03 remains explicitly deferred by the user.
+- **Disposition: BELUM FINAL.** Next work is E02-A..E and E06-A..F on their owner branches; then reconcile dependency bases, run combined integration tests and exact-head CI. Do not mark either feature ready on the basis of CI alone.
