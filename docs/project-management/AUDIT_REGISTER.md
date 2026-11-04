@@ -1190,3 +1190,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **No mutation:** no install, package replacement, HOME/default change, ADB setting, permission, data wipe or device change.
 - **Evidence and matrix:** [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md).
 - **Closure criteria:** explicit readiness approval, live device baseline, install/rollback evidence, full physical test matrix, logs/metrics, defect fixes at owner branches and exact-head retest. Host CI is not device PASS.
+
+
+## E02-GIF-002 / E06-DOCK-002 — Feature implementation audit (5 November 2026)
+
+- **E02 source head:** `ea9415ec3f63f599872a5c3acda153e30f84e200`; CI #1200 both required jobs SUCCESS. Search/data safeguards verified; animated previews, explicit cancellation/disconnect, lifecycle-safe commit and drawable stop wiring, and regression matrix remain incomplete.
+- **E06 source head:** `ecdeb0eba9fc7a574f1a6c9930205517687cd922`; CI #1198 both required jobs SUCCESS. Preference model/tests exist, but rendering/settings/focus/overflow/reorder are absent. Shared `COLUMNS` couples grid and Dock, so a separate Dock view/adapter and authoritative ordering model are required before orientation/capacity can work independently.
+- PR #62 and #63 remain OPEN/Draft/unmerged; their bases are diverged from current integration. No combined integration validation.
+- Audit detail and closure criteria: [E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md](E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md).
+- **Status: OPEN / BELUM FINAL.**
