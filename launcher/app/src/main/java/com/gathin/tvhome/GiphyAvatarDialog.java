@@ -65,7 +65,8 @@ final class GiphyAvatarDialog {
         RecyclerView results=new RecyclerView(activity);
         results.setLayoutManager(new GridLayoutManager(activity,4));
         results.setFocusable(false); results.setClipToPadding(false);
-        GifAdapter adapter=new GifAdapter(activity,profileId,onUpdated,status);
+        final Runnable[] closeDialog={()->{}};
+        GifAdapter adapter=new GifAdapter(activity,profileId,onUpdated,status,()->closeDialog[0].run());
         results.setAdapter(adapter);
         root.addView(results,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0,1f));
 
@@ -78,6 +79,7 @@ final class GiphyAvatarDialog {
         AlertDialog dialog=new AlertDialog.Builder(activity,R.style.Theme_TvHome_GlassDialog)
                 .setTitle(R.string.giphy_avatar_title).setView(root)
                 .setNegativeButton(R.string.cancel_action,(d,w)->d.dismiss()).create();
+        closeDialog[0]=dialog::dismiss;
         ExecutorService worker=Executors.newSingleThreadExecutor();
         AtomicInteger generation=new AtomicInteger();
         dialog.setOnDismissListener(d->{generation.incrementAndGet();worker.shutdownNow();adapter.close();});
@@ -127,10 +129,10 @@ final class GiphyAvatarDialog {
 
     private static final class GifAdapter extends RecyclerView.Adapter<GifHolder> {
         private final MainActivity activity; private final String profileId; private final Runnable onUpdated;
-        private final TextView status; private final List<GiphyCatalogClient.GifAsset> items=new ArrayList<>();
+        private final TextView status; private final Runnable closeDialog; private final List<GiphyCatalogClient.GifAsset> items=new ArrayList<>();
         private final ExecutorService chooser=Executors.newSingleThreadExecutor();
         private boolean closed;
-        GifAdapter(MainActivity a,String p,Runnable u,TextView s){activity=a;profileId=p;onUpdated=u;status=s;setHasStableIds(false);}
+        GifAdapter(MainActivity a,String p,Runnable u,TextView s,Runnable close){activity=a;profileId=p;onUpdated=u;status=s;closeDialog=close;setHasStableIds(false);}
         void submit(List<GiphyCatalogClient.GifAsset> list){items.clear();items.addAll(list);notifyDataSetChanged();}
         void clear(){items.clear();notifyDataSetChanged();}
         void close(){closed=true;chooser.shutdownNow();}
@@ -166,9 +168,7 @@ final class GiphyAvatarDialog {
                             activity.updateTopBarUserIcon();
                             if(onUpdated!=null)onUpdated.run();
                             TvFeedback.show(activity,R.string.giphy_avatar_saved,Toast.LENGTH_SHORT);
-                            // The enclosing dialog is dismissed by the owner callback on the next UI turn.
-                            View root=holder.tile.getRootView();
-                            if(root!=null)root.dispatchKeyEvent(new android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN,android.view.KeyEvent.KEYCODE_BACK));
+                            closeDialog.run();
                         }else{
                             holder.tile.setEnabled(true); status.setText(R.string.giphy_avatar_save_failed);
                             TvFeedback.show(activity,R.string.giphy_avatar_save_failed,Toast.LENGTH_LONG);
