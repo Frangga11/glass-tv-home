@@ -160,3 +160,11 @@ E02 selectively carries the QR avatar implementation into the profile-security b
 ## Official transition — 3 November 2026
 
 Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G is ready to begin at G01. The frozen F07 candidate is `integration/project-f07-performance-stability` @ `976e068d48ecc1ede2811ac455372395d382ba76`; PR #56 remains Draft/open/unmerged. Physical Mi TV Stick acceptance and full integrated regression remain Project G obligations. See [PROJECT_G_READINESS_CHECKPOINT.md](PROJECT_G_READINESS_CHECKPOINT.md).
+
+
+## Current Project G03 checkpoint — 5 November 2026
+
+- Project F is closed HOST/SOURCE EXIT PASS. G01 HOST/SOURCE PASS and G02 HOST BUILD + ARTIFACT PASS are recorded in HANDOVER.
+- Current G03 task: Mi TV Stick physical acceptance. Non-mutating preflight confirms integration SHA `562cde0751de93748eb4e0d4cdece4fa1672ac4d`, G02 run #1185 both jobs SUCCESS, artifact #13210715335 available, artifact digest and extracted APK SHA-256 match the canonical record, and APK ZIP integrity PASS.
+- G03 is OPEN/BLOCKED: no connected TV/ADB tools in this host; explicit readiness approval is required before installation/device mutation. No physical acceptance is claimed.
+- See [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md). Artifact retention expires 10 Nov 2026 06:37:50 UTC.
