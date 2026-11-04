@@ -78,3 +78,21 @@ Record evidence, not impressions:
 
 ## Current decision
 Project G is ready to begin at G01. This checkpoint does not authorize merging, producing/installing a TV-test APK, or modifying the physical TV. The immediate next action is live repository reconciliation of all owner branches and PR dependencies against the frozen F-series evidence.
+
+
+## Superseding roadmap/status correction — 5 November 2026
+
+This readiness document contains an earlier work-package numbering (G03 integrated source audit, G04 readiness, G05 device acceptance, G06 release). That sequence is historical and is **superseded** by the subsequently approved official five-stage Project G roadmap recorded in INVENTORY.md and HANDOVER.md. Do not use the older numbering to determine the current stage.
+
+**Binding current sequence:**
+1. G01 — Penyelesaian Bug Terakhir / branch reconciliation (HOST/SOURCE PASS).
+2. G02 — Build APK Final yang Sudah Teruji (HOST BUILD + ARTIFACT PASS).
+3. G03 — Uji Instalasi pada Mi TV Stick (current; preflight verified, physical acceptance not run).
+4. G04 — Finalisasi Dokumentasi GitHub.
+5. G05 — Finalisasi Memory dan Handover ChatGPT.
+
+**Current G03 evidence:** live integration SHA `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; G02 run #1185 both required jobs SUCCESS; artifact #13210715335 is available until 10 Nov 2026 06:37:50 UTC; downloaded artifact digest and extracted APK SHA-256 match the G02 canonical record; APK archive integrity PASS. No physical Mi TV Stick test or installation has been performed.
+
+**Current G03 blocker:** no connected Mi TV Stick/ADB/signature-verification tools in the execution host. Explicit user readiness approval remains required before installation, package replacement, HOME/default launcher change, ADB setting, permission or data mutation. G03 remains OPEN/BLOCKED / NOT FINAL. See [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md).
+
+Preserve the original historical work-package descriptions above for audit traceability; this addendum is the current controlling roadmap/status.
