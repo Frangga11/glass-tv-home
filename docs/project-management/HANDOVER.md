@@ -1026,3 +1026,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Local handoff file: `Glass-TV-Home-G02-Final.apk` (1,572,293 bytes; SHA-256 above). No TV/device installation or physical acceptance testing has been performed. No GitHub Release or public release was created.
 - Build-only PR #61 was closed unmerged after artifact retrieval. It must not be merged into integration. `main` and all launcher source branches remain untouched.
 - **G02 disposition: HOST BUILD + ARTIFACT PASS.** G03 physical Mi TV Stick acceptance remains pending and is a separate gate. APK signature verification/device compatibility have not been independently established by this host-side artifact check.
+
+
+## G03 device acceptance preflight — 5 November 2026
+
+- **Current stage:** G03 physical Mi TV Stick acceptance; preflight completed, physical execution BLOCKED / NOT FINAL.
+- Live `integration/b-series` still points to exact candidate `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- G02 artifact #1185 / run `41590889219`: both jobs SUCCESS. Live artifact ID `13210715335` remains available; expiry 10 Nov 2026 06:37:50 UTC.
+- Re-downloaded artifact ZIP SHA-256 `669491bfc7c9f5279ecc6c30915e4a340aa492bee21531db203036caf8651c81`; extracted APK is 1,572,293 bytes, SHA-256 `dc85fcd590eb2c52eb367d0bc9d4f67735cb94ef1cbf6f2b80b86f0de36de0dd`. ZIP integrity PASS; required manifest/DEX/resources entries present.
+- Current host has no adb/apksigner/aapt/zipalign and no connected Mi TV Stick. No signature validation, install, package mutation, HOME/default change or device setting change performed.
+- PR #61 CLOSED/UNMERGED; integration head unchanged; main untouched.
+- G03 matrix, blocker and evidence checklist: [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md).
+- **Decision:** device mutation remains gated by explicit readiness approval under the approved governance. User's instruction to continue routine technical work does not waive this gate. G03 remains OPEN/BLOCKED; do not claim device PASS.
+- Next: after explicit installation/readiness authorization and device connection, capture device identity/build/resolution/density/free storage and rollback baseline; then execute G03 matrix, capture logs/screenshots/metrics, route defects to owning branches, rerun exact-head CI and retest.
