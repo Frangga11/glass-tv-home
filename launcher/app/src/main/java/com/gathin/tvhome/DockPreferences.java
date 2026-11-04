@@ -18,12 +18,16 @@ final class DockPreferences {
 
     static DockPreferences load(Context context) {
         SharedPreferences p=context.getSharedPreferences(PREFS,Context.MODE_PRIVATE);
-        Orientation o;
-        try { o=Orientation.valueOf(p.getString(KEY_ORIENTATION,Orientation.HORIZONTAL.name())); }
-        catch(Exception ignored) { o=Orientation.HORIZONTAL; }
-        int n=p.getInt(KEY_CAPACITY,DEFAULT_CAPACITY);
-        if(n!=4 && n!=5 && n!=6) n=DEFAULT_CAPACITY;
+        Orientation o=normalizeOrientation(p.getString(KEY_ORIENTATION,Orientation.HORIZONTAL.name()));
+        int n=normalizeCapacity(p.getInt(KEY_CAPACITY,DEFAULT_CAPACITY));
         return new DockPreferences(o,n);
+    }
+    static Orientation normalizeOrientation(String raw) {
+        try { return Orientation.valueOf(raw); }
+        catch(Exception ignored) { return Orientation.HORIZONTAL; }
+    }
+    static int normalizeCapacity(int value) {
+        return value==4 || value==5 || value==6 ? value : DEFAULT_CAPACITY;
     }
     static boolean save(Context context,Orientation orientation,int capacity) {
         if(context==null || orientation==null || (capacity!=4 && capacity!=5 && capacity!=6)) return false;
