@@ -58,5 +58,5 @@ final class AnimatedGifDrawable extends Drawable implements Runnable {
     @Override public void setAlpha(int alpha) { imagePaint.setAlpha(alpha); ringPaint.setAlpha(alpha); invalidateSelf(); }
     @Override public void setColorFilter(ColorFilter filter) { imagePaint.setColorFilter(filter); invalidateSelf(); }
     @Override public int getOpacity() { return PixelFormat.TRANSLUCENT; }
-    @Override public void stop() { running=false; unscheduleSelf(this); }
+    public void stop() { running=false; unscheduleSelf(this); }
 }
