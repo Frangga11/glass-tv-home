@@ -12,6 +12,10 @@ android {
         targetSdk 34
         versionCode 40
         versionName '4.0.0'
+        // GIPHY client keys are public in a distributed APK. Never use a private/server secret here.
+        def giphyKey = providers.gradleProperty('GIPHY_API_KEY')
+                .orElse(providers.environmentVariable('GIPHY_API_KEY')).getOrElse('')
+        buildConfigField 'String', 'GIPHY_API_KEY', '"' + giphyKey.replace('\\', '\\\\').replace('"', '\\"') + '"'
     }
 
     buildTypes {
