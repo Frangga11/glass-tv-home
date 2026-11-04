@@ -814,3 +814,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - No adb/apksigner/aapt/zipalign or connected TV available in host environment. No device/package/HOME/ADB mutation or install was performed.
 - Added [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md).
 - Disposition: G03 preflight verified; physical acceptance NOT RUN / BLOCKED pending explicit readiness approval and device connection. Artifact expires 10 Nov 2026 06:37:50 UTC.
+
+
+## 5 November 2026 — E02 GIF avatar + E06 Dock source audit
+
+- Fetched live PR metadata and full diffs for #62 and #63; compared each feature branch with `integration/b-series`. E02 is 15 commits ahead / 326 behind with merge base `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; E06 is 3 commits ahead / 297 behind with merge base `570b7c83efaec3ac515b78f1c6c119b777fc3b84`. These are dependency-diverged owner branches; no merge or rebase performed.
+- Rechecked exact-head CI: E02 #1200 / run ID `41891880056` both required jobs SUCCESS; E06 #1198 / run ID `41890835096` both required jobs SUCCESS.
+- E02 source audit: GIPHY client has bounded G-rated search, HTTPS host checks, redirect disabled, bounded JSON/GIF download, MIME/signature validation, private staging and attribution. Missing: thumbnail/animated preview rendering; active HTTP cancellation/disconnect; lifecycle commit gate; drawable stop lifecycle integration; broader DPAD, storage rollback, profile-switch, memory and attribution tests.
+- E06 source audit: only `DockPreferences` and 31-line normalization/membership unit tests added. MainActivity remains one RecyclerView/GridLayoutManager with shared `COLUMNS` for grid columns, AppAdapter Dock threshold and DockDecoration. No independent Dock adapter/container, orientation renderers, settings UI, overflow/focus/reorder wiring or six-combination simulation.
+- Created [E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md](E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md) with exact refs, verified checks, root architecture issue, implementation order and acceptance criteria.
+- No source mutation, PR merge, integration/main update, APK publication/install, ADB or device evaluation performed in this audit pass. G03 remains deferred until user announces device-evaluation phase.
+- **Disposition: both isolated-head CI gates PASS; both feature acceptance gates OPEN / BELUM FINAL; combined integration validation NOT RUN.**
