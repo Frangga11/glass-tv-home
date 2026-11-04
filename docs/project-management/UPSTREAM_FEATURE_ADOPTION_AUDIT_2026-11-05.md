@@ -66,13 +66,13 @@ Positive behavior to adapt:
 - Preference persistence.
 - Rebuilds grid adapter/decoration and restores focus after selection.
 
-Important architectural improvement for target:
-- Upstream calls the setting "Dock columns", but `setDockColumns` changes the global `COLUMNS` value and the GridLayoutManager span count as well as Dock capacity. This couples two separate concepts.
-- Target E06 currently has a single `COLUMNS` value documented as both grid columns and dock slots; `AppAdapter` also receives that value as `dockSize`.
-- Our adaptation should separate **grid column count** from **Dock capacity**. Dock capacity controls only how many leading ordered apps are in the Dock; the app-grid column count remains unchanged.
-- Reducing capacity must never delete, reorder, or hide apps. Existing saved app order and apps after the Dock remain in the app grid.
-- Recompute Dock decoration and alignment using the capacity while tile geometry remains based on grid columns. Preserve focus identity and scroll state through rebind/recreation.
-- Preference key must be namespaced and bounded to 4/5/6; default 5 for legacy installs.
+Important architectural finding and target decision:
+- Upstream calls the setting "Dock columns"; `setDockColumns` changes global `COLUMNS` and the GridLayoutManager span count as well as Dock capacity. This coupling keeps the Dock in one row.
+- Target E06 also has one `COLUMNS` value for grid columns and Dock slots; AppAdapter uses it for tile geometry and Dock membership.
+- A truly independent Dock capacity would require a separate horizontal Dock container/adapter or a more substantial span/layout redesign. Changing only the Dock threshold while leaving the current grid at fewer columns could wrap a 5- or 6-item Dock onto multiple rows and break the visual contract.
+- **Safe first adaptation:** retain the existing single-RecyclerView architecture and let the selected Dock capacity (4/5/6) drive the matching column count, tile sizing, and Dock decoration as one coherent layout setting. Clearly label the effect in Settings so users understand that app-grid density also adapts. Default remains 5.
+- Do not delete, reorder, or hide apps when capacity changes. Preserve the saved order; the first N ordered apps occupy the Dock and the rest remain in the grid.
+- If a later design review approves a separate Dock/Grid layout, treat that as a distinct architecture project with its own focus/scroll regression matrix, not as a hidden refactor inside this feature.
 
 ## Target branch baselines and isolated work branches
 
