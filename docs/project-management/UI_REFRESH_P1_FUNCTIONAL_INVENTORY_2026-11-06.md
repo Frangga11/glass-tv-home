@@ -378,3 +378,107 @@ User instructed: “Lakukan pekerjaan sesuai rekomendasi gambar.” Treat V01–
 - V02 must not reduce the locked Weather V4 information scope; reference layout governs hierarchy, not data deletion.
 - P2 Shared Design & Interaction Contract is authorized to begin. P3 prototype and P4 implementation are not authorized by this direction alone; they require review of the P2 deliverable and a separate approval.
 - Overall P1 source inventory remains PARTIAL — BELUM PASS pending runtime/device/state verification. This does not prevent proceeding with P2 using the approved references and explicit limitations.
+
+
+---
+
+# P1 Finalization Addendum — Trigger 2 Inventory Closure Review (6 Nov 2026)
+
+## 14. Trigger 2 completion review
+
+This review closes the **inventory authoring and reference-mapping work** for Trigger 2. It does not claim runtime/device validation or feature parity where evidence is absent.
+
+### 14.1 Six-surface inventory closure
+
+| Reference | Inventory coverage | Source/design disposition | Remaining validation |
+|---|---|---|---|
+| V01 Home Screen | Main navigation, top shelf, location/weather/AQI, prayer/verse, app tiles, Dock, wallpaper and focus | Source inventory complete; target composition adopted | Independent Dock architecture, geometry, overscan, focus and runtime screenshot |
+| V02 Weather & AQI | Current weather, hourly/7-day, AQI, primary and secondary metrics, location/source/update | Source inventory complete; full locked V4 scope retained | Provider/source truthfulness, stale/offline/error/permission states and visual density |
+| V03 Profile Selector | Existing profile selection, add/switch, Child Mode and relation to full Profile settings | Functional inventory complete at source level | Active vs focused state, no-profile/default invariant, Back/focus restore, add/switch failure and profile lifecycle |
+| V04 Quick Settings | Restart, power off, cache, language, Wi-Fi handoff, wallpaper interval, Glass TV Settings, Android Settings, close | Source action inventory mapped; **Next Photo is target-only / not source-verified** | Verify action availability and wallpaper controller API; confirm/failure feedback and system-intent handling |
+| V05 Wi-Fi Popup | Connection state, SSID/IP where available, status refresh, Android Wi-Fi settings handoff | Existing source is status/deep-link only; **scan/list/rescan/connect/password/radio control are absent from evidenced surface** | Android 11/OEM feasibility and permission/security audit before any enhanced capability claim |
+| V06 Global Settings | Seven category navigation, split panes, search, detail controls, state/focus/scroll ownership | Source inventory complete; target taxonomy adopted | Control-level runtime focus, category localization, search semantics, scroll restoration and responsive behavior |
+
+### 14.2 Settings category and nested control coverage
+
+The existing P1 tables remain the control-level inventory of record. This finalization confirms the seven reference categories and their module ownership:
+
+| Target category | Existing source content included | Primary owner(s) |
+|---|---|---|
+| Profil | Active profile, avatar sources, QR/GIPHY, rename, profile list/add/switch/delete, Child Mode, locked/hidden apps, parent PIN | E02 |
+| Layar Utama | Prayer panel, daily ayah, interface sound, Azan settings; Home layout and Dock requirements | E06, E05/E01 for information/system dependencies |
+| Tampilan | Wallpaper collection, interval, uploaded wallpaper management, wallpaper behavior | E08 |
+| Widget & Informasi | Weather widget, location, weather/AQI dashboard, information actions and prayer/weather data presentation | E05, with E01 location/device integration |
+| Animasi & Efek | Icon animation, glass effects and weather animation | E07 |
+| Layar Siaga | Screensaver collection, QR/photo upload, selected photos, enable/disable, clear and preview | E04 |
+| Pengaturan Perangkat | Default launcher/Home control, accessibility services, input key service, notification access, screensaver/system timeout, restart/power, cache/storage/device info, language, OTA and Android Settings | E01 |
+
+No category reassignment changes feature ownership. The reference category “Widget & Informasi” is a UI taxonomy; E05 retains ownership of weather/information data and E01 retains device/location integration.
+
+### 14.3 Cross-surface state and interaction inventory
+
+The following state dimensions are explicitly required across applicable surfaces. Presence in this inventory means a requirement has been captured, not that every state has been verified in a running APK.
+
+- **Navigation/focus:** initial focus, selected vs focused vs enabled, D-pad directional traversal, list scroll with focus, popup anchor, close, Back cancellation, origin focus restoration, tab transition and focus retention.
+- **Data lifecycle:** loading, fresh success, stale success with timestamp, empty/no data, offline, retryable error, provider unavailable and interrupted refresh.
+- **Permissions/capabilities:** granted, denied, permanently unavailable, OEM-restricted, system-managed, missing intent/handler and graceful Android Settings handoff.
+- **Actions:** idle, invoking, success, failure, cancellation, duplicate invocation prevention, destructive confirmation, restart/power safety and cache cleanup result.
+- **Profile policy:** active profile, non-active profile, child policy, PIN required, invalid PIN, add/switch/delete cancellation and avatar absent/loading/failure.
+- **Home content:** no apps, package removed, app launch failure, no weather/location/prayer data, wallpaper load failure, media absent, long labels and dynamic content overflow.
+- **TV interaction/accessibility:** focus visibility over bright/dark wallpaper, overscan, text scaling, reduced motion, animation interruption, remote key repeat and no touch-only interaction dependency.
+- **Localization:** long translated labels, date/time formatting, units, RTL readiness where applicable, missing translation fallback and Indonesian category terminology.
+
+### 14.4 Reuse / build / replace register
+
+| Component or area | Decision | Reason / next action |
+|---|---|---|
+| TvUiTokens | Reuse and extend | Add semantic glass, contrast, typography, spacing, radii, motion and state tokens; avoid second token system |
+| TvDialogStyle / GlassDrawable | Reuse and extend | Provide consistent glass and high-opacity fallback variants |
+| TvFocusIndicator | Extend | Existing coverage is too narrow for cards, rows, toggles, chips, list items and close controls |
+| TvResponsiveLayout | Extend after contract | Add TV-safe area/overscan and adaptive popup placement; avoid ad hoc per-screen geometry |
+| Settings row/card/switch builders | Reuse and standardize | Consistent sizing, focus, selected/disabled and error behavior |
+| Popup menu/row infrastructure | Reuse where suitable | V04 and V05 need consistent anchors, scroll, focus restoration and surface style |
+| Home Dock | Re-architect / separate | Current grid/Dock coupling prevents independent orientation/capacity/layout |
+| Wi-Fi popup | Expand only after feasibility audit | Current source is status + system handoff, not a network manager |
+| Settings taxonomy/search | Refine | Map existing feature owners to V06 categories; decide whether search targets categories or individual controls |
+| Weather data presentation | Reorganize, do not reduce | Preserve full V4 scope and truthful provider/standard labels |
+
+### 14.5 Confirmed gaps vs unverified items
+
+**Confirmed from the existing audited source inventory**
+1. Dock has no independent renderer/adapter; app grid and Dock share RecyclerView/GridLayoutManager geometry.
+2. Dock orientation/capacity preference model is not wired to visible Settings controls/renderer.
+3. Wi-Fi popup is not an in-app network scanner/manager.
+4. Current Settings taxonomy uses “Status Bar & Weather”; V06 target uses “Widget & Informasi”.
+5. Shared focus indicator coverage is narrower than the full set of target interactive controls.
+6. Existing Settings shell is not yet using the full blue-glass reference treatment.
+
+**Not yet verified / must not be represented as a confirmed implementation**
+1. Quick Settings “Next Photo” action.
+2. Wi-Fi nearby-network scan/list/rescan, direct connect, credential entry, forget and radio toggle.
+3. Runtime focus restoration and edge/overscan placement across every popup.
+4. All empty/offline/error/permission-denied/interrupted states on target TV.
+5. Exact 1920×1080 geometry, text scale, contrast over bright/dark wallpapers and visual parity.
+6. Regional weather/AQI source-label behavior and every V4 pollutant/source field on live data.
+
+### 14.6 Dependency and decision order
+
+1. B01 shared visual/focus/dialog/responsive/state foundation.
+2. E01 feasibility and system surfaces, including Wi-Fi capability boundary and Quick Settings action availability.
+3. E05 Weather V4 hierarchy and source truthfulness.
+4. E02 profile selector and profile policy.
+5. E06 Home/Dock separation and Home Screen controls.
+6. E08 wallpaper behavior, E07 visual effects, E04 standby.
+7. Cross-surface QA: focus, Back, state, localization, overscan, contrast and device validation.
+
+This is a proposed dependency order, not authorization to modify owner branches or implement production code.
+
+### 14.7 Final Trigger 2 quality disposition
+
+- **Inventory scope coverage:** PASS — six visual surfaces, seven Settings categories, nested control domains, state dimensions, data boundaries, owners, dependencies, reuse/build/replace decisions and confirmed/unverified gaps are recorded in this canonical inventory.
+- **Visual reference mapping:** PASS — all six user-provided references V01–V06 are mapped.
+- **Source functional parity:** PARTIAL — known gaps are explicit; Next Photo remains unverified; Wi-Fi reference functionality is not present in the evidenced source surface.
+- **Runtime/device validation:** NOT RUN — no device/ADB/runtime screenshot testing was authorized or performed in this Trigger 2 closure pass.
+- **Overall Trigger 2:** **INVENTORY COMPLETE — VALIDATION PARTIAL / BELUM PASS.** This means the inventory artifact is complete enough to serve as the P1 baseline; it does not mean all target features are implemented or all tests passed.
+- **Gate:** P1 inventory authoring may close. Runtime validation remains a separate QA gate. P2 design contract is a separate workstream and must not be confused with P1 completion. P3 prototype and P4 implementation remain gated by user approval of P2.
+- **Change boundary:** documentation-only. No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV was changed.
