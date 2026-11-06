@@ -1303,3 +1303,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Disposition: PROTOTYPE VISUAL — REVISION REQUIRED.** This is a source-to-reference composition finding, not a screenshot measurement. A browser render/screenshot at exactly 1920×1080 was NOT captured; pixel/geometry, blur, color sampling and rendered legibility remain unverified.
 - V4 is preserved unchanged. No production source, owner branch, PR, integration/main, APK, ADB or physical device changed. P4/mass implementation remains BLOCKED.
 - **Next:** create a new versioned visual prototype revision, then obtain actual 1920×1080 screenshots for all six surfaces and repeat side-by-side comparison before requesting owner approval.
+
+## UI Refresh — TRIGGER 4 V5 visual revision checkpoint (6 November 2026)
+
+- Created new prototype-only artifact [UI_REFRESH_TRIGGER4_VISUAL_PROTOTYPE_V5.html](prototypes/UI_REFRESH_TRIGGER4_VISUAL_PROTOTYPE_V5.html); V4 remains unchanged.
+- V5 source revisions: Home now has clock/status/navigation, location/weather chips, prayer/information strip and bottom Dock; Profile Selector has four cards; Quick Settings and Wi-Fi have centered glass-popup compositions; Global Settings has an icon-led seven-category sidebar, identity/status header and profile detail card. Shared CSS adds translucent panels, backdrop blur and layered shadow.
+- Temporary placeholders remain: CSS scenic gradient instead of original photographic wallpaper; emoji avatars/icons instead of final artwork. Rendering is not verified.
+- V5 static QC PASS: JavaScript syntax parse, one script, no duplicate IDs, required structures present. Evidence: [UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md](UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md).
+- **Final disposition remains PROTOTYPE VISUAL — REVISION REQUIRED.** No browser render or 1920×1080 screenshot was captured; actual geometry, overlay behavior, text fit, colors, blur, glow and legibility remain unverified.
+- V4 preserved; no production source, feature branch, PR, integration/main, APK, ADB or TV device changed. P4/mass implementation remains BLOCKED.
+- Next: render all six V5 surfaces at 1920×1080, capture screenshots, compare each against its reference crop, correct observed deviations and only then request owner visual approval.
