@@ -166,3 +166,147 @@ Next authorized work after acceptance: P2 shared design & interaction contract, 
 - PR #62 description contains a stale statement that the latest head has not received confirmed exact-head CI. This conflicts with the live Actions evidence: run #1204 is attached to exact head `588456144df24f2f6c015a01053ad700a04bee39`, completed SUCCESS, and both required jobs succeeded. The PR description was not edited in this P1 pass; reconcile its text during the next authorized owner-branch/PR documentation update.
 - PR #63 description's exact-head CI statement matches live run #1198. Both PRs remain Draft and unmerged.
 - The earlier compare at the first consistency checkpoint verified the docs branch at `5d891b42147a0dea71cc7b7f6ad0e0ce43783f12`; later consistency addenda were then committed. The final docs branch head is recorded in the latest HANDOVER checkpoint.
+
+
+---
+
+# P1 Expansion — Global UI Functional Inventory Completion
+**Document:** GTVH-UIR-P1-001 / expansion 1  
+**Audit date:** 6 November 2026  
+**Source baseline:** `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`  
+**Documentation branch:** `docs/project-master-inventory`  
+**Disposition:** **PARTIAL — SOURCE MAPPING EXPANDED; VISUAL REFERENCE ACCEPTANCE BLOCKED**  
+**Method:** read-only source inspection and documentation update. No production source, owner branch, PR metadata, integration/main, APK, ADB or device changed.
+
+## 11. Scope and method of expansion
+
+This is an additive expansion of the existing P1 inventory, not a second inventory. Existing E02 and E06 tables remain authoritative for their detailed controls. This section adds cross-module coverage for the six named UI surfaces, Settings categories and nested actions, shared components, ownership and implementation dependencies.
+
+Evidence distinction:
+- **Source-present:** implementation and entry point were found at the frozen integration source.
+- **Partial:** source exists but behavior, states, runtime/device evidence or reference equivalence is incomplete.
+- **Absent/not wired:** data model or adjacent capability exists but the requested user-facing surface is not implemented/wired.
+- **Reference comparison blocked:** the six exact reference image assets were not found in the repository tree or the available source records for this audit. Existing promotional/live screenshots are not silently substituted for the user's six approved references. Source-to-surface mapping is possible; pixel/geometry comparison against the approved six images is not yet evidenced.
+
+## 12. Six-surface visual reference to source mapping
+
+| Ref ID | Requested surface | Source entry / principal files | Actual behavior and functional elements | State/data/owner | Disposition and gap |
+|---|---|---|---|---|---|
+| V01 | Home Screen | `MainActivity.java`, `activity_main.xml`, `AppAdapter.java`, `Config.java`, `DockDecoration.java` | Wallpaper/backdrop; top shelf; Inputs, Wi-Fi, Assistant, profile and Settings pills; date/time and prayer shelf; weather/AQI widget; media card; app grid and dock decoration; app launch, focus, package refresh, top-bar popups. | Installed app inventory from PackageManager; tile/favourite/hidden state and order; `theme_prefs`, `wallpaper_prefs`, `tiles/order`; owners E06 for Home/Dock, E05 for information widgets, E07 for visual effects, E01 for device/top-bar integration, E02 for profile identity, B01 for shared focus/navigation. | **Source-present / partial.** Existing Home is not an independent Dock architecture: one RecyclerView/GridLayoutManager and `COLUMNS` still couple grid columns, Dock membership, tile sizing, decoration and focus. The approved visual target cannot be compared pixel-by-pixel until V01 reference asset is attached/located. |
+| V02 | Weather & AQI Dashboard | `WeatherActivity.java`, `activity_weather.xml`, `WeatherAirQuality.java`, `WeatherBackgroundView.java`, `HomeWeather.java`, metric views | Location header/current condition/temp/high-low; hourly forecast strip; multi-day forecast rows and temperature bars; wind/compass; sunrise/sunset; UV; feels-like; AQI value/category/bar/model reference; precipitation/rain chance; visibility; humidity; pressure; radar illustration; source/update footer. Location picker exposes city/station, Asia region and visual mood. | Open-Meteo/CAMS model weather and modelled US AQI, selected location/region/station and `app_weather_prefs`; owner E05 (widgets/information) with E01 for location/device integration and B01 for dialog/focus. | **Source-present / partial.** AQI is explicitly a model estimate, not official Indonesian ISPU observation. Source contains a Malaysia/JAS APIMS footer path; region/provider applicability must be checked for supported Indonesian target locations. Exact V2 reference equivalence is unverified. Weather popup details must retain the previously approved V4 scope, but the live dashboard source must be reconciled against that locked scope rather than assuming every V4 field is already displayed. |
+| V03 | Profile Selector | `UserSwitchDialog.java`, `ProfileManager.java`, `ChildModeManager.java`, `ModernSettingsDialog.java` Profile tab, `TvFocusIndicator.java` | Horizontal profile selector with active-profile indication, Add Profile and Close; select another profile; Child Mode parent-PIN gate before switching away; profile creation/avatar choice; deletion protected by parent PIN and confirmation. Settings Profile tab also exposes avatar selection, QR upload, GIPHY picker, profile list, Child Mode, locked/hidden app pickers and PIN change. | Profile identity, avatar and package policies are profile-scoped; parent PIN remains device-wide. Owner E02; shared shell/focus B01. | **Source-present / partial.** Verify active/no-profile fallback, capacity/validation, long names, D-pad/Back return focus, child-to-adult and child-to-child paths, delete/rollback, profile isolation and QR/GIF lifecycle. Existing P1 E02 table remains the detailed control-level source of truth. |
+| V04 | Quick Settings Popup | `MainActivity.showQuickControlPopup()`, `popup_inputs.xml`, `showMenu()`, `addInputRow()` | Anchored compact popup from Settings pill. Actions: Restart, Turn Off, Clean Cache, Wallpaper (interval summary), Language, Glass TV Settings, Android All Settings, Close. Popup uses shared menu/row builder and closes before invoking actions. | Device/system intents, wallpaper state, language preference, cache manager and power/cache flows; owner E01 for device/system actions, E08 for wallpaper management, B01 for shared popup/focus behavior. | **Source-present / partial.** This is not a full Wi-Fi or network settings dashboard; it is a device quick-action menu. Verify focus entry/return, clipping/overscan, action failure, Back/outside dismiss, restart/power safety and localization. The exact V04 visual reference asset is not present in repository evidence. |
+| V05 | Wi-Fi Popup | `MainActivity.showWifiPopup()`, `popup_inputs.xml`, `ConnectivityManager`, `WifiManager`, `updateWifiLabel()` | Anchored popup reads active network transport, Wi-Fi SSID and IPv4 when available; status row shows connected/disconnected state; row opens Android Wi-Fi settings; Close dismisses. Long-press Wi-Fi pill opens system Wi-Fi settings directly. Network callbacks refresh top-bar label. | Android connectivity/network state; owner E01 for device/network surface, B01 for popup/focus shell. | **Source-present / limited.** This popup is a status + deep-link control, not an in-app scan/connect/password/forget network manager. SSID/IP may be unavailable due Android/OEM permission/privacy behavior; exceptions are currently caught and the popup falls back to generic status. Verify Wi-Fi disabled, Ethernet-only, VPN, unknown SSID, permission/privacy restrictions, disconnected, no active network, system intent unavailable, and status refresh. Do not promise network management functions absent from source. |
+| V06 | Global Settings Split Detail | `ModernSettingsDialog.java`, `NavigationState.java`, `TvUiTokens.java`, `TvDialogStyle.java`, `TvFocusIndicator.java`, `SettingsFocusPath.java` | Two-column modal: searchable left sidebar/profile card and right content pane. Tabs: Profile; Home Screen; Appearance; Status Bar & Weather; Visual Effects; Standby; Device Settings. Right pane rebuilds by selected tab; tab, scroll and focus path are persisted/restored. | `NavigationState` settings tab/focus/scroll; per-feature managers/preferences. Owner B01 for shared shell/navigation/dialog/focus; E02 Profile; E06 Home/Dock; E05 weather/information; E07 effects; E04 standby/screensaver; E01 device settings; E08 wallpaper. | **Source-present / partial.** Shared visual tokens currently define dark charcoal/grey surfaces, white/grey text and cyan avatar focus ring; modal policy uses glass/solid dialog surface, 0.68 dim and 88% viewport cap. Settings shell itself builds a matte charcoal root directly. Need one coherent target contract and source-backed reference comparison; no competing global style system. |
+
+## 13. Global Settings category and nested-control inventory
+
+| Category / navigation destination | Source-backed controls / submenus | Action, state and data boundary | Owner | Gap / verification |
+|---|---|---|---|---|
+| Profile & Multi-user | Active profile; 7 built-in avatars; QR personal photo; GIPHY avatar search/results/preview/attribution; profile list/switch/delete/add; Child Mode; locked apps; hidden apps; parent PIN change | Profile/avatar data and policy; PIN prompts; profile switch refreshes Home; GIPHY/QR network and private storage boundaries. | E02 | Reuse existing E02 inventory. Verify cancellation, lifecycle, profile isolation, provider terms, QR endpoint/token and failure rollback. |
+| Home Screen | Daily Prayer Panel switch; Daily Ayah switch; Interface Sound dialog; Azan Settings dialog | `theme_prefs` prayer shelf; WeeklyAyah visibility/cache; SoundEffects selected theme; prayer schedule/audio/popup settings. | E06 for Home setting entry; E01 for Azan/device integration; E05 for information content. | Dock orientation/capacity is **not yet present** in this Settings tab despite the DockPreferences model on E06 owner branch. Add only after independent Dock architecture decision. Verify toggle propagation and restart persistence. |
+| Appearance | Wallpaper Collection; Wallpaper Interval; Manage Uploaded Wallpapers | Existing collection/category, shuffle/interval, custom image management, QR upload/delete and default fallback flows. | E08 | Verify empty/error/download/offline/storage full/delete failure/default wallpaper fallback, metadata, image ownership and profile/device scope. Do not introduce another wallpaper settings system. |
+| Status Bar & Weather / Widgets & Information | Prayer location; Weather Widget switch; Information Actions (weather summary, prayer & ayah summary) | LocationActivity and location/prayer preferences; weather visibility; information summary dialogs. | E05, with E01 location/device integration | Does not itself implement full WeatherActivity. Verify location permission/unavailable, offline/cache, stale data, AQI disclaimer, selected region/station and source labeling. |
+| Visual Effects | Icon Animations; Glass Effects; Weather Animation | `wallpaper_prefs` icon animation/glass effects; weather dynamic-effect preference. Runtime setters update grid, glider, backdrop and overlays. | E07 | Global daylight/normal/night adaptive appearance is not evidenced as a single shared contract. Glass-off fallback must preserve solid readable surfaces. Verify reduced motion, low-memory device, focus visibility and background redraw. |
+| Standby | Collection count; Upload via QR; Pick Photos; Use Photos switch; Clear collection (when non-empty); Preview screensaver | `StandbyPhotoStore`, QR/local upload, photo picker, standby mode and screensaver/nightstand flow. | E04 | Verify no photos, picker unavailable, QR timeout/offline, storage full, clear failure, mode persistence, process death/reboot and lifecycle. |
+| Device Settings | Default launcher status/candidates; Home key accessibility service; Input key service; notification listener access; screensaver; display timeout; restart; power off; clear cache; storage capacity; device model/Android/resolution; app language; OTA update; Android Settings | Android Settings intents, PackageManager and Secure Settings read-only status, CacheCleaner, AppUpdateManager, language preference. | E01 | System settings availability and OEM-specific intent fallback must be tested. Sensitive actions require clear confirmation; never assume service enabled. API 26–34 and target device matrix remains open. |
+| Settings Search | Search input; keyword matching; result list; not-found state; destination tab routing | Query terms and labels map to tab IDs; selecting result switches right pane. | B01 for search/navigation shell; each category owner for content correctness. | Current search is a curated keyword-to-tab map, not a general search index over every control. Ensure results never promise a control that is absent and return focus predictably. |
+| Quick Control Popup (top bar) | Restart; Turn Off; Clean Cache; Wallpaper; Language; Glass TV Settings; Android All Settings; Close | Anchored PopupWindow/menu rows and downstream actions. | E01/E08/B01 | Different from Global Settings; preserve both entry paths and consistent Back/focus. |
+| Wi-Fi Popup (top bar) | Current network status/SSID; Wi-Fi Settings deep link; Close; long-press direct system settings | Reads ConnectivityManager/WifiManager; no in-app network scan or connection editor. | E01/B01 | Keep scope honest; verify privacy restrictions and OEM behavior. |
+
+## 14. Shared component reuse and gap register
+
+| Component / contract | Existing source | Reuse decision | Required extension / replacement boundary | Owner |
+|---|---|---|---|---|
+| Visual tokens | `TvUiTokens.java` | Reuse as single authority | Add approved semantic tokens only after P2; do not scatter near-duplicate colors/dimensions. Existing palette is charcoal/grey with cyan focus accent, not yet the requested navy/cyan target system. | B01 |
+| Dialog surface/geometry | `TvDialogStyle.java`, `bg_glass_dialog.xml` | Reuse | Distinguish centered modal, custom transparent modal and anchored PopupWindow contracts; test viewport/overscan and glass-off fallback. | B01 |
+| Focus indicator | `TvFocusIndicator.java` | Reuse | Standardize focus ring color/weight/scale, selected-vs-focused distinction, clipping and focus return across all six surfaces. Existing helper covers avatar ring and rounded text focus only. | B01 |
+| Responsive sizing | `TvResponsiveLayout.java` | Reuse where applicable | Extend after P2 for general TV viewport, overscan-safe margins, text scaling and 16:9/4K/density behavior; current helper is narrowly Recent Apps/Nightstand. | B01 |
+| Popup row/menu | `popup_inputs.xml`, `addInputRow()`, `showMenu()` | Reuse | Shared semantics/accessibility/focus/selected status and failure behavior; keep anchored popup separate from modal. | B01/E01 |
+| Settings row/card/switch | `ModernSettingsDialog.java` builders | Reuse | Normalize row height, typography, description wrapping, status/value affordance, focus and disabled/error state. Avoid new per-tab one-off card primitives. | B01 |
+| Profile identity/avatar | `ProfileManager`, `UserSwitchDialog` | Reuse | Fix/verify lifecycle and no-profile fallback; all surfaces must share same active profile state. | E02 |
+| Weather metric cards/charts | `activity_weather.xml`, custom metric views | Reuse selectively | Align hierarchy and metric scope with locked V4 dashboard; correct provider/region label and unavailable/stale state. | E05 |
+| Dock model/view | `DockPreferences` on E06 owner PR; legacy `MainActivity.COLUMNS`, `AppAdapter`, `DockDecoration` on integration | **Do not reuse coupled geometry as target architecture** | Separate ordered pinned-app model, Dock view/adapter, horizontal/vertical layout, capacity 4/5/6 and overflow; grid span count remains independent. | E06 |
+| State/feedback | `TvFeedback`, per-feature managers/preferences | Reuse | Define common loading/empty/error/offline/permission-denied/interrupted patterns and write-failure rollback. | B01 + feature owner |
+| Locale | `AppLanguage`, `LocaleContext`, localized strings | Reuse | Validate every visible label, accessibility description, long text, numeric/date/unit formatting in Indonesian/English. | B01 + feature owner |
+
+## 15. Cross-surface state and interaction matrix
+
+| State / interaction | Home | Weather & AQI | Profile Selector | Quick Settings | Wi-Fi Popup | Global Settings |
+|---|---|---|---|---|---|---|
+| Initial/loading | App/package refresh; widget cache | Cached data then sync; weather animation | Local profile store | Immediate menu construction | Immediate network read | Dialog construction and persisted tab/focus restore |
+| Empty | No apps/tiles; no media/widget | Missing weather/AQI/forecast/station | No profile/default profile invariant unproven | No known empty state | No SSID / no active network | Empty search results; some sections conditionally absent |
+| Success | App launch, top pills, dock, widget | Metrics, hourly/daily forecasts, source timestamp | Profile selection/add/switch | Action dispatch | Status + system settings handoff | Tab switch, toggle/card action, search route |
+| Error | App launch/package query failure | API/parse/cache/station failure | PIN/storage/create/delete/upload failure | System intent/action unavailable | WifiManager/ConnectivityManager read exception; fallback text | Preference write/system intent/permission failure |
+| Offline | Core launcher should remain usable; weather cache | Cached/stale or unavailable data; sync failure | Built-in avatars/local profiles usable; QR/GIPHY fail safely | Local actions remain; update/network-dependent actions may fail | Status read may remain; no in-app connect | Local settings remain; OTA/network actions fail gracefully |
+| Permission denied | Package visibility/service restrictions | Location source availability/provider restrictions | QR/local upload and file picker boundaries | Android system settings permission/intent | SSID redaction/permission restrictions | Accessibility/notification access not enabled; show status and route user to system UI |
+| Interrupted / Back | Popup dismissal, activity recreation, app switch | Sync callback/activity finish, picker/dialog dismissal | PIN cancel, upload/search cancel, profile switch | Dismiss before action; Back returns to Home | Dismiss or return from Android Wi-Fi settings | Tab switch/re-render, search, nested dialog, Activity recreation |
+| D-pad / focus | Top-pill route, widget, grid/Dock | Hourly/daily scroll, metric cards, dialogs | Horizontal profile carousel and avatar/list focus | Vertical menu rows and anchor return | Status/settings/close row and anchor return | Sidebar/search/right pane, nested dialog and remembered focus |
+| Reduced motion | Tile/glass/ambient animations | Weather background and card focus | Avatar focus scaling and animated GIF lifecycle | Popup transitions | Popup transitions | Focus scaling/dialog transitions |
+| Locale / text scaling | App names/date/prayer | Metric labels, source, units and forecast | Profile names, PIN, attribution | Action labels | SSID and system label | Search, long card descriptions, every tab and dialog |
+
+## 16. Module ownership matrix
+
+| Surface / concern | Accountable owner | Supporting owner(s) | Explicit boundary |
+|---|---|---|---|
+| Home layout, app grid, Dock | E06 | B01, E01, E02, E05, E07 | E06 cannot change global dialog/token contract unilaterally; Dock must be decoupled from grid columns. |
+| Weather/AQI dashboard and weather widget | E05 | E01, B01, E07 | E05 owns metric/data presentation; E01 owns device/location integration; AQI model disclaimers remain visible. |
+| Profile selector, avatar, Child Mode, app policy | E02 | B01, E06 | Profile data remains isolated; parent PIN is device-wide; Child Mode/package sets are profile-scoped. |
+| Quick Settings Popup | E01 | B01, E08 | Device actions and system intents belong to E01; wallpaper action delegates to E08; popup shell is shared. |
+| Wi-Fi Popup | E01 | B01 | Status/deep-link only unless user explicitly approves expanded network management scope. |
+| Global Settings shell/sidebar/search/focus | B01 | All category owners | B01 owns reusable shell and interaction primitives; feature owners own content/action/data. |
+| Home Screen Settings content | E06 | E01, E05 | Existing prayer/ayah/sound/Azan entries need explicit sub-owner mapping; Dock settings remain a gap. |
+| Appearance/wallpaper content | E08 | B01, E04 | Wallpaper library/upload/interval/delete and fallback; do not duplicate wallpaper manager. |
+| Visual effects | E07 | B01, E05, E06 | Shared tokens/animations and reduced motion must be consistent. |
+| Standby/screensaver | E04 | E01, B01 | Photo collection, QR, picker, persistence/recovery and preview. |
+| Device settings/system access | E01 | B01 | Android intents, service status, launcher status, power/cache/update/language. |
+| QA, integration, evidence | QA/Integration | All owners | Cross-surface tests, source reconciliation, exact-head CI and device gate; no owner self-acceptance by CI alone. |
+
+## 17. Dependency and implementation order
+
+1. **B01 / UI Architecture:** consolidate the shared UI shell, semantic component contract, dialog-vs-popup distinction, focus/Back contract, responsive/overscan and text scaling. Do not implement yet; this is P2.
+2. **E01 / system surface audit:** verify Quick Settings, Wi-Fi popup, system intent fallbacks, network/SSID privacy and TV-specific device settings.
+3. **E05 / Weather & AQI:** reconcile live screen against approved V4 scope, Indonesian provider/region behavior, cache/offline/error states and metric/source disclaimers.
+4. **E02 / Profile:** reconcile current PR head/base with integration and E01 dependencies; finish request cancellation, profile isolation, QR authorization, GIF lifecycle and focus tests.
+5. **E06 / Home & Dock:** resolve independent ordered app model, Dock view/adapter and overflow before designing orientation/capacity controls; preserve main-grid columns.
+6. **E08 / Appearance + E07 / Effects + E04 / Standby:** normalize wallpaper, glass/animation and screensaver surfaces against shared components and existing persistence/recovery audits.
+7. **QA/Integration:** create one traceability matrix and cross-surface regression suite; owner branches remain isolated; no merge/release/device operation without the later explicit gate.
+
+Dependency rule: P2 design and P3 prototype approval are mandatory before P4. This order is a proposed dependency order, not implementation authorization.
+
+## 18. Open decisions and unresolved evidence
+
+| ID | Decision / evidence gap | Owner | Required resolution | Blocks |
+|---|---|---|---|---|
+| OI-01 | The six exact approved visual reference files are not in the repository evidence inspected during this run. | UI/UX Architecture / user | Attach or point to canonical V01–V06 images and identify version; do not substitute marketing screenshots. | Pixel/geometry comparison and P1 visual PASS |
+| OI-02 | Weather V4 approved information scope vs currently rendered WeatherActivity fields needs explicit item-by-item reconciliation. | E05 | Build V4-to-source field traceability and identify absent/derived fields. | Weather surface acceptance |
+| OI-03 | Weather provider/source label has a Malaysia JAS/APIMS branch; supported Indonesia behavior and data attribution must be verified. | E05/E01 | Verify source routing and disclaimers for Indonesia and other supported regions. | Weather/AQI acceptance |
+| OI-04 | Wi-Fi popup currently exposes status/SSID/IP and Android settings deep link only. | E01 / user | Confirm this limited scope is intended; any scan/connect/forget/password workflow is new product scope. | Wi-Fi design lock |
+| OI-05 | Quick Settings popup is a distinct anchored menu, not the full Settings shell. | B01/E01 | Confirm naming and entry hierarchy; preserve both top-bar quick menu and full settings. | Navigation contract |
+| OI-06 | Global Settings uses seven categories; Home Screen has no Dock orientation/capacity control yet. | E06/B01 | Confirm category and placement for Dock controls after independent Dock architecture is approved. | P2/P3 Dock design |
+| OI-07 | Home/Dock currently shares one grid and COLUMNS geometry. | E06 | Separate model/view/adapter; prove grid span invariant. | Dock prototype and implementation |
+| OI-08 | B01 tokens/dialog/focus helpers are partial and Settings root uses direct matte styling. | B01 | Define one semantic surface policy and ensure glass-off readable fallback; no duplicate style system. | P2 |
+| OI-09 | General overscan-safe margins, text scaling and day/normal/night behavior are not complete shared contracts. | B01 | Define measurable rules and device/resolution test cases. | P2/P3 |
+| OI-10 | Settings search is curated keyword-to-tab routing, not search over every individual control. | B01 | Confirm current search scope or expand it with a traceable index. | Search acceptance |
+| OI-11 | Quick Settings and Wi-Fi popup failure, focus restoration and system intent compatibility have not been proven on target Mi TV Stick. | E01/QA | Unit/UI tests plus separately authorized device evidence. | P5 |
+| OI-12 | Exact live E02/E06 heads remain open Draft PRs and diverge substantially from integration. | E02/E06/Integration | Three-way semantic reconciliation with E01 and integration; no blind rebase/merge. | P4/integration |
+| OI-13 | Integrated APK baseline has only 571 B headroom; isolated E02/E06 APKs are not additive estimates. | QA/Integration | Rebuild exact combined candidate and measure before adding assets/dependencies. | P4/P6 |
+| OI-14 | Reference image visual fit, daylight glare, readability at viewing distance and remote focus cannot be signed off from source inspection alone. | UI/UX/QA | Approved six images, source-informed prototypes and actual display review. | P3/P5 |
+
+## 19. P1 expansion quality gate and disposition
+
+| Gate | Result | Evidence |
+|---|---|---|
+| Six named surfaces mapped to source entry points | **PASS (source mapping)** | V01–V06 table above |
+| All Settings navigation categories mapped | **PASS (source mapping)** | Seven categories plus search, quick menu and Wi-Fi popup |
+| Nested controls/submenus/actions identified | **PARTIAL** | Main categories and principal actions traced; existing E02 P1 remains detailed; several deep E01/E08/E04 dialog states require their source audit records and device tests |
+| State/data/persistence/owner mapped | **PARTIAL** | Cross-surface matrix and ownership table; unresolved provider/permission/device details retained |
+| Reusable vs new vs replace component register | **PASS (source-level disposition)** | Section 14 |
+| Dependency and implementation order | **PASS (proposed; not authorized)** | Section 17 |
+| Open gaps and decisions recorded | **PASS** | Section 18 |
+| Exact six approved images compared against source | **NOT PASS** | Canonical image assets not located in repository evidence |
+| Runtime/device/remote acceptance | **NOT RUN / NOT AUTHORIZED** | No ADB, install, TV interaction or physical device mutation |
+
+**P1 Expansion result: PARTIAL — BELUM PASS.** The source mapping for all six named surfaces and the Settings categories is recorded. The quality gate is not passed because the exact six approved visual references are not available in the audited repository evidence, several nested/device states still require verification, and no runtime/device comparison was authorized or performed.
+
+No P2 design contract, P3 prototype, P4 implementation, merge, APK build/publication/installation, ADB or device action is started by this expansion. Stop here and await user review/approval. P2 remains gated by the six canonical reference images and closure/explicit acceptance of the listed open decisions.
