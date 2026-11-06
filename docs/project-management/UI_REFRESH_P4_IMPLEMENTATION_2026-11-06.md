@@ -106,3 +106,11 @@ Cross-cutting B01 shared tokens/focus/dialog/navigation foundations are to be ex
 - This is a verified source/build checkpoint, not a Module 1 acceptance. The current source still uses one combined Home RecyclerView and one adapter; `DockLayoutModel` is a model boundary only. A separate Dock renderer, separate app-grid renderer, orientation-specific layout, settings controls, overflow/D-pad/focus/reorder migration and rendered 1920×1080 visual validation are still outstanding.
 - PR #64 remains Draft/open/unmerged. No APK installation, ADB or physical TV acceptance was performed.
 - **Decision:** do not advance to the next trigger yet. Complete the independent two-region renderer and all interaction/visual acceptance gates first; a green CI run alone does not close E06.
+
+
+### Component identity correction and exact-head verification — 6 November 2026
+- Found and fixed a correctness risk in the Dock snapshot: package name is not a unique launcher-tile identity because one package can expose multiple Leanback launcher activities. `AppAdapter.dockSnapshot()` now expands configured package favourites into component identities (`ComponentName.flattenToShortString()`), then partitions by component key. This preserves separate activities and prevents accidental model-level tile collapse.
+- Added regression test `distinctLauncherComponentsFromSamePackageRemainDistinctTiles` and updated the source audit to record package-config-to-component-identity mapping.
+- Source PR #64 current head: `ba5ccecd4a55e748aec5de45343b778c2fe4595b`; PR remains OPEN/DRAFT/UNMERGED, base `integration/b-series`. Exact-head CI run #1215 (`42180187065`) is IN_PROGRESS at checkpoint; both jobs are still running. No PASS is claimed until completion.
+- The earlier green CI #1212 applies only to prior head `9cfdeb902689d249e9e01e4ac9c6c91902905a62` and does not validate this correction.
+- Module 1 remains IN PROGRESS. Dedicated two-region renderer, orientation/settings, focus/D-pad/reorder/install-remove behavior, six-combination acceptance, 1920×1080 visual QC and physical remote acceptance remain open. No merge, APK publication/installation, ADB or device-setting change.
