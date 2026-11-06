@@ -2813,9 +2813,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         RecyclerView.ViewHolder vh = recycler.findViewHolderForAdapterPosition(pos);
         if (vh == null) {
             recycler.scrollToPosition(pos);
-            recycler.post(() -> {
-                if (movingPos < 0 && recycler.findViewHolderForAdapterPosition(pos) != null) startMove(key, inDock);
-            });
+            startMoveWhenLaidOut(key, inDock, pos, 3);
             return;
         }
         movingPos = pos;
@@ -2831,6 +2829,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         recycler.setItemAnimator(moveSlide);
         startMoveWiggle(movingCard);
+    }
+
+    private void startMoveWhenLaidOut(String key, boolean inDock, int position, int attemptsRemaining) {
+        if (movingPos >= 0) return;
+        RecyclerView recycler = inDock ? dockRecycler : grid;
+        int currentPosition = inDock ? dockAdapter.positionOf(key) : adapter.positionOf(key);
+        if (recycler == null || currentPosition < 0) return;
+        if (recycler.findViewHolderForAdapterPosition(currentPosition) != null) {
+            startMove(key, inDock);
+            return;
+        }
+        if (attemptsRemaining > 0) {
+            recycler.postOnAnimation(() -> startMoveWhenLaidOut(key, inDock, currentPosition, attemptsRemaining - 1));
+        }
     }
 
     private void startMoveWiggle(View card) {
@@ -2875,6 +2887,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         target.post(() -> startMove(key, toDock));
     }
 
+    private void restoreMovingTile(boolean inDock, String key, int position, View previousCard, int attemptsRemaining) {
+        RecyclerView recycler = inDock ? dockRecycler : grid;
+        if (recycler == null || movingPos != position || movingDock != inDock || movingRecycler != recycler) return;
+        RecyclerView.ViewHolder holder = recycler.findViewHolderForAdapterPosition(position);
+        if (holder == null) {
+            if (attemptsRemaining > 0) {
+                recycler.postOnAnimation(() -> restoreMovingTile(inDock, key, position, previousCard, attemptsRemaining - 1));
+            } else {
+                finishMove();
+            }
+            return;
+        }
+        View nextCard = holder.itemView.findViewById(R.id.card);
+        if (previousCard != null && previousCard != nextCard) previousCard.setRotation(0f);
+        movingCard = nextCard;
+        if (movingCard == null) {
+            finishMove();
+            return;
+        }
+        startMoveWiggle(movingCard);
+        movingCard.requestFocus();
+        if (inDock) onDockTileFocused(key, movingCard);
+        else onTileFocused(position, movingCard);
+    }
+
     private void stepMove(int keyCode) {
         if (movingPos < 0 || movingRecycler == null) return;
         int last;
@@ -2899,18 +2936,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             final int targetPosition = to;
             final String key = dockAdapter.keyAt(targetPosition);
             final View previousCard = movingCard;
-            dockRecycler.post(() -> {
-                RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
-                if (movingPos != targetPosition || vh == null) return;
-                View nextCard = vh.itemView.findViewById(R.id.card);
-                if (previousCard != null && previousCard != nextCard) previousCard.setRotation(0f);
-                movingCard = nextCard;
-                if (movingCard != null) {
-                    startMoveWiggle(movingCard);
-                    movingCard.requestFocus();
-                    onDockTileFocused(key, movingCard);
-                }
-            });
+            restoreMovingTile(true, key, targetPosition, previousCard, 3);
         } else {
             String movingKey = adapter.keyAt(movingPos);
             if ((!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS)
@@ -2942,18 +2968,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             final int targetPosition = to;
             final String key = adapter.keyAt(targetPosition);
             final View previousCard = movingCard;
-            grid.post(() -> {
-                RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(targetPosition);
-                if (movingPos != targetPosition || vh == null) return;
-                View nextCard = vh.itemView.findViewById(R.id.card);
-                if (previousCard != null && previousCard != nextCard) previousCard.setRotation(0f);
-                movingCard = nextCard;
-                if (movingCard != null) {
-                    startMoveWiggle(movingCard);
-                    movingCard.requestFocus();
-                    onTileFocused(targetPosition, movingCard);
-                }
-            });
+            restoreMovingTile(false, key, targetPosition, previousCard, 3);
         }
     }
 
