@@ -27,6 +27,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private final TileBinder binder;
     private final boolean reducedMotion;
     private boolean iconAnimationsEnabled;
+    private int capacity = 5;
     private List<AppAdapter.Entry> entries = Collections.emptyList();
     private boolean vertical;
 
@@ -43,6 +44,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     void refresh() {
+        capacity = DockPreferences.load(context).capacity;
         DockLayoutModel.Snapshot<AppAdapter.Entry> snapshot = source.dockSnapshot();
         entries = snapshot == null ? Collections.emptyList() : snapshot.dockItems;
         notifyDataSetChanged();
@@ -52,6 +54,13 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (this.vertical == vertical) return;
         this.vertical = vertical;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        // A changed capacity/orientation must recreate holders so their measured tile dimensions
+        // cannot remain stale after a live settings update.
+        return (vertical ? 100 : 0) + capacity;
     }
 
     @NonNull
@@ -64,7 +73,6 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (vertical) {
             width = Math.max(Math.round(112 * density), Math.min(Math.round(170 * density), inner - Math.round(20 * density)));
         } else {
-            int capacity = DockPreferences.load(context).capacity;
             width = AppAdapter.tileWidthPx(inner, capacity, density);
         }
         int height = AppAdapter.tileHeightPx(width);
