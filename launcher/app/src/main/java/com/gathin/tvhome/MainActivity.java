@@ -3133,12 +3133,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void focusLastTile() {
-        if (lastFocusedDock && dockAdapter != null) {
-            int dockPosition = dockAdapter.positionOf(lastFocusedKey);
-            if (dockPosition >= 0) { focusDockTile(dockPosition); return; }
+        // Capacity changes can move the same component between Dock and Grid. Resolve by identity
+        // across both regions before falling back to a default position.
+        int dockPosition = dockAdapter == null ? -1 : dockAdapter.positionOf(lastFocusedKey);
+        if (dockPosition >= 0) {
+            lastFocusedDock = true;
+            focusDockTile(dockPosition);
+            return;
         }
         int gridPosition = adapter == null ? -1 : adapter.positionOf(lastFocusedKey);
-        if (gridPosition >= 0) { focusTile(gridPosition); return; }
+        if (gridPosition >= 0) {
+            lastFocusedDock = false;
+            focusTile(gridPosition);
+            return;
+        }
         if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
         else if (adapter != null && adapter.getItemCount() > 0) focusTile(0);
         else if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
