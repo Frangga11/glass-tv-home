@@ -17,6 +17,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
 
     private final int dockSize;
     private final float density;
+    private final boolean vertical;
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint trayShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidTrayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -31,8 +32,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     final RectF area = new RectF();
 
     DockDecoration(int dockSize, float density) {
+        this(dockSize, density, false);
+    }
+
+    DockDecoration(int dockSize, float density, boolean vertical) {
         this.dockSize = dockSize;
         this.density = density;
+        this.vertical = vertical;
         // Same glass as the top-bar pills (GlassDrawable): an even veil and a shining edge.
         band.setColor(TvUiTokens.GLASS_VEIL_COLOR);
         trayShadowPaint.setColor(0x38000000);
@@ -54,8 +60,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
                                @NonNull RecyclerView.State state) {
         int pos = parent.getChildAdapterPosition(view);
         if (pos >= 0 && pos < dockSize) {
-            outRect.top = (int) (6 * density);
-            outRect.bottom = (int) (12 * density);
+            if (vertical) {
+                outRect.left = (int) (6 * density);
+                outRect.right = (int) (12 * density);
+            } else {
+                outRect.top = (int) (6 * density);
+                outRect.bottom = (int) (12 * density);
+            }
         }
     }
 

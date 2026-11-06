@@ -299,7 +299,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, dockSize, density), h = tileHeightPx(w);
+        int w = tileWidthPx(inner, MainActivity.COLUMNS, density), h = tileHeightPx(w);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;
@@ -315,8 +315,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder h, int position) {
-        Entry e = items.get(position);
-        tileBinder.bind(h, e, position >= dockSize, iconAnimationsEnabled);
+        Entry e = gridSnapshot().gridItems.get(position);
+        tileBinder.bind(h, e, true, iconAnimationsEnabled);
         h.card.setOnClickListener(v -> tileBinder.launch(e));
         h.card.setOnLongClickListener(v -> {
             int pos = h.getBindingAdapterPosition();
@@ -336,7 +336,17 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     /** Android's page for the app at {@code position}: storage, permissions, uninstall. */
     void openAppInfo(int position) {
-        if (position >= 0 && position < items.size()) openAppInfo(items.get(position));
+        List<Entry> grid = gridSnapshot().gridItems;
+        if (position >= 0 && position < grid.size()) openAppInfo(grid.get(position));
+    }
+
+    void openAppInfoByKey(String key) {
+        int index = inventoryPositionOf(key);
+        if (index >= 0) openAppInfo(items.get(index));
+    }
+
+    private int inventoryPositionOf(String key) {
+        return items.indexOfKey(key);
     }
 
     private void openAppInfo(Entry e) {
@@ -350,13 +360,15 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     /** Whether the tile at {@code position} can be moved: every app can, the Default home tile cannot. */
     boolean canMove(int position) {
-        return position >= 0 && position < items.size() && items.get(position).kind != Entry.HOME_SETTINGS;
+        List<Entry> grid = gridSnapshot().gridItems;
+        return position >= 0 && position < grid.size() && grid.get(position).kind != Entry.HOME_SETTINGS;
     }
 
     /** The last position a moved tile can take: before the Default home tile, which stays last. */
     int lastMovable() {
-        int last = items.size() - 1;
-        while (last >= 0 && items.get(last).kind == Entry.HOME_SETTINGS) last--;
+        List<Entry> grid = gridSnapshot().gridItems;
+        int last = grid.size() - 1;
+        while (last >= 0 && grid.get(last).kind == Entry.HOME_SETTINGS) last--;
         return last;
     }
 
@@ -365,17 +377,36 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      * the new order. Returns false when it cannot go there.
      */
     boolean move(int from, int to) {
+        DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+        List<Entry> grid = new ArrayList<>(snapshot.gridItems);
         if (from == to || !canMove(from) || to < 0 || to > lastMovable()) return false;
-        if (!items.move(from, to)) return false;
-        notifyItemMoved(from, to);
-        // A tile crossing into or out of the dock shows or hides its name.
-        int lo = Math.min(from, to), hi = Math.max(from, to);
-        if (lo < dockSize && hi >= dockSize) notifyItemRangeChanged(lo, hi - lo + 1, DOCK_CHANGED);
+        Entry moved = grid.remove(from);
+        grid.add(to, moved);
+        replacePresentationOrder(snapshot.dockItems, grid);
+        return true;
+    }
+
+    boolean moveDock(int from, int to) {
+        DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+        List<Entry> dock = new ArrayList<>(snapshot.dockItems);
+        if (from == to || from < 0 || to < 0 || from >= dock.size() || to >= dock.size()
+                || dock.get(from).kind == Entry.HOME_SETTINGS || dock.get(to).kind == Entry.HOME_SETTINGS) return false;
+        Entry moved = dock.remove(from);
+        dock.add(to, moved);
+        replacePresentationOrder(dock, snapshot.gridItems);
+        return true;
+    }
+
+    private void replacePresentationOrder(List<Entry> dock, List<Entry> grid) {
+        List<Entry> ordered = new ArrayList<>(dock.size() + grid.size());
+        ordered.addAll(dock);
+        ordered.addAll(grid);
+        items.replace(ordered);
         arranged.clear();
-        for (Entry x : items) if (x.kind != Entry.HOME_SETTINGS) arranged.add(x.component.flattenToShortString());
+        for (Entry x : ordered) if (x.kind != Entry.HOME_SETTINGS) arranged.add(x.component.flattenToShortString());
         ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
                 .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
-        return true;
+        notifyDataSetChanged();
     }
 
     /**
@@ -383,6 +414,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      * renders the legacy combined list; this snapshot establishes the model boundary without
      * changing focus, tile sizing, ordering, or the visible Home layout in this commit.
      */
+    DockLayoutModel.Snapshot<Entry> gridSnapshot() {
+        return dockSnapshot();
+    }
+
     DockLayoutModel.Snapshot<Entry> dockSnapshot() {
         int capacity = DockPreferences.load(ctx).capacity;
         // Dock configuration is package-based while tile identity is component-based.
@@ -398,12 +433,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return gridSnapshot().gridItems.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return items.get(position).component.flattenToShortString().hashCode();
+        return gridSnapshot().gridItems.get(position).component.flattenToShortString().hashCode();
     }
 
     void setIconAnimationsEnabled(boolean enabled, RecyclerView recyclerView) {
@@ -416,28 +451,38 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     /** Stable key for the app at a position (its component), or null. */
     String keyAt(int position) {
-        return position >= 0 && position < items.size() ? items.get(position).component.flattenToShortString() : null;
+        List<Entry> grid = gridSnapshot().gridItems;
+        return position >= 0 && position < grid.size() ? grid.get(position).component.flattenToShortString() : null;
     }
 
-    /** Position of the app with this key, or -1 when it is gone. */
+    /** Position of the app with this key in the App Grid, or -1 when it is not there. */
     int positionOf(String key) {
         if (key == null) return -1;
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).component.flattenToShortString().equals(key)) return i;
+        List<Entry> grid = gridSnapshot().gridItems;
+        for (int i = 0; i < grid.size(); i++) {
+            if (grid.get(i).component.flattenToShortString().equals(key)) return i;
         }
         return -1;
     }
 
     String labelAt(int position) {
-        return position >= 0 && position < items.size() ? items.get(position).label : "";
+        List<Entry> grid = gridSnapshot().gridItems;
+        return position >= 0 && position < grid.size() ? grid.get(position).label : "";
     }
 
     /** A vivid colour sampled from the app's banner (or icon), cached per entry; a card's accent when it set one. */
     int ambientColorAt(int position) {
-        if (position < 0 || position >= items.size()) return 0xFF444444;
-        Entry e = items.get(position);
+        List<Entry> grid = gridSnapshot().gridItems;
+        if (position < 0 || position >= grid.size()) return 0xFF444444;
+        Entry e = grid.get(position);
         if (e.ambient == 0) e.ambient = vividColor(e.banner != null ? e.banner : e.icon);
         return e.ambient;
+    }
+
+    int ambientColorFor(Entry entry) {
+        if (entry == null) return 0xFF444444;
+        if (entry.ambient == 0) entry.ambient = vividColor(entry.banner != null ? entry.banner : entry.icon);
+        return entry.ambient;
     }
 
     private static int vividColor(Drawable live) {
