@@ -1231,3 +1231,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Open clarifications: QR manifest/endpoint authorization, current GIPHY policy, profile no-profile/capacity failure invariants, package visibility/API matrix. E02 cancellation/lifecycle and E06 Dock separation/focus remain feature blockers.
 - No Critical defect reproduced in read-only inventory. No production source, branch ref, PR metadata, integration/main, APK or device was changed.
 - P2/P3 remain approval gates; P4 is not authorized.
+
+
+### P1 consistency finding — stale PR description (6 November 2026)
+
+- PR #62 live metadata is OPEN/DRAFT/UNMERGED at exact head `588456144df24f2f6c015a01053ad700a04bee39`; exact-head run #1204 has both required jobs SUCCESS. Its PR description still states that exact-head CI is unconfirmed. Treat the description as stale, not the CI result.
+- PR #63 live metadata is OPEN/DRAFT/UNMERGED; PR description and exact-head run #1198 are consistent.
+- No PR body or metadata was changed. Owner should reconcile PR #62 description before feature-ready review.
