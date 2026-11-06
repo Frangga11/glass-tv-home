@@ -328,7 +328,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     @Override
     public void onBindViewHolder(@NonNull Holder h, int position, @NonNull List<Object> payloads) {
         if (payloads.size() == 1 && payloads.get(0) == DOCK_CHANGED) {
-            h.name.setVisibility(position < dockSize ? View.INVISIBLE : View.VISIBLE);
+            h.name.setVisibility(View.VISIBLE);
             return;
         }
         onBindViewHolder(h, position);

@@ -139,6 +139,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private DockDecoration tray;
     private boolean dockVertical;
     private boolean lastFocusedDock;
+    private int lastDockDecorationCount = -1;
+    private boolean lastDockDecorationVertical;
     private static final String HOME_FOCUS_REGION = "home_focus_region";
     private FrameLayout root;
     private GlassView glass;
@@ -2453,17 +2455,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dockRecycler.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, orientation, false));
         }
 
+        int dockCount = dockAdapter.getItemCount();
         if (tray == null) {
-            tray = new DockDecoration(dockAdapter.getItemCount(), density, dockVertical);
+            tray = new DockDecoration(dockCount, density, dockVertical);
             tray.setGlider(glider);
             dockRecycler.addItemDecoration(tray);
-        } else {
-            tray.update(dockAdapter.getItemCount(), dockVertical);
+            lastDockDecorationCount = dockCount;
+            lastDockDecorationVertical = dockVertical;
+        } else if (lastDockDecorationCount != dockCount || lastDockDecorationVertical != dockVertical) {
+            tray.update(dockCount, dockVertical);
+            lastDockDecorationCount = dockCount;
+            lastDockDecorationVertical = dockVertical;
             dockRecycler.invalidateItemDecorations();
         }
 
-        FrameLayout.LayoutParams gridParams = (FrameLayout.LayoutParams) grid.getLayoutParams();
-        FrameLayout.LayoutParams dockParams = (FrameLayout.LayoutParams) dockRecycler.getLayoutParams();
+        FrameLayout.LayoutParams gridParams = new FrameLayout.LayoutParams((FrameLayout.LayoutParams) grid.getLayoutParams());
+        FrameLayout.LayoutParams dockParams = new FrameLayout.LayoutParams((FrameLayout.LayoutParams) dockRecycler.getLayoutParams());
         gridParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         gridParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         dockParams.gravity = dockVertical ? Gravity.START : Gravity.BOTTOM;
@@ -2502,9 +2509,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (grid.getPaddingTop() != gridTop) grid.setPadding(grid.getPaddingLeft(), gridTop, grid.getPaddingRight(), grid.getPaddingBottom());
         }
 
-        if (!sameLayoutParams(grid.getLayoutParams(), gridParams)) grid.setLayoutParams(gridParams);
-        if (!sameLayoutParams(dockRecycler.getLayoutParams(), dockParams)) dockRecycler.setLayoutParams(dockParams);
-        dockRecycler.requestLayout();
+        boolean gridLayoutChanged = !sameLayoutParams(grid.getLayoutParams(), gridParams);
+        boolean dockLayoutChanged = !sameLayoutParams(dockRecycler.getLayoutParams(), dockParams);
+        if (gridLayoutChanged) grid.setLayoutParams(gridParams);
+        if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);
+        if (gridLayoutChanged || dockLayoutChanged) {
+            grid.requestLayout();
+            dockRecycler.requestLayout();
+        }
     }
 
     private boolean sameLayoutParams(ViewGroup.LayoutParams current, ViewGroup.LayoutParams next) {
