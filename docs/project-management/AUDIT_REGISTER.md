@@ -1294,3 +1294,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - A 12-scenario manual browser/keyboard walkthrough plan is versioned. Execution remains NOT RUN; P3 stays PARTIAL.
 - Evidence: [UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md](UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md).
+
+
+## GTVH-UIR-P3-V4-QC-001 — V4 deeper interaction hardening (6 November 2026)
+
+- V4 corrects three additional V3 interaction risks: weather focus loss during loading, stale Wi-Fi scan completion after prerequisite changes, and modal Tab focus escape / Backspace text-entry conflict.
+- **Static QC PASS**; actual browser walkthrough and visual review NOT RUN. Full record: [UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md).
+- P3 remains PARTIAL; P4 blocked.
