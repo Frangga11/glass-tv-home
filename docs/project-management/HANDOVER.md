@@ -1135,3 +1135,18 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - P1 inventory and canonical records have been rechecked after the consistency addendum. Final documentation branch head: `8c9f398b2043a9e13b37fe6128291d3014faaeee` before this HANDOVER-only update; the HANDOVER update below is the final branch commit.
 - Inventory document SHA was refreshed after correcting its historical compare note. No source branch or PR was modified.
+
+
+
+
+## UI Refresh P1 Global UI Inventory Expansion — 6 November 2026
+
+- **Trigger:** user authorized expansion of the existing P1 inventory across six named surfaces: Home Screen, Weather & AQI Dashboard, Profile Selector, Quick Settings Popup, Wi-Fi Popup and Global Settings Split Detail.
+- **Canonical update:** expanded the existing `UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md`; no duplicate inventory document was created. Commit: `91af6e1c94c8b9e20bb1246c0901d4f589482b3e`.
+- **Frozen source baseline:** `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. Live PR #62 and #63 were rechecked OPEN/DRAFT/UNMERGED at their previously recorded exact heads. No branch/PR/integration/main changes were made.
+- **Coverage added:** V01–V06 source mapping; seven Global Settings categories and nested controls; Quick Settings and Wi-Fi popup behavior; cross-surface state matrix; shared component reuse/gap register; module ownership matrix; proposed dependency/implementation order; open decisions and quality gate.
+- **Important source findings:** Wi-Fi popup is status/SSID/IP plus Android Wi-Fi Settings deep-link, not an in-app network manager. Quick Settings is a separate anchored action menu, not the full Settings shell. Global Settings currently has Profile, Home Screen, Appearance, Status Bar & Weather, Visual Effects, Standby and Device Settings categories. Home Screen settings do not yet expose Dock orientation/capacity. Home still has coupled single-grid/Dock geometry. Weather screen has hourly/daily forecast and metric modules; AQI is modelled US AQI, not official Indonesian ISPU. Weather provider/source labeling includes a Malaysia JAS/APIMS path that needs regional verification.
+- **Shared components:** reuse B01 `TvUiTokens`, `TvDialogStyle`, `TvFocusIndicator`, `TvResponsiveLayout`, `GlassDrawable`, existing Settings row builders and popup row/menu infrastructure. Existing token palette and Settings root are charcoal/matte with cyan focus accents; do not call it already matching the target visual system. General overscan/text scaling/day-normal-night contract remains open for P2.
+- **Visual reference blocker:** exact canonical files for the six approved reference images were not found in the inspected repository tree/evidence. Existing promo/live screenshots were not substituted. Source mapping is complete at surface level, but pixel/geometry reference comparison is not evidenced.
+- **Disposition: PARTIAL — BELUM PASS.** Six surface source mappings and seven Settings categories recorded; nested/device verification and exact reference comparison remain open. P2/P3/P4 not started. Await user review/approval and canonical V01–V06 reference assets.
+- **No mutations:** no production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV was changed. Documentation-only commit on `docs/project-master-inventory`.
