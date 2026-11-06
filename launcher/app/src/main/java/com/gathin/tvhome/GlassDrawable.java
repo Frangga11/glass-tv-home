@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
  */
 final class GlassDrawable extends Drawable {
 
-    private static final int VEIL_ALPHA = 0x14;
+    private static final int VEIL_ALPHA = 0x99;
     private final View owner;
     private final float radius;
     private final Backdrop.Fill fill = new Backdrop.Fill();
@@ -53,7 +53,7 @@ final class GlassDrawable extends Drawable {
         this.owner = owner;
         this.highlight = highlight;
         this.radius = radius;
-        veil.setColor(0xFFFFFF | VEIL_ALPHA << 24);
+        veil.setColor(TvUiTokens.GLASS_VEIL_COLOR);
         solidSurface.setColor(TvUiTokens.POPUP_SURFACE);
         solidBorder.setColor(TvUiTokens.BORDER);
         solidBorder.setStyle(Paint.Style.STROKE);

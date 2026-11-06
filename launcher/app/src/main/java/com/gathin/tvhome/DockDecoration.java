@@ -34,7 +34,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         this.dockSize = dockSize;
         this.density = density;
         // Same glass as the top-bar pills (GlassDrawable): an even veil and a shining edge.
-        band.setColor(0x12FFFFFF);
+        band.setColor(TvUiTokens.GLASS_VEIL_COLOR);
         trayShadowPaint.setColor(0x38000000);
         solidTrayPaint.setColor(TvUiTokens.DOCK_SURFACE);
         solidTrayBorder.setColor(TvUiTokens.BORDER);

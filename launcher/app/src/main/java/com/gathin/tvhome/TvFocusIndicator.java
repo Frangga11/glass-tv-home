@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.View;
@@ -8,10 +9,11 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 /**
- * Shared, high-contrast focus treatment for TV remote controls.
+ * Shared high-contrast focus treatment for TV remote controls.
  *
- * Selection state and keyboard focus are deliberately separate: callers may keep their own
- * selected marker while this class adds a second, transient focus marker.
+ * The focus outline is a foreground layer: it never replaces the component background, so
+ * selected/active state remains independently visible. Call updateFocusOutline from the component's
+ * existing focus listener to preserve any component-specific state updates.
  */
 final class TvFocusIndicator {
     private TvFocusIndicator() { }
@@ -23,7 +25,8 @@ final class TvFocusIndicator {
         GradientDrawable ring = new GradientDrawable();
         ring.setShape(GradientDrawable.OVAL);
         ring.setColor(Color.TRANSPARENT);
-        ring.setStroke(Math.max(1, Math.round(2f * density)), 0xFF00E5FF);
+        ring.setStroke(Math.max(1, Math.round(TvUiTokens.FOCUS_STROKE_DP * density)),
+                TvUiTokens.FOCUS_BORDER);
         focusRing.setBackground(ring);
         focusRing.setVisibility(View.GONE);
 
@@ -35,9 +38,9 @@ final class TvFocusIndicator {
         frame.setOnFocusChangeListener((view, hasFocus) -> {
             focusRing.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
             view.animate().cancel();
-            view.animate().scaleX(hasFocus ? 1.10f : 1.0f)
-                    .scaleY(hasFocus ? 1.10f : 1.0f)
-                    .setDuration(120).start();
+            view.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
+                    .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
+                    .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
         return focusRing;
     }
@@ -60,7 +63,7 @@ final class TvFocusIndicator {
             target.animate().cancel();
             target.animate().scaleX(hasFocus ? focusedScale : 1.0f)
                     .scaleY(hasFocus ? focusedScale : 1.0f)
-                    .setDuration(120).start();
+                    .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
     }
 }

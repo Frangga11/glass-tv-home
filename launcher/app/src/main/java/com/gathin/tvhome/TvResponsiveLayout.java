@@ -1,7 +1,13 @@
 package com.gathin.tvhome;
 
-/** Pure sizing rules shared by TV surfaces that must adapt to the available viewport. */
+/**
+ * Pure responsive rules shared by TV surfaces.
+ *
+ * The 4% edge inset is a conservative software safe-area default, not a claim of final OEM
+ * overscan calibration. Physical-device validation may increase the inset for a specific panel.
+ */
 final class TvResponsiveLayout {
+    private static final float SAFE_INSET_FRACTION = 0.04f;
     private static final float RECENT_CARD_WIDTH_DP = 420f;
     private static final float RECENT_CARD_HEIGHT_DP = 250f;
     private static final float RECENT_SIDE_PADDING_DP = 64f;
@@ -13,6 +19,50 @@ final class TvResponsiveLayout {
     private static final float CLOCK_MAX_SP = 110f;
 
     private TvResponsiveLayout() { }
+
+    static int safeInsetPx(int viewportDimensionPx) {
+        if (viewportDimensionPx <= 1) return 0;
+        return Math.min(Math.round(viewportDimensionPx * SAFE_INSET_FRACTION),
+                (viewportDimensionPx - 1) / 2);
+    }
+
+    static int safeContentPx(int dimensionPx) {
+        return dimensionPx <= 0 ? 0 : Math.max(1, dimensionPx - 2 * safeInsetPx(dimensionPx));
+    }
+
+    static int popupLeftPx(int anchorLeftPx, int popupWidthPx, int viewportWidthPx) {
+        if (viewportWidthPx <= 0) return 0;
+        int inset = safeInsetPx(viewportWidthPx);
+        int safeRight = Math.max(inset, viewportWidthPx - inset);
+        int width = Math.min(Math.max(1, popupWidthPx), Math.max(1, safeRight - inset));
+        return Math.max(inset, Math.min(anchorLeftPx, safeRight - width));
+    }
+
+    static boolean shouldPlacePopupAbove(int aboveSpacePx, int belowSpacePx,
+                                         int contentHeightPx, int safeHeightPx,
+                                         boolean preferAbove) {
+        int required = Math.min(Math.max(1, contentHeightPx), Math.max(1, safeHeightPx));
+        boolean fitsAbove = aboveSpacePx >= required;
+        boolean fitsBelow = belowSpacePx >= required;
+        if (preferAbove && fitsAbove) return true;
+        if (fitsBelow) return false;
+        return aboveSpacePx > belowSpacePx;
+    }
+
+    static int minDpadTargetPx(float density) {
+        if (!(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) {
+            return TvUiTokens.MIN_DPAD_TARGET_DP;
+        }
+        return Math.max(1, Math.round(TvUiTokens.MIN_DPAD_TARGET_DP * density));
+    }
+
+    /** Applies the user's font scale without imposing a ceiling that would defeat accessibility. */
+    static float scaledTextSizeSp(float baseSp, float fontScale) {
+        if (!(baseSp > 0f) || Float.isInfinite(baseSp) || Float.isNaN(baseSp)) return 0f;
+        float scale = fontScale > 0f && !Float.isInfinite(fontScale) && !Float.isNaN(fontScale)
+                ? fontScale : 1f;
+        return baseSp * scale;
+    }
 
     static int recentCardWidthPx(int viewportWidthPx, float density) {
         if (!(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) {

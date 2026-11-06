@@ -49,11 +49,7 @@ public final class UserSwitchDialog {
         root.setClipChildren(false);
         root.setClipToPadding(false);
 
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF1E2026);
-        bg.setCornerRadius(24 * density);
-        bg.setStroke((int) (1.5f * density), 0xFF2F323B);
-        root.setBackground(bg);
+        root.setBackground(TvDialogStyle.createDialogSurface(activity));
 
         // Header Title
         LinearLayout header = new LinearLayout(activity);
@@ -62,7 +58,7 @@ public final class UserSwitchDialog {
 
         ImageView ivIcon = new ImageView(activity);
         ivIcon.setImageResource(R.drawable.ic_shield_child);
-        ivIcon.setColorFilter(0xFFF59E0B); // Amber
+        ivIcon.setColorFilter(TvUiTokens.WARNING); // Amber
         header.addView(ivIcon, new LinearLayout.LayoutParams((int) (24 * density), (int) (24 * density)));
 
         LinearLayout headerTextCol = new LinearLayout(activity);
@@ -71,15 +67,15 @@ public final class UserSwitchDialog {
 
         TextView tvTitle = new TextView(activity);
         tvTitle.setText(R.string.switch_user_title);
-        tvTitle.setTextSize(18);
-        tvTitle.setTextColor(0xFFFFFFFF);
+        tvTitle.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+        tvTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvTitle.setTypeface(outfit, Typeface.BOLD);
         headerTextCol.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
         tvSub.setText(R.string.switch_user_subtitle);
-        tvSub.setTextSize(12);
-        tvSub.setTextColor(0xFF8E929E);
+        tvSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+        tvSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvSub.setTypeface(outfit, Typeface.NORMAL);
         headerTextCol.addView(tvSub);
 
@@ -88,7 +84,7 @@ public final class UserSwitchDialog {
 
         // Divider
         View div1 = new View(activity);
-        div1.setBackgroundColor(0xFF282B35);
+        div1.setBackgroundColor(TvUiTokens.BORDER);
         LinearLayout.LayoutParams divLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (1 * density));
         divLp.topMargin = (int) (14 * density);
         divLp.bottomMargin = (int) (14 * density);
@@ -97,8 +93,8 @@ public final class UserSwitchDialog {
         // Section 1: User Profiles
         TextView tvProfSec = new TextView(activity);
         tvProfSec.setText(R.string.switch_user_section);
-        tvProfSec.setTextSize(11.5f);
-        tvProfSec.setTextColor(0xFF8E929E);
+        tvProfSec.setTextSize(TvUiTokens.SECTION_LABEL_SP);
+        tvProfSec.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvProfSec.setTypeface(outfit, Typeface.BOLD);
         root.addView(tvProfSec);
 
@@ -128,9 +124,9 @@ public final class UserSwitchDialog {
             itemCol.setPadding((int) (8 * density), (int) (6 * density), (int) (8 * density), (int) (6 * density));
 
             GradientDrawable iBg = new GradientDrawable();
-            iBg.setColor(isActive ? 0xFF2A2D38 : Color.TRANSPARENT);
+            iBg.setColor(isActive ? TvUiTokens.NAV_PROFILE_SELECTED : Color.TRANSPARENT);
             iBg.setCornerRadius(14 * density);
-            if (isActive) iBg.setStroke((int) (1.5f * density), 0x88FFFFFF);
+            if (isActive) iBg.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
             itemCol.setBackground(iBg);
 
             // Avatar Frame with Ring
@@ -141,7 +137,7 @@ public final class UserSwitchDialog {
             GradientDrawable ringBg = new GradientDrawable();
             ringBg.setShape(GradientDrawable.OVAL);
             ringBg.setColor(Color.TRANSPARENT);
-            ringBg.setStroke((int) (3 * density), isActive ? 0xFFFFFFFF : Color.TRANSPARENT);
+            ringBg.setStroke((int) (3 * density), isActive ? TvUiTokens.NAV_SELECTION_BORDER : Color.TRANSPARENT);
             ring.setBackground(ringBg);
             aFrame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
 
@@ -156,24 +152,25 @@ public final class UserSwitchDialog {
 
             TextView tvName = new TextView(activity);
             tvName.setText(prof.name + (profileChildMode ? " 👶" : ""));
-            tvName.setTextSize(12.5f);
-            tvName.setTextColor(isActive ? 0xFFFFFFFF : 0xFFCBD5E1);
+            tvName.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+            tvName.setTextColor(isActive ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
             tvName.setTypeface(outfit, isActive ? Typeface.BOLD : Typeface.NORMAL);
             tvName.setPadding(0, (int) (6 * density), 0, 0);
             tvName.setSingleLine(true);
+            tvName.setEllipsize(android.text.TextUtils.TruncateAt.END);
             itemCol.addView(tvName);
 
             itemCol.setOnFocusChangeListener((v, hasFocus) -> {
                 GradientDrawable g = new GradientDrawable();
-                g.setColor(hasFocus ? 0xFF353946 : (isActive ? 0xFF2A2D38 : Color.TRANSPARENT));
+                g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : (isActive ? TvUiTokens.NAV_PROFILE_SELECTED : Color.TRANSPARENT));
                 g.setCornerRadius(14 * density);
                 if (hasFocus) {
-                    g.setStroke((int) (2 * density), 0xFF38BDF8);
+                    g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
                 } else if (isActive) {
-                    g.setStroke((int) (1.5f * density), 0x88FFFFFF);
+                    g.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
                 }
                 v.setBackground(g);
-                v.animate().scaleX(hasFocus ? 1.08f : 1.0f).scaleY(hasFocus ? 1.08f : 1.0f).setDuration(120).start();
+                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
 
             itemCol.setOnClickListener(v -> {
@@ -200,7 +197,7 @@ public final class UserSwitchDialog {
         addCol.setPadding((int) (12 * density), (int) (8 * density), (int) (12 * density), (int) (8 * density));
 
         GradientDrawable addBg = new GradientDrawable();
-        addBg.setColor(0xFF242731);
+        addBg.setColor(TvUiTokens.SURFACE_IDLE);
         addBg.setCornerRadius(14 * density);
         addCol.setBackground(addBg);
 
@@ -208,32 +205,32 @@ public final class UserSwitchDialog {
         int pfDim = (int) (52 * density);
         GradientDrawable pfBg = new GradientDrawable();
         pfBg.setShape(GradientDrawable.OVAL);
-        pfBg.setColor(0xFF2E323F);
+        pfBg.setColor(TvUiTokens.SURFACE);
         plusFrame.setBackground(pfBg);
 
         TextView tvPlus = new TextView(activity);
         tvPlus.setText("＋");
-        tvPlus.setTextSize(22);
-        tvPlus.setTextColor(0xFF38BDF8);
+        tvPlus.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+        tvPlus.setTextColor(TvUiTokens.FOCUS_BORDER);
         tvPlus.setGravity(Gravity.CENTER);
         plusFrame.addView(tvPlus, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         addCol.addView(plusFrame, new LinearLayout.LayoutParams(pfDim, pfDim));
 
         TextView tvAddLbl = new TextView(activity);
         tvAddLbl.setText(R.string.add_user_label);
-        tvAddLbl.setTextSize(12);
-        tvAddLbl.setTextColor(0xFF8E929E);
+        tvAddLbl.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+        tvAddLbl.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvAddLbl.setTypeface(outfit, Typeface.NORMAL);
         tvAddLbl.setPadding(0, (int) (6 * density), 0, 0);
         addCol.addView(tvAddLbl);
 
         addCol.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF353946 : 0xFF242731);
+            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE_IDLE);
             g.setCornerRadius(14 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
+            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.08f : 1.0f).scaleY(hasFocus ? 1.08f : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         addCol.setOnClickListener(v -> {
@@ -251,22 +248,22 @@ public final class UserSwitchDialog {
         // Close / Batal Button
         Button btnClose = new Button(activity);
         btnClose.setText(R.string.close_label);
-        btnClose.setTextSize(14);
-        btnClose.setTextColor(0xFFE2E8F0);
+        btnClose.setTextSize(TvUiTokens.NAV_ITEM_TEXT_SP);
+        btnClose.setTextColor(TvUiTokens.TEXT_SECONDARY);
         btnClose.setTypeface(outfit, Typeface.BOLD);
         btnClose.setFocusable(true);
         btnClose.setClickable(true);
 
         GradientDrawable cBg = new GradientDrawable();
-        cBg.setColor(0xFF2C303D);
+        cBg.setColor(TvUiTokens.SURFACE);
         cBg.setCornerRadius(10 * density);
         btnClose.setBackground(cBg);
 
         btnClose.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF3D4354 : 0xFF2C303D);
+            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
             g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
+            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
         });
 
@@ -275,7 +272,7 @@ public final class UserSwitchDialog {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
         });
 
-        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density));
         root.addView(btnClose, btnLp);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
@@ -359,23 +356,19 @@ public final class UserSwitchDialog {
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding((int) (22 * density), (int) (18 * density), (int) (22 * density), (int) (16 * density));
 
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF1E2026);
-        bg.setCornerRadius(20 * density);
-        bg.setStroke((int) (1.5f * density), 0xFF2F323B);
-        content.setBackground(bg);
+        content.setBackground(TvDialogStyle.createDialogSurface(activity));
 
         TextView tvTitle = new TextView(activity);
         tvTitle.setText(R.string.add_user_title);
-        tvTitle.setTextSize(18);
-        tvTitle.setTextColor(0xFFFFFFFF);
+        tvTitle.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+        tvTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvTitle.setTypeface(font, Typeface.BOLD);
         content.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
         tvSub.setText(R.string.add_user_subtitle);
-        tvSub.setTextSize(12.5f);
-        tvSub.setTextColor(0xFF8E929E);
+        tvSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+        tvSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvSub.setTypeface(font, Typeface.NORMAL);
         tvSub.setPadding(0, (int) (2 * density), 0, (int) (12 * density));
         content.addView(tvSub);
@@ -383,27 +376,27 @@ public final class UserSwitchDialog {
         // Edit text for Name
         EditText et = new EditText(activity);
         et.setHint(R.string.add_user_name_hint);
-        et.setHintTextColor(0xFF6B7280);
-        et.setTextColor(0xFFFFFFFF);
-        et.setTextSize(15);
+        et.setHintTextColor(TvUiTokens.TEXT_SECONDARY);
+        et.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        et.setTextSize(TvUiTokens.BODY_SP);
         et.setTypeface(font, Typeface.NORMAL);
         et.setPadding((int) (14 * density), (int) (10 * density), (int) (14 * density), (int) (10 * density));
 
         GradientDrawable etBg = new GradientDrawable();
-        etBg.setColor(0xFF262934);
+        etBg.setColor(TvUiTokens.INPUT_SURFACE);
         etBg.setCornerRadius(10 * density);
-        etBg.setStroke((int) (1 * density), 0xFF3F4454);
+        etBg.setStroke((int) (1 * density), TvUiTokens.BORDER);
         et.setBackground(etBg);
         TvFocusIndicator.applyRoundedTextFocus(et, density, 10f,
-                0xFF262934, 0xFF343B4B, 0xFF3F4454, 0xFF7DD3FC,
-                0xFFFFFFFF, 0xFFFFFFFF, 1.0f);
+                TvUiTokens.INPUT_SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
+                TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
         content.addView(et);
 
         // Avatar Picker Header
         TextView tvAvHeader = new TextView(activity);
         tvAvHeader.setText(R.string.choose_avatar_label);
-        tvAvHeader.setTextSize(11.5f);
-        tvAvHeader.setTextColor(0xFF8E929E);
+        tvAvHeader.setTextSize(TvUiTokens.SECTION_LABEL_SP);
+        tvAvHeader.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvAvHeader.setTypeface(font, Typeface.BOLD);
         tvAvHeader.setPadding(0, (int) (12 * density), 0, (int) (6 * density));
         content.addView(tvAvHeader);
@@ -433,7 +426,7 @@ public final class UserSwitchDialog {
             GradientDrawable ringBg = new GradientDrawable();
             ringBg.setShape(GradientDrawable.OVAL);
             ringBg.setColor(Color.TRANSPARENT);
-            ringBg.setStroke((int) (2.5f * density), 0xFFFFFFFF);
+            ringBg.setStroke((int) (2.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
             ring.setBackground(ringBg);
             ring.setVisibility(idx == 0 ? View.VISIBLE : View.GONE);
             frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
@@ -461,8 +454,8 @@ public final class UserSwitchDialog {
         // Checkbox: Child Mode profile
         CheckBox cbChild = new CheckBox(activity);
         cbChild.setText(R.string.child_profile_checkbox);
-        cbChild.setTextColor(0xFFCBD5E1);
-        cbChild.setTextSize(13);
+        cbChild.setTextColor(TvUiTokens.TEXT_SECONDARY);
+        cbChild.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
         cbChild.setTypeface(font, Typeface.NORMAL);
         cbChild.setPadding((int) (6 * density), (int) (6 * density), 0, (int) (12 * density));
         content.addView(cbChild);
@@ -476,39 +469,40 @@ public final class UserSwitchDialog {
 
         Button btnCancel = new Button(activity);
         btnCancel.setText(R.string.cancel_action);
-        btnCancel.setTextColor(0xFF8E929E);
+        btnCancel.setTextColor(TvUiTokens.TEXT_SECONDARY);
         btnCancel.setTypeface(font, Typeface.NORMAL);
         btnCancel.setFocusable(true);
         btnCancel.setClickable(true);
         GradientDrawable cBg = new GradientDrawable();
-        cBg.setColor(0xFF262934);
+        cBg.setColor(TvUiTokens.INPUT_SURFACE);
         cBg.setCornerRadius(8 * density);
         btnCancel.setBackground(cBg);
         btnCancel.setPadding((int) (16 * density), 0, (int) (16 * density), 0);
         btnCancel.setOnFocusChangeListener((v, hasFocus) -> {
-            cBg.setStroke((int) (2 * density), hasFocus ? 0xFFFFFFFF : 0);
-            btnCancel.setTextColor(hasFocus ? 0xFFFFFFFF : 0xFF8E929E);
-            v.animate().scaleX(hasFocus ? 1.05f : 1.0f).scaleY(hasFocus ? 1.05f : 1.0f).setDuration(120).start();
+            cBg.setStroke((int) (2 * density), hasFocus ? TvUiTokens.FOCUS_BORDER : 0);
+            btnCancel.setTextColor(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
         btnCancel.setOnClickListener(v -> {
             if (dHolder[0] != null) dHolder[0].dismiss();
         });
-        btnRow.addView(btnCancel, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) (40 * density)));
+        btnRow.addView(btnCancel, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density)));
 
         Button btnSave = new Button(activity);
         btnSave.setText(R.string.save_profile_action);
-        btnSave.setTextColor(0xFFFFFFFF);
+        btnSave.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        btnSave.setTextSize(TvUiTokens.NAV_ITEM_TEXT_SP);
         btnSave.setTypeface(font, Typeface.BOLD);
         btnSave.setFocusable(true);
         btnSave.setClickable(true);
         GradientDrawable sBg = new GradientDrawable();
-        sBg.setColor(0xFF10B981); // Emerald
+        sBg.setColor(TvUiTokens.SUCCESS); // Emerald
         sBg.setCornerRadius(8 * density);
         btnSave.setBackground(sBg);
         btnSave.setPadding((int) (16 * density), 0, (int) (16 * density), 0);
         btnSave.setOnFocusChangeListener((v, hasFocus) -> {
-            sBg.setStroke((int) (2 * density), hasFocus ? 0xFFFFFFFF : 0);
-            v.animate().scaleX(hasFocus ? 1.05f : 1.0f).scaleY(hasFocus ? 1.05f : 1.0f).setDuration(120).start();
+            sBg.setStroke((int) (2 * density), hasFocus ? TvUiTokens.FOCUS_BORDER : 0);
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         btnSave.setOnClickListener(v -> {

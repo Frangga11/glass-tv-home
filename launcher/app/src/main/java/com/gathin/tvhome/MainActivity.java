@@ -578,8 +578,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return false;
             });
             weatherAirQualityView.setOnFocusChangeListener((v, hasFocus) -> {
-                float scale = hasFocus ? 1.05f : 1.0f;
-                v.animate().scaleX(scale).scaleY(scale).setDuration(150).start();
+                float scale = hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f;
+                v.animate().scaleX(scale).scaleY(scale).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
         }
         updateWeatherAqi();
@@ -4896,7 +4896,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
-                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(100).start();
+                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
 
             final String chosenKey = opt.key;
@@ -5089,7 +5089,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
-                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(100).start();
+                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
 
             final int chosenMin = opt.minutes;
@@ -6798,21 +6798,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         glider.addCompanion(panel);
         anchor.getLocationInWindow(menuAt);
         root.getLocationInWindow(menuGliderAt);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.leftMargin = Math.max(0, Math.min(menuAt[0] - menuGliderAt[0], root.getWidth() - width));
+
+        int safeX = TvResponsiveLayout.safeInsetPx(root.getWidth());
+        int safeY = TvResponsiveLayout.safeInsetPx(root.getHeight());
+        width = Math.max(1, Math.min(width, root.getWidth() - 2 * safeX));
         int gap = (int) (10 * density);
-        if (above) {
-            panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.UNSPECIFIED);
-            lp.topMargin = Math.max(0, menuAt[1] - menuGliderAt[1] - gap - panel.getMeasuredHeight());
-        } else {
-            lp.topMargin = menuAt[1] - menuGliderAt[1] + anchor.getHeight() + gap;
-        }
+        int anchorTop = menuAt[1] - menuGliderAt[1];
+        panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.UNSPECIFIED);
+        int contentHeight = Math.max(1, panel.getMeasuredHeight());
+        int safeHeight = Math.max(1, root.getHeight() - 2 * safeY);
+        int anchorBottom = anchorTop + anchor.getHeight();
+        int aboveSpace = Math.max(0, anchorTop - gap - safeY);
+        int belowSpace = Math.max(0, root.getHeight() - safeY - anchorBottom - gap);
+        boolean placeAbove = TvResponsiveLayout.shouldPlacePopupAbove(
+                aboveSpace, belowSpace, contentHeight, safeHeight, above);
+        int availableHeight = placeAbove ? aboveSpace : belowSpace;
+        int height = Math.max(1, Math.min(contentHeight, availableHeight));
+        int left = TvResponsiveLayout.popupLeftPx(
+                menuAt[0] - menuGliderAt[0], width, root.getWidth());
+        int popupTop = placeAbove ? anchorTop - gap - height : anchorBottom + gap;
+        popupTop = Math.max(safeY, Math.min(popupTop, root.getHeight() - safeY - height));
+        final boolean opensAbove = placeAbove;
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
+        lp.leftMargin = left;
+        lp.topMargin = popupTop;
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
 
-        // Focus stays in the menu until it closes. Leaving it towards the anchor closes it, and the
-        // selection glides back into what it opened from.
         View first = null, last = null;
         for (int i = 0; i < rows.getChildCount(); i++) {
             View row = rows.getChildAt(i);
@@ -6832,11 +6846,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_DPAD_UP:
                         if (v != top) return false;
-                        if (down && !above) closeMenu(true);
+                        if (down && !opensAbove) closeMenu(true);
                         return true;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
                         if (v != bottom) return false;
-                        if (down && above) closeMenu(true);
+                        if (down && opensAbove) closeMenu(true);
                         return true;
                     case KeyEvent.KEYCODE_DPAD_LEFT:
                     case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -6850,13 +6864,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
 
-        // The glass and the rows fade in around the selection as it arrives.
         glass.setAlpha(0);
         rows.setAlpha(0f);
-        final float slide = (above ? 8 : -8) * density;
+        final float slide = (opensAbove ? 8 : -8) * density;
         rows.setTranslationY(slide);
         android.animation.ValueAnimator in = android.animation.ValueAnimator.ofFloat(0f, 1f);
-        in.setDuration(220);
+        in.setDuration(reducedMotion ? 120 : 220);
         in.setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f));
         in.addUpdateListener(an -> {
             float f = (float) an.getAnimatedValue();
@@ -6868,9 +6881,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (top != null) {
             top.requestFocus();
             panel.post(() -> {
-                if (openMenu == panel && top != null) {
-                    top.requestFocus();
-                }
+                if (openMenu == panel && top.isAttachedToWindow()) top.requestFocus();
             });
         }
     }
