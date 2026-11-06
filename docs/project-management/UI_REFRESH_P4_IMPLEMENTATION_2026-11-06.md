@@ -172,3 +172,10 @@ Cross-cutting B01 shared tokens/focus/dialog/navigation foundations are to be ex
 - `TileBinder` successfully centralizes visual binding and app launch, but it is not yet a complete renderer-independent interaction seam: `AppAdapter.Holder` still captures `TileListener` and reports combined positions. A two-region adapter must move focus, long-press and key routing to stable component identity / region-aware callbacks before separate adapters are safe.
 - Next implementation gate: design and test identity-based tile interaction callbacks and a region-aware focus/navigation controller, preserving existing single-grid behavior during extraction. Then implement independent Dock/Grid adapters and layout as one cohesive migration; do not change `COLUMNS` to Dock capacity.
 - Module 1 remains IN PROGRESS / NOT READY for trigger 2. No merge, APK publication/install, ADB, device setting change, or physical TV test authorized.
+
+## 6 Nov 2026 — APK budget policy decision
+- User approved increasing the release APK size ceiling rather than removing fonts, wallpaper, assets or functionality to recover a few hundred bytes.
+- Updated `.github/workflows/ci.yml` on `feature/ui-global-01-home-dock` at commit `e4bc99c9a4822057ce3bd5490df0ad1471763409`: release APK maximum is now **1,677,722 bytes (1.6 MiB)**, enforced with `<=`; the check remains active and bounded.
+- The latest measured APK (1,573,125 bytes) is below the new ceiling, leaving approximately 104.6 KB of headroom. This is a policy adjustment, not a claim that the new exact-head CI has passed; a fresh PR CI run is required.
+- Preserve product quality: do not trim required fonts, default wallpaper, accessibility, features or UI behavior merely to satisfy the previous 1.5 MiB threshold. Revisit the ceiling only if actual growth warrants it, with explicit rationale and review.
+- PR #64 remains OPEN / DRAFT / UNMERGED. Architecture and functional work for independent Dock/App Grid renderers remains outstanding; Module 1 is still IN PROGRESS.
