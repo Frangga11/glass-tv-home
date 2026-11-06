@@ -1109,3 +1109,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - No Critical defect was reproduced in this read-only P0 audit. No code, PR state, branch ref, integration/main, APK publication/install, ADB, HOME/default launcher or physical device was changed.
 - **Next exact step:** P1 Functional Inventory. P1 has not started. P2/P3 approval remains mandatory before P4 implementation.
 - Full evidence: `UI_REFRESH_P0_BASELINE_2026-11-06.md`.
+
+
+## UI Refresh P1 — Functional Inventory checkpoint — 6 November 2026
+
+- **Current stage:** P1 inventory prepared; **PARTIAL / USER ACCEPTANCE PENDING**. Canonical output: [UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md](UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md).
+- **Documentation branch:** `docs/project-master-inventory`. P1 inventory created in commit `6022e4d6f5e6f3656ffc4cd00b0f8bb0ffbae157`; subsequent canonical-record sync commits follow in this checkpoint (use live branch head, not this intermediate SHA).
+- **Source baseline:** integration `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; E02 PR #62 `feature/e02-giphy-avatar-search-v1` @ `588456144df24f2f6c015a01053ad700a04bee39`; E06 PR #63 `feature/e06-dock-capacity-control-v1` @ `ecdeb0eba9fc7a574f1a6c9930205517687cd922`. Bases remain E02 `3ab9b55f3cfe03ad9841a119590a9183cf114e96` and E06 `570b7c83efaec3ac515b78f1c6c119b777fc3b84`. PRs OPEN/DRAFT/UNMERGED.
+- **Exact-head CI:** E02 run #1204 / `41895866368`, E06 #1198 / `41890835096`; both required jobs SUCCESS; publication skipped. This is isolated source CI, not device or integrated acceptance.
+- **P1 completed work:** mapped Profile/avatar surfaces, built-in/photo/GIPHY avatar actions, profile lifecycle/actions, Child Mode, locked/hidden app policy, parent PIN, Home app grid, current Dock behavior/preferences, Home settings, focus/navigation and state matrix. Every identified element has owner, current behavior or explicit absence, data/state/persistence/permission boundary and a test plan.
+- **Open P1 clarifications:** QR manifest/endpoint authorization; current GIPHY provider policy; default/no-profile and profile-capacity invariants; package visibility/API matrix. Existing high-risk feature gaps remain E02 cancellation/lifecycle and E06 independent Dock architecture/focus.
+- **No mutations:** no production code, owner branch, PR state, integration/main, APK publication/installation, ADB, HOME/default launcher or physical device changes.
+- **Next exact step:** user reviews and accepts P1 inventory/scope and confirms the listed clarifications may carry into P2/P5. Only then start P2 Shared Design & Interaction Contract. Do not begin P4; P2/P3 approval is mandatory.
