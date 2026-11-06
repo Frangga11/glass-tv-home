@@ -2,7 +2,7 @@
 
 **Document ID:** GTVH-UIR-P2-001  
 **Date:** 6 November 2026  
-**Status:** DRAFT FOR USER REVIEW — P2 CONTRACT WORK IN PROGRESS  
+**Status:** COMPLETE — CONTRACT BASELINE FROZEN FOR P3  
 **Authority:** User direction to follow the six supplied visual references V01–V06  
 **Reference inventory:** `UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md`  
 **Baseline audited:** `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`
@@ -13,7 +13,7 @@ Define one shared visual, navigation, focus, state, responsive and accessibility
 
 **In scope:** Home Screen, Weather & AQI Dashboard, Profile Selector, Quick Settings Popup, Wi-Fi Popup, Global Settings Split Detail; shared tokens and components; D-pad behavior; state patterns; TV layout constraints; ownership and dependency sequence.
 
-**Out of scope:** production code changes, visual asset implementation, prototype approval, feature branch changes, PR changes, integration/merge, APK build/install, ADB or physical TV testing.
+**P2 closeout:** shared design and interaction contract is complete. P3 prototype work is the next authorized Trigger. Production implementation, branch/PR changes, integration/merge, APK build/install, ADB or physical TV testing remain outside P2.
 
 ## 2. Approved visual direction
 
@@ -276,13 +276,13 @@ Initial P3 prototype baselines:
 **Root cause:** Android 10+ privacy/security restrictions prevent ordinary apps targeting API 29+ from managing the system Wi-Fi radio and saved-network database as privileged Settings apps. Android 11 (API 30) does not remove these restrictions.
 
 **Verified platform constraints:**
-1. WifiManager.setWifiEnabled() cannot toggle Wi-Fi for ordinary apps targeting Android 10+; it returns false. Device-owner/profile-owner/system-app exemptions do not apply unless the launcher is actually provisioned with those privileges. Do not assume it is. <Cite refs={["turn810250search0","turn810250search1"]}/>
-2. Legacy getConfiguredNetworks() and add/update/remove/reconnect operations are restricted for ordinary apps targeting Android 10+. Do not build the UI around reading or mutating the full saved-network list. <Cite refs={["turn810250search0","turn810250search7"]}/>
-3. Foreground scanning with WifiManager.startScan() and getScanResults() is technically possible on Android 10/11 with required permissions and Location services enabled. For target SDK 29+, scan requires ACCESS_FINE_LOCATION and CHANGE_WIFI_STATE; reading results requires ACCESS_FINE_LOCATION and ACCESS_WIFI_STATE, with Location services enabled. SecurityException, unavailable location, OEM restrictions and stale results must be handled. <Cite refs={["turn558081search1","turn558081search14"]}/>
-4. Scan throttling remains: foreground apps are limited to four scans in a two-minute period. Do not continuously scan or let D-pad repeat spam scan requests. Failed/throttled scans may leave old results; show the last successful scan timestamp and label stale results. <Cite refs={["turn558081search1","turn558081search4"]}/>
-5. Android 11 Settings.ACTION_WIFI_ADD_NETWORKS can request user-approved addition of up to five supplied network configurations to the saved list. It is not an unrestricted network manager; user approval is mandatory. <Cite refs={["turn810250search2","turn810250search8"]}/>
-6. WifiNetworkSuggestion is a system-mediated suggestion path, not a guarantee that a selected SSID connects immediately. The platform chooses and controls the connection. <Cite refs={["turn558081search0","turn810250search5"]}/>
-7. Android Wi-Fi Settings/Settings Panel handoff is the reliable baseline for radio enable/disable and normal network join/forget operations. <Cite refs={["turn810250search0","turn810250search18"]}/>
+1. WifiManager.setWifiEnabled() cannot toggle Wi-Fi for ordinary apps targeting Android 10+; it returns false. Device-owner/profile-owner/system-app exemptions do not apply unless the launcher is actually provisioned with those privileges. Do not assume it is. [Android 10 Wi-Fi privacy restrictions](https://developer.android.com/about/versions/10/privacy/changes) · [WifiManager API](https://developer.android.com/reference/android/net/wifi/WifiManager)
+2. Legacy getConfiguredNetworks() and add/update/remove/reconnect operations are restricted for ordinary apps targeting Android 10+. Do not build the UI around reading or mutating the full saved-network list. [Android 10 Wi-Fi privacy restrictions](https://developer.android.com/about/versions/10/privacy/changes)
+3. Foreground scanning with WifiManager.startScan() and getScanResults() is technically possible on Android 10/11 with required permissions and Location services enabled. For target SDK 29+, scan requires ACCESS_FINE_LOCATION and CHANGE_WIFI_STATE; reading results requires ACCESS_FINE_LOCATION and ACCESS_WIFI_STATE, with Location services enabled. SecurityException, unavailable location, OEM restrictions and stale results must be handled. [Wi-Fi scanning overview](https://developer.android.com/develop/connectivity/wifi/wifi-scan) · [Android 11 WifiManager source](https://android.googlesource.com/platform/frameworks/base/%2B/refs/heads/android11-release/wifi/java/android/net/wifi/WifiManager.java)
+4. Scan throttling remains: foreground apps are limited to four scans in a two-minute period. Do not continuously scan or let D-pad repeat spam scan requests. Failed/throttled scans may leave old results; show the last successful scan timestamp and label stale results. [Wi-Fi scanning restrictions and throttling](https://developer.android.com/develop/connectivity/wifi/wifi-scan)
+5. Android 11 Settings.ACTION_WIFI_ADD_NETWORKS can request user-approved addition of up to five supplied network configurations to the saved list. It is not an unrestricted network manager; user approval is mandatory. [Save networks and Passpoint configurations](https://developer.android.com/develop/connectivity/wifi/wifi-save-network-passpoint-config) · [Settings.ACTION_WIFI_ADD_NETWORKS](https://developer.android.com/reference/android/provider/Settings#ACTION_WIFI_ADD_NETWORKS)
+6. WifiNetworkSuggestion is a system-mediated suggestion path, not a guarantee that a selected SSID connects immediately. The platform chooses and controls the connection. [Wi-Fi suggestion API](https://developer.android.com/develop/connectivity/wifi/wifi-suggest) · [Wi-Fi infrastructure overview](https://developer.android.com/develop/connectivity/wifi/wifi-infrastructure)
+7. Android Wi-Fi Settings/Settings Panel handoff is the reliable baseline for radio enable/disable and normal network join/forget operations. [Android Wi-Fi settings restrictions](https://developer.android.com/about/versions/10/privacy/changes) · [Settings Wi-Fi panel](https://developer.android.com/reference/android/provider/Settings#ACTION_WIFI)
 
 **P2 design resolution for V05:**
 - Keep the reference popup structure, connected-network emphasis, nearby network list, rescan affordance and settings entry.
