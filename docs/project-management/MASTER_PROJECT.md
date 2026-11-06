@@ -1081,3 +1081,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Staged global UI implementation scope recorded. The Global UI Design System remains NOT PASS pending P3 real browser render/screenshots, 12 interaction scenarios, source call-site inventory and component/token conformance.
 - Canonical dependency/ownership matrix added to `GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md`, commit `45f1a4ae6cbf19c5bd7d79f5072d650eb297bdfc`: P3 → B01 → B02 → B03 → B06/B07 → E01–E08 → Project F integration.
 - PR #64 exact-head CI run #1225 passed both required jobs; PR remains Draft/unmerged. No production source was changed in this continuation.
+
+
+## R0 — live project reconciliation checkpoint (6 November 2026)
+- R0 audit completed; see `R0_RECONCILIATION_AUDIT_2026-11-06.md` for exact refs, ancestry comparisons, CI runs, blockers and evidence boundaries.
+- Governing UI Refresh v1.0 remains locked. P0 historical baseline PASS; P1 accepted/closed for progression; P2 complete/frozen; P3 partial/not accepted; P4–P6 not ready/blocked or not started as specified in the R0 report.
+- Live owner follow-ups #62/#63 remain Draft/open/unmerged and diverged from frozen integration (19 ahead/326 behind; 3 ahead/297 behind). P4-01 PR #64 is 25 ahead/0 behind and remains Draft/open/unmerged.
+- Exact-head CI #1204 (#62), #1198 (#63), and #1225 (#64) passed both required jobs. CI is not feature, visual, integration or device acceptance.
+- PR #62 and #64 stale CI descriptions were corrected. No source branch, integration/main, APK or device was changed. Do not merge/rebase/cherry-pick owner branches blindly.
+- Next active gate is P3 V5 browser rendering at 1920×1080, 12-scenario walkthrough and reference comparison. P4 mass styling remains blocked pending P3 visual/interaction acceptance.
