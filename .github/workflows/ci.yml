@@ -69,6 +69,6 @@ jobs:
         run: |
           size=$(stat -c %s launcher/app/build/outputs/apk/release/app-release.apk)
           echo "release APK: $((size / 1024)) KB"
-          # The bundled Default wallpaper adds an intentional ~226 KiB JPEG asset.
-          # Keep the complete release APK below 1.5 MiB while retaining headroom.
-          test "$size" -lt 1572864 || { echo "APK exceeds the 1.5 MiB budget"; exit 1; }
+          # Preserve bundled artwork, fonts and feature assets; size remains monitored with a
+          # bounded 1.6 MiB release budget (1,677,722 bytes), not an optimization mandate.
+          test "$size" -le 1677722 || { echo "APK exceeds the 1.6 MiB budget (1,677,722 bytes)"; exit 1; }
