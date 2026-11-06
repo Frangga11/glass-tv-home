@@ -1446,3 +1446,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Dependency map added to `GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md` (commit `45f1a4ae6cbf19c5bd7d79f5072d650eb297bdfc`). P3 visual acceptance and full B01 audit precede global token/focus changes; then B02/B03/B06/B07; then E01–E08; then Project F integration.
 - User's whole-app styling scope is authorized as a goal, not as permission to bypass quality gates. GDS remains BELUM PASS; mass implementation blocked pending 1920×1080 visual evidence, 12 D-pad scenarios, full call-site inventory and component conformance.
 - PR #64 CI #1225 exact head PASS; no merge or production source changes in this continuation.
+
+
+## R0 — live repository/roadmap reconciliation evidence (6 November 2026)
+- Audit report: `R0_RECONCILIATION_AUDIT_2026-11-06.md`; result COMPLETE for audit/documentation, project readiness NOT PASS.
+- Live exact-head CI verified: PR #62 head `588456144df24f2f6c015a01053ad700a04bee39`, run #1204 / `41895866368`, both jobs SUCCESS; PR #63 head `ecdeb0eba9fc7a574f1a6c9930205517687cd922`, run #1198 / `41890835096`, both jobs SUCCESS; PR #64 head `e4bc99c9a4822057ce3bd5490df0ad1471763409`, run #1225 / `42192107405`, both jobs SUCCESS.
+- Live compare against integration `562cde0751de93748eb4e0d4cdece4fa1672ac4d`: #62 diverged 19/326; #63 diverged 3/297; #64 ahead 25/behind 0. Preserve owner branches; semantic reconciliation required.
+- Corrected stale exact-head CI notes in PR #62 and PR #64. No production code, merge, rebase, cherry-pick, APK publication/installation, ADB or device action.
+- P3 remains PARTIAL: V5 static QC PASS only; browser walkthrough, 1920×1080 screenshots, visual comparison, 12 scenario execution and owner approval remain NOT RUN.
