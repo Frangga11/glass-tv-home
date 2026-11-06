@@ -1190,3 +1190,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - P2 commit: db5d7e70b09910f4f5d25d83fd815d024eee7d90. Canonical doc: docs/project-management/UI_REFRESH_P2_SHARED_DESIGN_INTERACTION_CONTRACT_2026-11-06.md on docs/project-master-inventory.
 - P3 — Six-Surface Visual Prototype & Interaction Validation is the next Trigger and is now authorized to start under the user's standing instruction. P4 production implementation remains gated until prototype/interaction QA and the roadmap implementation gate are satisfied.
 - No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV changed in P2.
+
+
+## P2 Final — Contract frozen; P3 started (6 Nov 2026)
+- P2 contract status changed from Draft to **COMPLETE — CONTRACT BASELINE FROZEN FOR P3** after closing the design and platform decision register.
+- Audited Android 11 Wi-Fi constraints using official Android developer/API documentation. Final design: nearby scan results are conditionally supported with permissions and Location enabled; foreground scan throttling must be respected; no app-side radio toggle or unrestricted saved-network manager; use Android Settings panel/settings handoff, with user-approved add-network API only for its intended use case.
+- Resolved: 960×540dp 16:9 design canvas; 48dp L/R and 27dp T/B safe margins; 8dp spacing rhythm; TV text/target/radius baselines; focus/motion/reduced-motion; Day/Normal/Night/Auto; wallpaper contrast; Next Photo E08 action contract; independent Dock/app-grid model; seven Settings categories and control-level search; full Weather V4 retention; common state/failure matrix.
+- P2 acceptance checklist marked PASS at contract level. P3/P4/P5 own runtime, source implementation and device verification; those are not claimed as completed.
+- P2 finalization commit: db5d7e70b09910f4f5d25d83fd815d024eee7d90. Final metadata/link cleanup commit: 2bd62bdacc5703cb5a629c6670cb56533ba658cf.
+- **P3 started:** generated visual concept boards for all six surfaces; these are design previews, not source-backed runtime or interactive prototypes. The Wi-Fi image treatment must follow the P2 correction (no fake in-app radio switch; show Wi-Fi status and system handoff, with conditional scan list). Visual boards are attached in the conversation and are not yet committed as repository assets.
+- Next P3 work: produce per-surface layout/state specifications and D-pad interaction test paths, reconcile prototype with P2 Wi-Fi capability boundary, then complete cross-surface visual/interaction QA. No production source, feature branches, PR metadata, integration/main, APK, ADB or TV device changed.
