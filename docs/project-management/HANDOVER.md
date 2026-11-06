@@ -1059,3 +1059,17 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - CI #1201 exposed a missing `java.io.File` import; corrected on the owner branch. Latest head `dafcaf8a6dd8003300aca155d3c02395f1a28165`; CI #1203 / run `41895682457` is still in progress. Do not claim this head passes until both jobs complete.
 - E02 still requires shared connection cancellation/disconnect, live GIF preview validation, lifecycle/profile/storage/DPAD/memory tests and GIPHY policy verification. E06 has not received source implementation changes in this pass; separate Dock architecture/UI/navigation remains open.
 - Overall E02/E06: **BELUM FINAL**.
+
+
+## UI Refresh planning standby checkpoint — 6 November 2026
+
+- User requested the UI team be placed on standby, preparation for the next interface build, and the responsible projects be called.
+- Responsible owners called on their existing Draft PRs: **E02 Profile & Avatar (#62)** and **E06 Home Screen & Dock (#63)**. Standby comments were posted to both PR conversations with preparation deliverables and explicit scope boundaries.
+- Preparation scope: reconcile owner heads/dependencies against approved integration; inventory source-backed screens, controls and data; prepare a unified UI/UX brief and 1920×1080 simulations; document risks, acceptance criteria and dependency order.
+- E02 preparation must account for request/connection cancellation, GIF preview/playback lifecycle, DPAD/focus, profile switching, private storage rollback, memory, localization and provider attribution/policy.
+- E06 preparation must cover a separate Dock view/adapter and ordered pinned-app model, horizontal/vertical orientation × capacity 4/5/6, overflow, independent focus/navigation and proof that main-grid columns remain unchanged.
+- Current evidence boundary: PR #62 and #63 remain Draft/open/unmerged; isolated CI is not feature acceptance. The 5 Nov audit records both features BELUM FINAL. Reconcile live heads before any implementation.
+- **Authorization boundary:** standby call authorizes preparation/audit/design brief/simulation only. It does not authorize production implementation, merge, integration/main updates, APK publication/installation, ADB, HOME/default-launcher changes or physical TV/device mutation. G03 remains separately gated.
+- Preserve Lean Engineering, source-backed UI only, simple/elegant/space-efficient/readable design, shared B01 visual/modal/focus contracts, and the APK size budget (G02 headroom was 571 bytes).
+- GitHub Issues are disabled for this repository; project calls were recorded as comments on PR #62 and #63 instead.
+- **Next decision point:** submit the consolidated UI refresh proposal for user review; do not start implementation until explicit approval.
