@@ -314,6 +314,10 @@ final class WeatherAirQuality {
     }
 
     /** Formats a clean Spannable UI string for the Home screen: "⛅ 29° Cerah  •  IPU 112 Tidak Sihat" */
+    /**
+     * A fresh timestamp is insufficient after a location change: the cached payload must
+     * belong to the currently selected coordinates before it can suppress a refresh.
+     */
     static boolean isCacheFresh(boolean hasCache, long now, long lastSuccess,
                                  String cachedLat, String cachedLon,
                                  double selectedLat, double selectedLon, long refreshIntervalMs) {
