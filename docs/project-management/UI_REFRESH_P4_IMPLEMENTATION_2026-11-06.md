@@ -186,3 +186,10 @@ Cross-cutting B01 shared tokens/focus/dialog/navigation foundations are to be ex
 - PR #64 remains OPEN / DRAFT / UNMERGED; Module 1 remains IN PROGRESS and is not visually accepted.
 - Started read-only Global UI Design System audit; see `GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md` commit `9412b1cef40b6496ac9560771a3ca9e73471cbaf`. References V01–V06 and additional Profile/Home Settings images were inspected. Reusable shared classes exist, but token palette and focus/material coverage require central reconciliation.
 - P3 V5 static QC PASS does not satisfy browser walkthrough or visual acceptance. 12 scenarios and real 1920×1080 screenshot comparison remain open. Global UI Design System: BELUM PASS. No mass implementation.
+
+
+## 6 Nov 2026 — global UI staged implementation plan
+- User authorized staged visual implementation across all named modules, preserving behavior and requiring module audit, integration, remote/focus tests, visual QC, documentation and commits.
+- Current gate is unchanged: Global UI Design System is NOT PASS. V5 browser render, 1920×1080 screenshot comparison, 12 interaction scenarios and full component call-site inventory remain pending. Do not style all modules or claim visual fidelity yet.
+- Canonical rollout dependency map: `GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md` commit `45f1a4ae6cbf19c5bd7d79f5072d650eb297bdfc`.
+- PR #64 exact-head CI #1225 passed; PR remains Draft/unmerged. Home & Dock migration still in progress; no source change in this continuation.
