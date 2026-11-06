@@ -77,14 +77,14 @@
     <string name="weather_wind_label">💨  ANGIN</string>
     <string name="weather_moon_phase_label">🌕  FASE BULAN</string>
     <string name="weather_sunset_label">🌅  MATAHARI TERBENAM</string>
-    <string name="weather_uv_label">☀️  INDEKS UV</string>
+    <string name="weather_uv_label">☀️  UV MAKSIMUM HARI INI</string>
     <string name="weather_uv_high">Tinggi</string>
     <string name="weather_uv_description">Perhatikan paparan sinar UV sesuai indeks saat ini.</string>
     <string name="weather_feels_like_label">🌡️  SUHU TERASA</string>
     <string name="weather_feels_like_description">Suhu terasa dapat berbeda dari suhu udara aktual.</string>
-    <string name="weather_air_quality_label">🍃  KUALITAS UDARA</string>
+    <string name="weather_air_quality_label">US AQI (CAMS)</string>
     <string name="weather_air_quality_moderate">Sedang</string>
-    <string name="weather_rainfall_label">💧  CURAH HUJAN</string>
+    <string name="weather_rainfall_label">🌧️  CURAH HUJAN HARI INI</string>
     <string name="weather_precipitation_chance">Saat ini • peluang hujan</string>
     <string name="weather_visibility_label">👁️  JARAK PANDANG</string>
     <string name="weather_visibility_good">Jarak pandang baik</string>
@@ -94,7 +94,7 @@
     <string name="weather_illustration_label">⛰️  ILUSTRASI CUACA</string>
     <string name="weather_humidity_label">💧  KELEMBAPAN</string>
     <string name="weather_humidity_description">Kelembapan relatif saat ini.</string>
-    <string name="weather_pressure_label">⏱️  TEKANAN UDARA</string>
+    <string name="weather_pressure_label">⏱️  TEKANAN UDARA (MSL)</string>
     <string name="weather_data_source">Prakiraan Open-Meteo • model CAMS • estimasi US AQI</string>
 
     <string name="media_now_playing">SEDANG DIPUTAR</string>
@@ -648,4 +648,38 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="dock_capacity_title">Kapasitas Dock</string>
     <string name="dock_capacity_summary">Pilih jumlah aplikasi yang ditampilkan: 4, 5, atau 6.</string>
     <string name="dock_settings_save_failed">Pengaturan Dock tidak dapat disimpan.</string>
+
+    <string name="weather_dew_point_label">TITIK EMBUN</string>
+    <string name="weather_dew_point_description">Suhu saat uap air mulai mengembun</string>
+    <string name="weather_moonrise_set_format">Terbit %1$s · Terbenam %2$s</string>
+    <string name="weather_moon_new">Bulan baru</string>
+    <string name="weather_moon_waxing_crescent">Sabit muda</string>
+    <string name="weather_moon_first_quarter">Perbani awal</string>
+    <string name="weather_moon_waxing_gibbous">Cembung muda</string>
+    <string name="weather_moon_full">Purnama</string>
+    <string name="weather_moon_waning_gibbous">Cembung tua</string>
+    <string name="weather_moon_last_quarter">Perbani akhir</string>
+    <string name="weather_moon_waning_crescent">Sabit tua</string>
+    <string name="weather_pollutants_format">PM2.5 %1$s · PM10 %2$s µg/m³\nCO %3$s mg/m³ · NO₂ %4$s · SO₂ %5$s µg/m³</string>
+    <string name="weather_model_reference_detail">Lokasi acuan model: %1$s · estimasi CAMS, bukan pengukuran ISPU resmi</string>
+    <string name="weather_footer_format">Cuaca: %1$s · AQI: %2$s\nSumber: %3$s</string>
+    <string name="weather_state_current">Terkini</string>
+    <string name="weather_state_offline">Offline · memakai cache</string>
+    <string name="weather_state_stale">Data usang</string>
+    <string name="weather_state_stale_failed">Data usang · pembaruan gagal</string>
+    <string name="weather_state_refresh_failed">Pembaruan gagal · memakai data terakhir</string>
+    <string name="weather_state_unavailable">Data tidak tersedia</string>
+    <string name="weather_state_offline_unavailable">Offline · belum ada data</string>
+    <string name="weather_precipitation_summary">Peluang hujan maks. hari ini %1$d%%</string>
+    <string name="uv_extreme">Ekstrem</string>
+    <string name="uv_advice_low">Paparan rendah; perlindungan khusus biasanya tidak diperlukan.</string>
+    <string name="uv_advice_moderate">Cari teduh saat siang; gunakan pelindung matahari bila lama di luar.</string>
+    <string name="uv_advice_high">Cari teduh; gunakan topi, pakaian pelindung dan tabir surya.</string>
+    <string name="uv_advice_very_high">Hindari matahari tengah hari; lindungi kulit dan mata.</string>
+    <string name="uv_advice_extreme">Paparan ekstrem; hindari berada di luar saat puncak UV dan gunakan perlindungan lengkap.</string>
+
+    <string name="weather_sunrise_label">Matahari terbit</string>
+
+    <string name="weather_state_offline_stale">Offline · data usang</string>
+    <string name="weather_pollutant_missing_note">— = tidak disediakan oleh provider</string>
 </resources>

@@ -77,14 +77,14 @@
     <string name="weather_wind_label">💨  WIND</string>
     <string name="weather_moon_phase_label">🌕  MOON PHASE</string>
     <string name="weather_sunset_label">🌅  SUNSET</string>
-    <string name="weather_uv_label">☀️  UV INDEX</string>
+    <string name="weather_uv_label">☀️  UV MAX TODAY</string>
     <string name="weather_uv_high">High</string>
     <string name="weather_uv_description">Take care with UV exposure based on the current index.</string>
     <string name="weather_feels_like_label">🌡️  FEELS LIKE</string>
     <string name="weather_feels_like_description">Feels-like temperature may differ from the actual air temperature.</string>
-    <string name="weather_air_quality_label">🍃  AIR QUALITY</string>
+    <string name="weather_air_quality_label">US AQI (CAMS)</string>
     <string name="weather_air_quality_moderate">Moderate</string>
-    <string name="weather_rainfall_label">💧  RAINFALL</string>
+    <string name="weather_rainfall_label">🌧️  RAINFALL TODAY</string>
     <string name="weather_precipitation_chance">Current • chance of rain</string>
     <string name="weather_visibility_label">👁️  VISIBILITY</string>
     <string name="weather_visibility_good">Good visibility</string>
@@ -94,7 +94,7 @@
     <string name="weather_illustration_label">⛰️  WEATHER ILLUSTRATION</string>
     <string name="weather_humidity_label">💧  HUMIDITY</string>
     <string name="weather_humidity_description">Current relative humidity.</string>
-    <string name="weather_pressure_label">⏱️  AIR PRESSURE</string>
+    <string name="weather_pressure_label">⏱️  AIR PRESSURE (MSL)</string>
     <string name="weather_data_source">Open-Meteo forecast • CAMS model • US AQI estimate</string>
 
     <string name="media_now_playing">NOW PLAYING</string>
@@ -650,4 +650,38 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="dock_capacity_summary">Choose how many apps are shown: 4, 5, or 6.</string>
     <string name="dock_settings_save_failed">Dock settings could not be saved.</string>
 
+
+    <string name="weather_dew_point_label">DEW POINT</string>
+    <string name="weather_dew_point_description">Temperature at which moisture condenses</string>
+    <string name="weather_moonrise_set_format">Rise %1$s · Set %2$s</string>
+    <string name="weather_moon_new">New Moon</string>
+    <string name="weather_moon_waxing_crescent">Waxing Crescent</string>
+    <string name="weather_moon_first_quarter">First Quarter</string>
+    <string name="weather_moon_waxing_gibbous">Waxing Gibbous</string>
+    <string name="weather_moon_full">Full Moon</string>
+    <string name="weather_moon_waning_gibbous">Waning Gibbous</string>
+    <string name="weather_moon_last_quarter">Last Quarter</string>
+    <string name="weather_moon_waning_crescent">Waning Crescent</string>
+    <string name="weather_pollutants_format">PM2.5 %1$s · PM10 %2$s µg/m³\nCO %3$s mg/m³ · NO₂ %4$s · SO₂ %5$s µg/m³</string>
+    <string name="weather_model_reference_detail">Model reference: %1$s · CAMS estimate, not official ISPU measurement</string>
+    <string name="weather_footer_format">Weather: %1$s · AQI: %2$s\nSource: %3$s</string>
+    <string name="weather_state_current">Current</string>
+    <string name="weather_state_offline">Offline · using cache</string>
+    <string name="weather_state_stale">Stale data</string>
+    <string name="weather_state_stale_failed">Stale data · refresh failed</string>
+    <string name="weather_state_refresh_failed">Refresh failed · showing last data</string>
+    <string name="weather_state_unavailable">Data unavailable</string>
+    <string name="weather_state_offline_unavailable">Offline · no data available</string>
+    <string name="weather_precipitation_summary">Max rain chance today %1$d%%</string>
+    <string name="uv_extreme">Extreme</string>
+    <string name="uv_advice_low">Low exposure; special protection is usually not needed.</string>
+    <string name="uv_advice_moderate">Seek shade around midday; use sun protection for extended outdoor activity.</string>
+    <string name="uv_advice_high">Seek shade; wear a hat and protective clothing and use sunscreen.</string>
+    <string name="uv_advice_very_high">Avoid midday sun; protect skin and eyes.</string>
+    <string name="uv_advice_extreme">Extreme exposure; avoid peak UV hours and use full sun protection.</string>
+
+    <string name="weather_sunrise_label">Sunrise</string>
+
+    <string name="weather_state_offline_stale">Offline · stale data</string>
+    <string name="weather_pollutant_missing_note">— = not provided by the data provider</string>
 </resources>

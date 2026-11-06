@@ -20,7 +20,7 @@ public class AqiSpectrumBarView extends View {
     private final RectF trackRect = new RectF();
 
     private int aqi = 50;
-    private int maxAqi = 300;
+    private int maxAqi = 500;
 
     public AqiSpectrumBarView(Context context) {
         this(context, null);
@@ -63,8 +63,8 @@ public class AqiSpectrumBarView extends View {
         // Rainbow gradient from Good (Green) to Hazardous (Maroon/Purple)
         LinearGradient grad = new LinearGradient(
                 0, 0, w, 0,
-                new int[]{0xFF22C55E, 0xFFEAB308, 0xFFF97316, 0xFFEF4444, 0xFFA855F7, 0xFF7E22CE},
-                new float[]{0f, 0.2f, 0.4f, 0.65f, 0.85f, 1f},
+                new int[]{0xFF22C55E, 0xFFEAB308, 0xFFF97316, 0xFFEF4444, 0xFFA855F7, 0xFF7E22CE, 0xFF7E22CE},
+                new float[]{0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.6f, 1f},
                 Shader.TileMode.CLAMP
         );
         trackPaint.setShader(grad);
