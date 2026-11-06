@@ -1,65 +1,76 @@
-# Glass TV Home — UI Refresh Roadmap
-**Document:** GTVH-UIR-001  
-**Version:** 1.0  
-**Status:** LOCKED BASELINE — v1.0  
-**Date:** 6 November 2026
+# Glass TV Home — Global UI Refresh Roadmap
+**Document:** GTVH-UIR-002  
+**Version:** 2.0  
+**Status:** NEW GOVERNING ROADMAP — replaces UI Refresh v1.0  
+**Baseline checkpoint:** 6 November 2026  
+**Execution principle:** Fix the complete scope first; test after implementation; repeat fix-and-test until successful and safe; perform final QC; only then close documentation and checkpoint.
 
 ## 1. Objective
-Refresh the UI without causing functional regression, navigation failure, data loss, lifecycle faults, security/privacy regressions, or unacceptable performance/compatibility changes. Use Lean UI Engineering: source-backed scope, small work units, parallel module work only after shared contracts are approved, and evidence-based gates.
+Deliver the six approved Global UI surfaces as one coherent, usable Android TV experience: visually consistent, fully functional, D-pad-safe, readable at TV distance and in daylight, stable across lifecycle/state changes, and free of known critical/high defects.
 
-## 2. Execution roadmap
+## 2. Accepted inputs — do not redo without a changed source
+- P0 baseline: PASS at integration baseline `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- P1 functional inventory: ACCEPTED for progression; six references V01–V06 and functional boundaries remain authoritative.
+- P2 shared design/interaction contract: COMPLETE/FROZEN. Preserve blue-tinted glass, restrained cyan focus, high-contrast typography, readable surfaces, deterministic D-pad/Back behavior, and full Weather V4 scope.
+- Existing B01 shared foundations remain the implementation base: `TvUiTokens`, `TvDialogStyle`, `GlassDrawable`, `TvFocusIndicator`, `TvResponsiveLayout`, shared Settings builders, `TvFeedback`, and `AppLanguage`.
+- Reuse valid audits and CI evidence. Repeat an audit only when code, branch ancestry, dependency, or test evidence changes.
 
-| Stage | Work | Measurable output / exit gate |
+## 3. Execution roadmap
+
+| Order | Work package | Required result |
 |---|---|---|
-| **P0 — Baseline & compatibility** | Reconcile live E02/E06 heads and dependencies against the approved integration baseline; inspect shared B01 contracts; record Android/API/device/resolution assumptions, current APK/resource budget and known defects. | Frozen source baseline + compatibility/dependency register; no stale SHA or undocumented dependency. |
-| **P1 — Functional inventory** | Map every screen, tab, submenu, control, data source, action, permission, persistence point and navigation destination. Include loading, empty, success, error, offline, denied-permission, no-profile and interrupted-operation states where applicable. | 100% of in-scope UI elements mapped to owner, behavior, data, state and test. |
-| **P2 — Shared design & interaction contract** | Lock typography, contrast, spacing, sizing, glass/transparency, day/normal/night behavior, dialog geometry, animation/reduced-motion behavior, focus indicators, overscan-safe margins, text scaling and localization rules. Reuse B01 tokens/dialog/focus contracts. | Approved design tokens + component rules + D-pad/focus contract; no competing global style system. |
-| **P3 — Prototype & review** | Produce source-informed 1920×1080 screen simulations, including all six Dock combinations (horizontal/vertical × capacity 4/5/6), focus paths, overflow, dialogs and failure states. Review readability at TV distance and daylight glare. | Approved screen-by-screen prototype and traceability from each control to P1 inventory; no unresolved critical UX/focus issue. |
-| **P4 — Controlled implementation** | Implement in small vertical slices on owner branches. E02 owns Profile/Avatar/Child Mode; E06 owns Home/Dock. Keep Dock data/view independent from the main grid. Add safe persistence/migration, cancellation, lifecycle cleanup and rollback behavior. | Each slice has scoped diff, owner, tests and acceptance evidence; existing behavior remains available until replacement passes its gate. |
-| **P5 — Verification & regression** | Run unit, integration, UI/focus, persistence, lifecycle, localization, security/privacy, offline/error-state, memory/performance and compatibility tests. Validate on supported Android API levels and actual TV hardware when authorized. | Test matrix complete; zero open critical/high defects; no data loss, focus trap, crash/ANR or reproducible regression; exact-head CI green. CI alone is not device acceptance. |
-| **P6 — Integrated acceptance & release decision** | Reconcile all owner changes on isolated integration candidate; audit conflicts/shared files; run cross-module regression and exact-head CI; verify APK integrity/signature, size budget, install/upgrade/rollback plan and release documentation. | One traceable candidate SHA and evidence bundle; explicit user approval before merge, publication, installation or device mutation. |
+| **G1 — Visual prototype completion** | Finish the real 1920×1080 prototype/review for V01–V06. Cover six Dock combinations (horizontal/vertical × capacity 4/5/6), focus paths, overflow, dialogs, loading/empty/error states, daylight contrast, text scaling and TV-distance readability. Compare against the six approved references. | All six surfaces reviewed against references; required interactions represented; no unresolved critical visual/navigation issue. No production rollout before this gate. |
+| **G2 — Shared UI foundation repair** | Bring shared tokens/components into line with the approved blue-glass direction. Complete focus coverage, dialog/surface contrast and fallback, responsive/overscan-safe layout, text scaling, localization fit, and shared state/feedback patterns. | One consistent shared visual system; no competing module-specific styles; source conformance across in-scope call sites. |
+| **G3 — Surface implementation** | Implement in dependency order using small owner-scoped changes: **3A Home & independent Dock**; **3B Weather/AQI V4**; **3C Profile, Avatar & Child Mode**; **3D Quick Settings**; **3E Wi-Fi**; **3F Global Settings**. Preserve each surface's approved behavior and data requirements. | Every V01–V06 surface implemented. Dock has its own model/view/adapter and focus region; app-grid columns remain independent. Existing behavior and data are preserved. |
+| **G4 — Source reconciliation & integration candidate** | Reconcile E02/PR #62, E06/PR #63, and P4-01/PR #64 with the current integration baseline. Resolve ancestry/shared-file conflicts semantically; retain owner changes; do not blindly merge, rebase, cherry-pick or force-push. Build one isolated candidate only after all scoped implementation is ready. | Clean, traceable integration candidate; no unresolved source conflict or lost owner change; APK budget measured on the combined tree. |
+| **G5 — Full verification and repair loop** | After implementation and reconciliation, run the complete test matrix: unit/build; all six surfaces and controls; D-pad/focus/Back/scroll/overflow; persistence/restart/rollback; profile isolation/Child Mode; GIF/network cancellation and lifecycle; offline/permission/error states; localization; security/privacy; memory/performance; supported API/resolution and authorized TV checks; regression across existing launcher features. | Tests and exact-head CI pass. Any failure returns to implementation repair, followed by the relevant tests again. Repeat until all required tests pass and the candidate is safe. |
+| **G6 — Final Quality Check** | Independently check visual parity, functional completeness, navigation, state/data integrity, lifecycle, security/privacy, compatibility, performance, regression, APK integrity/signature/size and evidence traceability. | **QC PASS** only when all mandatory criteria pass and no open Critical/High defect remains. |
+| **G7 — Closeout** | Update canonical project records once with final scope, decisions, owner commits/PRs, exact candidate SHA, test evidence, QC result and remaining accepted limitations. Create the final checkpoint. | Project marked complete only with evidence; concise final report. |
 
-## 3. Ownership
-- **UI/UX Architecture:** P0–P3; shared visual, component, responsive/overscan and focus contracts; design review.
-- **E02 Profile & Avatar:** profile screens/switching, avatar picker and GIF lifecycle, Child Mode, storage, cancellation, focus and localization.
-- **E06 Home Screen & Dock:** Home layout, separate Dock model/view, orientation/capacity, overflow, D-pad/focus/scroll/reorder and settings.
-- **QA/Integration:** independent test matrix, regression, dependency/conflict audit, exact-head CI, artifact and rollback evidence.
-- Shared B01 UI/navigation/dialog contracts remain authoritative; module teams must reuse them.
+## 4. Surface acceptance requirements
+- **V01 Home/Dock:** independent Dock presentation and app grid; horizontal/vertical and capacity 4/5/6; default capacity 5; stable pinned order, overflow, focus and reorder; Dock changes never alter grid columns or silently drop apps.
+- **V02 Weather/AQI:** preserve the complete approved Weather V4 metric set, including current conditions, feels-like/min-max, humidity, wind, pressure, dew point, visibility, sunrise/sunset, moon phase, rainfall/probability, UV and pollutant breakdown. Show truthful source, location and update/staleness information.
+- **V03 Profile:** active profile is distinct from current D-pad focus; profile-scoped data, Child Mode/PIN, avatar selection and QR/GIF flows remain secure and lifecycle-safe.
+- **V04 Quick Settings:** compact quick-action popup remains separate from full Settings; Next Photo uses the canonical E08 wallpaper controller.
+- **V05 Wi-Fi:** show only Android-exposed status/network information; scan/list/rescan only with required permissions and Location prerequisites; use Android Settings handoff for system-managed operations; never show fake toggles or claim unsupported actions succeeded.
+- **V06 Global Settings:** preserve the approved seven-category taxonomy, control-level search, left navigation/right detail layout, localization and focus restoration.
 
-## 4. Mandatory quality checklist
-1. **Visual:** no clipping/overlap; readable contrast and focus indicator; overscan-safe; day/night and locale text fit.
-2. **Functional:** every mapped control has the intended action; no dead controls or misleading status.
-3. **Navigation:** D-pad directional paths, Back, initial/return focus, scroll restoration and overflow are deterministic.
-4. **State & data:** loading/empty/error/offline/permission-denied/interrupted states are handled; no cross-profile leakage or silent data loss.
-5. **Persistence & recovery:** settings survive restart; failed writes/migrations have safe fallback or rollback.
-6. **Lifecycle:** dialogs, network requests, GIF drawables, callbacks and animations cancel/stop when dismissed, detached or profile changes.
-7. **Security & privacy:** permission boundaries, local storage, network/provider constraints and attribution are respected; no unintended data exposure.
-8. **Compatibility:** declared Android API/device/resolution/density assumptions are tested; unsupported conditions fail safely.
-9. **Performance:** measure startup/responsiveness, memory, rendering and animation behavior; compare against baseline and investigate regressions rather than guessing.
-10. **Regression:** existing launcher, settings, profile, Child Mode, app grid, Dock and shared modules continue to work.
+## 5. Quality and stop rules
+- No known Critical/High defect may pass G5 or G6.
+- No crash/ANR, data loss, cross-profile leakage, focus trap, dead control, false success state, or reproducible regression.
+- Every interactive control must have a verified action and every asynchronous flow must handle cancel, failure and lifecycle exit safely.
+- Visual acceptance includes contrast over wallpaper, overscan, daylight glare, 1920×1080 layout, TV-distance readability and localized text fit.
+- CI PASS is necessary but does not replace visual, device or integrated acceptance.
+- Do not add assets/dependencies without measuring APK impact against the 1,572,864-byte ceiling.
+- Never claim 100% defect-free software; report only verified results and known residual risk.
 
-## 5. Defect severity and stop rules
-- **Critical:** crash/data loss/security exposure/launcher unusable — stop the affected workstream and block integration.
-- **High:** core action, navigation, profile isolation, persistence or lifecycle broken — block that slice and integration.
-- **Medium/Low:** non-blocking defect with documented workaround and owner; may proceed only with explicit acceptance and tracked follow-up.
-- Never waive a failed test by labeling it “visual only” without impact analysis. No speculative fixes: reproduce, locate fault boundary, fix narrowly, add regression test, verify exact head.
+## 6. Ownership and dependency
+- **Shared UI foundation:** B01 and UI architecture.
+- **Home/Dock:** E06, with E01/E05/E08 dependencies where applicable.
+- **Profile/Avatar/Child Mode:** E02, with profile/security and upload dependencies.
+- **Weather/AQI:** E05/E01.
+- **Quick Settings/Wi-Fi:** E01 and E08 as applicable.
+- **Global Settings:** shared Settings/navigation/focus owners B01–B07 plus each feature owner.
+- **Verification/integration:** QA/integration workstream.
+- Keep changes on owner branches until G4. Preserve existing no-early-merge and device-mutation approval boundaries.
 
-## 6. Efficiency rules
-- Audit once and reuse valid evidence; refresh only when the source head or dependency changes.
-- Work in small, reviewable slices; E02/E06 may proceed in parallel only after P0–P3 contracts and dependencies are approved.
-- Prototype before production code; test each slice before combining.
-- Keep source branches isolated; no blind cherry-pick/merge. Reconcile shared-file changes semantically.
-- Preserve the existing APK size ceiling and narrow recorded headroom; measure before adding assets/dependencies.
-- Maintain one traceability chain: requirement → UI element → owner → change/commit → test → evidence → decision.
+## 7. Work discipline
+1. Follow the sequence; do not reopen accepted P0/P1/P2 work without new evidence.
+2. Audit to locate the fault, analyze the root cause, decide the simplest safe fix, and execute.
+3. Do not produce session-by-session progress documentation. Keep working notes internal to execution.
+4. Do not stop at a partial stage while known in-scope defects remain unresolved.
+5. Perform full verification only after the scoped implementation/reconciliation is ready; on failure, repair and retest until successful and safe.
+6. Run final QC after successful verification.
+7. Only after QC PASS, update documentation and create the checkpoint.
+8. Report briefly: STATUS, RESULT, EVIDENCE, REMAINING WORK (only if any).
 
-## 7. Authorization boundary and current status
-This roadmap is locked as the governing UI Refresh baseline. Locking the roadmap does not authorize production implementation, merge, changes to integration/main, APK publication/installation, ADB, HOME/default-launcher changes or physical TV mutation. E02 (#62) and E06 (#63) remain Draft/open/unmerged and **BELUM FINAL** according to the last recorded audit. Reconcile their live heads before execution. G03 physical Mi TV Stick acceptance remains a separate explicit gate.
+## 8. Current starting point
+- P0: PASS.
+- P1: ACCEPTED.
+- P2: COMPLETE/FROZEN.
+- G1: NOT COMPLETE — real-browser 1920×1080 review and six-surface validation are not evidenced.
+- PR #64: OPEN/DRAFT/UNMERGED; CI passed on recorded head, but Home/Dock implementation is incomplete.
+- PR #62 and #63: OPEN/DRAFT/UNMERGED; exact-head CI passed on recorded heads, but owner branches diverge from the frozen integration baseline and require semantic reconciliation.
+- G5–G7: NOT STARTED.
 
-## 8. Approval gates
-- P0–P1: baseline and complete functional map accepted.
-- P2–P3: shared design/interaction contract and prototypes approved before implementation.
-- P4: each module slice passes its own acceptance checklist.
-- P5: test matrix and exact-head CI pass; device checks are separately evidenced.
-- P6: integrated candidate, rollback plan and evidence bundle reviewed; user explicitly authorizes release actions.
-
-**Final rule:** “UI selesai” means visual, functional, navigation, state, lifecycle, security, compatibility and regression criteria all pass—not merely that the screen looks correct or CI is green.
+**This GTVH-UIR-002 roadmap supersedes and retires GTVH-UIR-001 v1.0 as the execution plan. P0/P1/P2 records remain historical evidence and are not deleted or re-run by default.**
