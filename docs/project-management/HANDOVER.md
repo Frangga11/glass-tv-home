@@ -1209,3 +1209,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - P3 status remains IN PROGRESS until the Wi-Fi visual is corrected, all six editable/interactive prototypes are available, the V4 full data hierarchy and Dock independence are represented, and P3-01..P3-12 are walked through.
 - P2 contract is COMPLETE and frozen. P2 final doc commit: db5d7e70b09910f4f5d25d83fd815d024eee7d90; metadata cleanup commit: 2bd62bdacc5703cb5a629c6670cb56533ba658cf. P3 spec creation commit: f9f9437cdba92d08213cf0c8f7f5f3ffd5ff4871.
 - No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV changed.
+
+
+### P3 V1 interaction refinement — 6 Nov 2026
+- Audited the first interactive prototype navigation and found two prototype-level defects: arrow navigation was linear rather than spatial; Back used a fixed Home destination instead of restoring the invoking surface/control.
+- Corrected V1 to use directional nearest-control focus based on visible element positions and a navigation history that restores the previous surface and invoking control when resolvable.
+- Updated the P3 scenario register: P3-01, P3-02, P3-09 and P3-11 now have prototype behavior implemented, but manual walkthrough/evidence remains pending. Other scenarios remain partial/pending; P3 is not PASS.
+- Latest prototype artifact commit: `f09515c2d434a809e0fe594cbed36880cc2e09ce`. P3 spec latest blob: `c8c4770b1450382f8be8bf88620ec96b543140b2`.
+- No production source, feature branch, PR, integration/main, APK, ADB or physical device changed.
