@@ -2486,10 +2486,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         gridParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         gridParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         dockParams.gravity = dockVertical ? Gravity.START : Gravity.BOTTOM;
+        boolean hasDock = dockCount > 0;
+        int wantedDockVisibility = hasDock ? View.VISIBLE : View.GONE;
+        boolean dockVisibilityChanged = dockRecycler.getVisibility() != wantedDockVisibility;
+        dockRecycler.setVisibility(wantedDockVisibility);
 
         if (dockVertical) {
-            int dockWidth = Math.round(202 * density);
-            gridParams.leftMargin = dockWidth + Math.round(12 * density);
+            int dockWidth = hasDock ? Math.round(202 * density) : 0;
+            gridParams.leftMargin = hasDock ? dockWidth + Math.round(12 * density) : 0;
             gridParams.topMargin = 0;
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
@@ -2505,27 +2509,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridParams.topMargin = 0;
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
-            int inner = Math.max(0, gridWrap.getWidth() - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
-            int tileWidth = AppAdapter.tileWidthPx(inner, preferences.capacity, density);
-            int tileHeight = AppAdapter.tileHeightPx(tileWidth);
-            int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
-            int dockHeight = itemHeight + Math.round(34 * density);
-            int belowDock = itemHeight * Math.max(0, rowsBelowDockSetting);
-            dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            dockParams.height = dockHeight;
-            dockParams.leftMargin = 0;
-            dockParams.topMargin = 0;
-            dockParams.rightMargin = 0;
-            dockParams.bottomMargin = belowDock;
-            int gridTop = Math.max(0, gridWrap.getHeight() - belowDock);
-            if (grid.getPaddingTop() != gridTop) grid.setPadding(grid.getPaddingLeft(), gridTop, grid.getPaddingRight(), grid.getPaddingBottom());
+            if (hasDock) {
+                int inner = Math.max(0, gridWrap.getWidth() - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
+                int tileWidth = AppAdapter.tileWidthPx(inner, preferences.capacity, density);
+                int tileHeight = AppAdapter.tileHeightPx(tileWidth);
+                int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
+                int dockHeight = itemHeight + Math.round(34 * density);
+                int belowDock = itemHeight * Math.max(0, rowsBelowDockSetting);
+                dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                dockParams.height = dockHeight;
+                dockParams.leftMargin = 0;
+                dockParams.topMargin = 0;
+                dockParams.rightMargin = 0;
+                dockParams.bottomMargin = belowDock;
+                int gridTop = Math.max(0, gridWrap.getHeight() - belowDock);
+                if (grid.getPaddingTop() != gridTop) grid.setPadding(grid.getPaddingLeft(), gridTop, grid.getPaddingRight(), grid.getPaddingBottom());
+            } else {
+                dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                dockParams.height = 0;
+                dockParams.leftMargin = 0;
+                dockParams.topMargin = 0;
+                dockParams.rightMargin = 0;
+                dockParams.bottomMargin = 0;
+                if (grid.getPaddingTop() != 0) grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), grid.getPaddingBottom());
+            }
         }
 
         boolean gridLayoutChanged = !sameLayoutParams(grid.getLayoutParams(), gridParams);
         boolean dockLayoutChanged = !sameLayoutParams(dockRecycler.getLayoutParams(), dockParams);
         if (gridLayoutChanged) grid.setLayoutParams(gridParams);
         if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);
-        if (gridLayoutChanged || dockLayoutChanged) {
+        if (gridLayoutChanged || dockLayoutChanged || dockVisibilityChanged) {
             grid.requestLayout();
             dockRecycler.requestLayout();
         }
