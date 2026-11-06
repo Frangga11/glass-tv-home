@@ -1275,3 +1275,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Medium gaps: inert Language/Wallpaper Interval controls, Next Photo failure state absent, normal Wi-Fi rescan may remain stuck loading, profile switch not simulated, generic shared Restart/Power Off confirmation.
 - Detailed scenario mapping and remediation evidence: [UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md](UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md).
 - Preserve V2 unchanged; fix only in a new versioned prototype revision. No source/branch/PR/merge/APK/device mutation.
+
+
+## GTVH-UIR-P3-V3-QC-001 — V3 prototype static quality check (6 November 2026)
+
+- New V3 artifact corrects R01–R07 from V2 static re-audit; V2 is preserved unchanged.
+- **Static source QC PASS:** JavaScript syntax parsed without execution; no duplicate IDs; nested dialog stack, modal D-pad traversal, Language/Wallpaper Interval flows, Next Photo failure, Wi-Fi rescan completion, profile switch and distinct restart/power-off confirmations verified in source.
+- **P3 overall remains PARTIAL** pending browser/keyboard walkthrough, all 12 scenarios and visual review against the six approved references.
+- Evidence: [UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md).
