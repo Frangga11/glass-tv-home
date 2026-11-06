@@ -30,26 +30,6 @@ final class TvResponsiveLayout {
         return dimensionPx <= 0 ? 0 : Math.max(1, dimensionPx - 2 * safeInsetPx(dimensionPx));
     }
 
-    static int[] popupBoundsPx(int anchorLeftPx, int anchorTopPx, int anchorHeightPx,
-                               int popupWidthPx, int contentHeightPx, int viewportWidthPx,
-                               int viewportHeightPx, int gapPx, boolean preferAbove) {
-        int xInset = safeInsetPx(viewportWidthPx);
-        int yInset = safeInsetPx(viewportHeightPx);
-        int safeWidth = Math.max(1, viewportWidthPx - 2 * xInset);
-        int safeHeight = Math.max(1, viewportHeightPx - 2 * yInset);
-        int width = Math.max(1, Math.min(popupWidthPx, safeWidth));
-        int left = Math.max(xInset, Math.min(anchorLeftPx, viewportWidthPx - xInset - width));
-        int above = Math.max(0, anchorTopPx - gapPx - yInset);
-        int below = Math.max(0, viewportHeightPx - yInset - anchorTopPx - anchorHeightPx - gapPx);
-        int required = Math.min(Math.max(1, contentHeightPx), safeHeight);
-        boolean placeAbove = preferAbove && above >= required || below < required && above > below;
-        int height = Math.max(1, Math.min(contentHeightPx, placeAbove ? above : below));
-        int top = placeAbove ? Math.max(yInset, anchorTopPx - gapPx - height)
-                : Math.max(yInset, Math.min(anchorTopPx + anchorHeightPx + gapPx,
-                viewportHeightPx - yInset - height));
-        return new int[]{left, top, width, height, placeAbove ? 1 : 0};
-    }
-
     static int minDpadTargetPx(float density) {
         if (!(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) {
             return TvUiTokens.MIN_DPAD_TARGET_DP;

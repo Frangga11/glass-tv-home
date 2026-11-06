@@ -27,6 +27,7 @@ final class TvUiTokens {
     static final int ACCENT_CYAN = 0xFF00E5FF;
     static final int FOCUS_BORDER = ACCENT_CYAN;
     static final int FOCUS_HALO = 0xFF0B2A5B;
+    static final int GLASS_VEIL_COLOR = 0x990B2A5B;
     static final int NAV_PROFILE_SELECTED = 0xFF1E6BFF;
     static final int NAV_PROFILE_IDLE = 0xFF0A244E;
     static final int NAV_ITEM_SELECTED = 0xFF1E6BFF;

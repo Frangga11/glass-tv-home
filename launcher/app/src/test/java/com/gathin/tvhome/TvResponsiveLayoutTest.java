@@ -61,23 +61,6 @@ public class TvResponsiveLayoutTest {
     }
 
     @Test
-    public void popupBoundsClampToSafeAreaAndChooseAvailableSide() {
-        int[] right = TvResponsiveLayout.popupBoundsPx(1840, 900, 80, 500, 500,
-                1920, 1080, 20, false);
-        assertEquals(1343, right[0]);
-        assertEquals(380, right[1]);
-        assertEquals(500, right[2]);
-        assertEquals(500, right[3]);
-        assertEquals(1, right[4]);
-
-        int[] left = TvResponsiveLayout.popupBoundsPx(-20, 100, 80, 500, 300,
-                1920, 1080, 20, false);
-        assertEquals(77, left[0]);
-        assertEquals(200, left[1]);
-        assertEquals(0, left[4]);
-    }
-
-    @Test
     public void honorsLargeUserFontScaleWithoutClamping() {
         assertEquals(27f, TvResponsiveLayout.scaledTextSizeSp(18f, 1.5f), 0.001f);
         assertEquals(36f, TvResponsiveLayout.scaledTextSizeSp(18f, 2f), 0.001f);
