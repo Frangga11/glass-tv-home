@@ -23,5 +23,5 @@
     <string name="dock_orientation_vertical">Vertical</string>
     <string name="dock_capacity_title">Capacitat del Dock</string>
     <string name="dock_capacity_summary">Trieu quantes aplicacions es mostren: 4, 5 o 6.</string>
-    <string name="dock_settings_save_failed">No s'han pogut desar els paràmetres del Dock.</string>
+    <string name="dock_settings_save_failed">No s\'han pogut desar els paràmetres del Dock.</string>
 </resources>
