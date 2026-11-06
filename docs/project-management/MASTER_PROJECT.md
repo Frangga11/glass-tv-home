@@ -1090,3 +1090,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI #1204 (#62), #1198 (#63), and #1225 (#64) passed both required jobs. CI is not feature, visual, integration or device acceptance.
 - PR #62 and #64 stale CI descriptions were corrected. No source branch, integration/main, APK or device was changed. Do not merge/rebase/cherry-pick owner branches blindly.
 - Next active gate is P3 V5 browser rendering at 1920×1080, 12-scenario walkthrough and reference comparison. P4 mass styling remains blocked pending P3 visual/interaction acceptance.
+
+## 6 November 2026 — GTVH-UIR-002 G1 visual prototype completion
+
+- G1 internal prototype/QC gate: **PASS**. V6 now contains all six Global UI surfaces V01–V06, full Weather V4 information scope, the seven-category Settings split detail, Wi-Fi system-handoff treatment, dialog/focus behavior and all six Dock variants.
+- Canonical artifact: `docs/project-management/prototypes/UI_REFRESH_G1_GLOBAL_UI_PROTOTYPE_V6.html`; detailed verification and boundaries: `UI_REFRESH_G1_CHECKPOINT_2026-11-06.md`.
+- Browser suite: 12/12 PASS at 1920×1080; Chromium 144.0.7559.96; JavaScript syntax PASS; visual comparison and screenshot capture completed.
+- No production source, PR #62/#63/#64, integration/main, APK or device changed. G1 completion is not Android runtime/physical-TV acceptance and does not authorize a merge.
+- Next UI-refresh stage: G2 shared UI foundation repair. Owner visual sign-off remains separate before broad rollout.
