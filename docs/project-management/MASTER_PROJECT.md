@@ -886,3 +886,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - E02 cancellation/lifecycle/provider-policy and E06 independent Dock architecture/interaction remain open acceptance blockers. No Critical defect reproduced; no production or device change.
 - P1 Functional Inventory is the next stage and has NOT STARTED. No P4 implementation authorization is implied.
 - Evidence: `UI_REFRESH_P0_BASELINE_2026-11-06.md`.
+
+
+## UI Refresh — P1 Functional Inventory (6 November 2026)
+
+- P1 source inventory document: [UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md](UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md).
+- Live E02 #62 head `588456144df24f2f6c015a01053ad700a04bee39`, base `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; E06 #63 head `ecdeb0eba9fc7a574f1a6c9930205517687cd922`, base `570b7c83efaec3ac515b78f1c6c119b777fc3b84`. Both remain OPEN/DRAFT/UNMERGED.
+- Exact-head CI rechecked: E02 run #1204 and E06 #1198, both required jobs SUCCESS; APK publication skipped. No device evidence implied.
+- P1 mapped Profile/avatar/QR/GIPHY/profile management/Child Mode/app policy and Home/app grid/Dock/settings/focus surfaces to owner, current behavior/data/state/persistence and tests.
+- P1 disposition: inventory recorded; PARTIAL pending user acceptance and listed clarifications. P2/P3 remain required before P4. No production or device changes.
