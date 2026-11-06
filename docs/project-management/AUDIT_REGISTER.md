@@ -1250,3 +1250,9 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Current live owner PR state rechecked: #62 OPEN/DRAFT/UNMERGED; #63 OPEN/DRAFT/UNMERGED. E02 latest CI statement in PR body is stale/inconsistent with the P1/AUDIT_REGISTER evidence: exact-head CI #1204 / run `41895866368` is recorded SUCCESS for both required jobs. Do not treat this as E02 feature acceptance; cancellation/lifecycle/preview/provider-policy gaps remain. E06 exact-head CI #1198 / run `41890835096` both jobs SUCCESS, but Dock renderer/settings/focus/overflow are absent.
 - P1 remains PARTIAL pending user acceptance. P2 remains frozen COMPLETE. P4 remains NOT STARTED and BLOCKED pending P1 acceptance and P3 review/approval.
 - No production source, owner branches, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical device was changed. No merge, publication or installation was performed.
+
+
+### P3 V2 follow-up — search focus regression corrected (6 Nov 2026)
+- Source review identified a multi-character search usability defect: each filter update moved focus from the search field to the first result. Corrected V2 to preserve input focus and use D-pad Down to enter the matching-control list.
+- Artifact commit: `ce6d45ca6a353bae867607d63d84c82c67eec4fa`; inline JavaScript syntax check PASS. Browser/keyboard interaction test remains pending.
+- P3 specification commit: `70c7a90f81d779f685891b894f13461b61da681d`; HANDOVER update commit: `42fcee279eb8dcc1af42188fd7d9d8f81be068e1`.
