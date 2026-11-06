@@ -179,3 +179,10 @@ Cross-cutting B01 shared tokens/focus/dialog/navigation foundations are to be ex
 - The latest measured APK (1,573,125 bytes) is below the new ceiling, leaving approximately 104.6 KB of headroom. This is a policy adjustment, not a claim that the new exact-head CI has passed; a fresh PR CI run is required.
 - Preserve product quality: do not trim required fonts, default wallpaper, accessibility, features or UI behavior merely to satisfy the previous 1.5 MiB threshold. Revisit the ceiling only if actual growth warrants it, with explicit rationale and review.
 - PR #64 remains OPEN / DRAFT / UNMERGED. Architecture and functional work for independent Dock/App Grid renderers remains outstanding; Module 1 is still IN PROGRESS.
+
+
+## 6 Nov 2026 — CI closeout and Global UI Design System audit start
+- PR #64 exact-head CI run `42192107405` on `e4bc99c9a4822057ce3bd5490df0ad1471763409` completed SUCCESS: both required jobs passed, including unit tests, release build validation, APK diagnostics and the 1.6 MiB budget gate, plus Lists/tools/docs. APK log prints 1,536 KB rounded; exact bytes were not extracted.
+- PR #64 remains OPEN / DRAFT / UNMERGED; Module 1 remains IN PROGRESS and is not visually accepted.
+- Started read-only Global UI Design System audit; see `GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md` commit `9412b1cef40b6496ac9560771a3ca9e73471cbaf`. References V01–V06 and additional Profile/Home Settings images were inspected. Reusable shared classes exist, but token palette and focus/material coverage require central reconciliation.
+- P3 V5 static QC PASS does not satisfy browser walkthrough or visual acceptance. 12 scenarios and real 1920×1080 screenshot comparison remain open. Global UI Design System: BELUM PASS. No mass implementation.
