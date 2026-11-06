@@ -127,7 +127,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): no overshoot, shorter fades. */
     private final boolean reducedMotion;
     private boolean iconAnimationsEnabled;
-    private final List<Entry> items = new ArrayList<>();
+    /** Single ordered source of truth; Dock/Grid are projections, never independent app inventories. */
+    private final TileBinder tileBinder;
+    private final AppInventory<Entry> items = new AppInventory<>(
+            entry -> entry.component.flattenToShortString());
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
     private static final String ORDER_PREFS = "tiles", ORDER_KEY = "order";
@@ -137,6 +140,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
         this.ctx = ctx;
         this.listener = listener;
+        this.tileBinder = new TileBinder(ctx);
         this.dockSize = dockSize;
         this.favourites = cfg.dockApps;
         this.hidden = new HashSet<>(cfg.hiddenApps);
@@ -268,8 +272,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     new ComponentName(ctx, HomeSettingsActivity.class), null,
                     ctx.getDrawable(R.drawable.ic_home_settings), null, 0));
         }
-        items.clear();
-        items.addAll(fresh);
+        items.replace(fresh);
         notifyDataSetChanged();
         return true;
     }
@@ -313,27 +316,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     @Override
     public void onBindViewHolder(@NonNull Holder h, int position) {
         Entry e = items.get(position);
-        h.name.setText(e.name);
-        h.name.setVisibility(position < dockSize ? View.INVISIBLE : View.VISIBLE);   // the dock has no labels
-        boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
-        h.name.setAlpha(focused ? 1f : 0f);
-        h.card.setScaleX(focused && iconAnimationsEnabled ? FOCUS_SCALE : 1f);
-        h.card.setScaleY(focused && iconAnimationsEnabled ? FOCUS_SCALE : 1f);
-        h.name.setTranslationY(0f);
-        if (e.banner != null) {
-            h.banner.setImageDrawable(e.banner);
-            h.banner.setVisibility(View.VISIBLE);
-            h.icon.setVisibility(View.GONE);
-            h.label.setVisibility(View.GONE);
-        } else {
-            h.banner.setImageDrawable(null);
-            h.banner.setVisibility(View.GONE);
-            h.icon.setImageDrawable(e.icon);
-            h.icon.setVisibility(View.VISIBLE);
-            h.label.setText(e.label);
-            h.label.setVisibility(View.VISIBLE);
-        }
-        h.card.setOnClickListener(v -> launch(e));
+        tileBinder.bind(h, e, position >= dockSize, iconAnimationsEnabled);
+        h.card.setOnClickListener(v -> tileBinder.launch(e));
         h.card.setOnLongClickListener(v -> {
             int pos = h.getBindingAdapterPosition();
             if (listener != null && pos != RecyclerView.NO_POSITION && listener.onTileHeld(pos, v)) return true;
@@ -341,7 +325,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             return true;
         });
     }
-
     @Override
     public void onBindViewHolder(@NonNull Holder h, int position, @NonNull List<Object> payloads) {
         if (payloads.size() == 1 && payloads.get(0) == DOCK_CHANGED) {
@@ -383,8 +366,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      */
     boolean move(int from, int to) {
         if (from == to || !canMove(from) || to < 0 || to > lastMovable()) return false;
-        Entry e = items.remove(from);
-        items.add(to, e);
+        if (!items.move(from, to)) return false;
         notifyItemMoved(from, to);
         // A tile crossing into or out of the dock shows or hides its name.
         int lo = Math.min(from, to), hi = Math.max(from, to);
@@ -396,41 +378,22 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         return true;
     }
 
-    /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
-    private void launch(Entry e) {
-        SoundEffects.playSelect();
-        if (e.kind == Entry.HOME_SETTINGS) {
-            ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            return;
-        }
-        if (ChildModeManager.isAppLocked(ctx, e.pkg)) {
-            Context localized = LocaleContext.wrap(ctx);
-            ChildModeManager.promptPin(localized, localized.getString(R.string.locked_app_title), localized.getString(R.string.enter_pin_to_open_app, e.label), new ChildModeManager.PinCallback() {
-                @Override
-                public void onSuccess() {
-                    performLaunch(e);
-                }
-
-                @Override
-                public void onCancelled() {}
-            });
-            return;
-        }
-        performLaunch(e);
-    }
-
-    private void performLaunch(Entry e) {
-        Intent i = new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
-                .setComponent(e.component)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        try {
-            RecentAppsManager.recordAppLaunch(ctx, e.pkg);
-            ctx.startActivity(i);
-        } catch (Exception ex) {
-            TvFeedback.show(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT);
-        }
+    /**
+     * Stable immutable partition for the dedicated Dock renderer. The current RecyclerView still
+     * renders the legacy combined list; this snapshot establishes the model boundary without
+     * changing focus, tile sizing, ordering, or the visible Home layout in this commit.
+     */
+    DockLayoutModel.Snapshot<Entry> dockSnapshot() {
+        int capacity = DockPreferences.load(ctx).capacity;
+        // Dock configuration is package-based while tile identity is component-based.
+        // Preserve the user's saved tile order among pinned identities; newly installed or
+        // unarranged favourite components fall back to configured package order.
+        List<String> pinnedComponentKeys = DockLayoutModel.orderedPinnedKeys(
+                items, favourites, arranged,
+                entry -> entry.component.flattenToShortString(),
+                entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg);
+        return DockLayoutModel.split(items, pinnedComponentKeys, capacity,
+                entry -> entry.component.flattenToShortString());
     }
 
     @Override
