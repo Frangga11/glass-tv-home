@@ -191,3 +191,13 @@ Not performed:
 Reason: the audit baseline and P2 contract are ready, but P1 acceptance and P3 walkthrough/design approval remain open; E02/E06 branches are divergent; E02 lifecycle/cancellation and E06 Dock/grid architecture remain unresolved; global focus/responsive contracts need implementation-ready validation.
 
 **Decision:** keep the frozen integration baseline and all feature PRs untouched. Finish P1 acceptance and P3 visual/interaction review, close the named technical blockers and reconcile owner dependencies before opening P4 implementation. Do not redesign or modify production source as part of this audit.
+
+
+## 11. Continued P3 review checkpoint — 6 November 2026
+
+- Continued read-only static interaction review of V2. Addendum: [UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md](UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md).
+- Newly confirmed prototype blockers: (R01) nested Wi-Fi system-handoff dialog overwrites root origin and loses the parent dialog/focus chain on close; (R02) modal-open guard disables arrow-key/D-pad traversal among modal actions.
+- Medium gaps: inert Language and Wallpaper Interval tiles; Next Photo lacks failure/unavailable path; normal Wi-Fi rescan can stay in loading state; profile switching not simulated; Restart/Power Off share generic confirmation copy.
+- P3 V2 is not ready for walkthrough sign-off until a new versioned revision addresses R01/R02 and medium completeness gaps. Preserve V2 unchanged for traceability.
+- P1 user acceptance and owner decisions remain open; source review cannot substitute for user acceptance or visual comparison against canonical references.
+- No source/prototype code, branch, PR, integration/main, APK or device changed.
