@@ -90,3 +90,11 @@ Cross-cutting B01 shared tokens/focus/dialog/navigation foundations are to be ex
 - Earlier exact-head CI #42177905579 passed both jobs on initial preference-only head `7fe684f559140b11355dfb67cf2a246f518c7724`; this does not replace the new exact-head check.
 - Module 1 remains IN PROGRESS. Dedicated Dock RecyclerView/adapter, independent main-grid data source, horizontal/vertical rendering, overflow, settings UI, D-pad/focus/reorder lifecycle, six-combination functional acceptance, 1920×1080 visual QC and physical TV acceptance are not implemented/verified yet.
 - No merge, APK publication/installation, ADB or device-setting changes.
+
+
+### Dock identity invariant correction — 6 November 2026
+- Tightened the partition model to match P2 section 11.8 exactly: Dock membership is now selected by explicit pinned package identity, not by first-N list positions. Dock order follows the pinned-key list; non-pinned apps preserve inventory order.
+- Missing packages do not reserve slots, duplicate/blank identities are ignored, and pinned items beyond capacity stay visible in the app grid. The Dock snapshot reads the independent Dock capacity preference; it does not read or change `MainActivity.COLUMNS`.
+- Added/expanded tests for explicit identity membership, separate Dock/grid order, overflow retention, missing apps, duplicate keys, immutable snapshots and 4/5/6 capacity.
+- Latest source/audit head `9cfdeb902689d249e9e01e4ac9c6c91902905a62`; exact-head CI #42178556451 is IN_PROGRESS. Earlier run #42178311594 passed build/test and size-gate steps on the intermediate head but does not verify the latest explicit-identity change.
+- Detailed source audit: `P4-01_HOME_DOCK_PARTITION_AUDIT_2026-11-06.md`. Dedicated Dock renderer and app-grid adapter separation remain unimplemented; Module 1 stays IN PROGRESS. No merge or device action.
