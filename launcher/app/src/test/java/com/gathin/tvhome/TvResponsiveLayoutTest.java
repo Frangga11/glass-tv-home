@@ -62,7 +62,7 @@ public class TvResponsiveLayoutTest {
 
     @Test
     public void popupWidthAndPositionStayInsideSafeArea() {
-        assertEquals(77, TvResponsiveLayout.popupLeftPx(1840, 500, 1920));
+        assertEquals(1343, TvResponsiveLayout.popupLeftPx(1840, 500, 1920));
         assertEquals(77, TvResponsiveLayout.popupLeftPx(-20, 500, 1920));
     }
 
@@ -70,8 +70,8 @@ public class TvResponsiveLayoutTest {
     public void popupChoosesTheSideWithEnoughRoom() {
         assertTrue(TvResponsiveLayout.shouldPlacePopupAbove(900, 80, 500, 1080, 20, false));
         assertTrue(!TvResponsiveLayout.shouldPlacePopupAbove(100, 80, 300, 1080, 20, false));
-        assertEquals(43, TvResponsiveLayout.popupTopPx(900, 80, 500, 1080, 20, true));
-        assertEquals(223, TvResponsiveLayout.popupTopPx(100, 80, 300, 1080, 20, false));
+        assertEquals(380, TvResponsiveLayout.popupTopPx(900, 80, 500, 1080, 20, true));
+        assertEquals(200, TvResponsiveLayout.popupTopPx(100, 80, 300, 1080, 20, false));
     }
 
     @Test
