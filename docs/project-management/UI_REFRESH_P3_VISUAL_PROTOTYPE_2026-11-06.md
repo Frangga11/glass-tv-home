@@ -218,3 +218,11 @@ No production source, feature branch, PR metadata, integration/main, APK, ADB, H
 - Browser render and screenshot capture at 1920×1080: **NOT RUN**. This is a source-to-reference composition audit only; no screenshot-based geometry, pixel or legibility claims are made.
 - Full findings and correction plan: [UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md](UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md).
 - V4 preserved unchanged; P4/mass implementation remains BLOCKED pending revised prototype, actual screenshot comparison, and explicit owner visual approval.
+
+## TRIGGER 4 — V5 visual revision checkpoint (6 November 2026)
+
+- New V5 prototype-only artifact: [UI_REFRESH_TRIGGER4_VISUAL_PROTOTYPE_V5.html](prototypes/UI_REFRESH_TRIGGER4_VISUAL_PROTOTYPE_V5.html). V4 remains preserved.
+- V5 corrects source-to-reference composition gaps in Home, four-card Profile Selector, Quick Settings popup, Wi-Fi popup and Global Settings split-detail shell; shared glass CSS adds translucency, backdrop blur and layered shadow.
+- Scenic gradient and emoji avatar/icon artwork are placeholders, not the original wallpaper or final iconography.
+- Static source QC PASS; evidence: [V5 Static QC](UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md).
+- Browser rendering and screenshot comparison at 1920×1080 remain NOT RUN. Therefore overall result remains **PROTOTYPE VISUAL — REVISION REQUIRED**; no owner approval or P4 authorization.
