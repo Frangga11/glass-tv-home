@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class DockDecoration extends RecyclerView.ItemDecoration {
 
-    private final int dockSize;
+    private int dockSize;
     private final float density;
-    private final boolean vertical;
+    private boolean vertical;
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint trayShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidTrayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -48,6 +48,11 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         solidTrayBorder.setStrokeWidth(1.5f * density);
         trayShadowPaint.setMaskFilter(new android.graphics.BlurMaskFilter(14f * density, android.graphics.BlurMaskFilter.Blur.NORMAL));
         edge = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, 0.5f);
+    }
+
+    void update(int dockSize, boolean vertical) {
+        this.dockSize = Math.max(0, dockSize);
+        this.vertical = vertical;
     }
 
     /** The focus shape: the tray's glass would hide it, so the tray paints it over the glass itself. */
