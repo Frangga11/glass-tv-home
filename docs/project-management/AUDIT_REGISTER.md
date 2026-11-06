@@ -1256,3 +1256,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Source review identified a multi-character search usability defect: each filter update moved focus from the search field to the first result. Corrected V2 to preserve input focus and use D-pad Down to enter the matching-control list.
 - Artifact commit: `ce6d45ca6a353bae867607d63d84c82c67eec4fa`; inline JavaScript syntax check PASS. Browser/keyboard interaction test remains pending.
 - P3 specification commit: `70c7a90f81d779f685891b894f13461b61da681d`; HANDOVER update commit: `42fcee279eb8dcc1af42188fd7d9d8f81be068e1`.
+
+
+## GTVH-UIR-MVR-AUDIT-001 — Master Visual Reference Global UI audit (6 November 2026)
+
+- **Overall disposition: BELUM PASS — implementation readiness not established.** P0 baseline PASS; P1 inventory PARTIAL/acceptance pending; P2 shared design contract COMPLETE/frozen; P3 V2 prototype PARTIAL/review pending; P4 NOT STARTED/BLOCKED.
+- Dedicated audit: [UI_REFRESH_MASTER_VISUAL_REFERENCE_AUDIT_2026-11-06.md](UI_REFRESH_MASTER_VISUAL_REFERENCE_AUDIT_2026-11-06.md).
+- Frozen integration remains `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. PR #62 E02 head `588456144df24f2f6c015a01053ad700a04bee39` (19 ahead/326 behind integration); PR #63 E06 head `ecdeb0eba9fc7a574f1a6c9930205517687cd922` (3 ahead/297 behind). Both remain OPEN/DRAFT/UNMERGED; exact-head CI runs #1204 and #1198 each have both required jobs SUCCESS. PR #62 body has a stale sentence claiming CI is unconfirmed.
+- Reusable global source: `TvUiTokens`, `TvDialogStyle`, `TvFocusIndicator`, `TvResponsiveLayout`, `GlassDrawable`, `ModernSettingsDialog`, `TvFeedback`, `AppLanguage`. Gaps: universal focus coverage and global overscan/text-scaling contract.
+- E02 blockers: cancellable/disconnectable HTTP ownership, preview/lifecycle/profile-switch/storage/memory/DPAD regression coverage and provider policy. E06 blocker: DockPreferences exists but production Dock still shares one RecyclerView/COLUMNS with app grid; separate ordered model/view/adapter, settings, overflow and focus are absent.
+- Impacted modules and responsibility: B01–B07 shared foundation/behavior; E01 system/Wi-Fi; E02 profile; E03 wallpaper metadata; E04 standby; E05 Weather/AQI; E06 Home/Dock; E07 effects; E08 wallpaper/Next Photo. Recommended sequence and exclusions are in the dedicated audit.
+- No production source, owner branch, PR metadata, integration/main, APK, ADB or device changed. No redesign or P4 implementation performed.
