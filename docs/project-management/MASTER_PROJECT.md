@@ -936,3 +936,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - V4 prototype-only hardening addresses Weather Refresh focus retention, stale Wi-Fi scan cancellation and modal Tab focus containment / input-safe Backspace.
 - Static QC PASS; browser walkthrough and V01–V06 visual acceptance NOT RUN. Evidence: [UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md).
 - P3 remains PARTIAL; P4 remains blocked. No production source change.
+
+
+## UI Refresh — TRIGGER 4 prototype visual validation (6 November 2026)
+
+- V01–V06 reference panels recovered from saved Global UI Design & Interaction Contract / UI Refresh overview boards.
+- V4 source-to-reference review found material composition deviations across all six surfaces: Home structure/wallpaper/Dock; Weather dashboard hierarchy; four-card Profile Selector; Quick Settings and Wi-Fi popup presentation; and Global Settings split-detail content/icon navigation.
+- Cross-surface source gaps include near-opaque glass surfaces, absent backdrop blur, limited glow and sparse iconography.
+- Result: **PROTOTYPE VISUAL — REVISION REQUIRED**. Detailed findings and correction plan: [TRIGGER 4 validation report](UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md).
+- Actual browser screenshot at 1920×1080 was NOT captured; screenshot-based geometry, pixel, material and legibility checks remain NOT VERIFIED. V4 is preserved unchanged.
+- P4 and mass implementation remain BLOCKED pending a revised prototype, actual six-surface screenshots, visual/interaction acceptance and explicit owner approval.
