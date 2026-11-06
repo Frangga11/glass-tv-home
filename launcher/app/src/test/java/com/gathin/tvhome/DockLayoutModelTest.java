@@ -36,6 +36,44 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void explicitPinnedKeysAreResolvedByStableIdentityAndDeduplicated() {
+        List<String> inventory = Arrays.asList("grid-a", "dock-b", "grid-c", "dock-a");
+        List<String> pinned = DockLayoutModel.orderedExplicitPinnedKeys(
+                inventory, Arrays.asList("dock-a", "missing", "dock-b", "dock-a"), value -> value);
+        assertEquals(Arrays.asList("dock-a", "dock-b"), pinned);
+    }
+
+    @Test
+    public void movingDockKeyOnlyReordersVisiblePinnedSlots() {
+        List<String> pinned = Arrays.asList("a", "b", "c", "d", "overflow");
+        assertEquals(Arrays.asList("c", "a", "b", "d", "overflow"),
+                DockLayoutModel.movePinnedKey(pinned, 2, 0, 4));
+        assertEquals(pinned, DockLayoutModel.movePinnedKey(pinned, 4, 0, 4));
+    }
+
+    @Test
+    public void pinningInsertsAtRequestedVisibleSlotAndPushesOverflowToGrid() {
+        List<String> pinned = Arrays.asList("a", "b", "c", "d");
+        List<String> updated = DockLayoutModel.pinKey(pinned, "new", 1, 4);
+        assertEquals(Arrays.asList("a", "new", "b", "c", "d"), updated);
+        assertEquals(Arrays.asList("a", "new", "b", "c"),
+                DockLayoutModel.split(updated, updated, 4, value -> value).dockItems);
+        assertEquals(Collections.singletonList("d"),
+                DockLayoutModel.split(updated, updated, 4, value -> value).gridItems);
+    }
+
+    @Test
+    public void unpinningMovesIdentityOutOfDockWithoutDroppingIt() {
+        List<String> pinned = Arrays.asList("a", "b", "c");
+        List<String> updated = DockLayoutModel.unpinKey(pinned, "b");
+        assertEquals(Arrays.asList("a", "c"), updated);
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                Arrays.asList("a", "b", "c"), updated, 4, value -> value);
+        assertEquals(Arrays.asList("a", "c"), snapshot.dockItems);
+        assertEquals(Collections.singletonList("b"), snapshot.gridItems);
+    }
+
+    @Test
     public void membershipUsesExplicitStableKeysRatherThanFirstInventoryPositions() {
         List<String> inventory = Arrays.asList("grid-first", "pinned-b", "grid-second", "pinned-a");
         DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(

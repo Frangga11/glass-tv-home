@@ -114,6 +114,32 @@ final class DockLayoutModel {
         return Collections.unmodifiableList(result);
     }
 
+    static List<String> movePinnedKey(List<String> keys, int from, int to, int visibleCount) {
+        List<String> result = new ArrayList<>(keys == null ? Collections.emptyList() : keys);
+        if (from < 0 || to < 0 || from >= visibleCount || to >= visibleCount
+                || from >= result.size() || to >= result.size() || from == to) {
+            return Collections.unmodifiableList(result);
+        }
+        String moved = result.remove(from);
+        result.add(to, moved);
+        return Collections.unmodifiableList(result);
+    }
+
+    static List<String> pinKey(List<String> keys, String key, int requestedPosition, int capacity) {
+        List<String> result = new ArrayList<>(keys == null ? Collections.emptyList() : keys);
+        if (key == null || key.trim().isEmpty() || result.contains(key)) return Collections.unmodifiableList(result);
+        int normalizedCapacity = normalizeCapacity(capacity);
+        int position = Math.max(0, Math.min(requestedPosition, Math.min(normalizedCapacity - 1, result.size())));
+        result.add(position, key);
+        return Collections.unmodifiableList(result);
+    }
+
+    static List<String> unpinKey(List<String> keys, String key) {
+        List<String> result = new ArrayList<>(keys == null ? Collections.emptyList() : keys);
+        if (key != null) result.remove(key);
+        return Collections.unmodifiableList(result);
+    }
+
     static <T> Snapshot<T> split(List<T> orderedItems, List<String> pinnedKeys,
                                  int requestedCapacity, Function<T, String> stableKey) {
         if (stableKey == null) throw new IllegalArgumentException("stableKey is required");

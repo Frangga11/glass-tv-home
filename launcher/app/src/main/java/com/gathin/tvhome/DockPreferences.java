@@ -68,16 +68,23 @@ final class DockPreferences {
         for (String key : raw.split("\\n")) {
             if (key != null && !key.trim().isEmpty() && seen.add(key.trim())) result.add(key.trim());
         }
-        return result;
+        return normalizePinnedKeys(result);
+    }
+
+    static java.util.List<String> normalizePinnedKeys(java.util.List<String> keys) {
+        java.util.ArrayList<String> clean = new java.util.ArrayList<>();
+        java.util.HashSet<String> seen = new java.util.HashSet<>();
+        if (keys != null) {
+            for (String key : keys) {
+                if (key != null && !key.trim().isEmpty() && seen.add(key.trim())) clean.add(key.trim());
+            }
+        }
+        return java.util.Collections.unmodifiableList(clean);
     }
 
     static boolean savePinnedKeys(Context context, java.util.List<String> keys) {
         if (context == null || keys == null) return false;
-        java.util.ArrayList<String> clean = new java.util.ArrayList<>();
-        java.util.HashSet<String> seen = new java.util.HashSet<>();
-        for (String key : keys) {
-            if (key != null && !key.trim().isEmpty() && seen.add(key.trim())) clean.add(key.trim());
-        }
+        java.util.List<String> clean = normalizePinnedKeys(keys);
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putString(KEY_PINNED_KEYS, android.text.TextUtils.join("\n", clean)).commit();
     }

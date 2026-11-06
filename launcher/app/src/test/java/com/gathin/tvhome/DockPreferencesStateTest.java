@@ -30,6 +30,14 @@ public class DockPreferencesStateTest {
     }
 
     @Test
+    public void pinnedKeysAreTrimmedDeduplicatedAndEmptyOverrideIsPreserved() {
+        assertEquals(java.util.Arrays.asList("pkg/.A", "pkg/.B"),
+                DockPreferences.normalizePinnedKeys(java.util.Arrays.asList(
+                        "pkg/.A", " ", "pkg/.A", null, "pkg/.B")));
+        assertTrue(DockPreferences.normalizePinnedKeys(java.util.Collections.emptyList()).isEmpty());
+    }
+
+    @Test
     public void dockMembershipIsBoundedAndNeverIncludesNegativePositions() {
         assertFalse(DockPreferences.isDockPosition(-1, 5));
         assertTrue(DockPreferences.isDockPosition(0, 5));

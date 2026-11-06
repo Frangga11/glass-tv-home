@@ -387,13 +387,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     boolean moveDock(int from, int to) {
-        List<String> pinned = currentPinnedKeys();
         DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+        List<String> pinned = currentPinnedKeys();
         if (from == to || from < 0 || to < 0 || from >= snapshot.dockItems.size()
                 || to >= snapshot.dockItems.size() || from >= pinned.size() || to >= pinned.size()) return false;
-        String moved = pinned.remove(from);
-        pinned.add(to, moved);
-        if (!DockPreferences.savePinnedKeys(ctx, pinned)) return false;
+        List<String> reordered = DockLayoutModel.movePinnedKey(pinned, from, to, snapshot.dockItems.size());
+        if (reordered.equals(pinned) || !DockPreferences.savePinnedKeys(ctx, reordered)) return false;
         notifyDataSetChanged();
         return true;
     }
@@ -401,11 +400,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     boolean pinToDock(String key, int requestedPosition) {
         if (key == null || key.trim().isEmpty()) return false;
         List<String> pinned = currentPinnedKeys();
-        if (pinned.contains(key)) return false;
-        int capacity = DockPreferences.load(ctx).capacity;
-        int position = Math.max(0, Math.min(requestedPosition, Math.min(capacity - 1, pinned.size())));
-        pinned.add(position, key);
-        if (!DockPreferences.savePinnedKeys(ctx, pinned)) return false;
+        List<String> updated = DockLayoutModel.pinKey(pinned, key, requestedPosition, DockPreferences.load(ctx).capacity);
+        if (updated.equals(pinned) || !DockPreferences.savePinnedKeys(ctx, updated)) return false;
         notifyDataSetChanged();
         return true;
     }
@@ -413,8 +409,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     boolean unpinFromDock(String key) {
         if (key == null || key.trim().isEmpty()) return false;
         List<String> pinned = currentPinnedKeys();
-        if (!pinned.remove(key)) return false;
-        if (!DockPreferences.savePinnedKeys(ctx, pinned)) return false;
+        List<String> updated = DockLayoutModel.unpinKey(pinned, key);
+        if (updated.equals(pinned) || !DockPreferences.savePinnedKeys(ctx, updated)) return false;
         notifyDataSetChanged();
         return true;
     }
