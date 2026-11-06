@@ -1750,7 +1750,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (lastFocusedKey != null) savedFocus.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
             else savedFocus.remove(NavigationState.HOME_FOCUS_KEY);
             savedFocus.apply();
-            if (pos < 0) hideHero();
+            if (pos < 0 && dockPos < 0) hideHero();
             // A newly installed app may have brought a card with it.
             tilesReady = true;
             showCardPrompt();
@@ -3957,21 +3957,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void applyDockPreferenceChange() {
-        String focusKey = lastFocusedKey;
-        boolean restoreDock = lastFocusedDock;
         if (dockAdapter != null) dockAdapter.refresh();
         applyDockLayout();
-        if (gridWrap != null) gridWrap.post(() -> {
-            applyDockLayout();
-            if (restoreDock) {
-                int position = dockAdapter.positionOf(focusKey);
-                if (position < 0) position = dockAdapter.positionOf(lastDockFocusedKey);
-                focusDockTile(position >= 0 ? position : 0);
-            } else {
-                int position = adapter.positionOf(focusKey);
-                focusTile(position >= 0 ? position : lastFocused);
-            }
-        });
+        // The settings surface is modal. Re-layout Home underneath it without stealing focus
+        // from the active settings row; the persisted tile identity remains the return target.
+        if (gridWrap != null) gridWrap.post(this::applyDockLayout);
     }
 
     void showSoundEffectsDialog() {
