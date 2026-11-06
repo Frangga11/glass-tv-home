@@ -186,3 +186,11 @@ No production source, feature branch, PR metadata, integration/main, APK, ADB, H
 - **P3 remains PARTIAL / BELUM PASS.** Found two high-severity prototype blockers: nested Wi-Fi handoff overwrites the root focus origin and closing the child dialog hides the whole modal; arrow-key/D-pad traversal is explicitly disabled while a modal is open.
 - Medium gaps: Language and Wallpaper Interval quick tiles are inert; Next Photo has no failure/unavailable-source path; normal Wi-Fi rescan can remain stuck in “Memindai…”; profile switching is not simulated; Restart and Power Off share generic confirmation text.
 - V2 remains preserved unchanged. No prototype or production source was modified. Correct these in a new versioned revision, then run browser keyboard walkthrough and visual comparison before P3 acceptance.
+
+
+## V3 — Static interaction corrections and QC (6 November 2026)
+
+- New artifact: [UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V3.html](prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V3.html). V2 is preserved unchanged.
+- V3 corrects all R01–R07 findings from the V2 static re-audit: nested dialog stack/root focus restoration; modal D-pad traversal; Language and Wallpaper Interval actions; Next Photo unavailable/failure paths; bounded Wi-Fi rescan completion; profile switch simulation; distinct restart/power-off confirmations.
+- Static QC: **PASS**. One embedded JS script parsed successfully without execution; no duplicate HTML IDs; all seven correction groups were source-checked. QC record: [UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md).
+- P3 remains **IN PROGRESS / PARTIAL** until browser keyboard walkthrough, 12-scenario validation and visual comparison against the six user-approved references. No production Android source or device was changed.
