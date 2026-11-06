@@ -12,64 +12,95 @@ import org.junit.Test;
 
 public class DockLayoutModelTest {
     @Test
-    public void partitionsInSourceOrderAndKeepsGridItemsAfterDock() {
-        List<String> ordered = Arrays.asList("pinned-a", "pinned-b", "app-c", "app-d", "app-e");
-        DockLayoutModel.Snapshot<String> result =
-                DockLayoutModel.split(ordered, 4, value -> value);
+    public void membershipUsesExplicitStableKeysRatherThanFirstInventoryPositions() {
+        List<String> inventory = Arrays.asList("grid-first", "pinned-b", "grid-second", "pinned-a");
+        DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
+                inventory, Arrays.asList("pinned-a", "pinned-b"), 4, value -> value);
 
-        assertEquals(Arrays.asList("pinned-a", "pinned-b", "app-c", "app-d"), result.dockItems);
-        assertEquals(Collections.singletonList("app-e"), result.gridItems);
-        assertEquals(5, result.totalCount());
+        assertEquals(Arrays.asList("pinned-a", "pinned-b"), result.dockItems);
+        assertEquals(Arrays.asList("grid-first", "grid-second"), result.gridItems);
     }
 
     @Test
-    public void supportsFourFiveAndSixSlotsWithoutChangingSourceOrder() {
-        List<String> ordered = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
-        assertEquals(4, DockLayoutModel.split(ordered, 4, value -> value).dockCount());
-        assertEquals(5, DockLayoutModel.split(ordered, 5, value -> value).dockCount());
-        assertEquals(6, DockLayoutModel.split(ordered, 6, value -> value).dockCount());
-        assertEquals(Collections.singletonList("g"),
-                DockLayoutModel.split(ordered, 6, value -> value).gridItems);
+    public void dockOrderFollowsPinnedIdentityOrderAndGridKeepsInventoryOrder() {
+        List<String> inventory = Arrays.asList("app-a", "app-b", "app-c", "app-d");
+        DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
+                inventory, Arrays.asList("app-d", "app-b"), 4, value -> value);
+
+        assertEquals(Arrays.asList("app-d", "app-b"), result.dockItems);
+        assertEquals(Arrays.asList("app-a", "app-c"), result.gridItems);
+    }
+
+    @Test
+    public void pinnedAppsBeyondCapacityRemainInGridAndAreNeverDropped() {
+        List<String> inventory = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+        List<String> pinned = Arrays.asList("g", "f", "e", "d", "c", "b", "a");
+        DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
+                inventory, pinned, 4, value -> value);
+
+        assertEquals(Arrays.asList("g", "f", "e", "d"), result.dockItems);
+        assertEquals(Arrays.asList("a", "b", "c"), result.gridItems);
+        assertEquals(inventory.size(), result.totalCount());
+    }
+
+    @Test
+    public void supportsFourFiveAndSixSlots() {
+        List<String> inventory = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+        assertEquals(4, DockLayoutModel.split(inventory, inventory, 4, value -> value).dockCount());
+        assertEquals(5, DockLayoutModel.split(inventory, inventory, 5, value -> value).dockCount());
+        assertEquals(6, DockLayoutModel.split(inventory, inventory, 6, value -> value).dockCount());
     }
 
     @Test
     public void invalidCapacityFallsBackToDefaultFive() {
+        List<String> inventory = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         DockLayoutModel.Snapshot<String> result =
-                DockLayoutModel.split(Arrays.asList("a", "b", "c", "d", "e", "f", "g"), 99, value -> value);
+                DockLayoutModel.split(inventory, inventory, 99, value -> value);
         assertEquals(5, result.capacity);
         assertEquals(5, result.dockCount());
         assertEquals(2, result.gridCount());
     }
 
     @Test
-    public void duplicateAndInvalidKeysDoNotCreateDuplicateTiles() {
-        List<String> ordered = Arrays.asList("a", "b", "a", "", "c", "d", "e", "f");
+    public void missingAndDuplicatePinnedKeysDoNotReserveSlotsOrDuplicateTiles() {
+        List<String> inventory = Arrays.asList("a", "b", "c", "d", "e");
+        List<String> pinned = Arrays.asList("missing", "b", "b", "", "d");
         DockLayoutModel.Snapshot<String> result =
-                DockLayoutModel.split(ordered, 4, value -> value);
-        assertEquals(Arrays.asList("a", "b", "c", "d"), result.dockItems);
-        assertEquals(Arrays.asList("e", "f"), result.gridItems);
+                DockLayoutModel.split(inventory, pinned, 4, value -> value);
+        assertEquals(Arrays.asList("b", "d"), result.dockItems);
+        assertEquals(Arrays.asList("a", "c", "e"), result.gridItems);
+    }
+
+    @Test
+    public void duplicateInventoryKeysKeepOnlyFirstEntry() {
+        List<String> inventory = Arrays.asList("a", "b", "a", "c");
+        DockLayoutModel.Snapshot<String> result =
+                DockLayoutModel.split(inventory, Collections.singletonList("a"), 4, value -> value);
+        assertEquals(Collections.singletonList("a"), result.dockItems);
+        assertEquals(Arrays.asList("b", "c"), result.gridItems);
     }
 
     @Test
     public void snapshotsAreImmutable() {
         DockLayoutModel.Snapshot<String> result =
-                DockLayoutModel.split(Arrays.asList("a", "b"), 4, value -> value);
+                DockLayoutModel.split(Arrays.asList("a", "b"), Collections.singletonList("a"), 4, value -> value);
         assertThrows(UnsupportedOperationException.class, () -> result.dockItems.add("c"));
         assertThrows(UnsupportedOperationException.class, () -> result.gridItems.clear());
     }
 
     @Test
-    public void nullInventoryProducesAnEmptySnapshot() {
-        DockLayoutModel.Snapshot<String> result =
-                DockLayoutModel.split(null, 4, value -> value);
-        assertTrue(result.dockItems.isEmpty());
-        assertTrue(result.gridItems.isEmpty());
-        assertEquals(0, result.totalCount());
+    public void nullInventoryOrPinnedListProducesSafeSnapshot() {
+        DockLayoutModel.Snapshot<String> empty =
+                DockLayoutModel.split(null, null, 4, value -> value);
+        assertTrue(empty.dockItems.isEmpty());
+        assertTrue(empty.gridItems.isEmpty());
+        assertEquals(0, empty.totalCount());
     }
 
     @Test
     public void stableKeyFunctionIsRequired() {
         assertThrows(IllegalArgumentException.class,
-                () -> DockLayoutModel.split(Collections.singletonList("a"), 4, null));
+                () -> DockLayoutModel.split(Collections.singletonList("a"),
+                        Collections.singletonList("a"), 4, null));
     }
 }
