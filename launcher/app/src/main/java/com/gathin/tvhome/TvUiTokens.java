@@ -9,40 +9,41 @@ package com.gathin.tvhome;
  */
 final class TvUiTokens {
     // Structural surfaces
-    static final int SHELL = 0xFF071A2B;
-    static final int SURFACE = 0xFF0C2942;
-    static final int SURFACE_FOCUSED = 0xFF123F60;
-    static final int SURFACE_SELECTED = 0xFF0E3552;
-    static final int SURFACE_IDLE = 0xFF09243A;
-    static final int INPUT_SURFACE = 0xFF0A263E;
-    static final int POPUP_SURFACE = 0xFF0B2B46;
-    static final int DOCK_SURFACE = 0xFF061D32;
-    static final int BORDER = 0xFF416987;
+    static final int SHELL = 0xFF0B2A5B;
+    static final int SURFACE = 0xFF0C2E61;
+    static final int SURFACE_FOCUSED = 0xFF0E3567;
+    static final int SURFACE_SELECTED = 0xFF1A4D8B;
+    static final int SURFACE_IDLE = 0xFF0A244E;
+    static final int INPUT_SURFACE = 0xFF0D315F;
+    static final int POPUP_SURFACE = 0xFF0B2A5B;
+    static final int DOCK_SURFACE = 0xFF071E46;
+    static final int BORDER = 0xFF426BAA;
 
     // Text and semantic accents
-    static final int TEXT_PRIMARY = 0xFFF4FAFF;
-    static final int TEXT_SECONDARY = 0xFFD0E0EE;
-    static final int ACCENT_SECTION = 0xFF8ADFFF;
-    static final int ACCENT_CYAN = 0xFF56E2FF;
+    static final int TEXT_PRIMARY = 0xFFFFFFFF;
+    static final int TEXT_SECONDARY = 0xFFB6C6FF;
+    static final int ACCENT_SECTION = 0xFFB6C6FF;
+    static final int ACCENT_BLUE = 0xFF1E6BFF;
+    static final int ACCENT_CYAN = 0xFF00E5FF;
     static final int FOCUS_BORDER = ACCENT_CYAN;
-    static final int FOCUS_HALO = 0xFF071A2B;
-    static final int NAV_PROFILE_SELECTED = 0xFF124465;
-    static final int NAV_PROFILE_IDLE = 0xFF0A263D;
-    static final int NAV_ITEM_SELECTED = 0xFF123B59;
-    static final int NAV_ITEM_TEXT = 0xFFEAF5FF;
-    static final int NAV_SELECTION_BORDER = 0x995BE6FF;
+    static final int FOCUS_HALO = 0xFF0B2A5B;
+    static final int NAV_PROFILE_SELECTED = 0xFF1E6BFF;
+    static final int NAV_PROFILE_IDLE = 0xFF0A244E;
+    static final int NAV_ITEM_SELECTED = 0xFF1E6BFF;
+    static final int NAV_ITEM_TEXT = 0xFFFFFFFF;
+    static final int NAV_SELECTION_BORDER = 0x9900E5FF;
     static final int NAV_ICON_TINT = TEXT_PRIMARY;
 
     // TV typography scale (sp); content containers must wrap/scroll at larger user font scales.
-    static final float PAGE_TITLE_SP = 32f;
-    static final float PAGE_HEADER_SP = 24f;
+    static final float PAGE_TITLE_SP = 36f;
+    static final float PAGE_HEADER_SP = 28f;
     static final float SECTION_TITLE_SP = 22f;
     static final float PRIMARY_VALUE_SP = 22f;
     static final float BODY_SP = 18f;
-    static final float NAV_ITEM_TEXT_SP = 16f;
+    static final float NAV_ITEM_TEXT_SP = 18f;
     static final float CARD_TITLE_SP = 18f;
     static final float CARD_SUBTITLE_SP = 16f;
-    static final float SECTION_LABEL_SP = 14f;
+    static final float SECTION_LABEL_SP = 12f;
     static final float METADATA_SP = 14f;
 
     // Geometry and focus

@@ -6,11 +6,11 @@
             <gradient
                 android:type="linear"
                 android:angle="270"
-                android:startColor="#F20D3556"
-                android:centerColor="#F2092B48"
-                android:endColor="#F2062038" />
+                android:startColor="#F20F3A72"
+                android:centerColor="#F20B2F61"
+                android:endColor="#F2082450" />
             <corners android:radius="24dp" />
-            <stroke android:width="2dp" android:color="#9958C7E8" />
+            <stroke android:width="2dp" android:color="#995D8FCB" />
         </shape>
     </item>
     <!-- Restrained top sheen; focus remains the strongest luminous accent. -->
