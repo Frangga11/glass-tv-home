@@ -1106,3 +1106,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI #1263 / run `42252069520` passed both jobs; app and installer unit tests and release build succeeded. APK measured 1,573,713 bytes; size is diagnostic/non-blocking.
 - No APK publication/install, ADB, merge or physical TV test. Physical TV evaluation remains separate.
 - Next: G3 surface implementation in official 3A–3F order.
+
+
+## UI Refresh G3A closeout — 7 November 2026
+
+- GTVH-UIR-002 v2.0 G3A Home Screen & Independent Dock is COMPLETE / SOURCE-HOST QC PASS.
+- Owner branch `feature/g3a-home-independent-dock` exact HEAD `87302f52de844954392bac5438cbe82ec5d14a30`; PR #66 OPEN/DRAFT/UNMERGED, stacked on G2 exact head `40fa0715bdbcd324042927fbc56ec19f91d1947a`. G2 PR #65 remains OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1296 / run `42266095885`: both required jobs SUCCESS; launcher unit tests, release validation build and lint-vital PASS. APK diagnostic 1,589,825 bytes, non-blocking under D-023.
+- Independent Dock/Grid projections, orientation and capacity controls, stable persisted pin order, overflow, D-pad movement/reorder/focus restoration, empty/full states and localization are implemented and host/source-reviewed.
+- No merge/rebase/cherry-pick/force-push, integration/main change, APK publication/installation, ADB or physical TV/remote/OEM overscan test. Device acceptance remains separate.
+- Canonical checkpoint: `UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md`. Next UI Refresh package: G3B Weather & AQI V4.

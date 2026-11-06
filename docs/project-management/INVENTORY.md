@@ -660,3 +660,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Release APK size diagnostic: 1,573,713 bytes. CI now reports size without blocking quality work.
 - No APK published/installed; no ADB or physical TV test.
 - Canonical result: `UI_REFRESH_G2_CHECKPOINT_2026-11-06.md`; next work package G3 (3A–3F).
+
+
+## UI Refresh G3A — Home Screen & Independent Dock (7 November 2026)
+
+- **Status:** COMPLETE / SOURCE-HOST QC PASS.
+- **Branch/head:** `feature/g3a-home-independent-dock` @ `87302f52de844954392bac5438cbe82ec5d14a30`; PR #66 OPEN/DRAFT/UNMERGED. Stacked on G2 `40fa0715bdbcd324042927fbc56ec19f91d1947a`; PR #65 remains OPEN/DRAFT/UNMERGED.
+- **Implemented:** independent DockAdapter and AppAdapter projections; horizontal tray / vertical rail; capacity 4/5/6 (default 5); four-column Grid invariant; persisted ordered pins/unpin exclusions; overflow accessibility; D-pad navigation, move/reorder/pin/unpin, focus restoration; empty/full state handling; Home Settings controls and localization.
+- **Verification:** exact-head CI #1296 / `42266095885` SUCCESS, both jobs; launcher unit tests, release build and lint-vital PASS. Source/host QC reviewed identity, persistence, geometry, focus, lifecycle and regression cases.
+- **APK diagnostic:** 1,589,825 bytes; informational only under D-023.
+- **Not verified:** physical TV/remote/OEM overscan. No APK install, ADB, merge or integration change.
+- Evidence: [UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md). Next: G3B Weather & AQI V4.

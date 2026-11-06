@@ -82,3 +82,13 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - Exact-head CI #1263 / run `42252069520`: both required jobs PASS; launcher unit-test/release-build validation and Lists/tools/docs passed. Release APK measured at **1,573,713 bytes**; size is diagnostic/non-blocking.
 - No APK artifact was published or installed; no ADB or physical TV test was performed. Device/remote/OEM overscan and physical visual acceptance remain a later evaluation gate.
 - Next work package: **G3 — Surface Implementation**, in the official order 3A Home & independent Dock → 3B Weather/AQI V4 → 3C Profile/Avatar/Child Mode → 3D Quick Settings → 3E Wi-Fi → 3F Global Settings.
+
+
+## 10. G3A closeout and current execution position — 7 November 2026
+
+- **G3A Home Screen & Independent Dock: COMPLETE / SOURCE-HOST QC PASS.** Checkpoint: `UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md`.
+- Owner branch `feature/g3a-home-independent-dock` @ `87302f52de844954392bac5438cbe82ec5d14a30`; PR #66 OPEN/DRAFT/UNMERGED. G2 PR #65 remains OPEN/DRAFT/UNMERGED at `40fa0715bdbcd324042927fbc56ec19f91d1947a`.
+- Exact-head CI #1296 / run `42266095885`: both required jobs PASS; launcher unit tests, release validation build and lint-vital PASS. APK diagnostic 1,589,825 bytes; informational under D-023.
+- G3A source/host QC covers independent Dock/Grid projections, orientation/capacity, Grid invariance, persisted pin/unpin order, overflow, empty/full cases, D-pad navigation/reorder, focus restoration and localization.
+- No merge, rebase, cherry-pick, force-push, APK publication/installation, ADB or physical TV/remote/OEM overscan test. Physical acceptance remains separate.
+- **Current starting point supersedes §8 and prior resume notes: G1 COMPLETE, G2 COMPLETE, G3A COMPLETE; resume at G3B — Weather & AQI V4.** G3C–G3F remain not started. Official Project G03 device acceptance remains separately OPEN/BLOCKED.

@@ -1490,3 +1490,21 @@ G1 is a browser-prototype result only. Production component conformance, live da
 | Physical TV / remote / OEM overscan | DEFERRED | No physical test or device mutation authorized/performed |
 
 **G2 disposition: COMPLETE / SOURCE-HOST QC PASS.** PR #65 remains OPEN/DRAFT/UNMERGED. This result is not physical-device acceptance.
+
+
+## 7 November 2026 — UI Refresh G3A source/host QC register
+
+| Area | Result | Evidence / boundary |
+|---|---|---|
+| Independent Dock/Grid architecture | PASS | Dedicated DockAdapter and AppAdapter projections; Dock not represented as Grid first row |
+| Stable app identity and partitioning | PASS | Membership/order/focus restoration and app lifecycle reviewed; missing/duplicate identities normalized |
+| Pin order, unpin exclusions and overflow | PASS | Persisted ordered pins; overflow remains reachable in Grid |
+| Orientation/capacity and Grid invariance | PASS | Horizontal tray / vertical rail; capacity 4/5/6, default 5; Grid fixed at four columns |
+| D-pad and move/reorder behavior | PASS | Region-aware navigation, cross-region pin/unpin, reorder and focus restoration reviewed |
+| Empty/full and reload states | PASS | Empty Dock/Grid, all-pinned/full Dock, reload and first-frame readiness reviewed |
+| Home Settings and localization | PASS | Orientation/capacity controls and supported locale resource parity; previous missing-key/apostrophe failures corrected |
+| Automated verification | PASS | Exact-head CI #1296 / `42266095885`; both required jobs SUCCESS; launcher unit tests, release build and lint-vital PASS |
+| APK size | INFORMATIONAL | 1,589,825 bytes; non-blocking under D-023; no quality feature/assets removed |
+| Physical TV/remote/OEM overscan | DEFERRED / NOT RUN | No device test, APK installation or ADB action; no DEVICE-VERIFIED claim |
+
+**G3A disposition: COMPLETE / SOURCE-HOST QC PASS.** Branch `feature/g3a-home-independent-dock` @ `87302f52de844954392bac5438cbe82ec5d14a30`; PR #66 OPEN/DRAFT/UNMERGED. G2 PR #65 remains OPEN/DRAFT/UNMERGED. Next UI Refresh work package: G3B Weather & AQI V4.

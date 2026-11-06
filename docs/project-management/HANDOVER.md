@@ -1475,3 +1475,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Shared palette/tokens, glass/solid material, dialog sizing/fallback, safe popup geometry/scrolling, focus motion/restore, 56dp D-pad targets and Weather/AQI shared palette are implemented.
 - No merge/rebase/cherry-pick, APK publication/install, ADB or physical TV testing. Physical TV/remote/OEM overscan acceptance remains deferred.
 - **Resume at G3 — Surface Implementation**, in order 3A Home & independent Dock → 3B Weather/AQI V4 → 3C Profile/Avatar/Child Mode → 3D Quick Settings → 3E Wi-Fi → 3F Global Settings.
+
+
+## Current resume checkpoint — UI Refresh G3A complete (7 November 2026)
+
+- Governing plan: GTVH-UIR-002 v2.0. **G3A Home Screen & Independent Dock: COMPLETE / SOURCE-HOST QC PASS.** Detailed evidence: `UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md`.
+- Owner branch `feature/g3a-home-independent-dock` exact HEAD `87302f52de844954392bac5438cbe82ec5d14a30`; PR #66 OPEN/DRAFT/UNMERGED. G2 branch exact HEAD `40fa0715bdbcd324042927fbc56ec19f91d1947a`; PR #65 OPEN/DRAFT/UNMERGED. Both remain unmerged; no rebase/cherry-pick/force-push.
+- Exact-head CI #1296 / run `42266095885` SUCCESS; both required jobs passed. Launcher unit tests, release validation build and lint-vital PASS. APK diagnostic 1,589,825 bytes, informational under D-023.
+- G3A includes independent Dock/Grid projections; horizontal/vertical orientation; capacity 4/5/6; four-column Grid invariant; persisted pin order/unpin exclusions; overflow; D-pad navigation/reorder/pin/unpin; focus restoration; empty/full states; Home Settings and localization.
+- No APK publication/installation, ADB, integration/main change, merge or physical Android TV/remote/OEM overscan test. No device PASS is claimed.
+- **Resume at G3B — Weather & AQI V4.** Start with current exact branch/source audit and data/cache/state/test contract; do not reopen G3A absent new evidence. Official Project G03 physical Mi TV Stick acceptance remains a separate OPEN/BLOCKED gate.

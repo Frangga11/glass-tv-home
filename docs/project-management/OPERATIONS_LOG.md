@@ -845,3 +845,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Completed and visually reviewed V01–V06 V6 prototype against the approved references at 1920×1080; all six Dock orientation/capacity combinations captured.
 - Browser functional suite 12/12 PASS; JS syntax PASS; screenshots and contact sheets attached to the G1 checkpoint response. Canonical artifact and evidence boundaries: `UI_REFRESH_G1_CHECKPOINT_2026-11-06.md`.
 - No production source, owner PR, integration branch, APK or device changed. UI Refresh G1 is complete; resume at G2 shared UI foundation repair.
+
+
+## 7 November 2026 — UI Refresh G3A Home & Independent Dock closeout
+
+- Completed G3A on `feature/g3a-home-independent-dock` @ `87302f52de844954392bac5438cbe82ec5d14a30`; PR #66 remains OPEN/DRAFT/UNMERGED, stacked on G2 `40fa0715bdbcd324042927fbc56ec19f91d1947a` (PR #65 OPEN/DRAFT/UNMERGED).
+- Delivered independent Dock/Grid adapters and projections, horizontal/vertical Dock, capacities 4/5/6 (default 5), fixed four-column Grid, persisted pin order/exclusions, overflow handling, D-pad navigation/move/reorder/pin/unpin, focus restoration, empty/full cases, Home Settings controls and localization.
+- Exact-head CI #1296 / run `42266095885` SUCCESS on the recorded head; both required jobs passed. Launcher unit tests, release validation build and lint-vital PASS. Source/host QC completed for identity, persistence, geometry, focus/lifecycle and regression cases.
+- APK diagnostic 1,589,825 bytes; informational under D-023. No quality assets/features removed to meet the historical 1.5 MiB threshold.
+- No merge/rebase/cherry-pick/force-push, integration/main change, APK publication/installation, ADB or physical TV/remote/OEM overscan test. PRs #65/#66 remain unmerged.
+- Canonical checkpoint: `UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md`. Next UI Refresh work package: G3B Weather & AQI V4. Official Project G03 physical device acceptance remains separately OPEN/BLOCKED.

@@ -4,8 +4,8 @@
 **Initial release:** v0.1-draft  
 **Prepared:** 31 October 2026  
 **Repository:** https://github.com/Frangga11/glass-tv-home  
-**Current project checkpoint:** G01 HOST/SOURCE PASS; G02 HOST BUILD + ARTIFACT PASS; G03 physical Mi TV Stick acceptance OPEN/BLOCKED pending explicit readiness approval and device connection.
-**Current stage:** Project G — G03 Mi TV Stick installation and physical acceptance. G04 documentation closure and G05 ChatGPT handover follow after G03.
+**Current project checkpoint:** Official Project G03 physical Mi TV Stick acceptance remains OPEN/BLOCKED pending explicit readiness approval and device connection. Separate UI Refresh GTVH-UIR-002 v2.0 subtrack: G1, G2 and G3A COMPLETE at their recorded source/host or prototype gates; next is G3B Weather & AQI V4.
+**Current stage:** Official Project G03 device acceptance remains a separate blocked gate. UI Refresh subtrack resumes at G3B — Weather & AQI V4.
 **Documentation branch:** `docs/project-master-inventory`  
 **F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
@@ -32,7 +32,7 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md) | B06 notification, Toast, OTA loading, QR progress/timeout audit and exact-head CI evidence |
 | [F03_QR_COMMUNICATION_FEASIBILITY.md](F03_QR_COMMUNICATION_FEASIBILITY.md) | F03 QR communication/upload feasibility evidence, CI, findings, and Project G device gates |
 | [F04_FEATURE_ISOLATION_AUDIT.md](F04_FEATURE_ISOLATION_AUDIT.md) | F04 Avatar, Wallpaper and StandBy source isolation, repairs, CI and Project G gates |
-| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
+| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |\n| [UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md) | G3A Home & independent Dock source/host closeout evidence |
 | [F07_PERFORMANCE_STABILITY_AUDIT.md](F07_PERFORMANCE_STABILITY_AUDIT.md) | Final F07 performance, memory, stability and storage host/source evidence |
 | [PROJECT_G_READINESS_CHECKPOINT.md](PROJECT_G_READINESS_CHECKPOINT.md) | Official Project F closure, Project G work packages, device gates and governance |
 
@@ -176,3 +176,11 @@ Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G
 - Browser functional suite: 12 PASS / 0 FAIL; JavaScript syntax check PASS; 13 screenshots captured. Prototype only: no production source, owner branch, integration, APK or device was changed.
 - Next UI-refresh work package: G2 — Shared UI Foundation Repair. Owner visual sign-off remains a separate acceptance gate before broad production rollout.
 - This UI-refresh subtrack is distinct from official Project G03 device acceptance, which remains OPEN/BLOCKED as recorded above.
+
+
+## Global UI Refresh G3A closeout — 7 November 2026
+
+- G3A Home Screen & Independent Dock is **COMPLETE / SOURCE-HOST QC PASS** on `feature/g3a-home-independent-dock` @ `87302f52de844954392bac5438cbe82ec5d14a30`; PR #66 remains OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1296 / `42266095885`: both required jobs SUCCESS; launcher tests, release validation build and lint-vital PASS. APK diagnostic 1,589,825 bytes; informational under D-023.
+- Canonical evidence: [G3A checkpoint](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md). Next UI Refresh work package is G3B Weather & AQI V4.
+- No merge, APK publication/installation, ADB or physical TV/remote/overscan test. Official Project G03 device acceptance remains separately OPEN/BLOCKED.
