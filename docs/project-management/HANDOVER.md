@@ -1249,3 +1249,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - E02 PR #62 remains OPEN/DRAFT/UNMERGED at `588456144df24f2f6c015a01053ad700a04bee39`; E06 PR #63 remains OPEN/DRAFT/UNMERGED at `ecdeb0eba9fc7a574f1a6c9930205517687cd922`. Exact-head CI runs #1204 and #1198 have both required jobs SUCCESS. Both heads are diverged from integration and require three-way semantic reconciliation. E02 cancellation/lifecycle gaps and E06 Dock/grid coupling remain blockers.
 - Module impact/ownership: B01–B07 shared UI/interaction foundation; E01 device/system; E02 profile; E03 wallpaper metadata; E04 standby; E05 Weather/AQI; E06 Home/Dock; E07 animation/effects; E08 wallpaper/Next Photo. Dependency sequence and risk register are in the audit file.
 - **Next work point:** finish P1 acceptance and P3 V2 walkthrough/design QA; do not start P4, redesign or production source edits until the required gates pass. No source/branch/PR/integration/main/APK/device mutation occurred in this audit.
+
+
+
+## UI Refresh — continued P3 static review checkpoint (6 November 2026)
+
+- Continued work stayed within Trigger P3 and was read-only. Detailed report: `docs/project-management/UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md` (report commit `4bac6067b3b32f415c8decf01479ca3aa5425ac3`).
+- Found two high-severity V2 prototype blockers: nested Wi-Fi handoff loses the original dialog/focus chain; D-pad/arrow navigation is disabled while a modal is open. Medium gaps: inert Language/Wallpaper Interval controls, no Next Photo failure path, normal Wi-Fi rescan stuck loading, no profile-switch simulation, generic Restart/Power Off confirmation.
+- V2 remains unchanged. Next: create a new versioned prototype revision correcting R01–R07, static/syntax re-check, then browser keyboard walkthrough and visual review. P1 acceptance and owner decisions remain pending; no user approval is inferred.
+- No production source, branch, PR, integration/main, APK, ADB or TV device changed.
