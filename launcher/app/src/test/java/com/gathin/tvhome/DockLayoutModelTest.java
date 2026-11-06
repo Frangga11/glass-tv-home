@@ -22,6 +22,19 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void distinctLauncherComponentsFromSamePackageRemainDistinctTiles() {
+        // Package-level Dock configuration can match more than one launcher activity.
+        // The partition identity must therefore be the component key, not package name.
+        List<String> inventory = Arrays.asList("pkg/.ActivityA", "other/.Main", "pkg/.ActivityB");
+        DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
+                inventory, Arrays.asList("pkg/.ActivityA", "pkg/.ActivityB"), 4, value -> value);
+
+        assertEquals(Arrays.asList("pkg/.ActivityA", "pkg/.ActivityB"), result.dockItems);
+        assertEquals(Collections.singletonList("other/.Main"), result.gridItems);
+        assertEquals(inventory.size(), result.totalCount());
+    }
+
+    @Test
     public void dockOrderFollowsPinnedIdentityOrderAndGridKeepsInventoryOrder() {
         List<String> inventory = Arrays.asList("app-a", "app-b", "app-c", "app-d");
         DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
