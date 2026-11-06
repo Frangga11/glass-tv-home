@@ -4,9 +4,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -20,7 +18,6 @@ import java.util.function.Function;
 final class AppInventory<T> extends AbstractList<T> {
     private final Function<T, String> stableKey;
     private final List<T> entries = new ArrayList<>();
-    private final Set<String> keys = new HashSet<>();
 
     AppInventory(Function<T, String> stableKey) {
         if (stableKey == null) throw new IllegalArgumentException("stableKey is required");
@@ -40,16 +37,14 @@ final class AppInventory<T> extends AbstractList<T> {
     @Override
     public void add(int index, T item) {
         String key = keyOf(item);
-        if (key == null || keys.contains(key)) return;
+        if (key == null || containsKey(key)) return;
         entries.add(index, item);
-        keys.add(key);
         modCount++;
     }
 
     @Override
     public T remove(int index) {
         T removed = entries.remove(index);
-        keys.remove(keyOf(removed));
         modCount++;
         return removed;
     }
@@ -58,7 +53,6 @@ final class AppInventory<T> extends AbstractList<T> {
     public void clear() {
         if (entries.isEmpty()) return;
         entries.clear();
-        keys.clear();
         modCount++;
     }
 
@@ -90,6 +84,11 @@ final class AppInventory<T> extends AbstractList<T> {
     /** Defensive immutable snapshot for presentation models and tests. */
     List<T> snapshot() {
         return Collections.unmodifiableList(new ArrayList<>(entries));
+    }
+
+    private boolean containsKey(String key) {
+        for (T entry : entries) if (key.equals(keyOf(entry))) return true;
+        return false;
     }
 
     private String keyOf(T item) {
