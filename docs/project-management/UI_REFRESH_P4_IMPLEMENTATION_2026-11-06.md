@@ -145,3 +145,12 @@ Cross-cutting B01 shared tokens/focus/dialog/navigation foundations are to be ex
 - This validates the saved pinned-order correction and new regression tests at the exact head. It remains a model/order slice only, not completion of P4-01 Module 1.
 - PR #64 remains OPEN/DRAFT/UNMERGED, base `integration/b-series`; no APK publication/installation, ADB, device-setting change or physical TV test.
 - Remaining: authoritative shared inventory/identity boundary, dedicated Dock and App Grid renderers with invariant grid span, orientation/capacity UI and live updates, focus/D-pad/reorder/install-remove lifecycle, six-combination functional acceptance and 1920×1080 visual QC.
+
+
+### P4-01 implementation checkpoint — authoritative inventory boundary — 6 November 2026
+- Implemented `AppInventory<T>` as the ordered inventory owner in `AppAdapter`, keyed by stable launcher component identity (`ComponentName.flattenToShortString()`). Rebuild now replaces the inventory through one deduplicating operation; tile movement uses an identity-preserving inventory move; stable-key lookup and detached immutable snapshots are available for the upcoming two-region renderer.
+- Added `AppInventoryTest` coverage for duplicate/blank/null identity filtering, source-order retention, stable-key lookup after reorder, invalid moves, and detached immutable snapshots.
+- Source commits: `c3186a67ec822224abbb50ac7bf52658ebbaf438` (inventory class), `93e9e582cd74707456876bc377f1a7d38fc50529` (AppAdapter integration), `2f5ba0051a24bce92c60f05445c106ab2e55f8d2` (tests). PR #64 branch `feature/ui-global-01-home-dock`, current head `2f5ba0051a24bce92c60f05445c106ab2e55f8d2`, base `integration/b-series`; PR remains OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1221 / run ID `42187109874`: `Lists, tools and docs` SUCCESS; `Launcher build and unit tests` still IN_PROGRESS at checkpoint. No full CI PASS is claimed until the Android build, unit tests, release validation and APK-size budget job completes.
+- Scope is the authoritative inventory foundation only. The visible UI is still the legacy single RecyclerView; reusable tile binding/launch extraction, dedicated Dock/App Grid renderers, invariant App Grid span, orientation/capacity settings, overflow and D-pad/focus/reorder/package lifecycle remain outstanding.
+- No APK publication/installation, ADB, device-setting change, physical TV test or merge. Module 1 remains IN PROGRESS; do not advance to the next trigger.
