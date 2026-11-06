@@ -142,6 +142,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private int lastDockDecorationCount = -1;
     private boolean lastDockDecorationVertical;
     private static final String HOME_FOCUS_REGION = "home_focus_region";
+    private static final String HOME_DOCK_FOCUS_KEY = "home_dock_focus_key";
+    private static String lastDockFocusedKey;
     private FrameLayout root;
     private GlassView glass;
     private View ambient;
@@ -443,6 +445,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     navigationPrefs.getString(NavigationState.HOME_FOCUS_KEY, null));
             lastFocused = Math.max(0, navigationPrefs.getInt(NavigationState.HOME_FOCUS_POSITION, 0));
         }
+        lastFocusedDock = "dock".equals(navigationPrefs.getString(HOME_FOCUS_REGION, "grid"));
+        lastDockFocusedKey = NavigationState.normalizeFocusKey(navigationPrefs.getString(HOME_DOCK_FOCUS_KEY, null));
         lastFocusWasTopPill = navigationPrefs.getBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false);
         lastFocusedTopPillKey = NavigationState.normalizeTopPillKey(
                 navigationPrefs.getString(NavigationState.HOME_FOCUS_TOP_PILL_KEY, null));
@@ -1731,6 +1735,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 lastFocusedDock = true;
                 lastFocused = dockPos;
                 lastFocusedKey = dockAdapter.keyAt(dockPos);
+                lastDockFocusedKey = lastFocusedKey;
             } else {
                 int itemCount = adapter.getItemCount();
                 int resolvedPosition = NavigationState.resolveHomePosition(pos, returnSlot, itemCount);
@@ -1777,6 +1782,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             lastFocusedDock = true;
             lastFocused = dockPosition;
             lastFocusedKey = dockAdapter.keyAt(dockPosition);
+            lastDockFocusedKey = lastFocusedKey;
         } else {
             int itemCount = adapter.getItemCount();
             int safePosition = itemCount > 0
@@ -1832,7 +1838,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
             }
             if (!restoredTopPill) {
-                if (dockPos >= 0) { lastFocusedDock = true; focusDockTile(dockPos); }
+                if (dockPos >= 0) { lastFocusedDock = true; lastDockFocusedKey = returnKey; focusDockTile(dockPos); }
                 else { lastFocusedDock = false; focusTile(pos >= 0 ? pos : returnSlot); }
             }
             tilesReady = true;
@@ -2009,6 +2015,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (!resuming && hasWindowFocus()) SoundEffects.playNav();
         lastFocused = position;
         lastFocusedDock = inDock;
+        if (inDock) lastDockFocusedKey = NavigationState.normalizeFocusKey(key);
         lastFocusedKey = NavigationState.normalizeFocusKey(key);
         android.content.SharedPreferences.Editor navigationEdit =
                 getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
@@ -2017,7 +2024,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (lastFocusedKey != null) navigationEdit.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
         else navigationEdit.remove(NavigationState.HOME_FOCUS_KEY);
         navigationEdit.putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
-                .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
+                .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY);
+        if (lastDockFocusedKey != null) navigationEdit.putString(HOME_DOCK_FOCUS_KEY, lastDockFocusedKey);
+        navigationEdit.apply();
         lastFocusWasTopPill = false;
         lastFocusedTopPillKey = null;
 
@@ -3070,6 +3079,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         else focusTopBarFallback();
     }
 
+    private void focusLastDockTile() {
+        if (dockAdapter == null || dockAdapter.getItemCount() == 0) {
+            focusTile(0);
+            return;
+        }
+        int position = dockAdapter.positionOf(lastDockFocusedKey);
+        focusDockTile(position >= 0 ? position : 0);
+    }
+
     private void focusDockTile(int position) {
         if (dockAdapter == null || dockRecycler == null || dockAdapter.getItemCount() == 0) {
             focusTile(0);
@@ -3847,6 +3865,66 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             closeMenu(false);
         }
         ModernSettingsDialog.show(this);
+    }
+
+    void showDockOrientationDialog() {
+        DockPreferences current = DockPreferences.load(this);
+        String[] options = {
+                getString(R.string.dock_orientation_horizontal),
+                getString(R.string.dock_orientation_vertical)
+        };
+        int selected = current.orientation == DockPreferences.Orientation.VERTICAL ? 1 : 0;
+        new android.app.AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                .setTitle(R.string.dock_orientation_title)
+                .setSingleChoiceItems(options, selected, (dialog, which) -> {
+                    DockPreferences.Orientation orientation = which == 1
+                            ? DockPreferences.Orientation.VERTICAL : DockPreferences.Orientation.HORIZONTAL;
+                    if (!DockPreferences.save(this, orientation, current.capacity)) {
+                        TvFeedback.show(this, R.string.dock_settings_save_failed, Toast.LENGTH_SHORT);
+                        return;
+                    }
+                    dialog.dismiss();
+                    applyDockPreferenceChange();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    void showDockCapacityDialog() {
+        DockPreferences current = DockPreferences.load(this);
+        String[] options = {"4", "5", "6"};
+        int selected = current.capacity == 4 ? 0 : current.capacity == 6 ? 2 : 1;
+        new android.app.AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
+                .setTitle(R.string.dock_capacity_title)
+                .setSingleChoiceItems(options, selected, (dialog, which) -> {
+                    int capacity = which == 0 ? 4 : which == 2 ? 6 : 5;
+                    if (!DockPreferences.save(this, current.orientation, capacity)) {
+                        TvFeedback.show(this, R.string.dock_settings_save_failed, Toast.LENGTH_SHORT);
+                        return;
+                    }
+                    dialog.dismiss();
+                    applyDockPreferenceChange();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void applyDockPreferenceChange() {
+        String focusKey = lastFocusedKey;
+        boolean restoreDock = lastFocusedDock;
+        if (dockAdapter != null) dockAdapter.refresh();
+        applyDockLayout();
+        if (gridWrap != null) gridWrap.post(() -> {
+            applyDockLayout();
+            if (restoreDock) {
+                int position = dockAdapter.positionOf(focusKey);
+                if (position < 0) position = dockAdapter.positionOf(lastDockFocusedKey);
+                focusDockTile(position >= 0 ? position : 0);
+            } else {
+                int position = adapter.positionOf(focusKey);
+                focusTile(position >= 0 ? position : lastFocused);
+            }
+        });
     }
 
     void showSoundEffectsDialog() {
