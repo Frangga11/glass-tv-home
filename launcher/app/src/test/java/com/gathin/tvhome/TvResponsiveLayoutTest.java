@@ -61,6 +61,20 @@ public class TvResponsiveLayoutTest {
     }
 
     @Test
+    public void popupWidthAndPositionStayInsideSafeArea() {
+        assertEquals(77, TvResponsiveLayout.popupLeftPx(1840, 500, 1920));
+        assertEquals(77, TvResponsiveLayout.popupLeftPx(-20, 500, 1920));
+    }
+
+    @Test
+    public void popupChoosesTheSideWithEnoughRoom() {
+        assertTrue(TvResponsiveLayout.shouldPlacePopupAbove(900, 80, 500, 1080, 20, false));
+        assertTrue(!TvResponsiveLayout.shouldPlacePopupAbove(100, 80, 300, 1080, 20, false));
+        assertEquals(43, TvResponsiveLayout.popupTopPx(900, 80, 500, 1080, 20, true));
+        assertEquals(223, TvResponsiveLayout.popupTopPx(100, 80, 300, 1080, 20, false));
+    }
+
+    @Test
     public void honorsLargeUserFontScaleWithoutClamping() {
         assertEquals(27f, TvResponsiveLayout.scaledTextSizeSp(18f, 1.5f), 0.001f);
         assertEquals(36f, TvResponsiveLayout.scaledTextSizeSp(18f, 2f), 0.001f);

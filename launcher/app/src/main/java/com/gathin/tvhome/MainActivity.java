@@ -6798,15 +6798,46 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         glider.addCompanion(panel);
         anchor.getLocationInWindow(menuAt);
         root.getLocationInWindow(menuGliderAt);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.leftMargin = Math.max(0, Math.min(menuAt[0] - menuGliderAt[0], root.getWidth() - width));
+
+        int viewportWidth = root.getWidth() > 0
+                ? root.getWidth() : getResources().getDisplayMetrics().widthPixels;
+        int viewportHeight = root.getHeight() > 0
+                ? root.getHeight() : getResources().getDisplayMetrics().heightPixels;
+        int safeWidth = TvResponsiveLayout.safeContentWidthPx(viewportWidth);
+        int boundedWidth = Math.max(1, Math.min(width, safeWidth));
         int gap = (int) (10 * density);
-        if (above) {
-            panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.UNSPECIFIED);
-            lp.topMargin = Math.max(0, menuAt[1] - menuGliderAt[1] - gap - panel.getMeasuredHeight());
-        } else {
-            lp.topMargin = menuAt[1] - menuGliderAt[1] + anchor.getHeight() + gap;
+        int anchorTop = menuAt[1] - menuGliderAt[1];
+        int measuredHeight;
+
+        panel.measure(View.MeasureSpec.makeMeasureSpec(boundedWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.UNSPECIFIED);
+        measuredHeight = Math.max(1, panel.getMeasuredHeight());
+        boolean placeAbove = TvResponsiveLayout.shouldPlacePopupAbove(
+                anchorTop, anchor.getHeight(), measuredHeight, viewportHeight, gap, above);
+        int availableHeight = TvResponsiveLayout.popupAvailableHeightPx(
+                anchorTop, anchor.getHeight(), viewportHeight, gap, placeAbove);
+        int panelHeight = Math.max(1, Math.min(measuredHeight, availableHeight));
+
+        // Long menus remain navigable: constrain the panel and put its existing focusable rows
+        // in a scroll container. ScrollView keeps the focused child visible during D-pad traversal.
+        if (measuredHeight > panelHeight && rows.getParent() == panel) {
+            panel.removeView(rows);
+            ScrollView scroll = new ScrollView(this);
+            scroll.setFillViewport(false);
+            scroll.setVerticalScrollBarEnabled(false);
+            scroll.setClipToPadding(false);
+            scroll.addView(rows, new ScrollView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            FrameLayout.LayoutParams scrollLp = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, panelHeight);
+            panel.addView(scroll, scrollLp);
         }
+
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(boundedWidth, panelHeight);
+        lp.leftMargin = TvResponsiveLayout.popupLeftPx(
+                menuAt[0] - menuGliderAt[0], boundedWidth, viewportWidth);
+        lp.topMargin = TvResponsiveLayout.popupTopPx(
+                anchorTop, anchor.getHeight(), panelHeight, viewportHeight, gap, placeAbove);
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
@@ -6832,11 +6863,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_DPAD_UP:
                         if (v != top) return false;
-                        if (down && !above) closeMenu(true);
+                        if (down && !placeAbove) closeMenu(true);
                         return true;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
                         if (v != bottom) return false;
-                        if (down && above) closeMenu(true);
+                        if (down && placeAbove) closeMenu(true);
                         return true;
                     case KeyEvent.KEYCODE_DPAD_LEFT:
                     case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -6853,10 +6884,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // The glass and the rows fade in around the selection as it arrives.
         glass.setAlpha(0);
         rows.setAlpha(0f);
-        final float slide = (above ? 8 : -8) * density;
+        final float slide = (placeAbove ? 8 : -8) * density;
         rows.setTranslationY(slide);
         android.animation.ValueAnimator in = android.animation.ValueAnimator.ofFloat(0f, 1f);
-        in.setDuration(220);
+        in.setDuration(reducedMotion ? 120 : 220);
         in.setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f));
         in.addUpdateListener(an -> {
             float f = (float) an.getAnimatedValue();
@@ -6868,9 +6899,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (top != null) {
             top.requestFocus();
             panel.post(() -> {
-                if (openMenu == panel && top != null) {
-                    top.requestFocus();
-                }
+                if (openMenu == panel && top.isAttachedToWindow()) top.requestFocus();
             });
         }
     }
