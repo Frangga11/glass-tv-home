@@ -1092,3 +1092,20 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Decision: LOCKED BASELINE v1.0.** Canonical document: [UI_REFRESH_ROADMAP.md](UI_REFRESH_ROADMAP.md).
 - Roadmap commit: 66f0d434f529929c106f31bfec2286e6caf1055f.
 - This locks scope, sequencing and acceptance criteria only. It does not authorize implementation, merge, integration/main updates, APK publication/installation, ADB or physical device changes. E02/E06 execution still requires live-head reconciliation and explicit stage authorization; G03 remains separately gated.
+
+
+
+## UI Refresh P0 — Baseline & Compatibility — 6 November 2026
+
+- **Disposition: P0 PASS — BASELINE VERIFIED** at frozen `integration/b-series` SHA `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. This is source/baseline PASS only; no feature, integration or device acceptance is implied.
+- Live E02 PR #62 head is `feature/e02-giphy-avatar-search-v1` @ `588456144df24f2f6c015a01053ad700a04bee39`, based on `feature/e02-profile-avatar-lock-ui` @ `3ab9b55f3cfe03ad9841a119590a9183cf114e96`. PR remains OPEN/DRAFT/UNMERGED. Exact-head CI #1204 / `41895866368`: both required jobs SUCCESS; APK 1,566,569 B; publication skipped.
+- Live E06 PR #63 head is `feature/e06-dock-capacity-control-v1` @ `ecdeb0eba9fc7a574f1a6c9930205517687cd922`, based on `feature/e06-home-screen-subtabs` @ `570b7c83efaec3ac515b78f1c6c119b777fc3b84`. PR remains OPEN/DRAFT/UNMERGED. Exact-head CI #1198 / `41890835096`: both required jobs SUCCESS; APK 1,563,741 B; publication skipped.
+- The live PR heads now supersede stale E02 #1203 pending / `dafcaf...` and earlier E02 #1200 / `ea9415...` checkpoints. E02 #1204 is the current verified head.
+- Both PR bases are ancestors of integration; the PR heads themselves diverge from integration (E02 19 ahead/326 behind; E06 3 ahead/297 behind). E01 current head `edd6461c932705a109ed9768649cae7e3c162c59` has three commits not contained in either E02/E06 base. This is documented for three-way semantic reconciliation before integration; no rebase/merge/cherry-pick was performed.
+- B01 contracts inspected from the frozen integration tree: `TvUiTokens`, `TvDialogStyle`, `TvFocusIndicator`, `TvResponsiveLayout`. E02/E06 scoped PR diffs do not replace the shared token/dialog contract. P2 must still define general overscan and text-scaling rules.
+- Compatibility source: compileSdk 34, minSdk 26, targetSdk 34, Java 17; last recorded Mi TV Stick Android 11/API 30, 1920×1080, density 320 (not physically re-probed). No ADB or device mutation.
+- APK ceiling 1,572,864 B: integrated G02 baseline 1,572,293 B (571 B headroom); E02 isolated build 1,566,569 B; E06 isolated build 1,563,741 B. Separate builds are not an integrated-size forecast.
+- E02 remains blocked on shared HTTP cancellation/disconnect, preview/lifecycle/profile-switch/memory tests and current GIPHY policy verification. E06 remains blocked on independent Dock model/view/adapter, settings, orientation/capacity/overflow, focus/navigation and six 1920×1080 combinations.
+- No Critical defect was reproduced in this read-only P0 audit. No code, PR state, branch ref, integration/main, APK publication/install, ADB, HOME/default launcher or physical device was changed.
+- **Next exact step:** P1 Functional Inventory. P1 has not started. P2/P3 approval remains mandatory before P4 implementation.
+- Full evidence: `UI_REFRESH_P0_BASELINE_2026-11-06.md`.
