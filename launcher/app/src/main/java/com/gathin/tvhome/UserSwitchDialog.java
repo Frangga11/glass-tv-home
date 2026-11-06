@@ -230,7 +230,7 @@ public final class UserSwitchDialog {
             g.setCornerRadius(14 * density);
             if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.08f : 1.0f).scaleY(hasFocus ? 1.08f : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         addCol.setOnClickListener(v -> {
@@ -263,7 +263,7 @@ public final class UserSwitchDialog {
             GradientDrawable g = new GradientDrawable();
             g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
             g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.TEXT_PRIMARY);
+            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
         });
 
@@ -360,7 +360,7 @@ public final class UserSwitchDialog {
 
         TextView tvTitle = new TextView(activity);
         tvTitle.setText(R.string.add_user_title);
-        tvTitle.setTextSize(18);
+        tvTitle.setTextSize(TvUiTokens.SECTION_TITLE_SP);
         tvTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvTitle.setTypeface(font, Typeface.BOLD);
         content.addView(tvTitle);
@@ -426,7 +426,7 @@ public final class UserSwitchDialog {
             GradientDrawable ringBg = new GradientDrawable();
             ringBg.setShape(GradientDrawable.OVAL);
             ringBg.setColor(Color.TRANSPARENT);
-            ringBg.setStroke((int) (2.5f * density), TvUiTokens.TEXT_PRIMARY);
+            ringBg.setStroke((int) (2.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
             ring.setBackground(ringBg);
             ring.setVisibility(idx == 0 ? View.VISIBLE : View.GONE);
             frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
@@ -502,7 +502,7 @@ public final class UserSwitchDialog {
         btnSave.setPadding((int) (16 * density), 0, (int) (16 * density), 0);
         btnSave.setOnFocusChangeListener((v, hasFocus) -> {
             sBg.setStroke((int) (2 * density), hasFocus ? TvUiTokens.FOCUS_BORDER : 0);
-            v.animate().scaleX(hasFocus ? 1.05f : 1.0f).scaleY(hasFocus ? 1.05f : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         btnSave.setOnClickListener(v -> {
