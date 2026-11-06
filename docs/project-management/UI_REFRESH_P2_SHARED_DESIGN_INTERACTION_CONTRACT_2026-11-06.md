@@ -227,3 +227,128 @@ P2 can be marked complete only when:
 **P2 contract status: DRAFT — awaiting technical verification and user review.** The reference direction and category taxonomy are adopted. Wi-Fi enhanced functionality is conditional, not yet technically approved. No prototype, production source change, feature branch, PR metadata change, integration/merge, APK build/install, ADB or physical TV test has been performed.
 
 **Next permitted step:** finish the targeted technical feasibility checks and present this contract for user review. P3 prototype must remain gated until explicit P2 approval.
+
+
+---
+
+## 11. P2 Closeout — Audited Decisions and Resolved Contract Questions
+
+**Decision status:** The following are binding P2 contract decisions for downstream prototype and implementation planning. They close design ambiguity; they do not claim runtime verification or grant permission to bypass platform restrictions.
+
+### 11.1 Shared TV layout baseline
+- Design canvas: **960 × 540 dp**, landscape 16:9. Build primary compositions on this reference grid and scale using dp/sp, not fixed physical pixels.
+- Safe area for critical UI: **48 dp left/right and 27 dp top/bottom** on the 960×540 design canvas (approximately 5%). At 1920×1080 on a 2× mapping this corresponds to 96 px left/right and 54 px top/bottom. Background wallpaper remains full bleed.
+- Use a 12-column composition grid with consistent gutters where useful; do not force every screen into a rigid grid.
+- TV UI remains landscape. Portrait V02–V05 images describe popup/detail composition only.
+- Device-specific safe-area behavior remains a P3 hardware validation item.
+
+### 11.2 Typography, spacing and target sizing
+Initial P3 prototype baselines:
+- Spacing: 8 dp base rhythm; 4 dp for optical adjustments; larger gaps in 16/24/32 dp increments.
+- Interactive target height: **56 dp minimum**, primary TV actions target 64 dp where layout permits.
+- Icon sizes: 24 dp standard, 28–32 dp for primary navigation/action icons.
+- Text: 16 sp primary row/body; 14 sp minimum for non-critical metadata; 20–24 sp section heading; 28–36 sp primary title/value.
+- Corner radii: semantic small/medium/large tokens, initial values 12/18/24 dp.
+- These are P2 baselines, not claims that legacy screens already meet them. P3/P5 may justify measured adjustments, which must be recorded.
+
+### 11.3 Motion and reduced-motion behavior
+- Focus transition target: 120–180 ms; popup/dialog entry and exit target: 160–220 ms.
+- Focus scale maximum target about 1.03×; must not move surrounding layout or clip.
+- Avoid continuous decorative motion behind text and dense dashboard data.
+- Reduced-motion removes scale/translation and nonessential looping effects; state changes remain clear through immediate visual state, outline and text.
+- Transitions must be interruptible by Back and must not delay remote input.
+
+### 11.4 Day / normal / night appearance
+- Provide three semantic modes: **Day, Normal, Night**, plus **Auto** only when local device time is available.
+- Default: **Normal**. Auto uses local device time and deterministic configurable boundaries; if time is unavailable, fall back to Normal.
+- Appearance changes surface opacity, background scrim and luminance hierarchy, not semantic color or focus meaning.
+- Focus remains high-contrast in every mode. Do not infer ambient brightness without a supported sensor.
+- Explicit user selection persists across restart.
+
+### 11.5 Wallpaper readability
+- Background is full bleed; foreground content sits within safe margins.
+- Adaptive scrim/contrast treatment behind top-level text and data. Dense dashboard/list/dialog surfaces use higher-opacity blue/neutral glass or solid fallback.
+- Blur alone is never sufficient for readability.
+- Wallpaper luminance changes do not alter focus color semantics.
+- P3 visual review includes bright sunrise/cloud, high-detail forest, saturated sunset and dark/night samples.
+
+### 11.6 Wi-Fi feasibility audit — final platform decision
+**Root cause:** Android 10+ privacy/security restrictions prevent ordinary apps targeting API 29+ from managing the system Wi-Fi radio and saved-network database as privileged Settings apps. Android 11 (API 30) does not remove these restrictions.
+
+**Verified platform constraints:**
+1. WifiManager.setWifiEnabled() cannot toggle Wi-Fi for ordinary apps targeting Android 10+; it returns false. Device-owner/profile-owner/system-app exemptions do not apply unless the launcher is actually provisioned with those privileges. Do not assume it is. <Cite refs={["turn810250search0","turn810250search1"]}/>
+2. Legacy getConfiguredNetworks() and add/update/remove/reconnect operations are restricted for ordinary apps targeting Android 10+. Do not build the UI around reading or mutating the full saved-network list. <Cite refs={["turn810250search0","turn810250search7"]}/>
+3. Foreground scanning with WifiManager.startScan() and getScanResults() is technically possible on Android 10/11 with required permissions and Location services enabled. For target SDK 29+, scan requires ACCESS_FINE_LOCATION and CHANGE_WIFI_STATE; reading results requires ACCESS_FINE_LOCATION and ACCESS_WIFI_STATE, with Location services enabled. SecurityException, unavailable location, OEM restrictions and stale results must be handled. <Cite refs={["turn558081search1","turn558081search14"]}/>
+4. Scan throttling remains: foreground apps are limited to four scans in a two-minute period. Do not continuously scan or let D-pad repeat spam scan requests. Failed/throttled scans may leave old results; show the last successful scan timestamp and label stale results. <Cite refs={["turn558081search1","turn558081search4"]}/>
+5. Android 11 Settings.ACTION_WIFI_ADD_NETWORKS can request user-approved addition of up to five supplied network configurations to the saved list. It is not an unrestricted network manager; user approval is mandatory. <Cite refs={["turn810250search2","turn810250search8"]}/>
+6. WifiNetworkSuggestion is a system-mediated suggestion path, not a guarantee that a selected SSID connects immediately. The platform chooses and controls the connection. <Cite refs={["turn558081search0","turn810250search5"]}/>
+7. Android Wi-Fi Settings/Settings Panel handoff is the reliable baseline for radio enable/disable and normal network join/forget operations. <Cite refs={["turn810250search0","turn810250search18"]}/>
+
+**P2 design resolution for V05:**
+- Keep the reference popup structure, connected-network emphasis, nearby network list, rescan affordance and settings entry.
+- Replace the literal in-app radio toggle with an honest Wi-Fi status/control row that opens Android Wi-Fi Settings Panel or Settings page. It may look switch-like only if clearly labelled as a system handoff and does not pretend the app toggled the radio.
+- Show nearby scan results only after permission and Location prerequisites are satisfied. Provide permission explanation, Location Settings handoff, scanning/loading, results, empty, stale, throttled and failure states.
+- Selecting a network opens Android system Wi-Fi selection/settings. Do not claim tapping a row connects directly unless a separately audited user-approved system API flow is implemented.
+- Optional Add Network path may use ACTION_WIFI_ADD_NETWORKS only when the user supplies credentials and explicitly approves the system confirmation; never persist or log passwords in Glass TV Home.
+- No password manager, saved-network enumeration, forget-network operation, or direct radio switch in the app.
+- **Conclusion:** enhanced V05 is feasible as read-only nearby scan + connected status + system handoff, subject to target device/OEM permission validation. Full Settings-equivalent network management is not feasible for an ordinary launcher app and is excluded from P2 scope.
+
+### 11.7 Quick Settings Next Photo
+- V04 includes a visible **Next Photo** action owned by E08.
+- Contract requires one wallpaper-controller operation (logical interface: advance to next eligible wallpaper), shared with existing wallpaper rotation/collection source. Do not create a parallel wallpaper list or bypass wallpaper ownership.
+- Disable the action when no alternate eligible wallpaper exists; show feedback only after the active wallpaper changes.
+- Current P1 evidence did not verify this action inside Quick Settings. It is a downstream E08 implementation/verification item, not a completed source feature. P3 shows the control; P4 wires it to the canonical wallpaper controller and tests one-item, multiple-item, empty, unavailable image and failure cases.
+
+### 11.8 Dock architecture
+- E06 maintains one authoritative ordered app model and two independent presentation regions: Dock and app grid.
+- Dock orientation/capacity affects only Dock rendering; it must never change app-grid span count or silently drop apps.
+- Dock membership/order is explicit and stable by app identity, not inferred from first N RecyclerView positions.
+- Capacity options remain 4/5/6 with default 5 unless source/data migration audit finds a compatibility issue; overflow remains accessible from app grid.
+- Existing preference model on E06 owner branch must be reconciled with integration source before implementation; do not assume it is integrated or wired to UI.
+
+### 11.9 Settings taxonomy and search
+- Canonical V06 taxonomy: Profil; Layar Utama; Tampilan; Widget & Informasi; Animasi & Efek; Layar Siaga; Pengaturan Perangkat.
+- Existing Status Bar & Weather controls move visually under Widget & Informasi; ownership of weather/location/information remains E05/E01.
+- Settings search indexes **individual visible controls and actions**, not only category names. Results identify destination category and exact control; selection navigates to and focuses the control. Hidden/disabled/unavailable controls must not be presented as actionable.
+- Search index is generated from canonical control IDs and localized labels/keywords; do not maintain a second hand-written keyword map that can drift.
+
+### 11.10 Weather V4 and data truthfulness
+- All locked V4 information fields remain in product scope. V02 screenshot controls hierarchy only; it does not remove secondary metrics.
+- Group secondary metrics in a scrollable/detail region with clear labels and units.
+- Every weather/AQI view identifies selected location, source/provider and last update where available.
+- Label modelled US AQI as US AQI; do not relabel as Indonesian ISPU. If local ISPU source is unavailable, say so rather than synthesizing it.
+- Provider-specific pollutant omissions or unavailable measurements are shown as unavailable, not zero.
+
+### 11.11 State, focus and failure acceptance matrix
+All interactive surfaces must pass these contract checks in P3/P5:
+- Focus can enter, traverse, activate, scroll, dismiss and restore to origin using D-pad only.
+- Active/selected/connected, focused, pressed, disabled and unavailable states are visually distinct.
+- Permission denied, location disabled, offline, empty, stale, throttled, provider error, missing intent, action failure and interrupted/Back states are designed explicitly.
+- No asynchronous refresh steals focus or changes the currently focused item.
+- No success feedback appears before action confirmation from its owner.
+- All visible actions have deterministic owner, action contract and failure path.
+- Localized labels may expand without clipping; focus outline remains inside safe area.
+
+## 12. P2 final acceptance checklist
+
+| Acceptance criterion | Result | Evidence / downstream gate |
+|---|---|---|
+| Six canonical surfaces have composition, action and owner contracts | PASS | Sections 6 and 7 |
+| Shared glass, contrast, typography, spacing, radius and motion vocabulary | PASS | Sections 2, 11.2–11.5 |
+| Focus vs selected/active/disabled semantics | PASS | Section 3 |
+| D-pad, Back and focus restoration rules | PASS | Section 3 and 11.11 |
+| 16:9 TV layout, responsive and overscan baseline | PASS | Section 11.1; hardware validation P5 |
+| Weather V4 full scope and data truthfulness | PASS | Section 11.10 |
+| Wi-Fi API feasibility and honest capability boundary | PASS | Section 11.6; device/OEM validation P5 |
+| Quick Settings Next Photo owner and action contract | PASS | Section 11.7; source implementation verification P4 |
+| Dock architecture and data invariants | PASS | Section 11.8; implementation verification P4 |
+| Settings taxonomy and search scope | PASS | Section 11.9 |
+| Shared loading/empty/error/offline/permission/interrupted states | PASS | Sections 5 and 11.11 |
+| Module ownership and dependency order | PASS | Section 7 |
+| User direction incorporated; no additional per-item approval needed | PASS | User instruction in conversation |
+
+**P2 disposition: COMPLETE — CONTRACT BASELINE FROZEN FOR P3.** All design and platform-feasibility decisions required to create prototypes are resolved. Runtime and implementation verification are explicitly assigned to P3/P4/P5; they are not misrepresented as P2 design blockers.
+
+**Implementation guardrails:** no direct Wi-Fi radio toggle or saved-network management; no fake success states; no removal of V4 metrics; no Dock/grid coupling; no duplicate wallpaper controller; no per-module competing design-token systems.
+
+**Next trigger:** P3 — Six-Surface Visual Prototype & Interaction Validation. Build visual prototypes against this frozen contract, then conduct structured visual/interaction QA. Production code remains untouched until the project roadmap's implementation gate.
