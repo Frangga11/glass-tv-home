@@ -2898,12 +2898,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             movingPos = to;
             final int targetPosition = to;
             final String key = dockAdapter.keyAt(targetPosition);
+            final View previousCard = movingCard;
             dockRecycler.post(() -> {
                 RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
                 if (movingPos != targetPosition || vh == null) return;
-                movingCard = vh.itemView.findViewById(R.id.card);
+                View nextCard = vh.itemView.findViewById(R.id.card);
+                if (previousCard != null && previousCard != nextCard) previousCard.setRotation(0f);
+                movingCard = nextCard;
                 if (movingCard != null) {
-                    movingCard.setRotation(reducedMotion ? 0.8f : 1.4f);
+                    startMoveWiggle(movingCard);
                     movingCard.requestFocus();
                     onDockTileFocused(key, movingCard);
                 }
@@ -2938,12 +2941,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             movingPos = to;
             final int targetPosition = to;
             final String key = adapter.keyAt(targetPosition);
+            final View previousCard = movingCard;
             grid.post(() -> {
                 RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(targetPosition);
                 if (movingPos != targetPosition || vh == null) return;
-                movingCard = vh.itemView.findViewById(R.id.card);
+                View nextCard = vh.itemView.findViewById(R.id.card);
+                if (previousCard != null && previousCard != nextCard) previousCard.setRotation(0f);
+                movingCard = nextCard;
                 if (movingCard != null) {
-                    movingCard.setRotation(reducedMotion ? 0.8f : 1.4f);
+                    startMoveWiggle(movingCard);
                     movingCard.requestFocus();
                     onTileFocused(targetPosition, movingCard);
                 }
@@ -3165,11 +3171,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         dockRecycler.scrollToPosition(targetPosition);
-        dockRecycler.post(() -> {
-            RecyclerView.ViewHolder next = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
-            View card = next != null ? next.itemView.findViewById(R.id.card) : null;
-            if (card != null && card.isShown() && card.isFocusable()) card.requestFocus();
-        });
+        focusDockTileWhenLaidOut(targetPosition, 3);
+    }
+
+    private void focusDockTileWhenLaidOut(int position, int attemptsRemaining) {
+        if (dockAdapter == null || position < 0 || position >= dockAdapter.getItemCount()) return;
+        RecyclerView.ViewHolder next = dockRecycler.findViewHolderForAdapterPosition(position);
+        View card = next != null ? next.itemView.findViewById(R.id.card) : null;
+        if (card != null && card.isShown() && card.isFocusable()) {
+            card.requestFocus();
+            return;
+        }
+        if (attemptsRemaining > 0) {
+            dockRecycler.postOnAnimation(() -> focusDockTileWhenLaidOut(position, attemptsRemaining - 1));
+        } else {
+            focusTopBarFallback();
+        }
     }
 
     private void focusTile(int position) {
