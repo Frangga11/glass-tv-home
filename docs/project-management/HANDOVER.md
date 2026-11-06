@@ -1313,3 +1313,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Final disposition remains PROTOTYPE VISUAL — REVISION REQUIRED.** No browser render or 1920×1080 screenshot was captured; actual geometry, overlay behavior, text fit, colors, blur, glow and legibility remain unverified.
 - V4 preserved; no production source, feature branch, PR, integration/main, APK, ADB or TV device changed. P4/mass implementation remains BLOCKED.
 - Next: render all six V5 surfaces at 1920×1080, capture screenshots, compare each against its reference crop, correct observed deviations and only then request owner visual approval.
+
+
+## UI Refresh P4 implementation start — 6 November 2026
+
+- User explicitly instructed staged production implementation of the Global UI modules, starting with Home Screen & Dock, using approved V01–V06 and frozen P2 contract.
+- Frozen source baseline: `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- Module 1 branch: `feature/ui-global-01-home-dock`; Draft PR #64: https://github.com/Frangga11/glass-tv-home/pull/64. PR base is the frozen integration baseline; no merge.
+- First slice adds isolated `DockPreferences` (horizontal/vertical, capacity 4/5/6) and unit-test source. `MainActivity.COLUMNS` is deliberately unchanged; existing Home rendering is not yet altered.
+- Audit confirmed the current single RecyclerView/GridLayoutManager and AppAdapter ordering couple Dock membership, app-grid columns and DockDecoration. Independent Dock model/renderer/adapter, settings UI, overflow, DPAD/focus and six-combination testing remain to implement.
+- Exact-head CI and execution of the added tests are PENDING; 1920×1080 visual QC and physical TV/remote tests are NOT RUN. Module 1 remains IN PROGRESS, not accepted.
+- Full scope, risks and verification matrix: `UI_REFRESH_P4_IMPLEMENTATION_2026-11-06.md`.
+- No PR merged, APK published/installed, ADB or device settings changed.
