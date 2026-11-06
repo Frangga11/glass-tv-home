@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Deep obsidian frosted glass veil -->
+    <!-- Blue-tinted glass with a dense, high-opacity veil for readable modal content. -->
     <item>
         <shape android:shape="rectangle">
             <gradient
                 android:type="linear"
                 android:angle="270"
-                android:startColor="#FF181A24"
-                android:centerColor="#FF1A1D2A"
-                android:endColor="#FF12141C" />
+                android:startColor="#F20D3556"
+                android:centerColor="#F2092B48"
+                android:endColor="#F2062038" />
             <corners android:radius="24dp" />
-            <stroke android:width="2dp" android:color="#66FFFFFF" />
+            <stroke android:width="2dp" android:color="#9958C7E8" />
         </shape>
     </item>
-    <!-- Subtle top sheen -->
+    <!-- Restrained top sheen; focus remains the strongest luminous accent. -->
     <item android:top="0dp" android:bottom="220dp">
         <shape android:shape="rectangle">
             <gradient

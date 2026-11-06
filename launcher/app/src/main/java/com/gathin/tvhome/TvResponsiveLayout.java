@@ -1,7 +1,13 @@
 package com.gathin.tvhome;
 
-/** Pure sizing rules shared by TV surfaces that must adapt to the available viewport. */
+/**
+ * Pure responsive rules shared by TV surfaces.
+ *
+ * The 4% edge inset is a conservative software safe-area default, not a claim of final OEM
+ * overscan calibration. Physical-device validation may increase the inset for a specific panel.
+ */
 final class TvResponsiveLayout {
+    private static final float SAFE_INSET_FRACTION = 0.04f;
     private static final float RECENT_CARD_WIDTH_DP = 420f;
     private static final float RECENT_CARD_HEIGHT_DP = 250f;
     private static final float RECENT_SIDE_PADDING_DP = 64f;
@@ -13,6 +19,42 @@ final class TvResponsiveLayout {
     private static final float CLOCK_MAX_SP = 110f;
 
     private TvResponsiveLayout() { }
+
+    static int safeInsetPx(int viewportDimensionPx) {
+        if (viewportDimensionPx <= 1) return 0;
+        return Math.min(Math.round(viewportDimensionPx * SAFE_INSET_FRACTION),
+                (viewportDimensionPx - 1) / 2);
+    }
+
+    static int safeContentWidthPx(int viewportWidthPx) {
+        if (viewportWidthPx <= 0) return 0;
+        return Math.max(1, viewportWidthPx - 2 * safeInsetPx(viewportWidthPx));
+    }
+
+    static int safeContentHeightPx(int viewportHeightPx) {
+        if (viewportHeightPx <= 0) return 0;
+        return Math.max(1, viewportHeightPx - 2 * safeInsetPx(viewportHeightPx));
+    }
+
+    static int clampToSafeWidthPx(int preferredWidthPx, int viewportWidthPx) {
+        if (preferredWidthPx <= 0 || viewportWidthPx <= 0) return 0;
+        return Math.min(preferredWidthPx, safeContentWidthPx(viewportWidthPx));
+    }
+
+    static int minDpadTargetPx(float density) {
+        if (!(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) {
+            return TvUiTokens.MIN_DPAD_TARGET_DP;
+        }
+        return Math.max(1, Math.round(TvUiTokens.MIN_DPAD_TARGET_DP * density));
+    }
+
+    /** Applies the user's font scale without imposing a ceiling that would defeat accessibility. */
+    static float scaledTextSizeSp(float baseSp, float fontScale) {
+        if (!(baseSp > 0f) || Float.isInfinite(baseSp) || Float.isNaN(baseSp)) return 0f;
+        float scale = fontScale > 0f && !Float.isInfinite(fontScale) && !Float.isNaN(fontScale)
+                ? fontScale : 1f;
+        return baseSp * scale;
+    }
 
     static int recentCardWidthPx(int viewportWidthPx, float density) {
         if (!(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) {

@@ -13,12 +13,11 @@ import android.view.WindowManager;
 /**
  * B01-owned visual contract for app-owned modal dialogs.
  *
- * Keep modal surface, dimming, centering and viewport bounds in one place. The main Settings
- * shell and anchored glass PopupWindows have their own distinct presentation contracts.
+ * Centered modal dialogs, transparent custom-content dialogs, and anchored PopupWindows are
+ * separate surface types. This class owns only modal window bounds, dimming and material fallback.
  */
 final class TvDialogStyle {
     private static final float DIM_AMOUNT = 0.68f;
-    private static final float VIEWPORT_SHARE = 0.88f;
     private static final int MIN_WIDTH_DP = 360;
 
     private TvDialogStyle() { }
@@ -49,7 +48,8 @@ final class TvDialogStyle {
         GradientDrawable solid = new GradientDrawable();
         solid.setShape(GradientDrawable.RECTANGLE);
         solid.setColor(TvUiTokens.POPUP_SURFACE);
-        solid.setCornerRadius(20f * context.getResources().getDisplayMetrics().density);
+        solid.setCornerRadius(TvUiTokens.POPUP_RADIUS_DP
+                * context.getResources().getDisplayMetrics().density);
         solid.setStroke(Math.max(1, Math.round(context.getResources().getDisplayMetrics().density)),
                 TvUiTokens.BORDER);
         return solid;
@@ -72,16 +72,17 @@ final class TvDialogStyle {
     }
 
     static int resolveWidthPx(int availableWidthPx, float density, int maxWidthDp) {
-        if (availableWidthPx <= 0 || density <= 0f) return 0;
+        if (availableWidthPx <= 0 || !(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) return 0;
         int requested = Math.max(MIN_WIDTH_DP, maxWidthDp);
-        return Math.min(Math.round(requested * density),
-                Math.round(availableWidthPx * VIEWPORT_SHARE));
+        return TvResponsiveLayout.clampToSafeWidthPx(Math.round(requested * density), availableWidthPx);
     }
 
     static int resolveHeightPx(int availableHeightPx, float density, int maxHeightDp) {
         if (maxHeightDp <= 0) return ViewGroup.LayoutParams.WRAP_CONTENT;
-        if (availableHeightPx <= 0 || density <= 0f) return ViewGroup.LayoutParams.WRAP_CONTENT;
+        if (availableHeightPx <= 0 || !(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) {
+            return ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
         return Math.min(Math.round(maxHeightDp * density),
-                Math.round(availableHeightPx * VIEWPORT_SHARE));
+                TvResponsiveLayout.safeContentHeightPx(availableHeightPx));
     }
 }

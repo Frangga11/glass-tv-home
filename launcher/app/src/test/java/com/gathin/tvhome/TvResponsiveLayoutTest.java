@@ -38,4 +38,38 @@ public class TvResponsiveLayoutTest {
         assertEquals(1152, TvResponsiveLayout.nightstandContentWidthPx(1280));
         assertEquals(992, TvResponsiveLayout.nightstandClockMaxWidthPx(1280, 2.5f));
     }
+
+    @Test
+    public void appliesConservativeSafeAreaAtCommonTvResolution() {
+        assertEquals(77, TvResponsiveLayout.safeInsetPx(1920));
+        assertEquals(43, TvResponsiveLayout.safeInsetPx(1080));
+        assertEquals(1766, TvResponsiveLayout.safeContentWidthPx(1920));
+        assertEquals(994, TvResponsiveLayout.safeContentHeightPx(1080));
+    }
+
+    @Test
+    public void safeAreaNeverConsumesTinyViewport() {
+        assertEquals(1, TvResponsiveLayout.safeContentWidthPx(1));
+        assertEquals(1, TvResponsiveLayout.safeContentHeightPx(2));
+        assertEquals(0, TvResponsiveLayout.safeContentWidthPx(0));
+    }
+
+    @Test
+    public void clampsPreferredWidthToSafeArea() {
+        assertEquals(1178, TvResponsiveLayout.clampToSafeWidthPx(1500, 1280));
+        assertEquals(800, TvResponsiveLayout.clampToSafeWidthPx(800, 1280));
+    }
+
+    @Test
+    public void honorsLargeUserFontScaleWithoutClamping() {
+        assertEquals(27f, TvResponsiveLayout.scaledTextSizeSp(18f, 1.5f), 0.001f);
+        assertEquals(36f, TvResponsiveLayout.scaledTextSizeSp(18f, 2f), 0.001f);
+        assertEquals(18f, TvResponsiveLayout.scaledTextSizeSp(18f, Float.NaN), 0.001f);
+    }
+
+    @Test
+    public void suppliesComfortableDpadTargetSize() {
+        assertEquals(112, TvResponsiveLayout.minDpadTargetPx(2f));
+        assertEquals(56, TvResponsiveLayout.minDpadTargetPx(Float.NaN));
+    }
 }
