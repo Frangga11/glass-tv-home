@@ -62,3 +62,23 @@ Visual comparison against the six approved V01–V06 reference images and 100/12
 - P4 remains blocked pending actual browser walkthrough, visual acceptance and implementation-readiness review.
 
 **Disposition:** V4 STATIC SOURCE QC PASS; P3 remains PARTIAL.
+
+
+## 6. P3-01 to P3-12 static evidence mapping
+
+| ID | Static source evidence | Static disposition | Browser execution |
+|---|---|---|---|
+| P3-01 | Parent dialog stack, action-index restoration, root invoking-element restoration | SOURCE PRESENT | NOT RUN |
+| P3-02 | Spatial D-pad movement inside modal; Tab/Shift+Tab wrap; Escape closes; Backspace in text input is safe | SOURCE PRESENT | NOT RUN |
+| P3-03 | Clamp-based text sizes, flexible grid and min-width rules are present | PARTIAL — no worst-case locale/zoom/geometry test | NOT RUN |
+| P3-04 | Normal/Day/Night modes and day contrast variables are present | SOURCE PRESENT — visual legibility not proven | NOT RUN |
+| P3-05 | Weather loading/result states, cache result dialog, Next Photo unavailable/failure path | SOURCE PRESENT | NOT RUN |
+| P3-06 | Wi-Fi permission, Location off, offline, throttled, stale and empty states | SOURCE PRESENT | NOT RUN |
+| P3-07 | Weather Refresh retains enabled invoking button with busy guard | SOURCE PRESENT | NOT RUN |
+| P3-08 | Wi-Fi request-generation guard invalidates stale scan callback after prerequisite changes | SOURCE PRESENT | NOT RUN |
+| P3-09 | Next Photo disabled for 0/1; success and failure branches for 2/5 | SOURCE PRESENT | NOT RUN |
+| P3-10 | Horizontal/Vertical selector × capacity 4/5/6; app grid fixed to four columns | SOURCE PRESENT — all six combinations need visual walkthrough | NOT RUN |
+| P3-11 | Seven-category control dataset, query routing, search-focus retention and Down-to-first-match | SOURCE PRESENT | NOT RUN |
+| P3-12 | Reduced-motion class disables transitions/animations; OS reduced-motion media rule exists | SOURCE PRESENT | NOT RUN |
+
+**Important:** “SOURCE PRESENT” is not a test PASS. P3 remains open until the browser walkthrough produces actual observations and evidence. P3-03/P3-04/P3-10 particularly require rendered visual review.
