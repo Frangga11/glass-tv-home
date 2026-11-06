@@ -3996,6 +3996,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void applyDockPreferenceChange() {
+        if (adapter != null) adapter.invalidateDockSnapshot();
         if (dockAdapter != null) dockAdapter.refresh();
         applyDockLayout();
         // The settings surface is modal. Re-layout Home underneath it without stealing focus

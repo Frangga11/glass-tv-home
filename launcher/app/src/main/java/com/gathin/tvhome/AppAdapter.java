@@ -133,6 +133,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             entry -> entry.component.flattenToShortString());
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
+    private DockLayoutModel.Snapshot<Entry> presentationSnapshot;
     private static final String ORDER_PREFS = "tiles", ORDER_KEY = "order";
     AppAdapter(Context ctx, TileListener listener, int gridColumns, Config cfg) {
         this.ctx = ctx;
@@ -270,6 +271,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     ctx.getDrawable(R.drawable.ic_home_settings), null, 0));
         }
         items.replace(fresh);
+        presentationSnapshot = null;
         notifyDataSetChanged();
         return true;
     }
@@ -381,6 +383,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 || to >= snapshot.dockItems.size() || from >= pinned.size() || to >= pinned.size()) return false;
         List<String> reordered = DockLayoutModel.movePinnedKey(pinned, from, to, snapshot.dockItems.size());
         if (reordered.equals(pinned) || !DockPreferences.savePinnedState(ctx, reordered, DockPreferences.loadUnpinnedKeys(ctx))) return false;
+        presentationSnapshot = null;
         notifyDataSetChanged();
         return true;
     }
@@ -393,6 +396,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
         excluded.remove(key);
         if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+        presentationSnapshot = null;
         notifyDataSetChanged();
         return true;
     }
@@ -405,6 +409,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
         if (!excluded.contains(key)) excluded.add(key);
         if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+        presentationSnapshot = null;
         notifyDataSetChanged();
         return true;
     }
@@ -414,6 +419,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         ordered.addAll(dock);
         ordered.addAll(grid);
         items.replace(ordered);
+        presentationSnapshot = null;
         arranged.clear();
         for (Entry x : ordered) if (x.kind != Entry.HOME_SETTINGS) arranged.add(x.component.flattenToShortString());
         ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
@@ -427,10 +433,17 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     DockLayoutModel.Snapshot<Entry> dockSnapshot() {
-        int capacity = DockPreferences.load(ctx).capacity;
-        List<String> pinnedComponentKeys = currentPinnedKeys();
-        return DockLayoutModel.split(items, pinnedComponentKeys, capacity,
-                entry -> entry.component.flattenToShortString());
+        if (presentationSnapshot == null) {
+            int capacity = DockPreferences.load(ctx).capacity;
+            List<String> pinnedComponentKeys = currentPinnedKeys();
+            presentationSnapshot = DockLayoutModel.split(items, pinnedComponentKeys, capacity,
+                    entry -> entry.component.flattenToShortString());
+        }
+        return presentationSnapshot;
+    }
+
+    void invalidateDockSnapshot() {
+        presentationSnapshot = null;
     }
 
     private List<String> currentPinnedKeys() {
