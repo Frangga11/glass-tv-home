@@ -440,8 +440,20 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      */
     DockLayoutModel.Snapshot<Entry> dockSnapshot() {
         int capacity = DockPreferences.load(ctx).capacity;
-        return DockLayoutModel.split(items, favourites, capacity,
-                entry -> entry.pkg);
+        // Dock config is package-based, while tile identity is component-based. Expand each
+        // configured package to its actual launcher components before partitioning so two
+        // activities from one package remain distinct tiles and are never collapsed by the model.
+        List<String> pinnedComponentKeys = new ArrayList<>();
+        for (String favouritePackage : favourites) {
+            if (favouritePackage == null || favouritePackage.trim().isEmpty()) continue;
+            for (Entry entry : items) {
+                if (favouritePackage.equals(entry.pkg)) {
+                    pinnedComponentKeys.add(entry.component.flattenToShortString());
+                }
+            }
+        }
+        return DockLayoutModel.split(items, pinnedComponentKeys, capacity,
+                entry -> entry.component.flattenToShortString());
     }
 
     @Override
