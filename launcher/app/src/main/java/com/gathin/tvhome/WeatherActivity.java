@@ -499,6 +499,7 @@ public class WeatherActivity extends Activity {
                     ? w.stationPlace : AppLocationManager.getStationPlace(this);
             aqiStation.setText(getString(R.string.weather_model_reference_detail, place));
         }
+        // Provider values stay distinct; CO is converted from µg/m³ to the V6 mg/m³ presentation.
         setPollutantValue(pm25ValueText, w.pm25, "µg/m³");
         setPollutantValue(pm10ValueText, w.pm10, "µg/m³");
         setPollutantValue(coValueText, w.carbonMonoxide / 1000.0, "mg/m³");
