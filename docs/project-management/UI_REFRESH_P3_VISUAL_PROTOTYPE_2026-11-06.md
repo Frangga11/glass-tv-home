@@ -208,3 +208,13 @@ No production source, feature branch, PR metadata, integration/main, APK, ADB, H
 - Additional V3 findings corrected: (1) Weather Refresh no longer disables its focused invoking button during loading; busy state blocks duplicate activation without removing focus. (2) Wi-Fi prerequisite changes invalidate an in-flight simulated scan so a stale callback cannot overwrite the newer condition. (3) Modal Tab/Shift+Tab now wraps focus inside the dialog; Backspace remains editable in text inputs while Escape closes/back.
 - V4 static source QC: **PASS**. Evidence: [UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md).
 - Browser walkthrough and visual acceptance remain NOT RUN. P3 stays PARTIAL; no P4/source implementation.
+
+
+## TRIGGER 4 — Prototype visual validation (6 November 2026)
+
+- Six reference panels V01–V06 recovered from saved Global UI Design & Interaction Contract / UI Refresh overview boards.
+- V4 source-to-reference composition comparison: **PROTOTYPE VISUAL — REVISION REQUIRED**. Main deviations: Home lacks reference wallpaper-led layout and Dock composition; Weather hierarchy is too generic; Profile selector has three generic cards instead of four avatar cards; Quick Settings and Wi-Fi are full pages instead of anchored popups; Global Settings lacks the complete icon-led split-detail composition.
+- Glass material also needs revision: V4 panels are near-opaque (alpha .94), no backdrop blur is declared, and glow/iconography are underdeveloped relative to references.
+- Browser render and screenshot capture at 1920×1080: **NOT RUN**. This is a source-to-reference composition audit only; no screenshot-based geometry, pixel or legibility claims are made.
+- Full findings and correction plan: [UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md](UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md).
+- V4 preserved unchanged; P4/mass implementation remains BLOCKED pending revised prototype, actual screenshot comparison, and explicit owner visual approval.
