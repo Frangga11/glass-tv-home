@@ -832,3 +832,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Guarded GIF avatar commit against dialog closure/interruption and active-profile switch; GIF drawable now stops scheduled frame callbacks when hidden/detached.
 - CI #1201 failed at Java compilation because the rewritten dialog lacked `java.io.File` import. Root cause identified from job log and corrected. New exact head `dafcaf8a6dd8003300aca155d3c02395f1a28165`; CI #1203 / run `41895682457` queued/running, final result pending.
 - No E06 implementation commit made in this pass. E06 remains an architectural refactor, not a preference-only patch. No PR merge/integration/main/device mutation.
+
+
+## 6 November 2026 — R0 reconciliation and audit
+- Reconciled live repository refs, owner PR ancestry, exact-head CI, locked roadmap stage dispositions and documentation inconsistencies. Full evidence: `R0_RECONCILIATION_AUDIT_2026-11-06.md`.
+- Updated PR #62 and PR #64 descriptions to record exact-head CI #1204 and #1225 respectively; both jobs succeeded on the current PR heads. PR states remain OPEN/DRAFT/UNMERGED.
+- Synchronized HANDOVER, MASTER_PROJECT, INVENTORY and AUDIT_REGISTER with current live state. No application source or feature branch changed; no merge/rebase/cherry-pick, APK publication/installation, ADB or physical TV action.
+- R0 audit/documentation disposition COMPLETE; project implementation readiness NOT PASS. Resume at P3 V5 real-browser walkthrough and 1920×1080 evidence.
