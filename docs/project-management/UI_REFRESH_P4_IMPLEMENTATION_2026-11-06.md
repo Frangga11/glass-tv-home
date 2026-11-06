@@ -77,3 +77,16 @@ Cross-cutting B01 shared tokens/focus/dialog/navigation foundations are to be ex
 - Reconcile each source PR against the frozen integration baseline before integration.
 - No APK publication, installation, ADB or TV system-setting changes are authorized by this log.
 - Do not mark any module complete until source audit, implementation, functional tests, visual QC, documentation and applicable runtime gates are evidenced.
+
+
+## Module 1 continuation — Dock partition model — 6 November 2026
+
+- Continued the Home Screen & Dock implementation on `feature/ui-global-01-home-dock`.
+- Added `DockLayoutModel`, an immutable partition boundary for ordered app entries: Dock capacity is normalized to 4/5/6, order is preserved, blank/null/duplicate stable keys are excluded, and snapshot lists cannot be mutated.
+- Added `AppAdapter.dockSnapshot()` as the read-only adapter boundary for the upcoming dedicated Dock renderer. The existing combined RecyclerView, app-grid span, D-pad/focus behavior and Home visual layout are intentionally unchanged in this slice.
+- Added `DockLayoutModelTest` covering source order, all three capacities, invalid-capacity fallback, duplicate/blank keys, immutability, empty inventory and required stable-key function.
+- Latest source head: `d739d0edad1449918faf44f538d42da632831714`; Draft PR #64 updated with exact scope and explicit outstanding work.
+- Exact-head CI run #42178311594: Lists/tools/docs SUCCESS; Launcher build/unit tests IN_PROGRESS at last poll (Android SDK setup underway). Do not report latest head green until job completes.
+- Earlier exact-head CI #42177905579 passed both jobs on initial preference-only head `7fe684f559140b11355dfb67cf2a246f518c7724`; this does not replace the new exact-head check.
+- Module 1 remains IN PROGRESS. Dedicated Dock RecyclerView/adapter, independent main-grid data source, horizontal/vertical rendering, overflow, settings UI, D-pad/focus/reorder lifecycle, six-combination functional acceptance, 1920×1080 visual QC and physical TV acceptance are not implemented/verified yet.
+- No merge, APK publication/installation, ADB or device-setting changes.
