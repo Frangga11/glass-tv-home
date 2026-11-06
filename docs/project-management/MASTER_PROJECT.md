@@ -874,3 +874,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Downloaded artifact digest matches GitHub SHA-256 `669491bfc7c9f5279ecc6c30915e4a340aa492bee21531db203036caf8651c81`; extracted APK is 1,572,293 bytes with SHA-256 `dc85fcd590eb2c52eb367d0bc9d4f67735cb94ef1cbf6f2b80b86f0de36de0dd`; archive integrity PASS.
 - Physical Mi TV Stick acceptance is not performed: host lacks ADB/signature tools and no TV is connected. Installation and device/package/ADB changes require explicit readiness approval.
 - G03 remains OPEN/BLOCKED, not PASS. See [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md). Artifact expiry: 10 November 2026 06:37:50 UTC.
+
+
+## UI Refresh — P0 Baseline & Compatibility (6 November 2026)
+
+- P0 **PASS — BASELINE VERIFIED**. Frozen integration: `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; main remains at `6eaf787c56226606b1d2e650c59540c553756c62`, untouched.
+- Live owner PRs: E02 #62 head `588456144df24f2f6c015a01053ad700a04bee39` (branch `feature/e02-giphy-avatar-search-v1`), base `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; E06 #63 head `ecdeb0eba9fc7a574f1a6c9930205517687cd922` (branch `feature/e06-dock-capacity-control-v1`), base `570b7c83efaec3ac515b78f1c6c119b777fc3b84`. Both OPEN/DRAFT/UNMERGED.
+- Exact-head CI: E02 #1204 both jobs SUCCESS, APK 1,566,569 B; E06 #1198 both jobs SUCCESS, APK 1,563,741 B. Publication skipped. Integrated baseline APK is 1,572,293 B / 1,572,864 B cap / 571 B headroom.
+- Dependency ancestry is recorded in `UI_REFRESH_P0_BASELINE_2026-11-06.md`: PR bases are ancestors of integration; feature heads are diverged; E01 has three unique commits relative to the E02/E06 bases. Three-way semantic reconciliation remains mandatory before integration.
+- B01 tokens/modal/focus contracts and Android configuration were inspected. Last recorded Mi TV Stick baseline is Android 11/API 30, 1920×1080, density 320; not physically re-probed in P0.
+- E02 cancellation/lifecycle/provider-policy and E06 independent Dock architecture/interaction remain open acceptance blockers. No Critical defect reproduced; no production or device change.
+- P1 Functional Inventory is the next stage and has NOT STARTED. No P4 implementation authorization is implied.
+- Evidence: `UI_REFRESH_P0_BASELINE_2026-11-06.md`.
