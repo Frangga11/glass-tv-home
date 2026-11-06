@@ -273,7 +273,7 @@ public final class ModernSettingsDialog {
         TextView tvProfileName = new TextView(activity);
         tvProfileName.setText(ProfileManager.getProfileName(activity));
         tvProfileName.setTextSize(14f);
-        tvProfileName.setTextColor(TvUiTokens.FOCUS_BORDER);
+        tvProfileName.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvProfileName.setTypeface(outfit, Typeface.BOLD);
         tvProfileName.setSingleLine(true);
         profileTextCol.addView(tvProfileName);
@@ -853,7 +853,7 @@ public final class ModernSettingsDialog {
                         GradientDrawable g = new GradientDrawable();
                         g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : (isCur ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE_IDLE));
                         g.setCornerRadius(12 * density);
-                        if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.TEXT_PRIMARY);
+                        if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
                         else if (isCur) g.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
                         v.setBackground(g);
                         v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
@@ -1910,7 +1910,7 @@ public final class ModernSettingsDialog {
             GradientDrawable g = new GradientDrawable();
             g.setColor(TvUiTokens.SUCCESS);
             g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.TEXT_PRIMARY);
+            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
         });
 
