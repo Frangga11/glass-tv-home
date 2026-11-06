@@ -1116,3 +1116,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Independent Dock/Grid projections, orientation and capacity controls, stable persisted pin order, overflow, D-pad movement/reorder/focus restoration, empty/full states and localization are implemented and host/source-reviewed.
 - No merge/rebase/cherry-pick/force-push, integration/main change, APK publication/installation, ADB or physical TV/remote/OEM overscan test. Device acceptance remains separate.
 - Canonical checkpoint: `UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md`. Next UI Refresh package: G3B Weather & AQI V4.
+
+## UI Refresh G3B closeout — Weather & AQI V4 (7 November 2026)
+
+- **G3B Weather & AQI V4: COMPLETE / SOURCE-HOST QC PASS.** Physical Android TV/remote/OEM overscan acceptance remains a separate deferred gate.
+- Owner branch: feature/g3b-weather-aqi-v4 @ 8cfc5c886950cc9d27d4530ba901df872b8e5c44; PR #67 OPEN/DRAFT/UNMERGED, stacked on G3A exact HEAD 87302f52de844954392bac5438cbe82ec5d14a30. The CI-verified functional commit is 8f2162036991ded803c5ca0981ad1f3e777cfb54; the current branch HEAD differs only by a documentation comment in the Python contract test.
+- Exact-head CI run 42274182438 on 8f2162036991ded803c5ca0981ad1f3e777cfb54: both required jobs SUCCESS. Launcher release build, release unit tests and lint-vital PASS; repository contract tests PASS.
+- Implemented complete Weather V4 metric coverage, CAMS-based US AQI and five pollutant values, location-scoped/per-source cache freshness, legacy JAS/APIMS cache invalidation, stale/offline/unavailable/error states, local-time source timestamps, moon/sun data, UV advice, dew point, D-pad focus restoration and Activity lifecycle guards.
+- G1 V6 visual authority retained; G2 shared card/material/focus foundations reused. Pollutants are presented as separate metrics; CO is converted from provider µg/m³ to the V6 mg/m³ presentation. Missing provider values remain unavailable, never zero.
+- APK diagnostic 1,600,893 bytes (+11,068 bytes / approximately 0.7% against G3A); informational only under D-023. No quality features/assets removed for size.
+- No merge, rebase, cherry-pick, force-push, integration/main modification, APK publication/installation, ADB or physical device action. PRs #65/#66 remain OPEN/DRAFT/UNMERGED; PR #67 remains OPEN/DRAFT/UNMERGED.
+- Canonical evidence: UI_REFRESH_G3B_AUDIT_2026-11-07.md and UI_REFRESH_G3B_CHECKPOINT_2026-11-07.md. Next package: G3C Profile, Avatar & Child Mode.

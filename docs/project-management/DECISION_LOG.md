@@ -427,3 +427,34 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - G2 implementation: `.github/workflows/ci.yml` now uses a non-blocking APK size diagnostic.
 - G2 exact-head CI #1263 measured 1,573,713 bytes; both required jobs passed.
 - Status: **APPROVED**.
+
+## D-024 — Weather V4 uses coordinate-based Open-Meteo/CAMS data, not official station IPU (7 November 2026)
+
+- Retain the existing Open-Meteo Forecast and Air Quality API integration for the Weather V4 dashboard. Air-quality output is labelled US AQI (CAMS model estimate), not official JAS/APIMS IPU or Indonesian ISPU station measurement.
+- The UI must show source location, source/update time and per-source stale/offline/unavailable/refresh-failed states. Do not describe a CAMS grid estimate as a ground-station reading.
+- Status: IMPLEMENTED / SOURCE-HOST VERIFIED. Physical acceptance remains separate.
+
+## D-025 — Pollutant units and missing-value semantics (7 November 2026)
+
+- PM2.5, PM10, NO₂ and SO₂ remain in µg/m³. The Open-Meteo carbon_monoxide value is converted from µg/m³ to mg/m³ to match the approved G1 V6 presentation.
+- A missing or invalid provider pollutant remains unavailable and is shown as an em dash with a provider-missing note; never substitute zero.
+- Status: IMPLEMENTED / REGRESSION TESTED.
+
+## D-026 — Cache freshness is coordinate- and source-scoped (7 November 2026)
+
+- A cache can suppress a refresh only when its payload belongs to the currently selected coordinates and is within the freshness interval.
+- Legacy JAS/APIMS cache data is not interchangeable with the current CAMS/US AQI contract. It is ignored until a successful CAMS response replaces it; failed refreshes must not relabel legacy data as CAMS.
+- Per-source last-success timestamps advance only after a successful response.
+- Status: IMPLEMENTED / REGRESSION TESTED.
+
+## D-027 — Weather V4 pollutant breakdown remains individually readable (7 November 2026)
+
+- Follow G1 V6 visual authority: show PM2.5, PM10, CO, NO₂ and SO₂ as distinct metric values rather than compressing them into a single long text line.
+- Reuse G2 shared card/material/focus foundations; do not duplicate shared UI primitives or remove existing weather functions.
+- Status: IMPLEMENTED / LAYOUT CONTRACT TESTED.
+
+## D-028 — Refresh must preserve D-pad focus and respect Activity lifecycle (7 November 2026)
+
+- Weather UI refreshes on resume and restores the prior hourly/daily focus target when it still exists; if the saved slot disappears, it falls back to the first row.
+- Async callbacks must not mutate a finishing/destroyed Activity.
+- Status: IMPLEMENTED / REGRESSION TESTED.

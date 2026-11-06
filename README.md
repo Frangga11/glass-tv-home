@@ -72,9 +72,9 @@ every week.
   - **Individual App Dismissal**: Press `▲ (Up)` on any app card to slide it away, force-stop its process, and immediately reclaim RAM.
   - **Close All Button**: Click the circular `Close All` button (`🗑️`) at the end of the carousel to kill all running apps at once.
 - **Weather & Air Quality Engine.** A full-screen Leanback weather hub (`WeatherActivity`) accessible directly from the under-clock pill:
-  - Current condition, apparent temperature, humidity, wind velocity, UV index, sunrise and sunset times.
-  - Air Quality Index (AQI / API / IPU) from Malaysia's Jabatan Alam Sekitar (APIMS) with a multi-color spectrum gauge, station comparisons, PM2.5 / PM10 readings, and health advisories.
-  - Next 12 Hours hourly forecast pills and 7-day daily forecast cards with precipitation probabilities.
+  - Current condition, apparent temperature, daily min/max, humidity, wind speed/direction, MSL pressure, dew point, visibility, rainfall total/probability, maximum UV with advice, sunrise/sunset and moon phase/rise/set.
+  - US AQI estimate from Open-Meteo Air Quality API using the CAMS model, with separate PM2.5, PM10, CO, NO₂ and SO₂ metrics. This is model-based data, not an official JAS/APIMS IPU or Indonesian ISPU station reading; unavailable provider values are never replaced with zero.
+  - Per-source location/update/stale/offline/unavailable/error information, plus 12-hour hourly and 7-day daily forecasts.
 - **Islamic Prayer Timetable & Daily Ayat.** A mindful cultural shelf:
   - 6-phase timetable (Subuh, Syuruk, Zohor, Asar, Maghrib, Isyak) with emerald highlighting for the active prayer window.
   - Daily Quranic Ayat of the Day with Arabic calligraphy and translations.
@@ -85,7 +85,7 @@ every week.
   - **Floating Glass Dropdown**: Clicking the top Settings icon (`⚙️`) opens a native Apple tvOS-style glass menu under the button.
   - **Dynamic 4K Wallpaper Switcher**: Switch themes on the fly between *Natural*, *🇲🇾 Malaysia (Koleksi 14 Negeri & Wilayah)*, *Skyscraper* (KLCC, Manhattan, Chicago, Dubai, HK), *Deep Space*, *Ocean & Coastal*, *Minimalist Dark*, or trigger *Next Wallpaper*.
   - **🇲🇾 Malaysia 14 States Sub-Dropdown**: Dedicated sub-dialog to choose wallpapers specifically for any of Malaysia's 14 states (Johor, Kedah, Kelantan, Melaka, Negeri Sembilan, Pahang, Perak, Perlis, Pulau Pinang, Sabah, Sarawak, Selangor, Terengganu, Wilayah Persekutuan) or rotate all states together.
-  - **Built-in Haze & Prayer Zone Selectors**: Select from 30+ Malaysian DOE (JAS APIMS) air quality stations and 35+ official JAKIM prayer zones without needing a computer or AI.
+  - **Built-in Location & Prayer Zone Selectors**: Choose a supported city/region for Open-Meteo weather and CAMS model coordinates, plus a separate supported prayer zone.
   - **All Settings Shortcut**: Access standard Android TV settings in one click (or by long-pressing Settings).
 - **Phone QR Wallpaper Upload & Gallery Manager (Phone-to-TV).**
   - **Instant QR Code Wi-Fi Upload**: Scan the QR code on TV with any phone to open a frosted glass web uploader. Send personal high-res wallpapers straight to TV with zero third-party cloud apps.
@@ -189,15 +189,15 @@ update patch latest glass tv dekat tv rumah saya: https://github.com/aqmangge/gl
 > 4. All personal wallpapers, dock orders, and settings are 100% retained!
 
 > 🚨 **AI Assistant Rule / Arahan Khas AI**:
-> When installing for a user, the AI **must ask the user for their location in Malaysia** (e.g. Putrajaya, Cheras, Shah Alam, Melaka, JB, Penang, Kuantan, Kuching, KK) to configure live JAS haze/IPU data and JAKIM prayer times via:
+> When installing for a user, ask for a supported city/region so Open-Meteo weather and CAMS US AQI use the intended coordinates. The AQI is a model estimate, not an official JAS/APIMS IPU or Indonesian ISPU station reading. If JAKIM prayer times are required, verify prayer-zone coverage for the selected location. Set the location via:
 > ```bash
 > adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<LOCATION>"
 > ```
-> If installed manually without AI, users can change the station at any time directly on the TV using the remote control under **Settings (⚙️) $\rightarrow$ Location API Haze** or **Weather Dashboard $\rightarrow$ 📍 Tukar Stesen / Change**.
+> If installed manually, users can select a supported city/region on the TV under **Settings (⚙️) $\rightarrow$ Location API Haze**. The legacy menu label is retained for compatibility; it sets model coordinates and does not select an official ground-monitoring station.
 
 > 📖 **Read the Beginner User Guides**:
-> - 🇬🇧 **[USER_GUIDE.md](USER_GUIDE.md)**: Full English step-by-step guide (Developer Mode, AI prompts, manual station selector, iPhone & Android setups, FAQ).
-> - 🇲🇾 **[PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md)**: Panduan penuh Bahasa Melayu untuk pengguna baru (aktifkan Developer Mode, arahan AI, tukar stesen manual remote TV, telefon pintar & FAQ).
+> - 🇬🇧 **[USER_GUIDE.md](USER_GUIDE.md)**: Full English step-by-step guide (Developer Mode, AI prompts, manual location selector, iPhone & Android setups, FAQ).
+> - 🇲🇾 **[PANDUAN_PENGGUNA.md](PANDUAN_PENGGUNA.md)**: Panduan penuh Bahasa Melayu untuk pengguna baru (aktifkan Developer Mode, arahan AI, tukar lokasi manual remote TV, telefon pintar & FAQ).
 
 The full step-by-step guide for debloating and installing is in
 [docs/CLEANYOURTV-README.md](docs/CLEANYOURTV-README.md), and [PROMPT.md](PROMPT.md) lets a coding assistant do

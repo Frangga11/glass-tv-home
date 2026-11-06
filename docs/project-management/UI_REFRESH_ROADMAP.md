@@ -92,3 +92,12 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - G3A source/host QC covers independent Dock/Grid projections, orientation/capacity, Grid invariance, persisted pin/unpin order, overflow, empty/full cases, D-pad navigation/reorder, focus restoration and localization.
 - No merge, rebase, cherry-pick, force-push, APK publication/installation, ADB or physical TV/remote/OEM overscan test. Physical acceptance remains separate.
 - **Current starting point supersedes §8 and prior resume notes: G1 COMPLETE, G2 COMPLETE, G3A COMPLETE; resume at G3B — Weather & AQI V4.** G3C–G3F remain not started. Official Project G03 device acceptance remains separately OPEN/BLOCKED.
+
+## 11. G3B closeout and current execution position — 7 November 2026
+
+- **G3B Weather & AQI V4: COMPLETE / SOURCE-HOST QC PASS.** Checkpoint: UI_REFRESH_G3B_CHECKPOINT_2026-11-07.md; audit: UI_REFRESH_G3B_AUDIT_2026-11-07.md.
+- Owner branch feature/g3b-weather-aqi-v4 @ 8cfc5c886950cc9d27d4530ba901df872b8e5c44; PR #67 OPEN/DRAFT/UNMERGED, stacked on G3A @ 87302f52de844954392bac5438cbe82ec5d14a30.
+- Exact CI run 42274182438 SUCCESS on functional commit 8f2162036991ded803c5ca0981ad1f3e777cfb54; both required jobs passed. Release build, release unit tests, lint-vital and repository contract tests PASS. APK diagnostic 1,600,893 bytes; informational under D-023.
+- Data contract includes complete Weather V4 metrics, CAMS-based US AQI and five pollutant values; legacy JAS cache cannot suppress CAMS refresh; coordinate-scoped freshness and per-source stale/offline/unavailable/error states are implemented.
+- No merge/rebase/cherry-pick/force-push, integration/main change, APK publication/install, ADB or physical device test. Physical TV/remote/OEM overscan acceptance remains separate.
+- **Current starting point supersedes prior G3A resume notes: G1 COMPLETE, G2 COMPLETE, G3A COMPLETE, G3B COMPLETE; next package G3C — Profile, Avatar & Child Mode.** G3D–G3F remain not started.

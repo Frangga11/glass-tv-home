@@ -10,7 +10,7 @@ Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Goog
 * 🚀 **Tiada Iklan & Sangat Ringan**: Hanya bersaiz ~453 KB, lancar dan tidak membebankan TV (menjimatkan lebih 400 MB RAM berbanding skrin asal).
 * 🪟 **Gaya Kaca Frosted (tvOS)**: Rekaan moden seperti Apple TV dengan bayang kaca terapung dan susunan aplikasi yang kemas.
 * 🕌 **Waktu Solat & Ayat Harian**: Jadual 6 waktu solat Malaysia secara automatik dengan ayat al-Quran pilihan harian.
-* ⛅ **Dashboard Cuaca & Jerebu (API)**: Semakan suhu semasa, ramalan 12 jam, 7 hari, serta indeks pencemaran udara rasmi (APIMS Jabatan Alam Sekitar).
+* ⛅ **Dashboard Cuaca & Kualiti Udara**: Suhu semasa, feels-like/min/maks, kelembapan, angin, tekanan MSL, titik embun, jarak penglihatan, hujan, nasihat UV, matahari terbit/terbenam, fasa bulan, ramalan 12 jam/7 hari serta anggaran US AQI berasaskan model CAMS dengan PM2.5, PM10, CO, NO₂ dan SO₂.
 * 🌙 **Screensaver Pintar & Jimat Elektrik**: Masuk screensaver selepas 10 minit rehat, dan TV padam automatik (*sleep standby*) selepas 2 jam.
 
 ---
@@ -131,13 +131,13 @@ AI akan menyambung ke TV melalui Wi-Fi, memasang kemas kini (`adb install -r`), 
 > **🚨 Pesanan Khas Untuk Pembantu AI (AI Assistant Rule)**:
 > Apabila pengguna memberikan prompt `install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home`, AI **WAJIB** bertanya kepada pengguna:
 > 1. *"Apakah alamat IP TV anda di menu Settings -> Network & Internet (atau jenama TV anda)?"* (jika belum dapat dikesan secara automatik)
-> 2. *"Di manakah lokasi anda di Malaysia (contoh: Putrajaya, Cheras, Shah Alam, Melaka, Johor Bahru, Pulau Pinang, Kuantan, Kuching, Kota Kinabalu, dll.) supaya data jerebu/IPU rasmi Jabatan Alam Sekitar (JAS) dan jadual waktu solat JAKIM dapat diselaraskan secara automatik?"*
+> 2. *"Bandar atau kawasan manakah yang patut digunakan untuk koordinat cuaca/kualiti udara? Nilai AQI ialah anggaran model CAMS menggunakan skala US AQI, bukannya bacaan rasmi stesen JAS/APIMS IPU atau ISPU Indonesia. Jika anda menggunakan waktu solat JAKIM, kita juga perlu mengesahkan liputan zon solat bagi bandar tersebut."*
 > 
 > Selepas bersambung ke TV, AI boleh pasang terus APK rasmi sedia ada dari `release/glass-tv-home.apk` atau compile APK baharu, jalankan debloat, dan tetapkan lokasi pengguna via:
 > ```bash
 > adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<NAMA_LOKASI>"
 > ```
-> *(Jika pengguna tidak menyatakan lokasi, sistem akan menggunakan lokasi lalai: **Putrajaya** / Stesen CA17W).*
+> *(Jika pengguna tidak menyatakan lokasi, preset lalai semasa ialah **Pagar Alam, Sumatera Selatan**.)*
 
 ---
 
@@ -182,20 +182,19 @@ Sangat mudah dan intuitif! Anda hanya perlukan butang arah pada remote TV anda:
 ### A. Kapsul Cuaca & Indeks Jerebu (Bawah Jam)
 * Terletak betul-betul di bawah jam utama (contoh: `☁ 27° Overcast  •  API 106 Unhealthy`).
 * **Tekan butang Atas (▲) lalu tekan OK** untuk membuka skrin cuaca penuh:
-  1. **Suhu Semasa & Angin**: Suhu, suhu rasa (*feels like*), kelembapan, kelajuan angin, indeks UV, waktu matahari terbit & terbenam.
-  2. **Kualiti Udara Rasmi (JAS APIMS / IPU)**: Menggunakan data rasmi stesen Jabatan Alam Sekitar Malaysia (MyEQMS/APIMS) dengan bar warna piawaian rasmi Malaysia (Baik: Hijau, Sederhana: Biru Langit, Tidak Sihat: Jingga, Sangat Tidak Sihat: Merah, Berbahaya: Maroon) dan nasihat kesihatan mengikut tahap IPU semasa.
-  3. **Ramalan 12 Jam**: Barisan kad jam demi jam dengan suhu dan peratus kebarangkalian hujan (`↑ %`).
-  4. **Ramalan 7 Hari**: Pandangan cuaca sepanjang minggu dengan suhu maksimum/minimum.
+  1. **Cuaca Semasa**: Suhu, feels-like, min/maks harian, kelembapan, kelajuan/arah angin, tekanan MSL, titik embun dan jarak penglihatan.
+  2. **US AQI (anggaran model CAMS)**: Data Open-Meteo Air Quality API dengan PM2.5, PM10, CO, NO₂ dan SO₂. Ini bukan bacaan rasmi stesen JAS/APIMS IPU atau ISPU Indonesia. Nilai polutan yang tiada dipaparkan sebagai tidak tersedia, bukan sifar.
+  3. **Hujan & UV**: Jumlah/kebarangkalian hujan harian, kategori dan nasihat UV maksimum, matahari terbit/terbenam serta fasa/terbit/terbenam bulan.
+  4. **Ramalan 12 Jam / 7 Hari**: Keadaan setiap jam dan ramalan harian dengan kebarangkalian hujan.
+  5. **Status Data**: Lokasi rujukan, sumber/waktu kemas kini serta status semasa, lapuk, luar talian, tidak tersedia atau gagal dikemas kini.
 
-📍 **Cara Tukar Lokasi Stesen Jerebu & Waktu Solat Secara Manual Guna Remote TV (Jika Pasang APK Sendiri):**
-Pengguna yang memasang fail APK secara manual atau berpindah rumah **TIDAK PERLUKAN KOMPUTER ATAU AI** untuk menukar lokasi:
-1. Pada skrin utama, tekan butang **Atas (▲)** dan tekan **OK** pada kapsul cuaca untuk buka Dashboard Cuaca.
-2. Tekan butang **Atas (▲)** sekali lagi ke butang **📍 Tukar Stesen / Change** (terletak bersebelahan nama bandar).
-3. Tekan **OK**. Menu pilihan senarai stesen rasmi JAS Malaysia akan muncul:
-   - *Putrajaya, Cheras (KL), Batu Muda (KL), Petaling Jaya, Shah Alam, Klang, Banting, Bandaraya Melaka, Alor Gajah, Bukit Rambai, Seremban, Nilai, Port Dickson, Larkin (JB), Pasir Gudang, Batu Pahat, Kluang, Tangkak, Seberang Jaya (Penang), Minden (USM), Balik Pulau, Ipoh, Taiping, Seri Manjung, Alor Setar, Sungai Petani, Langkawi, Kangar, Kuantan, Temerloh, Kuala Terengganu, Kemaman, Kota Bharu, Kota Kinabalu, Sandakan, Tawau, Kuching, Miri, Bintulu, Sibu, Labuan*.
-4. Gunakan butang **Atas / Bawah** remote untuk memilih stesen anda, lalu tekan **OK**.
-5. Serta-merta bacaan Indeks Pencemaran Udara (JAS IPU) dan zon waktu solat (JAKIM) akan dikemaskini mengikut bandar pilihan anda!
-
+📍 **Cara Menukar Lokasi pada TV:**
+Pengguna boleh memilih bandar/kawasan yang disokong tanpa komputer atau AI:
+1. Buka menu **Settings (⚙️)** di bahagian atas skrin utama.
+2. Pilih **Location API Haze** (label menu lama) untuk membuka pemilih lokasi.
+3. Pilih bandar/kawasan. Koordinat pilihan digunakan oleh Open-Meteo dan model kualiti udara CAMS; ia bukan pilihan stesen pemantauan rasmi.
+4. Lokasi yang sama turut dihantar kepada aliran zon waktu solat sedia ada. Sahkan liputan zon JAKIM bagi bandar pilihan jika anda bergantung pada jadual tersebut.
+5. Dashboard memaparkan lokasi rujukan model serta sumber dan status kemas kini setiap data.
 ### B. Waktu Solat & Ayat Al-Quran Harian
 * **Jadual Solat 6 Waktu**: Subuh, Syuruk, Zohor, Asar, Maghrib, Isyak mengikut zon waktu Malaysia secara tepat.
 * **Warna Hijau Zamrud**: Waktu solat yang sedang berlangsung akan automatik bertukar warna hijau terang supaya anda sentiasa peka waktu ibadah.
@@ -256,7 +255,7 @@ Ciri rohani eksklusif untuk kediaman Muslim pintar yang disegerakkan secara lang
 ### F. Menu Tetapan Frosted Glass (Settings Dropdown Menu) ⚙️
 Di bar atas skrin utama, tekan butang **Settings (ikon gear ⚙️)** untuk memaparkan menu terapung gaya kaca Apple tvOS:
 * 🖼️ **Wallpaper**: Membuka tetingkap pilihan kategori wallpaper (*Natural, Skyscraper, Deep Space, Ocean, Minimalist Dark, Next Wallpaper*). Pilihan anda disimpan secara kekal walaupun TV dimatikan.
-* 📍 **Location API Haze**: Membuka senarai 30+ stesen jerebu rasmi JAS APIMS untuk menukar stesen pemantauan udara di seluruh negeri.
+* 📍 **Location API Haze**: Label menu lama bagi pemilih bandar/kawasan. Ia menetapkan koordinat untuk data model Open-Meteo/CAMS, bukan memilih stesen pemantauan rasmi JAS/APIMS.
 * 🕌 **Location Waktu Solat**: Membuka senarai 35+ zon rasmi JAKIM untuk menyelaraskan jadual solat secara tepat mengikut daerah anda.
 * 🔊 **Sound Effect**: Memaparkan tema bunyi aktif (cth: `Sound: PlayStation 5`) dan membuka dialog pilihan tema audio konsol (PS5, Nintendo Switch, Xbox Series X/S, atau Bisu/Off) dengan pratonton nada serta-merta.
 * 🔄 **Check for Updates**: Menyemak patch atau versi kemas kini baharu secara terus dari GitHub tanpa memerlukan komputer.
@@ -432,7 +431,7 @@ Jika anda lebih suka menggunakan pendrive USB:
 * Glass TV Home dibina sebagai aplikasi Android TV asli (*Native Android TV app*).
 * Sebaik sahaja fail APK terpasang pada TV:
   - **Remote TV berfungsi sepenuhnya**: Butang D-Pad (Atas/Bawah/Kiri/Kanan/OK) untuk kawal aplikasi dan cuaca, serta butang Home/Back berfungsi seperti biasa.
-  - **Semua ciri automatik berjalan sendiri**: Jam, jadual waktu solat, cuaca & kualiti udara (APIMS), mod screensaver 10 minit, dan auto-sleep 2 jam dijana sepenuhnya oleh cip pemproses TV tanpa bergantung kepada mana-mana AI atau internet luar.
+  - **Ciri setempat** (jam, tarikh Hijri, screensaver dan pemasa tidur) berjalan pada TV. Cuaca dan anggaran AQI berasaskan CAMS memerlukan sambungan internet untuk mengambil data penyedia; kedua-duanya tidak memerlukan AI atau langganan.
   - Ahli keluarga dan pengguna biasa boleh menikmati TV dengan lancar hanya menggunakan remote TV biasa.
 * **Peranan AI hanyalah seperti "jurutera"** yang membantu memasang dan mencuci bloatware pada peringkat permulaan sahaja.
 
@@ -455,4 +454,4 @@ Jika anda lebih suka menggunakan pendrive USB:
 ## 📄 Lesen & Penghargaan
 * Dibina berasaskan [CleanYourTV](https://github.com/Gathin23/cleanyourtv) © Gathin (Lesen MIT).
 * Fon Outfit oleh SIL Open Font License.
-* Data cuaca oleh Open-Meteo & data kualiti udara berasaskan piawaian APIMS Jabatan Alam Sekitar Malaysia.
+* Ramalan cuaca dan anggaran US AQI berasaskan model CAMS menggunakan Open-Meteo Forecast dan Air Quality APIs. AQI ialah anggaran model, bukan bacaan rasmi stesen APIMS/IPU atau ISPU Indonesia.

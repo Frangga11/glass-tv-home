@@ -1508,3 +1508,36 @@ G1 is a browser-prototype result only. Production component conformance, live da
 | Physical TV/remote/OEM overscan | DEFERRED / NOT RUN | No device test, APK installation or ADB action; no DEVICE-VERIFIED claim |
 
 **G3A disposition: COMPLETE / SOURCE-HOST QC PASS.** Branch `feature/g3a-home-independent-dock` @ `87302f52de844954392bac5438cbe82ec5d14a30`; PR #66 OPEN/DRAFT/UNMERGED. G2 PR #65 remains OPEN/DRAFT/UNMERGED. Next UI Refresh work package: G3B Weather & AQI V4.
+
+## G3B — Weather & AQI V4 audit disposition (7 November 2026)
+
+**Overall:** SOURCE/HOST QC PASS. No Critical findings remain open. Physical Android TV/remote/OEM overscan and high-font-scale visual acceptance are DEFERRED / NOT RUN.
+
+| Finding | Severity | Disposition | Evidence |
+|---|---|---|---|
+| Cache freshness could be reused after a selected-location change | High | FIXED | Freshness now checks payload presence, age and exact selected coordinates; regression coverage added |
+| Legacy JAS/APIMS cache could suppress a CAMS/US AQI refresh | High | FIXED | Legacy-source guard invalidates the old cache for display/freshness until a successful CAMS response |
+| Weather V4 fields absent from the prior request/model | High | FIXED | Added dew point, is_day, rainfall total/probability, moon phase/rise/set, CO, NO₂ and SO₂ |
+| Source update time did not clearly identify age/date | Medium | FIXED | Per-source local timestamp includes date/time/timezone |
+| Stale/offline/unavailable/refresh-failed states were not independently exposed | Medium | FIXED | Per-source state derivation and footer status implemented |
+| Async refresh could lose D-pad position or update a destroyed Activity | Medium | FIXED | Focus-key restoration, resume refresh and lifecycle guard; tests added |
+| Pollutants were visually compressed and missing values could be ambiguous | Medium | FIXED | Separate five-metric pollutant card; CO unit conversion; missing-value note |
+| Home-screen HomeWeather summary has a separate data/cache owner from WeatherActivity | Medium | OPEN RISK / OUT OF G3B SCOPE | No proven regression in this audit; retain as an integration consistency check |
+| Connectivity changes while the dashboard remains foregrounded are not observed through a live NetworkCallback | Low | ACCEPTED LIMITATION | State is refreshed on Activity resume and data refresh |
+| Physical TV readability, D-pad behavior, OEM overscan and large-font scale | Acceptance gate | DEFERRED / NOT RUN | No device mutation or APK installation authorized/performed |
+| Settings menu still uses legacy “Location API Haze” wording | Low | DEFERRED | Selector supplies coordinates; label can be clarified in G3F Global Settings |
+
+### Data/provider contract
+
+- Forecast: Open-Meteo Forecast API; current/hourly/daily fields include temperature, apparent temperature, humidity, dew point, pressure, wind speed/direction/gust, visibility, weather code/day-night, precipitation, precipitation probability, daily min/max, sunrise/sunset and UV maximum.
+- Air quality: Open-Meteo Air Quality API with CAMS model values and US AQI; PM2.5, PM10, carbon monoxide, nitrogen dioxide and sulphur dioxide.
+- The dashboard explicitly labels the AQI as a CAMS-based US AQI estimate, not an official JAS/APIMS IPU or Indonesian ISPU station reading.
+- Official API references: https://open-meteo.com/en/docs and https://open-meteo.com/en/docs/air-quality-api.
+
+### Verification
+
+- CI run 42274182438 SUCCESS on commit 8f2162036991ded803c5ca0981ad1f3e777cfb54; both required jobs SUCCESS.
+- Launcher release build, release unit tests, lint-vital and repository contract tests PASS.
+- Regression coverage: cache freshness/location mismatch, legacy JAS cache invalidation, missing pollutant semantics, Weather V4 layout IDs, D-pad focus target restoration.
+- APK diagnostic: 1,600,893 bytes; non-blocking under D-023.
+- Current branch HEAD 8cfc5c886950cc9d27d4530ba901df872b8e5c44 differs from the CI-tested functional commit only by a one-line test comment.

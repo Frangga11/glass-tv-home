@@ -855,3 +855,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - APK diagnostic 1,589,825 bytes; informational under D-023. No quality assets/features removed to meet the historical 1.5 MiB threshold.
 - No merge/rebase/cherry-pick/force-push, integration/main change, APK publication/installation, ADB or physical TV/remote/OEM overscan test. PRs #65/#66 remain unmerged.
 - Canonical checkpoint: `UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md`. Next UI Refresh work package: G3B Weather & AQI V4. Official Project G03 physical device acceptance remains separately OPEN/BLOCKED.
+
+## 7 November 2026 — UI Refresh G3B Weather & AQI V4 closeout
+
+- Audited canonical docs, G2/G3A/integration branches, PR dependency chain, WeatherActivity/WeatherAirQuality, Open-Meteo request/model/cache, AppLocationManager, permissions, G2 shared UI resources, G1 V6 reference and regression coverage before source changes.
+- Implemented Weather V4 request/model fields: dew point, day/night, daily rainfall, UV maximum, sunrise/sunset, moon phase/rise/set, and CAMS pollutants PM2.5/PM10/CO/NO₂/SO₂ with US AQI.
+- Added coordinate-scoped cache freshness, per-source success/failure metadata, legacy JAS/APIMS cache invalidation, source timestamp/status UI, lifecycle refresh and D-pad focus restoration.
+- Added separate pollutant metric grid; CO converted to mg/m³ to match G1 V6; missing values remain unavailable. Added dynamic MoonPhaseView and SunArcView data handling; reused G2 shared styling.
+- Fixed first CI findings: missing ViewGroup import and stale repository cache-contract assertions. A subsequent XML validation caught a malformed intermediate layout; layout was rebuilt from the clean G3A baseline and revalidated as one balanced root with unique IDs/resources.
+- Regression coverage: WeatherAirQualityFreshnessTest, WeatherV4LayoutContractTest, WeatherActivityFocusRestoreTest and tests/test_weather_cache_location_contract.py.
+- Final exact CI run 42274182438 SUCCESS on functional commit 8f2162036991ded803c5ca0981ad1f3e777cfb54; both required jobs SUCCESS. Release build, release unit tests, lint-vital and repository contract tests PASS.
+- APK diagnostic 1,600,893 bytes (+11,068 bytes / approximately 0.7% vs G3A); informational only under D-023.
+- Branch feature/g3b-weather-aqi-v4 @ 8cfc5c886950cc9d27d4530ba901df872b8e5c44; PR #67 OPEN/DRAFT/UNMERGED, base G3A. PR #65/#66 remain OPEN/DRAFT/UNMERGED. No merge, rebase, cherry-pick, force-push, integration/main modification, APK publication/install, ADB or physical device action.
+- Physical Android TV/remote/OEM overscan, daylight/glare and large-font acceptance remain deferred. Next UI Refresh package: G3C Profile, Avatar & Child Mode.

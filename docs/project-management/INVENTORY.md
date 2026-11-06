@@ -671,3 +671,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **APK diagnostic:** 1,589,825 bytes; informational only under D-023.
 - **Not verified:** physical TV/remote/OEM overscan. No APK install, ADB, merge or integration change.
 - Evidence: [UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md). Next: G3B Weather & AQI V4.
+
+## UI Refresh G3B — Weather & AQI V4 (7 November 2026)
+
+- **Status:** COMPLETE / SOURCE-HOST QC PASS; physical Android TV/remote/OEM overscan acceptance DEFERRED.
+- **Branch/head:** feature/g3b-weather-aqi-v4 @ 8cfc5c886950cc9d27d4530ba901df872b8e5c44. PR #67 OPEN/DRAFT/UNMERGED; base feature/g3a-home-independent-dock @ 87302f52de844954392bac5438cbe82ec5d14a30.
+- **CI:** run 42274182438 SUCCESS on functional commit 8f2162036991ded803c5ca0981ad1f3e777cfb54; both required jobs passed. Current branch HEAD differs only by one comment in tests/test_weather_cache_location_contract.py.
+- **Implementation:** WeatherAirQuality.java, WeatherActivity.java, activity_weather.xml, MoonPhaseView.java, SunArcView.java, AqiSpectrumBarView.java; Indonesian/English/default strings.
+- **Data contract:** Open-Meteo Forecast API; Open-Meteo Air Quality API with CAMS-based US AQI; PM2.5, PM10, CO, NO₂, SO₂. US AQI is not official JAS/APIMS IPU or Indonesian ISPU station data. CO displayed in mg/m³ after conversion; PM/NO₂/SO₂ displayed in µg/m³.
+- **State/cache:** coordinate-scoped freshness; per-source success timestamps and refresh-failure flags; legacy JAS/APIMS cache cannot suppress a CAMS refresh; source location/time and stale/offline/unavailable/refresh-failed states.
+- **UI/interaction:** dew point, rainfall, UV category/advice, sunrise/sunset, moon phase/rise/set, hourly/daily forecasts, separate pollutant grid, missing-value note, focus restoration and resume-time refresh. Existing G2 shared styles and G1 V6 direction retained.
+- **Regression tests:** WeatherAirQualityFreshnessTest, WeatherV4LayoutContractTest, WeatherActivityFocusRestoreTest and tests/test_weather_cache_location_contract.py.
+- **APK diagnostic:** 1,600,893 bytes; non-blocking under D-023. Physical visual, remote and OEM overscan acceptance not performed.
+- **Next:** G3C Profile, Avatar & Child Mode. Do not reopen G1/G2/G3A without new evidence.

@@ -1485,3 +1485,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - G3A includes independent Dock/Grid projections; horizontal/vertical orientation; capacity 4/5/6; four-column Grid invariant; persisted pin order/unpin exclusions; overflow; D-pad navigation/reorder/pin/unpin; focus restoration; empty/full states; Home Settings and localization.
 - No APK publication/installation, ADB, integration/main change, merge or physical Android TV/remote/OEM overscan test. No device PASS is claimed.
 - **Resume at G3B — Weather & AQI V4.** Start with current exact branch/source audit and data/cache/state/test contract; do not reopen G3A absent new evidence. Official Project G03 physical Mi TV Stick acceptance remains a separate OPEN/BLOCKED gate.
+
+## Current resume checkpoint — UI Refresh G3B complete (7 November 2026)
+
+- Governing plan: GTVH-UIR-002 v2.0. G1, G2, G3A and G3B are COMPLETE / SOURCE-HOST QC PASS. Physical device acceptance remains separately OPEN/BLOCKED.
+- G3B branch feature/g3b-weather-aqi-v4 exact HEAD 8cfc5c886950cc9d27d4530ba901df872b8e5c44; PR #67 OPEN/DRAFT/UNMERGED, base G3A exact HEAD 87302f52de844954392bac5438cbe82ec5d14a30. CI run 42274182438 passed on functional commit 8f2162036991ded803c5ca0981ad1f3e777cfb54; branch HEAD differs only by one test comment.
+- G2 branch remains 40fa0715bdbcd324042927fbc56ec19f91d1947a / PR #65 OPEN/DRAFT/UNMERGED. G3A remains 87302f52de844954392bac5438cbe82ec5d14a30 / PR #66 OPEN/DRAFT/UNMERGED. integration/b-series remains 562cde0751de93748eb4e0d4cdece4fa1672ac4d.
+- G3B implements complete Weather V4 metrics and states, Open-Meteo/CAMS US AQI, five separate pollutant values, legacy JAS cache invalidation, coordinate-scoped freshness, source timestamps, focus restoration and Activity lifecycle handling.
+- Exact CI: both required jobs SUCCESS; release build, release unit tests, lint-vital and repository contract tests PASS. APK diagnostic 1,600,893 bytes, informational under D-023.
+- Physical TV/remote/OEM overscan, high-font-scale and daylight/glare acceptance were not performed. No APK install, ADB, merge, rebase, cherry-pick, force-push or integration/main change.
+- **Resume at G3C — Profile, Avatar & Child Mode.** Do not reopen G1/G2/G3A/G3B without new defect evidence. See UI_REFRESH_G3B_CHECKPOINT_2026-11-07.md.

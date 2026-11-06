@@ -11,7 +11,7 @@ Glass TV Home is a modern, lightweight home launcher replacement for Android TV 
 * 🚀 **Zero Ads & Ultralight**: Only ~453 KB in size. Saves over 400 MB of RAM compared to sluggish stock manufacturer launchers.
 * 🪟 **Frosted Glass Aesthetic (tvOS Style)**: Modern Apple TV-inspired interface with fluid focus animations and a floating glass dock.
 * 🕌 **Islamic Prayer Timetable & Daily Ayat**: Accurate 6-phase prayer timetable (Subuh, Syuruk, Zohor, Asar, Maghrib, Isyak) with active prayer emerald highlighting and daily Quranic verses.
-* ⛅ **Weather & Air Quality (API / AQI) Dashboard**: Live ambient temperature, "feels like", humidity, UV index, wind speed, sunrise/sunset, 12-hour forecast, 7-day outlook, and official Air Quality Index readings (APIMS).
+* ⛅ **Weather & Air Quality Dashboard**: Current conditions, feels-like/min/max temperature, humidity, wind, pressure, dew point, visibility, rainfall, UV advice, sunrise/sunset, moon phase, 12-hour forecast, 7-day outlook, and a CAMS-based US AQI estimate with PM2.5, PM10, CO, NO₂ and SO₂.
 * 🌙 **StandBy Screensaver & 2-Hour Auto Power-Off**: Enters ambient black nightstand screensaver after 10 minutes of inactivity (burn-in safe for OLED/LED), and automatically turns off the TV display after 2 hours of sleep standby to save electricity.
 
 ---
@@ -129,13 +129,13 @@ update patch latest glass tv dekat tv rumah saya: https://github.com/aqmangge/gl
 > **🚨 Mandatory Instruction For AI Assistants (AI Assistant Rule)**:
 > When a user gives you the prompt `install ni dekat tv rumah saya: https://github.com/aqmangge/glass-tv-home`, the AI **MUST** ask the user:
 > 1. *"What is your TV's IP address under Settings -> Network & Internet (or your TV brand)?"* (if not auto-discovered)
-> 2. *"Where are you located in Malaysia (e.g. Putrajaya, Cheras, Shah Alam, Melaka, Johor Bahru, Penang, Kuantan, Kuching, Kota Kinabalu, etc.) so that official Jabatan Alam Sekitar (DOE / APIMS) haze / IPU readings and JAKIM prayer times can be configured automatically?"*
+> 2. *"Which supported city or region should be used for the weather/AQI coordinates? The air-quality value is a CAMS-based US AQI model estimate, not an official APIMS/IPU or Indonesian ISPU station reading. If you use JAKIM prayer times, we should also verify the prayer-zone coverage for that city."*
 > 
 > The AI can immediately install the prebuilt APK from `release/glass-tv-home.apk` or build it, run debloat, and set the user location via:
 > ```bash
 > adb shell am broadcast -a com.gathin.tvhome.SET_LOCATION -p com.gathin.tvhome --es query "<USER_LOCATION>"
 > ```
-> *(If the user does not specify a location, the default preset is **Putrajaya** / Station CA17W).*
+> *(If the user does not specify a location, the current default preset is **Pagar Alam, Sumatera Selatan**.)*
 
 ---
 
@@ -179,20 +179,19 @@ Glass TV Home is designed around standard TV remotes:
 ### A. Weather & Air Quality (AQI) Hub
 * Located under the digital clock (e.g., `☁ 27° Overcast  •  API 106 Unhealthy`).
 * **Press UP (▲) then press OK** to launch the full Leanback weather interface:
-  1. **Current Conditions**: Temperature, "Feels Like", humidity, wind velocity, UV index, sunrise and sunset times.
-  2. **Official Air Quality Index (JAS Malaysia APIMS / IPU)**: Real-time ground data directly from the Department of Environment (JAS) APIMS portal with official Malaysian scale colors (Good: Green, Moderate: Sky Blue, Unhealthy: Orange, Very Unhealthy: Red, Hazardous: Maroon) and official health guidance.
-  3. **12-Hour Hourly Forecast**: Hourly forecast cards with precipitation chance percentages.
-  4. **7-Day Outlook**: Daily weather forecast across the upcoming week.
+  1. **Current Conditions**: Temperature, feels-like, daily min/max, humidity, wind speed/direction, MSL pressure, dew point and visibility.
+  2. **US AQI (CAMS model estimate)**: Open-Meteo Air Quality API data with PM2.5, PM10, CO, NO₂ and SO₂. It is not an official JAS/APIMS IPU or Indonesian ISPU ground-station reading. US AQI categories are used; unavailable pollutant values display as unavailable, not zero.
+  3. **Rainfall & UV**: Daily rainfall total/probability, maximum UV category and advice, sunrise/sunset, and moon phase/rise/set.
+  4. **12-Hour / 7-Day Forecasts**: Hourly conditions and daily outlook with precipitation probabilities.
+  5. **Data status**: Location, source/update time and per-source current, stale, offline, unavailable or refresh-failed state.
 
-📍 **Manual Location Setup Directly on TV Remote (For Standalone APK Installs):**
-Users who install the APK manually or relocate **DO NOT NEED A COMPUTER OR AI** to configure their station:
-1. On the home screen, press **UP (▲)** and press **OK** on the weather pill to open the Weather Dashboard.
-2. Press **UP (▲)** again to highlight the **📍 Tukar Stesen / Change** button next to the location name.
-3. Press **OK**. A dialog modal will appear with 30+ official Malaysian DOE stations across all states:
-   - *Putrajaya, Cheras (KL), Batu Muda (KL), Petaling Jaya, Shah Alam, Klang, Banting, Bandaraya Melaka, Alor Gajah, Bukit Rambai, Seremban, Nilai, Port Dickson, Larkin (JB), Pasir Gudang, Batu Pahat, Kluang, Tangkak, Seberang Jaya (Penang), Minden (USM), Balik Pulau, Ipoh, Taiping, Seri Manjung, Alor Setar, Sungai Petani, Langkawi, Kangar, Kuantan, Temerloh, Kuala Terengganu, Kemaman, Kota Bharu, Kota Kinabalu, Sandakan, Tawau, Kuching, Miri, Bintulu, Sibu, Labuan*.
-4. Scroll with the remote **UP / DOWN** arrows to select your station and press **OK**.
-5. Both the official JAS IPU readings and the JAKIM prayer timetable immediately calibrate to your chosen city!
-
+📍 **Manual Location Setup on the TV:**
+Users can select a supported city/region without a computer or AI:
+1. Open the top **Settings (⚙️)** dropdown from the home screen.
+2. Choose **Location API Haze** (legacy menu label) to open the location selector.
+3. Select the intended city/region. The chosen coordinates are used for Open-Meteo weather and CAMS air-quality model estimates; this is not a selection of an official air-quality monitoring station.
+4. The selected location is also passed to the existing prayer-zone flow; verify that the selected city has a supported JAKIM prayer zone if you rely on those prayer times.
+5. The dashboard shows the model reference location and each data source's update/status information.
 ### B. Islamic Prayer Timetable & Daily Ayat
 * **6-Phase Prayer Timetable**: Subuh, Syuruk, Zohor, Asar, Maghrib, and Isyak synchronized with your local time zone.
 * **Active Window Glow**: The current active prayer window illuminates in emerald green.
@@ -253,7 +252,7 @@ A respectful spiritual living room feature synchronized live with official JAKIM
 ### F. Frosted Glass Settings Dropdown Menu ⚙️
 Clicking the **Settings (gear icon ⚙️)** on the top bar reveals an Apple tvOS-style floating glass menu:
 * 🖼️ **Wallpaper**: Launches the category selector dialog (*Natural, Skyscraper, Deep Space, Ocean, Minimalist Dark, Next Wallpaper*). Preferences persist across reboots.
-* 📍 **Location API Haze**: Opens a selector for 30+ official Malaysian DOE (JAS APIMS) air quality monitoring stations.
+* 📍 **Location API Haze**: Legacy menu label for the supported city/region selector. It sets coordinates for Open-Meteo/CAMS model data; it does not select an official JAS/APIMS monitoring station.
 * 🕌 **Location Waktu Solat**: Opens a selector for 35+ official JAKIM prayer zones across all Malaysian states.
 * 🔊 **Sound Effect**: Displays current audio theme (e.g. `Sound: PlayStation 5`) and launches the console sound profile selector with live previews.
 * 🔄 **Check for Updates**: Checks GitHub directly for newer releases or patches without requiring a PC.
@@ -379,7 +378,7 @@ If you prefer using a physical USB drive:
 * Glass TV Home is a **native Android TV application** (Native Kotlin/AndroidX).
 * Once the APK is installed on the TV:
   - **Full Remote Control**: The D-Pad (Up/Down/Left/Right/OK), Back, and Home buttons navigate everything natively.
-  - **All smart features run locally**: Clock, Hijri dates, prayer timetable, weather & AQI (APIMS), 10-minute screensaver, and 2-hour auto sleep operate entirely inside the TV without requiring an AI agent, computer, or active subscription.
+  - **Local features** (clock, Hijri dates, screensaver and sleep timer) run on the TV. Weather and CAMS-based AQI require an internet connection to retrieve provider data; neither requires an AI agent or subscription.
   - Family members and non-technical users can use the TV just like a standard commercial smart TV.
 * **The AI's role is purely as a "mechanic/technician"** during the initial setup to automate installation and debloating. Once installed, Glass TV Home is 100% independent.
 
@@ -402,4 +401,4 @@ If you prefer using a physical USB drive:
 ## 📄 License & Credits
 * Built upon [CleanYourTV](https://github.com/Gathin23/cleanyourtv) © Gathin (MIT License).
 * Outfit font by SIL Open Font License.
-* Weather and AQI data powered by Open-Meteo & Malaysia Department of Environment (APIMS) standards.
+* Weather forecast and CAMS-based US AQI are powered by Open-Meteo Forecast and Air Quality APIs. The AQI is model-based, not an official APIMS/IPU or Indonesian ISPU station measurement.
