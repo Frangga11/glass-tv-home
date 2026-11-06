@@ -109,3 +109,15 @@ The P2 contract remains authoritative for shared tokens and interaction semantic
 
 **Final output: PROTOTYPE VISUAL — REVISION REQUIRED.**  
 **Next permitted action:** prepare a versioned visual revision and obtain real 1920×1080 browser screenshots before any visual PASS claim.
+
+## 9. V5 prototype revision checkpoint
+
+A new V5 prototype was created after the source-to-reference findings above. V4 remains unchanged.
+
+- Artifact: [UI_REFRESH_TRIGGER4_VISUAL_PROTOTYPE_V5.html](prototypes/UI_REFRESH_TRIGGER4_VISUAL_PROTOTYPE_V5.html).
+- V5 adds a wallpaper-led Home composition (including top clock/status/navigation, location/weather chips, information/prayer strip and bottom Dock); a centered four-card Profile Selector; centered glass-popup compositions for Quick Settings and Wi-Fi; and a more complete icon-led Global Settings split-detail shell.
+- Shared glass CSS now includes translucent surfaces, backdrop blur and layered shadow. The scenic gradient and emoji avatars are temporary placeholders, not the original photo wallpaper or final icon/avatar assets.
+- Static QC: PASS (one script, JavaScript syntax parse, no duplicate IDs, six surfaces and required V5 structures present). Evidence: [UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md](UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md).
+- The V5 screenshot/rendering gate remains NOT RUN. Do not infer visual accuracy from the CSS or source. The popup overlay context, actual 1920×1080 geometry, text fit, color/material/blur/glow and wallpaper readability still require browser screenshots and side-by-side comparison.
+
+**Updated disposition remains PROTOTYPE VISUAL — REVISION REQUIRED.** V5 is a candidate revision for rendering review, not an approved prototype.
