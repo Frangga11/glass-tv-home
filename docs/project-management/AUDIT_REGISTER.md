@@ -1311,3 +1311,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - 1920×1080 browser rendering and screenshot capture were NOT RUN. No pixel/geometry/material/legibility PASS is claimed.
 - V4 preserved; no production source or device mutation. P4 remains blocked.
 - Full report and correction plan: [UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md](UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md).
+
+## GTVH-UIR-T4-V5-QC-001 — TRIGGER 4 V5 visual revision (6 November 2026)
+
+- V5 created as a new prototype-only revision; V4 remains unchanged.
+- Source composition now better represents V01 Home, four-card V03 Profile Selector, anchored-style V04 Quick Settings and V05 Wi-Fi popup surfaces, and V06 icon-led split-detail shell. V02 Weather V4 content is preserved for subsequent visual hierarchy review.
+- Shared glass CSS includes translucent fill, backdrop blur and layered shadow. Scenic gradient and emoji avatars/icons are placeholders.
+- **Static source QC PASS**; no duplicate IDs and JavaScript syntax parses. Browser rendering/1920×1080 screenshot is NOT RUN; no visual PASS is claimed.
+- Detailed evidence: [UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md](UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md). Overall Trigger 4 status remains REVISION REQUIRED; P4 blocked.
