@@ -74,7 +74,7 @@ final class TvDialogStyle {
     static int resolveWidthPx(int availableWidthPx, float density, int maxWidthDp) {
         if (availableWidthPx <= 0 || !(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) return 0;
         int requested = Math.max(MIN_WIDTH_DP, maxWidthDp);
-        return TvResponsiveLayout.clampToSafeWidthPx(Math.round(requested * density), availableWidthPx);
+        return Math.min(Math.round(requested * density), TvResponsiveLayout.safeContentPx(availableWidthPx));
     }
 
     static int resolveHeightPx(int availableHeightPx, float density, int maxHeightDp) {
@@ -83,6 +83,6 @@ final class TvDialogStyle {
             return ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         return Math.min(Math.round(maxHeightDp * density),
-                TvResponsiveLayout.safeContentHeightPx(availableHeightPx));
+                TvResponsiveLayout.safeContentPx(availableHeightPx));
     }
 }

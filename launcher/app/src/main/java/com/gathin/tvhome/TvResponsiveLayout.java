@@ -26,60 +26,28 @@ final class TvResponsiveLayout {
                 (viewportDimensionPx - 1) / 2);
     }
 
-    static int safeContentWidthPx(int viewportWidthPx) {
-        if (viewportWidthPx <= 0) return 0;
-        return Math.max(1, viewportWidthPx - 2 * safeInsetPx(viewportWidthPx));
+    static int safeContentPx(int dimensionPx) {
+        return dimensionPx <= 0 ? 0 : Math.max(1, dimensionPx - 2 * safeInsetPx(dimensionPx));
     }
 
-    static int safeContentHeightPx(int viewportHeightPx) {
-        if (viewportHeightPx <= 0) return 0;
-        return Math.max(1, viewportHeightPx - 2 * safeInsetPx(viewportHeightPx));
-    }
-
-    static int clampToSafeWidthPx(int preferredWidthPx, int viewportWidthPx) {
-        if (preferredWidthPx <= 0 || viewportWidthPx <= 0) return 0;
-        return Math.min(preferredWidthPx, safeContentWidthPx(viewportWidthPx));
-    }
-
-    static int popupLeftPx(int anchorLeftPx, int popupWidthPx, int viewportWidthPx) {
-        int safeInset = safeInsetPx(viewportWidthPx);
-        int safeRight = Math.max(safeInset, viewportWidthPx - safeInset);
-        int boundedWidth = Math.min(Math.max(1, popupWidthPx), Math.max(1, safeRight - safeInset));
-        return Math.max(safeInset, Math.min(anchorLeftPx, safeRight - boundedWidth));
-    }
-
-    static int popupAvailableHeightPx(int anchorTopPx, int anchorHeightPx,
-                                      int viewportHeightPx, int gapPx, boolean above) {
-        if (viewportHeightPx <= 0) return 0;
-        int safeTop = safeInsetPx(viewportHeightPx);
-        int safeBottom = viewportHeightPx - safeTop;
-        int available = above
-                ? anchorTopPx - Math.max(0, gapPx) - safeTop
-                : safeBottom - (anchorTopPx + Math.max(0, anchorHeightPx) + Math.max(0, gapPx));
-        return Math.max(0, available);
-    }
-
-    static boolean shouldPlacePopupAbove(int anchorTopPx, int anchorHeightPx,
-                                         int contentHeightPx, int viewportHeightPx,
-                                         int gapPx, boolean preferAbove) {
-        int above = popupAvailableHeightPx(anchorTopPx, anchorHeightPx, viewportHeightPx, gapPx, true);
-        int below = popupAvailableHeightPx(anchorTopPx, anchorHeightPx, viewportHeightPx, gapPx, false);
-        int required = Math.min(Math.max(1, contentHeightPx), safeContentHeightPx(viewportHeightPx));
-        if (preferAbove && above >= required) return true;
-        if (below >= required) return false;
-        return above > below;
-    }
-
-    static int popupTopPx(int anchorTopPx, int anchorHeightPx, int popupHeightPx,
-                          int viewportHeightPx, int gapPx, boolean above) {
-        if (viewportHeightPx <= 0) return 0;
-        int safeTop = safeInsetPx(viewportHeightPx);
-        int safeBottom = viewportHeightPx - safeTop;
-        int preferred = above
-                ? anchorTopPx - Math.max(0, gapPx) - popupHeightPx
-                : anchorTopPx + Math.max(0, anchorHeightPx) + Math.max(0, gapPx);
-        int maxTop = Math.max(safeTop, safeBottom - Math.max(1, popupHeightPx));
-        return Math.max(safeTop, Math.min(preferred, maxTop));
+    static int[] popupBoundsPx(int anchorLeftPx, int anchorTopPx, int anchorHeightPx,
+                               int popupWidthPx, int contentHeightPx, int viewportWidthPx,
+                               int viewportHeightPx, int gapPx, boolean preferAbove) {
+        int xInset = safeInsetPx(viewportWidthPx);
+        int yInset = safeInsetPx(viewportHeightPx);
+        int safeWidth = Math.max(1, viewportWidthPx - 2 * xInset);
+        int safeHeight = Math.max(1, viewportHeightPx - 2 * yInset);
+        int width = Math.max(1, Math.min(popupWidthPx, safeWidth));
+        int left = Math.max(xInset, Math.min(anchorLeftPx, viewportWidthPx - xInset - width));
+        int above = Math.max(0, anchorTopPx - gapPx - yInset);
+        int below = Math.max(0, viewportHeightPx - yInset - anchorTopPx - anchorHeightPx - gapPx);
+        int required = Math.min(Math.max(1, contentHeightPx), safeHeight);
+        boolean placeAbove = preferAbove && above >= required || below < required && above > below;
+        int height = Math.max(1, Math.min(contentHeightPx, placeAbove ? above : below));
+        int top = placeAbove ? Math.max(yInset, anchorTopPx - gapPx - height)
+                : Math.max(yInset, Math.min(anchorTopPx + anchorHeightPx + gapPx,
+                viewportHeightPx - yInset - height));
+        return new int[]{left, top, width, height, placeAbove ? 1 : 0};
     }
 
     static int minDpadTargetPx(float density) {

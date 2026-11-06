@@ -43,35 +43,38 @@ public class TvResponsiveLayoutTest {
     public void appliesConservativeSafeAreaAtCommonTvResolution() {
         assertEquals(77, TvResponsiveLayout.safeInsetPx(1920));
         assertEquals(43, TvResponsiveLayout.safeInsetPx(1080));
-        assertEquals(1766, TvResponsiveLayout.safeContentWidthPx(1920));
-        assertEquals(994, TvResponsiveLayout.safeContentHeightPx(1080));
+        assertEquals(1766, TvResponsiveLayout.safeContentPx(1920));
+        assertEquals(994, TvResponsiveLayout.safeContentPx(1080));
     }
 
     @Test
     public void safeAreaNeverConsumesTinyViewport() {
-        assertEquals(1, TvResponsiveLayout.safeContentWidthPx(1));
+        assertEquals(1, TvResponsiveLayout.safeContentPx(1));
         assertEquals(2, TvResponsiveLayout.safeContentHeightPx(2));
-        assertEquals(0, TvResponsiveLayout.safeContentWidthPx(0));
+        assertEquals(0, TvResponsiveLayout.safeContentPx(0));
     }
 
     @Test
     public void clampsPreferredWidthToSafeArea() {
-        assertEquals(1178, TvResponsiveLayout.clampToSafeWidthPx(1500, 1280));
-        assertEquals(800, TvResponsiveLayout.clampToSafeWidthPx(800, 1280));
+        assertEquals(1178, Math.min(1500, TvResponsiveLayout.safeContentPx(1280)));
+        assertEquals(800, Math.min(800, TvResponsiveLayout.safeContentPx(1280)));
     }
 
     @Test
-    public void popupWidthAndPositionStayInsideSafeArea() {
-        assertEquals(1343, TvResponsiveLayout.popupLeftPx(1840, 500, 1920));
-        assertEquals(77, TvResponsiveLayout.popupLeftPx(-20, 500, 1920));
-    }
+    public void popupBoundsClampToSafeAreaAndChooseAvailableSide() {
+        int[] right = TvResponsiveLayout.popupBoundsPx(1840, 900, 80, 500, 500,
+                1920, 1080, 20, false);
+        assertEquals(1343, right[0]);
+        assertEquals(380, right[1]);
+        assertEquals(500, right[2]);
+        assertEquals(500, right[3]);
+        assertEquals(1, right[4]);
 
-    @Test
-    public void popupChoosesTheSideWithEnoughRoom() {
-        assertTrue(TvResponsiveLayout.shouldPlacePopupAbove(900, 80, 500, 1080, 20, false));
-        assertTrue(!TvResponsiveLayout.shouldPlacePopupAbove(100, 80, 300, 1080, 20, false));
-        assertEquals(380, TvResponsiveLayout.popupTopPx(900, 80, 500, 1080, 20, true));
-        assertEquals(200, TvResponsiveLayout.popupTopPx(100, 80, 300, 1080, 20, false));
+        int[] left = TvResponsiveLayout.popupBoundsPx(-20, 100, 80, 500, 300,
+                1920, 1080, 20, false);
+        assertEquals(77, left[0]);
+        assertEquals(200, left[1]);
+        assertEquals(0, left[4]);
     }
 
     @Test

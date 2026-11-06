@@ -6801,23 +6801,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         int viewportWidth = root.getWidth() > 0 ? root.getWidth() : getResources().getDisplayMetrics().widthPixels;
         int viewportHeight = root.getHeight() > 0 ? root.getHeight() : getResources().getDisplayMetrics().heightPixels;
-        width = Math.max(1, Math.min(width, TvResponsiveLayout.safeContentWidthPx(viewportWidth)));
+        width = Math.max(1, Math.min(width, TvResponsiveLayout.safeContentPx(viewportWidth)));
         int gap = (int) (10 * density);
         int anchorTop = menuAt[1] - menuGliderAt[1];
         panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.UNSPECIFIED);
         int contentHeight = Math.max(1, panel.getMeasuredHeight());
-        boolean placeAbove = TvResponsiveLayout.shouldPlacePopupAbove(
-                anchorTop, anchor.getHeight(), contentHeight, viewportHeight, gap, above);
-        int height = Math.max(1, Math.min(contentHeight,
-                TvResponsiveLayout.popupAvailableHeightPx(anchorTop, anchor.getHeight(),
-                        viewportHeight, gap, placeAbove)));
+        int[] bounds = TvResponsiveLayout.popupBoundsPx(
+                menuAt[0] - menuGliderAt[0], anchorTop, anchor.getHeight(), width,
+                contentHeight, viewportWidth, viewportHeight, gap, above);
+        int left = bounds[0], top = bounds[1], height = bounds[3];
+        width = bounds[2];
+        boolean placeAbove = bounds[4] == 1;
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
-        lp.leftMargin = TvResponsiveLayout.popupLeftPx(
-                menuAt[0] - menuGliderAt[0], width, viewportWidth);
-        lp.topMargin = TvResponsiveLayout.popupTopPx(
-                anchorTop, anchor.getHeight(), height, viewportHeight, gap, placeAbove);
+        lp.leftMargin = left;
+        lp.topMargin = top;
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
