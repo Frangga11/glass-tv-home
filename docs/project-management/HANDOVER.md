@@ -1150,3 +1150,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Visual reference blocker:** exact canonical files for the six approved reference images were not found in the inspected repository tree/evidence. Existing promo/live screenshots were not substituted. Source mapping is complete at surface level, but pixel/geometry reference comparison is not evidenced.
 - **Disposition: PARTIAL — BELUM PASS.** Six surface source mappings and seven Settings categories recorded; nested/device verification and exact reference comparison remain open. P2/P3/P4 not started. Await user review/approval and canonical V01–V06 reference assets.
 - **No mutations:** no production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV was changed. Documentation-only commit on `docs/project-master-inventory`.
+
+
+## UI Refresh P1 — Six canonical references reconciled (6 Nov 2026)
+- User supplied all six canonical visual references V01–V06: Home Screen, Weather & AQI Dashboard, Profile Selector, Quick Settings Popup, Wi-Fi Popup, and Global Settings Split Detail. Earlier missing-reference blocker is now closed.
+- Expanded the existing P1 inventory in place; no duplicate document created. Added per-reference visual target, source mapping, source-to-reference gap, P1 requirements, cross-reference design contract candidates, and updated quality disposition.
+- Main confirmed gap: V05 depicts an in-app Wi-Fi master switch, nearby network list, rescan and network selection; current source only provides connection summary and Android Wi-Fi Settings handoff. User decision required: retain lightweight handoff or scope an expanded Wi-Fi experience after feasibility/security/API audit.
+- Other key items: V04 Next photo action in Quick Settings remains unverified; V06 settings category taxonomy differs from source labels and needs approval; V02 must retain full locked V4 weather/AQI scope even though the reference image shows only a subset; V01 app-grid/Dock geometry coupling remains an architecture risk.
+- Visual mapping is complete at reference/surface level, but runtime/device/pixel comparison is not performed. Overall P1 remains **PARTIAL — BELUM PASS**; functional parity and runtime state gates remain open.
+- Inventory commit: b8bef437e872e1c99c73631ac5a1c3c3ff8a5aa2. Updated inventory path: docs/project-management/UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md on docs/project-master-inventory.
+- No production source, feature branches, PR metadata, integration/main, APK, ADB or TV device changed. P2/P3/P4 remain not started and gated pending user decisions/approval.
