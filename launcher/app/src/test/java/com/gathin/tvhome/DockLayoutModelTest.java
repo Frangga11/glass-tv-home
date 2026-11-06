@@ -72,6 +72,16 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void overflowPinnedAppCanBePromotedIntoVisibleDockSlot() {
+        List<String> pinned = Arrays.asList("a", "b", "c", "d", "overflow");
+        List<String> updated = DockLayoutModel.pinKey(pinned, "overflow", 1, 4);
+        assertEquals(Arrays.asList("a", "overflow", "b", "c", "d"), updated);
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(updated, updated, 4, value -> value);
+        assertEquals(Arrays.asList("a", "overflow", "b", "c"), snapshot.dockItems);
+        assertEquals(Collections.singletonList("d"), snapshot.gridItems);
+    }
+
+    @Test
     public void unpinningMovesIdentityOutOfDockWithoutDroppingIt() {
         List<String> pinned = Arrays.asList("a", "b", "c");
         List<String> updated = DockLayoutModel.unpinKey(pinned, "b");

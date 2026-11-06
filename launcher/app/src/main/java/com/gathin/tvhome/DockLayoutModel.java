@@ -150,7 +150,10 @@ final class DockLayoutModel {
 
     static List<String> pinKey(List<String> keys, String key, int requestedPosition, int capacity) {
         List<String> result = new ArrayList<>(keys == null ? Collections.emptyList() : keys);
-        if (key == null || key.trim().isEmpty() || result.contains(key)) return Collections.unmodifiableList(result);
+        if (key == null || key.trim().isEmpty()) return Collections.unmodifiableList(result);
+        // An overflow-pinned app is in the Grid but remains in the pin order. Moving it upward
+        // promotes it into a visible Dock slot instead of treating it as an already-pinned no-op.
+        result.remove(key);
         int normalizedCapacity = normalizeCapacity(capacity);
         int position = Math.max(0, Math.min(requestedPosition, Math.min(normalizedCapacity - 1, result.size())));
         result.add(position, key);
