@@ -946,3 +946,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Result: **PROTOTYPE VISUAL — REVISION REQUIRED**. Detailed findings and correction plan: [TRIGGER 4 validation report](UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md).
 - Actual browser screenshot at 1920×1080 was NOT captured; screenshot-based geometry, pixel, material and legibility checks remain NOT VERIFIED. V4 is preserved unchanged.
 - P4 and mass implementation remain BLOCKED pending a revised prototype, actual six-surface screenshots, visual/interaction acceptance and explicit owner approval.
+
+## UI Refresh — TRIGGER 4 V5 visual revision (6 November 2026)
+
+- New prototype-only V5 artifact created; V4 remains preserved. Home, four-card Profile Selector, Quick Settings popup, Wi-Fi popup and Global Settings split-detail composition were revised toward V01–V06. Shared glass CSS now includes translucency, backdrop blur and layered shadow.
+- V5 static source QC PASS; evidence: [V5 Static QC](UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md).
+- Scenic wallpaper and avatar/icon artwork are placeholders. Browser rendering and 1920×1080 screenshot comparison are NOT RUN.
+- **PROTOTYPE VISUAL — REVISION REQUIRED.** V5 is not approved; P4/mass implementation remains blocked pending actual six-surface screenshots and explicit owner approval.
