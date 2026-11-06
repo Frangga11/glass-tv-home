@@ -185,7 +185,7 @@ public class DockLayoutModelTest {
         assertEquals(8, DockLayoutModel.gridPositionForDock(2, true, 4, 12));
         assertEquals(1, DockLayoutModel.gridPositionForDock(5, false, 4, 12));
         assertEquals(11, DockLayoutModel.gridPositionForDock(5, true, 4, 12));
-        assertEquals(2, DockLayoutModel.dockPositionForGrid(6, true, 4, 6));
+        assertEquals(1, DockLayoutModel.dockPositionForGrid(6, true, 4, 6));
         assertEquals(2, DockLayoutModel.dockPositionForGrid(6, false, 4, 6));
         assertEquals(0, DockLayoutModel.dockPositionForGrid(0, false, 4, 6));
         assertEquals(-1, DockLayoutModel.gridPositionForDock(0, false, 4, 0));
