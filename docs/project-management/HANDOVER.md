@@ -1073,3 +1073,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Preserve Lean Engineering, source-backed UI only, simple/elegant/space-efficient/readable design, shared B01 visual/modal/focus contracts, and the APK size budget (G02 headroom was 571 bytes).
 - GitHub Issues are disabled for this repository; project calls were recorded as comments on PR #62 and #63 instead.
 - **Next decision point:** submit the consolidated UI refresh proposal for user review; do not start implementation until explicit approval.
+
+
+## UI Refresh roadmap v1.0 — completeness update — 6 November 2026
+
+- Added canonical roadmap: [UI_REFRESH_ROADMAP.md](UI_REFRESH_ROADMAP.md), document GTVH-UIR-001 v1.0.
+- Completeness review added explicit coverage previously missing from the short proposal: full UI state matrix (loading/empty/error/offline/permission denied/interrupted/no profile); overscan, text scaling and localization; D-pad focus-path contract; security/privacy and provider constraints; API/device compatibility; lifecycle cancellation; measured performance; safe persistence/migration and rollback; defect severity/stop rules; traceability from requirement through commit/test/evidence.
+- The roadmap remains seven lean stages P0–P6. E02/E06 can parallelize only after baseline, shared contracts and prototypes are approved. Each implementation slice must be tested before integration.
+- Acceptance requires zero open Critical/High defects, complete in-scope UI traceability, exact-head CI, and separate device evidence; green CI is not physical TV acceptance.
+- **Governance unchanged:** this document is a proposed baseline awaiting explicit user approval. It does not authorize production implementation, merge, integration/main updates, APK publication/installation, ADB or physical device mutation. E02 #62 and E06 #63 remain subject to live-head reconciliation; G03 remains separately gated.
+- Roadmap commit: ac51f60277b5571ed8c8825e0cf16c293edcae9b.
