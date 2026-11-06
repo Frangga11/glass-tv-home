@@ -6799,31 +6799,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         anchor.getLocationInWindow(menuAt);
         root.getLocationInWindow(menuGliderAt);
 
-        int viewportWidth = root.getWidth() > 0 ? root.getWidth() : getResources().getDisplayMetrics().widthPixels;
-        int viewportHeight = root.getHeight() > 0 ? root.getHeight() : getResources().getDisplayMetrics().heightPixels;
-        width = Math.max(1, Math.min(width, TvResponsiveLayout.safeContentPx(viewportWidth)));
+        int safeX = TvResponsiveLayout.safeInsetPx(root.getWidth());
+        int safeY = TvResponsiveLayout.safeInsetPx(root.getHeight());
+        width = Math.max(1, Math.min(width, root.getWidth() - 2 * safeX));
         int gap = (int) (10 * density);
         int anchorTop = menuAt[1] - menuGliderAt[1];
         panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.UNSPECIFIED);
-        int contentHeight = Math.max(1, panel.getMeasuredHeight());
-        int safeX = TvResponsiveLayout.safeInsetPx(viewportWidth);
-        int safeY = TvResponsiveLayout.safeInsetPx(viewportHeight);
-        int safeWidth = Math.max(1, viewportWidth - 2 * safeX);
-        int safeHeight = Math.max(1, viewportHeight - 2 * safeY);
-        width = Math.max(1, Math.min(width, safeWidth));
-        int height = Math.max(1, Math.min(contentHeight, safeHeight));
+        int height = Math.max(1, Math.min(panel.getMeasuredHeight(), root.getHeight() - 2 * safeY));
         int left = Math.max(safeX, Math.min(menuAt[0] - menuGliderAt[0],
-                viewportWidth - safeX - width));
-        int anchorBottom = anchorTop + anchor.getHeight();
-        boolean placeAbove = above;
-        int popupTop = placeAbove ? anchorTop - gap - height : anchorBottom + gap;
-        if (!placeAbove && popupTop + height > viewportHeight - safeY) {
-            placeAbove = true;
-            popupTop = anchorTop - gap - height;
-        }
-        popupTop = Math.max(safeY, Math.min(popupTop, viewportHeight - safeY - height));
-
+                root.getWidth() - safeX - width));
+        int popupTop = anchorTop + anchor.getHeight() + gap;
+        boolean placeAbove = above || popupTop + height > root.getHeight() - safeY;
+        if (placeAbove) popupTop = anchorTop - gap - height;
+        popupTop = Math.max(safeY, Math.min(popupTop, root.getHeight() - safeY - height));
         final boolean opensAbove = placeAbove;
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
         lp.leftMargin = left;
