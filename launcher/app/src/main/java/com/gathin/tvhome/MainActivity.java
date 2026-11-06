@@ -6799,51 +6799,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         anchor.getLocationInWindow(menuAt);
         root.getLocationInWindow(menuGliderAt);
 
-        int viewportWidth = root.getWidth() > 0
-                ? root.getWidth() : getResources().getDisplayMetrics().widthPixels;
-        int viewportHeight = root.getHeight() > 0
-                ? root.getHeight() : getResources().getDisplayMetrics().heightPixels;
-        int safeWidth = TvResponsiveLayout.safeContentWidthPx(viewportWidth);
-        int boundedWidth = Math.max(1, Math.min(width, safeWidth));
+        int viewportWidth = root.getWidth() > 0 ? root.getWidth() : getResources().getDisplayMetrics().widthPixels;
+        int viewportHeight = root.getHeight() > 0 ? root.getHeight() : getResources().getDisplayMetrics().heightPixels;
+        width = Math.max(1, Math.min(width, TvResponsiveLayout.safeContentWidthPx(viewportWidth)));
         int gap = (int) (10 * density);
         int anchorTop = menuAt[1] - menuGliderAt[1];
-        int measuredHeight;
-
-        panel.measure(View.MeasureSpec.makeMeasureSpec(boundedWidth, View.MeasureSpec.EXACTLY),
+        panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.UNSPECIFIED);
-        measuredHeight = Math.max(1, panel.getMeasuredHeight());
+        int contentHeight = Math.max(1, panel.getMeasuredHeight());
         boolean placeAbove = TvResponsiveLayout.shouldPlacePopupAbove(
-                anchorTop, anchor.getHeight(), measuredHeight, viewportHeight, gap, above);
-        int availableHeight = TvResponsiveLayout.popupAvailableHeightPx(
-                anchorTop, anchor.getHeight(), viewportHeight, gap, placeAbove);
-        int panelHeight = Math.max(1, Math.min(measuredHeight, availableHeight));
+                anchorTop, anchor.getHeight(), contentHeight, viewportHeight, gap, above);
+        int height = Math.max(1, Math.min(contentHeight,
+                TvResponsiveLayout.popupAvailableHeightPx(anchorTop, anchor.getHeight(),
+                        viewportHeight, gap, placeAbove)));
 
-        // Long menus remain navigable: constrain the panel and put its existing focusable rows
-        // in a scroll container. ScrollView keeps the focused child visible during D-pad traversal.
-        if (measuredHeight > panelHeight && rows.getParent() == panel) {
-            panel.removeView(rows);
-            ScrollView scroll = new ScrollView(this);
-            scroll.setFillViewport(false);
-            scroll.setVerticalScrollBarEnabled(false);
-            scroll.setClipToPadding(false);
-            scroll.addView(rows, new ScrollView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            FrameLayout.LayoutParams scrollLp = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, panelHeight);
-            panel.addView(scroll, scrollLp);
-        }
-
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(boundedWidth, panelHeight);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
         lp.leftMargin = TvResponsiveLayout.popupLeftPx(
-                menuAt[0] - menuGliderAt[0], boundedWidth, viewportWidth);
+                menuAt[0] - menuGliderAt[0], width, viewportWidth);
         lp.topMargin = TvResponsiveLayout.popupTopPx(
-                anchorTop, anchor.getHeight(), panelHeight, viewportHeight, gap, placeAbove);
+                anchorTop, anchor.getHeight(), height, viewportHeight, gap, placeAbove);
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
 
-        // Focus stays in the menu until it closes. Leaving it towards the anchor closes it, and the
-        // selection glides back into what it opened from.
         View first = null, last = null;
         for (int i = 0; i < rows.getChildCount(); i++) {
             View row = rows.getChildAt(i);
@@ -6881,7 +6859,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
 
-        // The glass and the rows fade in around the selection as it arrives.
         glass.setAlpha(0);
         rows.setAlpha(0f);
         final float slide = (placeAbove ? 8 : -8) * density;
