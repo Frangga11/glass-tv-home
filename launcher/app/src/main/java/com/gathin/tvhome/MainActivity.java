@@ -6810,13 +6810,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int[] bounds = TvResponsiveLayout.popupBoundsPx(
                 menuAt[0] - menuGliderAt[0], anchorTop, anchor.getHeight(), width,
                 contentHeight, viewportWidth, viewportHeight, gap, above);
-        int left = bounds[0], top = bounds[1], height = bounds[3];
+        int left = bounds[0], popupTop = bounds[1], height = bounds[3];
         width = bounds[2];
         boolean placeAbove = bounds[4] == 1;
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
         lp.leftMargin = left;
-        lp.topMargin = top;
+        lp.topMargin = popupTop;
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
