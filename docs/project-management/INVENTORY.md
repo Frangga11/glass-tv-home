@@ -634,3 +634,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - G02 artifact #13210715335 is currently available until 10 Nov 2026 06:37:50 UTC. Downloaded ZIP digest and extracted APK SHA-256 were independently revalidated; details in [G03 preflight](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md).
 - No physical TV test has been performed. Host lacks ADB/signature verification utilities and has no connected Mi TV Stick. Explicit readiness approval remains mandatory before install or device mutation.
 - G03 status: PREFLIGHT VERIFIED; PHYSICAL ACCEPTANCE NOT RUN / BLOCKED / NOT FINAL.
+
+
+## UI Refresh P1 — Functional Inventory (6 November 2026)
+
+- Canonical inventory: [UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md](UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md).
+- Scope mapped: E02 Profile, seven built-in avatars, QR photo upload, GIPHY search/preview/selection/playback, profile add/edit/switch/delete, Child Mode, locked/hidden apps and parent PIN; E06 Home app grid, current Dock membership/order/decoration, Dock preference model, Home settings and focus/navigation.
+- Every identified element records owner, actual behavior or explicit absence, data/state/persistence/permission boundary and test plan.
+- Explicit not implemented: separate Dock model/view/adapter, Dock settings UI, horizontal/vertical renderer, capacity wiring, overflow and independent focus/scroll/reorder.
+- P1 result PARTIAL pending user acceptance and source/permission/provider clarifications. No implementation authorization.
