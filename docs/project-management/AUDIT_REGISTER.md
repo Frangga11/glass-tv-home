@@ -1238,3 +1238,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #62 live metadata is OPEN/DRAFT/UNMERGED at exact head `588456144df24f2f6c015a01053ad700a04bee39`; exact-head run #1204 has both required jobs SUCCESS. Its PR description still states that exact-head CI is unconfirmed. Treat the description as stale, not the CI result.
 - PR #63 live metadata is OPEN/DRAFT/UNMERGED; PR description and exact-head run #1198 are consistent.
 - No PR body or metadata was changed. Owner should reconcile PR #62 description before feature-ready review.
+
+
+## GTVH-UIR-P3-001 — Prototype V2 source audit checkpoint (6 November 2026)
+
+- **Disposition: PARTIAL / IN PROGRESS — review gate open.**
+- Added `prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V2.html` on documentation branch. Artifact commits: `22a816ca90678c3c666db1de9a13cf9121136d82`, refinement `65d4fbfcacaa3af49c8fe964367ace3bf6e09d59`.
+- P3 specification updated at commit `699bdd6cf5f20d191ea8902608ca36eff0543add`; HANDOVER checkpoint updated at `24f686627902cfb5c91f2a4588670e6dee0b2484`.
+- Static checks confirmed prototype source includes: independent Dock presentation selector for horizontal/vertical and capacities 4/5/6; fixed four-column app-grid representation; permission/location gating; Wi-Fi offline/throttle/stale/empty states; weather loading and result states; confirm/failure dialogs; contrast modes; reduced-motion switch; spatial focus/Back handler; category-level search. No runtime/browser test result is claimed.
+- Scenario statuses P3-01..P3-12 are itemized in the P3 specification. Source implementation is present for most simulation paths; visual and interactive walkthroughs, worst-case localization/text scaling, TV-distance readability, screenshot comparison and actual remote behavior remain pending.
+- Current live owner PR state rechecked: #62 OPEN/DRAFT/UNMERGED; #63 OPEN/DRAFT/UNMERGED. E02 latest CI statement in PR body is stale/inconsistent with the P1/AUDIT_REGISTER evidence: exact-head CI #1204 / run `41895866368` is recorded SUCCESS for both required jobs. Do not treat this as E02 feature acceptance; cancellation/lifecycle/preview/provider-policy gaps remain. E06 exact-head CI #1198 / run `41890835096` both jobs SUCCESS, but Dock renderer/settings/focus/overflow are absent.
+- P1 remains PARTIAL pending user acceptance. P2 remains frozen COMPLETE. P4 remains NOT STARTED and BLOCKED pending P1 acceptance and P3 review/approval.
+- No production source, owner branches, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical device was changed. No merge, publication or installation was performed.
