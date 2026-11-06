@@ -6824,6 +6824,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         popupTop = Math.max(safeY, Math.min(popupTop, viewportHeight - safeY - height));
 
+        final boolean opensAbove = placeAbove;
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
         lp.leftMargin = left;
         lp.topMargin = popupTop;
@@ -6850,11 +6851,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_DPAD_UP:
                         if (v != top) return false;
-                        if (down && !placeAbove) closeMenu(true);
+                        if (down && !opensAbove) closeMenu(true);
                         return true;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
                         if (v != bottom) return false;
-                        if (down && placeAbove) closeMenu(true);
+                        if (down && opensAbove) closeMenu(true);
                         return true;
                     case KeyEvent.KEYCODE_DPAD_LEFT:
                     case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -6870,7 +6871,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         glass.setAlpha(0);
         rows.setAlpha(0f);
-        final float slide = (placeAbove ? 8 : -8) * density;
+        final float slide = (opensAbove ? 8 : -8) * density;
         rows.setTranslationY(slide);
         android.animation.ValueAnimator in = android.animation.ValueAnimator.ofFloat(0f, 1f);
         in.setDuration(reducedMotion ? 120 : 220);
