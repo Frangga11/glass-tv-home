@@ -3089,7 +3089,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int target;
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
             if (dockVertical && position % COLUMNS == 0 && dockAdapter.getItemCount() > 0) {
-                focusDockTile(lastFocused);
+                focusLastDockTile();
                 return true;
             }
             return position % COLUMNS == 0;
@@ -3100,7 +3100,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
                 if (!dockVertical && dockAdapter.getItemCount() > 0) {
-                    focusDockTile(lastFocused);
+                    focusLastDockTile();
                     return true;
                 }
                 if (position <= 1 && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
