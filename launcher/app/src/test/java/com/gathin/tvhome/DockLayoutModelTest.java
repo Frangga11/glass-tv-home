@@ -161,6 +161,16 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void allSixDockConfigurationsHaveDistinctHolderTypes() {
+        assertEquals(4, DockLayoutModel.dockViewType(false, 4));
+        assertEquals(5, DockLayoutModel.dockViewType(false, 5));
+        assertEquals(6, DockLayoutModel.dockViewType(false, 6));
+        assertEquals(104, DockLayoutModel.dockViewType(true, 4));
+        assertEquals(105, DockLayoutModel.dockViewType(true, 5));
+        assertEquals(106, DockLayoutModel.dockViewType(true, 6));
+    }
+
+    @Test
     public void invalidCapacityFallsBackToDefaultFive() {
         List<String> inventory = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         DockLayoutModel.Snapshot<String> result =

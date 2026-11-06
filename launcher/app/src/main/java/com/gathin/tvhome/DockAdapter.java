@@ -60,7 +60,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     public int getItemViewType(int position) {
         // A changed capacity/orientation must recreate holders so their measured tile dimensions
         // cannot remain stale after a live settings update.
-        return (vertical ? 100 : 0) + capacity;
+        return DockLayoutModel.dockViewType(vertical, capacity);
     }
 
     @NonNull

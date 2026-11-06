@@ -35,6 +35,11 @@ final class DockLayoutModel {
 
     private DockLayoutModel() { }
 
+    /** Unique holder type per orientation/capacity so changed geometry cannot reuse stale tile views. */
+    static int dockViewType(boolean vertical, int capacity) {
+        return (vertical ? 100 : 0) + normalizeCapacity(capacity);
+    }
+
     static int normalizeCapacity(int capacity) {
         return capacity == 4 || capacity == 5 || capacity == 6
                 ? capacity : DockPreferences.DEFAULT_CAPACITY;
