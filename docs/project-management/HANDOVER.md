@@ -1275,3 +1275,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - P1 inventory is **CLOSED FOR PROGRESSION** with approved V01–V06 direction and agreed functional boundaries; technical/runtime gaps remain explicitly carried, not waived. Evidence: `UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md` (commit `bfd5f252e309319fcbeecba6ec1818c39cdba316`).
 - V3 prototype static QC PASS. Manual 12-scenario browser/keyboard walkthrough plan created at `UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md` (commit `86b55ed6c3f8d849cdc6c2f9dde80f81f70ef5db`); execution NOT RUN.
 - Current stage remains P3 PARTIAL. Next permitted work is executing the V3 walkthrough and visual comparison against the six approved references. No P4 or production source change until P3 exits.
+
+
+
+## UI Refresh — V4 static QC checkpoint (6 November 2026)
+
+- V3 preserved; new V4 artifact: `docs/project-management/prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V4.html`.
+- Fixed three additional V3 risks: Weather Refresh focus retained while busy; stale Wi-Fi scan completion cancelled when prerequisites change; modal Tab/Shift+Tab focus trapped and Backspace remains editable in text fields.
+- Static QC **PASS**; evidence: `docs/project-management/UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md` (commit `97c27d55e1c4ac007ba2506e3f6cc7ebe56be60e`).
+- Browser walkthrough and visual comparison are NOT RUN. P3 remains PARTIAL; P4 blocked. No production source, branch, PR, integration/main, APK or device changed.
