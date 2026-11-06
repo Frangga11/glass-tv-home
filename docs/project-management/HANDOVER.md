@@ -1160,3 +1160,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Visual mapping is complete at reference/surface level, but runtime/device/pixel comparison is not performed. Overall P1 remains **PARTIAL — BELUM PASS**; functional parity and runtime state gates remain open.
 - Inventory commit: b8bef437e872e1c99c73631ac5a1c3c3ff8a5aa2. Updated inventory path: docs/project-management/UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md on docs/project-master-inventory.
 - No production source, feature branches, PR metadata, integration/main, APK, ADB or TV device changed. P2/P3/P4 remain not started and gated pending user decisions/approval.
+
+
+## UI Refresh P2 — Shared Design & Interaction Contract started (6 Nov 2026)
+- User directed: “Lakukan pekerjaan sesuai rekomendasi gambar.” Adopted V01–V06 as the official design direction and began P2 documentation.
+- Updated P1 inventory with explicit user direction: V06 taxonomy adopted (Profil, Layar Utama, Tampilan, Widget & Informasi, Animasi & Efek, Layar Siaga, Pengaturan Perangkat); V05 Wi-Fi is the target experience but enhanced scan/connect/radio capabilities are conditional on Android 11/API, permission, security and device feasibility; V04 Next photo is a target action pending source verification; V02 retains the complete approved Weather V4 scope.
+- Created docs/project-management/UI_REFRESH_P2_SHARED_DESIGN_INTERACTION_CONTRACT_2026-11-06.md (GTVH-UIR-P2-001). It defines shared glass/surface and contrast rules, typography, D-pad focus vs selected/active semantics, popup/dialog behavior, responsive/overscan constraints, common state patterns, all six surface contracts, module ownership/dependency order, acceptance criteria and open technical gates.
+- P2 status: DRAFT — technical verification and user review required. P3 prototype and P4 implementation have NOT started and remain gated on explicit P2 approval.
+- P1 remains PARTIAL — BELUM PASS for runtime/device/state verification; the missing visual reference blocker is closed.
+- P1 direction update commit: 55142dbaf25c6333491b0420b61ef376a97bd6eb. P2 contract creation commit: 92d4d263ebb3aa539d28228ffe51c2b67802c5c1.
+- No production source, feature branches, PR metadata, integration/main, APK, ADB or TV device changed.
