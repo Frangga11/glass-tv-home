@@ -310,3 +310,61 @@ Dependency rule: P2 design and P3 prototype approval are mandatory before P4. Th
 **P1 Expansion result: PARTIAL — BELUM PASS.** The source mapping for all six named surfaces and the Settings categories is recorded. The quality gate is not passed because the exact six approved visual references are not available in the audited repository evidence, several nested/device states still require verification, and no runtime/device comparison was authorized or performed.
 
 No P2 design contract, P3 prototype, P4 implementation, merge, APK build/publication/installation, ADB or device action is started by this expansion. Stop here and await user review/approval. P2 remains gated by the six canonical reference images and closure/explicit acceptance of the listed open decisions.
+
+
+## P1 Addendum — Canonical Visual Reference Reconciliation (6 Nov 2026)
+
+**Evidence received:** six user-supplied reference images, designated V01–V06. This closes the earlier missing-reference blocker for visual mapping. These images are design references, not evidence that the current APK already implements these layouts or behaviors. No runtime screenshot comparison was performed.
+
+### V01 — Home Screen (1024×576 reference)
+- **Visual target:** 16:9 composition; photographic Dempo/mountain sunrise background; top-left time/date; centered navigation pills (Beranda/Profil/Pengaturan); Wi-Fi and microphone actions; location/elevation and compact weather/AQI pills; large contextual weather headline; Qur'an verse and prayer-time strip; translucent glass dock with five large app tiles.
+- **Source mapping:** MainActivity.java, activity_main.xml, AppAdapter.java, Config.java, DockDecoration.java, HomeWeather.
+- **Source-to-reference gap:** source inventory confirms the home shelf, navigation/actions, weather/AQI, date/time/prayer shelf, media card, app grid and Dock. It does not establish that the exact visual hierarchy, proportional geometry, dock surface, or content composition in V01 is implemented. The current single RecyclerView/GridLayoutManager coupling of app grid and Dock is an architecture risk for independently tuning the dock.
+- **P1 requirement:** preserve TV-safe 16:9 composition, readable hierarchy and D-pad focus; decouple Dock geometry from app-grid column geometry before visual tuning. Validate dynamic content overflow and safe margins.
+
+### V02 — Weather & AQI Dashboard (473×1024 reference)
+- **Visual target:** compact location/elevation and weather/AQI trigger pills; expanded anchored dashboard with location/update time, current condition and temperature, feels-like and high/low, AQI/category/explanation, humidity, wind, pressure, hourly forecast, seven-day forecast, strong glass/cyan outline and legible nested cards.
+- **Source mapping:** WeatherActivity.java, activity_weather.xml, WeatherAirQuality.java, WeatherBackgroundView.java, HomeWeather.
+- **Source-to-reference gap:** source contains current weather, hourly/daily forecasts, wind/compass, sunrise/sunset, UV, feels-like, AQI/category, precipitation/rain chance, visibility, humidity, pressure, radar and source/update footer. The reference image does not display every field in the locked V4 dashboard scope. Therefore V02 is a layout reference, not permission to drop V4 data fields. Retain the full approved V4 information scope, deciding through P2 how secondary data is grouped or scrolled.
+- **P1 requirement:** document which fields are primary vs secondary; ensure AQI pollutant breakdown and local source/region labels are truthful. Existing modelled US AQI must not be labelled Indonesian official ISPU. Verify the Malaysia JAS/APIMS source-label path and regional provider behavior.
+
+### V03 — Profile Selector (473×1024 reference)
+- **Visual target:** anchored horizontal selector with title and four large cards: active personal profile, family, child, and add profile. Active profile has clear cyan focus/selection ring; avatar and labels are legible at TV distance.
+- **Source mapping:** UserSwitchDialog.java, ProfileManager.java, ChildModeManager.java, plus Profile tab in ModernSettingsDialog.
+- **Source-to-reference gap:** profile switching, add profile, Child Mode, avatar, locked/hidden apps and PIN are present in source inventory. Exact four-card geometry, active-vs-focused state distinction, and focus restoration need explicit verification. The reference selector itself does not show the full management controls; those remain in the Profile settings detail.
+- **P1 requirement:** separate active-profile indicator from D-pad focus indicator; define empty/one/many-profile states, add-profile flow, delete confirmation, Child Mode/PIN gate, and Back/focus restoration.
+
+### V04 — Quick Settings Popup (473×1024 reference)
+- **Visual target:** popup anchored to Settings pill; title/close; two-column quick actions for Wi-Fi, restart, language, power-off; full-width cache cleanup; Wallpaper section with next-photo and interval; Glass TV Settings and Android TV Settings entries.
+- **Source mapping:** MainActivity.showQuickControlPopup() and existing popup/menu row infrastructure.
+- **Source-to-reference gap:** source action inventory substantially matches the reference: Wi-Fi, restart, power off, cache, wallpaper interval summary, language, Glass TV Settings and Android Settings. The screenshot depicts a direct Next photo action and interval control; source inventory records wallpaper interval summary but not a verified Next photo action in this popup. Confirm that action exists before marking parity. Reference layout and glass styling are not established by source presence alone.
+- **P1 requirement:** specify action availability/confirmation/feedback and failure states for restart, power-off, cache, wallpaper change and external settings intents.
+
+### V05 — Wi-Fi Popup (473×1024 reference)
+- **Visual target:** Wi-Fi master switch; current connected SSID with selected check and lock/security icon; scrollable nearby network list; per-network security indicator; rescan action; Android Wi-Fi settings entry.
+- **Source mapping:** Wi-Fi pill and MainActivity.showWifiPopup().
+- **Critical functional gap:** current source behavior recorded in this audit is connection-state/SSID/IP summary, Android Wi-Fi Settings launch and Close; long press opens Android Wi-Fi Settings. It is **not** an in-app nearby-network scanner, network list, connect flow, password-entry flow or Wi-Fi radio controller. V05 requires materially broader functionality than the current source surface.
+- **P1 decision required:** explicitly choose (a) retain lightweight status + Android settings handoff, revising V05 as aspirational, or (b) approve an expanded in-app Wi-Fi experience after Android 11/API, permissions, security, lifecycle and device feasibility audit. Do not imply scan/connect support until implemented and verified.
+
+### V06 — Global Settings Split Detail (827×468 reference)
+- **Visual target:** 16:9 settings screen with persistent left category navigation and right detail pane; top product/device status; active Profile category; profile/avatar preview card; clear editable rows and parental control switch; luminous cyan focus and glass panels. Reference category labels: Profil, Layar Utama, Tampilan, Widget & Informasi, Animasi & Efek, Layar Siaga, Pengaturan Perangkat.
+- **Source mapping:** ModernSettingsDialog.java, TvUiTokens.java, TvDialogStyle.java, TvFocusIndicator.java, TvResponsiveLayout.java, GlassDrawable; settings category builders and underlying E01/E02/E04/E05/E06/E07/E08 owners.
+- **Source-to-reference gap:** the existing Settings screen already has a seven-tab split modal with search, profile card/sidebar and right pane, but current source labels/categories are Profile, Home Screen, Appearance, Status Bar & Weather, Visual Effects, Standby, Device Settings. The reference renames/reframes at least “Widget & Informasi” vs “Status Bar & Weather”. This is a semantic taxonomy decision, not merely a label translation. Current shared tokens and root surface are charcoal/matte with cyan focus, not yet the target blue glass visual language. Focus component coverage is narrower than the complete target interaction system.
+- **P1 requirement:** settle canonical category taxonomy and localization keys; retain clear ownership for each control; define focus traversal, scroll/focus restore, selected vs focused states, search result scope, and responsive/overscan behavior before P2 design lock.
+
+### Cross-reference design contract candidates (for P2 approval)
+1. **Surface language:** blue-tinted translucent glass, restrained blur/highlight, cyan edge/focus treatment, readable contrast; do not overuse transparency over busy wallpaper.
+2. **Focus semantics:** D-pad focus must be unmistakable and distinct from selected/active/connected states; define focus for cards, rows, toggles, chips, scroll lists, dialogs and close controls.
+3. **Hierarchy:** persistent navigation/actions, primary content and secondary detail must remain distinguishable at 1920×1080 TV distance; use consistent spacing, radii, icon sizes and typography.
+4. **Wallpaper adaptation:** text and controls must remain legible over bright sunrise, cloud, forest and dark images; define scrim/contrast adaptation rather than relying on one fixed background.
+5. **State completeness:** loading, empty, populated, offline, error, permission denied, unavailable, interrupted/Back, and action confirmation/result states must have shared patterns.
+6. **Motion/accessibility:** define reduced-motion behavior, animation duration, focus transition, text scaling, overscan-safe layout and day/normal/night appearance.
+7. **Data truthfulness:** source, update time, location scope, AQI model/standard and permission state must be explicit where relevant.
+
+### Updated disposition
+- **Visual reference availability:** PASS — all six user-supplied images received and mapped V01–V06.
+- **Source-to-reference surface reconciliation:** PARTIAL — all six surfaces mapped; exact pixel measurements, runtime behavior and device screenshots have not been compared.
+- **Functional parity:** NOT PASS — V05 Wi-Fi is a confirmed scope gap; V04 Next photo action is unverified; several focus/empty/error/permission states remain source/runtime verification items.
+- **Taxonomy/design decisions:** OPEN — V06 category naming and broader P2 contract require approval.
+- **Overall P1:** PARTIAL — BELUM PASS. Reference blocker is closed, but functional and runtime evidence gates remain open.
+- **Gate:** do not start P2/P3/P4 or implementation until user reviews the Wi-Fi scope decision, category taxonomy and proposed shared design contract. No production source, feature branch, PR metadata, integration/main, APK, ADB or TV device was changed.
