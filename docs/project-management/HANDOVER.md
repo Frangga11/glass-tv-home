@@ -1232,3 +1232,9 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - P3-01..P3-12 have been updated in the P3 spec with evidence and honest dispositions. All remain walkthrough/review pending where interactive or visual evidence is required. P3 is **PARTIAL / IN PROGRESS**, not PASS. No user design approval is inferred.
 - No production source, feature branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV changed. No browser session or physical TV test was run. No merge, publish or install occurred.
 - **Exact resume point:** continue P3 review against V2 and the 12-scenario matrix. Validate browser keyboard interactions and all six Dock combinations, collect screenshots at target frame/TV scale, perform long-label/contrast/focus/accessibility review, correct reproducible prototype defects, then update evidence. Keep P4 BLOCKED until P1 acceptance and P3 prototype/review approval are explicitly satisfied. Do not repeat P0/P1 inventory or P2 contract work unless live dependencies change.
+
+
+### P3 V2 source-review correction — V06 search focus (6 Nov 2026)
+- A source review caught a prototype defect: control filtering moved focus away from the search input on each keystroke. Fixed it so typing keeps focus in the input; D-pad Down transfers focus to the first matching control. Empty-query reset also preserves search focus.
+- Artifact correction commit: `ce6d45ca6a353bae867607d63d84c82c67eec4fa`; inline JavaScript syntax check PASS. This is not a browser walkthrough.
+- P3 spec correction recorded at `70c7a90f81d779f685891b894f13461b61da681d`. Continue with actual browser/keyboard test of multi-character search and Down/Back focus restoration before marking P3-11 accepted.
