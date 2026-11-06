@@ -371,6 +371,7 @@ final class WeatherAirQuality {
         double selectedLat = AppLocationManager.getLatitude(context);
         double selectedLon = AppLocationManager.getLongitude(context);
         if (!cacheMatchesLocation(prefs, KEY_WEATHER_LAT, KEY_WEATHER_LON, selectedLat, selectedLon)) weatherJson = null;
+        // APIMS/JAS index values are not interchangeable with the US AQI/CAMS cache contract.
         boolean legacyJasCache = prefs.getBoolean(KEY_AQI_IS_JAS, false);
         if (legacyJasCache || !cacheMatchesLocation(prefs, KEY_AQI_LAT, KEY_AQI_LON, selectedLat, selectedLon)) {
             aqiJson = null;
