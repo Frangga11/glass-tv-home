@@ -6809,17 +6809,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int contentHeight = Math.max(1, panel.getMeasuredHeight());
         int safeX = TvResponsiveLayout.safeInsetPx(viewportWidth);
         int safeY = TvResponsiveLayout.safeInsetPx(viewportHeight);
-        int anchorBottom = anchorTop + anchor.getHeight();
-        int aboveSpace = anchorTop - gap - safeY;
-        int belowSpace = viewportHeight - safeY - anchorBottom - gap;
-        boolean placeAbove = above && aboveSpace >= contentHeight
-                || contentHeight > belowSpace && aboveSpace > belowSpace;
-        int available = Math.max(0, placeAbove ? aboveSpace : belowSpace);
-        int height = Math.max(1, Math.min(contentHeight, available));
-        width = Math.max(1, Math.min(width, viewportWidth - 2 * safeX));
+        int safeWidth = Math.max(1, viewportWidth - 2 * safeX);
+        int safeHeight = Math.max(1, viewportHeight - 2 * safeY);
+        width = Math.max(1, Math.min(width, safeWidth));
+        int height = Math.max(1, Math.min(contentHeight, safeHeight));
         int left = Math.max(safeX, Math.min(menuAt[0] - menuGliderAt[0],
                 viewportWidth - safeX - width));
+        int anchorBottom = anchorTop + anchor.getHeight();
+        boolean placeAbove = above;
         int popupTop = placeAbove ? anchorTop - gap - height : anchorBottom + gap;
+        if (!placeAbove && popupTop + height > viewportHeight - safeY) {
+            placeAbove = true;
+            popupTop = anchorTop - gap - height;
+        }
         popupTop = Math.max(safeY, Math.min(popupTop, viewportHeight - safeY - height));
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
