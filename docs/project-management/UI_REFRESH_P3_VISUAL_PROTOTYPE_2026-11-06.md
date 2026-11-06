@@ -200,3 +200,11 @@ No production source, feature branch, PR metadata, integration/main, APK, ADB, H
 
 - Reproducible 12-scenario manual browser/keyboard test plan: [UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md](UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md).
 - Execution status: **NOT RUN**. V3 static source QC remains PASS; P3 is not closed until the plan has actual browser evidence and reference comparison.
+
+
+## V4 — Deeper interaction hardening (6 November 2026)
+
+- New artifact: [UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V4.html](prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V4.html). V3 remains preserved unchanged.
+- Additional V3 findings corrected: (1) Weather Refresh no longer disables its focused invoking button during loading; busy state blocks duplicate activation without removing focus. (2) Wi-Fi prerequisite changes invalidate an in-flight simulated scan so a stale callback cannot overwrite the newer condition. (3) Modal Tab/Shift+Tab now wraps focus inside the dialog; Backspace remains editable in text inputs while Escape closes/back.
+- V4 static source QC: **PASS**. Evidence: [UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md).
+- Browser walkthrough and visual acceptance remain NOT RUN. P3 stays PARTIAL; no P4/source implementation.
