@@ -44,6 +44,15 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void customDockOrderKeepsNewDefaultsButHonorsExplicitUnpins() {
+        assertEquals(Arrays.asList("custom", "favorite-a", "favorite-c"),
+                DockLayoutModel.mergePinnedKeys(
+                        Arrays.asList("custom", "favorite-a"),
+                        Arrays.asList("favorite-a", "favorite-b", "favorite-c"),
+                        Collections.singletonList("favorite-b")));
+    }
+
+    @Test
     public void movingDockKeyOnlyReordersVisiblePinnedSlots() {
         List<String> pinned = Arrays.asList("a", "b", "c", "d", "overflow");
         assertEquals(Arrays.asList("c", "a", "b", "d", "overflow"),

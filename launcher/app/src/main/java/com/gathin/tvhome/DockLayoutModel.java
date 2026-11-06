@@ -119,6 +119,24 @@ final class DockLayoutModel {
         return Collections.unmodifiableList(result);
     }
 
+    static List<String> mergePinnedKeys(List<String> explicitKeys, List<String> defaultKeys, List<String> excludedKeys) {
+        Set<String> excluded = new HashSet<>();
+        if (excludedKeys != null) excluded.addAll(excludedKeys);
+        List<String> result = new ArrayList<>();
+        Set<String> added = new HashSet<>();
+        if (explicitKeys != null) {
+            for (String key : explicitKeys) {
+                if (key != null && !key.trim().isEmpty() && !excluded.contains(key) && added.add(key)) result.add(key);
+            }
+        }
+        if (defaultKeys != null) {
+            for (String key : defaultKeys) {
+                if (key != null && !key.trim().isEmpty() && !excluded.contains(key) && added.add(key)) result.add(key);
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
     static List<String> movePinnedKey(List<String> keys, int from, int to, int visibleCount) {
         List<String> result = new ArrayList<>(keys == null ? Collections.emptyList() : keys);
         if (from < 0 || to < 0 || from >= visibleCount || to >= visibleCount

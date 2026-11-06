@@ -380,7 +380,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (from == to || from < 0 || to < 0 || from >= snapshot.dockItems.size()
                 || to >= snapshot.dockItems.size() || from >= pinned.size() || to >= pinned.size()) return false;
         List<String> reordered = DockLayoutModel.movePinnedKey(pinned, from, to, snapshot.dockItems.size());
-        if (reordered.equals(pinned) || !DockPreferences.savePinnedKeys(ctx, reordered)) return false;
+        if (reordered.equals(pinned) || !DockPreferences.savePinnedState(ctx, reordered, DockPreferences.loadUnpinnedKeys(ctx))) return false;
         notifyDataSetChanged();
         return true;
     }
@@ -389,7 +389,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (key == null || key.trim().isEmpty()) return false;
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.pinKey(pinned, key, requestedPosition, DockPreferences.load(ctx).capacity);
-        if (updated.equals(pinned) || !DockPreferences.savePinnedKeys(ctx, updated)) return false;
+        if (updated.equals(pinned)) return false;
+        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        excluded.remove(key);
+        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
         notifyDataSetChanged();
         return true;
     }
@@ -398,7 +401,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (key == null || key.trim().isEmpty()) return false;
         List<String> pinned = currentPinnedKeys();
         List<String> updated = DockLayoutModel.unpinKey(pinned, key);
-        if (updated.equals(pinned) || !DockPreferences.savePinnedKeys(ctx, updated)) return false;
+        if (updated.equals(pinned)) return false;
+        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        if (!excluded.contains(key)) excluded.add(key);
+        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
         notifyDataSetChanged();
         return true;
     }
@@ -422,25 +428,20 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     DockLayoutModel.Snapshot<Entry> dockSnapshot() {
         int capacity = DockPreferences.load(ctx).capacity;
-        List<String> explicit = DockPreferences.loadPinnedKeys(ctx);
-        List<String> pinnedComponentKeys = explicit == null
-                ? DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
-                        entry -> entry.component.flattenToShortString(),
-                        entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg)
-                : DockLayoutModel.orderedExplicitPinnedKeys(items, explicit,
-                        entry -> entry.component.flattenToShortString());
+        List<String> pinnedComponentKeys = currentPinnedKeys();
         return DockLayoutModel.split(items, pinnedComponentKeys, capacity,
                 entry -> entry.component.flattenToShortString());
     }
 
     private List<String> currentPinnedKeys() {
         List<String> explicit = DockPreferences.loadPinnedKeys(ctx);
-        return explicit == null
-                ? new ArrayList<>(DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
-                        entry -> entry.component.flattenToShortString(),
-                        entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg))
-                : new ArrayList<>(DockLayoutModel.orderedExplicitPinnedKeys(items, explicit,
-                        entry -> entry.component.flattenToShortString()));
+        List<String> defaults = DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
+                entry -> entry.component.flattenToShortString(),
+                entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg);
+        List<String> merged = DockLayoutModel.mergePinnedKeys(
+                explicit, defaults, DockPreferences.loadUnpinnedKeys(ctx));
+        return new ArrayList<>(DockLayoutModel.orderedExplicitPinnedKeys(items, merged,
+                entry -> entry.component.flattenToShortString()));
     }
 
     @Override

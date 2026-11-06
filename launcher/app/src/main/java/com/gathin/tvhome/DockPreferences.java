@@ -18,6 +18,7 @@ final class DockPreferences {
     private static final String KEY_ORIENTATION = "orientation";
     private static final String KEY_CAPACITY = "capacity";
     private static final String KEY_PINNED_KEYS = "pinned_component_keys";
+    private static final String KEY_UNPINNED_KEYS = "unpinned_component_keys";
 
     final Orientation orientation;
     final int capacity;
@@ -82,11 +83,29 @@ final class DockPreferences {
         return java.util.Collections.unmodifiableList(clean);
     }
 
-    static boolean savePinnedKeys(Context context, java.util.List<String> keys) {
-        if (context == null || keys == null) return false;
-        java.util.List<String> clean = normalizePinnedKeys(keys);
+    static java.util.List<String> loadUnpinnedKeys(Context context) {
+        String raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_UNPINNED_KEYS, null);
+        if (raw == null) return java.util.Collections.emptyList();
+        java.util.ArrayList<String> result = new java.util.ArrayList<>();
+        for (String key : raw.split("\\n")) {
+            if (key != null && !key.trim().isEmpty()) result.add(key.trim());
+        }
+        return normalizePinnedKeys(result);
+    }
+
+    static boolean savePinnedState(Context context, java.util.List<String> pinned, java.util.List<String> unpinned) {
+        if (context == null || pinned == null || unpinned == null) return false;
+        java.util.List<String> cleanPinned = normalizePinnedKeys(pinned);
+        java.util.List<String> cleanUnpinned = normalizePinnedKeys(unpinned);
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                .putString(KEY_PINNED_KEYS, android.text.TextUtils.join("\n", clean)).commit();
+                .putString(KEY_PINNED_KEYS, android.text.TextUtils.join("\n", cleanPinned))
+                .putString(KEY_UNPINNED_KEYS, android.text.TextUtils.join("\n", cleanUnpinned))
+                .commit();
+    }
+
+    static boolean savePinnedKeys(Context context, java.util.List<String> keys) {
+        return context != null && keys != null
+                && savePinnedState(context, keys, loadUnpinnedKeys(context));
     }
 
     static boolean isDockPosition(int position, int capacity) {
