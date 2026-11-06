@@ -5089,7 +5089,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
-                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(100).start();
+                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
 
             final int chosenMin = opt.minutes;
