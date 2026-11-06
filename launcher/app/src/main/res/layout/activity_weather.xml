@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tv_ui_shell"
+    android:background="#0A111E"
     android:clipChildren="false">
 
     <!-- Layer 0: Hardware-Accelerated Dynamic Atmospheric Weather Canvas -->
@@ -51,7 +51,7 @@
                     android:singleLine="true"
                     android:text="@string/weather_my_location"
                     android:textAllCaps="true"
-                    android:textColor="@color/tv_ui_text_secondary"
+                    android:textColor="#C8DCF8"
                     android:textSize="10sp" />
 
                 <TextView
@@ -68,7 +68,7 @@
                     android:shadowRadius="6"
                     android:singleLine="true"
                     android:text="Pagar Alam"
-                    android:textColor="@color/tv_ui_text_primary"
+                    android:textColor="#FFFFFF"
                     android:textSize="20sp" />
 
                 <TextView
@@ -85,7 +85,7 @@
                     android:shadowRadius="10"
                     android:singleLine="true"
                     android:text="29°"
-                    android:textColor="@color/tv_ui_text_primary"
+                    android:textColor="#FFFFFF"
                     android:textSize="38sp" />
 
                 <TextView
@@ -102,7 +102,7 @@
                     android:shadowRadius="5"
                     android:singleLine="true"
                     android:text="@string/weather_drizzle"
-                    android:textColor="@color/tv_ui_text_primary"
+                    android:textColor="#F1F5F9"
                     android:textSize="13sp" />
 
                 <TextView
@@ -120,7 +120,7 @@
                     android:shadowRadius="4"
                     android:singleLine="true"
                     android:text="H:30°  L:24°"
-                    android:textColor="@color/tv_ui_text_secondary"
+                    android:textColor="#CBD5E1"
                     android:textSize="11sp" />
 
                 <TextView
@@ -173,7 +173,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_wind_label"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
                             <com.gathin.tvhome.WindCompassView
@@ -201,7 +201,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_moon_phase_label"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
                             <com.gathin.tvhome.MoonPhaseView
@@ -238,7 +238,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_sunset_label"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
                             <TextView
@@ -249,7 +249,7 @@
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
                                 android:text="6:57 PM"
-                                android:textColor="@color/tv_ui_text_primary"
+                                android:textColor="#FFFFFF"
                                 android:textSize="13sp" />
 
                             <com.gathin.tvhome.SunArcView
@@ -277,7 +277,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_uv_label"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
                             <LinearLayout
@@ -294,7 +294,7 @@
                                     android:fontVariationSettings="'wght' 700"
                                     android:includeFontPadding="false"
                                     android:text="6"
-                                    android:textColor="@color/tv_ui_text_primary"
+                                    android:textColor="#FFFFFF"
                                     android:textSize="16sp" />
 
                                 <TextView
@@ -325,7 +325,7 @@
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
                                 android:text="@string/weather_uv_description"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#CBD5E1"
                                 android:textSize="8sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -357,7 +357,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_feels_like_label"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
                             <TextView
@@ -368,7 +368,7 @@
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
                                 android:text="30°"
-                                android:textColor="@color/tv_ui_text_primary"
+                                android:textColor="#FFFFFF"
                                 android:textSize="16sp" />
 
                             <TextView
@@ -381,7 +381,7 @@
                                 android:includeFontPadding="false"
                                 android:maxLines="2"
                                 android:text="@string/weather_feels_like_description"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#CBD5E1"
                                 android:textSize="8sp" />
                         </LinearLayout>
 
@@ -404,7 +404,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_air_quality_label"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
                             <LinearLayout
@@ -421,7 +421,7 @@
                                     android:fontVariationSettings="'wght' 700"
                                     android:includeFontPadding="false"
                                     android:text="56"
-                                    android:textColor="@color/tv_ui_focus_cyan"
+                                    android:textColor="#38BDF8"
                                     android:textSize="16sp" />
 
                                 <TextView
@@ -433,7 +433,7 @@
                                     android:fontVariationSettings="'wght' 600"
                                     android:includeFontPadding="false"
                                     android:text="@string/weather_air_quality_moderate"
-                                    android:textColor="@color/tv_ui_text_primary"
+                                    android:textColor="#FFFFFF"
                                     android:textSize="10sp" />
                             </LinearLayout>
 
@@ -454,7 +454,7 @@
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
                                 android:text="Kota Pagar Alam, Sumatera Selatan"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="8sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -485,7 +485,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_rainfall_label"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
                             <TextView
@@ -496,7 +496,7 @@
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
                                 android:text="0.0 mm"
-                                android:textColor="@color/tv_ui_text_primary"
+                                android:textColor="#FFFFFF"
                                 android:textSize="16sp" />
 
                             <TextView
@@ -510,7 +510,7 @@
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
                                 android:text="@string/weather_precipitation_chance"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#CBD5E1"
                                 android:textSize="8sp" />
                         </LinearLayout>
 
@@ -533,7 +533,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_visibility_label"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="9sp" />
 
                             <TextView
@@ -544,7 +544,7 @@
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
                                 android:text="10.0 km"
-                                android:textColor="@color/tv_ui_text_primary"
+                                android:textColor="#FFFFFF"
                                 android:textSize="16sp" />
 
                             <TextView
@@ -558,7 +558,7 @@
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
                                 android:text="@string/weather_visibility_good"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#CBD5E1"
                                 android:textSize="8sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -599,7 +599,7 @@
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
                                 android:text="@string/weather_conditions_label"
-                                android:textColor="@color/tv_ui_text_primary"
+                                android:textColor="#FFFFFF"
                                 android:textSize="12.5sp" />
 
                             <TextView
@@ -610,7 +610,7 @@
                                 android:fontVariationSettings="'wght' 500"
                                 android:includeFontPadding="false"
                                 android:text="@string/weather_temperature_c"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="10sp" />
 
                             <!-- Apple Weather 3-tab Toolbar Toggles -->
@@ -712,7 +712,7 @@
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
                                 android:text="@string/weather_forecast_7_days"
-                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textColor="#94A3B8"
                                 android:textSize="10sp" />
 
                             <View
@@ -754,7 +754,7 @@
                                     android:letterSpacing="0.08"
                                     android:singleLine="true"
                                     android:text="@string/weather_illustration_label"
-                                    android:textColor="@color/tv_ui_text_secondary"
+                                    android:textColor="#94A3B8"
                                     android:textSize="10sp" />
 
                                 <com.gathin.tvhome.RadarMapView
@@ -791,7 +791,7 @@
                                         android:letterSpacing="0.08"
                                         android:singleLine="true"
                                         android:text="@string/weather_humidity_label"
-                                        android:textColor="@color/tv_ui_text_secondary"
+                                        android:textColor="#94A3B8"
                                         android:textSize="9sp" />
 
                                     <TextView
@@ -802,7 +802,7 @@
                                         android:fontVariationSettings="'wght' 700"
                                         android:includeFontPadding="false"
                                         android:text="79%"
-                                        android:textColor="@color/tv_ui_text_primary"
+                                        android:textColor="#FFFFFF"
                                         android:textSize="16sp" />
 
                                     <TextView
@@ -815,7 +815,7 @@
                                         android:includeFontPadding="false"
                                         android:singleLine="true"
                                         android:text="@string/weather_humidity_description"
-                                        android:textColor="@color/tv_ui_text_secondary"
+                                        android:textColor="#CBD5E1"
                                         android:textSize="8sp" />
                                 </LinearLayout>
 
@@ -838,7 +838,7 @@
                                         android:letterSpacing="0.08"
                                         android:singleLine="true"
                                         android:text="@string/weather_pressure_label"
-                                        android:textColor="@color/tv_ui_text_secondary"
+                                        android:textColor="#94A3B8"
                                         android:textSize="9sp" />
 
                                     <com.gathin.tvhome.PressureGaugeView
