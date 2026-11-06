@@ -11,6 +11,30 @@ import java.util.List;
 import org.junit.Test;
 
 public class DockLayoutModelTest {
+
+    @Test
+    public void arrangedOrderIsPreservedForPinnedComponents() {
+        List<String> inventory = Arrays.asList("pkg.a/.Main", "pkg.b/.Main", "pkg.c/.Main");
+        List<String> pinned = DockLayoutModel.orderedPinnedKeys(
+                inventory, Arrays.asList("pkg.a", "pkg.b"),
+                Arrays.asList("pkg.b/.Main", "pkg.c/.Main", "pkg.a/.Main"),
+                value -> value, value -> value.substring(0, value.indexOf('/')));
+
+        assertEquals(Arrays.asList("pkg.b/.Main", "pkg.a/.Main"), pinned);
+    }
+
+    @Test
+    public void newlyInstalledFavouriteComponentsAppendInConfiguredPackageOrder() {
+        List<String> inventory = Arrays.asList(
+                "pkg.a/.Second", "pkg.b/.Main", "pkg.a/.First", "pkg.c/.Main");
+        List<String> pinned = DockLayoutModel.orderedPinnedKeys(
+                inventory, Arrays.asList("pkg.a", "pkg.b"),
+                Collections.singletonList("pkg.b/.Main"),
+                value -> value, value -> value.substring(0, value.indexOf('/')));
+
+        assertEquals(Arrays.asList("pkg.b/.Main", "pkg.a/.Second", "pkg.a/.First"), pinned);
+    }
+
     @Test
     public void membershipUsesExplicitStableKeysRatherThanFirstInventoryPositions() {
         List<String> inventory = Arrays.asList("grid-first", "pinned-b", "grid-second", "pinned-a");
