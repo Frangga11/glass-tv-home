@@ -2,7 +2,7 @@
 
 **Document ID:** GTVH-UIR-P3-001  
 **Date:** 6 November 2026  
-**Status:** IN PROGRESS — VISUAL CONCEPTS CREATED; CORRECTION AND VALIDATION REMAIN  
+**Status:** IN PROGRESS — INTERACTIVE V1 VERSIONED; WALKTHROUGH AND DESIGN QA REMAIN  
 **Frozen design baseline:** GTVH-UIR-P2-001, P2 contract COMPLETE  
 **Reference inventory:** GTVH-UIR-P1-001  
 **Source baseline for current-state comparison:** integration/b-series @ 562cde0751de93748eb4e0d4cdece4fa1672ac4d
@@ -100,7 +100,18 @@ Translate the six approved visual references and frozen P2 contract into TV-orie
 
 ## 5. Prototype artifact and discrepancy register
 
-- Generated overview boards for all six surfaces are attached in the conversation on 6 Nov 2026. They are concept references only and are not committed as repository image assets.
+### 5.1 Versioned interactive prototype V1
+- Canonical artifact: `prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V1.html` (same documentation branch).
+- Artifact includes six switchable surface views, D-pad/keyboard arrow traversal, Enter activation, Esc/Back return behavior, category navigation, control-level search demonstration, weather V4 metric hierarchy, independent Dock presentation, and Wi-Fi system-handoff treatment.
+- V04 includes a controllable 2/1/0-photo simulation: Next Photo is disabled when there is no alternate image and reports success only after the simulated wallpaper index changes.
+- V05 contains clearly labelled illustrative scan results, a rescan state, and Android Wi-Fi Settings handoff; it does not expose an in-app radio switch or claim a real network scan/connection.
+- All weather and Wi-Fi values in the prototype are illustrative sample data, not live device/provider output.
+- Artifact is a browser-based interaction prototype, not Android source, APK, or evidence of runtime/device acceptance. Keyboard navigation is a review aid; physical TV remote behavior remains unverified.
+- Prototype artifact latest documentation commit: `88d71836f9b0d87c19f276c8e3a87508f37b366c`.
+
+
+
+- Generated overview boards for all six surfaces are attached in the conversation on 6 Nov 2026. They are concept references only and are not committed as repository image assets. The corrected, versioned HTML prototype is the current review artifact.
 - The generated Wi-Fi popup artwork includes a switch-like visual. This conflicts with P2 and is explicitly rejected. The authoritative prototype must replace it with a Wi-Fi state indicator and Android system handoff.
 - Generated artwork is not pixel-accurate source output. Typography, logos, data values and icons must be normalized in a true editable prototype before P3 is marked PASS.
 - The concept boards are not interactive. The D-pad paths and acceptance cases in this document are the interaction specification; they still require an interactive prototype or structured prototype walkthrough before P3 closure.
@@ -121,7 +132,7 @@ P3 can close only when:
 ## 7. Current disposition
 
 **P2:** COMPLETE — frozen.  
-**P3:** IN PROGRESS — six-surface concept boards generated; per-surface specification and D-pad scenarios recorded; Wi-Fi artwork discrepancy explicitly rejected; editable/interactive prototype and full walkthrough remain outstanding.  
+**P3:** IN PROGRESS — six-surface interactive HTML prototype V1 versioned; D-pad/keyboard navigation and key state demonstrations included; complete 12-scenario walkthrough, visual comparison and accessibility/edge-case QA remain outstanding.  
 **P4:** NOT STARTED — production implementation remains gated by P3 exit and roadmap implementation checks.  
 **P5:** NOT STARTED — integrated QA/device validation remains separate.
 
