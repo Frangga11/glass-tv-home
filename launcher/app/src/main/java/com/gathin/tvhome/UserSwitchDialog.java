@@ -272,7 +272,7 @@ public final class UserSwitchDialog {
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
         });
 
-        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density));
         root.addView(btnClose, btnLp);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
@@ -486,7 +486,7 @@ public final class UserSwitchDialog {
         btnCancel.setOnClickListener(v -> {
             if (dHolder[0] != null) dHolder[0].dismiss();
         });
-        btnRow.addView(btnCancel, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) (40 * density)));
+        btnRow.addView(btnCancel, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density)));
 
         Button btnSave = new Button(activity);
         btnSave.setText(R.string.save_profile_action);
