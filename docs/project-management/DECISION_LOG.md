@@ -408,3 +408,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - G03 physical Mi TV Stick acceptance is explicitly out of scope until user announces that evaluation phase.
 - Full acceptance checklist: [E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md](E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md).
 - Status: **BELUM FINAL**.
+
+
+## D-022 — UI Refresh P1 inventory disposition (6 November 2026)
+
+- P1 inventory was executed read-only against the locked GTVH-UIR-001 roadmap, live owner PRs/heads, source diffs and exact-head CI.
+- Ownership remains E02 for Profile/Avatar/Child Mode and E06 for Home Screen/Dock. B01 shared tokens/dialog/focus contracts remain authoritative.
+- Inventory records the current implementation and missing behavior separately. In particular, E06 DockPreferences exists but there is no separate Dock renderer/settings/focus graph; the existing shared COLUMNS coupling remains an architectural blocker.
+- E02 open acceptance gaps remain explicit: active HTTP disconnect cancellation, animated-vs-still preview decision, drawable/profile lifecycle and memory tests, QR authorization/permission audit, current GIPHY policy, and profile no-profile/error invariants.
+- Decision: P1 inventory may be reviewed for completeness, but it is not marked accepted/closed until the user accepts the document and clarifications. P2/P3 approval remains a hard gate before P4. No code, merge, integration/main, APK publication/install or device action is authorized.
+- Evidence: [UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md](UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md).
