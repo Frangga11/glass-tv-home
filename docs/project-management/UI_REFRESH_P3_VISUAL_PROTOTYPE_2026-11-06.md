@@ -178,3 +178,11 @@ No production source, feature branch, PR metadata, integration/main, APK, ADB, H
 ### V2 review refinement — search focus stability
 - Source review found that filtering V06 controls moved focus away from the search input on each keystroke, which would interrupt multi-character input. Corrected V2 so filtering preserves focus in the search field; Down moves focus to the first matching control for D-pad selection. Empty-query reset also retains search focus.
 - Corrective artifact commit: `ce6d45ca6a353bae867607d63d84c82c67eec4fa`. Inline JavaScript syntax compilation check: PASS. This remains source-level verification; manual keyboard/browser walkthrough is pending.
+
+
+## V2 static interaction re-audit — 6 November 2026
+
+- Read-only review recorded in [UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md](UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md).
+- **P3 remains PARTIAL / BELUM PASS.** Found two high-severity prototype blockers: nested Wi-Fi handoff overwrites the root focus origin and closing the child dialog hides the whole modal; arrow-key/D-pad traversal is explicitly disabled while a modal is open.
+- Medium gaps: Language and Wallpaper Interval quick tiles are inert; Next Photo has no failure/unavailable-source path; normal Wi-Fi rescan can remain stuck in “Memindai…”; profile switching is not simulated; Restart and Power Off share generic confirmation text.
+- V2 remains preserved unchanged. No prototype or production source was modified. Correct these in a new versioned revision, then run browser keyboard walkthrough and visual comparison before P3 acceptance.
