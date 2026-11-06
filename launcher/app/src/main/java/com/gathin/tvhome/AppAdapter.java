@@ -127,7 +127,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): no overshoot, shorter fades. */
     private final boolean reducedMotion;
     private boolean iconAnimationsEnabled;
-    private final List<Entry> items = new ArrayList<>();
+    /** Single ordered source of truth; Dock/Grid are projections, never independent app inventories. */
+    private final AppInventory<Entry> items = new AppInventory<>(
+            entry -> entry.component.flattenToShortString());
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
     private static final String ORDER_PREFS = "tiles", ORDER_KEY = "order";
@@ -268,8 +270,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     new ComponentName(ctx, HomeSettingsActivity.class), null,
                     ctx.getDrawable(R.drawable.ic_home_settings), null, 0));
         }
-        items.clear();
-        items.addAll(fresh);
+        items.replace(fresh);
         notifyDataSetChanged();
         return true;
     }
@@ -383,8 +384,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      */
     boolean move(int from, int to) {
         if (from == to || !canMove(from) || to < 0 || to > lastMovable()) return false;
-        Entry e = items.remove(from);
-        items.add(to, e);
+        if (!items.move(from, to)) return false;
         notifyItemMoved(from, to);
         // A tile crossing into or out of the dock shows or hides its name.
         int lo = Math.min(from, to), hi = Math.max(from, to);
