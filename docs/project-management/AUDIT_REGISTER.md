@@ -1283,3 +1283,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Static source QC PASS:** JavaScript syntax parsed without execution; no duplicate IDs; nested dialog stack, modal D-pad traversal, Language/Wallpaper Interval flows, Next Photo failure, Wi-Fi rescan completion, profile switch and distinct restart/power-off confirmations verified in source.
 - **P3 overall remains PARTIAL** pending browser/keyboard walkthrough, all 12 scenarios and visual review against the six approved references.
 - Evidence: [UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md).
+
+
+## GTVH-UIR-P1-ACCEPT-001 — P1 inventory acceptance (6 November 2026)
+
+- P1 inventory **CLOSED FOR PROGRESSION** based on approved V01–V06 reference direction and agreed functional boundaries. Known technical/runtime gaps are explicitly carried forward, not waived.
+- Evidence: [UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md](UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md).
+
+## GTVH-UIR-P3-WALK-001 — V3 browser walkthrough plan (6 November 2026)
+
+- A 12-scenario manual browser/keyboard walkthrough plan is versioned. Execution remains NOT RUN; P3 stays PARTIAL.
+- Evidence: [UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md](UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md).
