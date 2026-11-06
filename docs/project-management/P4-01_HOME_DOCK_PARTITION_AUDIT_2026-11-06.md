@@ -30,6 +30,7 @@ From the frozen P2 Shared Design & Interaction Contract, section 11.8:
 - Missing installed apps do not reserve slots. Duplicate/blank keys are ignored.
 - Pinned entries beyond capacity remain in the app grid as overflow; none are discarded.
 - `AppAdapter.dockSnapshot()` exposes the immutable snapshot and reads capacity from `DockPreferences`, not `MainActivity.COLUMNS`.
+- Snapshot identity now uses each launcher component (`ComponentName.flattenToShortString()`), while package-level `dock_apps` configuration is expanded to matching components in configured package order. This prevents multiple launcher activities from one package being collapsed into one model entry.
 - Existing legacy combined RecyclerView remains the visible renderer until a separate Dock view/adapter and focus controller are introduced.
 
 ## Verification boundary
