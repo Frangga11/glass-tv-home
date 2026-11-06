@@ -230,7 +230,7 @@ public final class ModernSettingsDialog {
             v.setBackground(g);
             searchPrompt.setTextColor(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
             searchIcon.setColorFilter(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
-            v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         // The real search action is attached after the settings tabs are registered.
@@ -273,7 +273,7 @@ public final class ModernSettingsDialog {
         TextView tvProfileName = new TextView(activity);
         tvProfileName.setText(ProfileManager.getProfileName(activity));
         tvProfileName.setTextSize(14f);
-        tvProfileName.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        tvProfileName.setTextColor(TvUiTokens.FOCUS_BORDER);
         tvProfileName.setTypeface(outfit, Typeface.BOLD);
         tvProfileName.setSingleLine(true);
         profileTextCol.addView(tvProfileName);
@@ -402,7 +402,7 @@ public final class ModernSettingsDialog {
                 updateSidebarSelection.run();
                 if (renderRightPane[0] != null) renderRightPane[0].run();
             }
-            v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         profileCard.setOnKeyListener((v, keyCode, event) -> {
@@ -652,7 +652,7 @@ public final class ModernSettingsDialog {
                 uploadAvatarButton.setBackground(uploadAvatarBg);
                 TvFocusIndicator.applyRoundedTextFocus(uploadAvatarButton, density, 10f,
                         0xFF176B87, 0xFF1B7189, 0xFF2C7F98, TvUiTokens.TEXT_PRIMARY,
-                        TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, 1.025f);
+                        TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
                 uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
                     ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
                     boolean updatedChildMode = ChildModeManager.isChildModeEnabled(activity, updated.id);
@@ -670,7 +670,7 @@ public final class ModernSettingsDialog {
                     }
                 }));
                 avatarPhotoActions.addView(uploadAvatarButton, new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (44 * density)));
+                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density)));
 
                 Button defaultAvatarButton = new Button(activity);
                 defaultAvatarButton.setText(R.string.avatar_use_default_action);
@@ -686,7 +686,7 @@ public final class ModernSettingsDialog {
                         0xFF292D37, 0xFF3B4354, 0xFF454B5A, TvUiTokens.TEXT_PRIMARY,
                         TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, 1.025f);
                 LinearLayout.LayoutParams defaultAvatarLp = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
+                        ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density));
                 defaultAvatarLp.topMargin = (int) (6 * density);
                 defaultAvatarButton.setOnClickListener(v -> {
                     if (!ProfileManager.clearCustomAvatar(activity, activeP.id)) {
@@ -762,7 +762,7 @@ public final class ModernSettingsDialog {
                     g.setCornerRadius(12 * density);
                     if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
                     v.setBackground(g);
-                    v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+                    v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
                 });
 
                 editNameCard.setOnKeyListener((v, keyCode, event) -> {
@@ -854,9 +854,9 @@ public final class ModernSettingsDialog {
                         g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : (isCur ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE_IDLE));
                         g.setCornerRadius(12 * density);
                         if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.TEXT_PRIMARY);
-                        else if (isCur) g.setStroke((int) (1.5f * density), 0x77FFFFFF);
+                        else if (isCur) g.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
                         v.setBackground(g);
-                        v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+                        v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
                     });
 
                     pRow.setOnKeyListener((v, keyCode, event) -> {
@@ -1489,7 +1489,7 @@ public final class ModernSettingsDialog {
             g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
             if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         card.setOnKeyListener((v, keyCode, event) -> {
@@ -1561,7 +1561,7 @@ public final class ModernSettingsDialog {
             v.setBackground(g);
             v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
                     .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
-                    .setDuration(120).start();
+                    .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         card.setOnKeyListener((v, keyCode, event) -> {
@@ -1865,7 +1865,7 @@ public final class ModernSettingsDialog {
                 g.setCornerRadius(10 * density);
                 if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.TEXT_PRIMARY);
                 v.setBackground(g);
-                v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
 
             row.setOnClickListener(v -> {
