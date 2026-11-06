@@ -1208,3 +1208,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Remaining E02 acceptance: cancellable/disconnectable HTTP request ownership, true animated preview or explicit product decision for still previews, tests for DPAD/profile-switch/storage rollback/memory and provider policy compliance.
 - E06 still OPEN: separate Dock container/adapter, independent orientation, capacity slots, overflow, settings UI, focus/navigation and six-layout simulations not implemented.
 - Overall status **OPEN / BELUM FINAL**.
+
+
+## GTVH-UIR-P0-001 — UI Refresh Baseline & Compatibility (6 November 2026)
+
+- **Status: PASS — BASELINE VERIFIED.** Exact integration baseline `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; live E02/E06 refs and their base dependencies verified.
+- E02 #62: head `588456144df24f2f6c015a01053ad700a04bee39`, CI #1204 / `41895866368`, both required jobs SUCCESS, APK 1,566,569 B.
+- E06 #63: head `ecdeb0eba9fc7a574f1a6c9930205517687cd922`, CI #1198 / `41890835096`, both required jobs SUCCESS, APK 1,563,741 B.
+- Integrated G02 baseline: 1,572,293 B / 1,572,864 B cap / 571 B headroom. Do not infer integrated size from separate owner builds.
+- Known dependency divergence, B01 contract inspection, API/device assumptions, open E02/E06 risks, and no-mutation evidence are in `UI_REFRESH_P0_BASELINE_2026-11-06.md`.
+- No Critical defect reproduced. PRs remain Draft/open/unmerged; no code/branch/integration/main/device mutation. P1 NOT STARTED.
