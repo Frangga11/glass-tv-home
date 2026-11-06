@@ -158,3 +158,11 @@ User acceptance is requested for this inventory and its recorded boundaries:
 3. Keep P2/P3 design/prototype approval mandatory before any production implementation.
 
 Next authorized work after acceptance: P2 shared design & interaction contract, using the existing B01 contracts and this P1 traceability map. Do not start P4 from this document alone.
+
+
+## 10. Post-audit PR metadata consistency check
+
+- Live PR metadata was re-read after inventory: #62 and #63 are both OPEN, Draft=true, merged=false, and their head/base SHAs still match the inventory table.
+- PR #62 description contains a stale statement that the latest head has not received confirmed exact-head CI. This conflicts with the live Actions evidence: run #1204 is attached to exact head `588456144df24f2f6c015a01053ad700a04bee39`, completed SUCCESS, and both required jobs succeeded. The PR description was not edited in this P1 pass; reconcile its text during the next authorized owner-branch/PR documentation update.
+- PR #63 description's exact-head CI statement matches live run #1198. Both PRs remain Draft and unmerged.
+- Documentation branch final sync head at this point is `5d891b42147a0dea71cc7b7f6ad0e0ce43783f12`; GitHub compare confirms `docs/project-master-inventory` is identical to that SHA.
