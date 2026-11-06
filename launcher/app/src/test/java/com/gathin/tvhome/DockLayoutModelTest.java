@@ -127,6 +127,40 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void emptyDockKeepsEveryInstalledAppInTheGrid() {
+        List<String> inventory = Arrays.asList("app-a", "app-b", "app-c");
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                inventory, Collections.emptyList(), 4, value -> value);
+        assertTrue(snapshot.dockItems.isEmpty());
+        assertEquals(inventory, snapshot.gridItems);
+        assertEquals(inventory.size(), snapshot.totalCount());
+    }
+
+    @Test
+    public void allPinnedAppsCanFillTheDockWithoutInventingGridItems() {
+        List<String> inventory = Arrays.asList("app-a", "app-b", "app-c", "app-d");
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                inventory, inventory, 6, value -> value);
+        assertEquals(inventory, snapshot.dockItems);
+        assertTrue(snapshot.gridItems.isEmpty());
+        assertEquals(inventory.size(), snapshot.totalCount());
+    }
+
+    @Test
+    public void pinningAtEverySupportedCapacityPushesThePreviousLastSlotIntoGrid() {
+        List<String> source = Arrays.asList("a", "b", "c", "d", "e", "f");
+        for (int capacity : new int[]{4, 5, 6}) {
+            List<String> updated = DockLayoutModel.pinKey(
+                    source.subList(0, capacity), "new", 1, capacity);
+            DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                    updated, updated, capacity, value -> value);
+            assertEquals(capacity, snapshot.dockCount());
+            assertEquals(1, snapshot.gridCount());
+            assertEquals(source.get(capacity - 1), snapshot.gridItems.get(0));
+        }
+    }
+
+    @Test
     public void invalidCapacityFallsBackToDefaultFive() {
         List<String> inventory = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
         DockLayoutModel.Snapshot<String> result =
