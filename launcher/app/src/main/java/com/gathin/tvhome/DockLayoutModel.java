@@ -40,6 +40,58 @@ final class DockLayoutModel {
                 ? capacity : DockPreferences.DEFAULT_CAPACITY;
     }
 
+
+    /**
+     * Resolves package-configured Dock membership to stable component keys while honoring the
+     * user's persisted tile order. Arranged identities are considered first; newly installed or
+     * previously unarranged favourite components are appended in configured package order.
+     */
+    static <T> List<String> orderedPinnedKeys(List<T> inventory, List<String> favouritePackages,
+                                               List<String> arrangedKeys,
+                                               Function<T, String> stableKey,
+                                               Function<T, String> packageKey) {
+        if (stableKey == null || packageKey == null) {
+            throw new IllegalArgumentException("stableKey and packageKey are required");
+        }
+        Set<String> favourites = new HashSet<>();
+        if (favouritePackages != null) {
+            for (String pkg : favouritePackages) {
+                if (pkg != null && !pkg.trim().isEmpty()) favourites.add(pkg);
+            }
+        }
+        Map<String, T> byKey = new LinkedHashMap<>();
+        if (inventory != null) {
+            for (T item : inventory) {
+                if (item == null) continue;
+                String key = stableKey.apply(item);
+                if (key != null && !key.trim().isEmpty() && !byKey.containsKey(key)) {
+                    byKey.put(key, item);
+                }
+            }
+        }
+
+        List<String> result = new ArrayList<>();
+        Set<String> added = new HashSet<>();
+        if (arrangedKeys != null) {
+            for (String key : arrangedKeys) {
+                T item = key == null ? null : byKey.get(key);
+                if (item == null || !favourites.contains(packageKey.apply(item))) continue;
+                if (added.add(key)) result.add(key);
+            }
+        }
+        if (favouritePackages != null) {
+            for (String pkg : favouritePackages) {
+                if (pkg == null || pkg.trim().isEmpty()) continue;
+                for (Map.Entry<String, T> entry : byKey.entrySet()) {
+                    if (pkg.equals(packageKey.apply(entry.getValue())) && added.add(entry.getKey())) {
+                        result.add(entry.getKey());
+                    }
+                }
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
     static <T> Snapshot<T> split(List<T> orderedItems, List<String> pinnedKeys,
                                  int requestedCapacity, Function<T, String> stableKey) {
         if (stableKey == null) throw new IllegalArgumentException("stableKey is required");
