@@ -214,3 +214,21 @@ The repository currently contains multiple Draft feature branches. They are not 
 - The pending PR #64 CI trigger is closed: exact-head run `42192107405` / run #1225 completed SUCCESS for both required jobs on `e4bc99c9a4822057ce3bd5490df0ad1471763409`. PR #64 remains OPEN / DRAFT / UNMERGED.
 - No production implementation commit is made by this continuation. Current permitted execution is audit, ownership mapping, prototype validation and token/component conformance design. Production styling changes remain blocked by the P3 visual evidence gate described in Sections 8–10.
 - The immediate next task is to complete V5 browser rendering and screenshot evidence, then perform a full call-site inventory of B01 shared primitives before changing any global token or focus behavior.
+
+
+## Execution checkpoint — 6 November 2026 (follow-up)
+
+**Disposition: STILL BLOCKED — NO FALSE PASS.** Re-opened the controlling P2 contract and the current B01/P4-01 sources at their exact refs. Confirmed:
+
+- P2 remains frozen as the normative visual/interaction contract; it explicitly requires 1920×1080 validation in P3 and distinguishes focus from selection.
+- `TvUiTokens.java` on `integration/b-series` still uses charcoal/gray values (`#1E2026`, `#272A33`, `#8E929E`) and compact type metrics (13sp nav, 14sp card title, 12sp subtitle, 24sp page header), materially different from the candidate navy/blue/cyan reference baseline. The candidate values remain uncalibrated, so no token rewrite was made.
+- Current P4-01 PR #64 head is `e4bc99c9a4822057ce3bd5490dfad1471763409`, OPEN/DRAFT/UNMERGED. The PR description and diff confirm only a preference/partition/inventory/TileBinder foundation; the legacy combined RecyclerView is still the visible renderer. Separate Dock/Grid renderers, live settings UI, orientation/capacity rendering, overflow interaction, D-pad/focus/reorder migration and six-case acceptance remain incomplete.
+- The current tool session exposes GitHub repository/PR/CI operations but no browser automation or screenshot capture/rendering capability. Therefore the V5 browser walkthrough, 12-scenario UI walkthrough and 1920×1080 screenshot comparison could not be executed here. This is an environment capability limit, not a PASS or a substitute for the test.
+- Exact-head CI #1225 was recorded in the preceding checkpoint as passing both required jobs after the user-approved 1.6 MiB cap change. That CI result validates build/tests and size gate only; it does not validate visual rendering or runtime D-pad behavior.
+
+### Required external evidence to unblock
+1. Provide the V5 rendered browser URL/session or a captured 1920×1080 output for the 12-scenario walkthrough, with all required screens/states.
+2. Compare those captures against V01–V06 and the detailed Profile/Home Settings references; record measured geometry, contrast, material and typography deviations.
+3. Obtain explicit visual-owner acceptance before freezing tokens or starting global mass styling.
+
+No production source was changed in this follow-up. No PR merged, no APK published/installed, no ADB/device-setting change, and no physical TV test.
