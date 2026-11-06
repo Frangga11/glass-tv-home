@@ -368,3 +368,13 @@ No P2 design contract, P3 prototype, P4 implementation, merge, APK build/publica
 - **Taxonomy/design decisions:** OPEN — V06 category naming and broader P2 contract require approval.
 - **Overall P1:** PARTIAL — BELUM PASS. Reference blocker is closed, but functional and runtime evidence gates remain open.
 - **Gate:** do not start P2/P3/P4 or implementation until user reviews the Wi-Fi scope decision, category taxonomy and proposed shared design contract. No production source, feature branch, PR metadata, integration/main, APK, ADB or TV device was changed.
+
+
+## User Direction — Adopt the Six Visual References (6 Nov 2026)
+User instructed: “Lakukan pekerjaan sesuai rekomendasi gambar.” Treat V01–V06 as the approved visual direction and proceed to P2 contract work. Interpret this as:
+- V06 category taxonomy becomes the target: Profil, Layar Utama, Tampilan, Widget & Informasi, Animasi & Efek, Layar Siaga, Pengaturan Perangkat. Existing source key “Status Bar & Weather” is to be reorganized/renamed under “Widget & Informasi” in the future design contract; preserve ownership boundaries and existing data capabilities.
+- V05 is the target UX for a richer Wi-Fi popup: radio state, connected network, nearby network list, rescan and Android Wi-Fi settings handoff. This is a design target only. Actual scan/connect/password/radio-control capability remains conditional on Android 11/API, permission, security and device feasibility audit. No capability may be shown as working before verified.
+- V04 Next photo is included as a target action; implementation availability must be source-verified during design/implementation planning.
+- V02 must not reduce the locked Weather V4 information scope; reference layout governs hierarchy, not data deletion.
+- P2 Shared Design & Interaction Contract is authorized to begin. P3 prototype and P4 implementation are not authorized by this direction alone; they require review of the P2 deliverable and a separate approval.
+- Overall P1 source inventory remains PARTIAL — BELUM PASS pending runtime/device/state verification. This does not prevent proceeding with P2 using the approved references and explicit limitations.
