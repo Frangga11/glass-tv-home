@@ -3,16 +3,18 @@ package com.gathin.tvhome;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
 /**
- * Immutable boundary between the ordered Home app inventory and the Dock renderer.
+ * Immutable boundary between the authoritative app inventory and the two Home presentation regions.
  *
- * The source order is authoritative (pinned apps first, followed by user ordering and
- * the alphabetical remainder). This class partitions that order without mutating it.
- * A dedicated Dock view can consume dockItems while the main app grid consumes gridItems.
+ * Dock membership is selected by stable app identity, never by the first N positions in the app list.
+ * Dock order comes from the explicit pinned-key list. Non-pinned apps retain their source order in
+ * the main grid. Pinned apps beyond capacity remain in the main grid; nothing is silently dropped.
  */
 final class DockLayoutModel {
     static final class Snapshot<T> {
@@ -26,17 +28,9 @@ final class DockLayoutModel {
             this.capacity = capacity;
         }
 
-        int dockCount() {
-            return dockItems.size();
-        }
-
-        int gridCount() {
-            return gridItems.size();
-        }
-
-        int totalCount() {
-            return dockItems.size() + gridItems.size();
-        }
+        int dockCount() { return dockItems.size(); }
+        int gridCount() { return gridItems.size(); }
+        int totalCount() { return dockItems.size() + gridItems.size(); }
     }
 
     private DockLayoutModel() { }
@@ -46,21 +40,42 @@ final class DockLayoutModel {
                 ? capacity : DockPreferences.DEFAULT_CAPACITY;
     }
 
-    static <T> Snapshot<T> split(List<T> orderedItems, int requestedCapacity,
-                                 Function<T, String> stableKey) {
+    static <T> Snapshot<T> split(List<T> orderedItems, List<String> pinnedKeys,
+                                 int requestedCapacity, Function<T, String> stableKey) {
         if (stableKey == null) throw new IllegalArgumentException("stableKey is required");
         int capacity = normalizeCapacity(requestedCapacity);
-        List<T> dock = new ArrayList<>();
-        List<T> grid = new ArrayList<>();
-        Set<String> seen = new HashSet<>();
+        Map<String, T> byKey = new LinkedHashMap<>();
         if (orderedItems != null) {
             for (T item : orderedItems) {
                 if (item == null) continue;
                 String key = stableKey.apply(item);
-                if (key == null || key.trim().isEmpty() || !seen.add(key)) continue;
-                if (dock.size() < capacity) dock.add(item);
-                else grid.add(item);
+                if (key != null && !key.trim().isEmpty() && !byKey.containsKey(key)) {
+                    byKey.put(key, item);
+                }
             }
+        }
+
+        List<T> dock = new ArrayList<>();
+        Set<String> selectedKeys = new HashSet<>();
+        if (pinnedKeys != null) {
+            for (String key : pinnedKeys) {
+                if (key == null || key.trim().isEmpty() || !selectedKeys.add(key)) continue;
+                T item = byKey.get(key);
+                if (item == null) {
+                    selectedKeys.remove(key); // missing apps are not reserved Dock slots
+                    continue;
+                }
+                if (dock.size() < capacity) {
+                    dock.add(item);
+                } else {
+                    selectedKeys.remove(key); // overflow remains reachable in the main grid
+                }
+            }
+        }
+
+        List<T> grid = new ArrayList<>();
+        for (Map.Entry<String, T> entry : byKey.entrySet()) {
+            if (!selectedKeys.contains(entry.getKey())) grid.add(entry.getValue());
         }
         return new Snapshot<>(dock, grid, capacity);
     }
