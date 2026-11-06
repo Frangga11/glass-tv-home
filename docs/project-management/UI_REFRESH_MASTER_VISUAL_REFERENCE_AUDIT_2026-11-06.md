@@ -210,3 +210,10 @@ Reason: the audit baseline and P2 contract are ready, but P1 acceptance and P3 w
 - QC evidence: [UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md).
 - P3 remains PARTIAL: no browser execution, keyboard walkthrough, visual comparison, TV-distance readability or physical remote acceptance has been performed. P1 owner/runtime gaps remain carried forward; no user approval is inferred from static QC.
 - No production source, owner branch, PR, integration/main, APK, ADB or TV device changed.
+
+
+## 13. P1 acceptance and P3 execution plan checkpoint — 6 November 2026
+
+- P1 inventory is now **CLOSED FOR PROGRESSION** with accepted scope boundaries and explicit technical/runtime carry-forward items. Record: [UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md](UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md). This does not claim source/runtime/device parity and does not waive any listed gap.
+- V3 static QC remains PASS. A reproducible 12-scenario browser/keyboard walkthrough plan is recorded at [UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md](UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md). Execution is NOT RUN.
+- P3 remains PARTIAL until browser execution evidence and visual comparison against approved V01–V06 references exist. P4 remains blocked by P3 acceptance and branch/owner readiness.
