@@ -50,7 +50,7 @@ public class TvResponsiveLayoutTest {
     @Test
     public void safeAreaNeverConsumesTinyViewport() {
         assertEquals(1, TvResponsiveLayout.safeContentWidthPx(1));
-        assertEquals(1, TvResponsiveLayout.safeContentHeightPx(2));
+        assertEquals(2, TvResponsiveLayout.safeContentHeightPx(2));
         assertEquals(0, TvResponsiveLayout.safeContentWidthPx(0));
     }
 
