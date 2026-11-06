@@ -226,12 +226,12 @@ public final class ModernSettingsDialog {
             GradientDrawable g = new GradientDrawable();
             g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.INPUT_SURFACE);
             g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.TEXT_PRIMARY);
+            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
             searchPrompt.setTextColor(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
             searchIcon.setColorFilter(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
             TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.NAV_ROW_RADIUS_DP);
-            v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
+            v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         // The real search action is attached after the settings tabs are registered.
@@ -579,7 +579,7 @@ public final class ModernSettingsDialog {
                     GradientDrawable ringBg = new GradientDrawable();
                     ringBg.setShape(GradientDrawable.OVAL);
                     ringBg.setColor(Color.TRANSPARENT);
-                    ringBg.setStroke((int) (3f * density), TvUiTokens.TEXT_PRIMARY);
+                    ringBg.setStroke((int) (3f * density), TvUiTokens.NAV_SELECTION_BORDER);
                     ring.setBackground(ringBg);
                     ring.setVisibility(ProfileManager.isBuiltInAvatarSelected(activeP, idx) ? View.VISIBLE : View.GONE);
                     frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
@@ -761,7 +761,7 @@ public final class ModernSettingsDialog {
                     GradientDrawable g = new GradientDrawable();
                     g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
                     g.setCornerRadius(12 * density);
-                    if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.TEXT_PRIMARY);
+                    if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
                     v.setBackground(g);
                     TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.CARD_RADIUS_DP);
                     v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
@@ -816,7 +816,7 @@ public final class ModernSettingsDialog {
                     GradientDrawable pBg = new GradientDrawable();
                     pBg.setColor(isCur ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE_IDLE);
                     pBg.setCornerRadius(12 * density);
-                    if (isCur) pBg.setStroke((int) (1.5f * density), 0x77FFFFFF);
+                    if (isCur) pBg.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
                     pRow.setBackground(pBg);
 
                     boolean profileChildMode = ChildModeManager.isChildModeEnabled(activity, p.id);
@@ -846,7 +846,7 @@ public final class ModernSettingsDialog {
                         TextView tvDel = new TextView(activity);
                         tvDel.setText(R.string.delete_label);
                         tvDel.setTextSize(11.5f);
-                        tvDel.setTextColor(0xFFF87171);
+                        tvDel.setTextColor(TvUiTokens.DANGER);
                         tvDel.setTypeface(outfit, Typeface.NORMAL);
                         pRow.addView(tvDel);
                     }
@@ -1908,13 +1908,13 @@ public final class ModernSettingsDialog {
         btnDone.setClickable(true);
 
         GradientDrawable btnBg = new GradientDrawable();
-        btnBg.setColor(0xFF10B981);
+        btnBg.setColor(TvUiTokens.SUCCESS);
         btnBg.setCornerRadius(10 * density);
         btnDone.setBackground(btnBg);
 
         btnDone.setOnFocusChangeListener((v, hasFocus) -> {
             GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF059669 : 0xFF10B981);
+            g.setColor(TvUiTokens.SUCCESS);
             g.setCornerRadius(10 * density);
             if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.TEXT_PRIMARY);
             v.setBackground(g);
