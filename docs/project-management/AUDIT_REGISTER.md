@@ -1267,3 +1267,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - E02 blockers: cancellable/disconnectable HTTP ownership, preview/lifecycle/profile-switch/storage/memory/DPAD regression coverage and provider policy. E06 blocker: DockPreferences exists but production Dock still shares one RecyclerView/COLUMNS with app grid; separate ordered model/view/adapter, settings, overflow and focus are absent.
 - Impacted modules and responsibility: B01–B07 shared foundation/behavior; E01 system/Wi-Fi; E02 profile; E03 wallpaper metadata; E04 standby; E05 Weather/AQI; E06 Home/Dock; E07 effects; E08 wallpaper/Next Photo. Recommended sequence and exclusions are in the dedicated audit.
 - No production source, owner branch, PR metadata, integration/main, APK, ADB or device changed. No redesign or P4 implementation performed.
+
+
+## GTVH-UIR-P3-V2-REVIEW-ADD-001 — V2 static interaction re-audit (6 November 2026)
+
+- **P3 V2 static result: PARTIAL / BELUM PASS.** Read-only source review found two high-severity prototype blockers: nested dialog origin/focus chain is overwritten on Wi-Fi system handoff; D-pad arrow navigation is disabled while modal is open.
+- Medium gaps: inert Language/Wallpaper Interval controls, Next Photo failure state absent, normal Wi-Fi rescan may remain stuck loading, profile switch not simulated, generic shared Restart/Power Off confirmation.
+- Detailed scenario mapping and remediation evidence: [UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md](UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md).
+- Preserve V2 unchanged; fix only in a new versioned prototype revision. No source/branch/PR/merge/APK/device mutation.
