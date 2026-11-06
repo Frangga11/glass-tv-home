@@ -1121,3 +1121,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Open P1 clarifications:** QR manifest/endpoint authorization; current GIPHY provider policy; default/no-profile and profile-capacity invariants; package visibility/API matrix. Existing high-risk feature gaps remain E02 cancellation/lifecycle and E06 independent Dock architecture/focus.
 - **No mutations:** no production code, owner branch, PR state, integration/main, APK publication/installation, ADB, HOME/default launcher or physical device changes.
 - **Next exact step:** user reviews and accepts P1 inventory/scope and confirms the listed clarifications may carry into P2/P5. Only then start P2 Shared Design & Interaction Contract. Do not begin P4; P2/P3 approval is mandatory.
+
+
+### P1 post-audit consistency note — 6 November 2026
+
+- Live PR metadata rechecked: #62 and #63 are OPEN, Draft=true, merged=false; exact head/base SHAs unchanged.
+- PR #62 body still contains stale text saying its latest head has no confirmed exact-head CI. This is contradicted by live run #1204 on exact head `588456144df24f2f6c015a01053ad700a04bee39`, both required jobs SUCCESS. PR body was intentionally left untouched in P1; reconcile the description on the owner PR in a later authorized documentation update.
+- PR #63 body and live run #1198 are consistent. Do not treat mergeable=true as permission or acceptance.
+- Final docs branch head verified identical to `5d891b42147a0dea71cc7b7f6ad0e0ce43783f12` before this note.
