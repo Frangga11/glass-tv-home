@@ -1,7 +1,7 @@
 # Glass TV Home — UI Refresh Roadmap
 **Document:** GTVH-UIR-001  
 **Version:** 1.0  
-**Status:** Proposed baseline — awaiting explicit user approval  
+**Status:** LOCKED BASELINE — v1.0  
 **Date:** 6 November 2026
 
 ## 1. Objective
@@ -53,7 +53,7 @@ Refresh the UI without causing functional regression, navigation failure, data l
 - Maintain one traceability chain: requirement → UI element → owner → change/commit → test → evidence → decision.
 
 ## 7. Authorization boundary and current status
-This roadmap defines preparation and acceptance; it does not itself authorize implementation, merge, changes to integration/main, APK publication/installation, ADB, HOME/default-launcher changes or physical TV mutation. E02 (#62) and E06 (#63) remain Draft/open/unmerged and **BELUM FINAL** according to the last recorded audit. Reconcile their live heads before execution. G03 physical Mi TV Stick acceptance remains a separate explicit gate.
+This roadmap is locked as the governing UI Refresh baseline. Locking the roadmap does not authorize production implementation, merge, changes to integration/main, APK publication/installation, ADB, HOME/default-launcher changes or physical TV mutation. E02 (#62) and E06 (#63) remain Draft/open/unmerged and **BELUM FINAL** according to the last recorded audit. Reconcile their live heads before execution. G03 physical Mi TV Stick acceptance remains a separate explicit gate.
 
 ## 8. Approval gates
 - P0–P1: baseline and complete functional map accepted.
