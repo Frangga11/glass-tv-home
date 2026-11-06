@@ -85,17 +85,17 @@ Translate the six approved visual references and frozen P2 contract into TV-orie
 
 | ID | Scenario | Expected result | Status |
 |---|---|---|---|
-| P3-01 | Open/close each popup with D-pad and Back | Correct initial focus and exact origin restoration | Prototype review pending |
-| P3-02 | Traverse all controls without touch | No focus trap, invisible target or dead-end | Prototype review pending |
+| P3-01 | Open/close each popup with D-pad and Back | History-based return and invoking-control restoration implemented; manual walkthrough pending | Implemented / review pending |
+| P3-02 | Traverse all controls without touch | Spatial nearest-direction focus implemented; edge/dead-end walkthrough pending | Implemented / review pending |
 | P3-03 | Long label and large value | No clipping/overlap; layout expands or scrolls | Prototype review pending |
 | P3-04 | Bright and dark wallpaper | Text and focus remain legible | Prototype review pending |
 | P3-05 | Loading → success/error | Focus stable; truthful state and recovery action | Prototype review pending |
 | P3-06 | Permission denied/offline/unavailable | Honest explanation and safe system handoff | Prototype review pending |
 | P3-07 | Weather refresh while a card is focused | Focus and scroll position retained | Prototype review pending |
 | P3-08 | Wi-Fi scan throttled or stale | Timestamp and stale state shown; no fake live data | Prototype review pending |
-| P3-09 | Next Photo with one/many/zero images | Disabled or successful only after state change | Prototype review pending |
+| P3-09 | Next Photo with one/many/zero images | 2/1/0-image simulation; disabled when alternate unavailable; success after simulated index change | Implemented / review pending |
 | P3-10 | Dock orientation/capacity change | Dock changes independently; app grid columns/order remain invariant | Prototype review pending |
-| P3-11 | Search exact control | Navigate to owning category and focus exact control | Prototype review pending |
+| P3-11 | Search exact control | Search filters matching controls and selects owning category; exact-control focus walkthrough pending | Implemented / review pending |
 | P3-12 | Reduced motion | No nonessential scale/translation; focus remains obvious | Prototype review pending |
 
 ## 5. Prototype artifact and discrepancy register
@@ -107,7 +107,8 @@ Translate the six approved visual references and frozen P2 contract into TV-orie
 - V05 contains clearly labelled illustrative scan results, a rescan state, and Android Wi-Fi Settings handoff; it does not expose an in-app radio switch or claim a real network scan/connection.
 - All weather and Wi-Fi values in the prototype are illustrative sample data, not live device/provider output.
 - Artifact is a browser-based interaction prototype, not Android source, APK, or evidence of runtime/device acceptance. Keyboard navigation is a review aid; physical TV remote behavior remains unverified.
-- Prototype artifact latest documentation commit: `88d71836f9b0d87c19f276c8e3a87508f37b366c`.
+- Prototype artifact latest documentation commit: `f09515c2d434a809e0fe594cbed36880cc2e09ce`.
+- V1 interaction refinement: arrow-key movement now selects the nearest visible control in the requested spatial direction rather than moving through a flat list; Back/Esc restores the prior surface and invoking control where it can be resolved.
 
 
 
@@ -132,7 +133,7 @@ P3 can close only when:
 ## 7. Current disposition
 
 **P2:** COMPLETE — frozen.  
-**P3:** IN PROGRESS — six-surface interactive HTML prototype V1 versioned; D-pad/keyboard navigation and key state demonstrations included; complete 12-scenario walkthrough, visual comparison and accessibility/edge-case QA remain outstanding.  
+**P3:** IN PROGRESS — six-surface interactive HTML prototype V1 versioned; spatial focus and Back restoration implemented; full 12-scenario walkthrough, visual comparison and accessibility/edge-case QA remain outstanding.  
 **P4:** NOT STARTED — production implementation remains gated by P3 exit and roadmap implementation checks.  
 **P5:** NOT STARTED — integrated QA/device validation remains separate.
 
