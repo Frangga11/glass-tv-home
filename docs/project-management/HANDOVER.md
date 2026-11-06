@@ -1200,3 +1200,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - P2 finalization commit: db5d7e70b09910f4f5d25d83fd815d024eee7d90. Final metadata/link cleanup commit: 2bd62bdacc5703cb5a629c6670cb56533ba658cf.
 - **P3 started:** generated visual concept boards for all six surfaces; these are design previews, not source-backed runtime or interactive prototypes. The Wi-Fi image treatment must follow the P2 correction (no fake in-app radio switch; show Wi-Fi status and system handoff, with conditional scan list). Visual boards are attached in the conversation and are not yet committed as repository assets.
 - Next P3 work: produce per-surface layout/state specifications and D-pad interaction test paths, reconcile prototype with P2 Wi-Fi capability boundary, then complete cross-surface visual/interaction QA. No production source, feature branches, PR metadata, integration/main, APK, ADB or TV device changed.
+
+
+## P3 — Six-surface visual prototype specification started (6 Nov 2026)
+- Created docs/project-management/UI_REFRESH_P3_VISUAL_PROTOTYPE_2026-11-06.md (GTVH-UIR-P3-001), with per-surface region maps, D-pad focus paths, error/empty/offline/permission states, and 12 cross-surface interaction scenarios.
+- Generated overview concept boards for six screens in this conversation. They are illustrative only, not editable/interactive assets and not source-accurate screenshots.
+- Found visual discrepancy: generated Wi-Fi concept artwork depicts a switch-like control. It is explicitly rejected by P2's Android 11 capability boundary. Correct V05 must show Wi-Fi state plus “Kelola Wi-Fi” system handoff; nearby scan results remain conditional on fine-location permission, Location enabled and scan throttling.
+- P3 status remains IN PROGRESS until the Wi-Fi visual is corrected, all six editable/interactive prototypes are available, the V4 full data hierarchy and Dock independence are represented, and P3-01..P3-12 are walked through.
+- P2 contract is COMPLETE and frozen. P2 final doc commit: db5d7e70b09910f4f5d25d83fd815d024eee7d90; metadata cleanup commit: 2bd62bdacc5703cb5a629c6670cb56533ba658cf. P3 spec creation commit: f9f9437cdba92d08213cf0c8f7f5f3ffd5ff4871.
+- No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV changed.
