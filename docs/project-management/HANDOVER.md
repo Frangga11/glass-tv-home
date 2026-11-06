@@ -1377,3 +1377,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Guardrail: do not change `MainActivity.COLUMNS` to Dock capacity and do not add a second RecyclerView as a superficial patch. Both would leave existing tile geometry, decoration, parking, reorder and focus contracts inconsistent.
 - No production source commit was made in this continuation because the required inventory/renderer/focus refactor is cross-cutting; a partial view insertion would create a misleading or unsafe state. Next source change must implement the shared identity/inventory boundary and its tests as one reviewable slice.
 - Module 1 remains IN PROGRESS. No APK publication/installation, ADB, device setting change, physical TV test or merge.
+
+
+### P4-01 source correction — saved pinned order — 6 November 2026
+- Implemented `DockLayoutModel.orderedPinnedKeys(...)` and wired `AppAdapter.dockSnapshot()` to it. The Dock's explicit pinned component list now honors persisted user arrangement order among configured favourite packages; unarranged/new favourite components append in configured package order. The Home Settings shortcut is excluded from package matching.
+- Added regression tests for saved pinned order and fallback ordering of newly installed/unarranged favourite components.
+- Source branch `feature/ui-global-01-home-dock`, PR #64 current head `ade40dac76bf98621a41bdd8be08d0b0971dbf1c`; PR OPEN/DRAFT/UNMERGED, base `integration/b-series`.
+- Exact-head CI #1218 / run ID `42185963306` is IN_PROGRESS at this checkpoint. No PASS is claimed until both required jobs finish successfully.
+- Scope remains a model/order correction only. The two-region renderer, independent App Grid geometry, orientation/capacity settings, focus/D-pad/reorder and lifecycle migration, six-combination acceptance and 1920×1080 visual QC remain open. No APK publication/installation, ADB, device setting change, physical TV test or merge.
