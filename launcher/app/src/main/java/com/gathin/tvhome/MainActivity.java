@@ -6815,8 +6815,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 aboveSpace, belowSpace, contentHeight, safeHeight, above);
         int availableHeight = placeAbove ? aboveSpace : belowSpace;
         int height = Math.max(1, Math.min(contentHeight, availableHeight));
-        int left = Math.max(safeX, Math.min(menuAt[0] - menuGliderAt[0],
-                root.getWidth() - safeX - width));
+        int left = TvResponsiveLayout.popupLeftPx(
+                menuAt[0] - menuGliderAt[0], width, root.getWidth());
         int popupTop = placeAbove ? anchorTop - gap - height : anchorBottom + gap;
         popupTop = Math.max(safeY, Math.min(popupTop, root.getHeight() - safeY - height));
         final boolean opensAbove = placeAbove;

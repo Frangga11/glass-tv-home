@@ -30,6 +30,14 @@ final class TvResponsiveLayout {
         return dimensionPx <= 0 ? 0 : Math.max(1, dimensionPx - 2 * safeInsetPx(dimensionPx));
     }
 
+    static int popupLeftPx(int anchorLeftPx, int popupWidthPx, int viewportWidthPx) {
+        if (viewportWidthPx <= 0) return 0;
+        int inset = safeInsetPx(viewportWidthPx);
+        int safeRight = Math.max(inset, viewportWidthPx - inset);
+        int width = Math.min(Math.max(1, popupWidthPx), Math.max(1, safeRight - inset));
+        return Math.max(inset, Math.min(anchorLeftPx, safeRight - width));
+    }
+
     static boolean shouldPlacePopupAbove(int aboveSpacePx, int belowSpacePx,
                                          int contentHeightPx, int safeHeightPx,
                                          boolean preferAbove) {
