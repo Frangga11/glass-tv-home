@@ -1170,3 +1170,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - P1 remains PARTIAL — BELUM PASS for runtime/device/state verification; the missing visual reference blocker is closed.
 - P1 direction update commit: 55142dbaf25c6333491b0420b61ef376a97bd6eb. P2 contract creation commit: 92d4d263ebb3aa539d28228ffe51c2b67802c5c1.
 - No production source, feature branches, PR metadata, integration/main, APK, ADB or TV device changed.
+
+
+## Trigger 2 — Global UI Functional Inventory finalized (6 Nov 2026)
+- User asked to continue Trigger 2 after providing six visual references and directing the team to follow them.
+- Finalized the existing canonical P1 inventory in place (no duplicate). Added finalization matrix for V01–V06, seven target Settings categories and owner mapping, cross-surface states/interactions, reuse/build/replace register, confirmed-vs-unverified gap register, dependency order and final quality disposition.
+- **Trigger 2 disposition: INVENTORY COMPLETE — VALIDATION PARTIAL / BELUM PASS.** Inventory coverage and six-reference mapping are PASS. Source functional parity remains PARTIAL: Wi-Fi scan/network management is not in the evidenced source surface; Quick Settings Next Photo is not source-verified; Dock is coupled to the app grid; Dock preferences are not wired to UI/renderer; shared focus coverage and runtime states need validation.
+- No runtime/device/ADB testing was performed. Do not claim all target behaviors exist. Runtime QA remains separate. P2 is a separate workstream; P3 prototype/P4 implementation remain gated by explicit P2 approval.
+- Final P1 inventory commit: 0f45cdf2a2fb3ced3ce99611db4465b3fb15fa37. Canonical path: docs/project-management/UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md on docs/project-master-inventory.
+- No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV changed.
