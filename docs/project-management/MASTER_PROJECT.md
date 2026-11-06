@@ -1067,3 +1067,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - The latest measured APK (1,573,125 bytes) is below the new ceiling, leaving approximately 104.6 KB of headroom. This is a policy adjustment, not a claim that the new exact-head CI has passed; a fresh PR CI run is required.
 - Preserve product quality: do not trim required fonts, default wallpaper, accessibility, features or UI behavior merely to satisfy the previous 1.5 MiB threshold. Revisit the ceiling only if actual growth warrants it, with explicit rationale and review.
 - PR #64 remains OPEN / DRAFT / UNMERGED. Architecture and functional work for independent Dock/App Grid renderers remains outstanding; Module 1 is still IN PROGRESS.
+
+
+## 6 Nov 2026 — Global UI Design System audit checkpoint
+- Exact-head PR #64 CI run `42192107405` completed SUCCESS in both required jobs; PR #64 remains OPEN / DRAFT / UNMERGED at `e4bc99c9a4822057ce3bd5490df0ad1471763409`.
+- New audit artifact: `docs/project-management/GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md` (commit `9412b1cef40b6496ac9560771a3ca9e73471cbaf`).
+- Reference images V01–V06 and additional Profile & Security / Home Settings references were visually inspected. Existing global source components were inventoried; shared tokens currently diverge from the reference palette and component/focus coverage is partial.
+- P3 remains PARTIAL: V5 static source QC PASS only; browser walkthrough, 12 scenario evidence, 1920×1080 render comparison, daylight/zoom readability and owner approval are still NOT RUN / NOT ACCEPTED.
+- Global UI Design System remains BELUM PASS. No mass implementation, production source changes, merge, APK install, ADB or physical TV testing.
