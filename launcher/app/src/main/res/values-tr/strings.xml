@@ -44,4 +44,11 @@
     <string name="card_state_new_label">Yeni ad</string>
     <string name="tile_move">Taşı</string>
     <string name="tile_app_info">Uygulama bilgisi</string>
+    <string name="dock_orientation_title">Dock yönü</string>
+    <string name="dock_orientation_summary">Yatay veya dikey Dock düzenini seçin.</string>
+    <string name="dock_orientation_horizontal">Yatay</string>
+    <string name="dock_orientation_vertical">Dikey</string>
+    <string name="dock_capacity_title">Dock kapasitesi</string>
+    <string name="dock_capacity_summary">Gösterilecek uygulama sayısını seçin: 4, 5 veya 6.</string>
+    <string name="dock_settings_save_failed">Dock ayarları kaydedilemedi.</string>
 </resources>
