@@ -31,6 +31,15 @@ public class PopupMenuLayoutRobolectricTest {
     }
 
     @Test
+    public void sharedInputRowsMeetTheMinimumDpadTarget() {
+        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        View row = LayoutInflater.from(activity).inflate(R.layout.item_input, null, false);
+        int minimumPx = Math.round(TvUiTokens.MIN_DPAD_TARGET_DP
+                * activity.getResources().getDisplayMetrics().density);
+        assertTrue(row.getLayoutParams().height >= minimumPx);
+    }
+
+    @Test
     public void longMenuRowsRemainScrollableInsideViewportBoundedPanel() {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         FrameLayout panel = (FrameLayout) LayoutInflater.from(activity)
