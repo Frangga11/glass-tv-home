@@ -194,3 +194,9 @@ No production source, feature branch, PR metadata, integration/main, APK, ADB, H
 - V3 corrects all R01–R07 findings from the V2 static re-audit: nested dialog stack/root focus restoration; modal D-pad traversal; Language and Wallpaper Interval actions; Next Photo unavailable/failure paths; bounded Wi-Fi rescan completion; profile switch simulation; distinct restart/power-off confirmations.
 - Static QC: **PASS**. One embedded JS script parsed successfully without execution; no duplicate HTML IDs; all seven correction groups were source-checked. QC record: [UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md).
 - P3 remains **IN PROGRESS / PARTIAL** until browser keyboard walkthrough, 12-scenario validation and visual comparison against the six user-approved references. No production Android source or device was changed.
+
+
+## V3 browser walkthrough plan
+
+- Reproducible 12-scenario manual browser/keyboard test plan: [UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md](UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md).
+- Execution status: **NOT RUN**. V3 static source QC remains PASS; P3 is not closed until the plan has actual browser evidence and reference comparison.
