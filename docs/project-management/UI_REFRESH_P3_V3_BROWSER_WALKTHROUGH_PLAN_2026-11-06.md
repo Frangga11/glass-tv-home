@@ -41,3 +41,12 @@
 - P3 owner/QA review is recorded. P4 stays blocked until the user-approved visual direction is preserved and implementation-readiness checks pass.
 
 **Current status:** NOT RUN. Static V3 source QC is PASS; this plan does not claim browser execution.
+
+
+## V4 superseding prototype note — 6 November 2026
+
+- The walkthrough target is now **V4** at `prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V4.html`; V3 is retained for traceability.
+- Add these explicit checks to P3-01/P3-02: Tab and Shift+Tab wrap within the modal; Backspace edits text in the Add Profile input without closing the dialog; Escape closes the dialog.
+- P3-05/P3-07: activate Weather Refresh and confirm the focused button remains focused throughout loading and after completion; repeated activation while busy is ignored.
+- P3-06/P3-08: begin a scan, change permission/location/network condition before completion, and verify the prior scan callback cannot overwrite the latest condition/status.
+- **Execution status remains NOT RUN.** Static source QC does not count as a browser walkthrough. The V4 static QC is recorded separately in `UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md`.
