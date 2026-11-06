@@ -168,3 +168,11 @@ Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G
 - Current G03 task: Mi TV Stick physical acceptance. Non-mutating preflight confirms integration SHA `562cde0751de93748eb4e0d4cdece4fa1672ac4d`, G02 run #1185 both jobs SUCCESS, artifact #13210715335 available, artifact digest and extracted APK SHA-256 match the canonical record, and APK ZIP integrity PASS.
 - G03 is OPEN/BLOCKED: no connected TV/ADB tools in this host; explicit readiness approval is required before installation/device mutation. No physical acceptance is claimed.
 - See [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md). Artifact retention expires 10 Nov 2026 06:37:50 UTC.
+
+## Global UI Refresh subtrack — G1 checkpoint (6 November 2026)
+
+- GTVH-UIR-002 v2.0 work package G1 is **COMPLETE / internal QC PASS**. The six V01–V06 surfaces and all six Dock orientation/capacity variants were rendered and reviewed in Chromium at 1920×1080.
+- Canonical interactive artifact: [G1 V6 prototype](prototypes/UI_REFRESH_G1_GLOBAL_UI_PROTOTYPE_V6.html); verification record: [G1 checkpoint](UI_REFRESH_G1_CHECKPOINT_2026-11-06.md).
+- Browser functional suite: 12 PASS / 0 FAIL; JavaScript syntax check PASS; 13 screenshots captured. Prototype only: no production source, owner branch, integration, APK or device was changed.
+- Next UI-refresh work package: G2 — Shared UI Foundation Repair. Owner visual sign-off remains a separate acceptance gate before broad production rollout.
+- This UI-refresh subtrack is distinct from official Project G03 device acceptance, which remains OPEN/BLOCKED as recorded above.
