@@ -6806,12 +6806,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         int anchorTop = menuAt[1] - menuGliderAt[1];
         panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.UNSPECIFIED);
-        int height = Math.max(1, Math.min(panel.getMeasuredHeight(), root.getHeight() - 2 * safeY));
+        int contentHeight = Math.max(1, panel.getMeasuredHeight());
+        int safeHeight = Math.max(1, root.getHeight() - 2 * safeY);
+        int anchorBottom = anchorTop + anchor.getHeight();
+        int aboveSpace = Math.max(0, anchorTop - gap - safeY);
+        int belowSpace = Math.max(0, root.getHeight() - safeY - anchorBottom - gap);
+        boolean placeAbove = TvResponsiveLayout.shouldPlacePopupAbove(
+                aboveSpace, belowSpace, contentHeight, safeHeight, above);
+        int availableHeight = placeAbove ? aboveSpace : belowSpace;
+        int height = Math.max(1, Math.min(contentHeight, availableHeight));
         int left = Math.max(safeX, Math.min(menuAt[0] - menuGliderAt[0],
                 root.getWidth() - safeX - width));
-        int popupTop = anchorTop + anchor.getHeight() + gap;
-        boolean placeAbove = above || popupTop + height > root.getHeight() - safeY;
-        if (placeAbove) popupTop = anchorTop - gap - height;
+        int popupTop = placeAbove ? anchorTop - gap - height : anchorBottom + gap;
         popupTop = Math.max(safeY, Math.min(popupTop, root.getHeight() - safeY - height));
         final boolean opensAbove = placeAbove;
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);

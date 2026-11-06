@@ -30,6 +30,17 @@ final class TvResponsiveLayout {
         return dimensionPx <= 0 ? 0 : Math.max(1, dimensionPx - 2 * safeInsetPx(dimensionPx));
     }
 
+    static boolean shouldPlacePopupAbove(int aboveSpacePx, int belowSpacePx,
+                                         int contentHeightPx, int safeHeightPx,
+                                         boolean preferAbove) {
+        int required = Math.min(Math.max(1, contentHeightPx), Math.max(1, safeHeightPx));
+        boolean fitsAbove = aboveSpacePx >= required;
+        boolean fitsBelow = belowSpacePx >= required;
+        if (preferAbove && fitsAbove) return true;
+        if (fitsBelow) return false;
+        return aboveSpacePx > belowSpacePx;
+    }
+
     static int minDpadTargetPx(float density) {
         if (!(density > 0f) || Float.isInfinite(density) || Float.isNaN(density)) {
             return TvUiTokens.MIN_DPAD_TARGET_DP;
