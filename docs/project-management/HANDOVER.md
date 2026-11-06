@@ -1284,3 +1284,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Fixed three additional V3 risks: Weather Refresh focus retained while busy; stale Wi-Fi scan completion cancelled when prerequisites change; modal Tab/Shift+Tab focus trapped and Backspace remains editable in text fields.
 - Static QC **PASS**; evidence: `docs/project-management/UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md` (commit `97c27d55e1c4ac007ba2506e3f6cc7ebe56be60e`).
 - Browser walkthrough and visual comparison are NOT RUN. P3 remains PARTIAL; P4 blocked. No production source, branch, PR, integration/main, APK or device changed.
+
+
+## UI Refresh — V4 P3 scenario mapping checkpoint (6 November 2026)
+
+- P3-01 through P3-12 have now been mapped to V4 source evidence in `UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md` (latest QC commit `69a5e4f718636bb87ec3fcea2fd3d496c0fe3fb8`). Static presence is explicitly not treated as scenario execution PASS.
+- Walkthrough plan retargeted to V4 in `UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md` (commit `08d24d259d4e7c012a946d640dbf86c7084746e4`). Added modal Tab/Shift+Tab, safe Backspace, Weather Refresh focus, and in-flight Wi-Fi scan invalidation cases.
+- Current: V4 static QC PASS; all 12 browser scenarios NOT RUN; V01–V06 visual comparison NOT RUN. P3 PARTIAL, P4 blocked.
+- No production source, owner branch, PR, integration/main, APK, ADB or TV device changed.
