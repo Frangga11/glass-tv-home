@@ -217,3 +217,11 @@ Reason: the audit baseline and P2 contract are ready, but P1 acceptance and P3 w
 - P1 inventory is now **CLOSED FOR PROGRESSION** with accepted scope boundaries and explicit technical/runtime carry-forward items. Record: [UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md](UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md). This does not claim source/runtime/device parity and does not waive any listed gap.
 - V3 static QC remains PASS. A reproducible 12-scenario browser/keyboard walkthrough plan is recorded at [UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md](UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md). Execution is NOT RUN.
 - P3 remains PARTIAL until browser execution evidence and visual comparison against approved V01–V06 references exist. P4 remains blocked by P3 acceptance and branch/owner readiness.
+
+
+## 14. V4 interaction hardening checkpoint — 6 November 2026
+
+- Deeper source review identified three additional V3 interaction risks: weather refresh disabling its focused control, stale Wi-Fi scan completion overwriting a changed prerequisite state, and modal Tab/Shift+Tab escaping the dialog (plus Backspace closing during text entry).
+- Created V4 prototype at `prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V4.html`; V3 remains unchanged. V4 adds busy-without-disable, scan-generation cancellation and modal Tab wrapping/input-safe Backspace.
+- Static QC **PASS**: JS syntax parse, unique IDs, and all targeted source checks. Evidence: [UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md).
+- Browser walkthrough and V01–V06 visual comparison are still NOT RUN. P3 remains PARTIAL; P4 blocked.
