@@ -1446,3 +1446,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Open PR inventory checked: B01–B03 #10–12; B06/B07 #16–17; E01–E08 #34–41; follow-ups #62/#63; P4-01 #64; Project F #50–56. All are Draft/open; no merges performed. #62/#63 remain owner follow-ups, not replacements for parent modules.
 - Exact-head CI #1225 / run `42192107405` on PR #64 head `e4bc99c9a4822057ce3bd5490df0ad1471763409` is SUCCESS for both jobs. This closes CI only; P4-01 remains in progress and PR #64 remains Draft/unmerged.
 - Immediate next task: actual V5 browser walkthrough and 1920×1080 screenshot comparison; then complete B01 call-site inventory before central token/focus changes. No production source change in this continuation.
+
+
+## R0 reconciliation checkpoint — 6 November 2026
+- R0 audit completed and recorded in `R0_RECONCILIATION_AUDIT_2026-11-06.md` (audit result COMPLETE; overall project readiness NOT PASS).
+- Live refs: integration `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; PR #62 `588456144df24f2f6c015a01053ad700a04bee39`; PR #63 `ecdeb0eba9fc7a574f1a6c9930205517687cd922`; PR #64 `e4bc99c9a4822057ce3bd5490df0ad1471763409`. All three PRs remain OPEN/DRAFT/UNMERGED.
+- Exact-head CI: #62 run #1204 SUCCESS (both jobs); #63 run #1198 SUCCESS (both jobs); #64 run #1225 SUCCESS (both jobs, including its 1.6 MiB budget gate). PR #62 and #64 descriptions corrected to remove stale CI-pending statements.
+- #62 is 19 ahead / 326 behind integration; #63 is 3 ahead / 297 behind; both are diverged and require semantic reconciliation. #64 is 25 ahead / 0 behind integration. No merge/rebase/cherry-pick performed.
+- P1 ACCEPTED/CLOSED FOR PROGRESSION; P2 COMPLETE/FROZEN; P3 PARTIAL. V5 static QC PASS only; real browser rendering at 1920×1080, P3-01..P3-12 execution, screenshot comparison and owner approval remain NOT RUN. P4 broad rollout remains blocked.
+- **Resume point:** P3 — render V5 in a real browser at 1920×1080, capture V01–V06, execute the 12-scenario walkthrough and record deviations/evidence. Do not infer browser/device PASS from static QC or CI. No production source, integration/main, APK, ADB or physical TV changed in R0.
