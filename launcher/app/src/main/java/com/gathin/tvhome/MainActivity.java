@@ -2514,8 +2514,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int tileWidth = AppAdapter.tileWidthPx(inner, preferences.capacity, density);
                 int tileHeight = AppAdapter.tileHeightPx(tileWidth);
                 int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
-                int dockHeight = itemHeight + Math.round(34 * density);
-                int belowDock = itemHeight * Math.max(0, rowsBelowDockSetting);
+                int dockHeight = itemHeight + Math.round(18 * density);
+                int belowDock = itemHeight * Math.max(0, rowsBelowDockSetting) + Math.round(16 * density);
                 dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;

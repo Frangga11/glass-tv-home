@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Draws the glass tray behind the first (dock) row and adds a gap below it: the blurred wallpaper
+ * Draws the glass tray behind the independent Dock surface and adds orientation-aware spacing: the blurred wallpaper
  * behind it, an even veil and a light rim, with no brighter top.
  */
 public class DockDecoration extends RecyclerView.ItemDecoration {
@@ -95,7 +95,10 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
                 rect.union(l, t, r, b);
             }
         }
-        if (!any) return;
+        if (!any) {
+            area.setEmpty();
+            return;
+        }
         float pad = 14 * density;
         rect.inset(-pad, -pad);
         area.set(rect);
