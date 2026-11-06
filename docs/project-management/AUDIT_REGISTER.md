@@ -1218,3 +1218,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Integrated G02 baseline: 1,572,293 B / 1,572,864 B cap / 571 B headroom. Do not infer integrated size from separate owner builds.
 - Known dependency divergence, B01 contract inspection, API/device assumptions, open E02/E06 risks, and no-mutation evidence are in `UI_REFRESH_P0_BASELINE_2026-11-06.md`.
 - No Critical defect reproduced. PRs remain Draft/open/unmerged; no code/branch/integration/main/device mutation. P1 NOT STARTED.
+
+
+## GTVH-UIR-P1-001 — Functional Inventory (6 November 2026)
+
+- **Disposition: PARTIAL — INVENTORY RECORDED; USER ACCEPTANCE PENDING.**
+- Canonical output: [UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md](UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md).
+- Inputs read: locked UI roadmap, HANDOVER, MASTER_PROJECT, INVENTORY, DECISION_LOG, AUDIT_REGISTER, P0 baseline and E02/E06 source audit.
+- Live refs: integration `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; E02 #62 `588456144df24f2f6c015a01053ad700a04bee39`; E06 #63 `ecdeb0eba9fc7a574f1a6c9930205517687cd922`. Both owner PRs remain Draft/open/unmerged and diverged from integration.
+- Exact-head CI: E02 #1204 / `41895866368` and E06 #1198 / `41890835096`; both required jobs SUCCESS; publish step skipped.
+- Source inventory covers E02 profile/avatar/QR/GIPHY/Child Mode/parental app policy and E06 Home grid/Dock/preferences/settings/focus. Explicit absences and test plans are recorded; no behavior was inferred as implemented.
+- Open clarifications: QR manifest/endpoint authorization, current GIPHY policy, profile no-profile/capacity failure invariants, package visibility/API matrix. E02 cancellation/lifecycle and E06 Dock separation/focus remain feature blockers.
+- No Critical defect reproduced in read-only inventory. No production source, branch ref, PR metadata, integration/main, APK or device was changed.
+- P2/P3 remain approval gates; P4 is not authorized.
