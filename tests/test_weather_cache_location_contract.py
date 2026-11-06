@@ -36,10 +36,29 @@ class WeatherCacheLocationContractTest(unittest.TestCase):
         )[0]
         self.assertIn("if (wJson != null)", method)
         self.assertIn("if (aqiJson != null)", method)
-        self.assertIn("putLong(KEY_WEATHER_LAST_SUCCESS, now)", method)
-        self.assertIn("putLong(KEY_AQI_LAST_SUCCESS, now)", method)
+        self.assertIn("putLong(KEY_WEATHER_LAST_SUCCESS, completedAt)", method)
+        self.assertIn("putLong(KEY_AQI_LAST_SUCCESS, completedAt)", method)
         self.assertIn("putString(KEY_WEATHER_LAT, Double.toString(lat))", method)
         self.assertIn("putString(KEY_AQI_LAT, Double.toString(lat))", method)
+
+
+    def test_refresh_freshness_is_scoped_to_the_selected_coordinates(self):
+        # Legacy APIMS/JAS payloads cannot satisfy the current US AQI/CAMS freshness contract.
+        method = self.source.split("private static void syncInternal", 1)[1].split(
+            "static boolean isCurrentRequest", 1
+        )[0]
+        self.assertIn("isCacheFresh(prefs.contains(KEY_WEATHER_JSON)", method)
+        self.assertNotIn("isCacheFresh(prefs.contains(KEY_AQI_JSON)", method)
+        self.assertIn("isAqiCacheFresh(prefs.contains(KEY_AQI_JSON)", method)
+        self.assertIn("prefs.getBoolean(KEY_AQI_IS_JAS, false)", method)
+        self.assertIn("lat, lon, REFRESH_INTERVAL_MS", method)
+
+    def test_weather_and_aqi_requests_cover_the_approved_v4_metrics(self):
+        for parameter in (
+            "dew_point_2m", "moon_phase", "moonrise", "moonset", "precipitation_sum",
+            "carbon_monoxide", "nitrogen_dioxide", "sulphur_dioxide",
+        ):
+            self.assertIn(parameter, self.source)
 
     def test_location_comparison_rejects_non_finite_coordinates(self):
         method = self.source.split("static boolean isSameLocation", 1)[1].split(

@@ -130,26 +130,26 @@
                     android:visibility="gone" />
             </LinearLayout>
 
-            <!-- Main Widescreen Body: Bento Grid (Exact Height: 385dp) -->
+            <!-- Main Widescreen Body: Bento Grid (Exact Height: 421dp) -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="385dp"
+                android:layout_height="421dp"
                 android:layout_marginTop="7dp"
                 android:baselineAligned="false"
                 android:clipChildren="false"
                 android:orientation="horizontal">
 
-                <!-- LEFT SECTION: 2x4 Metric Grid Tiles (Total Height: 385dp) -->
+                <!-- LEFT SECTION: Metric Grid Tiles (Total Height: 421dp) -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1.0"
                     android:orientation="vertical">
 
-                    <!-- Row 1: WIND & MOON PHASE (92dp) -->
+                    <!-- Row 1: WIND & MOON PHASE (104dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="92dp"
+                        android:layout_height="104dp"
                         android:layout_marginBottom="6dp"
                         android:orientation="horizontal">
 
@@ -207,7 +207,28 @@
                             <com.gathin.tvhome.MoonPhaseView
                                 android:id="@+id/moonPhaseView"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
+                                android:layout_height="34dp" />
+
+                            <TextView
+                                android:id="@+id/moonPhaseName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:fontVariationSettings="'wght' 600"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/tv_ui_text_primary"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/moonriseMoonsetText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textSize="9sp" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -310,30 +331,25 @@
                                     android:textSize="10sp" />
                             </LinearLayout>
 
-                            <com.gathin.tvhome.AqiSpectrumBarView
-                                android:layout_width="match_parent"
-                                android:layout_height="6dp"
-                                android:layout_marginTop="2dp" />
-
-                            <TextView
+                                                        <TextView
+                                android:id="@+id/uvAdviceText"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:ellipsize="end"
                                 android:fontFamily="@font/inter"
-                                android:fontVariationSettings="'wght' 400"
+                                android:fontVariationSettings="'wght' 500"
                                 android:includeFontPadding="false"
-                                android:singleLine="true"
+                                android:maxLines="2"
                                 android:text="@string/weather_uv_description"
                                 android:textColor="@color/tv_ui_text_secondary"
-                                android:textSize="8sp" />
+                                android:textSize="8.5sp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Row 3: FEELS LIKE & AIR QUALITY (92dp) -->
+                    <!-- Row 3: FEELS LIKE & AIR QUALITY (104dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="92dp"
+                        android:layout_height="104dp"
                         android:layout_marginBottom="6dp"
                         android:orientation="horizontal">
 
@@ -459,10 +475,10 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Row 4: PRECIPITATION & VISIBILITY (92dp) -->
+                    <!-- Row 4: RAINFALL, VISIBILITY & DEW POINT (104dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="92dp"
+                        android:layout_height="104dp"
                         android:orientation="horizontal">
 
                         <!-- Tile 4A: PRECIPITATION -->
@@ -561,10 +577,53 @@
                                 android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="8sp" />
                         </LinearLayout>
+
+                        <!-- Tile 4C: DEW POINT -->
+                        <LinearLayout
+                            android:id="@+id/tileDewPoint"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:fontVariationSettings="'wght' 700"
+                                android:includeFontPadding="false"
+                                android:singleLine="true"
+                                android:text="@string/weather_dew_point_label"
+                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textSize="9sp" />
+
+                            <TextView
+                                android:id="@+id/dewPointValText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:fontVariationSettings="'wght' 700"
+                                android:includeFontPadding="false"
+                                android:text="—"
+                                android:textColor="@color/tv_ui_text_primary"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:includeFontPadding="false"
+                                android:maxLines="2"
+                                android:text="@string/weather_dew_point_description"
+                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textSize="8sp" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- RIGHT SECTION: Hourly (Top: 127dp) + 10-Day & Radar (Bottom: 252dp) (Total Height: 385dp) -->
+                <!-- RIGHT SECTION: Hourly (Top: 127dp) + pollutant / forecast / atmosphere (Bottom: 288dp) (Total Height: 421dp) -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -679,10 +738,10 @@
                         </HorizontalScrollView>
                     </LinearLayout>
 
-                    <!-- Bottom Row: 10-Day Forecast & Radar / Metrics (252dp) -->
+                    <!-- Bottom Row: 7-Day Forecast, pollutant breakdown and atmosphere (288dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="252dp"
+                        android:layout_height="288dp"
                         android:layout_marginTop="6dp"
                         android:baselineAligned="false"
                         android:orientation="horizontal">
@@ -736,11 +795,80 @@
                             android:layout_weight="1.08"
                             android:orientation="vertical">
 
+                            <!-- Five provider pollutants, distinct from the US AQI category -->
+                            <LinearLayout
+                                android:id="@+id/cardPollutants"
+                                android:layout_width="match_parent"
+                                android:layout_height="104dp"
+                                android:background="@drawable/weather_card_bg"
+                                android:orientation="vertical"
+                                android:padding="6dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/inter"
+                                    android:fontVariationSettings="'wght' 700"
+                                    android:includeFontPadding="false"
+                                    android:text="@string/weather_pollutants_title"
+                                    android:textColor="@color/tv_ui_text_secondary"
+                                    android:textSize="9sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="30dp"
+                                    android:layout_marginTop="3dp"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="PM2.5" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/pm25ValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="PM10" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/pm10ValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="CO" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/coValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="30dp"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="NO₂" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/no2ValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="SO₂" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/so2ValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                    <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/pollutantMissingNote"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/inter"
+                                    android:includeFontPadding="false"
+                                    android:maxLines="1"
+                                    android:text="@string/weather_pollutant_missing_note"
+                                    android:textColor="@color/tv_ui_text_secondary"
+                                    android:textSize="8sp"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
                             <!-- Local atmosphere illustration (not live radar) -->
                             <LinearLayout
                                 android:id="@+id/cardRadar"
                                 android:layout_width="match_parent"
-                                android:layout_height="170dp"
+                                android:layout_height="96dp"
+                                android:layout_marginTop="6dp"
                                 android:background="@drawable/weather_card_bg"
                                 android:orientation="vertical"
                                 android:padding="6dp">
@@ -760,7 +888,7 @@
                                 <com.gathin.tvhome.RadarMapView
                                     android:id="@+id/radarMapView"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
+                                    android:layout_height="68dp"
                                     android:layout_marginTop="3dp" />
                             </LinearLayout>
 
@@ -862,9 +990,9 @@
                 android:fontVariationSettings="'wght' 400"
                 android:gravity="center"
                 android:letterSpacing="0.04"
-                android:singleLine="true"
+                android:maxLines="2"
                 android:text="@string/weather_data_source"
-                android:textColor="#40FFFFFF"
+                android:textColor="@color/tv_ui_text_secondary"
                 android:textSize="9sp" />
         </LinearLayout>
     </ScrollView>
