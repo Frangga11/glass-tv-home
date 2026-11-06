@@ -185,3 +185,32 @@ Do not create duplicates if an existing source can be extended without breaking 
 - The next source changes, if later authorized by the gate, must extend B01's shared foundation and preserve module ownership. No parallel design system.
 
 **Final disposition: GLOBAL UI DESIGN SYSTEM AUDIT IN PROGRESS — BELUM PASS. P3 VISUAL ACCEPTANCE AND TOKEN/COMPONENT CONFORMANCE REMAIN BLOCKING.**
+
+
+## 11. Cross-module rollout and ownership order
+
+The repository currently contains multiple Draft feature branches. They are not all safe to style in parallel because they share settings shell, tokens, focus and popup foundations. Use this order; preserve each feature owner branch and do not merge during implementation.
+
+| Stage | Module / surface | Current owner evidence | Dependency / exit condition |
+|---|---|---|---|
+| 0 | P3 reference prototype acceptance | Trigger 4 V5 docs; prototype under `prototypes/` | Browser walkthrough, 12 scenarios, 1920×1080 captures and reference comparison; visual owner acceptance |
+| 1 | B01 Global UI foundation | PR #10 / `feature/b01-global-navigation-retention`; shared classes currently on `integration/b-series` | Freeze measured semantic tokens and component contracts; retain navigation/persistence behavior; source inventory complete |
+| 2 | B02 focus and selection | PR #11 / `feature/b02-remote-focus-indicators` | One focus-state contract for cards, rows, tabs, toggles, chips and dialogs; selected != focused; D-pad traversal/restore tests |
+| 3 | B03 dialogs and popup material | PR #12 / `feature/b03-dialog-opacity-layering` | Common modal material and opacity/fallback; anchored popup remains a separate placement role; Back/focus return verified |
+| 4 | B06/B07 feedback and focus restoration | PR #16 and #17 | Shared truthful feedback, timeout/error states, deterministic menu/submenu focus restoration |
+| 5 | E01 device/system affordances | PR #34 | Device controls retain OEM/system capability boundaries and existing actions |
+| 6 | E02 Profile, Avatar, Child Mode, security | PR #35; follow-up PR #62 | Profile selection, QR/avatar, app lock and child-mode behavior unchanged; visual/focus coverage tested |
+| 7 | E03 wallpaper metadata / E08 wallpaper controls | PR #36 and #41 | One wallpaper source/state owner; no duplicate wallpaper controller; preserve delete/failure handling |
+| 8 | E04 StandBy / E07 animation and effects | PR #37 and #40 | Lifecycle/power transitions preserved; reduced motion respected; no expensive always-on effects |
+| 9 | E05 Weather, AQI and information widgets | PR #38 | Full Weather V4 metric scope and source truthfulness retained; widget density/scroll/focus verified |
+| 10 | E06 Home Screen settings and Dock | PR #39; Dock follow-up #63; P4-01 PR #64 | Dock geometry independent from app-grid columns; existing controls and preferences retained; focus/reorder/overflow verified |
+| 11 | Global integration and regression | Project F integration PRs #50–56 | Cross-module visual/functional matrix, locale, persistence, performance and exact-head CI; final physical TV acceptance only with authorization |
+
+**Important:** PRs #62 and #63 are follow-up work on E02/E06 owners; they do not supersede the parent module branches. PR #64 is a separate P4-01 foundation and is not a completed two-renderer Home/Dock migration. Keep all PRs Draft/unmerged until their owner-specific exit criteria and the final integration gate pass.
+
+## 12. Current execution checkpoint
+
+- Repository open-PR inventory confirms B01–B03 (#10–#12), B06/B07 (#16–#17), E01–E08 (#34–#41), and active follow-ups #62–#64 remain open Draft PRs. The Project F integration chain #50–#56 also remains Draft.
+- The pending PR #64 CI trigger is closed: exact-head run `42192107405` / run #1225 completed SUCCESS for both required jobs on `e4bc99c9a4822057ce3bd5490df0ad1471763409`. PR #64 remains OPEN / DRAFT / UNMERGED.
+- No production implementation commit is made by this continuation. Current permitted execution is audit, ownership mapping, prototype validation and token/component conformance design. Production styling changes remain blocked by the P3 visual evidence gate described in Sections 8–10.
+- The immediate next task is to complete V5 browser rendering and screenshot evidence, then perform a full call-site inventory of B01 shared primitives before changing any global token or focus behavior.
