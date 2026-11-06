@@ -43,6 +43,7 @@ class WeatherCacheLocationContractTest(unittest.TestCase):
 
 
     def test_refresh_freshness_is_scoped_to_the_selected_coordinates(self):
+        # Legacy APIMS/JAS payloads cannot satisfy the current US AQI/CAMS freshness contract.
         method = self.source.split("private static void syncInternal", 1)[1].split(
             "static boolean isCurrentRequest", 1
         )[0]
