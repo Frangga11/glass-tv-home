@@ -2559,9 +2559,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 boolean parked = parkDock();
                 // The place's name and lines come in the same frame as the picture they describe,
                 // whenever focus lands in the dock, where the shelf shows.
-                boolean whole = adapter.getItemCount() > 0 && grid.getChildCount() > 0
-                        && dockAdapter != null && dockAdapter.getItemCount() > 0 && dockRecycler.getChildCount() > 0
-                        && parked && (wallBitmap != null || !expectsWallpaper) && (heroShown || !lastFocusedDock);
+                int gridCount = adapter == null ? 0 : adapter.getItemCount();
+                int dockCount = dockAdapter == null ? 0 : dockAdapter.getItemCount();
+                boolean hasTiles = gridCount > 0 || dockCount > 0;
+                boolean gridReady = gridCount == 0 || grid.getChildCount() > 0;
+                boolean dockReady = dockCount == 0 || dockRecycler.getChildCount() > 0;
+                boolean focusReady = heroShown || !lastFocusedDock || dockCount == 0;
+                boolean whole = hasTiles && gridReady && dockReady && parked
+                        && (wallBitmap != null || !expectsWallpaper) && focusReady;
                 if (!whole && android.os.SystemClock.uptimeMillis() - start < FIRST_FRAME_WAIT_MS) {
                     return false;   // skip this frame; the next traversal asks again
                 }
@@ -2569,7 +2574,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 firstFrameHeld = false;
                 android.util.Log.i("TvHome.Perf", "first frame after " + (android.os.SystemClock.uptimeMillis() - start)
                         + " ms" + (whole ? "" : " (gave up waiting: tiles=" + adapter.getItemCount()
-                        + " laidOut=" + grid.getChildCount() + " dockParked=" + parked
+                        + " gridLaidOut=" + grid.getChildCount() + " dockItems=" + (dockAdapter == null ? 0 : dockAdapter.getItemCount()) + " dockLaidOut=" + (dockRecycler == null ? 0 : dockRecycler.getChildCount()) + " dockParked=" + parked
                         + " wallpaper=" + (wallBitmap != null) + ")"));
                 return true;
             }
