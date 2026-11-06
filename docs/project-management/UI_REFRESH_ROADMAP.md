@@ -41,7 +41,7 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - Every interactive control must have a verified action and every asynchronous flow must handle cancel, failure and lifecycle exit safely.
 - Visual acceptance includes contrast over wallpaper, overscan, daylight glare, 1920×1080 layout, TV-distance readability and localized text fit.
 - CI PASS is necessary but does not replace visual, device or integrated acceptance.
-- Do not add assets/dependencies without measuring APK impact against the 1,572,864-byte ceiling.
+- Measure and report exact APK size and dependency/asset impact. There is no fixed hard size ceiling for G2/G3 UI quality work: do not remove required fonts, wallpaper, accessibility, visual treatments or functionality merely to stay under a historical threshold. Review unnecessary dependencies and disproportionate growth, but make the trade-off on product value and runtime cost rather than an arbitrary cap.
 - Never claim 100% defect-free software; report only verified results and known residual risk.
 
 ## 6. Ownership and dependency
@@ -75,3 +75,10 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - G1 prototype completion does not equal Android runtime/physical-TV acceptance; owner visual sign-off remains separate before broad rollout.
 
 **This GTVH-UIR-002 roadmap supersedes and retires GTVH-UIR-001 v1.0 as the execution plan. P0/P1/P2 records remain historical evidence and are not deleted or re-run by default.**
+
+## 9. G2 closeout — 6 November 2026
+- **G2 Shared UI Foundation Repair: COMPLETE / SOURCE-HOST QC PASS.** Checkpoint: `UI_REFRESH_G2_CHECKPOINT_2026-11-06.md`.
+- Feature branch `feature/g2-shared-ui-foundation-repair`, exact head `40fa0715bdbcd324042927fbc56ec19f91d1947a`; Draft PR #65 targets `integration/b-series` at `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. PR remains OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1263 / run `42252069520`: both required jobs PASS; launcher unit-test/release-build validation and Lists/tools/docs passed. Release APK measured at **1,573,713 bytes**; size is diagnostic/non-blocking.
+- No APK artifact was published or installed; no ADB or physical TV test was performed. Device/remote/OEM overscan and physical visual acceptance remain a later evaluation gate.
+- Next work package: **G3 — Surface Implementation**, in the official order 3A Home & independent Dock → 3B Weather/AQI V4 → 3C Profile/Avatar/Child Mode → 3D Quick Settings → 3E Wi-Fi → 3F Global Settings.

@@ -1465,3 +1465,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Scope boundary:** prototype and documentation only. No production source, PR #62/#63/#64, integration/main, APK, ADB or physical TV changed. No merge/rebase/cherry-pick was performed.
 - Owner visual sign-off is still a separate product-acceptance gate before broad production rollout. Browser simulation is not device acceptance.
 - **Resume at G2 — Shared UI Foundation Repair.** Preserve GTVH-UIR-002 order and existing owner-branch/merge/device-mutation boundaries. The separate official Project G03 Mi TV Stick gate remains OPEN/BLOCKED.
+
+
+## Current resume checkpoint — G2 complete (6 November 2026)
+
+- G2 Shared UI Foundation Repair is **COMPLETE / SOURCE-HOST QC PASS**. Canonical checkpoint: `UI_REFRESH_G2_CHECKPOINT_2026-11-06.md`.
+- Source branch `feature/g2-shared-ui-foundation-repair`, exact head `40fa0715bdbcd324042927fbc56ec19f91d1947a`; PR #65 is OPEN/DRAFT/UNMERGED and targets `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- Exact-head CI #1263 / run `42252069520` passed both required jobs, including app and installer unit tests and release build. APK diagnostic: 1,573,713 bytes; size threshold is non-blocking under the user's updated policy.
+- Shared palette/tokens, glass/solid material, dialog sizing/fallback, safe popup geometry/scrolling, focus motion/restore, 56dp D-pad targets and Weather/AQI shared palette are implemented.
+- No merge/rebase/cherry-pick, APK publication/install, ADB or physical TV testing. Physical TV/remote/OEM overscan acceptance remains deferred.
+- **Resume at G3 — Surface Implementation**, in order 3A Home & independent Dock → 3B Weather/AQI V4 → 3C Profile/Avatar/Child Mode → 3D Quick Settings → 3E Wi-Fi → 3F Global Settings.

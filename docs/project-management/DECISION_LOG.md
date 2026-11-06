@@ -418,3 +418,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - E02 open acceptance gaps remain explicit: active HTTP disconnect cancellation, animated-vs-still preview decision, drawable/profile lifecycle and memory tests, QR authorization/permission audit, current GIPHY policy, and profile no-profile/error invariants.
 - Decision: P1 inventory may be reviewed for completeness, but it is not marked accepted/closed until the user accepts the document and clarifications. P2/P3 approval remains a hard gate before P4. No code, merge, integration/main, APK publication/install or device action is authorized.
 - Evidence: [UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md](UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md).
+
+
+## D-023 — APK size is a diagnostic, not a UI quality gate (6 November 2026)
+
+- User direction: allow APK capacity to increase when the increase materially supports UI quality, accessibility, stability or feature completeness. Do not simplify approved visual treatments or functionality merely to satisfy an arbitrary size limit.
+- CI must continue to print the exact APK byte size and provide a warning for unusually large growth, but the historical 1.5 MiB threshold must not fail the build. Unnecessary dependencies/assets should still be reviewed; required fonts, wallpaper, UI effects, accessibility and behavior are not to be stripped for size alone.
+- G2 implementation: `.github/workflows/ci.yml` now uses a non-blocking APK size diagnostic.
+- G2 exact-head CI #1263 measured 1,573,713 bytes; both required jobs passed.
+- Status: **APPROVED**.

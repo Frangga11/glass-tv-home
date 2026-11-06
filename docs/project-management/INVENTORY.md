@@ -651,3 +651,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - E06 parent PR #39: `feature/e06-home-screen-subtabs` @ `570b7c83efaec3ac515b78f1c6c119b777fc3b84`; follow-up PR #63 @ `ecdeb0eba9fc7a574f1a6c9930205517687cd922`, 3 ahead/297 behind integration, OPEN/DRAFT/UNMERGED. Exact-head CI #1198 SUCCESS.
 - P4-01 PR #64 @ `e4bc99c9a4822057ce3bd5490df0ad1471763409`, based directly on integration @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`, 25 ahead/0 behind, OPEN/DRAFT/UNMERGED. Exact-head CI #1225 SUCCESS; branch-only 1.6 MiB budget gate passed.
 - Detailed scope gaps and safe reconciliation disposition are in `R0_RECONCILIATION_AUDIT_2026-11-06.md`. CI PASS does not close module acceptance; no early merge.
+
+
+## G2 Shared UI Foundation Repair — 6 November 2026
+- Source PR #65 / branch `feature/g2-shared-ui-foundation-repair` @ `40fa0715bdbcd324042927fbc56ec19f91d1947a`, base integration `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; OPEN/DRAFT/UNMERGED.
+- Scope: 29 changed files across shared Java components, XML palette/material resources, Weather/AQI surfaces, popup/profile/settings layouts and host tests.
+- Exact-head CI #1263 / run `42252069520`: both jobs PASS; `:app:testReleaseUnitTest`, `:installer:testReleaseUnitTest`, release build all PASS.
+- Release APK size diagnostic: 1,573,713 bytes. CI now reports size without blocking quality work.
+- No APK published/installed; no ADB or physical TV test.
+- Canonical result: `UI_REFRESH_G2_CHECKPOINT_2026-11-06.md`; next work package G3 (3A–3F).

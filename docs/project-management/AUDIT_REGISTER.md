@@ -1471,3 +1471,22 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Functional browser suite | PASS | 12 PASS / 0 FAIL; JSON SHA-256 recorded in G1 checkpoint |
 
 G1 is a browser-prototype result only. Production component conformance, live data, Android runtime, 4K/overscan, physical TV/remote and owner visual sign-off remain separate gates. No production source, PR, APK or device changed.
+
+
+## 6 November 2026 — G2 Shared UI Foundation Repair source/host QC
+
+| Check | Result | Evidence |
+|---|---|---|
+| Shared semantic palette and XML resource alignment | PASS | `TvUiTokens`, `res/values/colors.xml`, dialog/focus/weather resources |
+| Glass and solid fallback | PASS | `GlassDrawable`, `DockDecoration`, `TvDialogStyle.createDialogSurface` |
+| Dialog safe bounds | PASS | `TvDialogStyleTest` |
+| Popup safe-area horizontal/vertical placement | PASS | `TvResponsiveLayoutTest`; exact-head CI #1263 |
+| Long popup scrolling and D-pad target | PASS | `PopupMenuLayoutRobolectricTest` |
+| Focus outline/background separation | PASS | `TvFocusIndicatorRobolectricTest` |
+| Contrast and text scaling rules | PASS | `TvUiTokensTest`, `TvResponsiveLayoutTest`; G1 daylight/large-text prototype evidence |
+| App unit tests / installer unit tests / release build | PASS | Exact-head CI #1263 / run `42252069520` |
+| Lists/tools/docs CI | PASS | Exact-head CI #1263 |
+| APK size | INFORMATIONAL | 1,573,713 bytes; no blocking ceiling |
+| Physical TV / remote / OEM overscan | DEFERRED | No physical test or device mutation authorized/performed |
+
+**G2 disposition: COMPLETE / SOURCE-HOST QC PASS.** PR #65 remains OPEN/DRAFT/UNMERGED. This result is not physical-device acceptance.

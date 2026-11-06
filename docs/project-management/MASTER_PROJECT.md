@@ -1098,3 +1098,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Browser suite: 12/12 PASS at 1920×1080; Chromium 144.0.7559.96; JavaScript syntax PASS; visual comparison and screenshot capture completed.
 - No production source, PR #62/#63/#64, integration/main, APK or device changed. G1 completion is not Android runtime/physical-TV acceptance and does not authorize a merge.
 - Next UI-refresh stage: G2 shared UI foundation repair. Owner visual sign-off remains separate before broad rollout.
+
+
+## 6 November 2026 — GTVH-UIR-002 G2 Shared UI Foundation Repair
+- G2 **COMPLETE / SOURCE-HOST QC PASS**. The shared component foundation, semantic palette, glass/solid fallback, dialog bounds, popup geometry/scrolling, focus behavior, 56dp D-pad targets and Weather/AQI palette were repaired. See `UI_REFRESH_G2_CHECKPOINT_2026-11-06.md`.
+- Source PR #65: `feature/g2-shared-ui-foundation-repair` @ `40fa0715bdbcd324042927fbc56ec19f91d1947a`, based on integration `562cde0751de93748eb4e0d4cdece4fa1672ac4d`; OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1263 / run `42252069520` passed both jobs; app and installer unit tests and release build succeeded. APK measured 1,573,713 bytes; size is diagnostic/non-blocking.
+- No APK publication/install, ADB, merge or physical TV test. Physical TV evaluation remains separate.
+- Next: G3 surface implementation in official 3A–3F order.
