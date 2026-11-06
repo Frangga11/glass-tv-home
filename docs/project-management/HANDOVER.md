@@ -1455,3 +1455,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - #62 is 19 ahead / 326 behind integration; #63 is 3 ahead / 297 behind; both are diverged and require semantic reconciliation. #64 is 25 ahead / 0 behind integration. No merge/rebase/cherry-pick performed.
 - P1 ACCEPTED/CLOSED FOR PROGRESSION; P2 COMPLETE/FROZEN; P3 PARTIAL. V5 static QC PASS only; real browser rendering at 1920×1080, P3-01..P3-12 execution, screenshot comparison and owner approval remain NOT RUN. P4 broad rollout remains blocked.
 - **Resume point:** P3 — render V5 in a real browser at 1920×1080, capture V01–V06, execute the 12-scenario walkthrough and record deviations/evidence. Do not infer browser/device PASS from static QC or CI. No production source, integration/main, APK, ADB or physical TV changed in R0.
+
+## Current resume checkpoint — UI Refresh G1 complete (6 November 2026)
+
+- Governing UI refresh plan: `GTVH-UIR-002 v2.0`; work package **G1 COMPLETE / internal QC PASS**.
+- Canonical prototype: `prototypes/UI_REFRESH_G1_GLOBAL_UI_PROTOTYPE_V6.html`; full record: `UI_REFRESH_G1_CHECKPOINT_2026-11-06.md`.
+- V01–V06 rendered and visually reviewed against the six supplied references at 1920×1080. All six Dock variants (horizontal/vertical × 4/5/6) were rendered. Browser functional suite: 12 PASS / 0 FAIL; JS syntax PASS.
+- Tested D-pad arrow movement, popup/back focus restoration, nested dialogs, Child Mode PIN gate, Next Photo edge/error/success, Weather V4 missing/offline/stale states, Wi-Fi permission/Location/offline/throttle/stale/empty states, Settings category/search, daylight and large-text presentation.
+- **Scope boundary:** prototype and documentation only. No production source, PR #62/#63/#64, integration/main, APK, ADB or physical TV changed. No merge/rebase/cherry-pick was performed.
+- Owner visual sign-off is still a separate product-acceptance gate before broad production rollout. Browser simulation is not device acceptance.
+- **Resume at G2 — Shared UI Foundation Repair.** Preserve GTVH-UIR-002 order and existing owner-branch/merge/device-mutation boundaries. The separate official Project G03 Mi TV Stick gate remains OPEN/BLOCKED.
