@@ -1454,3 +1454,20 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Live compare against integration `562cde0751de93748eb4e0d4cdece4fa1672ac4d`: #62 diverged 19/326; #63 diverged 3/297; #64 ahead 25/behind 0. Preserve owner branches; semantic reconciliation required.
 - Corrected stale exact-head CI notes in PR #62 and PR #64. No production code, merge, rebase, cherry-pick, APK publication/installation, ADB or device action.
 - P3 remains PARTIAL: V5 static QC PASS only; browser walkthrough, 1920×1080 screenshots, visual comparison, 12 scenario execution and owner approval remain NOT RUN.
+
+## 6 November 2026 — GTVH-UIR-002 G1 prototype QC
+
+| Check | Result | Evidence / boundary |
+|---|---|---|
+| V01–V06 render | PASS | Chromium 144.0.7559.96, exact 1920×1080 viewport; six screenshots captured |
+| Six Dock variants | PASS | Horizontal/vertical × capacity 4/5/6; app grid invariant; vertical rail fit and non-overlap |
+| Weather V4 coverage | PASS | All approved metrics and forecasts present; offline, failure, stale, no-location, AQI-unavailable, source-unavailable and omitted-pollutant states exercised |
+| Profile selector | PASS | Active/focus distinction, D-pad movement and Child Mode PIN gate |
+| Quick Settings / dialogs | PASS | All actions represented; nested dialog and invoking-focus restoration tested |
+| Wi-Fi popup | PASS | No in-app radio switch; permission, Location, offline, throttle, stale and empty states; Android Settings handoff |
+| Global Settings | PASS | Seven categories, split detail and control-level search |
+| Large text / daylight | PASS | All six surfaces bounded within 1920×1080 in large-text mode; daylight contrast view rendered |
+| JavaScript syntax | PASS | Node.js v22.16.0 |
+| Functional browser suite | PASS | 12 PASS / 0 FAIL; JSON SHA-256 recorded in G1 checkpoint |
+
+G1 is a browser-prototype result only. Production component conformance, live data, Android runtime, 4K/overscan, physical TV/remote and owner visual sign-off remain separate gates. No production source, PR, APK or device changed.
