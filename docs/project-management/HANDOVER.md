@@ -1292,3 +1292,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Walkthrough plan retargeted to V4 in `UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md` (commit `08d24d259d4e7c012a946d640dbf86c7084746e4`). Added modal Tab/Shift+Tab, safe Backspace, Weather Refresh focus, and in-flight Wi-Fi scan invalidation cases.
 - Current: V4 static QC PASS; all 12 browser scenarios NOT RUN; V01–V06 visual comparison NOT RUN. P3 PARTIAL, P4 blocked.
 - No production source, owner branch, PR, integration/main, APK, ADB or TV device changed.
+
+
+## UI Refresh — TRIGGER 4 prototype visual validation (6 November 2026)
+
+- Started the requested visual-validation gate against V01–V06. The six reference panels were recovered from the saved Global UI Design & Interaction Contract / UI Refresh overview boards.
+- V4 source-to-reference composition review found material deviations: Home lacks the reference wallpaper/top-information/Dock composition; Weather is a generic full-page metrics layout rather than the reference card hierarchy; Profile uses three generic cards rather than the four-card avatar selector; Quick Settings and Wi-Fi are full pages rather than anchored glass popups; Global Settings lacks the reference icon-led navigation/detail content and profile card.
+- Cross-surface material gaps: V4 panel opacity is high (rgba alpha .94), no backdrop blur is declared, glow is mostly focus-only, and iconography is sparse/text-based. P2 safe margin is represented as 5% (96×54 px at 1920×1080, equivalent to 48×27 dp at the assumed 2× scale).
+- Dedicated report: [UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md](UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md), report commit `c99dc2b01bf69c1ee4a698f82114a220a316100a`.
+- **Disposition: PROTOTYPE VISUAL — REVISION REQUIRED.** This is a source-to-reference composition finding, not a screenshot measurement. A browser render/screenshot at exactly 1920×1080 was NOT captured; pixel/geometry, blur, color sampling and rendered legibility remain unverified.
+- V4 is preserved unchanged. No production source, owner branch, PR, integration/main, APK, ADB or physical device changed. P4/mass implementation remains BLOCKED.
+- **Next:** create a new versioned visual prototype revision, then obtain actual 1920×1080 screenshots for all six surfaces and repeat side-by-side comparison before requesting owner approval.
