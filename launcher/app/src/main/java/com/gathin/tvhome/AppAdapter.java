@@ -439,8 +439,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      * changing focus, tile sizing, ordering, or the visible Home layout in this commit.
      */
     DockLayoutModel.Snapshot<Entry> dockSnapshot() {
-        return DockLayoutModel.split(items, dockSize,
-                entry -> entry.component.flattenToShortString());
+        return DockLayoutModel.split(items, favourites, dockSize,
+                entry -> entry.pkg);
     }
 
     @Override
