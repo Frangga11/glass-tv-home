@@ -2811,8 +2811,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             moveSlide.setMoveDuration(reducedMotion ? 140 : 220);
         }
         recycler.setItemAnimator(moveSlide);
+        startMoveWiggle(movingCard);
+    }
+
+    private void startMoveWiggle(View card) {
+        if (card == null) return;
+        if (wiggle != null) wiggle.cancel();
+        movingCard = card;
         float tilt = reducedMotion ? 0.8f : 1.4f;
-        wiggle = android.animation.ObjectAnimator.ofFloat(movingCard, View.ROTATION, -tilt, tilt);
+        wiggle = android.animation.ObjectAnimator.ofFloat(card, View.ROTATION, -tilt, tilt);
         wiggle.setDuration(reducedMotion ? 260 : 140);
         wiggle.setRepeatMode(android.animation.ValueAnimator.REVERSE);
         wiggle.setRepeatCount(android.animation.ValueAnimator.INFINITE);

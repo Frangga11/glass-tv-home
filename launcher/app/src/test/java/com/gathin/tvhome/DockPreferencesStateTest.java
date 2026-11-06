@@ -18,6 +18,16 @@ public class DockPreferencesStateTest {
     }
 
     @Test
+    public void allSixOrientationAndCapacityCombinationsAreSupported() {
+        for (DockPreferences.Orientation orientation : DockPreferences.Orientation.values()) {
+            assertEquals(orientation, DockPreferences.normalizeOrientation(orientation.name()));
+            for (int capacity : new int[]{4, 5, 6}) {
+                assertEquals(capacity, DockPreferences.normalizeCapacity(capacity));
+            }
+        }
+    }
+
+    @Test
     public void orientationFallsBackSafely() {
         assertEquals(DockPreferences.Orientation.VERTICAL,
                 DockPreferences.normalizeOrientation("VERTICAL"));
