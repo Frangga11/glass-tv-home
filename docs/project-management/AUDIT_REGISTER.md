@@ -1301,3 +1301,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - V4 corrects three additional V3 interaction risks: weather focus loss during loading, stale Wi-Fi scan completion after prerequisite changes, and modal Tab focus escape / Backspace text-entry conflict.
 - **Static QC PASS**; actual browser walkthrough and visual review NOT RUN. Full record: [UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md).
 - P3 remains PARTIAL; P4 blocked.
+
+
+## GTVH-UIR-T4-VISUAL-001 — TRIGGER 4 prototype visual validation (6 November 2026)
+
+- Recovered six reference panels V01–V06 from saved Global UI Design & Interaction Contract / UI Refresh overview boards.
+- V4 source-to-reference composition audit: **REVISION REQUIRED**. Material deviations exist in all six surfaces; V04 Quick Settings and V05 Wi-Fi are full-page layouts instead of anchored popup compositions, V03 lacks the four-card avatar selector, V01 lacks the wallpaper-led Home composition, V02 lacks the reference dashboard hierarchy, and V06 lacks representative split-detail content/icon navigation.
+- Shared material findings: near-opaque panel fill, no backdrop blur, focus-only glow and sparse text/Unicode iconography.
+- 1920×1080 browser rendering and screenshot capture were NOT RUN. No pixel/geometry/material/legibility PASS is claimed.
+- V4 preserved; no production source or device mutation. P4 remains blocked.
+- Full report and correction plan: [UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md](UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md).
