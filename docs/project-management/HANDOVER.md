@@ -1427,3 +1427,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - The latest measured APK (1,573,125 bytes) is below the new ceiling, leaving approximately 104.6 KB of headroom. This is a policy adjustment, not a claim that the new exact-head CI has passed; a fresh PR CI run is required.
 - Preserve product quality: do not trim required fonts, default wallpaper, accessibility, features or UI behavior merely to satisfy the previous 1.5 MiB threshold. Revisit the ceiling only if actual growth warrants it, with explicit rationale and review.
 - PR #64 remains OPEN / DRAFT / UNMERGED. Architecture and functional work for independent Dock/App Grid renderers remains outstanding; Module 1 is still IN PROGRESS.
+
+
+## 6 Nov 2026 — Global UI Design System audit started; PR #64 CI closed
+- PR #64 source branch `feature/ui-global-01-home-dock`, head `e4bc99c9a4822057ce3bd5490df0ad1471763409`, base `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. PR remains OPEN / DRAFT / UNMERGED.
+- Exact-head GitHub Actions run `42192107405`: both required jobs completed SUCCESS. Launcher build/unit tests/release validation/APK diagnostics/1.6 MiB budget enforcement PASS; Lists/tools/docs PASS. APK log reports 1,536 KB rounded; do not infer an exact byte count from that display.
+- This closes the pending CI trigger only. P4-01 Home & Dock remains IN PROGRESS; separate Dock/App Grid renderers, region-aware focus/D-pad/reorder, six-combination tests and 1920×1080 visual QC remain open.
+- Began Global UI Design System audit from the saved reference board V01–V06 plus Profile & Security and Home Settings detail images. New canonical audit: `GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md`, commit `9412b1cef40b6496ac9560771a3ca9e73471cbaf`.
+- Source audit confirms reusable `TvUiTokens`, `GlassDrawable`, `GlassRim`, `GlassView`, `TvFocusIndicator`, `TvDialogStyle`, `ModernSettingsDialog`, `TvResponsiveLayout`, `TvFeedback` and `AppLanguage`. Current `TvUiTokens` uses charcoal/gray surfaces and compact Settings-specific dimensions, materially unlike the reference's navy/blue/cyan glass palette. Focus and material helpers are reusable but not universal; focus coverage and blur/material measurements remain incomplete.
+- Global UI Design System disposition: AUDIT IN PROGRESS / BELUM PASS. V5 static QC is not browser rendering; P3 12-scenario walkthrough, actual 1920×1080 screenshots, side-by-side visual review and owner approval remain blockers. No mass implementation or production source changes authorized/performed.
+- No merge, APK publication/installation, ADB, device-setting change or physical TV test.
