@@ -400,7 +400,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     void setGlassEffectsEnabled(boolean enabled) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("glass_effects_enabled", enabled).apply();
-        if (glider != null && grid != null && grid.hasFocus()) {
+        if (glider != null && ((grid != null && grid.hasFocus()) || (dockRecycler != null && dockRecycler.hasFocus()))) {
             glider.setStyle(enabled ? Glider.GLASS : Glider.DARK);
         }
         if (grid != null) grid.invalidateItemDecorations();

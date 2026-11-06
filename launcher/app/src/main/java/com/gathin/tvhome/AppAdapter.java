@@ -118,7 +118,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     private final Context ctx;
     private final TileListener listener;
-    private final int dockSize;
+    private final int gridColumns;
     /** Dock order (config.xml dock_apps, or a theme's config.json). */
     private final List<String> favourites;
     /** Never shown as tiles (res/values/config.xml, hidden_apps). */
@@ -134,14 +134,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
     private static final String ORDER_PREFS = "tiles", ORDER_KEY = "order";
-    /** Rebind payload: only whether the tile's name shows, which depends on being in the dock. */
-    private static final Object DOCK_CHANGED = new Object();
-
-    AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
+    AppAdapter(Context ctx, TileListener listener, int gridColumns, Config cfg) {
         this.ctx = ctx;
         this.listener = listener;
         this.tileBinder = new TileBinder(ctx);
-        this.dockSize = dockSize;
+        this.gridColumns = Math.max(1, gridColumns);
         this.favourites = cfg.dockApps;
         this.hidden = new HashSet<>(cfg.hiddenApps);
         this.showHomeSettings = cfg.showHomeSettingsShortcut;
@@ -299,7 +296,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, MainActivity.COLUMNS, density), h = tileHeightPx(w);
+        int w = tileWidthPx(inner, gridColumns, density), h = tileHeightPx(w);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;
@@ -325,15 +322,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             return true;
         });
     }
-    @Override
-    public void onBindViewHolder(@NonNull Holder h, int position, @NonNull List<Object> payloads) {
-        if (payloads.size() == 1 && payloads.get(0) == DOCK_CHANGED) {
-            h.name.setVisibility(View.VISIBLE);
-            return;
-        }
-        onBindViewHolder(h, position);
-    }
-
     /** Android's page for the app at {@code position}: storage, permissions, uninstall. */
     void openAppInfo(int position) {
         List<Entry> grid = gridSnapshot().gridItems;
