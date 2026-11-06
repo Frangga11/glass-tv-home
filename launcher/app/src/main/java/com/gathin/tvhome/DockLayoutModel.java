@@ -36,6 +36,18 @@ final class DockLayoutModel {
     private DockLayoutModel() { }
 
     /** Unique holder type per orientation/capacity so changed geometry cannot reuse stale tile views. */
+    static int gridPositionForDock(int dockPosition, boolean vertical, int gridColumns, int gridCount) {
+        if (dockPosition < 0 || gridColumns <= 0 || gridCount <= 0) return -1;
+        int target = vertical ? dockPosition * gridColumns : dockPosition % gridColumns;
+        return Math.min(target, gridCount - 1);
+    }
+
+    static int dockPositionForGrid(int gridPosition, boolean vertical, int gridColumns, int dockCount) {
+        if (gridPosition < 0 || gridColumns <= 0 || dockCount <= 0) return -1;
+        int target = vertical ? gridPosition / gridColumns : gridPosition % gridColumns;
+        return Math.min(target, dockCount - 1);
+    }
+
     static int dockViewType(boolean vertical, int capacity) {
         return (vertical ? 100 : 0) + normalizeCapacity(capacity);
     }
