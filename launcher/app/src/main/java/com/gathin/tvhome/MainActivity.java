@@ -2835,10 +2835,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             if (to == movingPos || !dockAdapter.move(movingPos, to)) return;
             movingPos = to;
-            final String key = dockAdapter.keyAt(to);
+            final int targetPosition = to;
+            final String key = dockAdapter.keyAt(targetPosition);
             dockRecycler.post(() -> {
-                RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(to);
-                if (movingPos != to || vh == null) return;
+                RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
+                if (movingPos != targetPosition || vh == null) return;
                 movingCard = vh.itemView.findViewById(R.id.card);
                 if (movingCard != null) {
                     movingCard.setRotation(reducedMotion ? 0.8f : 1.4f);
@@ -2866,15 +2867,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             if (to == movingPos || !adapter.move(movingPos, to)) return;
             movingPos = to;
-            final String key = adapter.keyAt(to);
+            final int targetPosition = to;
+            final String key = adapter.keyAt(targetPosition);
             grid.post(() -> {
-                RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(to);
-                if (movingPos != to || vh == null) return;
+                RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(targetPosition);
+                if (movingPos != targetPosition || vh == null) return;
                 movingCard = vh.itemView.findViewById(R.id.card);
                 if (movingCard != null) {
                     movingCard.setRotation(reducedMotion ? 0.8f : 1.4f);
                     movingCard.requestFocus();
-                    onTileFocused(to, movingCard);
+                    onTileFocused(targetPosition, movingCard);
                 }
             });
         }
