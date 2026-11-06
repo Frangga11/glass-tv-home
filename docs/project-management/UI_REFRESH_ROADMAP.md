@@ -68,9 +68,10 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - P0: PASS.
 - P1: ACCEPTED.
 - P2: COMPLETE/FROZEN.
-- G1: NOT COMPLETE — real-browser 1920×1080 review and six-surface validation are not evidenced.
+- G1: COMPLETE / internal QC PASS — V6 prototype reviewed at 1920×1080; six surfaces and six Dock variants rendered; browser suite 12/12 PASS. See `UI_REFRESH_G1_CHECKPOINT_2026-11-06.md`.
 - PR #64: OPEN/DRAFT/UNMERGED; CI passed on recorded head, but Home/Dock implementation is incomplete.
 - PR #62 and #63: OPEN/DRAFT/UNMERGED; exact-head CI passed on recorded heads, but owner branches diverge from the frozen integration baseline and require semantic reconciliation.
-- G5–G7: NOT STARTED.
+- G2–G7: NOT STARTED. Resume at G2 — Shared UI Foundation Repair.
+- G1 prototype completion does not equal Android runtime/physical-TV acceptance; owner visual sign-off remains separate before broad rollout.
 
 **This GTVH-UIR-002 roadmap supersedes and retires GTVH-UIR-001 v1.0 as the execution plan. P0/P1/P2 records remain historical evidence and are not deleted or re-run by default.**
