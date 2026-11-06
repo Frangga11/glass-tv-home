@@ -643,3 +643,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Every identified element records owner, actual behavior or explicit absence, data/state/persistence/permission boundary and test plan.
 - Explicit not implemented: separate Dock model/view/adapter, Dock settings UI, horizontal/vertical renderer, capacity wiring, overflow and independent focus/scroll/reorder.
 - P1 result PARTIAL pending user acceptance and source/permission/provider clarifications. No implementation authorization.
+
+
+## R0 live reconciliation — 6 November 2026
+- Canonical integration baseline: `integration/b-series` @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`.
+- E02 parent PR #35: `feature/e02-profile-avatar-lock-ui` @ `3ab9b55f3cfe03ad9841a119590a9183cf114e96`; follow-up PR #62 @ `588456144df24f2f6c015a01053ad700a04bee39`, 19 ahead/326 behind integration, OPEN/DRAFT/UNMERGED. Exact-head CI #1204 SUCCESS.
+- E06 parent PR #39: `feature/e06-home-screen-subtabs` @ `570b7c83efaec3ac515b78f1c6c119b777fc3b84`; follow-up PR #63 @ `ecdeb0eba9fc7a574f1a6c9930205517687cd922`, 3 ahead/297 behind integration, OPEN/DRAFT/UNMERGED. Exact-head CI #1198 SUCCESS.
+- P4-01 PR #64 @ `e4bc99c9a4822057ce3bd5490df0ad1471763409`, based directly on integration @ `562cde0751de93748eb4e0d4cdece4fa1672ac4d`, 25 ahead/0 behind, OPEN/DRAFT/UNMERGED. Exact-head CI #1225 SUCCESS; branch-only 1.6 MiB budget gate passed.
+- Detailed scope gaps and safe reconciliation disposition are in `R0_RECONCILIATION_AUDIT_2026-11-06.md`. CI PASS does not close module acceptance; no early merge.
