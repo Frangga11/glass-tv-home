@@ -928,3 +928,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - P1 inventory CLOSED FOR PROGRESSION with known technical/runtime gaps carried forward: [P1 acceptance disposition](UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md).
 - V3 prototype static QC PASS; browser walkthrough plan is versioned but NOT RUN: [P3 V3 walkthrough plan](UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md).
 - P3 remains PARTIAL; P4 remains blocked until 12-scenario browser walkthrough and visual comparison against approved V01–V06 references are completed.
+
+
+
+## UI Refresh — V4 current checkpoint (6 November 2026)
+
+- V4 prototype-only hardening addresses Weather Refresh focus retention, stale Wi-Fi scan cancellation and modal Tab focus containment / input-safe Backspace.
+- Static QC PASS; browser walkthrough and V01–V06 visual acceptance NOT RUN. Evidence: [UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md).
+- P3 remains PARTIAL; P4 remains blocked. No production source change.
