@@ -1179,3 +1179,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - No runtime/device/ADB testing was performed. Do not claim all target behaviors exist. Runtime QA remains separate. P2 is a separate workstream; P3 prototype/P4 implementation remain gated by explicit P2 approval.
 - Final P1 inventory commit: 0f45cdf2a2fb3ced3ce99611db4465b3fb15fa37. Canonical path: docs/project-management/UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md on docs/project-master-inventory.
 - No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV changed.
+
+
+## UI Refresh P2 — COMPLETE; P3 authorized by standing user instruction (6 Nov 2026)
+- User explicitly instructed that once a Trigger is commanded, complete its scope independently without repeated per-item approvals, then proceed to the next Trigger. This standing instruction authorizes normal in-scope decisions and continuation to the next roadmap Trigger; it does not authorize risky external actions or production implementation outside the roadmap gates.
+- Completed P2 Shared Design & Interaction Contract in place. Added audited Android 11 Wi-Fi platform constraints and solution: read-only scan list is conditionally feasible with FINE_LOCATION/CHANGE_WIFI_STATE/ACCESS_WIFI_STATE and Location enabled; scan throttling 4 per 2 minutes foreground; radio toggle and saved-network management excluded for ordinary apps; use system Wi-Fi panel/settings and user-approved add-network API only where applicable. Official Android documentation sources are cited in the P2 contract.
+- Resolved shared design baselines: 960×540 dp 16:9 canvas; safe content margins 48dp L/R and 27dp T/B; 8dp spacing rhythm; 56dp minimum interactive height, 64dp preferred primary actions; typography and radii tokens; focus/motion and reduced-motion; Day/Normal/Night/Auto; wallpaper scrim; settings taxonomy/search; Weather V4 preservation; Dock/grid separation; Next Photo owner/action contract; common state/failure matrix.
+- P2 acceptance checklist all PASS at contract level. Runtime/hardware validation and implementation verification remain explicitly assigned to P3/P4/P5; no claim of runtime pass.
+- **P2 status: COMPLETE — CONTRACT BASELINE FROZEN FOR P3.**
+- P2 commit: db5d7e70b09910f4f5d25d83fd815d024eee7d90. Canonical doc: docs/project-management/UI_REFRESH_P2_SHARED_DESIGN_INTERACTION_CONTRACT_2026-11-06.md on docs/project-master-inventory.
+- P3 — Six-Surface Visual Prototype & Interaction Validation is the next Trigger and is now authorized to start under the user's standing instruction. P4 production implementation remains gated until prototype/interaction QA and the roadmap implementation gate are satisfied.
+- No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV changed in P2.
