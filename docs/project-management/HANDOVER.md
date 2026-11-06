@@ -1258,3 +1258,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Found two high-severity V2 prototype blockers: nested Wi-Fi handoff loses the original dialog/focus chain; D-pad/arrow navigation is disabled while a modal is open. Medium gaps: inert Language/Wallpaper Interval controls, no Next Photo failure path, normal Wi-Fi rescan stuck loading, no profile-switch simulation, generic Restart/Power Off confirmation.
 - V2 remains unchanged. Next: create a new versioned prototype revision correcting R01–R07, static/syntax re-check, then browser keyboard walkthrough and visual review. P1 acceptance and owner decisions remain pending; no user approval is inferred.
 - No production source, branch, PR, integration/main, APK, ADB or TV device changed.
+
+
+
+## UI Refresh — V3 prototype static QC checkpoint (6 November 2026)
+
+- V2 preserved; new V3 prototype created at `docs/project-management/prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V3.html`.
+- Corrected R01–R07: nested dialog stack/root focus; modal D-pad; Language; Wallpaper Interval; Next Photo failure/unavailable; Wi-Fi rescan completion; profile switch; distinct restart/power-off confirmation.
+- Static QC **PASS** (JS syntax parse without execution, no duplicate IDs, correction presence checks). Evidence: `docs/project-management/UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md` (commit `22039e3ac4f9df1c9f70c2dac09ddc9f4239cee7`).
+- P3 remains PARTIAL until browser keyboard walkthrough, 12-scenario validation and visual comparison against the six user-approved references. No production source, branch, PR, integration/main, APK or device changed.
