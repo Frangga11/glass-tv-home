@@ -47,7 +47,7 @@ class WeatherCacheLocationContractTest(unittest.TestCase):
             "static boolean isCurrentRequest", 1
         )[0]
         self.assertIn("isCacheFresh(prefs.contains(KEY_WEATHER_JSON)", method)
-        self.assertIn("isCacheFresh(prefs.contains(KEY_AQI_JSON)", method)
+        self.assertNotIn("isCacheFresh(prefs.contains(KEY_AQI_JSON)", method)
         self.assertIn("isAqiCacheFresh(prefs.contains(KEY_AQI_JSON)", method)
         self.assertIn("prefs.getBoolean(KEY_AQI_IS_JAS, false)", method)
         self.assertIn("lat, lon, REFRESH_INTERVAL_MS", method)
