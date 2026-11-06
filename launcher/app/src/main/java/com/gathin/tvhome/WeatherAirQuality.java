@@ -230,7 +230,8 @@ final class WeatherAirQuality {
                     prefs.getLong(KEY_WEATHER_LAST_SUCCESS, 0L),
                     prefs.getString(KEY_WEATHER_LAT, null), prefs.getString(KEY_WEATHER_LON, null),
                     lat, lon, REFRESH_INTERVAL_MS);
-            boolean aqiFresh = isCacheFresh(prefs.contains(KEY_AQI_JSON), now,
+            boolean aqiFresh = isAqiCacheFresh(prefs.contains(KEY_AQI_JSON),
+                    prefs.getBoolean(KEY_AQI_IS_JAS, false), now,
                     prefs.getLong(KEY_AQI_LAST_SUCCESS, 0L),
                     prefs.getString(KEY_AQI_LAT, null), prefs.getString(KEY_AQI_LON, null),
                     lat, lon, REFRESH_INTERVAL_MS);
@@ -287,8 +288,10 @@ final class WeatherAirQuality {
                     } else {
                         edit.putBoolean(KEY_AQI_LAST_FAILED, true);
                     }
-                    edit.putString(KEY_AQI_STATION_PLACE, defaultPlace)
-                            .putBoolean(KEY_AQI_IS_JAS, false);
+                    if (aqiJson != null) {
+                        edit.putString(KEY_AQI_STATION_PLACE, defaultPlace)
+                                .putBoolean(KEY_AQI_IS_JAS, false);
+                    }
                     if (wJson != null || aqiJson != null) edit.putLong(KEY_LAST_UPDATE, completedAt);
                     edit.apply();
                 }
@@ -318,6 +321,13 @@ final class WeatherAirQuality {
      * A fresh timestamp is insufficient after a location change: the cached payload must
      * belong to the currently selected coordinates before it can suppress a refresh.
      */
+    static boolean isAqiCacheFresh(boolean hasCache, boolean legacyJasSource, long now,
+                                   long lastSuccess, String cachedLat, String cachedLon,
+                                   double selectedLat, double selectedLon, long refreshIntervalMs) {
+        return !legacyJasSource && isCacheFresh(hasCache, now, lastSuccess, cachedLat, cachedLon,
+                selectedLat, selectedLon, refreshIntervalMs);
+    }
+
     static boolean isCacheFresh(boolean hasCache, long now, long lastSuccess,
                                  String cachedLat, String cachedLon,
                                  double selectedLat, double selectedLon, long refreshIntervalMs) {
@@ -361,7 +371,10 @@ final class WeatherAirQuality {
         double selectedLat = AppLocationManager.getLatitude(context);
         double selectedLon = AppLocationManager.getLongitude(context);
         if (!cacheMatchesLocation(prefs, KEY_WEATHER_LAT, KEY_WEATHER_LON, selectedLat, selectedLon)) weatherJson = null;
-        if (!cacheMatchesLocation(prefs, KEY_AQI_LAT, KEY_AQI_LON, selectedLat, selectedLon)) aqiJson = null;
+        boolean legacyJasCache = prefs.getBoolean(KEY_AQI_IS_JAS, false);
+        if (legacyJasCache || !cacheMatchesLocation(prefs, KEY_AQI_LAT, KEY_AQI_LON, selectedLat, selectedLon)) {
+            aqiJson = null;
+        }
         String weatherText = isEnglish ? "Weather unavailable" : "Cuaca tidak tersedia";
         String aqiText = isEnglish ? "US AQI unavailable" : "US AQI tidak tersedia";
         int aqi = -1;
@@ -551,7 +564,9 @@ final class WeatherAirQuality {
         boolean isJas = false;
         String aqiStatus = aqi < 0 ? "—" : getAqiStatus(aqi, AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(context)));
         String aqiParam = "US AQI (CAMS)";
-        String stationPlace = prefs.getString(KEY_AQI_STATION_PLACE, AppLocationManager.getStationPlace(context));
+        String stationPlace = aqiAvailable
+                ? prefs.getString(KEY_AQI_STATION_PLACE, AppLocationManager.getStationPlace(context))
+                : AppLocationManager.getStationPlace(context);
         String stationId = AppLocationManager.getStationId(context);
         String locationName = AppLocationManager.getLocationName(context).toUpperCase(Locale.ROOT);
 

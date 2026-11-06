@@ -48,6 +48,8 @@ class WeatherCacheLocationContractTest(unittest.TestCase):
         )[0]
         self.assertIn("isCacheFresh(prefs.contains(KEY_WEATHER_JSON)", method)
         self.assertIn("isCacheFresh(prefs.contains(KEY_AQI_JSON)", method)
+        self.assertIn("isAqiCacheFresh(prefs.contains(KEY_AQI_JSON)", method)
+        self.assertIn("prefs.getBoolean(KEY_AQI_IS_JAS, false)", method)
         self.assertIn("lat, lon, REFRESH_INTERVAL_MS", method)
 
     def test_weather_and_aqi_requests_cover_the_approved_v4_metrics(self):

@@ -30,6 +30,15 @@ public class WeatherAirQualityFreshnessTest {
     }
 
     @Test
+    public void legacyJasCacheCannotSuppressCamsRefresh() {
+        long now = 2_000_000L;
+        assertFalse(WeatherAirQuality.isAqiCacheFresh(true, true, now, now - 1_000L,
+                "-6.2088", "106.8456", -6.2088, 106.8456, INTERVAL));
+        assertTrue(WeatherAirQuality.isAqiCacheFresh(true, false, now, now - 1_000L,
+                "-6.2088", "106.8456", -6.2088, 106.8456, INTERVAL));
+    }
+
+    @Test
     public void cacheAtRefreshBoundaryIsStale() {
         long now = 2_000_000L;
         assertFalse(WeatherAirQuality.isCacheFresh(true, now, now - INTERVAL,
