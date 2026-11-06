@@ -21,6 +21,11 @@ public class TvUiTokensTest {
     }
 
     @Test
+    public void sharedNavigationRowsMeetTheMinimumDpadTarget() {
+        assertTrue(TvUiTokens.NAV_ROW_HEIGHT_DP >= TvUiTokens.MIN_DPAD_TARGET_DP);
+    }
+
+    @Test
     public void focusAccentRemainsDistinctFromEverySharedSurface() {
         int[] surfaces = {
                 TvUiTokens.SHELL, TvUiTokens.SURFACE,

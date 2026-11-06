@@ -56,7 +56,7 @@ final class TvUiTokens {
     static final float ROW_RADIUS_DP = 14f;
     static final float NAV_ROW_RADIUS_DP = 14f;
     static final float NAV_ICON_RADIUS_DP = 10f;
-    static final float NAV_ROW_HEIGHT_DP = 52f;
+    static final float NAV_ROW_HEIGHT_DP = 56f;
     static final float NAV_ROW_BOTTOM_MARGIN_DP = 4f;
     static final float NAV_FOCUS_SCALE = 1.015f;
     static final float CARD_FOCUS_SCALE = 1.015f;
