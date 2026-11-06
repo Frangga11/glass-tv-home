@@ -578,8 +578,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return false;
             });
             weatherAirQualityView.setOnFocusChangeListener((v, hasFocus) -> {
-                float scale = hasFocus ? 1.05f : 1.0f;
-                v.animate().scaleX(scale).scaleY(scale).setDuration(150).start();
+                float scale = hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f;
+                v.animate().scaleX(scale).scaleY(scale).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
         }
         updateWeatherAqi();
@@ -4896,7 +4896,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
-                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(100).start();
+                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
 
             final String chosenKey = opt.key;
