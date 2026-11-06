@@ -173,3 +173,8 @@ No production source, feature branch, PR metadata, integration/main, APK, ADB, H
 | P3-12 | Reduced motion | Reduced-motion toggle removes nonessential transition/animation | Implemented in source; visual/focus walkthrough pending |
 
 **P3 disposition remains IN PROGRESS / PARTIAL.** V2 closes the missing prototype-state and six-combination representation gaps at source level, but does not close the review gate. No actual browser session, remote-control hardware, physical TV, 4K/1080p panel, or human TV-distance readability review was executed in this session. No approval of the design has been inferred. P1 remains PARTIAL pending user acceptance; P4 remains NOT STARTED and BLOCKED by P1 acceptance and P3 review/approval.
+
+
+### V2 review refinement — search focus stability
+- Source review found that filtering V06 controls moved focus away from the search input on each keystroke, which would interrupt multi-character input. Corrected V2 so filtering preserves focus in the search field; Down moves focus to the first matching control for D-pad selection. Empty-query reset also retains search focus.
+- Corrective artifact commit: `ce6d45ca6a353bae867607d63d84c82c67eec4fa`. Inline JavaScript syntax compilation check: PASS. This remains source-level verification; manual keyboard/browser walkthrough is pending.
