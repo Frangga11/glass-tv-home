@@ -88,3 +88,19 @@ E06-F: run exact-head CI, integration conflict audit and APK budget check.
 - Device acceptance: NOT IN SCOPE.
 
 **Overall: BELUM FINAL.** Next work is E02-A through E02-E and E06-A through E06-F, performed on owner branches with exact-head evidence. Do not report feature PASS until each acceptance requirement is implemented and tested.
+
+
+## P0 live-head revalidation addendum — 6 November 2026
+
+The following supersedes the stale head/CI pending statements above; historical findings and sequence remain valid.
+
+| Workstream | Verified live source branch | Exact head | Base branch / SHA | Exact-head CI |
+|---|---|---|---|---|
+| E02 PR #62 | `feature/e02-giphy-avatar-search-v1` | `588456144df24f2f6c015a01053ad700a04bee39` | `feature/e02-profile-avatar-lock-ui` / `3ab9b55f3cfe03ad9841a119590a9183cf114e96` | #1204 / `41895866368`, both required jobs SUCCESS |
+| E06 PR #63 | `feature/e06-dock-capacity-control-v1` | `ecdeb0eba9fc7a574f1a6c9930205517687cd922` | `feature/e06-home-screen-subtabs` / `570b7c83efaec3ac515b78f1c6c119b777fc3b84` | #1198 / `41890835096`, both required jobs SUCCESS |
+
+- Both PRs remain OPEN/DRAFT/UNMERGED. CI is isolated-head evidence, not feature acceptance or integrated validation.
+- E02 exact APK size: 1,566,569 B (6,295 B headroom to 1,572,864 B); E06: 1,563,741 B (9,123 B headroom). APK publication was skipped.
+- Frozen integration remains `562cde0751de93748eb4e0d4cdece4fa1672ac4d`. E02 head is 19 ahead/326 behind integration; E06 head is 3 ahead/297 behind. Their base refs are ancestors of integration. E01's current branch head has three commits not contained in either owner base; perform semantic reconciliation before integration.
+- The earlier E02 pending #1203 note and head `dafcaf...` are superseded by exact head `588456...` and successful run #1204.
+- Full P0 baseline and compatibility register: `UI_REFRESH_P0_BASELINE_2026-11-06.md`.
