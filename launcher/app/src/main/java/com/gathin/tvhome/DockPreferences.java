@@ -17,6 +17,7 @@ final class DockPreferences {
     static final String PREFS = "dock_presentation";
     private static final String KEY_ORIENTATION = "orientation";
     private static final String KEY_CAPACITY = "capacity";
+    private static final String KEY_PINNED_KEYS = "pinned_component_keys";
 
     final Orientation orientation;
     final int capacity;
@@ -56,6 +57,29 @@ final class DockPreferences {
                 .putString(KEY_ORIENTATION, orientation.name())
                 .putInt(KEY_CAPACITY, capacity)
                 .commit();
+    }
+
+    /** Null means no user override exists; an empty list is an explicit empty Dock. */
+    static java.util.List<String> loadPinnedKeys(Context context) {
+        String raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_PINNED_KEYS, null);
+        if (raw == null) return null;
+        java.util.ArrayList<String> result = new java.util.ArrayList<>();
+        java.util.HashSet<String> seen = new java.util.HashSet<>();
+        for (String key : raw.split("\\n")) {
+            if (key != null && !key.trim().isEmpty() && seen.add(key.trim())) result.add(key.trim());
+        }
+        return result;
+    }
+
+    static boolean savePinnedKeys(Context context, java.util.List<String> keys) {
+        if (context == null || keys == null) return false;
+        java.util.ArrayList<String> clean = new java.util.ArrayList<>();
+        java.util.HashSet<String> seen = new java.util.HashSet<>();
+        for (String key : keys) {
+            if (key != null && !key.trim().isEmpty() && seen.add(key.trim())) clean.add(key.trim());
+        }
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putString(KEY_PINNED_KEYS, android.text.TextUtils.join("\\n", clean)).commit();
     }
 
     static boolean isDockPosition(int position, int capacity) {

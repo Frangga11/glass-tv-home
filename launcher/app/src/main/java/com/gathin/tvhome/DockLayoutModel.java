@@ -92,6 +92,28 @@ final class DockLayoutModel {
         return Collections.unmodifiableList(result);
     }
 
+    /** Resolves a persisted component-key list against the current inventory, dropping missing and duplicate identities. */
+    static <T> List<String> orderedExplicitPinnedKeys(List<T> inventory, List<String> explicitKeys,
+                                                       Function<T, String> stableKey) {
+        if (stableKey == null) throw new IllegalArgumentException("stableKey is required");
+        Set<String> available = new HashSet<>();
+        if (inventory != null) {
+            for (T item : inventory) {
+                if (item == null) continue;
+                String key = stableKey.apply(item);
+                if (key != null && !key.trim().isEmpty()) available.add(key);
+            }
+        }
+        List<String> result = new ArrayList<>();
+        Set<String> added = new HashSet<>();
+        if (explicitKeys != null) {
+            for (String key : explicitKeys) {
+                if (key != null && available.contains(key) && added.add(key)) result.add(key);
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
     static <T> Snapshot<T> split(List<T> orderedItems, List<String> pinnedKeys,
                                  int requestedCapacity, Function<T, String> stableKey) {
         if (stableKey == null) throw new IllegalArgumentException("stableKey is required");

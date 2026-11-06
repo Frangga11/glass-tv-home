@@ -2829,11 +2829,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
+    private void moveTileAcrossRegion(String key, boolean toDock, int dockPosition) {
+        if (key == null) return;
+        finishMove();
+        boolean changed = toDock ? adapter.pinToDock(key, dockPosition) : adapter.unpinFromDock(key);
+        if (!changed) return;
+        dockAdapter.refresh();
+        applyDockLayout();
+        RecyclerView target = toDock ? dockRecycler : grid;
+        target.post(() -> startMove(key, toDock));
+    }
+
     private void stepMove(int keyCode) {
         if (movingPos < 0 || movingRecycler == null) return;
         int last;
         int to = movingPos;
         if (movingDock) {
+            String movingKey = dockAdapter.keyAt(movingPos);
+            if ((dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+                    || (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_DOWN)) {
+                moveTileAcrossRegion(movingKey, false, 0);
+                return;
+            }
             last = dockAdapter.lastMovable();
             if (dockVertical) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos > 0) to = movingPos - 1;
@@ -2857,6 +2874,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
             });
         } else {
+            String movingKey = adapter.keyAt(movingPos);
+            if ((!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS)
+                    || (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT && movingPos % COLUMNS == 0)) {
+                int targetDockPosition = dockVertical ? Math.min(dockAdapter.getItemCount(), movingPos / COLUMNS)
+                        : movingPos % COLUMNS;
+                moveTileAcrossRegion(movingKey, true, targetDockPosition);
+                return;
+            }
             last = adapter.lastMovable();
             switch (keyCode) {
                 case KeyEvent.KEYCODE_DPAD_LEFT:

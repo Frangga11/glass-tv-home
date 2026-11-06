@@ -387,13 +387,35 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     boolean moveDock(int from, int to) {
+        List<String> pinned = currentPinnedKeys();
         DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
-        List<Entry> dock = new ArrayList<>(snapshot.dockItems);
-        if (from == to || from < 0 || to < 0 || from >= dock.size() || to >= dock.size()
-                || dock.get(from).kind == Entry.HOME_SETTINGS || dock.get(to).kind == Entry.HOME_SETTINGS) return false;
-        Entry moved = dock.remove(from);
-        dock.add(to, moved);
-        replacePresentationOrder(dock, snapshot.gridItems);
+        if (from == to || from < 0 || to < 0 || from >= snapshot.dockItems.size()
+                || to >= snapshot.dockItems.size() || from >= pinned.size() || to >= pinned.size()) return false;
+        String moved = pinned.remove(from);
+        pinned.add(to, moved);
+        if (!DockPreferences.savePinnedKeys(ctx, pinned)) return false;
+        notifyDataSetChanged();
+        return true;
+    }
+
+    boolean pinToDock(String key, int requestedPosition) {
+        if (key == null || key.trim().isEmpty()) return false;
+        List<String> pinned = currentPinnedKeys();
+        if (pinned.contains(key)) return false;
+        int capacity = DockPreferences.load(ctx).capacity;
+        int position = Math.max(0, Math.min(requestedPosition, Math.min(capacity - 1, pinned.size())));
+        pinned.add(position, key);
+        if (!DockPreferences.savePinnedKeys(ctx, pinned)) return false;
+        notifyDataSetChanged();
+        return true;
+    }
+
+    boolean unpinFromDock(String key) {
+        if (key == null || key.trim().isEmpty()) return false;
+        List<String> pinned = currentPinnedKeys();
+        if (!pinned.remove(key)) return false;
+        if (!DockPreferences.savePinnedKeys(ctx, pinned)) return false;
+        notifyDataSetChanged();
         return true;
     }
 
@@ -409,26 +431,32 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         notifyDataSetChanged();
     }
 
-    /**
-     * Stable immutable partition for the dedicated Dock renderer. The current RecyclerView still
-     * renders the legacy combined list; this snapshot establishes the model boundary without
-     * changing focus, tile sizing, ordering, or the visible Home layout in this commit.
-     */
+    /** Immutable presentation partition shared by the independent Dock and App Grid adapters. */
     DockLayoutModel.Snapshot<Entry> gridSnapshot() {
         return dockSnapshot();
     }
 
     DockLayoutModel.Snapshot<Entry> dockSnapshot() {
         int capacity = DockPreferences.load(ctx).capacity;
-        // Dock configuration is package-based while tile identity is component-based.
-        // Preserve the user's saved tile order among pinned identities; newly installed or
-        // unarranged favourite components fall back to configured package order.
-        List<String> pinnedComponentKeys = DockLayoutModel.orderedPinnedKeys(
-                items, favourites, arranged,
-                entry -> entry.component.flattenToShortString(),
-                entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg);
+        List<String> explicit = DockPreferences.loadPinnedKeys(ctx);
+        List<String> pinnedComponentKeys = explicit == null
+                ? DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
+                        entry -> entry.component.flattenToShortString(),
+                        entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg)
+                : DockLayoutModel.orderedExplicitPinnedKeys(items, explicit,
+                        entry -> entry.component.flattenToShortString());
         return DockLayoutModel.split(items, pinnedComponentKeys, capacity,
                 entry -> entry.component.flattenToShortString());
+    }
+
+    private List<String> currentPinnedKeys() {
+        List<String> explicit = DockPreferences.loadPinnedKeys(ctx);
+        return explicit == null
+                ? new ArrayList<>(DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
+                        entry -> entry.component.flattenToShortString(),
+                        entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg))
+                : new ArrayList<>(DockLayoutModel.orderedExplicitPinnedKeys(items, explicit,
+                        entry -> entry.component.flattenToShortString()));
     }
 
     @Override
