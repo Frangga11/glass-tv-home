@@ -79,7 +79,7 @@ final class DockPreferences {
             if (key != null && !key.trim().isEmpty() && seen.add(key.trim())) clean.add(key.trim());
         }
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                .putString(KEY_PINNED_KEYS, android.text.TextUtils.join("\\n", clean)).commit();
+                .putString(KEY_PINNED_KEYS, android.text.TextUtils.join("\n", clean)).commit();
     }
 
     static boolean isDockPosition(int position, int capacity) {

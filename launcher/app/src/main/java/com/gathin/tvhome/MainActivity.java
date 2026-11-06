@@ -1774,6 +1774,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         cards = moduleCards ? CardFeature.run(() -> Cards.discover(this, hiddenApps, Cards.load(Cards.storeFile(this))), none) : none;
         boolean rebuilt = adapter.reload(cards.isEmpty() ? none : CardFeature.run(() -> Cards.shown(cards), none));
         if (dockAdapter != null) dockAdapter.refresh();
+        applyDockLayout();
         // RecyclerView rebinding may transiently move focus and fire onTileFocused(). Preserve
         // the user's top-bar destination across that internal rebuild; it is not a user move.
         int dockPosition = dockAdapter == null ? -1 : dockAdapter.positionOf(returnKey);
@@ -2789,7 +2790,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         boolean canMove = inDock ? dockAdapter.canMove(pos) : adapter.canMove(pos);
         if (recycler == null || pos < 0 || !canMove) return;
         RecyclerView.ViewHolder vh = recycler.findViewHolderForAdapterPosition(pos);
-        if (vh == null) return;
+        if (vh == null) {
+            recycler.scrollToPosition(pos);
+            recycler.post(() -> {
+                if (movingPos < 0 && recycler.findViewHolderForAdapterPosition(pos) != null) startMove(key, inDock);
+            });
+            return;
+        }
         movingPos = pos;
         movingDock = inDock;
         movingRecycler = recycler;
@@ -3140,7 +3147,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void focusTile(int position) {
         if (adapter == null || grid == null) return;
         if (adapter.getItemCount() == 0) {
-            focusTopBarFallback();
+            if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+            else focusTopBarFallback();
             return;
         }
         final int pos = NavigationState.resolveHomePosition(-1, position, adapter.getItemCount());
