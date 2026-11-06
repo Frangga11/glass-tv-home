@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Stores the original foreground while the shared transient D-pad focus outline is applied. -->
-    <item name="tv_focus_outline_state" type="id" />
-</resources>

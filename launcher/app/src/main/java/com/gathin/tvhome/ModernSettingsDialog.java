@@ -230,7 +230,6 @@ public final class ModernSettingsDialog {
             v.setBackground(g);
             searchPrompt.setTextColor(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
             searchIcon.setColorFilter(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
-            TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.NAV_ROW_RADIUS_DP);
             v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
@@ -394,6 +393,8 @@ public final class ModernSettingsDialog {
             }
         };
 
+        profileCard.setForeground(activity.getDrawable(R.drawable.bg_tv_focus_outline));
+
         profileCard.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 activeSidebarView[0] = profileCard;
@@ -401,7 +402,6 @@ public final class ModernSettingsDialog {
                 updateSidebarSelection.run();
                 if (renderRightPane[0] != null) renderRightPane[0].run();
             }
-            TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.CARD_RADIUS_DP);
             v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 

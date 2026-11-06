@@ -2,14 +2,13 @@ package com.gathin.tvhome;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
-import android.view.View;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,33 +28,21 @@ public class TvFocusIndicatorRobolectricTest {
     }
 
     @Test
-    public void focusOutlinePreservesAndRestoresExistingForeground() {
+    public void sharedFocusOutlineUsesStatefulForegroundWithoutReplacingBackground() {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        View view = new View(activity);
-        Drawable original = new GradientDrawable();
-        view.setForeground(original);
+        android.view.View view = new android.view.View(activity);
+        Drawable background = new GradientDrawable();
+        view.setBackground(background);
+        Drawable outline = activity.getDrawable(R.drawable.bg_tv_focus_outline);
+        assertNotNull(outline);
+        assertTrue(outline instanceof StateListDrawable);
 
-        TvFocusIndicator.updateFocusOutline(view, true, 2f, 14f);
-        Drawable focused = view.getForeground();
-        assertNotNull(focused);
-        assertNotSame(original, focused);
-
-        TvFocusIndicator.updateFocusOutline(view, false, 2f, 14f);
-        assertSame(original, view.getForeground());
-    }
-
-    @Test
-    public void focusOutlineRestoresNullForegroundWithoutChangingBackground() {
-        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        View view = new View(activity);
-        Drawable originalBackground = new GradientDrawable();
-        view.setBackground(originalBackground);
-
-        TvFocusIndicator.updateFocusOutline(view, true, 2f, 12f);
-        assertNotNull(view.getForeground());
-        TvFocusIndicator.updateFocusOutline(view, false, 2f, 12f);
-
-        assertNull(view.getForeground());
-        assertSame(originalBackground, view.getBackground());
+        outline.setState(new int[]{android.R.attr.state_focused});
+        assertTrue(((StateListDrawable) outline).getCurrent() instanceof GradientDrawable);
+        Drawable focused = ((StateListDrawable) outline).getCurrent();
+        outline.setState(new int[0]);
+        assertNotSame(focused, ((StateListDrawable) outline).getCurrent());
+        view.setForeground(outline);
+        assertTrue(view.getBackground() == background);
     }
 }

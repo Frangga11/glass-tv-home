@@ -18,26 +18,6 @@ import android.widget.TextView;
 final class TvFocusIndicator {
     private TvFocusIndicator() { }
 
-    static void updateFocusOutline(View view, boolean hasFocus, float density, float radiusDp) {
-        if (view == null) return;
-        Object tagged = view.getTag(R.id.tv_focus_outline_state);
-        Drawable[] state;
-        if (tagged instanceof Drawable[]) {
-            state = (Drawable[]) tagged;
-        } else {
-            float safeDensity = density > 0f && !Float.isInfinite(density) && !Float.isNaN(density)
-                    ? density : 1f;
-            GradientDrawable outline = new GradientDrawable();
-            outline.setColor(Color.TRANSPARENT);
-            outline.setCornerRadius(Math.max(0f, radiusDp) * safeDensity);
-            outline.setStroke(Math.max(1, Math.round(TvUiTokens.FOCUS_STROKE_DP * safeDensity)),
-                    TvUiTokens.FOCUS_BORDER);
-            state = new Drawable[]{view.getForeground(), outline};
-            view.setTag(R.id.tv_focus_outline_state, state);
-        }
-        view.setForeground(hasFocus ? state[1] : state[0]);
-    }
-
     static View attachAvatarFocusRing(FrameLayout frame, int frameSizePx, float density) {
         if (frame == null) return null;
 
