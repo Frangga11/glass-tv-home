@@ -1129,3 +1129,9 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #62 body still contains stale text saying its latest head has no confirmed exact-head CI. This is contradicted by live run #1204 on exact head `588456144df24f2f6c015a01053ad700a04bee39`, both required jobs SUCCESS. PR body was intentionally left untouched in P1; reconcile the description on the owner PR in a later authorized documentation update.
 - PR #63 body and live run #1198 are consistent. Do not treat mergeable=true as permission or acceptance.
 - Final docs branch head verified identical to `5d891b42147a0dea71cc7b7f6ad0e0ce43783f12` before this note.
+
+
+### Final P1 documentation sync — 6 November 2026
+
+- P1 inventory and canonical records have been rechecked after the consistency addendum. Final documentation branch head: `8c9f398b2043a9e13b37fe6128291d3014faaeee` before this HANDOVER-only update; the HANDOVER update below is the final branch commit.
+- Inventory document SHA was refreshed after correcting its historical compare note. No source branch or PR was modified.
