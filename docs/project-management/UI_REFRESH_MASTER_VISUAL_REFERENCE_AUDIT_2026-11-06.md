@@ -201,3 +201,12 @@ Reason: the audit baseline and P2 contract are ready, but P1 acceptance and P3 w
 - P3 V2 is not ready for walkthrough sign-off until a new versioned revision addresses R01/R02 and medium completeness gaps. Preserve V2 unchanged for traceability.
 - P1 user acceptance and owner decisions remain open; source review cannot substitute for user acceptance or visual comparison against canonical references.
 - No source/prototype code, branch, PR, integration/main, APK or device changed.
+
+
+## 12. V3 prototype correction checkpoint — 6 November 2026
+
+- Continued within Trigger P3. V2 remains unchanged; a new V3 prototype is available at `prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V3.html`.
+- V3 addresses all seven static findings R01–R07. Static QC **PASS**: JavaScript syntax parse passed without execution; no duplicate IDs; nested dialog/focus stack, modal D-pad, Language, interval, Next Photo failure, Wi-Fi rescan completion, profile switching and action-specific restart/power confirmations were source-checked.
+- QC evidence: [UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md).
+- P3 remains PARTIAL: no browser execution, keyboard walkthrough, visual comparison, TV-distance readability or physical remote acceptance has been performed. P1 owner/runtime gaps remain carried forward; no user approval is inferred from static QC.
+- No production source, owner branch, PR, integration/main, APK, ADB or TV device changed.
