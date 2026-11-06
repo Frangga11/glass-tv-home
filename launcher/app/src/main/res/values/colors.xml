@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tv_ui_shell">#FF0B2A5B</color>
+    <color name="tv_ui_surface">#CC0C2E61</color>
+    <color name="tv_ui_surface_focused">#E60E3567</color>
+    <color name="tv_ui_text_primary">#FFFFFFFF</color>
+    <color name="tv_ui_text_secondary">#FFB6C6FF</color>
+    <color name="tv_ui_focus_cyan">#FF00E5FF</color>
+    <color name="tv_ui_border">#80426BAA</color>
+    <color name="tv_ui_selected_blue">#331E6BFF</color>
+    <color name="tv_ui_selected_border">#6600E5FF</color>
+</resources>

@@ -33,6 +33,9 @@ final class TvUiTokens {
     static final int NAV_ITEM_TEXT = 0xFFFFFFFF;
     static final int NAV_SELECTION_BORDER = 0x9900E5FF;
     static final int NAV_ICON_TINT = TEXT_PRIMARY;
+    static final int SUCCESS = 0xFF22C55E;
+    static final int WARNING = 0xFFF59E0B;
+    static final int DANGER = 0xFFEF4444;
 
     // TV typography scale (sp); content containers must wrap/scroll at larger user font scales.
     static final float PAGE_TITLE_SP = 36f;
