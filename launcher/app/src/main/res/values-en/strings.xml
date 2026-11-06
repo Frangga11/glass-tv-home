@@ -641,4 +641,13 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_delete_failed">Could not delete one or more images. Check storage and try again.</string>
     <string name="weather_data_unavailable">Weather data unavailable</string>
     <string name="weather_model_reference">Model reference: %1$s</string>
+
+    <string name="dock_orientation_title">Dock orientation</string>
+    <string name="dock_orientation_summary">Choose a horizontal or vertical Dock layout.</string>
+    <string name="dock_orientation_horizontal">Horizontal</string>
+    <string name="dock_orientation_vertical">Vertical</string>
+    <string name="dock_capacity_title">Dock capacity</string>
+    <string name="dock_capacity_summary">Choose how many apps are shown: 4, 5, or 6.</string>
+    <string name="dock_settings_save_failed">Dock settings could not be saved.</string>
+
 </resources>

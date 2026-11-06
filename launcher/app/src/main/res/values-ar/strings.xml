@@ -44,4 +44,11 @@
     <string name="card_state_new_label">اسم جديد</string>
     <string name="tile_move">نقل</string>
     <string name="tile_app_info">معلومات التطبيق</string>
+    <string name="dock_orientation_title">اتجاه Dock</string>
+    <string name="dock_orientation_summary">اختر تخطيطًا أفقيًا أو عموديًا لـ Dock.</string>
+    <string name="dock_orientation_horizontal">أفقي</string>
+    <string name="dock_orientation_vertical">عمودي</string>
+    <string name="dock_capacity_title">سعة Dock</string>
+    <string name="dock_capacity_summary">اختر عدد التطبيقات المعروضة: 4 أو 5 أو 6.</string>
+    <string name="dock_settings_save_failed">تعذر حفظ إعدادات Dock.</string>
 </resources>

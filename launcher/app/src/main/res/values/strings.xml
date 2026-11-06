@@ -641,4 +641,13 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wallpaper_delete_failed">Tidak dapat menghapus satu atau beberapa gambar. Periksa penyimpanan lalu coba lagi.</string>
     <string name="weather_data_unavailable">Data cuaca tidak tersedia</string>
     <string name="weather_model_reference">Lokasi acuan model: %1$s</string>
+
+    <string name="dock_orientation_title">Orientasi Dock</string>
+    <string name="dock_orientation_summary">Pilih susunan Dock horizontal atau vertikal.</string>
+    <string name="dock_orientation_horizontal">Horizontal</string>
+    <string name="dock_orientation_vertical">Vertikal</string>
+    <string name="dock_capacity_title">Kapasitas Dock</string>
+    <string name="dock_capacity_summary">Pilih jumlah aplikasi yang ditampilkan: 4, 5, atau 6.</string>
+    <string name="dock_settings_save_failed">Pengaturan Dock tidak dapat disimpan.</string>
+
 </resources>

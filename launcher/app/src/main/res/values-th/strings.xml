@@ -19,4 +19,11 @@
 
     <string name="tile_move">ย้าย</string>
     <string name="tile_app_info">ข้อมูลแอป</string>
+    <string name="dock_orientation_title">การวางแนว Dock</string>
+    <string name="dock_orientation_summary">เลือกการจัดวาง Dock แบบแนวนอนหรือแนวตั้ง</string>
+    <string name="dock_orientation_horizontal">แนวนอน</string>
+    <string name="dock_orientation_vertical">แนวตั้ง</string>
+    <string name="dock_capacity_title">ความจุ Dock</string>
+    <string name="dock_capacity_summary">เลือกจำนวนแอปที่แสดง: 4, 5 หรือ 6</string>
+    <string name="dock_settings_save_failed">บันทึกการตั้งค่า Dock ไม่สำเร็จ</string>
 </resources>

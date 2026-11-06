@@ -10,13 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Draws the glass tray behind the first (dock) row and adds a gap below it: the blurred wallpaper
+ * Draws the glass tray behind the independent Dock surface and adds orientation-aware spacing: the blurred wallpaper
  * behind it, an even veil and a light rim, with no brighter top.
  */
 public class DockDecoration extends RecyclerView.ItemDecoration {
 
-    private final int dockSize;
+    private int dockSize;
     private final float density;
+    private boolean vertical;
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint trayShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidTrayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -31,8 +32,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     final RectF area = new RectF();
 
     DockDecoration(int dockSize, float density) {
+        this(dockSize, density, false);
+    }
+
+    DockDecoration(int dockSize, float density, boolean vertical) {
         this.dockSize = dockSize;
         this.density = density;
+        this.vertical = vertical;
         // Same glass as the top-bar pills (GlassDrawable): an even veil and a shining edge.
         band.setColor(TvUiTokens.GLASS_VEIL_COLOR);
         trayShadowPaint.setColor(0x38000000);
@@ -42,6 +48,11 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         solidTrayBorder.setStrokeWidth(1.5f * density);
         trayShadowPaint.setMaskFilter(new android.graphics.BlurMaskFilter(14f * density, android.graphics.BlurMaskFilter.Blur.NORMAL));
         edge = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, 0.5f);
+    }
+
+    void update(int dockSize, boolean vertical) {
+        this.dockSize = Math.max(0, dockSize);
+        this.vertical = vertical;
     }
 
     /** The focus shape: the tray's glass would hide it, so the tray paints it over the glass itself. */
@@ -54,8 +65,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
                                @NonNull RecyclerView.State state) {
         int pos = parent.getChildAdapterPosition(view);
         if (pos >= 0 && pos < dockSize) {
-            outRect.top = (int) (6 * density);
-            outRect.bottom = (int) (12 * density);
+            if (vertical) {
+                outRect.left = (int) (6 * density);
+                outRect.right = (int) (12 * density);
+            } else {
+                outRect.top = (int) (6 * density);
+                outRect.bottom = (int) (12 * density);
+            }
         }
     }
 
@@ -68,8 +84,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             if (pos < 0 || pos >= dockSize) continue;
             View card = child.findViewById(R.id.card);
             if (card == null) continue;
-            float l = child.getLeft() + card.getLeft();
-            float t = child.getTop() + card.getTop() + child.getTranslationY();
+            float l = child.getLeft() + child.getTranslationX() + card.getLeft();
+            float t = child.getTop() + child.getTranslationY() + card.getTop();
             float r = l + card.getWidth();
             float b = t + card.getHeight();
             if (!any) {
@@ -79,7 +95,10 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
                 rect.union(l, t, r, b);
             }
         }
-        if (!any) return;
+        if (!any) {
+            area.setEmpty();
+            return;
+        }
         float pad = 14 * density;
         rect.inset(-pad, -pad);
         area.set(rect);

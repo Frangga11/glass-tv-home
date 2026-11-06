@@ -18,4 +18,11 @@
     <string name="dream_name">Nightstand Screensaver</string>
     <string name="tile_move">Déplacer</string>
     <string name="tile_app_info">Infos sur l\'appli</string>
+    <string name="dock_orientation_title">Orientation du Dock</string>
+    <string name="dock_orientation_summary">Choisissez une disposition horizontale ou verticale du Dock.</string>
+    <string name="dock_orientation_horizontal">Horizontal</string>
+    <string name="dock_orientation_vertical">Vertical</string>
+    <string name="dock_capacity_title">Capacité du Dock</string>
+    <string name="dock_capacity_summary">Choisissez le nombre d’applications affichées : 4, 5 ou 6.</string>
+    <string name="dock_settings_save_failed">Impossible d’enregistrer les paramètres du Dock.</string>
 </resources>
