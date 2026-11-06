@@ -967,6 +967,16 @@ public final class ModernSettingsDialog {
                 // === TAB 1: HOME SCREEN (CONSOLIDATING CANDY BOX SETTINGS) ===
                 addHeader(rightContent, outfit, AppLanguage.strHomeScreen(activity));
 
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.dock_orientation_title),
+                        activity.getString(R.string.dock_orientation_summary),
+                        activity::showDockOrientationDialog));
+
+                rightContent.addView(buildCardRow(activity, density, outfit,
+                        activity.getString(R.string.dock_capacity_title),
+                        activity.getString(R.string.dock_capacity_summary),
+                        activity::showDockCapacityDialog));
+
                 rightContent.addView(buildSwitchRow(activity, density, outfit,
                         AppLanguage.strDailyPrayerPanelTitle(activity), AppLanguage.strDailyPrayerPanelSummary(activity),
                         activity.isIslamicShelfEnabled(), isChecked -> {
@@ -1281,7 +1291,7 @@ public final class ModernSettingsDialog {
                         };
                         String[] keywords = {
                                 "profil pengguna akun avatar nama",
-                                "beranda layar utama doa salat azan audio suara",
+                                "beranda layar utama doa salat azan audio suara dock orientasi kapasitas horizontal vertikal",
                                 "tampilan wallpaper latar gambar koleksi interval foto pribadi qr upload hp",
                                 "widget informasi lokasi cuaca udara kualitas aqi jadwal salat pusat informasi tindakan status sistem ringkasan",
                                 "animasi efek cuaca dinamis hujan cahaya warna ikon glow transisi",
