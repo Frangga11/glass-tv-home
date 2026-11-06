@@ -1440,3 +1440,9 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Inspected reference board V01–V06 and additional Profile & Security and Home Screen settings images. Existing reusable classes are listed in the audit; current token palette is materially charcoal/gray rather than the reference navy/blue/cyan glass direction.
 - PR #64 exact-head CI `42192107405` PASS in both jobs; PR remains Draft/unmerged. This resolves the pending CI check only, not Home & Dock acceptance.
 - P3 V5 browser/visual walkthrough remains not run. Global UI Design System status: BELUM PASS; mass implementation remains blocked.
+
+
+## 6 Nov 2026 — Global UI rollout order recorded
+- Dependency map added to `GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md` (commit `45f1a4ae6cbf19c5bd7d79f5072d650eb297bdfc`). P3 visual acceptance and full B01 audit precede global token/focus changes; then B02/B03/B06/B07; then E01–E08; then Project F integration.
+- User's whole-app styling scope is authorized as a goal, not as permission to bypass quality gates. GDS remains BELUM PASS; mass implementation blocked pending 1920×1080 visual evidence, 12 D-pad scenarios, full call-site inventory and component conformance.
+- PR #64 CI #1225 exact head PASS; no merge or production source changes in this continuation.
