@@ -226,3 +226,13 @@ No production source, feature branch, PR metadata, integration/main, APK, ADB, H
 - Scenic gradient and emoji avatar/icon artwork are placeholders, not the original wallpaper or final iconography.
 - Static source QC PASS; evidence: [V5 Static QC](UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md).
 - Browser rendering and screenshot comparison at 1920×1080 remain NOT RUN. Therefore overall result remains **PROTOTYPE VISUAL — REVISION REQUIRED**; no owner approval or P4 authorization.
+
+## G1 completion — V6 browser prototype and visual review (6 November 2026)
+
+- Canonical current artifact: [V6 Global UI prototype](prototypes/UI_REFRESH_G1_GLOBAL_UI_PROTOTYPE_V6.html). It supersedes V5 as the active G1 review artifact; V5 remains preserved as historical evidence.
+- V6 includes all six surfaces V01–V06, the full Weather V4 field family and state variants, four-card Profile Selector with Child Mode PIN gate, Quick Settings and Wi-Fi popups, and seven-category Global Settings split detail with search.
+- V01 exposes all six Dock combinations (horizontal/vertical × 4/5/6) independently of the four-column app grid. Vertical Dock fit and non-overlap are covered by browser tests.
+- Real browser rendering and manual reference comparison at 1920×1080 are now COMPLETE. Chromium 144.0.7559.96; six surface screenshots, six Dock-variant screenshots and a daylight view captured.
+- Functional browser suite: 12 PASS / 0 FAIL. Includes D-pad arrow traversal, Back/focus restoration, nested dialogs, Weather V4 offline/failure/stale/no-location/AQI-unavailable/source-unavailable/omitted-pollutant states, Child Mode PIN, Next Photo 0/2/failure/success, Wi-Fi permission/Location/offline/throttle/stale/empty, Settings search, and large-text bounds. Node.js syntax check PASS.
+- G1 internal prototype/QC result: **PASS**. Detailed evidence, SHA-256, and boundaries: [G1 checkpoint](UI_REFRESH_G1_CHECKPOINT_2026-11-06.md).
+- Owner visual sign-off remains a separate product-acceptance gate before broad production rollout. Browser simulation is not production component, Android runtime or physical-TV acceptance. P4 broad styling/rollout remains governed by G2–G6 and existing approval boundaries.
