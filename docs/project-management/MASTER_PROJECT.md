@@ -920,3 +920,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - V3 prototype created; V2 preserved. Static QC PASS for JavaScript syntax parse, unique IDs and R01–R07 correction presence. Full evidence: [UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md).
 - P3 remains PARTIAL pending browser/keyboard walkthrough, all 12 scenarios and visual comparison with the six user-approved references. No production source, branch/PR/integration/APK/device mutation.
+
+
+
+## UI Refresh — P1/P3 current disposition (6 November 2026)
+
+- P1 inventory CLOSED FOR PROGRESSION with known technical/runtime gaps carried forward: [P1 acceptance disposition](UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md).
+- V3 prototype static QC PASS; browser walkthrough plan is versioned but NOT RUN: [P3 V3 walkthrough plan](UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md).
+- P3 remains PARTIAL; P4 remains blocked until 12-scenario browser walkthrough and visual comparison against approved V01–V06 references are completed.
