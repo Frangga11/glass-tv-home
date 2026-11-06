@@ -33,7 +33,8 @@ public class PopupMenuLayoutRobolectricTest {
     @Test
     public void sharedInputRowsMeetTheMinimumDpadTarget() {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        View row = LayoutInflater.from(activity).inflate(R.layout.item_input, null, false);
+        LinearLayout parent = new LinearLayout(activity);
+        View row = LayoutInflater.from(activity).inflate(R.layout.item_input, parent, false);
         int minimumPx = Math.round(TvUiTokens.MIN_DPAD_TARGET_DP
                 * activity.getResources().getDisplayMetrics().density);
         assertTrue(row.getLayoutParams().height >= minimumPx);
