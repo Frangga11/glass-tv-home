@@ -1238,3 +1238,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - A source review caught a prototype defect: control filtering moved focus away from the search input on each keystroke. Fixed it so typing keeps focus in the input; D-pad Down transfers focus to the first matching control. Empty-query reset also preserves search focus.
 - Artifact correction commit: `ce6d45ca6a353bae867607d63d84c82c67eec4fa`; inline JavaScript syntax check PASS. This is not a browser walkthrough.
 - P3 spec correction recorded at `70c7a90f81d779f685891b894f13461b61da681d`. Continue with actual browser/keyboard test of multi-character search and Down/Back focus restoration before marking P3-11 accepted.
+
+
+
+## Master Visual Reference Global UI — audit checkpoint (6 November 2026)
+
+- User requested a comprehensive read-only audit before implementation preparation. Dedicated result: `docs/project-management/UI_REFRESH_MASTER_VISUAL_REFERENCE_AUDIT_2026-11-06.md` (GTVH-UIR-MVR-AUDIT-001).
+- **Overall: BELUM PASS — implementation readiness not established.** P0 baseline PASS; P1 functional inventory PARTIAL / user acceptance pending; P2 shared design contract COMPLETE/frozen; P3 V2 prototype PARTIAL / walkthrough and visual QA pending; P4 NOT STARTED/BLOCKED.
+- Reusable global source components confirmed: `TvUiTokens`, `TvDialogStyle`, `TvFocusIndicator`, `TvResponsiveLayout`, `GlassDrawable`, `ModernSettingsDialog`, `TvFeedback`, `AppLanguage`. Extend shared contracts centrally; do not create parallel style systems. Global focus coverage and overscan/text-scaling remain incomplete.
+- E02 PR #62 remains OPEN/DRAFT/UNMERGED at `588456144df24f2f6c015a01053ad700a04bee39`; E06 PR #63 remains OPEN/DRAFT/UNMERGED at `ecdeb0eba9fc7a574f1a6c9930205517687cd922`. Exact-head CI runs #1204 and #1198 have both required jobs SUCCESS. Both heads are diverged from integration and require three-way semantic reconciliation. E02 cancellation/lifecycle gaps and E06 Dock/grid coupling remain blockers.
+- Module impact/ownership: B01–B07 shared UI/interaction foundation; E01 device/system; E02 profile; E03 wallpaper metadata; E04 standby; E05 Weather/AQI; E06 Home/Dock; E07 animation/effects; E08 wallpaper/Next Photo. Dependency sequence and risk register are in the audit file.
+- **Next work point:** finish P1 acceptance and P3 V2 walkthrough/design QA; do not start P4, redesign or production source edits until the required gates pass. No source/branch/PR/integration/main/APK/device mutation occurred in this audit.
