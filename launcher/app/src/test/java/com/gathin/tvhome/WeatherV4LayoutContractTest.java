@@ -30,7 +30,12 @@ public class WeatherV4LayoutContractTest {
         View root = LayoutInflater.from(activity).inflate(R.layout.activity_weather, null, false);
 
         assertNotNull(root.findViewById(R.id.dewPointValText));
-        assertNotNull(root.findViewById(R.id.aqiPollutantsText));
+        assertNotNull(root.findViewById(R.id.pm25ValueText));
+        assertNotNull(root.findViewById(R.id.pm10ValueText));
+        assertNotNull(root.findViewById(R.id.coValueText));
+        assertNotNull(root.findViewById(R.id.no2ValueText));
+        assertNotNull(root.findViewById(R.id.so2ValueText));
+        assertNotNull(root.findViewById(R.id.pollutantMissingNote));
         assertNotNull(root.findViewById(R.id.moonPhaseName));
         assertNotNull(root.findViewById(R.id.moonriseMoonsetText));
         assertNotNull(root.findViewById(R.id.uvAdviceText));

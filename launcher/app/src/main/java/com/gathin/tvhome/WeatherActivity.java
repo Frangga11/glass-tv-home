@@ -48,7 +48,12 @@ public class WeatherActivity extends Activity {
     private TextView aqiStatus;
     private AqiSpectrumBarView aqiBar;
     private TextView aqiStation;
-    private TextView aqiPollutantsText;
+    private TextView pm25ValueText;
+    private TextView pm10ValueText;
+    private TextView coValueText;
+    private TextView no2ValueText;
+    private TextView so2ValueText;
+    private TextView pollutantMissingNote;
     private TextView dewPointValText;
     private TextView moonPhaseName;
     private TextView moonriseMoonsetText;
@@ -113,7 +118,12 @@ public class WeatherActivity extends Activity {
         aqiStatus = findViewById(R.id.aqiStatus);
         aqiBar = findViewById(R.id.aqiBar);
         aqiStation = findViewById(R.id.aqiStation);
-        aqiPollutantsText = findViewById(R.id.aqiPollutantsText);
+        pm25ValueText = findViewById(R.id.pm25ValueText);
+        pm10ValueText = findViewById(R.id.pm10ValueText);
+        coValueText = findViewById(R.id.coValueText);
+        no2ValueText = findViewById(R.id.no2ValueText);
+        so2ValueText = findViewById(R.id.so2ValueText);
+        pollutantMissingNote = findViewById(R.id.pollutantMissingNote);
         dewPointValText = findViewById(R.id.dewPointValText);
 
         humidityValText = findViewById(R.id.humidityValText);
@@ -489,17 +499,17 @@ public class WeatherActivity extends Activity {
                     ? w.stationPlace : AppLocationManager.getStationPlace(this);
             aqiStation.setText(getString(R.string.weather_model_reference_detail, place));
         }
-        if (aqiPollutantsText != null) {
-            String pollutantText = getString(R.string.weather_pollutants_format,
-                    pollutantValue(w.pm25), pollutantValue(w.pm10), pollutantValue(w.carbonMonoxide / 1000.0),
-                    pollutantValue(w.nitrogenDioxide), pollutantValue(w.sulphurDioxide));
-            boolean missingPollutant = Double.isNaN(w.pm25) || Double.isInfinite(w.pm25)
-                    || Double.isNaN(w.pm10) || Double.isInfinite(w.pm10)
-                    || Double.isNaN(w.carbonMonoxide) || Double.isInfinite(w.carbonMonoxide)
-                    || Double.isNaN(w.nitrogenDioxide) || Double.isInfinite(w.nitrogenDioxide)
-                    || Double.isNaN(w.sulphurDioxide) || Double.isInfinite(w.sulphurDioxide);
-            if (missingPollutant) pollutantText += "\\n" + getString(R.string.weather_pollutant_missing_note);
-            aqiPollutantsText.setText(pollutantText);
+        setPollutantValue(pm25ValueText, w.pm25, "µg/m³");
+        setPollutantValue(pm10ValueText, w.pm10, "µg/m³");
+        setPollutantValue(coValueText, w.carbonMonoxide / 1000.0, "mg/m³");
+        setPollutantValue(no2ValueText, w.nitrogenDioxide, "µg/m³");
+        setPollutantValue(so2ValueText, w.sulphurDioxide, "µg/m³");
+        boolean missingPollutant = !isAvailable(w.pm25) || !isAvailable(w.pm10)
+                || !isAvailable(w.carbonMonoxide) || !isAvailable(w.nitrogenDioxide)
+                || !isAvailable(w.sulphurDioxide);
+        if (pollutantMissingNote != null) {
+            pollutantMissingNote.setText(R.string.weather_pollutant_missing_note);
+            pollutantMissingNote.setVisibility(missingPollutant ? View.VISIBLE : View.GONE);
         }
 
         // Radar Map
@@ -566,9 +576,13 @@ public class WeatherActivity extends Activity {
         return null;
     }
 
-    private String pollutantValue(double value) {
-        return Double.isNaN(value) || Double.isInfinite(value) ? "—"
-                : String.format(Locale.ROOT, "%.1f", value);
+    private boolean isAvailable(double value) {
+        return !Double.isNaN(value) && !Double.isInfinite(value);
+    }
+
+    private void setPollutantValue(TextView view, double value, String unit) {
+        if (view == null) return;
+        view.setText(isAvailable(value) ? String.format(Locale.ROOT, "%.1f %s", value, unit) : "—");
     }
 
     private String moonPhaseName(double phase) {

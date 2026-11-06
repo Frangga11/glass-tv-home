@@ -684,4 +684,5 @@ adb shell pm disable-user --user 0 %1$s</string>
 
     <string name="weather_state_offline_stale">Offline · stale data</string>
     <string name="weather_pollutant_missing_note">— = not provided by the data provider</string>
+    <string name="weather_pollutants_title">AIR POLLUTANTS · CAMS</string>
 </resources>
