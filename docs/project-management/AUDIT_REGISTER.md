@@ -1374,3 +1374,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #64 source head `ba5ccecd4a55e748aec5de45343b778c2fe4595b` verified by GitHub Actions run #1215 (`42180187065`): **both required jobs SUCCESS**. Launcher build, unit tests, release validation and APK size budget passed; Lists/tools/docs passed.
 - This CI result validates the component-level Dock identity correction and its regression test at the exact head. It does not complete the Dock renderer or Module 1 acceptance.
 - PR #64 remains OPEN/DRAFT/UNMERGED, base `integration/b-series`. Dedicated Dock/App Grid rendering, settings, orientation/capacity behavior, overflow, D-pad/focus/reorder lifecycle, six-combination functional acceptance and 1920×1080 visual QC remain outstanding. No device test, APK publication/installation, ADB, merge or device-setting change.
+
+
+### P4-01 continuation checkpoint — implementation sequence clarified — 6 November 2026
+- Re-fetched PR #64 and source branch: head remains `ba5ccecd4a55e748aec5de45343b778c2fe4595b`; base `integration/b-series`; PR OPEN/DRAFT/UNMERGED and mergeable.
+- Corrected the PR description: the former embedded CI note referenced prior head `9cfdeb...`; the current exact-head CI #1215 (`42180187065`) is SUCCESS in both required jobs. Android build, unit tests, release validation/APK size budget and Lists/tools/docs passed.
+- Architecture sequence is now explicit: (1) extract one authoritative app inventory/identity boundary; (2) separate reusable tile binding/launch behavior from a single RecyclerView's positional assumptions; (3) introduce independent Dock and App Grid renderers while preserving App Grid span count; (4) connect orientation/capacity preferences; (5) migrate identity-based focus, D-pad, reorder and install/remove/hidden-app lifecycle; (6) validate all six orientation/capacity combinations and 1920×1080 visual QC.
+- Guardrail: do not change `MainActivity.COLUMNS` to Dock capacity and do not add a second RecyclerView as a superficial patch. Both would leave existing tile geometry, decoration, parking, reorder and focus contracts inconsistent.
+- No production source commit was made in this continuation because the required inventory/renderer/focus refactor is cross-cutting; a partial view insertion would create a misleading or unsafe state. Next source change must implement the shared identity/inventory boundary and its tests as one reviewable slice.
+- Module 1 remains IN PROGRESS. No APK publication/installation, ADB, device setting change, physical TV test or merge.
