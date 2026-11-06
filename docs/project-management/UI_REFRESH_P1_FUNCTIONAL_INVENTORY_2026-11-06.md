@@ -482,3 +482,8 @@ This is a proposed dependency order, not authorization to modify owner branches 
 - **Overall Trigger 2:** **INVENTORY COMPLETE — VALIDATION PARTIAL / BELUM PASS.** This means the inventory artifact is complete enough to serve as the P1 baseline; it does not mean all target features are implemented or all tests passed.
 - **Gate:** P1 inventory authoring may close. Runtime validation remains a separate QA gate. P2 design contract is a separate workstream and must not be confused with P1 completion. P3 prototype and P4 implementation remain gated by user approval of P2.
 - **Change boundary:** documentation-only. No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV was changed.
+
+
+## P1 acceptance disposition — 6 November 2026
+
+The inventory's earlier “user acceptance pending” status is superseded for stage progression by [UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md](UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md). **P1 inventory is CLOSED FOR PROGRESSION** with explicit carry-forward gaps. This is not runtime/device acceptance and does not waive E02/E06 technical gaps, Weather V4 source reconciliation, Wi-Fi platform validation, or P5 device QA.
