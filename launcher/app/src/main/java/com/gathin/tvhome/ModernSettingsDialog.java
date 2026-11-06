@@ -684,7 +684,7 @@ public final class ModernSettingsDialog {
                 defaultAvatarButton.setBackground(defaultAvatarBg);
                 TvFocusIndicator.applyRoundedTextFocus(defaultAvatarButton, density, 10f,
                         0xFF292D37, 0xFF3B4354, 0xFF454B5A, TvUiTokens.TEXT_PRIMARY,
-                        TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, 1.025f);
+                        TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
                 LinearLayout.LayoutParams defaultAvatarLp = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density));
                 defaultAvatarLp.topMargin = (int) (6 * density);
@@ -1863,7 +1863,7 @@ public final class ModernSettingsDialog {
                 GradientDrawable g = new GradientDrawable();
                 g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE_IDLE);
                 g.setCornerRadius(10 * density);
-                if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.TEXT_PRIMARY);
+                if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
                 v.setBackground(g);
                 v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
@@ -1919,7 +1919,7 @@ public final class ModernSettingsDialog {
             if (pickerHolder[0] != null) pickerHolder[0].dismiss();
         });
 
-        pickerLayout.addView(btnDone, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density)));
+        pickerLayout.addView(btnDone, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density)));
 
         AlertDialog.Builder pb = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
         pb.setView(pickerLayout);
@@ -2093,7 +2093,7 @@ public final class ModernSettingsDialog {
             GradientDrawable g = new GradientDrawable();
             g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE_IDLE);
             g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.TEXT_PRIMARY);
+            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
         });
         btnClose.setOnClickListener(v -> {
