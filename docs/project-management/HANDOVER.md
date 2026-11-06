@@ -1083,3 +1083,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Acceptance requires zero open Critical/High defects, complete in-scope UI traceability, exact-head CI, and separate device evidence; green CI is not physical TV acceptance.
 - **Governance unchanged:** this document is a proposed baseline awaiting explicit user approval. It does not authorize production implementation, merge, integration/main updates, APK publication/installation, ADB or physical device mutation. E02 #62 and E06 #63 remain subject to live-head reconciliation; G03 remains separately gated.
 - Roadmap commit: ac51f60277b5571ed8c8825e0cf16c293edcae9b.
+
+
+## UI Refresh roadmap locked — 6 November 2026
+
+- User requested a completeness check, correction of omissions, and locking of the roadmap once complete.
+- Completeness additions were incorporated into GTVH-UIR-001: state/error matrix, accessibility/TV focus and overscan, localization/text scaling, security/privacy, compatibility, lifecycle, performance measurement, persistence/migration/rollback, defect stop rules and traceability.
+- **Decision: LOCKED BASELINE v1.0.** Canonical document: [UI_REFRESH_ROADMAP.md](UI_REFRESH_ROADMAP.md).
+- Roadmap commit: 66f0d434f529929c106f31bfec2286e6caf1055f.
+- This locks scope, sequencing and acceptance criteria only. It does not authorize implementation, merge, integration/main updates, APK publication/installation, ADB or physical device changes. E02/E06 execution still requires live-head reconciliation and explicit stage authorization; G03 remains separately gated.
