@@ -325,15 +325,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             return true;
         });
     }
-        h.card.setOnClickListener(v -> launch(e));
-        h.card.setOnLongClickListener(v -> {
-            int pos = h.getBindingAdapterPosition();
-            if (listener != null && pos != RecyclerView.NO_POSITION && listener.onTileHeld(pos, v)) return true;
-            openAppInfo(e);
-            return true;
-        });
-    }
-
     @Override
     public void onBindViewHolder(@NonNull Holder h, int position, @NonNull List<Object> payloads) {
         if (payloads.size() == 1 && payloads.get(0) == DOCK_CHANGED) {
