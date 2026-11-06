@@ -1025,3 +1025,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Source branch `feature/ui-global-01-home-dock`, PR #64 current head `ade40dac76bf98621a41bdd8be08d0b0971dbf1c`; PR OPEN/DRAFT/UNMERGED, base `integration/b-series`.
 - Exact-head CI #1218 / run ID `42185963306` is IN_PROGRESS at this checkpoint. No PASS is claimed until both required jobs finish successfully.
 - Scope remains a model/order correction only. The two-region renderer, independent App Grid geometry, orientation/capacity settings, focus/D-pad/reorder and lifecycle migration, six-combination acceptance and 1920×1080 visual QC remain open. No APK publication/installation, ADB, device setting change, physical TV test or merge.
+
+
+### Exact-head CI closeout — saved pinned-order correction — 6 November 2026
+- PR #64 source head `ade40dac76bf98621a41bdd8be08d0b0971dbf1c` verified by GitHub Actions CI #1218 / run ID `42185963306`: **both required jobs SUCCESS**.
+- `Lists, tools and docs`: SUCCESS. `Launcher build and unit tests`: SUCCESS, including unit tests, release build validation, APK size diagnostics and release APK size budget enforcement.
+- This validates the saved pinned-order correction and new regression tests at the exact head. It remains a model/order slice only, not completion of P4-01 Module 1.
+- PR #64 remains OPEN/DRAFT/UNMERGED, base `integration/b-series`; no APK publication/installation, ADB, device-setting change or physical TV test.
+- Remaining: authoritative shared inventory/identity boundary, dedicated Dock and App Grid renderers with invariant grid span, orientation/capacity UI and live updates, focus/D-pad/reorder/install-remove lifecycle, six-combination functional acceptance and 1920×1080 visual QC.
