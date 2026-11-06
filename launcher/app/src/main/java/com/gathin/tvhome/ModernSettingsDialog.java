@@ -472,7 +472,6 @@ public final class ModernSettingsDialog {
                     updateSidebarSelection.run();
                     if (renderRightPane[0] != null) renderRightPane[0].run();
                 }
-                TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.NAV_ROW_RADIUS_DP);
                 v.animate().scaleX(hasFocus ? TvUiTokens.NAV_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.NAV_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             });
 
@@ -763,7 +762,6 @@ public final class ModernSettingsDialog {
                     g.setCornerRadius(12 * density);
                     if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
                     v.setBackground(g);
-                    TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.CARD_RADIUS_DP);
                     v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
                 });
 
@@ -858,7 +856,6 @@ public final class ModernSettingsDialog {
                         if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.TEXT_PRIMARY);
                         else if (isCur) g.setStroke((int) (1.5f * density), 0x77FFFFFF);
                         v.setBackground(g);
-                        TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.CARD_RADIUS_DP);
                         v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
                     });
 
@@ -1492,7 +1489,6 @@ public final class ModernSettingsDialog {
             g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
             if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.CARD_RADIUS_DP);
             v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(120).start();
         });
 
@@ -1563,7 +1559,6 @@ public final class ModernSettingsDialog {
             g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
             if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
             v.setBackground(g);
-            TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.CARD_RADIUS_DP);
             v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
                     .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
                     .setDuration(120).start();
@@ -1870,7 +1865,6 @@ public final class ModernSettingsDialog {
                 g.setCornerRadius(10 * density);
                 if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.TEXT_PRIMARY);
                 v.setBackground(g);
-                TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.NAV_ROW_RADIUS_DP);
                 v.animate().scaleX(hasFocus ? 1.015f : 1.0f).scaleY(hasFocus ? 1.015f : 1.0f).setDuration(120).start();
             });
 
@@ -1918,7 +1912,6 @@ public final class ModernSettingsDialog {
             g.setCornerRadius(10 * density);
             if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.TEXT_PRIMARY);
             v.setBackground(g);
-            TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.NAV_ROW_RADIUS_DP);
         });
 
         btnDone.setOnClickListener(v -> {
@@ -2102,7 +2095,6 @@ public final class ModernSettingsDialog {
             g.setCornerRadius(10 * density);
             if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.TEXT_PRIMARY);
             v.setBackground(g);
-            TvFocusIndicator.updateFocusOutline(v, hasFocus, density, TvUiTokens.NAV_ROW_RADIUS_DP);
         });
         btnClose.setOnClickListener(v -> {
             SoundEffects.playSelect();
