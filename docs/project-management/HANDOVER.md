@@ -1267,3 +1267,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Corrected R01–R07: nested dialog stack/root focus; modal D-pad; Language; Wallpaper Interval; Next Photo failure/unavailable; Wi-Fi rescan completion; profile switch; distinct restart/power-off confirmation.
 - Static QC **PASS** (JS syntax parse without execution, no duplicate IDs, correction presence checks). Evidence: `docs/project-management/UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md` (commit `22039e3ac4f9df1c9f70c2dac09ddc9f4239cee7`).
 - P3 remains PARTIAL until browser keyboard walkthrough, 12-scenario validation and visual comparison against the six user-approved references. No production source, branch, PR, integration/main, APK or device changed.
+
+
+
+## UI Refresh — P1 disposition / P3 walkthrough next point (6 November 2026)
+
+- P1 inventory is **CLOSED FOR PROGRESSION** with approved V01–V06 direction and agreed functional boundaries; technical/runtime gaps remain explicitly carried, not waived. Evidence: `UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md` (commit `bfd5f252e309319fcbeecba6ec1818c39cdba316`).
+- V3 prototype static QC PASS. Manual 12-scenario browser/keyboard walkthrough plan created at `UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md` (commit `86b55ed6c3f8d849cdc6c2f9dde80f81f70ef5db`); execution NOT RUN.
+- Current stage remains P3 PARTIAL. Next permitted work is executing the V3 walkthrough and visual comparison against the six approved references. No P4 or production source change until P3 exits.
