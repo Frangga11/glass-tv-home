@@ -225,3 +225,9 @@ Reason: the audit baseline and P2 contract are ready, but P1 acceptance and P3 w
 - Created V4 prototype at `prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V4.html`; V3 remains unchanged. V4 adds busy-without-disable, scan-generation cancellation and modal Tab wrapping/input-safe Backspace.
 - Static QC **PASS**: JS syntax parse, unique IDs, and all targeted source checks. Evidence: [UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md](UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md).
 - Browser walkthrough and V01–V06 visual comparison are still NOT RUN. P3 remains PARTIAL; P4 blocked.
+
+
+## Global UI Design System follow-up — 6 November 2026
+- Added the read-only source audit and reference-derived candidate design-system baseline: [GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md](GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md), commit `9412b1cef40b6496ac9560771a3ca9e73471cbaf`.
+- Visually inspected the saved V01–V06 contract board and the Profile & Security / Home Screen Settings references. Confirmed current B01 reusable source classes, but found token palette divergence (charcoal/gray source vs navy/blue/cyan reference), incomplete focus coverage and uncalibrated blur/material values.
+- P3 V5 static QC remains PASS as source-only evidence; actual browser execution, 12-scenario walkthrough, target 1920×1080 screenshot comparison and owner approval remain NOT RUN. Global UI Design System remains BELUM PASS; implementation mass remains blocked.
