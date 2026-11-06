@@ -905,3 +905,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Existing B01 shared UI components are reusable; focus coverage and global responsive/overscan/text-scaling need extension. E02 and E06 owner PRs remain Draft/unmerged and diverged from frozen integration; E02 cancellation/lifecycle and E06 Dock/grid separation remain blockers.
 - Impacted modules: B01–B07 and E01–E08. Responsibility, exact refs, current gaps and recommended dependency order are documented in the audit file.
 - No production source, owner branch, PR metadata, integration/main, APK, ADB or device was changed. No redesign or implementation was performed.
+
+
+
+## UI Refresh — P3 V2 static interaction re-audit (6 November 2026)
+
+- Detailed result: [UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md](UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md).
+- P3 remains PARTIAL / BELUM PASS. Two high-severity prototype blockers: nested dialog root-origin/focus restoration is broken; modal arrow-key/D-pad navigation is disabled. Medium gaps: inert Language/Wallpaper Interval, missing Next Photo failure path, Wi-Fi rescan loading completion, profile switch simulation and action-specific restart/power confirmation.
+- Preserve V2 unchanged; fix in a new versioned prototype only. P1 acceptance remains pending. No production source or branch/PR/integration/APK/device mutation.
