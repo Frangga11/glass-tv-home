@@ -2025,9 +2025,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (lastFocusedKey != null) navigationEdit.putString(NavigationState.HOME_FOCUS_KEY, lastFocusedKey);
         else navigationEdit.remove(NavigationState.HOME_FOCUS_KEY);
         navigationEdit.putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
-                .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY);
-        if (lastDockFocusedKey != null) navigationEdit.putString(HOME_DOCK_FOCUS_KEY, lastDockFocusedKey);
-        navigationEdit.apply();
+                .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
+        if (inDock && lastDockFocusedKey != null) {
+            getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                    .putString(HOME_DOCK_FOCUS_KEY, lastDockFocusedKey).apply();
+        }
         lastFocusWasTopPill = false;
         lastFocusedTopPillKey = null;
 

@@ -17,4 +17,11 @@
     <string name="dream_name">Nightstand Screensaver</string>
     <string name="tile_move">Mou</string>
     <string name="tile_app_info">Informació de l\'aplicació</string>
+    <string name="dock_orientation_title">Orientació del Dock</string>
+    <string name="dock_orientation_summary">Trieu una disposició horitzontal o vertical del Dock.</string>
+    <string name="dock_orientation_horizontal">Horitzontal</string>
+    <string name="dock_orientation_vertical">Vertical</string>
+    <string name="dock_capacity_title">Capacitat del Dock</string>
+    <string name="dock_capacity_summary">Trieu quantes aplicacions es mostren: 4, 5 o 6.</string>
+    <string name="dock_settings_save_failed">No s'han pogut desar els paràmetres del Dock.</string>
 </resources>

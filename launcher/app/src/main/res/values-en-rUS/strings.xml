@@ -3,4 +3,11 @@
      regions keep the default "Tuesday 20 October". Everything else falls back to values/. -->
 <resources>
     <string name="date_format">MMM d, yyyy</string>
+    <string name="dock_orientation_title">Dock orientation</string>
+    <string name="dock_orientation_summary">Choose a horizontal or vertical Dock layout.</string>
+    <string name="dock_orientation_horizontal">Horizontal</string>
+    <string name="dock_orientation_vertical">Vertical</string>
+    <string name="dock_capacity_title">Dock capacity</string>
+    <string name="dock_capacity_summary">Choose how many apps are shown: 4, 5, or 6.</string>
+    <string name="dock_settings_save_failed">Dock settings could not be saved.</string>
 </resources>
