@@ -138,3 +138,38 @@ P3 can close only when:
 **P5:** NOT STARTED — integrated QA/device validation remains separate.
 
 No production source, feature branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV was changed by this P3 kickoff.
+
+
+## 5.2 V2 — Expanded 1920×1080 review prototype (6 Nov 2026)
+
+- Added canonical artifact: `prototypes/UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V2.html`. It is a separate V2 artifact; V1 remains preserved for traceability.
+- The frame is 16:9 and labelled 1920×1080. Its browser preview scales responsively; the design content remains aligned to the frozen 960×540 dp / safe-margin contract. It is a simulation, not a native Android render or proof of physical pixel density.
+- V01 exposes independent Dock orientation and capacity selectors. The prototype supports all six combinations: Horizontal × 4/5/6 and Vertical × 4/5/6. Dock slots are rendered in a separate container; the app-grid preview retains a fixed four-column grid in every combination. This validates the visual model only; no production adapter/model has changed.
+- V02 retains the Weather V4 metric families, hourly and seven-day summary, AQI and pollutant detail, source/update disclaimer, missing-value treatment, and simulated loading/success/error/offline refresh. Focus is not deliberately moved by the refresh handler.
+- V03 includes active-vs-focused profile treatment, add-profile simulation and a failure state that preserves the previous state.
+- V04 includes confirmation, cache busy/success/failure affordances and Next Photo 0/1/2/5-image modes; the action is disabled when fewer than two images exist and only advances the simulated index when an alternate exists.
+- V05 exposes permission denied, Location disabled, offline, Android-throttled, stale-result and no-network states. Scan results are explicitly illustrative. The only network-management action is the Android Settings handoff; no in-app Wi-Fi radio switch is present.
+- V06 includes all seven approved categories, control-level search and category-specific controls. A search match renders the owning category and focuses its first matching control.
+- Shared review controls include Normal/Day-glare/Night contrast modes, reduced-motion mode, keyboard/D-pad directional focus, modal confirmation/failure surfaces, and Back/Escape close with invoking-control restoration where the origin remains available.
+- A follow-up source review corrected the Wi-Fi system-handoff dialog action so opening the Android handoff simulation does not immediately close the new dialog.
+- Static source checks performed against the committed HTML: all six orientation/capacity combinations are representable; grid remains explicitly fixed at four columns; permission/location gates and four Wi-Fi failure modes exist; weather loading/result states, confirmation/failure dialogs, contrast modes, reduced-motion toggle, focus/Back handler and control search are present. These are source-presence checks, not browser interaction or visual acceptance tests.
+- Artifact commits: initial V2 `22a816ca90678c3c666db1de9a13cf9121136d82`; dialog handoff refinement `65d4fbfcacaa3af49c8fe964367ace3bf6e09d59`.
+
+### P3 scenario disposition after V2
+
+| ID | Scenario | Evidence now available | Disposition |
+|---|---|---|---|
+| P3-01 | Open/close popup and restore origin focus | Modal origin is retained and close restores the invoking element in the prototype source | Implemented in source; interactive walkthrough pending |
+| P3-02 | D-pad traverse controls | Spatial nearest-direction keyboard handler is present | Implemented in source; edge/dead-end walkthrough pending |
+| P3-03 | Long label / large value | Flexible cards and responsive text are represented; no systematic worst-case locale/scale test | Partial; review pending |
+| P3-04 | Bright/dark wallpaper contrast | Day-glare, Normal and Night contrast modes are available | Implemented in source; visual legibility review pending |
+| P3-05 | Loading/success/error | Weather refresh, cache result and save-failure simulations exist | Implemented in source; walkthrough pending |
+| P3-06 | Permission denied/offline/unavailable | Wi-Fi permission/location/offline and system-handoff states exist | Implemented in source; walkthrough pending |
+| P3-07 | Weather refresh focus stability | Refresh does not intentionally call focus or rebuild the focused metric region | Source-inspected; browser focus-retention test pending |
+| P3-08 | Wi-Fi throttled/stale | Throttle and stale states plus timestamp are represented | Implemented in source; walkthrough pending |
+| P3-09 | Next Photo 0/1/many | 0/1/2/5 selector; disabled below two; index advances on valid action | Implemented in source; walkthrough pending |
+| P3-10 | Dock orientation × capacity | All six combinations selectable; separate Dock container; fixed four-column grid | Source-verified; visual comparison/walkthrough pending |
+| P3-11 | Search exact control | Seven category dataset and query-to-category/control filtering | Implemented in source; exact-control keyboard walkthrough pending |
+| P3-12 | Reduced motion | Reduced-motion toggle removes nonessential transition/animation | Implemented in source; visual/focus walkthrough pending |
+
+**P3 disposition remains IN PROGRESS / PARTIAL.** V2 closes the missing prototype-state and six-combination representation gaps at source level, but does not close the review gate. No actual browser session, remote-control hardware, physical TV, 4K/1080p panel, or human TV-distance readability review was executed in this session. No approval of the design has been inferred. P1 remains PARTIAL pending user acceptance; P4 remains NOT STARTED and BLOCKED by P1 acceptance and P3 review/approval.
