@@ -433,6 +433,16 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         }
     }
 
+    /**
+     * Stable immutable partition for the dedicated Dock renderer. The current RecyclerView still
+     * renders the legacy combined list; this snapshot establishes the model boundary without
+     * changing focus, tile sizing, ordering, or the visible Home layout in this commit.
+     */
+    DockLayoutModel.Snapshot<Entry> dockSnapshot() {
+        return DockLayoutModel.split(items, dockSize,
+                entry -> entry.component.flattenToShortString());
+    }
+
     @Override
     public int getItemCount() {
         return items.size();
