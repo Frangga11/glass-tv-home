@@ -43,8 +43,8 @@ final class TvUiTokens {
     static final float NAV_ITEM_TEXT_SP = 18f;
     static final float CARD_TITLE_SP = 18f;
     static final float CARD_SUBTITLE_SP = 16f;
-    static final float SECTION_LABEL_SP = 12f;
-    static final float METADATA_SP = 14f;
+    static final float SECTION_LABEL_SP = 14f;
+    static final float METADATA_SP = 12f;
 
     // Geometry and focus
     static final float POPUP_RADIUS_DP = 24f;

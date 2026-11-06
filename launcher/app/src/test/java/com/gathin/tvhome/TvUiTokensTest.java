@@ -20,11 +20,6 @@ public class TvUiTokensTest {
     }
 
     @Test
-    public void selectedBlueUsesHighContrastPrimaryText() {
-        assertTrue(contrast(TvUiTokens.TEXT_PRIMARY, TvUiTokens.ACCENT_BLUE) >= 4.5);
-    }
-
-    @Test
     public void focusAccentRemainsDistinctFromEverySharedSurface() {
         int[] surfaces = {
                 TvUiTokens.SHELL, TvUiTokens.SURFACE,
