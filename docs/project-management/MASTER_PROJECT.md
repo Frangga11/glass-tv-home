@@ -1284,3 +1284,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Removed the unsupported `setStackFromEnd` call; did not substitute `reverseLayout`, preserving app adapter ordering and remote-navigation semantics.
 - Fix commit `61d4e429be129263533ecfa75a729bbe0a15833f` on PR #74 branch `fix/home-dock-visual-parity-v2`.
 - CI run `42398810251` was IN_PROGRESS at checkpoint. Exact-head CI and physical Mi TV Stick cold-start/resume verification are mandatory before acceptance. PR #74 remains OPEN/DRAFT/UNMERGED.
+
+
+## HOME-STARTUP-CRASH-001 — latest build artifact verified (8 November 2026)
+
+- Source branch/head: `fix/home-dock-visual-parity-v2` @ `61d4e429be129263533ecfa75a729bbe0a15833f`; PR #74 remains OPEN/DRAFT/UNMERGED.
+- Exact-head CI run #1438 / `42398810251`: COMPLETED / SUCCESS. Both required jobs passed: Lists, tools and docs; Launcher build and unit tests. Release unit tests and `assembleRelease` succeeded.
+- Latest exact-head workflow artifact #13584279494 downloaded and inspected. ZIP: 1,425,448 bytes; contains `app-release.apk` of 1,625,545 bytes. APK SHA-256: `0f65ef8b7a97b334aeaff5b0493cbaa73400531f3b5d1618ce24c1b06d66a385`. File identifies as an Android package with APK Signing Block.
+- Artifact is the latest successful build available for this exact source HEAD; it was downloaded and extracted to provide the APK. No new workflow_dispatch was executed; PR-branch workflow has no manual dispatch trigger.
+- Source/host QC: PASS. Physical Mi TV Stick cold start, resume, DPAD, Dock/Grid visibility, orientation and OEM visual acceptance: PENDING / NOT RUN. This artifact is a test candidate, not a final release. Do not merge PR #74 or change default launcher until physical acceptance and remaining audits pass.
