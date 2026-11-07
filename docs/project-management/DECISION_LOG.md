@@ -549,5 +549,5 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Treat the five Dock icons as one centered group, not five independently positioned tiles. The owner photo proves the prior left-aligned group was visibly wrong.
 - Compute the horizontal offset from the full viewport width, measured tile width, and actual visible Dock item count; translate the Dock host without shrinking its measurement viewport.
 - Reset translation on vertical orientation/empty Dock. Preserve card size, spacing, tray inset, bottom safe gap, glass, focus and surrounding Home composition.
-- Add geometry tests for capacities 4/5/6 and multiple densities. Latest source HEAD 65108d4160243442922002618e739c898c4cb9e7; PR #74 remains OPEN/DRAFT/UNMERGED.
+- Add geometry tests for capacities 4/5/6 and multiple densities. Latest source HEAD b14a7bc3d1e99cf8cf0c74e944c39983d776f341; PR #74 remains OPEN/DRAFT/UNMERGED.
 - Latest-head CI and physical TV acceptance remain pending. Do not merge or call visual acceptance PASS before both are resolved.
