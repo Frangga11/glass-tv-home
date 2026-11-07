@@ -7,12 +7,14 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.os.Looper;
 import android.view.View;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
@@ -56,6 +58,7 @@ public class QuickSettingsDialogTest {
         assertTrue(control.isFocusable());
         assertTrue(control.isClickable());
         assertTrue(control.performClick());
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         assertEquals(expected, actions.lastAction);
         assertEquals(1, dismissed[0]);
         assertFalse(dialog.isShowing());
@@ -109,6 +112,7 @@ public class QuickSettingsDialogTest {
                 QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
         assertNotNull(dialog);
         dialog.cancel();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         assertEquals(1, dismissed[0]);
         assertEquals(null, actions.lastAction);
         assertFalse(dialog.isShowing());
