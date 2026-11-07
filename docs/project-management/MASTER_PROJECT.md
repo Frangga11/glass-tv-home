@@ -1185,3 +1185,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI #1376 / `42348837445`: both jobs SUCCESS; 134 Python tests; app/installer unit tests, release builds and lint-vital PASS. APK diagnostic 1,620,193 bytes (+2,820 / ~0.17% vs G3E), informational under D-023.
 - **G3A–G3F individual source-host gates are complete.** Next: G4 integration/reconciliation plan and combined-tree audit only after explicit approval. No PR merge or branch retargeting authorized.
 - Physical Android TV/Mi TV Stick, remote, OEM, overscan, daylight/glare, large-text and 1080p/4K acceptance remain PENDING / NOT RUN. No APK install/publication, ADB or device mutation.
+
+
+## UI Refresh G4 closeout — parent PIN hardening and combined-tree source-host acceptance (7 November 2026)
+
+- **G4-A–G4-J: COMPLETE / SOURCE-HOST QC PASS.** Canonical audit: `UI_REFRESH_G4_AUDIT_2026-11-07.md`; final checkpoint: `UI_REFRESH_G4_CHECKPOINT_2026-11-07.md`.
+- G3F baseline remains exact HEAD `455b619c3eefe417ac0152a51f3cb12478a8f4a9`. G4 branch `feature/g4-parent-pin-hardening` final HEAD `f46adf27bbc6b2156c7e9bb49d48cf4fd0fcdb5e`; PR #72 remains OPEN/DRAFT/UNMERGED and mergeable.
+- Final synthetic PR merge `376b5b69e2aed56e1f813169f35dbb9459ada554` has exactly two parents: G3F base and G4 HEAD. Exact combined-tree CI #1394 / `42353368760`: both required jobs SUCCESS; Android app/installer unit tests, release builds and lint-vital passed; 134 Python tests with one intentional skip.
+- Parent PIN custom storage now uses per-credential salted PBKDF2-HMAC-SHA256; legacy custom values migrate losslessly after successful verification; fresh-install/default `0000` remains unchanged. Corrupt or lost stored credentials fail closed. No retry counters, limits, cooldowns, lockouts, forced delays or temporary restrictions.
+- Final combined diff is limited to five PIN implementation/test files. PRs #66–#72 remain OPEN/DRAFT/UNMERGED; no merge, rebase, cherry-pick, force-push, base retarget or integration/main mutation.
+- APK diagnostic 1,622,401 bytes; informational under D-023, no artifact published. No APK install, ADB or device configuration.
+- Four-digit PIN with unlimited attempts remains guessable; hashing protects against plaintext exposure but is not brute-force immunity.
+- Physical Android TV/Mi TV Stick/remote/OEM/overscan/daylight/large-text acceptance remains PENDING / NOT RUN and is a separate gate. G4 closes source-host scope only.
