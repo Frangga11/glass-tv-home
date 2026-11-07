@@ -483,3 +483,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - SOURCE-HOST QC may pass independently; physical Android TV/remote/OEM acceptance remains a separate gate.
 - Exact owner: `feature/g3e-wifi` @ `9125043e24b8f13232e41193ba5fe10e1821f7cd`; PR #70 OPEN/DRAFT/UNMERGED; exact-head CI #1363 / `42346491017` — both required jobs SUCCESS.
 - Status: IMPLEMENTED / SOURCE-HOST QC PASS; DEVICE ACCEPTANCE PENDING / NOT RUN.
+
+
+## D-031 — G3F Global Settings V06 structure and ownership (7 November 2026)
+
+- Implement Global Settings against the approved G1 V6 V06 composition: branded header, global control search, read-only Wi-Fi status, persistent seven-category navigation and category detail pane.
+- Keep search localized to existing control labels/summaries; route each result to its owning category and focus the target control. Preserve saved-focus migration when the search moves from sidebar to header and when the profile identity summary is inserted.
+- Profile identity and child-mode state remain owned by ProfileManager and ChildModeManager. Wi-Fi/network state remains owned by MainActivity/E01; Global Settings must not add a duplicate network callback, radio switch or system-setting mutation.
+- Restore invoking-control focus on dialog dismissal and refresh external Android Settings state on host resume without retaining destroyed Activity/view objects.
+- SOURCE-HOST QC may pass independently; physical Android TV/remote/OEM/overscan/daylight acceptance remains a separate gate. Keep PR #71 OPEN/DRAFT/UNMERGED until separately approved integration.
+- Exact owner: `feature/g3f-global-settings` @ `455b619c3eefe417ac0152a51f3cb12478a8f4a9`; PR #71 OPEN/DRAFT/UNMERGED; exact-head CI #1376 / `42348837445` — both required jobs SUCCESS.
+- Status: IMPLEMENTED / SOURCE-HOST QC PASS; DEVICE ACCEPTANCE PENDING / NOT RUN.
