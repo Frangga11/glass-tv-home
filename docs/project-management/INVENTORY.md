@@ -896,3 +896,20 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - Source branch fix/home-dock-visual-parity-v2 @ 48f07a983ebee4370bbf13a80f85edd947c2eb31.
 - Evidence: HOME_DOCK_PATCH41_RECOVERY_2026-11-07.md.
+
+
+## Horizontal Dock centering correction — inventory (7 November 2026)
+
+| Gate | Status |
+|---|---|
+| Confirm aggregate Dock left-alignment defect from owner TV photo | SOURCE AUDIT CONFIRMED |
+| Aggregate centering offset based on viewport, tile width and visible item count | IMPLEMENTED |
+| Preserve full viewport tile-width measurement | IMPLEMENTED |
+| Reset offset for vertical/empty Dock | IMPLEMENTED |
+| Regression tests: capacities 4/5/6, four densities, edge cases | ADDED |
+| Latest source HEAD | 65108d4160243442922002618e739c898c4cb9e7 |
+| Latest-head CI | PENDING / NOT CONFIRMED |
+| Latest centered APK | PENDING |
+| Physical TV visual/remote acceptance | PENDING / NOT RUN |
+| PR #74 | OPEN / DRAFT / UNMERGED |
+| Install / ADB / device mutation / merge | NOT PERFORMED |
