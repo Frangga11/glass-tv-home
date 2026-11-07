@@ -1830,3 +1830,11 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 ### HOME-QUICK-TOGGLE-ALIGN-001 — base reconciliation
 
 PR #75 advanced to `21bc204a413fce3c527e0e8761d2016bc5dc87c6` with a workflow-only commit adding PR #76 to APK publication. PR #76 was rebased onto this base; the duplicate workflow change was removed from its diff. Current PR #76 head `012fba1c4012c7e4a05de292b69030c17a594d90`; compare is 2 ahead / 0 behind, only MainActivity and its regression test differ. PR #76 OPEN/DRAFT/UNMERGED. Exact-head CI #1449 / `42404084112` is IN PROGRESS. CI #1443 was PASS on the pre-rebase source/test head and is not substituted for the new exact-head gate. APK and physical device acceptance remain pending.
+
+### HOME-DOCK-HOST-CENTERING-002 — cumulative technical gate and APK verified
+
+- PR #75 head 21bc204a413fce3c527e0e8761d2016bc5dc87c6: CI #1448 / 42403925244 SUCCESS, both required jobs.
+- PR #76 head ea681545bbf356105683ef2c7da6664e29a83723: CI #1447 / 42403880493 SUCCESS, both required jobs.
+- PR #76 artifact #13586598248 downloaded; ZIP 1,422,482 bytes. Extracted APK 1,622,153 bytes; SHA-256 12dc35e31fc2e67bcba1e0ddcee548937f5f23f9bf90d654316fc6fdc34f17c7. ZIP/APK integrity checks passed; AndroidManifest.xml, classes.dex and resources.arsc present.
+- This exact cumulative test build includes the Dock host/padding correction, one-row overflow/DPAD path and Quick Toggles safe-frame correction.
+- Technical disposition: SOURCE / UNIT / CI / BUILD / APK QC PASS. Physical Mi TV Stick visual/remote acceptance remains PENDING; do not claim final visual PASS or merge until owner acceptance.
