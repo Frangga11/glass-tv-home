@@ -68,15 +68,19 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     public AppAdapter.Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app, parent, false);
         float density = parent.getResources().getDisplayMetrics().density;
-        int inner = Math.max(0, parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight());
+        int viewportWidth = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
+        int inner = Math.max(0, viewportWidth - parent.getPaddingLeft() - parent.getPaddingRight());
         int width;
         int itemWidth;
         if (vertical) {
             width = Math.max(Math.round(112 * density), Math.min(Math.round(170 * density), inner - Math.round(20 * density)));
             itemWidth = width;
         } else {
-            width = DockGeometry.horizontalTileWidthPx(inner, capacity, density);
-            itemWidth = DockGeometry.horizontalSlotWidthPx(inner, capacity);
+            // Horizontal centering is expressed as RecyclerView content padding. Tile dimensions
+            // must still use the full viewport, not the reduced child space between those paddings.
+            int horizontalWidth = DockGeometry.horizontalContentWidthPx(viewportWidth, density);
+            width = DockGeometry.horizontalTileWidthPx(horizontalWidth, capacity, density);
+            itemWidth = DockGeometry.horizontalSlotWidthPx(horizontalWidth, capacity);
         }
         // item_app.xml is shared with the multi-column Grid and therefore declares
         // match_parent width. In a horizontal RecyclerView that makes every Dock item
