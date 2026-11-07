@@ -384,7 +384,7 @@ final class WifiSettingsDialog {
                     NetworkCapabilities caps = manager.getNetworkCapabilities(network);
                     if (caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                         wifi = true;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                        if (hasLocationPermission() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                                 && caps.getTransportInfo() instanceof WifiInfo) {
                             connectionInfo = (WifiInfo) caps.getTransportInfo();
                         }
