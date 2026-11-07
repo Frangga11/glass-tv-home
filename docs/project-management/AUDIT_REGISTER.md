@@ -1799,3 +1799,16 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - CI run #1441 / run ID `42401401988`: both jobs SUCCESS. Release unit tests, `assembleRelease`, APK size diagnostics and artifact publication all SUCCESS.
 - Artifact: `glass-tv-home-dock-visual-parity-78b6510fd8f6a4c70d4bb93792abf53f9d5ee542`, artifact ID `13585890269`, ZIP 1,422,728 bytes. Extracted `app-release.apk`: 1,622,469 bytes; SHA-256 `61d5705915802e65fdecab6c7b6b91973b7187c4a276a972704d6ab1bbd242b8`.
 - CI/build gate: PASS. Device/remote validation of horizontal edge alignment, single-row viewport, DPAD Up/Down focus continuity and end-of-list behavior: PENDING. PR #75 remains OPEN/DRAFT/UNMERGED; no default-launcher change.
+
+
+## GTVH-HOME-LAYOUT-FIX-001 — global Home layout audit (8 November 2026)
+
+**Finding HOME-QUICK-TOGGLE-ALIGN-001:** `MainActivity.alignTopButtons()` aligned the Settings button to the last Dock card by translating the whole top menu. Grid and Dock global-layout listeners repeatedly invoked the method. Because Dock item count changes, the top menu (Wi-Fi, microphone, profile, Settings and Inputs) could be pulled left independently of the 56dp Home content safe frame. Correction in PR #76 removes both listeners and the translation method; existing XML end alignment is preserved.
+
+**Video evidence:** 23.14s, 1920×1080 physical TV recording. Pre-fix frames show Google Play separated at the left edge of the lower tray and a five-app row above it. The video is not post-fix acceptance evidence.
+
+**Dock/row lineage:** PR #74 restores first-row Dock fill and visual treatment. PR #75 removes duplicate horizontal inset, expands tray across the Dock host and limits horizontal overflow to one row with DPAD row progression. PR #75 exact-head CI #1441 succeeded; APK 1,622,469 bytes, SHA-256 `61d5705915802e65fdecab6c7b6b91973b7187c4a276a972704d6ab1bbd242b8` (baseline only, not PR #76).
+
+**PR #76 evidence:** branch `fix/home-global-layout-bounds` @ `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`; Draft PR #76 stacked on PR #75. Changed `MainActivity.java`; added `tests/test_home_layout_bounds_contract.py`. CI #1442 first attempt failed because the new test's ElementTree XPath lookup returned no element; corrected using namespace-aware ID iteration. Exact-head CI #1443 / `42403684594` IN PROGRESS at checkpoint. No APK/size/checksum for PR #76.
+
+**Disposition:** SOURCE FIX IMPLEMENTED; EXACT-HEAD CI PENDING; PHYSICAL VISUAL/REMOTE ACCEPTANCE NOT RUN; NO MERGE. Do not mark PASS based on compile/unit tests alone. See `HOME_LAYOUT_FIX_2026-11-08.md`.
