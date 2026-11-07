@@ -53,7 +53,10 @@ final class DockGeometry {
         return Math.max(0, viewportWidthPx - 2 * safeHorizontalInsetPx(density));
     }
 
-    /** Center Dock slots whose widths match the five-column Grid cells. */
+    /**
+     * Center Dock slots whose widths match the five-column Grid cells.
+     * The offset is measured inside the safe content viewport, not the full screen.
+     */
     static int horizontalCenterOffsetPx(int safeContentWidthPx, int slotWidthPx, int itemCount) {
         if (safeContentWidthPx <= 0 || slotWidthPx <= 0 || itemCount <= 0) return 0;
         return Math.max(0, (safeContentWidthPx - slotWidthPx * itemCount) / 2);
