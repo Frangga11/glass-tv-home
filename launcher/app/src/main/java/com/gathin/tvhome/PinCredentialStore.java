@@ -38,7 +38,11 @@ final class PinCredentialStore {
             if (prefs.contains(LEGACY_KEY_PIN)) {
                 return DEFAULT_PIN.equals(prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN));
             }
-            if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) return true;
+            if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) {
+                // A metadata marker with no credential pair means stored data is corrupt,
+                // not a fresh install. Never silently fall back to the default PIN.
+                return !prefs.contains(KEY_IS_DEFAULT);
+            }
             return prefs.getBoolean(KEY_IS_DEFAULT, false);
         } catch (ClassCastException exception) {
             // Corrupt preference types must not crash Settings or imply the default PIN.
@@ -59,7 +63,9 @@ final class PinCredentialStore {
                 return true;
             }
             if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) {
-                return DEFAULT_PIN.equals(entered);
+                // Fresh installs have no credential metadata. Once a PIN has been
+                // explicitly stored, missing hash/salt must fail closed.
+                return !prefs.contains(KEY_IS_DEFAULT) && DEFAULT_PIN.equals(entered);
             }
             return verifyStoredPin(prefs, entered);
         } catch (ClassCastException exception) {
