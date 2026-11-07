@@ -1581,3 +1581,23 @@ G1 is a browser-prototype result only. Production component conformance, live da
 - Residual risks: unchanged default PIN `0000` and plain-text SharedPreferences; launcher-scoped rather than system-wide parental control. Separate GIPHY PR #62 is not part of G3C.
 - Physical TV/remote/OEM acceptance: DEFERRED / NOT RUN; not waived. No APK publication/install, ADB, device configuration, merge, rebase, cherry-pick, force-push or integration/main mutation.
 - **Next package: G3D Quick Settings.** Do not reopen completed G3C work without new verified defect evidence.
+
+
+## UI Refresh G3D — Quick Settings source/host QC register (7 November 2026)
+
+| Area | Result | Evidence / boundary |
+|---|---|---|
+| V04 two-column modal | PASS | `QuickSettingsDialog`; centered G2 modal and G1 V6 V04 structure |
+| Shared glass/solid material and typography | PASS | `TvDialogStyle`, `TvUiTokens` and existing Glass Effect fallback |
+| D-pad/focus graph | PASS | `QuickSettingsFocusGraphTest`; actual view-link checks in `QuickSettingsDialogTest` |
+| All action dispatch | PASS | Robolectric verifies Wi-Fi, restart, language, power, cache, Next Photo, interval, wallpaper, Glass TV Settings and Android Settings |
+| Wi-Fi nested return / hidden top-bar pill | PASS | Parent-return contract and independent network summary source tests |
+| Cache asynchronous lifecycle | PASS | Weak Activity reference and finishing/destroyed/window-focus guard; source contract test |
+| Permission and system-service boundaries | PASS | No fake Wi-Fi/radio controls; no new manifest permissions; existing Android system handoffs retained |
+| Localization | PASS | Default/ID/EN quick-settings keys present exactly once |
+| Python repository tests | PASS | Exact-head CI #1328 / `42344123725`; 120 tests |
+| Launcher unit tests / release build | PASS | Exact-head CI #1328; `testReleaseUnitTest assembleRelease` |
+| APK size | INFORMATIONAL | 1,608,373 bytes; +6,012 bytes / 0.38% vs G3C; non-blocking under D-023 |
+| Physical TV / remote / OEM / overscan | DEFERRED / NOT RUN | No APK installation, ADB or device mutation authorized/performed |
+
+**G3D disposition: COMPLETE / SOURCE-HOST QC PASS.** Branch `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`; PR #69 OPEN/DRAFT/UNMERGED. G3C remains unchanged. Next package: G3E Wi-Fi.

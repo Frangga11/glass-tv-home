@@ -4,8 +4,8 @@
 **Initial release:** v0.1-draft  
 **Prepared:** 31 October 2026  
 **Repository:** https://github.com/Frangga11/glass-tv-home  
-**Current project checkpoint:** Official Project G03 physical Mi TV Stick acceptance remains OPEN/BLOCKED pending explicit readiness approval and device connection. Separate UI Refresh GTVH-UIR-002 v2.0 subtrack: G1, G2 and G3A COMPLETE at their recorded source/host or prototype gates; next is G3B Weather & AQI V4.
-**Current stage:** Official Project G03 device acceptance remains a separate blocked gate. UI Refresh subtrack resumes at G3B — Weather & AQI V4.
+**Current project checkpoint:** Official Project G03 physical Mi TV Stick acceptance remains OPEN/BLOCKED pending explicit readiness approval and device connection. Separate UI Refresh GTVH-UIR-002 v2.0 subtrack: G1, G2 and G3A–G3D COMPLETE at their recorded prototype/source-host gates; next is G3E Wi-Fi.
+**Current stage:** Official Project G03 device acceptance remains a separate blocked gate. UI Refresh subtrack resumes at G3E — Wi-Fi.
 **Documentation branch:** `docs/project-master-inventory`  
 **F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
@@ -33,6 +33,8 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [F03_QR_COMMUNICATION_FEASIBILITY.md](F03_QR_COMMUNICATION_FEASIBILITY.md) | F03 QR communication/upload feasibility evidence, CI, findings, and Project G device gates |
 | [F04_FEATURE_ISOLATION_AUDIT.md](F04_FEATURE_ISOLATION_AUDIT.md) | F04 Avatar, Wallpaper and StandBy source isolation, repairs, CI and Project G gates |
 | [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |\n| [UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md) | G3A Home & independent Dock source/host closeout evidence |
+| [UI_REFRESH_G3D_AUDIT_2026-11-07.md](UI_REFRESH_G3D_AUDIT_2026-11-07.md) | G3D Quick Settings audit, root causes, remediation and source/host verification |
+| [UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md) | G3D Quick Settings source/host closeout and next work point |
 | [F07_PERFORMANCE_STABILITY_AUDIT.md](F07_PERFORMANCE_STABILITY_AUDIT.md) | Final F07 performance, memory, stability and storage host/source evidence |
 | [PROJECT_G_READINESS_CHECKPOINT.md](PROJECT_G_READINESS_CHECKPOINT.md) | Official Project F closure, Project G work packages, device gates and governance |
 
@@ -184,3 +186,10 @@ Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G
 - Exact-head CI #1296 / `42266095885`: both required jobs SUCCESS; launcher tests, release validation build and lint-vital PASS. APK diagnostic 1,589,825 bytes; informational under D-023.
 - Canonical evidence: [G3A checkpoint](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md). Next UI Refresh work package is G3B Weather & AQI V4.
 - No merge, APK publication/installation, ADB or physical TV/remote/overscan test. Official Project G03 device acceptance remains separately OPEN/BLOCKED.
+
+## Global UI Refresh G3D closeout — 7 November 2026
+
+- G3D Quick Settings is **COMPLETE / SOURCE-HOST QC PASS** on `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`; PR #69 OPEN/DRAFT/UNMERGED, based on unchanged G3C exact HEAD `8cf81f84bd62d0b3da31532116553cfa21a5df98`.
+- Exact-head CI #1328 / `42344123725`: both required jobs SUCCESS; 120 Python tests, launcher/installer unit tests and release validation build passed. APK diagnostic 1,608,373 bytes, informational under D-023.
+- Canonical evidence: [G3D audit](UI_REFRESH_G3D_AUDIT_2026-11-07.md) and [G3D checkpoint](UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md).
+- No merge, APK publication/installation, ADB or physical TV/remote/overscan test. Official Project G03 device acceptance remains separately OPEN/BLOCKED. Next UI Refresh work package: G3E Wi-Fi.

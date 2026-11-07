@@ -458,3 +458,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Weather UI refreshes on resume and restores the prior hourly/daily focus target when it still exists; if the saved slot disappears, it falls back to the first row.
 - Async callbacks must not mutate a finishing/destroyed Activity.
 - Status: IMPLEMENTED / REGRESSION TESTED.
+
+
+## D-029 — G3D Quick Settings V04 implementation boundary (7 November 2026)
+
+- Implement Quick Settings as the approved G1 V6 V04 centered two-column modal, reusing G2 shared dialog, material, typography and focus contracts.
+- Preserve existing functional owners for restart/power, language, cache, E08 wallpaper controls, Glass TV Settings and Android Settings. Do not create duplicate system or wallpaper engines.
+- Wi-Fi remains an Android-owned status/settings handoff: no fake in-app radio toggle or claim of unsupported system control. G3D provides the nested entry/return contract; the full V05 Wi-Fi redesign remains G3E.
+- The optional top-bar network pill must not be a dependency for Quick Settings Wi-Fi status or popup anchoring.
+- Asynchronous cache feedback must not retain or update a finishing, destroyed or backgrounded Activity.
+- No new permission, manifest change or third-party dependency is justified for G3D.
+- G3D source-host closure does not waive physical Android TV/remote/OEM/overscan acceptance. PR #69 remains Draft/unmerged; physical testing and merge require their existing separate approvals.
+- Status: IMPLEMENTED / EXACT-HEAD CI VERIFIED; physical acceptance DEFERRED.

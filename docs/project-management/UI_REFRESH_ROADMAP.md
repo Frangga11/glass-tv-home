@@ -124,3 +124,13 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - No merge or integration/main changes; no APK publication/install, ADB or physical TV test. Physical Android TV/remote/OEM acceptance remains a separate deferred gate. Existing PIN default/storage limitations remain recorded.
 - GIPHY avatar PR #62 remains separate and was not incorporated into G3C.
 - **Current starting point: G1, G2, G3A, G3B and G3C COMPLETE for source-host scope; resume at G3D — Quick Settings.**
+
+
+## 14. G3D closeout and current execution position — 7 November 2026
+
+- **G3D Quick Settings: COMPLETE / SOURCE-HOST QC PASS.** Evidence: `UI_REFRESH_G3D_AUDIT_2026-11-07.md` and `UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md`.
+- Owner branch `feature/g3d-quick-settings` exact HEAD `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`; PR #69 OPEN/DRAFT/UNMERGED, stacked directly on G3C exact HEAD `8cf81f84bd62d0b3da31532116553cfa21a5df98`. G3C PR #68 remains unchanged.
+- V04 centered two-column Quick Settings, shared G2 modal/material/focus, D-pad graph, Wi-Fi nested return, independent network summary, lifecycle-safe cache result, existing action owners and locale parity are implemented.
+- Exact-head CI #1328 / run `42344123725`: both required jobs SUCCESS; launcher and installer unit tests, release build, and 120 repository Python tests PASS. APK diagnostic 1,608,373 bytes; informational under D-023.
+- No merge/rebase/cherry-pick/force-push, integration/main change, APK publication/installation, ADB or physical TV/remote/OEM overscan test. Device acceptance remains separate and is not waived.
+- **Current starting point supersedes §13 and earlier resume notes: G1, G2, G3A, G3B, G3C and G3D COMPLETE for their recorded prototype/source-host scopes; resume at G3E — Wi-Fi.** G3F Global Settings follows G3E. Official Project G03 physical Mi TV Stick acceptance remains separately OPEN/BLOCKED.

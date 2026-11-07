@@ -1518,3 +1518,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI #1313 / `42340859666` and #1314 / `42340866781`: both required jobs SUCCESS. `testReleaseUnitTest assembleRelease` completed BUILD SUCCESSFUL. APK diagnostic: 1,602,361 bytes; historical 1.5 MiB warning is informational/non-blocking under D-023.
 - No merge/rebase/cherry-pick/force-push, integration/main mutation, APK publication/installation, ADB, device configuration or physical TV/remote/OEM test. Physical acceptance remains deferred, not waived. Existing PIN default `0000` and plain-text SharedPreferences remain residual security risks; PIN control is launcher-scoped.
 - **Next resume: G3D — Quick Settings.** Do not reopen G3C or earlier completed work without new verified defect evidence.
+
+
+## Current resume checkpoint — UI Refresh G3D complete (7 November 2026)
+
+- **Phase:** G3D Quick Settings COMPLETE / SOURCE-HOST QC PASS. Governing plan GTVH-UIR-002 v2.0.
+- **Owner branch/head:** `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`; PR #69 OPEN/DRAFT/UNMERGED, base G3C `8cf81f84bd62d0b3da31532116553cfa21a5df98`. G3C PR #68 and branch are unchanged.
+- **Verified:** V04 two-column modal; G2 shared styling/focus; all action dispatches; D-pad graph and Back; Wi-Fi return/fallback anchor/network summary; cache Activity lifecycle guard; Indonesian/English/default resource parity.
+- **Exact CI:** #1328 / `42344123725`, both required jobs SUCCESS. Launcher/installer unit tests and release build PASS; Lists/tools/docs 120 tests PASS. APK 1,608,373 bytes (+6,012 / 0.38% vs G3C), informational under D-023. No artifact published.
+- **Audit/checkpoint:** `UI_REFRESH_G3D_AUDIT_2026-11-07.md` and `UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md`.
+- **Remaining:** physical Android TV/Mi TV Stick, remote D-pad/Back, OEM Wi-Fi/power/cache behavior, 1080p/4K, daylight/large-text and overscan acceptance remain DEFERRED / NOT RUN. No APK installation, ADB or device mutation.
+- **Next single action:** begin G3E Wi-Fi with read-only audit against G1 V6 V05, E01 network/system-service owners and the G3D nested-entry/return contract. Do not reopen G3D absent new defect evidence.
+- Official Project G03 physical acceptance remains separately OPEN/BLOCKED pending explicit readiness approval.

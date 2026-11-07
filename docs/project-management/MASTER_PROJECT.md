@@ -1150,3 +1150,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR remains Draft/open/unmerged. No integration/main change, merge, APK installation/publication, ADB or physical TV test. Physical Android TV/remote/OEM acceptance remains deferred and is not waived.
 - GIPHY avatar PR #62 remains a separate workstream and was not merged or included in G3C.
 - **Next package: G3D — Quick Settings.** G1/G2/G3A/G3B/G3C are closed for source-host scope; reopen only for new verified defect evidence.
+
+
+## UI Refresh G3D closeout — Quick Settings (7 November 2026)
+
+- **G3D Quick Settings: COMPLETE / SOURCE-HOST QC PASS.** Canonical audit/checkpoint: `UI_REFRESH_G3D_AUDIT_2026-11-07.md` and `UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md`.
+- Owner branch `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`; PR #69 OPEN/DRAFT/UNMERGED, based on G3C exact HEAD `8cf81f84bd62d0b3da31532116553cfa21a5df98`. G3C remains unchanged.
+- Implemented G1 V6 V04 two-column Quick Settings using G2 shared dialog/material/focus contracts; explicit D-pad graph; Wi-Fi nested return and hidden-pill-safe anchor/status; lifecycle-safe cache completion; existing HomeKeyService, AppLanguage, CacheCleaner, E08 wallpaper and SystemSettingsAccess owners retained.
+- Exact-head CI #1328 / `42344123725`: both required jobs SUCCESS; launcher/installer unit tests, release build and 120 repository tests passed. APK diagnostic 1,608,373 bytes (+6,012 / 0.38% vs G3C); non-blocking under D-023.
+- No new permission, manifest change, third-party dependency, duplicate wallpaper engine, APK publication/install, ADB, merge or integration/main mutation.
+- Physical TV/remote/OEM, overscan, 1080p/4K, daylight/large-text and real service acceptance remain DEFERRED / NOT RUN. This is not DEVICE-VERIFIED.
+- **Next UI Refresh package: G3E Wi-Fi.** Official Project G03 physical Mi TV Stick acceptance remains separately OPEN/BLOCKED.

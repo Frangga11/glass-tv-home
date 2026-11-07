@@ -868,3 +868,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - APK diagnostic 1,600,893 bytes (+11,068 bytes / approximately 0.7% vs G3A); informational only under D-023.
 - Branch feature/g3b-weather-aqi-v4 @ 8cfc5c886950cc9d27d4530ba901df872b8e5c44; PR #67 OPEN/DRAFT/UNMERGED, base G3A. PR #65/#66 remain OPEN/DRAFT/UNMERGED. No merge, rebase, cherry-pick, force-push, integration/main modification, APK publication/install, ADB or physical device action.
 - Physical Android TV/remote/OEM overscan, daylight/glare and large-font acceptance remain deferred. Next UI Refresh package: G3C Profile, Avatar & Child Mode.
+
+
+## 7 November 2026 — UI Refresh G3D Quick Settings closeout
+
+- Completed G3D on `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`; PR #69 OPEN/DRAFT/UNMERGED, stacked on unchanged G3C exact head `8cf81f84bd62d0b3da31532116553cfa21a5df98`.
+- Implemented V04 two-column modal, G2 styling/focus, D-pad graph, Wi-Fi nested return and hidden-pill-safe network status, lifecycle-safe cache completion, existing action-owner routing and locale parity.
+- Exact-head CI #1328 / run `42344123725` passed both jobs: launcher/installer unit tests, release build and 120 Python tests. APK diagnostic 1,608,373 bytes (+6,012 / 0.38% vs G3C); informational under D-023.
+- Audit/checkpoint: `UI_REFRESH_G3D_AUDIT_2026-11-07.md`, `UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md`.
+- No APK artifact/publication/install, ADB, physical device action, merge or integration/main mutation. Physical acceptance remains deferred.
+- Next: G3E Wi-Fi.

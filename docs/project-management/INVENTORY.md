@@ -697,3 +697,17 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Evidence:** exact-head CI #1313 / `42340859666` and #1314 / `42340866781`, both required jobs SUCCESS; release unit tests and APK assembly PASS. APK 1,602,361 bytes, informational warning above historical 1.5 MiB reference.
 - **Scope boundary:** physical TV/remote/OEM acceptance deferred/not run; no APK publication/install, ADB, device configuration or merge. PIN default/storage limitations unchanged. GIPHY PR #62 remains separate.
 - **Next:** G3D Quick Settings. Canonical checkpoint: `UI_REFRESH_G3C_CHECKPOINT_2026-11-07.md`.
+
+
+## UI Refresh G3D — Quick Settings (7 November 2026)
+
+- **Disposition:** COMPLETE / SOURCE-HOST QC PASS; physical Android TV acceptance DEFERRED / NOT RUN.
+- **Branch/head:** `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`; PR #69 OPEN/DRAFT/UNMERGED, base G3C @ `8cf81f84bd62d0b3da31532116553cfa21a5df98`.
+- **Implementation:** `QuickSettingsDialog` V04 centered two-column modal; `QuickSettingsFocusGraph` four-way D-pad links; retained existing restart, power, language, cache, wallpaper, Glass TV Settings and Android Settings owners; Wi-Fi child-menu return and hidden-pill-safe anchor/status.
+- **Lifecycle/security:** Cache completion uses a weak Activity reference and finishing/destroyed/window-focus guards. No new permission or manifest change; Android Settings still routes through `SystemSettingsAccess`; no fake Wi-Fi/radio control.
+- **Localization:** Default/ID/EN quick-settings strings present exactly once.
+- **Regression:** `QuickSettingsDialogTest`, `QuickSettingsFocusGraphTest`, `tests/test_quick_settings_contract.py`.
+- **CI:** exact-head run #1328 / `42344123725`, both jobs SUCCESS; `testReleaseUnitTest`, installer unit tests, `assembleRelease`, and 120 Python tests PASS.
+- **APK diagnostic:** 1,608,373 bytes (+6,012 bytes / approximately 0.38% vs G3C 1,602,361 bytes); informational under D-023. No artifact published.
+- **Not verified:** physical TV/remote/OEM Wi-Fi/power/cache behavior, 1080p/4K, overscan, daylight and large-text acceptance. No APK install, ADB, device setting change or merge.
+- **Next:** G3E Wi-Fi. See [G3D audit](UI_REFRESH_G3D_AUDIT_2026-11-07.md) and [G3D checkpoint](UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md).
