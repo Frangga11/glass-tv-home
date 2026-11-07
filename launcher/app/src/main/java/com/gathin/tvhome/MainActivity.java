@@ -3148,9 +3148,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
-                if (!dockVertical && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
-                    weatherAirQualityView.requestFocus();
-                    return true;
+                if (!dockVertical) {
+                    if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
+                            && weatherAirQualityView.requestFocus()) return true;
+                    return focusTopBarFallback();
                 }
                 return false;
             }
