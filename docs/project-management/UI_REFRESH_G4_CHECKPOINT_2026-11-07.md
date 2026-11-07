@@ -15,9 +15,9 @@ G4 closes the approved integration/reconciliation and parent-PIN hardening work 
 |---|---|---|
 | G4-A — baseline and ancestry audit | PASS | G3A–G3F linear dependency chain and exact G3F base confirmed |
 | G4-B — cross-project ownership and overlap audit | PASS | Shared source overlaps reconciled; no unresolved source/semantic conflict left open |
-| G4-C — combined-tree scope/reconciliation | PASS | G3F exact baseline and G3A–G3F stacked tree retained |
-| G4-D — integration regression coverage | PASS | Combined feature regression suite and prior G4 candidate validation |
-| G4-E — combined build/test validation | PASS | Prior combined candidate build, unit tests, lint and repository tests passed |
+| G4-C — prior approved G4 gate | PASS | Closed in the preceding G4 audit; retained without reopening |
+| G4-D — prior approved G4 gate | PASS | Closed in the preceding G4 audit; retained without reopening |
+| G4-E — combined candidate validation | PASS | Prior synthetic candidate build, unit tests, lint and repository tests passed |
 | G4-F — integration candidate validation | PASS | Prior synthetic combined candidate validated; no branch mutation or merge |
 | G4-G — parent PIN storage hardening | PASS | PBKDF2 salted storage, lossless legacy migration, default preserved, no retry restrictions |
 | G4-H — final quality check | PASS | 11 focused PIN tests; app/installer tests and release builds; lint-vital; 134 Python tests / 1 intentional skip |
