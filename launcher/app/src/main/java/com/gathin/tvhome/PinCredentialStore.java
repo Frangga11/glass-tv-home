@@ -34,7 +34,6 @@ final class PinCredentialStore {
     static synchronized boolean isDefaultPin(Context context) {
         if (context == null) return true;
         SharedPreferences prefs = prefs(context);
-        migrateLegacyPin(prefs);
         if (prefs.contains(LEGACY_KEY_PIN)) {
             return DEFAULT_PIN.equals(prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN));
         }
@@ -45,19 +44,24 @@ final class PinCredentialStore {
     static synchronized boolean verifyPin(Context context, String entered) {
         if (context == null || entered == null) return false;
         SharedPreferences prefs = prefs(context);
-        migrateLegacyPin(prefs);
+        if (prefs.contains(LEGACY_KEY_PIN)) {
+            String legacyPin = prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN);
+            if (legacyPin == null || !legacyPin.equals(entered)) return false;
+            // Migrate only after a successful legacy verification. A failed disk write
+            // leaves the old credential intact and usable on the next attempt.
+            migrateLegacyPin(prefs);
+            return true;
+        }
         if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) {
-            String legacyPin = prefs.contains(LEGACY_KEY_PIN)
-                    ? prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN) : DEFAULT_PIN;
-            return legacyPin != null && legacyPin.equals(entered);
+            return DEFAULT_PIN.equals(entered);
         }
         return verifyStoredPin(prefs, entered);
     }
 
-    static synchronized void setPin(Context context, String pin) {
-        if (context == null || pin == null || pin.length() != 4) return;
+    static synchronized boolean setPin(Context context, String pin) {
+        if (context == null || pin == null || !pin.matches("[0-9]{4}")) return false;
         SharedPreferences prefs = prefs(context);
-        writeCredential(prefs, pin);
+        return writeCredential(prefs, pin);
     }
 
     private static SharedPreferences prefs(Context context) {
@@ -80,7 +84,7 @@ final class PinCredentialStore {
         }
     }
 
-    private static void writeCredential(SharedPreferences prefs, String pin) {
+    private static boolean writeCredential(SharedPreferences prefs, String pin) {
         byte[] salt = new byte[SALT_BYTES];
         RANDOM.nextBytes(salt);
         byte[] hash;
@@ -88,10 +92,10 @@ final class PinCredentialStore {
             hash = derive(pin, salt);
         } catch (GeneralSecurityException exception) {
             // Preserve the previous credential if the platform crypto provider fails.
-            return;
+            return false;
         }
 
-        prefs.edit()
+        return prefs.edit()
                 .putString(KEY_SALT, Base64.encodeToString(salt, Base64.NO_WRAP))
                 .putString(KEY_HASH, Base64.encodeToString(hash, Base64.NO_WRAP))
                 .putBoolean(KEY_IS_DEFAULT, DEFAULT_PIN.equals(pin))
