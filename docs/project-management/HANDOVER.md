@@ -1772,3 +1772,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #76 was reopened as Draft after the temporary branch reset; it is OPEN/DRAFT/UNMERGED. Base is PR #75 branch at `21bc204a413fce3c527e0e8761d2016bc5dc87c6`; head is `fix/home-global-layout-bounds` @ `012fba1c4012c7e4a05de292b69030c17a594d90`.
 - Compare confirms 2 commits ahead / 0 behind and only two changed files: `MainActivity.java` and `tests/test_home_layout_bounds_contract.py`.
 - Exact-head CI #1449 / `42404084112` is IN PROGRESS. Earlier CI #1443 passed on the pre-rebase source/test head but is not the latest exact-head gate. PR #76 APK/size/SHA-256 pending; physical TV acceptance not run.
+
+### Exact cumulative Home layout CI and APK — 8 November 2026
+
+- PR #75 latest head 21bc204a413fce3c527e0e8761d2016bc5dc87c6: CI #1448 / 42403925244 SUCCESS, both jobs; artifact #13586239278.
+- PR #76 latest head ea681545bbf356105683ef2c7da6664e29a83723: CI #1447 / 42403880493 SUCCESS, both jobs; artifact #13586598248 (ZIP 1,422,482 bytes).
+- Downloaded and verified the PR #76 cumulative APK: 1,622,153 bytes; SHA-256 12dc35e31fc2e67bcba1e0ddcee548937f5f23f9bf90d654316fc6fdc34f17c7. Outer ZIP and APK ZIP integrity passed; manifest, DEX and resources table present.
+- PR #76 build includes the PR #75 Dock host/padding and one-row DPAD work plus the Quick Toggles safe-frame correction. This is a controlled test candidate, not proof of visual acceptance.
+- Technical CI/build/APK gate PASS. Physical Mi TV Stick visual/remote acceptance remains PENDING; no installation, ADB, default-launcher change, device mutation or merge.
