@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +20,8 @@ import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Manages Child Mode, PIN security, App Lock, and Hidden Apps for Glass TV Home.
@@ -25,7 +29,6 @@ import java.util.Set;
 public final class ChildModeManager {
     private static final String PREFS_NAME = "child_mode_prefs";
     private static final String KEY_ENABLED = "child_mode_enabled";
-    private static final String KEY_PIN = "security_pin";
     private static final String KEY_LOCKED_APPS = "locked_apps";
     private static final String KEY_HIDDEN_APPS = "hidden_apps";
 
@@ -33,6 +36,20 @@ public final class ChildModeManager {
         void onSuccess();
         void onCancelled();
     }
+
+    public interface PinVerificationCallback {
+        void onResult(boolean valid);
+    }
+
+    public interface PinSaveCallback {
+        void onResult(boolean saved);
+    }
+
+    private static final ExecutorService PIN_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "glass-tv-pin-crypto");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private ChildModeManager() {}
 
@@ -126,18 +143,50 @@ public final class ChildModeManager {
         }
     }
 
-    public static String getPin(Context ctx) {
-        if (ctx == null) return "0000";
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_PIN, "0000");
+    /** Returns true while the active parent PIN is still the unchanged default. */
+    public static boolean isDefaultPin(Context ctx) {
+        return PinCredentialStore.isDefaultPin(ctx);
     }
 
+    /** Stores a four-character parent PIN using a per-install salt and PBKDF2 hash. */
     public static void setPin(Context ctx, String pin) {
-        if (ctx == null || pin == null || pin.length() != 4) return;
-        ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .putString(KEY_PIN, pin)
-                .apply();
+        PinCredentialStore.setPin(ctx, pin);
+    }
+
+    private static void postPinResult(Runnable action) {
+        // Resolve the main looper lazily. Robolectric and non-UI callers may load this
+        // manager from a thread without a prepared looper.
+        new Handler(Looper.getMainLooper()).post(action);
+    }
+
+    /** Performs PIN derivation away from the UI thread; no failed-attempt state is kept. */
+    public static void verifyPinAsync(Context ctx, String entered, PinVerificationCallback callback) {
+        if (ctx == null) {
+            if (callback != null) callback.onResult(false);
+            return;
+        }
+        Context appContext = ctx.getApplicationContext();
+        PIN_EXECUTOR.execute(() -> {
+            boolean valid = PinCredentialStore.verifyPin(appContext, entered);
+            postPinResult(() -> {
+                if (callback != null) callback.onResult(valid);
+            });
+        });
+    }
+
+    /** Saves the new credential away from the UI thread and reports durable write success. */
+    public static void setPinAsync(Context ctx, String pin, PinSaveCallback callback) {
+        if (ctx == null) {
+            if (callback != null) callback.onResult(false);
+            return;
+        }
+        Context appContext = ctx.getApplicationContext();
+        PIN_EXECUTOR.execute(() -> {
+            boolean saved = PinCredentialStore.setPin(appContext, pin);
+            postPinResult(() -> {
+                if (callback != null) callback.onResult(saved);
+            });
+        });
     }
 
     /** Any switch away from an active Child Mode profile requires parent authorization.
@@ -147,8 +196,7 @@ public final class ChildModeManager {
     }
 
     public static boolean verifyPin(Context ctx, String entered) {
-        if (ctx == null || entered == null) return false;
-        return entered.equals(getPin(ctx));
+        return PinCredentialStore.verifyPin(ctx, entered);
     }
 
     public static boolean isAppLocked(Context ctx, String pkg) {
@@ -240,6 +288,26 @@ public final class ChildModeManager {
         return updated;
     }
 
+    private static void verifyPinAttempt(Context ctx, AlertDialog[] dialogHolder,
+            StringBuilder pinBuilder, Runnable updateDots, boolean[] verificationPending,
+            PinCallback callback) {
+        if (verificationPending[0] || pinBuilder.length() != 4) return;
+        verificationPending[0] = true;
+        String candidate = pinBuilder.toString();
+        verifyPinAsync(ctx, candidate, valid -> {
+            verificationPending[0] = false;
+            if (dialogHolder[0] == null || !dialogHolder[0].isShowing()) return;
+            if (valid) {
+                dialogHolder[0].dismiss();
+                if (callback != null) callback.onSuccess();
+            } else {
+                TvFeedback.show(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT);
+                pinBuilder.setLength(0);
+                updateDots.run();
+            }
+        });
+    }
+
     /**
      * Shows a TV-friendly 4-digit PIN dialog with a numeric keypad operable by remote control.
      */
@@ -318,6 +386,7 @@ public final class ChildModeManager {
                 }
             }
         };
+        boolean[] verificationPending = {false};
 
         // Keypad Grid (3 columns: 1-9, then Del, 0, OK)
         GridLayout grid = new GridLayout(ctx);
@@ -355,6 +424,9 @@ public final class ChildModeManager {
 
             btn.setOnClickListener(v -> {
                 SoundEffects.playSelect();
+                // Only prevent overlapping crypto work while this PIN is being checked.
+                // This is not a retry limit or cooldown; every completed failure can retry.
+                if (verificationPending[0]) return;
                 if (k.equals("⌫")) {
                     if (pinBuilder.length() > 0) {
                         pinBuilder.deleteCharAt(pinBuilder.length() - 1);
@@ -362,14 +434,8 @@ public final class ChildModeManager {
                     }
                 } else if (k.equals("OK")) {
                     if (pinBuilder.length() == 4) {
-                        if (verifyPin(ctx, pinBuilder.toString())) {
-                            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-                            if (callback != null) callback.onSuccess();
-                        } else {
-                            TvFeedback.show(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT);
-                            pinBuilder.setLength(0);
-                            updateDots.run();
-                        }
+                        verifyPinAttempt(ctx, dialogHolder, pinBuilder, updateDots,
+                                verificationPending, callback);
                     } else {
                         TvFeedback.show(ctx, R.string.pin_four_digits, Toast.LENGTH_SHORT);
                     }
@@ -379,14 +445,8 @@ public final class ChildModeManager {
                         updateDots.run();
                         if (pinBuilder.length() == 4) {
                             // Auto-verify on 4th digit
-                            if (verifyPin(ctx, pinBuilder.toString())) {
-                                if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-                                if (callback != null) callback.onSuccess();
-                            } else {
-                                TvFeedback.show(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT);
-                                pinBuilder.setLength(0);
-                                updateDots.run();
-                            }
+                            verifyPinAttempt(ctx, dialogHolder, pinBuilder, updateDots,
+                                    verificationPending, callback);
                         }
                     }
                 }

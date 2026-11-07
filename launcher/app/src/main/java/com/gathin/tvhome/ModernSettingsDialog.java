@@ -1070,7 +1070,7 @@ public final class ModernSettingsDialog {
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.change_pin_title),
-                        activity.getString(R.string.change_pin_summary, ChildModeManager.getPin(activity).equals("0000") ? activity.getString(R.string.default_pin_label) : "••••"),
+                        activity.getString(R.string.change_pin_summary, ChildModeManager.isDefaultPin(activity) ? activity.getString(R.string.default_pin_label) : "••••"),
                         () -> showChangePinDialog(activity, density, outfit)));
 
             } else if (tab == TAB_HOME_SCREEN) {
@@ -2122,9 +2122,18 @@ public final class ModernSettingsDialog {
                         confirmPin.requestFocus();
                         return;
                     }
-                    ChildModeManager.setPin(activity, first);
-                    dialog.dismiss();
-                    TvFeedback.show(activity, R.string.pin_updated, Toast.LENGTH_SHORT);
+                    Button saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    saveButton.setEnabled(false);
+                    ChildModeManager.setPinAsync(activity, first, saved -> {
+                        if (!dialog.isShowing()) return;
+                        saveButton.setEnabled(true);
+                        if (saved) {
+                            dialog.dismiss();
+                            TvFeedback.show(activity, R.string.pin_updated, Toast.LENGTH_SHORT);
+                        } else {
+                            TvFeedback.show(activity, R.string.profile_save_failed, Toast.LENGTH_LONG);
+                        }
+                    });
                 }));
                 dialog.show();
                 TvDialogStyle.apply(dialog, activity, 520, 0);
