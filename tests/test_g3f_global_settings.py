@@ -31,8 +31,10 @@ class GlobalSettingsSourceContractTest(unittest.TestCase):
     def test_search_routes_to_control_and_focuses_it(self):
         source = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/ModernSettingsDialog.java").read_text()
         self.assertIn("buildSearchEntries(activity)", source)
-        self.assertIn("findControlByDescription(rightContent, selected.title)", source)
-        self.assertIn("target.setTag(selected.id)", source)
+        self.assertIn("findControlBySearchEntry(rightContent, selected)", source)
+        self.assertIn("entry.id.equals(stableId)", source)
+        self.assertIn('frame.setTag("profile.avatar.builtin." + idx)', source)
+        self.assertIn('pRow.setTag("profile.profile." + p.id)', source)
         self.assertIn("target.requestFocus()", source)
         self.assertIn("R.string.search_keyword_required", source)
         self.assertNotIn("String[] keywords =", source)
