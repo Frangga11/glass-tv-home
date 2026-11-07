@@ -3,10 +3,10 @@ package com.gathin.tvhome;
 /**
  * Single source of truth for the horizontal Dock's visual geometry.
  *
- * Dimensions preserve the proven v4.0/v4.1 tile contract: 180x101dp design
- * tiles, 45dp item height beyond the card, 6/12dp item decoration offsets,
- * 14dp tray inset, and 16dp Grid-to-tray breathing room. The independent Dock
- * adapter and Home layout must use these same values.
+ * Horizontal Dock/Grid geometry shares the P2 safe content frame, a five-column
+ * slot model, 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
+ * breathing room, and a 36dp shelf-to-tray gap. The Dock and Grid remain independent
+ * RecyclerViews but derive their card and slot sizes from this class.
  */
 final class DockGeometry {
     private static final float DOCK_ITEM_TOP_OFFSET_DP = 6f;

@@ -393,7 +393,13 @@ public class DockLayoutModelTest {
             assertEquals(DockGeometry.safeBottomInsetPx(density), bottomMargin + trayBottomInset);
             assertEquals(Math.round(50f * density),
                     DockGeometry.shelfBottomOffsetFromTileTopPx(density));
-            assertEquals(dockHeight, DockGeometry.horizontalGridBottomMarginPx(tileHeight, density));
+            int gridBottomMargin = DockGeometry.horizontalGridBottomMarginPx(tileHeight, density);
+            int trayTopOffset = DockGeometry.dockItemTopOffsetPx(density)
+                    - Math.round(DockGeometry.trayPaddingPx(density));
+            int trayTopFromParentBottom = -dockHeight - bottomMargin + trayTopOffset;
+            int gridBottomFromParentBottom = -gridBottomMargin;
+            assertEquals(Math.round(8f * density), trayTopFromParentBottom - gridBottomFromParentBottom);
+            assertEquals(dockHeight, gridBottomMargin);
         }
     }
 
