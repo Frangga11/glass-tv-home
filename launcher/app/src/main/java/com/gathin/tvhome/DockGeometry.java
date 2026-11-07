@@ -27,7 +27,7 @@ final class DockGeometry {
     }
 
     static int itemHeightPx(int tileHeightPx, float density) {
-        return tileHeightPx + Math.round(ITEM_EXTRA_HEIGHT_DP * density);
+        return AppAdapter.itemHeightPx(tileHeightPx, density);
     }
 
     static int horizontalDockHeightPx(int tileHeightPx, float density) {
@@ -36,19 +36,18 @@ final class DockGeometry {
 
     static int horizontalGridBottomReservePx(int largestTileWidthPx, float density) {
         int largestTileHeight = tileHeightPx(largestTileWidthPx);
-        return horizontalDockHeightPx(largestTileHeight, density)
-                + Math.round(GRID_TO_TRAY_GAP_DP * density);
+        return itemHeightPx(largestTileHeight, density) + Math.round(34f * density);
     }
 
     static int dockItemTopOffsetPx(float density) {
-        return Math.round(DOCK_ITEM_TOP_OFFSET_DP * density);
+        return (int) (DOCK_ITEM_TOP_OFFSET_DP * density);
     }
 
     static int dockItemBottomOffsetPx(float density) {
-        return Math.round(DOCK_ITEM_BOTTOM_OFFSET_DP * density);
+        return (int) (DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
 
-    static int trayPaddingPx(float density) {
-        return Math.round(TRAY_PADDING_DP * density);
+    static float trayPaddingPx(float density) {
+        return TRAY_PADDING_DP * density;
     }
 }

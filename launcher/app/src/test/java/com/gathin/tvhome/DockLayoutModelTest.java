@@ -265,22 +265,27 @@ public class DockLayoutModelTest {
     }
     @Test
     public void dockGeometryPreservesLegacyFourFiveSixSlotRatiosAndSpacing() {
-        float density = 2f;
-        int innerWidth = 1920;
-        for (int capacity : new int[]{4, 5, 6}) {
-            int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
-            int tileHeight = DockGeometry.tileHeightPx(tileWidth);
-            int itemHeight = DockGeometry.itemHeightPx(tileHeight, density);
-            int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int innerWidth = 1920;
             int largestTileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, 4, density);
             int largestTileHeight = DockGeometry.tileHeightPx(largestTileWidth);
             int gridReserve = DockGeometry.horizontalGridBottomReservePx(largestTileWidth, density);
-            int trayHeight = tileHeight + Math.round(28 * density);
+            int legacyGridReserve = DockGeometry.itemHeightPx(largestTileHeight, density)
+                    + Math.round(34f * density);
+            assertEquals(legacyGridReserve, gridReserve);
 
-            assertEquals(Math.round(35 * density), dockHeight - trayHeight);
-            assertEquals(Math.round(16 * density),
-                    gridReserve - DockGeometry.horizontalDockHeightPx(largestTileHeight, density));
-            assertEquals(tileHeight + Math.round(45 * density), itemHeight);
+            for (int capacity : new int[]{4, 5, 6}) {
+                int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
+                int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+                int itemHeight = DockGeometry.itemHeightPx(tileHeight, density);
+                int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+                float trayHeight = tileHeight + 28f * density;
+
+                assertEquals(tileHeight + Math.round(45f * density), itemHeight);
+                assertEquals(itemHeight + Math.round(18f * density), dockHeight);
+                assertEquals(14f * density, DockGeometry.trayPaddingPx(density), 0.001f);
+                assertEquals(35f * density, dockHeight - trayHeight, 1.1f);
+            }
         }
     }
 
