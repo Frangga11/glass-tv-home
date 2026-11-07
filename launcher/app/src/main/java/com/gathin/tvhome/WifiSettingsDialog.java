@@ -256,6 +256,7 @@ final class WifiSettingsDialog {
                 && screen.dialog.isShowing()) {
             screen.refreshStatus();
             screen.updatePrerequisites();
+            screen.showCachedResults();
             screen.requestScan();
         }
     }
@@ -496,6 +497,9 @@ final class WifiSettingsDialog {
                 View fallback = firstFocusableControl();
                 if (fallback != null) fallback.requestFocus();
             }
+        } else if (focused == null || !focused.isShown() || !focused.isFocusable()) {
+            View fallback = firstFocusableControl();
+            if (fallback != null) fallback.requestFocus();
         }
     }
 
