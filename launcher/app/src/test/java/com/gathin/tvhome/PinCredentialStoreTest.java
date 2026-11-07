@@ -69,7 +69,7 @@ public class PinCredentialStoreTest {
             assertFalse(PinCredentialStore.verifyPin(context, "1111"));
         }
         assertTrue(PinCredentialStore.verifyPin(context, "7391"));
-        assertEquals(2, prefs.getAll().size());
+        assertEquals(3, prefs.getAll().size());
     }
 
     @Test
