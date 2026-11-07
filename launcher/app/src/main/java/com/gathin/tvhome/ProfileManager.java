@@ -466,6 +466,8 @@ public final class ProfileManager {
 
     public static boolean deleteProfile(Context context, String profileId) {
         if (context == null || profileId == null) return false;
+        // Migrate legacy restrictions while the profile that owned them is still active.
+        ChildModeManager.ensureProfileSettingsMigrated(context);
         synchronized (ProfileManager.class) {
             List<UserProfile> list = getAllProfiles(context);
             if (list.size() <= 1) return false;

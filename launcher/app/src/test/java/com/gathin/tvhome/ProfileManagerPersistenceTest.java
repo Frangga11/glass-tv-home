@@ -105,6 +105,23 @@ public class ProfileManagerPersistenceTest {
         assertTrue(prefs.getBoolean("profile_settings_migration_v1", false));
     }
 
+    @Test
+    public void deletingActiveProfileDoesNotMoveItsLegacyRestrictionsToFallback() {
+        Context context = context();
+        ProfileManager.UserProfile active = ProfileManager.getActiveProfile(context);
+        ProfileManager.UserProfile fallback = ProfileManager.addProfile(context, "Fallback", 1, false);
+        assertNotNull(fallback);
+        SharedPreferences prefs = context.getSharedPreferences("child_mode_prefs", Context.MODE_PRIVATE);
+        assertTrue(prefs.edit()
+                .putBoolean("child_mode_enabled", true)
+                .putStringSet("locked_apps", Collections.singleton("com.example.legacy"))
+                .commit());
+
+        assertTrue(ProfileManager.deleteProfile(context, active.id));
+        assertFalse(ChildModeManager.isChildModeEnabled(context, fallback.id));
+        assertTrue(ChildModeManager.getLockedApps(context, fallback.id).isEmpty());
+    }
+
     private ProfileManager.UserProfile find(Context context, String id) {
         for (ProfileManager.UserProfile profile : ProfileManager.getAllProfiles(context)) {
             if (id.equals(profile.id)) return profile;

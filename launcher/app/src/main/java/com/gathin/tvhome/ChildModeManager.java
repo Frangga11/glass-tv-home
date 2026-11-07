@@ -78,6 +78,11 @@ public final class ChildModeManager {
         return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
+    /** Resolve legacy device-wide values against the currently active profile before any profile change. */
+    static void ensureProfileSettingsMigrated(Context ctx) {
+        if (ctx != null) profilePrefs(ctx);
+    }
+
     public static boolean isChildModeEnabled(Context ctx) {
         if (ctx == null) return false;
         return isChildModeEnabled(ctx, activeProfileId(ctx));
