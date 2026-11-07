@@ -1842,3 +1842,10 @@ PR #75 advanced to `21bc204a413fce3c527e0e8761d2016bc5dc87c6` with a workflow-on
 ### HOME-QUICK-TOGGLE-ALIGN-001 — final current checkpoint
 
 Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, base latest PR #75 `21bc204a413fce3c527e0e8761d2016bc5dc87c6`; compare 3 ahead / 0 behind. The reapplication onto latest MainActivity explicitly preserves the Dock's newer symmetric RecyclerView padding and unshifted tray host, while removing the Dock-relative top menu shift and listeners. Exact-head CI #1450 repository job PASS (137 Python tests, one skip); Android unit tests/release build in progress. APK, screenshots and physical acceptance pending. PR #76 OPEN/DRAFT/UNMERGED. Decision PARTIAL PASS; no merge.
+
+### HOME-LAYOUT-FIX-001 — latest PR #76 candidate
+
+- PR #76 CI #1449 / 42404084112 passed both required jobs on head 012fba1c4012c7e4a05de292b69030c17a594d90, with PR #75 base 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+- Artifact #13586419148 verified: ZIP 1,422,343 bytes; APK 1,622,117 bytes; SHA-256 fe7db8ca54be34781b716454256e50da62b5ee3bf168fc211aa7e45095fa95b6. ZIP/APK integrity passed and manifest/DEX/resources table present.
+- Current PR #76 branch head f085c41356e2e5f53ca13f51bc0676bdb82d350a re-applies the same Dock host/padding correction already in PR #75 base; exact-head CI #1450 / 42404262057 is running.
+- CI #1449 APK is a valid candidate for the cumulative runtime tree; no physical visual/remote acceptance yet. Status: PENDING DEVICE ACCEPTANCE; no merge.
