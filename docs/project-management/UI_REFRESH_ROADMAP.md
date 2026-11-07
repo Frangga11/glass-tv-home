@@ -134,3 +134,16 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - Exact-head CI #1328 / run `42344123725`: both required jobs SUCCESS; launcher and installer unit tests, release build, and 120 repository Python tests PASS. APK diagnostic 1,608,373 bytes; informational under D-023.
 - No merge/rebase/cherry-pick/force-push, integration/main change, APK publication/installation, ADB or physical TV/remote/OEM overscan test. Device acceptance remains separate and is not waived.
 - **Current starting point supersedes §13 and earlier resume notes: G1, G2, G3A, G3B, G3C and G3D COMPLETE for their recorded prototype/source-host scopes; resume at G3E — Wi-Fi.** G3F Global Settings follows G3E. Official Project G03 physical Mi TV Stick acceptance remains separately OPEN/BLOCKED.
+
+
+## 15. G3E — Wi-Fi closeout (7 November 2026)
+
+- **Disposition:** COMPLETE / SOURCE-HOST QC PASS; DEVICE ACCEPTANCE PENDING / NOT RUN.
+- **Owner:** `feature/g3e-wifi` @ `89d044152b7d8460884466deb5baa47126f48027`; PR #70 OPEN/DRAFT/UNMERGED, based directly on G3D `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`.
+- **V05:** status/connected card, nearby network list, scan state, horizontal Rescan and Android Wi-Fi Settings actions, Close; permission, Location, offline, throttled, timeout and empty states.
+- **Architecture:** existing MainActivity network-state owner reused; no duplicate ConnectivityManager callback or custom network subsystem. Android owns authentication, saved networks, connect/disconnect and radio control.
+- **Permission/API:** runtime ACCESS_FINE_LOCATION and enabled Location service gate scan/result access; CHANGE_WIFI_STATE is declared only for WifiManager.startScan. No radio toggle or credential APIs.
+- **Verification:** exact-head CI #1362 / `42346091802`, both required jobs SUCCESS; 127 Python tests, app/installer release unit tests and app/installer release builds PASS. APK diagnostic 1,617,293 bytes (+8,920 / ~0.55% vs G3D), informational under D-023; no artifact published.
+- **Known risk:** startScan is deprecated since API 28 and scan requests are throttled; active scan is best-effort with cached-result/broadcast/Android Settings fallback. Future Android API migration remains open.
+- **Evidence:** `UI_REFRESH_G3E_AUDIT_2026-11-07.md` and `UI_REFRESH_G3E_CHECKPOINT_2026-11-07.md`.
+- **Next:** G3F — Global Settings. No merge/rebase/cherry-pick/force-push, APK publication/install, ADB, device mutation or integration/main change. Physical Android TV/remote/OEM acceptance remains separate and not waived.
