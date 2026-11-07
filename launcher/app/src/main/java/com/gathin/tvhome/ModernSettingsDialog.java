@@ -130,6 +130,21 @@ public final class ModernSettingsDialog {
         return target.getClass().getName() + "#" + target.getId() + "#" + label;
     }
 
+    /** Accepts the pre-search focus signature so existing saved focus paths survive this UI refresh. */
+    private static String legacyFocusSignature(View target) {
+        if (target == null) return "";
+        String label = "";
+        if (target instanceof EditText) {
+            CharSequence hint = ((EditText) target).getHint();
+            if (hint != null) label = hint.toString();
+        } else if (target instanceof TextView) {
+            CharSequence text = ((TextView) target).getText();
+            if (text != null) label = text.toString();
+        }
+        if (label.length() > 160) label = label.substring(0, 160);
+        return target.getClass().getName() + "#" + target.getId() + "#" + label;
+    }
+
     private static View resolveFocusPath(ViewGroup root, String encodedPath, String signature) {
         int[] indexes = SettingsFocusPath.decode(encodedPath);
         if (root == null || indexes == null || signature == null || signature.isEmpty()) return null;
@@ -141,7 +156,8 @@ public final class ModernSettingsDialog {
             current = group.getChildAt(index);
         }
         return current.isFocusable() && current.isEnabled() && current.isShown()
-                && signature.equals(focusSignature(current)) ? current : null;
+                && (signature.equals(focusSignature(current))
+                || signature.equals(legacyFocusSignature(current))) ? current : null;
     }
 
     private static boolean focusRightPane(ViewGroup container) {
