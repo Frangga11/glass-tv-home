@@ -907,8 +907,8 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Preserve full viewport tile-width measurement | IMPLEMENTED |
 | Reset offset for vertical/empty Dock | IMPLEMENTED |
 | Regression tests: capacities 4/5/6, four densities, edge cases | ADDED |
-| Latest source HEAD | 65108d4160243442922002618e739c898c4cb9e7 |
-| Latest-head CI | PENDING / NOT CONFIRMED |
+| Latest source HEAD | b14a7bc3d1e99cf8cf0c74e944c39983d776f341 |
+| Latest-head CI | RUN #42384207367 IN PROGRESS; initial test rounding assertion corrected |
 | Latest centered APK | PENDING |
 | Physical TV visual/remote acceptance | PENDING / NOT RUN |
 | PR #74 | OPEN / DRAFT / UNMERGED |
