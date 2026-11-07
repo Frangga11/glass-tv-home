@@ -75,6 +75,14 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         } else {
             width = DockGeometry.horizontalTileWidthPx(inner, capacity, density);
         }
+        // item_app.xml is shared with the multi-column Grid and therefore declares
+        // match_parent width. In a horizontal RecyclerView that makes every Dock item
+        // consume the full viewport; only the first card is visible and the others stack
+        // outside/under the same visual slot. Give Dock holders their own measured slot width.
+        ViewGroup.LayoutParams itemParams = item.getLayoutParams();
+        itemParams.width = width;
+        item.setLayoutParams(itemParams);
+
         int height = AppAdapter.tileHeightPx(width);
         View card = item.findViewById(R.id.card);
         ViewGroup.LayoutParams cardParams = card.getLayoutParams();
