@@ -362,4 +362,38 @@ public class DockLayoutModelTest {
         assertEquals(480, DockGeometry.horizontalCenterOffsetPx(1920, 320, 3));
     }
 
+
+    @Test
+    public void p2SafeDockGeometryIsSymmetricAcrossDensitiesCapacitiesAndViewports() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int viewport : new int[]{1280, 1920}) {
+                int safeWidth = DockGeometry.horizontalContentWidthPx(viewport, density);
+                assertEquals(Math.round(96f * density), viewport - safeWidth);
+                for (int capacity : new int[]{4, 5, 6}) {
+                    int tileWidth = DockGeometry.horizontalTileWidthPx(safeWidth, capacity, density);
+                    int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, tileWidth, capacity, density);
+                    int groupWidth = capacity * (tileWidth + DockGeometry.horizontalItemGapPx(density));
+                    int rightMargin = safeWidth - offset - groupWidth;
+                    assertTrue(Math.abs(offset - rightMargin) <= 1);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void p2DockTrayBottomAndShelfBaselineUseSafeMarginsAndSharedGeometry() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int tileHeight = DockGeometry.tileHeightPx(Math.round(180f * density));
+            int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+            int bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+            int trayBottomInset = dockHeight - tileHeight
+                    - DockGeometry.dockItemTopOffsetPx(density)
+                    - Math.round(DockGeometry.trayPaddingPx(density));
+            assertEquals(DockGeometry.safeBottomInsetPx(density), bottomMargin + trayBottomInset);
+            assertEquals(Math.round(50f * density),
+                    DockGeometry.shelfBottomOffsetFromTileTopPx(density));
+            assertEquals(dockHeight, DockGeometry.horizontalGridBottomMarginPx(dockHeight));
+        }
+    }
+
 }

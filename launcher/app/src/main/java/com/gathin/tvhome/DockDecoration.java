@@ -69,6 +69,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
                 outRect.left = DockGeometry.dockItemTopOffsetPx(density);
                 outRect.right = DockGeometry.dockItemBottomOffsetPx(density);
             } else {
+                outRect.left = DockGeometry.dockItemSideOffsetPx(density);
+                outRect.right = DockGeometry.dockItemSideOffsetPx(density);
                 outRect.top = DockGeometry.dockItemTopOffsetPx(density);
                 outRect.bottom = DockGeometry.dockItemBottomOffsetPx(density);
             }

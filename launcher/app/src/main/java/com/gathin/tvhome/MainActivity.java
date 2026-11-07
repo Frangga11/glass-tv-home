@@ -244,6 +244,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean tilesAnimatedOnce;
     /** Original XML top inset; Dock placement must not push the App Grid below it. */
     private int gridBasePaddingTop;
+    private int gridBasePaddingBottom;
     /** The longest Home holds its first frame while it puts itself together (see holdFirstFrame). */
     private static final long FIRST_FRAME_WAIT_MS = 1200;
     private static final long RETURN_SETTLE_MS = 6000;
@@ -799,6 +800,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid = findViewById(R.id.grid);
         gridWrap = findViewById(R.id.gridWrap);
         gridBasePaddingTop = grid.getPaddingTop();
+        gridBasePaddingBottom = grid.getPaddingBottom();
         grid.setLayoutManager(new GridLayoutManager(this, COLUMNS));
         grid.setHasFixedSize(true);
         grid.setItemAnimator(null);
@@ -2139,8 +2141,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 // Reveal the overflow inventory only on demand. It remains part of the
                 // same source inventory and is reachable without cluttering the idle Home.
-                int target = DockLayoutModel.gridPositionForDock(
-                        position, false, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
+                int target = DockLayoutModel.gridPositionAboveDock(
+                        position, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
                 if (target >= 0) focusTile(target);
                 return true;
             }
@@ -2186,9 +2188,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             int tileHeight = DockGeometry.tileHeightPx(tileWidth);
             int horizontalDockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
             // Horizontal Dock is fixed to the bottom edge; no rows are reserved beneath it.
-            shelfDockTop = shelfAnchorRect.bottom - horizontalDockHeight;
+            shelfDockTop = shelfAnchorRect.bottom - horizontalDockHeight
+                    + DockGeometry.dockItemTopOffsetPx(density);
         }
-        heroBottom = shelfDockTop - HERO_GAP_DP * density;
+        heroBottom = shelfDockTop - DockGeometry.shelfBottomOffsetFromTileTopPx(density);
 
         if (islamicShelf != null) {
             float iy = heroBottom - islamicShelf.getHeight();
@@ -2505,6 +2508,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockVertical = preferences.orientation == DockPreferences.Orientation.VERTICAL;
         dockAdapter.setVertical(dockVertical);
         if (dockVertical) horizontalGridExpanded = false;
+        if (grid.getLayoutManager() instanceof GridLayoutManager) {
+            ((GridLayoutManager) grid.getLayoutManager()).setStackFromEnd(!dockVertical && dockAdapter.getItemCount() > 0);
+        }
         // In horizontal mode the Grid is an on-demand overflow surface: hidden at rest,
         // revealed by DPAD Down from the Dock, and collapsed again when Dock focus returns.
         int wantedGridVisibility = dockVertical || horizontalGridExpanded ? View.VISIBLE : View.GONE;
@@ -2544,6 +2550,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         dockRecycler.setTranslationX(0f);
         if (dockVertical) {
+            gridParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            gridParams.gravity = Gravity.TOP | Gravity.START;
             int dockWidth = hasDock ? Math.round(202 * density) : 0;
             gridParams.leftMargin = hasDock ? dockWidth + Math.round(12 * density) : 0;
             gridParams.topMargin = 0;
@@ -2555,14 +2563,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dockParams.topMargin = 0;
             dockParams.rightMargin = 0;
             dockParams.bottomMargin = 0;
-            if (grid.getPaddingTop() != 0) grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), grid.getPaddingBottom());
+            if (grid.getPaddingTop() != 0 || grid.getPaddingBottom() != gridBasePaddingBottom) {
+                grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), gridBasePaddingBottom);
+            }
         } else {
             gridParams.leftMargin = 0;
             gridParams.topMargin = 0;
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
             if (hasDock) {
-                int inner = Math.max(0, gridWrap.getWidth() - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
+                int inner = DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density);
+                gridParams.width = inner;
+                gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                dockParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
                 int tileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
                 int tileHeight = DockGeometry.tileHeightPx(tileWidth);
                 int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
@@ -2572,28 +2585,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // 16:9 Home viewport. Translation preserves the full-width measuring viewport,
                 // so DockAdapter computes the same tile width and focus geometry as before.
                 int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
-                        inner, tileWidth, Math.min(dockCount, preferences.capacity));
+                        inner, tileWidth, Math.min(dockCount, preferences.capacity), density);
                 dockRecycler.setTranslationX(dockCenterOffset);
 
                 // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
                 // the largest supported tile and therefore the stable reservation baseline.
-                int maxTileWidth = DockGeometry.horizontalTileWidthPx(inner, 4, density);
-                int gridBottomReserve = DockGeometry.horizontalGridBottomReservePx(maxTileWidth, density);
-                gridParams.bottomMargin = gridBottomReserve;
+                gridParams.bottomMargin = DockGeometry.horizontalGridBottomMarginPx(dockHeight);
 
-                dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                dockParams.width = inner;
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
                 dockParams.rightMargin = 0;
-                // Patch 4.1 leaves a 16dp safe gap below the tray. The Grid reserve already
-                // includes this same gap, so keep the two sibling regions edge-aligned.
-                dockParams.bottomMargin = Math.round(16 * density);
-                if (grid.getPaddingTop() != gridBasePaddingTop) {
+                // Place the glass tray itself on the P2 27dp bottom safe margin. The
+                // RecyclerView host extends below its tray to contain the label/focus area.
+                dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+                if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
                     grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
-                            grid.getPaddingRight(), grid.getPaddingBottom());
+                            grid.getPaddingRight(), 0);
                 }
             } else {
+                gridParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                gridParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
                 dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 dockParams.height = 0;
                 dockParams.leftMargin = 0;
@@ -2601,9 +2614,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.rightMargin = 0;
                 dockParams.bottomMargin = 0;
                 gridParams.bottomMargin = 0;
-                if (grid.getPaddingTop() != gridBasePaddingTop) {
+                if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != gridBasePaddingBottom) {
                     grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
-                            grid.getPaddingRight(), grid.getPaddingBottom());
+                            grid.getPaddingRight(), gridBasePaddingBottom);
                 }
             }
         }
