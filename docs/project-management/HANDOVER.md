@@ -1552,3 +1552,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Exact-head CI:** #1376 / `42348837445`, both required jobs SUCCESS; 134 Python tests; app/installer unit tests, release builds and lint-vital PASS. APK diagnostic 1,620,193 bytes (+2,820 / ~0.17% vs G3E); informational only under D-023.
 - **Remaining:** physical Android TV/Mi TV Stick, remote D-pad/Back, OEM Settings handoff, overscan, 1080p/4K, daylight/glare and large-text acceptance remain PENDING / NOT RUN. No APK install/publication, ADB or device mutation.
 - **Next single action:** prepare G4 integration/reconciliation scope and combined-tree audit only after explicit approval; do not merge, retarget or mutate the stacked PR chain.
+
+
+## Current resume checkpoint — UI Refresh G4 complete (7 November 2026)
+
+- **G4-A–G4-J COMPLETE / SOURCE-HOST QC PASS.** Canonical audit: `UI_REFRESH_G4_AUDIT_2026-11-07.md`; checkpoint: `UI_REFRESH_G4_CHECKPOINT_2026-11-07.md`.
+- Final G4 owner branch `feature/g4-parent-pin-hardening` @ `f46adf27bbc6b2156c7e9bb49d48cf4fd0fcdb5e`; PR #72 OPEN/DRAFT/UNMERGED, based on exact G3F HEAD `455b619c3eefe417ac0152a51f3cb12478a8f4a9`.
+- Exact synthetic merge candidate `376b5b69e2aed56e1f813169f35dbb9459ada554`; exact combined-tree CI #1394 / `42353368760`, both jobs SUCCESS. Android app/installer unit tests, release builds and lint-vital PASS; 134 Python tests / 1 intentional skip.
+- Parent PIN hardening complete: salted PBKDF2-HMAC-SHA256, legacy migration, default `0000` preserved, corrupt/lost credential fail-closed, no retry restrictions. Parent PIN remains device-wide; Child Mode/App Lock/Hidden Apps remain profile-scoped.
+- PR #66–#72 remain OPEN/DRAFT/UNMERGED. No merge/rebase/cherry-pick/force-push, base retarget, integration/main mutation, APK publication/installation, ADB or device configuration.
+- Release APK diagnostic 1,622,401 bytes; informational under D-023, no artifact.
+- Four-digit PIN under unlimited attempts remains guessable; do not claim brute-force immunity.
+- **Next separate gate:** physical Android TV/Mi TV Stick/remote/OEM acceptance, only when explicitly authorized. It is PENDING / NOT RUN; source-host completion does not imply device verification.
