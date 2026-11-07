@@ -3789,6 +3789,45 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */
+    /** Reads network state independently of the optional top-bar network pill. */
+    private String getQuickSettingsNetworkSummary() {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            boolean online = false;
+            boolean wifi = false;
+            boolean ethernet = false;
+            for (Network network : cm != null ? cm.getAllNetworks() : new Network[0]) {
+                NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+                if (capabilities == null
+                        || !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                    continue;
+                }
+                online = true;
+                wifi |= capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+                ethernet |= capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
+            }
+            if (!online) return getString(R.string.offline);
+            if (ethernet) return getString(R.string.ethernet);
+            if (wifi) {
+                WifiManager manager = (WifiManager) getApplicationContext()
+                        .getSystemService(Context.WIFI_SERVICE);
+                WifiInfo info = manager != null ? manager.getConnectionInfo() : null;
+                String ssid = info != null ? info.getSSID() : null;
+                if (ssid != null) {
+                    ssid = ssid.replace("\\", "").replace("\"", "").trim();
+                    if (!ssid.isEmpty() && !ssid.toLowerCase(Locale.ROOT).contains("unknown")
+                            && !ssid.equals("0x")) {
+                        return ssid;
+                    }
+                }
+            }
+            return getString(R.string.connected);
+        } catch (Exception unavailable) {
+            return getString(R.string.quick_settings_wifi_summary);
+        }
+    }
+
     private void updateWifiLabel() {
         if (btnWifi.getVisibility() == View.GONE) return;   // show_network_pill off
         String text = getString(R.string.wifi);
@@ -3833,9 +3872,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Shows an Apple TV-style frosted glass Wi-Fi control center popup. */
     private void showWifiPopup() {
+        showWifiPopup(null);
+    }
+
+    /** Optional parent return keeps nested Quick Settings navigation deterministic. */
+    private void showWifiPopup(Runnable returnToParent) {
         if (openMenu != null) return;
         SoundEffects.playSelect();
         View anchor = btnWifi;
+        if (anchor == null || anchor.getVisibility() != View.VISIBLE) {
+            anchor = findViewById(R.id.btnSettings);
+        }
+        if (anchor == null) return;
         FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         Runnable close = () -> closeMenu(false);
@@ -3896,6 +3944,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         width = Math.max(width, panel.getMeasuredWidth());
 
         showMenu(panel, rows, anchor, width, false);
+        menuReturnAction = returnToParent;
     }
 
     /** Shows the User Profile & Child Mode quick dialog (formerly Candy Box). */
@@ -3934,37 +3983,69 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
     }
 
-    /** Shows the modern floating 2-column Settings modal (Profile, Avatars, Child Mode, Home, etc.). */
-    /** Compact TV control menu, optimized for the remote and Mi TV Stick. */
+    /** Opens the centered V04 Quick Settings modal using the shared G2 dialog/focus contract. */
     private void showQuickControlPopup() {
+        showQuickControlPopup(QuickSettingsFocusGraph.WIFI);
+    }
+
+    private void showQuickControlPopup(int initialFocus) {
+        if (isFinishing() || isDestroyed()) return;
         if (openMenu != null) closeMenu(false);
         SoundEffects.playSelect();
         View anchor = findViewById(R.id.btnSettings);
-        if (anchor == null) {
-            showSettingsPopup();
-            return;
-        }
-        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
-        LinearLayout rows = panel.findViewById(R.id.rows);
-        Runnable close = () -> closeMenu(false);
+        if (anchor == null) return;
 
-        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strRestart(this), -1, this::showRestartDialog);
-        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strTurnOff(this), -1, this::showTurnOffDialog);
-        addSeparator(rows);
-        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strCleanCache(this), -1, this::showCleanTvCacheDialog);
-        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperDialog);
-
-        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, this::showLanguageDialog);
-
-        addSeparator(rows);
-        addInputRow(rows, close, R.drawable.ic_settings, getString(R.string.glass_tv_settings_label), -1, this::showSettingsPopup);
-        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strAllSettings(this), -1,
-                () -> openSystemSettings(systemIntent(Settings.ACTION_SETTINGS)));
-        addInputRow(rows, close, R.drawable.ic_close, AppLanguage.strClose(this), -1, () -> closeMenu(true));
-
-        int width = (int) (285 * density);
-        panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.UNSPECIFIED);
-        showMenu(panel, rows, anchor, width, false);
+        QuickSettingsDialog.show(this, new QuickSettingsDialog.Actions() {
+            @Override public String wifiSummary() {
+                return getQuickSettingsNetworkSummary();
+            }
+            @Override public String languageSummary() {
+                return AppLanguage.getLanguageBadge(MainActivity.this);
+            }
+            @Override public String powerTitle() {
+                return AppLanguage.strTurnOffTitle(MainActivity.this);
+            }
+            @Override public String cacheTitle() {
+                return AppLanguage.strCleanCacheTitle(MainActivity.this);
+            }
+            @Override public String wallpaperIntervalSummary() {
+                return getWallpaperIntervalSummary();
+            }
+            @Override public void openWifi() {
+                showWifiPopup(() -> showQuickControlPopup(QuickSettingsFocusGraph.WIFI));
+            }
+            @Override public void restart() {
+                showRestartDialog();
+            }
+            @Override public void chooseLanguage() {
+                showLanguageDialog();
+            }
+            @Override public void openPowerMenu() {
+                showTurnOffDialog();
+            }
+            @Override public void cleanCache() {
+                showCleanTvCacheDialog();
+            }
+            @Override public void nextPhoto() {
+                showNextWallpaperFromSettings();
+            }
+            @Override public void chooseWallpaperInterval() {
+                showWallpaperIntervalDialog(false);
+            }
+            @Override public void manageWallpaper() {
+                showWallpaperDialog();
+            }
+            @Override public void openGlassSettings() {
+                showSettingsPopup();
+            }
+            @Override public void openAndroidSettings() {
+                openSystemSettings(systemIntent(Settings.ACTION_SETTINGS));
+            }
+        }, initialFocus, () -> {
+            if (!isFinishing() && !isDestroyed() && anchor.isAttachedToWindow()) {
+                anchor.requestFocus();
+            }
+        });
     }
 
     public void showSettingsPopup() {
@@ -4589,21 +4670,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dialog.dismiss();
             TvFeedback.show(MainActivity.this, AppLanguage.strCleanCacheToast(MainActivity.this), Toast.LENGTH_SHORT);
 
+            java.lang.ref.WeakReference<MainActivity> activityRef =
+                    new java.lang.ref.WeakReference<>(MainActivity.this);
             CacheCleaner.cleanNow(MainActivity.this, (bytesFreed, percentBefore, percentAfter, systemTrimmed) -> {
+                MainActivity activity = activityRef.get();
+                if (activity == null || activity.isFinishing() || activity.isDestroyed() || !activity.hasWindowFocus()) return;
+
                 SoundEffects.playSelect();
-                String freedStr = android.text.format.Formatter.formatFileSize(MainActivity.this, bytesFreed);
-                String resultMsg = AppLanguage.strCleanCacheDoneMsg(MainActivity.this, freedStr, bytesFreed > 0);
-                String systemStatus = getString(systemTrimmed
+                String freedStr = android.text.format.Formatter.formatFileSize(activity, bytesFreed);
+                String resultMsg = AppLanguage.strCleanCacheDoneMsg(activity, freedStr, bytesFreed > 0);
+                String systemStatus = activity.getString(systemTrimmed
                         ? R.string.cache_system_trim_success : R.string.cache_system_trim_skipped);
 
-                AlertDialog resDialog = new AlertDialog.Builder(MainActivity.this, R.style.Theme_TvHome_GlassDialog)
-                        .setTitle(AppLanguage.strCleanCacheDoneTitle(MainActivity.this))
+                AlertDialog resDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        .setTitle(AppLanguage.strCleanCacheDoneTitle(activity))
                         .setMessage(resultMsg + "\n\n" + systemStatus
-                                + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
-                        .setPositiveButton(AppLanguage.strDone(MainActivity.this), (d, w) -> d.dismiss())
+                                + AppLanguage.strCleanCacheUsageLine(activity, percentBefore, percentAfter))
+                        .setPositiveButton(AppLanguage.strDone(activity), (d, w) -> d.dismiss())
                         .create();
                 resDialog.show();
-                styleDeviceSettingsPopup(resDialog, 600, 0);
+                activity.styleDeviceSettingsPopup(resDialog, 600, 0);
                 Button btnOk = resDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                 if (btnOk != null) btnOk.requestFocus();
             });
@@ -7121,6 +7207,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** The glass menu while one is open (Inputs, or an app's), and what it opened from. */
     private View openMenu;
     private View menuAnchor;
+    private Runnable menuReturnAction;
     private final int[] menuAt = new int[2], menuGliderAt = new int[2];
 
     /**
@@ -7219,6 +7306,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
      * the menu is above), or Back, closes it and the shape glides back to the anchor.
      */
     private void showMenu(FrameLayout panel, LinearLayout rows, View anchor, int width, boolean above) {
+        menuReturnAction = null;
         GlassDrawable glass = new GlassDrawable(panel, 20 * density, density, glider, 0.5f, true);
         panel.setBackground(glass);
         Backdrop.watch(panel);
@@ -7347,12 +7435,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View panel = openMenu;
         if (panel == null) return;
         SoundEffects.playNav();
+        View returnAnchor = menuAnchor;
+        Runnable returnAction = toAnchor ? menuReturnAction : null;
         openMenu = null;
-        if (toAnchor && menuAnchor != null) menuAnchor.requestFocus();
         menuAnchor = null;
+        menuReturnAction = null;
+        if (toAnchor && returnAnchor != null) returnAnchor.requestFocus();
         panel.animate().alpha(0f).setDuration(reducedMotion ? 80 : 150).withEndAction(() -> {
             glider.removeCompanion(panel);
             root.removeView(panel);
+            if (returnAction != null && !isFinishing() && !isDestroyed()) returnAction.run();
         }).start();
     }
 

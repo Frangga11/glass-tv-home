@@ -685,4 +685,20 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="weather_pollutants_title">RINCIAN POLUTAN UDARA · CAMS</string>
     <string name="profile_save_failed">Perubahan profil gagal disimpan. Silakan coba lagi.</string>
     <string name="app_policy_save_failed">Perubahan pembatasan aplikasi gagal disimpan. Silakan coba lagi.</string>
+
+    <string name="quick_settings_title">Pengaturan Cepat</string>
+    <string name="quick_settings_wifi_summary">Status jaringan dan pengaturan Wi-Fi</string>
+    <string name="quick_settings_restart_summary">Mulai ulang perangkat</string>
+    <string name="quick_settings_power_summary">Buka menu daya perangkat</string>
+    <string name="quick_settings_cache_summary">Bersihkan berkas sementara</string>
+    <string name="quick_settings_wallpaper_title">Wallpaper</string>
+    <string name="quick_settings_next_photo">Foto Berikutnya</string>
+    <string name="quick_settings_next_photo_summary">Tampilkan wallpaper berikutnya</string>
+    <string name="quick_settings_interval_summary">Interval pergantian otomatis</string>
+    <string name="quick_settings_manage_wallpaper">Kelola</string>
+    <string name="quick_settings_glass_settings">Pengaturan Glass TV</string>
+    <string name="quick_settings_glass_settings_summary">Profil, tampilan, dan fitur launcher</string>
+    <string name="quick_settings_android_settings">Pengaturan Android</string>
+    <string name="quick_settings_android_settings_summary">Pengaturan sistem perangkat</string>
+    <string name="quick_settings_interval_title">Interval</string>
 </resources>
