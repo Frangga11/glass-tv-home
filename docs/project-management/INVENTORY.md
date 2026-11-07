@@ -716,13 +716,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 ## UI Refresh G3E — Wi-Fi (7 November 2026)
 
 - **Disposition:** COMPLETE / SOURCE-HOST QC PASS; physical Android TV acceptance PENDING / NOT RUN.
-- **Branch/head:** `feature/g3e-wifi` @ `89d044152b7d8460884466deb5baa47126f48027`; PR #70 OPEN/DRAFT/UNMERGED; base G3D exact HEAD `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`.
+- **Branch/head:** `feature/g3e-wifi` @ `9125043e24b8f13232e41193ba5fe10e1821f7cd`; PR #70 OPEN/DRAFT/UNMERGED; base G3D exact HEAD `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`.
 - **Implementation:** `WifiSettingsDialog`, `WifiScanPolicy`; V05 status/connected card, nearby scan list, security/signal labels, horizontal actions and Close. Android Settings owns network selection/authentication/connect/disconnect/radio state.
 - **Architecture/security:** existing MainActivity network-state owner reused; no duplicate ConnectivityManager callback. Fine-location and Location service gate SSID/scan results; CHANGE_WIFI_STATE is used only to request a scan. No credentials/BSSID persistence or direct radio/connect/disconnect calls.
 - **Lifecycle/focus:** scan receiver and timeout scoped to dialog; D-pad graph and IDs, Back, focus restoration, parent return after Android Settings and launch-failure fallback.
 - **Localization/tests:** default/ID/EN strings; WifiScanPolicyTest, WifiSettingsDialogTest, updated Quick Settings and Wi-Fi source-contract tests.
-- **Exact-head CI:** #1362 / `42346091802`, both required jobs SUCCESS; 127 Python tests, app/installer release unit tests and app/installer release builds PASS.
-- **APK diagnostic:** 1,617,293 bytes (+8,920 / approximately 0.55% vs G3D); informational under D-023, no artifact published.
+- **Exact-head CI:** #1363 / `42346491017`, both required jobs SUCCESS; 127 Python tests, app/installer release unit tests and app/installer release builds PASS.
+- **APK diagnostic:** 1,617,373 bytes (+9,000 / approximately 0.56% vs G3D); informational under D-023, no artifact published.
 - **Known risk:** Android deprecates `WifiManager.startScan()` since API 28 and throttles active scans; best-effort scan plus cached/broadcast/system-settings fallback. Future API migration remains open.
 - **Device boundary:** no physical TV test, APK installation/publication, ADB, device mutation, merge or integration/main change.
 - **Next:** G3F Global Settings. See `UI_REFRESH_G3E_AUDIT_2026-11-07.md` and `UI_REFRESH_G3E_CHECKPOINT_2026-11-07.md`.
