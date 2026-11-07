@@ -628,7 +628,7 @@ public final class ModernSettingsDialog {
                 LinearLayout.LayoutParams profileSummaryLp = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 profileSummaryLp.bottomMargin = (int) (10 * density);
-                rightContent.addView(profileSummary, 0, profileSummaryLp);
+                rightContent.addView(profileSummary, 1, profileSummaryLp);
 
                 // Section 1: Active Profile Avatars
                 TextView tvAvatars = new TextView(activity);
