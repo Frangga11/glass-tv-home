@@ -1822,3 +1822,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - CI run #1453 / 42405457829 was in progress when this note was written. Exact-head CI result, APK size and SHA-256 must be appended only after completion; no pass is claimed yet.
 - Physical Mi TV Stick visual/remote acceptance remains PENDING. No merge, installation, ADB, default-launcher change or device mutation.
 - Full report: `docs/project-management/HOME_LAYOUT_FIX_2026-11-08_CROSS_AUDIT.md`.
+
+
+### Exact-head correction after source review — 8 Nov 2026
+
+- Consolidated PR #77 advanced after a follow-up code review to `3c1bd036206b48f745e9edc9ea2a69857af91d34` on `fix/home-layout-consolidated-001`.
+- Bounded Grid focus retry was corrected to perform one scroll attempt only, then retry layout/focus a finite number of frames; returning to Dock increments the request generation and cancels any delayed Grid focus. This avoids an unbounded scroll/retry loop and stale focus theft.
+- Exact-head CI #1455 / run 42405589002 is running at the time of this update. Lists/tools/docs job PASS; Android unit-test/release-build job still in progress. Earlier CI #1453 / run 42405457829 passed both jobs on prior head bd789b6b180b6668f6d60904283ca559633d7fb1, but is not substituted for exact-head validation.
+- Current PR #77 head must be treated as the only consolidated candidate. Physical Mi TV Stick acceptance remains pending; no merge or device installation.
