@@ -309,7 +309,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         nameLp.width = w;
         nameLp.topMargin = h + Math.round(7 * density);
         name.setLayoutParams(nameLp);
-        return new Holder(v, listener, reducedMotion, iconAnimationsEnabled);
+        return new Holder(v, listener, reducedMotion, iconAnimationsEnabled, false);
     }
 
     @Override
@@ -453,8 +453,15 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg);
         List<String> merged = DockLayoutModel.mergePinnedKeys(
                 explicit, defaults, DockPreferences.loadUnpinnedKeys(ctx));
-        return new ArrayList<>(DockLayoutModel.orderedExplicitPinnedKeys(items, merged,
-                entry -> entry.component.flattenToShortString()));
+        List<String> resolved = DockLayoutModel.orderedExplicitPinnedKeys(items, merged,
+                entry -> entry.component.flattenToShortString());
+        List<String> inventoryKeys = new ArrayList<>();
+        for (Entry entry : items) inventoryKeys.add(entry.component.flattenToShortString());
+        // Patch 4.1 contract: configured favourites lead, then fill the remaining Dock slots
+        // from the same ordered inventory. A short/empty favourites list must not erase the Dock.
+        return new ArrayList<>(DockLayoutModel.fillDockSlots(
+                resolved, inventoryKeys, DockPreferences.loadUnpinnedKeys(ctx),
+                DockPreferences.load(ctx).capacity));
     }
 
     @Override
@@ -564,18 +571,23 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         final ImageView icon;
         final TextView label;
         final TextView name;
+        final DockBreathingBorderView breathingBorder;
         final boolean reducedMotion;
+        private final boolean dockTile;
         private boolean iconAnimationsEnabled;
 
-        Holder(View v, TileListener listener, boolean reducedMotion, boolean iconAnimationsEnabled) {
+        Holder(View v, TileListener listener, boolean reducedMotion,
+               boolean iconAnimationsEnabled, boolean dockTile) {
             super(v);
             card = v.findViewById(R.id.card);
             banner = v.findViewById(R.id.banner);
             icon = v.findViewById(R.id.icon);
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
+            breathingBorder = v.findViewById(R.id.dockBreathingBorder);
             this.reducedMotion = reducedMotion;
             this.iconAnimationsEnabled = iconAnimationsEnabled;
+            this.dockTile = dockTile;
 
             final float density = v.getResources().getDisplayMetrics().density;
             card.setOutlineProvider(new ViewOutlineProvider() {
@@ -596,6 +608,15 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
 
             card.setOnFocusChangeListener((view, focused) -> {
+                if (breathingBorder != null) {
+                    if (focused && dockTile) {
+                        float r = cornerRadius(view.getWidth(), density);
+                        breathingBorder.setCornerRadiusDp(r / density);
+                        breathingBorder.setVisibility(View.VISIBLE);
+                    } else {
+                        breathingBorder.setVisibility(View.GONE);
+                    }
+                }
                 float s = focused && iconAnimationsEnabled ? FOCUS_SCALE : 1.0f;
                 view.animate().cancel();
                 name.animate().cancel();
