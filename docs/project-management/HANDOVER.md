@@ -1648,6 +1648,6 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Confirmed cause: horizontal Dock RecyclerView spans the viewport and its LinearLayoutManager starts children at the left edge. Per-item width alone cannot center the group.
 - Corrected DockGeometry with horizontalCenterOffsetPx(innerWidth, tileWidth, itemCount) and applied the resulting X translation to the horizontal Dock host. Offset is based on actual visible item count and slot width; full viewport remains the width-measurement basis. Translation resets before vertical/empty layouts.
 - Added regression tests for capacities 4/5/6 at densities 1.0, 1.5, 1.75 and 2.0, plus empty/oversized groups.
-- Source branch fix/home-dock-visual-parity-v2 @ 65108d4160243442922002618e739c898c4cb9e7; PR #74 OPEN/DRAFT/UNMERGED. PR description now records the source finding and new acceptance gates.
-- CI run #42384023835 was still IN PROGRESS for the immediately preceding revision; it is not accepted as validation of latest HEAD. Latest-head CI and APK are pending.
+- Source branch fix/home-dock-visual-parity-v2 @ b14a7bc3d1e99cf8cf0c74e944c39983d776f341; PR #74 OPEN/DRAFT/UNMERGED. PR description now records the source finding and new acceptance gates.
+- CI run #42384023835 failed because the first regression assertion incorrectly required exact pixel parity under integer rounding. The assertion was corrected to allow a one-pixel left/right margin difference. Latest-head CI run #42384207367 is IN PROGRESS; APK pending.
 - Physical TV visual/remote acceptance NOT RUN. No install, ADB, device mutation or merge. The next APK must be built from the latest centered Dock source and then checked on the Mi TV Stick.
