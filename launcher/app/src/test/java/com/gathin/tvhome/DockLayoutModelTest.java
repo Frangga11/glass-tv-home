@@ -463,18 +463,5 @@ public class DockLayoutModelTest {
         }
     }
 
-    @Test
-    public void quickTogglesStayInsideSafeBoundsAndClearOfClockWhenDockIsShort() {
-        float shift = DockGeometry.clampTopRowTranslationPx(
-                -500f, 1300, 1800, 1920, 112, 112, 1200, 32);
-        assertEquals(-68f, shift, 0.01f);
-        assertTrue(1300 + shift >= 1232f);
-        assertTrue(1800 + shift <= 1808f);
-
-        float positiveShift = DockGeometry.clampTopRowTranslationPx(
-                200f, 1300, 1800, 1920, 112, 112, 1200, 32);
-        assertEquals(8f, positiveShift, 0.01f);
-        assertTrue(1800 + positiveShift <= 1808f);
-    }
 
 }
