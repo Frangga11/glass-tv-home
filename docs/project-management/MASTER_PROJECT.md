@@ -1197,3 +1197,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - APK diagnostic 1,622,401 bytes; informational under D-023, no artifact published. No APK install, ADB or device configuration.
 - Four-digit PIN with unlimited attempts remains guessable; hashing protects against plaintext exposure but is not brute-force immunity.
 - Physical Android TV/Mi TV Stick/remote/OEM/overscan/daylight/large-text acceptance remains PENDING / NOT RUN and is a separate gate. G4 closes source-host scope only.
+
+
+## Image 2 Home layout recovery — build checkpoint (7 November 2026)
+
+- Scoped source fix on `fix/home-layout-image2-dock-geometry` @ `31886651d7f275155f8a526302e252dc04687e4f`; PR #73 OPEN/DRAFT/UNMERGED, base G4 exact SHA `7146de58953325fdfc6c98501828676f143e64cf`.
+- Home information shelves are anchored to stable Home/Dock geometry in vertical mode rather than the currently focused Dock tile. Wallpaper description, Ayah and prayer schedule therefore no longer jump as vertical focus changes.
+- CI #1397 / `42357686726`: both required jobs SUCCESS. Test APK artifact #`13567869928`; archive SHA-256 `2c9b6a3ee8bbfc74971ca8734354fc819dfcdcd97a95499786998856f28c1298`; APK size 1,622,565 bytes; APK SHA-256 `cd2b301f5fb48ffdb6b9cafd74927c5da6515a4ab9aebf6dc47e6db4ddccb4ac`; ZIP integrity PASS.
+- Physical Image 2 visual/remote acceptance is PENDING / NOT RUN. No install, ADB, device mutation or merge. This is a test APK, not a production-signed release.
+- Evidence: `UI_REFRESH_IMAGE2_HOME_LAYOUT_CHECKPOINT_2026-11-07.md`.
