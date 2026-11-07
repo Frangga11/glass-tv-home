@@ -37,6 +37,8 @@ public class PinCredentialStoreTest {
     public void customLegacyPlaintextPinMigratesWithoutChangingItsValue() {
         prefs.edit().putString("security_pin", "2468").commit();
 
+        assertFalse(PinCredentialStore.isDefaultPin(context));
+        assertTrue(prefs.contains("security_pin"));
         assertTrue(PinCredentialStore.verifyPin(context, "2468"));
         assertFalse(PinCredentialStore.verifyPin(context, "0000"));
         assertFalse(prefs.contains("security_pin"));
@@ -57,7 +59,7 @@ public class PinCredentialStoreTest {
 
     @Test
     public void changedPinPersistsAsSaltedHashAndSurvivesRepeatedFailures() {
-        PinCredentialStore.setPin(context, "7391");
+        assertTrue(PinCredentialStore.setPin(context, "7391"));
 
         assertTrue(PinCredentialStore.verifyPin(context, "7391"));
         assertFalse(PinCredentialStore.verifyPin(context, "0000"));
@@ -74,9 +76,9 @@ public class PinCredentialStoreTest {
 
     @Test
     public void eachPinChangeUsesANewSalt() {
-        PinCredentialStore.setPin(context, "1357");
+        assertTrue(PinCredentialStore.setPin(context, "1357"));
         String firstSalt = prefs.getString("security_pin_salt_v1", "");
-        PinCredentialStore.setPin(context, "1357");
+        assertTrue(PinCredentialStore.setPin(context, "1357"));
         String secondSalt = prefs.getString("security_pin_salt_v1", "");
 
         assertFalse(firstSalt.equals(secondSalt));
