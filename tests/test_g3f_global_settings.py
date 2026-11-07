@@ -59,6 +59,7 @@ class GlobalSettingsSourceContractTest(unittest.TestCase):
         self.assertIn("ModernSettingsDialog.refreshNetworkStatus(this)", main)
         self.assertIn("WeakReference<MainActivity> sSettingsHost", settings)
         self.assertIn("findControlByDescription(content, focusedDescription)", settings)
+        self.assertIn("legacyFocusSignature(current)", settings)
 
 
 if __name__ == "__main__":
