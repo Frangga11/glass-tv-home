@@ -878,3 +878,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Audit/checkpoint: `UI_REFRESH_G3D_AUDIT_2026-11-07.md`, `UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md`.
 - No APK artifact/publication/install, ADB, physical device action, merge or integration/main mutation. Physical acceptance remains deferred.
 - Next: G3E Wi-Fi.
+
+
+## 7 November 2026 — UI Refresh G3F Global Settings closeout
+
+- Audited the canonical G1 V6 V06 reference, G1/G2 focus/dialog contracts, G3A–G3E dependency state and existing ProfileManager, ChildModeManager and MainActivity/E01 ownership before final source-host closeout.
+- Implemented the V06 header/search/Wi-Fi status shell, seven-category split pane, profile identity/status summary and localized control-level search with owning-category routing and focus targeting.
+- Preserved saved focus across the moved header search and profile summary insertion; restored invoking-control focus on dismissal; refreshed external Android Settings state on resume using weak references and existing owners.
+- Source audit found the profile identity summary inserted before the page title. Corrected its insertion point and added `test_profile_identity_summary_follows_page_title`; exact-head CI includes the correction.
+- Exact-head CI #1376 / run `42348837445` on `455b619c3eefe417ac0152a51f3cb12478a8f4a9`: both jobs SUCCESS; 134 Python tests, app/installer unit tests, release builds and lint-vital PASS.
+- APK diagnostic 1,620,193 bytes (+2,820 / approximately 0.17% vs G3E); informational under D-023. No APK artifact published.
+- Branch `feature/g3f-global-settings`; PR #71 OPEN/DRAFT/UNMERGED, based on unchanged G3E exact HEAD `9125043e24b8f13232e41193ba5fe10e1821f7cd`. No merge, rebase, cherry-pick, force-push, integration/main change, APK install, ADB or physical-device action.
+- Canonical evidence: `UI_REFRESH_G3F_AUDIT_2026-11-07.md` and `UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md`. Physical Android TV/Mi TV Stick acceptance remains pending. Next: G4 integration/reconciliation planning subject to explicit approval.
