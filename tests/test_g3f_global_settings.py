@@ -7,19 +7,24 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class GlobalSettingsSourceContractTest(unittest.TestCase):
     def test_v06_seven_category_taxonomy_is_present(self):
-        prototype = (ROOT / "docs/project-management/prototypes/UI_REFRESH_G1_GLOBAL_UI_PROTOTYPE_V6.html").read_text()
-        categories = [
-            "Profil", "Layar Utama", "Tampilan", "Widget &amp; Informasi",
-            "Animasi &amp; Efek", "Layar Siaga", "Pengaturan Perangkat",
+        language = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppLanguage.java").read_text()
+        expected_labels = [
+            'case LANG_ID: return "Profil";',
+            'case LANG_ID: return "Layar Utama";',
+            'case LANG_ID: return "Tampilan";',
+            'case LANG_ID: return "Widget & Informasi";',
+            'case LANG_ID: default: return "Animasi & Efek";',
+            'case LANG_ID: return "Layar Siaga";',
+            'case LANG_ID: default: return "Pengaturan Perangkat";',
         ]
-        for category in categories:
-            with self.subTest(category=category):
-                self.assertIn(category, prototype)
+        for label in expected_labels:
+            with self.subTest(label=label):
+                self.assertIn(label, language)
 
     def test_global_settings_has_header_status_and_split_panes(self):
         source = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/ModernSettingsDialog.java").read_text()
         self.assertIn('brandTitle.setText("GLASS TV HOME")', source)
-        self.assertIn("activity.getQuickSettingsNetworkSummary()", source)
+        self.assertIn("activity.getGlobalSettingsNetworkSummary()", source)
         self.assertIn("body.addView(leftCol, leftLp)", source)
         self.assertIn("body.addView(rightCol, rightLp)", source)
 
@@ -27,6 +32,7 @@ class GlobalSettingsSourceContractTest(unittest.TestCase):
         source = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/ModernSettingsDialog.java").read_text()
         self.assertIn("buildSearchEntries(activity)", source)
         self.assertIn("findControlByDescription(rightContent, selected.title)", source)
+        self.assertIn("target.setTag(selected.id)", source)
         self.assertIn("target.requestFocus()", source)
         self.assertNotIn("String[] keywords =", source)
 
