@@ -61,6 +61,8 @@ class GlobalSettingsSourceContractTest(unittest.TestCase):
         self.assertIn("ModernSettingsDialog.refreshNetworkStatus(this)", main)
         self.assertIn("WeakReference<MainActivity> sSettingsHost", settings)
         self.assertIn("findControlByDescription(content, focusedDescription)", settings)
+        self.assertIn("WeakReference<View> originFocus", settings)
+        self.assertIn("origin.post(origin::requestFocus)", settings)
         self.assertIn("legacyFocusSignature(current)", settings)
         self.assertGreaterEqual(settings.count("summaryAvatar.setImageDrawable"), 3)
         self.assertIn("resolveLegacySidebarFocusPath(leftCol, searchBox", settings)
