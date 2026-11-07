@@ -34,12 +34,14 @@ class GlobalSettingsSourceContractTest(unittest.TestCase):
         self.assertIn("findControlByDescription(rightContent, selected.title)", source)
         self.assertIn("target.setTag(selected.id)", source)
         self.assertIn("target.requestFocus()", source)
+        self.assertIn("R.string.search_keyword_required", source)
         self.assertNotIn("String[] keywords =", source)
 
     def test_search_catalog_uses_existing_control_labels_and_summaries(self):
         source = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/ModernSettingsDialog.java").read_text()
         for control_id in (
-            "profile.child-mode", "home.dock-orientation", "appearance.wallpaper-collection",
+            "profile.child-mode", "profile.avatar.builtin.", "profile.profile.",
+            "home.dock-orientation", "appearance.wallpaper-collection",
             "widgets.weather", "effects.glass", "standby.upload", "device.android-settings",
         ):
             with self.subTest(control_id=control_id):
