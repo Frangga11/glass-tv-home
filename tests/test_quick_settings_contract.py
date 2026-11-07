@@ -37,10 +37,10 @@ class QuickSettingsContractTest(unittest.TestCase):
 
     def test_wifi_child_route_restores_quick_settings_and_focus(self):
         self.assertIn("showWifiPopup(() -> showQuickControlPopup(QuickSettingsFocusGraph.WIFI))", MAIN)
-        self.assertIn("menuReturnAction", MAIN)
-        self.assertIn("returnAction.run()", MAIN)
-        self.assertIn("anchor.getVisibility() != View.VISIBLE", MAIN)
-        self.assertIn("anchor = findViewById(R.id.btnSettings)", MAIN)
+        self.assertIn("WifiSettingsDialog.show(this", MAIN)
+        self.assertIn("returnToParent", MAIN)
+        self.assertIn("returnToParent.run()", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
+        self.assertIn("TvDialogStyle.apply(dialog, activity, 760, 620)", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
 
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
@@ -71,7 +71,6 @@ class QuickSettingsContractTest(unittest.TestCase):
 
     def test_manifest_does_not_gain_new_system_toggle_permissions(self):
         for forbidden in (
-            "android.permission.CHANGE_WIFI_STATE",
             "android.permission.BLUETOOTH_CONNECT",
             "android.permission.BLUETOOTH_ADMIN",
             "android.permission.WRITE_SETTINGS",

@@ -1659,6 +1659,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        WifiSettingsDialog.onPermissionResult(requestCode);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -1696,6 +1703,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             weatherOverlayView.startAnimation();
         }
         hiddenSinceResume = false;
+        WifiSettingsDialog.onHostResumed();
     }
 
     /** Rebuilds the tiles (and the module cards), then puts focus back where it was. */
@@ -1886,6 +1894,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        WifiSettingsDialog.onHostDestroyed();
         if (sInstance != null && sInstance.get() == this) {
             sInstance = null;
         }
@@ -3829,6 +3838,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void updateWifiLabel() {
+        WifiSettingsDialog.onNetworkStateChanged();
         if (btnWifi.getVisibility() == View.GONE) return;   // show_network_pill off
         String text = getString(R.string.wifi);
         boolean vpn = false, online = false;
@@ -3877,74 +3887,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Optional parent return keeps nested Quick Settings navigation deterministic. */
     private void showWifiPopup(Runnable returnToParent) {
-        if (openMenu != null) return;
+        if (openMenu != null || isFinishing() || isDestroyed()) return;
         SoundEffects.playSelect();
-        View anchor = btnWifi;
-        if (anchor == null || anchor.getVisibility() != View.VISIBLE) {
-            anchor = findViewById(R.id.btnSettings);
-        }
-        if (anchor == null) return;
-        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
-        LinearLayout rows = panel.findViewById(R.id.rows);
-        Runnable close = () -> closeMenu(false);
-
-        String ssid = getString(R.string.wifi);
-        String ip = "";
-        boolean isConnected = false;
-        try {
-            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            Network activeNet = cm != null ? cm.getActiveNetwork() : null;
-            if (activeNet != null) {
-                NetworkCapabilities caps = cm.getNetworkCapabilities(activeNet);
-                if (caps != null && (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))) {
-                    isConnected = true;
-                }
+        WifiSettingsDialog.show(this, () -> {
+            if (!tryOpen(systemIntent(Settings.ACTION_WIFI_SETTINGS))) {
+                WifiSettingsDialog.onExternalSettingsUnavailable();
             }
-            WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            if (wm != null && wm.isWifiEnabled()) {
-                WifiInfo info = wm.getConnectionInfo();
-                if (info != null && info.getNetworkId() != -1) {
-                    String s = info.getSSID();
-                    if (s != null && !s.equals("<unknown ssid>") && !s.isEmpty()) {
-                        ssid = s.replaceAll("^\"|\"$", "");
-                    }
-                    int ipVal = info.getIpAddress();
-                    if (ipVal != 0) {
-                        ip = String.format(Locale.getDefault(), "%d.%d.%d.%d",
-                                (ipVal & 0xff), (ipVal >> 8 & 0xff), (ipVal >> 16 & 0xff), (ipVal >> 24 & 0xff));
-                    }
-                }
-            }
-        } catch (Exception ignored) {
-        }
-
-        int width = (int) (240 * density);
-
-        // Row 1: Current Wi-Fi status & SSID
-        addInputRow(rows, close, R.drawable.ic_wifi, ssid, isConnected ? TvInputManager.INPUT_STATE_CONNECTED : TvInputManager.INPUT_STATE_DISCONNECTED, () -> {
-            SoundEffects.playSelect();
-            open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
-        });
-
-        addSeparator(rows);
-
-        // Row 2: Pengaturan Wi-Fi
-        addInputRow(rows, close, R.drawable.ic_settings, getString(R.string.wifi_settings_label), -1, () -> {
-            SoundEffects.playSelect();
-            open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
-        });
-
-        // Row 3: Tutup
-        addInputRow(rows, close, R.drawable.ic_close, getString(R.string.close_label), -1, () -> {
-            SoundEffects.playSelect();
-            closeMenu(true);
-        });
-
-        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        width = Math.max(width, panel.getMeasuredWidth());
-
-        showMenu(panel, rows, anchor, width, false);
-        menuReturnAction = returnToParent;
+        }, returnToParent);
     }
 
     /** Shows the User Profile & Child Mode quick dialog (formerly Candy Box). */
@@ -7176,12 +7125,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void open(Intent i) {
+        tryOpen(i);
+    }
+
+    private boolean tryOpen(Intent i) {
         SoundEffects.playSelect();
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             startActivity(i);
+            return true;
         } catch (ActivityNotFoundException e) {
             TvFeedback.show(this, R.string.not_available, Toast.LENGTH_SHORT);
+            return false;
         }
     }
 
