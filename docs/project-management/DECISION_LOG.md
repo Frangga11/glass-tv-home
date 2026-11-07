@@ -533,3 +533,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Keep current G3A independent DockAdapter/AppAdapter architecture, stable identity, 4/5/6 capacity and orientation preferences. Do not replace the whole application with Patch 4.1.
 - PR #74 remains Draft/unmerged at 2d1f744a4b77406712e7868a7e7c6747a3bb88ed. Exact-head CI #1416 PASS.
 - Device visual/remote acceptance remains pending; no final visual PASS until owner confirms the new TV photo.
+
+
+## Decision — horizontal Dock overflow recovery (7 November 2026)
+
+- Keep the dedicated Dock/Grid renderers for now, but restore Patch 4.1's user-facing interaction contract: horizontal Home rests on Dock only; all remaining apps remain in the authoritative Grid and are reachable with DPAD Down.
+- Do not permanently hide or discard overflow apps. Reveal Grid only while the user browses overflow; Up from the first Grid row returns to the aligned Dock slot; Up from Dock returns to the top shelf; Dock focus collapses Grid.
+- Stable component identity remains the source of focus restoration. Keep vertical Dock, 4/5/6 capacity, pin/unpin and inventory split behavior intact.
+- Exact source head 48f07a983ebee4370bbf13a80f85edd947c2eb31; CI #42382202545 PASS. PR #74 remains OPEN/DRAFT/UNMERGED pending physical TV acceptance.
+- Physical TV visual/remote acceptance is NOT RUN; CI is not visual PASS.
