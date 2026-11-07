@@ -338,4 +338,27 @@ public class DockLayoutModelTest {
         }
     }
 
+    @Test
+    public void horizontalDockCentersFourFiveAndSixVisibleItems() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int innerWidth = 1920;
+            for (int capacity : new int[]{4, 5, 6}) {
+                int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
+                int count = capacity;
+                int offset = DockGeometry.horizontalCenterOffsetPx(innerWidth, tileWidth, count);
+                int right = offset + tileWidth * count;
+                assertEquals(innerWidth, offset + right);
+                assertTrue(offset >= 0);
+                assertTrue(right <= innerWidth);
+            }
+        }
+    }
+
+    @Test
+    public void horizontalDockCentersActualItemCountAndHandlesEmptyOrOversizedGroups() {
+        assertEquals(0, DockGeometry.horizontalCenterOffsetPx(1920, 320, 0));
+        assertEquals(0, DockGeometry.horizontalCenterOffsetPx(1920, 320, 8));
+        assertEquals(480, DockGeometry.horizontalCenterOffsetPx(1920, 320, 3));
+    }
+
 }
