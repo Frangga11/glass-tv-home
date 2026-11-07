@@ -3888,9 +3888,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void showWifiPopup(Runnable returnToParent) {
         if (openMenu != null || isFinishing() || isDestroyed()) return;
         SoundEffects.playSelect();
-        WifiSettingsDialog.show(this,
-                () -> open(systemIntent(Settings.ACTION_WIFI_SETTINGS)),
-                returnToParent);
+        WifiSettingsDialog.show(this, () -> {
+            if (!tryOpen(systemIntent(Settings.ACTION_WIFI_SETTINGS))) {
+                WifiSettingsDialog.onExternalSettingsUnavailable();
+            }
+        }, returnToParent);
     }
 
     /** Shows the User Profile & Child Mode quick dialog (formerly Candy Box). */
@@ -7122,12 +7124,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void open(Intent i) {
+        tryOpen(i);
+    }
+
+    private boolean tryOpen(Intent i) {
         SoundEffects.playSelect();
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             startActivity(i);
+            return true;
         } catch (ActivityNotFoundException e) {
             TvFeedback.show(this, R.string.not_available, Toast.LENGTH_SHORT);
+            return false;
         }
     }
 
