@@ -1750,10 +1750,18 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Source audit found the prior Dock centering offset translated the entire dockRecycler, which also moved the full-width tray drawn by DockDecoration.
 - PR #75 now centers icons using symmetric RecyclerView padding while keeping the Dock host translation at zero. DockAdapter calculates horizontal tile/slot dimensions from the full viewport, independent of centering padding; vertical/empty layouts reset padding.
 - Added horizontalDockPaddingCentersIconsWithoutMovingTheTrayHost() regression coverage in DockLayoutModelTest.java.
-- PR #75 branch fix/home-dock-alignment-row-scroll, latest commit 21bc204a413fce3c527e0e8761d2016bc5dc87c6. CI #1446 / 42403799908 was still running its Android job on preceding head 78539148930bc6e3613a03dbb7c6? No: 78539148930bc6e3613a03dbb7c6 is not a valid full SHA; use the full source head 78539148930bc6e3613a03dbb7c6? 
+- PR #75 branch fix/home-dock-alignment-row-scroll, latest commit 21bc204a413fce3c527e0e8761d2016bc5dc87c6. CI #1446 / 42403799908 ran on preceding head 78539148930bc6e3613a03db0dd3997073c725ee and completed SUCCESS; exact-head CI #1448 / 42403925244 is now IN PROGRESS on 21bc204...
 - Updated .github/workflows/ci.yml so PR #76 also publishes a test APK. PR #76 CI #1443 / 42403684594 passed both jobs, but its artifact step was skipped under the older condition; a new cumulative run is required after the PR #75 base update.
 - PR #76 remains the dedicated Quick Toggles correction: remove Dock-relative top-menu translation/listeners and preserve XML end alignment within mainContent's 56dp safe padding.
 - No current-head APK, checksum, post-fix screenshot or physical Mi TV Stick acceptance yet. The previous PR #75 artifact from c72c07f... is baseline-only.
 - Verify actual Dock pin/unpin preferences on device before changing app membership: source fills the five-slot default from ordered inventory except explicitly unpinned apps.
 - No merge, ADB, installation, default-launcher change or device mutation.
 - Detailed report: HOME_LAYOUT_FIX_2026-11-08.md.
+
+### Latest GTVH-HOME-LAYOUT-FIX-001 CI and APK checkpoint
+
+- PR #75 CI #1446 / 42403799908 completed SUCCESS on source head 78539148930bc6e3613a03db0dd3997073c725ee; both required jobs passed.
+- Artifact #13585808852 ZIP 1,422,660 bytes; extracted APK 1,622,497 bytes; SHA-256 38d818902ce3ccf800b8de5cc0428125b91b7e9c27ba81810759a53925c65d0f. ZIP and APK integrity checks passed.
+- This is an intermediate PR #75 Dock-only APK. It does not include PR #76 Quick Toggles changes and predates the later workflow-only head 21bc204a413fce3c527e0e8761d2016bc5dc87c6. Do not treat it as the final cumulative APK.
+- PR #75 latest head 21bc204... CI #1448 / 42403925244 IN PROGRESS. PR #76 latest head ea681545bbf356105683ef2c7da6664e29a83723 CI #1447 / 42403880493 IN PROGRESS; the artifact condition now includes PR #76.
+- Physical Mi TV Stick acceptance and post-fix visual evidence remain NOT RUN. No merge, ADB, installation or default-launcher change.
