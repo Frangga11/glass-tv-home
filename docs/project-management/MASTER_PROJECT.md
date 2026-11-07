@@ -1380,3 +1380,8 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 - PR #75 exact head 21bc204a413fce3c527e0e8761d2016bc5dc87c6; CI #1448 SUCCESS, both required jobs.
 - Verified current cumulative APK artifact #13585769799: 1,622,153 bytes; SHA-256 90fe5131a84231d1a725c4eb02b672d94a1c6c1a07f2cda8db710bc7c8ddc135. ZIP/APK integrity and core APK entries PASS.
 - Source, regression tests, CI, release build and APK verification: PASS. Physical Mi TV Stick visual/remote acceptance: PENDING. Status: PENDING DEVICE ACCEPTANCE; no merge or device mutation.
+
+### APK size diagnostic
+
+- CI #1450: 137 Python tests OK (1 intentional skip); Android unit tests/release build and artifact publication PASS.
+- APK size 1,622,153 bytes exceeds the historical 1.5 MiB reference by 49,289 bytes; CI warning is explicitly non-blocking. It is 316 bytes smaller than the earlier PR #75 baseline. No size-budget failure.
