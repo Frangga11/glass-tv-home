@@ -2560,7 +2560,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
                 dockParams.rightMargin = 0;
-                dockParams.bottomMargin = 0;
+                // Patch 4.1 leaves a 16dp safe gap below the tray. The Grid reserve already
+                // includes this same gap, so keep the two sibling regions edge-aligned.
+                dockParams.bottomMargin = Math.round(16 * density);
                 if (grid.getPaddingTop() != gridBasePaddingTop) {
                     grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
                             grid.getPaddingRight(), grid.getPaddingBottom());
