@@ -101,3 +101,15 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - Data contract includes complete Weather V4 metrics, CAMS-based US AQI and five pollutant values; legacy JAS cache cannot suppress CAMS refresh; coordinate-scoped freshness and per-source stale/offline/unavailable/error states are implemented.
 - No merge/rebase/cherry-pick/force-push, integration/main change, APK publication/install, ADB or physical device test. Physical TV/remote/OEM overscan acceptance remains separate.
 - **Current starting point supersedes prior G3A resume notes: G1 COMPLETE, G2 COMPLETE, G3A COMPLETE, G3B COMPLETE; next package G3C — Profile, Avatar & Child Mode.** G3D–G3F remain not started.
+
+
+## 12 G3C P1 closeout — 7 November 2026
+
+- **G3C P1 Security Policy & Authorization: COMPLETE / SOURCE-HOST QC PASS.** Canonical checkpoint: `UI_REFRESH_G3C_P1_CHECKPOINT_2026-11-07.md`.
+- Branch `feature/g3c-profile-avatar-child-mode` exact HEAD `16577e0210470762423ed0bf6cc7624c33537850`; PR #68 OPEN/DRAFT/UNMERGED, based on G3B exact HEAD `8cfc5c886950cc9d27d4530ba901df872b8e5c44`.
+- Exact-head CI run #1307 / `42338164003`: both required jobs SUCCESS. Release build, release unit tests, installer unit tests and repository checks passed.
+- Centralized launcher-scoped PIN gate covers Android Settings main, Accessibility, Notification Access and Default Home/Launcher. Wi-Fi, Display, Dream/Screensaver and ordinary Quick Settings remain exempt. Xiaomi fallback preserves the standard action; successful authorization is retained across firmware fallback attempts.
+- APK diagnostic 1,601,221 bytes; informational/non-blocking under D-023. No APK artifact published.
+- Existing PIN default/storage limitations remain unchanged by approved scope. This is not system-wide Android parental control.
+- No merge/rebase/cherry-pick/force-push, integration/main change, APK installation, ADB or physical TV test. Physical acceptance remains deferred.
+- **Next: G3C P2 — Profile Selector & Navigation.** Begin with read-only source audit against G1 V6 V03 and G2 shared focus/dialog foundations; do not code before scope review. P3–P5 remain NOT STARTED.
