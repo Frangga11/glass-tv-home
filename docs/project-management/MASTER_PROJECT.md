@@ -1216,3 +1216,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI #1404 / `42358639396`: both required jobs SUCCESS. APK artifact #`13568806731`, size 1,622,545 bytes, SHA-256 `3b01c1126043c2e8025e1852d7de5d09812b091986af21e9c1c607188cb926ab`; ZIP SHA-256 `a63aaf7577d15ad2cb2e7a1b8f1461b35027f9531a5e15e7ae492d9ef055e847`; integrity PASS.
 - This test APK supersedes the earlier Image 2 build. Physical TV visual/remote acceptance PENDING / NOT RUN; no installation or merge.
 - Evidence: `UI_REFRESH_IMAGE2_BOTTOM_DOCK_CORRECTION_2026-11-07.md`.
+
+
+## Project reset — active baseline 4.0.0 (7 November 2026)
+
+- Active work baseline is now `reset/baseline-4.0.0` @ `7146de58953325fdfc6c98501828676f143e64cf` (package `com.gathin.tvhome`, version 4.0.0 / code 40).
+- Verified baseline APK from CI #1395: 1,622,401 bytes; SHA-256 `ec125ca46bf98af8426fef060e974c963932f9ae7f863507d135ae40df9bb605`.
+- Failed Image 2/Dock rework PR #73 closed, branch preserved. PR #72 remains draft/open and baseline lineage unchanged. No merge, force-push, branch deletion or device installation.
+- Details: `RESET_BASELINE_4.0.0_2026-11-07.md`.
