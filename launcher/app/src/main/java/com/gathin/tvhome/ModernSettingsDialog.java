@@ -145,6 +145,30 @@ public final class ModernSettingsDialog {
         return target.getClass().getName() + "#" + target.getId() + "#" + label;
     }
 
+    private static View resolveLegacySidebarFocusPath(ViewGroup leftCol, View searchBox,
+                                                          String encodedPath, String signature) {
+        int[] indexes = SettingsFocusPath.decode(encodedPath);
+        if (indexes == null || indexes.length == 0) return null;
+        // The old sidebar began with Search. It now lives in the V06 header.
+        if (indexes[0] == 0) {
+            return signature != null && signature.equals(legacyFocusSignature(searchBox))
+                    ? searchBox : null;
+        }
+        indexes[0]--;
+        return resolveFocusPath(leftCol, SettingsFocusPath.encode(indexes), signature);
+    }
+
+    private static View resolveLegacyRightFocusPath(ViewGroup rightContent, int tab,
+                                                      String encodedPath, String signature) {
+        int[] indexes = SettingsFocusPath.decode(encodedPath);
+        if (indexes == null || indexes.length == 0) return null;
+        // V06 adds a non-focusable active-profile summary after the existing page title.
+        if (NavigationState.normalizeSettingsTab(tab) == TAB_PROFILE && indexes[0] >= 1) {
+            indexes[0]++;
+        }
+        return resolveFocusPath(rightContent, SettingsFocusPath.encode(indexes), signature);
+    }
+
     private static View resolveFocusPath(ViewGroup root, String encodedPath, String signature) {
         int[] indexes = SettingsFocusPath.decode(encodedPath);
         if (root == null || indexes == null || signature == null || signature.isEmpty()) return null;
@@ -1539,6 +1563,10 @@ public final class ModernSettingsDialog {
                 rightScroll.scrollTo(0, Math.max(0, navigationPrefs.getInt(rightScrollKey(activeTab[0]), 0)));
                 rightScroll.post(() -> {
                     View restored = resolveFocusPath(rightContent, savedFocusPath, savedFocusSignature);
+                    if (restored == null) {
+                        restored = resolveLegacyRightFocusPath(rightContent, activeTab[0],
+                                savedFocusPath, savedFocusSignature);
+                    }
                     if (restored != null && restored.requestFocus()) return;
                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                     else profileCard.requestFocus();
@@ -1547,6 +1575,10 @@ public final class ModernSettingsDialog {
         } else if (savedFocusTab == activeTab[0] && "sidebar".equals(savedFocusArea)) {
             root.post(() -> {
                 View restored = resolveFocusPath(leftCol, savedFocusPath, savedFocusSignature);
+                if (restored == null) {
+                    restored = resolveLegacySidebarFocusPath(leftCol, searchBox,
+                            savedFocusPath, savedFocusSignature);
+                }
                 if (restored != null && restored.requestFocus()) return;
                 if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                 else profileCard.requestFocus();
