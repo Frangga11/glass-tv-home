@@ -3362,10 +3362,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Not laid out yet: the Grid may have just been revealed and position 0 may
         // require no scroll at all. A scroll-state listener alone can then wait forever.
         // Retry after layout frames and request scrolling only if the holder is still absent.
-        focusTileWhenLaidOut(pos, requestGeneration, 6);
+        focusTileWhenLaidOut(pos, requestGeneration, 6, false);
     }
 
-    private void focusTileWhenLaidOut(int position, int requestGeneration, int attemptsRemaining) {
+    private void focusTileWhenLaidOut(int position, int requestGeneration, int attemptsRemaining, boolean scrollIssued) {
         if (requestGeneration != gridFocusRequestGeneration) return;
         if (adapter == null || grid == null || position < 0 || position >= adapter.getItemCount()) return;
         RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
@@ -3375,12 +3375,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         if (attemptsRemaining > 0) {
-            grid.postOnAnimation(() -> focusTileWhenLaidOut(position, requestGeneration, attemptsRemaining - 1));
-        } else if (attemptsRemaining == 0) {
+            grid.postOnAnimation(() -> focusTileWhenLaidOut(position, requestGeneration, attemptsRemaining - 1, scrollIssued));
+        } else if (attemptsRemaining == 0 && !scrollIssued) {
             // Align the requested row to the start of the fixed one-row viewport, then
             // keep checking layout completion instead of assuming one frame is sufficient.
             grid.scrollToPosition(position);
-            grid.postOnAnimation(() -> focusTileWhenLaidOut(position, requestGeneration, 8));
+            grid.postOnAnimation(() -> focusTileWhenLaidOut(position, requestGeneration, 8, true));
         } else {
             focusTopBarFallback();
         }
