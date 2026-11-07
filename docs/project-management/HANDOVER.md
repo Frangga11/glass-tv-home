@@ -1585,3 +1585,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI #1404 / `42358639396`: both required jobs SUCCESS. Artifact #`13568806731`; ZIP SHA-256 `a63aaf7577d15ad2cb2e7a1b8f1461b35027f9531a5e15e7ae492d9ef055e847`; APK size 1,622,545 bytes; APK SHA-256 `3b01c1126043c2e8025e1852d7de5d09812b091986af21e9c1c607188cb926ab`; ZIP integrity PASS. Artifact expires 14 Nov 2026.
 - Physical TV visual/remote acceptance remains PENDING / NOT RUN. No install, ADB, device mutation or merge.
 - **Next:** user acceptance-test this replacement APK and provide a new photo; verify Dock at bottom, 4/5/6 capacity, Grid viewport, DPAD and vertical orientation before claiming visual PASS.
+
+
+## Active starting point reset — Glass TV Home 4.0.0 (7 November 2026)
+
+- User directed a full return to application 4.0.0. Verified source baseline: `feature/g4-parent-pin-hardening` @ `7146de58953325fdfc6c98501828676f143e64cf`; clean work branch `reset/baseline-4.0.0` created at that exact SHA.
+- Exact baseline CI #1395 / `42355197900` PASS. APK package `com.gathin.tvhome`, versionName 4.0.0, versionCode 40, size 1,622,401 bytes, SHA-256 `ec125ca46bf98af8426fef060e974c963932f9ae7f863507d135ae40df9bb605`.
+- PR #73 (failed UI/Dock rework) CLOSED, not merged. Its branch/commits preserved. PR #72 remains OPEN/DRAFT/UNMERGED and corresponds to baseline branch.
+- No branch deletion, force-push, merge, TV install, ADB or device setting changes. Baseline APK is extracted at `/mnt/data/glass-tv-home-4.0.0-baseline/app-release.apk` in the active session.
+- Canonical report: `RESET_BASELINE_4.0.0_2026-11-07.md`. Do not resume new work until user specifies next step.
