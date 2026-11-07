@@ -1028,3 +1028,20 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Cumulative source / tests / build | PASS on CI #1449 tree |
 | Physical Mi TV Stick / remote acceptance | PENDING / NOT RUN |
 | Merge / install / ADB / device mutation | NOT PERFORMED |
+
+### GTVH-HOME-LAYOUT-FIX-001 — final exact-head technical gate
+
+| Gate | Status / evidence |
+|---|---|
+| PR #75 CI #1448 | PASS — both jobs; head 21bc204a413fce3c527e0e8761d2016bc5dc87c6 |
+| PR #76 latest head | f085c41356e2e5f53ca13f51bc0676bdb82d350a |
+| PR #76 CI #1450 | PASS — both jobs; run 42404262057 |
+| Cumulative APK artifact | #13585769799; ZIP 1,422,487 bytes |
+| APK size | 1,622,153 bytes |
+| APK SHA-256 | 90fe5131a84231d1a725c4eb02b672d94a1c6c1a07f2cda8db710bc7c8ddc135 |
+| ZIP/APK integrity and core entries | PASS |
+| Source / regression tests / release build | PASS |
+| Post-fix visual evidence | PENDING |
+| Physical Mi TV Stick / remote acceptance | PENDING / NOT RUN |
+| PR #74/#75/#76 merge | NOT PERFORMED; all remain Draft |
+| ADB / install / default-launcher change / device mutation | NOT PERFORMED |
