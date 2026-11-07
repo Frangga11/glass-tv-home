@@ -157,6 +157,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** The top-right buttons and the two rectangles used to line them up with the dock. */
     private View topRow, topSettings;
     private final Rect alignCard = new Rect(), alignButton = new Rect(), shelfAnchorRect = new Rect();
+    private final Rect topRowBounds = new Rect(), leftBlockBounds = new Rect();
     /** How much of the space between the side paddings the top shelf may use. */
     private static final float HERO_WIDTH_SHARE = 0.40f;
     /** The name is one line, and may run wider than the description, up to this share (capped to avoid overlapping Islamic shelf). */
@@ -2277,13 +2278,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
      * column count and the screen, so the edge is measured rather than written down.
      */
     private void alignTopButtons() {
-        // This runs on every layout pass, which during a grid scroll is every frame, so it keeps
-        // its views and rectangles rather than looking them up or allocating each time.
+        // Align against unscaled layout bounds. The helper deliberately ignores translations and
+        // focus scale so repeated layout/focus passes cannot feed the previous shift back in.
         if (topRow == null) {
             topRow = findViewById(R.id.topButtons);
             topSettings = findViewById(R.id.btnSettings);
         }
-        if (topRow == null || topSettings.getWidth() == 0) return;
+        if (topRow == null || topSettings == null || root == null || topSettings.getWidth() == 0) return;
         if (dockVertical || dockRecycler == null || dockAdapter == null || dockAdapter.getItemCount() == 0) {
             if (Math.abs(topRow.getTranslationX()) >= 1f) topRow.setTranslationX(0f);
             return;
@@ -2292,14 +2293,50 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (last == null) return;
         View card = last.itemView.findViewById(R.id.card);
         if (card == null || card.getWidth() == 0) return;
-        // Layout positions, not drawn ones: a focused card is scaled up, and the row's own shift
-        // must not be counted twice.
-        alignCard.set(0, 0, card.getWidth(), card.getHeight());
-        root.offsetDescendantRectToMyCoords(card, alignCard);
-        alignButton.set(0, 0, topSettings.getWidth(), topSettings.getHeight());
-        root.offsetDescendantRectToMyCoords(topSettings, alignButton);
-        float shift = alignCard.right - alignButton.right;
-        if (Math.abs(topRow.getTranslationX() - shift) >= 1f) topRow.setTranslationX(shift);
+
+        offsetLayoutRectToRoot(card, alignCard);
+        offsetLayoutRectToRoot(topSettings, alignButton);
+        offsetLayoutRectToRoot(topRow, topRowBounds);
+        View leftBlock = findViewById(R.id.leftBlock);
+        if (leftBlock != null) offsetLayoutRectToRoot(leftBlock, leftBlockBounds);
+        else leftBlockBounds.setEmpty();
+
+        float requestedShift = alignCard.right - alignButton.right;
+        int safeInset = Math.round(56f * density);
+        int minimumGap = Math.round(16f * density);
+        float boundedShift = DockGeometry.clampTopRowTranslationPx(
+                requestedShift,
+                topRowBounds.left,
+                topRowBounds.right,
+                root.getWidth(),
+                safeInset,
+                safeInset,
+                leftBlockBounds.right,
+                minimumGap);
+        if (Math.abs(topRow.getTranslationX() - boundedShift) >= 1f) {
+            topRow.setTranslationX(boundedShift);
+        }
+    }
+
+    /** Maps a view's untransformed layout bounds into root coordinates. */
+    private void offsetLayoutRectToRoot(View descendant, Rect out) {
+        if (descendant == null || root == null) {
+            out.setEmpty();
+            return;
+        }
+        out.set(0, 0, descendant.getWidth(), descendant.getHeight());
+        View current = descendant;
+        while (current != root) {
+            android.view.ViewParent parent = current.getParent();
+            if (!(parent instanceof View)) {
+                out.setEmpty();
+                return;
+            }
+            View parentView = (View) parent;
+            out.offset(current.getLeft() - parentView.getScrollX(),
+                    current.getTop() - parentView.getScrollY());
+            current = parentView;
+        }
     }
 
     /**
@@ -2566,6 +2603,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockRecycler.setVisibility(wantedDockVisibility);
 
         dockRecycler.setTranslationX(0f);
+        if (dockVertical || !hasDock) {
+            dockRecycler.setPadding(0, 0, 0, 0);
+        }
         if (dockVertical) {
             gridParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             gridParams.gravity = Gravity.TOP | Gravity.START;
@@ -2608,7 +2648,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int dockSlotWidth = DockGeometry.horizontalSlotWidthPx(inner, preferences.capacity);
                 int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
                         inner, dockSlotWidth, Math.min(dockCount, preferences.capacity));
-                dockRecycler.setTranslationX(dockCenterOffset);
+                // Center the icon group with symmetric content padding. The RecyclerView host
+                // stays at the Home shelf origin so its full-width glass tray and aligned shelves
+                // do not inherit the icon group's centering offset.
+                dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),
+                        dockCenterOffset, dockRecycler.getPaddingBottom());
+                dockRecycler.setTranslationX(0f);
 
                 // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
                 // the largest supported tile and therefore the stable reservation baseline.
