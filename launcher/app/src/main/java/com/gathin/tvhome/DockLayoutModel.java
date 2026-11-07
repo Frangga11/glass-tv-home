@@ -42,6 +42,13 @@ final class DockLayoutModel {
         return Math.min(target, gridCount - 1);
     }
 
+    /** Maps a horizontal bottom-Dock slot to the nearest tile in the App Grid row above it. */
+    static int gridPositionAboveDock(int dockPosition, int gridColumns, int gridCount) {
+        if (dockPosition < 0 || gridColumns <= 0 || gridCount <= 0) return -1;
+        int lastRowStart = ((gridCount - 1) / gridColumns) * gridColumns;
+        return Math.min(lastRowStart + dockPosition % gridColumns, gridCount - 1);
+    }
+
     static int dockPositionForGrid(int gridPosition, boolean vertical, int gridColumns, int dockCount) {
         if (gridPosition < 0 || gridColumns <= 0 || dockCount <= 0) return -1;
         int target = vertical ? gridPosition / gridColumns : gridPosition % gridColumns;
@@ -175,6 +182,29 @@ final class DockLayoutModel {
     static List<String> unpinKey(List<String> keys, String key) {
         List<String> result = new ArrayList<>(keys == null ? Collections.emptyList() : keys);
         if (key != null) result.remove(key);
+        return Collections.unmodifiableList(result);
+    }
+
+    /** Patch 4.1 first-row Dock contract: preferred pins lead; inventory fills free slots. */
+    static List<String> fillDockSlots(List<String> preferredKeys, List<String> inventoryKeys,
+                                      List<String> excludedKeys, int requestedCapacity) {
+        int capacity = normalizeCapacity(requestedCapacity);
+        Set<String> excluded = new HashSet<>();
+        if (excludedKeys != null) excluded.addAll(excludedKeys);
+        List<String> result = new ArrayList<>();
+        Set<String> added = new HashSet<>();
+        if (preferredKeys != null) {
+            for (String key : preferredKeys) {
+                if (key != null && !key.trim().isEmpty() && !excluded.contains(key) && added.add(key)) result.add(key);
+            }
+        }
+        if (result.size() < capacity && inventoryKeys != null) {
+            for (String key : inventoryKeys) {
+                if (key == null || key.trim().isEmpty() || excluded.contains(key) || !added.add(key)) continue;
+                result.add(key);
+                if (result.size() >= capacity) break;
+            }
+        }
         return Collections.unmodifiableList(result);
     }
 

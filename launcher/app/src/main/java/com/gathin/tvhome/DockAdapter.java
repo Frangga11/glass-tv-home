@@ -70,11 +70,22 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int inner = Math.max(0, parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight());
         int width;
+        int itemWidth;
         if (vertical) {
             width = Math.max(Math.round(112 * density), Math.min(Math.round(170 * density), inner - Math.round(20 * density)));
+            itemWidth = width;
         } else {
-            width = AppAdapter.tileWidthPx(inner, capacity, density);
+            width = DockGeometry.horizontalTileWidthPx(inner, capacity, density);
+            itemWidth = DockGeometry.horizontalSlotWidthPx(inner, capacity);
         }
+        // item_app.xml is shared with the multi-column Grid and therefore declares
+        // match_parent width. In a horizontal RecyclerView that makes every Dock item
+        // consume the full viewport; only the first card is visible and the others stack
+        // outside/under the same visual slot. Give Dock holders their own measured slot width.
+        ViewGroup.LayoutParams itemParams = item.getLayoutParams();
+        itemParams.width = itemWidth;
+        item.setLayoutParams(itemParams);
+
         int height = AppAdapter.tileHeightPx(width);
         View card = item.findViewById(R.id.card);
         ViewGroup.LayoutParams cardParams = card.getLayoutParams();
@@ -101,7 +112,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 return key != null && listener != null && listener.onDockTileHeld(key, focusedCard);
             }
         };
-        return new AppAdapter.Holder(item, holderListener, reducedMotion, iconAnimationsEnabled);
+        return new AppAdapter.Holder(item, holderListener, reducedMotion, iconAnimationsEnabled, true);
     }
 
     @Override

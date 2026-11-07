@@ -138,6 +138,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private DockAdapter dockAdapter;
     private DockDecoration tray;
     private boolean dockVertical;
+    /** Horizontal Grid stays parked out of sight until the user presses Down from the Dock. */
+    private boolean horizontalGridExpanded;
     private boolean lastFocusedDock;
     private int lastDockDecorationCount = -1;
     private boolean lastDockDecorationVertical;
@@ -154,14 +156,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private final int[] pillAt = new int[2], rootAt = new int[2];
     /** The top-right buttons and the two rectangles used to line them up with the dock. */
     private View topRow, topSettings;
-    private final Rect alignCard = new Rect(), alignButton = new Rect();
+    private final Rect alignCard = new Rect(), alignButton = new Rect(), shelfAnchorRect = new Rect();
     /** How much of the space between the side paddings the top shelf may use. */
     private static final float HERO_WIDTH_SHARE = 0.40f;
     /** The name is one line, and may run wider than the description, up to this share (capped to avoid overlapping Islamic shelf). */
     private static final float HERO_NAME_WIDTH_SHARE = 0.45f;
     private static final float HERO_TITLE_MAX_SP = 40f;
     /** The breathing room between the shelf's last line and the top of the app container (50dp gives airy, balanced spacing). */
-    private static final float HERO_GAP_DP = 50f;
     private static final float HERO_TITLE_MIN_SP = 26f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
@@ -240,8 +241,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** The grid has been laid out and focused since the last resume; the card prompt waits for this. */
     private boolean tilesReady;
     private boolean tilesAnimatedOnce;
-    /** Grid rows left showing under the dock (config rows_below_dock). */
-    private int rowsBelowDockSetting;
+    /** Original XML top inset; Dock placement must not push the App Grid below it. */
+    private int gridBasePaddingTop;
+    private int gridBasePaddingBottom;
     /** The longest Home holds its first frame while it puts itself together (see holdFirstFrame). */
     private static final long FIRST_FRAME_WAIT_MS = 1200;
     private static final long RETURN_SETTLE_MS = 6000;
@@ -688,6 +690,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         NowPlayingManager.registerListener(nowPlayingListener);
 
         islamicShelf = findViewById(R.id.islamicShelf);
+        applyHomeShelfSafeMargins();
         if (islamicShelf != null) {
             ayahBlock = findViewById(R.id.ayahBlock);
             ayahLabel = findViewById(R.id.ayahLabel);
@@ -796,6 +799,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         grid = findViewById(R.id.grid);
         gridWrap = findViewById(R.id.gridWrap);
+        gridBasePaddingTop = grid.getPaddingTop();
+        gridBasePaddingBottom = grid.getPaddingBottom();
         grid.setLayoutManager(new GridLayoutManager(this, COLUMNS));
         grid.setHasFixedSize(true);
         grid.setItemAnimator(null);
@@ -847,7 +852,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid.setAdapter(adapter);
         dockAdapter = new DockAdapter(this, adapter, this, reducedMotion);
         dockRecycler.setAdapter(dockAdapter);
-        rowsBelowDockSetting = cfg.rowsBelowDock;
         applyDockLayout();
         dockRecycler.getViewTreeObserver().addOnGlobalLayoutListener(this::alignTopButtons);
         glider.addCompanion(dockRecycler, tray.area);
@@ -2019,6 +2023,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (dockAdapter == null || card == null) return;
         int position = dockAdapter.positionOf(key);
         if (position < 0) return;
+        // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
+        // Collapse the overflow Grid only after focus has actually reached a Dock tile.
+        if (!dockVertical && horizontalGridExpanded) {
+            horizontalGridExpanded = false;
+            grid.setVisibility(View.GONE);
+        }
         handleTileFocused(key, position, card, true);
     }
 
@@ -2123,13 +2133,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                // The Dock is the first Home row in the Patch 4.1 navigation model:
+                // Up returns to the top shelf, never to an app row in the middle.
                 focusTopBarFallback();
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                int target = DockLayoutModel.gridPositionForDock(
-                        position, false, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
-                focusTile(target);
+                // Reveal the overflow inventory only on demand. It remains part of the
+                // same source inventory and is reachable without cluttering the idle Home.
+                int target = DockLayoutModel.gridPositionAboveDock(
+                        position, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
+                if (target >= 0) focusTile(target);
                 return true;
             }
         }
@@ -2158,7 +2172,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void showHero(int position, float dockTopInRoot) {
         int color = dockAdapter.ambientColorAt(position);
-        heroBottom = dockTopInRoot - HERO_GAP_DP * density;
+
+        // The information shelves belong to the Home composition, not to the focused Dock tile.
+        // In vertical mode the focused tile can be anywhere along the left rail; using its top
+        // made the wallpaper description, Ayah and prayer schedule jump up and down with DPAD.
+        // Keep the same bottom anchor that the horizontal Dock uses, calculated from the
+        // horizontal tray geometry, so changing Dock orientation never moves the Home content.
+        float shelfDockTop = dockTopInRoot;
+        if (dockVertical && gridWrap != null && gridWrap.getHeight() > 0) {
+            root.offsetDescendantRectToMyCoords(gridWrap, shelfAnchorRect);
+            DockPreferences preferences = DockPreferences.load(this);
+            int innerWidth = Math.max(0, gridWrap.getWidth()
+                    - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
+            int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, preferences.capacity, density);
+            int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+            int horizontalDockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+            // Horizontal Dock is fixed to the bottom edge; no rows are reserved beneath it.
+            shelfDockTop = shelfAnchorRect.bottom - horizontalDockHeight
+                    + DockGeometry.dockItemTopOffsetPx(density);
+        }
+        heroBottom = shelfDockTop - DockGeometry.shelfBottomOffsetFromTileTopPx(density);
 
         if (islamicShelf != null) {
             float iy = heroBottom - islamicShelf.getHeight();
@@ -2469,11 +2502,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         return true;
     }
 
+    /** Applies the frozen P2 horizontal safe inset to both Home information shelves. */
+    private void applyHomeShelfSafeMargins() {
+        int inset = DockGeometry.safeHorizontalInsetPx(density);
+        if (heroShelf != null && heroShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) heroShelf.getLayoutParams();
+            params.setMarginStart(inset);
+            heroShelf.setLayoutParams(params);
+        }
+        if (islamicShelf != null && islamicShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) islamicShelf.getLayoutParams();
+            params.setMarginEnd(inset);
+            islamicShelf.setLayoutParams(params);
+        }
+    }
+
     private void applyDockLayout() {
         if (gridWrap == null || grid == null || dockRecycler == null || dockAdapter == null) return;
         DockPreferences preferences = DockPreferences.load(this);
         dockVertical = preferences.orientation == DockPreferences.Orientation.VERTICAL;
         dockAdapter.setVertical(dockVertical);
+        if (dockVertical) horizontalGridExpanded = false;
+        // GridLayoutManager does not support stackFromEnd (it throws during onResume).
+        // Keep the Grid's natural adapter order; horizontal overflow is positioned by the
+        // surrounding FrameLayout geometry and is expanded only on DPAD Down.
+        // In horizontal mode the Grid is an on-demand overflow surface: hidden at rest,
+        // revealed by DPAD Down from the Dock, and collapsed again when Dock focus returns.
+        int wantedGridVisibility = dockVertical || horizontalGridExpanded ? View.VISIBLE : View.GONE;
+        boolean gridVisibilityChanged = grid.getVisibility() != wantedGridVisibility;
+        grid.setVisibility(wantedGridVisibility);
         int orientation = dockVertical
                 ? android.widget.LinearLayout.VERTICAL : android.widget.LinearLayout.HORIZONTAL;
         RecyclerView.LayoutManager current = dockRecycler.getLayoutManager();
@@ -2506,7 +2563,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         boolean dockVisibilityChanged = dockRecycler.getVisibility() != wantedDockVisibility;
         dockRecycler.setVisibility(wantedDockVisibility);
 
+        dockRecycler.setTranslationX(0f);
         if (dockVertical) {
+            gridParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            gridParams.gravity = Gravity.TOP | Gravity.START;
             int dockWidth = hasDock ? Math.round(202 * density) : 0;
             gridParams.leftMargin = hasDock ? dockWidth + Math.round(12 * density) : 0;
             gridParams.topMargin = 0;
@@ -2518,35 +2578,60 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dockParams.topMargin = 0;
             dockParams.rightMargin = 0;
             dockParams.bottomMargin = 0;
-            if (grid.getPaddingTop() != 0) grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), grid.getPaddingBottom());
+            if (grid.getPaddingTop() != 0 || grid.getPaddingBottom() != gridBasePaddingBottom) {
+                grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), gridBasePaddingBottom);
+            }
         } else {
             gridParams.leftMargin = 0;
             gridParams.topMargin = 0;
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
             if (hasDock) {
-                int inner = Math.max(0, gridWrap.getWidth() - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
-                int tileWidth = AppAdapter.tileWidthPx(inner, preferences.capacity, density);
-                int tileHeight = AppAdapter.tileHeightPx(tileWidth);
-                int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
-                int dockHeight = itemHeight + Math.round(18 * density);
-                int belowDock = itemHeight * Math.max(0, rowsBelowDockSetting) + Math.round(16 * density);
-                dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                int inner = DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density);
+                gridParams.width = DockGeometry.horizontalGridWidthPx(inner, preferences.capacity);
+                gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                dockParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                int tileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
+                int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+                int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+
+                // RecyclerView's horizontal LinearLayoutManager starts children at the left edge.
+                // Center the complete visible Dock group inside the P2 safe content width.
+                int dockSlotWidth = DockGeometry.horizontalSlotWidthPx(inner, preferences.capacity);
+                int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
+                        inner, dockSlotWidth, Math.min(dockCount, preferences.capacity));
+                dockRecycler.setTranslationX(dockCenterOffset);
+
+                // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
+                // the largest supported tile and therefore the stable reservation baseline.
+                gridParams.bottomMargin = DockGeometry.horizontalGridBottomMarginPx(tileHeight, density);
+
+                dockParams.width = inner;
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
                 dockParams.rightMargin = 0;
-                dockParams.bottomMargin = belowDock;
-                int gridTop = Math.max(0, gridWrap.getHeight() - belowDock);
-                if (grid.getPaddingTop() != gridTop) grid.setPadding(grid.getPaddingLeft(), gridTop, grid.getPaddingRight(), grid.getPaddingBottom());
+                // Place the glass tray itself on the P2 27dp bottom safe margin. The
+                // RecyclerView host extends below its tray to contain the label/focus area.
+                dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+                if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
+                    grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
+                            grid.getPaddingRight(), 0);
+                }
             } else {
+                gridParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                gridParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
                 dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 dockParams.height = 0;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
                 dockParams.rightMargin = 0;
                 dockParams.bottomMargin = 0;
-                if (grid.getPaddingTop() != 0) grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), grid.getPaddingBottom());
+                gridParams.bottomMargin = 0;
+                if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != gridBasePaddingBottom) {
+                    grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
+                            grid.getPaddingRight(), gridBasePaddingBottom);
+                }
             }
         }
 
@@ -2554,7 +2639,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         boolean dockLayoutChanged = !sameLayoutParams(dockRecycler.getLayoutParams(), dockParams);
         if (gridLayoutChanged) grid.setLayoutParams(gridParams);
         if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);
-        if (gridLayoutChanged || dockLayoutChanged || dockVisibilityChanged) {
+        if (gridLayoutChanged || dockLayoutChanged || dockVisibilityChanged || gridVisibilityChanged) {
             grid.requestLayout();
             dockRecycler.requestLayout();
         }
@@ -2591,7 +2676,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int gridCount = adapter == null ? 0 : adapter.getItemCount();
                 int dockCount = dockAdapter == null ? 0 : dockAdapter.getItemCount();
                 boolean hasTiles = gridCount > 0 || dockCount > 0;
-                boolean gridReady = gridCount == 0 || grid.getChildCount() > 0;
+                boolean gridReady = grid.getVisibility() != View.VISIBLE || gridCount == 0 || grid.getChildCount() > 0;
                 boolean dockReady = dockCount == 0 || dockRecycler.getChildCount() > 0;
                 boolean focusReady = heroShown || !lastFocusedDock || dockCount == 0;
                 boolean whole = hasTiles && gridReady && dockReady && parked
@@ -3113,16 +3198,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
             return position % COLUMNS == COLUMNS - 1 || position == count - 1;
         }
-        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) {
-                if (!dockVertical && dockAdapter.getItemCount() > 0) {
+        if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
+            // The bottom-most Grid row is the first overflow row adjacent to the Dock.
+            // Keep the requested remote contract: Up from that row returns to the Dock.
+            int dockAdjacentRow = ((count - 1) / COLUMNS) * COLUMNS;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                if (position >= dockAdjacentRow) {
                     focusDockTile(DockLayoutModel.dockPositionForGrid(
                             position, false, COLUMNS, dockAdapter.getItemCount()));
-                    return true;
+                } else {
+                    focusTile(Math.min(position + COLUMNS, count - 1));
                 }
-                if (position <= 1 && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
-                    weatherAirQualityView.requestFocus();
-                    return true;
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (position >= COLUMNS) focusTile(position - COLUMNS);
+                return true;
+            }
+        }
+        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+            if (position < COLUMNS) {
+                if (!dockVertical) {
+                    if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
+                            && weatherAirQualityView.requestFocus()) return true;
+                    return focusTopBarFallback();
                 }
                 return false;
             }
@@ -3231,6 +3330,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void focusTile(int position) {
         if (adapter == null || grid == null) return;
+        if (!dockVertical && !horizontalGridExpanded) {
+            if (adapter.getItemCount() == 0) {
+                if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+                else focusTopBarFallback();
+                return;
+            }
+            // A hidden RecyclerView cannot receive focus. Reveal it, wait for layout,
+            // then resolve the requested item by its current adapter position.
+            horizontalGridExpanded = true;
+            grid.setVisibility(View.VISIBLE);
+            grid.requestLayout();
+            grid.post(() -> focusTile(position));
+            return;
+        }
         if (adapter.getItemCount() == 0) {
             if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
             else focusTopBarFallback();

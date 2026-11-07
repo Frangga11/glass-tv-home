@@ -146,6 +146,25 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void patch41DockFillsSlotsFromInventoryWhenFavoritesAreMissing() {
+        List<String> inventory = Arrays.asList("browse", "disney", "miracast", "netflix", "store", "prime", "vidio");
+        List<String> pinned = DockLayoutModel.fillDockSlots(
+                Collections.emptyList(), inventory, Collections.emptyList(), 5);
+        assertEquals(Arrays.asList("browse", "disney", "miracast", "netflix", "store"), pinned);
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(inventory, pinned, 5, value -> value);
+        assertEquals(pinned, snapshot.dockItems);
+        assertEquals(Arrays.asList("prime", "vidio"), snapshot.gridItems);
+    }
+
+    @Test
+    public void patch41DockFillHonorsExplicitUnpins() {
+        List<String> pinned = DockLayoutModel.fillDockSlots(
+                Collections.singletonList("favorite"), Arrays.asList("favorite", "excluded", "next", "last"),
+                Collections.singletonList("excluded"), 4);
+        assertEquals(Arrays.asList("favorite", "next", "last"), pinned);
+    }
+
+    @Test
     public void emptyDockKeepsEveryInstalledAppInTheGrid() {
         List<String> inventory = Arrays.asList("app-a", "app-b", "app-c");
         DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
@@ -190,6 +209,15 @@ public class DockLayoutModelTest {
         assertEquals(0, DockLayoutModel.dockPositionForGrid(0, false, 4, 6));
         assertEquals(-1, DockLayoutModel.gridPositionForDock(0, false, 4, 0));
         assertEquals(-1, DockLayoutModel.dockPositionForGrid(0, false, 4, 0));
+    }
+
+    @Test
+    public void bottomDockFocusTargetsTheAdjacentLastGridRow() {
+        assertEquals(10, DockLayoutModel.gridPositionAboveDock(2, 4, 12));
+        assertEquals(9, DockLayoutModel.gridPositionAboveDock(3, 4, 10));
+        assertEquals(0, DockLayoutModel.gridPositionAboveDock(5, 4, 1));
+        assertEquals(-1, DockLayoutModel.gridPositionAboveDock(0, 4, 0));
+        assertEquals(-1, DockLayoutModel.gridPositionAboveDock(-1, 4, 5));
     }
 
     @Test
@@ -254,4 +282,146 @@ public class DockLayoutModelTest {
                 () -> DockLayoutModel.split(Collections.singletonList("a"),
                         Collections.singletonList("a"), 4, null));
     }
+    @Test
+    public void dockGeometryPreservesLegacyFourFiveSixSlotRatiosAndSpacing() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int innerWidth = 1920;
+            int largestTileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, 4, density);
+            int largestTileHeight = DockGeometry.tileHeightPx(largestTileWidth);
+            int gridReserve = DockGeometry.horizontalGridBottomReservePx(largestTileWidth, density);
+            int legacyGridReserve = DockGeometry.itemHeightPx(largestTileHeight, density)
+                    + Math.round(34f * density);
+            assertEquals(legacyGridReserve, gridReserve);
+
+            for (int capacity : new int[]{4, 5, 6}) {
+                int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
+                int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+                int itemHeight = DockGeometry.itemHeightPx(tileHeight, density);
+                int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+                float trayHeight = tileHeight + 28f * density;
+
+                assertEquals(tileHeight + Math.round(45f * density), itemHeight);
+                assertEquals(itemHeight + Math.round(18f * density), dockHeight);
+                assertEquals(14f * density, DockGeometry.trayPaddingPx(density), 0.001f);
+                assertEquals(35f * density, dockHeight - trayHeight, 1.1f);
+                // The horizontal host sits 16dp above the gridWrap edge, matching Patch 4.1.
+                assertEquals(51f * density,
+                        dockHeight - trayHeight + Math.round(16f * density), 1.1f);
+            }
+        }
+    }
+
+    @Test
+    public void dockGeometrySharesFiveColumnTileScaleAndFitsSixSlotCapacity() {
+        float density = 2f;
+        int four = DockGeometry.horizontalTileWidthPx(1920, 4, density);
+        int five = DockGeometry.horizontalTileWidthPx(1920, 5, density);
+        int six = DockGeometry.horizontalTileWidthPx(1920, 6, density);
+
+        assertTrue(four > 0);
+        assertEquals(five, four);
+        assertTrue(six < five);
+        assertEquals(Math.round(five * 101f / 180f), DockGeometry.tileHeightPx(five));
+    }
+
+
+    @Test
+    public void horizontalDockDownAndOverflowUpPreserveTheAlignedColumn() {
+        List<String> grid = Arrays.asList("overflow-a", "overflow-b", "overflow-c", "overflow-d",
+                "overflow-e", "overflow-f", "overflow-g");
+        for (int dockPosition = 0; dockPosition < 5; dockPosition++) {
+            int gridPosition = DockLayoutModel.gridPositionForDock(
+                    dockPosition, false, 5, grid.size());
+            assertEquals(dockPosition, gridPosition);
+            assertEquals(dockPosition, DockLayoutModel.dockPositionForGrid(
+                    gridPosition, false, 5, 5));
+        }
+    }
+
+    @Test
+    public void horizontalDockCentersFourFiveAndSixVisibleItems() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int innerWidth = 1920;
+            for (int capacity : new int[]{4, 5, 6}) {
+                int slotWidth = DockGeometry.horizontalSlotWidthPx(innerWidth, capacity);
+                int count = capacity;
+                int offset = DockGeometry.horizontalCenterOffsetPx(innerWidth, slotWidth, count);
+                int right = offset + slotWidth * count;
+                int rightMargin = innerWidth - right;
+                assertTrue(offset >= 0);
+                assertTrue(rightMargin >= 0);
+                assertTrue(Math.abs(offset - rightMargin) <= 1);
+            }
+        }
+    }
+
+    @Test
+    public void horizontalDockCentersActualItemCountAndHandlesEmptyOrOversizedGroups() {
+        assertEquals(0, DockGeometry.horizontalCenterOffsetPx(1920, 320, 0));
+        assertEquals(0, DockGeometry.horizontalCenterOffsetPx(1920, 320, 8));
+        assertEquals(480, DockGeometry.horizontalCenterOffsetPx(1920, 320, 3));
+    }
+
+
+    @Test
+    public void p2SafeDockGeometryIsSymmetricAcrossDensitiesCapacitiesAndViewports() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int viewport : new int[]{1280, 1920}) {
+                int safeWidth = DockGeometry.horizontalContentWidthPx(viewport, density);
+                assertEquals(5, DockGeometry.horizontalGridColumns());
+                assertEquals(Math.round(96f * density), viewport - safeWidth);
+                for (int capacity : new int[]{4, 5, 6}) {
+                    int slotWidth = DockGeometry.horizontalSlotWidthPx(safeWidth, capacity);
+                    int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, slotWidth, capacity);
+                    int groupWidth = capacity * slotWidth;
+                    int rightMargin = safeWidth - offset - groupWidth;
+                    assertTrue(Math.abs(offset - rightMargin) <= 1);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void p2DockTrayBottomAndShelfBaselineUseSafeMarginsAndSharedGeometry() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int tileHeight = DockGeometry.tileHeightPx(Math.round(180f * density));
+            int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+            int bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+            int trayBottomInset = dockHeight - tileHeight
+                    - DockGeometry.dockItemTopOffsetPx(density)
+                    - Math.round(DockGeometry.trayPaddingPx(density));
+            assertEquals(DockGeometry.safeBottomInsetPx(density), bottomMargin + trayBottomInset);
+            assertEquals(Math.round(50f * density),
+                    DockGeometry.shelfBottomOffsetFromTileTopPx(density));
+            int gridBottomMargin = DockGeometry.horizontalGridBottomMarginPx(tileHeight, density);
+            int trayTopOffset = DockGeometry.dockItemTopOffsetPx(density)
+                    - Math.round(DockGeometry.trayPaddingPx(density));
+            int trayTopFromParentBottom = -dockHeight - bottomMargin + trayTopOffset;
+            int gridBottomFromParentBottom = -gridBottomMargin;
+            assertEquals(Math.round(8f * density), trayTopFromParentBottom - gridBottomFromParentBottom);
+            assertEquals(dockHeight, gridBottomMargin);
+        }
+    }
+
+
+    @Test
+    public void dockAndFiveColumnGridShareTileAndCellGeometryAtAllCapacities() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int viewport : new int[]{1280, 1920}) {
+                int safeWidth = DockGeometry.horizontalContentWidthPx(viewport, density);
+                for (int capacity : new int[]{4, 5, 6}) {
+                    int gridWidth = DockGeometry.horizontalGridWidthPx(safeWidth, capacity);
+                    int gridTileWidth = AppAdapter.tileWidthPx(gridWidth, 5, density);
+                    int dockTileWidth = DockGeometry.horizontalTileWidthPx(safeWidth, capacity, density);
+                    int slotWidth = DockGeometry.horizontalSlotWidthPx(safeWidth, capacity);
+                    assertEquals(gridTileWidth, dockTileWidth);
+                    assertTrue(slotWidth >= dockTileWidth);
+                    int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, slotWidth, capacity);
+                    int rightMargin = safeWidth - offset - slotWidth * capacity;
+                    assertTrue(Math.abs(offset - rightMargin) <= 1);
+                }
+            }
+        }
+    }
+
 }

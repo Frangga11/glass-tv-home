@@ -66,11 +66,11 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         int pos = parent.getChildAdapterPosition(view);
         if (pos >= 0 && pos < dockSize) {
             if (vertical) {
-                outRect.left = (int) (6 * density);
-                outRect.right = (int) (12 * density);
+                outRect.left = DockGeometry.dockItemTopOffsetPx(density);
+                outRect.right = DockGeometry.dockItemBottomOffsetPx(density);
             } else {
-                outRect.top = (int) (6 * density);
-                outRect.bottom = (int) (12 * density);
+                outRect.top = DockGeometry.dockItemTopOffsetPx(density);
+                outRect.bottom = DockGeometry.dockItemBottomOffsetPx(density);
             }
         }
     }
@@ -99,7 +99,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             area.setEmpty();
             return;
         }
-        float pad = 14 * density;
+        float pad = DockGeometry.trayPaddingPx(density);
         rect.inset(-pad, -pad);
         area.set(rect);
         float radius = 26 * density;
@@ -151,5 +151,6 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         rect.inset(half, half);
         edge.fit(rect);
         c.drawRoundRect(rect, radius - half, radius - half, edge.paint);
+        edge.drawWindowLight(c, rect, radius - half, 1f);
     }
 }
