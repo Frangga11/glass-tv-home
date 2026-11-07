@@ -2189,15 +2189,7 @@ public final class ModernSettingsDialog {
     }
 
     private static boolean openDeviceSettings(Context context, Intent... intents) {
-        for (Intent intent : intents) {
-            try {
-                context.startActivity(intent);
-                return true;
-            } catch (Exception ignored) {
-                // Try the next firmware-compatible settings action.
-            }
-        }
-        return false;
+        return SystemSettingsAccess.open(context, intents);
     }
 
     interface EditNameCallback {
