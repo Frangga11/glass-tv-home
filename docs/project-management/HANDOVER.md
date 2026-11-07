@@ -1640,3 +1640,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Release APK 1,624,937 bytes (+204 bytes versus prior build); non-blocking historical 1.5 MiB diagnostic warning.
 - Test artifact #13578301246; ZIP 1,424,751 bytes; SHA-256 5c9ea538f64743a0b31c91b14add41b47f091c3d57110d2f0bce83c86e537922; expires 14 Nov 2026.
 - Physical Mi TV Stick visual/remote acceptance remains NOT RUN. PR #74 OPEN/DRAFT/UNMERGED; no install, ADB, device mutation or merge.
+
+
+## Horizontal Dock centering correction — 7 November 2026
+
+- Owner's Mi TV Stick photo showed five Dock icons grouped left of screen center; prior source changes corrected holder width but did not center the group.
+- Confirmed cause: horizontal Dock RecyclerView spans the viewport and its LinearLayoutManager starts children at the left edge. Per-item width alone cannot center the group.
+- Corrected DockGeometry with horizontalCenterOffsetPx(innerWidth, tileWidth, itemCount) and applied the resulting X translation to the horizontal Dock host. Offset is based on actual visible item count and slot width; full viewport remains the width-measurement basis. Translation resets before vertical/empty layouts.
+- Added regression tests for capacities 4/5/6 at densities 1.0, 1.5, 1.75 and 2.0, plus empty/oversized groups.
+- Source branch fix/home-dock-visual-parity-v2 @ 65108d4160243442922002618e739c898c4cb9e7; PR #74 OPEN/DRAFT/UNMERGED. PR description now records the source finding and new acceptance gates.
+- CI run #42384023835 was still IN PROGRESS for the immediately preceding revision; it is not accepted as validation of latest HEAD. Latest-head CI and APK are pending.
+- Physical TV visual/remote acceptance NOT RUN. No install, ADB, device mutation or merge. The next APK must be built from the latest centered Dock source and then checked on the Mi TV Stick.
