@@ -1264,3 +1264,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI #42382202545 SUCCESS; both required jobs passed. APK 1,624,937 bytes; artifact #13578301246 (ZIP 1,424,751 bytes; SHA-256 5c9ea538f64743a0b31c91b14add41b47f091c3d57110d2f0bce83c86e537922).
 - SOURCE-HOST BUILD/UNIT QC PASS. Physical TV visual/remote acceptance NOT RUN; no install, ADB, device mutation or merge.
 - Evidence: HOME_DOCK_PATCH41_RECOVERY_2026-11-07.md.
+
+
+## Horizontal Dock centering correction — 7 November 2026
+
+- Owner's TV photo showed five Dock icons left-aligned. Source audit identified horizontal LinearLayoutManager's start alignment as the cause; earlier holder-width changes did not center the aggregate group.
+- Added calculated aggregate centering offset in DockGeometry and applied it to the horizontal Dock host. Uses full viewport for tile sizing and actual visible item count for group centering; translation resets for vertical/empty states.
+- Added regression coverage for 4/5/6 capacities at multiple densities and edge cases.
+- Latest source HEAD 65108d4160243442922002618e739c898c4cb9e7; PR #74 OPEN/DRAFT/UNMERGED.
+- Latest-head CI pending/not confirmed; prior run #42384023835 does not validate the latest commit. Physical TV acceptance NOT RUN; next APK must come from latest source.
