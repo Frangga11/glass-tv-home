@@ -1893,8 +1893,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     protected void onDestroy() {
-        WifiSettingsDialog.onHostDestroyed();
         super.onDestroy();
+        WifiSettingsDialog.onHostDestroyed();
         if (sInstance != null && sInstance.get() == this) {
             sInstance = null;
         }
