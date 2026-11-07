@@ -48,10 +48,9 @@ public class QuickSettingsDialogTest {
     }
 
     private void assertAction(Activity activity, RecordingActions actions, String tag, String expected) {
-        final int[] dismissed = {0};
         actions.lastAction = null;
         AlertDialog dialog = QuickSettingsDialog.show(activity, actions,
-                QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
+                QuickSettingsFocusGraph.WIFI, null);
         assertNotNull(dialog);
         View control = find(dialog, tag);
         assertNotNull("missing control " + tag, control);
@@ -60,7 +59,6 @@ public class QuickSettingsDialogTest {
         assertTrue(control.performClick());
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         assertEquals(expected, actions.lastAction);
-        assertEquals(1, dismissed[0]);
         assertFalse(dialog.isShowing());
     }
 
@@ -104,16 +102,14 @@ public class QuickSettingsDialogTest {
     }
 
     @Test
-    public void backCancellationDismissesAndRunsFocusReturnCallbackWithoutDispatchingAction() {
+    public void backCancellationDismissesModalWithoutDispatchingAction() {
         Activity activity = newActivity();
         RecordingActions actions = new RecordingActions();
-        final int[] dismissed = {0};
         AlertDialog dialog = QuickSettingsDialog.show(activity, actions,
-                QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
+                QuickSettingsFocusGraph.WIFI, null);
         assertNotNull(dialog);
         dialog.cancel();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
-        assertEquals(1, dismissed[0]);
         assertEquals(null, actions.lastAction);
         assertFalse(dialog.isShowing());
     }
