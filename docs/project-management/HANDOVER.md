@@ -1788,3 +1788,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #76 changed files: MainActivity.java and `tests/test_home_layout_bounds_contract.py`; PR #76 OPEN/DRAFT/UNMERGED.
 - Exact-head CI #1450 / `42404262057`: Lists/tools/docs job SUCCESS (137 tests, 1 skip); Android unit tests/release build still IN PROGRESS. APK/size/SHA-256 pending.
 - No post-fix visual evidence and no physical Mi TV Stick/remote test. Current disposition PARTIAL PASS, not visual PASS. No merge/device mutation.
+
+### Latest PR #76 candidate and exact-head synchronization — 8 November 2026
+
+- PR #76 CI #1449 / 42404084112 SUCCESS on head 012fba1c4012c7e4a05de292b69030c17a594d90, base PR #75 head 21bc204a413fce3c527e0e8761d2016bc5dc87c6. Both required jobs passed.
+- Artifact #13586419148: ZIP 1,422,343 bytes; APK 1,622,117 bytes; SHA-256 fe7db8ca54be34781b716454256e50da62b5ee3bf168fc211aa7e45095fa95b6. ZIP/APK integrity and core APK entries verified.
+- PR #76 then advanced to f085c41356e2e5f53ca13f51bc0676bdb82d350a, reapplying the same Dock host/padding correction already present in its PR #75 base. CI #1450 / 42404262057 is running on this latest branch head; do not attribute #1449 to f085c.
+- The #1449 APK remains a valid test candidate for the cumulative runtime tree. Physical Mi TV Stick visual/remote acceptance remains pending; no default-launcher change, ADB, installation or merge.
+- PR #75 exact-head CI #1448 / 42403925244 also passed both required jobs on head 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
