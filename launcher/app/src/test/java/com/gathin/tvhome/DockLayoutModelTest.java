@@ -146,6 +146,25 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void patch41DockFillsSlotsFromInventoryWhenFavoritesAreMissing() {
+        List<String> inventory = Arrays.asList("browse", "disney", "miracast", "netflix", "store", "prime", "vidio");
+        List<String> pinned = DockLayoutModel.fillDockSlots(
+                Collections.emptyList(), inventory, Collections.emptyList(), 5);
+        assertEquals(Arrays.asList("browse", "disney", "miracast", "netflix", "store"), pinned);
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(inventory, pinned, 5, value -> value);
+        assertEquals(pinned, snapshot.dockItems);
+        assertEquals(Arrays.asList("prime", "vidio"), snapshot.gridItems);
+    }
+
+    @Test
+    public void patch41DockFillHonorsExplicitUnpins() {
+        List<String> pinned = DockLayoutModel.fillDockSlots(
+                Collections.singletonList("favorite"), Arrays.asList("favorite", "excluded", "next", "last"),
+                Collections.singletonList("excluded"), 4);
+        assertEquals(Arrays.asList("favorite", "next", "last"), pinned);
+    }
+
+    @Test
     public void emptyDockKeepsEveryInstalledAppInTheGrid() {
         List<String> inventory = Arrays.asList("app-a", "app-b", "app-c");
         DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
