@@ -39,3 +39,10 @@ Latest source commit: 48f07a983ebee4370bbf13a80f85edd947c2eb31
 3. DPAD Down reveals all remaining installed apps; horizontal navigation works; DPAD Up returns to Dock and then top shelf.
 4. Confirm 4/5/6 capacity, pin/unpin, app install/update/remove refresh, resume focus restoration, and vertical Dock mode.
 5. Compare against Patch 4.1 reference and only then request visual acceptance.
+
+## Validation update — exact-head CI PASS
+
+- Exact latest source head 48f07a983ebee4370bbf13a80f85edd947c2eb31 completed CI run 42382202545 with SUCCESS; both required jobs passed, including launcher release build, unit tests, repository checks and APK publication.
+- Release APK: 1,624,937 bytes. The workflow emitted a non-blocking historical 1.5 MiB diagnostic warning; this is +204 bytes versus the prior 1,624,733-byte build.
+- Test artifact #13578301246; ZIP size 1,424,751 bytes; SHA-256 5c9ea538f64743a0b31c91b14add41b47f091c3d57110d2f0bce83c86e537922; expires 14 Nov 2026.
+- Physical TV visual/remote acceptance remains NOT RUN. CI PASS is not visual/device PASS.
