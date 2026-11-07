@@ -75,8 +75,8 @@ jobs:
           if [ "$size" -ge 1572864 ]; then
             echo "::warning::Release APK is above the historical 1.5 MiB reference; review the size delta, but do not block CI."
           fi
-      - name: Publish Home Dock visual-parity test APK (PR #74/#75)
-        if: github.event_name == 'pull_request' && (github.event.pull_request.number == 74 || github.event.pull_request.number == 75)
+      - name: Publish Home layout test APK (PR #74/#75/#76)
+        if: github.event_name == 'pull_request' && (github.event.pull_request.number == 74 || github.event.pull_request.number == 75 || github.event.pull_request.number == 76)
         uses: actions/upload-artifact@v4
         with:
           name: glass-tv-home-dock-visual-parity-${{ github.sha }}
