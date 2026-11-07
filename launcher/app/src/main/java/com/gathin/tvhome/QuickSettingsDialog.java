@@ -91,22 +91,24 @@ final class QuickSettingsDialog {
         grid.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
 
         controls[QuickSettingsFocusGraph.WIFI] = addGridTile(activity, grid, 0, 0, 1,
-                R.drawable.ic_wifi, R.string.wifi,
+                R.drawable.ic_wifi, R.string.wifi, null,
                 safe(actions.wifiSummary(), activity.getString(R.string.quick_settings_wifi_summary)),
                 density, dialogHolder, actions::openWifi);
         controls[QuickSettingsFocusGraph.RESTART] = addGridTile(activity, grid, 0, 1, 1,
-                R.drawable.ic_power, R.string.restart_tv_title,
+                R.drawable.ic_power, R.string.restart_tv_title, null,
                 activity.getString(R.string.quick_settings_restart_summary),
                 density, dialogHolder, actions::restart);
         controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 1, 0, 1,
-                R.drawable.ic_settings, R.string.app_language_title,
+                R.drawable.ic_settings, R.string.app_language_title, null,
                 safe(actions.languageSummary(), ""),
                 density, dialogHolder, actions::chooseLanguage);
         controls[QuickSettingsFocusGraph.POWER] = addGridTile(activity, grid, 1, 1, 1,
                 R.drawable.ic_power, 0, actions.powerTitle(),
+                activity.getString(R.string.quick_settings_power_summary),
                 density, dialogHolder, actions::openPowerMenu);
         controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 2, 0, 2,
                 R.drawable.ic_settings, 0, actions.cacheTitle(),
+                activity.getString(R.string.quick_settings_cache_summary),
                 density, dialogHolder, actions::cleanCache);
         content.addView(grid, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -206,10 +208,10 @@ final class QuickSettingsDialog {
     }
 
     private static View addGridTile(MainActivity activity, GridLayout grid, int row, int column, int span,
-                                    int icon, int titleRes, String titleOverride, float density,
+                                    int icon, int titleRes, String titleOverride, String summary, float density,
                                     AlertDialog[] dialogHolder, Runnable action) {
         String title = titleOverride != null ? titleOverride : activity.getString(titleRes);
-        TextView tile = createTile(activity, icon, title, "", 76, density);
+        TextView tile = createTile(activity, icon, title, summary, 76, density);
         bind(tile, dialogHolder, action);
         GridLayout.Spec rowSpec = GridLayout.spec(row);
         GridLayout.Spec columnSpec = GridLayout.spec(column, span, 1f);
