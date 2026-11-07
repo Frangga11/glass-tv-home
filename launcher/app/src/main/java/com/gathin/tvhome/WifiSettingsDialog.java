@@ -383,7 +383,7 @@ final class WifiSettingsDialog {
         String ssid = null;
         try {
             if (hasLocationPermission() && isLocationEnabled()) {
-                if (connectionInfo == null) {
+                if (connectionInfo == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                     WifiManager manager = wifiManager();
                     connectionInfo = manager != null ? manager.getConnectionInfo() : null;
                 }
@@ -475,8 +475,17 @@ final class WifiSettingsDialog {
         return activity.getString(R.string.wifi_security_open);
     }
 
-    private String signalLabel(int level) {
-        int bars = WifiManager.calculateSignalLevel(level, 4) + 1;
+    private String signalLabel(int rssi) {
+        int bars;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WifiManager manager = wifiManager();
+            int maxLevel = manager != null ? manager.getMaxSignalLevel() : 4;
+            int level = manager != null ? manager.calculateSignalLevel(rssi) : 0;
+            bars = maxLevel <= 0 ? 1
+                    : Math.max(1, Math.min(4, (int) Math.ceil((level + 1) * 4.0 / (maxLevel + 1))));
+        } else {
+            bars = WifiManager.calculateSignalLevel(rssi, 4) + 1;
+        }
         return activity.getString(R.string.wifi_signal_bars, bars);
     }
 
