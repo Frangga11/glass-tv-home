@@ -9,7 +9,7 @@
 
 - Repository: `Frangga11/glass-tv-home`
 - Owner branch: `feature/g3e-wifi`
-- Exact HEAD: `89d044152b7d8460884466deb5baa47126f48027`
+- Exact HEAD: `9125043e24b8f13232e41193ba5fe10e1821f7cd`
 - PR #70: OPEN / DRAFT / UNMERGED — [G3E Wi-Fi V05](https://github.com/Frangga11/glass-tv-home/pull/70)
 - PR base: `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`
 - G3D PR #69 remains unchanged and OPEN / DRAFT / UNMERGED.
@@ -28,10 +28,10 @@ Detailed audit: [UI_REFRESH_G3E_AUDIT_2026-11-07.md](UI_REFRESH_G3E_AUDIT_2026-1
 
 ## 3. Verification evidence
 
-- Exact-head CI #1362 / `42346091802` on `89d044152b7d8460884466deb5baa47126f48027`: both required jobs SUCCESS.
+- Exact-head CI #1363 / `42346491017` on `9125043e24b8f13232e41193ba5fe10e1821f7cd`: both required jobs SUCCESS.
 - Lists/tools/docs: 127 Python tests PASS.
 - Gradle: app and installer `testReleaseUnitTest` PASS; app and installer `assembleRelease` PASS; BUILD SUCCESSFUL.
-- APK size diagnostic: 1,617,293 bytes; +8,920 bytes / approximately 0.55% vs G3D. Informational under D-023; no artifact published.
+- APK size diagnostic: 1,617,373 bytes; +9,000 bytes / approximately 0.56% vs G3D. Informational under D-023; no artifact published.
 - Source-host QC: PASS.
 
 ## 4. Remaining boundary
