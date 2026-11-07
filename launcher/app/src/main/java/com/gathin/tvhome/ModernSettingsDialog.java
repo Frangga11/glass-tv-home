@@ -1410,7 +1410,7 @@ public final class ModernSettingsDialog {
         // Reuse the existing E01/MainActivity network-state owner; Settings is read-only here.
         TextView wifiStatus = new TextView(activity);
         wifiStatus.setText(activity.getString(R.string.wifi) + "  ·  "
-                + activity.getQuickSettingsNetworkSummary());
+                + activity.getGlobalSettingsNetworkSummary());
         wifiStatus.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
         wifiStatus.setTextColor(TvUiTokens.TEXT_PRIMARY);
         wifiStatus.setSingleLine(true);
