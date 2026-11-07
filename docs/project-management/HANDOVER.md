@@ -1632,3 +1632,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Source branch fix/home-dock-visual-parity-v2 @ 48f07a983ebee4370bbf13a80f85edd947c2eb31; PR #74 OPEN/DRAFT/UNMERGED.
 - Added horizontal Dock/Grid navigation mapping unit test. Exact-head CI run 42382202545 was IN PROGRESS at this checkpoint; no PASS claim. Physical TV acceptance NOT RUN. No TV install, ADB, device mutation or merge.
 - Detailed audit and acceptance gates: HOME_DOCK_PATCH41_RECOVERY_2026-11-07.md.
+
+
+## Patch 4.1 overflow-app recovery — validation update (7 November 2026)
+
+- Exact source head 48f07a983ebee4370bbf13a80f85edd947c2eb31 CI run #42382202545 SUCCESS; both required jobs passed, including unit tests and release build.
+- Release APK 1,624,937 bytes (+204 bytes versus prior build); non-blocking historical 1.5 MiB diagnostic warning.
+- Test artifact #13578301246; ZIP 1,424,751 bytes; SHA-256 5c9ea538f64743a0b31c91b14add41b47f091c3d57110d2f0bce83c86e537922; expires 14 Nov 2026.
+- Physical Mi TV Stick visual/remote acceptance remains NOT RUN. PR #74 OPEN/DRAFT/UNMERGED; no install, ADB, device mutation or merge.
