@@ -49,8 +49,19 @@ final class DockGeometry {
         return Math.round(SAFE_VERTICAL_MARGIN_DP * density);
     }
 
+    /**
+     * The Dock host is already inside activity_main's 56dp Home content inset.
+     * Applying the old extra 48dp inset here double-inset the Dock and made its tray
+     * visibly narrower than the left weather/clock and right prayer/ayah shelves.
+     */
     static int horizontalContentWidthPx(int viewportWidthPx, float density) {
-        return Math.max(0, viewportWidthPx - 2 * safeHorizontalInsetPx(density));
+        return Math.max(0, viewportWidthPx);
+    }
+
+    /** One visible app row plus the RecyclerView's existing top breathing inset. */
+    static int horizontalGridViewportHeightPx(int tileWidthPx, float density, int topPaddingPx) {
+        int itemHeight = itemHeightPx(tileHeightPx(tileWidthPx), density);
+        return Math.max(0, itemHeight + Math.max(0, topPaddingPx));
     }
 
     /**

@@ -101,6 +101,12 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         }
         float pad = DockGeometry.trayPaddingPx(density);
         rect.inset(-pad, -pad);
+        if (!vertical) {
+            // Horizontal tray spans the same content frame as the clock/weather and
+            // prayer/ayah shelves; tile group remains centered within this full-width glass.
+            rect.left = 0f;
+            rect.right = parent.getWidth();
+        }
         area.set(rect);
         float radius = 26 * density;
         boolean glassEnabled = parent.getContext().getSharedPreferences("wallpaper_prefs", android.content.Context.MODE_PRIVATE)
