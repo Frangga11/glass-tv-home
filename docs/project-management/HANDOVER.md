@@ -1765,3 +1765,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - This is an intermediate PR #75 Dock-only APK. It does not include PR #76 Quick Toggles changes and predates the later workflow-only head 21bc204a413fce3c527e0e8761d2016bc5dc87c6. Do not treat it as the final cumulative APK.
 - PR #75 latest head 21bc204... CI #1448 / 42403925244 IN PROGRESS. PR #76 latest head ea681545bbf356105683ef2c7da6664e29a83723 CI #1447 / 42403880493 IN PROGRESS; the artifact condition now includes PR #76.
 - Physical Mi TV Stick acceptance and post-fix visual evidence remain NOT RUN. No merge, ADB, installation or default-launcher change.
+
+### PR #76 base reconciliation — 8 November 2026
+
+- PR #75 latest head advanced to `21bc204a413fce3c527e0e8761d2016bc5dc87c6` with a workflow-only change adding PR #76 to APK publication. PR #76 was rebased onto this exact latest base; duplicate workflow change removed from its own diff.
+- PR #76 was reopened as Draft after the temporary branch reset; it is OPEN/DRAFT/UNMERGED. Base is PR #75 branch at `21bc204a413fce3c527e0e8761d2016bc5dc87c6`; head is `fix/home-global-layout-bounds` @ `012fba1c4012c7e4a05de292b69030c17a594d90`.
+- Compare confirms 2 commits ahead / 0 behind and only two changed files: `MainActivity.java` and `tests/test_home_layout_bounds_contract.py`.
+- Exact-head CI #1449 / `42404084112` is IN PROGRESS. Earlier CI #1443 passed on the pre-rebase source/test head but is not the latest exact-head gate. PR #76 APK/size/SHA-256 pending; physical TV acceptance not run.
