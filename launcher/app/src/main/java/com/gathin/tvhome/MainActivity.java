@@ -3375,12 +3375,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             focusTopBarFallback();
             return;
         }
-        // Not laid out yet: scroll there, then focus once the scroll settles. One listener at most,
-        // aimed at the latest target, so asking again mid-scroll cannot pull focus back to an older one.
-        pendingFocus = pos;
-        grid.removeOnScrollListener(focusWhenSettled);
-        grid.addOnScrollListener(focusWhenSettled);
-        grid.smoothScrollToPosition(pos);
+        // Not laid out yet: the Grid may have just been revealed and position 0 may
+        // require no scroll at all. A scroll-state listener alone can then wait forever.
+        // Retry after layout frames and request scrolling only if the holder is still absent.
+        focusTileWhenLaidOut(pos, 4);
+    }
+
+    private void focusTileWhenLaidOut(int position, int attemptsRemaining) {
+        if (adapter == null || grid == null || position < 0 || position >= adapter.getItemCount()) return;
+        RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
+        View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
+        if (card != null && card.isShown() && card.isFocusable()) {
+            card.requestFocus();
+            return;
+        }
+        if (attemptsRemaining > 0) {
+            grid.postOnAnimation(() -> focusTileWhenLaidOut(position, attemptsRemaining - 1));
+        } else {
+            grid.scrollToPosition(position);
+            grid.postOnAnimation(() -> {
+                RecyclerView.ViewHolder next = grid.findViewHolderForAdapterPosition(position);
+                View target = next != null ? next.itemView.findViewById(R.id.card) : null;
+                if (target != null && target.isShown() && target.isFocusable()) target.requestFocus();
+                else focusTopBarFallback();
+            });
+        }
     }
 
     // ---- top bar ---------------------------------------------------------------------------------
