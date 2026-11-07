@@ -765,3 +765,19 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Combined diff: five files only — ChildModeManager, ModernSettingsDialog, PinCredentialStore, PinCredentialStoreTest and ProfileManagerPersistenceTest. No docs files are included in PR #72.
 - Release APK diagnostic: 1,622,401 bytes; +2,208 bytes vs G3F; informational under D-023.
 - Canonical evidence: `UI_REFRESH_G4_AUDIT_2026-11-07.md` and `UI_REFRESH_G4_CHECKPOINT_2026-11-07.md`.
+
+
+## Image 2 Home layout recovery — inventory (7 November 2026)
+
+| Gate | Evidence-based status |
+|---|---|
+| Home shelf/Dock geometry source fix | COMPLETE on PR #73 |
+| Owner branch / exact HEAD | `fix/home-layout-image2-dock-geometry` @ `31886651d7f275155f8a526302e252dc04687e4f` |
+| PR | #73 OPEN / DRAFT / UNMERGED |
+| Exact-head CI | #1397 / `42357686726`; both required jobs SUCCESS |
+| APK artifact | #`13567869928`; 1,622,565-byte APK; ZIP integrity PASS |
+| APK SHA-256 | `cd2b301f5fb48ffdb6b9cafd74927c5da6515a4ab9aebf6dc47e6db4ddccb4ac` |
+| Physical TV visual/remote acceptance | PENDING / NOT RUN |
+| Install / ADB / merge | NOT PERFORMED |
+
+- Canonical evidence: `UI_REFRESH_IMAGE2_HOME_LAYOUT_CHECKPOINT_2026-11-07.md`.
