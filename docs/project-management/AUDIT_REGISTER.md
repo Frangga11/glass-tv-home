@@ -1541,3 +1541,22 @@ G1 is a browser-prototype result only. Production component conformance, live da
 - Regression coverage: cache freshness/location mismatch, legacy JAS cache invalidation, missing pollutant semantics, Weather V4 layout IDs, D-pad focus target restoration.
 - APK diagnostic: 1,600,893 bytes; non-blocking under D-023.
 - Current branch HEAD 8cfc5c886950cc9d27d4530ba901df872b8e5c44 differs from the CI-tested functional commit only by a one-line test comment.
+
+
+## G3C P1 Security Policy & Authorization — 7 November 2026
+
+**Disposition: SOURCE-HOST QC PASS / COMPLETE for approved source scope.** Full checkpoint: `UI_REFRESH_G3C_P1_CHECKPOINT_2026-11-07.md`.
+
+| Check | Result | Evidence |
+|---|---|---|
+| Approved protected-page allowlist | PASS | Android Settings main, Accessibility, Notification Access, Default Home/Launcher actions covered by `SystemSettingsAccess` |
+| Approved exemptions | PASS | Wi-Fi, Display, Dream/Screensaver and ordinary Quick Settings remain exempt |
+| MainActivity entrypoints | PASS | “All Settings” routes through central gate; Wi-Fi paths remain exempt |
+| ModernSettingsDialog entrypoints | PASS | Accessibility, Notification Access, Android Settings main and Home/Launcher routes delegate to central gate |
+| Firmware fallback | PASS | Xiaomi fallback retains standard action; one successful PIN authorization is reused across fallback attempts |
+| PIN mechanism preservation | PASS | Existing PIN implementation unchanged |
+| Unit coverage | PASS | Protected action allowlist and exempt action tests added |
+| Exact-head CI | PASS | Run #1307 / `42338164003`; launcher build/unit tests and Lists/tools/docs both SUCCESS |
+| APK publication / device acceptance | NOT RUN | No artifact published, installation, ADB or physical TV test |
+
+**Accepted residual risks:** existing PIN default `0000` and plain-text SharedPreferences storage remain unchanged by scope; launcher-controlled routes do not constitute system-wide Android parental control. Physical Android TV/remote/OEM acceptance remains deferred.
