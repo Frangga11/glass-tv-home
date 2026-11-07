@@ -1564,3 +1564,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Release APK diagnostic 1,622,401 bytes; informational under D-023, no artifact.
 - Four-digit PIN under unlimited attempts remains guessable; do not claim brute-force immunity.
 - **Next separate gate:** physical Android TV/Mi TV Stick/remote/OEM acceptance, only when explicitly authorized. It is PENDING / NOT RUN; source-host completion does not imply device verification.
+
+
+## Current resume checkpoint — Image 2 Home layout recovery (7 November 2026)
+
+- **Build delivered / CI PASS.** Canonical checkpoint: `UI_REFRESH_IMAGE2_HOME_LAYOUT_CHECKPOINT_2026-11-07.md`.
+- Owner branch `fix/home-layout-image2-dock-geometry` @ `31886651d7f275155f8a526302e252dc04687e4f`; source implementation commit `e8d403142043d27bbfe4c5b4c7cb2b67eb058eaa`. PR #73 OPEN/DRAFT/UNMERGED, base G4 branch exact SHA `7146de58953325fdfc6c98501828676f143e64cf`.
+- Corrected Home information-shelf anchoring so vertical Dock focus movement does not move wallpaper description, Ayah and prayer-schedule shelves. Existing horizontal behavior and Dock controls are retained.
+- Exact-head CI #1397 / `42357686726`: both required jobs SUCCESS. APK artifact ID `13567869928`, ZIP SHA-256 `2c9b6a3ee8bbfc74971ca8734354fc819dfcdcd97a95499786998856f28c1298`; extracted APK 1,622,565 bytes, SHA-256 `cd2b301f5fb48ffdb6b9cafd74927c5da6515a4ab9aebf6dc47e6db4ddccb4ac`; APK archive integrity PASS. Artifact expires 14 Nov 2026.
+- This is a CI test APK, not a production-signing claim. Physical TV visual/remote acceptance remains PENDING / NOT RUN; no APK installation, ADB, device mutation, merge or retarget was performed.
+- **Next:** controlled Image 2 acceptance on TV, including wallpaper focal position, Ayah/prayer area, Dock capacities 4/5/6, horizontal/vertical orientation, D-pad focus and 1080p geometry. Fix only reproducible scoped defects.
