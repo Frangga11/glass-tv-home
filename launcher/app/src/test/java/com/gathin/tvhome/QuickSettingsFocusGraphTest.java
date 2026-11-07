@@ -16,6 +16,8 @@ public class QuickSettingsFocusGraphTest {
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WIFI, QuickSettingsFocusGraph.RIGHT));
         assertEquals(QuickSettingsFocusGraph.LANGUAGE,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WIFI, QuickSettingsFocusGraph.DOWN));
+        assertEquals(QuickSettingsFocusGraph.RESTART,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CLOSE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.POWER,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.LANGUAGE, QuickSettingsFocusGraph.RIGHT));
         assertEquals(QuickSettingsFocusGraph.CACHE,
@@ -51,7 +53,7 @@ public class QuickSettingsFocusGraphTest {
             }
         }
         assertEquals(QuickSettingsFocusGraph.COUNT, visited.size());
-        assertTrue(QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CLOSE,
-                QuickSettingsFocusGraph.DOWN) == QuickSettingsFocusGraph.WIFI);
+        assertEquals(QuickSettingsFocusGraph.RESTART,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CLOSE, QuickSettingsFocusGraph.DOWN));
     }
 }

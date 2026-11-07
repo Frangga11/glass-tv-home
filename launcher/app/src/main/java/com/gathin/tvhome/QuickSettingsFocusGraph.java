@@ -29,7 +29,6 @@ final class QuickSettingsFocusGraph {
         switch (node) {
             case WIFI:
                 if (direction == RIGHT) return RESTART;
-                if (direction == UP) return CLOSE;
                 if (direction == DOWN) return LANGUAGE;
                 break;
             case RESTART:
@@ -76,8 +75,7 @@ final class QuickSettingsFocusGraph {
                 if (direction == DOWN) return CLOSE;
                 break;
             case CLOSE:
-                if (direction == UP) return ANDROID_SETTINGS;
-                if (direction == DOWN) return WIFI;
+                if (direction == DOWN) return RESTART;
                 break;
             default:
                 break;
