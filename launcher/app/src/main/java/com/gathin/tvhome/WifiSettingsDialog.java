@@ -160,7 +160,10 @@ final class WifiSettingsDialog {
             updatePrerequisites();
             showCachedResults();
             connectFocusOrder();
-            rescan.requestFocus();
+            View initial = permissionAction.getVisibility() == View.VISIBLE ? permissionAction
+                    : locationAction.getVisibility() == View.VISIBLE ? locationAction
+                    : rescan.getVisibility() == View.VISIBLE ? rescan : androidSettings;
+            initial.requestFocus();
             registerScanReceiver();
             requestScan();
         });
@@ -173,6 +176,21 @@ final class WifiSettingsDialog {
         active = new WeakReference<>(screen);
         screen.dialog.show();
         return screen.dialog;
+    }
+
+    static void onHostResumed() {
+        WifiSettingsDialog screen = active.get();
+        if (screen != null && screen.dialog.isShowing()) {
+            screen.refreshStatus();
+            screen.updatePrerequisites();
+            screen.showCachedResults();
+            screen.requestScan();
+        }
+    }
+
+    static void onHostDestroyed() {
+        WifiSettingsDialog screen = active.get();
+        if (screen != null && screen.dialog.isShowing()) screen.dialog.dismiss();
     }
 
     static void onPermissionResult(int requestCode) {
@@ -293,10 +311,15 @@ final class WifiSettingsDialog {
         boolean wifi = false;
         try {
             ConnectivityManager manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-            Network activeNetwork = manager != null ? manager.getActiveNetwork() : null;
-            NetworkCapabilities caps = activeNetwork != null && manager != null
-                    ? manager.getNetworkCapabilities(activeNetwork) : null;
-            wifi = caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+            if (manager != null) {
+                for (Network network : manager.getAllNetworks()) {
+                    NetworkCapabilities caps = manager.getNetworkCapabilities(network);
+                    if (caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                        wifi = true;
+                        break;
+                    }
+                }
+            }
         } catch (RuntimeException ignored) { }
 
         if (!wifi) {
@@ -319,6 +342,13 @@ final class WifiSettingsDialog {
 
     private void showCachedResults() {
         if (!dialog.isShowing()) return;
+        String focusedSsid = null;
+        View focused = activity.getCurrentFocus();
+        if (focused != null && focused.getParent() == networkRows
+                && focused.getTag() instanceof String) {
+            String tag = (String) focused.getTag();
+            if (tag.startsWith("wifi_network:")) focusedSsid = tag.substring("wifi_network:".length());
+        }
         networkRows.removeAllViews();
         List<ScanResult> results = Collections.emptyList();
         if (hasLocationPermission() && isLocationEnabled() && wifiEnabled()) {
@@ -351,7 +381,7 @@ final class WifiSettingsDialog {
                 String security = securityLabel(result.capabilities);
                 String label = activity.getString(R.string.wifi_network_row, result.SSID, security,
                         signalLabel(result.level));
-                TextView row = action(label, "wifi_network_" + i,
+                TextView row = action(label, "wifi_network:" + result.SSID,
                         activity.getResources().getDisplayMetrics().density,
                         () -> dismissThen(openSystemWifiSettings));
                 networkRows.addView(row);
@@ -360,6 +390,15 @@ final class WifiSettingsDialog {
         }
         refreshStatus();
         connectFocusOrder();
+        if (focusedSsid != null) {
+            for (int i = 0; i < networkRows.getChildCount(); i++) {
+                View child = networkRows.getChildAt(i);
+                if (("wifi_network:" + focusedSsid).equals(child.getTag())) {
+                    child.requestFocus();
+                    break;
+                }
+            }
+        }
     }
 
     private String securityLabel(String capabilities) {
