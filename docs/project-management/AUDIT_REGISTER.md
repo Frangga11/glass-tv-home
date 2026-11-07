@@ -1622,3 +1622,25 @@ G1 is a browser-prototype result only. Production component conformance, live da
 | Physical TV / remote / OEM | DEFERRED / NOT RUN | No APK install, ADB or device mutation |
 
 **G3E disposition: COMPLETE / SOURCE-HOST QC PASS.** Branch `feature/g3e-wifi` @ `9125043e24b8f13232e41193ba5fe10e1821f7cd`; PR #70 OPEN/DRAFT/UNMERGED. Known risk: Android deprecates `WifiManager.startScan()` since API 28 and throttles active scans; current behavior is best-effort with Android Settings fallback. Next package: G3F Global Settings.
+
+
+## UI Refresh G3F — Global Settings source/host QC register (7 November 2026)
+
+| Check | Result | Evidence |
+|---|---|---|
+| V06 header, status pill and split-pane shell | PASS | `ModernSettingsDialog`; source review against canonical V06 |
+| Seven-category taxonomy | PASS | Localized labels in AppLanguage; source-contract tests |
+| Existing state owners | PASS | ProfileManager, ChildModeManager and MainActivity/E01 reused |
+| Localized control-level search | PASS | Search catalogue, all-term matcher, category routing and focus target resolution |
+| Legacy focus migration / dismissal restoration | PASS | Search/sidebar path migration, profile-summary index migration and origin focus restoration |
+| Lifecycle / external Settings return | PASS | Weak references; host resume refresh; destruction cleanup |
+| Resource parity | PASS | 77 referenced search strings found in default, Indonesian and English resources |
+| Regression tests | PASS | Profile summary ordering test included in exact HEAD |
+| Python repository tests | PASS | 134 tests |
+| App and installer unit tests / release builds | PASS | Exact-head Gradle validation |
+| Exact-head CI | PASS | #1376 / `42348837445`, both required jobs SUCCESS |
+| SOURCE-HOST QC | **PASS** | Exact HEAD `455b619c3eefe417ac0152a51f3cb12478a8f4a9` |
+| Physical Android TV / remote / OEM acceptance | **PENDING / NOT RUN** | Not performed |
+
+- APK diagnostic: 1,620,193 bytes; +2,820 bytes (~0.17%) vs G3E. Historical 1.5 MiB warning is informational under D-023; no artifact published.
+- **G3F disposition: COMPLETE / SOURCE-HOST QC PASS.** PR #71 OPEN/DRAFT/UNMERGED. Physical acceptance and G4 integration remain separate gates.
