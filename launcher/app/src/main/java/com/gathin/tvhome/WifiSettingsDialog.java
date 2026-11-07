@@ -376,6 +376,7 @@ final class WifiSettingsDialog {
 
     private void refreshStatus() {
         boolean wifi = false;
+        WifiInfo connectionInfo = null;
         try {
             ConnectivityManager manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
             if (manager != null) {
@@ -383,6 +384,10 @@ final class WifiSettingsDialog {
                     NetworkCapabilities caps = manager.getNetworkCapabilities(network);
                     if (caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                         wifi = true;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                                && caps.getTransportInfo() instanceof WifiInfo) {
+                            connectionInfo = (WifiInfo) caps.getTransportInfo();
+                        }
                         break;
                     }
                 }
@@ -397,9 +402,11 @@ final class WifiSettingsDialog {
         String ssid = null;
         try {
             if (hasLocationPermission()) {
-                WifiManager manager = wifiManager();
-                WifiInfo info = manager != null ? manager.getConnectionInfo() : null;
-                if (info != null) ssid = cleanSsid(info.getSSID());
+                if (connectionInfo == null) {
+                    WifiManager manager = wifiManager();
+                    connectionInfo = manager != null ? manager.getConnectionInfo() : null;
+                }
+                if (connectionInfo != null) ssid = cleanSsid(connectionInfo.getSSID());
             }
         } catch (RuntimeException ignored) { }
         status.setText(ssid == null
