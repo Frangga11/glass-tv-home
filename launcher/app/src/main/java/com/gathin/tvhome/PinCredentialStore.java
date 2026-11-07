@@ -22,6 +22,7 @@ final class PinCredentialStore {
     private static final String LEGACY_KEY_PIN = "security_pin";
     private static final String KEY_SALT = "security_pin_salt_v1";
     private static final String KEY_HASH = "security_pin_hash_v1";
+    private static final String KEY_IS_DEFAULT = "security_pin_is_default_v1";
     private static final String DEFAULT_PIN = "0000";
     private static final int SALT_BYTES = 16;
     private static final int HASH_BITS = 256;
@@ -38,7 +39,7 @@ final class PinCredentialStore {
             return DEFAULT_PIN.equals(prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN));
         }
         if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) return true;
-        return verifyStoredPin(prefs, DEFAULT_PIN);
+        return prefs.getBoolean(KEY_IS_DEFAULT, false);
     }
 
     static synchronized boolean verifyPin(Context context, String entered) {
@@ -93,6 +94,7 @@ final class PinCredentialStore {
         prefs.edit()
                 .putString(KEY_SALT, Base64.encodeToString(salt, Base64.NO_WRAP))
                 .putString(KEY_HASH, Base64.encodeToString(hash, Base64.NO_WRAP))
+                .putBoolean(KEY_IS_DEFAULT, DEFAULT_PIN.equals(pin))
                 .remove(LEGACY_KEY_PIN)
                 .commit();
     }
