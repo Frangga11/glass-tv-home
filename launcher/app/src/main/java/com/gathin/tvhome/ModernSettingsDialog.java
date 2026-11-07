@@ -1545,6 +1545,7 @@ public final class ModernSettingsDialog {
 
     private static void clearHostReferences(MainActivity activity) {
         if (sSettingsHost == null || sSettingsHost.get() != activity) return;
+        sDpadLeftTarget = null;
         sSettingsHost = null;
         sSettingsDialog = null;
         sSettingsNetworkStatus = null;
