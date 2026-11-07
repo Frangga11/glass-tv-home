@@ -925,7 +925,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     showModuleCards();
                     return true;
                 }
-                open(systemIntent(Settings.ACTION_SETTINGS));
+                openSystemSettings(systemIntent(Settings.ACTION_SETTINGS));
                 return true;
             });
         }
@@ -3959,7 +3959,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         addSeparator(rows);
         addInputRow(rows, close, R.drawable.ic_settings, getString(R.string.glass_tv_settings_label), -1, this::showSettingsPopup);
         addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strAllSettings(this), -1,
-                () -> open(systemIntent(Settings.ACTION_SETTINGS)));
+                () -> openSystemSettings(systemIntent(Settings.ACTION_SETTINGS)));
         addInputRow(rows, close, R.drawable.ic_close, AppLanguage.strClose(this), -1, () -> closeMenu(true));
 
         int width = (int) (285 * density);
@@ -7043,7 +7043,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     Intent systemIntent(String standardAction) {
         Intent i = new Intent(standardAction);
         if (i.resolveActivity(getPackageManager()) != null) return i;
-        i = new Intent().setComponent(new ComponentName(
+        i = new Intent(standardAction).setComponent(new ComponentName(
                 "com.xiaomi.mitv.settings", "com.xiaomi.mitv.settings.entry.MainActivity"));
         if (i.resolveActivity(getPackageManager()) != null) return i;
         return new Intent(standardAction);   // nothing found: let open() show the can't-open toast
@@ -7083,6 +7083,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         } catch (Exception e) {
             TvFeedback.show(this, R.string.not_available, Toast.LENGTH_SHORT);
         }
+    }
+
+    private void openSystemSettings(Intent intent) {
+        SystemSettingsAccess.open(this, intent);
     }
 
     private void open(Intent i) {
