@@ -854,7 +854,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockRecycler.setAdapter(dockAdapter);
         dockRecycler.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             int measuredWidth = Math.max(0, right - left);
-            if (dockAdapter != null && measuredWidth > 0) dockAdapter.setHorizontalViewportWidth(measuredWidth);
+            if (dockAdapter != null && measuredWidth > 0) {
+                dockRecycler.post(() -> {
+                    if (dockAdapter != null && dockRecycler.getWidth() == measuredWidth) {
+                        dockAdapter.setHorizontalViewportWidth(measuredWidth);
+                    }
+                });
+            }
         });
         applyDockLayout();
         glider.addCompanion(dockRecycler, tray.area);
