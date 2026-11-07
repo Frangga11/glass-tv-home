@@ -34,28 +34,38 @@ final class PinCredentialStore {
     static synchronized boolean isDefaultPin(Context context) {
         if (context == null) return true;
         SharedPreferences prefs = prefs(context);
-        if (prefs.contains(LEGACY_KEY_PIN)) {
-            return DEFAULT_PIN.equals(prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN));
+        try {
+            if (prefs.contains(LEGACY_KEY_PIN)) {
+                return DEFAULT_PIN.equals(prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN));
+            }
+            if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) return true;
+            return prefs.getBoolean(KEY_IS_DEFAULT, false);
+        } catch (ClassCastException exception) {
+            // Corrupt preference types must not crash Settings or imply the default PIN.
+            return false;
         }
-        if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) return true;
-        return prefs.getBoolean(KEY_IS_DEFAULT, false);
     }
 
     static synchronized boolean verifyPin(Context context, String entered) {
         if (context == null || entered == null) return false;
         SharedPreferences prefs = prefs(context);
-        if (prefs.contains(LEGACY_KEY_PIN)) {
-            String legacyPin = prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN);
-            if (legacyPin == null || !legacyPin.equals(entered)) return false;
-            // Migrate only after a successful legacy verification. A failed disk write
-            // leaves the old credential intact and usable on the next attempt.
-            migrateLegacyPin(prefs);
-            return true;
+        try {
+            if (prefs.contains(LEGACY_KEY_PIN)) {
+                String legacyPin = prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN);
+                if (legacyPin == null || !legacyPin.equals(entered)) return false;
+                // Migrate only after a successful legacy verification. A failed disk write
+                // leaves the old credential intact and usable on the next attempt.
+                migrateLegacyPin(prefs);
+                return true;
+            }
+            if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) {
+                return DEFAULT_PIN.equals(entered);
+            }
+            return verifyStoredPin(prefs, entered);
+        } catch (ClassCastException exception) {
+            // Fail closed when persisted credential values have unexpected types.
+            return false;
         }
-        if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) {
-            return DEFAULT_PIN.equals(entered);
-        }
-        return verifyStoredPin(prefs, entered);
     }
 
     static synchronized boolean setPin(Context context, String pin) {
