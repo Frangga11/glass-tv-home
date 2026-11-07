@@ -101,7 +101,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 return key != null && listener != null && listener.onDockTileHeld(key, focusedCard);
             }
         };
-        return new AppAdapter.Holder(item, holderListener, reducedMotion, iconAnimationsEnabled);
+        return new AppAdapter.Holder(item, holderListener, reducedMotion, iconAnimationsEnabled, true);
     }
 
     @Override
