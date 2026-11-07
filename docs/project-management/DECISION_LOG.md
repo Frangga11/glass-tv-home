@@ -470,3 +470,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - No new permission, manifest change or third-party dependency is justified for G3D.
 - G3D source-host closure does not waive physical Android TV/remote/OEM/overscan acceptance. PR #69 remains Draft/unmerged; physical testing and merge require their existing separate approvals.
 - Status: IMPLEMENTED / EXACT-HEAD CI VERIFIED; physical acceptance DEFERRED.
+
+
+## D-030 — G3E Wi-Fi remains an Android-owned network operation surface (7 November 2026)
+
+- Implement the G1 V6 V05 Wi-Fi status, nearby list and best-effort rescan surface; reuse G2 dialog/material/focus contracts and G3D Quick Settings entry/return.
+- Reuse MainActivity's existing network-state owner; do not register a duplicate ConnectivityManager callback or create a parallel network subsystem.
+- Fine-location permission, Location service and Wi-Fi enabled state gate scan/result access. Declare CHANGE_WIFI_STATE only because Android requires it for WifiManager.startScan; never use it to toggle the radio.
+- Android Settings remains the owner for network selection, saved networks, authentication, connection/disconnection and radio state. Do not collect/store credentials or claim unsupported direct control.
+- Treat startScan as best-effort: Android may throttle requests and the API is deprecated since API 28. Preserve last results, asynchronous completion, timeout/error states and Android Settings fallback; do not represent a rejected/stale scan as fresh.
+- Restore Quick Settings after Android Settings returns so its network summary is refreshed. If system Settings cannot launch, restore the parent immediately.
+- SOURCE-HOST QC may pass independently; physical Android TV/remote/OEM acceptance remains a separate gate.
+- Status: IMPLEMENTED / EXACT-HEAD CI VERIFIED; DEVICE ACCEPTANCE PENDING.
