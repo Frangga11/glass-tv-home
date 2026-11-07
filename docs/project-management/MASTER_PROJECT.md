@@ -1206,3 +1206,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - CI #1397 / `42357686726`: both required jobs SUCCESS. Test APK artifact #`13567869928`; archive SHA-256 `2c9b6a3ee8bbfc74971ca8734354fc819dfcdcd97a95499786998856f28c1298`; APK size 1,622,565 bytes; APK SHA-256 `cd2b301f5fb48ffdb6b9cafd74927c5da6515a4ab9aebf6dc47e6db4ddccb4ac`; ZIP integrity PASS.
 - Physical Image 2 visual/remote acceptance is PENDING / NOT RUN. No install, ADB, device mutation or merge. This is a test APK, not a production-signed release.
 - Evidence: `UI_REFRESH_IMAGE2_HOME_LAYOUT_CHECKPOINT_2026-11-07.md`.
+
+
+## Image 2 bottom Dock correction — project checkpoint (7 November 2026)
+
+- User TV photo confirmed previous build left Dock too high. Source root cause: legacy `rows_below_dock` raised the horizontal Dock while Grid padding placed apps below it.
+- Corrective branch `fix/home-layout-image2-dock-geometry` @ `c3d749db7373052019063f5057ac08f0eda797b0`; PR #73 OPEN/DRAFT/UNMERGED, base G4 exact SHA `7146de58953325fdfc6c98501828676f143e64cf`.
+- Horizontal Dock anchored to Home host bottom; App Grid viewport above Dock with capacity-independent reserve (max tile/capacity 4); D-pad navigation updated and regression test added. Vertical side rail preserved.
+- Exact-head CI #1404 / `42358639396`: both required jobs SUCCESS. APK artifact #`13568806731`, size 1,622,545 bytes, SHA-256 `3b01c1126043c2e8025e1852d7de5d09812b091986af21e9c1c607188cb926ab`; ZIP SHA-256 `a63aaf7577d15ad2cb2e7a1b8f1461b35027f9531a5e15e7ae492d9ef055e847`; integrity PASS.
+- This test APK supersedes the earlier Image 2 build. Physical TV visual/remote acceptance PENDING / NOT RUN; no installation or merge.
+- Evidence: `UI_REFRESH_IMAGE2_BOTTOM_DOCK_CORRECTION_2026-11-07.md`.
