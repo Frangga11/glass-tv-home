@@ -32,7 +32,8 @@ public class WifiSettingsDialogTest {
         assertTrue(rescan.isFocusable());
         assertTrue(settings.isClickable());
         assertTrue(permission.getNextFocusDownId() != 0);
-        dialog.cancel();
+        assertTrue(dialog.isCancelable());
+        dialog.dismiss();
         assertTrue(returns[0] == 1);
     }
 }
