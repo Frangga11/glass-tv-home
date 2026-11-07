@@ -60,6 +60,8 @@ class GlobalSettingsSourceContractTest(unittest.TestCase):
         self.assertIn("WeakReference<MainActivity> sSettingsHost", settings)
         self.assertIn("findControlByDescription(content, focusedDescription)", settings)
         self.assertIn("legacyFocusSignature(current)", settings)
+        self.assertIn("resolveLegacySidebarFocusPath(leftCol, searchBox", settings)
+        self.assertIn("resolveLegacyRightFocusPath(rightContent, activeTab[0]", settings)
 
 
 if __name__ == "__main__":
