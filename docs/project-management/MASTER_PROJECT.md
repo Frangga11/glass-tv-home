@@ -1330,3 +1330,8 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - New root cause: `MainActivity.alignTopButtons()` shifted the top menu based on the last Dock card and ran on Grid/Dock global layout. This caused unrelated Quick Toggles to move with Dock count. PR #76 removes this coupling and retains XML end alignment in the 56dp safe content frame.
 - PR #76 branch `fix/home-global-layout-bounds` @ `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`, Draft PR #76, stacked on PR #75. Regression contract added. CI #1443 was pending at checkpoint after correction of a test selector failure in run #1442.
 - No physical Mi TV Stick validation, post-fix screenshots, PR #76 APK/checksum, merge or default-launcher change. See `HOME_LAYOUT_FIX_2026-11-08.md`.
+
+### GTVH-HOME-LAYOUT-FIX-001 — CI follow-up
+
+- Source/test head `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`: CI #1443 SUCCESS; 137 Python tests (1 intentional skip), Android unit tests and release build passed.
+- Added PR #76 to the CI APK artifact publication condition. Latest branch head `ea681545bbf356105683ef2c7da6664e29a83723`; CI #1447 is rebuilding the exact latest head and publishing the physical-test APK. APK artifact/size/checksum remain pending until that run completes.
