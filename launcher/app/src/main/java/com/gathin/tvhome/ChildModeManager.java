@@ -50,7 +50,6 @@ public final class ChildModeManager {
         thread.setDaemon(true);
         return thread;
     });
-    private static final Handler MAIN_HANDLER = new Handler(Looper.getMainLooper());
 
     private ChildModeManager() {}
 
@@ -154,6 +153,12 @@ public final class ChildModeManager {
         PinCredentialStore.setPin(ctx, pin);
     }
 
+    private static void postPinResult(Runnable action) {
+        // Resolve the main looper lazily. Robolectric and non-UI callers may load this
+        // manager from a thread without a prepared looper.
+        new Handler(Looper.getMainLooper()).post(action);
+    }
+
     /** Performs PIN derivation away from the UI thread; no failed-attempt state is kept. */
     public static void verifyPinAsync(Context ctx, String entered, PinVerificationCallback callback) {
         if (ctx == null) {
@@ -163,7 +168,7 @@ public final class ChildModeManager {
         Context appContext = ctx.getApplicationContext();
         PIN_EXECUTOR.execute(() -> {
             boolean valid = PinCredentialStore.verifyPin(appContext, entered);
-            MAIN_HANDLER.post(() -> {
+            postPinResult(() -> {
                 if (callback != null) callback.onResult(valid);
             });
         });
