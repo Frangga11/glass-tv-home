@@ -1796,3 +1796,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #76 then advanced to f085c41356e2e5f53ca13f51bc0676bdb82d350a, reapplying the same Dock host/padding correction already present in its PR #75 base. CI #1450 / 42404262057 is running on this latest branch head; do not attribute #1449 to f085c.
 - The #1449 APK remains a valid test candidate for the cumulative runtime tree. Physical Mi TV Stick visual/remote acceptance remains pending; no default-launcher change, ADB, installation or merge.
 - PR #75 exact-head CI #1448 / 42403925244 also passed both required jobs on head 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+
+### Final exact-head Home layout result — 8 November 2026
+
+- PR #76 current head f085c41356e2e5f53ca13f51bc0676bdb82d350a, base PR #75 head 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+- CI #1450 / 42404262057 SUCCESS; both required jobs passed, including regression contract, Android unit tests and release build.
+- Artifact #13585769799: ZIP 1,422,487 bytes; APK 1,622,153 bytes; SHA-256 90fe5131a84231d1a725c4eb02b672d94a1c6c1a07f2cda8db710bc7c8ddc135. ZIP/APK integrity passed; manifest, DEX and resources table present.
+- PR #75 CI #1448 / 42403925244 also SUCCESS on head 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+- Final status: PENDING DEVICE ACCEPTANCE. No post-fix physical video, remote acceptance, ADB, installation, default-launcher change or merge. All three PRs remain Draft/unmerged.
