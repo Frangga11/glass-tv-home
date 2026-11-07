@@ -966,3 +966,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Latest PR #76 head | ea681545bbf356105683ef2c7da6664e29a83723; CI #1447 IN PROGRESS |
 | Combined PR #76 APK / SHA-256 | PENDING |
 | Physical Mi TV Stick acceptance | PENDING / NOT RUN |
+
+### PR #76 base reconciliation — latest inventory
+
+| Item | Status |
+|---|---|
+| Latest PR #75 base | `21bc204a413fce3c527e0e8761d2016bc5dc87c6` |
+| PR #76 head | `012fba1c4012c7e4a05de292b69030c17a594d90` |
+| Base → head | 2 ahead / 0 behind |
+| PR #76 changed files | `MainActivity.java`; `tests/test_home_layout_bounds_contract.py` |
+| PR #76 state | OPEN / DRAFT / UNMERGED |
+| Exact-head CI #1449 | IN PROGRESS |
+| PR #76 APK / size / SHA-256 | PENDING |
+| Physical Mi TV Stick acceptance | PENDING / NOT RUN |
