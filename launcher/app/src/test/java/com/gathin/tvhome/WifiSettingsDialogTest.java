@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -37,6 +38,8 @@ public class WifiSettingsDialogTest {
         assertNotNull(close);
         assertTrue(rescan.isFocusable());
         assertTrue(settings.isClickable());
+        assertNotEquals(View.NO_ID, rescan.getId());
+        assertNotEquals(View.NO_ID, settings.getId());
         assertTrue(rescan.getNextFocusRightId() == settings.getId());
         assertTrue(settings.getNextFocusLeftId() == rescan.getId());
         assertTrue(permission.getNextFocusDownId() != 0);
