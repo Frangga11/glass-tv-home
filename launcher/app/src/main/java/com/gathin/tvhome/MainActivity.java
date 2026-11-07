@@ -4639,7 +4639,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     new java.lang.ref.WeakReference<>(MainActivity.this);
             CacheCleaner.cleanNow(MainActivity.this, (bytesFreed, percentBefore, percentAfter, systemTrimmed) -> {
                 MainActivity activity = activityRef.get();
-                if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+                if (activity == null || activity.isFinishing() || activity.isDestroyed() || !activity.hasWindowFocus()) return;
 
                 SoundEffects.playSelect();
                 String freedStr = android.text.format.Formatter.formatFileSize(activity, bytesFreed);
