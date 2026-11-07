@@ -49,7 +49,7 @@ final class QuickSettingsFocusGraph {
                 break;
             case CACHE:
                 if (direction == UP) return LANGUAGE;
-                if (direction == DOWN) return NEXT_PHOTO;
+                if (direction == DOWN) return WALLPAPER_MANAGE;
                 break;
             case NEXT_PHOTO:
                 if (direction == RIGHT) return INTERVAL;
