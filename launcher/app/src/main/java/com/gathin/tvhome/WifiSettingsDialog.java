@@ -216,6 +216,14 @@ final class WifiSettingsDialog {
         }
     }
 
+    static void onExternalSettingsUnavailable() {
+        WifiSettingsDialog waiting = pendingReturn;
+        if (waiting != null) {
+            pendingReturn = null;
+            waiting.notifyReturnToParent();
+        }
+    }
+
     static void onHostDestroyed() {
         WifiSettingsDialog screen = active.get();
         if (screen != null && screen.dialog.isShowing()) screen.dialog.dismiss();
