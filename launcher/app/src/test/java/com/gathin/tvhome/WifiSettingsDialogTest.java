@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -23,6 +24,8 @@ public class WifiSettingsDialogTest {
         final int[] returns = {0};
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> returns[0]++);
         assertNotNull(dialog);
+        assertFalse(activity.isFinishing());
+        assertFalse(activity.isDestroyed());
         View permission = dialog.getWindow().getDecorView().findViewWithTag("wifi_permission");
         View rescan = dialog.getWindow().getDecorView().findViewWithTag("wifi_rescan");
         View settings = dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings");
@@ -36,6 +39,7 @@ public class WifiSettingsDialogTest {
         assertTrue(permission.getNextFocusDownId() != 0);
         dialog.cancel();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertFalse(dialog.isShowing());
         assertTrue(returns[0] == 1);
     }
 }
