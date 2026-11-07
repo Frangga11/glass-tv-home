@@ -1681,6 +1681,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updatePrayerTimes();
         updateDateAndPeriod();
         updateWifiLabel();
+        WifiSettingsDialog.onHostResumed();
         updateWeatherAqi();
         WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
         updateIslamicShelf();
@@ -1892,6 +1893,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     protected void onDestroy() {
+        WifiSettingsDialog.onHostDestroyed();
         super.onDestroy();
         if (sInstance != null && sInstance.get() == this) {
             sInstance = null;
