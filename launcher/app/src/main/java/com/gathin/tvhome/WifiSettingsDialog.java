@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -129,8 +130,13 @@ final class WifiSettingsDialog {
 
         TextView title = text(R.string.wifi, TvUiTokens.PAGE_HEADER_SP, true, density);
         content.addView(title);
-        status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, false, density);
-        status.setPadding(0, dp(density, 8), 0, dp(density, 10));
+        status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
+        status.setPadding(dp(density, 16), dp(density, 12), dp(density, 16), dp(density, 12));
+        GradientDrawable connectedSurface = new GradientDrawable();
+        connectedSurface.setColor(TvUiTokens.SURFACE_IDLE);
+        connectedSurface.setCornerRadius(dp(density, TvUiTokens.CARD_RADIUS_DP));
+        connectedSurface.setStroke(dp(density, 1), TvUiTokens.BORDER);
+        status.setBackground(connectedSurface);
         content.addView(status);
 
         TextView networksHeading = text(R.string.wifi_available_networks, TvUiTokens.SECTION_TITLE_SP, true, density);
@@ -139,24 +145,35 @@ final class WifiSettingsDialog {
         scanState.setPadding(0, dp(density, 4), 0, dp(density, 6));
         content.addView(scanState);
 
-        networkRows = new LinearLayout(activity);
-        networkRows.setOrientation(LinearLayout.VERTICAL);
-        content.addView(networkRows, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
         permissionAction = action(R.string.wifi_grant_location_permission, "wifi_permission", density,
                 this::requestLocationPermission);
         locationAction = action(R.string.wifi_enable_location, "wifi_location_settings", density,
                 () -> dismissThen(() -> launch(Settings.ACTION_LOCATION_SOURCE_SETTINGS)));
+        networkRows = new LinearLayout(activity);
+        networkRows.setOrientation(LinearLayout.VERTICAL);
+        content.addView(permissionAction);
+        content.addView(locationAction);
+        content.addView(networkRows, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
         androidSettings = action(R.string.wifi_open_android_settings, "wifi_open_settings", density,
                 () -> dismissThen(openSystemWifiSettings));
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
-
-        content.addView(permissionAction);
-        content.addView(locationAction);
-        content.addView(rescan);
-        content.addView(androidSettings);
+        LinearLayout actions = new LinearLayout(activity);
+        actions.setOrientation(LinearLayout.HORIZONTAL);
+        actions.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams actionWidth = new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        actionWidth.rightMargin = dp(density, 6);
+        rescan.setLayoutParams(actionWidth);
+        LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        settingsWidth.leftMargin = dp(density, 6);
+        androidSettings.setLayoutParams(settingsWidth);
+        actions.addView(rescan);
+        actions.addView(androidSettings);
+        content.addView(actions);
         content.addView(close);
 
         AlertDialog built = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
@@ -553,26 +570,25 @@ final class WifiSettingsDialog {
     }
 
     private View firstFocusableControl() {
+        if (permissionAction.getVisibility() == View.VISIBLE) return permissionAction;
+        if (locationAction.getVisibility() == View.VISIBLE) return locationAction;
         for (int i = 0; i < networkRows.getChildCount(); i++) {
             View child = networkRows.getChildAt(i);
             if (child.isFocusable() && child.getVisibility() == View.VISIBLE) return child;
         }
-        if (permissionAction.getVisibility() == View.VISIBLE) return permissionAction;
-        if (locationAction.getVisibility() == View.VISIBLE) return locationAction;
-        if (rescan.getVisibility() == View.VISIBLE) return rescan;
-        return androidSettings;
+        return rescan.getVisibility() == View.VISIBLE ? rescan : androidSettings;
     }
 
     private void connectFocusOrder() {
         focusOrder.clear();
+        if (permissionAction.getVisibility() == View.VISIBLE) focusOrder.add(permissionAction);
+        if (locationAction.getVisibility() == View.VISIBLE) focusOrder.add(locationAction);
         for (int i = 0; i < networkRows.getChildCount(); i++) {
             View child = networkRows.getChildAt(i);
             if (child.isFocusable() && child.getVisibility() == View.VISIBLE) focusOrder.add(child);
         }
-        if (permissionAction.getVisibility() == View.VISIBLE) focusOrder.add(permissionAction);
-        if (locationAction.getVisibility() == View.VISIBLE) focusOrder.add(locationAction);
         if (rescan.getVisibility() == View.VISIBLE) focusOrder.add(rescan);
-        focusOrder.add(androidSettings);
+        else focusOrder.add(androidSettings);
         focusOrder.add(close);
         for (int i = 0; i < focusOrder.size(); i++) {
             View view = focusOrder.get(i);
@@ -582,6 +598,13 @@ final class WifiSettingsDialog {
             view.setNextFocusDownId(next);
             view.setNextFocusLeftId(view.getId());
             view.setNextFocusRightId(view.getId());
+        }
+        if (rescan.getVisibility() == View.VISIBLE) {
+            androidSettings.setNextFocusUpId(rescan.getNextFocusUpId());
+            androidSettings.setNextFocusDownId(rescan.getNextFocusDownId());
+            rescan.setNextFocusRightId(androidSettings.getId());
+            androidSettings.setNextFocusLeftId(rescan.getId());
+            androidSettings.setNextFocusRightId(androidSettings.getId());
         }
     }
 
