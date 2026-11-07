@@ -514,3 +514,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Do not import Patch 4.1's extra DockBreathingBorderView in this pass: current G3A Glider already provides focus feedback and a second animated border would alter the approved focus appearance.
 - PR #74 remains Draft/unmerged on fix/home-dock-visual-parity-v2 @ 4ba1d7f14ba26e0c4051fcdf958f289234b6e7ae. No integration branch changes.
 - Source-host CI #1407 PASS; test APK is ready for controlled device acceptance. Do not claim visual PASS until owner confirms TV screenshot/remote behavior.
+
+
+## Decision — Patch 4.1 Dock & Liquid Glass adoption (7 November 2026)
+
+- Adopt Patch 4.1's first-row Dock fill semantics: configured favourites/user pins retain precedence; ordered inventory fills remaining visible slots; explicit unpins remain excluded; overflow remains in Grid.
+- Adopt Patch 4.1 GlassRim iridescent gradient, Window Light, GlassView hardware-layer focus rim and DockBreathingBorderView. Breathing rim is scoped to Dock cards only.
+- Keep current G3A independent DockAdapter/AppAdapter architecture, stable identity, 4/5/6 capacity and orientation preferences. Do not replace the whole application with Patch 4.1.
+- PR #74 remains Draft/unmerged at 239390db27fafcc39b2fefa68ddfa9f0ba30608f. Exact-head CI #1415 PASS.
+- Device visual/remote acceptance is pending; no claim of final visual PASS until the owner confirms the new TV photo.
