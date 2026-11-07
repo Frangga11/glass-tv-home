@@ -1161,3 +1161,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - No new permission, manifest change, third-party dependency, duplicate wallpaper engine, APK publication/install, ADB, merge or integration/main mutation.
 - Physical TV/remote/OEM, overscan, 1080p/4K, daylight/large-text and real service acceptance remain DEFERRED / NOT RUN. This is not DEVICE-VERIFIED.
 - **Next UI Refresh package: G3E Wi-Fi.** Official Project G03 physical Mi TV Stick acceptance remains separately OPEN/BLOCKED.
+
+
+## UI Refresh G3E closeout — Wi-Fi (7 November 2026)
+
+- **G3E Wi-Fi: COMPLETE / SOURCE-HOST QC PASS.** Canonical audit/checkpoint: `UI_REFRESH_G3E_AUDIT_2026-11-07.md` and `UI_REFRESH_G3E_CHECKPOINT_2026-11-07.md`.
+- Owner branch `feature/g3e-wifi` @ `89d044152b7d8460884466deb5baa47126f48027`; PR #70 OPEN/DRAFT/UNMERGED, based on G3D exact HEAD `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`. G3D PR #69 and branch remain unchanged.
+- Implemented G1 V6 V05 Wi-Fi surface: connected/status card, nearby network list, signal/security labels, scan state, horizontal Rescan and Android Wi-Fi Settings actions, Close. Fine-location permission and Location-service gates are explicit.
+- Android remains owner of network selection, authentication, saved networks, connection/disconnection and radio state. G3E adds only the manifest permission required for best-effort `WifiManager.startScan()`; no credentials, direct connect/disconnect or radio toggle. MainActivity's existing network-state owner is reused; no duplicate ConnectivityManager callback.
+- D-pad focus IDs/links, Back, row-focus restoration, permission-state focus fallback and deferred Quick Settings return after Android Settings are implemented. Default/ID/EN resource parity and regression/source-contract tests added.
+- Exact-head CI #1362 / `42346091802`: both required jobs SUCCESS; 127 Python tests, app/installer release unit tests and release builds passed. APK diagnostic 1,617,293 bytes (+8,920 / ~0.55% vs G3D); informational under D-023, no artifact published.
+- `WifiManager.startScan()` is deprecated since API 28 and Android throttles active scans; the implementation is best-effort and retains cached-result, broadcast, timeout and Android Settings fallbacks. Future API migration is a known risk.
+- Physical TV/remote/OEM acceptance remains PENDING / NOT RUN. No APK installation/publication, ADB, device configuration, merge/rebase/cherry-pick/force-push or integration/main mutation.
+- **Next UI Refresh package: G3F — Global Settings.** Reopen G3E only for new reproducible defect evidence.
