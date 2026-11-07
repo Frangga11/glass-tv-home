@@ -1174,3 +1174,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - `WifiManager.startScan()` is deprecated since API 28 and Android throttles active scans; the implementation is best-effort and retains cached-result, broadcast, timeout and Android Settings fallbacks. Future API migration is a known risk.
 - Physical TV/remote/OEM acceptance remains PENDING / NOT RUN. No APK installation/publication, ADB, device configuration, merge/rebase/cherry-pick/force-push or integration/main mutation.
 - **Next UI Refresh package: G3F — Global Settings.** Reopen G3E only for new reproducible defect evidence.
+
+## UI Refresh G3F closeout — Global Settings (7 November 2026)
+
+- **G3F Global Settings: COMPLETE / SOURCE-HOST QC PASS.** Canonical audit/checkpoint: `UI_REFRESH_G3F_AUDIT_2026-11-07.md` and `UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md`.
+- Owner branch `feature/g3f-global-settings` @ `455b619c3eefe417ac0152a51f3cb12478a8f4a9`; PR #71 OPEN/DRAFT/UNMERGED, based on G3E `feature/g3e-wifi` @ `9125043e24b8f13232e41193ba5fe10e1821f7cd`. PR #70 remains unchanged.
+- Implemented G1 V6 V06 Global Settings shell: header/search/Wi-Fi status, seven categories, profile identity summary, localized control-level search and category/focus routing.
+- Preserved ProfileManager/ChildModeManager and MainActivity/E01 network-state ownership. Added legacy focus-path migration, invoking-control restoration, external Settings resume refresh and weak-reference lifecycle cleanup.
+- Corrected profile summary ordering to follow the page title; regression test included in exact tested HEAD.
+- Exact-head CI #1376 / `42348837445`: both jobs SUCCESS; 134 Python tests; app/installer unit tests, release builds and lint-vital PASS. APK diagnostic 1,620,193 bytes (+2,820 / ~0.17% vs G3E), informational under D-023.
+- **G3A–G3F individual source-host gates are complete.** Next: G4 integration/reconciliation plan and combined-tree audit only after explicit approval. No PR merge or branch retargeting authorized.
+- Physical Android TV/Mi TV Stick, remote, OEM, overscan, daylight/glare, large-text and 1080p/4K acceptance remain PENDING / NOT RUN. No APK install/publication, ADB or device mutation.
