@@ -540,6 +540,7 @@ final class WifiSettingsDialog {
     }
 
     private TextView prepareAction(TextView view, String tag, float density, Runnable callback) {
+        if (view.getId() == View.NO_ID) view.setId(View.generateViewId());
         view.setTag(tag);
         view.setFocusable(true);
         view.setFocusableInTouchMode(true);
