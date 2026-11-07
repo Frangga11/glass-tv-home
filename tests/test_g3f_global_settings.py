@@ -49,6 +49,15 @@ class GlobalSettingsSourceContractTest(unittest.TestCase):
         source = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppLanguage.java").read_text()
         self.assertIn('case LANG_EN: return "Widgets & Information";', source)
 
+    def test_external_android_settings_return_refreshes_without_new_network_owner(self):
+        main = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text()
+        settings = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/ModernSettingsDialog.java").read_text()
+        self.assertIn("ModernSettingsDialog.onHostResumed(this)", main)
+        self.assertIn("ModernSettingsDialog.onHostDestroyed(this)", main)
+        self.assertIn("ModernSettingsDialog.refreshNetworkStatus(this)", main)
+        self.assertIn("WeakReference<MainActivity> sSettingsHost", settings)
+        self.assertIn("findControlByDescription(content, focusedDescription)", settings)
+
 
 if __name__ == "__main__":
     unittest.main()
