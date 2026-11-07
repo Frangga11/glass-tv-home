@@ -64,13 +64,15 @@ final class WifiSettingsDialog {
     private boolean receiverRegistered;
     private boolean scanPending;
     private Runnable pendingAfterDismiss;
-    private final Runnable scanTimeout = () -> {
+    private final Runnable scanTimeout = this::onScanTimeout;
+
+    private void onScanTimeout() {
         if (scanPending) {
             scanPending = false;
             scanState.setText(R.string.wifi_scan_timeout);
             showCachedResults();
         }
-    };
+    }
 
     private final BroadcastReceiver scanReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
