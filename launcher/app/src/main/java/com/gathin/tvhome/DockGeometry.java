@@ -73,6 +73,24 @@ final class DockGeometry {
         return Math.max(0, (safeContentWidthPx - slotWidthPx * itemCount) / 2);
     }
 
+    /**
+     * Keeps the top-right controls inside the Home safe frame and clear of the clock/date block.
+     * The Dock may contain fewer items than its configured capacity, so its last card is not
+     * always a safe horizontal anchor for the controls.
+     */
+    static float clampTopRowTranslationPx(float requestedShiftPx, int topRowLeftPx, int topRowRightPx,
+                                          int screenWidthPx, int safeLeftPx, int safeRightPx,
+                                          int leftBlockRightPx, int minimumGapPx) {
+        int minLeft = Math.max(Math.max(0, safeLeftPx), leftBlockRightPx + Math.max(0, minimumGapPx));
+        int maxRight = Math.max(0, screenWidthPx - Math.max(0, safeRightPx));
+        float minShift = minLeft - topRowLeftPx;
+        float maxShift = maxRight - topRowRightPx;
+        // If the controls cannot fit between the clock and the right safe edge, preserve the
+        // right edge rather than allowing the buttons to be clipped off-screen.
+        if (minShift > maxShift) return maxShift;
+        return Math.max(minShift, Math.min(maxShift, requestedShiftPx));
+    }
+
     static int tileHeightPx(int tileWidthPx) {
         return AppAdapter.tileHeightPx(tileWidthPx);
     }
