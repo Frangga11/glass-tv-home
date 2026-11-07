@@ -799,3 +799,19 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Installation / ADB / merge | NOT PERFORMED |
 
 - The earlier Image 2 APK did not correct Dock height and is superseded. Use only the APK recorded in `UI_REFRESH_IMAGE2_BOTTOM_DOCK_CORRECTION_2026-11-07.md` for the next acceptance test.
+
+
+## Reset inventory — Glass TV Home 4.0.0 (7 November 2026)
+
+| Item | Current reset state |
+|---|---|
+| Active baseline branch | `reset/baseline-4.0.0` |
+| Exact baseline SHA | `7146de58953325fdfc6c98501828676f143e64cf` |
+| Application version | 4.0.0 / versionCode 40 |
+| Baseline APK size | 1,622,401 bytes |
+| Baseline APK SHA-256 | `ec125ca46bf98af8426fef060e974c963932f9ae7f863507d135ae40df9bb605` |
+| PR #73 UI/Dock rework | CLOSED / NOT MERGED; branch retained |
+| PR #72 baseline lineage | OPEN / DRAFT / UNMERGED |
+| Device installation | NOT PERFORMED |
+
+- Full evidence: `RESET_BASELINE_4.0.0_2026-11-07.md`.
