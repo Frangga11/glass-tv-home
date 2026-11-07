@@ -183,7 +183,7 @@ public final class ChildModeManager {
         Context appContext = ctx.getApplicationContext();
         PIN_EXECUTOR.execute(() -> {
             boolean saved = PinCredentialStore.setPin(appContext, pin);
-            MAIN_HANDLER.post(() -> {
+            postPinResult(() -> {
                 if (callback != null) callback.onResult(saved);
             });
         });
