@@ -142,7 +142,7 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.NEXT_PHOTO] = nextPhoto;
         bind(nextPhoto, dialogHolder, actions::nextPhoto);
         LinearLayout.LayoutParams nextLp = new LinearLayout.LayoutParams(0,
-                dp(density, 72), 1f);
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         nextLp.setMargins(0, dp(density, 5), dp(density, 5), dp(density, 5));
         wallpaperActions.addView(nextPhoto, nextLp);
 
@@ -153,7 +153,7 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.INTERVAL] = interval;
         bind(interval, dialogHolder, actions::chooseWallpaperInterval);
         LinearLayout.LayoutParams intervalLp = new LinearLayout.LayoutParams(0,
-                dp(density, 72), 1f);
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         intervalLp.setMargins(dp(density, 5), dp(density, 5), 0, dp(density, 5));
         wallpaperActions.addView(interval, intervalLp);
         content.addView(wallpaperActions);
@@ -169,7 +169,7 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.GLASS_SETTINGS] = glassSettings;
         bind(glassSettings, dialogHolder, actions::openGlassSettings);
         LinearLayout.LayoutParams glassLp = new LinearLayout.LayoutParams(0,
-                dp(density, 64), 1f);
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         glassLp.setMargins(0, dp(density, 4), dp(density, 5), dp(density, 4));
         settingsActions.addView(glassSettings, glassLp);
 
@@ -179,7 +179,7 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.ANDROID_SETTINGS] = androidSettings;
         bind(androidSettings, dialogHolder, actions::openAndroidSettings);
         LinearLayout.LayoutParams androidLp = new LinearLayout.LayoutParams(0,
-                dp(density, 64), 1f);
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         androidLp.setMargins(dp(density, 5), dp(density, 4), 0, dp(density, 4));
         settingsActions.addView(androidSettings, androidLp);
         content.addView(settingsActions);
@@ -217,7 +217,7 @@ final class QuickSettingsDialog {
         GridLayout.Spec columnSpec = GridLayout.spec(column, span, 1f);
         GridLayout.LayoutParams lp = new GridLayout.LayoutParams(rowSpec, columnSpec);
         lp.width = 0;
-        lp.height = dp(density, 76);
+        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         lp.setMargins(dp(density, 5), dp(density, 5), dp(density, 5), dp(density, 5));
         grid.addView(tile, lp);
         return tile;
@@ -238,7 +238,7 @@ final class QuickSettingsDialog {
         tile.setGravity(Gravity.CENTER_VERTICAL);
         tile.setPadding(dp(density, 14), dp(density, 9), dp(density, 12), dp(density, 9));
         tile.setMinHeight(dp(density, minHeightDp));
-        tile.setMaxLines(3);
+        tile.setMaxLines(4);
         tile.setEllipsize(android.text.TextUtils.TruncateAt.END);
         tile.setTextSize(TvUiTokens.CARD_TITLE_SP);
         tile.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.NORMAL);
