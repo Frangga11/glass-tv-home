@@ -32,9 +32,12 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [B06_FEEDBACK_AUDIT.md](B06_FEEDBACK_AUDIT.md) | B06 notification, Toast, OTA loading, QR progress/timeout audit and exact-head CI evidence |
 | [F03_QR_COMMUNICATION_FEASIBILITY.md](F03_QR_COMMUNICATION_FEASIBILITY.md) | F03 QR communication/upload feasibility evidence, CI, findings, and Project G device gates |
 | [F04_FEATURE_ISOLATION_AUDIT.md](F04_FEATURE_ISOLATION_AUDIT.md) | F04 Avatar, Wallpaper and StandBy source isolation, repairs, CI and Project G gates |
-| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |\n| [UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md) | G3A Home & independent Dock source/host closeout evidence |
+| [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |
+| [UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md) | G3A Home & independent Dock source/host closeout evidence |
 | [UI_REFRESH_G3D_AUDIT_2026-11-07.md](UI_REFRESH_G3D_AUDIT_2026-11-07.md) | G3D Quick Settings audit, root causes, remediation and source/host verification |
-| [UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md) | G3D Quick Settings source/host closeout and next work point |\n| [UI_REFRESH_G3F_AUDIT_2026-11-07.md](UI_REFRESH_G3F_AUDIT_2026-11-07.md) | G3F Global Settings audit and source-host QC evidence |\n| [UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md) | G3F Global Settings source-host closeout and handover |
+| [UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md) | G3D Quick Settings source/host closeout and next work point |
+| [UI_REFRESH_G3F_AUDIT_2026-11-07.md](UI_REFRESH_G3F_AUDIT_2026-11-07.md) | G3F Global Settings audit and source-host QC evidence |
+| [UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md) | G3F Global Settings source-host closeout and handover |
 | [F07_PERFORMANCE_STABILITY_AUDIT.md](F07_PERFORMANCE_STABILITY_AUDIT.md) | Final F07 performance, memory, stability and storage host/source evidence |
 | [PROJECT_G_READINESS_CHECKPOINT.md](PROJECT_G_READINESS_CHECKPOINT.md) | Official Project F closure, Project G work packages, device gates and governance |
 
