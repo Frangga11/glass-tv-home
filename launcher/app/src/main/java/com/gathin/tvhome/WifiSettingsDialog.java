@@ -384,7 +384,8 @@ final class WifiSettingsDialog {
                     NetworkCapabilities caps = manager.getNetworkCapabilities(network);
                     if (caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                         wifi = true;
-                        if (hasLocationPermission() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                        if (hasLocationPermission() && isLocationEnabled()
+                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                                 && caps.getTransportInfo() instanceof WifiInfo) {
                             connectionInfo = (WifiInfo) caps.getTransportInfo();
                         }
@@ -401,7 +402,7 @@ final class WifiSettingsDialog {
 
         String ssid = null;
         try {
-            if (hasLocationPermission()) {
+            if (hasLocationPermission() && isLocationEnabled()) {
                 if (connectionInfo == null) {
                     WifiManager manager = wifiManager();
                     connectionInfo = manager != null ? manager.getConnectionInfo() : null;
