@@ -115,4 +115,26 @@ public class PinCredentialStoreTest {
         assertFalse(firstSalt.equals(secondSalt));
         assertTrue(PinCredentialStore.verifyPin(context, "1357"));
     }
+
+    @Test
+    public void explicitlySavingDefaultPinKeepsDefaultStatusAndUsesHashedStorage() {
+        assertTrue(PinCredentialStore.setPin(context, "0000"));
+
+        assertTrue(PinCredentialStore.isDefaultPin(context));
+        assertTrue(PinCredentialStore.verifyPin(context, "0000"));
+        assertFalse(PinCredentialStore.verifyPin(context, "1234"));
+        assertFalse(prefs.contains("security_pin"));
+        assertTrue(prefs.contains("security_pin_salt_v1"));
+        assertTrue(prefs.contains("security_pin_hash_v1"));
+    }
+
+    @Test
+    public void invalidPinValuesDoNotReplaceTheExistingCredential() {
+        assertTrue(PinCredentialStore.setPin(context, "2468"));
+
+        assertFalse(PinCredentialStore.setPin(context, "123"));
+        assertFalse(PinCredentialStore.setPin(context, "12a4"));
+        assertTrue(PinCredentialStore.verifyPin(context, "2468"));
+        assertFalse(PinCredentialStore.verifyPin(context, "0000"));
+    }
 }
