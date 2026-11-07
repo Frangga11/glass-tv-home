@@ -137,4 +137,25 @@ public class PinCredentialStoreTest {
         assertTrue(PinCredentialStore.verifyPin(context, "2468"));
         assertFalse(PinCredentialStore.verifyPin(context, "0000"));
     }
+
+    @Test
+    public void wrongPreferenceTypesFailClosedWithoutCrashing() {
+        prefs.edit().putInt("security_pin", 2468).commit();
+        assertFalse(PinCredentialStore.isDefaultPin(context));
+        assertFalse(PinCredentialStore.verifyPin(context, "2468"));
+
+        prefs.edit().clear()
+                .putInt("security_pin_salt_v1", 1)
+                .putString("security_pin_hash_v1", "bad")
+                .putBoolean("security_pin_is_default_v1", false)
+                .commit();
+        assertFalse(PinCredentialStore.verifyPin(context, "0000"));
+
+        prefs.edit().clear()
+                .putString("security_pin_salt_v1", "AAECAwQFBgcICQoLDA0ODw==")
+                .putString("security_pin_hash_v1", "bad")
+                .putString("security_pin_is_default_v1", "true")
+                .commit();
+        assertFalse(PinCredentialStore.isDefaultPin(context));
+    }
 }
