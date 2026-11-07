@@ -604,12 +604,12 @@ final class WifiSettingsDialog {
             view.setNextFocusLeftId(view.getId());
             view.setNextFocusRightId(view.getId());
         }
+        rescan.setNextFocusRightId(androidSettings.getId());
+        androidSettings.setNextFocusLeftId(rescan.getId());
+        androidSettings.setNextFocusRightId(androidSettings.getId());
         if (rescan.getVisibility() == View.VISIBLE) {
             androidSettings.setNextFocusUpId(rescan.getNextFocusUpId());
             androidSettings.setNextFocusDownId(rescan.getNextFocusDownId());
-            rescan.setNextFocusRightId(androidSettings.getId());
-            androidSettings.setNextFocusLeftId(rescan.getId());
-            androidSettings.setNextFocusRightId(androidSettings.getId());
         }
     }
 
