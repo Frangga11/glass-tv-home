@@ -2493,6 +2493,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         DockPreferences preferences = DockPreferences.load(this);
         dockVertical = preferences.orientation == DockPreferences.Orientation.VERTICAL;
         dockAdapter.setVertical(dockVertical);
+        // The approved horizontal Home composition is Dock-only. The App Grid is shown
+        // only in vertical-Dock mode, where it occupies the remaining side-by-side region.
+        int wantedGridVisibility = dockVertical ? View.VISIBLE : View.GONE;
+        boolean gridVisibilityChanged = grid.getVisibility() != wantedGridVisibility;
+        grid.setVisibility(wantedGridVisibility);
         int orientation = dockVertical
                 ? android.widget.LinearLayout.VERTICAL : android.widget.LinearLayout.HORIZONTAL;
         RecyclerView.LayoutManager current = dockRecycler.getLayoutManager();
@@ -2586,7 +2591,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         boolean dockLayoutChanged = !sameLayoutParams(dockRecycler.getLayoutParams(), dockParams);
         if (gridLayoutChanged) grid.setLayoutParams(gridParams);
         if (dockLayoutChanged) dockRecycler.setLayoutParams(dockParams);
-        if (gridLayoutChanged || dockLayoutChanged || dockVisibilityChanged) {
+        if (gridLayoutChanged || dockLayoutChanged || dockVisibilityChanged || gridVisibilityChanged) {
             grid.requestLayout();
             dockRecycler.requestLayout();
         }
@@ -2623,7 +2628,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int gridCount = adapter == null ? 0 : adapter.getItemCount();
                 int dockCount = dockAdapter == null ? 0 : dockAdapter.getItemCount();
                 boolean hasTiles = gridCount > 0 || dockCount > 0;
-                boolean gridReady = gridCount == 0 || grid.getChildCount() > 0;
+                boolean gridReady = grid.getVisibility() != View.VISIBLE || gridCount == 0 || grid.getChildCount() > 0;
                 boolean dockReady = dockCount == 0 || dockRecycler.getChildCount() > 0;
                 boolean focusReady = heroShown || !lastFocusedDock || dockCount == 0;
                 boolean whole = hasTiles && gridReady && dockReady && parked
@@ -3208,7 +3213,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         int gridPosition = adapter == null ? -1 : adapter.positionOf(lastFocusedKey);
-        if (gridPosition >= 0) {
+        if (gridPosition >= 0 && dockVertical) {
             lastFocusedDock = false;
             focusTile(gridPosition);
             return;
@@ -3265,6 +3270,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void focusTile(int position) {
         if (adapter == null || grid == null) return;
+        // Horizontal mode intentionally hides the App Grid; keep all Home tile focus in Dock.
+        if (!dockVertical) {
+            int dockCount = dockAdapter == null ? 0 : dockAdapter.getItemCount();
+            if (dockCount > 0) focusDockTile(NavigationState.resolveHomePosition(-1, position, dockCount));
+            else focusTopBarFallback();
+            return;
+        }
         if (adapter.getItemCount() == 0) {
             if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
             else focusTopBarFallback();
