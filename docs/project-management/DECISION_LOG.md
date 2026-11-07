@@ -481,4 +481,5 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Treat startScan as best-effort: Android may throttle requests and the API is deprecated since API 28. Preserve last results, asynchronous completion, timeout/error states and Android Settings fallback; do not represent a rejected/stale scan as fresh.
 - Restore Quick Settings after Android Settings returns so its network summary is refreshed. If system Settings cannot launch, restore the parent immediately.
 - SOURCE-HOST QC may pass independently; physical Android TV/remote/OEM acceptance remains a separate gate.
-- Status: IMPLEMENTED / EXACT-HEAD CI VERIFIED; DEVICE ACCEPTANCE PENDING.
+- Exact owner: `feature/g3e-wifi` @ `9125043e24b8f13232e41193ba5fe10e1821f7cd`; PR #70 OPEN/DRAFT/UNMERGED; exact-head CI #1363 / `42346491017` — both required jobs SUCCESS.
+- Status: IMPLEMENTED / SOURCE-HOST QC PASS; DEVICE ACCEPTANCE PENDING / NOT RUN.
