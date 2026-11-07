@@ -19,7 +19,7 @@ class SettingsSearchModalContractTest(unittest.TestCase):
             re.compile(
                 r"AlertDialog\s+resultsDialog\s*=.*?\.create\(\);"
                 r"\s*resultsDialog\.show\(\);"
-                r"\s*TvDialogStyle\.apply\(resultsDialog,\s*activity,\s*520,\s*0\);",
+                r"\s*TvDialogStyle\.apply\(resultsDialog,\s*activity,\s*620,\s*0\);",
                 re.DOTALL,
             ),
         )
@@ -29,7 +29,7 @@ class SettingsSearchModalContractTest(unittest.TestCase):
             self.source,
             re.compile(
                 r"searchDialog\.show\(\);"
-                r"\s*TvDialogStyle\.apply\(searchDialog,\s*activity,\s*520,\s*0\);",
+                r"\s*TvDialogStyle\.apply\(searchDialog,\s*activity,\s*620,\s*0\);",
             ),
         )
 
