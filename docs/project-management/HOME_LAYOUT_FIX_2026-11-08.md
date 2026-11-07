@@ -186,3 +186,14 @@ A further integration review found PR #75 had accumulated additional Dock host-c
 - PR #76 remains OPEN/DRAFT/UNMERGED. No install, ADB, default-launcher change, device mutation or merge.
 
 **Current decision:** PARTIAL PASS — source correction implemented and repository contract tests pass; exact-head Android build/artifact and physical device acceptance remain pending.
+
+## 13. Latest PR #76 head and physical-test APK candidate
+
+- PR #76 CI #1449 / 42404084112 completed SUCCESS on head 012fba1c4012c7e4a05de292b69030c17a594d90, based on PR #75 head 21bc204a413fce3c527e0e8761d2016bc5dc87c6. Both required jobs passed, including the Home layout bounds contract, Android unit tests and release build.
+- Artifact #13586419148 downloaded and verified. ZIP 1,422,343 bytes; extracted app-release.apk 1,622,117 bytes; SHA-256 fe7db8ca54be34781b716454256e50da62b5ee3bf168fc211aa7e45095fa95b6. ZIP and APK integrity passed; AndroidManifest.xml, classes.dex and resources.arsc are present.
+- The PR branch subsequently advanced to f085c41356e2e5f53ca13f51bc0676bdb82d350a. Its diff re-applies the Dock host/padding correction already present in the PR #75 base, preserving the cumulative production tree; no additional layout behavior was introduced. Exact-head CI #1450 / 42404262057 is running on f085c... as a final synchronization check.
+- The #1449 APK is a valid physical-test candidate for the cumulative production code (Dock host/padding, one-row viewport/DPAD and Quick Toggles safe-frame fix). Do not describe #1449 as the CI result for the later f085c commit.
+- PR #75 CI #1448 / 42403925244 also passed both required jobs on its exact head 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+- No post-fix screenshot/video or physical Mi TV Stick acceptance exists yet. Do not install by changing the default launcher; no device mutation or merge has been performed.
+
+**Decision:** PENDING DEVICE ACCEPTANCE. Cumulative source/test/build/APK gate passed on #1449; #1450 exact branch-head synchronization check is still running. Visual/remote acceptance remains outstanding.
