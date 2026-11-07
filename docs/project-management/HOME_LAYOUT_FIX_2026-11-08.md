@@ -142,3 +142,10 @@ A second source-level review found that the earlier aggregate-centering correcti
 - No merge, ADB, APK installation, default-launcher change or device mutation has been performed.
 
 **Updated decision:** IMPLEMENTATION IN PROGRESS / EXACT-HEAD CI PENDING / DEVICE ACCEPTANCE PENDING. No merge authorized.
+
+## 11. PR #75 Dock-only APK verification and cumulative CI
+
+- Exact source head for CI run #1446 / 42403799908: 78539148930bc6e3613a03db0dd3997073c725ee. Both required jobs completed SUCCESS, including the added Dock geometry regression test and release build.
+- Artifact #13585808852, ZIP 1,422,660 bytes. ZIP integrity passed; extracted app-release.apk is 1,622,497 bytes and APK ZIP integrity passed. SHA-256: 38d818902ce3ccf800b8de5cc0428125b91b7e9c27ba81810759a53925c65d0f.
+- This APK includes the Dock host/padding correction, but predates the workflow-only commit 21bc204a413fce3c527e0e8761d2016bc5dc87c6 and does not include PR #76's Quick Toggles correction. It is an intermediate Dock-only candidate, not the final cumulative Home layout APK.
+- PR #75 exact latest head 21bc204... has CI #1448 / 42403925244 in progress. PR #76 exact latest head ea681545bbf356105683ef2c7da6664e29a83723 has CI #1447 / 42403880493 in progress, with the updated APK publication condition. Await those exact-head runs and verify the PR #76 artifact before calling the build gate complete.
