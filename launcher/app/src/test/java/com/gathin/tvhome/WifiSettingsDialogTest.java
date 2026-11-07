@@ -21,15 +21,17 @@ public class WifiSettingsDialogTest {
         final int[] returns = {0};
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> returns[0]++);
         assertNotNull(dialog);
+        View permission = dialog.getWindow().getDecorView().findViewWithTag("wifi_permission");
         View rescan = dialog.getWindow().getDecorView().findViewWithTag("wifi_rescan");
         View settings = dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings");
         View close = dialog.getWindow().getDecorView().findViewWithTag("wifi_close");
+        assertNotNull(permission);
         assertNotNull(rescan);
         assertNotNull(settings);
         assertNotNull(close);
         assertTrue(rescan.isFocusable());
         assertTrue(settings.isClickable());
-        assertTrue(rescan.getNextFocusDownId() != 0);
+        assertTrue(permission.getNextFocusDownId() != 0);
         dialog.cancel();
         assertTrue(returns[0] == 1);
     }
