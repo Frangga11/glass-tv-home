@@ -1385,3 +1385,15 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 
 - CI #1450: 137 Python tests OK (1 intentional skip); Android unit tests/release build and artifact publication PASS.
 - APK size 1,622,153 bytes exceeds the historical 1.5 MiB reference by 49,289 bytes; CI warning is explicitly non-blocking. It is 316 bytes smaller than the earlier PR #75 baseline. No size-budget failure.
+
+
+### GTVH-HOME-LAYOUT-FIX-001 — consolidated repair follow-up (8 Nov 2026)
+
+- Owner's latest Mi TV Stick photo is treated as failed visual acceptance: Dock icons appear stacked/misaligned and the overflow app row is reported as floating near screen center. Previous CI is not accepted as proof of visual correctness.
+- Cross-audit confirmed PR chain #74 → #75 → #76 is stacked. Rather than waiting for those PRs to merge, created consolidated Draft PR #77 directly against `feature/g4-parent-pin-hardening`; old PRs #74/#75/#76 remain OPEN/DRAFT/UNMERGED and unmodified as audit history.
+- PR #77 branch `fix/home-layout-consolidated-001`, exact head `bd789b6b180b6668f6d60904283ca559633d7fb1`.
+- New source corrections: Dock holder slot/card/name geometry is recalculated on bind from the latest measured host width; a post-layout width callback triggers a safe rebind; DPAD focus restoration uses generation tokens to cancel stale targets and a bounded post-scroll retry.
+- Retains PR #75 one-row overflow viewport and PR #76 top-controls safe-frame correction. Added geometry test coverage across 1280/1696/1712/1920px widths and Dock capacities 4/5/6. CI workflow now publishes APK for PR #77.
+- CI run #1453 / 42405457829 was in progress when this note was written. Exact-head CI result, APK size and SHA-256 must be appended only after completion; no pass is claimed yet.
+- Physical Mi TV Stick visual/remote acceptance remains PENDING. No merge, installation, ADB, default-launcher change or device mutation.
+- Full report: `docs/project-management/HOME_LAYOUT_FIX_2026-11-08_CROSS_AUDIT.md`.
