@@ -194,7 +194,7 @@ public class DockLayoutModelTest {
 
     @Test
     public void bottomDockFocusTargetsTheAdjacentLastGridRow() {
-        assertEquals(8, DockLayoutModel.gridPositionAboveDock(2, 4, 12));
+        assertEquals(10, DockLayoutModel.gridPositionAboveDock(2, 4, 12));
         assertEquals(9, DockLayoutModel.gridPositionAboveDock(3, 4, 10));
         assertEquals(0, DockLayoutModel.gridPositionAboveDock(5, 4, 1));
         assertEquals(-1, DockLayoutModel.gridPositionAboveDock(0, 4, 0));
