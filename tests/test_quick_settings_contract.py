@@ -38,6 +38,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("showWifiPopup(() -> showQuickControlPopup(QuickSettingsFocusGraph.WIFI))", MAIN)
         self.assertIn("menuReturnAction", MAIN)
         self.assertIn("returnAction.run()", MAIN)
+        self.assertIn("anchor.getVisibility() != View.VISIBLE", MAIN)
+        self.assertIn("anchor = findViewById(R.id.btnSettings)", MAIN)
 
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (

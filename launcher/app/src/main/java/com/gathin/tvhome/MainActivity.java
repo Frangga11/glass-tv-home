@@ -3841,6 +3841,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (openMenu != null) return;
         SoundEffects.playSelect();
         View anchor = btnWifi;
+        if (anchor == null || anchor.getVisibility() != View.VISIBLE) {
+            anchor = findViewById(R.id.btnSettings);
+        }
+        if (anchor == null) return;
         FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         Runnable close = () -> closeMenu(false);
