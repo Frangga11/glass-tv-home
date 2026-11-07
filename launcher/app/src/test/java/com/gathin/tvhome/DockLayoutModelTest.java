@@ -347,9 +347,10 @@ public class DockLayoutModelTest {
                 int count = capacity;
                 int offset = DockGeometry.horizontalCenterOffsetPx(innerWidth, tileWidth, count);
                 int right = offset + tileWidth * count;
-                assertEquals(innerWidth, offset + right);
+                int rightMargin = innerWidth - right;
                 assertTrue(offset >= 0);
-                assertTrue(right <= innerWidth);
+                assertTrue(rightMargin >= 0);
+                assertTrue(Math.abs(offset - rightMargin) <= 1);
             }
         }
     }
