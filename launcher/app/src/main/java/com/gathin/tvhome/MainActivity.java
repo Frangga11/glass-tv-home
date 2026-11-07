@@ -154,7 +154,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private final int[] pillAt = new int[2], rootAt = new int[2];
     /** The top-right buttons and the two rectangles used to line them up with the dock. */
     private View topRow, topSettings;
-    private final Rect alignCard = new Rect(), alignButton = new Rect();
+    private final Rect alignCard = new Rect(), alignButton = new Rect(), shelfAnchorRect = new Rect();
     /** How much of the space between the side paddings the top shelf may use. */
     private static final float HERO_WIDTH_SHARE = 0.40f;
     /** The name is one line, and may run wider than the description, up to this share (capped to avoid overlapping Islamic shelf). */
@@ -2158,7 +2158,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void showHero(int position, float dockTopInRoot) {
         int color = dockAdapter.ambientColorAt(position);
-        heroBottom = dockTopInRoot - HERO_GAP_DP * density;
+
+        // The information shelves belong to the Home composition, not to the focused Dock tile.
+        // In vertical mode the focused tile can be anywhere along the left rail; using its top
+        // made the wallpaper description, Ayah and prayer schedule jump up and down with DPAD.
+        // Keep the same bottom anchor that the horizontal Dock uses, calculated from the
+        // horizontal tray geometry, so changing Dock orientation never moves the Home content.
+        float shelfDockTop = dockTopInRoot;
+        if (dockVertical && gridWrap != null && gridWrap.getHeight() > 0) {
+            root.offsetDescendantRectToMyCoords(gridWrap, shelfAnchorRect);
+            DockPreferences preferences = DockPreferences.load(this);
+            int innerWidth = Math.max(0, gridWrap.getWidth()
+                    - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
+            int tileWidth = AppAdapter.tileWidthPx(innerWidth, preferences.capacity, density);
+            int tileHeight = AppAdapter.tileHeightPx(tileWidth);
+            int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
+            int horizontalDockHeight = itemHeight + Math.round(18 * density);
+            int belowDock = itemHeight * Math.max(0, rowsBelowDockSetting)
+                    + Math.round(16 * density);
+            shelfDockTop = shelfAnchorRect.bottom - belowDock - horizontalDockHeight;
+        }
+        heroBottom = shelfDockTop - HERO_GAP_DP * density;
 
         if (islamicShelf != null) {
             float iy = heroBottom - islamicShelf.getHeight();
