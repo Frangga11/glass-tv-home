@@ -209,3 +209,10 @@ A further integration review found PR #75 had accumulated additional Dock host-c
 - PR #74/#75/#76 remain OPEN/DRAFT/UNMERGED. No physical install, ADB, launcher-default change or device mutation.
 
 **Final decision:** PENDING DEVICE ACCEPTANCE. Source audit, regression tests, CI, release build, artifact and checksum verification PASS. Physical Mi TV Stick visual/remote acceptance and post-fix visual evidence remain outstanding.
+
+## 15. CI test count and APK size diagnostic
+
+- CI #1450 Lists/tools/docs job ran 137 Python tests: OK, with 1 intentional skip.
+- CI #1450 Android job completed unit tests and release build successfully; artifact publication succeeded.
+- Current APK 1,622,153 bytes is 49,289 bytes above the historical 1.5 MiB reference. CI reports this as a non-blocking warning. It is 316 bytes smaller than the earlier PR #75 baseline APK (1,622,469 bytes).
+- This is a size-monitoring item, not a failed build. Revisit APK size only if the project adopts a stricter budget.
