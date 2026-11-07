@@ -1345,3 +1345,9 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - CI artifact publication now includes PR #76. PR #76 CI #1443 passed both jobs on its previous base, but must rerun against the updated PR #75 base to validate the cumulative tree and produce the current APK.
 - Quick Toggles remain scoped to PR #76, which removes Dock-relative top-menu translation and preserves the 56dp XML safe frame.
 - No current cumulative APK/checksum, post-fix visual evidence or physical TV acceptance. No merge or device mutation.
+
+### GTVH-HOME-LAYOUT-FIX-001 — verified intermediate APK and current CI
+
+- PR #75 CI #1446 succeeded on head 78539148930bc6e3613a03db0dd3997073c725ee. Artifact #13585808852: APK 1,622,497 bytes; SHA-256 38d818902ce3ccf800b8de5cc0428125b91b7e9c27ba81810759a53925c65d0f. ZIP/APK integrity passed.
+- This is a Dock-only intermediate candidate, not the combined PR #76 build. Latest PR #75 head 21bc204... CI #1448 is in progress; PR #76 head ea681545... CI #1447 is in progress with APK publication enabled.
+- Do not claim final CI/APK PASS until #1447 completes and its artifact is downloaded, inspected and hashed. Physical device acceptance remains pending.
