@@ -113,7 +113,10 @@ public class ProfileManagerPersistenceTest {
 
         assertTrue(ChildModeManager.isChildModeEnabled(context, active.id));
         assertTrue(ChildModeManager.getLockedApps(context, active.id).contains("com.example.legacy"));
-        assertEquals("2468", ChildModeManager.getPin(context));
+        assertTrue(ChildModeManager.verifyPin(context, "2468"));
+        assertFalse(prefs.contains("security_pin"));
+        assertTrue(prefs.contains("security_pin_salt_v1"));
+        assertTrue(prefs.contains("security_pin_hash_v1"));
         assertTrue(prefs.getBoolean("profile_settings_migration_v1", false));
     }
 
