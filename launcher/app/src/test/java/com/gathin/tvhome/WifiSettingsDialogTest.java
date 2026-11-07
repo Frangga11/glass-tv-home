@@ -61,4 +61,18 @@ public class WifiSettingsDialogTest {
         assertEquals(1, returned[0]);
     }
 
+    @Test public void unavailableAndroidSettingsRestoresParentWithoutWaitingForResume() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        final int[] returned = {0};
+        AlertDialog dialog = WifiSettingsDialog.show(activity,
+                WifiSettingsDialog::onExternalSettingsUnavailable, () -> returned[0]++);
+        assertNotNull(dialog);
+        View settings = dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings");
+        assertNotNull(settings);
+        assertTrue(settings.performClick());
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertFalse(dialog.isShowing());
+        assertEquals(1, returned[0]);
+    }
+
 }
