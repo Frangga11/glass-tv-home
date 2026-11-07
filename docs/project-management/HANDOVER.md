@@ -1725,3 +1725,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - CI run #1441 / run ID `42401401988`: both jobs SUCCESS. Release unit tests, `assembleRelease`, APK size diagnostics and artifact publication all SUCCESS.
 - Artifact: `glass-tv-home-dock-visual-parity-78b6510fd8f6a4c70d4bb93792abf53f9d5ee542`, artifact ID `13585890269`, ZIP 1,422,728 bytes. Extracted `app-release.apk`: 1,622,469 bytes; SHA-256 `61d5705915802e65fdecab6c7b6b91973b7187c4a276a972704d6ab1bbd242b8`.
 - CI/build gate: PASS. Device/remote validation of horizontal edge alignment, single-row viewport, DPAD Up/Down focus continuity and end-of-list behavior: PENDING. PR #75 remains OPEN/DRAFT/UNMERGED; no default-launcher change.
+
+
+## Active checkpoint — GTVH-HOME-LAYOUT-FIX-001 (8 November 2026)
+
+- Owner supplied 23.14s, 1920×1080 physical-TV video. Pre-fix evidence shows Google Play isolated at the left of the lower glass tray and a separate five-app row above it.
+- PR #74/#75 already contain the Dock inventory fill, duplicate-inset removal, full-width tray and one-row overflow/DPAD row progression. PR #75 exact-head CI #1441 passed; APK 1,622,469 bytes, SHA-256 `61d5705915802e65fdecab6c7b6b91973b7187c4a276a972704d6ab1bbd242b8`. This is a PR #75 baseline only.
+- New source finding: `MainActivity.alignTopButtons()` translated the entire top menu against the last Dock card and was called by Grid and Dock global-layout listeners. This coupled Wi-Fi/microphone/profile/Settings placement to Dock count and could shift controls left.
+- Minimal source fix: remove the two listeners and Dock-relative translation; preserve XML `topButtons` end alignment inside `mainContent` with 56dp start/end padding.
+- PR #76: https://github.com/Frangga11/glass-tv-home/pull/76; branch `fix/home-global-layout-bounds`; current head `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`; OPEN/DRAFT/UNMERGED; base PR #75 exact head `c72c07f9af1ee83b43ff19b34f2e704bdc570eea`.
+- Added `tests/test_home_layout_bounds_contract.py`. CI #1442 exposed an ElementTree XPath lookup failure in the new test; corrected to namespaced-ID iteration. Exact-head CI #1443 / `42403684594` was IN PROGRESS at checkpoint. No PR #76 APK or checksum available yet.
+- Physical Mi TV Stick install/remote/visual acceptance NOT RUN. No ADB, launcher-default change, device mutation or merge. Do not mark visual PASS from source/CI alone.
+- Detailed report: `docs/project-management/HOME_LAYOUT_FIX_2026-11-08.md`.
