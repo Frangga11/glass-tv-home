@@ -4,7 +4,7 @@
 **Date:** 7 November 2026  
 **Status:** COMPLETE — SOURCE-HOST QC PASS  
 **Owner branch:** `feature/g3e-wifi`  
-**Exact HEAD:** `89d044152b7d8460884466deb5baa47126f48027`  
+**Exact HEAD:** `9125043e24b8f13232e41193ba5fe10e1821f7cd`  
 **PR:** [#70 — G3E Wi-Fi V05](https://github.com/Frangga11/glass-tv-home/pull/70) — OPEN / DRAFT / UNMERGED  
 **Base:** `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`
 
@@ -77,7 +77,7 @@ No speculative defect was found in the G3D Quick Settings owner or existing E01 
 - Added `WifiSettingsDialog` and pure `WifiScanPolicy`.
 - Replaced the legacy Wi-Fi popup while preserving the G3D Quick Settings nested entry.
 - Implemented a V05-aligned connected/status card, nearby network list, signal/security labels, horizontal Rescan and Android Wi-Fi Settings actions, and Close.
-- Reads SSID only when fine-location permission and Location services are enabled. Uses `NetworkCapabilities.getTransportInfo()` on API 29+ and the existing WifiManager connection-info fallback when needed. Unknown/redacted SSIDs are not shown.
+- Reads SSID only when fine-location permission and Location services are enabled. Uses `NetworkCapabilities.getTransportInfo()` on API 29+; the deprecated WifiManager connection-info fallback is restricted to API 26–30. Unknown/redacted SSIDs are not shown.
 - Filters blank/unknown SSIDs, deduplicates by SSID using the strongest observed signal, and caps the displayed list at 12 entries. No BSSID or credential is displayed or persisted.
 - Gates scan/list/rescan on fine-location permission, Location enabled and Wi-Fi enabled. Handles permission denial, Location disabled, Wi-Fi disabled, scan request rejection/throttling, asynchronous completion, timeout, unavailable and empty states.
 - Adds `CHANGE_WIFI_STATE` solely for `WifiManager.startScan()`; no `setWifiEnabled`, `enableNetwork`, `addNetwork`, disconnect or credential handling is used.
@@ -99,11 +99,11 @@ No speculative defect was found in the G3D Quick Settings owner or existing E01 
 
 ### Exact-head CI
 
-- Workflow run: **#1362 / `42346091802`**.
-- Tested HEAD: `89d044152b7d8460884466deb5baa47126f48027`.
+- Workflow run: **#1363 / `42346491017`**.
+- Tested HEAD: `9125043e24b8f13232e41193ba5fe10e1821f7cd`.
 - Lists, tools and docs: SUCCESS.
 - Launcher build and unit tests: SUCCESS.
-- Release APK diagnostic: **1,617,293 bytes**. Compared with G3D's 1,608,373 bytes, growth is 8,920 bytes (approximately 0.55%). This is diagnostic only under D-023.
+- Release APK diagnostic: **1,617,373 bytes**. Compared with G3D's 1,608,373 bytes, growth is 8,920 bytes (approximately 0.56%). This is diagnostic only under D-023.
 - APK artifact publication was not performed.
 
 ## 7. Quality disposition
