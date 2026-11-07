@@ -1812,3 +1812,10 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 **PR #76 evidence:** branch `fix/home-global-layout-bounds` @ `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`; Draft PR #76 stacked on PR #75. Changed `MainActivity.java`; added `tests/test_home_layout_bounds_contract.py`. CI #1442 first attempt failed because the new test's ElementTree XPath lookup returned no element; corrected using namespace-aware ID iteration. Exact-head CI #1443 / `42403684594` IN PROGRESS at checkpoint. No APK/size/checksum for PR #76.
 
 **Disposition:** SOURCE FIX IMPLEMENTED; EXACT-HEAD CI PENDING; PHYSICAL VISUAL/REMOTE ACCEPTANCE NOT RUN; NO MERGE. Do not mark PASS based on compile/unit tests alone. See `HOME_LAYOUT_FIX_2026-11-08.md`.
+
+### HOME-QUICK-TOGGLE-ALIGN-001 — CI and artifact follow-up
+
+- Exact source/test head `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`: CI #1443 / `42403684594` SUCCESS. Both required jobs passed; 137 Python tests with one intentional skip; Android unit tests and release build succeeded.
+- No APK was published by #1443 because the artifact step only matched PR #74/#75. Corrected `.github/workflows/ci.yml` to include PR #76 and use the `glass-tv-home-layout-fix` artifact name.
+- Latest PR #76 head `ea681545bbf356105683ef2c7da6664e29a83723`; exact-head CI #1447 / `42403880493` is rebuilding and publishing the APK. Do not reuse the PR #75 APK as the PR #76 test candidate.
+- Physical visual/remote acceptance remains NOT RUN; no merge.
