@@ -2123,13 +2123,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                focusTopBarFallback();
+                int target = DockLayoutModel.gridPositionAboveDock(
+                        position, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
+                if (target >= 0) focusTile(target);
+                else focusTopBarFallback();
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                int target = DockLayoutModel.gridPositionForDock(
-                        position, false, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
-                focusTile(target);
+                // The horizontal Dock is the bottom-most Home row.
                 return true;
             }
         }
@@ -3144,9 +3145,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
-                if (!dockVertical && dockAdapter.getItemCount() > 0) {
-                    focusDockTile(DockLayoutModel.dockPositionForGrid(
-                            position, false, COLUMNS, dockAdapter.getItemCount()));
+                if (!dockVertical && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
+                    weatherAirQualityView.requestFocus();
                     return true;
                 }
                 if (position <= 1 && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
@@ -3158,7 +3158,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             target = position - COLUMNS;
         } else {
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
-            if (position >= lastRowStart) return true;
+            if (position >= lastRowStart) {
+                if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
+                    focusDockTile(DockLayoutModel.dockPositionForGrid(
+                            position, false, COLUMNS, dockAdapter.getItemCount()));
+                }
+                return true;
+            }
             target = Math.min(position + COLUMNS, count - 1);
         }
         focusTile(target);
