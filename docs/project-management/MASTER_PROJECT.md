@@ -1137,3 +1137,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Launcher-scoped PIN gate protects approved Android Settings main, Accessibility, Notification Access and Default Home/Launcher routes. Wi-Fi, Display, Dream/Screensaver and ordinary Quick Settings remain exempt. Existing PIN mechanism/default/storage were not changed. No system-wide Android parental-control claim.
 - Physical Android TV acceptance deferred; no APK install, ADB, merge or integration/main change.
 - **Next: G3C P2 Profile Selector & Navigation.** Start with a read-only audit against G1 V6 V03 and G2 shared focus/dialog foundations. P2 implementation not yet authorized; P3–P5 NOT STARTED.
+
+
+## UI Refresh G3C closeout — Profile, Avatar & Child Mode (7 November 2026)
+
+- **G3C P1–P5: COMPLETE / SOURCE-HOST QC PASS.** Canonical checkpoint: `UI_REFRESH_G3C_CHECKPOINT_2026-11-07.md`.
+- Branch `feature/g3c-profile-avatar-child-mode` @ `8cf81f84bd62d0b3da31532116553cfa21a5df98`; PR #68 OPEN/DRAFT/UNMERGED, based on G3B exact HEAD `8cfc5c886950cc9d27d4530ba901df872b8e5c44`.
+- P2 implements active/focused profile distinction and active-profile focus restoration. P3 retains profile-scoped avatar selection/custom QR photo upload with bounded live session. P4 implements profile-scoped Child Mode, App Lock and Hidden Apps with staged Done-save / Back-cancel semantics. P5 hardens durable persistence, profile ID repair, corrupt-data backup and legacy migration ownership.
+- Added persistence/avatar/session regression tests. Exact-head CI #1313 / `42340859666` and #1314 / `42340866781`: both required jobs SUCCESS; release unit tests and APK assembly passed.
+- APK diagnostic 1,602,361 bytes (+1,140 bytes against the P1 exact-head diagnostic 1,601,221 bytes). Above historical 1.5 MiB reference; informational only under D-023. No APK artifact published.
+- P1 PIN mechanism remains unchanged; default `0000` and plain-text SharedPreferences are residual risks. Launcher PIN policy is not system-wide Android parental control.
+- PR remains Draft/open/unmerged. No integration/main change, merge, APK installation/publication, ADB or physical TV test. Physical Android TV/remote/OEM acceptance remains deferred and is not waived.
+- GIPHY avatar PR #62 remains a separate workstream and was not merged or included in G3C.
+- **Next package: G3D — Quick Settings.** G1/G2/G3A/G3B/G3C are closed for source-host scope; reopen only for new verified defect evidence.

@@ -1505,3 +1505,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Central PIN gate covers selected launcher-controlled Android Settings main, Accessibility, Notification Access and Default Home/Launcher routes. Wi-Fi, Display, Dream/Screensaver and ordinary Quick Settings remain exempt. Existing PIN mechanism unchanged; launcher PIN is not system-wide parental control.
 - No merge/rebase/cherry-pick/force-push, APK installation, ADB or physical device test. Physical acceptance remains deferred.
 - **Resume at G3C P2 — Profile Selector & Navigation.** First perform read-only source audit against approved G1 V6 V03 and G2 focus/dialog foundations; map active-vs-focused profile, profile cards/count, add-profile and Back/navigation behavior. No code until P2 scope is reviewed. P3–P5 NOT STARTED.
+
+
+## Current resume checkpoint — UI Refresh G3C complete (7 November 2026)
+
+- **G3C Profile, Avatar & Child Mode — P1–P5 COMPLETE / SOURCE-HOST QC PASS.** Canonical evidence: `UI_REFRESH_G3C_CHECKPOINT_2026-11-07.md`.
+- Owner branch `feature/g3c-profile-avatar-child-mode` exact HEAD `8cf81f84bd62d0b3da31532116553cfa21a5df98`; PR #68 OPEN / DRAFT / UNMERGED, base G3B exact HEAD `8cfc5c886950cc9d27d4530ba901df872b8e5c44`.
+- P1 security policy remains closed and unchanged. P2 aligns the selector with G1 V6 V03 and G2 focus/dialog foundations: active profile is labelled separately from focus, and initial focus returns to the active profile.
+- P3 preserves profile-scoped built-in/custom avatar and QR photo upload; QR commit requires a live, unexpired session. Separate GIPHY PR #62 was not pulled into this scope.
+- P4 keeps Child Mode, App Lock and Hidden Apps profile-scoped. Picker changes are staged: Done commits once; Back/dismiss cancels without writing.
+- P5 makes profile and policy writes durable; active-profile deletion/fallback is atomic; legacy settings migrate before deletion; duplicate/missing IDs are repaired and persisted; malformed profile JSON is backed up before fallback recovery.
+- Exact-head CI #1313 / `42340859666` and #1314 / `42340866781`: both required jobs SUCCESS. `testReleaseUnitTest assembleRelease` completed BUILD SUCCESSFUL. APK diagnostic: 1,602,361 bytes; historical 1.5 MiB warning is informational/non-blocking under D-023.
+- No merge/rebase/cherry-pick/force-push, integration/main mutation, APK publication/installation, ADB, device configuration or physical TV/remote/OEM test. Physical acceptance remains deferred, not waived. Existing PIN default `0000` and plain-text SharedPreferences remain residual security risks; PIN control is launcher-scoped.
+- **Next resume: G3D — Quick Settings.** Do not reopen G3C or earlier completed work without new verified defect evidence.

@@ -1560,3 +1560,24 @@ G1 is a browser-prototype result only. Production component conformance, live da
 | APK publication / device acceptance | NOT RUN | No artifact published, installation, ADB or physical TV test |
 
 **Accepted residual risks:** existing PIN default `0000` and plain-text SharedPreferences storage remain unchanged by scope; launcher-controlled routes do not constitute system-wide Android parental control. Physical Android TV/remote/OEM acceptance remains deferred.
+
+
+## G3C P2–P5 — Profile, Avatar & Child Mode implementation disposition (7 November 2026)
+
+**Overall disposition: COMPLETE / SOURCE-HOST QC PASS** on branch `feature/g3c-profile-avatar-child-mode` exact HEAD `8cf81f84bd62d0b3da31532116553cfa21a5df98`; PR #68 OPEN/DRAFT/UNMERGED.
+
+| Work area | Disposition | Verified implementation / evidence |
+|---|---|---|
+| P1 Security Policy & Authorization | PASS — previously closed | Selected Android system pages gated by existing parent PIN during Child Mode; exempt settings preserved. Exact-head CI #1307. |
+| P2 Profile Selector & Navigation | PASS — SOURCE | Active profile has a distinct status label from D-pad focus; selector restores focus to active profile; G1 V03 and G2 tokens/dialog styling reused. Profile CRUD surfaces persistence failure. |
+| P3 Avatar & QR Upload | PASS — SOURCE/HOST | Profile-scoped built-in/custom avatar paths and QR upload retained; live-session expiry is centralized and boundary-tested; existing route, image, storage and rollback tests remain in the suite. |
+| P4 Child Mode / App Lock / Hidden Apps | PASS — SOURCE/HOST | Policies remain profile-scoped and PIN-gated. Picker edits are in-memory until Done; Done writes the complete policy once; Back/dismiss leaves persisted policy unchanged. |
+| P5 Persistence / Lifecycle / Regression | PASS — SOURCE/HOST | Durable profile/policy commits; atomic active-profile deletion/fallback; legacy settings migration occurs before deleting the owning profile; missing/duplicate IDs are repaired and persisted; malformed JSON is backed up before fallback recovery. |
+
+- Added `ProfileManagerPersistenceTest` coverage for profile create/rename/switch/delete, policy isolation/cleanup, duplicate and missing IDs, malformed JSON recovery, custom avatar commit/reset, legacy migration and active-profile deletion ownership.
+- Added `AvatarUploadSessionPolicyTest` for stopped, active, and exact-expiry upload commit boundaries.
+- Exact-head CI #1313 / `42340859666` and #1314 / `42340866781`: Launcher build and unit tests SUCCESS; Lists, tools and docs SUCCESS. `testReleaseUnitTest assembleRelease` completed BUILD SUCCESSFUL.
+- APK diagnostic 1,602,361 bytes (+1,140 bytes versus P1 exact-head 1,601,221 bytes); above historical 1.5 MiB reference, informational/non-blocking under D-023.
+- Residual risks: unchanged default PIN `0000` and plain-text SharedPreferences; launcher-scoped rather than system-wide parental control. Separate GIPHY PR #62 is not part of G3C.
+- Physical TV/remote/OEM acceptance: DEFERRED / NOT RUN; not waived. No APK publication/install, ADB, device configuration, merge, rebase, cherry-pick, force-push or integration/main mutation.
+- **Next package: G3D Quick Settings.** Do not reopen completed G3C work without new verified defect evidence.

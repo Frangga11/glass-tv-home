@@ -113,3 +113,14 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - Existing PIN default/storage limitations remain unchanged by approved scope. This is not system-wide Android parental control.
 - No merge/rebase/cherry-pick/force-push, integration/main change, APK installation, ADB or physical TV test. Physical acceptance remains deferred.
 - **Next: G3C P2 — Profile Selector & Navigation.** Begin with read-only source audit against G1 V6 V03 and G2 shared focus/dialog foundations; do not code before scope review. P3–P5 remain NOT STARTED.
+
+
+## 13. G3C closeout and current execution position — 7 November 2026
+
+- **G3C Profile, Avatar & Child Mode P1–P5: COMPLETE / SOURCE-HOST QC PASS.** Checkpoint: `UI_REFRESH_G3C_CHECKPOINT_2026-11-07.md`.
+- Branch `feature/g3c-profile-avatar-child-mode` exact HEAD `8cf81f84bd62d0b3da31532116553cfa21a5df98`; PR #68 OPEN/DRAFT/UNMERGED; base G3B exact HEAD `8cfc5c886950cc9d27d4530ba901df872b8e5c44`.
+- P2 active/focused profile distinction and active-profile focus restoration follow G1 V6 V03 and G2 focus/dialog foundations. P3 retains profile-scoped avatars and QR photo upload with session expiry protection. P4 stages app-lock/hidden-app selection until Done; Back cancels. P5 hardens durable writes, ID repair, malformed-data backup and legacy migration ownership.
+- Exact-head CI #1313 / `42340859666` and #1314 / `42340866781`: both required jobs SUCCESS. Release tests/build passed. APK diagnostic 1,602,361 bytes; historical 1.5 MiB warning remains informational under D-023.
+- No merge or integration/main changes; no APK publication/install, ADB or physical TV test. Physical Android TV/remote/OEM acceptance remains a separate deferred gate. Existing PIN default/storage limitations remain recorded.
+- GIPHY avatar PR #62 remains separate and was not incorporated into G3C.
+- **Current starting point: G1, G2, G3A, G3B and G3C COMPLETE for source-host scope; resume at G3D — Quick Settings.**

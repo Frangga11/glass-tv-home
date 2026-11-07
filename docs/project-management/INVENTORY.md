@@ -684,3 +684,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Regression tests:** WeatherAirQualityFreshnessTest, WeatherV4LayoutContractTest, WeatherActivityFocusRestoreTest and tests/test_weather_cache_location_contract.py.
 - **APK diagnostic:** 1,600,893 bytes; non-blocking under D-023. Physical visual, remote and OEM overscan acceptance not performed.
 - **Next:** G3C Profile, Avatar & Child Mode. Do not reopen G1/G2/G3A without new evidence.
+
+
+## UI Refresh G3C — Profile, Avatar & Child Mode (7 November 2026)
+
+- **Disposition:** P1–P5 COMPLETE / SOURCE-HOST QC PASS.
+- **Branch/head:** `feature/g3c-profile-avatar-child-mode` @ `8cf81f84bd62d0b3da31532116553cfa21a5df98`; PR #68 OPEN/DRAFT/UNMERGED; base G3B @ `8cfc5c886950cc9d27d4530ba901df872b8e5c44`.
+- **P2:** active profile status is independent of focus state; profile selector initially focuses the active profile; G1 V03 and G2 shared focus/dialog foundations reused.
+- **P3:** profile-scoped built-in/custom avatar and QR photo upload retained; upload session expiry and stop-state are checked before commit.
+- **P4:** Child Mode, App Lock and Hidden Apps remain profile-scoped and PIN-gated. Policy picker is transactional: Done saves; Back/dismiss cancels.
+- **P5:** durable profile and policy writes, atomic active-profile fallback on deletion, legacy settings migration ownership, duplicate/missing ID repair and malformed JSON backup.
+- **Evidence:** exact-head CI #1313 / `42340859666` and #1314 / `42340866781`, both required jobs SUCCESS; release unit tests and APK assembly PASS. APK 1,602,361 bytes, informational warning above historical 1.5 MiB reference.
+- **Scope boundary:** physical TV/remote/OEM acceptance deferred/not run; no APK publication/install, ADB, device configuration or merge. PIN default/storage limitations unchanged. GIPHY PR #62 remains separate.
+- **Next:** G3D Quick Settings. Canonical checkpoint: `UI_REFRESH_G3C_CHECKPOINT_2026-11-07.md`.
