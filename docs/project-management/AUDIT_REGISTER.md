@@ -1677,3 +1677,19 @@ Evidence
 - APK size 1,622,573 bytes; SHA-256 19d1435c7c20491b9093747d65c8dbab6a0627971461bee401702990538a142c; artifact #13576552604.
 
 Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physical visual, remote, orientation/capacity and OEM overscan acceptance remains PENDING / NOT RUN. No installation, ADB, device mutation, merge or integration branch changes.
+
+
+## Patch 4.1 Dock & Liquid Glass adoption — audit disposition (7 November 2026)
+
+**Finding HOME-DOCK-PARTITION-001:** V2's independent Dock adapter consumed only resolved configured/user-pinned identities. Unlike Patch 4.1's first-row Dock contract, it did not fill remaining visible slots from the ordered app inventory. With an empty/short pin list, the Dock could be empty/undersized and all app tiles stayed in Grid, matching the user's TV photo with two Grid rows and no Dock tray.
+
+**Finding HOME-DOCK-GLASS-001:** V2 had a simplified GlassRim and GlassView with no Window Light pass, and item_app lacked Patch 4.1's DockBreathingBorderView layer. The focus treatment was therefore materially incomplete.
+
+**Disposition and evidence**
+- Restored first-row fill-to-capacity behavior; explicit unpins remain excluded and overflow remains in Grid.
+- Adopted Patch 4.1 GlassRim/GlassView/DockBreathingBorderView and restored Window Light in DockDecoration, GlassDrawable and Glider.
+- Branch fix/home-dock-visual-parity-v2 @ 239390db27fafcc39b2fefa68ddfa9f0ba30608f; PR #74 OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1415 / 42379388302 both jobs SUCCESS; app/installer unit tests and release builds passed.
+- APK 1,624,741 bytes; SHA-256 23ffb28d48b05f975be4b5bd13aa1086c08e47eef1feb5b8e13916799f32fafc; artifact #13576403262.
+
+**Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED TV ACCEPTANCE.** New physical TV visual/remote acceptance remains PENDING / NOT RUN. No installation, ADB, device mutation or merge.
