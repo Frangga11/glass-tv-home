@@ -35,6 +35,7 @@ public final class ProfileManager {
     private static final String KEY_LEGACY_AVATAR = "avatar_index";
     private static final String KEY_PROFILES_JSON = "profiles_list_json";
     private static final String KEY_ACTIVE_PROFILE_ID = "active_profile_id";
+    private static final String KEY_PROFILES_CORRUPT_BACKUP = "profiles_list_json_corrupt_backup";
 
     public static final String[] AVATAR_NAMES = {
             "Fox", "Panda", "Tiger", "Lion", "Frog", "Koala", "Octopus"
@@ -83,7 +84,8 @@ public final class ProfileManager {
 
         public static UserProfile fromJson(JSONObject obj) {
             if (obj == null) return new UserProfile("default", "User", 1, false);
-            String id = obj.optString("id", "user_" + System.currentTimeMillis());
+            String id = obj.optString("id", null);
+            if (id == null || id.trim().isEmpty()) id = "user_" + UUID.randomUUID();
             String name = obj.optString("name", "User");
             int avatarIndex = obj.optInt("avatarIndex", 1);
             boolean isChild = obj.optBoolean("isChild", false);
@@ -363,14 +365,28 @@ public final class ProfileManager {
         SharedPreferences sp = getPrefs(context);
         String json = sp.getString(KEY_PROFILES_JSON, null);
 
+        boolean repairedIds = false;
         if (json != null && !json.trim().isEmpty()) {
             try {
                 JSONArray arr = new JSONArray(json);
+                Set<String> seenIds = new HashSet<>();
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
-                    list.add(UserProfile.fromJson(obj));
+                    String persistedId = obj.optString("id", null);
+                    UserProfile profile = UserProfile.fromJson(obj);
+                    if (persistedId == null || persistedId.trim().isEmpty() || !seenIds.add(profile.id)) {
+                        if (persistedId != null && !persistedId.trim().isEmpty()) {
+                            profile.id = "user_" + UUID.randomUUID();
+                        }
+                        seenIds.add(profile.id);
+                        repairedIds = true;
+                    }
+                    list.add(profile);
                 }
             } catch (JSONException e) {
+                if (!sp.contains(KEY_PROFILES_CORRUPT_BACKUP)) {
+                    sp.edit().putString(KEY_PROFILES_CORRUPT_BACKUP, json).commit();
+                }
                 list.clear();
             }
         }
@@ -393,19 +409,19 @@ public final class ProfileManager {
             UserProfile defaultProfile = new UserProfile("profile_default", legacyName, legacyAvatar, false);
             list.add(defaultProfile);
             saveProfiles(context, list);
-            sp.edit().putString(KEY_ACTIVE_PROFILE_ID, defaultProfile.id).apply();
+            sp.edit().putString(KEY_ACTIVE_PROFILE_ID, defaultProfile.id).commit();
+        } else if (repairedIds) {
+            saveProfiles(context, list);
         }
 
         return list;
     }
 
-    private static synchronized void saveProfiles(Context context, List<UserProfile> list) {
-        if (context == null || list == null) return;
+    private static synchronized boolean saveProfiles(Context context, List<UserProfile> list) {
+        if (context == null || list == null) return false;
         JSONArray arr = new JSONArray();
-        for (UserProfile p : list) {
-            arr.put(p.toJson());
-        }
-        getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).apply();
+        for (UserProfile p : list) arr.put(p.toJson());
+        return getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit();
     }
 
     public static synchronized UserProfile getActiveProfile(Context context) {
@@ -422,23 +438,23 @@ public final class ProfileManager {
         }
 
         UserProfile first = list.get(0);
-        getPrefs(context).edit().putString(KEY_ACTIVE_PROFILE_ID, first.id).apply();
+        getPrefs(context).edit().putString(KEY_ACTIVE_PROFILE_ID, first.id).commit();
         return first;
     }
 
-    public static synchronized void setActiveProfile(Context context, String profileId) {
-        if (context == null || profileId == null) return;
+    public static synchronized boolean setActiveProfile(Context context, String profileId) {
+        if (context == null || profileId == null) return false;
         List<UserProfile> list = getAllProfiles(context);
         for (UserProfile p : list) {
             if (profileId.equals(p.id)) {
-                getPrefs(context).edit()
+                return getPrefs(context).edit()
                         .putString(KEY_ACTIVE_PROFILE_ID, p.id)
                         .putString(KEY_LEGACY_NAME, p.name)
                         .putInt(KEY_LEGACY_AVATAR, p.avatarIndex)
-                        .apply();
-                return;
+                        .commit();
             }
         }
+        return false;
     }
 
     public static synchronized UserProfile addProfile(Context context, String name, int avatarIndex, boolean isChild) {
@@ -448,68 +464,66 @@ public final class ProfileManager {
         String id = "user_" + UUID.randomUUID().toString();
         UserProfile newProf = new UserProfile(id, name, avatarIndex, isChild);
         list.add(newProf);
-        saveProfiles(context, list);
-        return newProf;
+        return saveProfiles(context, list) ? newProf : null;
     }
 
     public static boolean deleteProfile(Context context, String profileId) {
         if (context == null || profileId == null) return false;
+        // Migrate legacy restrictions while the profile that owned them is still active.
+        ChildModeManager.ensureProfileSettingsMigrated(context);
         synchronized (ProfileManager.class) {
             List<UserProfile> list = getAllProfiles(context);
-            if (list.size() <= 1) return false; // Cannot delete the last remaining profile
-
+            if (list.size() <= 1) return false;
             UserProfile toRemove = null;
             for (UserProfile p : list) {
-                if (profileId.equals(p.id)) {
-                    toRemove = p;
-                    break;
-                }
+                if (profileId.equals(p.id)) { toRemove = p; break; }
             }
-
             if (toRemove == null) return false;
             list.remove(toRemove);
             JSONArray persistedProfiles = new JSONArray();
             for (UserProfile profile : list) persistedProfiles.put(profile.toJson());
-            // Persist profile removal before cleaning up its avatar file; never delete the photo if the
-            // profile-list write fails.
-            if (!getPrefs(context).edit().putString(KEY_PROFILES_JSON, persistedProfiles.toString()).commit()) {
-                return false;
-            }
-            // The cleanup routine deletes only unreferenced files inside the private avatar directory.
-            cleanupOrphanedAvatarUploads(context);
-
+            SharedPreferences.Editor edit = getPrefs(context).edit().putString(KEY_PROFILES_JSON, persistedProfiles.toString());
             String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
             if (profileId.equals(activeId)) {
-                // Fall back to first remaining profile
-                setActiveProfile(context, list.get(0).id);
+                UserProfile fallback = list.get(0);
+                edit.putString(KEY_ACTIVE_PROFILE_ID, fallback.id)
+                        .putString(KEY_LEGACY_NAME, fallback.name)
+                        .putInt(KEY_LEGACY_AVATAR, fallback.avatarIndex);
             }
+            if (!edit.commit()) return false;
+            cleanupOrphanedAvatarUploads(context);
         }
-        // Clear only after releasing ProfileManager's lock to avoid lock-order inversion.
-        // The shared device-wide parent PIN is deliberately preserved.
         ChildModeManager.clearProfileSettings(context, profileId);
         return true;
     }
 
-    public static synchronized void updateProfile(Context context, String profileId, String newName, int newAvatarIndex, boolean isChild) {
-        if (context == null || profileId == null) return;
+    public static synchronized boolean updateProfile(Context context, String profileId, String newName, int newAvatarIndex, boolean isChild) {
+        if (context == null || profileId == null) return false;
         List<UserProfile> list = getAllProfiles(context);
         for (UserProfile p : list) {
             if (profileId.equals(p.id)) {
+                String oldName = p.name;
+                int oldAvatar = p.avatarIndex;
+                boolean oldChild = p.isChild;
                 if (newName != null && !newName.trim().isEmpty()) p.name = newName.trim();
                 if (newAvatarIndex >= 0 && newAvatarIndex < AVATAR_RES_IDS.length) p.avatarIndex = newAvatarIndex;
                 p.isChild = isChild;
-                saveProfiles(context, list);
-
-                String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
-                if (profileId.equals(activeId)) {
-                    getPrefs(context).edit()
-                            .putString(KEY_LEGACY_NAME, p.name)
-                            .putInt(KEY_LEGACY_AVATAR, p.avatarIndex)
-                            .apply();
+                JSONArray arr = new JSONArray();
+                for (UserProfile profile : list) arr.put(profile.toJson());
+                SharedPreferences.Editor edit = getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString());
+                if (profileId.equals(getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, ""))) {
+                    edit.putString(KEY_LEGACY_NAME, p.name).putInt(KEY_LEGACY_AVATAR, p.avatarIndex);
                 }
-                return;
+                if (!edit.commit()) {
+                    p.name = oldName;
+                    p.avatarIndex = oldAvatar;
+                    p.isChild = oldChild;
+                    return false;
+                }
+                return true;
             }
         }
+        return false;
     }
 
     // --- Backward-compatible convenience methods ---
@@ -517,20 +531,29 @@ public final class ProfileManager {
         return getActiveProfile(context).name;
     }
 
-    public static void setProfileName(Context context, String name) {
-        if (context == null) return;
+    public static boolean setProfileName(Context context, String name) {
+        if (context == null) return false;
         UserProfile active = getActiveProfile(context);
-        updateProfile(context, active.id, name, active.avatarIndex, active.isChild);
+        return updateProfile(context, active.id, name, active.avatarIndex, active.isChild);
     }
 
     public static int getAvatarIndex(Context context) {
         return getActiveProfile(context).avatarIndex;
     }
 
-    public static void setAvatarIndex(Context context, int index) {
-        if (context == null) return;
+    public static boolean setAvatarIndex(Context context, int index) {
+        if (context == null) return false;
         UserProfile active = getActiveProfile(context);
-        updateProfile(context, active.id, active.name, index, active.isChild);
+        return updateProfile(context, active.id, active.name, index, active.isChild);
+    }
+
+    static int indexOfProfile(List<UserProfile> profiles, String profileId) {
+        if (profiles == null || profileId == null) return -1;
+        for (int i = 0; i < profiles.size(); i++) {
+            UserProfile profile = profiles.get(i);
+            if (profile != null && profileId.equals(profile.id)) return i;
+        }
+        return -1;
     }
 
     public static int getAvatarResId(int index) {

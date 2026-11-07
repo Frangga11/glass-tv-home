@@ -70,12 +70,17 @@ public final class ChildModeManager {
             Set<String> oldHidden = sp.getStringSet(KEY_HIDDEN_APPS, null);
             if (oldHidden != null) edit.putStringSet(profileKey(profileId, KEY_HIDDEN_APPS), new HashSet<>(oldHidden));
         }
-        edit.putBoolean(KEY_PROFILE_MIGRATION_DONE, true).apply();
+        edit.putBoolean(KEY_PROFILE_MIGRATION_DONE, true).commit();
     }
 
     private static SharedPreferences profilePrefs(Context ctx) {
         migrateLegacySettings(ctx);
         return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    /** Resolve legacy device-wide values against the currently active profile before any profile change. */
+    static void ensureProfileSettingsMigrated(Context ctx) {
+        if (ctx != null) profilePrefs(ctx);
     }
 
     public static boolean isChildModeEnabled(Context ctx) {
@@ -94,17 +99,17 @@ public final class ChildModeManager {
         return false;
     }
 
-    public static void setChildModeEnabled(Context ctx, boolean enabled) {
-        if (ctx == null) return;
+    public static boolean setChildModeEnabled(Context ctx, boolean enabled) {
+        if (ctx == null) return false;
         synchronized (ChildModeManager.class) {
-            setChildModeEnabled(ctx, activeProfileId(ctx), enabled);
+            return setChildModeEnabled(ctx, activeProfileId(ctx), enabled);
         }
     }
 
-    public static void setChildModeEnabled(Context ctx, String profileId, boolean enabled) {
-        if (ctx == null || profileId == null) return;
+    public static boolean setChildModeEnabled(Context ctx, String profileId, boolean enabled) {
+        if (ctx == null || profileId == null) return false;
         synchronized (ChildModeManager.class) {
-            profilePrefs(ctx).edit().putBoolean(profileKey(profileId, KEY_ENABLED), enabled).apply();
+            return profilePrefs(ctx).edit().putBoolean(profileKey(profileId, KEY_ENABLED), enabled).commit();
         }
     }
 
@@ -117,7 +122,7 @@ public final class ChildModeManager {
                     .remove(profileKey(profileId, KEY_ENABLED))
                     .remove(profileKey(profileId, KEY_LOCKED_APPS))
                     .remove(profileKey(profileId, KEY_HIDDEN_APPS))
-                    .apply();
+                    .commit();
         }
     }
 
@@ -203,7 +208,22 @@ public final class ChildModeManager {
         String key = profileKey(profileId, keyName);
         Set<String> current = new HashSet<>(preferences.getStringSet(key, new HashSet<>()));
         Set<String> updated = updatedPackageSet(current, packageName, enabled);
-        preferences.edit().putStringSet(key, updated).apply();
+        preferences.edit().putStringSet(key, updated).commit();
+    }
+
+    /** Saves the complete pending app policy for the profile in one durable write. */
+    static boolean replaceAppPolicyPackages(Context ctx, String profileId, boolean hidden, Set<String> selected) {
+        if (ctx == null || profileId == null || profileId.trim().isEmpty() || selected == null) return false;
+        synchronized (ChildModeManager.class) {
+            Set<String> safe = new HashSet<>();
+            String ownPackage = ctx.getPackageName();
+            for (String packageName : selected) {
+                if (packageName != null && !packageName.trim().isEmpty()
+                        && !packageName.equals(ownPackage)) safe.add(packageName);
+            }
+            String key = profileKey(profileId, hidden ? KEY_HIDDEN_APPS : KEY_LOCKED_APPS);
+            return profilePrefs(ctx).edit().putStringSet(key, safe).commit();
+        }
     }
 
     static boolean addAppPolicyPackage(Set<String> seenPackages, String packageName, String ownPackage) {
