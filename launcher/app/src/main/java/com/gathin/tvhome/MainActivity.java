@@ -690,6 +690,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         NowPlayingManager.registerListener(nowPlayingListener);
 
         islamicShelf = findViewById(R.id.islamicShelf);
+        applyHomeShelfSafeMargins();
         if (islamicShelf != null) {
             ayahBlock = findViewById(R.id.ayahBlock);
             ayahLabel = findViewById(R.id.ayahLabel);
@@ -2499,6 +2500,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 || gridWrap.getWidth() <= 0 || gridWrap.getHeight() <= 0) return false;
         applyDockLayout();
         return true;
+    }
+
+    /** Applies the frozen P2 horizontal safe inset to both Home information shelves. */
+    private void applyHomeShelfSafeMargins() {
+        int inset = DockGeometry.safeHorizontalInsetPx(density);
+        if (heroShelf != null && heroShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) heroShelf.getLayoutParams();
+            params.setMarginStart(inset);
+            heroShelf.setLayoutParams(params);
+        }
+        if (islamicShelf != null && islamicShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) islamicShelf.getLayoutParams();
+            params.setMarginEnd(inset);
+            islamicShelf.setLayoutParams(params);
+        }
     }
 
     private void applyDockLayout() {
