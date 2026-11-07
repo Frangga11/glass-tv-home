@@ -939,3 +939,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Install / ADB / device mutation / merge | NOT PERFORMED |
 
 - Detailed checkpoint: `HOME_LAYOUT_FIX_2026-11-08.md`.
+
+### PR #76 CI follow-up
+
+| Gate | Status |
+|---|---|
+| Exact source/test head CI #1443 | PASS — both jobs |
+| Python tests | PASS — 137 tests, 1 intentional skip |
+| Android unit tests / release build | PASS on `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01` |
+| APK artifact workflow scope | Corrected to include PR #76 |
+| Latest branch head | `ea681545bbf356105683ef2c7da6664e29a83723` |
+| Latest-head CI #1447 | IN PROGRESS |
+| PR #76 APK size / SHA-256 | PENDING artifact publication and verification |
+| Physical Mi TV Stick acceptance | PENDING / NOT RUN |
