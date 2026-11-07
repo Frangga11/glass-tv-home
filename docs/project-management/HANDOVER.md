@@ -1542,3 +1542,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - `WifiManager.startScan()` deprecation/throttling is a known Android platform risk; active scanning is best-effort and Android Settings remains fallback.
 - Physical Android TV/Mi TV Stick, remote D-pad/Back, real permission/Location prompts, scan results/throttling, OEM Settings handoff, connection/authentication/disconnection and visual acceptance remain PENDING / NOT RUN. No APK install, ADB, device mutation, merge or integration/main change.
 - **Next resume: G3F — Global Settings.** Start with read-only audit against its approved G1 V6 design, G1/G2 shared dialog/focus contracts and actual current E01 source. Do not reopen G3E without reproducible defect evidence.
+
+
+## Current resume checkpoint — UI Refresh G3F complete (7 November 2026)
+
+- **Phase:** G3F Global Settings COMPLETE / SOURCE-HOST QC PASS. Canonical evidence: `UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md`; audit: `UI_REFRESH_G3F_AUDIT_2026-11-07.md`.
+- **Owner branch/head:** `feature/g3f-global-settings` @ `455b619c3eefe417ac0152a51f3cb12478a8f4a9`; PR #71 OPEN/DRAFT/UNMERGED, base G3E `9125043e24b8f13232e41193ba5fe10e1821f7cd`. PR #70 remains OPEN/DRAFT/UNMERGED and unchanged.
+- **Verified:** V06 header/search/status/split-pane; seven categories; profile summary; localized control search and target focus; focus migration/restoration; MainActivity/E01 network owner; lifecycle refresh/cleanup; default/ID/EN resource parity.
+- **Exact-head CI:** #1376 / `42348837445`, both required jobs SUCCESS; 134 Python tests; app/installer unit tests, release builds and lint-vital PASS. APK diagnostic 1,620,193 bytes (+2,820 / ~0.17% vs G3E); informational only under D-023.
+- **Remaining:** physical Android TV/Mi TV Stick, remote D-pad/Back, OEM Settings handoff, overscan, 1080p/4K, daylight/glare and large-text acceptance remain PENDING / NOT RUN. No APK install/publication, ADB or device mutation.
+- **Next single action:** prepare G4 integration/reconciliation scope and combined-tree audit only after explicit approval; do not merge, retarget or mutate the stacked PR chain.
