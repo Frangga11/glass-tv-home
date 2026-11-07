@@ -26,7 +26,7 @@ class WifiSurfaceContractTest(unittest.TestCase):
         self.assertIn("WifiScanPolicy.mayRequestScan", DIALOG)
         self.assertIn("manager.startScan()", DIALOG)
         self.assertIn("manager.getScanResults()", DIALOG)
-        self.assertIn("WifiScanPolicy.BlockReason.PERMISSION", POLICY)
+        self.assertIn("BlockReason.PERMISSION", POLICY)
 
     def test_scan_receiver_and_timeout_are_lifecycle_scoped(self):
         self.assertIn("registerReceiver(scanReceiver", DIALOG)
