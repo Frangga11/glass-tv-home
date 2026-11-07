@@ -197,3 +197,15 @@ A further integration review found PR #75 had accumulated additional Dock host-c
 - No post-fix screenshot/video or physical Mi TV Stick acceptance exists yet. Do not install by changing the default launcher; no device mutation or merge has been performed.
 
 **Decision:** PENDING DEVICE ACCEPTANCE. Cumulative source/test/build/APK gate passed on #1449; #1450 exact branch-head synchronization check is still running. Visual/remote acceptance remains outstanding.
+
+## 14. Final exact-head CI #1450 and APK verification
+
+- Current PR #76 head: f085c41356e2e5f53ca13f51bc0676bdb82d350a; base PR #75 head: 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+- CI #1450 / 42404262057 completed SUCCESS. Both required jobs passed: Lists/tools/docs and Launcher build/unit tests/release build.
+- Artifact #13585769799 downloaded and verified. ZIP 1,422,487 bytes; extracted app-release.apk 1,622,153 bytes; SHA-256 90fe5131a84231d1a725c4eb02b672d94a1c6c1a07f2cda8db710bc7c8ddc135.
+- ZIP integrity and APK ZIP integrity passed; AndroidManifest.xml, classes.dex and resources.arsc present.
+- This is the exact-current-head cumulative PR #76 APK and includes the Dock host/padding correction, one-row Grid/DPAD progression and Quick Toggles safe-frame correction.
+- PR #75 CI #1448 / 42403925244 also passed both jobs on head 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+- PR #74/#75/#76 remain OPEN/DRAFT/UNMERGED. No physical install, ADB, launcher-default change or device mutation.
+
+**Final decision:** PENDING DEVICE ACCEPTANCE. Source audit, regression tests, CI, release build, artifact and checksum verification PASS. Physical Mi TV Stick visual/remote acceptance and post-fix visual evidence remain outstanding.
