@@ -2523,9 +2523,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockVertical = preferences.orientation == DockPreferences.Orientation.VERTICAL;
         dockAdapter.setVertical(dockVertical);
         if (dockVertical) horizontalGridExpanded = false;
-        if (grid.getLayoutManager() instanceof GridLayoutManager) {
-            ((GridLayoutManager) grid.getLayoutManager()).setStackFromEnd(!dockVertical && dockAdapter.getItemCount() > 0);
-        }
+        // GridLayoutManager does not support stackFromEnd (it throws during onResume).
+        // Keep the Grid's natural adapter order; horizontal overflow is positioned by the
+        // surrounding FrameLayout geometry and is expanded only on DPAD Down.
         // In horizontal mode the Grid is an on-demand overflow surface: hidden at rest,
         // revealed by DPAD Down from the Dock, and collapsed again when Dock focus returns.
         int wantedGridVisibility = dockVertical || horizontalGridExpanded ? View.VISIBLE : View.GONE;
