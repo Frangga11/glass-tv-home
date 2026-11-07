@@ -617,6 +617,7 @@ public final class ModernSettingsDialog {
                     FrameLayout frame = new FrameLayout(activity);
                     frame.setFocusable(true);
                     frame.setClickable(true);
+                    frame.setContentDescription(ProfileManager.AVATAR_NAMES[idx]);
 
                     int frameDim = (int) (60 * density);
                     LinearLayout.LayoutParams fLp = new LinearLayout.LayoutParams(frameDim, frameDim);
@@ -866,6 +867,7 @@ public final class ModernSettingsDialog {
                     pRow.setPadding((int) (14 * density), (int) (8 * density), (int) (14 * density), (int) (8 * density));
                     pRow.setFocusable(true);
                     pRow.setClickable(true);
+                    pRow.setContentDescription(p.name);
 
                     GradientDrawable pBg = new GradientDrawable();
                     pBg.setColor(isCur ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE_IDLE);
@@ -1337,6 +1339,10 @@ public final class ModernSettingsDialog {
                     .setView(searchInput)
                     .setPositiveButton(R.string.search_action, (dialog, which) -> {
                         String query = searchInput.getText().toString().trim();
+                        if (query.isEmpty()) {
+                            TvFeedback.show(activity, R.string.search_keyword_required, Toast.LENGTH_SHORT);
+                            return;
+                        }
                         List<SearchEntry> matches = new ArrayList<>();
                         for (SearchEntry entry : buildSearchEntries(activity)) {
                             if (SettingsSearchIndex.matches(query, entry.title, entry.summary)) {
@@ -1650,6 +1656,16 @@ public final class ModernSettingsDialog {
         addSearchEntry(entries, "profile.avatar.default", TAB_PROFILE,
                 activity.getString(R.string.avatar_use_default_action), "");
         addSearchEntry(entries, "profile.rename", TAB_PROFILE, AppLanguage.strEditName(activity), "");
+        ProfileManager.UserProfile activeProfile = ProfileManager.getActiveProfile(activity);
+        for (int i = 0; i < ProfileManager.AVATAR_NAMES.length; i++) {
+            addSearchEntry(entries, "profile.avatar.builtin." + i, TAB_PROFILE,
+                    ProfileManager.AVATAR_NAMES[i],
+                    activity.getString(R.string.active_profile_avatar_header, activeProfile.name));
+        }
+        for (ProfileManager.UserProfile profile : ProfileManager.getAllProfiles(activity)) {
+            addSearchEntry(entries, "profile.profile." + profile.id, TAB_PROFILE,
+                    profile.name, activity.getString(R.string.profile_user_title, profile.name));
+        }
         addSearchEntry(entries, "profile.add", TAB_PROFILE,
                 activity.getString(R.string.add_profile_card_title), activity.getString(R.string.add_profile_card_summary));
         addSearchEntry(entries, "profile.child-mode", TAB_PROFILE,
