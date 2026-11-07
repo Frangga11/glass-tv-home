@@ -57,6 +57,8 @@ final class WifiSettingsDialog {
     private final TextView rescan;
     private final TextView permissionAction;
     private final TextView locationAction;
+    private final TextView androidSettings;
+    private final TextView close;
     private final AlertDialog dialog;
     private final List<View> focusOrder = new ArrayList<>();
     private boolean receiverRegistered;
@@ -125,9 +127,9 @@ final class WifiSettingsDialog {
         locationAction = action(R.string.wifi_enable_location, "wifi_location_settings", density,
                 () -> dismissThen(() -> launch(Settings.ACTION_LOCATION_SOURCE_SETTINGS)));
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
-        TextView androidSettings = action(R.string.wifi_open_android_settings, "wifi_open_settings", density,
+        androidSettings = action(R.string.wifi_open_android_settings, "wifi_open_settings", density,
                 () -> dismissThen(openSystemWifiSettings));
-        TextView close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
+        close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
 
         content.addView(permissionAction);
         content.addView(locationAction);
@@ -240,14 +242,14 @@ final class WifiSettingsDialog {
     }
 
     private void updatePrerequisites() {
-        boolean permission = hasLocationPermission();
-        boolean location = isLocationEnabled();
-        permissionAction.setVisibility(permission ? View.GONE : View.VISIBLE);
-        locationAction.setVisibility(permission && !location ? View.VISIBLE : View.GONE);
-        rescan.setVisibility(permission && location && wifiEnabled() ? View.VISIBLE : View.GONE);
-        if (!permission) scanState.setText(R.string.wifi_scan_permission_required);
-        else if (!location) scanState.setText(R.string.wifi_scan_location_required);
-        else if (!wifiEnabled()) scanState.setText(R.string.wifi_scan_radio_off);
+        WifiScanPolicy.BlockReason reason = WifiScanPolicy.blockReason(
+                hasLocationPermission(), isLocationEnabled(), wifiEnabled());
+        permissionAction.setVisibility(reason == WifiScanPolicy.BlockReason.PERMISSION ? View.VISIBLE : View.GONE);
+        locationAction.setVisibility(reason == WifiScanPolicy.BlockReason.LOCATION ? View.VISIBLE : View.GONE);
+        rescan.setVisibility(reason == WifiScanPolicy.BlockReason.NONE ? View.VISIBLE : View.GONE);
+        if (reason == WifiScanPolicy.BlockReason.PERMISSION) scanState.setText(R.string.wifi_scan_permission_required);
+        else if (reason == WifiScanPolicy.BlockReason.LOCATION) scanState.setText(R.string.wifi_scan_location_required);
+        else if (reason == WifiScanPolicy.BlockReason.WIFI_DISABLED) scanState.setText(R.string.wifi_scan_radio_off);
     }
 
     private void requestLocationPermission() {
@@ -259,7 +261,7 @@ final class WifiSettingsDialog {
     private void requestScan() {
         if (!dialog.isShowing()) return;
         updatePrerequisites();
-        if (!hasLocationPermission() || !isLocationEnabled() || !wifiEnabled()) {
+        if (!WifiScanPolicy.mayRequestScan(hasLocationPermission(), isLocationEnabled(), wifiEnabled())) {
             showCachedResults();
             return;
         }
@@ -309,7 +311,7 @@ final class WifiSettingsDialog {
                 WifiInfo info = manager != null ? manager.getConnectionInfo() : null;
                 if (info != null) ssid = cleanSsid(info.getSSID());
             }
-        } catch (SecurityException | RuntimeException ignored) { }
+        } catch (RuntimeException ignored) { }
         status.setText(ssid == null
                 ? activity.getString(R.string.wifi_status_connected)
                 : activity.getString(R.string.wifi_status_connected_to, ssid));
@@ -357,6 +359,7 @@ final class WifiSettingsDialog {
             }
         }
         refreshStatus();
+        connectFocusOrder();
     }
 
     private String securityLabel(String capabilities) {
@@ -418,7 +421,6 @@ final class WifiSettingsDialog {
         view.setOnClickListener(v -> {
             if (callback != null) callback.run();
         });
-        focusOrder.add(view);
         return view;
     }
 
@@ -431,6 +433,16 @@ final class WifiSettingsDialog {
     }
 
     private void connectFocusOrder() {
+        focusOrder.clear();
+        if (permissionAction.getVisibility() == View.VISIBLE) focusOrder.add(permissionAction);
+        if (locationAction.getVisibility() == View.VISIBLE) focusOrder.add(locationAction);
+        if (rescan.getVisibility() == View.VISIBLE) focusOrder.add(rescan);
+        for (int i = 0; i < networkRows.getChildCount(); i++) {
+            View child = networkRows.getChildAt(i);
+            if (child.isFocusable() && child.getVisibility() == View.VISIBLE) focusOrder.add(child);
+        }
+        focusOrder.add(androidSettings);
+        focusOrder.add(close);
         for (int i = 0; i < focusOrder.size(); i++) {
             View view = focusOrder.get(i);
             int previous = i > 0 ? focusOrder.get(i - 1).getId() : view.getId();
