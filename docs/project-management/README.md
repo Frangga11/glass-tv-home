@@ -4,8 +4,8 @@
 **Initial release:** v0.1-draft  
 **Prepared:** 31 October 2026  
 **Repository:** https://github.com/Frangga11/glass-tv-home  
-**Current project checkpoint:** Official Project G03 physical Mi TV Stick acceptance remains OPEN/BLOCKED pending explicit readiness approval and device connection. Separate UI Refresh GTVH-UIR-002 v2.0 subtrack: G1, G2 and G3A–G3D COMPLETE at their recorded prototype/source-host gates; next is G3E Wi-Fi.
-**Current stage:** Official Project G03 device acceptance remains a separate blocked gate. UI Refresh subtrack resumes at G3E — Wi-Fi.
+**Current project checkpoint:** Official Project G03 physical Mi TV Stick acceptance remains OPEN/BLOCKED pending explicit readiness approval and device connection. Separate UI Refresh GTVH-UIR-002 v2.0 subtrack: G1, G2 and G3A–G3F COMPLETE at their recorded prototype/source-host gates; next is a separately approved G4 integration/reconciliation plan.
+**Current stage:** Official Project G03 device acceptance remains a separate blocked gate. UI Refresh G3F Global Settings is complete at SOURCE-HOST QC; G4 planning requires explicit approval, and physical device acceptance remains separate.
 **Documentation branch:** `docs/project-master-inventory`  
 **F02 review PR:** https://github.com/Frangga11/glass-tv-home/pull/50
 
@@ -34,7 +34,7 @@ This directory is the durable project record for Glass TV Home. GitHub is the ca
 | [F04_FEATURE_ISOLATION_AUDIT.md](F04_FEATURE_ISOLATION_AUDIT.md) | F04 Avatar, Wallpaper and StandBy source isolation, repairs, CI and Project G gates |
 | [HANDOVER.md](HANDOVER.md) | Current work position and how to resume in a new conversation |\n| [UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md) | G3A Home & independent Dock source/host closeout evidence |
 | [UI_REFRESH_G3D_AUDIT_2026-11-07.md](UI_REFRESH_G3D_AUDIT_2026-11-07.md) | G3D Quick Settings audit, root causes, remediation and source/host verification |
-| [UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md) | G3D Quick Settings source/host closeout and next work point |
+| [UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md) | G3D Quick Settings source/host closeout and next work point |\n| [UI_REFRESH_G3F_AUDIT_2026-11-07.md](UI_REFRESH_G3F_AUDIT_2026-11-07.md) | G3F Global Settings audit and source-host QC evidence |\n| [UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md](UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md) | G3F Global Settings source-host closeout and handover |
 | [F07_PERFORMANCE_STABILITY_AUDIT.md](F07_PERFORMANCE_STABILITY_AUDIT.md) | Final F07 performance, memory, stability and storage host/source evidence |
 | [PROJECT_G_READINESS_CHECKPOINT.md](PROJECT_G_READINESS_CHECKPOINT.md) | Official Project F closure, Project G work packages, device gates and governance |
 
@@ -193,3 +193,11 @@ Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G
 - Exact-head CI #1328 / `42344123725`: both required jobs SUCCESS; 120 Python tests, launcher/installer unit tests and release validation build passed. APK diagnostic 1,608,373 bytes, informational under D-023.
 - Canonical evidence: [G3D audit](UI_REFRESH_G3D_AUDIT_2026-11-07.md) and [G3D checkpoint](UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md).
 - No merge, APK publication/installation, ADB or physical TV/remote/overscan test. Official Project G03 device acceptance remains separately OPEN/BLOCKED. Next UI Refresh work package: G3E Wi-Fi.
+
+## Global UI Refresh G3F closeout — 7 November 2026
+
+- G3F Global Settings is **COMPLETE / SOURCE-HOST QC PASS** on `feature/g3f-global-settings` @ `455b619c3eefe417ac0152a51f3cb12478a8f4a9`; PR #71 remains OPEN/DRAFT/UNMERGED, based on unchanged G3E exact HEAD `9125043e24b8f13232e41193ba5fe10e1821f7cd`.
+- Exact-head CI #1376 / `42348837445`: both jobs SUCCESS; 134 Python tests, app/installer unit tests, release builds and lint-vital PASS.
+- APK diagnostic 1,620,193 bytes (+2,820 bytes / approximately 0.17% vs G3E); informational under D-023, no artifact published.
+- Canonical evidence: [G3F audit](UI_REFRESH_G3F_AUDIT_2026-11-07.md) and [G3F checkpoint](UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md).
+- Physical Android TV/Mi TV Stick acceptance remains PENDING / NOT RUN. No APK install/publication, ADB, physical-device mutation, merge or integration/main change. Next: separately approved G4 integration/reconciliation planning.
