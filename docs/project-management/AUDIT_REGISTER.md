@@ -1661,3 +1661,19 @@ G1 is a browser-prototype result only. Production component conformance, live da
 **Residual / boundary:** four-digit PIN remains guessable under unlimited attempts by explicit product decision. This is source-host acceptance only; physical TV/remote/OEM acceptance remains PENDING / NOT RUN. No merge, APK install/publication, ADB or device mutation.
 
 **Disposition: G4-A–G4-J COMPLETE / SOURCE-HOST QC PASS.** See canonical `UI_REFRESH_G4_AUDIT_2026-11-07.md` and `UI_REFRESH_G4_CHECKPOINT_2026-11-07.md`.
+
+
+## Home Dock visual parity V2 — audit disposition (7 November 2026)
+
+Finding HOME-DOCK-GEO-001: Previous horizontal Dock placement used the legacy rows_below_dock reservation/padding model. The independent Dock/Grid implementation requires a bottom-anchored Dock surface and a separate Grid viewport reservation; otherwise the Dock can float high or an extra app row can appear below it.
+
+Finding HOME-DOCK-GEO-002: Dock tile width, Dock host height, Grid bottom reserve and tray decoration were calculated in separate components. Consolidating them prevents drift between the DockAdapter's measured card and MainActivity's host geometry.
+
+Evidence
+- v4.0.0 commit 71e5b26205c068ebd866bd39af503bfd20769498; v4.1.0 commit cca6a3b450cc13fa16e9287164083a465796f57b.
+- v4.0/v4.1 MainActivity SHA identical: 7a59c8c050c2be84c58588417f61b91b3d75e70b.
+- Owner branch fix/home-dock-visual-parity-v2 @ 4ba1d7f14ba26e0c4051fcdf958f289234b6e7ae; PR #74 OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1407 / 42378227691: both required jobs SUCCESS; app/installer release unit tests and builds passed; repo contract tests passed.
+- APK size 1,622,573 bytes; SHA-256 19d1435c7c20491b9093747d65c8dbab6a0627971461bee401702990538a142c; artifact #13576552604.
+
+Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physical visual, remote, orientation/capacity and OEM overscan acceptance remains PENDING / NOT RUN. No installation, ADB, device mutation, merge or integration branch changes.

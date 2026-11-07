@@ -1224,3 +1224,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Verified baseline APK from CI #1395: 1,622,401 bytes; SHA-256 `ec125ca46bf98af8426fef060e974c963932f9ae7f863507d135ae40df9bb605`.
 - Failed Image 2/Dock rework PR #73 closed, branch preserved. PR #72 remains draft/open and baseline lineage unchanged. No merge, force-push, branch deletion or device installation.
 - Details: `RESET_BASELINE_4.0.0_2026-11-07.md`.
+
+
+## Home Dock visual parity V2 — checkpoint (7 November 2026)
+
+- Locked visual master: user's supplied Home reference screenshot. Work is scoped to Dock/icon geometry and glass tray parity; preserve wallpaper, hero, ayah/prayer shelf and header.
+- Patch 4.0/4.1 MainActivity source identical; original tile geometry recovered and consolidated into DockGeometry across MainActivity, DockAdapter and DockDecoration. Added regression tests for 4/5/6 capacities, tile ratio, tray and density behavior.
+- Branch fix/home-dock-visual-parity-v2 @ 4ba1d7f14ba26e0c4051fcdf958f289234b6e7ae; PR #74 OPEN/DRAFT/UNMERGED, stacked on G4 head 7146de58953325fdfc6c98501828676f143e64cf.
+- CI #1407 / 42378227691 both jobs SUCCESS. APK 1,622,573 bytes; SHA-256 19d1435c7c20491b9093747d65c8dbab6a0627971461bee401702990538a142c; artifact #13576552604.
+- SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physical TV visual/remote/OEM overscan acceptance remains PENDING / NOT RUN; no install, ADB, merge or integration mutation.
+- Evidence: HOME_DOCK_VISUAL_PARITY_V2_2026-11-07.md.

@@ -1594,3 +1594,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #73 (failed UI/Dock rework) CLOSED, not merged. Its branch/commits preserved. PR #72 remains OPEN/DRAFT/UNMERGED and corresponds to baseline branch.
 - No branch deletion, force-push, merge, TV install, ADB or device setting changes. Baseline APK is extracted at `/mnt/data/glass-tv-home-4.0.0-baseline/app-release.apk` in the active session.
 - Canonical report: `RESET_BASELINE_4.0.0_2026-11-07.md`. Do not resume new work until user specifies next step.
+
+
+## Home Dock visual parity V2 — 7 November 2026
+
+- User resumed Home Screen only and reaffirmed the supplied reference screenshot as the locked visual master. Scope is Dock/icon position and glass parity; wallpaper, hero description, ayah/prayer shelf and header remain untouched.
+- Source audit: Patch 4.0/4.1 MainActivity identical; current G3A item_app XML matches 4.0. Legacy 180×101dp tile contract and 6/12dp offsets, 14dp tray inset, +18dp Dock height and +34dp Grid reserve are captured in DockGeometry.
+- Branch fix/home-dock-visual-parity-v2 @ 4ba1d7f14ba26e0c4051fcdf958f289234b6e7ae; PR #74 OPEN/DRAFT/UNMERGED, base G4 7146de58953325fdfc6c98501828676f143e64cf.
+- Exact-head CI #1407 / 42378227691: both required jobs SUCCESS; app/installer release unit tests and builds passed; repository contract checks passed. APK 1,622,573 bytes; SHA-256 19d1435c7c20491b9093747d65c8dbab6a0627971461bee401702990538a142c; artifact #13576552604.
+- Source-host QC PASS; controlled TV visual/remote/overscan acceptance READY but NOT RUN. No install, ADB, device mutation or merge. Full checklist: HOME_DOCK_VISUAL_PARITY_V2_2026-11-07.md.

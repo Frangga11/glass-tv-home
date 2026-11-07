@@ -815,3 +815,21 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Device installation | NOT PERFORMED |
 
 - Full evidence: `RESET_BASELINE_4.0.0_2026-11-07.md`.
+
+
+## Home Dock visual parity V2 — inventory (7 November 2026)
+
+| Gate | Status |
+|---|---|
+| Patch 4.0/4.1 source baseline audit | COMPLETE |
+| Shared Dock geometry contract | IMPLEMENTED |
+| Capacity 4/5/6 and density regression tests | PASS |
+| Exact-head CI #1407 | BOTH REQUIRED JOBS SUCCESS |
+| Test APK | 1,622,573 bytes; SHA-256 19d1435c7c20491b9093747d65c8dbab6a0627971461bee401702990538a142c |
+| Artifact | #13576552604; expires 14 Nov 2026 |
+| PR #74 | OPEN / DRAFT / UNMERGED |
+| Physical TV visual/remote/overscan acceptance | READY / NOT RUN |
+| Install / ADB / device mutation / merge | NOT PERFORMED |
+
+- Owner branch: fix/home-dock-visual-parity-v2 @ 4ba1d7f14ba26e0c4051fcdf958f289234b6e7ae.
+- Evidence: HOME_DOCK_VISUAL_PARITY_V2_2026-11-07.md.

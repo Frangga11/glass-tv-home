@@ -505,3 +505,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **G4-A–G4-J COMPLETE / SOURCE-HOST QC PASS.** Final G4 HEAD `f46adf27bbc6b2156c7e9bb49d48cf4fd0fcdb5e`; exact G3F base `455b619c3eefe417ac0152a51f3cb12478a8f4a9`; synthetic merge `376b5b69e2aed56e1f813169f35dbb9459ada554`; CI #1394 / `42353368760` both jobs SUCCESS.
 - PR #72 remains OPEN/DRAFT/UNMERGED. PR #66–#71 dependency chain remains unchanged and OPEN/DRAFT/UNMERGED. No merge/rebase/cherry-pick/force-push, APK publication/install, ADB or device mutation.
 - Physical TV/remote/OEM acceptance remains a separate PENDING / NOT RUN gate. Canonical checkpoint: `UI_REFRESH_G4_CHECKPOINT_2026-11-07.md`.
+
+
+## Decision — Home Dock visual parity V2 (7 November 2026)
+
+- Preserve the supplied Home screenshot as the locked visual master; do not redesign the Dock or surrounding Home composition.
+- Reuse Patch 4.0/4.1 geometry and preserve legacy density rounding. Centralize sizing/spacing in DockGeometry; the independent G3A Dock/Grid architecture remains.
+- Do not import Patch 4.1's extra DockBreathingBorderView in this pass: current G3A Glider already provides focus feedback and a second animated border would alter the approved focus appearance.
+- PR #74 remains Draft/unmerged on fix/home-dock-visual-parity-v2 @ 4ba1d7f14ba26e0c4051fcdf958f289234b6e7ae. No integration branch changes.
+- Source-host CI #1407 PASS; test APK is ready for controlled device acceptance. Do not claim visual PASS until owner confirms TV screenshot/remote behavior.
