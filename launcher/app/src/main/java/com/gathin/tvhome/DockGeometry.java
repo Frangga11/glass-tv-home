@@ -22,6 +22,13 @@ final class DockGeometry {
         return AppAdapter.tileWidthPx(innerWidthPx, DockPreferences.normalizeCapacity(capacity), density);
     }
 
+    /** Horizontal offset that centers the complete visible Dock group in its viewport. */
+    static int horizontalCenterOffsetPx(int innerWidthPx, int tileWidthPx, int itemCount) {
+        if (innerWidthPx <= 0 || tileWidthPx <= 0 || itemCount <= 0) return 0;
+        int groupWidth = tileWidthPx * itemCount;
+        return Math.max(0, (innerWidthPx - groupWidth) / 2);
+    }
+
     static int tileHeightPx(int tileWidthPx) {
         return AppAdapter.tileHeightPx(tileWidthPx);
     }
