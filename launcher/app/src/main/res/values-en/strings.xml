@@ -687,4 +687,19 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="weather_pollutants_title">AIR POLLUTANTS · CAMS</string>
     <string name="profile_save_failed">Profile changes could not be saved. Please try again.</string>
     <string name="app_policy_save_failed">App restriction changes could not be saved. Please try again.</string>
+
+    <string name="quick_settings_title">Quick Settings</string>
+    <string name="quick_settings_wifi_summary">Network status and Wi-Fi settings</string>
+    <string name="quick_settings_restart_summary">Restart the device</string>
+    <string name="quick_settings_power_summary">Open the device power menu</string>
+    <string name="quick_settings_cache_summary">Clean temporary files</string>
+    <string name="quick_settings_wallpaper_title">Wallpaper</string>
+    <string name="quick_settings_next_photo">Next Photo</string>
+    <string name="quick_settings_next_photo_summary">Show the next wallpaper</string>
+    <string name="quick_settings_interval_summary">Automatic change interval</string>
+    <string name="quick_settings_manage_wallpaper">Manage</string>
+    <string name="quick_settings_glass_settings">Glass TV Settings</string>
+    <string name="quick_settings_glass_settings_summary">Profiles, appearance and launcher features</string>
+    <string name="quick_settings_android_settings">Android Settings</string>
+    <string name="quick_settings_android_settings_summary">Device system settings</string>
 </resources>

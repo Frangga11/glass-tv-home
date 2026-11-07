@@ -3833,6 +3833,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Shows an Apple TV-style frosted glass Wi-Fi control center popup. */
     private void showWifiPopup() {
+        showWifiPopup(null);
+    }
+
+    /** Optional parent return keeps nested Quick Settings navigation deterministic. */
+    private void showWifiPopup(Runnable returnToParent) {
         if (openMenu != null) return;
         SoundEffects.playSelect();
         View anchor = btnWifi;
@@ -3896,6 +3901,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         width = Math.max(width, panel.getMeasuredWidth());
 
         showMenu(panel, rows, anchor, width, false);
+        menuReturnAction = returnToParent;
     }
 
     /** Shows the User Profile & Child Mode quick dialog (formerly Candy Box). */
@@ -3934,37 +3940,69 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
     }
 
-    /** Shows the modern floating 2-column Settings modal (Profile, Avatars, Child Mode, Home, etc.). */
-    /** Compact TV control menu, optimized for the remote and Mi TV Stick. */
+    /** Opens the centered V04 Quick Settings modal using the shared G2 dialog/focus contract. */
     private void showQuickControlPopup() {
+        showQuickControlPopup(QuickSettingsFocusGraph.WIFI);
+    }
+
+    private void showQuickControlPopup(int initialFocus) {
+        if (isFinishing() || isDestroyed()) return;
         if (openMenu != null) closeMenu(false);
         SoundEffects.playSelect();
         View anchor = findViewById(R.id.btnSettings);
-        if (anchor == null) {
-            showSettingsPopup();
-            return;
-        }
-        FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
-        LinearLayout rows = panel.findViewById(R.id.rows);
-        Runnable close = () -> closeMenu(false);
+        if (anchor == null) return;
 
-        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strRestart(this), -1, this::showRestartDialog);
-        addInputRow(rows, close, R.drawable.ic_power, AppLanguage.strTurnOff(this), -1, this::showTurnOffDialog);
-        addSeparator(rows);
-        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strCleanCache(this), -1, this::showCleanTvCacheDialog);
-        addInputRow(rows, close, R.drawable.ic_wallpaper, AppLanguage.strWallpaper(this) + " (" + getWallpaperIntervalSummary() + ")", -1, this::showWallpaperDialog);
-
-        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strLanguage(this) + ": " + AppLanguage.getLanguageBadge(this), -1, this::showLanguageDialog);
-
-        addSeparator(rows);
-        addInputRow(rows, close, R.drawable.ic_settings, getString(R.string.glass_tv_settings_label), -1, this::showSettingsPopup);
-        addInputRow(rows, close, R.drawable.ic_settings, AppLanguage.strAllSettings(this), -1,
-                () -> openSystemSettings(systemIntent(Settings.ACTION_SETTINGS)));
-        addInputRow(rows, close, R.drawable.ic_close, AppLanguage.strClose(this), -1, () -> closeMenu(true));
-
-        int width = (int) (285 * density);
-        panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.UNSPECIFIED);
-        showMenu(panel, rows, anchor, width, false);
+        QuickSettingsDialog.show(this, new QuickSettingsDialog.Actions() {
+            @Override public String wifiSummary() {
+                return getString(R.string.quick_settings_wifi_summary);
+            }
+            @Override public String languageSummary() {
+                return AppLanguage.getLanguageBadge(MainActivity.this);
+            }
+            @Override public String powerTitle() {
+                return AppLanguage.strTurnOffTitle(MainActivity.this);
+            }
+            @Override public String cacheTitle() {
+                return AppLanguage.strCleanCacheTitle(MainActivity.this);
+            }
+            @Override public String wallpaperIntervalSummary() {
+                return getWallpaperIntervalSummary();
+            }
+            @Override public void openWifi() {
+                showWifiPopup(() -> showQuickControlPopup(QuickSettingsFocusGraph.WIFI));
+            }
+            @Override public void restart() {
+                showRestartDialog();
+            }
+            @Override public void chooseLanguage() {
+                showLanguageDialog();
+            }
+            @Override public void openPowerMenu() {
+                showTurnOffDialog();
+            }
+            @Override public void cleanCache() {
+                showCleanTvCacheDialog();
+            }
+            @Override public void nextPhoto() {
+                showNextWallpaperFromSettings();
+            }
+            @Override public void chooseWallpaperInterval() {
+                showWallpaperIntervalDialog(false);
+            }
+            @Override public void manageWallpaper() {
+                showWallpaperDialog();
+            }
+            @Override public void openGlassSettings() {
+                showSettingsPopup();
+            }
+            @Override public void openAndroidSettings() {
+                openSystemSettings(systemIntent(Settings.ACTION_SETTINGS));
+            }
+        }, initialFocus, () -> {
+            if (!isFinishing() && !isDestroyed() && anchor.isAttachedToWindow()) {
+                anchor.requestFocus();
+            }
+        });
     }
 
     public void showSettingsPopup() {
@@ -7121,6 +7159,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** The glass menu while one is open (Inputs, or an app's), and what it opened from. */
     private View openMenu;
     private View menuAnchor;
+    private Runnable menuReturnAction;
     private final int[] menuAt = new int[2], menuGliderAt = new int[2];
 
     /**
@@ -7219,6 +7258,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
      * the menu is above), or Back, closes it and the shape glides back to the anchor.
      */
     private void showMenu(FrameLayout panel, LinearLayout rows, View anchor, int width, boolean above) {
+        menuReturnAction = null;
         GlassDrawable glass = new GlassDrawable(panel, 20 * density, density, glider, 0.5f, true);
         panel.setBackground(glass);
         Backdrop.watch(panel);
@@ -7347,12 +7387,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View panel = openMenu;
         if (panel == null) return;
         SoundEffects.playNav();
+        View returnAnchor = menuAnchor;
+        Runnable returnAction = toAnchor ? menuReturnAction : null;
         openMenu = null;
-        if (toAnchor && menuAnchor != null) menuAnchor.requestFocus();
         menuAnchor = null;
+        menuReturnAction = null;
+        if (toAnchor && returnAnchor != null) returnAnchor.requestFocus();
         panel.animate().alpha(0f).setDuration(reducedMotion ? 80 : 150).withEndAction(() -> {
             glider.removeCompanion(panel);
             root.removeView(panel);
+            if (returnAction != null && !isFinishing() && !isDestroyed()) returnAction.run();
         }).start();
     }
 
