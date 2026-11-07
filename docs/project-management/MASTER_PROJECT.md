@@ -1127,3 +1127,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - APK diagnostic 1,600,893 bytes (+11,068 bytes / approximately 0.7% against G3A); informational only under D-023. No quality features/assets removed for size.
 - No merge, rebase, cherry-pick, force-push, integration/main modification, APK publication/installation, ADB or physical device action. PRs #65/#66 remain OPEN/DRAFT/UNMERGED; PR #67 remains OPEN/DRAFT/UNMERGED.
 - Canonical evidence: UI_REFRESH_G3B_AUDIT_2026-11-07.md and UI_REFRESH_G3B_CHECKPOINT_2026-11-07.md. Next package: G3C Profile, Avatar & Child Mode.
+
+
+## UI Refresh G3C P1 closeout — 7 November 2026
+
+- **G3C P1 Security Policy & Authorization: COMPLETE / SOURCE-HOST QC PASS.** Evidence: `UI_REFRESH_G3C_P1_CHECKPOINT_2026-11-07.md`.
+- Branch `feature/g3c-profile-avatar-child-mode` @ `16577e0210470762423ed0bf6cc7624c33537850`; PR #68 OPEN/DRAFT/UNMERGED, stacked on G3B @ `8cfc5c886950cc9d27d4530ba901df872b8e5c44`.
+- Exact-head CI #1307 / run `42338164003`: both required jobs SUCCESS; release build and release/installer unit tests passed. APK diagnostic 1,601,221 bytes, informational under D-023; no artifact published.
+- Launcher-scoped PIN gate protects approved Android Settings main, Accessibility, Notification Access and Default Home/Launcher routes. Wi-Fi, Display, Dream/Screensaver and ordinary Quick Settings remain exempt. Existing PIN mechanism/default/storage were not changed. No system-wide Android parental-control claim.
+- Physical Android TV acceptance deferred; no APK install, ADB, merge or integration/main change.
+- **Next: G3C P2 Profile Selector & Navigation.** Start with a read-only audit against G1 V6 V03 and G2 shared focus/dialog foundations. P2 implementation not yet authorized; P3–P5 NOT STARTED.
