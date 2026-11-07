@@ -744,3 +744,24 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - Canonical evidence: `UI_REFRESH_G3F_AUDIT_2026-11-07.md` and `UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md`.
 - **Next:** G4 integration/reconciliation planning, subject to explicit approval. No APK publication/install, ADB or physical device mutation.
+
+
+## UI Refresh G4 — final parent PIN security inventory (7 November 2026)
+
+| Area | Final state | Evidence |
+|---|---|---|
+| Parent PIN storage | PASS | Salted PBKDF2-HMAC-SHA256, 16-byte salt, 120,000 iterations, 256-bit hash |
+| Legacy custom PIN | PASS | Lossless migration only after successful verification; plaintext removed after successful hash write |
+| Default PIN | PASS | Fresh-install and legacy default remain `0000`; no forced first-use update |
+| Retry policy | PASS | No counters, limits, cooldown, lockout, forced delay or temporary restriction |
+| Corrupt credential | PASS | Malformed, mistyped, partial or missing previously stored credential fails closed; no default fallback |
+| UI responsiveness | PASS / SOURCE | KDF/verification runs on background executor; UI result posts to main looper |
+| Profile/device scope | PASS | Parent PIN device-wide; Child Mode/App Lock/Hidden Apps profile-scoped |
+| Regression tests | PASS | 11 focused PinCredentialStore tests plus profile persistence regression |
+| Combined-tree CI | PASS | PR #72 synthetic merge `376b5b69e2aed56e1f813169f35dbb9459ada554`; CI #1394 both jobs SUCCESS |
+| Physical device acceptance | PENDING / NOT RUN | Separate approval gate; no APK installation, ADB or device mutation |
+
+- Final G4 source HEAD: `f46adf27bbc6b2156c7e9bb49d48cf4fd0fcdb5e`; base G3F `455b619c3eefe417ac0152a51f3cb12478a8f4a9`.
+- Combined diff: five files only — ChildModeManager, ModernSettingsDialog, PinCredentialStore, PinCredentialStoreTest and ProfileManagerPersistenceTest. No docs files are included in PR #72.
+- Release APK diagnostic: 1,622,401 bytes; +2,208 bytes vs G3F; informational under D-023.
+- Canonical evidence: `UI_REFRESH_G4_AUDIT_2026-11-07.md` and `UI_REFRESH_G4_CHECKPOINT_2026-11-07.md`.
