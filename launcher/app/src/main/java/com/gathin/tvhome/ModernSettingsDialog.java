@@ -1502,6 +1502,7 @@ public final class ModernSettingsDialog {
         root.addView(body, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
+        WeakReference<View> originFocus = new WeakReference<>(activity.getCurrentFocus());
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
         builder.setView(root);
         AlertDialog dialog = builder.create();
@@ -1522,6 +1523,10 @@ public final class ModernSettingsDialog {
             }
             sDpadLeftTarget = null;
             clearHostReferences(activity);
+            View origin = originFocus.get();
+            if (origin != null && origin.isFocusable() && origin.isShown()) {
+                origin.post(origin::requestFocus);
+            }
         });
         dialog.show();
 
