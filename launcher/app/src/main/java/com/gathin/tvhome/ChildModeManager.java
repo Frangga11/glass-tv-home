@@ -25,7 +25,6 @@ import java.util.Set;
 public final class ChildModeManager {
     private static final String PREFS_NAME = "child_mode_prefs";
     private static final String KEY_ENABLED = "child_mode_enabled";
-    private static final String KEY_PIN = "security_pin";
     private static final String KEY_LOCKED_APPS = "locked_apps";
     private static final String KEY_HIDDEN_APPS = "hidden_apps";
 
@@ -126,18 +125,14 @@ public final class ChildModeManager {
         }
     }
 
-    public static String getPin(Context ctx) {
-        if (ctx == null) return "0000";
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_PIN, "0000");
+    /** Returns true while the active parent PIN is still the unchanged default. */
+    public static boolean isDefaultPin(Context ctx) {
+        return PinCredentialStore.isDefaultPin(ctx);
     }
 
+    /** Stores a four-character parent PIN using a per-install salt and PBKDF2 hash. */
     public static void setPin(Context ctx, String pin) {
-        if (ctx == null || pin == null || pin.length() != 4) return;
-        ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .putString(KEY_PIN, pin)
-                .apply();
+        PinCredentialStore.setPin(ctx, pin);
     }
 
     /** Any switch away from an active Child Mode profile requires parent authorization.
@@ -147,8 +142,7 @@ public final class ChildModeManager {
     }
 
     public static boolean verifyPin(Context ctx, String entered) {
-        if (ctx == null || entered == null) return false;
-        return entered.equals(getPin(ctx));
+        return PinCredentialStore.verifyPin(ctx, entered);
     }
 
     public static boolean isAppLocked(Context ctx, String pkg) {
