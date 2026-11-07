@@ -1723,3 +1723,17 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - APK 1,624,937 bytes; artifact #13578301246; ZIP SHA-256 5c9ea538f64743a0b31c91b14add41b47f091c3d57110d2f0bce83c86e537922.
 
 **Disposition: SOURCE BUILD / UNIT QC PASS.** Physical Mi TV visual/remote acceptance remains PENDING / NOT RUN. No install, ADB, device mutation or merge.
+
+
+## Horizontal Dock centering — follow-up audit (7 November 2026)
+
+**Finding HOME-DOCK-CENTER-001:** The prior fix measured each Dock holder width but did not center the aggregate group. The Dock RecyclerView occupied the full viewport and its horizontal LinearLayoutManager placed the first item at x=0; therefore all five icons remained left-aligned. This is consistent with the owner's physical TV photo and explains why the earlier APK showed no perceived position change.
+
+**Corrective change:** Add one geometry function to calculate (viewportWidth - tileWidth × visibleItemCount) / 2, clamp at zero, and translate the horizontal Dock host by that offset. Keep tile-width measurement based on the full viewport; reset translation when switching to vertical orientation or empty Dock. Add regression tests for 4/5/6 capacities across four densities and edge cases.
+
+**Evidence**
+- Latest source HEAD 65108d4160243442922002618e739c898c4cb9e7; PR #74 OPEN/DRAFT/UNMERGED.
+- Exact-head CI is PENDING / NOT CONFIRMED. Run #42384023835 covers the immediately preceding revision only and was in progress at last check.
+- Physical TV visual acceptance PENDING / NOT RUN; latest centered APK not yet available.
+
+**Disposition: SOURCE CHANGE IMPLEMENTED / QC PENDING.** Do not claim visual PASS until latest-head CI and owner TV photo/remote acceptance pass.
