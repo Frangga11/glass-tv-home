@@ -726,3 +726,21 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **Known risk:** Android deprecates `WifiManager.startScan()` since API 28 and throttles active scans; best-effort scan plus cached/broadcast/system-settings fallback. Future API migration remains open.
 - **Device boundary:** no physical TV test, APK installation/publication, ADB, device mutation, merge or integration/main change.
 - **Next:** G3F Global Settings. See `UI_REFRESH_G3E_AUDIT_2026-11-07.md` and `UI_REFRESH_G3E_CHECKPOINT_2026-11-07.md`.
+
+## UI Refresh G3F — Global Settings inventory checkpoint (7 November 2026)
+
+| Item | Current evidence-based status |
+|---|---|
+| Owner branch / HEAD | `feature/g3f-global-settings` @ `455b619c3eefe417ac0152a51f3cb12478a8f4a9` |
+| PR / dependency | #71 OPEN/DRAFT/UNMERGED; base G3E exact HEAD `9125043e24b8f13232e41193ba5fe10e1821f7cd` |
+| V06 Global Settings shell | COMPLETE / SOURCE-HOST QC PASS |
+| Seven categories and localized control search | PASS; category routing and target focus covered |
+| Profile, Wi-Fi and device state ownership | PASS; existing ProfileManager, ChildModeManager and MainActivity/E01 owners reused |
+| Focus/lifecycle | PASS at source-host gate; physical remote acceptance not run |
+| Exact-head CI | #1376 / `42348837445`; both jobs SUCCESS; 134 Python tests; app/installer unit tests and release builds PASS |
+| APK diagnostic | 1,620,193 bytes; +2,820 bytes (~0.17%) vs G3E; informational under D-023 |
+| Device acceptance | PENDING / NOT RUN |
+| Integration / merge | NOT AUTHORIZED; PR remains draft and unmerged |
+
+- Canonical evidence: `UI_REFRESH_G3F_AUDIT_2026-11-07.md` and `UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md`.
+- **Next:** G4 integration/reconciliation planning, subject to explicit approval. No APK publication/install, ADB or physical device mutation.
