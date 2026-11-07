@@ -2268,7 +2268,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    
+
 
     /**
      * The one focus shape (Glider) goes behind everything it marks; the pills' glass makes way for it
@@ -2534,6 +2534,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockRecycler.setVisibility(wantedDockVisibility);
 
         dockRecycler.setTranslationX(0f);
+        if (dockVertical || !hasDock) {
+            dockRecycler.setPadding(0, 0, 0, 0);
+        }
         if (dockVertical) {
             gridParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             gridParams.gravity = Gravity.TOP | Gravity.START;
@@ -2576,7 +2579,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int dockSlotWidth = DockGeometry.horizontalSlotWidthPx(inner, preferences.capacity);
                 int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
                         inner, dockSlotWidth, Math.min(dockCount, preferences.capacity));
-                dockRecycler.setTranslationX(dockCenterOffset);
+                // Center the icon group with symmetric content padding. The RecyclerView host
+                // stays at the Home shelf origin so its full-width glass tray and aligned shelves
+                // do not inherit the icon group's centering offset.
+                dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),
+                        dockCenterOffset, dockRecycler.getPaddingBottom());
+                dockRecycler.setTranslationX(0f);
 
                 // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
                 // the largest supported tile and therefore the stable reservation baseline.
