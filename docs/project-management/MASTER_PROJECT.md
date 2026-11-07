@@ -1244,3 +1244,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - CI #1415 / 42379388302 both required jobs SUCCESS. APK 1,624,741 bytes; SHA-256 23ffb28d48b05f975be4b5bd13aa1086c08e47eef1feb5b8e13916799f32fafc; artifact #13576403262.
 - SOURCE-HOST QC PASS / READY FOR CONTROLLED TV ACCEPTANCE. New device test pending; no install, ADB, merge or integration mutation.
 - Evidence: PATCH41_DOCK_GLASS_ADOPTION_2026-11-07.md.
+
+
+## Patch 4.1 Dock & Liquid Glass adoption — final checkpoint (7 November 2026)
+
+- Restored Patch 4.1 Dock fill semantics (preferred pins then ordered inventory), visual assets (GlassRim, GlassView, DockBreathingBorderView, Window Light), and 16dp horizontal Dock bottom safe offset.
+- Preserved G3A independent Dock/Grid, 4/5/6 capacity and orientation preferences.
+- Branch fix/home-dock-visual-parity-v2 @ 2d1f744a4b77406712e7868a7e7c6747a3bb88ed; PR #74 OPEN/DRAFT/UNMERGED.
+- CI #1416 / 42379710925 both jobs SUCCESS. APK 1,624,733 bytes; SHA-256 5da75cfd30956224bb9bf7c61ced34a11068356d83227cdb28d2fd9fb6d00684; artifact #13577033231.
+- SOURCE-HOST QC PASS / READY FOR CONTROLLED TV ACCEPTANCE. New physical test pending; no install, ADB, merge or integration mutation.
+- Evidence: PATCH41_DOCK_GLASS_ADOPTION_2026-11-07.md.
