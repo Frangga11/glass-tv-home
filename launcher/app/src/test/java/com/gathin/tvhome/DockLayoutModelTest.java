@@ -324,4 +324,18 @@ public class DockLayoutModelTest {
         assertEquals(Math.round(four * 101f / 180f), DockGeometry.tileHeightPx(four));
     }
 
+
+    @Test
+    public void horizontalDockDownAndOverflowUpPreserveTheAlignedColumn() {
+        List<String> grid = Arrays.asList("overflow-a", "overflow-b", "overflow-c", "overflow-d",
+                "overflow-e", "overflow-f", "overflow-g");
+        for (int dockPosition = 0; dockPosition < 5; dockPosition++) {
+            int gridPosition = DockLayoutModel.gridPositionForDock(
+                    dockPosition, false, 5, grid.size());
+            assertEquals(dockPosition, gridPosition);
+            assertEquals(dockPosition, DockLayoutModel.dockPositionForGrid(
+                    gridPosition, false, 5, 5));
+        }
+    }
+
 }
