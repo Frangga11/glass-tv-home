@@ -1680,3 +1680,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Likely failure mode if the user is installing over an existing `com.gathin.tvhome`: Android rejects the update due to signing-certificate mismatch (`INSTALL_FAILED_UPDATE_INCOMPATIBLE` / “App not installed”). This is not yet confirmed as the user's actual symptom; do not uninstall the existing launcher or erase app data without confirmation.
 - No source-code or workflow signing changes made pending the exact TV error. The APK's ZIP structure and declared Android compatibility were checked, but physical installation/launch on TV remains NOT TESTED.
 - Next diagnostic required: distinguish installer failure/update-signature conflict from successful installation followed by launch crash. Ask for the exact TV message or a photo of the screen. For a durable CI sideload APK, configure a stable owner-controlled signing keystore via protected GitHub Actions secrets; do not commit a private keystore into the repository.
+
+## Mi TV Stick cold-start crash diagnosis and source fix — 8 November 2026
+
+- Owner supplied on-device Android-shell `logcat` from Mi TV Stick (Android 11 / API 30). Runtime confirmed `FATAL EXCEPTION: main` during `MainActivity.onResume()`.
+- Exact exception: `UnsupportedOperationException: GridLayoutManager does not support stack from end. Consider using reverse layout`.
+- Stack: `MainActivity.applyDockLayout()` → `reloadTiles()` → `reloadApps()` → `onResume()`. This proves the direct launcher-start crash; it is not a speculative performance diagnosis.
+- Corrected `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java` by removing the unsupported `GridLayoutManager.setStackFromEnd(...)` call. Retained GridLayoutManager's natural adapter order; horizontal overflow remains governed by FrameLayout geometry and DPAD-driven visibility/focus.
+- Fix commit `61d4e429be129263533ecfa75a729bbe0a15833f` on `fix/home-dock-visual-parity-v2`; PR #74 remains OPEN / DRAFT / UNMERGED.
+- Exact-head CI run `42398810251` was observed IN_PROGRESS at checkpoint. Previous CI success on older head does not validate this fix.
+- Physical TV re-test is NOT YET RUN. Do not install/declare fixed until exact-head CI passes and owner tests cold start + resume on Mi TV Stick. Do not change default launcher, uninstall, clear data, or merge.
