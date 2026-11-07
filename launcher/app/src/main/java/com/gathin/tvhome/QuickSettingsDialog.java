@@ -75,10 +75,10 @@ final class QuickSettingsDialog {
         title.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         header.addView(title);
 
-        TextView close = createLink(activity, R.string.close_label, 48, density);
+        TextView close = createLink(activity, R.string.close_label, TvUiTokens.MIN_DPAD_TARGET_DP, density);
         controls[QuickSettingsFocusGraph.CLOSE] = close;
         header.addView(close, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 48)));
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, TvUiTokens.MIN_DPAD_TARGET_DP)));
         content.addView(header);
         bind(close, dialogHolder, null);
 
@@ -126,10 +126,10 @@ final class QuickSettingsDialog {
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         wallpaperHeader.addView(wallpaperTitle);
-        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 44, density);
+        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, TvUiTokens.MIN_DPAD_TARGET_DP, density);
         controls[QuickSettingsFocusGraph.WALLPAPER_MANAGE] = manageWallpaper;
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 44)));
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, TvUiTokens.MIN_DPAD_TARGET_DP)));
         content.addView(wallpaperHeader);
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
 
