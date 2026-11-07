@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- Required by WifiManager.startScan; this app never changes the radio state. -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <!-- The azan at prayer time: one exact alarm for the next prayer that is switched on. -->
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
