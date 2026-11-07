@@ -37,6 +37,7 @@ import android.widget.Toast;
 
 import com.gathin.tvhome.qrcode.QrBitmapUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -63,6 +64,14 @@ public final class ModernSettingsDialog {
     private static final int TAB_DEVICE_SETTINGS = NavigationState.TAB_DEVICE_SETTINGS;
 
     private static Runnable sDpadLeftTarget;
+    private static WeakReference<MainActivity> sSettingsHost;
+    private static WeakReference<AlertDialog> sSettingsDialog;
+    private static WeakReference<TextView> sSettingsNetworkStatus;
+    private static WeakReference<LinearLayout> sSettingsRightContent;
+    private static WeakReference<ScrollView> sSettingsRightScroll;
+    private static WeakReference<Runnable> sSettingsPaneRefresh;
+    private static WeakReference<int[]> sSettingsActiveTab;
+    private static WeakReference<View[]> sSettingsActiveSidebarView;
     private static final String PREF_SETTINGS_FOCUS_AREA = "settings_focus_area";
     private static final String PREF_SETTINGS_FOCUS_PATH = "settings_focus_path";
     private static final String PREF_SETTINGS_FOCUS_TAB = "settings_focus_tab";
@@ -1446,6 +1455,14 @@ public final class ModernSettingsDialog {
         builder.setView(root);
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
+        sSettingsHost = new WeakReference<>(activity);
+        sSettingsDialog = new WeakReference<>(dialog);
+        sSettingsNetworkStatus = new WeakReference<>(wifiStatus);
+        sSettingsRightContent = new WeakReference<>(rightContent);
+        sSettingsRightScroll = new WeakReference<>(rightScroll);
+        sSettingsPaneRefresh = new WeakReference<>(renderRightPane[0]);
+        sSettingsActiveTab = new WeakReference<>(activeTab);
+        sSettingsActiveSidebarView = new WeakReference<>(activeSidebarView);
         final ViewTreeObserver.OnGlobalFocusChangeListener[] focusListener =
                 new ViewTreeObserver.OnGlobalFocusChangeListener[1];
         dialog.setOnDismissListener(d -> {
@@ -1453,6 +1470,7 @@ public final class ModernSettingsDialog {
                 root.getViewTreeObserver().removeOnGlobalFocusChangeListener(focusListener[0]);
             }
             sDpadLeftTarget = null;
+            clearHostReferences(activity);
         });
         dialog.show();
 
@@ -1517,6 +1535,66 @@ public final class ModernSettingsDialog {
                 else profileCard.requestFocus();
             });
         }
+    }
+
+    private static void clearHostReferences(MainActivity activity) {
+        if (sSettingsHost == null || sSettingsHost.get() != activity) return;
+        sSettingsHost = null;
+        sSettingsDialog = null;
+        sSettingsNetworkStatus = null;
+        sSettingsRightContent = null;
+        sSettingsRightScroll = null;
+        sSettingsPaneRefresh = null;
+        sSettingsActiveTab = null;
+        sSettingsActiveSidebarView = null;
+    }
+
+    /** Called from the existing host network-state path; no second connectivity callback is added. */
+    static void refreshNetworkStatus(MainActivity activity) {
+        if (activity == null || sSettingsHost == null || sSettingsHost.get() != activity) return;
+        TextView status = sSettingsNetworkStatus == null ? null : sSettingsNetworkStatus.get();
+        if (status == null) return;
+        CharSequence value = activity.getString(R.string.wifi) + "  ·  "
+                + activity.getGlobalSettingsNetworkSummary();
+        status.setText(value);
+        status.setContentDescription(value);
+    }
+
+    /** Refresh external Android device state on return without discarding the focused Settings control. */
+    static void onHostResumed(MainActivity activity) {
+        if (activity == null || sSettingsHost == null || sSettingsHost.get() != activity) return;
+        AlertDialog dialog = sSettingsDialog == null ? null : sSettingsDialog.get();
+        if (dialog == null || !dialog.isShowing()) return;
+        refreshNetworkStatus(activity);
+
+        int[] activeTab = sSettingsActiveTab == null ? null : sSettingsActiveTab.get();
+        if (activeTab == null || NavigationState.normalizeSettingsTab(activeTab[0]) != TAB_DEVICE_SETTINGS) return;
+        LinearLayout content = sSettingsRightContent == null ? null : sSettingsRightContent.get();
+        ScrollView scroll = sSettingsRightScroll == null ? null : sSettingsRightScroll.get();
+        Runnable refresh = sSettingsPaneRefresh == null ? null : sSettingsPaneRefresh.get();
+        View[] sidebar = sSettingsActiveSidebarView == null ? null : sSettingsActiveSidebarView.get();
+        if (content == null || scroll == null || refresh == null) return;
+
+        View focused = content.findFocus();
+        boolean restoreRight = focused != null;
+        String focusedDescription = focused != null && focused.getContentDescription() != null
+                ? focused.getContentDescription().toString() : null;
+        int previousScroll = scroll.getScrollY();
+        refresh.run();
+        scroll.post(() -> {
+            scroll.scrollTo(0, previousScroll);
+            if (restoreRight && focusedDescription != null) {
+                View target = findControlByDescription(content, focusedDescription);
+                if (target != null && target.isFocusable() && target.requestFocus()) return;
+            }
+            if (sidebar != null && sidebar.length > 0 && sidebar[0] != null) {
+                sidebar[0].requestFocus();
+            }
+        });
+    }
+
+    static void onHostDestroyed(MainActivity activity) {
+        clearHostReferences(activity);
     }
 
     private static void addSectionHeader(LinearLayout root, Typeface font, String title) {
