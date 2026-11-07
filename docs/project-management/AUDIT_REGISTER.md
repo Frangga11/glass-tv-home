@@ -1709,3 +1709,17 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - APK 1,624,733 bytes; SHA-256 5da75cfd30956224bb9bf7c61ced34a11068356d83227cdb28d2fd9fb6d00684; artifact #13577033231.
 
 **Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED TV ACCEPTANCE.** New physical visual/remote acceptance remains PENDING / NOT RUN. No installation, ADB, device mutation or merge.
+
+
+## Home Dock overflow reachability — recovery audit (7 November 2026)
+
+**Finding HOME-DOCK-OVERFLOW-001:** PR #74 horizontal mode set the App Grid to GONE, while onDockTileKey(DPAD_DOWN) returned true without transferring focus to Grid. This made every non-Dock app unreachable. The defect is confirmed by source inspection and matches the user's report that the remaining apps disappeared.
+
+**Corrective change:** Keep Grid collapsed at idle but reveal it on DPAD Down from Dock; focus the aligned app. DPAD Up from first Grid row returns to Dock; DPAD Up from Dock returns to top shelf. Returning Dock focus collapses Grid. Focus restore follows stable app identity into overflow.
+
+**Evidence**
+- Source head 48f07a983ebee4370bbf13a80f85edd947c2eb31; PR #74 OPEN/DRAFT/UNMERGED.
+- Exact-head CI #42382202545 SUCCESS; both required jobs passed.
+- APK 1,624,937 bytes; artifact #13578301246; ZIP SHA-256 5c9ea538f64743a0b31c91b14add41b47f091c3d57110d2f0bce83c86e537922.
+
+**Disposition: SOURCE BUILD / UNIT QC PASS.** Physical Mi TV visual/remote acceptance remains PENDING / NOT RUN. No install, ADB, device mutation or merge.
