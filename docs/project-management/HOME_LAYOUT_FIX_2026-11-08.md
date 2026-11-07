@@ -172,3 +172,17 @@ PR #75 advanced by a workflow-only commit `21bc204a413fce3c527e0e8761d2016bc5dc8
 - Both PRs remain OPEN/DRAFT/UNMERGED. No installation, ADB, default-launcher change or device mutation has been performed.
 
 **Updated technical disposition:** CI / unit tests / release build / APK integrity PASS. Physical Mi TV Stick visual and DPAD acceptance PENDING. Final project status is PENDING DEVICE ACCEPTANCE, not PASS.
+
+## 9. Current exact-head checkpoint — 8 November 2026
+
+A further integration review found PR #75 had accumulated additional Dock host-centering changes after the earlier PR #76 branch snapshot. The first rebase attempt had overwritten those latest MainActivity changes. This was corrected by reapplying only the Quick Toggle translation removal onto the latest PR #75 MainActivity, preserving the Dock's symmetric RecyclerView padding and keeping its tray host unshifted.
+
+- Current PR #76 head: `f085c41356e2e5f53ca13f51bc0676bdb82d350a`.
+- Base PR #75 head: `21bc204a413fce3c527e0e8761d2016bc5dc87c6`.
+- Compare: 3 commits ahead / 0 behind. PR #76 changed files remain only `MainActivity.java` and `tests/test_home_layout_bounds_contract.py`.
+- Source inspection confirms the latest Dock padding-centering implementation is preserved; the old `dockRecycler.setTranslationX(dockCenterOffset)` is absent. The Dock-relative top-menu listeners and `alignTopButtons()` method are absent.
+- Exact-head CI #1450 / `42404262057` is running. The repository job passed: 137 Python tests, 1 intentional skip. Android unit tests/release build and APK publication are still in progress.
+- No PR #76 APK, byte size or SHA-256 yet. No post-fix visual screenshots/video. Physical Mi TV Stick remote/visual acceptance remains NOT RUN.
+- PR #76 remains OPEN/DRAFT/UNMERGED. No install, ADB, default-launcher change, device mutation or merge.
+
+**Current decision:** PARTIAL PASS — source correction implemented and repository contract tests pass; exact-head Android build/artifact and physical device acceptance remain pending.
