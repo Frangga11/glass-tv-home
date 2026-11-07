@@ -149,3 +149,16 @@ A second source-level review found that the earlier aggregate-centering correcti
 - Artifact #13585808852, ZIP 1,422,660 bytes. ZIP integrity passed; extracted app-release.apk is 1,622,497 bytes and APK ZIP integrity passed. SHA-256: 38d818902ce3ccf800b8de5cc0428125b91b7e9c27ba81810759a53925c65d0f.
 - This APK includes the Dock host/padding correction, but predates the workflow-only commit 21bc204a413fce3c527e0e8761d2016bc5dc87c6 and does not include PR #76's Quick Toggles correction. It is an intermediate Dock-only candidate, not the final cumulative Home layout APK.
 - PR #75 exact latest head 21bc204... has CI #1448 / 42403925244 in progress. PR #76 exact latest head ea681545bbf356105683ef2c7da6664e29a83723 has CI #1447 / 42403880493 in progress, with the updated APK publication condition. Await those exact-head runs and verify the PR #76 artifact before calling the build gate complete.
+
+## 8. Base reconciliation follow-up — 8 November 2026
+
+PR #75 advanced by a workflow-only commit `21bc204a413fce3c527e0e8761d2016bc5dc87c6` that includes PR #76 in the APK artifact publication condition. To avoid a stale base and duplicate workflow change, PR #76 was rebased onto that latest PR #75 head. The workflow change is inherited from the base and is no longer duplicated in PR #76.
+
+- PR #76 remains OPEN / DRAFT / UNMERGED: https://github.com/Frangga11/glass-tv-home/pull/76
+- Base branch/head: `fix/home-dock-alignment-row-scroll` @ `21bc204a413fce3c527e0e8761d2016bc5dc87c6`.
+- PR #76 head branch: `fix/home-global-layout-bounds` @ `012fba1c4012c7e4a05de292b69030c17a594d90`.
+- Compare base → head: 2 commits ahead, 0 behind; only `MainActivity.java` and `tests/test_home_layout_bounds_contract.py` differ.
+- The source/test head `cf9d661...` previously passed CI #1443. That run is not the final exact-head CI after rebase.
+- New exact-head CI run #1449 / `42404084112` is IN PROGRESS. It will use the PR #75 inherited artifact publication workflow.
+- The prior run #1447 targeted a superseded branch head and is not the current acceptance evidence.
+- PR #76 APK size/SHA-256 remain pending. Physical TV/remote acceptance remains not run; no merge or device mutation.
