@@ -1335,3 +1335,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - Source/test head `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`: CI #1443 SUCCESS; 137 Python tests (1 intentional skip), Android unit tests and release build passed.
 - Added PR #76 to the CI APK artifact publication condition. Latest branch head `ea681545bbf356105683ef2c7da6664e29a83723`; CI #1447 is rebuilding the exact latest head and publishing the physical-test APK. APK artifact/size/checksum remain pending until that run completes.
+
+## GTVH-HOME-LAYOUT-FIX-001 — Dock host centering follow-up (8 November 2026)
+
+- Confirmed the aggregate-centering offset must not translate the entire Dock RecyclerView because the full-width tray is drawn by DockDecoration in host coordinates.
+- PR #75 now uses symmetric RecyclerView content padding for icon-group centering; host translation remains zero. DockAdapter uses full viewport width for tile/slot measurement so centering padding does not shrink icons. Padding resets for vertical/empty Dock states.
+- Added Dock centering regression coverage. Latest PR #75 source commit: 21bc204a413fce3c527e0e8761d2016bc5dc87c6 on fix/home-dock-alignment-row-scroll.
+- Exact-head CI for 21bc204... is not yet observed. CI #1446 / 42403799908 was running the Android job on the prior head 78539148930bc6e3613a03db0dd3997073c725ee; do not claim its result for the later workflow commit.
+- CI artifact publication now includes PR #76. PR #76 CI #1443 passed both jobs on its previous base, but must rerun against the updated PR #75 base to validate the cumulative tree and produce the current APK.
+- Quick Toggles remain scoped to PR #76, which removes Dock-relative top-menu translation and preserves the 56dp XML safe frame.
+- No current cumulative APK/checksum, post-fix visual evidence or physical TV acceptance. No merge or device mutation.
