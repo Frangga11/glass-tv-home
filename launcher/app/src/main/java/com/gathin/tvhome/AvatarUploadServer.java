@@ -179,7 +179,7 @@ public final class AvatarUploadServer {
             if (lines.length == 0 || !UploadHttpRequest.hasValidHeaders(lines)) {
                 respond(out, 400, localized(R.string.avatar_error_invalid_request)); return;
             }
-            if (SystemClock.elapsedRealtime() >= expiresAt || !running) {
+            if (!isSessionOpen(running, SystemClock.elapsedRealtime(), expiresAt)) {
                 respond(out, 410, localized(R.string.avatar_error_session_expired)); return;
             }
             UploadHttpRequest request = UploadHttpRequest.parse(lines[0]);
@@ -259,12 +259,12 @@ public final class AvatarUploadServer {
                 return;
             }
             temp = storedAvatar;
-            if (!running || SystemClock.elapsedRealtime() > expiresAt) { respond(out, 410, localized(R.string.avatar_error_session_expired_short)); return; }
+            if (!isSessionOpen(running, SystemClock.elapsedRealtime(), expiresAt)) { respond(out, 410, localized(R.string.avatar_error_session_expired_short)); return; }
             File delivered = temp;
             boolean accepted;
             synchronized (this) {
                 // stop() uses the same monitor: a closed/revoked QR session cannot commit afterwards.
-                if (!running || SystemClock.elapsedRealtime() >= expiresAt) {
+                if (!isSessionOpen(running, SystemClock.elapsedRealtime(), expiresAt)) {
                     respond(out, 410, localized(R.string.avatar_error_session_closed));
                     return;
                 }
@@ -289,6 +289,10 @@ public final class AvatarUploadServer {
                 if (activeClients.remove(socket)) activeClientCount.decrementAndGet();
             }
         }
+    }
+
+    static boolean isSessionOpen(boolean running, long nowElapsedRealtime, long expiresAt) {
+        return running && nowElapsedRealtime < expiresAt;
     }
 
     static boolean isAvatarPagePath(String path, String token) {

@@ -683,4 +683,6 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="weather_state_offline_stale">Offline · data usang</string>
     <string name="weather_pollutant_missing_note">— = tidak disediakan oleh provider</string>
     <string name="weather_pollutants_title">RINCIAN POLUTAN UDARA · CAMS</string>
+    <string name="profile_save_failed">Perubahan profil gagal disimpan. Silakan coba lagi.</string>
+    <string name="app_policy_save_failed">Perubahan pembatasan aplikasi gagal disimpan. Silakan coba lagi.</string>
 </resources>

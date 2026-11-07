@@ -778,7 +778,10 @@ public final class ModernSettingsDialog {
                 editNameCard.setOnClickListener(v -> {
                     SoundEffects.playSelect();
                     showEditNameDialog(activity, density, outfit, newName -> {
-                        ProfileManager.setProfileName(activity, newName);
+                        if (!ProfileManager.setProfileName(activity, newName)) {
+                            TvFeedback.show(activity, R.string.profile_save_failed, Toast.LENGTH_LONG);
+                            return;
+                        }
                         tvCurName.setText(newName);
                         tvProfileName.setText(newName);
                         activity.updateTopBarUserIcon();
@@ -929,7 +932,11 @@ public final class ModernSettingsDialog {
                             ChildModeManager.promptPin(activity, activity.getString(R.string.child_mode_pin_confirm_title), activity.getString(R.string.child_mode_pin_confirm_message), new ChildModeManager.PinCallback() {
                                 @Override
                                 public void onSuccess() {
-                                    ChildModeManager.setChildModeEnabled(activity, isChecked);
+                                    if (!ChildModeManager.setChildModeEnabled(activity, isChecked)) {
+                                        TvFeedback.show(activity, R.string.profile_save_failed, Toast.LENGTH_LONG);
+                                        if (renderRightPane[0] != null) renderRightPane[0].run();
+                                        return;
+                                    }
                                     activity.reloadTiles();
                                     activity.updateTopBarUserIcon();
                                     updateSidebarSelection.run();
@@ -1784,7 +1791,12 @@ public final class ModernSettingsDialog {
         }
         Collections.sort(entryList, (a, b) -> a.label.compareToIgnoreCase(b.label));
 
-        final Set<String> targetSet = isHideMode ? ChildModeManager.getHiddenApps(activity) : ChildModeManager.getLockedApps(activity);
+        ProfileManager.UserProfile targetProfile = ProfileManager.getActiveProfile(activity);
+        if (targetProfile == null) return;
+        final String targetProfileId = targetProfile.id;
+        final Set<String> targetSet = isHideMode
+                ? ChildModeManager.getHiddenApps(activity, targetProfileId)
+                : ChildModeManager.getLockedApps(activity, targetProfileId);
         final Set<String> selectedPackages = new HashSet<>(targetSet);
 
         LinearLayout pickerLayout = new LinearLayout(activity);
@@ -1882,11 +1894,6 @@ public final class ModernSettingsDialog {
                 SoundEffects.playSelect();
                 boolean nowChecked = !cb.isChecked();
                 cb.setChecked(nowChecked);
-                if (isHideMode) {
-                    ChildModeManager.setAppHidden(activity, app.pkg, nowChecked);
-                } else {
-                    ChildModeManager.setAppLocked(activity, app.pkg, nowChecked);
-                }
                 if (nowChecked) selectedPackages.add(app.pkg);
                 else selectedPackages.remove(app.pkg);
                 tvCount.setText(activity.getString(R.string.app_policy_selected_count, selectedPackages.size()));
@@ -1924,8 +1931,14 @@ public final class ModernSettingsDialog {
             v.setBackground(g);
         });
 
+        final boolean[] savedSelection = new boolean[]{false};
         btnDone.setOnClickListener(v -> {
             SoundEffects.playSelect();
+            if (!ChildModeManager.replaceAppPolicyPackages(activity, targetProfileId, isHideMode, selectedPackages)) {
+                TvFeedback.show(activity, R.string.app_policy_save_failed, Toast.LENGTH_LONG);
+                return;
+            }
+            savedSelection[0] = true;
             if (pickerHolder[0] != null) pickerHolder[0].dismiss();
         });
 
@@ -1936,9 +1949,7 @@ public final class ModernSettingsDialog {
         AlertDialog d = pb.create();
         pickerHolder[0] = d;
         d.setOnDismissListener(ignored -> {
-            if (activity.isFinishing() || activity.isDestroyed()) return;
-            // Selection writes are immediate, so every dismissal path (Done or Back)
-            // must refresh both the home tiles and the still-open Settings summary.
+            if (!savedSelection[0] || activity.isFinishing() || activity.isDestroyed()) return;
             activity.reloadTiles();
             if (onFinished != null) onFinished.run();
         });

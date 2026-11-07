@@ -159,6 +159,15 @@ public final class UserSwitchDialog {
             tvName.setSingleLine(true);
             tvName.setEllipsize(android.text.TextUtils.TruncateAt.END);
             itemCol.addView(tvName);
+            if (isActive) {
+                TextView activeLabel = new TextView(activity);
+                activeLabel.setText(R.string.active_label);
+                activeLabel.setTextSize(TvUiTokens.METADATA_SP);
+                activeLabel.setTextColor(TvUiTokens.ACCENT_CYAN);
+                activeLabel.setTypeface(outfit, Typeface.BOLD);
+                activeLabel.setPadding(0, (int) (3 * density), 0, 0);
+                itemCol.addView(activeLabel);
+            }
 
             itemCol.setOnFocusChangeListener((v, hasFocus) -> {
                 GradientDrawable g = new GradientDrawable();
@@ -283,7 +292,10 @@ public final class UserSwitchDialog {
 
         TvDialogStyle.applyCustom(dialog, activity, 580, 0, 0.68f);
 
-        profRow.getChildAt(0).requestFocus();
+        int activeIndex = ProfileManager.indexOfProfile(profiles, activeProfile.id);
+        if (activeIndex < 0) activeIndex = 0;
+        View activeCard = profRow.getChildAt(activeIndex);
+        if (activeCard != null) activeCard.requestFocus();
     }
 
     /** Centralized profile-switch policy shared by every profile entry point. */
@@ -342,7 +354,10 @@ public final class UserSwitchDialog {
 
     static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, AlertDialog dialog) {
         if (activity == null || prof == null) return;
-        ProfileManager.setActiveProfile(activity, prof.id);
+        if (!ProfileManager.setActiveProfile(activity, prof.id)) {
+            TvFeedback.show(activity, R.string.profile_save_failed, Toast.LENGTH_LONG);
+            return;
+        }
         activity.reloadTiles();
         activity.updateTopBarUserIcon();
         TvFeedback.show(activity, activity.getString(R.string.profile_active_message, prof.name,
@@ -512,7 +527,11 @@ public final class UserSwitchDialog {
                 return;
             }
             SoundEffects.playSelect();
-            ProfileManager.addProfile(activity, name, chosenAvatar[0], cbChild.isChecked());
+            ProfileManager.UserProfile created = ProfileManager.addProfile(activity, name, chosenAvatar[0], cbChild.isChecked());
+            if (created == null) {
+                TvFeedback.show(activity, R.string.profile_save_failed, Toast.LENGTH_LONG);
+                return;
+            }
             TvFeedback.show(activity, activity.getString(R.string.profile_created, name), Toast.LENGTH_SHORT);
             if (dHolder[0] != null) dHolder[0].dismiss();
             if (onAdded != null) onAdded.run();
