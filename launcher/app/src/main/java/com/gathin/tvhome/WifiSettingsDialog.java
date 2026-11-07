@@ -45,6 +45,7 @@ final class WifiSettingsDialog {
     private static final int REQUEST_FINE_LOCATION = 7314;
     private static final long SCAN_TIMEOUT_MS = 12_000L;
     private static WeakReference<WifiSettingsDialog> active = new WeakReference<>(null);
+    private static WifiSettingsDialog pendingReturn;
 
     private final Activity activity;
     private final Runnable openSystemWifiSettings;
@@ -82,6 +83,7 @@ final class WifiSettingsDialog {
     }
     private Runnable pendingAfterDismiss;
     private boolean parentReturned;
+    private boolean deferParentReturn;
     private final Runnable scanTimeout = this::onScanTimeout;
 
     private void onScanTimeout() {
@@ -169,7 +171,8 @@ final class WifiSettingsDialog {
             unregisterScanReceiver();
             unregisterNetworkCallback();
             if (active.get() == this) active.clear();
-            notifyReturnToParent();
+            if (deferParentReturn) pendingReturn = this;
+            else notifyReturnToParent();
             Runnable action = pendingAfterDismiss;
             pendingAfterDismiss = null;
             if (action != null && !activity.isFinishing() && !activity.isDestroyed()) action.run();
@@ -198,6 +201,12 @@ final class WifiSettingsDialog {
     }
 
     static void onHostResumed() {
+        WifiSettingsDialog waiting = pendingReturn;
+        if (waiting != null) {
+            pendingReturn = null;
+            waiting.notifyReturnToParent();
+            return;
+        }
         WifiSettingsDialog screen = active.get();
         if (screen != null && screen.dialog.isShowing()) {
             screen.refreshStatus();
@@ -210,6 +219,10 @@ final class WifiSettingsDialog {
     static void onHostDestroyed() {
         WifiSettingsDialog screen = active.get();
         if (screen != null && screen.dialog.isShowing()) screen.dialog.dismiss();
+        if (pendingReturn != null) {
+            pendingReturn.parentReturned = true;
+            pendingReturn = null;
+        }
     }
 
     static void onPermissionResult(int requestCode) {
@@ -565,6 +578,7 @@ final class WifiSettingsDialog {
     }
 
     private void dismissThen(Runnable action) {
+        deferParentReturn = action != null;
         pendingAfterDismiss = action;
         dialog.dismiss();
     }
@@ -574,6 +588,8 @@ final class WifiSettingsDialog {
             activity.startActivity(new Intent(action));
         } catch (RuntimeException unavailable) {
             // A firmware may not expose a standalone Location settings activity.
+            if (pendingReturn == this) pendingReturn = null;
+            notifyReturnToParent();
         }
     }
 
