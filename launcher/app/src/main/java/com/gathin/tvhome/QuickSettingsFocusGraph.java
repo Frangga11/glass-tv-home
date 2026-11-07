@@ -53,26 +53,26 @@ final class QuickSettingsFocusGraph {
                 break;
             case NEXT_PHOTO:
                 if (direction == RIGHT) return INTERVAL;
-                if (direction == UP) return CACHE;
-                if (direction == DOWN) return WALLPAPER_MANAGE;
+                if (direction == UP) return WALLPAPER_MANAGE;
+                if (direction == DOWN) return GLASS_SETTINGS;
                 break;
             case INTERVAL:
                 if (direction == LEFT) return NEXT_PHOTO;
-                if (direction == UP) return CACHE;
-                if (direction == DOWN) return WALLPAPER_MANAGE;
+                if (direction == UP) return WALLPAPER_MANAGE;
+                if (direction == DOWN) return ANDROID_SETTINGS;
                 break;
             case WALLPAPER_MANAGE:
-                if (direction == UP) return NEXT_PHOTO;
-                if (direction == DOWN) return GLASS_SETTINGS;
+                if (direction == UP) return CACHE;
+                if (direction == DOWN) return NEXT_PHOTO;
                 break;
             case GLASS_SETTINGS:
                 if (direction == RIGHT) return ANDROID_SETTINGS;
-                if (direction == UP) return WALLPAPER_MANAGE;
+                if (direction == UP) return NEXT_PHOTO;
                 if (direction == DOWN) return CLOSE;
                 break;
             case ANDROID_SETTINGS:
                 if (direction == LEFT) return GLASS_SETTINGS;
-                if (direction == UP) return WALLPAPER_MANAGE;
+                if (direction == UP) return INTERVAL;
                 if (direction == DOWN) return CLOSE;
                 break;
             case CLOSE:

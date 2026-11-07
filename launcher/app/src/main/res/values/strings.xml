@@ -702,4 +702,5 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="quick_settings_glass_settings_summary">Profil, tampilan, dan fitur launcher</string>
     <string name="quick_settings_android_settings">Pengaturan Android</string>
     <string name="quick_settings_android_settings_summary">Pengaturan sistem perangkat</string>
+    <string name="quick_settings_interval_title">Interval</string>
 </resources>

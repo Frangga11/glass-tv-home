@@ -78,6 +78,7 @@ class QuickSettingsContractTest(unittest.TestCase):
             "quick_settings_wallpaper_title",
             "quick_settings_next_photo",
             "quick_settings_next_photo_summary",
+            "quick_settings_interval_title",
             "quick_settings_interval_summary",
             "quick_settings_manage_wallpaper",
             "quick_settings_glass_settings",

@@ -147,7 +147,7 @@ final class QuickSettingsDialog {
         wallpaperActions.addView(nextPhoto, nextLp);
 
         TextView interval = createTile(activity, R.drawable.ic_wallpaper,
-                R.string.wallpaper_interval_title,
+                R.string.quick_settings_interval_title,
                 safe(actions.wallpaperIntervalSummary(), activity.getString(R.string.quick_settings_interval_summary)),
                 72, density);
         controls[QuickSettingsFocusGraph.INTERVAL] = interval;
