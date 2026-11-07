@@ -996,3 +996,19 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Post-fix visual evidence | PENDING |
 | Physical Mi TV Stick / remote acceptance | PENDING / NOT RUN |
 | Merge / install / ADB / device mutation | NOT PERFORMED |
+
+### Current exact-head inventory — 8 November 2026
+
+| Item | Status |
+|---|---|
+| PR #75 base | `21bc204a413fce3c527e0e8761d2016bc5dc87c6` |
+| PR #76 current head | `f085c41356e2e5f53ca13f51bc0676bdb82d350a` |
+| Base → head | 3 ahead / 0 behind |
+| Latest Dock symmetric padding/host geometry | PRESERVED |
+| Dock-relative top-menu translation/listeners | REMOVED |
+| PR #76 files | MainActivity.java; tests/test_home_layout_bounds_contract.py |
+| Exact-head CI #1450 | PARTIAL: Python job PASS (137 tests, 1 skip); Android job IN PROGRESS |
+| APK artifact / size / SHA-256 | PENDING |
+| Post-fix visual evidence | PENDING |
+| Physical Mi TV Stick acceptance | PENDING / NOT RUN |
+| PR #76 | OPEN / DRAFT / UNMERGED |
