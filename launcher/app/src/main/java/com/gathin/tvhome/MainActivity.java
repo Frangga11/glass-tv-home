@@ -2566,6 +2566,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int tileHeight = DockGeometry.tileHeightPx(tileWidth);
                 int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
 
+                // RecyclerView's horizontal LinearLayoutManager starts children at the left edge.
+                // Center the complete visible Dock group (not each tile independently) in the
+                // 16:9 Home viewport. Translation preserves the full-width measuring viewport,
+                // so DockAdapter computes the same tile width and focus geometry as before.
+                int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
+                        inner, tileWidth, Math.min(dockCount, preferences.capacity));
+                dockRecycler.setTranslationX(dockCenterOffset);
+
                 // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
                 // the largest supported tile and therefore the stable reservation baseline.
                 int maxTileWidth = DockGeometry.horizontalTileWidthPx(inner, 4, density);
