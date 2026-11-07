@@ -14,7 +14,6 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkRequest;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -63,28 +62,8 @@ final class WifiSettingsDialog {
     private final AlertDialog dialog;
     private final List<View> focusOrder = new ArrayList<>();
     private boolean receiverRegistered;
-    private boolean networkCallbackRegistered;
     private boolean scanPending;
 
-    private final ConnectivityManager.NetworkCallback wifiNetworkCallback =
-            new ConnectivityManager.NetworkCallback() {
-        @Override public void onAvailable(Network network) { postNetworkRefresh(); }
-        @Override public void onLost(Network network) { postNetworkRefresh(); }
-        @Override public void onCapabilitiesChanged(Network network, NetworkCapabilities capabilities) {
-            postNetworkRefresh();
-        }
-    };
-
-    private void postNetworkRefresh() {
-        handler.post(() -> {
-            if (!dialog.isShowing() || activity.isFinishing() || activity.isDestroyed()) return;
-            updatePrerequisites();
-            showCachedResults();
-        });
-    }
-    private Runnable pendingAfterDismiss;
-    private boolean parentReturned;
-    private boolean deferParentReturn;
     private final Runnable scanTimeout = this::onScanTimeout;
 
     private void onScanTimeout() {
@@ -186,7 +165,6 @@ final class WifiSettingsDialog {
         dialog.setOnDismissListener(d -> {
             handler.removeCallbacksAndMessages(null);
             unregisterScanReceiver();
-            unregisterNetworkCallback();
             if (active.get() == this) active.clear();
             if (deferParentReturn) pendingReturn = this;
             else notifyReturnToParent();
@@ -199,7 +177,6 @@ final class WifiSettingsDialog {
             refreshStatus();
             updatePrerequisites();
             registerScanReceiver();
-            registerNetworkCallback();
             requestScan();
             showCachedResults();
             connectFocusOrder();
@@ -229,6 +206,15 @@ final class WifiSettingsDialog {
             screen.refreshStatus();
             screen.updatePrerequisites();
             screen.requestScan();
+            screen.showCachedResults();
+        }
+    }
+
+    static void onNetworkStateChanged() {
+        WifiSettingsDialog screen = active.get();
+        if (screen != null && screen.dialog.isShowing()) {
+            screen.refreshStatus();
+            screen.updatePrerequisites();
             screen.showCachedResults();
         }
     }
@@ -274,33 +260,6 @@ final class WifiSettingsDialog {
         } catch (RuntimeException ignored) {
             scanState.setText(R.string.wifi_scan_unavailable);
         }
-    }
-
-    private void registerNetworkCallback() {
-        if (networkCallbackRegistered) return;
-        try {
-            ConnectivityManager manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (manager == null) return;
-            NetworkRequest request = new NetworkRequest.Builder()
-                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                    .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                    .build();
-            manager.registerNetworkCallback(request, wifiNetworkCallback);
-            networkCallbackRegistered = true;
-        } catch (RuntimeException unavailable) {
-            // Status still refreshes on resume and after scan results.
-        }
-    }
-
-    private void unregisterNetworkCallback() {
-        if (!networkCallbackRegistered) return;
-        try {
-            ConnectivityManager manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (manager != null) manager.unregisterNetworkCallback(wifiNetworkCallback);
-        } catch (RuntimeException ignored) {
-            // The system may already have detached callbacks during Activity teardown.
-        }
-        networkCallbackRegistered = false;
     }
 
     private void unregisterScanReceiver() {
