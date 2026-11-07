@@ -63,6 +63,9 @@ final class WifiSettingsDialog {
     private final List<View> focusOrder = new ArrayList<>();
     private boolean receiverRegistered;
     private boolean scanPending;
+    private Runnable pendingAfterDismiss;
+    private boolean parentReturned;
+    private boolean deferParentReturn;
 
     private final Runnable scanTimeout = this::onScanTimeout;
 
