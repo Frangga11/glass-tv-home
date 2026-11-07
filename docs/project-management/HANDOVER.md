@@ -1780,3 +1780,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Downloaded and verified the PR #76 cumulative APK: 1,622,153 bytes; SHA-256 12dc35e31fc2e67bcba1e0ddcee548937f5f23f9bf90d654316fc6fdc34f17c7. Outer ZIP and APK ZIP integrity passed; manifest, DEX and resources table present.
 - PR #76 build includes the PR #75 Dock host/padding and one-row DPAD work plus the Quick Toggles safe-frame correction. This is a controlled test candidate, not proof of visual acceptance.
 - Technical CI/build/APK gate PASS. Physical Mi TV Stick visual/remote acceptance remains PENDING; no installation, ADB, default-launcher change, device mutation or merge.
+
+### Current PR #76 checkpoint — 8 November 2026
+
+- Latest source head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on latest PR #75 head `21bc204a413fce3c527e0e8761d2016bc5dc87c6`; 3 ahead / 0 behind.
+- Final reconciliation preserved PR #75's newer Dock host centering via symmetric RecyclerView padding and removed only the Dock-relative top-menu translation/listeners from MainActivity. Old Dock `translationX(dockCenterOffset)` is absent.
+- PR #76 changed files: MainActivity.java and `tests/test_home_layout_bounds_contract.py`; PR #76 OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1450 / `42404262057`: Lists/tools/docs job SUCCESS (137 tests, 1 skip); Android unit tests/release build still IN PROGRESS. APK/size/SHA-256 pending.
+- No post-fix visual evidence and no physical Mi TV Stick/remote test. Current disposition PARTIAL PASS, not visual PASS. No merge/device mutation.
