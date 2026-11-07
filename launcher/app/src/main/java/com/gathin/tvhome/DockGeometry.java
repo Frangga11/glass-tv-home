@@ -56,7 +56,8 @@ final class DockGeometry {
 
     /** Compatibility overload for existing geometry callers. */
     static int horizontalCenterOffsetPx(int innerWidthPx, int tileWidthPx, int itemCount) {
-        return horizontalCenterOffsetPx(innerWidthPx, tileWidthPx, itemCount, 1f);
+        if (innerWidthPx <= 0 || tileWidthPx <= 0 || itemCount <= 0) return 0;
+        return Math.max(0, (innerWidthPx - tileWidthPx * itemCount) / 2);
     }
 
     static int tileHeightPx(int tileWidthPx) {

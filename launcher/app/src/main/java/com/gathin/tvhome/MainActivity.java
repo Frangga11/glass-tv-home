@@ -3184,15 +3184,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
             return position % COLUMNS == COLUMNS - 1 || position == count - 1;
         }
-        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) {
-                if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
-                    // First overflow row sits immediately above the horizontal Dock.
-                    // Returning Up restores the Dock as the idle Home surface.
+        if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
+            // The bottom-most Grid row is the first overflow row adjacent to the Dock.
+            // Keep the requested remote contract: Up from that row returns to the Dock.
+            int dockAdjacentRow = ((count - 1) / COLUMNS) * COLUMNS;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                if (position >= dockAdjacentRow) {
                     focusDockTile(DockLayoutModel.dockPositionForGrid(
                             position, false, COLUMNS, dockAdapter.getItemCount()));
-                    return true;
+                } else {
+                    focusTile(Math.min(position + COLUMNS, count - 1));
                 }
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (position >= COLUMNS) focusTile(position - COLUMNS);
+                return true;
+            }
+        }
+        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+            if (position < COLUMNS) {
                 if (!dockVertical) {
                     if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
                             && weatherAirQualityView.requestFocus()) return true;
@@ -3203,13 +3214,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             target = position - COLUMNS;
         } else {
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
-            if (position >= lastRowStart) {
-                if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
-                    focusDockTile(DockLayoutModel.dockPositionForGrid(
-                            position, false, COLUMNS, dockAdapter.getItemCount()));
-                }
-                return true;
-            }
+            if (position >= lastRowStart) return true;
             target = Math.min(position + COLUMNS, count - 1);
         }
         focusTile(target);
