@@ -372,9 +372,12 @@ public final class ProfileManager {
                 Set<String> seenIds = new HashSet<>();
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
+                    String persistedId = obj.optString("id", null);
                     UserProfile profile = UserProfile.fromJson(obj);
-                    if (profile.id == null || profile.id.trim().isEmpty() || !seenIds.add(profile.id)) {
-                        profile.id = "user_" + UUID.randomUUID();
+                    if (persistedId == null || persistedId.trim().isEmpty() || !seenIds.add(profile.id)) {
+                        if (persistedId != null && !persistedId.trim().isEmpty()) {
+                            profile.id = "user_" + UUID.randomUUID();
+                        }
                         seenIds.add(profile.id);
                         repairedIds = true;
                     }

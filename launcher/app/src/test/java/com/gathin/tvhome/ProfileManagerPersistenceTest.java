@@ -57,6 +57,18 @@ public class ProfileManagerPersistenceTest {
     }
 
     @Test
+    public void missingPersistedProfileIdsAreGeneratedOnceAndThenRemainStable() {
+        Context context = context();
+        SharedPreferences prefs = context.getSharedPreferences("profile_prefs", Context.MODE_PRIVATE);
+        assertTrue(prefs.edit().putString("profiles_list_json",
+                "[{\"name\":\"Legacy without id\",\"avatarIndex\":1}]").commit());
+        List<ProfileManager.UserProfile> first = ProfileManager.getAllProfiles(context);
+        String generatedId = first.get(0).id;
+        List<ProfileManager.UserProfile> second = ProfileManager.getAllProfiles(context);
+        assertEquals(generatedId, second.get(0).id);
+    }
+
+    @Test
     public void unreadableProfileJsonIsPreservedBeforeFallbackRecovery() {
         Context context = context();
         SharedPreferences prefs = context.getSharedPreferences("profile_prefs", Context.MODE_PRIVATE);
