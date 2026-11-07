@@ -249,7 +249,7 @@ public final class ModernSettingsDialog {
             return false;
         });
 
-        header.addView(searchBox, new LinearLayout.LayoutParams((int) (390 * density), (int) (52 * density)));
+        // Search is inserted after the brand block is built, preserving the V06 header order.
 
         // 2. Profile Card (User Profiles - No mention of backup)
         profileCard.setOrientation(LinearLayout.HORIZONTAL);
@@ -1362,7 +1362,10 @@ public final class ModernSettingsDialog {
                                     renderRightPane[0].run();
                                     rightContent.post(() -> {
                                         View target = findControlByDescription(rightContent, selected.title);
-                                        if (target != null && target.isFocusable() && target.requestFocus()) return;
+                                        if (target != null && target.isFocusable()) {
+                                            target.setTag(selected.id);
+                                            if (target.requestFocus()) return;
+                                        }
                                         if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                                     });
                                 })
@@ -1401,6 +1404,8 @@ public final class ModernSettingsDialog {
         brandBlock.addView(brandSubtitle);
         header.addView(brandBlock, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        header.addView(searchBox, new LinearLayout.LayoutParams(
+                (int) (390 * density), (int) (52 * density)));
 
         // Reuse the existing E01/MainActivity network-state owner; Settings is read-only here.
         TextView wifiStatus = new TextView(activity);
@@ -1409,6 +1414,8 @@ public final class ModernSettingsDialog {
         wifiStatus.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
         wifiStatus.setTextColor(TvUiTokens.TEXT_PRIMARY);
         wifiStatus.setSingleLine(true);
+        wifiStatus.setMaxWidth((int) (260 * density));
+        wifiStatus.setEllipsize(android.text.TextUtils.TruncateAt.END);
         wifiStatus.setPadding((int) (14 * density), (int) (10 * density),
                 (int) (14 * density), (int) (10 * density));
         GradientDrawable wifiStatusBg = new GradientDrawable();
