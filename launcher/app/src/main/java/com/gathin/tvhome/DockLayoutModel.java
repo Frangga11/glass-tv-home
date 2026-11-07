@@ -42,6 +42,13 @@ final class DockLayoutModel {
         return Math.min(target, gridCount - 1);
     }
 
+    /** Maps a horizontal bottom-Dock slot to the nearest tile in the App Grid row above it. */
+    static int gridPositionAboveDock(int dockPosition, int gridColumns, int gridCount) {
+        if (dockPosition < 0 || gridColumns <= 0 || gridCount <= 0) return -1;
+        int lastRowStart = ((gridCount - 1) / gridColumns) * gridColumns;
+        return Math.min(lastRowStart + dockPosition % gridColumns, gridCount - 1);
+    }
+
     static int dockPositionForGrid(int gridPosition, boolean vertical, int gridColumns, int dockCount) {
         if (gridPosition < 0 || gridColumns <= 0 || dockCount <= 0) return -1;
         int target = vertical ? gridPosition / gridColumns : gridPosition % gridColumns;
