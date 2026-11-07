@@ -1373,3 +1373,10 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 - Verified artifact #13586419148: APK 1,622,117 bytes; SHA-256 fe7db8ca54be34781b716454256e50da62b5ee3bf168fc211aa7e45095fa95b6; ZIP/APK integrity passed.
 - Current PR #76 head f085c41356e2e5f53ca13f51bc0676bdb82d350a re-applies the Dock host/padding correction already in its base; CI #1450 is the exact-head synchronization check in progress.
 - Technical source/test/build/APK gate passed on the cumulative runtime tree. Physical Mi TV Stick visual/remote acceptance remains pending. Status: PENDING DEVICE ACCEPTANCE.
+
+### GTVH-HOME-LAYOUT-FIX-001 — technical gate complete, device acceptance pending
+
+- PR #76 exact head f085c41356e2e5f53ca13f51bc0676bdb82d350a; CI #1450 / 42404262057 SUCCESS, both required jobs.
+- PR #75 exact head 21bc204a413fce3c527e0e8761d2016bc5dc87c6; CI #1448 SUCCESS, both required jobs.
+- Verified current cumulative APK artifact #13585769799: 1,622,153 bytes; SHA-256 90fe5131a84231d1a725c4eb02b672d94a1c6c1a07f2cda8db710bc7c8ddc135. ZIP/APK integrity and core APK entries PASS.
+- Source, regression tests, CI, release build and APK verification: PASS. Physical Mi TV Stick visual/remote acceptance: PENDING. Status: PENDING DEVICE ACCEPTANCE; no merge or device mutation.
