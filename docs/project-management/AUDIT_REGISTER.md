@@ -1741,3 +1741,26 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - Final latest-head CI #1424 / run 42384207367 SUCCESS; both required jobs passed, including 296+ unit tests and release build, repo contract checks, APK diagnostics and artifact publication.
 - Release APK 1,624,997 bytes; SHA-256 8e3183addc092e5bce1b41b09d939fc64682d6b16f595a0e4e1caa0a5f982664. Artifact #13578283307; ZIP 1,424,983 bytes; SHA-256 72014680fd7e7b02cf36ed5029d55be465ac3394d649fc95ee718af05e234d17; expires 14 Nov 2026.
 - APK extracted and verified as Android package. Physical TV visual/remote acceptance still PENDING / NOT RUN; PR #74 OPEN/DRAFT/UNMERGED. No install, ADB, device mutation or merge.
+
+## HOME-STARTUP-CRASH-001 — GridLayoutManager unsupported stackFromEnd (8 November 2026)
+
+**Severity: P0 / launch-blocking. Status: source patch committed; verification pending.**
+
+**Runtime evidence**
+- Owner's Mi TV Stick Android 11 logcat shows `FATAL EXCEPTION: main` while resuming `com.gathin.tvhome/.MainActivity`.
+- Exception: `java.lang.UnsupportedOperationException: GridLayoutManager does not support stack from end`.
+- Call chain: `MainActivity.applyDockLayout()` → `reloadTiles()` → `reloadApps()` → `onResume()`; ActivityManager force-finished MainActivity.
+
+**Root cause**
+- `applyDockLayout()` called `setStackFromEnd(!dockVertical && dockAdapter.getItemCount() > 0)` on the Grid's `GridLayoutManager`. AndroidX GridLayoutManager rejects this operation at runtime.
+
+**Correction**
+- Removed the unsupported call from `MainActivity.java`. Kept natural adapter order; deliberately did not use `reverseLayout`, which could invert visible app ordering and DPAD semantics. Existing FrameLayout geometry and DPAD-driven overflow expansion remain unchanged.
+- Commit `61d4e429be129263533ecfa75a729bbe0a15833f`, branch `fix/home-dock-visual-parity-v2`, PR #74.
+
+**Quality gate**
+- Exact-head CI run `42398810251`: IN_PROGRESS at checkpoint; no pass claimed.
+- Physical Mi TV Stick cold start, app return/resume, DPAD overflow, and orientation checks: NOT RUN after patch.
+- PR #74 remains OPEN/DRAFT/UNMERGED. Do not promote APK or change default launcher until CI and physical verification pass.
+
+**Disposition: ROOT CAUSE CONFIRMED; PATCH COMMITTED; FINAL QC PENDING.**
