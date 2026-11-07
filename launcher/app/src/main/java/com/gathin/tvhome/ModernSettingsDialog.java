@@ -658,6 +658,7 @@ public final class ModernSettingsDialog {
                     frame.setFocusable(true);
                     frame.setClickable(true);
                     frame.setContentDescription(ProfileManager.AVATAR_NAMES[idx]);
+                    frame.setTag("profile.avatar.builtin." + idx);
 
                     int frameDim = (int) (60 * density);
                     LinearLayout.LayoutParams fLp = new LinearLayout.LayoutParams(frameDim, frameDim);
@@ -914,6 +915,7 @@ public final class ModernSettingsDialog {
                     pRow.setFocusable(true);
                     pRow.setClickable(true);
                     pRow.setContentDescription(p.name);
+                    pRow.setTag("profile.profile." + p.id);
 
                     GradientDrawable pBg = new GradientDrawable();
                     pBg.setColor(isCur ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE_IDLE);
@@ -1422,11 +1424,8 @@ public final class ModernSettingsDialog {
                                     updateSidebarSelection.run();
                                     renderRightPane[0].run();
                                     rightContent.post(() -> {
-                                        View target = findControlByDescription(rightContent, selected.title);
-                                        if (target != null && target.isFocusable()) {
-                                            target.setTag(selected.id);
-                                            if (target.requestFocus()) return;
-                                        }
+                                        View target = findControlBySearchEntry(rightContent, selected);
+                                        if (target != null && target.isFocusable() && target.requestFocus()) return;
                                         if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                                     });
                                 })
@@ -1830,6 +1829,25 @@ public final class ModernSettingsDialog {
             case TAB_DEVICE_SETTINGS: return AppLanguage.strDeviceSettings(activity);
             default: return AppLanguage.strProfileTitle(activity);
         }
+    }
+
+    private static View findControlBySearchEntry(View root, SearchEntry entry) {
+        if (root == null || entry == null) return null;
+        Object stableId = root.getTag();
+        if (entry.id.equals(stableId)) return root;
+        if (root instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) root;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View found = findControlBySearchEntry(group.getChildAt(i), entry);
+                if (found != null) return found;
+            }
+        }
+        CharSequence description = root.getContentDescription();
+        if (description != null && entry.title.contentEquals(description) && root.isFocusable()) {
+            root.setTag(entry.id);
+            return root;
+        }
+        return null;
     }
 
     private static View findControlByDescription(View root, String description) {
