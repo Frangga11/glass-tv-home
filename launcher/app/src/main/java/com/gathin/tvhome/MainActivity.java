@@ -2576,7 +2576,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.rightMargin = 0;
                 dockParams.bottomMargin = 0;
                 gridParams.bottomMargin = 0;
-                if (grid.getPaddingTop() != 0) grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), grid.getPaddingBottom());
+                if (grid.getPaddingTop() != gridBasePaddingTop) {
+                    grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
+                            grid.getPaddingRight(), grid.getPaddingBottom());
+                }
             }
         }
 
@@ -3146,10 +3149,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
                 if (!dockVertical && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
-                    weatherAirQualityView.requestFocus();
-                    return true;
-                }
-                if (position <= 1 && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
                     weatherAirQualityView.requestFocus();
                     return true;
                 }
