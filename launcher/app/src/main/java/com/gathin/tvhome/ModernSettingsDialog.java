@@ -712,6 +712,8 @@ public final class ModernSettingsDialog {
                             }
                         }
                         boolean refreshedChildMode = ChildModeManager.isChildModeEnabled(activity, refreshedProfile.id);
+                        summaryAvatar.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
+                                Math.round(64 * density), refreshedChildMode));
                         profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
                                 Math.round(38 * density), refreshedChildMode));
                         if (activeProfileListAvatar[0] != null) {
@@ -748,6 +750,8 @@ public final class ModernSettingsDialog {
                 uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
                     ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
                     boolean updatedChildMode = ChildModeManager.isChildModeEnabled(activity, updated.id);
+                    summaryAvatar.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
+                            Math.round(64 * density), updatedChildMode));
                     profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
                             Math.round(38 * density), updatedChildMode));
                     if (activeProfileListAvatar[0] != null) {
@@ -788,6 +792,8 @@ public final class ModernSettingsDialog {
                     }
                     ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
                     boolean restoredChildMode = ChildModeManager.isChildModeEnabled(activity, restored.id);
+                    summaryAvatar.setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
+                            Math.round(64 * density), restoredChildMode));
                     profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
                             Math.round(38 * density), restoredChildMode));
                     if (activeProfileListAvatar[0] != null) {
