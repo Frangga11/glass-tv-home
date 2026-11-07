@@ -3799,7 +3799,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */
     /** Reads network state independently of the optional top-bar network pill. */
-    private String getQuickSettingsNetworkSummary() {
+    String getQuickSettingsNetworkSummary() {
         try {
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             boolean online = false;
