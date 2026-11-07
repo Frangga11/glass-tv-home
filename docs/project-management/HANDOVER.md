@@ -1804,3 +1804,9 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Artifact #13585769799: ZIP 1,422,487 bytes; APK 1,622,153 bytes; SHA-256 90fe5131a84231d1a725c4eb02b672d94a1c6c1a07f2cda8db710bc7c8ddc135. ZIP/APK integrity passed; manifest, DEX and resources table present.
 - PR #75 CI #1448 / 42403925244 also SUCCESS on head 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
 - Final status: PENDING DEVICE ACCEPTANCE. No post-fix physical video, remote acceptance, ADB, installation, default-launcher change or merge. All three PRs remain Draft/unmerged.
+
+### CI test-count and APK size note
+
+- CI #1450 Lists/tools/docs: 137 Python tests OK, 1 intentional skip. Android unit tests/release build and artifact publication succeeded.
+- APK 1,622,153 bytes is 49,289 bytes above the historical 1.5 MiB reference (non-blocking CI warning), but 316 bytes smaller than the earlier PR #75 baseline APK.
+- No size-budget failure was configured; track this as a non-blocking optimization item.
