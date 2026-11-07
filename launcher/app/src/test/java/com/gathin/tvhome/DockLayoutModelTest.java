@@ -304,6 +304,9 @@ public class DockLayoutModelTest {
                 assertEquals(itemHeight + Math.round(18f * density), dockHeight);
                 assertEquals(14f * density, DockGeometry.trayPaddingPx(density), 0.001f);
                 assertEquals(35f * density, dockHeight - trayHeight, 1.1f);
+                // The horizontal host sits 16dp above the gridWrap edge, matching Patch 4.1.
+                assertEquals(51f * density,
+                        dockHeight - trayHeight + Math.round(16f * density), 1.1f);
             }
         }
     }
