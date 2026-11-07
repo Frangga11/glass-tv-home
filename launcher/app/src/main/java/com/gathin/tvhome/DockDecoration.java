@@ -151,5 +151,6 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         rect.inset(half, half);
         edge.fit(rect);
         c.drawRoundRect(rect, radius - half, radius - half, edge.paint);
+        edge.drawWindowLight(c, rect, radius - half, 1f);
     }
 }
