@@ -1681,7 +1681,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updatePrayerTimes();
         updateDateAndPeriod();
         updateWifiLabel();
-        WifiSettingsDialog.onHostResumed();
         updateWeatherAqi();
         WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
         updateIslamicShelf();
@@ -1704,6 +1703,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             weatherOverlayView.startAnimation();
         }
         hiddenSinceResume = false;
+        WifiSettingsDialog.onHostResumed();
     }
 
     /** Rebuilds the tiles (and the module cards), then puts focus back where it was. */
