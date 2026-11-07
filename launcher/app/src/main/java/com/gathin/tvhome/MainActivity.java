@@ -140,6 +140,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean dockVertical;
     /** Horizontal Grid stays parked out of sight until the user presses Down from the Dock. */
     private boolean horizontalGridExpanded;
+    /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
+    private int gridFocusRequestGeneration;
     private boolean lastFocusedDock;
     private int lastDockDecorationCount = -1;
     private boolean lastDockDecorationVertical;
@@ -850,6 +852,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid.setAdapter(adapter);
         dockAdapter = new DockAdapter(this, adapter, this, reducedMotion);
         dockRecycler.setAdapter(dockAdapter);
+        dockRecycler.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            int measuredWidth = Math.max(0, right - left);
+            if (dockAdapter != null && measuredWidth > 0) dockAdapter.setHorizontalViewportWidth(measuredWidth);
+        });
         applyDockLayout();
         glider.addCompanion(dockRecycler, tray.area);
         holdFirstFrame();
@@ -2569,6 +2575,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
                 dockParams.gravity = Gravity.BOTTOM | Gravity.START;
                 dockParams.width = dockViewportWidth;
+                dockAdapter.setHorizontalViewportWidth(dockViewportWidth);
                 dockParams.rightMargin = -Math.round(8 * density);
                 int tileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
                 int tileHeight = DockGeometry.tileHeightPx(tileWidth);
@@ -3319,6 +3326,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void focusTile(int position) {
         if (adapter == null || grid == null) return;
+        final int requestGeneration = ++gridFocusRequestGeneration;
         if (!dockVertical && !horizontalGridExpanded) {
             if (adapter.getItemCount() == 0) {
                 if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
@@ -3354,10 +3362,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Not laid out yet: the Grid may have just been revealed and position 0 may
         // require no scroll at all. A scroll-state listener alone can then wait forever.
         // Retry after layout frames and request scrolling only if the holder is still absent.
-        focusTileWhenLaidOut(pos, 4);
+        focusTileWhenLaidOut(pos, requestGeneration, 6);
     }
 
-    private void focusTileWhenLaidOut(int position, int attemptsRemaining) {
+    private void focusTileWhenLaidOut(int position, int requestGeneration, int attemptsRemaining) {
+        if (requestGeneration != gridFocusRequestGeneration) return;
         if (adapter == null || grid == null || position < 0 || position >= adapter.getItemCount()) return;
         RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
         View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
@@ -3366,15 +3375,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         if (attemptsRemaining > 0) {
-            grid.postOnAnimation(() -> focusTileWhenLaidOut(position, attemptsRemaining - 1));
-        } else {
+            grid.postOnAnimation(() -> focusTileWhenLaidOut(position, requestGeneration, attemptsRemaining - 1));
+        } else if (attemptsRemaining == 0) {
+            // Align the requested row to the start of the fixed one-row viewport, then
+            // keep checking layout completion instead of assuming one frame is sufficient.
             grid.scrollToPosition(position);
-            grid.postOnAnimation(() -> {
-                RecyclerView.ViewHolder next = grid.findViewHolderForAdapterPosition(position);
-                View target = next != null ? next.itemView.findViewById(R.id.card) : null;
-                if (target != null && target.isShown() && target.isFocusable()) target.requestFocus();
-                else focusTopBarFallback();
-            });
+            grid.postOnAnimation(() -> focusTileWhenLaidOut(position, requestGeneration, 8));
+        } else {
+            focusTopBarFallback();
         }
     }
 

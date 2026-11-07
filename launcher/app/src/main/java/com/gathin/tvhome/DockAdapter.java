@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +29,8 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private final boolean reducedMotion;
     private boolean iconAnimationsEnabled;
     private int capacity = 5;
+    /** Latest measured horizontal host width; never freeze zero/stale XML width into a holder. */
+    private int horizontalViewportWidthPx;
     private List<AppAdapter.Entry> entries = Collections.emptyList();
     private boolean vertical;
 
@@ -50,6 +53,15 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         notifyDataSetChanged();
     }
 
+    void setHorizontalViewportWidth(int widthPx) {
+        int measured = Math.max(0, widthPx);
+        if (horizontalViewportWidthPx == measured) return;
+        horizontalViewportWidthPx = measured;
+        // Existing holders may have been created before the first real layout pass.
+        // Rebind them so their root slot/card/name geometry follows the measured viewport.
+        notifyDataSetChanged();
+    }
+
     void setVertical(boolean vertical) {
         if (this.vertical == vertical) return;
         this.vertical = vertical;
@@ -67,40 +79,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     @Override
     public AppAdapter.Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app, parent, false);
-        float density = parent.getResources().getDisplayMetrics().density;
-        int viewportWidth = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
-        int inner = Math.max(0, viewportWidth - parent.getPaddingLeft() - parent.getPaddingRight());
-        int width;
-        int itemWidth;
-        if (vertical) {
-            width = Math.max(Math.round(112 * density), Math.min(Math.round(170 * density), inner - Math.round(20 * density)));
-            itemWidth = width;
-        } else {
-            // Horizontal centering is expressed as RecyclerView content padding. Tile dimensions
-            // must still use the full viewport, not the reduced child space between those paddings.
-            int horizontalWidth = DockGeometry.horizontalContentWidthPx(viewportWidth, density);
-            width = DockGeometry.horizontalTileWidthPx(horizontalWidth, capacity, density);
-            itemWidth = DockGeometry.horizontalSlotWidthPx(horizontalWidth, capacity);
-        }
-        // item_app.xml is shared with the multi-column Grid and therefore declares
-        // match_parent width. In a horizontal RecyclerView that makes every Dock item
-        // consume the full viewport; only the first card is visible and the others stack
-        // outside/under the same visual slot. Give Dock holders their own measured slot width.
-        ViewGroup.LayoutParams itemParams = item.getLayoutParams();
-        itemParams.width = itemWidth;
-        item.setLayoutParams(itemParams);
-
-        int height = AppAdapter.tileHeightPx(width);
-        View card = item.findViewById(R.id.card);
-        ViewGroup.LayoutParams cardParams = card.getLayoutParams();
-        cardParams.width = width;
-        cardParams.height = height;
-        card.setLayoutParams(cardParams);
-        View name = item.findViewById(R.id.name);
-        ViewGroup.MarginLayoutParams nameParams = (ViewGroup.MarginLayoutParams) name.getLayoutParams();
-        nameParams.width = width;
-        nameParams.topMargin = height + Math.round(7 * density);
-        name.setLayoutParams(nameParams);
+        applyItemGeometry(item, measuredWidth(parent));
 
         AppAdapter.TileListener holderListener = new AppAdapter.TileListener() {
             @Override public void onTileFocused(int position, View focusedCard) {
@@ -122,6 +101,10 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     @Override
     public void onBindViewHolder(@NonNull AppAdapter.Holder holder, int position) {
         AppAdapter.Entry entry = entries.get(position);
+        ViewParent parent = holder.itemView.getParent();
+        int width = horizontalViewportWidthPx;
+        if (width <= 0 && parent instanceof ViewGroup) width = measuredWidth((ViewGroup) parent);
+        if (width > 0) applyItemGeometry(holder.itemView, width);
         binder.bind(holder, entry, false, iconAnimationsEnabled);
         holder.card.setOnClickListener(v -> binder.launch(entry));
         holder.card.setOnLongClickListener(v -> {
@@ -130,6 +113,56 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             source.openAppInfoByKey(key);
             return true;
         });
+    }
+
+    private static int measuredWidth(ViewGroup parent) {
+        if (parent == null) return 0;
+        int width = parent.getWidth();
+        return width > 0 ? width : Math.max(0, parent.getMeasuredWidth());
+    }
+
+    /** Apply slot, card and label dimensions from the latest measured viewport. */
+    private void applyItemGeometry(View item, int viewportWidthPx) {
+        if (item == null || viewportWidthPx <= 0) return;
+        float density = item.getResources().getDisplayMetrics().density;
+        ViewGroup parent = item.getParent() instanceof ViewGroup
+                ? (ViewGroup) item.getParent() : null;
+        int parentPaddingLeft = parent == null ? 0 : parent.getPaddingLeft();
+        int parentPaddingRight = parent == null ? 0 : parent.getPaddingRight();
+        int inner = Math.max(0, viewportWidthPx - parentPaddingLeft - parentPaddingRight);
+        int width;
+        int itemWidth;
+        if (vertical) {
+            width = Math.max(Math.round(112 * density),
+                    Math.min(Math.round(170 * density), inner - Math.round(20 * density)));
+            itemWidth = width;
+        } else {
+            // Use the full host width for card geometry; content padding only positions the group.
+            int horizontalWidth = DockGeometry.horizontalContentWidthPx(viewportWidthPx, density);
+            width = DockGeometry.horizontalTileWidthPx(horizontalWidth, capacity, density);
+            itemWidth = DockGeometry.horizontalSlotWidthPx(horizontalWidth, capacity);
+        }
+        ViewGroup.LayoutParams itemParams = item.getLayoutParams();
+        if (itemParams != null && itemParams.width != itemWidth) {
+            itemParams.width = itemWidth;
+            item.setLayoutParams(itemParams);
+        }
+        int height = AppAdapter.tileHeightPx(width);
+        View card = item.findViewById(R.id.card);
+        ViewGroup.LayoutParams cardParams = card.getLayoutParams();
+        if (cardParams.width != width || cardParams.height != height) {
+            cardParams.width = width;
+            cardParams.height = height;
+            card.setLayoutParams(cardParams);
+        }
+        View name = item.findViewById(R.id.name);
+        ViewGroup.MarginLayoutParams nameParams = (ViewGroup.MarginLayoutParams) name.getLayoutParams();
+        int nameTop = height + Math.round(7 * density);
+        if (nameParams.width != width || nameParams.topMargin != nameTop) {
+            nameParams.width = width;
+            nameParams.topMargin = nameTop;
+            name.setLayoutParams(nameParams);
+        }
     }
 
     @Override public int getItemCount() { return entries.size(); }

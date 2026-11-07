@@ -464,4 +464,24 @@ public class DockLayoutModelTest {
     }
 
 
+    @Test
+    public void measuredDockViewportGeometryIsStableAcrossInitialZeroAndResize() {
+        for (int viewport : new int[]{1280, 1696, 1712, 1920}) {
+            for (int capacity : new int[]{4, 5, 6}) {
+                int slot = DockGeometry.horizontalSlotWidthPx(viewport, capacity);
+                assertTrue(slot > 0);
+                int tile = DockGeometry.horizontalTileWidthPx(viewport, capacity, 2f);
+                assertTrue(tile > 0);
+                assertTrue(tile <= slot);
+                for (int count = 1; count <= capacity; count++) {
+                    int left = DockGeometry.horizontalCenterOffsetPx(viewport, slot, count);
+                    int right = viewport - left - slot * count;
+                    assertTrue(left >= 0);
+                    assertTrue(right >= 0);
+                    assertTrue(Math.abs(left - right) <= 1);
+                }
+            }
+        }
+    }
+
 }
