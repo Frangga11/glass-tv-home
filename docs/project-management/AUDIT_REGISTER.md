@@ -1601,3 +1601,24 @@ G1 is a browser-prototype result only. Production component conformance, live da
 | Physical TV / remote / OEM / overscan | DEFERRED / NOT RUN | No APK installation, ADB or device mutation authorized/performed |
 
 **G3D disposition: COMPLETE / SOURCE-HOST QC PASS.** Branch `feature/g3d-quick-settings` @ `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`; PR #69 OPEN/DRAFT/UNMERGED. G3C remains unchanged. Next package: G3E Wi-Fi.
+
+
+## UI Refresh G3E — Wi-Fi source/host QC register (7 November 2026)
+
+| Area | Result | Evidence / boundary |
+|---|---|---|
+| V05 status/connected card and nearby list | PASS | `WifiSettingsDialog`; current status, filtered SSIDs, security and signal |
+| Scan prerequisites and permissions | PASS | `WifiScanPolicy`; fine-location runtime permission, Location enabled, Wi-Fi enabled; minimal CHANGE_WIFI_STATE for startScan |
+| Scan/loading/error/empty/throttled states | PASS | Scan-result broadcast, request boolean, timeout, cached results, empty/unavailable/permission/Location/radio-off states |
+| Existing network-state owner | PASS | MainActivity `updateWifiLabel()` notifies dialog; no duplicate ConnectivityManager callback |
+| Android-owned operations/security | PASS | Selection hands off to Android Wi-Fi Settings; no credential storage, direct connect/disconnect or radio toggle |
+| D-pad/Back/focus | PASS | Generated view IDs, explicit four-way links, horizontal action pair, focus restoration and parent return |
+| Lifecycle | PASS | Scan receiver registered/unregistered with dialog; Handler cleanup; permission and Activity resume refresh; system-settings return/failure recovery |
+| Localization | PASS | Default/ID/EN resource parity; exact resource-contract test |
+| Python repository tests | PASS | Exact-head CI #1362 / `42346091802`; 127 tests |
+| App/installer unit tests | PASS | Exact-head CI #1362; release unit-test tasks successful |
+| Release build | PASS | Exact-head CI #1362; app and installer release assembly successful |
+| APK size | INFORMATIONAL | 1,617,293 bytes; +8,920 bytes / approximately 0.55% vs G3D; informational under D-023 |
+| Physical TV / remote / OEM | DEFERRED / NOT RUN | No APK install, ADB or device mutation |
+
+**G3E disposition: COMPLETE / SOURCE-HOST QC PASS.** Branch `feature/g3e-wifi` @ `89d044152b7d8460884466deb5baa47126f48027`; PR #70 OPEN/DRAFT/UNMERGED. Known risk: Android deprecates `WifiManager.startScan()` since API 28 and throttles active scans; current behavior is best-effort with Android Settings fallback. Next package: G3F Global Settings.
