@@ -3954,7 +3954,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         QuickSettingsDialog.show(this, new QuickSettingsDialog.Actions() {
             @Override public String wifiSummary() {
-                return getString(R.string.quick_settings_wifi_summary);
+                updateWifiLabel();
+                String current = btnWifi != null && btnWifi.getText() != null
+                        ? btnWifi.getText().toString().trim() : "";
+                return current.isEmpty() || current.equals(getString(R.string.wifi))
+                        ? getString(R.string.quick_settings_wifi_summary) : current;
             }
             @Override public String languageSummary() {
                 return AppLanguage.getLanguageBadge(MainActivity.this);
