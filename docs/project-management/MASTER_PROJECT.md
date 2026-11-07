@@ -1271,5 +1271,5 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Owner's TV photo showed five Dock icons left-aligned. Source audit identified horizontal LinearLayoutManager's start alignment as the cause; earlier holder-width changes did not center the aggregate group.
 - Added calculated aggregate centering offset in DockGeometry and applied it to the horizontal Dock host. Uses full viewport for tile sizing and actual visible item count for group centering; translation resets for vertical/empty states.
 - Added regression coverage for 4/5/6 capacities at multiple densities and edge cases.
-- Latest source HEAD 65108d4160243442922002618e739c898c4cb9e7; PR #74 OPEN/DRAFT/UNMERGED.
-- Latest-head CI pending/not confirmed; prior run #42384023835 does not validate the latest commit. Physical TV acceptance NOT RUN; next APK must come from latest source.
+- Latest source HEAD b14a7bc3d1e99cf8cf0c74e944c39983d776f341; PR #74 OPEN/DRAFT/UNMERGED.
+- Prior CI #42384023835 failed only the newly added exact-pixel rounding assertion; test corrected for ±1px. Latest-head CI #42384207367 IN PROGRESS. Physical TV acceptance NOT RUN; next APK must come from latest source.
