@@ -368,6 +368,7 @@ public class DockLayoutModelTest {
         for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
             for (int viewport : new int[]{1280, 1920}) {
                 int safeWidth = DockGeometry.horizontalContentWidthPx(viewport, density);
+                assertEquals(5, DockGeometry.horizontalGridColumns());
                 assertEquals(Math.round(96f * density), viewport - safeWidth);
                 for (int capacity : new int[]{4, 5, 6}) {
                     int slotWidth = DockGeometry.horizontalSlotWidthPx(safeWidth, capacity);

@@ -59,12 +59,6 @@ final class DockGeometry {
         return Math.max(0, (safeContentWidthPx - slotWidthPx * itemCount) / 2);
     }
 
-    /** Symmetric inset between a centered card and its Dock/Grid slot. */
-    static int dockItemSideOffsetPx(int safeContentWidthPx, int tileWidthPx, int capacity) {
-        int slotWidth = horizontalSlotWidthPx(safeContentWidthPx, capacity);
-        return Math.max(0, (slotWidth - tileWidthPx) / 2);
-    }
-
     /** Compatibility overload for existing geometry callers. */
     static int horizontalCenterOffsetPx(int innerWidthPx, int tileWidthPx, int itemCount) {
         if (innerWidthPx <= 0 || tileWidthPx <= 0 || itemCount <= 0) return 0;
