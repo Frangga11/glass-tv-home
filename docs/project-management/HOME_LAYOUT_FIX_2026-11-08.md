@@ -162,3 +162,13 @@ PR #75 advanced by a workflow-only commit `21bc204a413fce3c527e0e8761d2016bc5dc8
 - New exact-head CI run #1449 / `42404084112` is IN PROGRESS. It will use the PR #75 inherited artifact publication workflow.
 - The prior run #1447 targeted a superseded branch head and is not the current acceptance evidence.
 - PR #76 APK size/SHA-256 remain pending. Physical TV/remote acceptance remains not run; no merge or device mutation.
+
+## 12. Exact cumulative CI and final test APK — 8 November 2026
+
+- PR #75 latest head 21bc204a413fce3c527e0e8761d2016bc5dc87c6: CI #1448 / 42403925244 SUCCESS. Both required jobs passed, including unit tests, release build and APK publication. Artifact #13586239278.
+- PR #76 latest head ea681545bbf356105683ef2c7da6664e29a83723: CI #1447 / 42403880493 SUCCESS. Both required jobs passed; the Lists/tools/docs job and Launcher build/unit tests succeeded. Artifact #13586598248, ZIP 1,422,482 bytes.
+- Downloaded PR #76 artifact and verified ZIP integrity. Extracted app-release.apk is 1,622,153 bytes; APK ZIP integrity passed; AndroidManifest.xml, classes.dex and resources.arsc are present. SHA-256: 12dc35e31fc2e67bcba1e0ddcee548937f5f23f9bf90d654316fc6fdc34f17c7.
+- This is the current cumulative PR #76 test APK, including PR #75 Dock host/padding and row-scroll work plus PR #76 Quick Toggles safe-frame correction. It is suitable for controlled owner testing, but is not visual acceptance evidence.
+- Both PRs remain OPEN/DRAFT/UNMERGED. No installation, ADB, default-launcher change or device mutation has been performed.
+
+**Updated technical disposition:** CI / unit tests / release build / APK integrity PASS. Physical Mi TV Stick visual and DPAD acceptance PENDING. Final project status is PENDING DEVICE ACCEPTANCE, not PASS.
