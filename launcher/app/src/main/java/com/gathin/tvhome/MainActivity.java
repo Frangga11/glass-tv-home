@@ -3290,6 +3290,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void focusDockTile(int position) {
+        // Invalidate delayed Grid requests when navigation returns to the fixed Dock.
+        gridFocusRequestGeneration++;
         if (dockAdapter == null || dockRecycler == null || dockAdapter.getItemCount() == 0) {
             focusTile(0);
             return;
