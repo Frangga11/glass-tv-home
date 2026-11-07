@@ -1615,10 +1615,10 @@ G1 is a browser-prototype result only. Production component conformance, live da
 | D-pad/Back/focus | PASS | Generated view IDs, explicit four-way links, horizontal action pair, focus restoration and parent return |
 | Lifecycle | PASS | Scan receiver registered/unregistered with dialog; Handler cleanup; permission and Activity resume refresh; system-settings return/failure recovery |
 | Localization | PASS | Default/ID/EN resource parity; exact resource-contract test |
-| Python repository tests | PASS | Exact-head CI #1362 / `42346091802`; 127 tests |
+| Python repository tests | PASS | Exact-head CI #1363 / `42346491017`; 127 tests |
 | App/installer unit tests | PASS | Exact-head CI #1362; release unit-test tasks successful |
 | Release build | PASS | Exact-head CI #1362; app and installer release assembly successful |
-| APK size | INFORMATIONAL | 1,617,293 bytes; +8,920 bytes / approximately 0.55% vs G3D; informational under D-023 |
+| APK size | INFORMATIONAL | 1,617,373 bytes; +9,000 bytes / approximately 0.56% vs G3D; informational under D-023 |
 | Physical TV / remote / OEM | DEFERRED / NOT RUN | No APK install, ADB or device mutation |
 
-**G3E disposition: COMPLETE / SOURCE-HOST QC PASS.** Branch `feature/g3e-wifi` @ `89d044152b7d8460884466deb5baa47126f48027`; PR #70 OPEN/DRAFT/UNMERGED. Known risk: Android deprecates `WifiManager.startScan()` since API 28 and throttles active scans; current behavior is best-effort with Android Settings fallback. Next package: G3F Global Settings.
+**G3E disposition: COMPLETE / SOURCE-HOST QC PASS.** Branch `feature/g3e-wifi` @ `9125043e24b8f13232e41193ba5fe10e1821f7cd`; PR #70 OPEN/DRAFT/UNMERGED. Known risk: Android deprecates `WifiManager.startScan()` since API 28 and throttles active scans; current behavior is best-effort with Android Settings fallback. Next package: G3F Global Settings.
