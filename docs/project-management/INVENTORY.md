@@ -1045,3 +1045,7 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Physical Mi TV Stick / remote acceptance | PENDING / NOT RUN |
 | PR #74/#75/#76 merge | NOT PERFORMED; all remain Draft |
 | ADB / install / default-launcher change / device mutation | NOT PERFORMED |
+
+| CI #1450 Python contract suite | 137 tests OK; 1 intentional skip |
+| APK size diagnostic | 1,622,153 bytes; 49,289 bytes above historical 1.5 MiB reference (non-blocking) |
+| Size vs earlier PR #75 baseline | 316 bytes smaller |
