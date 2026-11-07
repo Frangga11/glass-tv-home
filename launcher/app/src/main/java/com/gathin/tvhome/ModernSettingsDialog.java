@@ -1070,7 +1070,7 @@ public final class ModernSettingsDialog {
 
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.change_pin_title),
-                        activity.getString(R.string.change_pin_summary, ChildModeManager.getPin(activity).equals("0000") ? activity.getString(R.string.default_pin_label) : "••••"),
+                        activity.getString(R.string.change_pin_summary, ChildModeManager.isDefaultPin(activity) ? activity.getString(R.string.default_pin_label) : "••••"),
                         () -> showChangePinDialog(activity, density, outfit)));
 
             } else if (tab == TAB_HOME_SCREEN) {
