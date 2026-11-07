@@ -56,6 +56,14 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("new java.lang.ref.WeakReference<>(MainActivity.this)", MAIN)
         self.assertIn("activity == null || activity.isFinishing() || activity.isDestroyed() || !activity.hasWindowFocus()", MAIN)
 
+    def test_quick_settings_network_summary_is_independent_of_optional_top_bar_pill(self):
+        self.assertIn("private String getQuickSettingsNetworkSummary()", MAIN)
+        self.assertIn("return getQuickSettingsNetworkSummary();", MAIN)
+        self.assertIn("cm.getAllNetworks()", MAIN)
+        self.assertIn("NetworkCapabilities.TRANSPORT_WIFI", MAIN)
+        self.assertIn("NetworkCapabilities.TRANSPORT_ETHERNET", MAIN)
+        self.assertNotIn("btnWifi.getText()", MAIN[MAIN.index("private String getQuickSettingsNetworkSummary()"):MAIN.index("private void updateWifiLabel()")])
+
     def test_quick_settings_does_not_fake_system_radio_controls(self):
         for forbidden in ("setWifiEnabled(", "BluetoothAdapter", "BluetoothManager", "ACTION_AIRPLANE_MODE_CHANGED"):
             self.assertNotIn(forbidden, DIALOG)

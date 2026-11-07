@@ -3789,6 +3789,45 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */
+    /** Reads network state independently of the optional top-bar network pill. */
+    private String getQuickSettingsNetworkSummary() {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            boolean online = false;
+            boolean wifi = false;
+            boolean ethernet = false;
+            for (Network network : cm != null ? cm.getAllNetworks() : new Network[0]) {
+                NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
+                if (capabilities == null
+                        || !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                    continue;
+                }
+                online = true;
+                wifi |= capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+                ethernet |= capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
+            }
+            if (!online) return getString(R.string.offline);
+            if (ethernet) return getString(R.string.ethernet);
+            if (wifi) {
+                WifiManager manager = (WifiManager) getApplicationContext()
+                        .getSystemService(Context.WIFI_SERVICE);
+                WifiInfo info = manager != null ? manager.getConnectionInfo() : null;
+                String ssid = info != null ? info.getSSID() : null;
+                if (ssid != null) {
+                    ssid = ssid.replace("\\", "").replace("\"", "").trim();
+                    if (!ssid.isEmpty() && !ssid.toLowerCase(Locale.ROOT).contains("unknown")
+                            && !ssid.equals("0x")) {
+                        return ssid;
+                    }
+                }
+            }
+            return getString(R.string.connected);
+        } catch (Exception unavailable) {
+            return getString(R.string.quick_settings_wifi_summary);
+        }
+    }
+
     private void updateWifiLabel() {
         if (btnWifi.getVisibility() == View.GONE) return;   // show_network_pill off
         String text = getString(R.string.wifi);
@@ -3958,11 +3997,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         QuickSettingsDialog.show(this, new QuickSettingsDialog.Actions() {
             @Override public String wifiSummary() {
-                updateWifiLabel();
-                String current = btnWifi != null && btnWifi.getText() != null
-                        ? btnWifi.getText().toString().trim() : "";
-                return current.isEmpty() || current.equals(getString(R.string.wifi))
-                        ? getString(R.string.quick_settings_wifi_summary) : current;
+                return getQuickSettingsNetworkSummary();
             }
             @Override public String languageSummary() {
                 return AppLanguage.getLanguageBadge(MainActivity.this);
