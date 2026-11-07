@@ -4635,21 +4635,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dialog.dismiss();
             TvFeedback.show(MainActivity.this, AppLanguage.strCleanCacheToast(MainActivity.this), Toast.LENGTH_SHORT);
 
+            java.lang.ref.WeakReference<MainActivity> activityRef =
+                    new java.lang.ref.WeakReference<>(MainActivity.this);
             CacheCleaner.cleanNow(MainActivity.this, (bytesFreed, percentBefore, percentAfter, systemTrimmed) -> {
+                MainActivity activity = activityRef.get();
+                if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+
                 SoundEffects.playSelect();
-                String freedStr = android.text.format.Formatter.formatFileSize(MainActivity.this, bytesFreed);
-                String resultMsg = AppLanguage.strCleanCacheDoneMsg(MainActivity.this, freedStr, bytesFreed > 0);
-                String systemStatus = getString(systemTrimmed
+                String freedStr = android.text.format.Formatter.formatFileSize(activity, bytesFreed);
+                String resultMsg = AppLanguage.strCleanCacheDoneMsg(activity, freedStr, bytesFreed > 0);
+                String systemStatus = activity.getString(systemTrimmed
                         ? R.string.cache_system_trim_success : R.string.cache_system_trim_skipped);
 
-                AlertDialog resDialog = new AlertDialog.Builder(MainActivity.this, R.style.Theme_TvHome_GlassDialog)
-                        .setTitle(AppLanguage.strCleanCacheDoneTitle(MainActivity.this))
+                AlertDialog resDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                        .setTitle(AppLanguage.strCleanCacheDoneTitle(activity))
                         .setMessage(resultMsg + "\n\n" + systemStatus
-                                + AppLanguage.strCleanCacheUsageLine(MainActivity.this, percentBefore, percentAfter))
-                        .setPositiveButton(AppLanguage.strDone(MainActivity.this), (d, w) -> d.dismiss())
+                                + AppLanguage.strCleanCacheUsageLine(activity, percentBefore, percentAfter))
+                        .setPositiveButton(AppLanguage.strDone(activity), (d, w) -> d.dismiss())
                         .create();
                 resDialog.show();
-                styleDeviceSettingsPopup(resDialog, 600, 0);
+                activity.styleDeviceSettingsPopup(resDialog, 600, 0);
                 Button btnOk = resDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                 if (btnOk != null) btnOk.requestFocus();
             });

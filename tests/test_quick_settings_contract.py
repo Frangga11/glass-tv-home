@@ -51,6 +51,10 @@ class QuickSettingsContractTest(unittest.TestCase):
             self.assertIn(setter, GRAPH)
         self.assertIn("QuickSettingsFocusGraph.connect(controls)", DIALOG)
 
+    def test_cache_result_callback_does_not_retain_or_use_destroyed_activity(self):
+        self.assertIn("new java.lang.ref.WeakReference<>(MainActivity.this)", MAIN)
+        self.assertIn("activity == null || activity.isFinishing() || activity.isDestroyed()", MAIN)
+
     def test_quick_settings_does_not_fake_system_radio_controls(self):
         for forbidden in ("setWifiEnabled(", "BluetoothAdapter", "BluetoothManager", "ACTION_AIRPLANE_MODE_CHANGED"):
             self.assertNotIn(forbidden, DIALOG)
