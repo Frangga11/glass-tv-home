@@ -729,4 +729,5 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wifi_security_secured">Secured network</string>
     <string name="wifi_security_open">Open network</string>
     <string name="wifi_signal_bars">%1$d</string>
+    <string name="global_settings_header">Launcher Settings</string>
 </resources>

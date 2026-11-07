@@ -1681,6 +1681,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updatePrayerTimes();
         updateDateAndPeriod();
         updateWifiLabel();
+        ModernSettingsDialog.onHostResumed(this);
         updateWeatherAqi();
         WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
         updateIslamicShelf();
@@ -1895,6 +1896,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     protected void onDestroy() {
         super.onDestroy();
         WifiSettingsDialog.onHostDestroyed();
+        ModernSettingsDialog.onHostDestroyed(this);
         if (sInstance != null && sInstance.get() == this) {
             sInstance = null;
         }
@@ -3799,6 +3801,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */
     /** Reads network state independently of the optional top-bar network pill. */
+    String getGlobalSettingsNetworkSummary() {
+        return getQuickSettingsNetworkSummary();
+    }
+
     private String getQuickSettingsNetworkSummary() {
         try {
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -3839,6 +3845,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void updateWifiLabel() {
         WifiSettingsDialog.onNetworkStateChanged();
+        ModernSettingsDialog.refreshNetworkStatus(this);
         if (btnWifi.getVisibility() == View.GONE) return;   // show_network_pill off
         String text = getString(R.string.wifi);
         boolean vpn = false, online = false;

@@ -727,4 +727,5 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wifi_security_secured">Jaringan aman</string>
     <string name="wifi_security_open">Jaringan terbuka</string>
     <string name="wifi_signal_bars">%1$d</string>
+    <string name="global_settings_header">Pengaturan Launcher</string>
 </resources>

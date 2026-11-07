@@ -376,9 +376,9 @@ final class AppLanguage {
 
     public static String strStatusBarWeather(Context ctx) {
         switch (getLanguage(ctx)) {
-            case LANG_EN: return "Status Bar & Weather";
+            case LANG_EN: return "Widgets & Information";
             case LANG_ID: return "Widget & Informasi";
-            case LANG_MS: default: return "Bar Status & Cuaca";
+            case LANG_MS: default: return "Widget & Maklumat";
         }
     }
 

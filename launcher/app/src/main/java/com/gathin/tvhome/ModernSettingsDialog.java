@@ -37,6 +37,7 @@ import android.widget.Toast;
 
 import com.gathin.tvhome.qrcode.QrBitmapUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -63,6 +64,14 @@ public final class ModernSettingsDialog {
     private static final int TAB_DEVICE_SETTINGS = NavigationState.TAB_DEVICE_SETTINGS;
 
     private static Runnable sDpadLeftTarget;
+    private static WeakReference<MainActivity> sSettingsHost;
+    private static WeakReference<AlertDialog> sSettingsDialog;
+    private static WeakReference<TextView> sSettingsNetworkStatus;
+    private static WeakReference<LinearLayout> sSettingsRightContent;
+    private static WeakReference<ScrollView> sSettingsRightScroll;
+    private static WeakReference<Runnable> sSettingsPaneRefresh;
+    private static WeakReference<int[]> sSettingsActiveTab;
+    private static WeakReference<View[]> sSettingsActiveSidebarView;
     private static final String PREF_SETTINGS_FOCUS_AREA = "settings_focus_area";
     private static final String PREF_SETTINGS_FOCUS_PATH = "settings_focus_path";
     private static final String PREF_SETTINGS_FOCUS_TAB = "settings_focus_tab";
@@ -121,6 +130,45 @@ public final class ModernSettingsDialog {
         return target.getClass().getName() + "#" + target.getId() + "#" + label;
     }
 
+    /** Accepts the pre-search focus signature so existing saved focus paths survive this UI refresh. */
+    private static String legacyFocusSignature(View target) {
+        if (target == null) return "";
+        String label = "";
+        if (target instanceof EditText) {
+            CharSequence hint = ((EditText) target).getHint();
+            if (hint != null) label = hint.toString();
+        } else if (target instanceof TextView) {
+            CharSequence text = ((TextView) target).getText();
+            if (text != null) label = text.toString();
+        }
+        if (label.length() > 160) label = label.substring(0, 160);
+        return target.getClass().getName() + "#" + target.getId() + "#" + label;
+    }
+
+    private static View resolveLegacySidebarFocusPath(ViewGroup leftCol, View searchBox,
+                                                          String encodedPath, String signature) {
+        int[] indexes = SettingsFocusPath.decode(encodedPath);
+        if (indexes == null || indexes.length == 0) return null;
+        // The old sidebar began with Search. It now lives in the V06 header.
+        if (indexes[0] == 0) {
+            return signature != null && signature.equals(legacyFocusSignature(searchBox))
+                    ? searchBox : null;
+        }
+        indexes[0]--;
+        return resolveFocusPath(leftCol, SettingsFocusPath.encode(indexes), signature);
+    }
+
+    private static View resolveLegacyRightFocusPath(ViewGroup rightContent, int tab,
+                                                      String encodedPath, String signature) {
+        int[] indexes = SettingsFocusPath.decode(encodedPath);
+        if (indexes == null || indexes.length == 0) return null;
+        // V06 adds a non-focusable active-profile summary after the existing page title.
+        if (NavigationState.normalizeSettingsTab(tab) == TAB_PROFILE && indexes[0] >= 1) {
+            indexes[0]++;
+        }
+        return resolveFocusPath(rightContent, SettingsFocusPath.encode(indexes), signature);
+    }
+
     private static View resolveFocusPath(ViewGroup root, String encodedPath, String signature) {
         int[] indexes = SettingsFocusPath.decode(encodedPath);
         if (root == null || indexes == null || signature == null || signature.isEmpty()) return null;
@@ -132,7 +180,8 @@ public final class ModernSettingsDialog {
             current = group.getChildAt(index);
         }
         return current.isFocusable() && current.isEnabled() && current.isShown()
-                && signature.equals(focusSignature(current)) ? current : null;
+                && (signature.equals(focusSignature(current))
+                || signature.equals(legacyFocusSignature(current))) ? current : null;
     }
 
     private static boolean focusRightPane(ViewGroup container) {
@@ -164,10 +213,11 @@ public final class ModernSettingsDialog {
 
         // Main Horizontal Container (2 Columns)
         LinearLayout root = new LinearLayout(activity);
-        root.setOrientation(LinearLayout.HORIZONTAL);
+        root.setOrientation(LinearLayout.VERTICAL);
         root.setGravity(Gravity.CENTER);
         root.setClipChildren(false);
         root.setClipToPadding(false);
+        root.setPadding((int) (12 * density), (int) (8 * density), (int) (12 * density), (int) (12 * density));
 
         // Dark matte rounded container matching screenshot
         GradientDrawable dialogBg = new GradientDrawable();
@@ -189,11 +239,12 @@ public final class ModernSettingsDialog {
 
         // Subtle dark translucent background for left pane
         GradientDrawable leftBg = new GradientDrawable();
-        leftBg.setColor(0x5514161C);
+        leftBg.setColor(TvUiTokens.GLASS_VEIL_COLOR);
         leftCol.setBackground(leftBg);
 
         final LinearLayout profileCard = new LinearLayout(activity);
         final LinearLayout rightContent = new LinearLayout(activity);
+        LinearLayout header = new LinearLayout(activity);
 
         // 1. Search Bar (Optimized height & margins to prevent clipping)
         LinearLayout searchBox = new LinearLayout(activity);
@@ -247,10 +298,7 @@ public final class ModernSettingsDialog {
             return false;
         });
 
-        LinearLayout.LayoutParams sbLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density));
-        sbLp.topMargin = (int) (2 * density);
-        sbLp.bottomMargin = (int) (8 * density);
-        leftCol.addView(searchBox, sbLp);
+        // Search is inserted after the brand block is built, preserving the V06 header order.
 
         // 2. Profile Card (User Profiles - No mention of backup)
         profileCard.setOrientation(LinearLayout.HORIZONTAL);
@@ -271,7 +319,7 @@ public final class ModernSettingsDialog {
         profileTextCol.setOrientation(LinearLayout.VERTICAL);
 
         TextView tvProfileName = new TextView(activity);
-        tvProfileName.setText(ProfileManager.getProfileName(activity));
+        tvProfileName.setText(AppLanguage.strProfileTitle(activity));
         tvProfileName.setTextSize(14f);
         tvProfileName.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvProfileName.setTypeface(outfit, Typeface.BOLD);
@@ -279,7 +327,7 @@ public final class ModernSettingsDialog {
         profileTextCol.addView(tvProfileName);
 
         TextView tvProfileSub = new TextView(activity);
-        tvProfileSub.setText(AppLanguage.strProfileSubtitle(activity));
+        tvProfileSub.setText(ProfileManager.getProfileName(activity));
         tvProfileSub.setTextSize(11f);
         tvProfileSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvProfileSub.setTypeface(outfit, Typeface.NORMAL);
@@ -293,7 +341,7 @@ public final class ModernSettingsDialog {
 
         // Vertical divider between Left and Right
         View verticalDivider = new View(activity);
-        verticalDivider.setBackgroundColor(0xFF262832);
+        verticalDivider.setBackgroundColor(TvUiTokens.BORDER);
         LinearLayout.LayoutParams divLp = new LinearLayout.LayoutParams((int) (1 * density), ViewGroup.LayoutParams.MATCH_PARENT);
 
         // --- RIGHT COLUMN: Content Area ---
@@ -346,10 +394,10 @@ public final class ModernSettingsDialog {
         }
 
         List<NavItem> navItems = new ArrayList<>();
-        navItems.add(new NavItem(TAB_HOME_SCREEN, AppLanguage.strHomeScreen(activity), R.drawable.ic_home_screen, 0xFF7B1FA2));
-        navItems.add(new NavItem(TAB_APPEARANCE, AppLanguage.strAppearance(activity), R.drawable.ic_appearance, 0xFF0097A7));
-        navItems.add(new NavItem(TAB_STATUS_WEATHER, AppLanguage.strStatusBarWeather(activity), R.drawable.ic_screen_weather, 0xFF1976D2));
-        navItems.add(new NavItem(TAB_EFFECTS, AppLanguage.strVisualEffects(activity), R.drawable.ic_settings, 0xFF7C3AED));
+        navItems.add(new NavItem(TAB_HOME_SCREEN, AppLanguage.strHomeScreen(activity), R.drawable.ic_home_screen, TvUiTokens.SURFACE_IDLE));
+        navItems.add(new NavItem(TAB_APPEARANCE, AppLanguage.strAppearance(activity), R.drawable.ic_appearance, TvUiTokens.SURFACE_IDLE));
+        navItems.add(new NavItem(TAB_STATUS_WEATHER, AppLanguage.strStatusBarWeather(activity), R.drawable.ic_screen_weather, TvUiTokens.SURFACE_IDLE));
+        navItems.add(new NavItem(TAB_EFFECTS, AppLanguage.strVisualEffects(activity), R.drawable.ic_settings, TvUiTokens.SURFACE_IDLE));
         navItems.add(new NavItem(TAB_STANDBY, AppLanguage.strStandByMode(activity), R.drawable.ic_standby_clock, TvUiTokens.SURFACE_IDLE));
         String deviceLabel = AppLanguage.strDeviceSettings(activity);
         if (AppUpdateManager.isUpdateAvailable(activity)) {
@@ -373,7 +421,8 @@ public final class ModernSettingsDialog {
             ProfileManager.UserProfile sidebarActive = ProfileManager.getActiveProfile(activity);
             profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, sidebarActive,
                     Math.round(38 * density), ChildModeManager.isChildModeEnabled(activity, sidebarActive.id)));
-            tvProfileName.setText(ProfileManager.getProfileName(activity));
+            tvProfileName.setText(AppLanguage.strProfileTitle(activity));
+            tvProfileSub.setText(ProfileManager.getProfileName(activity));
 
             for (NavItem item : navItems) {
                 if (item.rowView == null) continue;
@@ -465,6 +514,7 @@ public final class ModernSettingsDialog {
             lbl.setTypeface(outfit, Typeface.NORMAL);
             row.addView(lbl);
 
+            row.setForeground(activity.getDrawable(R.drawable.bg_tv_focus_outline));
             row.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) {
                     activeSidebarView[0] = row;
@@ -540,6 +590,46 @@ public final class ModernSettingsDialog {
                 ProfileManager.UserProfile activeP = ProfileManager.getActiveProfile(activity);
                 ImageView[] activeProfileListAvatar = new ImageView[1];
 
+                // V06 identity/status summary; profile storage and avatar remain owned by ProfileManager.
+                boolean summaryChildMode = ChildModeManager.isChildModeEnabled(activity, activeP.id);
+                LinearLayout profileSummary = new LinearLayout(activity);
+                profileSummary.setOrientation(LinearLayout.HORIZONTAL);
+                profileSummary.setGravity(Gravity.CENTER_VERTICAL);
+                profileSummary.setPadding((int) (18 * density), (int) (14 * density),
+                        (int) (18 * density), (int) (14 * density));
+                GradientDrawable profileSummaryBg = new GradientDrawable();
+                profileSummaryBg.setColor(TvUiTokens.SURFACE_SELECTED);
+                profileSummaryBg.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
+                profileSummaryBg.setStroke(Math.max(1, (int) density), TvUiTokens.BORDER);
+                profileSummary.setBackground(profileSummaryBg);
+                ImageView summaryAvatar = new ImageView(activity);
+                summaryAvatar.setImageDrawable(ProfileManager.getAvatarDrawable(activity, activeP,
+                        Math.round(64 * density), summaryChildMode));
+                LinearLayout.LayoutParams summaryAvatarLp = new LinearLayout.LayoutParams(
+                        (int) (64 * density), (int) (64 * density));
+                summaryAvatarLp.setMarginEnd((int) (16 * density));
+                profileSummary.addView(summaryAvatar, summaryAvatarLp);
+                LinearLayout summaryText = new LinearLayout(activity);
+                summaryText.setOrientation(LinearLayout.VERTICAL);
+                TextView summaryName = new TextView(activity);
+                summaryName.setText(activeP.name);
+                summaryName.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+                summaryName.setTextColor(TvUiTokens.TEXT_PRIMARY);
+                summaryName.setTypeface(outfit, Typeface.BOLD);
+                summaryText.addView(summaryName);
+                TextView summaryState = new TextView(activity);
+                summaryState.setText(activity.getString(R.string.active_label)
+                        + (summaryChildMode ? " · " + activity.getString(R.string.child_mode_suffix) : ""));
+                summaryState.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+                summaryState.setTextColor(summaryChildMode ? TvUiTokens.WARNING : TvUiTokens.SUCCESS);
+                summaryText.addView(summaryState);
+                profileSummary.addView(summaryText, new LinearLayout.LayoutParams(
+                        0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+                LinearLayout.LayoutParams profileSummaryLp = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                profileSummaryLp.bottomMargin = (int) (10 * density);
+                rightContent.addView(profileSummary, 1, profileSummaryLp);
+
                 // Section 1: Active Profile Avatars
                 TextView tvAvatars = new TextView(activity);
                 tvAvatars.setText(activity.getString(R.string.active_profile_avatar_header, activeP.name.toUpperCase()));
@@ -567,6 +657,8 @@ public final class ModernSettingsDialog {
                     FrameLayout frame = new FrameLayout(activity);
                     frame.setFocusable(true);
                     frame.setClickable(true);
+                    frame.setContentDescription(ProfileManager.AVATAR_NAMES[idx]);
+                    frame.setTag("profile.avatar.builtin." + idx);
 
                     int frameDim = (int) (60 * density);
                     LinearLayout.LayoutParams fLp = new LinearLayout.LayoutParams(frameDim, frameDim);
@@ -621,6 +713,8 @@ public final class ModernSettingsDialog {
                             }
                         }
                         boolean refreshedChildMode = ChildModeManager.isChildModeEnabled(activity, refreshedProfile.id);
+                        summaryAvatar.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
+                                Math.round(64 * density), refreshedChildMode));
                         profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, refreshedProfile,
                                 Math.round(38 * density), refreshedChildMode));
                         if (activeProfileListAvatar[0] != null) {
@@ -642,6 +736,7 @@ public final class ModernSettingsDialog {
 
                 Button uploadAvatarButton = new Button(activity);
                 uploadAvatarButton.setText(R.string.avatar_upload_qr_action);
+                uploadAvatarButton.setContentDescription(activity.getString(R.string.avatar_upload_qr_action));
                 uploadAvatarButton.setTextColor(TvUiTokens.TEXT_PRIMARY);
                 uploadAvatarButton.setTextSize(13);
                 uploadAvatarButton.setAllCaps(false);
@@ -656,6 +751,8 @@ public final class ModernSettingsDialog {
                 uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
                     ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
                     boolean updatedChildMode = ChildModeManager.isChildModeEnabled(activity, updated.id);
+                    summaryAvatar.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
+                            Math.round(64 * density), updatedChildMode));
                     profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, updated,
                             Math.round(38 * density), updatedChildMode));
                     if (activeProfileListAvatar[0] != null) {
@@ -674,6 +771,7 @@ public final class ModernSettingsDialog {
 
                 Button defaultAvatarButton = new Button(activity);
                 defaultAvatarButton.setText(R.string.avatar_use_default_action);
+                defaultAvatarButton.setContentDescription(activity.getString(R.string.avatar_use_default_action));
                 defaultAvatarButton.setTextColor(TvUiTokens.TEXT_SECONDARY);
                 defaultAvatarButton.setTextSize(13);
                 defaultAvatarButton.setAllCaps(false);
@@ -695,6 +793,8 @@ public final class ModernSettingsDialog {
                     }
                     ProfileManager.UserProfile restored = ProfileManager.getActiveProfile(activity);
                     boolean restoredChildMode = ChildModeManager.isChildModeEnabled(activity, restored.id);
+                    summaryAvatar.setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
+                            Math.round(64 * density), restoredChildMode));
                     profileAvatarView.setImageDrawable(ProfileManager.getAvatarDrawable(activity, restored,
                             Math.round(38 * density), restoredChildMode));
                     if (activeProfileListAvatar[0] != null) {
@@ -720,6 +820,7 @@ public final class ModernSettingsDialog {
                 editNameCard.setPadding((int) (14 * density), (int) (10 * density), (int) (16 * density), (int) (10 * density));
                 editNameCard.setFocusable(true);
                 editNameCard.setClickable(true);
+                editNameCard.setContentDescription(AppLanguage.strEditName(activity));
 
                 GradientDrawable enBg = new GradientDrawable();
                 enBg.setColor(TvUiTokens.SURFACE);
@@ -813,6 +914,8 @@ public final class ModernSettingsDialog {
                     pRow.setPadding((int) (14 * density), (int) (8 * density), (int) (14 * density), (int) (8 * density));
                     pRow.setFocusable(true);
                     pRow.setClickable(true);
+                    pRow.setContentDescription(p.name);
+                    pRow.setTag("profile.profile." + p.id);
 
                     GradientDrawable pBg = new GradientDrawable();
                     pBg.setColor(isCur ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE_IDLE);
@@ -1269,7 +1372,10 @@ public final class ModernSettingsDialog {
             searchInput.setHintTextColor(TvUiTokens.TEXT_SECONDARY);
             searchInput.setHint(R.string.settings_search_hint);
             searchInput.setTextSize(TvUiTokens.CARD_TITLE_SP);
-            searchInput.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density));
+            searchInput.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density),
+                    (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density),
+                    (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density));
             GradientDrawable inputBg = new GradientDrawable();
             inputBg.setColor(TvUiTokens.INPUT_SURFACE);
             inputBg.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
@@ -1280,69 +1386,36 @@ public final class ModernSettingsDialog {
                     .setTitle(R.string.settings_search_title)
                     .setView(searchInput)
                     .setPositiveButton(R.string.search_action, (dialog, which) -> {
-                        String query = searchInput.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
+                        String query = searchInput.getText().toString().trim();
                         if (query.isEmpty()) {
                             TvFeedback.show(activity, R.string.search_keyword_required, Toast.LENGTH_SHORT);
                             return;
                         }
-
-                        String[] labels = {
-                                activity.getString(R.string.search_tab_profile),
-                                activity.getString(R.string.search_tab_home),
-                                activity.getString(R.string.search_tab_appearance),
-                                activity.getString(R.string.search_tab_information),
-                                activity.getString(R.string.search_tab_effects),
-                                activity.getString(R.string.search_tab_standby),
-                                activity.getString(R.string.search_tab_parental),
-                                activity.getString(R.string.search_tab_device)
-                        };
-                        String[] keywords = {
-                                "profil pengguna akun avatar nama",
-                                "beranda layar utama doa salat azan audio suara dock orientasi kapasitas horizontal vertikal",
-                                "tampilan wallpaper latar gambar koleksi interval foto pribadi qr upload hp",
-                                "widget informasi lokasi cuaca udara kualitas aqi jadwal salat pusat informasi tindakan status sistem ringkasan",
-                                "animasi efek cuaca dinamis hujan cahaya warna ikon glow transisi",
-                                "layar siaga standby screensaver jam foto pribadi foto upload qr hp ponsel",
-                                "mode anak pin kunci aplikasi sembunyikan kontrol orang tua",
-                                "perangkat remote tombol home aksesibilitas restart matikan daya tv android resolusi penyimpanan bahasa pembaruan cache"
-                        };
-                        int[] tabIds = {
-                                TAB_PROFILE, TAB_HOME_SCREEN, TAB_APPEARANCE, TAB_STATUS_WEATHER,
-                                TAB_EFFECTS, TAB_STANDBY, TAB_PROFILE, TAB_DEVICE_SETTINGS
-                        };
-                        ArrayList<String> resultLabels = new ArrayList<>();
-                        ArrayList<Integer> resultTabs = new ArrayList<>();
-                        String[] terms = query.split("\\s+");
-                        for (int i = 0; i < labels.length; i++) {
-                            String searchable = (labels[i] + " " + keywords[i]).toLowerCase(java.util.Locale.ROOT);
-                            boolean matches = true;
-                            for (String term : terms) {
-                                if (!searchable.contains(term)) {
-                                    matches = false;
-                                    break;
-                                }
-                            }
-                            if (matches) {
-                                resultLabels.add(labels[i]);
-                                resultTabs.add(tabIds[i]);
+                        List<SearchEntry> matches = new ArrayList<>();
+                        for (SearchEntry entry : buildSearchEntries(activity)) {
+                            if (SettingsSearchIndex.matches(query, entry.title, entry.summary)) {
+                                matches.add(entry);
                             }
                         }
-
-                        if (resultTabs.isEmpty()) {
+                        if (matches.isEmpty()) {
                             TvFeedback.show(activity, R.string.settings_search_not_found, Toast.LENGTH_LONG);
                             return;
                         }
-                        String[] choices = resultLabels.toArray(new String[0]);
+                        String[] choices = new String[matches.size()];
+                        for (int i = 0; i < matches.size(); i++) {
+                            SearchEntry entry = matches.get(i);
+                            choices[i] = entry.title + "  ·  " + settingsCategoryLabel(activity, entry.tabId);
+                        }
                         AlertDialog resultsDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                                 .setTitle(R.string.settings_search_results)
                                 .setItems(choices, (resultDialog, index) -> {
-                                    int selectedTab = resultTabs.get(index);
-                                    activeTab[0] = selectedTab;
-                                    if (selectedTab == TAB_PROFILE) {
+                                    SearchEntry selected = matches.get(index);
+                                    activeTab[0] = selected.tabId;
+                                    if (selected.tabId == TAB_PROFILE) {
                                         activeSidebarView[0] = profileCard;
                                     } else {
                                         for (NavItem item : navItems) {
-                                            if (item.tabId == selectedTab) {
+                                            if (item.tabId == selected.tabId) {
                                                 activeSidebarView[0] = item.rowView;
                                                 break;
                                             }
@@ -1350,17 +1423,21 @@ public final class ModernSettingsDialog {
                                     }
                                     updateSidebarSelection.run();
                                     renderRightPane[0].run();
-                                    if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+                                    rightContent.post(() -> {
+                                        View target = findControlBySearchEntry(rightContent, selected);
+                                        if (target != null && target.isFocusable() && target.requestFocus()) return;
+                                        if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
+                                    });
                                 })
                                 .setNegativeButton(R.string.cancel_action, null)
                                 .create();
                         resultsDialog.show();
-                        TvDialogStyle.apply(resultsDialog, activity, 520, 0);
+                        TvDialogStyle.apply(resultsDialog, activity, 620, 0);
                     })
                     .setNegativeButton(R.string.cancel_action, null)
                     .create();
             searchDialog.show();
-            TvDialogStyle.apply(searchDialog, activity, 520, 0);
+            TvDialogStyle.apply(searchDialog, activity, 620, 0);
             searchInput.requestFocus();
         });
 
@@ -1368,14 +1445,76 @@ public final class ModernSettingsDialog {
         updateSidebarSelection.run();
         renderRightPane[0].run();
 
-        root.addView(leftCol, leftLp);
-        root.addView(verticalDivider, divLp);
-        root.addView(rightCol, rightLp);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setPadding((int) (12 * density), (int) (4 * density),
+                (int) (12 * density), (int) (10 * density));
+        LinearLayout brandBlock = new LinearLayout(activity);
+        brandBlock.setOrientation(LinearLayout.VERTICAL);
+        TextView brandTitle = new TextView(activity);
+        brandTitle.setText("GLASS TV HOME");
+        brandTitle.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+        brandTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        brandTitle.setTypeface(outfit, Typeface.BOLD);
+        brandBlock.addView(brandTitle);
+        TextView brandSubtitle = new TextView(activity);
+        brandSubtitle.setText(R.string.global_settings_header);
+        brandSubtitle.setTextSize(TvUiTokens.METADATA_SP);
+        brandSubtitle.setTextColor(TvUiTokens.TEXT_SECONDARY);
+        brandBlock.addView(brandSubtitle);
+        header.addView(brandBlock, new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        header.addView(searchBox, new LinearLayout.LayoutParams(
+                (int) (390 * density), (int) (52 * density)));
 
+        // Reuse the existing E01/MainActivity network-state owner; Settings is read-only here.
+        TextView wifiStatus = new TextView(activity);
+        wifiStatus.setText(activity.getString(R.string.wifi) + "  ·  "
+                + activity.getGlobalSettingsNetworkSummary());
+        wifiStatus.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+        wifiStatus.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        wifiStatus.setSingleLine(true);
+        wifiStatus.setMaxWidth((int) (260 * density));
+        wifiStatus.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        wifiStatus.setPadding((int) (14 * density), (int) (10 * density),
+                (int) (14 * density), (int) (10 * density));
+        GradientDrawable wifiStatusBg = new GradientDrawable();
+        wifiStatusBg.setColor(TvUiTokens.SURFACE);
+        wifiStatusBg.setCornerRadius(TvUiTokens.POPUP_RADIUS_DP * density);
+        wifiStatusBg.setStroke((int) density, TvUiTokens.BORDER);
+        wifiStatus.setBackground(wifiStatusBg);
+        wifiStatus.setContentDescription(wifiStatus.getText());
+        LinearLayout.LayoutParams wifiStatusLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        wifiStatusLp.setMarginStart((int) (12 * density));
+        header.addView(wifiStatus, wifiStatusLp);
+
+        LinearLayout body = new LinearLayout(activity);
+        body.setOrientation(LinearLayout.HORIZONTAL);
+        body.setGravity(Gravity.CENTER);
+        body.setClipChildren(false);
+        body.setClipToPadding(false);
+        body.addView(leftCol, leftLp);
+        body.addView(verticalDivider, divLp);
+        body.addView(rightCol, rightLp);
+        root.addView(header, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (64 * density)));
+        root.addView(body, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        WeakReference<View> originFocus = new WeakReference<>(activity.getCurrentFocus());
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
         builder.setView(root);
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
+        sSettingsHost = new WeakReference<>(activity);
+        sSettingsDialog = new WeakReference<>(dialog);
+        sSettingsNetworkStatus = new WeakReference<>(wifiStatus);
+        sSettingsRightContent = new WeakReference<>(rightContent);
+        sSettingsRightScroll = new WeakReference<>(rightScroll);
+        sSettingsPaneRefresh = new WeakReference<>(renderRightPane[0]);
+        sSettingsActiveTab = new WeakReference<>(activeTab);
+        sSettingsActiveSidebarView = new WeakReference<>(activeSidebarView);
         final ViewTreeObserver.OnGlobalFocusChangeListener[] focusListener =
                 new ViewTreeObserver.OnGlobalFocusChangeListener[1];
         dialog.setOnDismissListener(d -> {
@@ -1383,6 +1522,11 @@ public final class ModernSettingsDialog {
                 root.getViewTreeObserver().removeOnGlobalFocusChangeListener(focusListener[0]);
             }
             sDpadLeftTarget = null;
+            clearHostReferences(activity);
+            View origin = originFocus.get();
+            if (origin != null && origin.isFocusable() && origin.isShown()) {
+                origin.post(origin::requestFocus);
+            }
         });
         dialog.show();
 
@@ -1429,6 +1573,10 @@ public final class ModernSettingsDialog {
                 rightScroll.scrollTo(0, Math.max(0, navigationPrefs.getInt(rightScrollKey(activeTab[0]), 0)));
                 rightScroll.post(() -> {
                     View restored = resolveFocusPath(rightContent, savedFocusPath, savedFocusSignature);
+                    if (restored == null) {
+                        restored = resolveLegacyRightFocusPath(rightContent, activeTab[0],
+                                savedFocusPath, savedFocusSignature);
+                    }
                     if (restored != null && restored.requestFocus()) return;
                     if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                     else profileCard.requestFocus();
@@ -1437,6 +1585,10 @@ public final class ModernSettingsDialog {
         } else if (savedFocusTab == activeTab[0] && "sidebar".equals(savedFocusArea)) {
             root.post(() -> {
                 View restored = resolveFocusPath(leftCol, savedFocusPath, savedFocusSignature);
+                if (restored == null) {
+                    restored = resolveLegacySidebarFocusPath(leftCol, searchBox,
+                            savedFocusPath, savedFocusSignature);
+                }
                 if (restored != null && restored.requestFocus()) return;
                 if (activeSidebarView[0] != null) activeSidebarView[0].requestFocus();
                 else profileCard.requestFocus();
@@ -1447,6 +1599,67 @@ public final class ModernSettingsDialog {
                 else profileCard.requestFocus();
             });
         }
+    }
+
+    private static void clearHostReferences(MainActivity activity) {
+        if (sSettingsHost == null || sSettingsHost.get() != activity) return;
+        sDpadLeftTarget = null;
+        sSettingsHost = null;
+        sSettingsDialog = null;
+        sSettingsNetworkStatus = null;
+        sSettingsRightContent = null;
+        sSettingsRightScroll = null;
+        sSettingsPaneRefresh = null;
+        sSettingsActiveTab = null;
+        sSettingsActiveSidebarView = null;
+    }
+
+    /** Called from the existing host network-state path; no second connectivity callback is added. */
+    static void refreshNetworkStatus(MainActivity activity) {
+        if (activity == null || sSettingsHost == null || sSettingsHost.get() != activity) return;
+        TextView status = sSettingsNetworkStatus == null ? null : sSettingsNetworkStatus.get();
+        if (status == null) return;
+        CharSequence value = activity.getString(R.string.wifi) + "  ·  "
+                + activity.getGlobalSettingsNetworkSummary();
+        status.setText(value);
+        status.setContentDescription(value);
+    }
+
+    /** Refresh external Android device state on return without discarding the focused Settings control. */
+    static void onHostResumed(MainActivity activity) {
+        if (activity == null || sSettingsHost == null || sSettingsHost.get() != activity) return;
+        AlertDialog dialog = sSettingsDialog == null ? null : sSettingsDialog.get();
+        if (dialog == null || !dialog.isShowing()) return;
+        refreshNetworkStatus(activity);
+
+        int[] activeTab = sSettingsActiveTab == null ? null : sSettingsActiveTab.get();
+        if (activeTab == null || NavigationState.normalizeSettingsTab(activeTab[0]) != TAB_DEVICE_SETTINGS) return;
+        LinearLayout content = sSettingsRightContent == null ? null : sSettingsRightContent.get();
+        ScrollView scroll = sSettingsRightScroll == null ? null : sSettingsRightScroll.get();
+        Runnable refresh = sSettingsPaneRefresh == null ? null : sSettingsPaneRefresh.get();
+        View[] sidebar = sSettingsActiveSidebarView == null ? null : sSettingsActiveSidebarView.get();
+        if (content == null || scroll == null || refresh == null) return;
+
+        View focused = content.findFocus();
+        boolean restoreRight = focused != null;
+        String focusedDescription = focused != null && focused.getContentDescription() != null
+                ? focused.getContentDescription().toString() : null;
+        int previousScroll = scroll.getScrollY();
+        refresh.run();
+        scroll.post(() -> {
+            scroll.scrollTo(0, previousScroll);
+            if (restoreRight && focusedDescription != null) {
+                View target = findControlByDescription(content, focusedDescription);
+                if (target != null && target.isFocusable() && target.requestFocus()) return;
+            }
+            if (sidebar != null && sidebar.length > 0 && sidebar[0] != null) {
+                sidebar[0].requestFocus();
+            }
+        });
+    }
+
+    static void onHostDestroyed(MainActivity activity) {
+        clearHostReferences(activity);
     }
 
     private static void addSectionHeader(LinearLayout root, Typeface font, String title) {
@@ -1471,12 +1684,198 @@ public final class ModernSettingsDialog {
         root.addView(tv);
     }
 
+    private static final class SearchEntry {
+        final String id;
+        final int tabId;
+        final String title;
+        final String summary;
+
+        SearchEntry(String id, int tabId, String title, String summary) {
+            this.id = id;
+            this.tabId = tabId;
+            this.title = title;
+            this.summary = summary == null ? "" : summary;
+        }
+    }
+
+    private static void addSearchEntry(List<SearchEntry> entries, String id, int tabId,
+                                       String title, String summary) {
+        entries.add(new SearchEntry(id, tabId, title, summary));
+    }
+
+    /** Search entries use the same localized labels and summaries displayed by each control. */
+    private static List<SearchEntry> buildSearchEntries(MainActivity activity) {
+        ArrayList<SearchEntry> entries = new ArrayList<>();
+        int locked = ChildModeManager.getLockedApps(activity).size();
+        int hidden = ChildModeManager.getHiddenApps(activity).size();
+        boolean hasUpdate = AppUpdateManager.isUpdateAvailable(activity);
+
+        addSearchEntry(entries, "profile.avatar.upload", TAB_PROFILE,
+                activity.getString(R.string.avatar_upload_qr_action), "");
+        addSearchEntry(entries, "profile.avatar.default", TAB_PROFILE,
+                activity.getString(R.string.avatar_use_default_action), "");
+        addSearchEntry(entries, "profile.rename", TAB_PROFILE, AppLanguage.strEditName(activity), "");
+        ProfileManager.UserProfile activeProfile = ProfileManager.getActiveProfile(activity);
+        for (int i = 0; i < ProfileManager.AVATAR_NAMES.length; i++) {
+            addSearchEntry(entries, "profile.avatar.builtin." + i, TAB_PROFILE,
+                    ProfileManager.AVATAR_NAMES[i],
+                    activity.getString(R.string.active_profile_avatar_header, activeProfile.name));
+        }
+        for (ProfileManager.UserProfile profile : ProfileManager.getAllProfiles(activity)) {
+            addSearchEntry(entries, "profile.profile." + profile.id, TAB_PROFILE,
+                    profile.name, activity.getString(R.string.profile_user_title, profile.name));
+        }
+        addSearchEntry(entries, "profile.add", TAB_PROFILE,
+                activity.getString(R.string.add_profile_card_title), activity.getString(R.string.add_profile_card_summary));
+        addSearchEntry(entries, "profile.child-mode", TAB_PROFILE,
+                activity.getString(R.string.child_mode_switch_title), activity.getString(R.string.child_mode_switch_description));
+        addSearchEntry(entries, "profile.lock-apps", TAB_PROFILE,
+                activity.getString(R.string.lock_apps_count, locked), activity.getString(R.string.lock_apps_count_summary));
+        addSearchEntry(entries, "profile.hide-apps", TAB_PROFILE,
+                activity.getString(R.string.hide_apps_count, hidden), activity.getString(R.string.hide_apps_count_summary));
+        addSearchEntry(entries, "profile.pin", TAB_PROFILE,
+                activity.getString(R.string.change_pin_title), activity.getString(R.string.change_pin_summary));
+
+        addSearchEntry(entries, "home.dock-orientation", TAB_HOME_SCREEN,
+                activity.getString(R.string.dock_orientation_title), activity.getString(R.string.dock_orientation_summary));
+        addSearchEntry(entries, "home.dock-capacity", TAB_HOME_SCREEN,
+                activity.getString(R.string.dock_capacity_title), activity.getString(R.string.dock_capacity_summary));
+        addSearchEntry(entries, "home.prayer-panel", TAB_HOME_SCREEN,
+                AppLanguage.strDailyPrayerPanelTitle(activity), AppLanguage.strDailyPrayerPanelSummary(activity));
+        addSearchEntry(entries, "home.daily-ayah", TAB_HOME_SCREEN,
+                AppLanguage.strDailyAyahTitle(activity), AppLanguage.strDailyAyahSummary(activity));
+        addSearchEntry(entries, "home.interface-sound", TAB_HOME_SCREEN,
+                AppLanguage.strInterfaceSoundTitle(activity), AppLanguage.strInterfaceSoundSummary(activity));
+        addSearchEntry(entries, "home.azan", TAB_HOME_SCREEN,
+                AppLanguage.strAzanSettingsTitle(activity), AppLanguage.strAzanSettingsSummary(activity));
+
+        addSearchEntry(entries, "appearance.wallpaper-collection", TAB_APPEARANCE,
+                activity.getString(R.string.wallpaper_collection_title), activity.getString(R.string.wallpaper_collection_summary));
+        addSearchEntry(entries, "appearance.wallpaper-interval", TAB_APPEARANCE,
+                activity.getString(R.string.wallpaper_interval_title), activity.getString(R.string.wallpaper_interval_summary));
+        addSearchEntry(entries, "appearance.custom-wallpaper", TAB_APPEARANCE,
+                activity.getString(R.string.wallpaper_manage_title_card), activity.getString(R.string.wallpaper_manage_summary_card));
+
+        addSearchEntry(entries, "widgets.location-prayer", TAB_STATUS_WEATHER,
+                activity.getString(R.string.location_prayer_title), activity.getString(R.string.location_prayer_summary));
+        addSearchEntry(entries, "widgets.weather", TAB_STATUS_WEATHER,
+                activity.getString(R.string.weather_widget_title), activity.getString(R.string.weather_widget_summary));
+        addSearchEntry(entries, "widgets.info-actions", TAB_STATUS_WEATHER,
+                activity.getString(R.string.info_actions_title_card), activity.getString(R.string.info_actions_summary_card));
+
+        addSearchEntry(entries, "effects.icon-animation", TAB_EFFECTS,
+                activity.getString(R.string.icon_animation_setting_title), activity.getString(R.string.icon_animation_setting_description));
+        addSearchEntry(entries, "effects.glass", TAB_EFFECTS,
+                activity.getString(R.string.glass_effect_setting_title), activity.getString(R.string.glass_effect_setting_description));
+        addSearchEntry(entries, "effects.weather", TAB_EFFECTS,
+                activity.getString(R.string.weather_animation_setting_title), activity.getString(R.string.weather_animation_setting_description));
+        addSearchEntry(entries, "effects.icon-glow", TAB_EFFECTS,
+                activity.getString(R.string.icon_glow_setting_title), activity.getString(R.string.icon_glow_setting_description));
+
+        addSearchEntry(entries, "standby.upload", TAB_STANDBY,
+                activity.getString(R.string.standby_upload_title), activity.getString(R.string.standby_upload_summary));
+        addSearchEntry(entries, "standby.pick-photos", TAB_STANDBY,
+                activity.getString(R.string.standby_pick_title), activity.getString(R.string.standby_pick_summary));
+        addSearchEntry(entries, "standby.use-photos", TAB_STANDBY,
+                activity.getString(R.string.standby_use_photos_title), activity.getString(R.string.standby_use_photos_summary));
+        if (activity.getStandbyPhotoCount() > 0) {
+            addSearchEntry(entries, "standby.clear-photos", TAB_STANDBY,
+                    activity.getString(R.string.standby_clear_title), activity.getString(R.string.standby_clear_summary));
+        }
+        addSearchEntry(entries, "standby.preview", TAB_STANDBY,
+                activity.getString(R.string.standby_preview_title), activity.getString(R.string.standby_preview_summary));
+
+        addSearchEntry(entries, "device.default-launcher", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.default_launcher_status_title), activity.getString(R.string.default_launcher_status_summary,
+                        activity.getString(R.string.launcher_is_default)));
+        addSearchEntry(entries, "device.home-key", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.home_key_status_title), activity.getString(R.string.home_key_status_summary,
+                        activity.getString(DeviceSettingsStatus.isAccessibilityServiceEnabled(activity, HomeKeyService.class)
+                                ? R.string.device_service_enabled : R.string.device_service_disabled)));
+        addSearchEntry(entries, "device.input-key", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.input_key_status_title), activity.getString(R.string.input_key_status_summary,
+                        activity.getString(DeviceSettingsStatus.isAccessibilityServiceEnabled(activity, InputKeyService.class)
+                                ? R.string.device_service_enabled : R.string.device_service_disabled)));
+        addSearchEntry(entries, "device.notification-access", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.notification_access_title), activity.getString(R.string.notification_access_summary,
+                        activity.getString(DeviceSettingsStatus.isNotificationListenerEnabled(activity, MediaNotificationListener.class)
+                                ? R.string.device_service_enabled : R.string.device_service_disabled)));
+        addSearchEntry(entries, "device.screensaver", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.screensaver_settings_title), activity.getString(R.string.screensaver_settings_summary));
+        addSearchEntry(entries, "device.display-timeout", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.display_timeout_title), activity.getString(R.string.display_timeout_summary));
+        addSearchEntry(entries, "device.restart", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.restart_tv_title), activity.getString(R.string.restart_tv_summary));
+        addSearchEntry(entries, "device.power", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.power_tv_title), activity.getString(R.string.power_tv_summary));
+        addSearchEntry(entries, "device.clear-cache", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.clear_tv_cache_title), activity.getString(R.string.clear_tv_cache_summary));
+        addSearchEntry(entries, "device.language", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.app_language_title), activity.getString(R.string.app_language_summary));
+        String updateTitle = hasUpdate ? activity.getString(R.string.update_available_title)
+                : activity.getString(R.string.check_updates_title);
+        String updateSummary = hasUpdate
+                ? activity.getString(R.string.update_available_summary, AppUpdateManager.getNewVersionName(activity))
+                : activity.getString(R.string.check_updates_summary);
+        addSearchEntry(entries, "device.updates", TAB_DEVICE_SETTINGS, updateTitle, updateSummary);
+        addSearchEntry(entries, "device.android-settings", TAB_DEVICE_SETTINGS,
+                activity.getString(R.string.android_settings_title), activity.getString(R.string.android_settings_summary));
+        return entries;
+    }
+
+    private static String settingsCategoryLabel(MainActivity activity, int tabId) {
+        switch (NavigationState.normalizeSettingsTab(tabId)) {
+            case TAB_PROFILE: return AppLanguage.strProfileTitle(activity);
+            case TAB_HOME_SCREEN: return AppLanguage.strHomeScreen(activity);
+            case TAB_APPEARANCE: return AppLanguage.strAppearance(activity);
+            case TAB_STATUS_WEATHER: return AppLanguage.strStatusBarWeather(activity);
+            case TAB_EFFECTS: return AppLanguage.strVisualEffects(activity);
+            case TAB_STANDBY: return AppLanguage.strStandByMode(activity);
+            case TAB_DEVICE_SETTINGS: return AppLanguage.strDeviceSettings(activity);
+            default: return AppLanguage.strProfileTitle(activity);
+        }
+    }
+
+    private static View findControlBySearchEntry(View root, SearchEntry entry) {
+        if (root == null || entry == null) return null;
+        Object stableId = root.getTag();
+        if (entry.id.equals(stableId)) return root;
+        if (root instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) root;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View found = findControlBySearchEntry(group.getChildAt(i), entry);
+                if (found != null) return found;
+            }
+        }
+        CharSequence description = root.getContentDescription();
+        if (description != null && entry.title.contentEquals(description) && root.isFocusable()) {
+            root.setTag(entry.id);
+            return root;
+        }
+        return null;
+    }
+
+    private static View findControlByDescription(View root, String description) {
+        if (root == null || description == null) return null;
+        CharSequence current = root.getContentDescription();
+        if (current != null && description.contentEquals(current)) return root;
+        if (root instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) root;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View found = findControlByDescription(group.getChildAt(i), description);
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
+
     private static LinearLayout buildCardRow(Context ctx, float density, Typeface font, String title, String subtitle, Runnable action) {
         LinearLayout card = new LinearLayout(ctx);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density));
         card.setFocusable(true);
         card.setClickable(true);
+        card.setContentDescription(title);
 
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(TvUiTokens.SURFACE);
@@ -1536,6 +1935,7 @@ public final class ModernSettingsDialog {
         card.setPadding((int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density), (int) (TvUiTokens.CARD_PADDING_HORIZONTAL_DP * density), (int) (TvUiTokens.CARD_PADDING_VERTICAL_DP * density));
         card.setFocusable(true);
         card.setClickable(true);
+        card.setContentDescription(title);
 
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(TvUiTokens.SURFACE);
