@@ -917,3 +917,25 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Final latest-head CI #1424 / run 42384207367 SUCCESS; both required jobs passed, including 296+ unit tests and release build, repo contract checks, APK diagnostics and artifact publication.
 - Release APK 1,624,997 bytes; SHA-256 8e3183addc092e5bce1b41b09d939fc64682d6b16f595a0e4e1caa0a5f982664. Artifact #13578283307; ZIP 1,424,983 bytes; SHA-256 72014680fd7e7b02cf36ed5029d55be465ac3394d649fc95ee718af05e234d17; expires 14 Nov 2026.
 - APK extracted and verified as Android package. Physical TV visual/remote acceptance still PENDING / NOT RUN; PR #74 OPEN/DRAFT/UNMERGED. No install, ADB, device mutation or merge.
+
+
+## GTVH-HOME-LAYOUT-FIX-001 — inventory (8 November 2026)
+
+| Item | Status / evidence |
+|---|---|
+| Owner video evidence | Received; 23.14s, 1920×1080; pre-fix only |
+| Dock inventory/tray/overflow correction | Existing PR #74/#75; source implemented, PR #75 CI #1441 PASS |
+| Shared Dock/Grid geometry | `DockGeometry.java`; existing tests cover capacities 4/5/6, densities 1/1.5/1.75/2, 1280/1920 viewports |
+| DPAD row progression | Source path present in `MainActivity`; physical remote test pending |
+| Quick Toggle root cause | Confirmed: `alignTopButtons()` Dock-relative translation via Grid/Dock global-layout listeners |
+| Quick Toggle correction | PR #76 removes listeners/method; XML right/safe-frame anchor retained |
+| New regression test | `tests/test_home_layout_bounds_contract.py` |
+| PR #76 branch/head | `fix/home-global-layout-bounds` @ `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01` |
+| PR #76 | OPEN / DRAFT / UNMERGED; base is PR #75 |
+| Exact-head CI #1443 | IN PROGRESS at checkpoint; #1442 first attempt failed due test XPath lookup, corrected in new commit |
+| PR #76 APK size / SHA-256 | PENDING |
+| Post-fix visual evidence | PENDING |
+| Physical Mi TV Stick / remote acceptance | PENDING / NOT RUN |
+| Install / ADB / device mutation / merge | NOT PERFORMED |
+
+- Detailed checkpoint: `HOME_LAYOUT_FIX_2026-11-08.md`.
