@@ -1849,3 +1849,10 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, base latest PR #
 - Artifact #13586419148 verified: ZIP 1,422,343 bytes; APK 1,622,117 bytes; SHA-256 fe7db8ca54be34781b716454256e50da62b5ee3bf168fc211aa7e45095fa95b6. ZIP/APK integrity passed and manifest/DEX/resources table present.
 - Current PR #76 branch head f085c41356e2e5f53ca13f51bc0676bdb82d350a re-applies the same Dock host/padding correction already in PR #75 base; exact-head CI #1450 / 42404262057 is running.
 - CI #1449 APK is a valid candidate for the cumulative runtime tree; no physical visual/remote acceptance yet. Status: PENDING DEVICE ACCEPTANCE; no merge.
+
+### HOME-LAYOUT-FIX-001 — final exact-head technical verification
+
+- PR #76 exact head f085c41356e2e5f53ca13f51bc0676bdb82d350a: CI #1450 / 42404262057 SUCCESS, both required jobs.
+- PR #75 exact head 21bc204a413fce3c527e0e8761d2016bc5dc87c6: CI #1448 SUCCESS, both required jobs.
+- Current cumulative artifact #13585769799 downloaded and verified: ZIP 1,422,487 bytes; APK 1,622,153 bytes; SHA-256 90fe5131a84231d1a725c4eb02b672d94a1c6c1a07f2cda8db710bc7c8ddc135. ZIP/APK integrity passed; AndroidManifest.xml, classes.dex and resources.arsc present.
+- Technical source/test/build/APK gate PASS. Physical Mi TV Stick visual/remote acceptance and post-fix evidence PENDING. No merge or device mutation.
