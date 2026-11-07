@@ -1717,3 +1717,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Changed: `DockGeometry.java`, `MainActivity.java`, `DockDecoration.java`, `DockLayoutModelTest.java`.
 - Exact-head CI run #1439 / `42400927777`: repository tests PASS; Android launcher unit tests/release build still IN PROGRESS at checkpoint. No APK artifact or build PASS claimed.
 - PR #75 remains OPEN/DRAFT/UNMERGED. Physical Mi TV visual/remote acceptance NOT RUN. Do not merge or change default launcher until exact-head CI and physical acceptance pass.
+
+
+### CI/build follow-up — 8 November 2026
+
+- Latest PR #75 head: `c72c07f9af1ee83b43ff19b34f2e704bdc570eea` (includes initial Grid-focus retry and CI artifact publication for PR #75).
+- CI run #1441 / run ID `42401401988`: both jobs SUCCESS. Release unit tests, `assembleRelease`, APK size diagnostics and artifact publication all SUCCESS.
+- Artifact: `glass-tv-home-dock-visual-parity-78b6510fd8f6a4c70d4bb93792abf53f9d5ee542`, artifact ID `13585890269`, ZIP 1,422,728 bytes. Extracted `app-release.apk`: 1,622,469 bytes; SHA-256 `61d5705915802e65fdecab6c7b6b91973b7187c4a276a972704d6ab1bbd242b8`.
+- CI/build gate: PASS. Device/remote validation of horizontal edge alignment, single-row viewport, DPAD Up/Down focus continuity and end-of-list behavior: PENDING. PR #75 remains OPEN/DRAFT/UNMERGED; no default-launcher change.
