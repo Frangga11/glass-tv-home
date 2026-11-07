@@ -143,6 +143,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean lastFocusedDock;
     private int lastDockDecorationCount = -1;
     private boolean lastDockDecorationVertical;
+    private int lastDockDecorationCapacity = -1;
     private static final String HOME_FOCUS_REGION = "home_focus_region";
     private static final String HOME_DOCK_FOCUS_KEY = "home_dock_focus_key";
     private static String lastDockFocusedKey;
@@ -2525,15 +2526,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         int dockCount = dockAdapter.getItemCount();
         if (tray == null) {
-            tray = new DockDecoration(dockCount, density, dockVertical);
+            tray = new DockDecoration(dockCount, density, dockVertical, preferences.capacity);
             tray.setGlider(glider);
             dockRecycler.addItemDecoration(tray);
             lastDockDecorationCount = dockCount;
             lastDockDecorationVertical = dockVertical;
-        } else if (lastDockDecorationCount != dockCount || lastDockDecorationVertical != dockVertical) {
-            tray.update(dockCount, dockVertical);
+            lastDockDecorationCapacity = preferences.capacity;
+        } else if (lastDockDecorationCount != dockCount || lastDockDecorationVertical != dockVertical
+                || lastDockDecorationCapacity != preferences.capacity) {
+            tray.update(dockCount, dockVertical, preferences.capacity);
             lastDockDecorationCount = dockCount;
             lastDockDecorationVertical = dockVertical;
+            lastDockDecorationCapacity = preferences.capacity;
             dockRecycler.invalidateItemDecorations();
         }
 
@@ -2572,7 +2576,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridParams.bottomMargin = 0;
             if (hasDock) {
                 int inner = DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density);
-                gridParams.width = inner;
+                gridParams.width = DockGeometry.horizontalGridWidthPx(inner, preferences.capacity);
                 gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
                 dockParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
                 int tileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
@@ -2581,8 +2585,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
                 // RecyclerView's horizontal LinearLayoutManager starts children at the left edge.
                 // Center the complete visible Dock group inside the P2 safe content width.
+                int dockSlotWidth = DockGeometry.horizontalSlotWidthPx(inner, preferences.capacity);
                 int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
-                        inner, tileWidth, Math.min(dockCount, preferences.capacity), density);
+                        inner, dockSlotWidth, Math.min(dockCount, preferences.capacity));
                 dockRecycler.setTranslationX(dockCenterOffset);
 
                 // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is

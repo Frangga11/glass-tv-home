@@ -18,6 +18,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private int dockSize;
     private final float density;
     private boolean vertical;
+    private int capacity;
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint trayShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidTrayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -32,13 +33,18 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     final RectF area = new RectF();
 
     DockDecoration(int dockSize, float density) {
-        this(dockSize, density, false);
+        this(dockSize, density, false, DockPreferences.DEFAULT_CAPACITY);
     }
 
     DockDecoration(int dockSize, float density, boolean vertical) {
+        this(dockSize, density, vertical, DockPreferences.DEFAULT_CAPACITY);
+    }
+
+    DockDecoration(int dockSize, float density, boolean vertical, int capacity) {
         this.dockSize = dockSize;
         this.density = density;
         this.vertical = vertical;
+        this.capacity = DockPreferences.normalizeCapacity(capacity);
         // Same glass as the top-bar pills (GlassDrawable): an even veil and a shining edge.
         band.setColor(TvUiTokens.GLASS_VEIL_COLOR);
         trayShadowPaint.setColor(0x38000000);
@@ -50,9 +56,10 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         edge = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, 0.5f);
     }
 
-    void update(int dockSize, boolean vertical) {
+    void update(int dockSize, boolean vertical, int capacity) {
         this.dockSize = Math.max(0, dockSize);
         this.vertical = vertical;
+        this.capacity = DockPreferences.normalizeCapacity(capacity);
     }
 
     /** The focus shape: the tray's glass would hide it, so the tray paints it over the glass itself. */
@@ -69,8 +76,13 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
                 outRect.left = DockGeometry.dockItemTopOffsetPx(density);
                 outRect.right = DockGeometry.dockItemBottomOffsetPx(density);
             } else {
-                outRect.left = DockGeometry.dockItemSideOffsetPx(density);
-                outRect.right = DockGeometry.dockItemSideOffsetPx(density);
+                View card = view.findViewById(R.id.card);
+                int tileWidth = card == null ? 0 : card.getLayoutParams().width;
+                int sideInset = DockGeometry.dockItemSideOffsetPx(
+                        parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight(),
+                        tileWidth, capacity);
+                outRect.left = sideInset;
+                outRect.right = sideInset;
                 outRect.top = DockGeometry.dockItemTopOffsetPx(density);
                 outRect.bottom = DockGeometry.dockItemBottomOffsetPx(density);
             }

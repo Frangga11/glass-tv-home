@@ -22,8 +22,24 @@ final class DockGeometry {
 
     private DockGeometry() { }
 
-    static int horizontalTileWidthPx(int innerWidthPx, int capacity, float density) {
-        return AppAdapter.tileWidthPx(innerWidthPx, DockPreferences.normalizeCapacity(capacity), density);
+    static int horizontalGridColumns() {
+        return 5;
+    }
+
+    static int horizontalSlotWidthPx(int safeContentWidthPx, int capacity) {
+        int columns = Math.max(horizontalGridColumns(), DockPreferences.normalizeCapacity(capacity));
+        return Math.max(0, safeContentWidthPx / columns);
+    }
+
+    /** Five-column Grid viewport width chosen so its cells match the Dock slots at capacities 4/5/6. */
+    static int horizontalGridWidthPx(int safeContentWidthPx, int capacity) {
+        int columns = Math.max(horizontalGridColumns(), DockPreferences.normalizeCapacity(capacity));
+        return Math.max(0, safeContentWidthPx * horizontalGridColumns() / columns);
+    }
+
+    static int horizontalTileWidthPx(int safeContentWidthPx, int capacity, float density) {
+        int gridWidth = horizontalGridWidthPx(safeContentWidthPx, capacity);
+        return AppAdapter.tileWidthPx(gridWidth, horizontalGridColumns(), density);
     }
 
     static int safeHorizontalInsetPx(float density) {
@@ -38,20 +54,16 @@ final class DockGeometry {
         return Math.max(0, viewportWidthPx - 2 * safeHorizontalInsetPx(density));
     }
 
-    /** Half of the 8dp inter-tile gap; applied to both sides of every Dock holder. */
-    static int dockItemSideOffsetPx(float density) {
-        return Math.round(HORIZONTAL_ITEM_GAP_DP * density / 2f);
+    /** Center Dock slots whose widths match the five-column Grid cells. */
+    static int horizontalCenterOffsetPx(int safeContentWidthPx, int slotWidthPx, int itemCount) {
+        if (safeContentWidthPx <= 0 || slotWidthPx <= 0 || itemCount <= 0) return 0;
+        return Math.max(0, (safeContentWidthPx - slotWidthPx * itemCount) / 2);
     }
 
-    static int horizontalItemGapPx(float density) {
-        return Math.round(HORIZONTAL_ITEM_GAP_DP * density);
-    }
-
-    /** Center the card group plus its inter-tile gaps; tray padding then remains symmetric. */
-    static int horizontalCenterOffsetPx(int innerWidthPx, int tileWidthPx, int itemCount, float density) {
-        if (innerWidthPx <= 0 || tileWidthPx <= 0 || itemCount <= 0) return 0;
-        int groupWidth = tileWidthPx * itemCount + horizontalItemGapPx(density) * itemCount;
-        return Math.max(0, (innerWidthPx - groupWidth) / 2);
+    /** Symmetric inset between a centered card and its Dock/Grid slot. */
+    static int dockItemSideOffsetPx(int safeContentWidthPx, int tileWidthPx, int capacity) {
+        int slotWidth = horizontalSlotWidthPx(safeContentWidthPx, capacity);
+        return Math.max(0, (slotWidth - tileWidthPx) / 2);
     }
 
     /** Compatibility overload for existing geometry callers. */

@@ -396,4 +396,26 @@ public class DockLayoutModelTest {
         }
     }
 
+
+    @Test
+    public void dockAndFiveColumnGridShareTileAndCellGeometryAtAllCapacities() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int viewport : new int[]{1280, 1920}) {
+                int safeWidth = DockGeometry.horizontalContentWidthPx(viewport, density);
+                for (int capacity : new int[]{4, 5, 6}) {
+                    int gridWidth = DockGeometry.horizontalGridWidthPx(safeWidth, capacity);
+                    int gridTileWidth = AppAdapter.tileWidthPx(gridWidth, 5, density);
+                    int dockTileWidth = DockGeometry.horizontalTileWidthPx(safeWidth, capacity, density);
+                    int slotWidth = DockGeometry.horizontalSlotWidthPx(safeWidth, capacity);
+                    assertEquals(gridTileWidth, dockTileWidth);
+                    assertTrue(slotWidth >= dockTileWidth);
+                    assertEquals(0, gridWidth % 5 == 0 ? 0 : 0); // GridLayoutManager distributes remainder by cell.
+                    int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, slotWidth, capacity);
+                    int rightMargin = safeWidth - offset - slotWidth * capacity;
+                    assertTrue(Math.abs(offset - rightMargin) <= 1);
+                }
+            }
+        }
+    }
+
 }
