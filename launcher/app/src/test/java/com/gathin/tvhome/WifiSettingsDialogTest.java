@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -42,4 +43,22 @@ public class WifiSettingsDialogTest {
         assertFalse(dialog.isShowing());
         assertTrue(returns[0] == 1);
     }
+    @Test public void androidSettingsHandoffRestoresQuickSettingsAfterHostResume() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        final int[] launched = {0};
+        final int[] returned = {0};
+        AlertDialog dialog = WifiSettingsDialog.show(activity,
+                () -> launched[0]++, () -> returned[0]++);
+        assertNotNull(dialog);
+        View settings = dialog.getWindow().getDecorView().findViewWithTag("wifi_open_settings");
+        assertNotNull(settings);
+        assertTrue(settings.performClick());
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertFalse(dialog.isShowing());
+        assertEquals(1, launched[0]);
+        assertEquals(0, returned[0]);
+        WifiSettingsDialog.onHostResumed();
+        assertEquals(1, returned[0]);
+    }
+
 }
