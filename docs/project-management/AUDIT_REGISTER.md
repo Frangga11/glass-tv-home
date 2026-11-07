@@ -1732,8 +1732,8 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 **Corrective change:** Add one geometry function to calculate (viewportWidth - tileWidth × visibleItemCount) / 2, clamp at zero, and translate the horizontal Dock host by that offset. Keep tile-width measurement based on the full viewport; reset translation when switching to vertical orientation or empty Dock. Add regression tests for 4/5/6 capacities across four densities and edge cases.
 
 **Evidence**
-- Latest source HEAD 65108d4160243442922002618e739c898c4cb9e7; PR #74 OPEN/DRAFT/UNMERGED.
-- Exact-head CI is PENDING / NOT CONFIRMED. Run #42384023835 covers the immediately preceding revision only and was in progress at last check.
+- Latest source HEAD b14a7bc3d1e99cf8cf0c74e944c39983d776f341; PR #74 OPEN/DRAFT/UNMERGED.
+- Run #42384023835 failed on the test's exact-pixel rounding assertion; the test was corrected to allow one-pixel parity. Latest-head CI #42384207367 is IN PROGRESS.
 - Physical TV visual acceptance PENDING / NOT RUN; latest centered APK not yet available.
 
 **Disposition: SOURCE CHANGE IMPLEMENTED / QC PENDING.** Do not claim visual PASS until latest-head CI and owner TV photo/remote acceptance pass.
