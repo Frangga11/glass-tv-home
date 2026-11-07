@@ -283,6 +283,26 @@ public final class ChildModeManager {
         return updated;
     }
 
+    private static void verifyPinAttempt(Context ctx, AlertDialog[] dialogHolder,
+            StringBuilder pinBuilder, Runnable updateDots, boolean[] verificationPending,
+            PinCallback callback) {
+        if (verificationPending[0] || pinBuilder.length() != 4) return;
+        verificationPending[0] = true;
+        String candidate = pinBuilder.toString();
+        verifyPinAsync(ctx, candidate, valid -> {
+            verificationPending[0] = false;
+            if (dialogHolder[0] == null || !dialogHolder[0].isShowing()) return;
+            if (valid) {
+                dialogHolder[0].dismiss();
+                if (callback != null) callback.onSuccess();
+            } else {
+                TvFeedback.show(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT);
+                pinBuilder.setLength(0);
+                updateDots.run();
+            }
+        });
+    }
+
     /**
      * Shows a TV-friendly 4-digit PIN dialog with a numeric keypad operable by remote control.
      */
