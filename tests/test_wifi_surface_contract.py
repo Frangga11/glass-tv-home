@@ -31,6 +31,8 @@ class WifiSurfaceContractTest(unittest.TestCase):
     def test_scan_receiver_and_timeout_are_lifecycle_scoped(self):
         self.assertIn("registerReceiver(scanReceiver", DIALOG)
         self.assertIn("unregisterReceiver(scanReceiver)", DIALOG)
+        self.assertIn("registerNetworkCallback(request, wifiNetworkCallback)", DIALOG)
+        self.assertIn("unregisterNetworkCallback(wifiNetworkCallback)", DIALOG)
         self.assertIn("handler.removeCallbacksAndMessages(null)", DIALOG)
         self.assertIn("SCAN_TIMEOUT_MS", DIALOG)
 
