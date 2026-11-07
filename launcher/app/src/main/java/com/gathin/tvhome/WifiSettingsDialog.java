@@ -50,9 +50,7 @@ final class WifiSettingsDialog {
     private final Runnable openSystemWifiSettings;
     private final Runnable returnToParent;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final LinearLayout content;
     private final TextView status;
-    private final TextView networksHeading;
     private final LinearLayout networkRows;
     private final TextView scanState;
     private final TextView rescan;
@@ -120,7 +118,7 @@ final class WifiSettingsDialog {
         scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
         scroll.setClipToPadding(false);
 
-        content = new LinearLayout(activity);
+        LinearLayout content = new LinearLayout(activity);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(density, 24), dp(density, 18), dp(density, 24), dp(density, 18));
         scroll.addView(content, new ScrollView.LayoutParams(
@@ -132,7 +130,7 @@ final class WifiSettingsDialog {
         status.setPadding(0, dp(density, 8), 0, dp(density, 10));
         content.addView(status);
 
-        networksHeading = text(R.string.wifi_available_networks, TvUiTokens.SECTION_TITLE_SP, true, density);
+        TextView networksHeading = text(R.string.wifi_available_networks, TvUiTokens.SECTION_TITLE_SP, true, density);
         content.addView(networksHeading);
         scanState = text(R.string.wifi_scan_idle, TvUiTokens.CARD_SUBTITLE_SP, false, density);
         scanState.setPadding(0, dp(density, 4), 0, dp(density, 6));
@@ -246,6 +244,7 @@ final class WifiSettingsDialog {
             if (manager == null) return;
             NetworkRequest request = new NetworkRequest.Builder()
                     .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                    .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                     .build();
             manager.registerNetworkCallback(request, wifiNetworkCallback);
             networkCallbackRegistered = true;
@@ -566,7 +565,7 @@ final class WifiSettingsDialog {
         try {
             activity.startActivity(new Intent(action));
         } catch (RuntimeException unavailable) {
-            // The primary Wi-Fi handoff is supplied by MainActivity's existing OEM-aware opener.
+            // A firmware may not expose a standalone Location settings activity.
         }
     }
 
