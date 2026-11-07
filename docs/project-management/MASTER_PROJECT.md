@@ -1277,3 +1277,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Final latest-head CI #1424 / run 42384207367 SUCCESS; both required jobs passed, including 296+ unit tests and release build, repo contract checks, APK diagnostics and artifact publication.
 - Release APK 1,624,997 bytes; SHA-256 8e3183addc092e5bce1b41b09d939fc64682d6b16f595a0e4e1caa0a5f982664. Artifact #13578283307; ZIP 1,424,983 bytes; SHA-256 72014680fd7e7b02cf36ed5029d55be465ac3394d649fc95ee718af05e234d17; expires 14 Nov 2026.
 - APK extracted and verified as Android package. Physical TV visual/remote acceptance still PENDING / NOT RUN; PR #74 OPEN/DRAFT/UNMERGED. No install, ADB, device mutation or merge.
+
+## Mi TV Stick startup crash — confirmed root cause and patch (8 November 2026)
+
+- Runtime logcat from owner confirms `FATAL EXCEPTION: main`: `GridLayoutManager does not support stack from end` in `MainActivity.applyDockLayout()`, invoked during `onResume()`.
+- Removed the unsupported `setStackFromEnd` call; did not substitute `reverseLayout`, preserving app adapter ordering and remote-navigation semantics.
+- Fix commit `61d4e429be129263533ecfa75a729bbe0a15833f` on PR #74 branch `fix/home-dock-visual-parity-v2`.
+- CI run `42398810251` was IN_PROGRESS at checkpoint. Exact-head CI and physical Mi TV Stick cold-start/resume verification are mandatory before acceptance. PR #74 remains OPEN/DRAFT/UNMERGED.
