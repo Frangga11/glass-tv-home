@@ -833,3 +833,24 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - Owner branch: fix/home-dock-visual-parity-v2 @ 4ba1d7f14ba26e0c4051fcdf958f289234b6e7ae.
 - Evidence: HOME_DOCK_VISUAL_PARITY_V2_2026-11-07.md.
+
+
+## Patch 4.1 Dock & Liquid Glass adoption — inventory (7 November 2026)
+
+| Gate | Status |
+|---|---|
+| Patch 4.1 Dock fill semantics restored | IMPLEMENTED |
+| Short/empty pin list fills Dock from ordered inventory | IMPLEMENTED / TESTED |
+| Explicit unpinned keys respected | TESTED |
+| Patch 4.1 GlassRim + Window Light | ADOPTED |
+| Patch 4.1 GlassView hardware-layer rim | ADOPTED |
+| DockBreathingBorderView and Dock-only focus wiring | ADOPTED |
+| Exact-head CI #1415 | BOTH REQUIRED JOBS SUCCESS |
+| Test APK | 1,624,741 bytes; SHA-256 23ffb28d48b05f975be4b5bd13aa1086c08e47eef1feb5b8e13916799f32fafc |
+| Artifact | #13576403262; expires 14 Nov 2026 |
+| PR #74 | OPEN / DRAFT / UNMERGED |
+| Physical TV visual/remote acceptance | PENDING / NOT RUN |
+| Install / ADB / device mutation / merge | NOT PERFORMED |
+
+- Owner branch fix/home-dock-visual-parity-v2 @ 239390db27fafcc39b2fefa68ddfa9f0ba30608f.
+- Evidence: PATCH41_DOCK_GLASS_ADOPTION_2026-11-07.md.
