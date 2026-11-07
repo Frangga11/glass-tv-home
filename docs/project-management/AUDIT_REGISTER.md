@@ -1737,3 +1737,7 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - Physical TV visual acceptance PENDING / NOT RUN; latest centered APK not yet available.
 
 **Disposition: SOURCE CHANGE IMPLEMENTED / QC PENDING.** Do not claim visual PASS until latest-head CI and owner TV photo/remote acceptance pass.
+
+- Final latest-head CI #1424 / run 42384207367 SUCCESS; both required jobs passed, including 296+ unit tests and release build, repo contract checks, APK diagnostics and artifact publication.
+- Release APK 1,624,997 bytes; SHA-256 8e3183addc092e5bce1b41b09d939fc64682d6b16f595a0e4e1caa0a5f982664. Artifact #13578283307; ZIP 1,424,983 bytes; SHA-256 72014680fd7e7b02cf36ed5029d55be465ac3394d649fc95ee718af05e234d17; expires 14 Nov 2026.
+- APK extracted and verified as Android package. Physical TV visual/remote acceptance still PENDING / NOT RUN; PR #74 OPEN/DRAFT/UNMERGED. No install, ADB, device mutation or merge.
