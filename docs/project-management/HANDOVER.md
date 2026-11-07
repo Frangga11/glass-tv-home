@@ -1574,3 +1574,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI #1397 / `42357686726`: both required jobs SUCCESS. APK artifact ID `13567869928`, ZIP SHA-256 `2c9b6a3ee8bbfc74971ca8734354fc819dfcdcd97a95499786998856f28c1298`; extracted APK 1,622,565 bytes, SHA-256 `cd2b301f5fb48ffdb6b9cafd74927c5da6515a4ab9aebf6dc47e6db4ddccb4ac`; APK archive integrity PASS. Artifact expires 14 Nov 2026.
 - This is a CI test APK, not a production-signing claim. Physical TV visual/remote acceptance remains PENDING / NOT RUN; no APK installation, ADB, device mutation, merge or retarget was performed.
 - **Next:** controlled Image 2 acceptance on TV, including wallpaper focal position, Ayah/prayer area, Dock capacities 4/5/6, horizontal/vertical orientation, D-pad focus and 1080p geometry. Fix only reproducible scoped defects.
+
+
+## Current resume checkpoint — Image 2 bottom Dock correction (7 November 2026)
+
+- User TV photo exposed that the previous APK did not fix the primary defect: horizontal Dock remained too high. Root cause was legacy `rows_below_dock` positioning plus App Grid padding toward the bottom. Previous APK is superseded.
+- **Corrective source/build: COMPLETE / exact-head CI PASS.** Evidence: `UI_REFRESH_IMAGE2_BOTTOM_DOCK_CORRECTION_2026-11-07.md`.
+- Branch `fix/home-layout-image2-dock-geometry` @ `c3d749db7373052019063f5057ac08f0eda797b0`; PR #73 OPEN/DRAFT/UNMERGED, base G4 exact SHA `7146de58953325fdfc6c98501828676f143e64cf`.
+- Horizontal Dock now anchored to bottom edge with zero bottom margin. App Grid viewport above it uses a capacity-independent reserve based on capacity 4; original XML top inset restored. DPAD navigation now moves Dock-Up to adjacent Grid row and Grid-Down from last row to Dock. Vertical side rail retained.
+- Exact-head CI #1404 / `42358639396`: both required jobs SUCCESS. Artifact #`13568806731`; ZIP SHA-256 `a63aaf7577d15ad2cb2e7a1b8f1461b35027f9531a5e15e7ae492d9ef055e847`; APK size 1,622,545 bytes; APK SHA-256 `3b01c1126043c2e8025e1852d7de5d09812b091986af21e9c1c607188cb926ab`; ZIP integrity PASS. Artifact expires 14 Nov 2026.
+- Physical TV visual/remote acceptance remains PENDING / NOT RUN. No install, ADB, device mutation or merge.
+- **Next:** user acceptance-test this replacement APK and provide a new photo; verify Dock at bottom, 4/5/6 capacity, Grid viewport, DPAD and vertical orientation before claiming visual PASS.
