@@ -1351,3 +1351,7 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #75 CI #1446 succeeded on head 78539148930bc6e3613a03db0dd3997073c725ee. Artifact #13585808852: APK 1,622,497 bytes; SHA-256 38d818902ce3ccf800b8de5cc0428125b91b7e9c27ba81810759a53925c65d0f. ZIP/APK integrity passed.
 - This is a Dock-only intermediate candidate, not the combined PR #76 build. Latest PR #75 head 21bc204... CI #1448 is in progress; PR #76 head ea681545... CI #1447 is in progress with APK publication enabled.
 - Do not claim final CI/APK PASS until #1447 completes and its artifact is downloaded, inspected and hashed. Physical device acceptance remains pending.
+
+### PR #76 base reconciliation
+
+PR #75 advanced to `21bc204a413fce3c527e0e8761d2016bc5dc87c6` with a workflow-only APK publication change. PR #76 is rebased onto this latest base; current head `012fba1c4012c7e4a05de292b69030c17a594d90`, 2 commits ahead / 0 behind, with only MainActivity and its regression test changed. PR #76 is OPEN/DRAFT/UNMERGED. Exact-head CI #1449 / `42404084112` is in progress; no APK/size/checksum or physical acceptance claimed yet.
