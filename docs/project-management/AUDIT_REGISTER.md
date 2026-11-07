@@ -1838,3 +1838,7 @@ PR #75 advanced to `21bc204a413fce3c527e0e8761d2016bc5dc87c6` with a workflow-on
 - PR #76 artifact #13586598248 downloaded; ZIP 1,422,482 bytes. Extracted APK 1,622,153 bytes; SHA-256 12dc35e31fc2e67bcba1e0ddcee548937f5f23f9bf90d654316fc6fdc34f17c7. ZIP/APK integrity checks passed; AndroidManifest.xml, classes.dex and resources.arsc present.
 - This exact cumulative test build includes the Dock host/padding correction, one-row overflow/DPAD path and Quick Toggles safe-frame correction.
 - Technical disposition: SOURCE / UNIT / CI / BUILD / APK QC PASS. Physical Mi TV Stick visual/remote acceptance remains PENDING; do not claim final visual PASS or merge until owner acceptance.
+
+### HOME-QUICK-TOGGLE-ALIGN-001 — final current checkpoint
+
+Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, base latest PR #75 `21bc204a413fce3c527e0e8761d2016bc5dc87c6`; compare 3 ahead / 0 behind. The reapplication onto latest MainActivity explicitly preserves the Dock's newer symmetric RecyclerView padding and unshifted tray host, while removing the Dock-relative top menu shift and listeners. Exact-head CI #1450 repository job PASS (137 Python tests, one skip); Android unit tests/release build in progress. APK, screenshots and physical acceptance pending. PR #76 OPEN/DRAFT/UNMERGED. Decision PARTIAL PASS; no merge.
