@@ -2122,9 +2122,18 @@ public final class ModernSettingsDialog {
                         confirmPin.requestFocus();
                         return;
                     }
-                    ChildModeManager.setPin(activity, first);
-                    dialog.dismiss();
-                    TvFeedback.show(activity, R.string.pin_updated, Toast.LENGTH_SHORT);
+                    Button saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    saveButton.setEnabled(false);
+                    ChildModeManager.setPinAsync(activity, first, saved -> {
+                        if (!dialog.isShowing()) return;
+                        saveButton.setEnabled(true);
+                        if (saved) {
+                            dialog.dismiss();
+                            TvFeedback.show(activity, R.string.pin_updated, Toast.LENGTH_SHORT);
+                        } else {
+                            TvFeedback.show(activity, R.string.profile_save_failed, Toast.LENGTH_LONG);
+                        }
+                    });
                 }));
                 dialog.show();
                 TvDialogStyle.apply(dialog, activity, 520, 0);
