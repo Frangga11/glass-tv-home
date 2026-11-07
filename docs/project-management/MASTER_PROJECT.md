@@ -1366,3 +1366,10 @@ PR #75 advanced to `21bc204a413fce3c527e0e8761d2016bc5dc87c6` with a workflow-on
 ### Current status — GTVH-HOME-LAYOUT-FIX-001
 
 Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 `21bc204a413fce3c527e0e8761d2016bc5dc87c6`, 3 commits ahead / 0 behind. The latest PR #75 Dock host centering change is preserved; PR #76 removes only the Dock-relative Quick Toggle shift and adds its regression contract. CI #1450 repository job passed (137 Python tests, 1 skip); Android unit tests/release build and APK publication remain in progress. Physical visual/remote acceptance not run. PR #76 OPEN/DRAFT/UNMERGED. Decision: PARTIAL PASS.
+
+### GTVH-HOME-LAYOUT-FIX-001 — cumulative candidate ready for device acceptance
+
+- PR #76 CI #1449 passed both required jobs on head 012fba1c4012c7e4a05de292b69030c17a594d90, based on PR #75 head 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+- Verified artifact #13586419148: APK 1,622,117 bytes; SHA-256 fe7db8ca54be34781b716454256e50da62b5ee3bf168fc211aa7e45095fa95b6; ZIP/APK integrity passed.
+- Current PR #76 head f085c41356e2e5f53ca13f51bc0676bdb82d350a re-applies the Dock host/padding correction already in its base; CI #1450 is the exact-head synchronization check in progress.
+- Technical source/test/build/APK gate passed on the cumulative runtime tree. Physical Mi TV Stick visual/remote acceptance remains pending. Status: PENDING DEVICE ACCEPTANCE.
