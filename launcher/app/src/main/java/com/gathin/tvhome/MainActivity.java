@@ -3838,6 +3838,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void updateWifiLabel() {
+        WifiSettingsDialog.onNetworkStateChanged();
         if (btnWifi.getVisibility() == View.GONE) return;   // show_network_pill off
         String text = getString(R.string.wifi);
         boolean vpn = false, online = false;
