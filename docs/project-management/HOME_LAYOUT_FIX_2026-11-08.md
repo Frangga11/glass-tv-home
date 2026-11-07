@@ -107,3 +107,38 @@ No ADB command, APK installation, launcher default change, device setting change
 6. Only after all technical checks and physical visual/remote acceptance pass may the work be marked PASS. If technical checks pass but physical acceptance is still outstanding, use PENDING DEVICE ACCEPTANCE.
 
 **Decision at this checkpoint:** PARTIAL IMPLEMENTATION / QC PENDING. No merge authorized.
+
+## 8. Follow-up source audit — Dock host and icon centering
+
+A second source-level review found that the earlier aggregate-centering correction applied dockRecycler.setTranslationX(dockCenterOffset). DockDecoration draws the full-width tray in RecyclerView-local coordinates, so translating the RecyclerView also translated the tray host, not only the icon group. The host's position therefore was not independent from the centering offset.
+
+**Correction committed on PR #75 source branch**
+- Center the horizontal Dock icon group with symmetric RecyclerView start/end padding; keep the Dock host translation at zero so the tray remains anchored to the Home content frame.
+- Reset centering padding when switching to vertical orientation or when the Dock is empty.
+- In DockAdapter, calculate horizontal tile and slot widths from the full viewport width, not the reduced content width after centering padding. This preserves icon size and slot geometry.
+- Add horizontalDockPaddingCentersIconsWithoutMovingTheTrayHost() coverage for 1..capacity visible items, capacities 4/5/6 and 1280/1920 viewport widths.
+- Keep the existing one-row Grid viewport and DPAD row progression unchanged.
+- Extend CI artifact publication to include PR #76 so its exact-head APK can be produced.
+
+**Latest PR #75 source state**
+- Branch: fix/home-dock-alignment-row-scroll.
+- Latest commit at this checkpoint: 21bc204a413fce3c527e0e8761d2016bc5dc87c6.
+- Additional changed files: DockAdapter.java, MainActivity.java, DockLayoutModelTest.java, and .github/workflows/ci.yml.
+- CI run #1446 / 42403799908 was started on the immediately preceding source head 78539148930bc6e3613a03db0dd3997073c725ee; Lists/tools/docs passed while Android unit tests and release build were still running. The workflow-publication update is on the newer head 21bc204...; no exact-head result or APK is yet claimed for that head.
+
+## 9. Quick Toggles follow-up — current CI state
+
+- PR #76 source branch remains fix/home-global-layout-bounds @ cf9d661dc7e9d0520608dc771aed2b9d75bb1a01.
+- CI run #1443 / 42403684594 completed SUCCESS; both required jobs passed. The artifact step was skipped because the workflow at that time only published APKs for PR #74/#75.
+- The PR #75 base branch has since advanced beyond c72c07f... with the Dock host/padding correction and artifact-workflow update. PR #76 therefore requires a fresh exact cumulative CI run before its result can be treated as current.
+- CI artifact publication now includes PR #76, but no PR #76 APK, byte size or SHA-256 is available yet.
+
+## 10. Remaining evidence and acceptance
+
+- The video is pre-fix evidence only; no post-fix visual capture exists.
+- No physical Mi TV Stick installation, cold-start/resume, DPAD, focus, Quick Toggle bounds, overscan or Home-composition acceptance has been performed.
+- The video shows only Google Play in the lower tray. Source defaults to five Dock slots and fills free slots from ordered app inventory, except explicitly unpinned apps. Do not override persisted pin/unpin choices speculatively; verify the device's actual Dock inventory during controlled acceptance.
+- No APK from the current exact PR #75/#76 cumulative head is available yet. The older PR #75 artifact from head c72c07f... is baseline-only and must not be used as evidence for these later source changes.
+- No merge, ADB, APK installation, default-launcher change or device mutation has been performed.
+
+**Updated decision:** IMPLEMENTATION IN PROGRESS / EXACT-HEAD CI PENDING / DEVICE ACCEPTANCE PENDING. No merge authorized.
