@@ -3164,6 +3164,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
+                if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
+                    // First overflow row sits immediately above the horizontal Dock.
+                    // Returning Up restores the Dock as the idle Home surface.
+                    focusDockTile(DockLayoutModel.dockPositionForGrid(
+                            position, false, COLUMNS, dockAdapter.getItemCount()));
+                    return true;
+                }
                 if (!dockVertical) {
                     if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
                             && weatherAirQualityView.requestFocus()) return true;
