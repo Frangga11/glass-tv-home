@@ -34,6 +34,9 @@ final class PinCredentialStore {
         if (context == null) return true;
         SharedPreferences prefs = prefs(context);
         migrateLegacyPin(prefs);
+        if (prefs.contains(LEGACY_KEY_PIN)) {
+            return DEFAULT_PIN.equals(prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN));
+        }
         if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) return true;
         return verifyStoredPin(prefs, DEFAULT_PIN);
     }
@@ -43,7 +46,9 @@ final class PinCredentialStore {
         SharedPreferences prefs = prefs(context);
         migrateLegacyPin(prefs);
         if (!prefs.contains(KEY_SALT) && !prefs.contains(KEY_HASH)) {
-            return DEFAULT_PIN.equals(entered);
+            String legacyPin = prefs.contains(LEGACY_KEY_PIN)
+                    ? prefs.getString(LEGACY_KEY_PIN, DEFAULT_PIN) : DEFAULT_PIN;
+            return legacyPin != null && legacyPin.equals(entered);
         }
         return verifyStoredPin(prefs, entered);
     }
