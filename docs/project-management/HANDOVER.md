@@ -1623,3 +1623,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Branch fix/home-dock-visual-parity-v2 @ 2d1f744a4b77406712e7868a7e7c6747a3bb88ed; PR #74 OPEN/DRAFT/UNMERGED.
 - Exact-head CI #1416 / 42379710925 both jobs SUCCESS. APK 1,624,733 bytes; SHA-256 5da75cfd30956224bb9bf7c61ced34a11068356d83227cdb28d2fd9fb6d00684; artifact #13577033231.
 - SOURCE-HOST QC PASS / READY FOR CONTROLLED TV ACCEPTANCE. New device test pending; no install, ADB, device mutation or merge. Evidence: PATCH41_DOCK_GLASS_ADOPTION_2026-11-07.md.
+
+
+## Patch 4.1 overflow-app recovery — 7 November 2026
+
+- Re-audit confirmed PR #74 made non-Dock apps unreachable in horizontal mode: Grid was hidden and DPAD Down from Dock was consumed. This explains the user's report that remaining apps disappeared.
+- Restored an on-demand overflow path: horizontal Grid remains hidden at idle; DPAD Down reveals it and focuses the aligned app; DPAD Up from first Grid row returns to Dock; DPAD Up from Dock returns to top shelf. Returning focus to Dock collapses Grid. Stable-key focus restoration now supports horizontal overflow apps.
+- Source branch fix/home-dock-visual-parity-v2 @ 48f07a983ebee4370bbf13a80f85edd947c2eb31; PR #74 OPEN/DRAFT/UNMERGED.
+- Added horizontal Dock/Grid navigation mapping unit test. Exact-head CI run 42382202545 was IN PROGRESS at this checkpoint; no PASS claim. Physical TV acceptance NOT RUN. No TV install, ADB, device mutation or merge.
+- Detailed audit and acceptance gates: HOME_DOCK_PATCH41_RECOVERY_2026-11-07.md.
