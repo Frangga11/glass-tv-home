@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -62,7 +63,25 @@ final class WifiSettingsDialog {
     private final AlertDialog dialog;
     private final List<View> focusOrder = new ArrayList<>();
     private boolean receiverRegistered;
+    private boolean networkCallbackRegistered;
     private boolean scanPending;
+
+    private final ConnectivityManager.NetworkCallback wifiNetworkCallback =
+            new ConnectivityManager.NetworkCallback() {
+        @Override public void onAvailable(Network network) { postNetworkRefresh(); }
+        @Override public void onLost(Network network) { postNetworkRefresh(); }
+        @Override public void onCapabilitiesChanged(Network network, NetworkCapabilities capabilities) {
+            postNetworkRefresh();
+        }
+    };
+
+    private void postNetworkRefresh() {
+        handler.post(() -> {
+            if (!dialog.isShowing() || activity.isFinishing() || activity.isDestroyed()) return;
+            updatePrerequisites();
+            showCachedResults();
+        });
+    }
     private Runnable pendingAfterDismiss;
     private final Runnable scanTimeout = this::onScanTimeout;
 
@@ -148,6 +167,7 @@ final class WifiSettingsDialog {
         dialog.setOnDismissListener(d -> {
             handler.removeCallbacksAndMessages(null);
             unregisterScanReceiver();
+            unregisterNetworkCallback();
             if (active.get() == this) active.clear();
             if (returnToParent != null && !activity.isFinishing() && !activity.isDestroyed()) {
                 returnToParent.run();
@@ -165,6 +185,7 @@ final class WifiSettingsDialog {
             View initial = firstFocusableControl();
             if (initial != null) initial.requestFocus();
             registerScanReceiver();
+            registerNetworkCallback();
             requestScan();
         });
     }
@@ -216,6 +237,32 @@ final class WifiSettingsDialog {
         } catch (RuntimeException ignored) {
             scanState.setText(R.string.wifi_scan_unavailable);
         }
+    }
+
+    private void registerNetworkCallback() {
+        if (networkCallbackRegistered) return;
+        try {
+            ConnectivityManager manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (manager == null) return;
+            NetworkRequest request = new NetworkRequest.Builder()
+                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                    .build();
+            manager.registerNetworkCallback(request, wifiNetworkCallback);
+            networkCallbackRegistered = true;
+        } catch (RuntimeException unavailable) {
+            // Status still refreshes on resume and after scan results.
+        }
+    }
+
+    private void unregisterNetworkCallback() {
+        if (!networkCallbackRegistered) return;
+        try {
+            ConnectivityManager manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (manager != null) manager.unregisterNetworkCallback(wifiNetworkCallback);
+        } catch (RuntimeException ignored) {
+            // The system may already have detached callbacks during Activity teardown.
+        }
+        networkCallbackRegistered = false;
     }
 
     private void unregisterScanReceiver() {
