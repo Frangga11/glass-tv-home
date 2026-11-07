@@ -39,6 +39,9 @@ class WifiSurfaceContractTest(unittest.TestCase):
     def test_network_selection_hands_off_to_android_settings(self):
         self.assertIn("() -> dismissThen(openSystemWifiSettings)", DIALOG)
         self.assertIn("Settings.ACTION_WIFI_SETTINGS", MAIN)
+        self.assertIn("deferParentReturn = action != null", DIALOG)
+        self.assertIn("pendingReturn = this", DIALOG)
+        self.assertIn("waiting.notifyReturnToParent()", DIALOG)
 
     def test_focus_graph_and_back_dismissal_are_explicit(self):
         for edge in ("setNextFocusUpId", "setNextFocusDownId",
