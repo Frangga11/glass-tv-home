@@ -1773,3 +1773,21 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - Latest exact-head workflow artifact #13584279494 downloaded and inspected. ZIP: 1,425,448 bytes; contains `app-release.apk` of 1,625,545 bytes. APK SHA-256: `0f65ef8b7a97b334aeaff5b0493cbaa73400531f3b5d1618ce24c1b06d66a385`. File identifies as an Android package with APK Signing Block.
 - Artifact is the latest successful build available for this exact source HEAD; it was downloaded and extracted to provide the APK. No new workflow_dispatch was executed; PR-branch workflow has no manual dispatch trigger.
 - Source/host QC: PASS. Physical Mi TV Stick cold start, resume, DPAD, Dock/Grid visibility, orientation and OEM visual acceptance: PENDING / NOT RUN. This artifact is a test candidate, not a final release. Do not merge PR #74 or change default launcher until physical acceptance and remaining audits pass.
+
+
+## HOME-DOCK-ALIGNMENT-ROW-SCROLL-001 — owner video follow-up (8 November 2026)
+
+**User evidence:** owner-provided Mi TV video shows the horizontal Dock tray visibly narrower than the Home information shelves. After DPAD Down, a separate app row appears floating in the middle while the Dock remains fixed below it; this is not the requested replacement/scroll behavior.
+
+**Source findings and changes**
+- The Dock host was already nested inside `mainContent` with its own 56dp horizontal content inset, but `DockGeometry.horizontalContentWidthPx` subtracted another 48dp on both sides. Removed this duplicate inset.
+- The Islamic shelf uses a 48dp end margin while the left Home content starts at 56dp. Extended the horizontal Dock host 8dp to the right, anchored its left edge to the Home content start, and expanded the horizontal glass tray to the full Dock host width. Dock icons remain centered in the tray.
+- Horizontal overflow Grid previously filled the entire available vertical space and DPAD Down selected the last Grid row adjacent to the Dock. Changed it to reveal the first overflow row directly above the Dock and limit the visible Grid viewport to one app row. DPAD Down advances by one Grid row and scrolls it into the same viewport; DPAD Up returns to the previous row and then the matching Dock slot.
+- Geometry is recalculated on Grid expand/collapse. Added tests for full-width content geometry and one-row viewport sizing.
+
+**Implementation evidence**
+- Branch `fix/home-dock-alignment-row-scroll`; Draft PR #75 stacked on PR #74 branch `fix/home-dock-visual-parity-v2`.
+- Current source HEAD `260bb1cf14a284f6f67a21005a056eb053942516`.
+- Changed: `DockGeometry.java`, `MainActivity.java`, `DockDecoration.java`, `DockLayoutModelTest.java`.
+- Exact-head CI run #1439 / `42400927777`: repository tests PASS; Android launcher unit tests/release build still IN PROGRESS at checkpoint. No APK artifact or build PASS claimed.
+- PR #75 remains OPEN/DRAFT/UNMERGED. Physical Mi TV visual/remote acceptance NOT RUN. Do not merge or change default launcher until exact-head CI and physical acceptance pass.
