@@ -187,7 +187,7 @@ final class QuickSettingsDialog {
         QuickSettingsFocusGraph.connect(controls);
 
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                .setView(scroll, 0, 0, 0, 0)
+                .setView(scroll)
                 .create();
         dialogHolder[0] = dialog;
         dialog.setCancelable(true);
