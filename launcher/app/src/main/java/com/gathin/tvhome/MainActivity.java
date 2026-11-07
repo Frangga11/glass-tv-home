@@ -2027,7 +2027,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Collapse the overflow Grid only after focus has actually reached a Dock tile.
         if (!dockVertical && horizontalGridExpanded) {
             horizontalGridExpanded = false;
-            grid.setVisibility(View.GONE);
+            applyDockLayout();
         }
         handleTileFocused(key, position, card, true);
     }
@@ -3352,6 +3352,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // A hidden RecyclerView cannot receive focus. Reveal it, wait for layout,
             // then resolve the requested item by its current adapter position.
             horizontalGridExpanded = true;
+            applyDockLayout();
             grid.setVisibility(View.VISIBLE);
             grid.requestLayout();
             grid.post(() -> focusTile(position));
