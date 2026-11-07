@@ -343,10 +343,10 @@ public class DockLayoutModelTest {
         for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
             int innerWidth = 1920;
             for (int capacity : new int[]{4, 5, 6}) {
-                int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
+                int slotWidth = DockGeometry.horizontalSlotWidthPx(innerWidth, capacity);
                 int count = capacity;
-                int offset = DockGeometry.horizontalCenterOffsetPx(innerWidth, tileWidth, count);
-                int right = offset + tileWidth * count;
+                int offset = DockGeometry.horizontalCenterOffsetPx(innerWidth, slotWidth, count);
+                int right = offset + slotWidth * count;
                 int rightMargin = innerWidth - right;
                 assertTrue(offset >= 0);
                 assertTrue(rightMargin >= 0);
@@ -370,9 +370,9 @@ public class DockLayoutModelTest {
                 int safeWidth = DockGeometry.horizontalContentWidthPx(viewport, density);
                 assertEquals(Math.round(96f * density), viewport - safeWidth);
                 for (int capacity : new int[]{4, 5, 6}) {
-                    int tileWidth = DockGeometry.horizontalTileWidthPx(safeWidth, capacity, density);
-                    int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, tileWidth, capacity, density);
-                    int groupWidth = capacity * (tileWidth + DockGeometry.horizontalItemGapPx(density));
+                    int slotWidth = DockGeometry.horizontalSlotWidthPx(safeWidth, capacity);
+                    int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, slotWidth, capacity);
+                    int groupWidth = capacity * slotWidth;
                     int rightMargin = safeWidth - offset - groupWidth;
                     assertTrue(Math.abs(offset - rightMargin) <= 1);
                 }
@@ -409,7 +409,6 @@ public class DockLayoutModelTest {
                     int slotWidth = DockGeometry.horizontalSlotWidthPx(safeWidth, capacity);
                     assertEquals(gridTileWidth, dockTileWidth);
                     assertTrue(slotWidth >= dockTileWidth);
-                    assertEquals(0, gridWidth % 5 == 0 ? 0 : 0); // GridLayoutManager distributes remainder by cell.
                     int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, slotWidth, capacity);
                     int rightMargin = safeWidth - offset - slotWidth * capacity;
                     assertTrue(Math.abs(offset - rightMargin) <= 1);

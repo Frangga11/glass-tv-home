@@ -17,7 +17,6 @@ final class DockGeometry {
     private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
     private static final float SAFE_HORIZONTAL_MARGIN_DP = 48f;
     private static final float SAFE_VERTICAL_MARGIN_DP = 27f;
-    private static final float HORIZONTAL_ITEM_GAP_DP = 8f;
     private static final float SHELF_TO_TRAY_GAP_DP = 36f;
 
     private DockGeometry() { }

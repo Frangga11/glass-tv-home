@@ -143,7 +143,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean lastFocusedDock;
     private int lastDockDecorationCount = -1;
     private boolean lastDockDecorationVertical;
-    private int lastDockDecorationCapacity = -1;
     private static final String HOME_FOCUS_REGION = "home_focus_region";
     private static final String HOME_DOCK_FOCUS_KEY = "home_dock_focus_key";
     private static String lastDockFocusedKey;
@@ -2526,18 +2525,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         int dockCount = dockAdapter.getItemCount();
         if (tray == null) {
-            tray = new DockDecoration(dockCount, density, dockVertical, preferences.capacity);
+            tray = new DockDecoration(dockCount, density, dockVertical);
             tray.setGlider(glider);
             dockRecycler.addItemDecoration(tray);
             lastDockDecorationCount = dockCount;
             lastDockDecorationVertical = dockVertical;
-            lastDockDecorationCapacity = preferences.capacity;
-        } else if (lastDockDecorationCount != dockCount || lastDockDecorationVertical != dockVertical
-                || lastDockDecorationCapacity != preferences.capacity) {
-            tray.update(dockCount, dockVertical, preferences.capacity);
+        } else if (lastDockDecorationCount != dockCount || lastDockDecorationVertical != dockVertical) {
+            tray.update(dockCount, dockVertical);
             lastDockDecorationCount = dockCount;
             lastDockDecorationVertical = dockVertical;
-            lastDockDecorationCapacity = preferences.capacity;
             dockRecycler.invalidateItemDecorations();
         }
 
