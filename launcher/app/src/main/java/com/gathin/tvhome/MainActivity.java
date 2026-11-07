@@ -1681,6 +1681,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updatePrayerTimes();
         updateDateAndPeriod();
         updateWifiLabel();
+        ModernSettingsDialog.onHostResumed(this);
         updateWeatherAqi();
         WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
         updateIslamicShelf();
@@ -1895,6 +1896,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     protected void onDestroy() {
         super.onDestroy();
         WifiSettingsDialog.onHostDestroyed();
+        ModernSettingsDialog.onHostDestroyed(this);
         if (sInstance != null && sInstance.get() == this) {
             sInstance = null;
         }
@@ -3843,6 +3845,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void updateWifiLabel() {
         WifiSettingsDialog.onNetworkStateChanged();
+        ModernSettingsDialog.refreshNetworkStatus(this);
         if (btnWifi.getVisibility() == View.GONE) return;   // show_network_pill off
         String text = getString(R.string.wifi);
         boolean vpn = false, online = false;
