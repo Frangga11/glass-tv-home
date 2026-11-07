@@ -1535,10 +1535,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 ## Current resume checkpoint — UI Refresh G3E complete (7 November 2026)
 
 - **G3E Wi-Fi: COMPLETE / SOURCE-HOST QC PASS.** Canonical checkpoint: `UI_REFRESH_G3E_CHECKPOINT_2026-11-07.md`; audit: `UI_REFRESH_G3E_AUDIT_2026-11-07.md`.
-- Owner branch `feature/g3e-wifi` exact HEAD `89d044152b7d8460884466deb5baa47126f48027`; PR #70 OPEN / DRAFT / UNMERGED, based on G3D exact HEAD `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`. G3D PR #69 remains unchanged.
+- Owner branch `feature/g3e-wifi` exact HEAD `9125043e24b8f13232e41193ba5fe10e1821f7cd`; PR #70 OPEN / DRAFT / UNMERGED, based on G3D exact HEAD `bbc7b240d2ad7bfc9d22dbaf3437f03b5953bcf8`. G3D PR #69 remains unchanged.
 - V05 Wi-Fi status/list/rescan/system-settings surface implemented. Android owns authentication, saved networks, connection/disconnection and radio control. MainActivity's existing network-state owner is reused; no duplicate network callback.
 - Fine-location permission, Location-service prerequisite, scan throttling/timeout/empty/error states, receiver lifecycle, D-pad/Back, row focus restoration and parent return after Android Settings are covered. Default/ID/EN resources are present.
-- Exact-head CI #1362 / `42346091802`: both required jobs SUCCESS; 127 Python tests; app/installer `testReleaseUnitTest` and `assembleRelease` PASS. APK diagnostic 1,617,293 bytes (+8,920 / ~0.55% vs G3D), informational under D-023; no artifact published.
+- Exact-head CI #1363 / `42346491017`: both required jobs SUCCESS; 127 Python tests; app/installer `testReleaseUnitTest` and `assembleRelease` PASS. APK diagnostic 1,617,373 bytes (+9,000 / ~0.56% vs G3D), informational under D-023; no artifact published.
 - `WifiManager.startScan()` deprecation/throttling is a known Android platform risk; active scanning is best-effort and Android Settings remains fallback.
 - Physical Android TV/Mi TV Stick, remote D-pad/Back, real permission/Location prompts, scan results/throttling, OEM Settings handoff, connection/authentication/disconnection and visual acceptance remain PENDING / NOT RUN. No APK install, ADB, device mutation, merge or integration/main change.
 - **Next resume: G3F — Global Settings.** Start with read-only audit against its approved G1 V6 design, G1/G2 shared dialog/focus contracts and actual current E01 source. Do not reopen G3E without reproducible defect evidence.
