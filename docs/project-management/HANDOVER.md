@@ -1737,3 +1737,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Added `tests/test_home_layout_bounds_contract.py`. CI #1442 exposed an ElementTree XPath lookup failure in the new test; corrected to namespaced-ID iteration. Exact-head CI #1443 / `42403684594` was IN PROGRESS at checkpoint. No PR #76 APK or checksum available yet.
 - Physical Mi TV Stick install/remote/visual acceptance NOT RUN. No ADB, launcher-default change, device mutation or merge. Do not mark visual PASS from source/CI alone.
 - Detailed report: `docs/project-management/HOME_LAYOUT_FIX_2026-11-08.md`.
+
+### PR #76 CI and APK publication follow-up — 8 November 2026
+
+- Exact-head source/test commit `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`: CI run #1443 / `42403684594` SUCCESS, both required jobs. Python suite: 137 tests, 1 intentional skip; Android unit tests and release build passed.
+- Run #1443 produced no artifact because the existing upload step was scoped to PR #74/#75. Updated `.github/workflows/ci.yml` to include PR #76 and publish artifact `glass-tv-home-layout-fix-${{ github.sha }}`.
+- Latest PR #76 head is now `ea681545bbf356105683ef2c7da6664e29a83723` (workflow-only addition on top of the passing source/test head). Exact-head CI run #1447 / `42403880493` is in progress to rebuild and publish the APK.
+- Until run #1447 succeeds and the artifact is verified, PR #76 APK size/SHA-256 remain PENDING. PR #76 remains Draft/unmerged; physical TV acceptance remains NOT RUN.
