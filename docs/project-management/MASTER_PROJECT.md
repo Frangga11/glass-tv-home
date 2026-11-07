@@ -1355,3 +1355,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 ### PR #76 base reconciliation
 
 PR #75 advanced to `21bc204a413fce3c527e0e8761d2016bc5dc87c6` with a workflow-only APK publication change. PR #76 is rebased onto this latest base; current head `012fba1c4012c7e4a05de292b69030c17a594d90`, 2 commits ahead / 0 behind, with only MainActivity and its regression test changed. PR #76 is OPEN/DRAFT/UNMERGED. Exact-head CI #1449 / `42404084112` is in progress; no APK/size/checksum or physical acceptance claimed yet.
+
+### GTVH-HOME-LAYOUT-FIX-001 — cumulative CI/APK gate complete (8 November 2026)
+
+- PR #75 latest head 21bc204a413fce3c527e0e8761d2016bc5dc87c6: CI #1448 SUCCESS, both jobs; artifact #13586239278.
+- PR #76 latest head ea681545bbf356105683ef2c7da6664e29a83723: CI #1447 SUCCESS, both jobs; artifact #13586598248.
+- Verified cumulative PR #76 APK: 1,622,153 bytes; SHA-256 12dc35e31fc2e67bcba1e0ddcee548937f5f23f9bf90d654316fc6fdc34f17c7. ZIP and APK integrity pass; manifest, DEX and resources table present.
+- Source, unit tests, CI, release build and APK verification: PASS. Physical Mi TV Stick visual/remote acceptance: PENDING. Final project status: PENDING DEVICE ACCEPTANCE; no merge or device mutation.
