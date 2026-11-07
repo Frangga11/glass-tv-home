@@ -2141,8 +2141,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 // Reveal the overflow inventory only on demand. It remains part of the
                 // same source inventory and is reachable without cluttering the idle Home.
-                int target = DockLayoutModel.gridPositionAboveDock(
-                        position, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
+                // The first overflow row sits directly above the Dock. Later rows replace it
+                // through the one-row RecyclerView viewport as the user presses DPAD Down.
+                int target = DockLayoutModel.gridPositionForDock(
+                        position, false, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
                 if (target >= 0) focusTile(target);
                 return true;
             }
@@ -2587,10 +2589,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
             if (hasDock) {
-                int inner = DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density);
+                // Match the Home shelves: mainContent already supplies the left 56dp inset.
+                // The Islamic shelf ends 8dp farther right, so the Dock host gets the same
+                // asymmetric +8dp extension rather than another symmetric safe inset.
+                int dockViewportWidth = gridWrap.getWidth() + Math.round(8 * density);
+                int inner = DockGeometry.horizontalContentWidthPx(dockViewportWidth, density);
                 gridParams.width = DockGeometry.horizontalGridWidthPx(inner, preferences.capacity);
                 gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-                dockParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                dockParams.gravity = Gravity.BOTTOM | Gravity.START;
+                dockParams.width = dockViewportWidth;
+                dockParams.rightMargin = -Math.round(8 * density);
                 int tileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
                 int tileHeight = DockGeometry.tileHeightPx(tileWidth);
                 int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
@@ -2605,12 +2613,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
                 // the largest supported tile and therefore the stable reservation baseline.
                 gridParams.bottomMargin = DockGeometry.horizontalGridBottomMarginPx(tileHeight, density);
+                // Show exactly one app row above the fixed Dock. DPAD Down scrolls the next
+                // row into this same viewport instead of exposing a second floating row.
+                gridParams.height = horizontalGridExpanded
+                        ? DockGeometry.horizontalGridViewportHeightPx(tileWidth, density, gridBasePaddingTop)
+                        : ViewGroup.LayoutParams.MATCH_PARENT;
 
-                dockParams.width = inner;
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
-                dockParams.rightMargin = 0;
+                // rightMargin is -8dp above so the Dock's right edge matches the Islamic shelf.
                 // Place the glass tray itself on the P2 27dp bottom safe margin. The
                 // RecyclerView host extends below its tray to contain the label/focus area.
                 dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
@@ -3199,20 +3211,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return position % COLUMNS == COLUMNS - 1 || position == count - 1;
         }
         if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
-            // The bottom-most Grid row is the first overflow row adjacent to the Dock.
-            // Keep the requested remote contract: Up from that row returns to the Dock.
-            int dockAdjacentRow = ((count - 1) / COLUMNS) * COLUMNS;
+            // The first Grid row is immediately above the Dock. Up returns to the
+            // matching Dock slot; Down advances to the next row, which scrolls into
+            // the same one-row viewport and replaces the previous row.
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                if (position >= dockAdjacentRow) {
+                if (position < COLUMNS) {
                     focusDockTile(DockLayoutModel.dockPositionForGrid(
                             position, false, COLUMNS, dockAdapter.getItemCount()));
                 } else {
-                    focusTile(Math.min(position + COLUMNS, count - 1));
+                    focusTile(position - COLUMNS);
                 }
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                if (position >= COLUMNS) focusTile(position - COLUMNS);
+                int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
+                if (position < lastRowStart) focusTile(Math.min(position + COLUMNS, count - 1));
                 return true;
             }
         }
