@@ -160,10 +160,8 @@ final class WifiSettingsDialog {
             updatePrerequisites();
             showCachedResults();
             connectFocusOrder();
-            View initial = permissionAction.getVisibility() == View.VISIBLE ? permissionAction
-                    : locationAction.getVisibility() == View.VISIBLE ? locationAction
-                    : rescan.getVisibility() == View.VISIBLE ? rescan : androidSettings;
-            initial.requestFocus();
+            View initial = firstFocusableControl();
+            if (initial != null) initial.requestFocus();
             registerScanReceiver();
             requestScan();
         });
@@ -391,12 +389,18 @@ final class WifiSettingsDialog {
         refreshStatus();
         connectFocusOrder();
         if (focusedSsid != null) {
+            boolean restored = false;
             for (int i = 0; i < networkRows.getChildCount(); i++) {
                 View child = networkRows.getChildAt(i);
                 if (("wifi_network:" + focusedSsid).equals(child.getTag())) {
                     child.requestFocus();
+                    restored = true;
                     break;
                 }
+            }
+            if (!restored) {
+                View fallback = firstFocusableControl();
+                if (fallback != null) fallback.requestFocus();
             }
         }
     }
@@ -471,15 +475,26 @@ final class WifiSettingsDialog {
         view.setPadding(0, dp(density, 3), 0, dp(density, 3));
     }
 
+    private View firstFocusableControl() {
+        for (int i = 0; i < networkRows.getChildCount(); i++) {
+            View child = networkRows.getChildAt(i);
+            if (child.isFocusable() && child.getVisibility() == View.VISIBLE) return child;
+        }
+        if (permissionAction.getVisibility() == View.VISIBLE) return permissionAction;
+        if (locationAction.getVisibility() == View.VISIBLE) return locationAction;
+        if (rescan.getVisibility() == View.VISIBLE) return rescan;
+        return androidSettings;
+    }
+
     private void connectFocusOrder() {
         focusOrder.clear();
-        if (permissionAction.getVisibility() == View.VISIBLE) focusOrder.add(permissionAction);
-        if (locationAction.getVisibility() == View.VISIBLE) focusOrder.add(locationAction);
-        if (rescan.getVisibility() == View.VISIBLE) focusOrder.add(rescan);
         for (int i = 0; i < networkRows.getChildCount(); i++) {
             View child = networkRows.getChildAt(i);
             if (child.isFocusable() && child.getVisibility() == View.VISIBLE) focusOrder.add(child);
         }
+        if (permissionAction.getVisibility() == View.VISIBLE) focusOrder.add(permissionAction);
+        if (locationAction.getVisibility() == View.VISIBLE) focusOrder.add(locationAction);
+        if (rescan.getVisibility() == View.VISIBLE) focusOrder.add(rescan);
         focusOrder.add(androidSettings);
         focusOrder.add(close);
         for (int i = 0; i < focusOrder.size(); i++) {
