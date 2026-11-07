@@ -263,4 +263,38 @@ public class DockLayoutModelTest {
                 () -> DockLayoutModel.split(Collections.singletonList("a"),
                         Collections.singletonList("a"), 4, null));
     }
+    @Test
+    public void dockGeometryPreservesLegacyFourFiveSixSlotRatiosAndSpacing() {
+        float density = 2f;
+        int innerWidth = 1920;
+        for (int capacity : new int[]{4, 5, 6}) {
+            int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
+            int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+            int itemHeight = DockGeometry.itemHeightPx(tileHeight, density);
+            int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+            int largestTileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, 4, density);
+            int largestTileHeight = DockGeometry.tileHeightPx(largestTileWidth);
+            int gridReserve = DockGeometry.horizontalGridBottomReservePx(largestTileWidth, density);
+            int trayHeight = tileHeight + Math.round(28 * density);
+
+            assertEquals(Math.round(35 * density), dockHeight - trayHeight);
+            assertEquals(Math.round(16 * density),
+                    gridReserve - DockGeometry.horizontalDockHeightPx(largestTileHeight, density));
+            assertEquals(tileHeight + Math.round(45 * density), itemHeight);
+        }
+    }
+
+    @Test
+    public void dockGeometryUsesLegacy180By101DesignAndCapacityScaling() {
+        float density = 2f;
+        int four = DockGeometry.horizontalTileWidthPx(1920, 4, density);
+        int five = DockGeometry.horizontalTileWidthPx(1920, 5, density);
+        int six = DockGeometry.horizontalTileWidthPx(1920, 6, density);
+
+        assertEquals(Math.round(180 * density), four);
+        assertTrue(five < four);
+        assertTrue(six < five);
+        assertEquals(Math.round(four * 101f / 180f), DockGeometry.tileHeightPx(four));
+    }
+
 }

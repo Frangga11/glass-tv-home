@@ -2171,10 +2171,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             DockPreferences preferences = DockPreferences.load(this);
             int innerWidth = Math.max(0, gridWrap.getWidth()
                     - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
-            int tileWidth = AppAdapter.tileWidthPx(innerWidth, preferences.capacity, density);
-            int tileHeight = AppAdapter.tileHeightPx(tileWidth);
-            int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
-            int horizontalDockHeight = itemHeight + Math.round(18 * density);
+            int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, preferences.capacity, density);
+            int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+            int horizontalDockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
             // Horizontal Dock is fixed to the bottom edge; no rows are reserved beneath it.
             shelfDockTop = shelfAnchorRect.bottom - horizontalDockHeight;
         }
@@ -2546,16 +2545,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridParams.bottomMargin = 0;
             if (hasDock) {
                 int inner = Math.max(0, gridWrap.getWidth() - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
-                int tileWidth = AppAdapter.tileWidthPx(inner, preferences.capacity, density);
-                int tileHeight = AppAdapter.tileHeightPx(tileWidth);
-                int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
-                int dockHeight = itemHeight + Math.round(18 * density);
+                int tileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
+                int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+                int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
 
-                // Reserve a capacity-independent App Grid viewport using the largest supported
-                // Dock tile (capacity 4). The Dock itself always sits on the bottom edge.
-                int maxTileWidth = AppAdapter.tileWidthPx(inner, 4, density);
-                int maxItemHeight = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(maxTileWidth), density);
-                int gridBottomReserve = maxItemHeight + Math.round(34 * density);
+                // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
+                // the largest supported tile and therefore the stable reservation baseline.
+                int maxTileWidth = DockGeometry.horizontalTileWidthPx(inner, 4, density);
+                int gridBottomReserve = DockGeometry.horizontalGridBottomReservePx(maxTileWidth, density);
                 gridParams.bottomMargin = gridBottomReserve;
 
                 dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;

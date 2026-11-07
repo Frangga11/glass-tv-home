@@ -73,7 +73,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (vertical) {
             width = Math.max(Math.round(112 * density), Math.min(Math.round(170 * density), inner - Math.round(20 * density)));
         } else {
-            width = AppAdapter.tileWidthPx(inner, capacity, density);
+            width = DockGeometry.horizontalTileWidthPx(inner, capacity, density);
         }
         int height = AppAdapter.tileHeightPx(width);
         View card = item.findViewById(R.id.card);
