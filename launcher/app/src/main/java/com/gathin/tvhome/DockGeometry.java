@@ -59,12 +59,6 @@ final class DockGeometry {
         return Math.max(0, (safeContentWidthPx - slotWidthPx * itemCount) / 2);
     }
 
-    /** Compatibility overload for existing geometry callers. */
-    static int horizontalCenterOffsetPx(int innerWidthPx, int tileWidthPx, int itemCount) {
-        if (innerWidthPx <= 0 || tileWidthPx <= 0 || itemCount <= 0) return 0;
-        return Math.max(0, (innerWidthPx - tileWidthPx * itemCount) / 2);
-    }
-
     static int tileHeightPx(int tileWidthPx) {
         return AppAdapter.tileHeightPx(tileWidthPx);
     }
