@@ -2542,6 +2542,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         boolean dockVisibilityChanged = dockRecycler.getVisibility() != wantedDockVisibility;
         dockRecycler.setVisibility(wantedDockVisibility);
 
+        dockRecycler.setTranslationX(0f);
         if (dockVertical) {
             int dockWidth = hasDock ? Math.round(202 * density) : 0;
             gridParams.leftMargin = hasDock ? dockWidth + Math.round(12 * density) : 0;
