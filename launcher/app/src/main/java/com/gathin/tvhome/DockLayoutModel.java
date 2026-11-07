@@ -185,6 +185,29 @@ final class DockLayoutModel {
         return Collections.unmodifiableList(result);
     }
 
+    /** Patch 4.1 first-row Dock contract: preferred pins lead; inventory fills free slots. */
+    static List<String> fillDockSlots(List<String> preferredKeys, List<String> inventoryKeys,
+                                      List<String> excludedKeys, int requestedCapacity) {
+        int capacity = normalizeCapacity(requestedCapacity);
+        Set<String> excluded = new HashSet<>();
+        if (excludedKeys != null) excluded.addAll(excludedKeys);
+        List<String> result = new ArrayList<>();
+        Set<String> added = new HashSet<>();
+        if (preferredKeys != null) {
+            for (String key : preferredKeys) {
+                if (key != null && !key.trim().isEmpty() && !excluded.contains(key) && added.add(key)) result.add(key);
+            }
+        }
+        if (result.size() < capacity && inventoryKeys != null) {
+            for (String key : inventoryKeys) {
+                if (key == null || key.trim().isEmpty() || excluded.contains(key) || !added.add(key)) continue;
+                result.add(key);
+                if (result.size() >= capacity) break;
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
     static <T> Snapshot<T> split(List<T> orderedItems, List<String> pinnedKeys,
                                  int requestedCapacity, Function<T, String> stableKey) {
         if (stableKey == null) throw new IllegalArgumentException("stableKey is required");
