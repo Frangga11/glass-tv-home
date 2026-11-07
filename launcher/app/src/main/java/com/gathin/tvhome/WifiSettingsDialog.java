@@ -134,7 +134,7 @@ final class WifiSettingsDialog {
         status.setPadding(dp(density, 16), dp(density, 12), dp(density, 16), dp(density, 12));
         GradientDrawable connectedSurface = new GradientDrawable();
         connectedSurface.setColor(TvUiTokens.SURFACE_IDLE);
-        connectedSurface.setCornerRadius(dp(density, TvUiTokens.CARD_RADIUS_DP));
+        connectedSurface.setCornerRadius(dp(density, (int) TvUiTokens.CARD_RADIUS_DP));
         connectedSurface.setStroke(dp(density, 1), TvUiTokens.BORDER);
         status.setBackground(connectedSurface);
         content.addView(status);
