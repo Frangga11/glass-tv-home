@@ -781,3 +781,21 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Install / ADB / merge | NOT PERFORMED |
 
 - Canonical evidence: `UI_REFRESH_IMAGE2_HOME_LAYOUT_CHECKPOINT_2026-11-07.md`.
+
+
+## Image 2 bottom Dock correction — inventory (7 November 2026)
+
+| Gate | Evidence-based status |
+|---|---|
+| Horizontal Dock bottom anchoring | SOURCE FIX COMPLETE |
+| App Grid viewport above Dock | SOURCE FIX COMPLETE; fixed reserve independent of capacity 4/5/6 |
+| D-pad adjacency / regression test | IMPLEMENTED |
+| Vertical Dock side rail | PRESERVED |
+| Owner branch / exact HEAD | `fix/home-layout-image2-dock-geometry` @ `c3d749db7373052019063f5057ac08f0eda797b0` |
+| PR #73 | OPEN / DRAFT / UNMERGED |
+| Exact-head CI #1404 | BOTH REQUIRED JOBS SUCCESS |
+| Corrective APK | 1,622,545 bytes; SHA-256 `3b01c1126043c2e8025e1852d7de5d09812b091986af21e9c1c607188cb926ab` |
+| Physical TV visual/remote acceptance | PENDING / NOT RUN |
+| Installation / ADB / merge | NOT PERFORMED |
+
+- The earlier Image 2 APK did not correct Dock height and is superseded. Use only the APK recorded in `UI_REFRESH_IMAGE2_BOTTOM_DOCK_CORRECTION_2026-11-07.md` for the next acceptance test.
