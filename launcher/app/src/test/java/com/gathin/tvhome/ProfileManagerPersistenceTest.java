@@ -88,6 +88,23 @@ public class ProfileManagerPersistenceTest {
         assertEquals(3, reset.avatarIndex);
     }
 
+    @Test
+    public void legacyChildPoliciesMigrateToActiveProfileWhileParentPinStaysGlobal() {
+        Context context = context();
+        ProfileManager.UserProfile active = ProfileManager.getActiveProfile(context);
+        SharedPreferences prefs = context.getSharedPreferences("child_mode_prefs", Context.MODE_PRIVATE);
+        assertTrue(prefs.edit()
+                .putBoolean("child_mode_enabled", true)
+                .putStringSet("locked_apps", Collections.singleton("com.example.legacy"))
+                .putString("security_pin", "2468")
+                .commit());
+
+        assertTrue(ChildModeManager.isChildModeEnabled(context, active.id));
+        assertTrue(ChildModeManager.getLockedApps(context, active.id).contains("com.example.legacy"));
+        assertEquals("2468", ChildModeManager.getPin(context));
+        assertTrue(prefs.getBoolean("profile_settings_migration_v1", false));
+    }
+
     private ProfileManager.UserProfile find(Context context, String id) {
         for (ProfileManager.UserProfile profile : ProfileManager.getAllProfiles(context)) {
             if (id.equals(profile.id)) return profile;
