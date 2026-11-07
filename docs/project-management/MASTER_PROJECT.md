@@ -1319,3 +1319,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - CI run #1441 / run ID `42401401988`: both jobs SUCCESS. Release unit tests, `assembleRelease`, APK size diagnostics and artifact publication all SUCCESS.
 - Artifact: `glass-tv-home-dock-visual-parity-78b6510fd8f6a4c70d4bb93792abf53f9d5ee542`, artifact ID `13585890269`, ZIP 1,422,728 bytes. Extracted `app-release.apk`: 1,622,469 bytes; SHA-256 `61d5705915802e65fdecab6c7b6b91973b7187c4a276a972704d6ab1bbd242b8`.
 - CI/build gate: PASS. Device/remote validation of horizontal edge alignment, single-row viewport, DPAD Up/Down focus continuity and end-of-list behavior: PENDING. PR #75 remains OPEN/DRAFT/UNMERGED; no default-launcher change.
+
+
+## GTVH-HOME-LAYOUT-FIX-001 — Global Home layout (8 November 2026)
+
+**Status: IMPLEMENTATION IN PROGRESS / QC PENDING / DEVICE ACCEPTANCE PENDING.** Scope is Home Screen, Dock, overflow app rows, Quick Toggles and DPAD at Mi TV Stick Android TV 11, 1920×1080.
+
+- Video evidence confirms the pre-fix Dock/tray partition issue: Google Play appears isolated at the tray's left edge while a separate app row appears above the tray.
+- Existing PR #75 implements the Dock inset/tray and one-row overflow corrections; exact-head CI #1441 passed. PR #75 remains Draft/unmerged and its APK is not the final PR #76 artifact.
+- New root cause: `MainActivity.alignTopButtons()` shifted the top menu based on the last Dock card and ran on Grid/Dock global layout. This caused unrelated Quick Toggles to move with Dock count. PR #76 removes this coupling and retains XML end alignment in the 56dp safe content frame.
+- PR #76 branch `fix/home-global-layout-bounds` @ `cf9d661dc7e9d0520608dc771aed2b9d75bb1a01`, Draft PR #76, stacked on PR #75. Regression contract added. CI #1443 was pending at checkpoint after correction of a test selector failure in run #1442.
+- No physical Mi TV Stick validation, post-fix screenshots, PR #76 APK/checksum, merge or default-launcher change. See `HOME_LAYOUT_FIX_2026-11-08.md`.
