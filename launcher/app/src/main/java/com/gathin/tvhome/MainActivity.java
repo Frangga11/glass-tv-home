@@ -240,8 +240,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** The grid has been laid out and focused since the last resume; the card prompt waits for this. */
     private boolean tilesReady;
     private boolean tilesAnimatedOnce;
-    /** Grid rows left showing under the dock (config rows_below_dock). */
-    private int rowsBelowDockSetting;
+    /** Original XML top inset; Dock placement must not push the App Grid below it. */
+    private int gridBasePaddingTop;
     /** The longest Home holds its first frame while it puts itself together (see holdFirstFrame). */
     private static final long FIRST_FRAME_WAIT_MS = 1200;
     private static final long RETURN_SETTLE_MS = 6000;
@@ -796,6 +796,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         grid = findViewById(R.id.grid);
         gridWrap = findViewById(R.id.gridWrap);
+        gridBasePaddingTop = grid.getPaddingTop();
         grid.setLayoutManager(new GridLayoutManager(this, COLUMNS));
         grid.setHasFixedSize(true);
         grid.setItemAnimator(null);
@@ -847,7 +848,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid.setAdapter(adapter);
         dockAdapter = new DockAdapter(this, adapter, this, reducedMotion);
         dockRecycler.setAdapter(dockAdapter);
-        rowsBelowDockSetting = cfg.rowsBelowDock;
         applyDockLayout();
         dockRecycler.getViewTreeObserver().addOnGlobalLayoutListener(this::alignTopButtons);
         glider.addCompanion(dockRecycler, tray.area);
@@ -2174,9 +2174,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             int tileHeight = AppAdapter.tileHeightPx(tileWidth);
             int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
             int horizontalDockHeight = itemHeight + Math.round(18 * density);
-            int belowDock = itemHeight * Math.max(0, rowsBelowDockSetting)
-                    + Math.round(16 * density);
-            shelfDockTop = shelfAnchorRect.bottom - belowDock - horizontalDockHeight;
+            // Horizontal Dock is fixed to the bottom edge; no rows are reserved beneath it.
+            shelfDockTop = shelfAnchorRect.bottom - horizontalDockHeight;
         }
         heroBottom = shelfDockTop - HERO_GAP_DP * density;
 
@@ -2550,15 +2549,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int tileHeight = AppAdapter.tileHeightPx(tileWidth);
                 int itemHeight = AppAdapter.itemHeightPx(tileHeight, density);
                 int dockHeight = itemHeight + Math.round(18 * density);
-                int belowDock = itemHeight * Math.max(0, rowsBelowDockSetting) + Math.round(16 * density);
+
+                // Reserve a capacity-independent App Grid viewport using the largest supported
+                // Dock tile (capacity 4). The Dock itself always sits on the bottom edge.
+                int maxTileWidth = AppAdapter.tileWidthPx(inner, 4, density);
+                int maxItemHeight = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(maxTileWidth), density);
+                int gridBottomReserve = maxItemHeight + Math.round(34 * density);
+                gridParams.bottomMargin = gridBottomReserve;
+
                 dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
                 dockParams.rightMargin = 0;
-                dockParams.bottomMargin = belowDock;
-                int gridTop = Math.max(0, gridWrap.getHeight() - belowDock);
-                if (grid.getPaddingTop() != gridTop) grid.setPadding(grid.getPaddingLeft(), gridTop, grid.getPaddingRight(), grid.getPaddingBottom());
+                dockParams.bottomMargin = 0;
+                if (grid.getPaddingTop() != gridBasePaddingTop) {
+                    grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
+                            grid.getPaddingRight(), grid.getPaddingBottom());
+                }
             } else {
                 dockParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
                 dockParams.height = 0;
@@ -2566,6 +2574,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.topMargin = 0;
                 dockParams.rightMargin = 0;
                 dockParams.bottomMargin = 0;
+                gridParams.bottomMargin = 0;
                 if (grid.getPaddingTop() != 0) grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), grid.getPaddingBottom());
             }
         }
