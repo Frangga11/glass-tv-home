@@ -81,6 +81,7 @@ final class WifiSettingsDialog {
         });
     }
     private Runnable pendingAfterDismiss;
+    private boolean parentReturned;
     private final Runnable scanTimeout = this::onScanTimeout;
 
     private void onScanTimeout() {
@@ -162,14 +163,13 @@ final class WifiSettingsDialog {
         dialog = built;
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnCancelListener(d -> notifyReturnToParent());
         dialog.setOnDismissListener(d -> {
             handler.removeCallbacksAndMessages(null);
             unregisterScanReceiver();
             unregisterNetworkCallback();
             if (active.get() == this) active.clear();
-            if (returnToParent != null && !activity.isFinishing() && !activity.isDestroyed()) {
-                returnToParent.run();
-            }
+            notifyReturnToParent();
             Runnable action = pendingAfterDismiss;
             pendingAfterDismiss = null;
             if (action != null && !activity.isFinishing() && !activity.isDestroyed()) action.run();
@@ -553,6 +553,14 @@ final class WifiSettingsDialog {
             view.setNextFocusDownId(next);
             view.setNextFocusLeftId(view.getId());
             view.setNextFocusRightId(view.getId());
+        }
+    }
+
+    private void notifyReturnToParent() {
+        if (parentReturned) return;
+        parentReturned = true;
+        if (returnToParent != null && !activity.isFinishing() && !activity.isDestroyed()) {
+            returnToParent.run();
         }
     }
 
