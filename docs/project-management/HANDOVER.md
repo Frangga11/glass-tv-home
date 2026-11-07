@@ -1651,3 +1651,7 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Source branch fix/home-dock-visual-parity-v2 @ b14a7bc3d1e99cf8cf0c74e944c39983d776f341; PR #74 OPEN/DRAFT/UNMERGED. PR description now records the source finding and new acceptance gates.
 - CI run #42384023835 failed because the first regression assertion incorrectly required exact pixel parity under integer rounding. The assertion was corrected to allow a one-pixel left/right margin difference. Latest-head CI run #42384207367 is IN PROGRESS; APK pending.
 - Physical TV visual/remote acceptance NOT RUN. No install, ADB, device mutation or merge. The next APK must be built from the latest centered Dock source and then checked on the Mi TV Stick.
+
+- Final latest-head CI #1424 / run 42384207367 SUCCESS; both required jobs passed, including 296+ unit tests and release build, repo contract checks, APK diagnostics and artifact publication.
+- Release APK 1,624,997 bytes; SHA-256 8e3183addc092e5bce1b41b09d939fc64682d6b16f595a0e4e1caa0a5f982664. Artifact #13578283307; ZIP 1,424,983 bytes; SHA-256 72014680fd7e7b02cf36ed5029d55be465ac3394d649fc95ee718af05e234d17; expires 14 Nov 2026.
+- APK extracted and verified as Android package. Physical TV visual/remote acceptance still PENDING / NOT RUN; PR #74 OPEN/DRAFT/UNMERGED. No install, ADB, device mutation or merge.
