@@ -158,4 +158,19 @@ public class PinCredentialStoreTest {
                 .commit();
         assertFalse(PinCredentialStore.isDefaultPin(context));
     }
+
+    @Test
+    public void missingStoredHashAndSaltNeverFallBackToDefaultPin() {
+        assertTrue(PinCredentialStore.setPin(context, "2468"));
+        assertFalse(PinCredentialStore.isDefaultPin(context));
+
+        prefs.edit()
+                .remove("security_pin_salt_v1")
+                .remove("security_pin_hash_v1")
+                .commit();
+
+        assertFalse(PinCredentialStore.isDefaultPin(context));
+        assertFalse(PinCredentialStore.verifyPin(context, "0000"));
+        assertFalse(PinCredentialStore.verifyPin(context, "2468"));
+    }
 }
