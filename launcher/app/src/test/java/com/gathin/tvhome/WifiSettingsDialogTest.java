@@ -6,11 +6,13 @@ import static org.junit.Assert.assertTrue;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.view.View;
+import android.os.Looper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
@@ -34,6 +36,7 @@ public class WifiSettingsDialogTest {
         assertTrue(permission.getNextFocusDownId() != 0);
         assertTrue(dialog.isCancelable());
         dialog.dismiss();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
         assertTrue(returns[0] == 1);
     }
 }
