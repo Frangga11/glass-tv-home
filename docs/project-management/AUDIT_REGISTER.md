@@ -1819,3 +1819,10 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - No APK was published by #1443 because the artifact step only matched PR #74/#75. Corrected `.github/workflows/ci.yml` to include PR #76 and use the `glass-tv-home-layout-fix` artifact name.
 - Latest PR #76 head `ea681545bbf356105683ef2c7da6664e29a83723`; exact-head CI #1447 / `42403880493` is rebuilding and publishing the APK. Do not reuse the PR #75 APK as the PR #76 test candidate.
 - Physical visual/remote acceptance remains NOT RUN; no merge.
+
+### HOME-DOCK-HOST-CENTERING-002 — intermediate CI/APK verification
+
+- PR #75 exact head 78539148930bc6e3613a03db0dd3997073c725ee passed CI #1446 / 42403799908; both required jobs succeeded.
+- Artifact #13585808852 was downloaded and verified: ZIP 1,422,660 bytes; extracted APK 1,622,497 bytes; SHA-256 38d818902ce3ccf800b8de5cc0428125b91b7e9c27ba81810759a53925c65d0f. ZIP integrity and APK ZIP integrity passed.
+- This is an intermediate Dock-only build, not the combined Quick Toggles fix. PR #75 latest head 21bc204... is under CI #1448; PR #76 latest head ea681545... is under CI #1447 with artifact publication enabled.
+- Final cumulative APK verification and physical Mi TV Stick visual/remote acceptance remain pending. No merge or device mutation.
