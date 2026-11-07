@@ -1644,3 +1644,20 @@ G1 is a browser-prototype result only. Production component conformance, live da
 
 - APK diagnostic: 1,620,193 bytes; +2,820 bytes (~0.17%) vs G3E. Historical 1.5 MiB warning is informational under D-023; no artifact published.
 - **G3F disposition: COMPLETE / SOURCE-HOST QC PASS.** PR #71 OPEN/DRAFT/UNMERGED. Physical acceptance and G4 integration remain separate gates.
+
+
+## G4 final source-host audit disposition — 7 November 2026
+
+**Finding G4-SEC-001:** prior plaintext parent PIN preference `security_pin` replaced by salted PBKDF2-HMAC-SHA256 credential storage. Legacy custom PIN migration is lossless and occurs only after successful verification. Fresh-install/default `0000` remains. No attempt restriction was introduced.
+
+**Final verification evidence**
+- Exact branch HEAD `f46adf27bbc6b2156c7e9bb49d48cf4fd0fcdb5e`; base `455b619c3eefe417ac0152a51f3cb12478a8f4a9`.
+- Synthetic merge `376b5b69e2aed56e1f813169f35dbb9459ada554`, parents exactly base + head.
+- CI #1394 / `42353368760`: both jobs SUCCESS; app/installer unit tests and release builds, lint-vital and repository contract tests passed. Python suite: 134 tests / 1 intentional skip.
+- Eleven focused PIN credential tests include default behavior, migration, repeated failed attempts, salt rotation, invalid values, malformed/mistyped state and no fallback after credential loss.
+- Final PR diff limited to five source/test files. G3A–G3F chain and PR heads unchanged; PR #66–#72 OPEN/DRAFT/UNMERGED.
+- APK diagnostic 1,622,401 bytes, informational under D-023; no artifact published.
+
+**Residual / boundary:** four-digit PIN remains guessable under unlimited attempts by explicit product decision. This is source-host acceptance only; physical TV/remote/OEM acceptance remains PENDING / NOT RUN. No merge, APK install/publication, ADB or device mutation.
+
+**Disposition: G4-A–G4-J COMPLETE / SOURCE-HOST QC PASS.** See canonical `UI_REFRESH_G4_AUDIT_2026-11-07.md` and `UI_REFRESH_G4_CHECKPOINT_2026-11-07.md`.
