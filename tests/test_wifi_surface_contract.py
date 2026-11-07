@@ -23,6 +23,7 @@ class WifiSurfaceContractTest(unittest.TestCase):
         self.assertIn("ACCESS_FINE_LOCATION", DIALOG)
         self.assertIn("isLocationEnabled()", DIALOG)
         self.assertIn("WifiScanPolicy", POLICY)
+        self.assertIn("WifiScanPolicy.mayRequestScan", DIALOG)
         self.assertIn("manager.startScan()", DIALOG)
         self.assertIn("manager.getScanResults()", DIALOG)
         self.assertIn("WifiScanPolicy.BlockReason.PERMISSION", POLICY)
@@ -45,9 +46,8 @@ class WifiSurfaceContractTest(unittest.TestCase):
         self.assertIn("dialog.setOnDismissListener", DIALOG)
 
     def test_no_new_privileged_wifi_permissions_or_dependencies(self):
-        for forbidden in ("android.permission.CHANGE_WIFI_STATE",
-                          "android.permission.WRITE_SETTINGS"):
-            self.assertNotIn(forbidden, MANIFEST)
+        self.assertIn("android.permission.CHANGE_WIFI_STATE", MANIFEST)
+        self.assertNotIn("android.permission.WRITE_SETTINGS", MANIFEST)
         self.assertIn("android.permission.ACCESS_WIFI_STATE", MANIFEST)
         self.assertIn("android.permission.ACCESS_FINE_LOCATION", MANIFEST)
 
