@@ -1660,12 +1660,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 ## Home Dock P2 safe-geometry and bottom-anchor correction — 8 November 2026
 
 - Applied to source branch `fix/home-dock-visual-parity-v2`; PR #74 remains OPEN / DRAFT / UNMERGED.
-- Source head: `722aa96812901a64f66dd2019c3ab8b4214c8d15`.
-- Corrected the horizontal Dock to use the P2 48dp left/right safe content width and 27dp bottom safe margin. Tray padding remains symmetric at 14dp; Dock item spacing is centralized in `DockGeometry`.
+- Source head: `11817b2ec2d656ca1f897c360a35fa8a06a93a10`.
+- Corrected the horizontal Dock to use the P2 48dp left/right safe content width and 27dp bottom safe margin. Tray padding remains symmetric at 14dp. Dock slots and Grid cells share the same derived tile width and cell spacing at capacities 4 / 5 / 6.
 - Anchored the horizontal overflow Grid to the Dock tray: Grid bottom margin is derived from Dock host height, bottom safe offset, item top offset, tray inset and the 8dp Grid-to-tray gap. Grid uses bottom-stacked rows while idle remains hidden.
 - Reworked horizontal overflow focus mapping so DPAD Down from Dock targets the bottom-most Dock-adjacent Grid row, and DPAD Up from that row returns to Dock. Remaining rows stay in the scrollable Grid.
 - Aligned the left/right shelf baselines through the shared Dock tile-top anchor; shelf bottom is 36dp above tray top (14dp tray inset + 36dp shelf gap). Side margins changed to the P2 48dp safe inset.
 - Added geometry unit coverage for left/right symmetry, densities 1.0 / 1.5 / 1.75 / 2.0, capacities 4 / 5 / 6, and viewport widths 1280 / 1920.
-- Validation at handover update: latest source head `722aa96812901a64f66dd2019c3ab8b4214c8d15`; latest-head CI result not yet available. Local `./gradlew testReleaseUnitTest assembleRelease` was not run because the execution environment could not resolve GitHub to retrieve the repository. Do not mark source QC PASS until CI is green on this exact head.
+- Validation: CI run #1433 failed on earlier head `a3cedeb4f85289899a1d01a5d51b7730973ef974` at Java compilation because `horizontalCenterOffsetPx(int,int,int)` was declared twice. Removed the duplicate in commit `6422c37a18cefbb26487d04cf948c52ba9968bdc`; latest source head is `11817b2ec2d656ca1f897c360a35fa8a06a93a10`, for which no exact-head CI result is available yet. Local `./gradlew testReleaseUnitTest assembleRelease` was not run because the execution environment could not resolve GitHub to retrieve the repository. Do not mark source QC PASS until CI is green on this exact head.
 - Physical TV acceptance: NOT RUN. No ADB, device interaction, APK installation or merge performed.
-- Remaining: confirm exact-head CI; review 5-column Grid/Dock tile-size and inter-tile visual parity; then run the owner's TV checklist for tray symmetry, idle wallpaper clearance, DPAD Down/Up, and both shelf/tray collision clearance.
+- Remaining: obtain exact-head CI; visually verify Grid/Dock tile-size and inter-tile parity at runtime; then run the owner's TV checklist for tray symmetry, idle wallpaper clearance, DPAD Down/Up, and both shelf/tray collision clearance.
