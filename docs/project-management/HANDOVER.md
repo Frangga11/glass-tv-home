@@ -1744,3 +1744,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Run #1443 produced no artifact because the existing upload step was scoped to PR #74/#75. Updated `.github/workflows/ci.yml` to include PR #76 and publish artifact `glass-tv-home-layout-fix-${{ github.sha }}`.
 - Latest PR #76 head is now `ea681545bbf356105683ef2c7da6664e29a83723` (workflow-only addition on top of the passing source/test head). Exact-head CI run #1447 / `42403880493` is in progress to rebuild and publish the APK.
 - Until run #1447 succeeds and the artifact is verified, PR #76 APK size/SHA-256 remain PENDING. PR #76 remains Draft/unmerged; physical TV acceptance remains NOT RUN.
+
+## GTVH-HOME-LAYOUT-FIX-001 — Dock centering and CI follow-up (8 November 2026)
+
+- Source audit found the prior Dock centering offset translated the entire dockRecycler, which also moved the full-width tray drawn by DockDecoration.
+- PR #75 now centers icons using symmetric RecyclerView padding while keeping the Dock host translation at zero. DockAdapter calculates horizontal tile/slot dimensions from the full viewport, independent of centering padding; vertical/empty layouts reset padding.
+- Added horizontalDockPaddingCentersIconsWithoutMovingTheTrayHost() regression coverage in DockLayoutModelTest.java.
+- PR #75 branch fix/home-dock-alignment-row-scroll, latest commit 21bc204a413fce3c527e0e8761d2016bc5dc87c6. CI #1446 / 42403799908 was still running its Android job on preceding head 78539148930bc6e3613a03dbb7c6? No: 78539148930bc6e3613a03dbb7c6 is not a valid full SHA; use the full source head 78539148930bc6e3613a03dbb7c6? 
+- Updated .github/workflows/ci.yml so PR #76 also publishes a test APK. PR #76 CI #1443 / 42403684594 passed both jobs, but its artifact step was skipped under the older condition; a new cumulative run is required after the PR #75 base update.
+- PR #76 remains the dedicated Quick Toggles correction: remove Dock-relative top-menu translation/listeners and preserve XML end alignment within mainContent's 56dp safe padding.
+- No current-head APK, checksum, post-fix screenshot or physical Mi TV Stick acceptance yet. The previous PR #75 artifact from c72c07f... is baseline-only.
+- Verify actual Dock pin/unpin preferences on device before changing app membership: source fills the five-slot default from ordered inventory except explicitly unpinned apps.
+- No merge, ADB, installation, default-launcher change or device mutation.
+- Detailed report: HOME_LAYOUT_FIX_2026-11-08.md.
