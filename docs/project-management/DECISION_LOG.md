@@ -494,3 +494,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - SOURCE-HOST QC may pass independently; physical Android TV/remote/OEM/overscan/daylight acceptance remains a separate gate. Keep PR #71 OPEN/DRAFT/UNMERGED until separately approved integration.
 - Exact owner: `feature/g3f-global-settings` @ `455b619c3eefe417ac0152a51f3cb12478a8f4a9`; PR #71 OPEN/DRAFT/UNMERGED; exact-head CI #1376 / `42348837445` — both required jobs SUCCESS.
 - Status: IMPLEMENTED / SOURCE-HOST QC PASS; DEVICE ACCEPTANCE PENDING / NOT RUN.
+
+
+## G4 final security policy and source-host checkpoint — 7 November 2026
+
+- Preserve the user's approved policy: default parent PIN remains `0000`; no forced first-use change; unlimited wrong attempts; no retry counter, limit, cooldown, lockout, forced delay or temporary restriction.
+- Parent PIN remains device-wide. Child Mode, App Lock and Hidden Apps remain profile-scoped.
+- Custom PIN at-rest storage is hardened with salted PBKDF2-HMAC-SHA256; legacy custom PIN migration is lossless after successful verification. Corrupt or previously stored-but-lost credential state fails closed and never silently reverts to `0000`.
+- The four-digit PIN remains guessable under unlimited attempts. Hashing reduces plaintext exposure; it does not make the PIN brute-force-proof.
+- **G4-A–G4-J COMPLETE / SOURCE-HOST QC PASS.** Final G4 HEAD `f46adf27bbc6b2156c7e9bb49d48cf4fd0fcdb5e`; exact G3F base `455b619c3eefe417ac0152a51f3cb12478a8f4a9`; synthetic merge `376b5b69e2aed56e1f813169f35dbb9459ada554`; CI #1394 / `42353368760` both jobs SUCCESS.
+- PR #72 remains OPEN/DRAFT/UNMERGED. PR #66–#71 dependency chain remains unchanged and OPEN/DRAFT/UNMERGED. No merge/rebase/cherry-pick/force-push, APK publication/install, ADB or device mutation.
+- Physical TV/remote/OEM acceptance remains a separate PENDING / NOT RUN gate. Canonical checkpoint: `UI_REFRESH_G4_CHECKPOINT_2026-11-07.md`.
