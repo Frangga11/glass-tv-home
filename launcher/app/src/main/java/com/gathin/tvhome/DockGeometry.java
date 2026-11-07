@@ -81,8 +81,14 @@ final class DockGeometry {
     }
 
     /** The Grid viewport ends one 8dp rhythm above the tray's top edge. */
-    static int horizontalGridBottomMarginPx(int dockHeightPx) {
-        return Math.max(0, dockHeightPx);
+    static int horizontalGridBottomMarginPx(int tileHeightPx, float density) {
+        int dockHeight = horizontalDockHeightPx(tileHeightPx, density);
+        int dockBottomMargin = horizontalDockBottomMarginPx(tileHeightPx, density);
+        int trayTopOffset = dockItemTopOffsetPx(density)
+                - Math.round(TRAY_PADDING_DP * density);
+        int gridToTrayGap = Math.round(GRID_TO_TRAY_GAP_DP * density);
+        return Math.max(0, dockHeight + dockBottomMargin - trayTopOffset
+                + Math.round(TRAY_PADDING_DP * density) + gridToTrayGap);
     }
 
     /** Shelf baseline sits 36dp above the tray; tray starts 14dp above the tile card. */

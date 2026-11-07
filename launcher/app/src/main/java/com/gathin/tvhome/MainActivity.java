@@ -163,7 +163,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private static final float HERO_NAME_WIDTH_SHARE = 0.45f;
     private static final float HERO_TITLE_MAX_SP = 40f;
     /** The breathing room between the shelf's last line and the top of the app container (50dp gives airy, balanced spacing). */
-    private static final float HERO_GAP_DP = 50f;
     private static final float HERO_TITLE_MIN_SP = 26f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
@@ -2581,16 +2580,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
 
                 // RecyclerView's horizontal LinearLayoutManager starts children at the left edge.
-                // Center the complete visible Dock group (not each tile independently) in the
-                // 16:9 Home viewport. Translation preserves the full-width measuring viewport,
-                // so DockAdapter computes the same tile width and focus geometry as before.
+                // Center the complete visible Dock group inside the P2 safe content width.
                 int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
                         inner, tileWidth, Math.min(dockCount, preferences.capacity), density);
                 dockRecycler.setTranslationX(dockCenterOffset);
 
                 // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
                 // the largest supported tile and therefore the stable reservation baseline.
-                gridParams.bottomMargin = DockGeometry.horizontalGridBottomMarginPx(dockHeight);
+                gridParams.bottomMargin = DockGeometry.horizontalGridBottomMarginPx(tileHeight, density);
 
                 dockParams.width = inner;
                 dockParams.height = dockHeight;
