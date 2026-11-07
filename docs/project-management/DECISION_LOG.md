@@ -523,3 +523,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Keep current G3A independent DockAdapter/AppAdapter architecture, stable identity, 4/5/6 capacity and orientation preferences. Do not replace the whole application with Patch 4.1.
 - PR #74 remains Draft/unmerged at 239390db27fafcc39b2fefa68ddfa9f0ba30608f. Exact-head CI #1415 PASS.
 - Device visual/remote acceptance is pending; no claim of final visual PASS until the owner confirms the new TV photo.
+
+
+## Decision — Patch 4.1 Dock & Liquid Glass adoption final (7 November 2026)
+
+- Adopt Patch 4.1 first-row Dock fill semantics: configured/user pins lead; ordered inventory fills remaining visible slots; explicit unpins are respected; overflow stays in Grid.
+- Adopt Patch 4.1 GlassRim iridescent gradient, Window Light, GlassView hardware-layer focus rim and DockBreathingBorderView. Breathing rim is scoped to Dock cards only.
+- Restore Patch 4.1's 16dp horizontal Dock bottom safe offset; the Grid reservation already includes this gap so the Dock and Grid meet cleanly.
+- Keep current G3A independent DockAdapter/AppAdapter architecture, stable identity, 4/5/6 capacity and orientation preferences. Do not replace the whole application with Patch 4.1.
+- PR #74 remains Draft/unmerged at 2d1f744a4b77406712e7868a7e7c6747a3bb88ed. Exact-head CI #1416 PASS.
+- Device visual/remote acceptance remains pending; no final visual PASS until owner confirms the new TV photo.
