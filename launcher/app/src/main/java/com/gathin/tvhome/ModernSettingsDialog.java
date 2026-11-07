@@ -195,6 +195,7 @@ public final class ModernSettingsDialog {
 
         final LinearLayout profileCard = new LinearLayout(activity);
         final LinearLayout rightContent = new LinearLayout(activity);
+        LinearLayout header = new LinearLayout(activity);
 
         // 1. Search Bar (Optimized height & margins to prevent clipping)
         LinearLayout searchBox = new LinearLayout(activity);
@@ -248,9 +249,6 @@ public final class ModernSettingsDialog {
             return false;
         });
 
-        LinearLayout.LayoutParams sbLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density));
-        sbLp.topMargin = (int) (2 * density);
-        sbLp.bottomMargin = (int) (8 * density);
         header.addView(searchBox, new LinearLayout.LayoutParams((int) (390 * density), (int) (52 * density)));
 
         // 2. Profile Card (User Profiles - No mention of backup)
@@ -1384,7 +1382,6 @@ public final class ModernSettingsDialog {
         updateSidebarSelection.run();
         renderRightPane[0].run();
 
-        LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setPadding((int) (12 * density), (int) (4 * density),
