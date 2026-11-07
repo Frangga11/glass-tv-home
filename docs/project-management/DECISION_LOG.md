@@ -542,3 +542,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Stable component identity remains the source of focus restoration. Keep vertical Dock, 4/5/6 capacity, pin/unpin and inventory split behavior intact.
 - Exact source head 48f07a983ebee4370bbf13a80f85edd947c2eb31; CI #42382202545 PASS. PR #74 remains OPEN/DRAFT/UNMERGED pending physical TV acceptance.
 - Physical TV visual/remote acceptance is NOT RUN; CI is not visual PASS.
+
+
+## Decision — horizontal Dock aggregate centering correction (7 November 2026)
+
+- Treat the five Dock icons as one centered group, not five independently positioned tiles. The owner photo proves the prior left-aligned group was visibly wrong.
+- Compute the horizontal offset from the full viewport width, measured tile width, and actual visible Dock item count; translate the Dock host without shrinking its measurement viewport.
+- Reset translation on vertical orientation/empty Dock. Preserve card size, spacing, tray inset, bottom safe gap, glass, focus and surrounding Home composition.
+- Add geometry tests for capacities 4/5/6 and multiple densities. Latest source HEAD 65108d4160243442922002618e739c898c4cb9e7; PR #74 remains OPEN/DRAFT/UNMERGED.
+- Latest-head CI and physical TV acceptance remain pending. Do not merge or call visual acceptance PASS before both are resolved.
