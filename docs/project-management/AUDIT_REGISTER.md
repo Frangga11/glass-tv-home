@@ -1693,3 +1693,19 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - APK 1,624,741 bytes; SHA-256 23ffb28d48b05f975be4b5bd13aa1086c08e47eef1feb5b8e13916799f32fafc; artifact #13576403262.
 
 **Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED TV ACCEPTANCE.** New physical TV visual/remote acceptance remains PENDING / NOT RUN. No installation, ADB, device mutation or merge.
+
+
+## Patch 4.1 Dock & Liquid Glass adoption — final audit disposition (7 November 2026)
+
+**Finding HOME-DOCK-PARTITION-001:** V2's independent Dock adapter consumed only resolved configured/user-pinned identities. Unlike Patch 4.1's first-row Dock contract, it did not fill remaining visible slots from ordered app inventory. With an empty/short pin list, the Dock could be empty/undersized and all apps stayed in Grid, matching the user's TV photo.
+
+**Finding HOME-DOCK-GLASS-001:** V2 lacked Patch 4.1's richer iridescent GlassRim/Window Light and DockBreathingBorderView item layer. The focus treatment was incomplete.
+
+**Finding HOME-DOCK-POSITION-001:** V2 attached the horizontal Dock host flush to gridWrap bottom. Patch 4.1 reserves 16dp below the tray. Restored bottomMargin 16dp while retaining the matching 16dp in Grid reservation.
+
+**Evidence and disposition**
+- Branch fix/home-dock-visual-parity-v2 @ 2d1f744a4b77406712e7868a7e7c6747a3bb88ed; PR #74 OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1416 / 42379710925 both jobs SUCCESS; app/installer unit tests and release builds passed.
+- APK 1,624,733 bytes; SHA-256 5da75cfd30956224bb9bf7c61ced34a11068356d83227cdb28d2fd9fb6d00684; artifact #13577033231.
+
+**Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED TV ACCEPTANCE.** New physical visual/remote acceptance remains PENDING / NOT RUN. No installation, ADB, device mutation or merge.
