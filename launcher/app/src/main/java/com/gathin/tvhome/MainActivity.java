@@ -138,6 +138,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private DockAdapter dockAdapter;
     private DockDecoration tray;
     private boolean dockVertical;
+    /** Horizontal Grid stays parked out of sight until the user presses Down from the Dock. */
+    private boolean horizontalGridExpanded;
     private boolean lastFocusedDock;
     private int lastDockDecorationCount = -1;
     private boolean lastDockDecorationVertical;
@@ -2019,6 +2021,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (dockAdapter == null || card == null) return;
         int position = dockAdapter.positionOf(key);
         if (position < 0) return;
+        // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
+        // Collapse the overflow Grid only after focus has actually reached a Dock tile.
+        if (!dockVertical && horizontalGridExpanded) {
+            horizontalGridExpanded = false;
+            grid.setVisibility(View.GONE);
+        }
         handleTileFocused(key, position, card, true);
     }
 
@@ -2123,14 +2131,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                int target = DockLayoutModel.gridPositionAboveDock(
-                        position, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
-                if (target >= 0) focusTile(target);
-                else focusTopBarFallback();
+                // The Dock is the first Home row in the Patch 4.1 navigation model:
+                // Up returns to the top shelf, never to an app row in the middle.
+                focusTopBarFallback();
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                // The horizontal Dock is the bottom-most Home row.
+                // Reveal the overflow inventory only on demand. It remains part of the
+                // same source inventory and is reachable without cluttering the idle Home.
+                int target = DockLayoutModel.gridPositionForDock(
+                        position, false, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
+                if (target >= 0) focusTile(target);
                 return true;
             }
         }
@@ -2493,9 +2504,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         DockPreferences preferences = DockPreferences.load(this);
         dockVertical = preferences.orientation == DockPreferences.Orientation.VERTICAL;
         dockAdapter.setVertical(dockVertical);
-        // The approved horizontal Home composition is Dock-only. The App Grid is shown
-        // only in vertical-Dock mode, where it occupies the remaining side-by-side region.
-        int wantedGridVisibility = dockVertical ? View.VISIBLE : View.GONE;
+        if (dockVertical) horizontalGridExpanded = false;
+        // In horizontal mode the Grid is an on-demand overflow surface: hidden at rest,
+        // revealed by DPAD Down from the Dock, and collapsed again when Dock focus returns.
+        int wantedGridVisibility = dockVertical || horizontalGridExpanded ? View.VISIBLE : View.GONE;
         boolean gridVisibilityChanged = grid.getVisibility() != wantedGridVisibility;
         grid.setVisibility(wantedGridVisibility);
         int orientation = dockVertical
@@ -3213,7 +3225,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         int gridPosition = adapter == null ? -1 : adapter.positionOf(lastFocusedKey);
-        if (gridPosition >= 0 && dockVertical) {
+        if (gridPosition >= 0) {
             lastFocusedDock = false;
             focusTile(gridPosition);
             return;
@@ -3270,11 +3282,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void focusTile(int position) {
         if (adapter == null || grid == null) return;
-        // Horizontal mode intentionally hides the App Grid; keep all Home tile focus in Dock.
-        if (!dockVertical) {
-            int dockCount = dockAdapter == null ? 0 : dockAdapter.getItemCount();
-            if (dockCount > 0) focusDockTile(NavigationState.resolveHomePosition(-1, position, dockCount));
-            else focusTopBarFallback();
+        if (!dockVertical && !horizontalGridExpanded) {
+            if (adapter.getItemCount() == 0) {
+                if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+                else focusTopBarFallback();
+                return;
+            }
+            // A hidden RecyclerView cannot receive focus. Reveal it, wait for layout,
+            // then resolve the requested item by its current adapter position.
+            horizontalGridExpanded = true;
+            grid.setVisibility(View.VISIBLE);
+            grid.requestLayout();
+            grid.post(() -> focusTile(position));
             return;
         }
         if (adapter.getItemCount() == 0) {
