@@ -198,13 +198,13 @@ final class WifiSettingsDialog {
             TvDialogStyle.apply(dialog, activity, 760, 620);
             refreshStatus();
             updatePrerequisites();
+            registerScanReceiver();
+            registerNetworkCallback();
+            requestScan();
             showCachedResults();
             connectFocusOrder();
             View initial = firstFocusableControl();
             if (initial != null) initial.requestFocus();
-            registerScanReceiver();
-            registerNetworkCallback();
-            requestScan();
         });
     }
 
@@ -228,8 +228,8 @@ final class WifiSettingsDialog {
         if (screen != null && screen.dialog.isShowing()) {
             screen.refreshStatus();
             screen.updatePrerequisites();
-            screen.showCachedResults();
             screen.requestScan();
+            screen.showCachedResults();
         }
     }
 
@@ -256,8 +256,8 @@ final class WifiSettingsDialog {
                 && screen.dialog.isShowing()) {
             screen.refreshStatus();
             screen.updatePrerequisites();
-            screen.showCachedResults();
             screen.requestScan();
+            screen.showCachedResults();
         }
     }
 
@@ -463,11 +463,11 @@ final class WifiSettingsDialog {
         }
         List<ScanResult> sorted = new ArrayList<>(strongest.values());
         sorted.sort(Comparator.comparingInt((ScanResult item) -> item.level).reversed());
-        if (sorted.isEmpty()) {
+        if (sorted.isEmpty() && !scanPending) {
             TextView empty = text(R.string.wifi_scan_empty, TvUiTokens.CARD_SUBTITLE_SP, false,
                     activity.getResources().getDisplayMetrics().density);
             networkRows.addView(empty);
-        } else {
+        } else if (!sorted.isEmpty()) {
             int count = Math.min(sorted.size(), 12);
             for (int i = 0; i < count; i++) {
                 ScanResult result = sorted.get(i);
