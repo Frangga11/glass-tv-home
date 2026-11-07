@@ -312,16 +312,16 @@ public class DockLayoutModelTest {
     }
 
     @Test
-    public void dockGeometryUsesLegacy180By101DesignAndCapacityScaling() {
+    public void dockGeometrySharesFiveColumnTileScaleAndFitsSixSlotCapacity() {
         float density = 2f;
         int four = DockGeometry.horizontalTileWidthPx(1920, 4, density);
         int five = DockGeometry.horizontalTileWidthPx(1920, 5, density);
         int six = DockGeometry.horizontalTileWidthPx(1920, 6, density);
 
         assertEquals(Math.round(180 * density), four);
-        assertTrue(five < four);
+        assertEquals(five, four);
         assertTrue(six < five);
-        assertEquals(Math.round(four * 101f / 180f), DockGeometry.tileHeightPx(four));
+        assertEquals(Math.round(five * 101f / 180f), DockGeometry.tileHeightPx(five));
     }
 
 
