@@ -875,3 +875,24 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 
 - Owner branch fix/home-dock-visual-parity-v2 @ 2d1f744a4b77406712e7868a7e7c6747a3bb88ed.
 - Evidence: PATCH41_DOCK_GLASS_ADOPTION_2026-11-07.md.
+
+
+## Patch 4.1 overflow-app recovery — 7 November 2026
+
+| Gate | Status |
+|---|---|
+| Confirm horizontal non-Dock apps were inaccessible | SOURCE AUDIT CONFIRMED |
+| Grid collapsed at idle, reveal on Dock DPAD Down | IMPLEMENTED |
+| Overflow Grid Up returns to Dock | IMPLEMENTED |
+| Dock Up returns to top shelf | IMPLEMENTED |
+| Stable-key horizontal Grid focus restoration | IMPLEMENTED |
+| Navigation mapping unit test | ADDED / CI PASS |
+| Exact-head CI #42382202545 | BOTH REQUIRED JOBS SUCCESS |
+| Release APK | 1,624,937 bytes |
+| Test artifact | #13578301246; ZIP 1,424,751 bytes; SHA-256 5c9ea538f64743a0b31c91b14add41b47f091c3d57110d2f0bce83c86e537922 |
+| Physical TV visual/remote acceptance | PENDING / NOT RUN |
+| PR #74 | OPEN / DRAFT / UNMERGED |
+| Install / ADB / device mutation / merge | NOT PERFORMED |
+
+- Source branch fix/home-dock-visual-parity-v2 @ 48f07a983ebee4370bbf13a80f85edd947c2eb31.
+- Evidence: HOME_DOCK_PATCH41_RECOVERY_2026-11-07.md.
