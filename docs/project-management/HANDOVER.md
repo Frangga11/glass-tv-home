@@ -1603,3 +1603,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Branch fix/home-dock-visual-parity-v2 @ 4ba1d7f14ba26e0c4051fcdf958f289234b6e7ae; PR #74 OPEN/DRAFT/UNMERGED, base G4 7146de58953325fdfc6c98501828676f143e64cf.
 - Exact-head CI #1407 / 42378227691: both required jobs SUCCESS; app/installer release unit tests and builds passed; repository contract checks passed. APK 1,622,573 bytes; SHA-256 19d1435c7c20491b9093747d65c8dbab6a0627971461bee401702990538a142c; artifact #13576552604.
 - Source-host QC PASS; controlled TV visual/remote/overscan acceptance READY but NOT RUN. No install, ADB, device mutation or merge. Full checklist: HOME_DOCK_VISUAL_PARITY_V2_2026-11-07.md.
+
+
+## Patch 4.1 Dock & Liquid Glass adoption — 7 November 2026
+
+- Device test photo rejected prior V2: all apps remained in two Grid rows, Dock/tray/focus visuals absent.
+- Root cause: Patch 4.1 fills the first Dock row from configured favourites followed by ordered inventory; V2's separate Dock adapter used only configured/user-pinned keys and could collapse when none were available. Restored fill-to-capacity semantics with explicit unpins respected.
+- Adopted Patch 4.1 GlassRim iridescent gradient + Window Light, GlassView hardware-layer rim, DockBreathingBorderView and item_app layer. Wired breathing rim to Dock holders only; Window Light restored to DockDecoration, GlassDrawable and Glider.
+- Branch fix/home-dock-visual-parity-v2 @ 239390db27fafcc39b2fefa68ddfa9f0ba30608f; PR #74 OPEN/DRAFT/UNMERGED.
+- Exact-head CI #1415 / 42379388302 both jobs SUCCESS. APK 1,624,741 bytes; SHA-256 23ffb28d48b05f975be4b5bd13aa1086c08e47eef1feb5b8e13916799f32fafc; artifact #13576403262.
+- SOURCE-HOST QC PASS / READY FOR CONTROLLED TV ACCEPTANCE. New build not yet physically tested. No install, ADB, device mutation or merge. Evidence: PATCH41_DOCK_GLASS_ADOPTION_2026-11-07.md.
