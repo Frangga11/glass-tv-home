@@ -49,6 +49,15 @@ class GlobalSettingsSourceContractTest(unittest.TestCase):
             with self.subTest(control_id=control_id):
                 self.assertIn('"' + control_id + '"', source)
 
+    def test_profile_identity_summary_follows_page_title(self):
+        source = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/ModernSettingsDialog.java").read_text()
+        profile = source[source.index("if (tab == TAB_PROFILE)"):source.index("} else if (tab == TAB_HOME_SCREEN)", source.index("if (tab == TAB_PROFILE)"))]
+        title = profile.index("rightContent.addView(tvTitle);")
+        summary = profile.index("rightContent.addView(profileSummary, 1, profileSummaryLp);")
+        avatars = profile.index("rightContent.addView(tvAvatars);")
+        self.assertLess(title, summary)
+        self.assertLess(summary, avatars)
+
     def test_english_category_name_matches_v06_taxonomy(self):
         source = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppLanguage.java").read_text()
         self.assertIn('case LANG_EN: return "Widgets & Information";', source)
