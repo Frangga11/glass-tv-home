@@ -75,6 +75,37 @@ public class PinCredentialStoreTest {
     }
 
     @Test
+    public void failedLegacyAttemptDoesNotMigrateOrChangeCredential() {
+        prefs.edit().putString("security_pin", "2468").commit();
+
+        assertFalse(PinCredentialStore.verifyPin(context, "1111"));
+        assertTrue(prefs.contains("security_pin"));
+        assertFalse(prefs.contains("security_pin_salt_v1"));
+        assertFalse(prefs.contains("security_pin_hash_v1"));
+        assertFalse(PinCredentialStore.isDefaultPin(context));
+
+        assertTrue(PinCredentialStore.verifyPin(context, "2468"));
+        assertFalse(prefs.contains("security_pin"));
+        assertTrue(prefs.contains("security_pin_salt_v1"));
+        assertTrue(prefs.contains("security_pin_hash_v1"));
+    }
+
+    @Test
+    public void malformedStoredCredentialFailsClosedInsteadOfUsingDefaultPin() {
+        byte[] salt = new byte[16];
+        prefs.edit()
+                .putString("security_pin_salt_v1",
+                        android.util.Base64.encodeToString(salt, android.util.Base64.NO_WRAP))
+                .putString("security_pin_hash_v1", "bad")
+                .putBoolean("security_pin_is_default_v1", false)
+                .commit();
+
+        assertFalse(PinCredentialStore.isDefaultPin(context));
+        assertFalse(PinCredentialStore.verifyPin(context, "0000"));
+        assertFalse(PinCredentialStore.verifyPin(context, "7391"));
+    }
+
+    @Test
     public void eachPinChangeUsesANewSalt() {
         assertTrue(PinCredentialStore.setPin(context, "1357"));
         String firstSalt = prefs.getString("security_pin_salt_v1", "");
