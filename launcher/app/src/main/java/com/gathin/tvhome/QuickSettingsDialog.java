@@ -1,5 +1,6 @@
 package com.gathin.tvhome;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -39,7 +40,7 @@ final class QuickSettingsDialog {
 
     private QuickSettingsDialog() { }
 
-    static AlertDialog show(MainActivity activity, Actions actions, int initialFocus,
+    static AlertDialog show(Activity activity, Actions actions, int initialFocus,
                             Runnable onDismiss) {
         if (activity == null || actions == null || activity.isFinishing() || activity.isDestroyed()) {
             return null;
@@ -77,6 +78,7 @@ final class QuickSettingsDialog {
 
         TextView close = createLink(activity, R.string.close_label, TvUiTokens.MIN_DPAD_TARGET_DP, density);
         controls[QuickSettingsFocusGraph.CLOSE] = close;
+        close.setTag("quick_settings_close");
         header.addView(close, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, TvUiTokens.MIN_DPAD_TARGET_DP)));
         content.addView(header);
@@ -94,22 +96,27 @@ final class QuickSettingsDialog {
                 R.drawable.ic_wifi, R.string.wifi, null,
                 safe(actions.wifiSummary(), activity.getString(R.string.quick_settings_wifi_summary)),
                 density, dialogHolder, actions::openWifi);
+        controls[QuickSettingsFocusGraph.WIFI].setTag("quick_settings_wifi");
         controls[QuickSettingsFocusGraph.RESTART] = addGridTile(activity, grid, 0, 1, 1,
                 R.drawable.ic_power, R.string.restart_tv_title, null,
                 activity.getString(R.string.quick_settings_restart_summary),
                 density, dialogHolder, actions::restart);
+        controls[QuickSettingsFocusGraph.RESTART].setTag("quick_settings_restart");
         controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 1, 0, 1,
                 R.drawable.ic_settings, R.string.app_language_title, null,
                 safe(actions.languageSummary(), ""),
                 density, dialogHolder, actions::chooseLanguage);
+        controls[QuickSettingsFocusGraph.LANGUAGE].setTag("quick_settings_language");
         controls[QuickSettingsFocusGraph.POWER] = addGridTile(activity, grid, 1, 1, 1,
                 R.drawable.ic_power, 0, actions.powerTitle(),
                 activity.getString(R.string.quick_settings_power_summary),
                 density, dialogHolder, actions::openPowerMenu);
+        controls[QuickSettingsFocusGraph.POWER].setTag("quick_settings_power");
         controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 2, 0, 2,
                 R.drawable.ic_settings, 0, actions.cacheTitle(),
                 activity.getString(R.string.quick_settings_cache_summary),
                 density, dialogHolder, actions::cleanCache);
+        controls[QuickSettingsFocusGraph.CACHE].setTag("quick_settings_cache");
         content.addView(grid, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -128,6 +135,7 @@ final class QuickSettingsDialog {
         wallpaperHeader.addView(wallpaperTitle);
         TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, TvUiTokens.MIN_DPAD_TARGET_DP, density);
         controls[QuickSettingsFocusGraph.WALLPAPER_MANAGE] = manageWallpaper;
+        manageWallpaper.setTag("quick_settings_manage_wallpaper");
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, TvUiTokens.MIN_DPAD_TARGET_DP)));
         content.addView(wallpaperHeader);
@@ -140,6 +148,7 @@ final class QuickSettingsDialog {
                 R.string.quick_settings_next_photo,
                 activity.getString(R.string.quick_settings_next_photo_summary), 72, density);
         controls[QuickSettingsFocusGraph.NEXT_PHOTO] = nextPhoto;
+        nextPhoto.setTag("quick_settings_next_photo");
         bind(nextPhoto, dialogHolder, actions::nextPhoto);
         LinearLayout.LayoutParams nextLp = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
@@ -151,6 +160,7 @@ final class QuickSettingsDialog {
                 safe(actions.wallpaperIntervalSummary(), activity.getString(R.string.quick_settings_interval_summary)),
                 72, density);
         controls[QuickSettingsFocusGraph.INTERVAL] = interval;
+        interval.setTag("quick_settings_interval");
         bind(interval, dialogHolder, actions::chooseWallpaperInterval);
         LinearLayout.LayoutParams intervalLp = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
@@ -167,6 +177,7 @@ final class QuickSettingsDialog {
                 R.string.quick_settings_glass_settings,
                 activity.getString(R.string.quick_settings_glass_settings_summary), 64, density);
         controls[QuickSettingsFocusGraph.GLASS_SETTINGS] = glassSettings;
+        glassSettings.setTag("quick_settings_glass_settings");
         bind(glassSettings, dialogHolder, actions::openGlassSettings);
         LinearLayout.LayoutParams glassLp = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
@@ -177,6 +188,7 @@ final class QuickSettingsDialog {
                 R.string.quick_settings_android_settings,
                 activity.getString(R.string.quick_settings_android_settings_summary), 64, density);
         controls[QuickSettingsFocusGraph.ANDROID_SETTINGS] = androidSettings;
+        androidSettings.setTag("quick_settings_android_settings");
         bind(androidSettings, dialogHolder, actions::openAndroidSettings);
         LinearLayout.LayoutParams androidLp = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
@@ -207,7 +219,7 @@ final class QuickSettingsDialog {
         return dialog;
     }
 
-    private static View addGridTile(MainActivity activity, GridLayout grid, int row, int column, int span,
+    private static View addGridTile(Activity activity, GridLayout grid, int row, int column, int span,
                                     int icon, int titleRes, String titleOverride, String summary, float density,
                                     AlertDialog[] dialogHolder, Runnable action) {
         String title = titleOverride != null ? titleOverride : activity.getString(titleRes);
@@ -223,12 +235,12 @@ final class QuickSettingsDialog {
         return tile;
     }
 
-    private static TextView createTile(MainActivity activity, int iconRes, int titleRes,
+    private static TextView createTile(Activity activity, int iconRes, int titleRes,
                                        String summary, int minHeightDp, float density) {
         return createTile(activity, iconRes, activity.getString(titleRes), summary, minHeightDp, density);
     }
 
-    private static TextView createTile(MainActivity activity, int iconRes, String title,
+    private static TextView createTile(Activity activity, int iconRes, String title,
                                        String summary, int minHeightDp, float density) {
         TextView tile = new TextView(activity);
         tile.setId(View.generateViewId());
@@ -265,7 +277,7 @@ final class QuickSettingsDialog {
         return tile;
     }
 
-    private static TextView createLink(MainActivity activity, int titleRes, int heightDp, float density) {
+    private static TextView createLink(Activity activity, int titleRes, int heightDp, float density) {
         TextView link = new TextView(activity);
         link.setId(View.generateViewId());
         link.setFocusable(true);
@@ -313,7 +325,7 @@ final class QuickSettingsDialog {
         });
     }
 
-    private static void addDivider(MainActivity activity, LinearLayout parent, float density, int topMarginDp) {
+    private static void addDivider(Activity activity, LinearLayout parent, float density, int topMarginDp) {
         View divider = new View(activity);
         divider.setBackgroundColor(0x66426BAA);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(

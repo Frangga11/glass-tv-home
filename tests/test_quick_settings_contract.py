@@ -20,6 +20,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("TvFocusIndicator.applyRoundedTextFocus", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
+        self.assertIn("dialog.setCancelable(true)", DIALOG)
 
     def test_all_approved_quick_actions_route_to_existing_owners(self):
         for source in (
