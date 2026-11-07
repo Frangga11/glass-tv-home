@@ -1826,3 +1826,7 @@ Disposition: SOURCE-HOST QC PASS / READY FOR CONTROLLED DEVICE ACCEPTANCE. Physi
 - Artifact #13585808852 was downloaded and verified: ZIP 1,422,660 bytes; extracted APK 1,622,497 bytes; SHA-256 38d818902ce3ccf800b8de5cc0428125b91b7e9c27ba81810759a53925c65d0f. ZIP integrity and APK ZIP integrity passed.
 - This is an intermediate Dock-only build, not the combined Quick Toggles fix. PR #75 latest head 21bc204... is under CI #1448; PR #76 latest head ea681545... is under CI #1447 with artifact publication enabled.
 - Final cumulative APK verification and physical Mi TV Stick visual/remote acceptance remain pending. No merge or device mutation.
+
+### HOME-QUICK-TOGGLE-ALIGN-001 — base reconciliation
+
+PR #75 advanced to `21bc204a413fce3c527e0e8761d2016bc5dc87c6` with a workflow-only commit adding PR #76 to APK publication. PR #76 was rebased onto this base; the duplicate workflow change was removed from its diff. Current PR #76 head `012fba1c4012c7e4a05de292b69030c17a594d90`; compare is 2 ahead / 0 behind, only MainActivity and its regression test differ. PR #76 OPEN/DRAFT/UNMERGED. Exact-head CI #1449 / `42404084112` is IN PROGRESS. CI #1443 was PASS on the pre-rebase source/test head and is not substituted for the new exact-head gate. APK and physical device acceptance remain pending.
