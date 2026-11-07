@@ -444,7 +444,9 @@ final class WifiSettingsDialog {
         }
         networkRows.removeAllViews();
         List<ScanResult> results = Collections.emptyList();
-        if (hasLocationPermission() && isLocationEnabled() && wifiEnabled()) {
+        boolean canReadResults = WifiScanPolicy.mayRequestScan(
+                hasLocationPermission(), isLocationEnabled(), wifiEnabled());
+        if (canReadResults) {
             try {
                 WifiManager manager = wifiManager();
                 if (manager != null) results = manager.getScanResults();
@@ -463,7 +465,7 @@ final class WifiSettingsDialog {
         }
         List<ScanResult> sorted = new ArrayList<>(strongest.values());
         sorted.sort(Comparator.comparingInt((ScanResult item) -> item.level).reversed());
-        if (sorted.isEmpty() && !scanPending) {
+        if (sorted.isEmpty() && !scanPending && canReadResults) {
             TextView empty = text(R.string.wifi_scan_empty, TvUiTokens.CARD_SUBTITLE_SP, false,
                     activity.getResources().getDisplayMetrics().density);
             networkRows.addView(empty);
