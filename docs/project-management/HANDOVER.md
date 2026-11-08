@@ -18,7 +18,7 @@
 - Reconciled the overlapping shelf test while retaining PR #84's single-anchor regression.
 - Added PR #100 to the Home layout APK artifact allowlist.
 - Candidate diff: 2 commits ahead, 0 behind exact PR #89 base; 11 changed files.
-- Exact-head CI #1677 / run `42533185178`: Python 208 tests, 1 skipped; Lists/tools/docs job PASS; Android build/unit test still pending at this checkpoint update.
+- Exact-head CI #1677 / run `42533185178`: both jobs SUCCESS; Python 208 tests (1 skipped); Android unit tests + release build PASS. APK 1,626,857 bytes; artifact #13638675606 ZIP SHA-256 `e1428796d54847cd7e33c5c761b7339ad76c6eea004b8e26c39f6499d9502521`; extracted APK SHA-256 `b7ae8aa3919e0818b0879b8996427ea6eab9b91f14bf0fcff84b80fad32f292a`. See [REFINEMENT-002 audit](GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md).
 
 ## Next steps
 1. Wait for launcher unit tests and release build on exact HEAD `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b`.
