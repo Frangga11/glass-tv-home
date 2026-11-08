@@ -208,7 +208,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private View btnAssistant;
     private View btnCandyBox;
     private View btnHome;
-    private View badgeSettingsUpdate;
     private boolean activityResumed;
     private TextView ampmView, dateView;
     private TextView shamsiDate;
@@ -723,7 +722,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             });
             GradientDrawable islamicScrim = new GradientDrawable(
                     GradientDrawable.Orientation.LEFT_RIGHT,
-                    new int[]{0x00000000, 0x1F000000, 0x44000000});
+                    new int[]{0x00000000, 0x12000000, 0x26000000});
             islamicScrim.setCornerRadius(10f * density);
             islamicShelf.setBackground(islamicScrim);
         }
@@ -929,7 +928,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 pill.setBackgroundColor(android.graphics.Color.TRANSPARENT);
                 pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
             } else {
-                pill.setBackground(new GlassDrawable(pill, 21f * density, density, glider));
+                pill.setBackground(new GlassDrawable(pill, 20f * density, density, glider));
             }
             glider.addCompanion(pill);
             Backdrop.watch(pill);
@@ -1036,8 +1035,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         btnHome = findViewById(R.id.btnHome);
         btnCandyBox = findViewById(R.id.btnCandyBox);
         View btnSettings = findViewById(R.id.btnSettings);
-        badgeSettingsUpdate = findViewById(R.id.badgeSettingsUpdate);
-        updateSettingsBadge();
         updateHeaderTabLabels();
         updateLocationPill();
         if (btnHome != null) btnHome.setOnClickListener(v -> updateHomeTabIndicator());
@@ -1223,7 +1220,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
 
         // Silent background update check after 5 seconds on launch
-        handler.postDelayed(() -> AppUpdateManager.checkForUpdates(this, false), 5000);
 
         if (getIntent() != null && getIntent().getBooleanExtra("open_settings", false)) {
             getIntent().removeExtra("open_settings");
@@ -1838,11 +1834,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updateIslamicShelf();
         updateInputsButton();
         updateTopBarUserIcon();
-        updateSettingsBadge();
         updateHeaderTabLabels();
         updateLocationPill();
         updateHomeTabIndicator();
-        handler.postDelayed(() -> AppUpdateManager.checkForUpdates(this, false), 1500);
         Location.Zone chosenPlace = Location.chosen(this);
         String zoneCode = (chosenPlace != null) ? chosenPlace.code : "WLY01";
         Azan.schedule(this, zoneCode);
@@ -4697,15 +4691,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    public void updateSettingsBadge() {
-        runOnUiThread(() -> {
-            if (badgeSettingsUpdate != null) {
-                boolean hasUpdate = AppUpdateManager.isUpdateAvailable(this);
-                badgeSettingsUpdate.setVisibility(hasUpdate ? View.VISIBLE : View.GONE);
-            }
-        });
-    }
-
     /** Opens the centered V04 Quick Settings modal using the shared G2 dialog/focus contract. */
     private void showQuickControlPopup() {
         showQuickControlPopup(QuickSettingsFocusGraph.WIFI);
@@ -5433,33 +5418,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    void showAutoUpdateDialog() {
+    void showManualUpdateDialog() {
         SoundEffects.playSelect();
         View view = getLayoutInflater().inflate(R.layout.dialog_ota_coffee, null);
 
         TextView tvVersionSubtitle = view.findViewById(R.id.tvVersionSubtitle);
-        TextView tvAutoStatus = view.findViewById(R.id.tvAutoStatus);
+        TextView tvManualStatus = view.findViewById(R.id.tvManualStatus);
         TextView btnCheckNow = view.findViewById(R.id.btnCheckNow);
-        TextView btnChangeTime = view.findViewById(R.id.btnChangeTime);
-        TextView btnToggleAuto = view.findViewById(R.id.btnToggleAuto);
         TextView btnClose = view.findViewById(R.id.btnClose);
         ImageView imgQrCoffee = view.findViewById(R.id.imgQrCoffee);
 
         if (tvVersionSubtitle != null) {
             tvVersionSubtitle.setText(getString(R.string.ota_version_subtitle_dynamic, getAppVersionName()));
         }
-
-        Runnable updateStatusUi = () -> {
-            boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
-            String sched = AppUpdateManager.getAutoUpdateTime(this);
-            if (tvAutoStatus != null) {
-                tvAutoStatus.setText(isAuto ? getString(R.string.auto_update_status_enabled, sched) : getString(R.string.auto_update_status_disabled));
-            }
-            if (btnToggleAuto != null) {
-                btnToggleAuto.setText(isAuto ? R.string.auto_update_disable_action : R.string.auto_update_enable_action);
-            }
-        };
-        updateStatusUi.run();
+        if (tvManualStatus != null) {
+            tvManualStatus.setText(R.string.ota_manual_update_status);
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setView(view);
@@ -5474,54 +5448,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (btnCheckNow != null) {
             btnCheckNow.setTextColor(0xFF000000);
             btnCheckNow.setOnFocusChangeListener(focusListener);
-        }
-        if (btnChangeTime != null) {
-            btnChangeTime.setTextColor(0xFFFFFFFF);
-            btnChangeTime.setOnFocusChangeListener(focusListener);
-        }
-        if (btnToggleAuto != null) {
-            btnToggleAuto.setTextColor(0xFFFFFFFF);
-            btnToggleAuto.setOnFocusChangeListener(focusListener);
-        }
-        if (btnClose != null) {
-            btnClose.setTextColor(0xFFFFFFFF);
-            btnClose.setOnFocusChangeListener(focusListener);
-        }
-
-        if (btnCheckNow != null) {
             btnCheckNow.setOnClickListener(v -> {
                 SoundEffects.playSelect();
                 dialog.dismiss();
                 AppUpdateManager.checkForUpdates(MainActivity.this, true);
             });
         }
-
-        if (btnChangeTime != null) {
-            btnChangeTime.setOnClickListener(v -> {
-                SoundEffects.playSelect();
-                dialog.dismiss();
-                showUpdateTimePickerDialog();
-            });
-        }
-
-        if (btnToggleAuto != null) {
-            btnToggleAuto.setOnClickListener(v -> {
-                SoundEffects.playSelect();
-                boolean isAuto = AppUpdateManager.isAutoUpdateEnabled(this);
-                boolean newMode = !isAuto;
-                AppUpdateManager.setAutoUpdateEnabled(this, newMode);
-                updateStatusUi.run();
-                TvFeedback.show(this, newMode ? getString(R.string.auto_update_enabled_at, AppUpdateManager.getAutoUpdateTime(this)) : getString(R.string.auto_update_disabled), Toast.LENGTH_SHORT);
-            });
-        }
-
         if (btnClose != null) {
+            btnClose.setTextColor(0xFFFFFFFF);
+            btnClose.setOnFocusChangeListener(focusListener);
             btnClose.setOnClickListener(v -> {
                 SoundEffects.playSelect();
                 dialog.dismiss();
             });
         }
-
         if (imgQrCoffee != null) {
             imgQrCoffee.setOnClickListener(v -> {
                 SoundEffects.playSelect();
@@ -5531,47 +5471,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         dialog.show();
         styleDeviceSettingsPopup(dialog, 680, 0);
-
         if (btnCheckNow != null) btnCheckNow.requestFocus();
-    }
-
-    private void showUpdateTimePickerDialog() {
-        final String[] times = new String[]{
-                getString(R.string.auto_update_time_0330_option),
-                getString(R.string.auto_update_time_0400_option),
-                getString(R.string.auto_update_time_0500_option),
-                getString(R.string.auto_update_time_1200_option),
-                getString(R.string.auto_update_time_0200_option)
-        };
-        final String[] rawTimes = new String[]{
-                "03:30 AM", "04:00 AM", "05:00 AM", "12:00 PM", "02:00 AM"
-        };
-        String current = AppUpdateManager.getAutoUpdateTime(this);
-        int selectedIndex = 0;
-        for (int i = 0; i < rawTimes.length; i++) {
-            if (rawTimes[i].equalsIgnoreCase(current)) {
-                selectedIndex = i;
-                break;
-            }
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle(R.string.auto_update_schedule_title);
-        builder.setSingleChoiceItems(times, selectedIndex, (dialog, which) -> {
-            dialog.dismiss();
-            String chosen = rawTimes[which];
-            AppUpdateManager.setAutoUpdateTime(MainActivity.this, chosen);
-            AppUpdateManager.setAutoUpdateEnabled(MainActivity.this, true);
-            TvFeedback.show(MainActivity.this, getString(R.string.auto_update_time_selected, chosen), Toast.LENGTH_SHORT);
-            showAutoUpdateDialog();
-        });
-        builder.setNegativeButton(R.string.back_action, (dialog, which) -> {
-            dialog.dismiss();
-            showAutoUpdateDialog();
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-        styleDeviceSettingsPopup(dialog, 600, 480);
     }
 
     private void updateNowPlayingUi(NowPlayingManager.MediaInfo info) {
