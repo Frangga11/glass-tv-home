@@ -644,3 +644,22 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - CI #1639 / run `42523095371`: Python regression suite **PASS — 184 tests, 1 skipped** (confirmed from completed GitHub Actions job logs).
 - Android `testReleaseUnitTest` and `assembleRelease` job remained **IN_PROGRESS** at the time of this update; no final CI result or APK artifact is claimed yet.
 - Physical Mi TV Stick acceptance remains pending.
+
+
+---
+
+## 19. GTVH-HOME-ISLAMIC-SHELF-ARABIC-TYPOGRAPHY-001 — 9 November 2026
+
+**Status: SOURCE CHANGE COMMITTED / CI NOT YET VERIFIED / PHYSICAL VISUAL ACCEPTANCE PENDING / NOT FINAL.**
+
+- PR [#85](https://github.com/Frangga11/glass-tv-home/pull/85): OPEN / DRAFT / UNMERGED.
+- Branch: `fix/home-islamic-shelf-arabic-typography-001`.
+- Exact branch HEAD at checkpoint: `a5eaae843f8998c53238870609102e4c20b05ded`.
+- Base: PR #84 branch `fix/home-islamic-shelf-single-anchor-004`, exact base HEAD `d821842c2211cb6e65bbde506253cde7b3929771`.
+- Updated only the `ayahArabic` TextView in `activity_main.xml`: warm yellow-orange `#FFFFC45A`; line spacing `-1dp` and multiplier `0.94`; retained Amiri Quran font, 20sp size, font padding, two-line cap, and ellipsize behavior; applied soft warm shadow `#CC3A1800` with dx 0, dy 2, radius 3.
+- Translation text, label, Islamic Shelf geometry, prayer-time table, Dock, focus navigation, and wallpaper safe frame are unchanged.
+- Added `tests/test_home_islamic_shelf_arabic_typography_contract.py` to lock color, line spacing, glyph padding, shadow, and translation-style isolation.
+- CI for exact PR #85 HEAD has not yet been verified. No test pass or APK build is claimed.
+- Physical Mi TV Stick visual acceptance is pending. Must inspect both one-line and two-line Arabic text on bright/dark wallpapers and confirm that Arabic glyphs and harakat are not clipped or colliding.
+- Keep PR #85 DRAFT / UNMERGED until exact-head CI and physical visual acceptance pass.
+- Detailed audit: [GTVH-HOME-ISLAMIC-SHELF-ARABIC-TYPOGRAPHY-001-AUDIT.md](GTVH-HOME-ISLAMIC-SHELF-ARABIC-TYPOGRAPHY-001-AUDIT.md).
