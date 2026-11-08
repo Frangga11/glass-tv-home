@@ -794,6 +794,46 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 return false;
             });
         }
+
+        // The visible timetable is the real Home entry point; the legacy fallback
+        // TextView is GONE and must not be the only route to the prayer popup.
+        View prayerTableView = findViewById(R.id.prayerTable);
+        if (prayerTableView != null) {
+            prayerTableView.setFocusable(true);
+            prayerTableView.setClickable(true);
+            prayerTableView.setOnClickListener(v -> showPrayerPopup());
+            prayerTableView.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    View inputs = findViewById(R.id.btnInputs);
+                    View wifi = findViewById(R.id.btnWifi);
+                    View settings = findViewById(R.id.btnSettings);
+                    if (inputs != null && inputs.getVisibility() == View.VISIBLE) inputs.requestFocus();
+                    else if (wifi != null && wifi.getVisibility() == View.VISIBLE) wifi.requestFocus();
+                    else if (settings != null) settings.requestFocus();
+                    return true;
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    focusLastTile();
+                    return true;
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
+                    showPrayerPopup();
+                    return true;
+                }
+                return false;
+            });
+            prayerTableView.setOnFocusChangeListener((v, hasFocus) -> {
+                GradientDrawable focusSurface = new GradientDrawable();
+                focusSurface.setColor(hasFocus ? 0x553B5872 : 0x00000000);
+                focusSurface.setCornerRadius(8 * density);
+                focusSurface.setStroke(Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
+                        hasFocus ? 0xFF7DD3FC : 0x22FFFFFF);
+                v.setBackground(focusSurface);
+                if (hasFocus) SoundEffects.playNav();
+            });
+        }
         updatePrayerTimes();
         PrayerTimes.syncIfDue(this, this::updatePrayerTimes);
         vpnApp = cfg.vpnApp;
