@@ -81,7 +81,8 @@
 - **Evidence:** `MainActivity.updateHomeWeather()` is only called recursively from its own stale-response retry; there is no startup, resume, minute-tick or external production caller. `HomeWeather.refresh()` is only invoked inside that method. `WeatherActivity` refreshes `WeatherAirQuality` directly and does not populate the legacy `HomeWeather` cache. The Home atmospheric overlay is updated only by `showHomeWeather(line)`, settings-toggle refresh using `HomeWeather.last(this)`, or the test override.
 - **Impact:** The Home weather/AQI text remains correctly fed by the G3B `WeatherAirQuality` cache, but the separate dynamic rain/thunderstorm wallpaper overlay has no normal automatic data-refresh path. It may remain absent or stale unless a legacy cache was populated by another path or the setting/test override is invoked.
 - **Required correction:** Decide whether the atmospheric overlay remains an approved feature. If yes, call a guarded `updateHomeWeather()` from the appropriate Home lifecycle/refresh cadence and add stale-location/lifecycle tests. If no, remove the dormant refresh path and related UI setting so it cannot imply active functionality.
-- **No code correction made in this audit.
+- **No code correction made in this audit.**
+
 ## Additional observations
 - Existing E06 documentation is specifically about the four controls inside the **Home Screen Settings destination**. It is not a full Home main-screen audit; this document closes that documentation-scope gap.
 - `updateHomeWeather()` appears to have no production entry point beyond its own retry call. The visible Home weather/AQI text is currently fed by `WeatherAirQuality.getFormatted()`; the legacy `HomeWeather` path only calls `updateWeatherAqi()` plus `updateWeatherOverlay()`. Confirm whether the atmospheric wallpaper overlay is still an intended active feature before wiring or removing this dormant path.
