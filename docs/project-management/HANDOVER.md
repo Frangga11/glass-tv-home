@@ -1843,3 +1843,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #79 remains OPEN / DRAFT / UNMERGED. PR #77 latest observed head is `0ea3746f0304b7042a018eeebf850d759f357bf8`; PR #79 compares 42 ahead / 1 behind with merge base `0aeb3851ddce5deb47e3c5f96db44631b0343577`. The one missing PR #77 commit is workflow-only APK artifact publication; no Home source file changed there. Keep this dependency visible and reconcile before merge.
 - Physical Mi TV Stick visual/remote acceptance remains PENDING. No merge, APK installation, ADB, default-launcher change, or device-setting mutation.
 - Detailed audit: `docs/project-management/HOME_LAYOUT_CALIBRATION_AUDIT_2026-11-08.md`.
+
+
+## Resume checkpoint — Home final cross-audit, 8 November 2026
+
+- Active Home repair: PR #79 `fix/home-balanced-frame-001`, exact latest source/documentation head `ddd8750a688460cf1c8bc4b27c77189294301844`; OPEN / DRAFT / UNMERGED. Parent PR #77 remains OPEN / DRAFT / UNMERGED at `0ea3746f0304b7042a018eeebf850d759f357bf8`.
+- Cross-audit found an incomplete stale-focus cancellation path: Grid reveal callbacks could re-enter focus without checking the captured generation, and Dock/header focus plus Activity pause did not invalidate pending Grid requests.
+- Corrected in PR #79: generation guard on deferred Grid reveal, cancellation on Dock focus, header-pill focus, and onPause. Added a Python source-contract regression test.
+- Updated source files: `MainActivity.java`, `tests/test_home_layout_bounds_contract.py`, and `HOME_LAYOUT_RECONCILIATION_2026-11-08.md` on the PR branch.
+- Previous exact-head CI: PR #77 run #1506 PASS; PR #79 run #1526 PASS. These are pre-correction results. Fresh CI for `ddd8750a688460cf1c8bc4b27c77189294301844` is not yet visible; do not claim the new commits passed CI.
+- Dependency audit: PR #79's base SHA `0aeb3851ddce5deb47e3c5f96db44631b0343577` is one commit behind PR #77 head; the intervening commit changes only the CI workflow, and both branch workflow contents were inspected and are identical. Reconcile ancestry before merge.
+- Device visual/DPAD/overscan acceptance remains NOT RUN. No APK installed, no ADB or device settings changed. No PR merged.
+- Next: obtain fresh exact-head CI for PR #79, inspect resulting APK diagnostics/artifact, complete source review, then prepare the Mi TV Stick acceptance matrix. Do not test or merge before CI and source review pass.
