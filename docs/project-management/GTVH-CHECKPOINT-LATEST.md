@@ -728,3 +728,19 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Detailed audit: [GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001-AUDIT.md](GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001-AUDIT.md).
 - PR #88 exact-head CI #1649 / run `42524805149`: **SUCCESS**; Python suite **201 tests, 1 skipped**, all three source-label contracts passed; Android `testReleaseUnitTest` and `assembleRelease` **PASS / BUILD SUCCESSFUL**; APK diagnostic **1,626,381 bytes**. Publisher skipped because PR #88 is Draft.
 - Physical Mi TV Stick visual/source-state acceptance pending.
+
+
+---
+
+## 23. GTVH-HOME-DAILY-AYAH-OFFLINE-RETRY-BACKOFF-001 — 9 November 2026
+
+**Status: IMPLEMENTATION COMMITTED / PYTHON CI PASS / ANDROID CI IN PROGRESS / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+
+- PR [#89](https://github.com/Frangga11/glass-tv-home/pull/89): OPEN / DRAFT / UNMERGED.
+- Branch: `fix/daily-ayah-offline-retry-backoff-001`.
+- Exact HEAD: `4038c08f4825f7bacf965bc6708505d3c8c30ebc`.
+- Base: PR #88 branch, exact base HEAD `a4b979540def5fc1414e66eec6df516a1ef22fe8`.
+- Adds 30-minute retry cooldown keyed by WIB day, process-wide single-flight fetch guard, and Home preflight to avoid creating worker threads during cooldown.
+- New WIB day allows immediate refresh; previous valid cached verse remains visible with stale/local freshness status.
+- CI #1649 / run `42525047258`: Python suite **202 tests, 1 skipped**, all new retry contracts pass. Android unit/release build still in progress.
+- Detailed audit: [GTVH-HOME-DAILY-AYAH-OFFLINE-RETRY-BACKOFF-001-AUDIT.md](GTVH-HOME-DAILY-AYAH-OFFLINE-RETRY-BACKOFF-001-AUDIT.md).
