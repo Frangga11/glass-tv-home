@@ -1101,3 +1101,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 | Merge / release | NOT AUTHORIZED / NOT DONE |
 
 Previous CI #1506 and #1526 predate the latest stale-focus correction and must not be used as evidence for the new exact head.
+
+
+## GTVH-HOME-FINAL-CROSS-AUDIT-001 follow-up — 8 November 2026
+
+| Item | Status |
+|---|---|
+| Stale-focus cancellation and callback guard | FIXED; exact-head CI #1529 PASS (prior head) |
+| Bilingual altitude resource | FIXED in latest PR #79 head `1fff5b7b8eea4ee53198fe3e65f6c75c91340be3` |
+| Default/Indonesian altitude | `%1$d mdpl` |
+| English altitude | `%1$d m ASL` |
+| Localization regression test | ADDED; CI #1534 IN PROGRESS |
+| PR #79 merge status | OPEN / DRAFT / UNMERGED |
+| Mi TV Stick acceptance | NOT RUN |
