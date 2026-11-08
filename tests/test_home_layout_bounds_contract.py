@@ -306,5 +306,64 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("updateWeatherOverlay(HomeWeather.last(this));", toggle)
         self.assertIn("if (enabled) updateHomeWeather();", toggle)
 
+
+    def test_location_pill_opens_prayer_zone_dialog_and_routes_to_weather(self):
+        self.assertIn(
+            "if (locationPill != null) locationPill.setOnClickListener(v -> showPrayerZoneDialog());",
+            MAIN,
+        )
+        start = MAIN.index("View.OnKeyListener pillKeys")
+        end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
+        keys = MAIN[start:end]
+        for key in ("KEYCODE_DPAD_CENTER", "KEYCODE_ENTER", "KEYCODE_NUMPAD_ENTER",
+                    "KEYCODE_DPAD_UP", "KEYCODE_DPAD_DOWN", "KEYCODE_DPAD_LEFT",
+                    "KEYCODE_DPAD_RIGHT"):
+            self.assertIn(key, keys)
+        self.assertIn("v.performClick();", keys)
+        self.assertIn("v.getId() == R.id.locationPill", keys)
+        self.assertIn("weatherAirQualityView.requestFocus();", keys)
+
+        start = MAIN.index("if (weatherAirQualityView != null) {")
+        end = MAIN.index("// Measure the actual clock/date content edge", start)
+        weather_keys = MAIN[start:end]
+        self.assertIn("locationPill.requestFocus();", weather_keys)
+        self.assertIn("btnHome.requestFocus()", weather_keys)
+
+    def test_home_profile_and_settings_tabs_keep_their_real_actions(self):
+        self.assertIn(
+            "if (btnHome != null) btnHome.setOnClickListener(v -> updateHomeTabIndicator());",
+            MAIN,
+        )
+        self.assertIn(
+            "btnCandyBox.setOnClickListener(v -> showCandyBoxPopup());",
+            MAIN,
+        )
+        self.assertIn(
+            "btnSettings.setOnClickListener(v -> showQuickControlPopup());",
+            MAIN,
+        )
+        self.assertIn("setText(indonesian ? \"Beranda\" : \"Home\")", MAIN)
+        self.assertIn("setText(indonesian ? \"Profil\" : \"Profile\")", MAIN)
+        self.assertIn("setText(indonesian ? \"Pengaturan\" : \"Settings\")", MAIN)
+
+        start = MAIN.index("View.OnKeyListener pillKeys")
+        end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
+        keys = MAIN[start:end]
+        self.assertIn("id == R.id.btnHome) target = btnCandyBox", keys)
+        self.assertIn("id == R.id.btnCandyBox) target = btnSettings", keys)
+        self.assertIn("id == R.id.btnSettings)", keys)
+        self.assertIn("target = btnCandyBox;", keys)
+
+    def test_header_widths_recompute_after_each_measured_group_changes(self):
+        start = MAIN.index("View.OnLayoutChangeListener headerMetricsListener")
+        end = MAIN.index("// Hide the glass when focus leaves the tiles.", start)
+        metrics = MAIN[start:end]
+        for view in ("headerRow", "leftHeader", "dateHeader", "rightHeader", "navHeader"):
+            self.assertIn(f"{view}.addOnLayoutChangeListener(headerMetricsListener)", metrics)
+        self.assertIn("root.post(this::applyHeaderWidths);", metrics)
+        self.assertIn("HomeHeaderGeometry.centeredWidthPx", MAIN)
+        self.assertIn("No measured space for centered Home navigation", MAIN)
+
+
 if __name__ == "__main__":
     unittest.main()
