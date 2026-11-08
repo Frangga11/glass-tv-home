@@ -821,7 +821,7 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 
 ## 28. GTVH-HOME-ISLAMIC-SHELF-ARABIC-RIGHT-ALIGN-001 — 9 November 2026
 
-**Status: IMPLEMENTATION COMMITTED / DRAFT PR OPEN / CI IN PROGRESS / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+**Status: IMPLEMENTATION COMMITTED / EXACT-HEAD CI PASS / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
 
 - User-approved design rule: Quran Arabic is right-aligned with true RTL direction; Indonesian translation is left-aligned with LTR direction.
 - Audit at PR #89 exact source HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc` found:
@@ -835,7 +835,30 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
   - `activity_main.xml`: Home Shelf translation is explicitly LTR and start-aligned; Arabic remains RTL and end-aligned.
   - `test_daily_ayah_cache_and_label_contract.py`: add regression contract for XML and runtime alignment in both displays.
 - Diff against PR #89 base: 3 files, 23 additions, 2 deletions; no unrelated app scope changed. No ayah content, cache/network, font/color/line spacing, size, max-line limits, Shelf geometry, prayer timetable, focus/navigation, or worker behavior changed.
-- CI #1651 / run `42526843055`: IN PROGRESS at checkpoint write. APK publisher run `42526843044` / #106: IN PROGRESS. Do not report CI/build or APK artifact as passed until verified.
+- CI #1651 / run `42526843055`: **SUCCESS**; both Launcher build/unit tests and Lists/tools/docs jobs passed. Android release build and unit tests passed. Publisher run `42526843044` / #106: SKIPPED because PR #91 is Draft; no APK artifact is claimed.
 - PR #91 remains OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, or device install performed.
 - Physical Mi TV Stick acceptance remains pending: verify Arabic glyphs/harakat and right edge alignment for one-/two-line verses, Indonesian translation left alignment, and no clipping on the 1920×1080 Android 11 reference device.
 - Decision: source implementation committed; automated validation pending; physical acceptance pending; final merge blocked.
+
+
+---
+
+## 29. GTVH-HOME-ISLAMIC-SHELF-AYAH-SPACING-AND-PRAYER-LABEL-001 — 9 November 2026
+
+**Status: IMPLEMENTATION COMMITTED / DRAFT PR OPEN / CI IN PROGRESS / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+
+- User requested tighter vertical rhythm for the daily selected ayah preview and removal of the added local/official prayer-source labels.
+- Based on PR #91 exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`, branch `fix/home-islamic-shelf-ayah-spacing-and-prayer-label-001`.
+- Draft PR [#92](https://github.com/Frangga11/glass-tv-home/pull/92): OPEN / DRAFT / UNMERGED. Exact HEAD `5195921dbce1947862c3a49c6fcde1ce8b42f6d6`; base PR #91 branch at exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`. Six commits ahead, zero behind.
+- Six files changed:
+  - `activity_main.xml`: Arabic top margin 3dp→1dp; Arabic line spacing -1dp/0.94→-2dp/0.92; Arabic font padding remains enabled. Translation top margin 2dp→0dp; translation line spacing 2dp→0dp and multiplier 1.04. “Read full verse” hint top margin 7dp→3dp.
+  - `MainActivity.java`: runtime translation line spacing set to 0px / 1.04; prayer header restored to location + Hijri date without source suffix.
+  - `PrayerTimes.java`: remove visible KEMENAG RI / PERKIRAAN suffix from compact prayer summary; prayer calculations and source validation untouched.
+  - `AppLanguage.java`: remove now-unused prayer source label helper.
+  - Regression tests updated for compact Shelf spacing and restored prayer display.
+- No Quran content, translation selection, cache/network/retry behavior, prayer-time calculation, Kemenag validation, local fallback calculations, Shelf geometry, focus/navigation, or Dock behavior changed.
+- PR #91 exact-head CI #1651 / run `42526843055`: **SUCCESS** (Android build/unit tests and Python/docs jobs passed); publisher skipped because Draft.
+- PR #92 exact-head CI #1652 / run `42527386710`: **IN PROGRESS** at checkpoint update. Publisher run `42527386843` / #107: SKIPPED because Draft; no APK artifact is claimed.
+- PR #92 remains OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, or device install performed.
+- Physical Mi TV Stick visual acceptance remains pending. Specifically inspect two-line Arabic for harakat/glyph collision, translation line spacing, spacing to the “Baca ayat lengkap” hint, and prayer header/summary with no source suffix.
+- Decision: source implementation committed; PR #91 CI pass; PR #92 automated validation pending; physical acceptance pending; final merge blocked.
