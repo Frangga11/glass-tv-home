@@ -32,6 +32,15 @@ class HomeIslamicShelfArabicTypographyContract(unittest.TestCase):
         self.assertEqual(arabic.attrib["{http://schemas.android.com/apk/res/android}maxLines"], "2")
         self.assertEqual(arabic.attrib["{http://schemas.android.com/apk/res/android}includeFontPadding"], "true")
 
+    def test_home_ayah_views_use_a_shared_fixed_line_box_at_runtime(self):
+        main = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("arabicParams.width = islamicMaxWidth", main)
+        self.assertIn("ayahArabic.setLayoutParams(arabicParams)", main)
+        self.assertIn("translationParams.width = islamicMaxWidth", main)
+        self.assertIn("ayahText.setLayoutParams(translationParams)", main)
+        self.assertIn("ayahArabic.setGravity(Gravity.END)", main)
+        self.assertIn("ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL)", main)
+
     def test_arabic_text_has_soft_depth_shadow(self):
         arabic = self.views["ayahArabic"]
         ns = "{http://schemas.android.com/apk/res/android}"
