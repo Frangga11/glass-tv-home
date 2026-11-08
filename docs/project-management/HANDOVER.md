@@ -1,4 +1,55 @@
-# CURRENT CHECKPOINT — GLASS TV HOME — 8 NOVEMBER 2026, 19:42 WIB
+# CURRENT CHECKPOINT — GTVH-HOME-HEADER-REFINEMENT-001 — 8 NOVEMBER 2026
+
+## Active workstream
+- Workstream: `GTVH-HOME-HEADER-REFINEMENT-001`.
+- Owner decision: equal **29dp safe frame** on top, left, right and bottom; at density 2.0 this is **58px per edge**.
+- Source repository: `Frangga11/glass-tv-home`.
+- Source branch: `fix/home-balanced-frame-001`.
+- PR #79: **OPEN / DRAFT / UNMERGED**; current HEAD `354b855b65d95db688cf9a43af5b74e4a14a229b`.
+- Stacked PR #77: **OPEN / DRAFT / UNMERGED**; keep both unmerged.
+- Canonical docs branch: `docs/project-master-inventory`.
+
+## Implemented source changes
+- Clock 56sp → 44sp; AM/PM and Gregorian date 13sp → 11sp; Shamsi date 13sp → 11sp. Formatting and time/date update logic are unchanged.
+- `mainContent` top/start/end insets 34dp → 29dp.
+- `DockGeometry` horizontal and vertical safe margins 34dp → 29dp; bottom placement derives from the same 29dp value.
+- Header navigation now has one shared parent glass surface (`navPill`, 20dp radius); its three independent focus/click targets have transparent backgrounds and retain the 14dp state selector.
+- Other Header glass pills retain 21dp runtime radius.
+- Per-tab focus scaling removed to keep segment geometry stable.
+- Updated geometry tests and added static regression coverage for clock sizing and unified capsule structure.
+
+## Changed source files
+- `launcher/app/src/main/res/layout/activity_main.xml`
+- `launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java`
+- `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+- `launcher/app/src/main/res/drawable/header_glass_pill_bg.xml`
+- `launcher/app/src/test/java/com/gathin/tvhome/DockGeometryTest.java`
+- `tests/test_home_layout_bounds_contract.py`
+
+## Quality and safety status
+- Repository/PR/head verification: **PASS**.
+- 29dp source geometry and 58px density conversion: **PASS** (static source/unit assertions).
+- Clock/date sizes: **PASS** (XML attributes verified).
+- Unified capsule structure: **PASS** (static source structure).
+- DPAD behavior: **PARTIAL** (existing independent handlers preserved; runtime not yet tested).
+- Rendered four-edge measurement and before/after screenshot: **PENDING**.
+- CI #1559 / run `42484088913`: **IN PROGRESS** at checkpoint capture; do not claim build/test success.
+- Physical Mi TV Stick visual/focus/resume acceptance: **PENDING**.
+- APK installation, ADB, device/default-launcher setting changes: **NOT PERFORMED**.
+- PR merge: **NOT PERFORMED**.
+
+## Next actions
+1. Wait for CI #1559 and inspect all required jobs.
+2. If CI passes, inspect the exact generated APK/artifact and report its integrity.
+3. Provide visual evidence only from a genuine rendered build; do not fabricate screenshots or infer final bounds from source values.
+4. Owner reviews APK and explicitly authorizes any physical TV test. No remote install or device-setting changes.
+5. Keep PR #79 and #77 unmerged until acceptance.
+
+Detailed record: [GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md](GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md).
+
+---
+
+# HISTORICAL BASELINE CHECKPOINT — GLASS TV HOME — 8 NOVEMBER 2026, 19:42 WIB
 
 ## Canonical restart point
 This is the latest authoritative checkpoint and the starting point for all future Glass TV Home discussions. Read this section first, then consult the historical entries below. Do not restart from older checkpoint notes unless explicitly asked.
