@@ -659,3 +659,10 @@ The owner-approved refinement is isolated in PR #83 and stacked on the exact PR 
 6. Automated checks and exact-head Release build must pass; physical Mi TV Stick acceptance remains a separate mandatory gate.
 
 Evidence: PR #83 https://github.com/Frangga11/glass-tv-home/pull/83; exact HEAD `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`; CI #1637 PASS; Publisher #92 PASS; APK 1,625,213 bytes, SHA-256 `2d14894da872f616188bace686be5f85021766914bbe65260cc76a7848baee26`. **Do not merge before physical acceptance.**
+
+
+## Decision — GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-001 — 9 November 2026
+
+Owner confirmed safe frame: left/right/bottom 30dp, top stays 29dp. MIC/Assistant, Wi-Fi and Beranda/Profile/Settings outer/segment bounds must be 30dp. Inputs is excluded. Beranda and Profile icon-label spacing becomes 2dp; Settings and all other spacing remain unchanged. Wallpaper description and visible prayer-table bottom must each be 30dp from the actual horizontal Glass Dock tray. The prayer table's existing -6dp translation must be compensated from its runtime value, not approximated from its container. At 320dpi, 30dp = 60px; all runtime calculations use density.
+
+Implementation is isolated in PR #97, base PR #83 exact HEAD `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`, source HEAD `bb10228f930cc0b0e8c3dbf526aad9b0c94112fd`. PR #94–#96 are closed, not merged, and superseded. Python CI 190 tests (1 skipped) and Lists/tools/docs job pass; Android unit tests and release build remain pending. No merge, ADB, device installation or physical acceptance has occurred. Status BELUM FINAL until exact-head build, APK QA and visual audit pass.
