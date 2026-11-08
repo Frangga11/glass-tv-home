@@ -89,6 +89,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("horizontalGridTransitionGeneration", MAIN)
         self.assertIn("horizontalGridTransitionRetries", MAIN)
         self.assertIn("pendingHorizontalGridPosition", MAIN)
+        self.assertIn("private String pendingHorizontalGridKey;", MAIN)
         self.assertIn("pendingHorizontalGridKey = adapter.keyAt(targetPosition)", MAIN)
         self.assertIn("adapter.positionOf(pendingHorizontalGridKey)", MAIN)
         self.assertIn("grid.stopScroll()", MAIN)
