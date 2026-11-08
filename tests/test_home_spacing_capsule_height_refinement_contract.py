@@ -30,6 +30,11 @@ class HomeSpacingCapsuleHeightRefinementContractTest(unittest.TestCase):
         self.assertEqual(by_id["@+id/btnWifi"].get(ANDROID + "layout_height"), "30dp")
         self.assertEqual(by_id["@+id/btnAssistant"].get(ANDROID + "layout_height"), "30dp")
         self.assertEqual(by_id["@+id/navPill"].get(ANDROID + "layout_height"), "30dp")
+        nav = by_id["@+id/navPill"]
+        self.assertEqual(nav.get(ANDROID + "paddingTop"), "0dp")
+        self.assertEqual(nav.get(ANDROID + "paddingBottom"), "0dp")
+        for view_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettingsContainer"):
+            self.assertEqual(by_id[view_id].get(ANDROID + "layout_height"), "match_parent")
         # Inputs is intentionally excluded from the five requested capsules.
         self.assertIsNone(by_id["@+id/btnInputs"].get(ANDROID + "layout_height"))
 
