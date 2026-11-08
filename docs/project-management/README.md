@@ -214,3 +214,12 @@ Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G
 - Exact-head CI #1581 / run `42486917618`: both required jobs SUCCESS; release build SUCCESS; APK diagnostic size 1,627,577 bytes; test artifact #13620161574. Companion release workflow #36 / run `42486917728`: SUCCESS.
 - Status: **SOURCE + EXACT-HEAD CI PASS; WHOLE-HOME DEVICE ACCEPTANCE PENDING**. PR #79 and dependency PR #77 remain OPEN / DRAFT / UNMERGED. No APK installation, ADB, device setting/default-launcher mutation, or physical TV test.
 - Detailed evidence: [Home Screen cross-audit](GTVH_HOME_SCREEN_CROSS_AUDIT_001.md).
+
+
+## Home Header + whole-Home cross-audit follow-up — 8 November 2026
+- Implementation HEAD `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`: HOME-001–HOME-005 source corrections and exact-head CI #1581 PASS; both required jobs and companion release workflow #36 succeeded. Release APK diagnostic: 1,627,577 bytes; artifact #13620161574.
+- Static review inventory: 63 unique IDs in `activity_main.xml`; Home Header actions, location/weather controls, visible prayer timetable activation and DPAD paths reviewed. No additional source-level missing-handler defect confirmed.
+- Added three source-contract regression tests for location pill activation/DPAD, Home/Profile/Settings actions and measured Header-width recalculation. Test-only commit `49f2777cee006a5afd50a33b85cb90a61a077e40`; exact-head CI pending observation.
+- PR #79 remains OPEN / DRAFT / UNMERGED and stacked on PR #77. No APK installation, ADB, device setting/default-launcher change or physical TV test.
+- Whole Home Screen remains PARTIAL / NOT PASS pending Mi TV Stick rendered, DPAD, lifecycle and feature acceptance.
+- Canonical audit: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
