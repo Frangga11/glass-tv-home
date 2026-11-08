@@ -17,7 +17,7 @@ jobs:
       - name: Download exact APK artifact from CI #1545
         uses: actions/download-artifact@v4
         with:
-          name: glass-tv-home-dock-visual-parity-c058935ed4398f5c7964d753fcf35a9cf77989bb
+          name: glass-tv-home-dock-visual-parity-5036c61e785b1b457b90954c3baa3e72b181cd06
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: 42479472690
