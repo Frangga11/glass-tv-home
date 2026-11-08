@@ -1241,3 +1241,13 @@ Previous CI #1506 and #1526 predate the latest stale-focus correction and must n
 - Updated source HEAD: `e9fdecdb4dd44eefeed1464fddaf8edd2e2ec5e0`.
 - CI #1559 failed 1/310 tests because DockLayoutModelTest retained the old 34dp safe-reserve expectation; test corrected to 29dp.
 - CI #1560 / run `42484233880` is pending/in progress; no build pass claimed.
+
+
+## Home Screen remediation checkpoint — 8 November 2026
+- Active audit: `GTVH-HOME-SCREEN-CROSS-AUDIT-001`; source branch `fix/home-balanced-frame-001`; exact source/test HEAD `701487f7f708d0b4342b613205fde9fba7c0dd72`.
+- PR #79 remains OPEN / DRAFT / UNMERGED, stacked on PR #77. No merge or device operation.
+- Applied source corrections: HOME-001 retain supported paused/buffering/connecting media sessions with playback state snapshotted off the UI path; HOME-002 visible prayer table opens popup and supports DPAD activation; HOME-003 generation-guarded Dock retries; HOME-004 combined Weather/AQI scale + Header highlight listener; HOME-005 Home atmospheric overlay refresh on resume using its existing due cadence.
+- Added source-contract regression coverage for all five findings.
+- Exact-head CI for this HEAD has not yet appeared in workflow/status results. Earlier CI #1560 does not validate these later commits; tests are not claimed passing.
+- APK installation, ADB, device settings/default launcher mutation, physical Mi TV Stick verification and merge remain prohibited/pending separate owner authorization.
+- Canonical detailed record: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
