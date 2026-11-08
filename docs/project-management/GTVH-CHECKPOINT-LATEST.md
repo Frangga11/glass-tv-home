@@ -815,3 +815,27 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - This APK was built from PR #89 source content plus the CI-only artifact-export workflow change in PR #90; no app runtime/source change was introduced by PR #90.
 - Physical Mi TV Stick install, ADB verification, visual/focus acceptance and runtime checks remain PENDING. CI success and APK file verification do not equal device acceptance.
 - **Decision:** PR #90 and PRs #84–#89 remain OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, device installation or default-launcher change performed.
+
+
+---
+
+## 28. GTVH-HOME-ISLAMIC-SHELF-ARABIC-RIGHT-ALIGN-001 — 9 November 2026
+
+**Status: IMPLEMENTATION COMMITTED / DRAFT PR OPEN / CI IN PROGRESS / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+
+- User-approved design rule: Quran Arabic is right-aligned with true RTL direction; Indonesian translation is left-aligned with LTR direction.
+- Audit at PR #89 exact source HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc` found:
+  - Home Shelf Arabic had RTL/right alignment in XML, but runtime did not explicitly enforce right gravity.
+  - Home Shelf Indonesian translation inherited right alignment from XML.
+  - Full daily-ayah reader centered Arabic text, while its translation was already left-aligned.
+- Implemented on branch `fix/home-islamic-shelf-arabic-right-align-001`, based directly on PR #89 exact HEAD.
+- Draft PR [#91](https://github.com/Frangga11/glass-tv-home/pull/91): OPEN / DRAFT / UNMERGED. Exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`; base `fix/daily-ayah-offline-retry-backoff-001` at `4038c08f4825f7bacf965bc6708505d3c8c30ebc`.
+- Three commits, three files changed:
+  - `MainActivity.java`: enforce RTL + `Gravity.END` for Arabic in the Home Shelf and full reader; enforce LTR + `Gravity.START` for translation in both.
+  - `activity_main.xml`: Home Shelf translation is explicitly LTR and start-aligned; Arabic remains RTL and end-aligned.
+  - `test_daily_ayah_cache_and_label_contract.py`: add regression contract for XML and runtime alignment in both displays.
+- Diff against PR #89 base: 3 files, 23 additions, 2 deletions; no unrelated app scope changed. No ayah content, cache/network, font/color/line spacing, size, max-line limits, Shelf geometry, prayer timetable, focus/navigation, or worker behavior changed.
+- CI #1651 / run `42526843055`: IN PROGRESS at checkpoint write. APK publisher run `42526843044` / #106: IN PROGRESS. Do not report CI/build or APK artifact as passed until verified.
+- PR #91 remains OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, or device install performed.
+- Physical Mi TV Stick acceptance remains pending: verify Arabic glyphs/harakat and right edge alignment for one-/two-line verses, Indonesian translation left alignment, and no clipping on the 1920×1080 Android 11 reference device.
+- Decision: source implementation committed; automated validation pending; physical acceptance pending; final merge blocked.
