@@ -491,7 +491,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    if (btnHome != null) { btnHome.requestFocus(); return true; }
+                    if (btnCandyBox != null) { btnCandyBox.requestFocus(); return true; }
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                     View location = findViewById(R.id.locationPill);
@@ -830,7 +830,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
 
-        // D-pad order: Location -> weather -> Home -> Profile -> Settings -> Inputs -> Wi-Fi -> Assistant.
+        // D-pad order mirrors the reference: Location -> weather -> Profile -> Home -> Settings -> Inputs -> Wi-Fi -> Assistant.
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
@@ -841,11 +841,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (id == R.id.locationPill) return true;
-                else if (id == R.id.btnHome)
+                else if (id == R.id.btnCandyBox)
                     target = weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
                             ? weatherAirQualityView : findViewById(R.id.locationPill);
-                else if (id == R.id.btnCandyBox) target = btnHome;
-                else if (id == R.id.btnSettings) target = btnCandyBox;
+                else if (id == R.id.btnHome) target = btnCandyBox;
+                else if (id == R.id.btnSettings) target = btnHome;
                 else if (id == R.id.btnInputs) target = btnSettings;
                 else if (id == R.id.btnWifi)
                     target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings;
@@ -860,8 +860,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (id == R.id.locationPill)
                     target = weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
                             ? weatherAirQualityView : btnHome;
-                else if (id == R.id.btnHome) target = btnCandyBox;
-                else if (id == R.id.btnCandyBox) target = btnSettings;
+                else if (id == R.id.btnCandyBox) target = btnHome;
+                else if (id == R.id.btnHome) target = btnSettings;
                 else if (id == R.id.btnSettings)
                     target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs
                             : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant);
@@ -886,8 +886,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (btnAssistant != null) btnAssistant.setOnKeyListener(pillKeys);
         if (btnCandyBox != null) btnCandyBox.setOnKeyListener(pillKeys);
         if (btnSettings != null) btnSettings.setOnKeyListener(pillKeys);
-        root.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
-                root.post(this::applyHeaderWidths));
+        View.OnLayoutChangeListener headerMetricsListener =
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                        root.post(this::applyHeaderWidths);
+        root.addOnLayoutChangeListener(headerMetricsListener);
+        View headerLeft = findViewById(R.id.leftBlock);
+        View headerRight = findViewById(R.id.topButtons);
+        if (headerLeft != null) headerLeft.addOnLayoutChangeListener(headerMetricsListener);
+        if (headerRight != null) headerRight.addOnLayoutChangeListener(headerMetricsListener);
         root.post(this::applyHeaderWidths);
 
         // Hide the glass when focus leaves the tiles.
