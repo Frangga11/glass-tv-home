@@ -27,8 +27,8 @@ class HomeIslamicShelfArabicTypographyContract(unittest.TestCase):
         arabic = self.views["ayahArabic"]
         extra = arabic.attrib["{http://schemas.android.com/apk/res/android}lineSpacingExtra"]
         multiplier = arabic.attrib["{http://schemas.android.com/apk/res/android}lineSpacingMultiplier"]
-        self.assertEqual(extra, "-1dp")
-        self.assertEqual(multiplier, "0.94")
+        self.assertEqual(extra, "-2dp")
+        self.assertEqual(multiplier, "0.92")
         self.assertEqual(arabic.attrib["{http://schemas.android.com/apk/res/android}maxLines"], "2")
         self.assertEqual(arabic.attrib["{http://schemas.android.com/apk/res/android}includeFontPadding"], "true")
 
