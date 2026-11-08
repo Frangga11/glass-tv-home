@@ -2052,3 +2052,10 @@ Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exa
 | GTVH-HOME-SCREEN-CROSS-AUDIT-001 | 2026-11-08 | Whole Home screen: Now Playing, prayer timetable, Dock focus, Weather/AQI focus, atmospheric overlay refresh | SOURCE FIXES APPLIED; EXACT-HEAD CI PENDING; DEVICE ACCEPTANCE NOT RUN; OVERALL NOT PASS | `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md` |
 
 Source branch `fix/home-balanced-frame-001`, exact source/test HEAD `701487f7f708d0b4342b613205fde9fba7c0dd72`. PR #79 remains OPEN / DRAFT / UNMERGED. Do not use earlier CI #1560 as validation for this newer HEAD. No APK installation, ADB, device configuration changes, physical TV test, or merge.
+
+
+### Exact-head validation update — 8 November 2026
+- Source/test HEAD `701487f7f708d0b4342b613205fde9fba7c0dd72`.
+- CI #1574 / run `42486582167`: **SUCCESS**; Lists/tools/docs and Launcher build/unit tests both passed. Release build successful; APK diagnostic size 1,627,417 bytes.
+- Audit status: **SOURCE + CI VALIDATION PASS; END-TO-END / DEVICE ACCEPTANCE PENDING; OVERALL HOME SCREEN NOT PASS**.
+- PR #79 and PR #77 remain open/draft/unmerged. No APK installation, ADB, device settings changes, or physical TV test.
