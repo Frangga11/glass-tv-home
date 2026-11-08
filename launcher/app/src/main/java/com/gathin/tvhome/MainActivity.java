@@ -602,10 +602,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return false;
             });
-            weatherAirQualityView.setOnFocusChangeListener((v, hasFocus) -> {
-                float scale = hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f;
-                v.animate().scaleX(scale).scaleY(scale).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-            });
         }
         updateWeatherAqi();
         WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
@@ -889,6 +885,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             glider.addCompanion(pill);
             Backdrop.watch(pill);
             pill.setOnFocusChangeListener((v, has) -> {
+                if (id == R.id.weatherAirQuality) {
+                    // Compose the weather pill's focus-scale feedback with Header highlight
+                    // handling in one listener; Android keeps only the most recently assigned one.
+                    float scale = has ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f;
+                    v.animate().scaleX(scale).scaleY(scale)
+                            .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+                }
                 if (has) {
                     // Any header focus supersedes a deferred Grid target.
                     gridFocusRequestGeneration++;
