@@ -1,3 +1,19 @@
+## CURRENT AUTHORITATIVE UPDATE — HOME SPACING/CAPSULE REFINEMENT — 9 NOVEMBER 2026
+
+**This update supersedes older pending-status statements in the historical sections below for workstream GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-001 only.**
+
+- Active source PR: [#99](https://github.com/Frangga11/glass-tv-home/pull/99), OPEN / DRAFT / UNMERGED; branch `verify/home-spacing-capsule-height-refinement-001-qa`; exact HEAD `443d8491109c416915955c8a9ceb202860916a6b`; base PR #83 source at `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
+- Exact-head CI #1672 / run `42531805446`: both required jobs SUCCESS. Launcher job ID `128887415014`; Lists/tools/docs job ID `128887415159`. Duplicate PR-trigger run #1671 / `42531795756` also completed both jobs SUCCESS.
+- Python suite: **190 tests, OK (1 skipped)**. Android `testReleaseUnitTest` and `assembleRelease`: **BUILD SUCCESSFUL**.
+- Release APK size: **1,625,337 bytes**. GitHub workflow artifact #13637424249, ZIP size **1,426,876 bytes**, SHA-256 `1d2955027a07a2a80e7eb3398821639b6595542768860b35a4b6d185f5e38ff4`, expires 15 November 2026 UTC. Downloaded ZIP contains exactly one `app-release.apk`.
+- Extracted APK SHA-256: `96d2bae44ac33a7c250467e37cb2d35c4d4cb85fc767993dc9625e6bd1e0eead`; file identification confirms Android APK with APK Signing Block. Local QA file: `/mnt/data/pr99_extract/app-release.apk`.
+- Exact changed-file inventory: 11 files — 3 production files (`activity_main.xml`, `MainActivity.java`, `DockGeometry.java`), 7 regression-test files, and 1 CI workflow allowlist adjustment. No unrelated production file appears in the PR changed-file list.
+- Source/layout and automated checks are PASS. The warning that APK exceeds the historical 1.5 MiB reference is diagnostic/non-blocking; it is not a build failure.
+- **Still pending:** rendered 1920×1080 visual audit and physical Mi TV Stick acceptance. CI source assertions do not prove final rendered pixels. No ADB, installation, device-setting change, or merge has been performed.
+- **Decision:** automated gates PASS; artifact verified; overall task remains **BELUM FINAL** until rendered visual review is completed. Keep PR #99 draft/unmerged and do not ask for device installation before that review.
+
+---
+
 # GTVH-CHECKPOINT-LATEST
 **Status:** CANONICAL / SINGLE ENTRY POINT  
 **Checkpoint date:** 9 November 2026  
@@ -5,7 +21,7 @@
 **Canonical documentation branch:** `docs/project-master-inventory`  
 **Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
 **Current Home implementation PR:** [PR #99](https://github.com/Frangga11/glass-tv-home/pull/99) — spacing/capsule refinement stacked on PR #83; PR #99 OPEN / DRAFT / UNMERGED. Parent PRs #80/#81/#82/#83 retain their prior states.  
-**Latest documentation sync:** PR #83 audit report, handover, audit register, decision log, inventory and this checkpoint were updated together on `docs/project-master-inventory`; see the branch tip for the final documentation commit SHA.
+**Latest documentation sync:** PR #99 spacing/capsule audit and CI/artifact checkpoint synchronized on `docs/project-master-inventory`; see this commit and branch tip for the latest documentation revision.
 
 ---
 
