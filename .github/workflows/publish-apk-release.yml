@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build-and-publish-direct-apk:
-    if: github.event.pull_request.number == 79 || github.event.pull_request.number == 82
+    if: github.event.pull_request.number == 79 || github.event.pull_request.number == 82 || github.event.pull_request.number == 83
     name: Build exact PR HEAD and publish direct APK asset
     runs-on: ubuntu-latest
     steps:
