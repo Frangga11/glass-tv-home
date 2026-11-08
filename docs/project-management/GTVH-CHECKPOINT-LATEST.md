@@ -5,7 +5,7 @@
 **Canonical documentation branch:** `docs/project-master-inventory`  
 **Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
 **Current cumulative Home implementation PR:** [PR #100](https://github.com/Frangga11/glass-tv-home/pull/100) — spacing/capsule refinement reapplied on the complete PR #84–#89 stack; PR #100 OPEN / DRAFT / UNMERGED. Source PR #99 remains OPEN / DRAFT / UNMERGED on its isolated PR #83 base.  
-**Latest documentation sync:** cumulative PR #100 CI/APK audit, inventory, decision log, master project and handover synchronized on `docs/project-master-inventory`; latest docs branch commit `ac9c268431a62e182dd22fecd5b918547fa2e451`.
+**Latest documentation sync:** cumulative PR #100 CI/APK audit, inventory, decision log, master project and handover synchronized on `docs/project-master-inventory`; this checkpoint records the current authoritative state.
 
 ## CURRENT AUTHORITATIVE UPDATE — CUMULATIVE HOME SPACING/CAPSULE REFINEMENT — 9 NOVEMBER 2026
 
