@@ -726,5 +726,5 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - No prayer-time calculation, API, validation or fallback parameters changed.
 - Independent current-date cross-reference: Pagar Alam 9 Nov 2026 listed Subuh 04:24, Terbit 06:07, Dzuhur 11:54, Asar 15:14, Maghrib 18:07, Isya 19:14 by a Bimas Islam-sourced calendar. Sajadah documents that its JSON mirrors Kemenag without time adjustment. Direct app JSON retrieval remains unverified in the audit browser; do not treat cross-reference values as proof of the device cache.
 - Detailed audit: [GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001-AUDIT.md](GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001-AUDIT.md).
-- Python/docs CI #1647? no, PR #88 CI #1649 / run `42524805149`: Python suite **201 tests, 1 skipped**, all three new source-label contracts passed. Android build/unit tests are still in progress; no final CI pass or APK size is claimed.
+- PR #88 exact-head CI #1649 / run `42524805149`: **SUCCESS**; Python suite **201 tests, 1 skipped**, all three source-label contracts passed; Android `testReleaseUnitTest` and `assembleRelease` **PASS / BUILD SUCCESSFUL**; APK diagnostic **1,626,381 bytes**. Publisher skipped because PR #88 is Draft.
 - Physical Mi TV Stick visual/source-state acceptance pending.
