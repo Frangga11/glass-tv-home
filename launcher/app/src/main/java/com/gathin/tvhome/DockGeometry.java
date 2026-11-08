@@ -3,9 +3,9 @@ package com.gathin.tvhome;
 /**
  * Single source of truth for the horizontal Dock's visual geometry.
  *
- * Horizontal Dock/Grid geometry shares the P2 safe content frame, a five-column
+ * Horizontal Dock/Grid geometry shares a 30dp left/right/bottom safe frame (29dp top), a five-column
  * slot model, 6/8dp horizontal and 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
- * breathing room, and a 36dp shelf-to-tray gap. The Dock and Grid remain independent
+ * breathing room, and a 30dp information-shelf-to-tray gap. The Dock and Grid remain independent
  * RecyclerViews but derive their card and slot sizes from this class.
  */
 final class DockGeometry {
@@ -20,8 +20,9 @@ final class DockGeometry {
     private static final float DOCK_SLOT_GAP_DP = 32f;
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
     private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
-    private static final float SAFE_HORIZONTAL_MARGIN_DP = 29f;
-    private static final float SAFE_VERTICAL_MARGIN_DP = 29f;
+    private static final float SAFE_HORIZONTAL_MARGIN_DP = 30f;
+    private static final float SAFE_VERTICAL_MARGIN_DP = 30f;
+    private static final float SAFE_TOP_MARGIN_DP = 29f;
     private static final float SHELF_TO_TRAY_GAP_DP = 36f;
 
     private DockGeometry() { }
@@ -74,6 +75,10 @@ final class DockGeometry {
         return (int) SAFE_VERTICAL_MARGIN_DP;
     }
 
+    static int safeTopInsetPx(float density) {
+        return Math.round(SAFE_TOP_MARGIN_DP * density);
+    }
+
     static int safeHorizontalInsetPx(float density) {
         return Math.round(SAFE_HORIZONTAL_MARGIN_DP * density);
     }
@@ -83,7 +88,7 @@ final class DockGeometry {
     }
 
     /**
-     * The Dock host is already inside activity_main's shared 29dp Home content inset.
+     * The Dock host is already inside activity_main's shared 30dp Home content inset.
      * Applying another inset here would double-inset the Dock and make its tray narrower
      * than the left information and right prayer/ayah shelves.
      */
@@ -93,7 +98,7 @@ final class DockGeometry {
 
     /** Exact visual clearance between the Islamic information package and horizontal Glass Dock. */
     static int islamicShelfDockGapPx(float density) {
-        return Math.round(27.5f * density);
+        return Math.round(30f * density);
     }
 
     /** Signed scroll delta to align a target Grid row; positive moves content upward, negative downward. */
@@ -128,7 +133,7 @@ final class DockGeometry {
         return itemHeightPx(tileHeightPx, density) + Math.round(DOCK_EXTRA_HEIGHT_DP * density);
     }
 
-    /** Dock host extends below its glass tray so the tray itself lands on the P2 safe margin. */
+    /** Dock host extends below its glass tray so the tray itself lands on the 30dp bottom safe margin. */
     static int horizontalDockBottomMarginPx(int tileHeightPx, float density) {
         int dockHeight = horizontalDockHeightPx(tileHeightPx, density);
         int trayBottomInset = dockHeight - tileHeightPx
