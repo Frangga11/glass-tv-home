@@ -202,3 +202,10 @@ The final HOME-005 regression extension verifies that the atmospheric overlay re
 - Updated PR-branch reconciliation document to replace the obsolete intermediate 34dp safe frame with the approved 29dp frame. PR-branch docs-only commit: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`. CI #1583 is validating that documentation-only tip; no need to change application source.
 - Release workflow #37 is explicitly **not** the current candidate: its logs show CI #1545 / older commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not cite that release asset as the latest PR #79 APK.
 - PR #79 remains OPEN / DRAFT / UNMERGED; physical Mi TV Stick acceptance remains NOT RUN. No APK installation, ADB, device settings/default launcher mutation or merge.
+
+
+## Home Header cross-audit addendum — weather/AQI pill width (8 Nov 2026)
+
+Audited `activity_main.xml` and `MainActivity.applyHeaderWidths()` on PR #79. Both `locationPill` and `weatherAirQuality` use `layout_alignParentStart="true"`; the width mismatch came from independent runtime formulas (34% vs 44%). The correction preserves the location reference and applies its single computed width to both controls. This makes left and right edges mathematically identical in the shared RelativeLayout coordinate space. Weather content updates still only replace text and do not alter layout parameters; the view remains single-line/end-ellipsized. Regression test checks these source/layout contracts.
+
+Changed files: `MainActivity.java` and `tests/test_home_layout_bounds_contract.py` only. Source commit `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`; current PR #79 HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. CI #1587 run `42489445766` is partially green (Lists/tools/docs PASS; Android job IN PROGRESS). No visual/physical acceptance claim.
