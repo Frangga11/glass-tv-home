@@ -100,6 +100,9 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         end = MAIN.index("private void settleHorizontalGridRowTransition", start)
         transition = MAIN[start:end]
         self.assertNotIn("scrollToPositionWithOffset", transition)
+        focus_start = MAIN.index("private void focusHorizontalGridRowTargetWhenLaidOut")
+        focus_end = MAIN.index("private void alignHorizontalGridRowToGlass", focus_start)
+        self.assertNotIn("scrollToPositionWithOffset", MAIN[focus_start:focus_end])
         self.assertIn("DockGeometry.gridRowScrollDeltaPx(", transition)
         pause_start = MAIN.index("protected void onPause()")
         pause_end = MAIN.index("public void onWindowFocusChanged", pause_start)
