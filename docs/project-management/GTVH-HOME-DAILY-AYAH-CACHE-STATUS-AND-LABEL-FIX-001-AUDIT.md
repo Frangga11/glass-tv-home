@@ -1,7 +1,7 @@
 # GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001 — Audit & Implementation
 
 **Date:** 9 November 2026  
-**Status:** IMPLEMENTATION COMMITTED · CI PENDING · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
+**Status:** IMPLEMENTATION COMMITTED · FIRST CI ATTEMPT FOUND TWO TEST ASSERTION FAILURES · CORRECTIVE TEST UPDATES PUSHED · EXACT-HEAD CI PENDING · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
 
 ## Source authority
 - Repository: `Frangga11/glass-tv-home`
@@ -16,11 +16,12 @@
 1. `WeeklyAyah.VERSES` is a rotating 52-verse Quran selection. The Home component does not contain a daily dua corpus, while Indonesian labels called it `DOA HARIAN • AYAT PILIHAN` and Settings advertised `Ayat & Doa Harian`.
 2. `stored()` required English and Indonesian cache fields even when Malay translation was available. The translation method already used language fallbacks, so requiring every translation was stricter than the display capability and could cause unnecessary network refreshes.
 3. On a failed network request, `last()` intentionally displayed the last retained verse, but the UI did not identify it as stale. The built-in local fallback was also visually indistinguishable from a current daily verse.
-4. PR #85 added Arabic XML line-spacing values, but `MainActivity.showAyah()` subsequently called `ayahArabic.setLineSpacing(3dp, 1.08f)`, overriding the XML values at runtime. The requested compact spacing therefore was not guaranteed to render.
+4. The 52-verse selection cycles. Comparing only the verse key could accept a cache from 52 days earlier as current when the same verse key recurs.
+5. PR #85 added Arabic XML line-spacing values, but `MainActivity.showAyah()` subsequently called `ayahArabic.setLineSpacing(3dp, 1.08f)`, overriding the XML values at runtime. The requested compact spacing therefore was not guaranteed to render.
 
 ## Changes committed
 - Rename the module and related Indonesian/English Settings, popup and summary copy to **Ayat Pilihan Harian / Daily Selected Verse**. No daily dua text is fabricated or implied.
-- Accept a current cache when the selected day key matches, Arabic text is non-empty, and at least one translation is available. Optional language fields may be absent.
+- Accept a current cache only when the exact WIB day index and selected verse key match, Arabic text is non-empty, and at least one translation is available. The exact day index prevents a 52-day cycle collision. Optional language fields may be absent.
 - Add `hasCached()` to distinguish a previous saved verse from the current daily verse.
 - Reject incomplete Quran API payloads before replacing the existing valid cache.
 - Expand translation fallback order so Indonesian and Malay users receive an available translation even if their preferred and secondary translation resources are absent.
@@ -31,7 +32,8 @@
 ## Regression coverage
 - Python contracts verify optional translation cache validity, freshness labelling, truthful module naming, XML typography ownership, and rejection of incomplete API payloads.
 - Android unit tests verify translation fallback to Malay/English for Indonesian, English and Malay language settings.
-- Exact-head CI has not yet been confirmed for current HEAD `4c9d049461b217ed20d134f4f430f2b812c383e7`. Do not claim CI pass until the run and job logs are checked.
+- First CI #1644 / run `42524504080` on the earlier head failed the Python/docs job with two test assertion issues: the cache contract included the shared helper's optional-language fields in its inspected slice, and the existing localization contract still expected the old popup title. The Android build job was still running at the time.
+- Corrective changes narrowed the contract to the `stored()` method and updated the localization expectations. A further regression assertion now covers the exact day index. These corrections are committed on the current PR branch; a fresh exact-head CI result is pending. Do not claim CI pass until the new run and job logs are checked.
 
 ## Acceptance gates
 1. Exact-head CI passes Python contracts, Android translation unit tests, Release unit tests/build and APK diagnostics.
