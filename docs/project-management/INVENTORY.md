@@ -1,57 +1,32 @@
-# CURRENT CHECKPOINT — GLASS TV HOME — 8 NOVEMBER 2026, 19:42 WIB
+# CURRENT CHECKPOINT — GTVH-HOME-SCREEN-CROSS-AUDIT-001 — 8 NOVEMBER 2026
 
-## Canonical restart point
-This is the latest authoritative checkpoint and the starting point for all future Glass TV Home discussions. Read this section first, then consult the historical entries below. Do not restart from older checkpoint notes unless explicitly asked.
+## Current source and validation
+- Repository: `Frangga11/glass-tv-home`; branch: `fix/home-balanced-frame-001`.
+- Exact audited HEAD: `e9fdecdb4dd44eefeed1464fddaf8edd2e2ec5e0`.
+- PR #79: OPEN / DRAFT / UNMERGED; stacked PR #77 remains unmerged.
+- CI #1560 / run `42484233880`: **SUCCESS** on exact HEAD; both jobs passed, release build successful.
+- Release APK size: **1,624,625 bytes**. Validation artifact size: **1,424,041 bytes**; artifact ZIP SHA-256 `5fa3ea60f7e727b8e4ac663e08ea7488564a70b7acb60e4c3a7040fd821b9f86`.
+- No APK installation, ADB, device/default-launcher settings change, physical TV test, or PR merge.
 
-### Active workstream
-- Workstream: `GTVH-HOME-FINAL-CROSS-AUDIT-001`
-- Main PR: [PR #79](https://github.com/Frangga11/glass-tv-home/pull/79), branch `fix/home-balanced-frame-001`, current head `acf344bc31874dfc6b680ac0bd6089b72ce1c8fa`, **OPEN / DRAFT / UNMERGED**.
-- Stacked base: PR #77, branch `fix/home-layout-consolidated-001`. Keep both PRs unmerged until owner acceptance.
-- Canonical docs branch: `docs/project-master-inventory`.
+## Main Home Screen cross-audit result
+- Dedicated report: [GTVH_HOME_SCREEN_CROSS_AUDIT_001.md](GTVH_HOME_SCREEN_CROSS_AUDIT_001.md).
+- Overall: **PARTIAL / NOT PASS**.
+- Main layout structure: 63 unique IDs, no duplicate IDs; all 52 unique `R.id` references in the audited MainActivity onCreate range exist in activity_main.xml.
+- Findings:
+  - HOME-001 P2 **FAIL** — Now Playing disappears for paused/buffering media; paused playback cannot be resumed from the Home card.
+  - HOME-002 P2 **FAIL (popup entry path)** — prayer detail popup is wired only to hidden `prayerTimes` fallback view; visible timetable has no click/DPAD route.
+  - HOME-003 P2 **PARTIAL/RISK** — delayed Dock focus retries lack cancellation generation and may steal focus.
+  - HOME-004 P3 **PARTIAL** — Weather focus-scale listener is overwritten by shared Header listener.
+- Clock/date, location, Header tabs, Inputs/Wi-Fi/Assistant, wallpaper/hero, ayah shelf, app inventory and Dock geometry have source-level wiring; device/runtime acceptance remains pending.
+- Existing E06 audit is limited to the Home Screen Settings destination, not the full main Home surface.
 
-### Latest verified build
-- CI #1545 / run `42479472690`: **SUCCESS**. Android Launcher build, `testReleaseUnitTest`, release packaging, APK diagnostics, artifact upload, and Lists/tools/docs checks all passed.
-- Validated source/test commit: `c058935ed4398f5c7964d753fcf35a9cf77989bb`.
-- APK: `app-release.apk`, 1,624,589 bytes.
-- SHA-256: `6c7981a6c71aa5fc6f5146ba5a6023b9fdbfc527c887d1c367dc500d04fd3b10`.
-
-### Distribution defect and definitive remediation
-- User's Samsung Browser repeatedly appended `.bin` to ChatGPT sandbox attachment downloads. Local APK and its contents were valid; changing local filename or re-linking the sandbox attachment did not fix browser behavior. Treat the ChatGPT attachment delivery path as unsuitable for this APK distribution.
-- Added `.github/workflows/publish-apk-release.yml` to PR #77 base and PR #79 branches. Final workflow downloads the exact CI #1545 artifact, verifies byte size and SHA-256, and uploads that unmodified file as a direct GitHub Release asset. It does NOT rebuild/re-sign the APK.
-- Important audit: a first rebuild-based attempt passed Gradle but failed exact SHA comparison (rebuilt hash `298f494e48d6dac56a0613ffb76536499a1c32bb6c291299ed0fe10607f27a01` vs expected CI hash); that approach was rejected. An initial artifact lookup also used a wrong artifact name; corrected.
-- Final publishing workflow run #7 / run `42480957620`: **SUCCESS**. Release asset verified via GitHub API:
-  - Release tag: `glass-tv-home-ci1545-20261108` (QA prerelease)
-  - Asset ID: `723889891`
-  - Filename: `app-release.apk`
-  - MIME: `application/vnd.android.package-archive`
-  - Size: 1,624,589 bytes
-  - SHA-256: `6c7981a6c71aa5fc6f5146ba5a6023b9fdbfc527c887d1c367dc500d04fd3b10`
-  - Direct download: https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-ci1545-20261108/app-release.apk
-  - Release page: https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-ci1545-20261108
-- Server-side GitHub asset metadata and publication are **PASS**. Actual filename received by Samsung Browser is still **PENDING owner confirmation**. Do not claim user-side download success until confirmed.
-
-### Current quality and safety gates
+## Remaining gates
 - CI/build: **PASS**.
-- Exact CI artifact integrity: **PASS**.
-- Direct GitHub Release publication and MIME/filename metadata: **PASS**.
-- Samsung Browser received filename: **PENDING**.
-- Static integration audit: **PARTIAL**.
-- Physical Mi TV Stick visual/DPAD/resume acceptance: **PENDING**.
-- APK installation, ADB, device/default-launcher setting changes: **NOT PERFORMED**.
-- PR #79 and PR #77: **DO NOT MERGE** until owner confirms direct APK download and completes physical TV acceptance.
+- Whole Home source audit: **PARTIAL / NOT PASS**.
+- Rendered visual, DPAD, lifecycle/resume, weather/prayer refresh, media pause/resume and runtime error-log acceptance: **PENDING**.
+- No source-code edits were made during this audit; documentation only.
+- Keep PR #79 and PR #77 unmerged.
 
-### Next action on restart
-1. Ask owner to test the direct GitHub Release APK link above and confirm the downloaded filename is exactly `app-release.apk` (no `.bin`).
-2. If correct, owner may proceed with the agreed Mi TV Stick test checklist; do not remotely install or alter device settings.
-3. Record physical test results and complete static cross-audit.
-4. Only then reassess PR merge readiness and final QA.
-
-### Mandatory project handling
-- This checkpoint supersedes older progress summaries as the starting point.
-- Continue using the agreed workflow: Trigger → Input → Verification → Work/Analysis → Decision Point → Output → Quality Check → Final/Not Final.
-- Clearly label PASS / FAIL / PARTIAL / PENDING.
-- Preserve user-approved scope and do not merge prematurely.
-- Keep canonical documentation synchronized at each meaningful checkpoint.
 
 ---
 
