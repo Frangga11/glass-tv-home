@@ -784,3 +784,18 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - **Acceptance gates still open:** physical Mi TV Stick install and DPAD traversal; Islamic Shelf anchor stability; Arabic one-/two-line rendering and harakat; prayer timetable across day boundaries and after Isya; Kemenag/local-estimate label behavior; offline Ayah cooldown and online recovery.
 - **Decision:** keep PRs #84–#89 OPEN / DRAFT / UNMERGED. Automated source/build gate PASS; downloadable APK artifact NOT AVAILABLE from current CI; physical acceptance PENDING; final merge BLOCKED.
 - **Next operational step:** provide a controlled APK-export path (CI artifact upload or an authorized non-Draft release workflow), then verify APK SHA-256 and install/test on Mi TV Stick. Do not change PR readiness or merge state merely to bypass the artifact gate.
+
+---
+
+## 26. APK artifact export correction — 9 November 2026
+
+**Status: CI EXPORT FIX COMMITTED / DRAFT PR OPEN / VALIDATION PENDING.**
+
+- Root cause: the existing CI workflow built `app-release.apk`, but its artifact-upload condition only listed PR #74–#83. The latest Islamic Shelf/prayer PRs #84–#89 were excluded, so their successful builds produced diagnostics but no downloadable artifact.
+- Created isolated CI-only branch `ci/export-islamic-prayer-stack-apk-001` from PR #89 exact HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc`.
+- Workflow change commit: `aba99d40b8f95f7d6a81711d0c74576ec340b3b9`. It extends the existing upload allowlist to PRs #84–#90 and preserves the existing artifact name pattern and 7-day retention.
+- Draft PR [#90](https://github.com/Frangga11/glass-tv-home/pull/90), base `fix/daily-ayah-offline-retry-backoff-001` (PR #89 source branch), head `ci/export-islamic-prayer-stack-apk-001`. One workflow file changed; no app source/runtime code, signing, dependencies, release workflow, or PR readiness state changed.
+- PR #90 is OPEN / DRAFT / UNMERGED. At checkpoint update, its CI run/status had not yet appeared in the Actions query. Do not claim artifact upload or successful export until a run completes and the artifact is visible.
+- Expected output: `launcher/app/build/outputs/apk/release/app-release.apk`, uploaded by the existing CI job with 7-day retention.
+- Once CI completes, verify exact HEAD, both jobs, artifact listing, APK size and SHA-256. Then download the artifact and provide the APK file.
+- Keep PR #90 draft/unmerged and do not merge it solely to obtain an artifact. PRs #84–#89 also remain OPEN / DRAFT / UNMERGED.
