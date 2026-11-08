@@ -2121,3 +2121,8 @@ Source branch `fix/home-balanced-frame-001`, exact source/test HEAD `97f7e0c96d1
 **Remediation:** retain the existing 34% location reference and calculate `locationWidth` once; assign that exact value to both views. Keep common XML left anchors and weather single-line/end-ellipsis. No arbitrary margin/translation; no other UI geometry or behavior changed.
 
 **Evidence:** source commit `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`; regression test commit/current PR #79 HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. Compare from prior PR head shows only `MainActivity.java` and `test_home_layout_bounds_contract.py` modified. CI #1587 / run `42489445766`: Lists/tools/docs PASS; Android build/unit tests still IN PROGRESS at audit update. Physical 1920×1080 / 320dpi visual verification not performed; status remains pending.
+
+
+## CI #1587 final validation — 8 Nov 2026
+
+CI #1587 / run `42489445766` completed **SUCCESS** on PR #79 head `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. Both required jobs passed. Python regression suite: **161 tests, OK (1 skipped)**; the new `test_weather_aqi_pill_matches_location_pill_width_and_left_anchor` passed. Android `testReleaseUnitTest` and `assembleRelease`: **BUILD SUCCESSFUL**. Release APK diagnostic: **1,627,545 bytes**; CI artifact ID **13621187055**, ZIP size **1,426,725 bytes**. CI proves source/build/test contracts only; no rendered Mi TV Stick or physical visual acceptance is claimed. PR #79 remains OPEN / DRAFT / UNMERGED.
