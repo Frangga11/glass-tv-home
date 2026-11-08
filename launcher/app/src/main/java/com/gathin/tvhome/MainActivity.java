@@ -3642,10 +3642,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
         }
         if (weather != null) {
-            int weatherWidth = Math.round(width * 0.44f);
+            // Both information pills share the location pill's measured width. Their XML
+            // anchors already share the same parent-start edge, so equal widths produce
+            // identical left and right geometry without changing the location reference.
             ViewGroup.LayoutParams params = weather.getLayoutParams();
-            if (params.width != weatherWidth) {
-                params.width = weatherWidth;
+            if (params.width != locationWidth) {
+                params.width = locationWidth;
                 weather.setLayoutParams(params);
             }
         }
