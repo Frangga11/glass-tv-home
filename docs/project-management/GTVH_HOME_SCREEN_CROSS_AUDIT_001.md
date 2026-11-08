@@ -153,3 +153,16 @@
 - The companion APK release workflow run #29 / `42486582644` also completed SUCCESS; this is a workflow result, not authorization to install or test the APK.
 
 **Updated assessment:** the five source-level corrections and their CI regression/build validation are **PASS**. Whole Home Screen end-to-end acceptance remains **PARTIAL / NOT PASS** until authorized Mi TV Stick rendered, DPAD, lifecycle, media, prayer, and weather-overlay verification is performed. No APK installed, no ADB/device settings/default launcher changes, and no PR merged.
+
+
+### Follow-up after interrupted connection — 8 November 2026
+
+The remediation session resumed and re-verified the PR #79 branch. Further tightening was applied after reviewing the DPAD focus graph:
+
+- HOME-002: the visible prayerTable now opens the prayer popup on click / DPAD Center / Enter, and its DPAD Up route returns to the right-side Header controls. DPAD Down returns to the app area. DPAD Down from the visible rightmost Header control (btnAssistant) enters the visible timetable. Regression coverage asserts both entry and return routes.
+- HOME-005: the atmospheric overlay refresh is now checked on Home resume and from the active Home minute tick. HomeWeather.due() retains its 15-minute cadence; homeWeatherRunning prevents overlapping fetches. The refresh continues to update only the atmospheric overlay and does not overwrite the G3B Weather/AQI pill cache.
+- HOME-001, HOME-003 and HOME-004 remain as previously recorded: immutable active-session state snapshot for supported playback states; generation-guarded Dock focus retries; composed Weather/AQI scale and Header highlight feedback.
+
+Latest source/test HEAD: 765634e7d806f48bc38014119cd170a8697ea442. PR #79 remains OPEN / DRAFT / UNMERGED, stacked on PR #77. CI #1576 was running on the immediately preceding head 9a6133c956819fa5c840cada5762b9e68ac05785; it does not validate the latest DPAD changes. Exact-head CI for 765634e7d806f48bc38014119cd170a8697ea442 is pending observation. No regression test pass is claimed until that run completes.
+
+No APK installation, ADB, device settings/default launcher mutation, physical Mi TV Stick test, force-push, or merge.
