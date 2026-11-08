@@ -13,7 +13,7 @@ jobs:
     name: Build exact PR HEAD and publish direct APK asset
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout exact PR #79 source HEAD
+      - name: Checkout exact pull request source HEAD
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
