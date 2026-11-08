@@ -932,7 +932,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updateSettingsBadge();
         updateHeaderTabLabels();
         updateLocationPill();
-        if (btnHome != null) btnHome.setOnClickListener(v -> returnToMainScreen());
+        if (btnHome != null) btnHome.setOnClickListener(v -> updateHomeTabIndicator());
         if (btnInputs != null) btnInputs.setOnClickListener(v -> showInputs());
         if (btnWifi != null) {
             btnWifi.setOnClickListener(v -> showWifiPopup());
