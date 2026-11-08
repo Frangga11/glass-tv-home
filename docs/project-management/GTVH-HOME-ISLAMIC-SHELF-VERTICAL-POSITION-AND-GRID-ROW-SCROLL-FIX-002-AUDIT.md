@@ -116,6 +116,7 @@ No unrelated application modules, DockAdapter, DockDecoration, wallpaper provide
 
 - APK: `Glass-TV-Home-PR82-d6f594933b712b36b0660e119a0d4ee8b7de3134.apk`
 - Size: **1,630,737 bytes**
+- CI emitted the historical 1.5 MiB APK-size reference warning; it is explicitly non-blocking. The APK is 1,268 bytes larger than PR #81's 1,629,469-byte APK; continue monitoring the size delta.
 - SHA-256: `524963af6aad72444d38e1cd896eac25d29be05cac9e765b8819e0f69dcba735`
 - Release: [Glass TV Home — PR #82 QA APK](https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-pr82-d6f594933b712b36b0660e119a0d4ee8b7de3134)
 - Direct APK: [Download exact-head APK](https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr82-d6f594933b712b36b0660e119a0d4ee8b7de3134/Glass-TV-Home-PR82-d6f594933b712b36b0660e119a0d4ee8b7de3134.apk)
