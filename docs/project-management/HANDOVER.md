@@ -2201,3 +2201,9 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - Release API verification confirms exactly one asset with the exact `.apk` filename, size `1,627,561`, state `uploaded`, and content type `application/vnd.android.package-archive`. Direct asset URL: `https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr79-b4abdf0bd555a0106c135add20c3f287cf10b412/Glass-TV-Home-PR79-b4abdf0bd555a0106c135add20c3f287cf10b412.apk`.
 - Separate general CI run `42491530833` was still in progress at the time of this note; the publisher workflow itself independently passed unit tests + release APK build. Device installation and Samsung Browser filename behavior remain pending owner confirmation.
 - User-facing delivery rule observed: provide only the direct GitHub Release `.apk` asset URL. No sandbox attachment, ZIP, or BIN.
+
+## Permanent delivery procedure — GTVH-APK-DIRECT-DELIVERY-001
+
+For all future Glass TV Home builds, use the workflow definition on the pull request's base branch for pull_request events; keep the PR head copy synchronized. The previous publisher hardcoded CI #1545, and changing only the PR head workflow did not affect the workflow GitHub executed. Always build from the exact PR head SHA with testReleaseUnitTest assembleRelease, validate the APK, publish the actual APK binary as a source-SHA-tagged GitHub Release asset, and verify filename, MIME, size, and SHA-256 against the workflow log. Give the owner only the direct Release asset URL ending in .apk. Never provide sandbox attachments, Actions artifact ZIPs, .zip, or .bin. If direct APK verification fails, stop instead of substituting a format or stale build.
+
+Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LATEST.md under GTVH-APK-DIRECT-DELIVERY-001. Samsung Browser download behavior and Mi TV Stick installation acceptance are still awaiting owner confirmation; PR #79 remains OPEN / DRAFT / UNMERGED.
