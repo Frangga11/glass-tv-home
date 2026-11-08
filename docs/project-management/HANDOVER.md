@@ -2215,3 +2215,15 @@ Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LA
 3. Source/CI gates: PASS. Python: 166 tests (1 skipped); Android `testReleaseUnitTest` and `assembleRelease`: PASS. APK diagnostic 1,627,937 bytes; +376 bytes versus the prior recorded build; historical threshold warning is non-blocking.
 4. Do not merge PR #80 or install on device automatically. Next acceptance step is owner visual/physical test on Mi TV Stick 1920×1080: verify location → title → description, 5mm down shift for both shelves, no Dock collision, prayer gradient contrast, doa integration, and unchanged Dock/Header/navigation/safe frame.
 5. If visual/device issues are found, repair only the named in-scope component. Record out-of-scope findings separately. Do not mark final until physical acceptance is confirmed.
+
+
+## Corrective handover — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
+
+- Read `GTVH-CHECKPOINT-LATEST.md` first; Section 12 is the current corrective state and supersedes the prior 5mm downward-shift instructions in older handover entries.
+- PR #80 remains OPEN / DRAFT / UNMERGED on `fix/home-wallpaper-text-refinement-001`.
+- Current corrective HEAD: `894544cb89191a08980cf1d7a16c7fefbe5acdc7`; base PR #79 HEAD `b4abdf0bd555a0106c135add20c3f287cf10b412`.
+- Corrected geometry: wallpaper shelf up ~28dp from the prior PR #80 rendering, nominal 32.5dp clearance above Dock; daily Ayah up 18dp; prayer header/table up 24dp total.
+- Prayer timetable now uses crisp solid high-contrast text and retains the XML Inter font; Arabic/translation enlarged to 20/14sp at 1080p (22/15sp at 4K); subtle right-shelf gradient scrim added without a bordered panel.
+- Three changed files for the corrective pass: MainActivity.java, activity_main.xml, and test_home_wallpaper_text_refinement_contract.py. DockGeometry, Dock/Grid, Header/capsules, navigation, wallpaper image/crop/provider/rotation, prayer data/provider/order and safe frame remain untouched.
+- Exact-head CI for `894544c` is pending verification. Prior CI #1592 / run `42493469262` belongs to old HEAD `c7d95c3` only.
+- No APK install, ADB, device setting change or merge. Next: verify exact-head CI, review rendered 1920×1080, then owner Mi TV Stick visual/remote acceptance.
