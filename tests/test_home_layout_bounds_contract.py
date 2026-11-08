@@ -52,6 +52,16 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("date.getRight()", MAIN)
         self.assertIn("right.getLeft()", MAIN)
 
+    def test_header_controls_keep_the_established_liquid_glass_surface(self):
+        start = MAIN.index("// Preserve the established GlassDrawable/Backdrop treatment")
+        end = MAIN.index("// Hide the glass when focus leaves the tiles.", start)
+        header = MAIN[start:end]
+        for view_id in ("locationPill", "weatherAirQuality", "btnInputs", "btnWifi",
+                        "btnAssistant", "btnHome", "btnCandyBox", "btnSettings"):
+            self.assertIn(f"R.id.{view_id}", header)
+        self.assertIn("new GlassDrawable(pill", header)
+        self.assertIn("pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg))", header)
+
     def test_top_controls_are_not_repositioned_from_dock_item_geometry(self):
         self.assertNotIn("alignTopButtons", MAIN)
         self.assertNotIn("topRow.setTranslationX", MAIN)
