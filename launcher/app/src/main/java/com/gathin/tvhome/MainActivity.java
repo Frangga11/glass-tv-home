@@ -839,7 +839,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 else if (id == R.id.btnInputs) target = btnSettings;
                 else if (id == R.id.btnWifi)
                     target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings;
-                else if (id == R.id.btnAssistant) target = btnWifi;
+                else if (id == R.id.btnAssistant)
+                    target = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi
+                            : (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings);
                 else return false;
                 if (target != null && target.getVisibility() == View.VISIBLE) { target.requestFocus(); return true; }
                 return id == R.id.btnHome || id == R.id.btnInputs;
@@ -2281,6 +2283,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (position < COLUMNS) {
                 if (position <= 1 && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
                     weatherAirQualityView.requestFocus();
+                    return true;
+                }
+                if (btnHome != null && btnHome.getVisibility() == View.VISIBLE) {
+                    btnHome.requestFocus();
                     return true;
                 }
                 return false;          // dock row: let focus move to the top bar
@@ -5623,6 +5629,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         btnInputs.setVisibility(any ? View.VISIBLE : View.GONE);
+        View divider = findViewById(R.id.headerInputsDivider);
+        if (divider != null) {
+            divider.setVisibility(any && btnWifi != null && btnWifi.getVisibility() == View.VISIBLE
+                    ? View.VISIBLE : View.GONE);
+        }
     }
 
     /** The Live TV app's launch intent: its leanback entry point, or the configured action if it has none. */
