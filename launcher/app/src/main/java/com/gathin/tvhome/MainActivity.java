@@ -4203,13 +4203,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         String zoneTitle = (currentZone != null && currentZone.town != null) ? currentZone.town.toUpperCase(Locale.ROOT) : PrayerTimes.getShortZoneName(this);
         if (prayerHeader != null) {
             String pPrefix = AppLanguage.getPrayerHeaderPrefix(this);
-            String headerText = pPrefix + " " + zoneTitle + "  •  " + PrayerTimes.getHijriDate(this).toUpperCase(Locale.ROOT);
-            String activePrayerZone = PrayerTimes.getActiveZone(this);
-            if (activePrayerZone != null && activePrayerZone.startsWith("ID_")) {
-                headerText += "  •  " + AppLanguage.getPrayerDataSourceLabel(
-                        this, PrayerTimes.isUsingOfficialKemenagSchedule(this));
-            }
-            prayerHeader.setText(headerText);
+            prayerHeader.setText(pPrefix + " " + zoneTitle + "  •  " + PrayerTimes.getHijriDate(this).toUpperCase(Locale.ROOT));
             prayerHeader.setTextColor(0xFFF4F7FC);
         }
 
