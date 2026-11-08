@@ -88,3 +88,22 @@ Prior CI run `42493469262` passed 166 Python tests (1 skipped), Android release 
 **SOURCE CORRECTION COMMITTED: PASS. EXACT-HEAD CI: PENDING. RENDERED / PHYSICAL ACCEPTANCE: PENDING. OVERALL: NOT FINAL.**
 
 Next: monitor exact-head CI #1599 / run `42497894475` on `a085be150ebcf1d48b825ed7ac43b172261f3aa0`, review rendered 1920×1080 output, then wait for owner Mi TV Stick acceptance. Any further correction must remain inside the same strict visual scope.
+
+
+## 9. Exact-head CI result — 8 November 2026
+
+**Corrective HEAD:** `a085be150ebcf1d48b825ed7ac43b172261f3aa0`  
+**CI:** [run #1599](https://github.com/Frangga11/glass-tv-home/actions/runs/42497894475) — **SUCCESS**.
+
+- `Launcher build and unit tests`: SUCCESS.
+- `Lists, tools and docs`: SUCCESS.
+- Python regression suite: **167 tests, OK (1 skipped)**. All six `HomeWallpaperTextRefinementContractTest` checks passed, including all six prayer labels at 13sp and all six prayer times at 17sp.
+- Android: `./gradlew --no-daemon testReleaseUnitTest assembleRelease` — **BUILD SUCCESSFUL in 1m 18s**; app and installer release unit tests and release assembly passed.
+- APK diagnostic size: **1,627,685 bytes**. Historical 1.5 MiB warning is non-blocking. Publisher workflow #54 was skipped by design for PR #80; this run did not publish a direct APK release asset.
+- Visual parity artifact: ID `13624193020`, ZIP size `1,426,812` bytes, expires 15 Nov 2026. It is an Actions artifact ZIP, not a direct APK release asset.
+
+### Scope reconciliation
+The total PR #80 diff contains four files: `.github/workflows/ci.yml`, `MainActivity.java`, `activity_main.xml`, and `test_home_wallpaper_text_refinement_contract.py`. The CI workflow inclusion for PR #80 enables its visual-parity artifact step. The corrective application-source edits are limited to the two Home presentation files, and the test addition/update is limited to this refinement contract. No DockGeometry, Dock/Grid, Header/capsule, navigation, safe-frame, wallpaper provider/image/rotation, prayer data/provider/order or unrelated app source files changed.
+
+### Remaining acceptance
+Exact-head source/build/test validation is **PASS**. Rendered 1920×1080 visual inspection and physical Mi TV Stick acceptance remain **PENDING**. No ADB, install, device setting/default-launcher mutation or merge has been performed. PR #80 remains OPEN / DRAFT / UNMERGED.
