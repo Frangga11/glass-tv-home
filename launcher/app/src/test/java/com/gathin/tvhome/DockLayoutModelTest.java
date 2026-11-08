@@ -358,6 +358,16 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void miTvStickFiveSlotDockCardTargetsApproximately144By81Dp() {
+        // 1920px at 320dpi with the approved 29dp left/right safe margins.
+        int safeContentWidth = 1920 - Math.round(29f * 2f) * 2;
+        int widthPx = DockGeometry.horizontalDockTileWidthPx(safeContentWidth, 5, 2f);
+        int heightPx = DockGeometry.tileHeightPx(widthPx);
+        assertEquals(287, widthPx);
+        assertEquals(161, heightPx);
+    }
+
+    @Test
     public void dockGeometrySharesFiveColumnTileScaleAndFitsSixSlotCapacity() {
         float density = 2f;
         int four = DockGeometry.horizontalTileWidthPx(1920, 4, density);
