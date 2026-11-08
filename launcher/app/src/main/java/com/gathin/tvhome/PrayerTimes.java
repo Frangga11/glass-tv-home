@@ -564,10 +564,6 @@ final class PrayerTimes {
 
         int l1Start = sb.length();
         String zoneHeader = getShortZoneName(context).toUpperCase(Locale.ROOT);
-        String activeZone = getActiveZone(context);
-        if (activeZone != null && activeZone.startsWith("ID_")) {
-            zoneHeader += isUsingOfficialKemenagSchedule(context) ? " • KEMENAG RI" : " • PERKIRAAN";
-        }
         sb.append(zoneHeader).append("  •  ").append(nextWord).append(": ").append(nextName).append(" ").append(nextTime);
         int l1End = sb.length();
         sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), l1Start, l1End, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
