@@ -1913,3 +1913,15 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, base latest PR #
 | Merge / release | NOT DONE | Both PRs remain Draft/open/unmerged; no APK installed or device settings changed |
 
 Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exact-head CI has not yet been observed; do not mark the new correction PASS until that run succeeds.
+
+
+## Home bilingual altitude correction — 8 November 2026
+
+| Audit | Result | Evidence / boundary |
+|---|---|---|
+| Altitude label language parity | FIXED; CI PENDING | New `location_altitude_format` in default/ID/EN resource sets |
+| Altitude value clarity | FIXED; CI PENDING | Removed misleading `±`; known configured elevation is displayed directly |
+| Resource regression coverage | ADDED; CI PENDING | Python contract checks all three localized values and MainActivity resource usage |
+| Stale-focus correction | PASS | Exact-head CI #1529 passed both jobs at prior head `ddd8750a688460cf1c8bc4b27c77189294301844` |
+| Latest exact-head CI | IN PROGRESS | Run #1534 for `1fff5b7b8eea4ee53198fe3e65f6c75c91340be3` |
+| Physical TV acceptance | PENDING | Not run |
