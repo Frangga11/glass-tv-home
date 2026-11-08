@@ -2110,3 +2110,14 @@ Source branch `fix/home-balanced-frame-001`, exact source/test HEAD `97f7e0c96d1
 - Updated PR-branch reconciliation document to replace the obsolete intermediate 34dp safe frame with the approved 29dp frame. PR-branch docs-only commit: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`. CI #1583 is validating that documentation-only tip; no need to change application source.
 - Release workflow #37 is explicitly **not** the current candidate: its logs show CI #1545 / older commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not cite that release asset as the latest PR #79 APK.
 - PR #79 remains OPEN / DRAFT / UNMERGED; physical Mi TV Stick acceptance remains NOT RUN. No APK installation, ADB, device settings/default launcher mutation or merge.
+
+
+## Audit finding — GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-001 (8 Nov 2026)
+
+**Finding:** `MainActivity.applyHeaderWidths()` used two different widths: location/altitude = 34% of measured Header width, weather/AQI = 44%. The XML already anchored both views to the same parent-start edge. Therefore the left edges were correct, while the weather pill extended farther to the right.
+
+**Severity / scope:** visual geometry mismatch isolated to the two left Header information pills; no evidence of a provider/data or interaction defect in this audit.
+
+**Remediation:** retain the existing 34% location reference and calculate `locationWidth` once; assign that exact value to both views. Keep common XML left anchors and weather single-line/end-ellipsis. No arbitrary margin/translation; no other UI geometry or behavior changed.
+
+**Evidence:** source commit `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`; regression test commit/current PR #79 HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. Compare from prior PR head shows only `MainActivity.java` and `test_home_layout_bounds_contract.py` modified. CI #1587 / run `42489445766`: Lists/tools/docs PASS; Android build/unit tests still IN PROGRESS at audit update. Physical 1920×1080 / 320dpi visual verification not performed; status remains pending.
