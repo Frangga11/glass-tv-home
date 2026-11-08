@@ -182,5 +182,27 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("horizontalGridWidthPx", GEOMETRY)
 
 
+    def test_clock_and_date_hierarchy_uses_compact_readable_sizes(self):
+        root = ET.parse(LAYOUT).getroot()
+        expected = {"clock": "44sp", "ampm": "11sp", "date": "11sp",
+                    "shamsiDate": "11sp"}
+        for view_id, size in expected.items():
+            node = next((item for item in root.iter()
+                         if item.get(ANDROID + "id") == f"@+id/{view_id}"), None)
+            self.assertIsNotNone(node, view_id)
+            self.assertEqual(node.get(ANDROID + "textSize"), size, view_id)
+
+    def test_navigation_is_one_glass_capsule_with_independent_transparent_tabs(self):
+        root = ET.parse(LAYOUT).getroot()
+        nav = next((node for node in root.iter()
+                    if node.get(ANDROID + "id") == "@+id/navPill"), None)
+        self.assertIsNotNone(nav)
+        self.assertEqual(nav.get(ANDROID + "background"), "@drawable/header_glass_pill_bg")
+        self.assertIn("navCapsule.setBackground(new GlassDrawable(navCapsule", MAIN)
+        self.assertIn("pill.setBackgroundColor(android.graphics.Color.TRANSPARENT)", MAIN)
+        self.assertIn("pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg))", MAIN)
+        self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
+
+
 if __name__ == "__main__":
     unittest.main()
