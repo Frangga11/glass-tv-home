@@ -1,7 +1,7 @@
 # GTVH-HOME-ISLAMIC-SHELF-ARABIC-TYPOGRAPHY-001 — Audit & Implementation
 
 **Date:** 9 November 2026  
-**Status:** SOURCE CHANGE COMMITTED / CI NOT YET VERIFIED / PHYSICAL VISUAL ACCEPTANCE PENDING / NOT FINAL
+**Status:** SOURCE CHANGE COMMITTED / EXACT-HEAD CI PASS / PHYSICAL VISUAL ACCEPTANCE PENDING / NOT FINAL
 
 ## Objective
 Refine the Arabic verse text in the Home Islamic Shelf so it reads with a warm yellow-orange tone, tighter two-line rhythm, and subtle dimensional shadow.
@@ -33,6 +33,15 @@ Added `tests/test_home_islamic_shelf_arabic_typography_contract.py` to verify:
 
 ## Quality and acceptance status
 - Source diff is intentionally limited to the Arabic TextView and its regression contract.
-- Python/Android CI for PR #85: not yet verified at checkpoint time.
+- CI #1640 / run `42523437010` on exact HEAD `a5eaae843f8998c53238870609102e4c20b05ded`: **SUCCESS**; both workflow jobs passed.
+- Python suite: **188 tests, 1 skipped**. The four Arabic typography regression contracts passed.
+- Android `testReleaseUnitTest` and `assembleRelease`: **PASS / BUILD SUCCESSFUL**.
+- Release APK diagnostic: **1,625,337 bytes**. Publisher workflow was `skipped` because PR #85 remains Draft; no release asset was published by this run.
 - Physical Mi TV Stick screenshot/visual acceptance: pending. Inspect both one-line and two-line Arabic verses, especially diacritics at line boundaries, against bright and dark wallpapers.
-- Do not merge PR #85 until exact-head CI passes and physical visual acceptance confirms that glyphs/harakat are not clipped and the shadow remains subtle.
+- Do not merge PR #85 until physical visual acceptance confirms that glyphs/harakat are not clipped and the shadow remains subtle.
+
+
+### Exact-head CI final result — 9 November 2026
+- CI #1640 / run `42523437010`: **SUCCESS** on the exact branch HEAD above.
+- Android unit/release validation and APK size diagnostics passed. Publisher workflow skipped due to Draft state; this is not a CI failure.
+- Physical Mi TV Stick visual acceptance remains pending; inspect Arabic diacritics/harakat on one-line and two-line verses over bright and dark wallpapers.
