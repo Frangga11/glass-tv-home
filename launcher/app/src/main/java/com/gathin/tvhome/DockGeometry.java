@@ -118,7 +118,7 @@ final class DockGeometry {
 
     static int horizontalGridBottomReservePx(int largestTileWidthPx, float density) {
         int largestTileHeight = tileHeightPx(largestTileWidthPx);
-        return itemHeightPx(largestTileHeight, density) + Math.round(34f * density);
+        return itemHeightPx(largestTileHeight, density) + Math.round(SAFE_VERTICAL_MARGIN_DP * density);
     }
 
     static int dockItemTopOffsetPx(float density) {
