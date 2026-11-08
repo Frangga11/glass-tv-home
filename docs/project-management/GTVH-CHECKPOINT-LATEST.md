@@ -397,8 +397,7 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 - Translation: **14sp at 1080p / 15sp at 4K**.
 - Added a subtle transparent-to-dark gradient scrim behind the right information shelf; no bordered panel or idle frame was added. Existing focus-only feedback and click/DPAD activation remain.
 
-### Verification boundary
-- Exact-head workflow lookup did not yet return a run for corrective HEAD `a085be1`; exact-head CI is **PENDING**, not PASS.
+### Verification boundary- Exact-head workflow lookup did not yet return a run for corrective HEAD `a085be1`; exact-head CI is **PENDING**, not PASS.
 - Prior HEAD `c7d95c3` had CI #1592 / run `42493469262` PASS (166 Python tests, 1 skipped; Android release unit tests and assembleRelease PASS). That evidence does not validate the corrective commits.
 - Rendered 1920×1080 review and physical Mi TV Stick acceptance remain PENDING.
 - No APK installation, ADB session, device setting change, PR merge or force-push was performed.
@@ -796,8 +795,7 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Workflow change commit: `aba99d40b8f95f7d6a81711d0c74576ec340b3b9`. It extends the existing upload allowlist to PRs #84–#90 and preserves the existing artifact name pattern and 7-day retention.
 - Draft PR [#90](https://github.com/Frangga11/glass-tv-home/pull/90), base `fix/daily-ayah-offline-retry-backoff-001` (PR #89 source branch), head `ci/export-islamic-prayer-stack-apk-001`. One workflow file changed; no app source/runtime code, signing, dependencies, release workflow, or PR readiness state changed.
 - PR #90 is OPEN / DRAFT / UNMERGED. At checkpoint update, its CI run/status had not yet appeared in the Actions query. Do not claim artifact upload or successful export until a run completes and the artifact is visible.
-- Expected output: `launcher/app/build/outputs/apk/release/app-release.apk`, uploaded by the existing CI job with 7-day retention.
-- Once CI completes, verify exact HEAD, both jobs, artifact listing, APK size and SHA-256. Then download the artifact and provide the APK file.
+- Expected output: `launcher/app/build/outputs/apk/release/app-release.apk`, uploaded by the existing CI job with 7-day retention.- Once CI completes, verify exact HEAD, both jobs, artifact listing, APK size and SHA-256. Then download the artifact and provide the APK file.
 - Keep PR #90 draft/unmerged and do not merge it solely to obtain an artifact. PRs #84–#89 also remain OPEN / DRAFT / UNMERGED.
 
 
@@ -845,20 +843,25 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 
 ## 29. GTVH-HOME-ISLAMIC-SHELF-AYAH-SPACING-AND-PRAYER-LABEL-001 — 9 November 2026
 
-**Status: IMPLEMENTATION COMMITTED / DRAFT PR OPEN / CI IN PROGRESS / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+**Status: EXACT-HEAD CI PASS / APK ARTIFACT DOWNLOADED AND VERIFIED / PHYSICAL MI TV STICK ACCEPTANCE PENDING / NOT FINAL.**
 
 - User requested tighter vertical rhythm for the daily selected ayah preview and removal of the added local/official prayer-source labels.
 - Based on PR #91 exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`, branch `fix/home-islamic-shelf-ayah-spacing-and-prayer-label-001`.
-- Draft PR [#92](https://github.com/Frangga11/glass-tv-home/pull/92): OPEN / DRAFT / UNMERGED. Exact HEAD `59d63a3c9854b646876aade98e26fc74a39d3140`; base PR #91 branch at exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`. Six commits ahead, zero behind.
-- Seven files changed:
-  - `activity_main.xml`: Arabic top margin 3dp→1dp; Arabic line spacing -1dp/0.94→-2dp/0.92; Arabic font padding remains enabled. Translation top margin 2dp→0dp; translation line spacing 2dp→0dp and multiplier 1.04. “Read full verse” hint top margin 7dp→3dp.
+- Draft PR [#92](https://github.com/Frangga11/glass-tv-home/pull/92): OPEN / DRAFT / UNMERGED. Exact application-source HEAD before CI-only export fix: `59d63a3c9854b646876aade98e26fc74a39d3140`; latest branch HEAD after CI workflow export fix: `51cba1bc8bdaa2d80f017b3e83653c9a94f21904`. Base PR #91 branch at exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`. Seven app/test files plus one CI workflow file changed across the branch.
+- App implementation:
+  - `activity_main.xml`: Arabic top margin 3dp→1dp; Arabic line spacing -1dp/0.94→-2dp/0.92; Arabic font padding remains enabled. Translation top margin 2dp→0dp; translation line spacing 2dp→0dp and multiplier 1.04. “Baca ayat lengkap” hint top margin 7dp→3dp.
   - `MainActivity.java`: runtime translation line spacing set to 0px / 1.04; prayer header restored to location + Hijri date without source suffix.
   - `PrayerTimes.java`: remove visible KEMENAG RI / PERKIRAAN suffix from compact prayer summary; prayer calculations and source validation untouched.
   - `AppLanguage.java`: remove now-unused prayer source label helper.
   - Regression tests updated for compact Shelf spacing and restored prayer display.
 - No Quran content, translation selection, cache/network/retry behavior, prayer-time calculation, Kemenag validation, local fallback calculations, Shelf geometry, focus/navigation, or Dock behavior changed.
-- PR #91 exact-head CI #1651 / run `42526843055`: **SUCCESS** (Android build/unit tests and Python/docs jobs passed); publisher skipped because Draft.
-- Initial PR #92 CI #1652 / run `42527386710`: Lists/tools/docs job failed because the existing Arabic typography contract still expected the former `-1dp / 0.94` values; all new ayah-spacing and prayer-label removal contracts passed. Updated the stale regression expectation to `-2dp / 0.92` in a corrective test commit. The Android build job on the initial run was still in progress at inspection. The corrected exact HEAD `59d63a3c9854b646876aade98e26fc74a39d3140` triggered CI #1653 / run `42527522848`: Lists/tools/docs job **SUCCESS** (204 tests, 1 skipped); Android Launcher build/unit tests job **IN PROGRESS** at this update. Publisher run `42527522851` / #108: SKIPPED because Draft; no APK artifact is claimed.
-- PR #92 remains OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, or device install performed.
-- Physical Mi TV Stick visual acceptance remains pending. Specifically inspect two-line Arabic for harakat/glyph collision, translation line spacing, spacing to the “Baca ayat lengkap” hint, and prayer header/summary with no source suffix.
-- Decision: source implementation committed; PR #91 CI pass; PR #92 automated validation pending; physical acceptance pending; final merge blocked.
+- PR #91 exact-head CI #1651 / run `42526843055`: **SUCCESS** (Android build/unit tests and Python/docs jobs passed).
+- Initial PR #92 CI #1652 / run `42527386710`: Lists/tools/docs failed because an existing Arabic typography contract expected former `-1dp / 0.94` values; the stale expectation was corrected.
+- Corrected app-source HEAD `59d63a3c9854b646876aade98e26fc74a39d3140`, CI #1653 / run `42527522848`: **SUCCESS**; Lists/tools/docs passed (204 tests, 1 skipped); Android release build, unit tests and APK diagnostics passed. This first corrected run did not publish an artifact because PR #92 was not included in the artifact allowlist.
+- CI-only artifact export fix: commit `51cba1bc8bdaa2d80f017b3e83653c9a94f21904` adds PR #92 to the existing CI artifact-upload allowlist in `.github/workflows/ci.yml`. No app/runtime source changes in this commit.
+- Latest CI #1654 / run `42528160811` on exact latest branch HEAD `51cba1bc8bdaa2d80f017b3e83653c9a94f21904`: **SUCCESS**; Android launcher build/unit tests, release assemble, APK size diagnostics and artifact upload passed; Lists/tools/docs passed. Publisher workflow remains skipped because PR is Draft.
+- Workflow artifact #13635882633, name `glass-tv-home-dock-visual-parity-83d63facff8d36902fa851d283fd7b9f253a6426` (GitHub artifact digest SHA-256 `37d4f4087eacf577f7d7c252be03439152376da1adff130c6b25167415694394`), expires 15 November 2026 UTC. Downloaded ZIP inspected: contains exactly `app-release.apk`, 1,626,505 bytes.
+- Verified APK file: `/mnt/data/Glass-TV-Home-PR92.apk`; SHA-256 `c2eea02caec2b2f8c5d48e318efa0efb32949284074c57e4e60b48b5b1b18d86`. This is the APK from the latest CI #1654 commit, not a prior build.
+- Physical Mi TV Stick visual acceptance remains pending. Specifically inspect two-line Arabic for harakat/glyph collision, Arabic-to-translation gap (currently 0dp; evaluate visual breathing room), translation line spacing, spacing to “Baca ayat lengkap”, and prayer header/summary with no source suffix.
+- PR #92 remains OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, device install, ADB session, or default-launcher change performed.
+- **Decision:** exact-head automated validation PASS; APK artifact downloaded and SHA-256 verified; physical device acceptance PENDING; final merge BLOCKED until user tests and reports results.
