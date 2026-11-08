@@ -799,3 +799,19 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Expected output: `launcher/app/build/outputs/apk/release/app-release.apk`, uploaded by the existing CI job with 7-day retention.
 - Once CI completes, verify exact HEAD, both jobs, artifact listing, APK size and SHA-256. Then download the artifact and provide the APK file.
 - Keep PR #90 draft/unmerged and do not merge it solely to obtain an artifact. PRs #84–#89 also remain OPEN / DRAFT / UNMERGED.
+
+
+---
+
+## 27. PR #90 APK export validation and verified download — 9 November 2026
+
+**Status: EXACT-HEAD CI PASS / APK ARTIFACT DOWNLOADED AND VERIFIED / PHYSICAL DEVICE ACCEPTANCE PENDING / PRs UNMERGED.**
+
+- PR [#90](https://github.com/Frangga11/glass-tv-home/pull/90), branch `ci/export-islamic-prayer-stack-apk-001`, exact HEAD `aba99d40b8f95f7d6a81711d0c74576ec340b3b9`; base remains PR #89 source branch. PR remains OPEN / DRAFT / UNMERGED.
+- CI #1650 / run `42525914841`: both jobs completed SUCCESS. Android “Launcher build and unit tests” passed, including “Unit tests and release build (validation only)”, APK size diagnostics and artifact upload. “Lists, tools and docs” also passed.
+- Workflow artifact #13634728567, ZIP name `glass-tv-home-pr90-apk-artifact.zip`, size 1,428,646 bytes, created 8 Nov 2026 UTC, expiry 15 Nov 2026 UTC. Artifact SHA-256: `92b0aff385d3c221dd897c8847f9229aa1471c0b998c69463e925e9c20b188af`; matches GitHub artifact digest.
+- Downloaded ZIP and inspected contents: exactly one `app-release.apk`, 1,626,745 bytes. APK SHA-256: `835e4284035a8bbf6b4b0261e46536c840ac959fbc316b4c49176f46fac43b18`. File identification confirms Android package/APK with APK Signing Block.
+- Verified local execution artifacts: `/mnt/data/glass-tv-home-pr90-apk/app-release.apk` and `/mnt/data/glass-tv-home-pr90-apk-artifact.zip`. These are available in the current conversation session; preserve hashes above when transferring or checking integrity.
+- This APK was built from PR #89 source content plus the CI-only artifact-export workflow change in PR #90; no app runtime/source change was introduced by PR #90.
+- Physical Mi TV Stick install, ADB verification, visual/focus acceptance and runtime checks remain PENDING. CI success and APK file verification do not equal device acceptance.
+- **Decision:** PR #90 and PRs #84–#89 remain OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, device installation or default-launcher change performed.
