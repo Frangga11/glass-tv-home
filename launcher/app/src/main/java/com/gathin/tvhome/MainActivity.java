@@ -2571,7 +2571,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Up to the top menu it is dark at once, and travels that way.
         gliderOnPill = true;
         glider.setStyle(Glider.DARK);
-        glider.moveTo(l, t, l + pill.getWidth(), t + pill.getHeight(), pill.getHeight() / 2f);
+        glider.moveTo(l, t, l + pill.getWidth(), t + pill.getHeight(), Math.min(20f * density, pill.getHeight() / 2f));
     }
 
     /** The shelf's two lines. An empty description takes no room, so the title keeps its place. */
