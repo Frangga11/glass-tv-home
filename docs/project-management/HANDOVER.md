@@ -1916,3 +1916,11 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Further static focus audit found horizontal Grid resume restoration did not explicitly reapply the glass when the target card was already focused. Corrected `focusTileWhenLaidOut()` to call `onTileFocused(position, card)` for an already-focused card; added Python source-contract regression test.
 - PR #79 source commit `c52a1cba8ea3190299bce994a52f010457dddbd4`; regression test commit `de4ae44c53e6f99bce2e8fc2d0694a8982a117a3`; audit report commit `edf93d80cca713cfb89b504bf437c64f93c64ac2`. Fresh exact-head CI pending; no PASS claim for these changes yet.
 - PR #77/#79 remain OPEN / DRAFT / UNMERGED. Physical Mi TV Stick visual/DPAD/resume/overscan and whole-Home acceptance remain pending. No APK installation, ADB, default-launcher or device settings mutation.
+
+
+### Retained-focus restoration correction and CI status — 8 November 2026
+
+- Additional audit found already-focused horizontal Grid restoration could leave the glass highlight hidden because `requestFocus()` may not emit a new focus callback. First patch targeted the similarly shaped Dock helper by mistake; CI #1543 correctly caught this via the new regression test. That attempt is **FAIL / superseded**, not accepted.
+- Corrected source commit `728fb356be892b15c4903ea97ff950b1fbdde9fc`: already-focused Grid card explicitly calls `onTileFocused(position, card)`; already-focused Dock card calls `onDockTileFocused(dockAdapter.keyAt(position), card)`. Otherwise normal `requestFocus()` remains.
+- Regression test commit `c058935ed4398f5c7964d753fcf35a9cf77989bb` covers both restoration helpers. CI #1545 / run `42479472690` is validating the exact source/test commit; both jobs were still in progress at last poll. No PASS claim yet.
+- PR #79 latest docs-only audit report commit `3bfaa7047989dcfd04a11eb58ec7e6d94882e685`. PR remains OPEN / DRAFT / UNMERGED. Physical Mi TV Stick acceptance pending; no APK installation, ADB, default-launcher/device settings mutation, force-push, or merge.
