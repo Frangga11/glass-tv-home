@@ -2429,3 +2429,10 @@ Detailed evidence: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT
 - CI artifact is built from GitHub's PR merge ref `569500eacf0669f8d7bc5f191328a9d49790cf1e`, which merges source HEAD above into base. It is not a production release publication; the separate release-publisher workflow was skipped by design for a PR.
 - Final static package integrity and changed-file scope checks are recorded. Rendered 1920×1080 visual audit is NOT RUN: current available execution environment has no Android emulator, ADB, aapt/apkanalyzer or screenshot renderer. Physical Mi TV Stick acceptance remains NOT RUN. No ADB, installation, launcher setting mutation, or merge.
 - **Status: AUTOMATED QA PASS; VISUAL / DEVICE ACCEPTANCE PENDING; OVERALL BELUM FINAL.** Keep PR #101 draft/unmerged. Next gate is a genuine rendered 1920×1080 visual inspection; only after it passes may owner-approved Mi TV Stick acceptance proceed. No installation or merge without explicit owner authorization.
+
+### Handover checkpoint — 9 November 2026
+Resume PR #101 from source HEAD `b8389e1f90b9fb7f65d91cfd0d7a41782f343d83` on `integration/home-islamic-prayer-spacing-cumulative-101`; base SHA `4038c08f4825f7bacf965bc6708505d3c8c30ebc`. PR remains OPEN / DRAFT / UNMERGED.
+
+Automated QA is complete: CI #1681 / run `42535212323` SUCCESS; Python 211 tests (1 skipped), Android app/installer unit tests and Release build PASS. Artifact `13639167072` contains `app-release.apk`; size 1,626,525 bytes; SHA-256 `5423f7746d6b771fcb0c76ca3fcdca5186c5957d2967f66437554cb6e7d62398`; package ZIP integrity PASS. Size warning is non-blocking and delta vs PR #83 is only +1,312 bytes (+0.081%).
+
+Do NOT claim visual pass: no rendered 1920×1080 screenshot exists. Current execution environment lacks Android emulator/renderer. Next required work: arrange genuine rendering/visual audit, then explicit owner-authorized Mi TV Stick acceptance. No ADB/install/default-launcher changes or merge before those gates and explicit approval.
