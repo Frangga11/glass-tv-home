@@ -1855,3 +1855,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Dependency audit: PR #79's base SHA `0aeb3851ddce5deb47e3c5f96db44631b0343577` is one commit behind PR #77 head; the intervening commit changes only the CI workflow, and both branch workflow contents were inspected and are identical. Reconcile ancestry before merge.
 - Device visual/DPAD/overscan acceptance remains NOT RUN. No APK installed, no ADB or device settings changed. No PR merged.
 - Next: obtain fresh exact-head CI for PR #79, inspect resulting APK diagnostics/artifact, complete source review, then prepare the Mi TV Stick acceptance matrix. Do not test or merge before CI and source review pass.
+
+
+## Follow-up source correction — bilingual altitude, 8 November 2026
+
+- Latest PR #79 head: `1fff5b7b8eea4ee53198fe3e65f6c75c91340be3`; OPEN / DRAFT / UNMERGED.
+- Stale-focus correction committed at prior head `ddd8750a688460cf1c8bc4b27c77189294301844`; exact-head CI #1529 passed both jobs.
+- Additional audit found the altitude pill hard-coded Indonesian and used an uncertainty symbol. Added `location_altitude_format` in default/ID/EN resources; Indonesian/default `%1$d mdpl`, English `%1$d m ASL`; updated MainActivity and added resource regression coverage.
+- Fresh CI #1534 for latest head is IN PROGRESS; do not claim final PASS until complete.
+- PR #77/#79 remain Draft and unmerged; physical TV acceptance remains pending. No APK installed or device settings changed.
