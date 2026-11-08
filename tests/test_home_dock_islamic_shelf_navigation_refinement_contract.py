@@ -34,13 +34,13 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertEqual(icon.get(ANDROID + "layout_width"), "48dp")
         self.assertEqual(icon.get(ANDROID + "layout_height"), "48dp")
 
-    def test_dock_host_loses_only_eight_dp_of_extra_height(self):
-        self.assertIn("DOCK_EXTRA_HEIGHT_DP = 10f", GEOMETRY)
+    def test_dock_host_total_height_reduces_by_about_eight_dp(self):
+        self.assertIn("DOCK_EXTRA_HEIGHT_DP = 14f", GEOMETRY)
         self.assertIn("return itemHeightPx(tileHeightPx, density) + Math.round(DOCK_EXTRA_HEIGHT_DP * density);", GEOMETRY)
         self.assertIn("horizontalShelfAnchorHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
         self.assertIn("horizontalGridBottomMarginPx", GEOMETRY)
-        self.assertIn("HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 4f", GEOMETRY)
+        self.assertIn("HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 8f", GEOMETRY)
         self.assertIn("DOCK_ITEM_BOTTOM_OFFSET_DP = 12f", GEOMETRY)
         self.assertIn("horizontalDockItemBottomOffsetPx", DECORATION)
 
