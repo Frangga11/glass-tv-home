@@ -24,7 +24,7 @@
 ## Remaining gates
 - CI/build: **PASS**.
 - Whole Home source audit: **PARTIAL / NOT PASS**.
-- Rendered visual, DPAD, lifecycle/resume, weather/prayer refresh, media pause/resume and runtime error-log acceptance: **PENDING**.
+- Rendered visual, DPAD, lifecycle/resume, weather/prayer refresh, atmospheric overlay refresh, media pause/resume and runtime error-log acceptance: **PENDING**.
 - No source-code edits were made during this audit; documentation only.
 - Keep PR #79 and PR #77 unmerged.
 
