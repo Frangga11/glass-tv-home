@@ -51,16 +51,18 @@ final class WeeklyAyah {
         }
 
         String translation(String lang) {
-            if (AppLanguage.LANG_EN.equals(lang)) {
-                return (english != null && !english.isEmpty()) ? english : malay;
-            } else if (AppLanguage.LANG_ID.equals(lang)) {
-                return (indonesian != null && !indonesian.isEmpty()) ? indonesian : malay;
-            }
-            return (malay != null && !malay.isEmpty()) ? malay : english;
+            if (AppLanguage.LANG_EN.equals(lang)) return firstNonEmpty(english, malay, indonesian);
+            if (AppLanguage.LANG_ID.equals(lang)) return firstNonEmpty(indonesian, malay, english);
+            return firstNonEmpty(malay, english, indonesian);
         }
 
         String translation(boolean inEnglish) {
-            return inEnglish && !english.isEmpty() ? english : malay;
+            return inEnglish ? firstNonEmpty(english, malay, indonesian) : firstNonEmpty(malay, english, indonesian);
+        }
+
+        private static String firstNonEmpty(String... values) {
+            for (String value : values) if (value != null && !value.trim().isEmpty()) return value;
+            return "";
         }
     }
 
