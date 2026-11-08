@@ -4255,6 +4255,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 13f : 11f);
         }
         if (ayahArabic != null) {
+            // Give the Arabic preview a real, shared line box. maxWidth alone only caps
+            // measurement; with wrap_content it does not create a stable right edge for RTL.
+            ViewGroup.LayoutParams arabicParams = ayahArabic.getLayoutParams();
+            if (arabicParams != null && arabicParams.width != islamicMaxWidth) {
+                arabicParams.width = islamicMaxWidth;
+                ayahArabic.setLayoutParams(arabicParams);
+            }
             ayahArabic.setMaxWidth(islamicMaxWidth);
             ayahArabic.setSingleLine(false);
             ayahArabic.setMaxLines(2);
@@ -4268,6 +4275,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahArabic.setText(a.arabic.trim());
         }
         if (ayahText != null) {
+            // Match the Arabic line box so the translation stays on the same visual column.
+            ViewGroup.LayoutParams translationParams = ayahText.getLayoutParams();
+            if (translationParams != null && translationParams.width != islamicMaxWidth) {
+                translationParams.width = islamicMaxWidth;
+                ayahText.setLayoutParams(translationParams);
+            }
             ayahText.setTextDirection(View.TEXT_DIRECTION_LTR);
             ayahText.setGravity(Gravity.START);
             ayahText.setMaxWidth(islamicMaxWidth);
