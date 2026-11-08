@@ -5,7 +5,7 @@
 **Repository:** `Frangga11/glass-tv-home`  
 **PR:** [#82](https://github.com/Frangga11/glass-tv-home/pull/82)  
 **Branch:** `fix/home-islamic-shelf-vertical-position-grid-row-scroll-002`  
-**Exact HEAD:** `37bd6343f9b4b535f477c307770f49778320b032`  
+**Exact HEAD:** `d6f594933b712b36b0660e119a0d4ee8b7de3134`  
 **Base branch:** `fix/home-dock-islamic-shelf-navigation-001` (PR #81; current branch tip `3cd36b8a5fbc788a7b15e178e4aaf0606e919c61`)
 
 ---
@@ -22,7 +22,7 @@ Before implementation, the canonical checkpoint, handover, audit register, PR #8
 - PR #81: OPEN / DRAFT / UNMERGED; branch `fix/home-dock-islamic-shelf-navigation-001`; current HEAD `3cd36b8a5fbc788a7b15e178e4aaf0606e919c61`.
 - PR #81 remains based on PR #80. Its application source was not changed for this follow-up; only CI and direct-APK workflow eligibility was extended so PR #82 can produce exact-head validation and a direct APK.
 - PR #82: OPEN / DRAFT / UNMERGED; mergeable; branch above; exact HEAD above; stacked on PR #81.
-- No PR was merged and no source from PR #80/#81 was reverted.
+- PR #82 is synchronized with current PR #81 base (0 commits behind; mergeable). No PR was merged and no source from PR #80/#81 was reverted.
 
 The repository did not contain new physical-device evidence in PR #81 comments or its audit record; the user-provided Mi TV Stick observation is the reproduction baseline. Physical acceptance remains a separate gate.
 
@@ -83,13 +83,13 @@ Indonesian locale resolves the six requested names as SUBUH, TERBIT, DZUHUR, ASH
 
 ## 4. Changed files in PR #82
 
-1. `.github/workflows/ci.yml`
-2. `.github/workflows/publish-apk-release.yml`
-3. `launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java`
-4. `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
-5. `launcher/app/src/main/res/layout/activity_main.xml`
-6. `launcher/app/src/test/java/com/gathin/tvhome/DockLayoutModelTest.java`
-7. `tests/test_home_dock_islamic_shelf_navigation_refinement_contract.py`
+1. `launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java`
+2. `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+3. `launcher/app/src/main/res/layout/activity_main.xml`
+4. `launcher/app/src/test/java/com/gathin/tvhome/DockLayoutModelTest.java`
+5. `tests/test_home_dock_islamic_shelf_navigation_refinement_contract.py`
+
+CI and direct APK workflow support is inherited from the updated PR #81 base branch; these workflow files are not part of PR #82's five-file diff.
 
 No unrelated application modules, DockAdapter, DockDecoration, wallpaper provider, prayer-time calculation/data, profile, kids mode, header, capsules, or global safe-frame code were changed.
 
@@ -97,9 +97,9 @@ No unrelated application modules, DockAdapter, DockDecoration, wallpaper provide
 
 ## 5. Exact-head validation
 
-**Final exact HEAD:** `37bd6343f9b4b535f477c307770f49778320b032`
+**Final exact HEAD:** `d6f594933b712b36b0660e119a0d4ee8b7de3134`
 
-### CI #1629 — run `42505054837`
+### CI #1630 — run `42505427017`
 
 **SUCCESS — both jobs passed.**
 
@@ -107,18 +107,18 @@ No unrelated application modules, DockAdapter, DockDecoration, wallpaper provide
 - Scoped contracts passed for measured 27.5dp anchoring, stable bottom anchors, decorated row geometry, real `scrollBy()` motion, focus identity, no-jump focus settlement, viewport clipping and typography.
 - Android `testReleaseUnitTest`: app and installer tasks passed.
 - Android `assembleRelease`: passed.
-- Gradle result: **BUILD SUCCESSFUL in 1m 14s**.
-- CI visual-parity artifact ID: `13627675055`; ZIP size 1,429,685 bytes; SHA-256 `1e158a07b761627e98f6d84c986e616bd4ebd91c45090af657477c311ce40342`. This is a CI artifact ZIP, not the direct APK asset.
+- Gradle result: **BUILD SUCCESSFUL in 1m 37s**.
+- CI visual-parity artifact ID: `13627586269`; ZIP size 1,429,683 bytes; SHA-256 `3b081cde3d8fcfd5da101d5300a772bf2e6ca2bbc0371606e39e804603c62584`. This is a CI artifact ZIP, not the direct APK asset.
 
 ### Direct APK publisher #84 — run `42505054798`
 
 **SUCCESS.** It built and verified the release APK from the exact HEAD above, then published the APK binary itself as a direct GitHub Release asset.
 
-- APK: `Glass-TV-Home-PR82-37bd6343f9b4b535f477c307770f49778320b032.apk`
+- APK: `Glass-TV-Home-PR82-d6f594933b712b36b0660e119a0d4ee8b7de3134.apk`
 - Size: **1,630,737 bytes**
-- SHA-256: `3416c4ec0a956263a05fd923638f8b27d06c5fce619e8a328accc057c01bd777`
-- Release: [Glass TV Home — PR #82 QA APK](https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-pr82-37bd6343f9b4b535f477c307770f49778320b032)
-- Direct APK: [Download exact-head APK](https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr82-37bd6343f9b4b535f477c307770f49778320b032/Glass-TV-Home-PR82-37bd6343f9b4b535f477c307770f49778320b032.apk)
+- SHA-256: `524963af6aad72444d38e1cd896eac25d29be05cac9e765b8819e0f69dcba735`
+- Release: [Glass TV Home — PR #82 QA APK](https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-pr82-d6f594933b712b36b0660e119a0d4ee8b7de3134)
+- Direct APK: [Download exact-head APK](https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr82-d6f594933b712b36b0660e119a0d4ee8b7de3134/Glass-TV-Home-PR82-d6f594933b712b36b0660e119a0d4ee8b7de3134.apk)
 
 A first build attempt failed because the pending stable-key field declaration was missing. The compiler log identified the missing declaration; it was added, a regression assertion was added, and the final exact-head CI and publisher runs both passed. Do not carry the failed attempt forward as the final result.
 
