@@ -2405,7 +2405,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         numberEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 int statusStart = numberEnd + 1;
                 if (statusStart < value.length()) {
-                    styled.setSpan(new android.text.style.BackgroundColorSpan(0xFF2E9D4B), statusStart,
+                    int badgeColor = apiColor != 0 ? apiColor
+                            : (Integer.parseInt(value.substring(numberStart, numberEnd)) <= 100 ? 0xFF2E9D4B
+                            : (Integer.parseInt(value.substring(numberStart, numberEnd)) <= 200 ? 0xFFE0A126 : 0xFFCC3D3D));
+                    styled.setSpan(new android.text.style.BackgroundColorSpan(badgeColor), statusStart,
                             value.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     styled.setSpan(new android.text.style.ForegroundColorSpan(0xFFFFFFFF), statusStart,
                             value.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -2848,12 +2851,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         name.setText(zone.town);
+        View altitudeDivider = findViewById(R.id.locationAltitudeDivider);
+        View mountain = findViewById(R.id.locationMountainIcon);
         if (zone.altitudeMeters != null && zone.altitudeMeters > 0) {
             altitude.setText("± " + zone.altitudeMeters + " mdpl");
             altitude.setVisibility(View.VISIBLE);
+            if (altitudeDivider != null) altitudeDivider.setVisibility(View.VISIBLE);
+            if (mountain != null) mountain.setVisibility(View.VISIBLE);
         } else {
             altitude.setText("");
             altitude.setVisibility(View.GONE);
+            if (altitudeDivider != null) altitudeDivider.setVisibility(View.GONE);
+            if (mountain != null) mountain.setVisibility(View.GONE);
         }
     }
 
