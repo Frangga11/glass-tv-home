@@ -2225,5 +2225,5 @@ Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LA
 - Corrected geometry: wallpaper shelf up ~28dp from the prior PR #80 rendering, nominal 32.5dp clearance above Dock; daily Ayah up 18dp; prayer header/table up 24dp total.
 - All six prayer names/times use 13sp/17sp solid high-contrast text and retain the XML Inter font; Arabic/translation enlarged to 20/14sp at 1080p (22/15sp at 4K); subtle right-shelf gradient scrim added without a bordered panel.
 - Three changed files for the corrective pass: MainActivity.java, activity_main.xml, and test_home_wallpaper_text_refinement_contract.py. DockGeometry, Dock/Grid, Header/capsules, navigation, wallpaper image/crop/provider/rotation, prayer data/provider/order and safe frame remain untouched.
-- Exact-head CI for `a085be1` is pending verification. Prior CI #1592 / run `42493469262` belongs to old HEAD `c7d95c3` only.
+- Exact-head CI #1599 / run `42497894475` for `a085be1` is IN PROGRESS. Prior CI #1592 / run `42493469262` belongs to old HEAD `c7d95c3` only.
 - No APK install, ADB, device setting change or merge. Next: verify exact-head CI, review rendered 1920×1080, then owner Mi TV Stick visual/remote acceptance.
