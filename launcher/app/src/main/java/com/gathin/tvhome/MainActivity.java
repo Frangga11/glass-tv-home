@@ -498,7 +498,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    if (btnCandyBox != null) { btnCandyBox.requestFocus(); return true; }
+                    if (btnHome != null) { btnHome.requestFocus(); return true; }
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                     View location = findViewById(R.id.locationPill);
@@ -837,7 +837,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
 
-        // Spatial D-pad: Location ↓ Weather; both lead right to Profile → Home → Settings → Inputs → Wi-Fi → Assistant.
+        // Preserve the established order: Home → Profile → Settings → Inputs → Wi-Fi → Assistant. Location/Weather remain stacked at left.
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
@@ -856,11 +856,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (id == R.id.locationPill) return true;
-                else if (id == R.id.btnCandyBox)
+                else if (id == R.id.btnHome)
                     target = weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
                             ? weatherAirQualityView : findViewById(R.id.locationPill);
-                else if (id == R.id.btnHome) target = btnCandyBox;
-                else if (id == R.id.btnSettings) target = btnHome;
+                else if (id == R.id.btnCandyBox) target = btnHome;
+                else if (id == R.id.btnSettings) target = btnCandyBox;
                 else if (id == R.id.btnInputs) target = btnSettings;
                 else if (id == R.id.btnWifi)
                     target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings;
@@ -872,9 +872,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return id == R.id.btnHome || id == R.id.btnInputs;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                if (id == R.id.locationPill) target = btnCandyBox;
-                else if (id == R.id.btnCandyBox) target = btnHome;
-                else if (id == R.id.btnHome) target = btnSettings;
+                if (id == R.id.locationPill) target = btnHome;
+                else if (id == R.id.btnHome) target = btnCandyBox;
+                else if (id == R.id.btnCandyBox) target = btnSettings;
                 else if (id == R.id.btnSettings)
                     target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs
                             : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant);
