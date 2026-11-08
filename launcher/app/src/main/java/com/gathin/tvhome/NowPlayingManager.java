@@ -65,8 +65,14 @@ public final class NowPlayingManager {
             this.albumArt = albumArt;
         }
 
+        /**
+         * True while an allowed music app still owns a usable media session.
+         * Playback state is intentionally separate: paused/buffering sessions
+         * remain available on Home so the user can resume without reopening the app.
+         */
         public boolean hasMusic() {
-            return isPlaying && isAllowedMusicApp(packageName);
+            return isAllowedMusicApp(packageName)
+                    && (controller != null || !title.isEmpty());
         }
 
         public String getDisplayText() {
