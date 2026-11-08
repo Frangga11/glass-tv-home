@@ -753,7 +753,7 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 **Status: SOURCE CROSS-AUDIT PASS / ALL SIX EXACT-HEAD CI RUNS PASS / PHYSICAL DEVICE ACCEPTANCE PENDING / FINAL MERGE BLOCKED.**
 
 - Cross-audited PR #84 → #85 → #86 → #87 → #88 → #89 at their exact tested HEADs.
-- All six exact-head CI runs completed successfully: #1639, #1640, #1642, #1647, #1649 (PR #88), #1649 (PR #89). Python suites passed at 184, 188, 192, 198, 201 and 202 tests respectively, each with one skipped. Android `testReleaseUnitTest` and `assembleRelease` passed on all six.
+- All six exact-head CI runs completed successfully: #1639, #1640, #1642, #1647, #1648 (PR #88), #1649 (PR #89). Python suites passed at 184, 188, 192, 198, 201 and 202 tests respectively, each with one skipped. Android `testReleaseUnitTest` and `assembleRelease` passed on all six.
 - Latest PR #89 APK diagnostic: 1,626,745 bytes. No APK release asset was published because PRs remain Draft.
 - Cross-source checks at PR #89 HEAD: one Islamic Shelf position listener; no runtime Arabic line-spacing override; XML `-1dp / 0.94` retained; tomorrow Subuh shared lookup; prayer sync single-flight; exact WIB epoch-day ayah cache; 30-minute ayah retry cooldown; ayah single-flight; no worker launch during cooldown.
 - All six PRs remain OPEN / DRAFT / UNMERGED. Individual mergeable flags do not resolve the known upstream PR #70–#72 dependency chain and PR #77 ancestry discrepancy.
