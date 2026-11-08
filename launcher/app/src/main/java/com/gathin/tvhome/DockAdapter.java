@@ -156,6 +156,8 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             iconParams.height = iconSize;
             icon.setLayoutParams(iconParams);
         }
+        // A restrained horizontal optical expansion keeps the original icon art recognizable.
+        icon.setScaleX(vertical ? 1f : 1.045f);
         View card = item.findViewById(R.id.card);
         ViewGroup.LayoutParams cardParams = card.getLayoutParams();
         if (cardParams.width != width || cardParams.height != height) {
