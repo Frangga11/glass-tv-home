@@ -2085,3 +2085,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Exact-head CI for 97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5 has not yet been observed. Prior CI runs on earlier heads do not validate these latest changes; no exact-head test pass is claimed.
 - No APK installation, ADB, device settings/default launcher changes, physical TV testing, force-push or merge.
 - Canonical audit: GTVH_HOME_SCREEN_CROSS_AUDIT_001.md.
+
+
+## Latest Home Screen remediation validation — 8 November 2026
+- Latest PR #79 head: `765634e7d806f48bc38014119cd170a8697ea442`; CI #1579 / run `42486810729`: **SUCCESS** on merge ref `09c7b98534f151cb292f1b03c50b9d9ed21c3c90`, which includes that exact head.
+- Both CI jobs passed (Lists/tools/docs; Launcher build/unit tests); release build successful; APK diagnostic size **1,627,581 bytes**; test artifact ID `13620310383`.
+- HOME-002 test was extended for DPAD Up and Header Assistant → prayer timetable focus routing. Latest exact-head CI validates the final test commit.
+- All five source corrections and latest-head CI validation: PASS. Whole Home Screen end-to-end acceptance: **PARTIAL / NOT PASS** pending separately authorized Mi TV Stick verification.
+- PR #79 and dependency PR #77 remain OPEN / DRAFT / UNMERGED. No APK installation, ADB, device settings/default launcher changes, or physical TV test.
+- Canonical record: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
