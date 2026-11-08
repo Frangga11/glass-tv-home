@@ -1985,3 +1985,13 @@ Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exa
 - Corrected source commit `728fb356be892b15c4903ea97ff950b1fbdde9fc`: already-focused Grid card explicitly calls `onTileFocused(position, card)`; already-focused Dock card calls `onDockTileFocused(dockAdapter.keyAt(position), card)`. Otherwise normal `requestFocus()` remains.
 - Regression test commit `c058935ed4398f5c7964d753fcf35a9cf77989bb` covers both restoration helpers. CI #1545 / run `42479472690` is validating the exact source/test commit; both jobs were still in progress at last poll. No PASS claim yet.
 - PR #79 latest docs-only audit report commit `3bfaa7047989dcfd04a11eb58ec7e6d94882e685`. PR remains OPEN / DRAFT / UNMERGED. Physical Mi TV Stick acceptance pending; no APK installation, ADB, default-launcher/device settings mutation, force-push, or merge.
+
+
+### CI #1545 final result — 8 November 2026
+
+- CI #1545 / run `42479472690` completed **SUCCESS** on corrected source/test commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`: Launcher build + `testReleaseUnitTest` PASS; release packaging and APK diagnostics PASS; Lists/tools/docs checks PASS; test APK artifact upload PASS.
+- Corrected retained-focus handling covers both horizontal Grid and Dock: already-focused cards explicitly reapply the corresponding focus handler; otherwise normal `requestFocus()` is used. Regression test covers both helpers. Earlier CI #1543 failure is recorded as superseded, not passed.
+- APK exact size **1,624,589 bytes (1,586 KB)**; versus PR #77 CI #1506 size 1,622,585 bytes: **+2,004 bytes (+0.12%)**. Historical 1.5 MiB threshold warning remains non-blocking.
+- Artifact ID `13616788353`, ZIP size 1,423,762 bytes, SHA-256 `549ca1201857ec44968a86ec8961f4431354ea7bd29f0de93bfca99b7f0d39c9`, expires 15 Nov 2026. Artifact not installed.
+- PR #79 remains OPEN / DRAFT / UNMERGED; PR #77 remains OPEN / DRAFT / UNMERGED. Static integration audit PARTIAL; physical Mi TV Stick acceptance PENDING. No ADB, APK installation, device/default-launcher settings changes, force-push, or merge.
+- PR #79 CI result comment posted, GitHub comment ID `6721430044`.
