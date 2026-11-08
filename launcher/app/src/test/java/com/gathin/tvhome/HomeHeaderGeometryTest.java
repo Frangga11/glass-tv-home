@@ -10,6 +10,11 @@ public class HomeHeaderGeometryTest {
     }
 
     @Test
+    public void preservesCenteredNavigationAt4kResolution() {
+        assertEquals(1400, HomeHeaderGeometry.centeredWidthPx(3840, 1000, 2840, 1400));
+    }
+
+    @Test
     public void constrainsToNarrowerSideWithoutOverlappingControls() {
         assertEquals(280, HomeHeaderGeometry.centeredWidthPx(1280, 440, 780, 500));
     }
