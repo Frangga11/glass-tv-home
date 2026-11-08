@@ -1,3 +1,60 @@
+# CURRENT CHECKPOINT — GLASS TV HOME — 8 NOVEMBER 2026, 19:42 WIB
+
+## Canonical restart point
+This is the latest authoritative checkpoint and the starting point for all future Glass TV Home discussions. Read this section first, then consult the historical entries below. Do not restart from older checkpoint notes unless explicitly asked.
+
+### Active workstream
+- Workstream: `GTVH-HOME-FINAL-CROSS-AUDIT-001`
+- Main PR: [PR #79](https://github.com/Frangga11/glass-tv-home/pull/79), branch `fix/home-balanced-frame-001`, current head `acf344bc31874dfc6b680ac0bd6089b72ce1c8fa`, **OPEN / DRAFT / UNMERGED**.
+- Stacked base: PR #77, branch `fix/home-layout-consolidated-001`. Keep both PRs unmerged until owner acceptance.
+- Canonical docs branch: `docs/project-master-inventory`.
+
+### Latest verified build
+- CI #1545 / run `42479472690`: **SUCCESS**. Android Launcher build, `testReleaseUnitTest`, release packaging, APK diagnostics, artifact upload, and Lists/tools/docs checks all passed.
+- Validated source/test commit: `c058935ed4398f5c7964d753fcf35a9cf77989bb`.
+- APK: `app-release.apk`, 1,624,589 bytes.
+- SHA-256: `6c7981a6c71aa5fc6f5146ba5a6023b9fdbfc527c887d1c367dc500d04fd3b10`.
+
+### Distribution defect and definitive remediation
+- User's Samsung Browser repeatedly appended `.bin` to ChatGPT sandbox attachment downloads. Local APK and its contents were valid; changing local filename or re-linking the sandbox attachment did not fix browser behavior. Treat the ChatGPT attachment delivery path as unsuitable for this APK distribution.
+- Added `.github/workflows/publish-apk-release.yml` to PR #77 base and PR #79 branches. Final workflow downloads the exact CI #1545 artifact, verifies byte size and SHA-256, and uploads that unmodified file as a direct GitHub Release asset. It does NOT rebuild/re-sign the APK.
+- Important audit: a first rebuild-based attempt passed Gradle but failed exact SHA comparison (rebuilt hash `298f494e48d6dac56a0613ffb76536499a1c32bb6c291299ed0fe10607f27a01` vs expected CI hash); that approach was rejected. An initial artifact lookup also used a wrong artifact name; corrected.
+- Final publishing workflow run #7 / run `42480957620`: **SUCCESS**. Release asset verified via GitHub API:
+  - Release tag: `glass-tv-home-ci1545-20261108` (QA prerelease)
+  - Asset ID: `723889891`
+  - Filename: `app-release.apk`
+  - MIME: `application/vnd.android.package-archive`
+  - Size: 1,624,589 bytes
+  - SHA-256: `6c7981a6c71aa5fc6f5146ba5a6023b9fdbfc527c887d1c367dc500d04fd3b10`
+  - Direct download: https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-ci1545-20261108/app-release.apk
+  - Release page: https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-ci1545-20261108
+- Server-side GitHub asset metadata and publication are **PASS**. Actual filename received by Samsung Browser is still **PENDING owner confirmation**. Do not claim user-side download success until confirmed.
+
+### Current quality and safety gates
+- CI/build: **PASS**.
+- Exact CI artifact integrity: **PASS**.
+- Direct GitHub Release publication and MIME/filename metadata: **PASS**.
+- Samsung Browser received filename: **PENDING**.
+- Static integration audit: **PARTIAL**.
+- Physical Mi TV Stick visual/DPAD/resume acceptance: **PENDING**.
+- APK installation, ADB, device/default-launcher setting changes: **NOT PERFORMED**.
+- PR #79 and PR #77: **DO NOT MERGE** until owner confirms direct APK download and completes physical TV acceptance.
+
+### Next action on restart
+1. Ask owner to test the direct GitHub Release APK link above and confirm the downloaded filename is exactly `app-release.apk` (no `.bin`).
+2. If correct, owner may proceed with the agreed Mi TV Stick test checklist; do not remotely install or alter device settings.
+3. Record physical test results and complete static cross-audit.
+4. Only then reassess PR merge readiness and final QA.
+
+### Mandatory project handling
+- This checkpoint supersedes older progress summaries as the starting point.
+- Continue using the agreed workflow: Trigger → Input → Verification → Work/Analysis → Decision Point → Output → Quality Check → Final/Not Final.
+- Clearly label PASS / FAIL / PARTIAL / PENDING.
+- Preserve user-approved scope and do not merge prematurely.
+- Keep canonical documentation synchronized at each meaningful checkpoint.
+
+---
+
 ## Historical B06 completion checkpoint — 1 November 2026
 
 - B06 source implementation and static quality checks are complete on `feature/b06-notification-feedback`; exact verified head: `bc86a250d73a5cbb83250217d42c3c3993cf29d7`.
