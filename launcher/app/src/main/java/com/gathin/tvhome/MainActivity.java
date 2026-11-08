@@ -868,7 +868,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (btnAssistant != null) btnAssistant.setOnKeyListener(pillKeys);
         if (btnCandyBox != null) btnCandyBox.setOnKeyListener(pillKeys);
         if (btnSettings != null) btnSettings.setOnKeyListener(pillKeys);
-        root.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> applyHeaderWidths());
+        root.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                root.post(this::applyHeaderWidths));
         root.post(this::applyHeaderWidths);
 
         // Hide the glass when focus leaves the tiles.
@@ -2894,6 +2895,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (lp.width != pillWidth) { lp.width = pillWidth; weather.setLayoutParams(lp); }
         }
         if (nav != null) {
+            if (left != null && left.getHeight() > 0 && nav.getHeight() > 0) {
+                int centeredTop = Math.max(0, (left.getHeight() - nav.getHeight()) / 2);
+                android.widget.RelativeLayout.LayoutParams navParams =
+                        (android.widget.RelativeLayout.LayoutParams) nav.getLayoutParams();
+                if (navParams.topMargin != centeredTop) {
+                    navParams.topMargin = centeredTop;
+                    nav.setLayoutParams(navParams);
+                }
+            }
             int desired = Math.round(screen * 0.39f);
             int max = desired;
             if (left != null && right != null && left.getWidth() > 0 && right.getWidth() > 0) {
