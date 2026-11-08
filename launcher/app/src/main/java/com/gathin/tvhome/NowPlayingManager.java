@@ -71,8 +71,14 @@ public final class NowPlayingManager {
          * remain available on Home so the user can resume without reopening the app.
          */
         public boolean hasMusic() {
-            return isAllowedMusicApp(packageName)
-                    && (controller != null || !title.isEmpty());
+            if (!isAllowedMusicApp(packageName) || controller == null) return false;
+            PlaybackState state = controller.getPlaybackState();
+            if (state == null) return false;
+            int playbackState = state.getState();
+            return playbackState == PlaybackState.STATE_PLAYING
+                    || playbackState == PlaybackState.STATE_PAUSED
+                    || playbackState == PlaybackState.STATE_BUFFERING
+                    || playbackState == PlaybackState.STATE_CONNECTING;
         }
 
         public String getDisplayText() {
