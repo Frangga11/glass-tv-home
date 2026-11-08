@@ -2210,3 +2210,20 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - A first compile attempt exposed a missing pending app-key field declaration; it was added and covered by a Python contract assertion. Final exact-head CI and publisher both pass. Do not treat the failed intermediate run as final.
 - **Outstanding:** physical Mi TV Stick acceptance, 27.5dp runtime measurement, DOWN/UP direction and position, repeated/rapid reversal, partial last row, app-count change, capacity 4/5/6, return-to-Home focus and locked-component regression. No ADB, install, device setting change or merge performed by assistant.
 - Detailed report: [GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md](GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md).
+
+---
+
+## Audit entry — GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003 — 9 November 2026
+
+**Status: IMPLEMENTATION PASS / AUTOMATED VALIDATION PASS / PHYSICAL ACCEPTANCE PENDING.**
+
+- PR #83: https://github.com/Frangga11/glass-tv-home/pull/83; OPEN / DRAFT / UNMERGED.
+- Source branch: `fix/home-ui-proportion-glass-focus-refinement-003`.
+- Exact HEAD: `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`; base PR #82 exact HEAD: `d6f594933b712b36b0660e119a0d4ee8b7de3134`.
+- Changed files: 20. Scope: manual-only OTA; navigation capsule/spacing; horizontal Dock icon/height; Islamic Shelf divider/scrim; shared Glider/glass; regression tests and PR-specific CI/publisher workflow eligibility.
+- CI #1637 / run `42509424284`: **SUCCESS**. Python 184 tests (1 skipped); Android app/installer Release unit tests passed; `assembleRelease` passed.
+- Publisher #92 / run `42509424259`: **SUCCESS**. APK size 1,625,213 bytes; SHA-256 `2d14894da872f616188bace686be5f85021766914bbe65260cc76a7848baee26`; [release page](https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-pr83-947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803).
+- CI artifact `13628113675`: 1,427,011-byte ZIP; SHA-256 `7caf8c43502a4db15c61a098bf1d55559ecf6a0fdf2f8eb73eeaecf0d32dbd08`; expires 15 November 2026.
+- APK is 5,524 bytes smaller than PR #82; it remains 52,349 bytes above the non-blocking historical 1.5 MiB diagnostic threshold.
+- Physical Mi TV Stick acceptance is not performed. Do not merge or call final until the owner confirms 1920×1080 / density320 visuals, remote focus, manual OTA and regression behavior.
+- Detailed report: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md](GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md).
