@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
 LAYOUT = ROOT / "launcher/app/src/main/res/layout/activity_main.xml"
 GEOMETRY = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java").read_text(encoding="utf-8")
+NOW_PLAYING = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/NowPlayingManager.java").read_text(encoding="utf-8")
 ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 
@@ -203,6 +204,20 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg))", MAIN)
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
+
+    def test_supported_paused_media_session_remains_available_on_home(self):
+        start = NOW_PLAYING.index("public boolean hasMusic()")
+        end = NOW_PLAYING.index("public String getDisplayText()", start)
+        has_music = NOW_PLAYING[start:end]
+        self.assertIn("isAllowedMusicApp(packageName)", has_music)
+        self.assertIn("controller != null || !title.isEmpty()", has_music)
+        self.assertNotIn("return isPlaying &&", has_music)
+
+        self.assertIn("PlaybackState.STATE_PAUSED", NOW_PLAYING)
+        self.assertIn("PlaybackState.STATE_BUFFERING", NOW_PLAYING)
+        self.assertIn("PlaybackState.STATE_CONNECTING", NOW_PLAYING)
+        self.assertIn("boolean hasActiveMusic = info != null && info.hasMusic();", MAIN)
+        self.assertIn("info.isPlaying ? R.drawable.ic_pause : R.drawable.ic_play", MAIN)
 
 if __name__ == "__main__":
     unittest.main()
