@@ -837,6 +837,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             pill.setOnFocusChangeListener((v, has) -> {
                 if (has) {
+                    // Any header focus supersedes a deferred Grid target.
+                    gridFocusRequestGeneration++;
                     moveTopHighlight(v);
                     if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings)
                         v.animate().scaleX(1.04f).scaleY(1.04f).setDuration(reducedMotion ? 0 : 140).start();
@@ -1894,6 +1896,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onPause() {
         super.onPause();
+        // Invalidate focus work queued before Home yielded the window to another Activity.
+        gridFocusRequestGeneration++;
         activityResumed = false;
         updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
@@ -2056,6 +2060,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (dockAdapter == null || card == null) return;
         int position = dockAdapter.positionOf(key);
         if (position < 0) return;
+        // Dock is a newer, authoritative focus destination; cancel every queued Grid request.
+        gridFocusRequestGeneration++;
         // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
         // Collapse the overflow Grid only after focus has actually reached a Dock tile.
         if (!dockVertical && horizontalGridExpanded) {
@@ -3381,7 +3387,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             applyDockLayout();
             grid.setVisibility(View.VISIBLE);
             grid.requestLayout();
-            grid.post(() -> focusTile(position));
+            grid.post(() -> {
+                // The Grid may have received a newer request (or Dock/header focus) before layout.
+                if (requestGeneration != gridFocusRequestGeneration) return;
+                focusTile(position);
+            });
             return;
         }
         if (adapter.getItemCount() == 0) {
