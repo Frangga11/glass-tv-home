@@ -1,6 +1,6 @@
 # H01 — Header Reskin Implementation Report
 
-**Status:** Implementation in progress; final CI pending  
+**Status:** Implementation CI PASS; emulator/physical visual regression pending  
 **Branch:** `feature/h01-header-reskin`  
 **Base:** `main` at `23598f8b5202ed71fc38e8c8da5ed2eeaeac535b`  
 **PR:** [#78](https://github.com/Frangga11/glass-tv-home/pull/78) — draft, not merged  
@@ -63,7 +63,8 @@ The original `btnInputs` XML element is identical to baseline. The same view ID 
 
 ## Verification limits
 
-- Build and unit-test status for the latest commit is pending; update this report when run # is complete.
+- Implementation commit `95b255a7d2b83195e33040ebcae96d392e5a5591` passed GitHub Actions run #1476 (`42454944257`): `testReleaseUnitTest` + `assembleRelease`, launcher size check, and release APK publication all PASS.
+- No new Java/compiler warnings were introduced; the deprecation notices in the implementation run match the baseline run.
 - No Android emulator screenshot/layout test has yet been run at 1280×720, 1920×1080 or 3840×2160.
 - No physical-TV regression test has yet been run. CI success does not prove remote navigation, popup anchoring, focus rendering or overscan behavior on hardware.
 - Do not merge until the latest CI passes and the three-resolution visual/focus checks are completed or explicitly accepted as deferred.
