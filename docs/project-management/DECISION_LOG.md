@@ -4,6 +4,17 @@
 
 ---
 
+## Latest implementation decision — cumulative Home refinement — 9 November 2026
+
+- Owner authorized repeating all PR #99 work from PR #89 so the cumulative candidate contains PR #84–#89 first.
+- Implemented as Draft PR #100 on branch `integration/home-spacing-capsule-height-pr89-cumulative-001`, base PR #89 exact HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc`, current HEAD `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b`.
+- Keep PR #84–#89, #99 and #100 OPEN / DRAFT / UNMERGED. No merge or device installation until full audit and explicit acceptance.
+- Preserve approved scope: 30dp left/right/bottom, 29dp top; target capsules 30dp except Inputs; Home/Profile icon-label gap 2dp, Settings 4dp; visible wallpaper/prayer lower edges 30dp above measured horizontal Glass Dock.
+- Preserve all PR #84–#89 behavior and regression tests. The overlapping shelf contract was reconciled without deleting PR #84's single-anchor test.
+- CI #1677 / run `42533185178`: Python 208 tests (1 skipped) and Lists/tools/docs job PASS; Android/release job pending at time of documentation. Visual/device acceptance pending.
+
+---
+
 # 03 — Decision Log
 
 **Version:** 0.1-draft  
