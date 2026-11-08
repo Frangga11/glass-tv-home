@@ -205,6 +205,17 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
 
+    def test_weather_pill_focus_scale_and_header_highlight_share_one_listener(self):
+        self.assertNotIn("weatherAirQualityView.setOnFocusChangeListener", MAIN)
+        start = MAIN.index("for (int id : new int[]{R.id.locationPill, R.id.weatherAirQuality")
+        end = MAIN.index("if (prayerTimesView != null)", start)
+        header = MAIN[start:end]
+        self.assertIn("pill.setOnFocusChangeListener((v, has) -> {", header)
+        self.assertIn("if (id == R.id.weatherAirQuality)", header)
+        self.assertIn("TvUiTokens.CARD_FOCUS_SCALE", header)
+        self.assertIn("TvUiTokens.FOCUS_ANIMATION_MS", header)
+        self.assertIn("moveTopHighlight(v);", header)
+
     def test_deferred_dock_focus_retries_are_cancelled_by_newer_focus_requests(self):
         start = MAIN.index("private void focusDockTile(int position)")
         end = MAIN.index("private void focusTile(int position)", start)
