@@ -30,9 +30,9 @@ The response to this phrase must always load this exact file from `docs/project-
 - Workstream: `GTVH-HOME-HEADER-REFINEMENT-001` + whole-Home source cross-audit.
 - Active source branch: `fix/home-balanced-frame-001`.
 - Active PR: #79, OPEN / DRAFT / UNMERGED; base `fix/home-layout-consolidated-001` (PR #77).
-- Current PR #79 HEAD: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a` (weather/AQI pill width refinement regression-test head).
-- Previous Home implementation baseline: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`; latest weather/AQI width source fix: `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`.
-- Latest weather/AQI width regression-test commit: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`.
+- Current PR #79 HEAD: `bf65621ae46b170294e4333928886fbafa0898b6` (30% shared width + identical 30dp pill geometry; CI #1590 PASS).
+- Previous Home implementation baseline: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`; latest pill-size source commits: `d6fa94b913ed2e694a0c3ab4c6990afbdc31d604` (30% width), `370b85b525014c7726262ee8b740e34f4d061f58` (height), `bf65621ae46b170294e4333928886fbafa0898b6` (final XML geometry correction).
+- Latest regression-test commit: `1d38edf07fbb894b169d00ccfc0f975f2a9fde58`; current PR tip includes subsequent final XML correction `bf65621ae46b170294e4333928886fbafa0898b6`.
 - Prior PR-branch documentation sync head: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`; subsequent commits are the four weather/AQI refinement commits listed below.
 - PR #79 remains open, draft and unmerged. Do not merge or retarget without a separately verified reconciliation and owner authorization.
 
@@ -73,8 +73,9 @@ The response to this phrase must always load this exact file from `docs/project-
 | Test-only CI #1582 | `49f2777cee006a5afd50a33b85cb90a61a077e40` / run `42487572059` | PASS; 160 Python tests, 1 skipped; all 3 new tests passed; Android unit tests + release build |
 | Docs-only tip CI #1583 | `c15e4383d7dd3f148b31a19f5e9b85423936b56d` / run `42487822397` | PASS; both jobs completed SUCCESS |
 | Weather/AQI width refinement CI #1587 | `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a` / run `42489445766` | PASS; both jobs, 161 Python tests (1 skipped), Android unit tests + release build |
+| 30% / identical 30dp pill geometry CI #1590 | `bf65621ae46b170294e4333928886fbafa0898b6` / run `42490240670` | PASS; both jobs, 161 Python tests (1 skipped), pill regression PASS, Android unit tests + release build |
 
-- Release APK diagnostic from CI #1582: **1,627,577 bytes**.
+- Latest release APK diagnostic from CI #1590: **1,627,561 bytes** (artifact #13621062347; ZIP 1,426,708 bytes).
 - Candidate test artifact: **#13619209786**. This is the latest candidate artifact recorded for the test-only source/test commit; no installation has occurred.
 - CI #1583 validates a documentation-only PR tip; application source did not change after CI #1582.
 - Release workflows #37/#38 published an older CI #1545 build for commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`; they are **not** the current PR #79 candidate. Never mislabel those release assets as the latest build.
@@ -211,30 +212,30 @@ All are on `docs/project-master-inventory` and must link back to this checkpoint
 Supporting-document synchronization commits:
 | File | Commit |
 |---|---|
-| README.md | `cfc2255a33d394249093f6d33f8308e56a258441` |
-| MASTER_PROJECT.md | `357595932bf21ca6b9a7c34f5e0787dbb30bb9e5` |
-| INVENTORY.md | `0643f40e8b49ead62bd7f8685c549c3ffb52811b` |
-| DECISION_LOG.md | `e425cee59b2b5a27c19bbcb05ee20705cdf5b10f` |
-| AUDIT_REGISTER.md | `d67529bce5ea5280de832882370a8c6759bb78ec` |
-| HANDOVER.md | `6b26260c43323d19e9cdd88a35207fea56711d3e` |
-| GTVH_HOME_SCREEN_CROSS_AUDIT_001.md | `e3dff63f914b8244ecacf39bb975e188b09a6d80` |
+| README.md | `8ad0db3c41c4343c0081c1822d35d1d873bd193a` |
+| MASTER_PROJECT.md | `fa83007db9e8ed4b521e56b96025953da76f84b6` |
+| INVENTORY.md | `227c6ddae335f606a5d05ab8130f90d5bbfe77fb` |
+| DECISION_LOG.md | `fc7832cb30305535fe3dcb0d3daa178d449295bc` |
+| AUDIT_REGISTER.md | `7da5adf23060083f0fbec33d95f3acb01073a12c` |
+| HANDOVER.md | `d680e638435311e1381a0e98c356ff732bcdab75` |
+| GTVH_HOME_SCREEN_CROSS_AUDIT_001.md | `f9e9232ad75e21ac9955bdfe7c4ddbc51ea4c039` |
 
-## 9. Active refinement — GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-001 (8 November 2026)
+## 9. Active refinement — GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-002 (8 November 2026)
 
-- Audit root cause: `applyHeaderWidths()` used 34% of measured Header width for `locationPill` and 44% for `weatherAirQuality`. Both XML views already share `layout_alignParentStart="true"`; therefore the left edge was correct and only the right edge differed.
-- Approved correction: preserve the location pill's existing 34% width as the sole reference; calculate `locationWidth` once and apply the same pixel width to both views. No margin, padding, X/Y position, font/icon/radius, safe-frame, weather provider, data, click, DPAD, focus, or animation changes.
-- Source implementation commit: `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`. Regression-test commit / current PR #79 HEAD: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`.
-- Regression contract checks one shared width calculation and assignment to both views, common left anchors, weather single-line/end-ellipsis, and that weather text refresh does not alter layout parameters.
-- Geometry derivation for 1920×1080 at 320dpi: the `mainContent` inner Header width is 1,804px after 58px left/right padding; the preserved 34% reference calculates to 613px. Both pills therefore resolve to the same source-level bounds: left x=58px, right x=671px. This is a layout calculation, not a rendered-device measurement.
-- Compared with prior PR #79 HEAD `c15e4383d7dd3f148b31a19f5e9b85423936b56d`, exactly two files changed: `MainActivity.java` and `tests/test_home_layout_bounds_contract.py` (4 commits ahead, 0 behind).
-- CI #1587 / run `42489445766`: **BOTH JOBS SUCCESS**. Python suite 161 tests, OK (1 skipped); new pill-width regression test PASS; Android `testReleaseUnitTest` + `assembleRelease` BUILD SUCCESSFUL.
-- Release APK diagnostic: **1,627,545 bytes**. CI artifact ID `13621187055`; ZIP size `1,426,725 bytes`.
-- Physical 1920×1080 / 320dpi visual check, ID/EN content-length matrix, and Mi TV Stick acceptance remain PENDING. No APK install, ADB, device-setting mutation, force-push, or PR merge.
+- Owner's revised decision: **both capsules use 30% of measured Header width**. Location–altitude remains the sizing reference; weather/AQI must match it exactly.
+- Runtime implementation: `MainActivity.applyHeaderWidths()` computes `Math.round(width * 0.30f)` once and assigns that exact pixel width to both `locationPill` and `weatherAirQuality`. Both retain the same parent-start anchor.
+- Physical geometry: both capsules are **30dp high**. Location is unchanged and remains the reference. Weather uses 30dp height, 12dp start/end padding, 0dp top/bottom padding and vertical centering, matching the location container's default vertical padding and center gravity. Both use the same `header_glass_pill_bg` background/radius. Existing 8dp vertical separation, fonts, icons, content, provider, click/DPAD/focus and animations are preserved. Weather remains single-line/end-ellipsized.
+- At measured inner Header width 1,804px, 30% calculates to **541px** (rounded). At 320dpi, 30dp height corresponds to **60px**. These are source/layout calculations, not rendered-device measurements.
+- Changed source files only: `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`, `launcher/app/src/main/res/layout/activity_main.xml`, and `tests/test_home_layout_bounds_contract.py`. The regression contract checks shared 30% width, both layout width assignments, common left anchor, equal 30dp height, horizontal padding, vertical centering, weather ellipsis and content-refresh invariance.
+- Current PR #79 HEAD: `bf65621ae46b170294e4333928886fbafa0898b6`. PR remains OPEN / DRAFT / UNMERGED; no merge or retarget.
+- CI #1590 / run `42490240670`: **BOTH JOBS SUCCESS**. Python: **161 tests, OK (1 skipped)**; new pill-size regression PASS. Android `testReleaseUnitTest` and `assembleRelease`: SUCCESS.
+- Release APK: **1,627,561 bytes**. Artifact ID `13621062347`, ZIP size 1,426,708 bytes, expires 15 November 2026. Extracted APK SHA-256: `51c6921ad7055812dd4c3de844bce26516b0ffeea6dd8401abc5d94913dcb56d`. APK delivered to owner for Mi TV Stick test.
+- Physical acceptance is **PENDING**. Owner to test on Mi TV Stick, 1920×1080 / 320dpi, Indonesian and English, short/long location/weather/AQI values; verify clipping, actual capsule bounds/height, left/right edge equality, vertical gap, focus/click/DPAD and unaffected Header components. Do not claim physical success until owner reports results.
 
 ## 10. Final checkpoint decision
 
-**Current source/CI result:** PASS within the stated boundaries.  
-**Overall Home acceptance:** PARTIAL / NOT FINAL; physical Mi TV Stick acceptance remains pending.  
+**Current source/CI result:** PASS; CI #1590 and release APK build successful.  
+**Overall Home acceptance:** PARTIAL / NOT FINAL; APK handed to owner; physical Mi TV Stick acceptance remains pending.  
 **Repository cleanup:** NOT FINAL; 58 open PRs require evidence-based reconciliation.  
 **Documentation architecture:** one canonical checkpoint entry point established by this file; supporting documents are subordinate detail/history.
 
