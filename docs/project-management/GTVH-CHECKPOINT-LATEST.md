@@ -1,3 +1,12 @@
+# GTVH-CHECKPOINT-LATEST
+**Status:** CANONICAL / SINGLE ENTRY POINT  
+**Checkpoint date:** 9 November 2026  
+**Repository:** Frangga11/glass-tv-home  
+**Canonical documentation branch:** `docs/project-master-inventory`  
+**Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
+**Current Home implementation PR:** [PR #99](https://github.com/Frangga11/glass-tv-home/pull/99) — spacing/capsule refinement stacked on PR #83; PR #99 OPEN / DRAFT / UNMERGED. Parent PRs #80/#81/#82/#83 retain their prior states.  
+**Latest documentation sync:** PR #99 spacing/capsule audit and CI/artifact checkpoint synchronized on `docs/project-master-inventory`; latest preceding audit-report correction commit `62f90762d6a417477c046e50dd576fb6c3362da2`.
+
 ## CURRENT AUTHORITATIVE UPDATE — HOME SPACING/CAPSULE REFINEMENT — 9 NOVEMBER 2026
 
 **This update supersedes older pending-status statements in the historical sections below for workstream GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-001 only.**
@@ -13,15 +22,6 @@
 - **Decision:** automated gates PASS; artifact verified; overall task remains **BELUM FINAL** until rendered visual review is completed. Keep PR #99 draft/unmerged and do not ask for device installation before that review.
 
 ---
-
-# GTVH-CHECKPOINT-LATEST
-**Status:** CANONICAL / SINGLE ENTRY POINT  
-**Checkpoint date:** 9 November 2026  
-**Repository:** Frangga11/glass-tv-home  
-**Canonical documentation branch:** `docs/project-master-inventory`  
-**Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
-**Current Home implementation PR:** [PR #99](https://github.com/Frangga11/glass-tv-home/pull/99) — spacing/capsule refinement stacked on PR #83; PR #99 OPEN / DRAFT / UNMERGED. Parent PRs #80/#81/#82/#83 retain their prior states.  
-**Latest documentation sync:** PR #99 spacing/capsule audit and CI/artifact checkpoint synchronized on `docs/project-master-inventory`; latest preceding audit-report correction commit `62f90762d6a417477c046e50dd576fb6c3362da2`.
 
 ---
 
