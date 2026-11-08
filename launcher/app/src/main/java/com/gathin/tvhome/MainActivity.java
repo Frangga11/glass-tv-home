@@ -3376,9 +3376,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         RecyclerView.ViewHolder next = dockRecycler.findViewHolderForAdapterPosition(position);
         View card = next != null ? next.itemView.findViewById(R.id.card) : null;
         if (card != null && card.isShown() && card.isFocusable()) {
-            // A resumed Grid card may already retain Android focus. requestFocus() then
-            // emits no focus-change callback, so explicitly restore the visual glass target.
-            if (card.isFocused()) onTileFocused(position, card);
+            if (card.isFocused()) onDockTileFocused(dockAdapter.keyAt(position), card);
             else card.requestFocus();
             return;
         }
@@ -3457,7 +3455,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
         View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
         if (card != null && card.isShown() && card.isFocusable()) {
-            card.requestFocus();
+            // requestFocus() emits no callback when Android already retains this card.
+            // Reapply the glass target explicitly so the visual focus matches logical focus.
+            if (card.isFocused()) onTileFocused(position, card);
+            else card.requestFocus();
             return;
         }
         if (attemptsRemaining > 0) {
