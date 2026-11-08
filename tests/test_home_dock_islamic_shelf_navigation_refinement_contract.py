@@ -94,6 +94,8 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("grid.stopScroll()", MAIN)
         self.assertNotIn("grid.smoothScrollBy(0, dy", MAIN)
         self.assertIn("focusHorizontalGridRowTargetWhenLaidOut(targetKey, target, focusGeneration, 8)", MAIN)
+        self.assertIn("Math.abs(targetBounds.top - grid.getPaddingTop()) > 1", MAIN)
+        self.assertIn("adapter.positionOf(key)", MAIN)
         self.assertNotIn("horizontalGridScrollAwaitingIdle", MAIN)
         self.assertIn("grid.setClipToPadding(!dockVertical && horizontalGridExpanded)", MAIN)
         start = MAIN.index("private void startHorizontalGridRowTransition")
