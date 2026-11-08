@@ -2345,3 +2345,19 @@ Detailed evidence: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT
 - Do not include #78 in future audit, rebase, merge, or release planning.
 - Focus only on #77 and #79–#83. Remaining path: #77 → #79 → #80 → #81 → #82 → #83, subject to explicit reconciliation of #77/#79 ancestry and the upstream #70–#72 dependency chain.
 - No merge was executed in this session. Recheck live refs, reviews, threads, exact-head CI, and device acceptance before the next merge operation.
+
+
+## Active refinement — GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-001 — 9 November 2026
+
+- Active source PR: [#97](https://github.com/Frangga11/glass-tv-home/pull/97), OPEN / DRAFT / UNMERGED. Base: PR #83 source branch at exact SHA `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
+- Source branch: `verify/home-spacing-capsule-height-refinement-001-validated`; exact HEAD: `bb10228f930cc0b0e8c3dbf526aad9b0c94112fd`.
+- Superseded PRs #94, #95 and #96 are CLOSED / NOT MERGED. They were replaced to ensure exact-head CI ran against the final implementation and corrected regression contracts. Do not reopen or merge them.
+- Owner-approved boundaries: horizontal safe margins 30dp; bottom safe margin 30dp in horizontal and vertical Dock modes; top safe margin remains 29dp. MIC/Assistant, Wi-Fi and the full Beranda/Profile/Settings navigation capsule are 30dp high. Inputs is intentionally untouched. Beranda/Profile drawable spacing is 2dp; Settings remains 4dp.
+- Home wallpaper description bottom is anchored to the measured horizontal Glass tray top at 30dp. Prayer table retains its existing -6dp translation; the Islamic shelf anchor compensates the actual translation so the visible prayer-table lower edge is also 30dp from the tray.
+- At 320dpi (density 2.0), 30dp = 60px. Runtime uses display density, not fixed pixel constants.
+- Production files changed: `activity_main.xml`, `MainActivity.java`, `DockGeometry.java`. Regression files changed: new `test_home_spacing_capsule_height_refinement_contract.py` plus four existing contracts updated from superseded 29dp/36dp/27.5dp expectations. Total PR diff: 8 files; no other production files changed.
+- CI #1668 / run `42531491295`: Lists/tools/docs job PASS. Python suite: **190 tests, OK (1 skipped)**. Android unit tests + Release build still IN PROGRESS at checkpoint capture; do not claim PASS until exact-head run completes.
+- Publisher workflow skipped; no APK QA asset is available yet. No rendered 1920×1080 visual audit, physical Mi TV Stick test, ADB, installation, setting change or PR merge has been performed.
+- **Status: BELUM FINAL.** Gates pending: exact-head Android unit tests and assembleRelease; APK artifact/size/hash verification; rendered 1920×1080 layout inspection; source/diff audit final pass; owner device acceptance after all gates.
+- Detailed report: `GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-001-AUDIT.md`.
+- Next action: complete exact-head CI #1668, verify APK QA artifact and inspect final diff. Keep PR #97 draft/unmerged; do not install on TV or request device testing before the automated and visual audits pass.
