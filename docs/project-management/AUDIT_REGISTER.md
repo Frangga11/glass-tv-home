@@ -1894,3 +1894,22 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, base latest PR #
 - PR #79 remains OPEN / DRAFT / UNMERGED. PR #77 latest observed head is `0ea3746f0304b7042a018eeebf850d759f357bf8`; PR #79 compares 42 ahead / 1 behind with merge base `0aeb3851ddce5deb47e3c5f96db44631b0343577`. The one missing PR #77 commit is workflow-only APK artifact publication; no Home source file changed there. Keep this dependency visible and reconcile before merge.
 - Physical Mi TV Stick visual/remote acceptance remains PENDING. No merge, APK installation, ADB, default-launcher change, or device-setting mutation.
 - Detailed audit: `docs/project-management/HOME_LAYOUT_CALIBRATION_AUDIT_2026-11-08.md`.
+
+
+## Home final cross-audit — 8 November 2026
+
+| Audit | Result | Evidence / boundary |
+|---|---|---|
+| PR #77 exact-head source CI | PASS (prior head) | Run #1506; does not validate subsequent PR #79 commits |
+| PR #79 prior exact-head source CI | PASS (prior head) | Run #1526; both CI jobs succeeded and test APK artifact step completed; does not validate subsequent correction |
+| Deferred Grid reveal callback generation guard | FIXED; CI PENDING | Captured generation is checked before the queued callback can enqueue another focus request |
+| Dock focus invalidates pending Grid focus | FIXED; CI PENDING | `onDockTileFocused` increments the generation |
+| Header focus invalidates pending Grid focus | FIXED; CI PENDING | Header-pill focus listener increments the generation |
+| Activity pause invalidates pending Grid focus | FIXED; CI PENDING | `onPause` increments the generation |
+| Regression contract coverage | ADDED; CI PENDING | `tests/test_home_layout_bounds_contract.py` asserts the four paths |
+| PR #79 base ancestry | PARTIAL | Base SHA is one commit behind PR #77 head; only intervening file is CI workflow and branch contents are identical; reconcile before merge |
+| Mi TV Stick visual / DPAD / overscan | PENDING | No physical-device test performed |
+| Whole-Home regression acceptance | PENDING | Shelves, wallpaper, ayah, prayer timetable, Weather/AQI, media, app inventory and profile/settings actions remain to be accepted on device |
+| Merge / release | NOT DONE | Both PRs remain Draft/open/unmerged; no APK installed or device settings changed |
+
+Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exact-head CI has not yet been observed; do not mark the new correction PASS until that run succeeds.
