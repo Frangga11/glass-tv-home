@@ -583,7 +583,8 @@
                 android:shadowDx="0"
                 android:shadowDy="1"
                 android:shadowRadius="3"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:ellipsize="end" />
 
             <!-- Now Playing Widget Card: Matching bravia-glass-tv design -->
             <LinearLayout
@@ -736,6 +737,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_alignParentTop="true"
+                android:layout_marginTop="12dp"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
                 android:orientation="horizontal"
