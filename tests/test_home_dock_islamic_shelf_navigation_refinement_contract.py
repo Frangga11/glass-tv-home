@@ -29,6 +29,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
 
     def test_dock_icon_is_44dp_but_grid_icon_stays_48dp(self):
         self.assertIn("Math.round(44 * density)", DOCK)
+        self.assertIn("icon.setScaleX(vertical ? 1f : 1.045f)", DOCK)
         root = ET.parse(LAYOUT).getroot()
         icon = next(node for node in root.iter()
                     if node.get(ANDROID + "id") == "@+id/icon")
@@ -36,7 +37,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertEqual(icon.get(ANDROID + "layout_height"), "48dp")
 
     def test_dock_host_total_height_reduces_by_about_eight_dp(self):
-        self.assertIn("DOCK_EXTRA_HEIGHT_DP = 14f", GEOMETRY)
+        self.assertIn("DOCK_EXTRA_HEIGHT_DP = 12f", GEOMETRY)
         self.assertIn("return itemHeightPx(tileHeightPx, density) + Math.round(DOCK_EXTRA_HEIGHT_DP * density);", GEOMETRY)
         self.assertIn("horizontalShelfAnchorHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
