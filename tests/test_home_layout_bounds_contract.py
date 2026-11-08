@@ -210,7 +210,11 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         end = NOW_PLAYING.index("public String getDisplayText()", start)
         has_music = NOW_PLAYING[start:end]
         self.assertIn("isAllowedMusicApp(packageName)", has_music)
-        self.assertIn("controller != null || !title.isEmpty()", has_music)
+        self.assertIn("controller == null", has_music)
+        self.assertIn("PlaybackState.STATE_PLAYING", has_music)
+        self.assertIn("PlaybackState.STATE_PAUSED", has_music)
+        self.assertIn("PlaybackState.STATE_BUFFERING", has_music)
+        self.assertIn("PlaybackState.STATE_CONNECTING", has_music)
         self.assertNotIn("return isPlaying &&", has_music)
 
         self.assertIn("PlaybackState.STATE_PAUSED", NOW_PLAYING)
