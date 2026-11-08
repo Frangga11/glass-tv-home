@@ -824,17 +824,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Preserve the established GlassDrawable/Backdrop treatment on every header control.
         // The three navigation tabs use a foreground selector so the active Beranda state remains
         // visible without replacing the liquid-glass background.
+        // One shared glass surface owns the Home/Profile/Settings navigation capsule.
+        // Individual tabs below remain independent focus/click targets with transparent backgrounds.
+        View navCapsule = findViewById(R.id.navPill);
+        if (navCapsule != null) {
+            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider));
+            glider.addCompanion(navCapsule);
+            Backdrop.watch(navCapsule);
+        }
         for (int id : new int[]{R.id.locationPill, R.id.weatherAirQuality, R.id.btnInputs,
                 R.id.btnWifi, R.id.btnAssistant, R.id.btnHome, R.id.btnCandyBox, R.id.btnSettings}) {
             View pill = findViewById(id);
             if (pill == null) continue;
-            float radius = 21f * density;
-            pill.setBackground(new GlassDrawable(pill, radius, density, glider));
+            boolean navigationTab = id == R.id.btnHome || id == R.id.btnCandyBox
+                    || id == R.id.btnSettings;
+            if (navigationTab) {
+                // The three tabs are transparent focus targets inside one shared capsule.
+                // Their selector paints only the active/focused segment; it is not a second glass pill.
+                pill.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+                pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
+            } else {
+                pill.setBackground(new GlassDrawable(pill, 21f * density, density, glider));
+            }
             glider.addCompanion(pill);
             Backdrop.watch(pill);
-            if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings) {
-                pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
-            }
             pill.setOnFocusChangeListener((v, has) -> {
                 if (has) {
                     // Any header focus supersedes a deferred Grid target.
