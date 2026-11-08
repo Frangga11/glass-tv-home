@@ -43,6 +43,15 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         )
         self.assertIn("return safeBottomInsetPx(density) - trayBottomInset", GEOMETRY)
 
+    def test_legacy_home_weather_refresh_cannot_overwrite_shared_weather_aqi_text(self):
+        start = MAIN.index("private void showHomeWeather(HomeWeather.Line line)")
+        end = MAIN.index("public void ensureWeatherOverlayView()", start)
+        method = MAIN[start:end]
+        self.assertIn("updateWeatherAqi()", method)
+        self.assertIn("updateWeatherOverlay(line)", method)
+        self.assertNotIn("line.aqi", method)
+        self.assertNotIn("weatherAirQualityView.setText", method)
+
     def test_header_navigation_keeps_the_owner_approved_order(self):
         root = ET.parse(LAYOUT).getroot()
         nav = next((node for node in root.iter()
