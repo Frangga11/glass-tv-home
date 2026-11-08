@@ -2937,8 +2937,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void updateHomeTabIndicator() {
         if (btnHome == null) return;
-        boolean active = activityResumed && hasWindowFocus() && !hiddenSinceResume
-                && !screensaverActive && !wallpaperFullscreen && !isFinishing() && !isDestroyed();
+        // Dialogs/popups may take window focus while the launcher remains the underlying screen.
+        // Derive the marker from Activity lifecycle and full-screen modes, not window focus.
+        boolean active = activityResumed && !hiddenSinceResume && !screensaverActive
+                && !wallpaperFullscreen && !isFinishing() && !isDestroyed();
         btnHome.setSelected(active);
         btnHome.setElevation(active ? 8f * density : 0f);
         btnHome.invalidate();
