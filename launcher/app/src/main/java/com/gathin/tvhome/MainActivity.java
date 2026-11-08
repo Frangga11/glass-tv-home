@@ -2805,7 +2805,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dockParams.leftMargin = 0;
             dockParams.topMargin = 0;
             dockParams.rightMargin = 0;
-            dockParams.bottomMargin = 0;
+            dockParams.bottomMargin = DockGeometry.safeBottomInsetPx(density);
             if (grid.getPaddingTop() != 0 || grid.getPaddingBottom() != gridBasePaddingBottom) {
                 grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), gridBasePaddingBottom);
             }
@@ -2815,7 +2815,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
             if (hasDock) {
-                // The Dock host, clock/header and both Home shelves share the same 34dp frame.
+                // The Dock host, clock/header and both Home shelves share the 30dp horizontal safe frame.
                 // Do not extend the host or apply a second inset: its left and right edges must match.
                 int dockViewportWidth = gridWrap.getWidth();
                 int inner = DockGeometry.horizontalContentWidthPx(dockViewportWidth, density);
@@ -2855,7 +2855,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
-                // Place the glass tray on the same 34dp bottom safe margin as the top and side edges.
+                // Place the glass tray on the 30dp bottom safe margin; the top edge remains 29dp.
                 // The RecyclerView host extends around its tray to contain labels and focus effects.
                 dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
                 if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
