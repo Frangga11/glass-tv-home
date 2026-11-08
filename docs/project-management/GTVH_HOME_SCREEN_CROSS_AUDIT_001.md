@@ -4,16 +4,16 @@
 
 **SOURCE IMPLEMENTATION + STATIC CROSS-AUDIT: PASS**  
 **EXACT-HEAD CI FOR IMPLEMENTATION: PASS**  
-**ADDITIONAL TEST-ONLY COMMIT CI: PENDING**  
+**ADDITIONAL TEST-ONLY COMMIT CI #1582: PASS**  
 **PHYSICAL MI TV STICK ACCEPTANCE: PENDING — NOT RUN**
 
 - Implementation branch: `fix/home-balanced-frame-001`
 - Validated implementation HEAD: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`
-- Additional test-only commit now at branch tip: `49f2777cee006a5afd50a33b85cb90a61a077e40`
+- Test-only commit: `49f2777cee006a5afd50a33b85cb90a61a077e40` (CI #1582 PASS); PR-branch docs-only tip: `c15e4383d7dd3f148b31a19f5e9b85423936b56d` (CI #1583 running).
 - PR #79: OPEN / DRAFT / UNMERGED; stacked on PR #77.
 - PR #79 scope: 22 changed files across Home geometry, Header, location metadata, strings, media/session behavior, focus restoration, CI and tests.
 - Main Home layout: 63 unique IDs; no duplicate ID declarations.
-- Source-contract test file: 26 tests after adding three additional Header/location interaction contracts. These three new tests await CI on the test-only tip.
+- Source-contract test file: 26 tests. Exact-head CI #1582 ran 160 Python tests (1 skipped); all three new Header/location contracts passed.
 - No APK installation, ADB, device setting/default-launcher change, physical TV test, force-push or merge.
 
 ## Quality gate and repository checks
@@ -26,7 +26,7 @@
 | Main layout XML | PASS | 63 unique IDs, no duplicate declarations. |
 | Header geometry tests | PASS | 1920, 3840, 1280 width cases plus impossible/unmeasured geometry. |
 | Home source-contract suite before added tests | PASS | Included in exact-head CI #1581. |
-| Three additional Header/location contract tests | PENDING | Test-only commit `49f2777cee006a5afd50a33b85cb90a61a077e40`; no CI result observed yet. |
+| Three additional Header/location contract tests | PASS | All three passed in CI #1582; Python suite 160 tests, 1 skipped. |
 | Physical rendering / DPAD / lifecycle | PENDING | No emulator or physical device execution. |
 | Runtime crash/log inspection | PENDING | No new logcat/runtime session collected. |
 
@@ -186,3 +186,13 @@ The final HOME-005 regression extension verifies that the atmospheric overlay re
 - Companion APK release workflow run #36 / `42486917728`: SUCCESS.
 
 **Final source/CI status:** HOME-001 through HOME-005 = **SOURCE FIXED + LATEST-HEAD CI PASS**. Overall Home Screen = **PARTIAL / NOT PASS** until separately authorized end-to-end Mi TV Stick acceptance is completed. No APK installation, ADB, device settings/default launcher changes, or PR merge.
+
+
+## Exact-head CI #1582 and reconciliation-doc update — 8 November 2026
+
+- Test-only commit `49f2777cee006a5afd50a33b85cb90a61a077e40` is **CI #1582 PASS** (run `42487572059`). The only diff from implementation HEAD `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5` is `tests/test_home_layout_bounds_contract.py` (+59 lines).
+- Python CI: **160 tests, OK (1 skipped)**; all three newly added location/Header regression tests passed.
+- Android CI: `testReleaseUnitTest` + `assembleRelease` **BUILD SUCCESSFUL**; APK diagnostic 1,627,577 bytes; artifact #13619209786.
+- Updated PR-branch reconciliation document to replace the obsolete intermediate 34dp safe frame with the approved 29dp frame. PR-branch docs-only commit: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`. CI #1583 is validating that documentation-only tip; no need to change application source.
+- Release workflow #37 is explicitly **not** the current candidate: its logs show CI #1545 / older commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not cite that release asset as the latest PR #79 APK.
+- PR #79 remains OPEN / DRAFT / UNMERGED; physical Mi TV Stick acceptance remains NOT RUN. No APK installation, ADB, device settings/default launcher mutation or merge.
