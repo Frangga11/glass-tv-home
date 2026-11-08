@@ -421,3 +421,12 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 - No rendered 1920×1080 screenshot has been independently reviewed and no physical Mi TV Stick test, ADB session, installation, device setting change, or merge was performed.
 
 **Next action:** inspect rendered 1920×1080 visual output and owner acceptance on Mi TV Stick. Keep PR #80 draft and unmerged until physical review passes. No APK release delivery yet.
+
+
+## 14. PR #80 APK build package retrieved — 8 November 2026
+
+- Built from exact validated PR #80 HEAD `a085be150ebcf1d48b825ed7ac43b172261f3aa0` by CI #1599 / run `42497894475`.
+- Release APK successfully assembled and retrieved from Actions artifact ID `13624193020` (artifact ZIP contained exactly `app-release.apk`).
+- APK size: **1,627,685 bytes**. SHA-256: `67ecc3fddc6b4bab6c36025c6d285973fe329591eabe9f29c108fbc49d8fe602`.
+- User-facing package: `Glass-TV-Home-PR80-a085be1.apk` (extracted from CI artifact and verified by file size/hash). The APK is the release build from the validated source HEAD; it is not a merged/final release.
+- CI and build pass. Physical Mi TV Stick installation/acceptance remains pending and is the next step. PR #80 remains OPEN / DRAFT / UNMERGED; no device install, ADB or merge performed by assistant.
