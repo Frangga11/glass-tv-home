@@ -63,3 +63,6 @@ A second source review found that the earlier focus-generation fix did not inval
 - Mi TV Stick visual, DPAD, overscan and whole-Home regression acceptance remain NOT RUN.
 - No APK installed; no ADB/device settings or launcher configuration changed.
 - No PR merged; PR #79 remains Draft.
+
+### Additional bilingual-content correction
+A follow-up review found that the new altitude label used a hard-coded Indonesian suffix and a `±` symbol, which implies uncertainty even though the configured altitude is a known value. Replaced it with the localized `location_altitude_format` resource in all three resource sets: default/Indonesian use `%1$d mdpl`; English uses `%1$d m ASL`. Added a regression assertion for the resource values and the absence of the misleading approximation symbol. This correction also requires fresh exact-head CI.
