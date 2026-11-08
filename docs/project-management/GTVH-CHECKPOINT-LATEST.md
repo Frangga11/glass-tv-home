@@ -696,7 +696,7 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 
 ## 21. GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001 — 9 November 2026
 
-**Status: IMPLEMENTATION COMMITTED / CI PENDING / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+**Status: IMPLEMENTATION COMMITTED / FIRST CI ATTEMPT FAILED ON TWO TEST ASSERTIONS / CORRECTIVE TEST UPDATES PUSHED / EXACT-HEAD CI PENDING / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
 
 - PR [#87](https://github.com/Frangga11/glass-tv-home/pull/87): OPEN / DRAFT / UNMERGED.
 - Branch: `fix/daily-ayah-cache-status-label-001`.
@@ -707,6 +707,6 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Cache validity now requires current day key, Arabic text and at least one translation rather than every language field. Incomplete API responses are rejected before cache replacement. Translation fallback now tries other available language resources.
 - Shelf label distinguishes current content, previous saved content (`TERSIMPAN`) and local fallback (`DATA LOKAL`).
 - Cross-audit discovered PR #85 XML Arabic line-spacing values were overridden by a runtime `setLineSpacing(3dp,1.08f)` call. PR #87 removes that runtime override so PR #85 XML settings can control rendering.
-- Exact-head CI for PR #87 is pending verification; no CI pass or APK size is claimed.
+- First CI #1644 / run `42524504080` failed the Python/docs job on two test assertion issues (old expected popup title; contract slice included shared optional-language helper). Corrective test changes and a 52-day cache-cycle assertion have since been pushed; new exact-head CI is pending. Android job was still in progress during the first attempt. No CI pass or APK size is claimed.
 - Physical Mi TV Stick acceptance remains pending.
 - Detailed audit: [GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001-AUDIT.md](GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001-AUDIT.md).
