@@ -13,6 +13,8 @@ final class DockGeometry {
     private static final float DOCK_ITEM_BOTTOM_OFFSET_DP = 12f;
     private static final float TRAY_PADDING_DP = 14f;
     private static final float DOCK_EXTRA_HEIGHT_DP = 10f;
+    /** Legacy shelf baseline keeps the information panels stationary while Dock cards shrink. */
+    private static final float SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP = 18f;
     private static final float DOCK_TILE_SCALE = 0.92f;
     private static final float DOCK_SLOT_GAP_DP = 32f;
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
@@ -121,6 +123,12 @@ final class DockGeometry {
         int trayBottomInset = dockHeight - tileHeightPx
                 - dockItemTopOffsetPx(density) - Math.round(TRAY_PADDING_DP * density);
         return safeBottomInsetPx(density) - trayBottomInset;
+    }
+
+    /** Pre-refinement Dock host height used only as a stable shelf baseline. */
+    static int horizontalShelfAnchorHeightPx(int tileHeightPx, float density) {
+        return itemHeightPx(tileHeightPx, density)
+                + Math.round(SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP * density);
     }
 
     /** The Grid viewport ends one 8dp rhythm above the tray's top edge. */
