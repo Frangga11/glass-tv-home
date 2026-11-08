@@ -430,3 +430,22 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 - APK size: **1,627,685 bytes**. SHA-256: `67ecc3fddc6b4bab6c36025c6d285973fe329591eabe9f29c108fbc49d8fe602`.
 - User-facing package: `Glass-TV-Home-PR80-a085be1.apk` (extracted from CI artifact and verified by file size/hash). The APK is the release build from the validated source HEAD; it is not a merged/final release.
 - CI and build pass. Physical Mi TV Stick installation/acceptance remains pending and is the next step. PR #80 remains OPEN / DRAFT / UNMERGED; no device install, ADB or merge performed by assistant.
+
+
+## 15. GTVH-HOME-DOCK-ISLAMIC-SHELF-NAVIGATION-REFINEMENT-001 — 8 November 2026
+
+**Status: SOURCE PASS · EXACT-HEAD CI PASS · RELEASE APK EXTRACTED/HASHED · VISUAL AND PHYSICAL ACCEPTANCE PENDING · NOT FINAL**
+
+- Dedicated audit: [GTVH_HOME_DOCK_ISLAMIC_SHELF_NAVIGATION_REFINEMENT_001_AUDIT.md](GTVH_HOME_DOCK_ISLAMIC_SHELF_NAVIGATION_REFINEMENT_001_AUDIT.md).
+- PR #81: OPEN / DRAFT / UNMERGED. Branch: `fix/home-dock-islamic-shelf-navigation-001`.
+- Exact source HEAD: `2130675f1f2723f8e7c895cbc6ac63327d2efd60`.
+- Base: PR #80 exact HEAD `a085be150ebcf1d48b825ed7ac43b172261f3aa0`. PR #80 remains OPEN / DRAFT / UNMERGED and was not modified.
+- Eight changed files, limited to DockAdapter, DockDecoration, DockGeometry, MainActivity, scoped tests, and PR #81 CI artifact eligibility.
+- Dock scale 0.95; default five-slot Mi TV Stick card geometry 287×161px ≈143.5×80.5dp (target 144×81dp). Dock-only icon 44dp; Grid remains on original AppAdapter geometry and 48dp XML icon.
+- Total horizontal Dock host height reduced approximately 8dp by card-height reduction plus spare-height reduction 18dp→14dp. Horizontal decoration offsets coordinated to 6dp/8dp; vertical offsets remain 6dp/12dp. Tray remains full width.
+- Islamic shelf is anchored independently of the focused card; its bottom edge is preserved through content-height changes. Fade visibility remains separate from position.
+- Horizontal Grid DPAD row motion uses signed smooth scrolling, pending focus targets and generation guards; DOWN/UP direction reversal, rapid input, final partial row and pause/resume cancellation have regression coverage.
+- Exact-head CI #1620 / run `42501726878`: **SUCCESS** on exact HEAD. Python: **176 tests, OK (1 skipped)**. Android `testReleaseUnitTest` (app and installer) and `assembleRelease`: **BUILD SUCCESSFUL in 1m 19s**, 99 actionable tasks. Both CI jobs and APK artifact upload passed.
+- Release APK: **1,629,469 bytes**; SHA-256 `caa3289641184e516b5758b8ce647d7bc33616ee55cb5f022576e53add572e24`. CI artifact ZIP ID `13625911589`, size 1,428,433 bytes, SHA-256 `e9dbc0307aa7823d019ccf464e21e633f6dfe1a3a5906407feee3ada6fa1ea41`. APK extracted and verified; publisher workflow skipped by design.
+- No rendered 1920×1080 visual review, physical Mi TV Stick test, ADB, installation, device setting change or merge was performed.
+- **Next action:** owner tests exact-head APK on Mi TV Stick using all required remote/focus/panel/capacity scenarios. Keep PR #81 DRAFT and unmerged until physical acceptance.
