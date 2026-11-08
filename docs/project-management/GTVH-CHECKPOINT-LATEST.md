@@ -287,3 +287,54 @@ Supporting-document synchronization commits:
 - Release API verification confirms exactly one asset with the exact `.apk` filename, size `1,627,561`, state `uploaded`, and content type `application/vnd.android.package-archive`. Direct asset URL: `https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr79-b4abdf0bd555a0106c135add20c3f287cf10b412/Glass-TV-Home-PR79-b4abdf0bd555a0106c135add20c3f287cf10b412.apk`.
 - Separate general CI run `42491530833` was still in progress at the time of this note; the publisher workflow itself independently passed unit tests + release APK build. Device installation and Samsung Browser filename behavior remain pending owner confirmation.
 - User-facing delivery rule observed: provide only the direct GitHub Release `.apk` asset URL. No sandbox attachment, ZIP, or BIN.
+
+# CHECKPOINT RESMI TERBARU — GTVH-APK-DIRECT-DELIVERY-001
+
+**Tanggal:** 8 November 2026  
+**Status:** BUILD PASS · DIRECT APK RELEASE VERIFIED · DEVICE DOWNLOAD ACCEPTANCE PENDING
+
+## 1. Tujuan checkpoint
+Menetapkan jalur build dan distribusi APK Glass TV Home yang terbukti menghasilkan aset Android .apk langsung, serta mencegah pengulangan kesalahan pengiriman .apk.bin, ZIP, atau BIN.
+
+## 2. Source of truth
+- Repository: Frangga11/glass-tv-home
+- PR aktif: https://github.com/Frangga11/glass-tv-home/pull/79 — OPEN / DRAFT / UNMERGED
+- Source branch: fix/home-balanced-frame-001
+- Base branch: fix/home-layout-consolidated-001
+- Exact source HEAD used for successful build: b4abdf0bd555a0106c135add20c3f287cf10b412
+- Corrected publisher workflow is present on the PR base branch (commit 7e51a86cc83394ae47f7c9d32c22bf0c6042c9d1) and aligned on PR head branch (commit b4abdf0bd555a0106c135add20c3f287cf10b412).
+
+## 3. Root cause — permanently recorded
+The old publisher workflow hardcoded CI #1545's artifact ID/run ID and source SHA. More importantly, for a pull_request event, GitHub used the workflow definition from the PR base branch, not the PR head branch. Editing only the PR head copy therefore did not change the workflow GitHub executed. The old run log proved it republished the stale CI #1545 APK. Correction: maintain the workflow on the PR base branch and keep the PR head copy aligned to avoid regression after merge.
+
+## 4. Mandatory build and delivery route (DO NOT DEVIATE)
+1. Confirm PR number, base/head branches, and exact current source HEAD.
+2. Ensure .github/workflows/publish-apk-release.yml is corrected on the PR base branch; align the same file on PR head branch.
+3. Trigger a PR #79 synchronize event (or an authorized manual workflow dispatch if available). Do not assume a commit on the head branch alone controls the workflow definition.
+4. Workflow must checkout github.event.pull_request.head.sha, run ./gradlew --no-daemon testReleaseUnitTest assembleRelease, validate APK package/manifest, and calculate size and SHA-256.
+5. Publish the actual APK binary as a GitHub Release asset with a unique source-SHA-derived tag and filename ending exactly .apk.
+6. Verify the Release API asset: exact filename ends .apk, state=uploaded, MIME application/vnd.android.package-archive, size and SHA-256 match workflow logs.
+7. Send the user only the direct GitHub Release asset URL (the URL path itself must end in .apk). Never send sandbox:/mnt/data attachments, GitHub Actions artifact ZIPs, .zip, or .bin. Never rename a ZIP to .apk.
+8. If a direct APK Release asset cannot be verified, stop and report the blocker; do not substitute another format or stale build.
+9. Physical Samsung Browser download test and Mi TV Stick installation/visual acceptance remain pending until owner confirms.
+
+## 5. Latest verified build
+- Publisher workflow run: https://github.com/Frangga11/glass-tv-home/actions/runs/42491530852 — SUCCESS.
+- Job: 128764760421 — SUCCESS.
+- Build command: ./gradlew --no-daemon testReleaseUnitTest assembleRelease.
+- Unit tests and assembleRelease: PASS; log reports BUILD SUCCESSFUL.
+- APK filename: Glass-TV-Home-PR79-b4abdf0bd555a0106c135add20c3f287cf10b412.apk.
+- Size: 1,627,561 bytes.
+- SHA-256: 2bd779dc0da3a8cbf81b7f6f7dad1ee53d6f7be949eef9261d1d0b7018c09aa6.
+- Release tag: glass-tv-home-pr79-b4abdf0bd555a0106c135add20c3f287cf10b412.
+- Direct APK asset: https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr79-b4abdf0bd555a0106c135add20c3f287cf10b412/Glass-TV-Home-PR79-b4abdf0bd555a0106c135add20c3f287cf10b412.apk
+- Release API independently confirms one uploaded asset, exact .apk filename, MIME application/vnd.android.package-archive, matching size and digest.
+
+## 6. Acceptance boundary / next action
+- Build: PASS.
+- Release asset: PASS — direct APK verified at GitHub.
+- Samsung Browser filename behavior: NOT YET CONFIRMED by owner.
+- Mi TV Stick installation and visual acceptance: PENDING.
+- PR #79 remains OPEN / DRAFT / UNMERGED. No merge authorized by this checkpoint.
+
+**Resume instruction:** Start from this checkpoint. Do not repeat the stale CI #1545 publisher, do not edit only the PR head workflow when the PR base workflow is authoritative, and do not send sandbox/ZIP/BIN. First obtain the owner's Samsung Browser download and Mi TV Stick test result; if another build is needed, follow section 4 exactly.
