@@ -166,3 +166,12 @@ The remediation session resumed and re-verified the PR #79 branch. Further tight
 Latest source/test HEAD: 765634e7d806f48bc38014119cd170a8697ea442. PR #79 remains OPEN / DRAFT / UNMERGED, stacked on PR #77. CI #1576 was running on the immediately preceding head 9a6133c956819fa5c840cada5762b9e68ac05785; it does not validate the latest DPAD changes. Exact-head CI for 765634e7d806f48bc38014119cd170a8697ea442 is pending observation. No regression test pass is claimed until that run completes.
 
 No APK installation, ADB, device settings/default launcher mutation, physical Mi TV Stick test, force-push, or merge.
+
+
+### Weather overlay preference guard — 8 November 2026
+
+- The Home atmospheric overlay refresh now returns without starting a network request while the dynamic weather overlay preference is disabled.
+- Enabling the preference reapplies the cached line and invokes the existing due-gated refresh, so stale/missing weather data can be refreshed without waiting for the next minute tick.
+- Regression coverage asserts both the disabled guard and the enable-triggered refresh.
+
+Latest source/test HEAD: 97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5. PR #79 remains OPEN / DRAFT / UNMERGED. Exact-head CI has not yet been observed for this commit; tests remain unclaimed as passing. Earlier CI #1579 is on an earlier commit and cannot validate this change. Device acceptance remains NOT RUN.
