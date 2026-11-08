@@ -7,6 +7,16 @@
 **Current Home implementation PR:** [PR #99](https://github.com/Frangga11/glass-tv-home/pull/99) — spacing/capsule refinement stacked on PR #83; PR #99 OPEN / DRAFT / UNMERGED. Parent PRs #80/#81/#82/#83 retain their prior states.  
 **Latest documentation sync:** PR #99 spacing/capsule audit and CI/artifact checkpoint synchronized on `docs/project-master-inventory`; latest preceding audit-report correction commit `62f90762d6a417477c046e50dd576fb6c3362da2`.
 
+## INTEGRATION BLOCKER — PR #99 DOES NOT CONTAIN ISLAMIC SHELF / PRAYER / DAILY AYAH STACK — 9 NOVEMBER 2026
+
+Root cause confirmed by live PR metadata and changed-file inventories:
+- PR #99 base SHA is PR #83 HEAD `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`. Its APK/CI run `42531805446` was built from PR #99 HEAD `443d8491109c416915955c8a9ceb202860916a6b`; therefore it contains the PR #83 ancestry plus PR #99 spacing/capsule changes, but not the separate subsequent Islamic/prayer/daily-ayah chain.
+- The omitted chain is sequential and all OPEN / DRAFT / UNMERGED: PR #84 `d821842c2211cb6e65bbde506253cde7b3929771` (Islamic shelf anchor) → #85 `a5eaae843f8998c53238870609102e4c20b05ded` (Arabic typography) → #86 `746beaba2648b167dc174dfd3a61f5e859ed9fc2` (prayer refresh/next Subuh) → #87 `91f1152361d9b4db70a74f8f6b30ad38f60b4211` (daily Ayah cache/label) → #88 `a4b979540def5fc1414e66eec6df516a1ef22fe8` (prayer source label) → #89 `4038c08f4825f7bacf965bc6708505d3c8c30ebc` (daily Ayah offline retry). PR #89 base is PR #88; #84 base is PR #83.
+- Confirmed file overlap: PR #84/#86/#87/#88/#89 modify `MainActivity.java`; PR #85 modifies `activity_main.xml`; PR #99 also modifies `MainActivity.java` and `activity_main.xml`. Therefore a blind cherry-pick or simple base retarget is unsafe; integrate by applying/rebasing PR #99's scoped geometry changes onto the PR #89 head, resolve overlap deliberately, then rerun all regression/Android/release checks.
+- The PR #99 QA APK is technically built and CI-passing but is **not a cumulative integration build** for the Islamic/prayer/daily-Ayah work. Do not treat it as the current complete Home candidate or install it expecting PR #84–#89 behavior.
+- Next action after owner approval: create a new cumulative integration candidate based on PR #89 exact HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc`, port PR #99's 3 production-file scope plus tests/workflow carefully, run full CI and audit the integrated diff. Keep all source PRs draft/unmerged until reconciliation and visual QA pass.
+
+---
 ## CURRENT AUTHORITATIVE UPDATE — HOME SPACING/CAPSULE REFINEMENT — 9 NOVEMBER 2026
 
 **This update supersedes older pending-status statements in the historical sections below for workstream GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-001 only.**
