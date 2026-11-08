@@ -106,12 +106,13 @@ final class PrayerTimes {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
                 long attemptTime = System.currentTimeMillis();
-                long lastAttempt = prefs.getLong(KEY_LAST_SYNC_ATTEMPT, 0L);
-                if (!force && lastAttempt > 0L && attemptTime - lastAttempt < SYNC_RETRY_COOLDOWN_MS) return;
-                prefs.edit().putLong(KEY_LAST_SYNC_ATTEMPT, attemptTime).apply();
                 Calendar now = calendar(context);
                 int currentMonth = now.get(Calendar.YEAR) * 100 + (now.get(Calendar.MONTH) + 1);
                 String zone = getJakimZone(context);
+                String attemptKey = KEY_LAST_SYNC_ATTEMPT + "_" + String.valueOf(zone) + "_" + currentMonth;
+                long lastAttempt = prefs.getLong(attemptKey, 0L);
+                if (!force && lastAttempt > 0L && attemptTime - lastAttempt < SYNC_RETRY_COOLDOWN_MS) return;
+                prefs.edit().putLong(attemptKey, attemptTime).apply();
                 String cachedZone = prefs.getString("cached_zone", "");
 
                 if (zone != null && zone.startsWith("ID_")) {
