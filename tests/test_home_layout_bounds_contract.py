@@ -122,6 +122,25 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("if (requestGeneration != gridFocusRequestGeneration) return;", focus)
         self.assertIn("grid.post(() -> {", focus)
 
+    def test_location_altitude_uses_bilingual_resources_without_approximation_symbol(self):
+        self.assertIn(
+            "getString(R.string.location_altitude_format, zone.altitudeMeters)",
+            MAIN,
+        )
+        self.assertNotIn('altitude.setText("± "', MAIN)
+        resource_paths = (
+            ROOT / "launcher/app/src/main/res/values/strings.xml",
+            ROOT / "launcher/app/src/main/res/values-id/strings.xml",
+            ROOT / "launcher/app/src/main/res/values-en/strings.xml",
+        )
+        expected = ("%1$d mdpl", "%1$d mdpl", "%1$d m ASL")
+        for path, value in zip(resource_paths, expected):
+            resources = ET.parse(path).getroot()
+            entry = next((item for item in resources
+                          if item.get("name") == "location_altitude_format"), None)
+            self.assertIsNotNone(entry, str(path))
+            self.assertEqual(entry.text, value, str(path))
+
     def test_top_controls_are_not_repositioned_from_dock_item_geometry(self):
         self.assertNotIn("alignTopButtons", MAIN)
         self.assertNotIn("topRow.setTranslationX", MAIN)
