@@ -710,3 +710,20 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - First CI #1644 / run `42524504080` failed the Python/docs job on two test assertion issues (old expected popup title; contract slice included shared optional-language helper). Corrective test changes and a 52-day cache-cycle assertion have since been pushed; new exact-head CI is pending. Android job was still in progress during the first attempt. No CI pass or APK size is claimed.
 - Physical Mi TV Stick acceptance remains pending.
 - Detailed audit: [GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001-AUDIT.md](GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001-AUDIT.md).
+
+
+---
+
+## 22. GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001 — 9 November 2026
+
+**Status: SOURCE CHANGE COMMITTED / CI PENDING / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+
+- PR [#88](https://github.com/Frangga11/glass-tv-home/pull/88): OPEN / DRAFT / UNMERGED.
+- Branch: `fix/prayer-source-label-transparency-001`.
+- Exact HEAD: `a4b979540def5fc1414e66eec6df516a1ef22fe8`.
+- Base: PR #87 branch, exact base HEAD `91f1152361d9b4db70a74f8f6b30ad38f60b4211`.
+- Islamic Shelf header now appends a localized Kemenag RI vs local-estimate source label for Indonesian zones; compact prayer summary uses the same zone condition.
+- No prayer-time calculation, API, validation or fallback parameters changed.
+- Independent current-date cross-reference: Pagar Alam 9 Nov 2026 listed Subuh 04:24, Terbit 06:07, Dzuhur 11:54, Asar 15:14, Maghrib 18:07, Isya 19:14 by a Bimas Islam-sourced calendar. Sajadah documents that its JSON mirrors Kemenag without time adjustment. Direct app JSON retrieval remains unverified in the audit browser; do not treat cross-reference values as proof of the device cache.
+- Detailed audit: [GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001-AUDIT.md](GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001-AUDIT.md).
+- Physical Mi TV Stick visual/source-state acceptance pending.
