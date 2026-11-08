@@ -209,3 +209,8 @@ The final HOME-005 regression extension verifies that the atmospheric overlay re
 Audited `activity_main.xml` and `MainActivity.applyHeaderWidths()` on PR #79. Both `locationPill` and `weatherAirQuality` use `layout_alignParentStart="true"`; the width mismatch came from independent runtime formulas (34% vs 44%). The correction preserves the location reference and applies its single computed width to both controls. This makes left and right edges mathematically identical in the shared RelativeLayout coordinate space. Weather content updates still only replace text and do not alter layout parameters; the view remains single-line/end-ellipsized. Regression test checks these source/layout contracts.
 
 Changed files: `MainActivity.java` and `tests/test_home_layout_bounds_contract.py` only. Source commit `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`; current PR #79 HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. CI #1587 run `42489445766` is partially green (Lists/tools/docs PASS; Android job IN PROGRESS). No visual/physical acceptance claim.
+
+
+## CI #1587 final validation — 8 Nov 2026
+
+CI #1587 / run `42489445766` completed **SUCCESS** on PR #79 head `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. Both required jobs passed. Python regression suite: **161 tests, OK (1 skipped)**; the new `test_weather_aqi_pill_matches_location_pill_width_and_left_anchor` passed. Android `testReleaseUnitTest` and `assembleRelease`: **BUILD SUCCESSFUL**. Release APK diagnostic: **1,627,545 bytes**; CI artifact ID **13621187055**, ZIP size **1,426,725 bytes**. CI proves source/build/test contracts only; no rendered Mi TV Stick or physical visual acceptance is claimed. PR #79 remains OPEN / DRAFT / UNMERGED.
