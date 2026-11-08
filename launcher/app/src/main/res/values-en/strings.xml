@@ -48,8 +48,8 @@
     <string name="recent_apps_activity_label">Recent Apps</string>
     <string name="media_listener_service_label">Glass TV Media Listener</string>
 
-    <string name="daily_prayer_label">DAILY PRAYER  •  VERSE OF THE DAY</string>
-    <string name="daily_ayah_popup_title">Daily Verse</string>
+    <string name="daily_prayer_label">DAILY SELECTED VERSE</string>
+    <string name="daily_ayah_popup_title">Daily Selected Verse</string>
     <string name="daily_ayah_open">READ FULL VERSE  ›</string>
     <string name="daily_ayah_meaning_label">MEANING</string>
     <string name="daily_ayah_close">Close</string>
@@ -202,7 +202,7 @@
     <string name="weather_summary_title">🌦️ Weather &amp; Air Quality</string>
     <string name="weather_summary_body">📍 Location: %1$s\n\n📊 Current conditions: %2$s\n\nℹ️ Source: Open-Meteo / CAMS (CC BY 4.0). US AQI is a model estimate, not an official local-station ISPU measurement.\n\n📌 Check AQI values and follow official BMKG or relevant agency alerts before making outdoor activity decisions.</string>
     <string name="prayer_summary_title">🕌 Prayer Times &amp; Daily Verse</string>
-    <string name="prayer_summary_body">📍 Location: %1$s • %2$s\n\n⏳ Next prayer: %3$s\n\n📖 Selected verse / daily prayer:\n%4$s</string>
+    <string name="prayer_summary_body">📍 Location: %1$s • %2$s\n\n⏳ Next prayer: %3$s\n\n📖 Selected verse of the day:\n%4$s</string>
     <string name="ok_action">OK</string>
     <string name="sound_effects_title">🔊 Choose Sound Effects</string>
     <string name="sound_effects_off">🔇 Sound effects turned off</string>
@@ -375,10 +375,10 @@
     <string name="change_pin_title">🔢 Change Security PIN</string>
     <string name="change_pin_summary">Change the 4-digit parental control PIN (current PIN: %1$s)</string>
     <string name="default_pin_label">0000 [Default]</string>
-    <string name="daily_prayer_panel_title">Daily Prayer Panel &amp; Prayer Times</string>
-    <string name="daily_prayer_panel_summary">Show a selected verse and prayer times for the local time</string>
-    <string name="daily_ayah_title">📖 Daily Verse &amp; Prayer</string>
-    <string name="daily_ayah_summary">Show a Quran verse and daily prayer above prayer times</string>
+    <string name="daily_prayer_panel_title">Daily Verse Panel &amp; Prayer Times</string>
+    <string name="daily_prayer_panel_summary">Show the daily selected Quran verse and local prayer times</string>
+    <string name="daily_ayah_title">📖 Daily Selected Verse</string>
+    <string name="daily_ayah_summary">Show one selected Quran verse above prayer times</string>
     <string name="interface_sound_title">🔊 Interface Sound Effects</string>
     <string name="interface_sound_summary">Choose a sound profile: PlayStation, Nintendo Switch, Xbox, or silent</string>
     <string name="azan_settings_title">🕌 Adhan Settings</string>

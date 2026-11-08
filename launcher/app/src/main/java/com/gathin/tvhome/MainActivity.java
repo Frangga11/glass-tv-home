@@ -4250,7 +4250,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 || getResources().getDisplayMetrics().heightPixels >= 2160);
 
         if (ayahLabel != null) {
-            ayahLabel.setText(AppLanguage.getAyahLabel(this, a.reference));
+            ayahLabel.setText(AppLanguage.getAyahLabel(this, a.reference,
+                    WeeklyAyah.stored(this) != null, WeeklyAyah.hasCached(this)));
             ayahLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 13f : 11f);
         }
         if (ayahArabic != null) {
@@ -4262,7 +4263,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahArabic.setIncludeFontPadding(true);
             ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
-            ayahArabic.setLineSpacing(Math.round(3 * density), 1.08f);
             ayahArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 22f : 20f);
             ayahArabic.setText(a.arabic.trim());
         }
