@@ -1,7 +1,7 @@
 # GTVH-HOME-PRAYER-TIMES-REFRESH-AND-NEXT-SUBUH-FIX-001 — Audit & Implementation
 
 **Date:** 9 November 2026  
-**Status:** IMPLEMENTATION COMMITTED · EXACT-HEAD CI IN PROGRESS · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
+**Status:** IMPLEMENTATION COMMITTED · EXACT-HEAD CI PASS · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
 
 ## Source authority
 - Repository: `Frangga11/glass-tv-home`
@@ -29,11 +29,14 @@
 ## Regression coverage
 - Android `PrayerTimesNextPrayerTest`: next prayer before/after times, sunrise skip, after-Isya no-same-day result, tomorrow Subuh and fallback timestamp.
 - Python `test_prayer_times_refresh_next_subuh_contract.py`: single-flight/cooldown contract, Home resume/minute refresh, shared next-prayer selection and tomorrow Subuh row.
-- Exact-head CI run #1642 / `42524091486`: **IN PROGRESS** at time of this record. Python/docs job passed; Android unit/release build still running.
+- Exact-head CI #1642 / run `42524091486`: **SUCCESS**; both jobs passed.
+- Python suite: **192 tests, 1 skipped**; all four new prayer refresh/next-Subuh contracts passed.
+- Android `testReleaseUnitTest` and `assembleRelease`: **PASS / BUILD SUCCESSFUL**.
+- Release APK diagnostic: **1,625,865 bytes**. Publisher workflow #97 skipped because PR #86 is Draft; no APK release asset is claimed.
 - Release APK publisher workflow #97 / `42524091555`: skipped because PR #86 is Draft; not a CI failure and no APK release asset is claimed.
 
 ## Quality and acceptance gates
-1. Exact-head CI #1642 must finish successfully, including Android `testReleaseUnitTest`, `assembleRelease` and APK diagnostics.
+1. Exact-head CI #1642 has passed, including Android `testReleaseUnitTest`, `assembleRelease` and APK diagnostics.
 2. Confirm the CI logs show the new Java tests and Python contracts actually ran.
 3. Physical Mi TV Stick acceptance at 1920×1080 / density 320:
    - Home remains open across a month/year boundary and the due-check path refreshes the active annual timetable.
