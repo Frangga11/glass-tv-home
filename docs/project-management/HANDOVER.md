@@ -2247,3 +2247,20 @@ Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LA
 - SHA-256: `67ecc3fddc6b4bab6c36025c6d285973fe329591eabe9f29c108fbc49d8fe602`.
 - User-facing filename: `Glass-TV-Home-PR80-a085be1.apk`.
 - This is a successful release build from the current PR head, not a merged/final release. PR #80 remains OPEN / DRAFT / UNMERGED. Physical Mi TV Stick installation and owner acceptance are still pending.
+
+
+---
+
+## Handover — GTVH-HOME-DOCK-ISLAMIC-SHELF-NAVIGATION-REFINEMENT-001 (8 Nov 2026)
+
+- Read canonical `GTVH-CHECKPOINT-LATEST.md` first. Current scoped continuation is PR #81, not a modification to PR #80.
+- Repository: `Frangga11/glass-tv-home`.
+- Branch: `fix/home-dock-islamic-shelf-navigation-001`.
+- PR #81: OPEN / DRAFT / UNMERGED; base branch `fix/home-wallpaper-text-refinement-001` (PR #80).
+- Exact source HEAD: `2130675f1f2723f8e7c895cbc6ac63327d2efd60`; exact base HEAD: `a085be150ebcf1d48b825ed7ac43b172261f3aa0`.
+- PR #80 remains unchanged and OPEN / DRAFT / UNMERGED.
+- Scope completed in source: Dock-only 0.95 card scale and 44dp icon; total horizontal host reduction ~8dp with 6/8dp horizontal decoration offsets; stable Islamic shelf anchor and bottom-edge height correction; signed smooth DOWN/UP row scrolling with generation cancellation and lifecycle reset.
+- CI #1620 / run `42501726878`: SUCCESS on exact HEAD. Python 176 tests, 1 skipped; Android app/installer release unit-test tasks and `assembleRelease` passed; BUILD SUCCESSFUL in 1m19; 99 actionable tasks.
+- Release APK size 1,629,469 bytes; SHA-256 `caa3289641184e516b5758b8ce647d7bc33616ee55cb5f022576e53add572e24`. Artifact ID `13625911589`; ZIP SHA-256 `e9dbc0307aa7823d019ccf464e21e633f6dfe1a3a5906407feee3ada6fa1ea41`. Extracted APK is available from the conversation's PR #81 build output; it is not a final merged release.
+- **Do not mark final:** rendered 1920×1080 review and physical Mi TV Stick remote acceptance are still pending. No ADB, installation, device settings change or merge was performed.
+- Next: owner tests the exact-head APK on Mi TV Stick, including Dock capacities 4/5/6, repeated DOWN/UP, fast reversal, incomplete last row, Islamic shelf stability and return from launched apps. Record acceptance before merge.
