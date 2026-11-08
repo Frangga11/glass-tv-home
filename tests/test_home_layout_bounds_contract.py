@@ -367,3 +367,28 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_weather_aqi_pill_matches_location_pill_width_and_left_anchor(self):
+        start = MAIN.index("private void applyHeaderWidths()")
+        end = MAIN.index("private void updatePrayerTimes()", start)
+        sizing = MAIN[start:end]
+        self.assertIn("int locationWidth = Math.round(width * 0.34f);", sizing)
+        self.assertEqual(sizing.count("params.width = locationWidth;"), 2)
+        self.assertNotIn("0.44f", sizing)
+
+        root = ET.parse(LAYOUT).getroot()
+        by_id = {node.get(ANDROID + "id"): node for node in root.iter()
+                 if node.get(ANDROID + "id")}
+        location = by_id["@+id/locationPill"]
+        weather = by_id["@+id/weatherAirQuality"]
+        self.assertEqual(location.get(ANDROID + "layout_alignParentStart"), "true")
+        self.assertEqual(weather.get(ANDROID + "layout_alignParentStart"), "true")
+        self.assertEqual(weather.get(ANDROID + "singleLine"), "true")
+        self.assertEqual(weather.get(ANDROID + "ellipsize"), "end")
+
+        weather_update_start = MAIN.index("private void updateWeatherAqi()")
+        weather_update_end = MAIN.index("private void updateHomeWeather()", weather_update_start)
+        weather_update = MAIN[weather_update_start:weather_update_end]
+        self.assertIn("weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));", weather_update)
+        self.assertNotIn("setLayoutParams", weather_update)
