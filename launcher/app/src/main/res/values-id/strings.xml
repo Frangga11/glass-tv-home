@@ -73,6 +73,7 @@
     <string name="standby_return_hint">Tekan tombol apa pun untuk kembali</string>
 
     <string name="weather_my_location">LOKASI SAYA</string>
+    <string name="location_altitude_format">%1$d mdpl</string>
     <string name="weather_drizzle">Gerimis</string>
     <string name="weather_wind_label">💨  ANGIN</string>
     <string name="weather_moon_phase_label">🌕  FASE BULAN</string>

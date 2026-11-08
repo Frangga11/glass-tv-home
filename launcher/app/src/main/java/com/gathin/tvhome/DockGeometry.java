@@ -15,8 +15,8 @@ final class DockGeometry {
     private static final float DOCK_EXTRA_HEIGHT_DP = 18f;
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
     private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
-    private static final float SAFE_HORIZONTAL_MARGIN_DP = 48f;
-    private static final float SAFE_VERTICAL_MARGIN_DP = 27f;
+    private static final float SAFE_HORIZONTAL_MARGIN_DP = 29f;
+    private static final float SAFE_VERTICAL_MARGIN_DP = 29f;
     private static final float SHELF_TO_TRAY_GAP_DP = 36f;
 
     private DockGeometry() { }
@@ -41,6 +41,14 @@ final class DockGeometry {
         return AppAdapter.tileWidthPx(gridWidth, horizontalGridColumns(), density);
     }
 
+    static int safeHorizontalMarginDp() {
+        return (int) SAFE_HORIZONTAL_MARGIN_DP;
+    }
+
+    static int safeVerticalMarginDp() {
+        return (int) SAFE_VERTICAL_MARGIN_DP;
+    }
+
     static int safeHorizontalInsetPx(float density) {
         return Math.round(SAFE_HORIZONTAL_MARGIN_DP * density);
     }
@@ -50,9 +58,9 @@ final class DockGeometry {
     }
 
     /**
-     * The Dock host is already inside activity_main's 56dp Home content inset.
-     * Applying the old extra 48dp inset here double-inset the Dock and made its tray
-     * visibly narrower than the left weather/clock and right prayer/ayah shelves.
+     * The Dock host is already inside activity_main's shared 29dp Home content inset.
+     * Applying another inset here would double-inset the Dock and make its tray narrower
+     * than the left information and right prayer/ayah shelves.
      */
     static int horizontalContentWidthPx(int viewportWidthPx, float density) {
         return Math.max(0, viewportWidthPx);
@@ -110,7 +118,7 @@ final class DockGeometry {
 
     static int horizontalGridBottomReservePx(int largestTileWidthPx, float density) {
         int largestTileHeight = tileHeightPx(largestTileWidthPx);
-        return itemHeightPx(largestTileHeight, density) + Math.round(34f * density);
+        return itemHeightPx(largestTileHeight, density) + Math.round(SAFE_VERTICAL_MARGIN_DP * density);
     }
 
     static int dockItemTopOffsetPx(float density) {

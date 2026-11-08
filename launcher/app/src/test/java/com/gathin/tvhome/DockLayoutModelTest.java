@@ -300,7 +300,7 @@ public class DockLayoutModelTest {
             int largestTileHeight = DockGeometry.tileHeightPx(largestTileWidth);
             int gridReserve = DockGeometry.horizontalGridBottomReservePx(largestTileWidth, density);
             int legacyGridReserve = DockGeometry.itemHeightPx(largestTileHeight, density)
-                    + Math.round(34f * density);
+                    + Math.round(29f * density);
             assertEquals(legacyGridReserve, gridReserve);
 
             for (int capacity : new int[]{4, 5, 6}) {
@@ -422,7 +422,10 @@ public class DockLayoutModelTest {
             int trayTopFromParentBottom = -dockHeight - bottomMargin + trayTopOffset;
             int gridBottomFromParentBottom = -gridBottomMargin;
             assertEquals(Math.round(8f * density), trayTopFromParentBottom - gridBottomFromParentBottom);
-            assertEquals(dockHeight, gridBottomMargin);
+            int expectedGridBottomMargin = DockGeometry.safeBottomInsetPx(density)
+                    + tileHeight + 2 * Math.round(DockGeometry.trayPaddingPx(density))
+                    + Math.round(8f * density);
+            assertEquals(expectedGridBottomMargin, gridBottomMargin);
         }
     }
 
@@ -442,6 +445,46 @@ public class DockLayoutModelTest {
                     int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, slotWidth, capacity);
                     int rightMargin = safeWidth - offset - slotWidth * capacity;
                     assertTrue(Math.abs(offset - rightMargin) <= 1);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void allFourHomeSafeFrameEdgesRemainEqualAcrossMeasuredTvWidthsAndDensities() {
+        int[] screenWidths = new int[]{1280, 1696, 1712, 1920};
+        float[] densities = new float[]{1f, 1.5f, 1.75f, 2f};
+
+        for (float density : densities) {
+            int horizontalInset = DockGeometry.safeHorizontalInsetPx(density);
+            int bottomInset = DockGeometry.safeBottomInsetPx(density);
+            assertEquals("top/left/right and bottom use one density-scaled inset", horizontalInset, bottomInset);
+
+            for (int screenWidth : screenWidths) {
+                int safeContentWidth = screenWidth - 2 * horizontalInset;
+                assertTrue(safeContentWidth > 0);
+                int viewport = DockGeometry.horizontalContentWidthPx(safeContentWidth, density);
+                assertEquals(safeContentWidth, viewport);
+
+                for (int capacity : new int[]{4, 5, 6}) {
+                    int tileWidth = DockGeometry.horizontalTileWidthPx(viewport, capacity, density);
+                    int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+                    int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+                    int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+                    int trayBottomInset = dockHeight - tileHeight
+                            - DockGeometry.dockItemTopOffsetPx(density)
+                            - Math.round(DockGeometry.trayPaddingPx(density));
+
+                    assertEquals("bottom tray edge must match the top/side safe frame at "
+                                    + screenWidth + "px, density " + density + ", capacity " + capacity,
+                            horizontalInset, dockBottomMargin + trayBottomInset);
+
+                    int slotWidth = DockGeometry.horizontalSlotWidthPx(viewport, capacity);
+                    int groupOffset = DockGeometry.horizontalCenterOffsetPx(viewport, slotWidth, capacity);
+                    int leftVisualMargin = horizontalInset + groupOffset;
+                    int rightVisualMargin = horizontalInset + viewport - groupOffset - slotWidth * capacity;
+                    assertTrue("Dock group must remain horizontally centered",
+                            Math.abs(leftVisualMargin - rightVisualMargin) <= 1);
                 }
             }
         }

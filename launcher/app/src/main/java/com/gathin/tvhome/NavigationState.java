@@ -36,7 +36,8 @@ final class NavigationState {
     }
 
     static String normalizeTopPillKey(String key) {
-        if ("inputs".equals(key) || "wifi".equals(key) || "assistant".equals(key)
+        if ("location".equals(key) || "weather".equals(key) || "home".equals(key)
+                || "inputs".equals(key) || "wifi".equals(key) || "assistant".equals(key)
                 || "candy_box".equals(key) || "settings".equals(key)) return key;
         return null;
     }
