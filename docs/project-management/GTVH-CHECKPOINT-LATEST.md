@@ -30,10 +30,10 @@ The response to this phrase must always load this exact file from `docs/project-
 - Workstream: `GTVH-HOME-HEADER-REFINEMENT-001` + whole-Home source cross-audit.
 - Active source branch: `fix/home-balanced-frame-001`.
 - Active PR: #79, OPEN / DRAFT / UNMERGED; base `fix/home-layout-consolidated-001` (PR #77).
-- Current PR #79 HEAD: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`.
-- Implementation HEAD: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`.
-- Test-only HEAD: `49f2777cee006a5afd50a33b85cb90a61a077e40`.
-- Documentation-only PR-branch HEAD: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`.
+- Current PR #79 HEAD: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a` (weather/AQI pill width refinement regression-test head).
+- Previous Home implementation baseline: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`; latest weather/AQI width source fix: `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`.
+- Latest weather/AQI width regression-test commit: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`.
+- Prior PR-branch documentation sync head: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`; subsequent commits are the four weather/AQI refinement commits listed below.
 - PR #79 remains open, draft and unmerged. Do not merge or retarget without a separately verified reconciliation and owner authorization.
 
 ### Approved layout constraints — locked
@@ -210,15 +210,25 @@ All are on `docs/project-master-inventory` and must link back to this checkpoint
 Supporting-document synchronization commits:
 | File | Commit |
 |---|---|
-| README.md | `fb7922dec305bb278ddc0607c87f27637091a6b1` |
-| MASTER_PROJECT.md | `bc9d520dc5790fb6ae15112552e79c6d6a5f91f0` |
-| INVENTORY.md | `e309363cb820a8fc9088efcfc3e2c31b5afab1e8` |
-| DECISION_LOG.md | `0a9cda82566a0b4a9b229e33deacbb375ad7ebba` |
-| AUDIT_REGISTER.md | `b66d862558992427f1870cc2dc7e8b8e24e8d186` |
-| HANDOVER.md | `7cc1a864ea5879565f60925d6210293eacd6b55b` |
-| GTVH_HOME_SCREEN_CROSS_AUDIT_001.md | `9bbbf5690fc4bbfd6b9c1162c7197f4291802867` |
+| README.md | `63430cb39306b88354d3a579a2541294723bce9f` |
+| MASTER_PROJECT.md | `acfa06bb73fd4aa1184241b323599a290d6ebe7e` |
+| INVENTORY.md | `1a06b484ca00e4878a0051519ce6ceb030d3f6bc` |
+| DECISION_LOG.md | `654a98bdd110c4b1698f5b99ad85a6e5bace8977` |
+| AUDIT_REGISTER.md | `e9878ea0aaccaa856039e7542fe7dc875b966f4c` |
+| HANDOVER.md | `49b14ad8c151e0306dff16b0392b48cfbaab2930` |
+| GTVH_HOME_SCREEN_CROSS_AUDIT_001.md | `dec4c670083f535aea45bbbc9dff4159f2770ad9` |
 
-## 9. Final checkpoint decision
+## 9. Active refinement — GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-001 (8 November 2026)
+
+- Audit root cause: `applyHeaderWidths()` used 34% of measured Header width for `locationPill` and 44% for `weatherAirQuality`. Both XML views already share `layout_alignParentStart="true"`; therefore the left edge was correct and only the right edge differed.
+- Approved correction: preserve the location pill's existing 34% width as the sole reference; calculate `locationWidth` once and apply the same pixel width to both views. No margin, padding, X/Y position, font/icon/radius, safe-frame, weather provider, data, click, DPAD, focus, or animation changes.
+- Source implementation commit: `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`. Regression-test commit / current PR #79 HEAD: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`.
+- Regression contract checks one shared width calculation and assignment to both views, common left anchors, weather single-line/end-ellipsis, and that weather text refresh does not alter layout parameters.
+- Compared with prior PR #79 HEAD `c15e4383d7dd3f148b31a19f5e9b85423936b56d`, exactly two files changed: `MainActivity.java` and `tests/test_home_layout_bounds_contract.py` (4 commits ahead, 0 behind).
+- CI #1587 / run `42489445766`: Lists/tools/docs job PASS; Launcher build/unit-tests job IN PROGRESS at checkpoint update. No full CI PASS claim yet.
+- Physical 1920×1080 / 320dpi visual check, ID/EN content-length matrix, and Mi TV Stick acceptance remain PENDING. No APK install, ADB, device-setting mutation, force-push, or PR merge.
+
+## 10. Final checkpoint decision
 
 **Current source/CI result:** PASS within the stated boundaries.  
 **Overall Home acceptance:** PARTIAL / NOT FINAL; physical Mi TV Stick acceptance remains pending.  
