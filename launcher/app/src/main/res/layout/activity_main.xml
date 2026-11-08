@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:alpha="0" />
 
-    <!-- Top shelf: the place's name, its country and what it is about, positioned above the dock in code.
+    <!-- Top shelf: location, wallpaper title and description, positioned above the dock in code.
          The width is capped in code to a share of the space between the side paddings, so the
          description wraps in a column instead of running the width of the screen. -->
     <LinearLayout
@@ -26,9 +26,29 @@
         android:alpha="0">
 
         <TextView
+            android:id="@+id/heroWhere"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:textColor="#E6FFFFFF"
+            android:textSize="13sp"
+            android:fontFamily="@font/inter"
+            android:fontVariationSettings="'wght' 600"
+            android:letterSpacing="0.18"
+            android:textAllCaps="false"
+            android:includeFontPadding="false"
+            android:shadowColor="#99000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:singleLine="true"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/heroName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:textColor="#FFFFFFFF"
             android:textSize="36sp"
             android:fontFamily="@font/inter"
@@ -43,25 +63,7 @@
             android:maxLines="1"
             android:ellipsize="end" />
 
-        <!-- The country/state close under the name, and the description a little further below it. -->
-        <TextView
-            android:id="@+id/heroWhere"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="#E6FFFFFF"
-            android:textSize="13sp"
-            android:fontFamily="@font/inter"
-            android:fontVariationSettings="'wght' 600"
-            android:letterSpacing="0.18"
-            android:textAllCaps="true"
-            android:includeFontPadding="false"
-            android:shadowColor="#99000000"
-            android:shadowDx="0"
-            android:shadowDy="1"
-            android:shadowRadius="4"
-            android:singleLine="true"
-            android:visibility="gone" />
+        <!-- The wallpaper description follows the title. -->
 
         <TextView
             android:id="@+id/heroDesc"
@@ -111,7 +113,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/daily_prayer_label"
                 android:textColor="#CCFFFFFF"
-                android:textSize="10.5sp"
+                android:textSize="12sp"
                 android:fontFamily="@font/inter"
                 android:fontVariationSettings="'wght' 600"
                 android:letterSpacing="0.14"
@@ -131,8 +133,8 @@
                 android:maxWidth="400dp"
                 android:gravity="end"
                 android:textDirection="rtl"
-                android:textColor="#FFFFC56B"
-                android:textSize="15sp"
+                android:textColor="#FFFFF2D8"
+                android:textSize="20sp"
                 android:fontFamily="@font/amiri_quran"
                 android:lineSpacingExtra="2dp"
                 android:breakStrategy="high_quality"
@@ -143,7 +145,7 @@
                 android:shadowColor="#99000000"
                 android:shadowDx="0"
                 android:shadowDy="1"
-                android:shadowRadius="4" />
+                android:shadowRadius="2" />
 
             <TextView
                 android:id="@+id/ayahText"
@@ -152,8 +154,8 @@
                 android:layout_marginTop="2dp"
                 android:maxWidth="400dp"
                 android:gravity="end"
-                android:textColor="#D9FFFFFF"
-                android:textSize="11sp"
+                android:textColor="#F2FFFFFF"
+                android:textSize="14sp"
                 android:fontFamily="@font/inter"
                 android:fontVariationSettings="'wght' 400"
                 android:lineSpacingExtra="2dp"
@@ -164,7 +166,7 @@
                 android:shadowColor="#99000000"
                 android:shadowDx="0"
                 android:shadowDy="1"
-                android:shadowRadius="3" />
+                android:shadowRadius="1.5" />
 
             <TextView
                 android:id="@+id/ayahOpenHint"
@@ -190,7 +192,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
             android:textColor="#B3FFFFFF"
-            android:textSize="11.5sp"
+            android:textSize="12sp"
+            android:translationY="-6dp"
             android:fontFamily="@font/inter"
             android:fontVariationSettings="'wght' 600"
             android:letterSpacing="0.12"
@@ -203,6 +206,7 @@
         <!-- Waktu Solat Table (6 Columns: Subuh, Syuruk, Zohor, Asar, Maghrib, Isyak) -->
         <LinearLayout
             android:id="@+id/prayerTable"
+            android:translationY="-6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -222,24 +226,24 @@
                     android:layout_height="wrap_content"
                     android:text="@string/prayer_subuh"
                     android:textColor="#B3FFFFFF"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:shadowColor="#99000000"
                     android:shadowDy="1"
-                    android:shadowRadius="3" />
+                    android:shadowRadius="1.5" />
                 <TextView
                     android:id="@+id/timeSubuh"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 700"
                     android:shadowColor="#B3000000"
                     android:shadowDy="1"
-                    android:shadowRadius="4" />
+                    android:shadowRadius="2" />
             </LinearLayout>
 
             <!-- Syuruk -->
@@ -255,7 +259,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/prayer_sunrise"
                     android:textColor="#B3FFFFFF"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:shadowColor="#99000000"
@@ -267,7 +271,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 700"
                     android:shadowColor="#B3000000"
@@ -288,7 +292,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/prayer_dhuhr"
                     android:textColor="#B3FFFFFF"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:shadowColor="#99000000"
@@ -300,7 +304,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 700"
                     android:shadowColor="#B3000000"
@@ -321,7 +325,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/prayer_asr"
                     android:textColor="#B3FFFFFF"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:shadowColor="#99000000"
@@ -333,7 +337,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 700"
                     android:shadowColor="#B3000000"
@@ -354,7 +358,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/prayer_maghrib"
                     android:textColor="#B3FFFFFF"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:shadowColor="#99000000"
@@ -366,7 +370,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 700"
                     android:shadowColor="#B3000000"
@@ -387,7 +391,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/prayer_isha"
                     android:textColor="#B3FFFFFF"
-                    android:textSize="12sp"
+                    android:textSize="13sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:shadowColor="#99000000"
@@ -399,7 +403,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 700"
                     android:shadowColor="#B3000000"

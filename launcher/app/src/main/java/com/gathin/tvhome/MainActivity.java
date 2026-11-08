@@ -165,6 +165,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private static final float HERO_TITLE_MAX_SP = 40f;
     /** The breathing room between the shelf's last line and the top of the app container (50dp gives airy, balanced spacing). */
     private static final float HERO_TITLE_MIN_SP = 26f;
+    /** Small measured offset keeps the wallpaper shelf 32dp clear of the Dock tray. */
+    private static final float HOME_SHELF_BASELINE_OFFSET_DP = 3.5f;
+    /** Minimum visual clearance between the information shelf and Dock tray. */
+    private static final float MIN_HOME_SHELF_TRAY_GAP_DP = 32f;
+    /** The daily Ayah rises 18dp; prayer header/table receive a further 6dp lift. */
+    private static final float ISLAMIC_SHELF_BOTTOM_OFFSET_DP = 10f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
     private View heroShelf;
@@ -692,6 +698,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         NowPlayingManager.registerListener(nowPlayingListener);
 
         islamicShelf = findViewById(R.id.islamicShelf);
+        if (islamicShelf != null) {
+            GradientDrawable islamicScrim = new GradientDrawable(
+                    GradientDrawable.Orientation.LEFT_RIGHT,
+                    new int[]{0x00000000, 0x1F000000, 0x44000000});
+            islamicScrim.setCornerRadius(10f * density);
+            islamicShelf.setBackground(islamicScrim);
+        }
         applyHomeShelfSafeMargins();
         if (islamicShelf != null) {
             ayahBlock = findViewById(R.id.ayahBlock);
@@ -715,10 +728,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 });
                 ayahBlock.setOnFocusChangeListener((v, hasFocus) -> {
                     GradientDrawable focusSurface = new GradientDrawable();
-                    focusSurface.setColor(hasFocus ? 0x553B5872 : 0x00000000);
+                    focusSurface.setColor(hasFocus ? 0x443B5872 : 0x00000000);
                     focusSurface.setCornerRadius(10 * density);
-                    focusSurface.setStroke(Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
-                            hasFocus ? 0xFF7DD3FC : 0x22FFFFFF);
+                    // No idle frame: retain a restrained outline only while the remote focuses the verse.
+                    focusSurface.setStroke(hasFocus ? Math.max(1, Math.round(density)) : 0,
+                            hasFocus ? 0x997DD3FC : 0x00000000);
                     v.setBackground(focusSurface);
                     if (hasFocus) SoundEffects.playNav();
                 });
@@ -726,9 +740,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (ayahOpenHint != null) {
                 ayahOpenHint.setText(R.string.daily_ayah_open);
                 GradientDrawable hintBg = new GradientDrawable();
-                hintBg.setColor(0x334B6680);
+                hintBg.setColor(0x224B6680);
                 hintBg.setCornerRadius(8 * density);
-                hintBg.setStroke(Math.max(1, Math.round(density)), 0x557DD3FC);
+                hintBg.setStroke(0, 0x00000000);
                 ayahOpenHint.setBackground(hintBg);
             }
 
@@ -2326,10 +2340,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             shelfDockTop = shelfAnchorRect.bottom - horizontalDockHeight
                     + DockGeometry.dockItemTopOffsetPx(density);
         }
-        heroBottom = shelfDockTop - DockGeometry.shelfBottomOffsetFromTileTopPx(density);
+        int shelfGapPx = DockGeometry.shelfBottomOffsetFromTileTopPx(density);
+        int baselineOffsetPx = Math.round(HOME_SHELF_BASELINE_OFFSET_DP * density);
+        int minimumGapPx = Math.round(MIN_HOME_SHELF_TRAY_GAP_DP * density);
+        int safeOffsetPx = Math.min(baselineOffsetPx, Math.max(0, shelfGapPx - minimumGapPx));
+        heroBottom = shelfDockTop - shelfGapPx + safeOffsetPx;
 
         if (islamicShelf != null) {
-            float iy = heroBottom - islamicShelf.getHeight();
+            float iy = heroBottom - islamicShelf.getHeight()
+                    + Math.round(ISLAMIC_SHELF_BOTTOM_OFFSET_DP * density);
             islamicShelf.setY(iy);
             islamicShelf.animate().cancel();
             if (!heroShown) {
@@ -3832,6 +3851,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (prayerHeader != null) {
             String pPrefix = AppLanguage.getPrayerHeaderPrefix(this);
             prayerHeader.setText(pPrefix + " " + zoneTitle + "  •  " + PrayerTimes.getHijriDate(this).toUpperCase(Locale.ROOT));
+            prayerHeader.setTextColor(0xFFF4F7FC);
         }
 
         PrayerTimes.PrayerItem[] items = PrayerTimes.getPrayerItems(this);
@@ -3844,19 +3864,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (labels[i] != null) {
                     labels[i].setText(items[i].name);
                     if (items[i].isNext) {
-                        labels[i].setTextColor(0xFFFFB300);
-                        labels[i].setTypeface(Typeface.DEFAULT_BOLD);
-                        if (times[i] != null) {
-                            times[i].setTextColor(0xFFFFB300);
-                            times[i].setTypeface(Typeface.DEFAULT_BOLD);
-                        }
+                        labels[i].setTextColor(0xFFFFD27A);
+                        if (times[i] != null) times[i].setTextColor(0xFFFFD27A);
                     } else {
-                        labels[i].setTextColor(0xB3FFFFFF);
-                        labels[i].setTypeface(Typeface.DEFAULT);
-                        if (times[i] != null) {
-                            times[i].setTextColor(0xFFFFFFFF);
-                            times[i].setTypeface(Typeface.DEFAULT);
-                        }
+                        labels[i].setTextColor(0xFFF0F4FA);
+                        if (times[i] != null) times[i].setTextColor(0xFFFFFFFF);
                     }
                 }
             }
@@ -3905,7 +3917,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
             ayahArabic.setLineSpacing(Math.round(3 * density), 1.08f);
-            ayahArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 21f : 17f);
+            ayahArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 22f : 20f);
             ayahArabic.setText(a.arabic.trim());
         }
         if (ayahText != null) {
@@ -3918,7 +3930,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahText.setLineSpacing(Math.round(2 * density), 1.12f);
             String tr = a.translation(AppLanguage.getLanguage(this));
             ayahText.setText(tr != null ? tr.trim() : "");
-            ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 15f : 12.5f);
+            ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 15f : 14f);
             ayahText.setVisibility(tr != null && !tr.trim().isEmpty() ? View.VISIBLE : View.GONE);
         }
         ayahBlock.setVisibility(View.VISIBLE);
