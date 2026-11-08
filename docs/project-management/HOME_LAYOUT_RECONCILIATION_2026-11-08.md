@@ -66,3 +66,20 @@ A second source review found that the earlier focus-generation fix did not inval
 
 ### Additional bilingual-content correction
 A follow-up review found that the new altitude label used a hard-coded Indonesian suffix and a `±` symbol, which implies uncertainty even though the configured altitude is a known value. Replaced it with the localized `location_altitude_format` resource in all three resource sets: default/Indonesian use `%1$d mdpl`; English uses `%1$d m ASL`. Added a regression assertion for the resource values and the absence of the misleading approximation symbol. This correction also requires fresh exact-head CI.
+
+
+## Resume focus-restoration race — 8 November 2026
+
+### Finding
+A deeper lifecycle review found a second queued focus path not covered by the earlier first-reveal callback fix: `restoreFocus()` posts a runnable after Home rebuilds its app list, but the runnable previously forced the saved Grid/Dock/header target without checking whether the user had already moved focus to a newer destination. This could let a delayed resume restore override a fast DPAD action.
+
+### Correction
+- Capture `gridFocusRequestGeneration` when queuing resume restoration.
+- Skip the saved-focus request if Dock/header/other guarded focus work has advanced the generation before the runnable executes.
+- Always complete `tilesReady` / `resuming` lifecycle bookkeeping and the card-prompt refresh even when the stale restore is skipped.
+- Added `test_resume_focus_restore_does_not_steal_a_newer_user_focus_target` to the Python source-contract suite.
+
+### Validation boundary
+- Source commits: `eda610c85e9de4486bd3d9cd51e74f0647a56e0f` (guard) and `2033e06d3cc695cb812160f4e50261c853f7ee29` (readability cleanup); regression test commit `fc7b07abc043b26ab28455dc8dcd5b83f0238465`.
+- Fresh exact-head CI for the final commit is queued/running; do not claim PASS until completed.
+- This is source-level focus-race coverage only. Physical Mi TV Stick DPAD/return-from-app acceptance remains pending.
