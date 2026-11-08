@@ -960,112 +960,112 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             });
         }
 
-        // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
-        // jump to a tile far below when there is nothing in that direction.
+        // Spatial remote navigation: Home → Profile → Settings → Inputs → Wi-Fi → Assistant.
+        // The two left-side information pills form their own vertical pair.
+        View locationPill = findViewById(R.id.locationPill);
+        if (locationPill != null) locationPill.setOnClickListener(v -> showPrayerZoneDialog());
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
+                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
                 v.performClick();
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                // Back to the dock tile Up came from, not wherever the focus finder lands.
+                if (v.getId() == R.id.locationPill && weatherAirQualityView != null
+                        && weatherAirQualityView.getVisibility() == View.VISIBLE) {
+                    weatherAirQualityView.requestFocus();
+                    return true;
+                }
                 focusLastTile();
                 return true;
             }
+            View target = null;
+            int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (v.getId() == R.id.btnSettings) {
-                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
-                        btnCandyBox.requestFocus();
-                        return true;
-                    }
-                    if (btnAssistant != null && btnAssistant.getVisibility() == View.VISIBLE) {
-                        btnAssistant.requestFocus();
-                        return true;
-                    }
-                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
-                        btnWifi.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnCandyBox) {
-                    if (btnAssistant != null && btnAssistant.getVisibility() == View.VISIBLE) {
-                        btnAssistant.requestFocus();
-                        return true;
-                    }
-                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
-                        btnWifi.requestFocus();
-                        return true;
-                    }
-                    if (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) {
-                        btnInputs.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnAssistant) {
-                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
-                        btnWifi.requestFocus();
-                        return true;
-                    }
-                    if (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) {
-                        btnInputs.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnInputs || (v.getId() == R.id.btnWifi && (btnInputs == null || btnInputs.getVisibility() != View.VISIBLE))) {
-                    if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
-                        weatherAirQualityView.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnInputs && prayerTimesView != null && prayerTimesView.getVisibility() == View.VISIBLE) {
-                    prayerTimesView.requestFocus();
-                    return true;
-                }
-                return v.getId() == R.id.btnInputs
-                        || (v.getId() == R.id.btnWifi && (btnInputs == null || btnInputs.getVisibility() != View.VISIBLE));
+                if (id == R.id.locationPill) return true;
+                if (id == R.id.btnHome) {
+                    target = weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
+                            ? weatherAirQualityView : locationPill;
+                } else if (id == R.id.btnCandyBox) target = btnHome;
+                else if (id == R.id.btnSettings) target = btnCandyBox;
+                else if (id == R.id.btnInputs) target = btnSettings;
+                else if (id == R.id.btnWifi)
+                    target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings;
+                else if (id == R.id.btnAssistant)
+                    target = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi
+                            : (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings);
+                else return false;
+                if (target != null && target.getVisibility() == View.VISIBLE && target.requestFocus()) return true;
+                return id == R.id.btnHome || id == R.id.btnInputs;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                if (v.getId() == R.id.btnWifi) {
-                    if (btnAssistant != null && btnAssistant.getVisibility() == View.VISIBLE) {
-                        btnAssistant.requestFocus();
-                        return true;
-                    }
-                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
-                        btnCandyBox.requestFocus();
-                        return true;
-                    }
-                    if (btnSettings != null) {
-                        btnSettings.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnAssistant) {
-                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
-                        btnCandyBox.requestFocus();
-                        return true;
-                    }
-                    if (btnSettings != null) {
-                        btnSettings.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnCandyBox) {
-                    if (btnSettings != null) {
-                        btnSettings.requestFocus();
-                        return true;
-                    }
-                }
-                return v.getId() == R.id.btnSettings;
+                if (id == R.id.locationPill || id == R.id.weatherAirQuality) target = btnHome;
+                else if (id == R.id.btnHome) target = btnCandyBox;
+                else if (id == R.id.btnCandyBox) target = btnSettings;
+                else if (id == R.id.btnSettings)
+                    target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs
+                            : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant);
+                else if (id == R.id.btnInputs)
+                    target = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant;
+                else if (id == R.id.btnWifi) target = btnAssistant;
+                else if (id == R.id.btnAssistant) return true;
+                else return false;
+                if (target != null && target.getVisibility() == View.VISIBLE && target.requestFocus()) return true;
+                return id == R.id.btnAssistant;
             }
             return false;
         };
+        if (locationPill != null) locationPill.setOnKeyListener(pillKeys);
+        if (btnHome != null) btnHome.setOnKeyListener(pillKeys);
+        if (btnCandyBox != null) btnCandyBox.setOnKeyListener(pillKeys);
+        if (btnSettings != null) btnSettings.setOnKeyListener(pillKeys);
         if (btnInputs != null) btnInputs.setOnKeyListener(pillKeys);
         if (btnWifi != null) btnWifi.setOnKeyListener(pillKeys);
         if (btnAssistant != null) btnAssistant.setOnKeyListener(pillKeys);
-        if (btnCandyBox != null) btnCandyBox.setOnKeyListener(pillKeys);
-        if (btnSettings != null) btnSettings.setOnKeyListener(pillKeys);
+        if (weatherAirQualityView != null) {
+            weatherAirQualityView.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                    if (locationPill != null && locationPill.getVisibility() == View.VISIBLE) {
+                        locationPill.requestFocus();
+                        return true;
+                    }
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    if (btnHome != null) { btnHome.requestFocus(); return true; }
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    if (nowPlayingCard != null && nowPlayingCard.getVisibility() == View.VISIBLE) {
+                        if (cardTrackInfo != null) cardTrackInfo.requestFocus();
+                        else nowPlayingCard.requestFocus();
+                    } else {
+                        focusTile(0);
+                    }
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        // Measure the actual clock/date content edge, not leftBlock's constrained RelativeLayout
+        // bounds. Using leftBlock.getRight() here can make the center navigation collapse to 0px.
+        View leftHeader = findViewById(R.id.leftBlock);
+        View dateHeader = findViewById(R.id.dateBlock);
+        View rightHeader = findViewById(R.id.topButtons);
+        View navHeader = findViewById(R.id.navPill);
+        ViewGroup headerRow = leftHeader != null && leftHeader.getParent() instanceof ViewGroup
+                ? (ViewGroup) leftHeader.getParent() : null;
+        View.OnLayoutChangeListener headerMetricsListener =
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                        root.post(this::applyHeaderWidths);
+        if (headerRow != null) headerRow.addOnLayoutChangeListener(headerMetricsListener);
+        if (leftHeader != null) leftHeader.addOnLayoutChangeListener(headerMetricsListener);
+        if (dateHeader != null) dateHeader.addOnLayoutChangeListener(headerMetricsListener);
+        if (rightHeader != null) rightHeader.addOnLayoutChangeListener(headerMetricsListener);
+        if (navHeader != null) navHeader.addOnLayoutChangeListener(headerMetricsListener);
+        root.post(this::applyHeaderWidths);
 
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
@@ -2320,6 +2320,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private String topPillKeyForView(View view) {
         if (view == null) return null;
         int id = view.getId();
+        if (id == R.id.locationPill) return "location";
+        if (id == R.id.weatherAirQuality) return "weather";
+        if (id == R.id.btnHome) return "home";
         if (id == R.id.btnInputs) return "inputs";
         if (id == R.id.btnWifi) return "wifi";
         if (id == R.id.btnAssistant) return "assistant";
@@ -2333,6 +2336,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (normalized == null) return null;
         int id;
         switch (normalized) {
+            case "location": id = R.id.locationPill; break;
+            case "weather": id = R.id.weatherAirQuality; break;
+            case "home": id = R.id.btnHome; break;
             case "inputs": id = R.id.btnInputs; break;
             case "wifi": id = R.id.btnWifi; break;
             case "assistant": id = R.id.btnAssistant; break;
@@ -2345,7 +2351,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private boolean isTopPill(View v) {
         int id = v.getId();
-        return id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnAssistant || id == R.id.btnCandyBox || id == R.id.btnSettings;
+        return id == R.id.locationPill || id == R.id.weatherAirQuality || id == R.id.btnHome
+                || id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnAssistant
+                || id == R.id.btnCandyBox || id == R.id.btnSettings;
     }
 
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
