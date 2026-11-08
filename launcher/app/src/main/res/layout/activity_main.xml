@@ -789,6 +789,7 @@
                     android:paddingEnd="6dp"
                     android:textSize="13sp"
                     android:text="Profil"
+                    android:drawableStart="@drawable/ic_shield_child"
                     android:contentDescription="@string/user_profile_content_description"
                     android:background="@drawable/header_nav_tab_bg" />
                 <FrameLayout
