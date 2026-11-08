@@ -2095,9 +2095,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         } else {
             hideShelf();
             showAmbient(adapter.ambientColorAt(position));
-            View item = (View) card.getParent();
-            showRect.set(0, -(int) pad * 2, item.getWidth(), item.getHeight() + (int) pad);
-            grid.requestChildRectangleOnScreen(item, showRect, reducedMotion);
+            // Horizontal Dock mode owns a fixed one-row viewport. Revealing the enlarged
+            // focus rectangle can scroll the active row away from the glass baseline.
+            // Row placement is controlled explicitly by focusTile() in this mode.
+            if (dockVertical) {
+                View item = (View) card.getParent();
+                showRect.set(0, -(int) pad * 2, item.getWidth(), item.getHeight() + (int) pad);
+                grid.requestChildRectangleOnScreen(item, showRect, reducedMotion);
+            }
         }
     }
 
@@ -3348,6 +3353,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         final int pos = NavigationState.resolveHomePosition(-1, position, adapter.getItemCount());
+        if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
+            // Keep the active overflow row bottom-aligned immediately above the Dock glass.
+            // Default scrollToPosition aligns to the top and breaks the intended row progression.
+            alignHorizontalGridRowToGlass(pos);
+            grid.postOnAnimation(() -> focusTileWhenLaidOut(pos, requestGeneration, 8));
+            return;
+        }
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         if (vh != null) {
             View card = vh.itemView.findViewById(R.id.card);
@@ -3365,6 +3377,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         focusTileWhenLaidOut(pos, requestGeneration, 6);
     }
 
+    /** Aligns a horizontal overflow row to the fixed baseline immediately above the glass. */
+    private void alignHorizontalGridRowToGlass(int position) {
+        RecyclerView.LayoutManager manager = grid.getLayoutManager();
+        if (manager instanceof GridLayoutManager) {
+            ((GridLayoutManager) manager).scrollToPositionWithOffset(position, grid.getPaddingTop());
+        } else {
+            grid.scrollToPosition(position);
+        }
+    }
+
     private void focusTileWhenLaidOut(int position, int requestGeneration, int attemptsRemaining) {
         if (requestGeneration != gridFocusRequestGeneration) return;
         if (adapter == null || grid == null || position < 0 || position >= adapter.getItemCount()) return;
@@ -3379,7 +3401,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         } else if (attemptsRemaining == 0) {
             // Align the requested row to the start of the fixed one-row viewport, then
             // keep checking layout completion instead of assuming one frame is sufficient.
-            grid.scrollToPosition(position);
+            if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
+                alignHorizontalGridRowToGlass(position);
+            } else {
+                grid.scrollToPosition(position);
+            }
             grid.postOnAnimation(() -> focusTileWhenLaidOut(position, requestGeneration, 8));
         } else {
             focusTopBarFallback();
