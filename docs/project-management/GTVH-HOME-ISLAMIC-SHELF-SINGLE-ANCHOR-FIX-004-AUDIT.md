@@ -45,3 +45,9 @@ No changes to Dock geometry, Dock focus/navigation, wallpaper safe frame, prayer
 
 ## Decision
 The duplicate vertical-position writer has been removed in source and guarded by a regression contract. This is an implementation checkpoint, not final device acceptance. Next: confirm exact-head CI, then proceed to Mi TV Stick physical acceptance before moving on to prayer-data refresh and ayah cache-status work.
+
+
+### CI progress update — exact HEAD d821842c2211cb6e65bbde506253cde7b3929771
+- CI #1639 / run `42523095371`: Python regression suite **PASS — 184 tests, 1 skipped** (confirmed from completed GitHub Actions job logs).
+- Android `testReleaseUnitTest` and `assembleRelease` job remained **IN_PROGRESS** at the time of this update; no final CI result or APK artifact is claimed yet.
+- Physical Mi TV Stick acceptance remains pending.
