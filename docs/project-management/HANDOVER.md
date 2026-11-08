@@ -2227,3 +2227,14 @@ Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LA
 - Three changed files for the corrective pass: MainActivity.java, activity_main.xml, and test_home_wallpaper_text_refinement_contract.py. DockGeometry, Dock/Grid, Header/capsules, navigation, wallpaper image/crop/provider/rotation, prayer data/provider/order and safe frame remain untouched.
 - Exact-head CI #1599 / run `42497894475` for `a085be1` is IN PROGRESS. Prior CI #1592 / run `42493469262` belongs to old HEAD `c7d95c3` only.
 - No APK install, ADB, device setting change or merge. Next: verify exact-head CI, review rendered 1920×1080, then owner Mi TV Stick visual/remote acceptance.
+
+
+## Exact-head CI pass handover — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
+
+- Current PR #80 source HEAD: `a085be150ebcf1d48b825ed7ac43b172261f3aa0`; PR OPEN / DRAFT / UNMERGED.
+- Exact-head CI #1599 / run `42497894475`: SUCCESS, both jobs passed.
+- Python suite: **167 tests, OK (1 skipped)**; all six refinement regression contracts passed, including all six prayer labels at 13sp and times at 17sp.
+- Android `./gradlew --no-daemon testReleaseUnitTest assembleRelease`: BUILD SUCCESSFUL in 1m 18s. Release APK diagnostic size 1,627,685 bytes; historical 1.5 MiB warning is informational/non-blocking.
+- Publisher workflow #54 is SKIPPED by design for PR #80; no direct APK Release asset exists from this run. A visual-parity artifact ZIP (ID `13624193020`, 1,426,812 bytes, expires 15 Nov 2026) was uploaded; do not describe this ZIP as a direct APK.
+- PR total diff contains 4 files including the CI workflow adjustment that enables the PR #80 visual-parity artifact. Corrective application edits remain only MainActivity.java and activity_main.xml plus the scoped regression test.
+- Rendered 1920×1080 visual review and physical Mi TV Stick acceptance remain pending. No ADB, install, device setting change or merge. Next: inspect visual output and await owner acceptance.
