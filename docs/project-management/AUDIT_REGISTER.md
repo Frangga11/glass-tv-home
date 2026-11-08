@@ -2161,5 +2161,5 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - **Daily Ayah:** Arabic 20sp / translation 14sp at 1080p (22sp / 15sp at 4K), native Amiri Quran, RTL and high-quality line breaking retained. Added only a subtle transparent-to-dark scrim; no border/panel. Focus-only outline and click/DPAD remain.
 - **Protected:** DockGeometry and Dock/Grid behavior, Header/capsules/navigation, wallpaper image/crop/provider/rotation, prayer data/provider/order, safe frame and unrelated components.
 - **Changed files:** MainActivity.java, activity_main.xml, test_home_wallpaper_text_refinement_contract.py.
-- **CI:** prior run `42493469262` validates old HEAD `c7d95c3` only. Exact-head CI for `894544c` is pending; do not carry forward the prior PASS claim.
+- **CI:** prior run `42493469262` validates old HEAD `c7d95c3` only. Exact-head CI #1599 / run `42497894475` for HEAD `a085be1` is IN PROGRESS; do not carry forward the prior PASS claim.
 - **Rendered 1920×1080 / physical Mi TV Stick:** PENDING. No installation, ADB, setting change or merge.
