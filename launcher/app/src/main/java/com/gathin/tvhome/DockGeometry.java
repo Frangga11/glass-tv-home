@@ -3,9 +3,9 @@ package com.gathin.tvhome;
 /**
  * Single source of truth for the horizontal Dock's visual geometry.
  *
- * Horizontal Dock/Grid geometry shares the P2 safe content frame, a five-column
+ * Horizontal Dock/Grid geometry shares a 30dp left/right/bottom safe frame (29dp top), a five-column
  * slot model, 6/8dp horizontal and 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
- * breathing room, and a 36dp shelf-to-tray gap. The Dock and Grid remain independent
+ * breathing room, and a 30dp information-shelf-to-tray gap. The Dock and Grid remain independent
  * RecyclerViews but derive their card and slot sizes from this class.
  */
 final class DockGeometry {
