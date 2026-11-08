@@ -4,7 +4,7 @@
 **Repository:** `Frangga11/glass-tv-home`  
 **PR:** [#80](https://github.com/Frangga11/glass-tv-home/pull/80) — OPEN / DRAFT / UNMERGED  
 **Branch:** `fix/home-wallpaper-text-refinement-001`  
-**Corrective HEAD:** `894544cb89191a08980cf1d7a16c7fefbe5acdc7`  
+**Corrective HEAD:** `a085be150ebcf1d48b825ed7ac43b172261f3aa0`  
 **Base:** `fix/home-balanced-frame-001` at `b4abdf0bd555a0106c135add20c3f287cf10b412` (PR #79)
 
 ## 1. Trigger and strict scope
@@ -74,7 +74,7 @@ At target Mi TV Stick density 320dpi, `density = 2.0`.
 | Rendered 1920×1080 screenshot | PENDING | No rendered screenshot evidence available |
 | Physical Mi TV Stick acceptance | PENDING | No ADB, install or device test performed |
 
-Prior CI run `42493469262` passed 166 Python tests (1 skipped), Android release unit tests and `assembleRelease`, but it validated the old PR #80 HEAD `c7d95c3de24bc70b671159d5aa9ef49451cbe112` only. It must not be represented as validation of corrective HEAD `894544c`.
+Prior CI run `42493469262` passed 166 Python tests (1 skipped), Android release unit tests and `assembleRelease`, but it validated the old PR #80 HEAD `c7d95c3de24bc70b671159d5aa9ef49451cbe112` only. It must not be represented as validation of corrective HEAD `a085be1`.
 
 ## 7. Regression boundaries
 
@@ -87,4 +87,4 @@ Prior CI run `42493469262` passed 166 Python tests (1 skipped), Android release 
 
 **SOURCE CORRECTION COMMITTED: PASS. EXACT-HEAD CI: PENDING. RENDERED / PHYSICAL ACCEPTANCE: PENDING. OVERALL: NOT FINAL.**
 
-Next: verify exact-head CI on `894544cb89191a08980cf1d7a16c7fefbe5acdc7`, review rendered 1920×1080 output, then wait for owner Mi TV Stick acceptance. Any further correction must remain inside the same strict visual scope.
+Next: verify exact-head CI on `a085be150ebcf1d48b825ed7ac43b172261f3aa0`, review rendered 1920×1080 output, then wait for owner Mi TV Stick acceptance. Any further correction must remain inside the same strict visual scope.
