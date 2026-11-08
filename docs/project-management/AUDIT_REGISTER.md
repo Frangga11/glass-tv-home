@@ -2239,3 +2239,15 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - PR #77 targets PR #72 head branch; #72 targets PR #71 head branch; #71 targets PR #70 head branch. #70–#72 remain OPEN / DRAFT / UNMERGED. Thus merging #77–#83 into their existing parent branches does not merge the whole stack into `main`.
 - PR #77 vs #79 head ancestry: 117 ahead / 5 behind from merge-base `0aeb3851ddce5deb47e3c5f96db44631b0343577`; needs explicit reconciliation.
 - Await owner decision: preserve configured stacked bases and skip #78, or integrate upstream prerequisites #70–#72 into `main` and reconcile #78 separately. Physical Mi TV Stick acceptance remains pending and is not waived in the technical record.
+
+
+---
+
+## Disposition update — PR #78 closed as erroneous — 9 November 2026
+
+- Owner explicitly confirmed PR #78 was an error and instructed that it be removed from the integration path.
+- Action: updated PR #78 state to CLOSED; GitHub response verified state=closed, merged=false, closed_at=2026-11-08T18:36:07Z. Closure note appended to PR description: owner-confirmed erroneous PR; do not merge or revive.
+- PR URL: https://github.com/Frangga11/glass-tv-home/pull/78.
+- PR #78 is excluded. No code branch deletion was requested or performed.
+- Remaining merge review scope: #77 and #79–#83. No merge executed. Continue dependency/ancestry audit for #77 vs #79 and upstream #70–#72; physical Mi TV Stick acceptance remains pending.
+- This entry supersedes the prior pre-merge note that asked whether PR #78 should be reconciled separately.
