@@ -293,7 +293,7 @@ public class DockLayoutModelTest {
                         Collections.singletonList("a"), 4, null));
     }
     @Test
-    public void dockGeometryPreservesLegacyFourFiveSixSlotRatiosAndSpacing() {
+    public void dockGeometryKeepsFourFiveSixGridReserveAndCompactDockHeight() {
         for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
             int innerWidth = 1920;
             int largestTileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, 4, density);
@@ -311,13 +311,28 @@ public class DockLayoutModelTest {
                 float trayHeight = tileHeight + 28f * density;
 
                 assertEquals(tileHeight + Math.round(45f * density), itemHeight);
-                assertEquals(itemHeight + Math.round(18f * density), dockHeight);
+                assertEquals(itemHeight + Math.round(10f * density), dockHeight);
                 assertEquals(14f * density, DockGeometry.trayPaddingPx(density), 0.001f);
-                assertEquals(35f * density, dockHeight - trayHeight, 1.1f);
+                assertEquals(27f * density, dockHeight - trayHeight, 1.1f);
                 // The horizontal host sits 16dp above the gridWrap edge, matching Patch 4.1.
-                assertEquals(51f * density,
+                assertEquals(43f * density,
                         dockHeight - trayHeight + Math.round(16f * density), 1.1f);
             }
+        }
+    }
+
+    @Test
+    public void dockTileScaleAndSpacingRemainConsistentAcrossFourFiveAndSixCapacities() {
+        float density = 2f;
+        int innerWidth = 1920;
+        for (int capacity : new int[]{4, 5, 6}) {
+            int baseWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
+            int dockWidth = DockGeometry.horizontalDockTileWidthPx(innerWidth, capacity, density);
+            int slotWidth = DockGeometry.horizontalDockSlotWidthPx(innerWidth, capacity, density);
+            assertEquals(Math.round(baseWidth * 0.92f), dockWidth);
+            assertTrue(dockWidth < baseWidth);
+            assertTrue(slotWidth >= dockWidth);
+            assertTrue(slotWidth - dockWidth <= Math.round(32f * density));
         }
     }
 
@@ -353,7 +368,7 @@ public class DockLayoutModelTest {
         for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
             int innerWidth = 1920;
             for (int capacity : new int[]{4, 5, 6}) {
-                int slotWidth = DockGeometry.horizontalSlotWidthPx(innerWidth, capacity);
+                int slotWidth = DockGeometry.horizontalDockSlotWidthPx(innerWidth, capacity, density);
                 int count = capacity;
                 int offset = DockGeometry.horizontalCenterOffsetPx(innerWidth, slotWidth, count);
                 int right = offset + slotWidth * count;
