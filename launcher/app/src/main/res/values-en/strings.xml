@@ -106,12 +106,10 @@
     <string name="media_open_spotify">Open Spotify</string>
     <string name="media_close_stop">Close &amp; Stop</string>
     <string name="ota_support_title">System Updates &amp; Support</string>
-    <string name="ota_version_subtitle">Glass TV Home • Automatic Update Engine (OTA)</string>
-    <string name="ota_auto_update_active">✅ Auto-Update: On</string>
-    <string name="ota_update_description">Updates download and install in the background without interrupting playback.</string>
+    <string name="ota_version_subtitle">Glass TV Home • Manual Updates</string>
+    <string name="ota_manual_update_status">Updates are checked and installed manually.</string>
+    <string name="ota_update_description">Updates are checked and installed only when you choose to do so.</string>
     <string name="ota_check_now">🔄 Check for Updates Now</string>
-    <string name="ota_change_time">⏱️ Change Auto-Update Time</string>
-    <string name="ota_disable">⚡ Turn Off Auto-Update</string>
     <string name="coffee_support">Support Development</string>
     <string name="coffee_payment_method">Payment QR • GXBank</string>
     <string name="coffee_qr_description">Scan with your phone camera or banking app</string>
@@ -162,7 +160,7 @@
     <string name="update_dialog_message">Current version: v%1$s\nLatest version: v%2$s\n\n📋 Release notes:\n%3$s\n\nWould you like to update now?</string>
     <string name="update_now_action">⚡ Update Now</string>
     <string name="update_later_action">⏭️ Skip / Later</string>
-    <string name="update_deferred">Update postponed. The red dot 🔴 remains on the Settings button.</string>
+    <string name="update_deferred">The update was postponed.</string>
     <string name="install_permission_title">⚠️ Installation Permission Required</string>
     <string name="install_permission_message">Enable the Allow from this source option so Glass TV Home can install updates automatically.</string>
     <string name="open_settings_action">Open Settings</string>
@@ -209,14 +207,6 @@
     <string name="sound_effects_title">🔊 Choose Sound Effects</string>
     <string name="sound_effects_off">🔇 Sound effects turned off</string>
     <string name="sound_effects_selected">🔊 Sound effects: %1$s</string>
-    <string name="auto_update_schedule_title">⏱️ Choose Daily Auto-Update Time</string>
-    <string name="auto_update_time_selected">Automatic update time set to: %1$s</string>
-    <string name="auto_update_time_0330_option">🌙 03:30 AM (Best time: overnight &amp; Fajr)</string>
-    <string name="auto_update_time_0400_option">🌙 04:00 AM (Early morning)</string>
-    <string name="auto_update_time_0500_option">🌙 05:00 AM (Fajr)</string>
-    <string name="auto_update_time_1200_option">☀️ 12:00 PM (Midday)</string>
-    <string name="auto_update_time_0200_option">🌃 02:00 AM (Midnight)</string>
-
     <string name="standby_photo_required">Choose photos before enabling photo mode.</string>
     <string name="standby_mode_save_failed">Could not save the Standby mode change. The previous setting remains active.</string>
     <string name="standby_picker_unavailable">The photo picker is not available on this device.</string>
@@ -303,7 +293,7 @@
     <string name="qr_waiting_for_photo">📡 Waiting for a photo from your phone...</string>
 
     <string name="current_user_content_description">Current user: %1$s%2$s</string>
-    <string name="ota_version_subtitle_dynamic">Glass TV Home v%1$s • Automatic Update Engine (OTA)</string>
+    <string name="ota_version_subtitle_dynamic">Glass TV Home v%1$s • Manual Updates</string>
     <string name="coffee_thanks">☕ Thank you for your support! (@imsomangge)</string>
     <string name="sound_ps5_option">🎮 PlayStation 5 (Default Chime)</string>
     <string name="sound_switch_option">🕹️ Nintendo Switch (Click &amp; Snap Pop)</string>
@@ -327,12 +317,6 @@
     <string name="standby_clock_mode_enabled">The built-in clock display is now used.</string>
     <string name="azan_popup_enabled">✅ Adhan popup enabled.</string>
     <string name="azan_popup_disabled">⭕ Adhan popup disabled.</string>
-    <string name="auto_update_status_enabled">✅ Auto-Update: On (%1$s)</string>
-    <string name="auto_update_status_disabled">⭕ Auto-Update: Off</string>
-    <string name="auto_update_disable_action">❌ Turn Auto-Update Off</string>
-    <string name="auto_update_enable_action">⚡ Turn Auto-Update On</string>
-    <string name="auto_update_enabled_at">✅ Auto-Update enabled (%1$s)</string>
-    <string name="auto_update_disabled">⭕ Auto-Update disabled</string>
     <string name="now_playing_fallback_title">Now playing</string>
     <string name="now_playing_fallback_artist">Music</string>
     <string name="playback_status_playing">▶ Playing</string>
@@ -474,7 +458,7 @@
     <string name="ui_resolution_title">🖥️ Interface Resolution</string>
     <string name="app_language_title">🌐 App Language</string>
     <string name="app_language_summary">Choose Indonesian or English.</string>
-    <string name="update_available_title">🚀 Glass TV Update Available 🔴</string>
+    <string name="update_available_title">Glass TV Home update available</string>
     <string name="check_updates_title">🚀 Check for Glass TV Updates</string>
     <string name="update_available_summary">Version %1$s is ready to install.</string>
     <string name="check_updates_summary">Check whether the latest Glass TV Home version is available.</string>
