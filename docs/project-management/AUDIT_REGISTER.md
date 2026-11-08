@@ -1968,3 +1968,12 @@ Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exa
 ### Dependency diff clarification — same workflow tree content
 
 - Follow-up blob-level verification compared `.github/workflows/ci.yml` directly at PR #77 head `0ea3746f0304b7042a018eeebf850d759f357bf8` and PR #79 head `162cfdeb681cdd52e160c13d756679f84c0a3f2a`: both resolve to the **same blob SHA** `5d271a43c5bfada87d85b144740a0074aea3e56b`, and the Home layout artifact upload condition/name are identical in both trees. The earlier compare-commits file list reflects divergent commit ancestry, not a remaining workflow-content difference. Keep the ancestry status at 60 ahead / 1 behind pending identification of the unique commit; do not describe this as a workflow conflict or content mismatch.
+
+
+## Home focus restoration follow-up and PR ancestry audit — 8 November 2026
+
+- PR #79 CI #1540 / run `42478445302` is fully **SUCCESS** for source/test head `434d32afb424c4625a45979cc08d632be6443cc3`: Android build, JVM unit tests, release APK diagnostics/artifact upload and Lists/tools/docs checks all PASS. APK 1,624,505 bytes; artifact ID `13616452360` (ZIP 1,423,819 bytes, expires 15 Nov 2026). This does not validate later commits.
+- PR ancestry audit identified the only PR #77-side commit after merge base: `0ea3746f0304b7042a018eeebf850d759f357bf8`, CI artifact publishing for PR #79. PR #79 contains parallel commit `f38b9663e2422ef793f075acc47f800200f677f7` with an identical patch and identical resulting workflow blob `5d271a43c5bfada87d85b144740a0074aea3e56b`. It is a duplicate equivalent CI change, not missing functional source. Do not cherry-pick it into PR #79 solely for ancestry; preserve no-force-push/no-merge constraints.
+- Further static focus audit found horizontal Grid resume restoration did not explicitly reapply the glass when the target card was already focused. Corrected `focusTileWhenLaidOut()` to call `onTileFocused(position, card)` for an already-focused card; added Python source-contract regression test.
+- PR #79 source commit `c52a1cba8ea3190299bce994a52f010457dddbd4`; regression test commit `de4ae44c53e6f99bce2e8fc2d0694a8982a117a3`; audit report commit `edf93d80cca713cfb89b504bf437c64f93c64ac2`. Fresh exact-head CI pending; no PASS claim for these changes yet.
+- PR #77/#79 remain OPEN / DRAFT / UNMERGED. Physical Mi TV Stick visual/DPAD/resume/overscan and whole-Home acceptance remain pending. No APK installation, ADB, default-launcher or device settings mutation.
