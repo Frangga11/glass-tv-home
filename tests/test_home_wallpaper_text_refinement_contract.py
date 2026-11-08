@@ -27,7 +27,7 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
     def test_home_shelves_clear_the_dock_and_daily_ayah_prayer_offsets_are_distinct(self):
         self.assertIn("HOME_SHELF_BASELINE_OFFSET_DP = 3.5f", MAIN)
         self.assertIn("MIN_HOME_SHELF_TRAY_GAP_DP = 32f", MAIN)
-        self.assertNotIn("ISLAMIC_SHELF_BOTTOM_OFFSET_DP", MAIN)
+        self.assertIn("ISLAMIC_SHELF_BOTTOM_OFFSET_DP = 10f", MAIN)
         self.assertIn("heroBottom = trayTop - shelfGapPx", MAIN)
         self.assertIn("islamicShelfBottomAnchor = heroBottom + islamicShelfVisualBottomOffsetPx()", MAIN)
         self.assertIn("islamicShelfDockGapPx(float density)", (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java").read_text(encoding="utf-8"))
