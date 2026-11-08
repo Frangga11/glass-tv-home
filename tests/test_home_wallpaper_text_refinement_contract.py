@@ -24,24 +24,46 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
         self.assertIn('"Udara sejuk turun perlahan, menyelimuti lereng dan kebun teh Pagar Alam."', METADATA)
         self.assertIn('"Pagar Alam, Sumatera Selatan"', METADATA)
 
-    def test_both_shelves_share_a_measured_five_millimetre_downward_anchor(self):
-        self.assertIn("HOME_SHELF_DROP_MM = 5f", MAIN)
-        self.assertIn("HOME_SHELF_DROP_MM * (160f / 25.4f) * density", MAIN)
-        self.assertIn("Math.min(requestedDropPx, maximumSafeDropPx)", MAIN)
-        self.assertIn("islamicShelf.setY(iy)", MAIN)
-        self.assertIn("float y = heroBottom - heroShelf.getHeight();", MAIN)
-        self.assertIn("MIN_HOME_SHELF_TRAY_GAP_DP = 12f", MAIN)
+    def test_home_shelves_clear_the_dock_and_daily_ayah_prayer_offsets_are_distinct(self):
+        self.assertIn("HOME_SHELF_BASELINE_OFFSET_DP = 3.5f", MAIN)
+        self.assertIn("MIN_HOME_SHELF_TRAY_GAP_DP = 32f", MAIN)
+        self.assertIn("ISLAMIC_SHELF_BOTTOM_OFFSET_DP = 10f", MAIN)
+        self.assertIn("heroBottom = shelfDockTop - shelfGapPx + safeOffsetPx", MAIN)
+        self.assertIn("Math.round(ISLAMIC_SHELF_BOTTOM_OFFSET_DP * density)", MAIN)
+        root = ET.parse(LAYOUT).getroot()
+        prayer_header = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/prayerHeader")
+        prayer_table = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/prayerTable")
+        self.assertEqual(prayer_header.get(ANDROID + "translationY"), "-6dp")
+        self.assertEqual(prayer_table.get(ANDROID + "translationY"), "-6dp")
 
-    def test_prayer_names_and_times_receive_subtle_gradients_without_data_changes(self):
-        self.assertIn("applyPrayerTextGradient(labels[i], items[i].isNext, false)", MAIN)
-        self.assertIn("applyPrayerTextGradient(times[i], items[i].isNext, true)", MAIN)
-        self.assertIn("new android.graphics.LinearGradient(", MAIN)
-        self.assertIn("Shader.TileMode.CLAMP", MAIN)
-        self.assertIn("PrayerTimes.getPrayerItems(this)", MAIN)
+    def test_prayer_text_uses_solid_high_contrast_colors_and_keeps_native_font(self):
+        self.assertIn("prayerHeader.setTextColor(0xFFF4F7FC)", MAIN)
+        self.assertIn("labels[i].setTextColor(0xFFFFD27A)", MAIN)
+        self.assertIn("labels[i].setTextColor(0xFFF0F4FA)", MAIN)
+        self.assertNotIn("applyPrayerTextGradient", MAIN)
+        self.assertNotIn("labels[i].setTypeface(Typeface.DEFAULT", MAIN)
+        self.assertNotIn("times[i].setTypeface(Typeface.DEFAULT", MAIN)
+        root = ET.parse(LAYOUT).getroot()
+        prayer_times = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/timeSubuh")
+        prayer_names = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/lblSubuh")
+        self.assertEqual(prayer_times.get(ANDROID + "textSize"), "17sp")
+        self.assertEqual(prayer_names.get(ANDROID + "textSize"), "13sp")
 
-    def test_daily_ayah_has_no_idle_frame_but_keeps_remote_focus_feedback(self):
+    def test_daily_ayah_uses_larger_native_arabic_and_translation_text(self):
+        self.assertIn("ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL)", MAIN)
+        self.assertIn("ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY)", MAIN)
+        self.assertIn("is4K ? 22f : 20f", MAIN)
+        self.assertIn("is4K ? 15f : 14f", MAIN)
+        root = ET.parse(LAYOUT).getroot()
+        arabic = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/ayahArabic")
+        translation = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/ayahText")
+        self.assertEqual(arabic.get(ANDROID + "textSize"), "20sp")
+        self.assertEqual(translation.get(ANDROID + "textSize"), "14sp")
+        self.assertEqual(arabic.get(ANDROID + "fontFamily"), "@font/amiri_quran")
+
+    def test_daily_ayah_scrim_is_subtle_and_has_no_idle_outline(self):
+        self.assertIn("new int[]{0x00000000, 0x1F000000, 0x44000000}", MAIN)
         self.assertIn("focusSurface.setStroke(hasFocus ? Math.max(1, Math.round(density)) : 0,", MAIN)
-        self.assertIn("hasFocus ? 0x997DD3FC : 0x00000000", MAIN)
         self.assertIn("hintBg.setStroke(0, 0x00000000)", MAIN)
         self.assertIn("ayahBlock.setOnKeyListener", MAIN)
         self.assertIn("showDailyAyahDialog();", MAIN)
