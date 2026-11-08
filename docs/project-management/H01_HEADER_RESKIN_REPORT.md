@@ -46,7 +46,7 @@ The following method bodies were compared with `main` and are unchanged:
 - `showInputs()`
 - `triggerGoogleAssistant()`
 
-The original `btnInputs` XML element is identical to baseline. The same view ID and existing click listener remain. D-pad key routing mirrors the approved reference order: Location → weather/AQI → Profile → Home → Settings → Inputs → Wi-Fi → Assistant.
+The original `btnInputs` XML element is identical to baseline. The same view ID and existing click listener remain. D-pad follows spatial placement: Location ↓ weather/AQI; both lead right to Profile → Home → Settings → Inputs → Wi-Fi → Assistant. Weather ↑ returns to Location; Weather ↓ returns to the grid/now-playing target.
 
 ## Layout values
 
@@ -79,7 +79,7 @@ The original `btnInputs` XML element is identical to baseline. The same view ID 
 - Final source-level recheck confirms no duplicate XML view IDs and all new resource references resolve in the successful Android resource/build pipeline.
 - The dock is parked using the existing bottom-anchored `parkDock()` calculation. Its method and `DockDecoration` implementation are unchanged; increasing the header stack does not alter the dock's bottom anchor.
 - The only intended header layout growth is the added location pill above the existing weather pill. No title/description, ayah, prayer schedule, wallpaper, grid, dock, or glass geometry source code was modified.
-- The approved 1672×940 reference is `Kabut Pagi Dempo di Pagar Alam.png`: Profile → active Home → Settings. The earlier implementation's Home/Profile order was found in cross-audit and corrected before the final test build. Header remeasurement listens to root, left-group, and right-group layout changes so changes in date/Inputs visibility cannot leave the centered capsule stale.
+- The approved 1672×940 reference is `Kabut Pagi Dempo di Pagar Alam.png`: Profile → active Home → Settings. The location/weather D-pad sequence was refined after cross-audit so Down from Location reaches Weather, and Right from either left-side pill reaches Profile. The earlier implementation's Home/Profile order was found in cross-audit and corrected before the final test build. Header remeasurement listens to root, left-group, and right-group layout changes so changes in date/Inputs visibility cannot leave the centered capsule stale.
 
 ## Integration safety
 
