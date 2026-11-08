@@ -133,14 +133,14 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         int width;
         int itemWidth;
         if (vertical) {
-            width = Math.max(Math.round(112 * density),
-                    Math.min(Math.round(170 * density), inner - Math.round(20 * density)));
+            width = DockGeometry.verticalDockTileWidthPx(inner, density);
             itemWidth = width;
         } else {
-            // Use the full host width for card geometry; content padding only positions the group.
+            // Dock card geometry is independent from the full-size App Grid geometry.
+            // The full-width tray remains owned by DockDecoration; only the card slots tighten.
             int horizontalWidth = DockGeometry.horizontalContentWidthPx(viewportWidthPx, density);
-            width = DockGeometry.horizontalTileWidthPx(horizontalWidth, capacity, density);
-            itemWidth = DockGeometry.horizontalSlotWidthPx(horizontalWidth, capacity);
+            width = DockGeometry.horizontalDockTileWidthPx(horizontalWidth, capacity, density);
+            itemWidth = DockGeometry.horizontalDockSlotWidthPx(horizontalWidth, capacity, density);
         }
         ViewGroup.LayoutParams itemParams = item.getLayoutParams();
         if (itemParams != null && itemParams.width != itemWidth) {
@@ -148,6 +148,14 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             item.setLayoutParams(itemParams);
         }
         int height = AppAdapter.tileHeightPx(width);
+        android.widget.ImageView icon = item.findViewById(R.id.icon);
+        ViewGroup.LayoutParams iconParams = icon.getLayoutParams();
+        int iconSize = Math.round(44 * density);
+        if (iconParams.width != iconSize || iconParams.height != iconSize) {
+            iconParams.width = iconSize;
+            iconParams.height = iconSize;
+            icon.setLayoutParams(iconParams);
+        }
         View card = item.findViewById(R.id.card);
         ViewGroup.LayoutParams cardParams = card.getLayoutParams();
         if (cardParams.width != width || cardParams.height != height) {
