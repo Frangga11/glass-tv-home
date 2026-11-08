@@ -1068,6 +1068,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
+            // Any non-Grid focus destination supersedes queued Grid/resume restoration work.
+            if (newF != null && !onTile) gridFocusRequestGeneration++;
             if (newF != null && isTopPill(newF)) {
                 String pillKey = topPillKeyForView(newF);
                 if (pillKey != null) {
