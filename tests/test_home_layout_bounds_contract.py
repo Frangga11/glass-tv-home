@@ -365,10 +365,6 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("No measured space for centered Home navigation", MAIN)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
     def test_weather_aqi_pill_matches_location_pill_width_and_left_anchor(self):
         start = MAIN.index("private void applyHeaderWidths()")
         end = MAIN.index("private void updatePrayerTimes()", start)
@@ -392,3 +388,7 @@ if __name__ == "__main__":
         weather_update = MAIN[weather_update_start:weather_update_end]
         self.assertIn("weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));", weather_update)
         self.assertNotIn("setLayoutParams", weather_update)
+
+
+if __name__ == "__main__":
+    unittest.main()
