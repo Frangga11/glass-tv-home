@@ -2,6 +2,16 @@
 > The only authoritative restart point is [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) on branch `docs/project-master-inventory`. Start every continuation there; do not resume from historical checkpoint blocks, old PR descriptions, or branch-local notes. This file is supporting detail/history and must not establish a competing current state.  
 > **Checkpoint authority:** GitHub repository `Frangga11/glass-tv-home`; canonical docs branch `docs/project-master-inventory`; single entry file `docs/project-management/GTVH-CHECKPOINT-LATEST.md`. The latest checkpoint supersedes all older status statements below.  
 
+## CRITICAL INTEGRATION GAP — PR #91–#93 — 9 NOVEMBER 2026
+
+Audit silang live GitHub confirms PR #100 does not include PR #91–#93. PR #100 remains a verified partial candidate only.
+- #91: Arabic RTL/right alignment for Home Shelf and full reader; Indonesian LTR/left alignment. HEAD ee8bfb34db8c00a801ac260428f52ead1c7c6662.
+- #92: Islamic Shelf spacing (Arabic 1dp top, -2dp/0.92; Arabic-to-translation 0dp; translation 0dp/1.04; hint 3dp; font padding retained) and removal of prayer source labels from Home header/summary without changing calculations/fallback. Branch fix/home-islamic-shelf-ayah-spacing-and-prayer-label-001; final test commit 59d63a3c9854b646876aade98e26fc74a39d3140.
+- #93: runtime shared fixed line-box width for Arabic preview and Indonesian translation; branch fix/home-islamic-shelf-arabic-right-align-corrective-001; HEAD 5b46ef0cea39fa439316e48bf85a3cbbb0944820; CI #1656 / 42529068497 passed on PR #92 ancestry only.
+- Overlap with PR #100 exists in MainActivity.java, activity_main.xml and CI workflow. Do not cherry-pick blindly.
+- Required action: produce a new Draft cumulative candidate with ancestry PR #84–#89 + #91–#93 + PR #100 geometry, reconcile overlaps, rerun all regression/build/artifact checks, then rendered 1920×1080 audit. No ADB, TV installation, or merge before visual gate and owner approval.
+- Full evidence and preservation checklist: GTVH-HOME-CUMULATIVE-RECONCILIATION-003.md. Canonical checkpoint updated; PR #100 is not the latest complete build.
+
 ---
 
 # CURRENT IMPLEMENTATION CHECKPOINT — CUMULATIVE HOME REFINEMENT — 9 NOVEMBER 2026
