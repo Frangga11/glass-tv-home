@@ -70,7 +70,7 @@ At target Mi TV Stick density 320dpi, `density = 2.0`.
 | Prayer text rendering | CONTRACT ADDED; CI PENDING | Solid colors; no shader method or Typeface.DEFAULT override |
 | Arabic/translation rendering | CONTRACT ADDED; CI PENDING | 20/14sp at 1080p, 22/15sp at 4K; Amiri Quran + RTL |
 | Daily Ayah focus/activation | PRESERVED IN SOURCE; CI PENDING | Existing focus-only stroke and click/DPAD listeners remain |
-| Exact-head GitHub CI | PENDING | Workflow lookup did not yet return a run for `894544c` |
+| Exact-head GitHub CI | IN PROGRESS | CI #1599 / run `42497894475` on corrective HEAD `a085be1` |
 | Rendered 1920×1080 screenshot | PENDING | No rendered screenshot evidence available |
 | Physical Mi TV Stick acceptance | PENDING | No ADB, install or device test performed |
 
@@ -87,4 +87,4 @@ Prior CI run `42493469262` passed 166 Python tests (1 skipped), Android release 
 
 **SOURCE CORRECTION COMMITTED: PASS. EXACT-HEAD CI: PENDING. RENDERED / PHYSICAL ACCEPTANCE: PENDING. OVERALL: NOT FINAL.**
 
-Next: verify exact-head CI on `a085be150ebcf1d48b825ed7ac43b172261f3aa0`, review rendered 1920×1080 output, then wait for owner Mi TV Stick acceptance. Any further correction must remain inside the same strict visual scope.
+Next: monitor exact-head CI #1599 / run `42497894475` on `a085be150ebcf1d48b825ed7ac43b172261f3aa0`, review rendered 1920×1080 output, then wait for owner Mi TV Stick acceptance. Any further correction must remain inside the same strict visual scope.
