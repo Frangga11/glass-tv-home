@@ -190,3 +190,18 @@ A follow-up source/test commit extended HOME-002 regression coverage to assert D
 - Companion APK release workflow run #34 / `42486810748`: SUCCESS.
 
 **Current gate:** all five remediation findings have source corrections and latest-head CI validation PASS. Whole Home Screen end-to-end acceptance remains **PARTIAL / NOT PASS** pending separately authorized Mi TV Stick rendered, DPAD, lifecycle, Now Playing pause/resume, prayer popup, Weather/AQI focus, and atmospheric overlay verification. No APK installed, no ADB/device settings/default launcher changes, and no PR merged.
+
+
+## Final latest-head validation — 8 November 2026
+
+The final HOME-005 regression extension verifies that the atmospheric overlay refresh respects the user's dynamic-weather-effects setting and that enabling the setting reuses the cached overlay while scheduling a due refresh.
+
+- **Latest PR #79 head:** `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`.
+- **CI #1581 / run `42486917618`: SUCCESS** on PR merge ref `5203d9cab667b976a3cd47ecaceac444ecd8e06b`; merge commit message confirms it includes the latest exact head.
+- Both jobs passed: Lists/tools/docs; Launcher build/unit tests.
+- Release build: **BUILD SUCCESSFUL**.
+- Release APK diagnostic size: **1,627,577 bytes**.
+- Test APK artifact upload succeeded (artifact ID `13620161574`).
+- Companion APK release workflow run #36 / `42486917728`: SUCCESS.
+
+**Final source/CI status:** HOME-001 through HOME-005 = **SOURCE FIXED + LATEST-HEAD CI PASS**. Overall Home Screen = **PARTIAL / NOT PASS** until separately authorized end-to-end Mi TV Stick acceptance is completed. No APK installation, ADB, device settings/default launcher changes, or PR merge.
