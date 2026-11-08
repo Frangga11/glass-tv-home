@@ -110,7 +110,7 @@ No unrelated application modules, DockAdapter, DockDecoration, wallpaper provide
 - Gradle result: **BUILD SUCCESSFUL in 1m 37s**.
 - CI visual-parity artifact ID: `13627586269`; ZIP size 1,429,683 bytes; SHA-256 `3b081cde3d8fcfd5da101d5300a772bf2e6ca2bbc0371606e39e804603c62584`. This is a CI artifact ZIP, not the direct APK asset.
 
-### Direct APK publisher #84 — run `42505054798`
+### Direct APK publisher #85 — run `42505426954`
 
 **SUCCESS.** It built and verified the release APK from the exact HEAD above, then published the APK binary itself as a direct GitHub Release asset.
 
