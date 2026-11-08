@@ -1261,6 +1261,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * arrives before onResume, so this tells it apart from a Home press on Home itself.
      */
     private boolean hiddenSinceResume;
+    private boolean activityResumed;
 
     @Override
     protected void onStop() {
@@ -1273,6 +1274,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onResume() {
         super.onResume();
+        activityResumed = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(packageReceiver, packageFilter, Context.RECEIVER_NOT_EXPORTED);
         } else {
@@ -1395,6 +1397,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onPause() {
         super.onPause();
+        activityResumed = false;
+        updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
         handler.removeCallbacks(minuteTick);
         handler.removeCallbacks(wallTick);
@@ -2791,9 +2795,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void updateHomeTabIndicator() {
         if (btnHome == null) return;
-        boolean active = getLifecycle().getCurrentState().isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)
-                && hasWindowFocus() && !hiddenSinceResume && !screensaverActive && !wallpaperFullscreen
-                && !isFinishing() && !isDestroyed();
+        boolean active = activityResumed && hasWindowFocus() && !hiddenSinceResume
+                && !screensaverActive && !wallpaperFullscreen && !isFinishing() && !isDestroyed();
         btnHome.setSelected(active);
         btnHome.setElevation(active ? 8f * density : 0f);
         btnHome.invalidate();
