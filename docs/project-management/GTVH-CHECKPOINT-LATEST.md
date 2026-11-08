@@ -683,3 +683,8 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Exact-head CI has not yet appeared in GitHub Actions at this checkpoint. Do not claim CI success until run IDs and job logs are checked.
 - Physical Mi TV Stick acceptance pending: validate minute/month boundary refresh, offline retry behavior, after-Isya Subuh row and consistency between compact Home timetable and full schedule.
 - Keep PR #86 DRAFT / UNMERGED. No merge or physical device test has been performed.
+
+
+### Detailed audit — PR #86
+- [GTVH-HOME-PRAYER-TIMES-REFRESH-AND-NEXT-SUBUH-FIX-001-AUDIT.md](GTVH-HOME-PRAYER-TIMES-REFRESH-AND-NEXT-SUBUH-FIX-001-AUDIT.md) records the verified source findings, implementation, tests and outstanding acceptance gates.
+- At checkpoint update, exact-head CI #1642 / run `42524091486` is still running; Python/docs job has passed, Android job remains in progress. Publisher workflow skipped because PR #86 is Draft.
