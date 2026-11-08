@@ -107,3 +107,35 @@
 - PR #79 remains OPEN / DRAFT / UNMERGED; PR #77 remains unmerged.
 
 **Overall:** HOME SCREEN AUDIT = **PARTIAL / NOT PASS**. The four findings above must be resolved or explicitly accepted before claiming the entire Home screen is fully verified.
+
+
+## Remediation checkpoint — 8 November 2026
+
+**Source branch:** `fix/home-balanced-frame-001`  
+**Exact source/test HEAD:** `701487f7f708d0b4342b613205fde9fba7c0dd72`  
+**PR:** #79 — OPEN / DRAFT / UNMERGED  
+**Remediation state:** CODE CHANGES APPLIED; EXACT-HEAD CI PENDING; DEVICE ACCEPTANCE NOT RUN.
+
+### Corrections applied
+
+1. **HOME-001 — Now Playing:** `MediaInfo` now snapshots a supported active session state independently from `isPlaying`. Spotify/YouTube Music sessions in PLAYING, PAUSED, BUFFERING, or CONNECTING remain eligible for the Home card. The snapshot is derived while the media refresh worker constructs the model, avoiding a new controller-state Binder read in the UI listener. The existing play/pause icon still reflects `isPlaying`. A source-contract regression test covers the accepted states and the card's independent visibility predicate.
+2. **HOME-002 — Prayer timetable:** the visible `prayerTable` is now focusable/clickable and opens the detailed popup by click, DPAD Center, or Enter. It has explicit focus feedback and retains the existing right/down/up navigation behavior. The hidden `prayerTimes` fallback remains for its text/update compatibility; it is no longer the only interaction route.
+3. **HOME-003 — Dock delayed focus:** Dock focus requests now capture `gridFocusRequestGeneration`; each animation-frame retry checks that generation before attempting focus or fallback. A newer focus destination invalidates the old request. Added source-contract regression coverage.
+4. **HOME-004 — Weather/AQI focus:** removed the earlier standalone weather scale listener and composed scale feedback into the shared Header focus listener. The same listener now applies both Weather/AQI scale and Header highlight behavior without listener replacement. Added source-contract regression coverage.
+5. **HOME-005 — Atmospheric weather overlay:** `updateHomeWeather()` is now called from Home `onResume()`, with existing `HomeWeather.due()` cadence and stale-response/location generation protection preserved. The legacy atmospheric overlay refresh remains separate from the G3B Weather/AQI text cache. Added source-contract regression coverage.
+
+### Validation and remaining boundary
+
+- Source changes and regression assertions are present on the exact HEAD above.
+- Exact-HEAD CI has **not yet been observed**. The GitHub workflow-run/status queries returned no checks for this new head; prior CI #1560 is not evidence for these later commits.
+- Regression tests have been added but are **not yet claimed executed/passing**.
+- No APK installation, ADB, device settings/default launcher changes, or physical Mi TV Stick testing.
+- No PR merged or closed. PR #79 and dependency PR #77 remain unmerged.
+- The five source findings have implementation patches, but the overall Home Screen remains **NOT PASS / acceptance pending** until exact-head CI and authorized runtime/device verification complete.
+
+### Next actions
+
+1. Obtain exact-head CI for `701487f7f708d0b4342b613205fde9fba7c0dd72`; fix any compile/test failures and repeat on the resulting exact HEAD.
+2. Review the complete PR diff for unintended changes and verify the stacked PR #77 dependency remains intact.
+3. After CI passes, perform static regression review and update the audit status.
+4. Only after separate owner authorization, verify visible prayer popup activation, Now Playing pause/resume, Dock/header DPAD focus, Weather/AQI focus feedback, overlay refresh/lifecycle, and whole-screen rendering on Mi TV Stick.
