@@ -90,3 +90,19 @@ A deeper lifecycle review found a second queued focus path not covered by the ea
 The resume-restoration guard was strengthened after checking the full Home focus graph. The global focus-change observer now invalidates queued Grid/resume focus work whenever focus moves to any non-Grid destination (including prayer, media, popups and other controls), not only the header and Dock. This closes the remaining class of focus-steal paths while preserving focus movement within the Grid. Regression coverage now asserts this global invalidation rule.
 
 Commits: `734eebb18b6095f6912e85def357d4630ccb1f5f` (source), `434d32afb424c4625a45979cc08d632be6443cc3` (test). Exact-head CI pending.
+
+
+## Already-focused horizontal Grid restoration correction — 8 November 2026
+
+### Finding
+The horizontal branch of `focusTile()` delegates to `focusTileWhenLaidOut()`. That helper previously called `card.requestFocus()` unconditionally. If Android had already retained focus on the same Grid card during an Activity return/rebuild, `requestFocus()` could succeed without emitting a new focus-change callback. In that case the logical focus target could be correct while the glass highlight remained hidden (the vertical Grid and Dock restoration paths already explicitly handle already-focused cards).
+
+### Correction
+- In `focusTileWhenLaidOut()`, explicitly call `onTileFocused(position, card)` when the resolved card is already focused; otherwise request focus normally.
+- Added Python source-contract regression test `test_horizontal_grid_focus_restore_reapplies_glass_for_already_focused_card`.
+- Source commit: `c52a1cba8ea3190299bce994a52f010457dddbd4`.
+- Test commit: `de4ae44c53e6f99bce2e8fc2d0694a8982a117a3`.
+- Fresh exact-head CI is required; no PASS claimed yet. Physical Mi TV Stick resume/DPAD/visual validation remains pending.
+
+### Dependency audit result
+The sole PR #77-side commit after merge base is `0ea3746f0304b7042a018eeebf850d759f357bf8` (`ci(home): publish balanced-frame test APK for stacked PR 79`). PR #79 independently contains `f38b9663e2422ef793f075acc47f800200f677f7` (`ci(home): publish corrected Home layout test APK for PR 79`), with an identical patch and identical resulting workflow blob `5d271a43c5bfada87d85b144740a0074aea3e56b`. The apparent one-commit divergence is a duplicate equivalent CI change, not missing functional source. Do not cherry-pick or merge either duplicate commit solely to reconcile this. Both PRs remain OPEN / DRAFT / UNMERGED; no force-push or device action.
