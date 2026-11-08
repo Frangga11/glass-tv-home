@@ -760,3 +760,27 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - No further code change recommended in this scope absent a reproducible defect. Separate daily-doa module is explicitly out of scope per user decision.
 - Physical Mi TV Stick acceptance is still mandatory before marking final or planning merges.
 - Detailed record: [GTVH-HOME-ISLAMIC-SHELF-AND-PRAYER-STACK-CROSS-AUDIT-001.md](GTVH-HOME-ISLAMIC-SHELF-AND-PRAYER-STACK-CROSS-AUDIT-001.md).
+
+---
+
+## 25. GTVH-HOME-ISLAMIC-SHELF-AND-PRAYER-STACK-CHECKPOINT / BUILD — 9 November 2026
+
+**Status: CHECKPOINT UPDATED / EXACT-HEAD RELEASE BUILD VALIDATED / APK FILE NOT EXPORTED BY CI / PHYSICAL ACCEPTANCE PENDING / FINAL MERGE BLOCKED.**
+
+- Scope: consolidated candidate PR #84 → #85 → #86 → #87 → #88 → #89. Separate Daily Doa module remains out of scope; current module stays labelled **Ayat Pilihan Harian / Daily Selected Verse**.
+- Build source: PR #89 branch `fix/daily-ayah-offline-retry-backoff-001`.
+- Exact source HEAD: `4038c08f4825f7bacf965bc6708505d3c8c30ebc`.
+- PR #89 remains OPEN / DRAFT / UNMERGED; no PR was merged, retargeted or force-pushed.
+- Exact-head CI #1649 / run `42525047258`: **SUCCESS**.
+  - Launcher build and unit tests job: SUCCESS.
+  - Lists, tools and docs job: SUCCESS.
+  - Android `testReleaseUnitTest` and `assembleRelease`: PASS / BUILD SUCCESSFUL.
+  - Python/docs suite: 202 tests, 1 skipped.
+  - APK size diagnostic: **1,626,745 bytes**.
+- **Artifact limitation:** the CI run reports no downloadable workflow artifacts. The Android job explicitly labels the build as validation-only; APK publishing step was skipped because the PR is Draft. Therefore this run proves that an APK was built successfully in CI, but it does **not** provide an APK file for download or installation. Do not describe the diagnostic byte count as a downloadable APK.
+- Publisher workflow run `42525047240`, run number 104: SKIPPED. No release asset is claimed.
+- Attempt to clone the public repository into the execution environment was blocked because outbound DNS/network access to GitHub was unavailable. No local build was falsely claimed.
+- Prior six-PR cross-audit remains valid: source checks pass and all exact-head CI runs pass. No additional source edits were made during this checkpoint/build request.
+- **Acceptance gates still open:** physical Mi TV Stick install and DPAD traversal; Islamic Shelf anchor stability; Arabic one-/two-line rendering and harakat; prayer timetable across day boundaries and after Isya; Kemenag/local-estimate label behavior; offline Ayah cooldown and online recovery.
+- **Decision:** keep PRs #84–#89 OPEN / DRAFT / UNMERGED. Automated source/build gate PASS; downloadable APK artifact NOT AVAILABLE from current CI; physical acceptance PENDING; final merge BLOCKED.
+- **Next operational step:** provide a controlled APK-export path (CI artifact upload or an authorized non-Draft release workflow), then verify APK SHA-256 and install/test on Mi TV Stick. Do not change PR readiness or merge state merely to bypass the artifact gate.
