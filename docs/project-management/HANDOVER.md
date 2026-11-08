@@ -2264,3 +2264,21 @@ Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LA
 - Release APK size 1,629,469 bytes; SHA-256 `caa3289641184e516b5758b8ce647d7bc33616ee55cb5f022576e53add572e24`. Artifact ID `13625911589`; ZIP SHA-256 `e9dbc0307aa7823d019ccf464e21e633f6dfe1a3a5906407feee3ada6fa1ea41`. Extracted APK is available from the conversation's PR #81 build output; it is not a final merged release.
 - **Do not mark final:** rendered 1920×1080 review and physical Mi TV Stick remote acceptance are still pending. No ADB, installation, device settings change or merge was performed.
 - Next: owner tests the exact-head APK on Mi TV Stick, including Dock capacities 4/5/6, repeated DOWN/UP, fast reversal, incomplete last row, Islamic shelf stability and return from launched apps. Record acceptance before merge.
+
+
+---
+
+## Handover — GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002 (9 Nov 2026)
+
+- **Start here:** read canonical `GTVH-CHECKPOINT-LATEST.md` first. This handover is supporting context only.
+- PR #82: OPEN / DRAFT / UNMERGED; [PR #82](https://github.com/Frangga11/glass-tv-home/pull/82).
+- Branch: `fix/home-islamic-shelf-vertical-position-grid-row-scroll-fix-002`.
+- Exact HEAD: `37bd6343f9b4b535f477c307770f49778320b032`.
+- Base branch: `fix/home-dock-islamic-shelf-navigation-001`, current tip `3cd36b8a5fbc788a7b15e178e4aaf0606e919c61` (PR #81). PR #80 remains OPEN / DRAFT / UNMERGED at `a085be150ebcf1d48b825ed7ac43b172261f3aa0`; PR #81 remains OPEN / DRAFT / UNMERGED. PR #81 received workflow-only CI/publisher eligibility updates to support exact-head PR #82 APK delivery; its application source was not changed.
+- Scope: (A) measure actual horizontal Glass tray edge and target 27.5dp package clearance; (B) deterministic real Grid row scroll using decorated row pitch, cancellable `ValueAnimator` + incremental `RecyclerView.scrollBy()`, stable app key and aligned focus; (C) stronger Islamic headings and uppercase prayer labels.
+- Exact-head CI #1629 / run `42505054837`: SUCCESS, both jobs passed. Python **177 tests, OK (1 skipped)**. Android app/installer release unit tests and `assembleRelease` passed; BUILD SUCCESSFUL in 1m14s.
+- Direct APK publisher #84 / run `42505054798`: SUCCESS. Exact-head release APK **1,630,737 bytes**, SHA-256 `3416c4ec0a956263a05fd923638f8b27d06c5fce619e8a328accc057c01bd777`.
+- Direct APK: [Glass-TV-Home-PR82-37bd6343f9b4b535f477c307770f49778320b032.apk](https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr82-37bd6343f9b4b535f477c307770f49778320b032/Glass-TV-Home-PR82-37bd6343f9b4b535f477c307770f49778320b032.apk).
+- Detailed evidence: `GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md`.
+- **Not final:** no physical Mi TV Stick installation, ADB, device setting change, rendered screenshot review or owner acceptance has occurred. CI proves source/build contracts, not actual visual scroll behavior.
+- Next: owner installs only the exact-head APK on Mi TV Stick 1920×1080 / density320; verifies 27.5dp gap, stable package, DOWN/UP opposite real content movement, fast reversals, incomplete last row, capacity 4/5/6, app return focus and locked-component regressions. Capture screenshot/video if any discrepancy. Keep PR #82 DRAFT / UNMERGED until acceptance.
