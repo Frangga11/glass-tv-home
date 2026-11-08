@@ -2207,3 +2207,11 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 For all future Glass TV Home builds, use the workflow definition on the pull request's base branch for pull_request events; keep the PR head copy synchronized. The previous publisher hardcoded CI #1545, and changing only the PR head workflow did not affect the workflow GitHub executed. Always build from the exact PR head SHA with testReleaseUnitTest assembleRelease, validate the APK, publish the actual APK binary as a source-SHA-tagged GitHub Release asset, and verify filename, MIME, size, and SHA-256 against the workflow log. Give the owner only the direct Release asset URL ending in .apk. Never provide sandbox attachments, Actions artifact ZIPs, .zip, or .bin. If direct APK verification fails, stop instead of substituting a format or stale build.
 
 Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LATEST.md under GTVH-APK-DIRECT-DELIVERY-001. Samsung Browser download behavior and Mi TV Stick installation acceptance are still awaiting owner confirmation; PR #79 remains OPEN / DRAFT / UNMERGED.
+
+## Current handover — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
+
+1. Restart by reading `GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory` first.
+2. Scoped implementation is PR [#80](https://github.com/Frangga11/glass-tv-home/pull/80), branch `fix/home-wallpaper-text-refinement-001`, HEAD `c7d95c3de24bc70b671159d5aa9ef49451cbe112`, stacked on PR #79 HEAD `b4abdf0bd555a0106c135add20c3f287cf10b412`.
+3. Source/CI gates: PASS. Python: 166 tests (1 skipped); Android `testReleaseUnitTest` and `assembleRelease`: PASS. APK diagnostic 1,627,937 bytes; +376 bytes versus the prior recorded build; historical threshold warning is non-blocking.
+4. Do not merge PR #80 or install on device automatically. Next acceptance step is owner visual/physical test on Mi TV Stick 1920×1080: verify location → title → description, 5mm down shift for both shelves, no Dock collision, prayer gradient contrast, doa integration, and unchanged Dock/Header/navigation/safe frame.
+5. If visual/device issues are found, repair only the named in-scope component. Record out-of-scope findings separately. Do not mark final until physical acceptance is confirmed.

@@ -2140,3 +2140,13 @@ Changed PR #79 branch `fix/home-balanced-frame-001`:
 Current PR #79 HEAD / implementation source SHA: `bf65621ae46b170294e4333928886fbafa0898b6`. CI #1590 / run `42490240670`: SUCCESS, both jobs pass. Python suite: **161 tests, OK (1 skipped)**; the new pill-geometry regression test passes. Android `testReleaseUnitTest` and `assembleRelease` completed successfully. Release APK: **1,627,561 bytes**. Downloadable workflow artifact ID `13621062347` (ZIP 1,426,708 bytes; expires 15 Nov 2026). Local extracted APK SHA-256: `51c6921ad7055812dd4c3de844bce26516b0ffeea6dd8401abc5d94913dcb56d`.
 
 PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owner will install/test this APK on Mi TV Stick at 1920×1080, 320dpi; Indonesian/English; short/long location, weather and AQI content; inspect clipping, exact visual height/width, common left/right edges, vertical spacing, focus/click/DPAD and unaffected Header elements. Documentation checkpoint is synced after build/test; physical acceptance remains pending.
+
+
+## Audit record — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001
+
+- **Status:** SOURCE + CI PASS / VISUAL + DEVICE ACCEPTANCE PENDING.
+- **PR:** [#80](https://github.com/Frangga11/glass-tv-home/pull/80), branch `fix/home-wallpaper-text-refinement-001`, HEAD `c7d95c3de24bc70b671159d5aa9ef49451cbe112`, base PR #79 HEAD `b4abdf0bd555a0106c135add20c3f287cf10b412`.
+- **Evidence:** PR diff limited to MainActivity.java, activity_main.xml and the new regression test. CI run `42493469262` passed Python (166, 1 skipped), Android release unit tests and `assembleRelease`. APK size `1,627,937` bytes; non-blocking historical size warning only.
+- **Controls:** DockGeometry/Dock/Grid, Header/capsules, navigation, safe frame, wallpaper provider/rotation, prayer data/order and unrelated components were not modified.
+- **Open gates:** rendered screenshot at 1920×1080; physical Mi TV Stick review for overlap, 5mm visual shift, text legibility on bright/dark wallpapers, ayah frame appearance and DPAD focus. No merge/install.
+- Detailed source evidence: `GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md`.

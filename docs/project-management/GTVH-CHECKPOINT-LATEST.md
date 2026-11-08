@@ -338,3 +338,34 @@ The old publisher workflow hardcoded CI #1545's artifact ID/run ID and source SH
 - PR #79 remains OPEN / DRAFT / UNMERGED. No merge authorized by this checkpoint.
 
 **Resume instruction:** Start from this checkpoint. Do not repeat the stale CI #1545 publisher, do not edit only the PR head workflow when the PR base workflow is authoritative, and do not send sandbox/ZIP/BIN. First obtain the owner's Samsung Browser download and Mi TV Stick test result; if another build is needed, follow section 4 exactly.
+
+## 11. Active scoped refinement — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 November 2026)
+
+**Status: SOURCE IMPLEMENTATION PASS · CI PASS · VISUAL/DEVICE ACCEPTANCE PENDING · NOT FINAL**
+
+- Scope PR: [#80](https://github.com/Frangga11/glass-tv-home/pull/80) — OPEN / DRAFT / UNMERGED.
+- Source branch: `fix/home-wallpaper-text-refinement-001`.
+- Exact PR #80 HEAD: `c7d95c3de24bc70b671159d5aa9ef49451cbe112`.
+- Base: `fix/home-balanced-frame-001`, exact base HEAD `b4abdf0bd555a0106c135add20c3f287cf10b412` (PR #79 remains OPEN / DRAFT / UNMERGED).
+- Changed files: `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`; `launcher/app/src/main/res/layout/activity_main.xml`; new `tests/test_home_wallpaper_text_refinement_contract.py`.
+
+### Approved implementation and measured geometry
+- Wallpaper shelf order: location → title → description. Existing `WallpaperMetadata` values remain unchanged: `Pagar Alam, Sumatera Selatan`; `Kabut Pagi Dempo`; `Udara sejuk turun perlahan, menyelimuti lereng dan kebun teh Pagar Alam.` Location capitalization is now preserved as authored (not forced to uppercase).
+- Both information shelves share the existing Dock-relative `heroBottom` anchor. Conversion: `5mm × 160 / 25.4 = 31.496dp`; at density `2.0` (320dpi), `62.992px`, rounded to **63px**. Existing 50dp shelf-to-tray gap becomes approximately **18.5dp** after the shift; a 12dp minimum-gap clamp prevents collision on other density/layout cases. No Dock geometry or global safe-frame values were changed.
+- Prayer header, names and times receive restrained cool-to-warm gradients. Prayer data, order, provider and interaction remain unchanged.
+- Daily ayah idle outline is removed and the open hint border is removed. A restrained 1dp focus outline remains while the ayah block has remote focus; existing click/DPAD activation remains intact.
+
+### CI / build evidence
+- CI run `42493469262`: both jobs SUCCESS.
+- Python contract suite: **166 tests, OK (1 skipped)**; all five new GTVH wallpaper refinement contracts passed.
+- Android `testReleaseUnitTest` and `assembleRelease`: PASS; log reports `BUILD SUCCESSFUL in 1m 37s`.
+- Release APK diagnostic: **1,627,937 bytes** (about 1,589 KB), +376 bytes against the prior PR #79 recorded APK size of 1,627,561 bytes. The workflow emitted a warning above its historical 1.5 MiB reference; this is explicitly non-blocking.
+- PR #80's APK-artifact upload step is skipped by the current workflow scope (which only publishes visual-test artifacts for PRs #74–#79). No user-facing APK release or device install was performed.
+
+### Regression boundaries and remaining acceptance
+- PR diff is limited to the two production files above plus one new regression test. `DockGeometry.java`, Dock/Grid sizes/order/scroll, Header and capsules, navigation/focus routes, global safe frame, wallpaper image/provider/rotation, prayer data and unrelated components are untouched.
+- **Pending:** rendered visual review at 1920×1080; physical Mi TV Stick test for exact shelf movement, Dock collision, clipping, bright/dark wallpaper contrast, prayer legibility, daily ayah frame and remote focus.
+- Do not merge PR #80, install an APK, or claim overall final acceptance until the owner completes the physical test.
+- Detailed evidence: `GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md`.
+
+**Next action:** owner visual/physical acceptance on Mi TV Stick; if corrections are required, keep changes strictly inside the approved five-component scope.

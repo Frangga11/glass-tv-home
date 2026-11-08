@@ -270,3 +270,11 @@ Changed PR #79 branch `fix/home-balanced-frame-001`:
 Current PR #79 HEAD / implementation source SHA: `bf65621ae46b170294e4333928886fbafa0898b6`. CI #1590 / run `42490240670`: SUCCESS, both jobs pass. Python suite: **161 tests, OK (1 skipped)**; the new pill-geometry regression test passes. Android `testReleaseUnitTest` and `assembleRelease` completed successfully. Release APK: **1,627,561 bytes**. Downloadable workflow artifact ID `13621062347` (ZIP 1,426,708 bytes; expires 15 Nov 2026). Local extracted APK SHA-256: `51c6921ad7055812dd4c3de844bce26516b0ffeea6dd8401abc5d94913dcb56d`.
 
 PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owner will install/test this APK on Mi TV Stick at 1920×1080, 320dpi; Indonesian/English; short/long location, weather and AQI content; inspect clipping, exact visual height/width, common left/right edges, vertical spacing, focus/click/DPAD and unaffected Header elements. Documentation checkpoint is synced after build/test; physical acceptance remains pending.
+
+
+## Active scoped refinement — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
+
+- Draft PR [#80](https://github.com/Frangga11/glass-tv-home/pull/80), branch `fix/home-wallpaper-text-refinement-001`, base `fix/home-balanced-frame-001` (PR #79). Source HEAD: `c7d95c3de24bc70b671159d5aa9ef49451cbe112`.
+- Scope: wallpaper location/title/description order; shared 5mm downward movement for both information shelves; prayer timetable text gradients; softer daily ayah frame. No other component is in scope.
+- CI run `42493469262`: Python suite **166 tests, OK (1 skipped)**; Android `testReleaseUnitTest` + `assembleRelease` **PASS**. APK diagnostic: `1,627,937` bytes (+376 bytes versus PR #79's last recorded build); the historical 1.5 MiB threshold warning is non-blocking.
+- Visual 1920×1080 review and physical Mi TV Stick acceptance remain pending. PR #80 is OPEN / DRAFT / UNMERGED; no install or merge performed. See `GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md` and canonical checkpoint.

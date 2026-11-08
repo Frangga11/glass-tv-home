@@ -1342,3 +1342,11 @@ Changed PR #79 branch `fix/home-balanced-frame-001`:
 Current PR #79 HEAD / implementation source SHA: `bf65621ae46b170294e4333928886fbafa0898b6`. CI #1590 / run `42490240670`: SUCCESS, both jobs pass. Python suite: **161 tests, OK (1 skipped)**; the new pill-geometry regression test passes. Android `testReleaseUnitTest` and `assembleRelease` completed successfully. Release APK: **1,627,561 bytes**. Downloadable workflow artifact ID `13621062347` (ZIP 1,426,708 bytes; expires 15 Nov 2026). Local extracted APK SHA-256: `51c6921ad7055812dd4c3de844bce26516b0ffeea6dd8401abc5d94913dcb56d`.
 
 PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owner will install/test this APK on Mi TV Stick at 1920×1080, 320dpi; Indonesian/English; short/long location, weather and AQI content; inspect clipping, exact visual height/width, common left/right edges, vertical spacing, focus/click/DPAD and unaffected Header elements. Documentation checkpoint is synced after build/test; physical acceptance remains pending.
+
+
+## Home source inventory addendum — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001
+
+- PR #80 source branch: `fix/home-wallpaper-text-refinement-001`; HEAD `c7d95c3de24bc70b671159d5aa9ef49451cbe112`; base is PR #79 HEAD `b4abdf0bd555a0106c135add20c3f287cf10b412`.
+- Changed source: `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java` (shared shelf anchor, prayer text gradient, ayah focus/frame styling); `launcher/app/src/main/res/layout/activity_main.xml` (location/title order and spacing); added `tests/test_home_wallpaper_text_refinement_contract.py`.
+- Unchanged: `DockGeometry.java`, Dock/Grid layout and ordering, Header/capsules, global safe frame, wallpaper providers/rotation, prayer data/provider/order and remote navigation routes.
+- CI PASS; rendered/device acceptance pending. Full evidence: `GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md`.
