@@ -369,7 +369,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         start = MAIN.index("private void applyHeaderWidths()")
         end = MAIN.index("private void updatePrayerTimes()", start)
         sizing = MAIN[start:end]
-        self.assertIn("int locationWidth = Math.round(width * 0.34f);", sizing)
+        self.assertIn("int locationWidth = Math.round(width * 0.30f);", sizing)
         self.assertEqual(sizing.count("params.width = locationWidth;"), 2)
         self.assertNotIn("0.44f", sizing)
 
@@ -380,6 +380,18 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         weather = by_id["@+id/weatherAirQuality"]
         self.assertEqual(location.get(ANDROID + "layout_alignParentStart"), "true")
         self.assertEqual(weather.get(ANDROID + "layout_alignParentStart"), "true")
+        # Location/altitude is the physical-size reference for both capsules.
+        self.assertEqual(location.get(ANDROID + "layout_height"), "30dp")
+        self.assertEqual(weather.get(ANDROID + "layout_height"),
+                         location.get(ANDROID + "layout_height"))
+        self.assertEqual(weather.get(ANDROID + "paddingStart"),
+                         location.get(ANDROID + "paddingStart"))
+        self.assertEqual(weather.get(ANDROID + "paddingEnd"),
+                         location.get(ANDROID + "paddingEnd"))
+        self.assertEqual(weather.get(ANDROID + "paddingTop"), "0dp")
+        self.assertEqual(weather.get(ANDROID + "paddingBottom"), "0dp")
+        self.assertEqual(weather.get(ANDROID + "gravity"), "center_vertical")
+        self.assertEqual(location.get(ANDROID + "gravity"), "center_vertical")
         self.assertEqual(weather.get(ANDROID + "singleLine"), "true")
         self.assertEqual(weather.get(ANDROID + "ellipsize"), "end")
 
