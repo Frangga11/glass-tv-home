@@ -177,6 +177,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private static final float HOME_SHELF_BASELINE_OFFSET_DP = 3.5f;
     /** Minimum visual clearance between the information shelf and Dock tray. */
     private static final float MIN_HOME_SHELF_TRAY_GAP_DP = 32f;
+    /** Vertical Dock fallback retains its established inter-shelf spacing. */
+    private static final float ISLAMIC_SHELF_BOTTOM_OFFSET_DP = 10f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
     private View heroShelf;
