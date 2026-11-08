@@ -491,7 +491,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    if (btnHome != null) { btnHome.requestFocus(); return true; }
+                    View location = findViewById(R.id.locationPill);
+                    if (location != null && location.getVisibility() == View.VISIBLE) {
+                        location.requestFocus();
+                        return true;
+                    }
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return true;
                 return false;
@@ -701,7 +705,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
         // New glass pills retain their own selected/focused drawable while the glider tracks focus.
-        for (int id : new int[]{R.id.btnWifi, R.id.btnAssistant, R.id.btnHome, R.id.btnCandyBox, R.id.btnSettings}) {
+        for (int id : new int[]{R.id.locationPill, R.id.btnWifi, R.id.btnAssistant, R.id.btnHome, R.id.btnCandyBox, R.id.btnSettings}) {
             View pill = findViewById(id);
             if (pill == null) continue;
             glider.addCompanion(pill);
@@ -823,7 +827,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
 
-        // D-pad order: weather -> Home -> Profile -> Settings -> Inputs -> Wi-Fi -> Assistant.
+        // D-pad order: Location -> weather -> Home -> Profile -> Settings -> Inputs -> Wi-Fi -> Assistant.
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
@@ -833,7 +837,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             View target = null;
             int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (id == R.id.btnHome) target = weatherAirQualityView;
+                if (id == R.id.locationPill) return true;
+                else if (id == R.id.btnHome) target = weatherAirQualityView;
                 else if (id == R.id.btnCandyBox) target = btnHome;
                 else if (id == R.id.btnSettings) target = btnCandyBox;
                 else if (id == R.id.btnInputs) target = btnSettings;
@@ -847,7 +852,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return id == R.id.btnHome || id == R.id.btnInputs;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                if (id == R.id.btnHome) target = btnCandyBox;
+                if (id == R.id.locationPill) target = weatherAirQualityView;
+                else if (id == R.id.btnHome) target = btnCandyBox;
                 else if (id == R.id.btnCandyBox) target = btnSettings;
                 else if (id == R.id.btnSettings)
                     target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs
@@ -862,6 +868,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             return false;
         };
+        View locationPill = findViewById(R.id.locationPill);
+        if (locationPill != null) {
+            locationPill.setOnClickListener(v -> showPrayerZoneDialog());
+            locationPill.setOnKeyListener(pillKeys);
+        }
         if (btnHome != null) btnHome.setOnKeyListener(pillKeys);
         if (btnInputs != null) btnInputs.setOnKeyListener(pillKeys);
         if (btnWifi != null) btnWifi.setOnKeyListener(pillKeys);
@@ -1725,7 +1736,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private boolean isTopPill(View v) {
         int id = v.getId();
-        return id == R.id.btnHome || id == R.id.btnInputs || id == R.id.btnWifi
+        return id == R.id.locationPill || id == R.id.btnHome || id == R.id.btnInputs || id == R.id.btnWifi
                 || id == R.id.btnAssistant || id == R.id.btnCandyBox || id == R.id.btnSettings;
     }
 
@@ -2282,6 +2293,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
+                View locationPill = findViewById(R.id.locationPill);
+                if (position <= 1 && locationPill != null && locationPill.getVisibility() == View.VISIBLE) {
+                    locationPill.requestFocus();
+                    return true;
+                }
                 if (position <= 1 && weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
                     weatherAirQualityView.requestFocus();
                     return true;
