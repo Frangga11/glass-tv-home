@@ -205,6 +205,19 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
 
+    def test_visible_prayer_timetable_opens_popup_and_supports_dpad_activation(self):
+        start = MAIN.index("View prayerTableView = findViewById(R.id.prayerTable);")
+        end = MAIN.index("updatePrayerTimes();", start)
+        binding = MAIN[start:end]
+        self.assertIn("prayerTableView.setFocusable(true);", binding)
+        self.assertIn("prayerTableView.setClickable(true);", binding)
+        self.assertIn("prayerTableView.setOnClickListener(v -> showPrayerPopup());", binding)
+        self.assertIn("KEYCODE_DPAD_CENTER", binding)
+        self.assertIn("KEYCODE_ENTER", binding)
+        self.assertIn("KEYCODE_DPAD_DOWN", binding)
+        self.assertIn("setOnFocusChangeListener", binding)
+        self.assertIn("showPrayerPopup();", binding)
+
     def test_supported_paused_media_session_remains_available_on_home(self):
         start = NOW_PLAYING.index("public boolean hasMusic()")
         end = NOW_PLAYING.index("public String getDisplayText()", start)
