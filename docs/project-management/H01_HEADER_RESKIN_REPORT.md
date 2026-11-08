@@ -64,7 +64,7 @@ The original `btnInputs` XML element is identical to baseline. The same view ID 
 ## Verification limits
 
 - Final implementation commit `21a4238189a1505b1303d6e6bb455c4c65abe49d` passed GitHub Actions run #1486 (`42455389359`): `testReleaseUnitTest` + `assembleRelease`, launcher size check, and release APK publication all PASS.
-- Final implementation commit `9b3c7dea8de75096cc422c88a8acb64361032956` passed GitHub Actions run #1492 (`42456266058`): `testReleaseUnitTest` + `assembleRelease`, launcher size check, and release APK publication all PASS. Release APK artifact: [glass-tv-home-pagar-alam-release](https://github.com/Frangga11/glass-tv-home/actions/runs/42456266058/artifacts/13608285064) (1,095,773 bytes).
+- Final source commit `ab54dc7e40772d5a84b200b47cc1bf6ee665f4d9` passed GitHub Actions run #1496 (`42456474700`): `testReleaseUnitTest` + `assembleRelease`, launcher size check, and release APK publication all PASS. Release APK artifact: [glass-tv-home-pagar-alam-release](https://github.com/Frangga11/glass-tv-home/actions/runs/42456474700/artifacts/13608370361) (1,095,570 bytes).
 - No new Java/compiler warnings were introduced; the deprecation notices in the implementation run match the baseline run.
 - No Android emulator screenshot/layout test has yet been run at 1280×720, 1920×1080 or 3840×2160.
 - No physical-TV regression test has yet been run. CI success does not prove remote navigation, popup anchoring, focus rendering or overscan behavior on hardware.
@@ -79,7 +79,7 @@ The original `btnInputs` XML element is identical to baseline. The same view ID 
 - Final source-level recheck confirms no duplicate XML view IDs and all new resource references resolve in the successful Android resource/build pipeline.
 - The dock is parked using the existing bottom-anchored `parkDock()` calculation. Its method and `DockDecoration` implementation are unchanged; increasing the header stack does not alter the dock's bottom anchor.
 - The only intended header layout growth is the added location pill above the existing weather pill. No title/description, ayah, prayer schedule, wallpaper, grid, dock, or glass geometry source code was modified.
-- The approved 1672×940 reference is `Kabut Pagi Dempo di Pagar Alam.png`: Profile → active Home → Settings. The location/weather D-pad sequence was refined after cross-audit so Down from Location reaches Weather, and Right from either left-side pill reaches Profile. The earlier implementation's Home/Profile order was found in cross-audit and corrected before the final test build. Header remeasurement listens to root, left-group, and right-group layout changes so changes in date/Inputs visibility cannot leave the centered capsule stale.
+- The approved 1672×940 reference is `Kabut Pagi Dempo di Pagar Alam.png`: Profile → active Home → Settings. The location/weather D-pad sequence was refined after cross-audit so Down from Location reaches Weather, Up from Weather returns to Location, and Right from either left-side pill reaches Profile. The earlier implementation's Home/Profile order was found in cross-audit and corrected before the final test build. Header remeasurement listens to root, left-group, and right-group layout changes so changes in date/Inputs visibility cannot leave the centered capsule stale.
 
 ## Integration safety
 
