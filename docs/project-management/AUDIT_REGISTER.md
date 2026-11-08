@@ -2070,3 +2070,10 @@ Source branch `fix/home-balanced-frame-001`, exact source/test HEAD `97f7e0c96d1
 - Exact-head CI for 97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5 has not yet been observed. Prior CI runs on earlier heads do not validate these latest changes; no exact-head test pass is claimed.
 - No APK installation, ADB, device settings/default launcher changes, physical TV testing, force-push or merge.
 - Canonical audit: GTVH_HOME_SCREEN_CROSS_AUDIT_001.md.
+
+
+### Latest exact-head validation — 8 November 2026
+- Latest PR #79 source/test HEAD: `765634e7d806f48bc38014119cd170a8697ea442`.
+- CI #1579 / run `42486810729`: **SUCCESS**; both jobs passed, release build successful, APK diagnostic size 1,627,581 bytes.
+- Status: **SOURCE + LATEST-HEAD CI VALIDATION PASS; DEVICE ACCEPTANCE PENDING; OVERALL HOME SCREEN NOT PASS**.
+- PR #79 and PR #77 remain open/draft/unmerged; no device operations.
