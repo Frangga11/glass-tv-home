@@ -1995,3 +1995,14 @@ Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exa
 - Artifact ID `13616788353`, ZIP size 1,423,762 bytes, SHA-256 `549ca1201857ec44968a86ec8961f4431354ea7bd29f0de93bfca99b7f0d39c9`, expires 15 Nov 2026. Artifact not installed.
 - PR #79 remains OPEN / DRAFT / UNMERGED; PR #77 remains OPEN / DRAFT / UNMERGED. Static integration audit PARTIAL; physical Mi TV Stick acceptance PENDING. No ADB, APK installation, device/default-launcher settings changes, force-push, or merge.
 - PR #79 CI result comment posted, GitHub comment ID `6721430044`.
+
+
+### Direct APK distribution remediation — 8 November 2026
+
+- User reported Samsung Browser saved the ChatGPT sandbox download as `app-release.apk.bin` despite the local artifact being a valid APK. Audit confirmed both local files were valid Android packages (1,624,589 bytes; SHA-256 `6c7981a6c71aa5fc6f5146ba5a6023b9fdbfc527c887d1c367dc500d04fd3b10`). Root cause for the observed suffix is the ChatGPT attachment delivery path/response metadata, not the Gradle build; direct sandbox re-links and renaming were not a reliable fix.
+- Added `.github/workflows/publish-apk-release.yml` to PR #77 base branch and PR #79 branch. Workflow executes on PR #79, downloads the exact CI #1545 artifact, verifies size + SHA-256, and publishes the unmodified APK as a GitHub Release asset. PR #79 workflow commit `acf344bc31874dfc6b680ac0bd6089b72ce1c8fa`; base workflow commit `d6a5581d2975ebe61c4862ca4614474c60e53cca`.
+- A first approach rebuilt the same source commit and failed byte-for-byte SHA verification (`298f494e...` vs CI artifact `6c7981a6...`), so it was blocked. Rebuild is not byte-for-byte reproducible in this environment; final workflow avoids repackaging/re-signing and publishes the exact CI artifact. Initial artifact-name mismatch was corrected.
+- Final publishing workflow run #7 / run ID `42480957620`: **SUCCESS**. GitHub Release `glass-tv-home-ci1545-20261108` (prerelease/QA) published. Direct asset `app-release.apk`, asset ID `723889891`, MIME `application/vnd.android.package-archive`, size 1,624,589 bytes, SHA-256 `6c7981a6c71aa5fc6f5146ba5a6023b9fdbfc527c887d1c367dc500d04fd3b10`.
+- Direct release page: https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-ci1545-20261108
+- Direct APK asset: https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-ci1545-20261108/app-release.apk
+- PR #79 remains OPEN / DRAFT / UNMERGED. No APK installation, ADB, device/default-launcher settings mutation, or merge. Physical Mi TV Stick acceptance remains PENDING. User must confirm the browser's received filename; the server-side GitHub asset metadata is correct, but actual Samsung Browser download confirmation has not yet been observed.
