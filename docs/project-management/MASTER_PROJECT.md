@@ -1418,3 +1418,13 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 - PR #79 remains OPEN / DRAFT / UNMERGED. PR #77 latest observed head is `0ea3746f0304b7042a018eeebf850d759f357bf8`; PR #79 compares 42 ahead / 1 behind with merge base `0aeb3851ddce5deb47e3c5f96db44631b0343577`. The one missing PR #77 commit is workflow-only APK artifact publication; no Home source file changed there. Keep this dependency visible and reconcile before merge.
 - Physical Mi TV Stick visual/remote acceptance remains PENDING. No merge, APK installation, ADB, default-launcher change, or device-setting mutation.
 - Detailed audit: `docs/project-management/HOME_LAYOUT_CALIBRATION_AUDIT_2026-11-08.md`.
+
+
+## Home layout final cross-audit checkpoint — 8 November 2026
+
+- PR #79 `fix/home-balanced-frame-001` latest exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`; OPEN / DRAFT / UNMERGED. PR #77 parent head: `0ea3746f0304b7042a018eeebf850d759f357bf8`; OPEN / DRAFT / UNMERGED.
+- Found and fixed stale Grid focus callbacks: deferred first-reveal callback now validates its captured request generation; Dock focus, header-pill focus and Activity pause invalidate pending Grid requests.
+- Added regression coverage in `tests/test_home_layout_bounds_contract.py`; detailed source audit is recorded in `HOME_LAYOUT_RECONCILIATION_2026-11-08.md` on the PR branch.
+- Prior CI #1506 (PR #77) and #1526 (PR #79) passed before this latest correction. Fresh CI for the latest exact head is pending/unobserved.
+- PR #79 base is one CI-workflow-only commit behind PR #77 head; the workflow content is identical, but ancestry must be reconciled before merge.
+- No device acceptance, APK installation, ADB, settings mutation or merge has occurred. Physical Mi TV Stick acceptance remains pending.
