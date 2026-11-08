@@ -4,15 +4,20 @@ package com.gathin.tvhome;
  * Single source of truth for the horizontal Dock's visual geometry.
  *
  * Horizontal Dock/Grid geometry shares the P2 safe content frame, a five-column
- * slot model, 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
+ * slot model, 6/8dp horizontal and 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
  * breathing room, and a 36dp shelf-to-tray gap. The Dock and Grid remain independent
  * RecyclerViews but derive their card and slot sizes from this class.
  */
 final class DockGeometry {
     private static final float DOCK_ITEM_TOP_OFFSET_DP = 6f;
     private static final float DOCK_ITEM_BOTTOM_OFFSET_DP = 12f;
+    private static final float HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 8f;
     private static final float TRAY_PADDING_DP = 14f;
-    private static final float DOCK_EXTRA_HEIGHT_DP = 18f;
+    private static final float DOCK_EXTRA_HEIGHT_DP = 14f;
+    /** Legacy shelf baseline keeps the information panels stationary while Dock cards shrink. */
+    private static final float SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP = 18f;
+    private static final float DOCK_TILE_SCALE = 0.95f;
+    private static final float DOCK_SLOT_GAP_DP = 32f;
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
     private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
     private static final float SAFE_HORIZONTAL_MARGIN_DP = 29f;
@@ -41,6 +46,26 @@ final class DockGeometry {
         return AppAdapter.tileWidthPx(gridWidth, horizontalGridColumns(), density);
     }
 
+    /** Dock-only tile width: shrink the Dock without changing AppAdapter/Grid geometry. */
+    static int horizontalDockTileWidthPx(int safeContentWidthPx, int capacity, float density) {
+        int base = horizontalTileWidthPx(safeContentWidthPx, capacity, density);
+        return Math.max(Math.round(80 * density), Math.round(base * DOCK_TILE_SCALE));
+    }
+
+    /** Dock-only vertical tile width, scaled from the established 112–170dp rail range. */
+    static int verticalDockTileWidthPx(int innerWidthPx, float density) {
+        int base = Math.max(Math.round(112 * density),
+                Math.min(Math.round(170 * density), innerWidthPx - Math.round(20 * density)));
+        return Math.max(Math.round(80 * density), Math.round(base * DOCK_TILE_SCALE));
+    }
+
+    /** Keep a consistent visual gap after shrinking Dock cards; the glass tray remains full width. */
+    static int horizontalDockSlotWidthPx(int safeContentWidthPx, int capacity, float density) {
+        int cell = horizontalSlotWidthPx(safeContentWidthPx, capacity);
+        int tile = horizontalDockTileWidthPx(safeContentWidthPx, capacity, density);
+        return Math.min(cell, tile + Math.round(DOCK_SLOT_GAP_DP * density));
+    }
+
     static int safeHorizontalMarginDp() {
         return (int) SAFE_HORIZONTAL_MARGIN_DP;
     }
@@ -64,6 +89,11 @@ final class DockGeometry {
      */
     static int horizontalContentWidthPx(int viewportWidthPx, float density) {
         return Math.max(0, viewportWidthPx);
+    }
+
+    /** Signed scroll delta to align a target Grid row; positive moves content upward, negative downward. */
+    static int gridRowScrollDeltaPx(int currentRow, int targetRow, int rowHeightPx, int currentTopOffsetPx) {
+        return (targetRow - currentRow) * rowHeightPx + currentTopOffsetPx;
     }
 
     /** One visible app row plus the RecyclerView's existing top breathing inset. */
@@ -101,6 +131,12 @@ final class DockGeometry {
         return safeBottomInsetPx(density) - trayBottomInset;
     }
 
+    /** Pre-refinement Dock host height used only as a stable shelf baseline. */
+    static int horizontalShelfAnchorHeightPx(int tileHeightPx, float density) {
+        return itemHeightPx(tileHeightPx, density)
+                + Math.round(SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP * density);
+    }
+
     /** The Grid viewport ends one 8dp rhythm above the tray's top edge. */
     static int horizontalGridBottomMarginPx(int tileHeightPx, float density) {
         int dockHeight = horizontalDockHeightPx(tileHeightPx, density);
@@ -127,6 +163,11 @@ final class DockGeometry {
 
     static int dockItemBottomOffsetPx(float density) {
         return (int) (DOCK_ITEM_BOTTOM_OFFSET_DP * density);
+    }
+
+    /** Horizontal Dock host has 4dp less spare height; the other 4dp reduction comes from the shorter card. */
+    static int horizontalDockItemBottomOffsetPx(float density) {
+        return (int) (HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
 
     static float trayPaddingPx(float density) {

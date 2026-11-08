@@ -39,7 +39,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         end = MAIN.index("private void updateHomeTabIndicator()", start)
         dock_layout = MAIN[start:end]
         self.assertIn(
-            "dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density)",
+            "dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density)",
             dock_layout,
         )
         self.assertIn("return safeBottomInsetPx(density) - trayBottomInset", GEOMETRY)
