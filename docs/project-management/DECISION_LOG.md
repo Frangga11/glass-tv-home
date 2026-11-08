@@ -584,3 +584,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Keep the existing left, bottom and right visual alignment baseline; calibrate the top edge to the same 29dp frame. Do not alter Dock/Grid dimensions or behavior as part of this Header refinement.
 - Current source/test HEAD: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`; PR #79 remains Draft/Open/Unmerged.
 - Exact-head CI #1581 / run `42486917618` and companion release workflow #36 / `42486917728` succeeded. Device visual/remote acceptance remains pending; CI is not physical-TV acceptance.
+
+
+## Home Header + whole-Home cross-audit follow-up — 8 November 2026
+- Implementation HEAD `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`: HOME-001–HOME-005 source corrections and exact-head CI #1581 PASS; both required jobs and companion release workflow #36 succeeded. Release APK diagnostic: 1,627,577 bytes; artifact #13620161574.
+- Static review inventory: 63 unique IDs in `activity_main.xml`; Home Header actions, location/weather controls, visible prayer timetable activation and DPAD paths reviewed. No additional source-level missing-handler defect confirmed.
+- Added three source-contract regression tests for location pill activation/DPAD, Home/Profile/Settings actions and measured Header-width recalculation. Test-only commit `49f2777cee006a5afd50a33b85cb90a61a077e40`; exact-head CI pending observation.
+- PR #79 remains OPEN / DRAFT / UNMERGED and stacked on PR #77. No APK installation, ADB, device setting/default-launcher change or physical TV test.
+- Whole Home Screen remains PARTIAL / NOT PASS pending Mi TV Stick rendered, DPAD, lifecycle and feature acceptance.
+- Canonical audit: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
