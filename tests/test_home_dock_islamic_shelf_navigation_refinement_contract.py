@@ -70,10 +70,19 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("27.5f * density", GEOMETRY)
         self.assertNotIn("showHero(position, r.top)", MAIN)
 
-    def test_islamic_shelf_content_height_changes_keep_the_bottom_anchor(self):
-        self.assertIn("islamicShelf.addOnLayoutChangeListener", MAIN)
+    def test_islamic_shelf_has_one_bottom_anchor_for_all_layout_changes_and_focus(self):
+        # One listener owns content-height changes; it delegates to the same measured
+        # Dock-relative anchor used by showHero. A legacy heroBottom writer caused a
+        # 10dp vertical jump whenever layout and focus callbacks interleaved.
+        self.assertEqual(MAIN.count("islamicShelf.addOnLayoutChangeListener"), 1)
         self.assertIn("applyIslamicShelfPosition();", MAIN)
         self.assertIn("private void applyIslamicShelfPosition()", MAIN)
+        shelf_listener_start = MAIN.index("islamicShelf.addOnLayoutChangeListener")
+        shelf_listener_end = MAIN.index("GradientDrawable islamicScrim", shelf_listener_start)
+        shelf_listener = MAIN[shelf_listener_start:shelf_listener_end]
+        self.assertIn("applyIslamicShelfPosition();", shelf_listener)
+        self.assertNotIn("heroBottom", shelf_listener)
+        self.assertIn("applyIslamicShelfPosition();", MAIN[MAIN.index("private void showHero(int position)"):])
         self.assertIn("heroShelf.addOnLayoutChangeListener", MAIN)
         start = MAIN.index("private void hideShelf()")
         end = MAIN.index("private boolean isIconGlowEnabled()", start)

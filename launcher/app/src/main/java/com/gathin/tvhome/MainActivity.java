@@ -786,9 +786,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             timeMaghrib = findViewById(R.id.timeMaghrib);
             timeIsyak = findViewById(R.id.timeIsyak);
 
-            islamicShelf.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, orr, ob) -> {
-                if (heroBottom > 0) v.setY(heroBottom - v.getHeight());
-            });
             updateIslamicShelf();
         }
 
