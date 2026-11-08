@@ -1454,3 +1454,11 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - CI artifact is built from GitHub's PR merge ref `569500eacf0669f8d7bc5f191328a9d49790cf1e`, which merges source HEAD above into base. It is not a production release publication; the separate release-publisher workflow was skipped by design for a PR.
 - Final static package integrity and changed-file scope checks are recorded. Rendered 1920×1080 visual audit is NOT RUN: current available execution environment has no Android emulator, ADB, aapt/apkanalyzer or screenshot renderer. Physical Mi TV Stick acceptance remains NOT RUN. No ADB, installation, launcher setting mutation, or merge.
 - **Status: AUTOMATED QA PASS; VISUAL / DEVICE ACCEPTANCE PENDING; OVERALL BELUM FINAL.** Keep PR #101 draft/unmerged. Next gate is a genuine rendered 1920×1080 visual inspection; only after it passes may owner-approved Mi TV Stick acceptance proceed. No installation or merge without explicit owner authorization.
+
+### PR #101 cumulative integration — 9 November 2026
+- Current source candidate: PR #101, OPEN / DRAFT / UNMERGED; branch `integration/home-islamic-prayer-spacing-cumulative-101`; HEAD `b8389e1f90b9fb7f65d91cfd0d7a41782f343d83`; base SHA `4038c08f4825f7bacf965bc6708505d3c8c30ebc`.
+- 16 changed files (5 production/source/workflow; 11 regression/test), 4 commits ahead / 0 behind.
+- Exact-head CI #1681 PASS: 211 Python tests, 1 skipped; Android app/installer unit tests and release assemble PASS.
+- QA artifact ID `13639167072`; extracted APK 1,626,525 bytes; SHA-256 `5423f7746d6b771fcb0c76ca3fcdca5186c5957d2967f66437554cb6e7d62398`; package ZIP integrity PASS.
+- Historical APK threshold warning (+53,661 bytes above 1.5 MiB); only +1,312 bytes vs PR #83 baseline 1,625,213 bytes (+0.081%). Non-blocking; monitor, no unscoped optimization.
+- Visual 1920×1080 render and physical Mi TV Stick acceptance remain NOT RUN. No ADB/install/merge. Candidate is not final.
