@@ -422,7 +422,10 @@ public class DockLayoutModelTest {
             int trayTopFromParentBottom = -dockHeight - bottomMargin + trayTopOffset;
             int gridBottomFromParentBottom = -gridBottomMargin;
             assertEquals(Math.round(8f * density), trayTopFromParentBottom - gridBottomFromParentBottom);
-            assertEquals(dockHeight, gridBottomMargin);
+            int expectedGridBottomMargin = DockGeometry.safeBottomInsetPx(density)
+                    + tileHeight + 2 * Math.round(DockGeometry.trayPaddingPx(density))
+                    + Math.round(8f * density);
+            assertEquals(expectedGridBottomMargin, gridBottomMargin);
         }
     }
 
