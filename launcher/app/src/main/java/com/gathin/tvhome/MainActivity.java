@@ -841,7 +841,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (id == R.id.locationPill) return true;
-                else if (id == R.id.btnHome) target = weatherAirQualityView;
+                else if (id == R.id.btnHome)
+                    target = weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
+                            ? weatherAirQualityView : findViewById(R.id.locationPill);
                 else if (id == R.id.btnCandyBox) target = btnHome;
                 else if (id == R.id.btnSettings) target = btnCandyBox;
                 else if (id == R.id.btnInputs) target = btnSettings;
@@ -855,7 +857,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return id == R.id.btnHome || id == R.id.btnInputs;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                if (id == R.id.locationPill) target = weatherAirQualityView;
+                if (id == R.id.locationPill)
+                    target = weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
+                            ? weatherAirQualityView : btnHome;
                 else if (id == R.id.btnHome) target = btnCandyBox;
                 else if (id == R.id.btnCandyBox) target = btnSettings;
                 else if (id == R.id.btnSettings)
