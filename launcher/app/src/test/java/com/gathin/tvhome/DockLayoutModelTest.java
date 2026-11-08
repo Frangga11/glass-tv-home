@@ -324,6 +324,15 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void gridRowScrollDeltaMakesDownAndUpTrueOpposites() {
+        int rowHeight = 320;
+        assertEquals(320, DockGeometry.gridRowScrollDeltaPx(0, 1, rowHeight, 0));
+        assertEquals(-320, DockGeometry.gridRowScrollDeltaPx(1, 0, rowHeight, 0));
+        assertEquals(280, DockGeometry.gridRowScrollDeltaPx(0, 1, rowHeight, -40));
+        assertEquals(-40, DockGeometry.gridRowScrollDeltaPx(0, 0, rowHeight, -40));
+    }
+
+    @Test
     public void dockTileScaleAndSpacingRemainConsistentAcrossFourFiveAndSixCapacities() {
         float density = 2f;
         int innerWidth = 1920;
