@@ -2227,3 +2227,15 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - APK is 5,524 bytes smaller than PR #82; it remains 52,349 bytes above the non-blocking historical 1.5 MiB diagnostic threshold.
 - Physical Mi TV Stick acceptance is not performed. Do not merge or call final until the owner confirms 1920×1080 / density320 visuals, remote focus, manual OTA and regression behavior.
 - Detailed report: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md](GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md).
+
+---
+
+## Pre-merge audit — requested PR #77–#83 integration — 9 November 2026
+
+**No merge performed.** Exact current refs, branch topology and CI evidence are recorded in checkpoint section “Pre-merge integration audit”.
+
+- Active Home stack: #77 → #79 → #80 → #81 → #82 → #83. All OPEN / DRAFT; exact-head CI runs #1591, #1592, #1599, #1628, #1630, #1637 succeeded.
+- PR #78 is separate from old `main`, overlaps eight source/resource files with #79, and #79's reconciliation report says #78 is not a valid candidate for the current G3A–G4 / #77 stack. Its CI #1500 succeeded, but that does not make its old-main branch compatible with the newer chain.
+- PR #77 targets PR #72 head branch; #72 targets PR #71 head branch; #71 targets PR #70 head branch. #70–#72 remain OPEN / DRAFT / UNMERGED. Thus merging #77–#83 into their existing parent branches does not merge the whole stack into `main`.
+- PR #77 vs #79 head ancestry: 117 ahead / 5 behind from merge-base `0aeb3851ddce5deb47e3c5f96db44631b0343577`; needs explicit reconciliation.
+- Await owner decision: preserve configured stacked bases and skip #78, or integrate upstream prerequisites #70–#72 into `main` and reconcile #78 separately. Physical Mi TV Stick acceptance remains pending and is not waived in the technical record.
