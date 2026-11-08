@@ -177,8 +177,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private static final float HOME_SHELF_BASELINE_OFFSET_DP = 3.5f;
     /** Minimum visual clearance between the information shelf and Dock tray. */
     private static final float MIN_HOME_SHELF_TRAY_GAP_DP = 32f;
-    /** The daily Ayah rises 18dp; prayer header/table receive a further 6dp lift. */
-    private static final float ISLAMIC_SHELF_BOTTOM_OFFSET_DP = 10f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
     private View heroShelf;
@@ -2381,11 +2379,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return;
             }
-            // The Islamic shelf is the package's lower edge. Keep the existing 10dp
-            // internal vertical relationship between the wallpaper shelf and Islamic shelf.
-            islamicShelfBottomAnchor = trayTop - DockGeometry.islamicShelfDockGapPx(density);
-            heroBottom = islamicShelfBottomAnchor
-                    - Math.round(ISLAMIC_SHELF_BOTTOM_OFFSET_DP * density);
+            // Anchor both visible information bottoms to the measured Glass tray edge.
+            // prayerTable is translated upward in XML; compensate that runtime translation
+            // so its visible bottom, not the container bottom, receives the exact 30dp gap.
+            int shelfGapPx = DockGeometry.islamicShelfDockGapPx(density);
+            heroBottom = trayTop - shelfGapPx;
+            islamicShelfBottomAnchor = heroBottom + islamicShelfVisualBottomOffsetPx();
         }
 
         homeShelfAnchorReady = true;
@@ -2419,6 +2418,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (firstCardTop == Integer.MAX_VALUE) return Integer.MIN_VALUE;
         return firstCardTop - Math.round(DockGeometry.trayPaddingPx(density));
+    }
+
+    private int islamicShelfVisualBottomOffsetPx() {
+        View prayerTable = findViewById(R.id.prayerTable);
+        if (prayerTable == null || prayerTable.getVisibility() != View.VISIBLE) return 0;
+        return Math.max(0, -Math.round(prayerTable.getTranslationY()));
     }
 
     private void applyIslamicShelfPosition() {
@@ -2717,7 +2722,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         return true;
     }
 
-    /** Applies the frozen P2 horizontal safe inset to both Home information shelves. */
+    /** Applies the 30dp horizontal safe inset while preserving the 29dp top safe edge. */
     private void applyHomeShelfSafeMargins() {
         int inset = DockGeometry.safeHorizontalInsetPx(density);
         if (heroShelf != null && heroShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
@@ -2728,7 +2733,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (islamicShelf != null && islamicShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) islamicShelf.getLayoutParams();
             params.setMarginEnd(inset);
-            params.topMargin = inset;
+            params.topMargin = DockGeometry.safeTopInsetPx(density);
             islamicShelf.setLayoutParams(params);
         }
     }
