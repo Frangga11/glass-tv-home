@@ -10,6 +10,7 @@ DOCK = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java").
 DECORATION = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockDecoration.java").read_text(encoding="utf-8")
 APP = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
 LAYOUT = ROOT / "launcher/app/src/main/res/layout/item_app.xml"
+HOME_LAYOUT = ROOT / "launcher/app/src/main/res/layout/activity_main.xml"
 ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 
@@ -53,21 +54,26 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("horizontalGridViewportHeightPx(gridTileWidth", sizing)
         self.assertIn("horizontalGridBottomMarginPx(dockTileHeight", sizing)
 
-    def test_islamic_shelf_anchor_does_not_use_focused_card_coordinates(self):
-        self.assertIn("private void showHero(int position)", MAIN)
-        self.assertNotIn("showHero(position, r.top)", MAIN)
+    def test_islamic_shelf_anchor_uses_measured_tray_edge_and_exact_27_5dp_gap(self):
         start = MAIN.index("private void updateHomeShelfAnchor()")
         end = MAIN.index("private void showHero(int position)", start)
         anchor = MAIN[start:end]
-        self.assertIn("findViewHolderForAdapterPosition(0)", anchor)
-        self.assertNotIn("dockTopInRoot", anchor)
-        self.assertIn("islamicShelfBottomAnchor = heroBottom", anchor)
-        self.assertIn("islamicShelf.setY(islamicShelfBottomAnchor - islamicShelf.getHeight())", anchor)
+        self.assertIn("horizontalDockTrayTopInRoot()", anchor)
+        self.assertIn("DockGeometry.islamicShelfDockGapPx(density)", anchor)
+        self.assertIn("islamicShelfBottomAnchor = trayTop -", anchor)
+        self.assertIn("heroBottom = islamicShelfBottomAnchor", anchor)
+        self.assertIn("private int horizontalDockTrayTopInRoot()", MAIN)
+        self.assertIn("root.offsetDescendantRectToMyCoords(item, cardRect)", MAIN)
+        self.assertIn("DockGeometry.trayPaddingPx(density)", MAIN)
+        self.assertIn("static int islamicShelfDockGapPx(float density)", GEOMETRY)
+        self.assertIn("27.5f * density", GEOMETRY)
+        self.assertNotIn("showHero(position, r.top)", MAIN)
 
     def test_islamic_shelf_content_height_changes_keep_the_bottom_anchor(self):
         self.assertIn("islamicShelf.addOnLayoutChangeListener", MAIN)
         self.assertIn("applyIslamicShelfPosition();", MAIN)
         self.assertIn("private void applyIslamicShelfPosition()", MAIN)
+        self.assertIn("heroShelf.addOnLayoutChangeListener", MAIN)
         start = MAIN.index("private void hideShelf()")
         end = MAIN.index("private boolean isIconGlowEnabled()", start)
         hide = MAIN[start:end]
@@ -75,17 +81,49 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertNotIn("setY(", hide)
         self.assertNotIn("translationY(", hide)
 
-    def test_row_navigation_uses_signed_smooth_scroll_and_generation_guards(self):
-        self.assertIn("grid.smoothScrollBy(0, dy", MAIN)
-        self.assertIn("DockGeometry.gridRowScrollDeltaPx(", MAIN)
-        self.assertIn("static int gridRowScrollDeltaPx(int currentRow, int targetRow, int rowHeightPx, int currentTopOffsetPx)", GEOMETRY)
+    def test_row_navigation_uses_decorated_geometry_and_real_scroll(self):
+        self.assertIn("manager.getDecoratedBoundsWithMargins(firstView, rowBounds)", MAIN)
+        self.assertIn("manager.getDecoratedBoundsWithMargins(targetView, targetBounds)", MAIN)
+        self.assertIn("ValueAnimator.ofInt(0, dy)", MAIN)
+        self.assertIn("grid.scrollBy(0, step)", MAIN)
         self.assertIn("horizontalGridTransitionGeneration", MAIN)
-        self.assertIn("horizontalGridScrollAwaitingIdle", MAIN)
+        self.assertIn("horizontalGridTransitionRetries", MAIN)
         self.assertIn("pendingHorizontalGridPosition", MAIN)
+        self.assertIn("private String pendingHorizontalGridKey;", MAIN)
+        self.assertIn("pendingHorizontalGridKey = adapter.keyAt(targetPosition)", MAIN)
+        self.assertIn("adapter.positionOf(pendingHorizontalGridKey)", MAIN)
         self.assertIn("grid.stopScroll()", MAIN)
+        self.assertNotIn("grid.smoothScrollBy(0, dy", MAIN)
+        self.assertIn("focusHorizontalGridRowTargetWhenLaidOut(targetKey, target, focusGeneration, 8)", MAIN)
+        self.assertIn("Math.abs(targetBounds.top - grid.getPaddingTop()) > 1", MAIN)
+        self.assertIn("adapter.positionOf(key)", MAIN)
+        self.assertNotIn("horizontalGridScrollAwaitingIdle", MAIN)
+        self.assertIn("grid.setClipToPadding(!dockVertical && horizontalGridExpanded)", MAIN)
+        start = MAIN.index("private void startHorizontalGridRowTransition")
+        end = MAIN.index("private void settleHorizontalGridRowTransition", start)
+        transition = MAIN[start:end]
+        self.assertNotIn("scrollToPositionWithOffset", transition)
+        focus_start = MAIN.index("private void focusHorizontalGridRowTargetWhenLaidOut")
+        focus_end = MAIN.index("private void alignHorizontalGridRowToGlass", focus_start)
+        self.assertNotIn("scrollToPositionWithOffset", MAIN[focus_start:focus_end])
+        self.assertIn("DockGeometry.gridRowScrollDeltaPx(", transition)
         pause_start = MAIN.index("protected void onPause()")
         pause_end = MAIN.index("public void onWindowFocusChanged", pause_start)
         self.assertIn("cancelHorizontalGridRowTransition();", MAIN[pause_start:pause_end])
+
+    def test_islamic_headings_and_prayer_names_have_requested_typography(self):
+        root = ET.parse(HOME_LAYOUT).getroot()
+        by_id = {node.get(ANDROID + "id"): node for node in root.iter()
+                 if node.get(ANDROID + "id")}
+        for view_id in ("@+id/prayerHeader", "@+id/ayahLabel"):
+            self.assertEqual(by_id[view_id].get(ANDROID + "fontVariationSettings"), "'wght' 700")
+        for view_id in ("@+id/lblSubuh", "@+id/lblSyuruk", "@+id/lblZohor",
+                        "@+id/lblAsar", "@+id/lblMaghrib", "@+id/lblIsyak"):
+            label = by_id[view_id]
+            self.assertEqual(label.get(ANDROID + "textAllCaps"), "true")
+            self.assertEqual(label.get(ANDROID + "fontVariationSettings"), "'wght' 650")
+            self.assertEqual(label.get(ANDROID + "textSize"), "13sp")
+            self.assertEqual(label.get(ANDROID + "fontFamily"), "@font/inter")
 
     def test_dpad_down_and_up_use_pending_row_and_clamp_incomplete_last_row(self):
         start = MAIN.index("public boolean onTileVerticalKey")
