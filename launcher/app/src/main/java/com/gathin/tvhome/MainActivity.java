@@ -4266,6 +4266,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahArabic.setMaxLines(2);
             ayahArabic.setEllipsize(TextUtils.TruncateAt.END);
             ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL);
+            ayahArabic.setGravity(Gravity.END);
             ayahArabic.setIncludeFontPadding(true);
             ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
@@ -4273,6 +4274,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahArabic.setText(a.arabic.trim());
         }
         if (ayahText != null) {
+            ayahText.setTextDirection(View.TEXT_DIRECTION_LTR);
+            ayahText.setGravity(Gravity.START);
             ayahText.setMaxWidth(islamicMaxWidth);
             ayahText.setSingleLine(false);
             ayahText.setMaxLines(2);
@@ -4397,7 +4400,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 getResources().getDisplayMetrics().widthPixels >= 3840 ? 34f : 28f);
         arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
         arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
-        arabic.setGravity(Gravity.CENTER);
+        arabic.setGravity(Gravity.END);
         arabic.setIncludeFontPadding(true);
         arabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
         arabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
@@ -4424,6 +4427,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         translation.setTextColor(0xF2FFFFFF);
         translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
         translation.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
+        translation.setTextDirection(View.TEXT_DIRECTION_LTR);
         translation.setGravity(Gravity.START);
         translation.setLineSpacing(Math.round(5 * density), 1.18f);
         translation.setMaxLines(Integer.MAX_VALUE);
