@@ -57,11 +57,11 @@ class F06LocalizationUiContractTest(unittest.TestCase):
             "Use the directional buttons to scroll the reading.",
             read_value("values-en", "daily_ayah_navigation_hint"),
         )
-        self.assertEqual("Ayat Harian", read_value("values-id", "daily_ayah_popup_title"))
+        self.assertEqual("Ayat Pilihan Harian", read_value("values-id", "daily_ayah_popup_title"))
         self.assertEqual("BACA AYAT LENGKAP  ›", read_value("values-id", "daily_ayah_open"))
         self.assertEqual("MAKSUDNYA", read_value("values-id", "daily_ayah_meaning_label"))
         self.assertEqual("Terjemahan belum tersedia.", read_value("values-id", "daily_ayah_translation_unavailable"))
-        self.assertEqual("Daily Verse", read_value("values-en", "daily_ayah_popup_title"))
+        self.assertEqual("Daily Selected Verse", read_value("values-en", "daily_ayah_popup_title"))
         self.assertEqual("READ FULL VERSE  ›", read_value("values-en", "daily_ayah_open"))
         self.assertEqual("MEANING", read_value("values-en", "daily_ayah_meaning_label"))
         self.assertEqual("Translation is not available.", read_value("values-en", "daily_ayah_translation_unavailable"))
