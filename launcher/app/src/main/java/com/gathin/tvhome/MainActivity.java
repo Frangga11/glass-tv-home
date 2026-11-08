@@ -1683,6 +1683,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onStop() {
         hiddenSinceResume = true;
+        updateHomeTabIndicator();
         handler.removeCallbacks(cacheClean);
         handler.removeCallbacks(nowPlayingPoll);
         super.onStop();
@@ -1698,6 +1699,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onResume() {
         super.onResume();
+        activityResumed = true;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(packageReceiver, packageFilter, Context.RECEIVER_NOT_EXPORTED);
         } else {
@@ -1718,6 +1720,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updateInputsButton();
         updateTopBarUserIcon();
         updateSettingsBadge();
+        updateHeaderTabLabels();
+        updateLocationPill();
+        updateHomeTabIndicator();
         handler.postDelayed(() -> AppUpdateManager.checkForUpdates(this, false), 1500);
         Location.Zone chosenPlace = Location.chosen(this);
         String zoneCode = (chosenPlace != null) ? chosenPlace.code : "WLY01";
@@ -1734,6 +1739,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             weatherOverlayView.startAnimation();
         }
         hiddenSinceResume = false;
+        updateHomeTabIndicator();
         WifiSettingsDialog.onHostResumed();
     }
 
@@ -1892,6 +1898,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onPause() {
         super.onPause();
+        activityResumed = false;
+        updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
         handler.removeCallbacks(minuteTick);
         handler.removeCallbacks(wallTick);
@@ -1909,6 +1917,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        updateHomeTabIndicator();
         if (hasFocus) showCardPrompt();
     }
 
@@ -1956,6 +1965,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     public void refreshLocationDependentData() {
+        updateLocationPill();
         updateWeatherAqi();
         updatePrayerTimes();
         WeatherAirQuality.sync(this, this::updateWeatherAqi);
@@ -2031,6 +2041,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 wallView.setColorFilter(0xFF7A7A7A, android.graphics.PorterDuff.Mode.MULTIPLY);
             }
         }
+        updateHomeTabIndicator();
     }
 
     // ---- glass highlight -------------------------------------------------------------------------
@@ -7243,6 +7254,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             setWallpaperFullscreen(false);
         }
         screensaverActive = true;
+        updateHomeTabIndicator();
         if (screensaverView == null) {
             screensaverView = getLayoutInflater().inflate(R.layout.view_nightstand, root, false);
             screensaverView.setOnClickListener(v -> dismissScreensaver());
@@ -7362,6 +7374,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void dismissScreensaver() {
         if (!screensaverActive || screensaverView == null) return;
         screensaverActive = false;
+        updateHomeTabIndicator();
         handler.removeCallbacks(standbyPhotoTick);
         screensaverView.animate().alpha(0f).setDuration(350).withEndAction(() -> {
             if (!screensaverActive && screensaverView != null) {
