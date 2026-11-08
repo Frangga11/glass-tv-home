@@ -564,3 +564,45 @@ Test on Mi TV Stick at **1920×1080 / density 320**:
 **BELUM FINAL.** Source implementation, automated tests, Android Release build, APK size/hash verification and direct APK publication are complete. Physical acceptance remains pending. Owner installs the exact-head APK and reports screenshots/observations; only then should any discrepancy be triaged. Keep PR #83 OPEN / DRAFT / UNMERGED. Do not merge or mark final without physical acceptance.
 
 Detailed audit: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md](GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md).
+
+---
+
+## Pre-merge integration audit — user request to merge PR #77–#83 — 9 November 2026
+
+**Decision status: CHECKPOINT CREATED / NO MERGE EXECUTED / TARGET-CHAIN CLARIFICATION REQUIRED.**
+
+### User request
+The owner requested a checkpoint and asked to merge PR #77 through PR #83. This section records the live GitHub state before taking merge actions. It does not authorize changing base branches, bypassing dependencies, or merging a superseded parallel implementation without reconciliation.
+
+### Live PR state and exact refs
+| PR | State | Head branch / exact HEAD | Base branch / base SHA | Exact-head CI |
+|---|---|---|---|---|
+| #77 | OPEN / DRAFT | `fix/home-layout-consolidated-001` / `7e51a86cc83394ae47f7c9d32c22bf0c6042c9d1` | `feature/g4-parent-pin-hardening` / `7146de58953325fdfc6c98501828676f143e64cf` | CI #1591 SUCCESS |
+| #78 | OPEN / DRAFT | `feature/h01-header-reskin` / `aca3c6b8a9cfb6f30410631bfd6e178a74be2b23` | `main` / `23598f8b5202ed71fc38e8c8da5ed2eeaeac535b` | CI #1500 SUCCESS |
+| #79 | OPEN / DRAFT | `fix/home-balanced-frame-001` / `b4abdf0bd555a0106c135add20c3f287cf10b412` | `fix/home-layout-consolidated-001` / recorded base SHA `0aeb3851ddce5deb47e3c5f96db44631b0343577` | CI #1592 SUCCESS |
+| #80 | OPEN / DRAFT | `fix/home-wallpaper-text-refinement-001` / `a085be150ebcf1d48b825ed7ac43b172261f3aa0` | `fix/home-balanced-frame-001` / `b4abdf0bd555a0106c135add20c3f287cf10b412` | CI #1599 SUCCESS |
+| #81 | OPEN / DRAFT | `fix/home-dock-islamic-shelf-navigation-001` / `3cd36b8a5fbc788a7b15e178e4aaf0606e919c61` | `fix/home-wallpaper-text-refinement-001` / `a085be150ebcf1d48b825ed7ac43b172261f3aa0` | CI #1628 SUCCESS |
+| #82 | OPEN / DRAFT | `fix/home-islamic-shelf-vertical-position-grid-row-scroll-002` / `d6f594933b712b36b0660e119a0d4ee8b7de3134` | `fix/home-dock-islamic-shelf-navigation-001` / `3cd36b8a5fbc788a7b15e178e4aaf0606e919c61` | CI #1630 SUCCESS |
+| #83 | OPEN / DRAFT | `fix/home-ui-proportion-glass-focus-refinement-003` / `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803` | `fix/home-islamic-shelf-vertical-position-grid-row-scroll-002` / `d6f594933b712b36b0660e119a0d4ee8b7de3134` | CI #1637 SUCCESS |
+
+### Dependency findings
+1. PR #77 is not based on `main`; it targets `feature/g4-parent-pin-hardening`, which is the head branch of PR #72.
+2. PR #72 is OPEN / DRAFT / UNMERGED and itself targets `feature/g3f-global-settings`, the head branch of PR #71.
+3. PR #71 is OPEN / DRAFT / UNMERGED and targets `feature/g3e-wifi`, the head branch of PR #70. PR #70 is also OPEN / DRAFT / UNMERGED and targets `feature/g3d-quick-settings`.
+4. Therefore merging #77–#83 only into their configured stacked bases will not integrate the full stack into `main`. A mainline integration needs an explicit decision about the upstream #70–#72 dependencies and their own parent chain.
+5. PR #79 is stacked on #77, and PRs #80 → #81 → #82 → #83 form a sequential chain. Comparing current #77 head to #79 head reports **117 ahead / 5 behind**, merge-base `0aeb3851ddce5deb47e3c5f96db44631b0343577`; despite GitHub's `mergeable=true`, the ancestry discrepancy needs deliberate reconciliation before merge.
+6. PR #78 is a separate branch directly from old `main`, and its header implementation overlaps eight source/resource files changed by PR #79. PR #79's own reconciliation notes explicitly state that PR #78 is based on the old main baseline and is not a valid candidate for the newer G3A–G4 / PR #77 Home layout chain. Do not merge #78 alongside #79 without a deliberate source reconciliation; doing so risks reintroducing old header implementations over the newer integrated Home.
+7. All seven PRs are currently OPEN / DRAFT and GitHub reports mergeable metadata, but that does not resolve the dependency/ancestry issues above. Exact-head CI success is recorded as listed; physical Mi TV Stick acceptance remains pending on the Home visual/focus changes.
+
+### Recommended safe route
+- Treat PR #78 as a superseded parallel candidate unless the owner explicitly requests a separate mainline header merge after reconciliation.
+- Preserve the active stack #77 → #79 → #80 → #81 → #82 → #83.
+- First decide whether the target is (A) each PR's configured parent branch, leaving the upstream #70–#72 chain unmerged, or (B) full integration to `main`, which requires resolving and merging the prerequisite #70–#72 chain (and their parents) plus reconciling #77/#79 ancestry.
+- Do not force-push, retarget base branches, or merge PR #78 into main as a substitute for the current integrated stack.
+- The owner's merge request is explicit, but the target topology and treatment of superseded PR #78 are not yet specified. No merge has been executed in this checkpoint.
+
+### Physical acceptance boundary
+Prior project checkpoints require Mi TV Stick physical acceptance before final merge. The latest PR #83 Release APK exists and CI passes, but no physical device acceptance is recorded. Owner's latest instruction asks to merge; this is recorded as a change of requested action, but the physical acceptance gap remains visible and must not be misreported as passed.
+
+### Current decision
+**WAITING FOR ONE OWNER DECISION:** Should I merge only the active stacked chain into each PR's configured parent branch and skip superseded #78, or should I integrate the entire dependency chain into `main` (including prerequisite PRs #70–#72, with #78 reconciled separately)?
