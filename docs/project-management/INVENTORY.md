@@ -1127,3 +1127,10 @@ Previous CI #1506 and #1526 predate the latest stale-focus correction and must n
 - Source follow-ups previously committed on PR #79 remain: stale Grid focus callback generation guard/cancellation and bilingual altitude formatting (`%1$d mdpl` / `%1$d m ASL`).
 - Overall source/CI status: PASS for exact current head; overall Home layout acceptance remains PARTIAL because physical Mi TV Stick visual/DPAD/overscan and whole-Home regression tests have not been performed.
 - No APK installed; no ADB/device settings/default-launcher mutation; no PR merged. Keep both PRs Draft until owner device acceptance and final ancestry review.
+
+
+### APK size baseline comparison — 8 November 2026
+
+- Compared PR #79 exact-head release APK (`1,624,589 bytes`) against PR #77 exact-head CI #1506 release APK (`1,622,585 bytes`). The PR #79 build is only **2,004 bytes (+0.12%)** larger than the parent PR #77 build.
+- Both builds already exceed the historical 1.5 MiB warning threshold; therefore the threshold warning is pre-existing, not a material regression introduced by the balanced-frame/header changes. Continue monitoring APK size, but do not classify this PR as causing the full 51,725-byte threshold overage.
+- Parent artifact: ID `13609978757`, ZIP 1,422,754 bytes. Latest PR #79 artifact: ID `13615852690`, ZIP 1,423,863 bytes. These are compressed artifact archive sizes; compare release APK payload sizes separately as above.
