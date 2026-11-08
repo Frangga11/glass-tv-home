@@ -142,6 +142,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean horizontalGridExpanded;
     /** Pending target for serialized horizontal Grid row transitions (supports rapid DPAD repeats). */
     private int pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
+    /** Stable component identity for a pending row target while the app inventory changes. */
+    private String pendingHorizontalGridKey;
     private int horizontalGridTransitionGeneration;
     private boolean horizontalGridTransitionRunning;
     private int horizontalGridTransitionRetries;
