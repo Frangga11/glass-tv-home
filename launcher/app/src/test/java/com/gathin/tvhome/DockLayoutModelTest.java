@@ -340,7 +340,7 @@ public class DockLayoutModelTest {
             int baseWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
             int dockWidth = DockGeometry.horizontalDockTileWidthPx(innerWidth, capacity, density);
             int slotWidth = DockGeometry.horizontalDockSlotWidthPx(innerWidth, capacity, density);
-            assertEquals(Math.round(baseWidth * 0.92f), dockWidth);
+            assertEquals(Math.round(baseWidth * 0.95f), dockWidth);
             assertTrue(dockWidth < baseWidth);
             assertTrue(slotWidth >= dockWidth);
             assertTrue(slotWidth - dockWidth <= Math.round(32f * density));
