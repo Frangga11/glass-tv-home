@@ -369,3 +369,39 @@ The old publisher workflow hardcoded CI #1545's artifact ID/run ID and source SH
 - Detailed evidence: `GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md`.
 
 **Next action:** owner visual/physical acceptance on Mi TV Stick; if corrections are required, keep changes strictly inside the approved five-component scope.
+
+
+## 12. Owner-approved corrective refinement — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 November 2026)
+
+**Current status: SOURCE CHANGES COMMITTED · EXACT-HEAD CI PENDING · RENDERED/DEVICE ACCEPTANCE PENDING · NOT FINAL**
+
+This section supersedes the earlier downward 5mm movement and 12dp minimum-gap values recorded in Section 11. The previous CI result applies only to the prior PR #80 HEAD, not to the corrective HEAD below.
+
+- PR: [#80](https://github.com/Frangga11/glass-tv-home/pull/80), OPEN / DRAFT / UNMERGED.
+- Source branch: `fix/home-wallpaper-text-refinement-001`.
+- Corrective HEAD: `894544cb89191a08980cf1d7a16c7fefbe5acdc7`.
+- Base branch / SHA: `fix/home-balanced-frame-001` / `b4abdf0bd555a0106c135add20c3f287cf10b412`.
+- Changed files remain limited to two production files and one scoped regression test. The PR's existing workflow file remains part of the inherited PR diff; this corrective pass did not alter it.
+
+### Corrective visual geometry
+- The prior implementation moved the Home information shelves downward by 5mm (31.5dp at density 2.0), leaving only about 4.5dp of visual clearance above the tray. This is superseded.
+- New wallpaper title/description baseline uses a 3.5dp offset against the existing 50dp Dock-relative geometry, giving a nominal **32.5dp** clearance above the tray at 320dpi. A **32dp minimum** clamp protects other density/layout cases. This moves the wallpaper shelf upward about **28dp** from the prior PR #80 rendering; the small difference from the original 24dp target is intentional to honor the approved 32–40dp Dock clearance.
+- Daily Ayah parent shelf is offset so the Ayah block rises **18dp** from the prior PR #80 position.
+- Prayer header and table each receive an additional **6dp** upward translation, so the timetable rises **24dp** total.
+- No Dock geometry, safe-frame, grid, header or capsule measurements were changed.
+
+### Text clarity correction
+- Prayer header now uses solid high-contrast light text. Prayer names/times use solid white/warm active-prayer colors. Removed the per-glyph text gradient shader and runtime `Typeface.DEFAULT` overrides that had bypassed the XML Inter typeface.
+- Prayer names: **13sp**; times: **17sp**. Existing timetable data, order, provider and activation remain unchanged.
+- Daily Arabic: **20sp at 1080p / 22sp at 4K**, preserving Amiri Quran font, RTL direction and high-quality line breaking.
+- Translation: **14sp at 1080p / 15sp at 4K**.
+- Added a subtle transparent-to-dark gradient scrim behind the right information shelf; no bordered panel or idle frame was added. Existing focus-only feedback and click/DPAD activation remain.
+
+### Verification boundary
+- Exact-head workflow lookup did not yet return a run for corrective HEAD `894544c`; exact-head CI is **PENDING**, not PASS.
+- Prior HEAD `c7d95c3` had CI #1592 / run `42493469262` PASS (166 Python tests, 1 skipped; Android release unit tests and assembleRelease PASS). That evidence does not validate the corrective commits.
+- Rendered 1920×1080 review and physical Mi TV Stick acceptance remain PENDING.
+- No APK installation, ADB session, device setting change, PR merge or force-push was performed.
+- Explicitly protected: Dock/Grid geometry/order/scroll/focus, Header/navigation/capsules, wallpaper image/crop/provider/rotation, prayer data/provider/order, safe frame and unrelated components.
+
+**Next action:** verify exact-head CI for `894544c`; then inspect the rendered 1920×1080 composition and wait for owner Mi TV Stick visual acceptance. Do not merge or install automatically.
