@@ -4196,13 +4196,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         String zoneTitle = (currentZone != null && currentZone.town != null) ? currentZone.town.toUpperCase(Locale.ROOT) : PrayerTimes.getShortZoneName(this);
         if (prayerHeader != null) {
             String pPrefix = AppLanguage.getPrayerHeaderPrefix(this);
-            String headerText = pPrefix + " " + zoneTitle + "  •  " + PrayerTimes.getHijriDate(this).toUpperCase(Locale.ROOT);
-            String activePrayerZone = PrayerTimes.getActiveZone(this);
-            if (activePrayerZone != null && activePrayerZone.startsWith("ID_")) {
-                headerText += "  •  " + AppLanguage.getPrayerDataSourceLabel(
-                        this, PrayerTimes.isUsingOfficialKemenagSchedule(this));
-            }
-            prayerHeader.setText(headerText);
+            prayerHeader.setText(pPrefix + " " + zoneTitle + "  •  " + PrayerTimes.getHijriDate(this).toUpperCase(Locale.ROOT));
             prayerHeader.setTextColor(0xFFF4F7FC);
         }
 
@@ -4282,7 +4276,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahText.setEllipsize(TextUtils.TruncateAt.END);
             ayahText.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahText.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
-            ayahText.setLineSpacing(Math.round(2 * density), 1.12f);
+            ayahText.setLineSpacing(0, 1.04f);
             String tr = a.translation(AppLanguage.getLanguage(this));
             ayahText.setText(tr != null ? tr.trim() : "");
             ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 15f : 14f);
