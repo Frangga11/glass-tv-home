@@ -2409,9 +2409,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     int badgeColor = apiColor != 0 ? apiColor
                             : (Integer.parseInt(value.substring(numberStart, numberEnd)) <= 100 ? 0xFF2E9D4B
                             : (Integer.parseInt(value.substring(numberStart, numberEnd)) <= 200 ? 0xFFE0A126 : 0xFFCC3D3D));
-                    styled.setSpan(new android.text.style.BackgroundColorSpan(badgeColor), statusStart,
-                            value.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    styled.setSpan(new android.text.style.ForegroundColorSpan(0xFFFFFFFF), statusStart,
+                    styled.setSpan(new RoundedBadgeSpan(badgeColor, 5f * density, 2f * density, 10f * density),
+                            statusStart, value.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    styled.setSpan(new android.text.style.RelativeSizeSpan(0.88f), statusStart,
                             value.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
@@ -2422,6 +2422,51 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return styled;
+    }
+
+    /** Compact rounded status badge used only in the header's weather/AQI line. */
+    private static final class RoundedBadgeSpan extends android.text.style.ReplacementSpan {
+        private final int color;
+        private final float horizontalPadding, verticalPadding, radius;
+
+        RoundedBadgeSpan(int color, float horizontalPadding, float verticalPadding, float radius) {
+            this.color = color;
+            this.horizontalPadding = horizontalPadding;
+            this.verticalPadding = verticalPadding;
+            this.radius = radius;
+        }
+
+        @Override
+        public int getSize(android.graphics.Paint paint, CharSequence text, int start, int end,
+                           android.graphics.Paint.FontMetricsInt metrics) {
+            if (metrics != null) {
+                paint.getFontMetricsInt(metrics);
+                metrics.ascent -= verticalPadding;
+                metrics.top -= verticalPadding;
+                metrics.descent += verticalPadding;
+                metrics.bottom += verticalPadding;
+            }
+            return Math.round(paint.measureText(text, start, end) + horizontalPadding * 2f);
+        }
+
+        @Override
+        public void draw(android.graphics.Canvas canvas, CharSequence text, int start, int end,
+                         float x, int top, int y, int bottom, android.graphics.Paint paint) {
+            android.graphics.Paint badge = new android.graphics.Paint(paint);
+            badge.setColor(color);
+            badge.setStyle(android.graphics.Paint.Style.FILL);
+            badge.setAntiAlias(true);
+            android.graphics.Paint.FontMetricsInt metrics = paint.getFontMetricsInt();
+            float badgeTop = y + metrics.ascent - verticalPadding;
+            float badgeBottom = y + metrics.descent + verticalPadding;
+            float width = paint.measureText(text, start, end) + horizontalPadding * 2f;
+            canvas.drawRoundRect(new android.graphics.RectF(x, badgeTop, x + width, badgeBottom),
+                    radius, radius, badge);
+            int oldColor = paint.getColor();
+            paint.setColor(0xFFFFFFFF);
+            canvas.drawText(text, start, end, x + horizontalPadding, y, paint);
+            paint.setColor(oldColor);
+        }
     }
 
     private void updateHomeWeather() {
