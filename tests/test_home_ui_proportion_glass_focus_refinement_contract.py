@@ -79,7 +79,7 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
             if node_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
                 segments[node_id] = node
         self.assertEqual(set(segments), {"@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"})
-        for node in segments.values():
+        for node_id, node in segments.items():
             self.assertEqual(node.get(ANDROID + "gravity"), "center")
             self.assertEqual(node.get(ANDROID + "drawablePadding"),
                              "2dp" if node_id in ("@+id/btnHome", "@+id/btnCandyBox") else "4dp")
