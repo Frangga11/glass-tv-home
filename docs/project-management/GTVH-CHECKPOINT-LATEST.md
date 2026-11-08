@@ -405,3 +405,19 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 - Explicitly protected: Dock/Grid geometry/order/scroll/focus, Header/navigation/capsules, wallpaper image/crop/provider/rotation, prayer data/provider/order, safe frame and unrelated components.
 
 **Next action:** monitor exact-head CI run `42497894475` (#1599) for HEAD `a085be1`; then inspect the rendered 1920×1080 composition and wait for owner Mi TV Stick visual acceptance. Do not merge or install automatically.
+
+
+## 13. Exact-head CI completed — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
+
+**Status: SOURCE PASS · EXACT-HEAD CI PASS · RENDERED / PHYSICAL ACCEPTANCE PENDING · NOT FINAL**
+
+- PR #80 remains OPEN / DRAFT / UNMERGED. Current source HEAD: `a085be150ebcf1d48b825ed7ac43b172261f3aa0`; base PR #79 SHA `b4abdf0bd555a0106c135add20c3f287cf10b412`.
+- Exact-head CI #1599 / run `42497894475`: **SUCCESS**. Both jobs succeeded: `Launcher build and unit tests` and `Lists, tools and docs`.
+- Python regression suite: **167 tests, OK (1 skipped)**. All six wallpaper-text refinement contracts passed, including explicit checks for all six prayer labels at 13sp and all six prayer times at 17sp.
+- Android command `./gradlew --no-daemon testReleaseUnitTest assembleRelease`: **BUILD SUCCESSFUL in 1m 18s**. Both `:app:testReleaseUnitTest`, `:installer:testReleaseUnitTest`, and both release assemble tasks passed.
+- Release APK diagnostic size: **1,627,685 bytes**. Historical 1.5 MiB warning is non-blocking; no release APK was published. The separate publisher workflow #54 was SKIPPED by design for PR #80.
+- CI generated visual-parity artifact `glass-tv-home-dock-visual-parity-4e99e1ba497ae2724c46abfdff28087f484679cb`, artifact ID `13624193020`, ZIP size `1,426,812` bytes, expires 15 Nov 2026. This is a workflow artifact ZIP, not a direct APK release asset; do not present it as a direct APK download.
+- PR total diff has 4 files: CI workflow, MainActivity.java, activity_main.xml, and the scoped regression test. The CI workflow adjustment enables the Home layout visual-parity artifact for PR #80; the corrective application edits remain limited to MainActivity.java and activity_main.xml, plus the focused test. No DockGeometry/Dock/Grid/Header/capsule/navigation/safe-frame/wallpaper provider/prayer data code was edited.
+- No rendered 1920×1080 screenshot has been independently reviewed and no physical Mi TV Stick test, ADB session, installation, device setting change, or merge was performed.
+
+**Next action:** inspect rendered 1920×1080 visual output and owner acceptance on Mi TV Stick. Keep PR #80 draft and unmerged until physical review passes. No APK release delivery yet.
