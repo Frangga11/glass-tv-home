@@ -2150,3 +2150,16 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - **Controls:** DockGeometry/Dock/Grid, Header/capsules, navigation, safe frame, wallpaper provider/rotation, prayer data/order and unrelated components were not modified.
 - **Open gates:** rendered screenshot at 1920×1080; physical Mi TV Stick review for overlap, 5mm visual shift, text legibility on bright/dark wallpapers, ayah frame appearance and DPAD focus. No merge/install.
 - Detailed source evidence: `GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md`.
+
+
+## Corrective audit — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
+
+- **Current corrective HEAD:** `894544cb89191a08980cf1d7a16c7fefbe5acdc7`, PR #80 OPEN / DRAFT / UNMERGED.
+- **Root cause:** prior PR #80 code applied a 5mm downward shift (31.5dp at density 2.0), reducing nominal clearance above the Dock tray to about 4.5dp. This contradicted the intended balanced spacing.
+- **Correction:** title/description shelf now has a nominal 32.5dp Dock-tray clearance and 32dp minimum clamp; this is about 28dp upward from the prior PR #80 rendering. Daily Ayah rises 18dp; prayer header/table rise 24dp total (18dp parent + 6dp child translation).
+- **Prayer text:** removed per-text gradient shader and runtime default Typeface overrides; solid high-contrast colors retain the XML Inter family. Names 13sp; times 17sp.
+- **Daily Ayah:** Arabic 20sp / translation 14sp at 1080p (22sp / 15sp at 4K), native Amiri Quran, RTL and high-quality line breaking retained. Added only a subtle transparent-to-dark scrim; no border/panel. Focus-only outline and click/DPAD remain.
+- **Protected:** DockGeometry and Dock/Grid behavior, Header/capsules/navigation, wallpaper image/crop/provider/rotation, prayer data/provider/order, safe frame and unrelated components.
+- **Changed files:** MainActivity.java, activity_main.xml, test_home_wallpaper_text_refinement_contract.py.
+- **CI:** prior run `42493469262` validates old HEAD `c7d95c3` only. Exact-head CI for `894544c` is pending; do not carry forward the prior PASS claim.
+- **Rendered 1920×1080 / physical Mi TV Stick:** PENDING. No installation, ADB, setting change or merge.
