@@ -609,3 +609,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Updated PR-branch reconciliation document to replace the obsolete intermediate 34dp safe frame with the approved 29dp frame. PR-branch docs-only commit: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`. CI #1583 is validating that documentation-only tip; no need to change application source.
 - Release workflow #37 is explicitly **not** the current candidate: its logs show CI #1545 / older commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not cite that release asset as the latest PR #79 APK.
 - PR #79 remains OPEN / DRAFT / UNMERGED; physical Mi TV Stick acceptance remains NOT RUN. No APK installation, ADB, device settings/default launcher mutation or merge.
+
+
+## Decision — equalize Home left information pills (8 Nov 2026)
+
+**Decision:** Preserve the location/altitude pill as the fixed reference. Calculate its existing runtime width once from the measured Header width (34%) and assign the same pixel width to the weather/AQI pill. Both controls already share the same parent-start anchor, so no horizontal offset or padding change is needed.
+
+**Rationale:** The previous 34% vs 44% sizing caused the right-edge mismatch. Reusing the location width produces identical left/right coordinates and avoids changing an already-approved component. Long weather text remains single-line/end-ellipsized inside its fixed slot; data and interaction behavior remain untouched.
+
+**Scope exclusions:** no vertical movement, margins, padding, font/icon/radius, clock/date, Wi-Fi/Assistant, Home/Profile/Settings, safe frame, provider, click/DPAD/focus/animation, or other Home changes.
+
+**Implementation:** PR #79 `fix/home-balanced-frame-001`; source `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`; regression test/current HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. CI #1587 Android job pending; device visual acceptance pending.
