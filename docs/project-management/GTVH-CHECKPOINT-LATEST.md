@@ -5,7 +5,7 @@
 **Canonical documentation branch:** `docs/project-master-inventory`  
 **Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
 **Current Home implementation PR:** [PR #82](https://github.com/Frangga11/glass-tv-home/pull/82) — stacked on PR #81; PRs #80/#81/#82 remain unmerged.  
-**Latest documentation sync:** supporting audit, handover and register updated immediately before this checkpoint update on `docs/project-master-inventory`; see the branch tip for the resulting commit SHA.
+**Latest documentation sync:** audit report, handover, audit register and this checkpoint were updated together on `docs/project-master-inventory`; see the branch tip for the final documentation commit SHA.
 
 ---
 
@@ -459,16 +459,16 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 
 - **Current PR:** [PR #82](https://github.com/Frangga11/glass-tv-home/pull/82), OPEN / DRAFT / UNMERGED.
 - **Branch:** `fix/home-islamic-shelf-vertical-position-grid-row-scroll-002`.
-- **Exact source HEAD:** `37bd6343f9b4b535f477c307770f49778320b032`.
+- **Exact source HEAD:** `d6f594933b712b36b0660e119a0d4ee8b7de3134`.
 - **Base:** `fix/home-dock-islamic-shelf-navigation-001`, current tip `3cd36b8a5fbc788a7b15e178e4aaf0606e919c61` (PR #81). PR #80 remains OPEN / DRAFT / UNMERGED at `a085be150ebcf1d48b825ed7ac43b172261f3aa0`; PR #81 remains OPEN / DRAFT / UNMERGED. PR #81 application source was not changed for this follow-up; only workflow eligibility was extended to support exact-head PR #82 artifact and direct APK delivery.
 - **A — Islamic package:** horizontal Glass tray top is measured from laid-out Dock card coordinates and DockDecoration's tray inset in root coordinates. Islamic package lower edge targets exactly 27.5dp (55px at density 2.0) above that visual tray edge. Existing 10dp internal hero/Islamic shelf relationship and content layout are preserved. Runtime/device confirmation is pending.
 - **B — Grid:** previous raw child-height smooth scroll replaced with decorated row-pitch geometry and a cancellable ValueAnimator driving actual RecyclerView.scrollBy() content movement. Expanded horizontal viewport clips to its padded content area, destination row is aligned by decorated top, focus resolves by stable app key, stale animations are invalidated, and transition/focus settlement has no scrollToPositionWithOffset jump fallback.
 - **C — typography:** prayer and daily-doa headings Inter weight 700; six localized prayer-name labels uppercase and weight 650. Existing 13sp/17sp text sizes, font family, colors, positions, prayer data, Arabic/RTL and translations are unchanged.
-- **Changed PR #82 files (7):** `.github/workflows/ci.yml`, `.github/workflows/publish-apk-release.yml`, `DockGeometry.java`, `MainActivity.java`, `activity_main.xml`, `DockLayoutModelTest.java`, and `test_home_dock_islamic_shelf_navigation_refinement_contract.py`.
-- **Exact-head CI #1629 / run `42505054837`: SUCCESS**, both jobs passed. Python **177 tests, OK (1 skipped)**. Android app/installer Release unit tests and Release assemble passed; **BUILD SUCCESSFUL in 1m14s**.
-- **Exact-head publisher #84 / run `42505054798`: SUCCESS.** Release APK size **1,630,737 bytes**; SHA-256 `3416c4ec0a956263a05fd923638f8b27d06c5fce619e8a328accc057c01bd777`.
-- **Direct APK:** [Glass-TV-Home-PR82-37bd6343f9b4b535f477c307770f49778320b032.apk](https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr82-37bd6343f9b4b535f477c307770f49778320b032/Glass-TV-Home-PR82-37bd6343f9b4b535f477c307770f49778320b032.apk).
-- CI visual-parity artifact ZIP ID `13627675055`, size 1,429,685 bytes, SHA-256 `1e158a07b761627e98f6d84c986e616bd4ebd91c45090af657477c311ce40342`; this ZIP is not the direct APK asset.
+- **Changed PR #82 files (5):** `DockGeometry.java`, `MainActivity.java`, `activity_main.xml`, `DockLayoutModelTest.java`, and `test_home_dock_islamic_shelf_navigation_refinement_contract.py`. CI and publisher workflow support is inherited from PR #81's updated base branch.
+- **Exact-head CI #1630 / run `42505427017`: SUCCESS**, both jobs passed. Python **177 tests, OK (1 skipped)**. Android app/installer Release unit tests and Release assemble passed; **BUILD SUCCESSFUL in 1m37s**.
+- **Exact-head publisher #85 / run `42505426954`: SUCCESS.** Release APK size **1,630,737 bytes**; SHA-256 `524963af6aad72444d38e1cd896eac25d29be05cac9e765b8819e0f69dcba735`.
+- **Direct APK:** [Glass-TV-Home-PR82-d6f594933b712b36b0660e119a0d4ee8b7de3134.apk](https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr82-d6f594933b712b36b0660e119a0d4ee8b7de3134/Glass-TV-Home-PR82-d6f594933b712b36b0660e119a0d4ee8b7de3134.apk).
+- CI visual-parity artifact ZIP ID `13627586269`, size 1,429,683 bytes, SHA-256 `3b081cde3d8fcfd5da101d5300a772bf2e6ca2bbc0371606e39e804603c62584`; this ZIP is not the direct APK asset.
 - An initial compile attempt caught a missing pending app-key field declaration; it was corrected and guarded by a regression assertion. Final exact-head CI and APK publisher both pass.
 - **Physical acceptance remains mandatory:** Mi TV Stick 1920×1080 / density320 measurement of 27.5dp, package stability during focus changes, DOWN/UP opposite real row motion, repeated and rapid reversals, incomplete last row, app-count change, return-to-Home focus, Dock capacities 4/5/6, typography clipping/overlap and locked-component regression.
 - No assistant-side physical installation, ADB, device setting change, screenshot review or merge was performed. Keep PR #82 DRAFT / UNMERGED until owner confirms the physical tests.
