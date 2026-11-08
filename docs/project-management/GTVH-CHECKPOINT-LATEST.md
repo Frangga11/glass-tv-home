@@ -404,4 +404,4 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 - No APK installation, ADB session, device setting change, PR merge or force-push was performed.
 - Explicitly protected: Dock/Grid geometry/order/scroll/focus, Header/navigation/capsules, wallpaper image/crop/provider/rotation, prayer data/provider/order, safe frame and unrelated components.
 
-**Next action:** verify exact-head CI for `894544c`; then inspect the rendered 1920×1080 composition and wait for owner Mi TV Stick visual acceptance. Do not merge or install automatically.
+**Next action:** monitor exact-head CI run `42497894475` (#1599) for HEAD `a085be1`; then inspect the rendered 1920×1080 composition and wait for owner Mi TV Stick visual acceptance. Do not merge or install automatically.
