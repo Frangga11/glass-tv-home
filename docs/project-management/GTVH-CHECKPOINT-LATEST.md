@@ -999,3 +999,19 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - CI #1672 / run `42531805446`: Lists/tools/docs job completed SUCCESS; Python suite **190 tests, OK (1 skipped)** on PR #99 exact HEAD `443d8491109c416915955c8a9ceb202860916a6b`.
 - Launcher build/unit-test job remains IN PROGRESS; Android `testReleaseUnitTest`, `assembleRelease`, APK size diagnostics and QA artifact upload are not yet verified.
 - Status remains **BELUM FINAL**. No APK installation, ADB, device setting change, visual acceptance or merge.
+
+
+## Cumulative integration checkpoint — PR #101 — 9 November 2026
+
+- New cumulative candidate: [PR #101](https://github.com/Frangga11/glass-tv-home/pull/101), OPEN / DRAFT / UNMERGED.
+- Branch: `integration/home-islamic-prayer-spacing-cumulative-101`.
+- Current exact HEAD after corrective follow-up: `b8389e1f90b9fb7f65d91cfd0d7a41782f343d83`.
+- Base: `fix/daily-ayah-offline-retry-backoff-001`, exact base SHA `4038c08f4825f7bacf965bc6708505d3c8c30ebc`.
+- PR #101 is 4 commits ahead, 0 behind its exact base; 16 changed files: 5 production source/layout/workflow files and 11 regression/test files. No unrelated files are in the PR changed-file list.
+- Integrated content: PR #100 cumulative Home geometry/capsule changes; PR #91 explicit Arabic RTL/right alignment and LTR translation; PR #92 Ayah spacing refinements and removal of prayer-source labels from Home presentation; PR #93 shared fixed runtime line-box width for Arabic and translation. CI APK artifact allowlist includes PR #90–#93 and PR #101.
+- First exact-head CI #1679 / run `42535145121` failed: 211 Python tests, 1 skipped, 1 failure. Root cause was a stale prayer-source label block still present in the cumulative MainActivity header, caught by `test_islamic_shelf_header_is_restored_without_source_label`.
+- Corrective commit removed that remaining block. Current exact HEAD `b8389e1f90b9fb7f65d91cfd0d7a41782f343d83` verified from branch file; `getPrayerDataSourceLabel` no longer occurs in MainActivity. Compare against base confirms 4 commits ahead / 0 behind.
+- Retest CI #1681 / run `42535212323` is running on the corrected exact HEAD. Lists/tools/docs job PASS; Launcher build and unit tests job still IN PROGRESS at checkpoint capture. Python/Android test result, release build, APK artifact/size/hash remain PENDING.
+- PR #101 API currently reports OPEN / DRAFT and mergeable; this is not authorization to merge. Source PRs remain untouched.
+- No rendered 1920×1080 visual review, physical Mi TV Stick acceptance, ADB, installation, launcher setting change or merge has been performed.
+- **Status: BELUM FINAL.** Continue from exact HEAD above; wait for run #1681 to finish, inspect all failure logs if any, verify APK artifact and hashes, then run rendered visual audit and final scope/behavior audit. Device acceptance only after all automated and visual gates pass and owner explicitly approves.
