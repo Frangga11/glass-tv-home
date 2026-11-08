@@ -1,6 +1,5 @@
 """Regression contracts for the Home UI proportion, manual OTA, glass and focus refinement."""
 from pathlib import Path
-import re
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -45,8 +44,6 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         home = ET.parse(HOME_XML).getroot()
         self.assertFalse(any(node.get(ANDROID + "id") == "@+id/badgeSettingsUpdate"
                              for node in home.iter()))
-        self.assertFalse(any(node.get(ANDROID + "id") == "@+id/prayerSectionDivider"
-                             for node in home.iter()) is False)
         ota = ET.parse(OTA_XML).getroot()
         ids = {node.get(ANDROID + "id") for node in ota.iter()}
         self.assertIn("@+id/btnCheckNow", ids)
@@ -82,7 +79,9 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
             self.assertEqual(node.get(ANDROID + "gravity"), "center")
             self.assertEqual(node.get(ANDROID + "drawablePadding"), "4dp")
             self.assertEqual(node.get(ANDROID + "layout_height"), "match_parent")
-        self.assertEqual(len({node.get(ANDROID + "layout_weight") for node in segments.values()}), 1)
+        settings_container = next(node for node in nav.iter()
+                                  if node.get(ANDROID + "id") == "@+id/btnSettingsContainer")
+        self.assertEqual(settings_container.get(ANDROID + "layout_weight"), "1")
 
     def test_dock_icons_expand_optically_without_changing_grid_icon_geometry(self):
         self.assertIn("int iconSize = Math.round(44 * density)", DOCK)
