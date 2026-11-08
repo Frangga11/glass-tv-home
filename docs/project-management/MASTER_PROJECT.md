@@ -1636,3 +1636,10 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 - Updated PR-branch reconciliation document to replace the obsolete intermediate 34dp safe frame with the approved 29dp frame. PR-branch docs-only commit: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`. CI #1583 is validating that documentation-only tip; no need to change application source.
 - Release workflow #37 is explicitly **not** the current candidate: its logs show CI #1545 / older commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not cite that release asset as the latest PR #79 APK.
 - PR #79 remains OPEN / DRAFT / UNMERGED; physical Mi TV Stick acceptance remains NOT RUN. No APK installation, ADB, device settings/default launcher mutation or merge.
+
+
+## Architecture update — GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-001 (8 Nov 2026)
+
+The Home Header left information pills now use one shared width source. `locationPill` remains the reference at its pre-existing 34% measured Header width; `weatherAirQuality` receives the same runtime width. Both retain their existing `layout_alignParentStart` anchor, so left and right edges coincide without offsets. Weather content remains single-line and end-ellipsized. The weather/AQI provider, location/altitude data, pill padding, font, icons, radius, click/DPAD/focus behavior, and all other Header geometry are unchanged.
+
+Implementation: `MainActivity.applyHeaderWidths()`; source commit `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`. Regression source contract added in `tests/test_home_layout_bounds_contract.py`, commit/current PR #79 HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. CI #1587 / run `42489445766` has its Lists/tools/docs job PASS and Android build/test job IN PROGRESS. Visual device acceptance is not claimed.
