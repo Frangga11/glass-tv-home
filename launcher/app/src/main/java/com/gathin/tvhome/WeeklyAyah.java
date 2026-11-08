@@ -23,6 +23,7 @@ import java.util.TimeZone;
 final class WeeklyAyah {
     private static final String TAG = "TvHome.Ayah";
     private static final String API = "https://api.quran.com/api/v4/";
+    private static final String KEY_DAY_INDEX = "day_index";
     /** Short enough for two lines of Arabic and a few of Malay; read in order, one a day. */
     static final String[] VERSES = {
             "2:152", "94:5", "13:28", "2:153", "20:25", "2:45", "3:8", "94:6", "3:134", "7:23",
@@ -102,7 +103,8 @@ final class WeeklyAyah {
     /** Today's valid verse from storage, or null when today's verse is not cached. */
     static Ayah stored(Context ctx) {
         SharedPreferences p = prefs(ctx);
-        if (!keyFor(day()).equals(p.getString("key", null)) || !hasUsableContent(p)) return null;
+        if (p.getInt(KEY_DAY_INDEX, Integer.MIN_VALUE) != day()
+                || !keyFor(day()).equals(p.getString("key", null)) || !hasUsableContent(p)) return null;
         return read(p);
     }
 
@@ -120,7 +122,7 @@ final class WeeklyAyah {
     }
 
     static void clearCache(Context ctx) {
-        prefs(ctx).edit().remove("key").remove("text_indonesian").apply();
+        prefs(ctx).edit().remove("key").remove(KEY_DAY_INDEX).remove("text_indonesian").apply();
     }
 
     /** The last verse kept, whatever day it was for: shown while today's is on its way. */
@@ -145,7 +147,8 @@ final class WeeklyAyah {
 
     /** Fetches today's verse. Network; never on the UI thread. */
     static Ayah refresh(Context ctx) {
-        String key = keyFor(day());
+        int dayIndex = day();
+        String key = keyFor(dayIndex);
         try {
             JSONObject v = new JSONObject(get(API + "verses/by_key/" + key + "?fields=text_uthmani&translations="
                     + MALAY + "," + ENGLISH + "," + INDONESIAN)).getJSONObject("verse");
@@ -166,7 +169,8 @@ final class WeeklyAyah {
             }
             if (name == null || name.trim().isEmpty()) name = "Surah";
             Ayah a = new Ayah(arabic, malay, english, indonesian, name + " " + key);
-            prefs(ctx).edit().putString("key", key).putString("arabic", a.arabic).putString("translation", a.malay)
+            prefs(ctx).edit().putString("key", key).putInt(KEY_DAY_INDEX, dayIndex)
+                    .putString("arabic", a.arabic).putString("translation", a.malay)
                     .putString("text_english", a.english).putString("text_indonesian", a.indonesian)
                     .putString("reference", a.reference).apply();
             return a;
