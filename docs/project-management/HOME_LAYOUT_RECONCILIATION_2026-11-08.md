@@ -83,3 +83,10 @@ A deeper lifecycle review found a second queued focus path not covered by the ea
 - Source commits: `eda610c85e9de4486bd3d9cd51e74f0647a56e0f` (guard) and `2033e06d3cc695cb812160f4e50261c853f7ee29` (readability cleanup); regression test commit `fc7b07abc043b26ab28455dc8dcd5b83f0238465`.
 - Fresh exact-head CI for the final commit is queued/running; do not claim PASS until completed.
 - This is source-level focus-race coverage only. Physical Mi TV Stick DPAD/return-from-app acceptance remains pending.
+
+
+### Expanded cancellation coverage — 8 November 2026
+
+The resume-restoration guard was strengthened after checking the full Home focus graph. The global focus-change observer now invalidates queued Grid/resume focus work whenever focus moves to any non-Grid destination (including prayer, media, popups and other controls), not only the header and Dock. This closes the remaining class of focus-steal paths while preserving focus movement within the Grid. Regression coverage now asserts this global invalidation rule.
+
+Commits: `734eebb18b6095f6912e85def357d4630ccb1f5f` (source), `434d32afb424c4625a45979cc08d632be6443cc3` (test). Exact-head CI pending.
