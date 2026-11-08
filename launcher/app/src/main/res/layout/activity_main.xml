@@ -545,6 +545,7 @@
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:singleLine="true"
+                    android:ellipsize="end"
                     android:includeFontPadding="false" />
                 <View
                     android:id="@+id/locationAltitudeDivider"
@@ -569,6 +570,7 @@
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:singleLine="true"
+                    android:ellipsize="end"
                     android:includeFontPadding="false"
                     android:visibility="gone" />
             </LinearLayout>
@@ -597,7 +599,8 @@
                 android:shadowDx="0"
                 android:shadowDy="1"
                 android:shadowRadius="3"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:ellipsize="end" />
 
             <!-- Now Playing Widget Card: Matching bravia-glass-tv design -->
             <LinearLayout
@@ -772,6 +775,7 @@
                     android:fontFamily="@font/inter"
                     android:fontVariationSettings="'wght' 600"
                     android:singleLine="true"
+                    android:ellipsize="end"
                     android:background="@drawable/header_nav_tab_bg"
                     android:focusable="true"
                     android:clickable="true"
@@ -789,6 +793,8 @@
                     android:paddingEnd="6dp"
                     android:textSize="13sp"
                     android:text="Profil"
+                    android:singleLine="true"
+                    android:ellipsize="end"
                     android:drawableStart="@drawable/ic_shield_child"
                     android:contentDescription="@string/user_profile_content_description"
                     android:background="@drawable/header_nav_tab_bg" />
@@ -811,6 +817,8 @@
                         android:paddingEnd="6dp"
                         android:textSize="13sp"
                         android:text="@string/settings"
+                        android:singleLine="true"
+                        android:ellipsize="end"
                         android:contentDescription="@string/settings"
                         android:drawableStart="@drawable/ic_settings"
                         android:background="@drawable/header_nav_tab_bg" />
