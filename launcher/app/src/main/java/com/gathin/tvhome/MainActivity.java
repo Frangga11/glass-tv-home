@@ -853,10 +853,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     // Any header focus supersedes a deferred Grid target.
                     gridFocusRequestGeneration++;
                     moveTopHighlight(v);
-                    if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings)
-                        v.animate().scaleX(1.04f).scaleY(1.04f).setDuration(reducedMotion ? 0 : 140).start();
-                } else if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings) {
-                    v.animate().scaleX(1f).scaleY(1f).setDuration(reducedMotion ? 0 : 140).start();
+                    // Keep each tab's measured segment geometry stable inside the unified capsule.
                 }
             });
         }
