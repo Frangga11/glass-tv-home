@@ -57,6 +57,22 @@ class DailyAyahCacheAndLabelContract(unittest.TestCase):
         self.assertIn("android:lineSpacingExtra=\"-1dp\"", self.layout)
         self.assertIn("android:lineSpacingMultiplier=\"0.94\"", self.layout)
 
+    def test_arabic_ayah_is_rtl_right_aligned_and_translation_is_ltr_left_aligned(self):
+        shelf_arabic = self.layout[self.layout.index('android:id="@+id/ayahArabic"'):self.layout.index('android:id="@+id/ayahText"')]
+        shelf_translation = self.layout[self.layout.index('android:id="@+id/ayahText"'):self.layout.index('</LinearLayout>', self.layout.index('android:id="@+id/ayahText"'))]
+        self.assertIn('android:gravity="end"', shelf_arabic)
+        self.assertIn('android:textDirection="rtl"', shelf_arabic)
+        self.assertIn('android:gravity="start"', shelf_translation)
+        self.assertIn('android:textDirection="ltr"', shelf_translation)
+        self.assertIn('ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL)', self.main)
+        self.assertIn('ayahArabic.setGravity(Gravity.END)', self.main)
+        self.assertIn('ayahText.setTextDirection(View.TEXT_DIRECTION_LTR)', self.main)
+        self.assertIn('ayahText.setGravity(Gravity.START)', self.main)
+        self.assertIn('arabic.setTextDirection(View.TEXT_DIRECTION_RTL)', self.main)
+        self.assertIn('arabic.setGravity(Gravity.END)', self.main)
+        self.assertIn('translation.setTextDirection(View.TEXT_DIRECTION_LTR)', self.main)
+        self.assertIn('translation.setGravity(Gravity.START)', self.main)
+
     def test_failed_incomplete_payload_is_not_written_to_cache(self):
         self.assertIn("Incomplete Quran verse payload", self.weekly)
         self.assertIn("if (arabic.isEmpty()", self.weekly)
