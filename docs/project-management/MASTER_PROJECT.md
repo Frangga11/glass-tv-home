@@ -1602,3 +1602,12 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 - All five source corrections and latest-head CI validation: PASS. Whole Home Screen end-to-end acceptance: **PARTIAL / NOT PASS** pending separately authorized Mi TV Stick verification.
 - PR #79 and dependency PR #77 remain OPEN / DRAFT / UNMERGED. No APK installation, ADB, device settings/default launcher changes, or physical TV test.
 - Canonical record: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
+
+
+## Final latest-head Home Screen remediation validation — 8 November 2026
+- Latest PR #79 head: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`; CI #1581 / run `42486917618`: **SUCCESS** on merge ref `5203d9cab667b976a3cd47ecaceac444ecd8e06b`, which includes that exact head.
+- Both jobs passed; release build successful; APK diagnostic size **1,627,577 bytes**; test artifact ID `13620161574`.
+- Regression coverage now includes the dynamic-weather-effects disabled guard and settings-toggle refresh behavior.
+- HOME-001–HOME-005: source fixes and latest-head CI validation PASS. Whole Home Screen end-to-end/device acceptance remains **PARTIAL / NOT PASS** pending separate owner authorization and Mi TV Stick verification.
+- PR #79 remains OPEN / DRAFT / UNMERGED; dependency PR #77 remains unmerged. No APK installation, ADB, device settings/default launcher changes, or physical TV test.
+- Canonical report: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
