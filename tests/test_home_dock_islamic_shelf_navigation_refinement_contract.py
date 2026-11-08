@@ -15,7 +15,7 @@ ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
     def test_dock_has_independent_proportional_tile_geometry(self):
-        self.assertIn("DOCK_TILE_SCALE = 0.92f", GEOMETRY)
+        self.assertIn("DOCK_TILE_SCALE = 0.95f", GEOMETRY)
         self.assertIn("horizontalDockTileWidthPx", GEOMETRY)
         self.assertIn("verticalDockTileWidthPx", GEOMETRY)
         self.assertIn("horizontalDockSlotWidthPx", GEOMETRY)
