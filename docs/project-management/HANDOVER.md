@@ -2128,3 +2128,10 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Updated PR-branch reconciliation document to replace the obsolete intermediate 34dp safe frame with the approved 29dp frame. PR-branch docs-only commit: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`. CI #1583 is validating that documentation-only tip; no need to change application source.
 - Release workflow #37 is explicitly **not** the current candidate: its logs show CI #1545 / older commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not cite that release asset as the latest PR #79 APK.
 - PR #79 remains OPEN / DRAFT / UNMERGED; physical Mi TV Stick acceptance remains NOT RUN. No APK installation, ADB, device settings/default launcher mutation or merge.
+
+
+## Handover — Home weather/AQI pill width refinement (8 Nov 2026)
+
+Resume only from `GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. Active task: `GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-001` in PR #79, branch `fix/home-balanced-frame-001`.
+
+Current PR HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`; implementation commit `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`. Location width remains the 34% reference; weather/AQI now uses that same width. Both left anchors remain unchanged. Regression test added. CI #1587 / run `42489445766` Lists/tools/docs PASS; Android test/build still in progress at handover. Next: verify CI conclusion and test output; update checkpoint and supporting docs with final exact status. Then, only when a device test is separately authorized, visually verify 1920×1080 at 320dpi, ID/EN, long location/weather/AQI values, clipping and Header non-regression. Do not merge PR #79 or install APK as part of this task.
