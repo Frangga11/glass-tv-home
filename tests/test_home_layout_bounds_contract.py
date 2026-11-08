@@ -13,17 +13,18 @@ ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 
 class HomeLayoutBoundsContractTest(unittest.TestCase):
-    def test_home_content_uses_equal_29dp_top_and_side_safe_margins(self):
+    def test_home_content_uses_30dp_horizontal_and_bottom_29dp_top_safe_margins(self):
         root = ET.parse(LAYOUT).getroot()
         main_content = next((node for node in root.iter()
                              if node.get(ANDROID + "id") == "@+id/mainContent"), None)
         self.assertIsNotNone(main_content)
-        self.assertEqual(main_content.get(ANDROID + "paddingStart"), "29dp")
-        self.assertEqual(main_content.get(ANDROID + "paddingEnd"), "29dp")
+        self.assertEqual(main_content.get(ANDROID + "paddingStart"), "30dp")
+        self.assertEqual(main_content.get(ANDROID + "paddingEnd"), "30dp")
         self.assertEqual(main_content.get(ANDROID + "paddingTop"), "29dp")
 
-        self.assertIn("SAFE_HORIZONTAL_MARGIN_DP = 29f", GEOMETRY)
-        self.assertIn("SAFE_VERTICAL_MARGIN_DP = 29f", GEOMETRY)
+        self.assertIn("SAFE_HORIZONTAL_MARGIN_DP = 30f", GEOMETRY)
+        self.assertIn("SAFE_VERTICAL_MARGIN_DP = 30f", GEOMETRY)
+        self.assertIn("SAFE_TOP_MARGIN_DP = 29f", GEOMETRY)
         self.assertIn("safeBottomInsetPx", GEOMETRY)
 
     def test_right_prayer_shelf_uses_the_same_top_and_right_safe_inset(self):
@@ -31,7 +32,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         end = MAIN.index("private void applyDockLayout()", start)
         shelf = MAIN[start:end]
         self.assertIn("params.setMarginEnd(inset)", shelf)
-        self.assertIn("params.topMargin = inset", shelf)
+        self.assertIn("params.topMargin = DockGeometry.safeTopInsetPx(density)", shelf)
         self.assertIn("params.setMarginStart(inset)", shelf)
 
     def test_bottom_dock_tray_uses_the_same_safe_frame_as_top_and_sides(self):
@@ -43,6 +44,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
             dock_layout,
         )
         self.assertIn("return safeBottomInsetPx(density) - trayBottomInset", GEOMETRY)
+        self.assertIn("dockParams.bottomMargin = DockGeometry.safeBottomInsetPx(density)", dock_layout)
 
     def test_legacy_home_weather_refresh_cannot_overwrite_shared_weather_aqi_text(self):
         start = MAIN.index("private void showHomeWeather(HomeWeather.Line line)")

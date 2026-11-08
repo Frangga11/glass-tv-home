@@ -68,17 +68,21 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         root = ET.parse(HOME_XML).getroot()
         nav = next(node for node in root.iter()
                    if node.get(ANDROID + "id") == "@+id/navPill")
-        self.assertEqual(nav.get(ANDROID + "layout_height"), "36dp")
-        self.assertEqual(nav.get(ANDROID + "padding"), "2dp")
+        self.assertEqual(nav.get(ANDROID + "layout_height"), "30dp")
+        self.assertEqual(nav.get(ANDROID + "paddingStart"), "2dp")
+        self.assertEqual(nav.get(ANDROID + "paddingEnd"), "2dp")
+        self.assertEqual(nav.get(ANDROID + "paddingTop"), "0dp")
+        self.assertEqual(nav.get(ANDROID + "paddingBottom"), "0dp")
         segments = {}
         for node in nav.iter():
             node_id = node.get(ANDROID + "id")
             if node_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
                 segments[node_id] = node
         self.assertEqual(set(segments), {"@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"})
-        for node in segments.values():
+        for node_id, node in segments.items():
             self.assertEqual(node.get(ANDROID + "gravity"), "center")
-            self.assertEqual(node.get(ANDROID + "drawablePadding"), "4dp")
+            self.assertEqual(node.get(ANDROID + "drawablePadding"),
+                             "2dp" if node_id in ("@+id/btnHome", "@+id/btnCandyBox") else "4dp")
             self.assertEqual(node.get(ANDROID + "layout_height"), "match_parent")
         settings_container = next(node for node in nav.iter()
                                   if node.get(ANDROID + "id") == "@+id/btnSettingsContainer")
