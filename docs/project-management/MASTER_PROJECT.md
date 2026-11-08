@@ -1428,3 +1428,11 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 - Prior CI #1506 (PR #77) and #1526 (PR #79) passed before this latest correction. Fresh CI for the latest exact head is pending/unobserved.
 - PR #79 base is one CI-workflow-only commit behind PR #77 head; the workflow content is identical, but ancestry must be reconciled before merge.
 - No device acceptance, APK installation, ADB, settings mutation or merge has occurred. Physical Mi TV Stick acceptance remains pending.
+
+
+## Home bilingual altitude correction — 8 November 2026
+
+- PR #79 latest head `1fff5b7b8eea4ee53198fe3e65f6c75c91340be3`, OPEN / DRAFT / UNMERGED.
+- Added localized altitude format across default/ID/EN: `%1$d mdpl` for Indonesian/default and `%1$d m ASL` for English. Removed the misleading `±` marker and added regression coverage.
+- Stale-focus correction at prior head passed exact-head CI #1529 (both jobs). Latest exact-head CI #1534 is IN PROGRESS.
+- Device visual/DPAD/overscan acceptance and PR dependency ancestry reconciliation remain pending. No merge or APK installation.
