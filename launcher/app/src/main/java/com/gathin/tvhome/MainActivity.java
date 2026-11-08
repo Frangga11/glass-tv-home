@@ -3864,6 +3864,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             requestHorizontalGridRow(position);
             return;
         }
+        View targetView = manager == null ? null : manager.findViewByPosition(position);
+        if (targetView != null) {
+            Rect targetBounds = new Rect();
+            manager.getDecoratedBoundsWithMargins(targetView, targetBounds);
+            if (Math.abs(targetBounds.top - grid.getPaddingTop()) > 1) {
+                requestHorizontalGridRow(position);
+                return;
+            }
+        }
         RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
         View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
         if (card != null && card.isShown() && card.isFocusable()) {
