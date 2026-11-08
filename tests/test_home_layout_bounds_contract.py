@@ -100,6 +100,28 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("new GlassDrawable(pill", header)
         self.assertIn("pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg))", header)
 
+    def test_deferred_grid_focus_is_cancelled_by_newer_focus_destinations(self):
+        dock_start = MAIN.index("public void onDockTileFocused(String key, View card)")
+        dock_end = MAIN.index("private void handleTileFocused", dock_start)
+        dock_focus = MAIN[dock_start:dock_end]
+        self.assertIn("gridFocusRequestGeneration++;", dock_focus)
+
+        header_start = MAIN.index("pill.setOnFocusChangeListener((v, has) -> {")
+        header_end = MAIN.index("if (prayerTimesView != null)", header_start)
+        header_focus = MAIN[header_start:header_end]
+        self.assertIn("gridFocusRequestGeneration++;", header_focus)
+
+        pause_start = MAIN.index("protected void onPause()")
+        pause_end = MAIN.index("public void onWindowFocusChanged", pause_start)
+        lifecycle = MAIN[pause_start:pause_end]
+        self.assertIn("gridFocusRequestGeneration++;", lifecycle)
+
+        focus_start = MAIN.index("private void focusTile(int position)")
+        focus_end = MAIN.index("private void alignHorizontalGridRowToGlass", focus_start)
+        focus = MAIN[focus_start:focus_end]
+        self.assertIn("if (requestGeneration != gridFocusRequestGeneration) return;", focus)
+        self.assertIn("grid.post(() -> {", focus)
+
     def test_top_controls_are_not_repositioned_from_dock_item_geometry(self):
         self.assertNotIn("alignTopButtons", MAIN)
         self.assertNotIn("topRow.setTranslationX", MAIN)
