@@ -2163,3 +2163,13 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - **Changed files:** MainActivity.java, activity_main.xml, test_home_wallpaper_text_refinement_contract.py.
 - **CI:** prior run `42493469262` validates old HEAD `c7d95c3` only. Exact-head CI #1599 / run `42497894475` for HEAD `a085be1` is IN PROGRESS; do not carry forward the prior PASS claim.
 - **Rendered 1920×1080 / physical Mi TV Stick:** PENDING. No installation, ADB, setting change or merge.
+
+
+## Exact-head validation — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
+
+- Corrective source HEAD `a085be150ebcf1d48b825ed7ac43b172261f3aa0`, PR #80 OPEN / DRAFT / UNMERGED.
+- CI #1599 / run `42497894475`: **SUCCESS**, both jobs passed.
+- Python: **167 tests, OK (1 skipped)**; six scoped wallpaper refinement tests passed. Android app/installer release unit tests and `assembleRelease`: **BUILD SUCCESSFUL in 1m 18s**.
+- APK diagnostic: **1,627,685 bytes**; historical 1.5 MiB threshold warning is non-blocking. Publisher workflow #54 skipped; no direct release APK. Visual parity artifact ID `13624193020` is a ZIP, 1,426,812 bytes, expires 15 Nov 2026.
+- PR diff has four files, including a CI workflow change to include PR #80 in the visual-parity artifact step. App source correction remains confined to MainActivity.java and activity_main.xml; focused regression test file is the third scoped change. No unrelated application modules were edited.
+- Rendered 1920×1080 review and physical Mi TV Stick acceptance pending. No install, ADB, device settings change or merge.
