@@ -31,6 +31,7 @@ class DailyAyahCacheAndLabelContract(unittest.TestCase):
         self.assertIn("RETRY_COOLDOWN_MS = 30L * 60L * 1000L", self.weekly)
         self.assertIn("KEY_LAST_ATTEMPT_DAY", self.weekly)
         self.assertIn("KEY_LAST_ATTEMPT_MS", self.weekly)
+        self.assertIn("WeeklyAyah.shouldAttemptRefresh(this)", self.main)
 
     def test_cache_uses_exact_day_index_not_repeating_verse_key_alone(self):
         self.assertIn("KEY_DAY_INDEX = \"day_index\"", self.weekly)
