@@ -4,6 +4,20 @@
 
 ---
 
+# CURRENT PR INVENTORY UPDATE — CUMULATIVE HOME REFINEMENT — 9 NOVEMBER 2026
+
+| PR | Workstream | Base / head | Status | Notes |
+|---|---|---|---|---|
+| #100 | GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002 | Base PR #89 HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc`; HEAD `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b` | OPEN / DRAFT / UNMERGED | Cumulative PR #84–#89 plus re-applied PR #99 geometry; 11 files; CI #1677 PASS; APK artifact #13638675606 verified; visual audit pending |
+| #99 | GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-001 | Base PR #83 HEAD `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`; HEAD `443d8491109c416915955c8a9ceb202860916a6b` | OPEN / DRAFT / UNMERGED | Isolated source candidate; do not use its APK as cumulative Home build |
+| #84–#89 | Islamic shelf / prayer / daily Ayah sequential stack | #84 → #85 → #86 → #87 → #88 → #89; final #89 HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc` | OPEN / DRAFT / UNMERGED | All six source PRs are inherited by PR #100 |
+
+**Current exact-head validation:** CI #1677 / run `42533185178` passed both jobs; Python 208 tests (1 skipped); Android unit tests and release build passed. APK 1,626,857 bytes; artifact ZIP SHA-256 `e1428796d54847cd7e33c5c761b7339ad76c6eea004b8e26c39f6499d9502521`; extracted APK SHA-256 `b7ae8aa3919e0818b0879b8996427ea6eab9b91f14bf0fcff84b80fad32f292a`. Dedicated audit: [GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md](GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md).
+
+No merge, ADB, TV installation or device-setting change. Rendered 1920×1080 visual review remains pending.
+
+---
+
 # CURRENT CHECKPOINT — GTVH-HOME-SCREEN-CROSS-AUDIT-001 — 8 NOVEMBER 2026
 
 ## Current source and validation
