@@ -1769,6 +1769,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         ModernSettingsDialog.onHostResumed(this);
         updateWeatherAqi();
         WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);
+        // The atmospheric wallpaper overlay has its own location-scoped cache and cadence.
+        // Refresh it on Home entry/resume; the shared G3B pill/dashboard cache remains untouched.
+        updateHomeWeather();
         updateIslamicShelf();
         updateInputsButton();
         updateTopBarUserIcon();
