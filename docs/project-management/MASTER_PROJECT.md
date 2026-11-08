@@ -17,6 +17,7 @@
   - HOME-002 P2 **FAIL (popup entry path)** — prayer detail popup is wired only to hidden `prayerTimes` fallback view; visible timetable has no click/DPAD route.
   - HOME-003 P2 **PARTIAL/RISK** — delayed Dock focus retries lack cancellation generation and may steal focus.
   - HOME-004 P3 **PARTIAL** — Weather focus-scale listener is overwritten by shared Header listener.
+  - HOME-005 P3 **FAIL** — Home atmospheric weather overlay refresh has no production entry point; the dynamic wallpaper weather effect can remain absent or stale.
 - Clock/date, location, Header tabs, Inputs/Wi-Fi/Assistant, wallpaper/hero, ayah shelf, app inventory and Dock geometry have source-level wiring; device/runtime acceptance remains pending.
 - Existing E06 audit is limited to the Home Screen Settings destination, not the full main Home surface.
 
