@@ -1,7 +1,7 @@
 # GTVH-HOME-ISLAMIC-SHELF-SINGLE-ANCHOR-FIX-004 — Audit & Implementation Record
 
 **Date:** 9 November 2026  
-**Status:** SOURCE FIX COMMITTED · EXACT-HEAD CI IN PROGRESS · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
+**Status:** SOURCE FIX COMMITTED · EXACT-HEAD CI PASS · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
 
 ## Source authority
 - Repository: `Frangga11/glass-tv-home`
@@ -51,3 +51,11 @@ The duplicate vertical-position writer has been removed in source and guarded by
 - CI #1639 / run `42523095371`: Python regression suite **PASS — 184 tests, 1 skipped** (confirmed from completed GitHub Actions job logs).
 - Android `testReleaseUnitTest` and `assembleRelease` job remained **IN_PROGRESS** at the time of this update; no final CI result or APK artifact is claimed yet.
 - Physical Mi TV Stick acceptance remains pending.
+
+
+### Exact-head CI final result — 9 November 2026
+- CI #1639 / run `42523095371` on exact HEAD `d821842c2211cb6e65bbde506253cde7b3929771`: **SUCCESS**; both workflow jobs passed.
+- Python regression suite: **184 tests, 1 skipped**.
+- Android `testReleaseUnitTest` and `assembleRelease`: **PASS / BUILD SUCCESSFUL**.
+- Release APK diagnostic: **1,625,313 bytes**. This is a diagnostic build only; the publisher job was not invoked for this PR checkpoint.
+- Physical Mi TV Stick acceptance remains pending. CI success does not prove the vertical anchor is stable on the actual device.
