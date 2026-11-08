@@ -315,9 +315,9 @@ public class DockLayoutModelTest {
                 int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
                 int oldHostHeight = DockGeometry.itemHeightPx(tileHeight, density)
                         + Math.round(18f * density);
-                assertEquals(6f * density,
-                        oldHostHeight - DockGeometry.horizontalDockHeightPx(dockTileHeight, density),
-                        1.0f * density);
+                int expectedHostDelta = tileHeight - dockTileHeight + Math.round(6f * density);
+                assertEquals(expectedHostDelta,
+                        oldHostHeight - DockGeometry.horizontalDockHeightPx(dockTileHeight, density));
                 float trayHeight = tileHeight + 28f * density;
 
                 assertEquals(tileHeight + Math.round(45f * density), itemHeight);
