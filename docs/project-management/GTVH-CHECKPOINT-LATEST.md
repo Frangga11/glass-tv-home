@@ -225,6 +225,7 @@ Supporting-document synchronization commits:
 - Approved correction: preserve the location pill's existing 34% width as the sole reference; calculate `locationWidth` once and apply the same pixel width to both views. No margin, padding, X/Y position, font/icon/radius, safe-frame, weather provider, data, click, DPAD, focus, or animation changes.
 - Source implementation commit: `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`. Regression-test commit / current PR #79 HEAD: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`.
 - Regression contract checks one shared width calculation and assignment to both views, common left anchors, weather single-line/end-ellipsis, and that weather text refresh does not alter layout parameters.
+- Geometry derivation for 1920×1080 at 320dpi: the `mainContent` inner Header width is 1,804px after 58px left/right padding; the preserved 34% reference calculates to 613px. Both pills therefore resolve to the same source-level bounds: left x=58px, right x=671px. This is a layout calculation, not a rendered-device measurement.
 - Compared with prior PR #79 HEAD `c15e4383d7dd3f148b31a19f5e9b85423936b56d`, exactly two files changed: `MainActivity.java` and `tests/test_home_layout_bounds_contract.py` (4 commits ahead, 0 behind).
 - CI #1587 / run `42489445766`: **BOTH JOBS SUCCESS**. Python suite 161 tests, OK (1 skipped); new pill-width regression test PASS; Android `testReleaseUnitTest` + `assembleRelease` BUILD SUCCESSFUL.
 - Release APK diagnostic: **1,627,545 bytes**. CI artifact ID `13621187055`; ZIP size `1,426,725 bytes`.
