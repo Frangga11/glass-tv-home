@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
 GEOMETRY = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java").read_text(encoding="utf-8")
 DOCK = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java").read_text(encoding="utf-8")
+DECORATION = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockDecoration.java").read_text(encoding="utf-8")
 APP = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
 LAYOUT = ROOT / "launcher/app/src/main/res/layout/item_app.xml"
 ANDROID = "{http://schemas.android.com/apk/res/android}"
@@ -39,6 +40,9 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("horizontalShelfAnchorHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
         self.assertIn("horizontalGridBottomMarginPx", GEOMETRY)
+        self.assertIn("HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 4f", GEOMETRY)
+        self.assertIn("DOCK_ITEM_BOTTOM_OFFSET_DP = 12f", GEOMETRY)
+        self.assertIn("horizontalDockItemBottomOffsetPx", DECORATION)
 
     def test_dock_capacity_uses_separate_dock_and_grid_widths(self):
         start = MAIN.index("int gridTileWidth = DockGeometry.horizontalTileWidthPx")
