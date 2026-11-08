@@ -63,25 +63,7 @@
             android:maxLines="1"
             android:ellipsize="end" />
 
-        <!-- The country/state close under the name, and the description a little further below it. -->
-        <TextView
-            android:id="@+id/heroWhere"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="#E6FFFFFF"
-            android:textSize="13sp"
-            android:fontFamily="@font/inter"
-            android:fontVariationSettings="'wght' 600"
-            android:letterSpacing="0.18"
-            android:textAllCaps="true"
-            android:includeFontPadding="false"
-            android:shadowColor="#99000000"
-            android:shadowDx="0"
-            android:shadowDy="1"
-            android:shadowRadius="4"
-            android:singleLine="true"
-            android:visibility="gone" />
+        <!-- The wallpaper description follows the title. -->
 
         <TextView
             android:id="@+id/heroDesc"
