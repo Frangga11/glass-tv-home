@@ -122,6 +122,17 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("if (requestGeneration != gridFocusRequestGeneration) return;", focus)
         self.assertIn("grid.post(() -> {", focus)
 
+    def test_resume_focus_restore_does_not_steal_a_newer_user_focus_target(self):
+        start = MAIN.index("private void restoreFocus()")
+        end = MAIN.index("protected void onPause()", start)
+        restore = MAIN[start:end]
+        self.assertIn("final int restoreGeneration = gridFocusRequestGeneration;", restore)
+        self.assertIn("restoreGeneration != gridFocusRequestGeneration", restore)
+        self.assertIn("if (!supersededByNewFocus)", restore)
+        # Lifecycle completion must still happen when the stale restore is skipped.
+        self.assertIn("tilesReady = true;", restore)
+        self.assertIn("resuming = false;", restore)
+
     def test_location_altitude_uses_bilingual_resources_without_approximation_symbol(self):
         self.assertIn(
             "getString(R.string.location_altitude_format, zone.altitudeMeters)",
