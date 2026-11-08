@@ -575,3 +575,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #79 remains OPEN / DRAFT / UNMERGED. PR #77 latest observed head is `0ea3746f0304b7042a018eeebf850d759f357bf8`; PR #79 compares 42 ahead / 1 behind with merge base `0aeb3851ddce5deb47e3c5f96db44631b0343577`. The one missing PR #77 commit is workflow-only APK artifact publication; no Home source file changed there. Keep this dependency visible and reconcile before merge.
 - Physical Mi TV Stick visual/remote acceptance remains PENDING. No merge, APK installation, ADB, default-launcher change, or device-setting mutation.
 - Detailed audit: `docs/project-management/HOME_LAYOUT_CALIBRATION_AUDIT_2026-11-08.md`.
+
+
+## Superseding Home safe-frame decision — 8 November 2026
+
+- The earlier 34dp balanced-frame checkpoint was an intermediate calibration state and is superseded for the current Home Header refinement.
+- Final owner-approved target for PR #79 is **29dp on top, bottom, left and right**. At 320dpi logical density (2px/dp), this is 58px per edge.
+- Keep the existing left, bottom and right visual alignment baseline; calibrate the top edge to the same 29dp frame. Do not alter Dock/Grid dimensions or behavior as part of this Header refinement.
+- Current source/test HEAD: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`; PR #79 remains Draft/Open/Unmerged.
+- Exact-head CI #1581 / run `42486917618` and companion release workflow #36 / `42486917728` succeeded. Device visual/remote acceptance remains pending; CI is not physical-TV acceptance.
