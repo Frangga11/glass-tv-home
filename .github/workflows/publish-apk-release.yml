@@ -74,4 +74,5 @@ jobs:
           files: launcher/app/build/outputs/apk/release/app-release.apk
           fail_on_unmatched_files: true
 
-# APK-ONLY DELIVERY GUARD: publish the verified app-release.apk asset directly; never distribute ZIP/BIN.
+
+# Trigger note: PR #79 must run the publisher defined on its base branch; see base-branch workflow correction.
