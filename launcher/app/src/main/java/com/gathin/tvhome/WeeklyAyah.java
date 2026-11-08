@@ -16,9 +16,9 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * The daily ayat above the prayer times (weekly_ayah): one of 52 well-known short verses, a new one each
- * day in Malaysian time, with its Uthmani text and Abdullah Muhammad Basmeih's Malay translation from
- * Quran.com. Fetched once a day and kept, so Home shows it at once.
+ * The daily selected Quran verse above the prayer times: one of 52 short verses, selected by the
+ * Western Indonesian (WIB) calendar day, with Uthmani text and available Malay, English and Indonesian
+ * translations from Quran.com. The last valid verse is retained for offline display.
  */
 final class WeeklyAyah {
     private static final String TAG = "TvHome.Ayah";
@@ -97,17 +97,24 @@ final class WeeklyAyah {
         return VERSES[Math.floorMod(day, VERSES.length)];
     }
 
-    /** Today's verse from storage, or null when it has not been fetched yet. */
+    /** Today's valid verse from storage, or null when today's verse is not cached. */
     static Ayah stored(Context ctx) {
         SharedPreferences p = prefs(ctx);
-        // A verse kept before English or Indonesian was added lacks it: fetch again, once.
-        if (!keyFor(day()).equals(p.getString("key", null))
-                || !p.contains("text_english")
-                || !p.contains("text_indonesian")
-                || p.getString("text_indonesian", "").isEmpty()) {
-            return null;
-        }
+        if (!keyFor(day()).equals(p.getString("key", null)) || !hasUsableContent(p)) return null;
         return read(p);
+    }
+
+    /** True when any valid verse is retained, even if it belongs to an earlier day. */
+    static boolean hasCached(Context ctx) {
+        return hasUsableContent(prefs(ctx));
+    }
+
+    private static boolean hasUsableContent(SharedPreferences p) {
+        String arabic = p.getString("arabic", "");
+        boolean hasTranslation = !p.getString("translation", "").trim().isEmpty()
+                || !p.getString("text_english", "").trim().isEmpty()
+                || !p.getString("text_indonesian", "").trim().isEmpty();
+        return arabic != null && !arabic.trim().isEmpty() && hasTranslation;
     }
 
     static void clearCache(Context ctx) {
@@ -117,7 +124,7 @@ final class WeeklyAyah {
     /** The last verse kept, whatever day it was for: shown while today's is on its way. */
     static Ayah last(Context ctx) {
         SharedPreferences p = prefs(ctx);
-        if (p.getString("arabic", null) != null) {
+        if (hasUsableContent(p)) {
             return read(p);
         }
         return new Ayah(
@@ -151,7 +158,12 @@ final class WeeklyAyah {
             }
             String chapter = key.substring(0, key.indexOf(':'));
             String name = new JSONObject(get(API + "chapters/" + chapter + "?language=ms")).getJSONObject("chapter").optString("name_simple");
-            Ayah a = new Ayah(v.optString("text_uthmani"), malay, english, indonesian, name + " " + key);
+            String arabic = v.optString("text_uthmani", "").trim();
+            if (arabic.isEmpty() || (malay.isEmpty() && english.isEmpty() && indonesian.isEmpty())) {
+                throw new IllegalStateException("Incomplete Quran verse payload for " + key);
+            }
+            if (name == null || name.trim().isEmpty()) name = "Surah";
+            Ayah a = new Ayah(arabic, malay, english, indonesian, name + " " + key);
             prefs(ctx).edit().putString("key", key).putString("arabic", a.arabic).putString("translation", a.malay)
                     .putString("text_english", a.english).putString("text_indonesian", a.indonesian)
                     .putString("reference", a.reference).apply();
