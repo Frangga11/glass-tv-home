@@ -2532,6 +2532,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (islamicShelf != null && islamicShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) islamicShelf.getLayoutParams();
             params.setMarginEnd(inset);
+            params.topMargin = inset;
             islamicShelf.setLayoutParams(params);
         }
     }
