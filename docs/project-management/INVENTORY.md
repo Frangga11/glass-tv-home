@@ -1314,3 +1314,12 @@ Previous CI #1506 and #1526 predate the latest stale-focus correction and must n
 - Updated PR-branch reconciliation document to replace the obsolete intermediate 34dp safe frame with the approved 29dp frame. PR-branch docs-only commit: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`. CI #1583 is validating that documentation-only tip; no need to change application source.
 - Release workflow #37 is explicitly **not** the current candidate: its logs show CI #1545 / older commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not cite that release asset as the latest PR #79 APK.
 - PR #79 remains OPEN / DRAFT / UNMERGED; physical Mi TV Stick acceptance remains NOT RUN. No APK installation, ADB, device settings/default launcher mutation or merge.
+
+
+## Source inventory delta — Home weather/AQI pill width (8 Nov 2026)
+
+Changed on PR #79 branch `fix/home-balanced-frame-001`:
+- `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java` — one shared `locationWidth` calculation (existing 34% location reference) now sets both location and weather/AQI runtime widths.
+- `tests/test_home_layout_bounds_contract.py` — regression contract for equal width source, common left anchors, weather text ellipsis, and content updates not changing layout parameters.
+
+No XML layout, resource strings, weather provider, location model, Header navigation, safe frame, or other Home component files changed in this refinement. Compare from previous PR #79 HEAD `c15e4383d7dd3f148b31a19f5e9b85423936b56d` to current test HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`: exactly these two files changed (4 commits ahead). CI #1587 Android job is pending.
