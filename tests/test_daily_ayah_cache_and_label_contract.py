@@ -25,6 +25,14 @@ class DailyAyahCacheAndLabelContract(unittest.TestCase):
         self.assertNotIn("text_indonesian", stored)
         self.assertIn("boolean hasTranslation", self.weekly)
 
+    def test_refresh_uses_single_flight_and_persisted_retry_cooldown(self):
+        self.assertIn("REFRESH_RUNNING.compareAndSet(false, true)", self.weekly)
+        self.assertIn("REFRESH_RUNNING.set(false)", self.weekly)
+        self.assertIn("RETRY_COOLDOWN_MS = 30L * 60L * 1000L", self.weekly)
+        self.assertIn("KEY_LAST_ATTEMPT_DAY", self.weekly)
+        self.assertIn("KEY_LAST_ATTEMPT_MS", self.weekly)
+        self.assertIn("WeeklyAyah.shouldAttemptRefresh(this)", self.main)
+
     def test_cache_uses_exact_day_index_not_repeating_verse_key_alone(self):
         self.assertIn("KEY_DAY_INDEX = \"day_index\"", self.weekly)
         self.assertIn("p.getInt(KEY_DAY_INDEX, Integer.MIN_VALUE) != day()", self.weekly)
