@@ -352,6 +352,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             updateWifiLabel();
             updateWeatherAqi();
             WeatherAirQuality.syncIfDue(MainActivity.this, MainActivity.this::updateWeatherAqi);
+            // HomeWeather has a separate 15-minute cadence for the atmospheric wallpaper overlay.
+            // Polling from the active Home minute tick keeps it fresh without starting duplicate fetches.
+            updateHomeWeather();
             updateIslamicShelf();
             refreshPlacesIfDue();
             refreshOnlineWallpapersIfDue();
