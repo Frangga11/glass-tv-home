@@ -1082,3 +1082,22 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #79 remains OPEN / DRAFT / UNMERGED. PR #77 latest observed head is `0ea3746f0304b7042a018eeebf850d759f357bf8`; PR #79 compares 42 ahead / 1 behind with merge base `0aeb3851ddce5deb47e3c5f96db44631b0343577`. The one missing PR #77 commit is workflow-only APK artifact publication; no Home source file changed there. Keep this dependency visible and reconcile before merge.
 - Physical Mi TV Stick visual/remote acceptance remains PENDING. No merge, APK installation, ADB, default-launcher change, or device-setting mutation.
 - Detailed audit: `docs/project-management/HOME_LAYOUT_CALIBRATION_AUDIT_2026-11-08.md`.
+
+
+## GTVH-HOME-FINAL-CROSS-AUDIT-001 — 8 November 2026
+
+| Item | Evidence / status |
+|---|---|
+| PR #77 consolidated Home layout | OPEN / DRAFT / UNMERGED; head `0ea3746f0304b7042a018eeebf850d759f357bf8`; prior exact-head CI #1506 PASS |
+| PR #79 balanced safe frame/header | OPEN / DRAFT / UNMERGED; latest head `ddd8750a688460cf1c8bc4b27c77189294301844`; fresh exact-head CI pending/unobserved |
+| Stale Grid reveal callback | FIXED in PR #79; captured generation checked before deferred callback re-enters focus flow |
+| Dock focus cancellation | FIXED in PR #79; Dock focus invalidates queued Grid focus generation |
+| Header focus cancellation | FIXED in PR #79; top/header pill focus invalidates queued Grid focus generation |
+| Activity pause cancellation | FIXED in PR #79; onPause invalidates queued Grid focus generation |
+| Regression test | Added Python source-contract test for all four cancellation/guard paths |
+| PR dependency ancestry | PARTIAL: PR #79 base SHA is one CI-only commit behind PR #77 head; CI workflow files inspected and identical; reconcile before merge |
+| Mi TV Stick visual/DPAD/overscan | NOT RUN; requires owner device acceptance |
+| APK installation / device mutation | NOT DONE |
+| Merge / release | NOT AUTHORIZED / NOT DONE |
+
+Previous CI #1506 and #1526 predate the latest stale-focus correction and must not be used as evidence for the new exact head.
