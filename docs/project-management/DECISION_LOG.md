@@ -644,3 +644,18 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 ## Decision — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
 
 Approved implementation boundary is restricted to wallpaper location/title/description, the vertical position of both Home information shelves, prayer timetable text presentation, and daily ayah frame styling. Preserve all existing content/provider logic and all Dock, Header, navigation, global safe-frame and unrelated component geometry. Convert 5mm using Android density: 5 × 160 / 25.4 = 31.496dp; at density 2.0 this rounds to 63px. Both shelves share the existing `heroBottom` anchor; clamp only if required to preserve a minimum 12dp gap to the Dock tray. Daily ayah focus outline remains available for remote accessibility; only the idle border is removed. PR #80 remains draft/unmerged pending visual and physical acceptance.
+
+---
+
+## Decision — GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003 — 9 November 2026
+
+The owner-approved refinement is isolated in PR #83 and stacked on the exact PR #82 source HEAD. The approved implementation decisions are:
+
+1. App updates are manual-only: no launch/resume reminder, no automatic scheduling controls and no red Settings badge. Manual version check, download, install permission and PackageInstaller remain.
+2. Beranda/Profile/Settings navigation capsule is 36dp high with 2dp inner padding; icon/text spacing is 4dp.
+3. Horizontal Glass Dock host extra height is 12dp; horizontal Dock icons receive a restrained 1.045 optical width scale; Grid icon bounds remain unchanged.
+4. Daily Doa and prayer schedule are separated by a subtle 1dp divider; Islamic Shelf scrim uses softer alpha stops 0x12 and 0x26.
+5. Header capsules share 20dp GlassDrawable radius and one Glider focus indicator. Navigation selector retains only selected-tab tint, not a second focus overlay.
+6. Automated checks and exact-head Release build must pass; physical Mi TV Stick acceptance remains a separate mandatory gate.
+
+Evidence: PR #83 https://github.com/Frangga11/glass-tv-home/pull/83; exact HEAD `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`; CI #1637 PASS; Publisher #92 PASS; APK 1,625,213 bytes, SHA-256 `2d14894da872f616188bace686be5f85021766914bbe65260cc76a7848baee26`. **Do not merge before physical acceptance.**
