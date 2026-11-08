@@ -1,7 +1,7 @@
 # GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001 — Audit & Implementation
 
 **Date:** 9 November 2026  
-**Status:** SOURCE CHANGE COMMITTED · EXACT-HEAD CI PENDING · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
+**Status:** SOURCE CHANGE COMMITTED · PYTHON CI PASS · ANDROID CI IN PROGRESS · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
 
 ## Source authority
 - Repository: `Frangga11/glass-tv-home`
@@ -30,7 +30,7 @@
 - Direct access to the exact app JSON URL was unavailable in the audit browser. Therefore these are independent cross-reference values, not proof that the current device cache contains the same JSON. Exact endpoint payload and on-device display still require verification.
 
 ## Acceptance gates
-1. Exact-head CI passes Python and Android unit tests, Release build and APK diagnostics.
+1. Exact-head CI has passed Python contracts (**201 tests, 1 skipped**); Android unit/release build and APK diagnostics are still in progress.
 2. Physical Mi TV Stick review confirms the longer source-bearing header does not clip, overlap or shift the prayer table at 1920×1080 / density 320.
 3. When a validated annual Kemenag dataset is present, both the Islamic Shelf header and compact prayer summary show Kemenag RI.
 4. When the annual dataset is absent, damaged or invalid, both views show the local-estimate label. Never label fallback calculations as Kemenag data.
