@@ -20,7 +20,7 @@ The source was read through the GitHub API and built on GitHub-hosted runners; a
 - Repositioned the existing clock/date block and added its vertical separator.
 - Added a focusable location pill sourced from `Location.chosen()`; it opens the existing `LocationActivity` through `showPrayerZoneDialog()`. Pagar Alam altitude is configured as 800 m; other locations without altitude omit the altitude section.
 - Repositioned the existing `weatherAirQuality` TextView below the location pill; kept its ID, click/key/focus listeners and existing data providers. Header formatting adds temperature/AQI emphasis and a rounded category badge only.
-- Added the Home tab as a position marker only. Its selected state is derived from actual Activity/window/screen state; Home click and remote Home share `returnToMainScreen()`.
+- Added the Home tab as a position marker only. Its selected state is derived from Activity lifecycle plus screensaver/wallpaper-fullscreen flags (not window focus, so dialogs do not deactivate it); Home click and remote Home share `returnToMainScreen()`.
 - Moved the existing Profile and Settings views into the centered navigation capsule without changing their IDs or their click/long-click handlers.
 - Kept `btnInputs` as the first child of `topButtons`. Its XML element was verified byte-for-byte identical to the baseline; its style, text, icon, size and click action are unchanged.
 - Kept Wi-Fi and Assistant as right-side controls. Existing Wi-Fi update, visibility and long-click behavior remain attached to the same view.
