@@ -177,27 +177,28 @@ final class WeeklyAyah {
             try {
                 JSONObject v = new JSONObject(get(API + "verses/by_key/" + key + "?fields=text_uthmani&translations="
                         + MALAY + "," + ENGLISH + "," + INDONESIAN)).getJSONObject("verse");
-            JSONArray trs = v.optJSONArray("translations");
-            String malay = "", english = "", indonesian = "";
-            for (int i = 0; trs != null && i < trs.length(); i++) {
-                JSONObject t = trs.getJSONObject(i);
-                String text = t.optString("text").replaceAll("<sup[^>]*>.*?</sup>", "").replaceAll("<[^>]+>", "").trim();
-                if (t.optInt("resource_id") == MALAY) malay = text;
-                else if (t.optInt("resource_id") == ENGLISH) english = text;
-                else if (t.optInt("resource_id") == INDONESIAN) indonesian = text;
-            }
-            String chapter = key.substring(0, key.indexOf(':'));
-            String name = new JSONObject(get(API + "chapters/" + chapter + "?language=ms")).getJSONObject("chapter").optString("name_simple");
-            String arabic = v.optString("text_uthmani", "").trim();
-            if (arabic.isEmpty() || (malay.isEmpty() && english.isEmpty() && indonesian.isEmpty())) {
-                throw new IllegalStateException("Incomplete Quran verse payload for " + key);
-            }
-            if (name == null || name.trim().isEmpty()) name = "Surah";
-            Ayah a = new Ayah(arabic, malay, english, indonesian, name + " " + key);
-            cache.edit().putString("key", key).putInt(KEY_DAY_INDEX, dayIndex)
-                    .putString("arabic", a.arabic).putString("translation", a.malay)
-                    .putString("text_english", a.english).putString("text_indonesian", a.indonesian)
-                    .putString("reference", a.reference).apply();
+                JSONArray trs = v.optJSONArray("translations");
+                String malay = "", english = "", indonesian = "";
+                for (int i = 0; trs != null && i < trs.length(); i++) {
+                    JSONObject t = trs.getJSONObject(i);
+                    String text = t.optString("text").replaceAll("<sup[^>]*>.*?</sup>", "").replaceAll("<[^>]+>", "").trim();
+                    if (t.optInt("resource_id") == MALAY) malay = text;
+                    else if (t.optInt("resource_id") == ENGLISH) english = text;
+                    else if (t.optInt("resource_id") == INDONESIAN) indonesian = text;
+                }
+                String chapter = key.substring(0, key.indexOf(':'));
+                String name = new JSONObject(get(API + "chapters/" + chapter + "?language=ms"))
+                        .getJSONObject("chapter").optString("name_simple");
+                String arabic = v.optString("text_uthmani", "").trim();
+                if (arabic.isEmpty() || (malay.isEmpty() && english.isEmpty() && indonesian.isEmpty())) {
+                    throw new IllegalStateException("Incomplete Quran verse payload for " + key);
+                }
+                if (name == null || name.trim().isEmpty()) name = "Surah";
+                Ayah a = new Ayah(arabic, malay, english, indonesian, name + " " + key);
+                cache.edit().putString("key", key).putInt(KEY_DAY_INDEX, dayIndex)
+                        .putString("arabic", a.arabic).putString("translation", a.malay)
+                        .putString("text_english", a.english).putString("text_indonesian", a.indonesian)
+                        .putString("reference", a.reference).apply();
                 return a;
             } catch (Exception e) {
                 Log.w(TAG, "verse " + key + ": " + e.getMessage());
@@ -207,7 +208,6 @@ final class WeeklyAyah {
             REFRESH_RUNNING.set(false);
         }
     }
-
     private static String get(String url) throws Exception {
         HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
         c.setConnectTimeout(15000);
