@@ -482,7 +482,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         heroName = findViewById(R.id.heroName);
         heroDesc = findViewById(R.id.heroDesc);
         heroWhere = findViewById(R.id.heroWhere);
-        int usable = getResources().getDisplayMetrics().widthPixels - Math.round(96 * density);
+        int usable = getResources().getDisplayMetrics().widthPixels - Math.round(68 * density);
         heroMaxWidth = Math.round(usable * HERO_WIDTH_SHARE);
         heroNameMaxWidth = Math.round(usable * HERO_NAME_WIDTH_SHARE);
         if (heroName != null) heroName.setMaxWidth(heroNameMaxWidth);
@@ -733,7 +733,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ayahOpenHint.setBackground(hintBg);
             }
 
-            int uWidth = getResources().getDisplayMetrics().widthPixels - Math.round(96 * density);
+            int uWidth = getResources().getDisplayMetrics().widthPixels - Math.round(68 * density);
             int iMaxWidth = Math.round(uWidth * 0.46f);
             if (ayahArabic != null) ayahArabic.setMaxWidth(iMaxWidth);
             if (ayahText != null) ayahText.setMaxWidth(iMaxWidth);
@@ -2648,7 +2648,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
-                // Place the glass tray on the same 48dp bottom safe margin as the top and side edges.
+                // Place the glass tray on the same 34dp bottom safe margin as the top and side edges.
                 // The RecyclerView host extends around its tray to contain labels and focus effects.
                 dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
                 if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
@@ -3793,7 +3793,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
 
-        int usable = getResources().getDisplayMetrics().widthPixels - Math.round(96 * density);
+        int usable = getResources().getDisplayMetrics().widthPixels - Math.round(68 * density);
         int islamicMaxWidth = Math.round(usable * 0.46f);
         boolean is4K = (getResources().getDisplayMetrics().widthPixels >= 3840
                 || getResources().getDisplayMetrics().heightPixels >= 2160);
