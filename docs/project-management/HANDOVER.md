@@ -31,7 +31,7 @@
 ## Safety / acceptance gates
 - Source/build CI: **PASS**.
 - Static Home source audit: **PARTIAL / NOT PASS**.
-- Rendered screen, actual DPAD/focus, lifecycle/resume, weather/prayer live data and Now Playing pause/resume: **PENDING**.
+- Rendered screen, actual DPAD/focus, lifecycle/resume, weather/prayer live data, atmospheric overlay refresh and Now Playing pause/resume: **PENDING**.
 - Crash/error log inspection: **PENDING** (no runtime session/logcat).
 - APK installation, ADB, device settings/default-launcher changes: **NOT PERFORMED**.
 - No source-code changes made during this audit; only audit documentation was updated.
