@@ -1,7 +1,7 @@
 # Home Layout Reconciliation — 8 November 2026
 
 ## Status
-Implementation in progress on `fix/home-balanced-frame-001`, stacked on PR #77 (`fix/home-layout-consolidated-001`). PR #79 is draft and must not be merged before the dependency chain and owner device verification.
+Implementation and exact-head source/CI validation are complete on `fix/home-balanced-frame-001`, stacked on PR #77 (`fix/home-layout-consolidated-001`). PR #79 remains Draft/Open/Unmerged pending dependency reconciliation and owner device verification.
 
 ## Owner-approved constraints
 - Header navigation order: **Beranda → Profil → Pengaturan**. Do not reorder.
@@ -16,23 +16,23 @@ Implementation in progress on `fix/home-balanced-frame-001`, stacked on PR #77 (
 4. Header navigation is now a dedicated centered pill with owner-approved order. Width is computed between measured clock/date content and the right-side controls to avoid overlap.
 5. Location and weather/AQI controls share the same left content edge. Pagar Alam has a source entry with 800 m altitude metadata.
 6. Home was previously rendering a separate lightweight `HomeWeather` cache before the full `WeatherAirQuality` cache. That allowed the Home line to show temperature only even when the G3B dashboard cache contained AQI. The Home line now reads the same location-scoped G3B formatter/cache as the Weather dashboard; unavailable AQI is explicit, not silently omitted.
-7. A single 34dp content safe frame is applied to top/left/right and Dock tray bottom. At the tested 1920×1080 / density 320 device mapping (2 px per dp), reducing the earlier 48dp frame to 34dp moves the Dock tray down by 28 px (approximately 1 cm) while keeping all four edge margins equal.
+7. A single 29dp content safe frame is applied to top/left/right and Dock tray bottom. At the tested 1920×1080 / density 320 device mapping (2 px per dp), reducing the earlier 48dp frame to 29dp moves the Dock tray down by 38 px while keeping all four edge margins equal.
 8. The row-2 requirement is covered by PR #77's existing overflow behavior: grid hidden at rest, exposed only on DPAD Down, and collapsed when focus returns to a Dock tile.
 
 ## Files changed in PR #79
-- `activity_main.xml`: centered navigation, location pill, shared 34dp top/side inset, and weather pill anchored below location.
+- `activity_main.xml`: centered navigation, location pill, shared 29dp top/side inset, and weather pill anchored below location.
 - `MainActivity.java`: header labels/measurement, focus restoration and explicit D-pad routes, equal-frame shelf placement, and one shared weather/AQI display source.
-- `DockGeometry.java`: 34dp shared horizontal/vertical safe frame.
+- `DockGeometry.java`: 29dp shared horizontal/vertical safe frame.
 - `Location.java`: optional altitude field and Pagar Alam = 800 m.
 - `NavigationState.java`: stable focus keys for location, weather and Home tab.
 - `HomeHeaderGeometry.java` plus JVM tests: measured center navigation geometry.
-- `DockGeometryTest.java`: equal 34dp safe-frame contract.
+- `DockGeometryTest.java`: equal 29dp safe-frame contract.
 - Header vector/background drawables and CI artifact publishing for PR #79.
 
 ## Validation
-- CI #1513 (pre-34dp final geometry): release build, unit tests, docs checks and artifact publication passed. APK exact size: 1,627,969 bytes.
+- CI #1513 (historical pre-29dp geometry): release build, unit tests, docs checks and artifact publication passed. APK exact size: 1,627,969 bytes.
 - CI #1514/#1515: weather source consolidation and width adjustment passed.
-- CI #1516–#1519: final 34dp geometry commits are running; do not treat them as final until exact-head CI completes.
+- CI #1516–#1519 are historical intermediate geometry validations and are superseded by exact-head CI #1581 and #1582 on the 29dp implementation.
 - CI success is source/build validation only. It does not replace visual emulator inspection or owner testing on the TV.
 - Do not use the previous PR #78 APK for device verification.
 - No merge authorized.
@@ -115,3 +115,29 @@ The sole PR #77-side commit after merge base is `0ea3746f0304b7042a018eeebf850d7
 - Updated regression test commit `c058935ed4398f5c7964d753fcf35a9cf77989bb` asserts both Grid and Dock retained-focus behavior.
 - CI #1545 / run `42479472690` is running on exact source/test commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`; no PASS claim until both jobs complete.
 - No device test, APK installation, ADB, default-launcher/device settings mutation, force-push, or merge.
+
+
+## Final whole-Home and Header audit — 8 November 2026
+
+### Current implementation and validation
+- Implementation source HEAD: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`.
+- Test-only commit: `49f2777cee006a5afd50a33b85cb90a61a077e40`; diff from the implementation HEAD contains only `tests/test_home_layout_bounds_contract.py` (+59 lines).
+- Exact-head CI #1581 / run `42486917618`: PASS; both jobs, Android unit tests and release build succeeded. APK diagnostic: 1,627,577 bytes; artifact #13620161574.
+- Exact-head CI #1582 / run `42487572059`: PASS; both jobs succeeded. Python suite: **160 tests, OK (1 skipped)**, including all three newly added Header/location regression tests. Android `testReleaseUnitTest` and `assembleRelease`: BUILD SUCCESSFUL. APK diagnostic: 1,627,577 bytes; test artifact #13619209786.
+- The separate release workflow #37 is not the current candidate: its logs show it published the older CI #1545 artifact for commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not treat that release asset as PR #79's latest build.
+- Main layout inventory: 63 unique IDs, no duplicates. Static review confirmed Home/Profile/Settings actions, location and weather controls, prayer timetable activation, DPAD transitions and measured Header geometry.
+- HOME-001–HOME-005 source corrections and exact-head validation are PASS. Overall acceptance remains PARTIAL / NOT PASS until rendered Mi TV Stick, DPAD, lifecycle, overscan and feature acceptance are completed.
+
+### Additional test coverage
+- Location pill click / DPAD Center, Enter, NumPad Enter and vertical transition to Weather.
+- Home, Profile and Settings tab actions, bilingual labels and left/right navigation order.
+- Header width recalculation after the header row, clock/date, right controls or navigation capsule changes measured bounds.
+
+### Safe-frame decision
+- The final approved safe frame is **29dp** on top, left, right and bottom. At 320dpi logical density, this is 58px per edge.
+- The prior 34dp calibration was an intermediate checkpoint and is superseded. Preserve Dock/Grid card sizing and app order; only the safe-frame placement is calibrated.
+
+### Dependency and safety
+- PR #79 remains OPEN / DRAFT / UNMERGED and stacked on PR #77.
+- PR #77's only commit after the common merge base is a CI workflow-only change; PR #79's one-commit-behind ancestry is not a functional source conflict. Keep the dependency visible and reconcile before merge; do not cherry-pick equivalent workflow edits.
+- No APK installed, no ADB, no device settings/default launcher mutation, no physical TV test, no force-push or merge.
