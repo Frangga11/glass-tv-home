@@ -2334,3 +2334,14 @@ Detailed evidence: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT
 - #77 current head vs #79 head comparison: 117 ahead / 5 behind. GitHub reports mergeable, but ancestry needs reconciliation.
 - Exact-head CI for #77, #78, #79, #80, #81, #82 and #83 all reports success (runs #1591, #1500, #1592, #1599, #1628, #1630 and #1637 respectively). Physical Mi TV Stick acceptance remains pending.
 - Await owner's decision: merge the active stack into each configured base (skip #78), or integrate the upstream dependency chain to `main` including #70–#72 and reconcile #78 separately. Do not force-push or change PR bases until confirmed.
+
+
+---
+
+## Owner decision — PR #78 closed and excluded — 9 November 2026
+
+- Owner confirmed PR #78 was a mistake and instructed to remove it from the integration path.
+- PR #78 has been closed on GitHub and verified CLOSED / NOT MERGED: https://github.com/Frangga11/glass-tv-home/pull/78. A closure note in its description says not to merge or revive it. GitHub PRs cannot be permanently deleted through the normal PR API; closing is the correct action.
+- Do not include #78 in future audit, rebase, merge, or release planning.
+- Focus only on #77 and #79–#83. Remaining path: #77 → #79 → #80 → #81 → #82 → #83, subject to explicit reconciliation of #77/#79 ancestry and the upstream #70–#72 dependency chain.
+- No merge was executed in this session. Recheck live refs, reviews, threads, exact-head CI, and device acceptance before the next merge operation.
