@@ -272,5 +272,24 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("boolean hasActiveMusic = info != null && info.hasMusic();", MAIN)
         self.assertIn("info.isPlaying ? R.drawable.ic_pause : R.drawable.ic_play", MAIN)
 
+    def test_home_weather_overlay_refreshes_on_resume_and_active_minute_tick(self):
+        tick_start = MAIN.index("private final Runnable minuteTick")
+        tick_end = MAIN.index("private final Runnable nowPlayingPoll", tick_start)
+        minute_tick = MAIN[tick_start:tick_end]
+        self.assertIn("updateHomeWeather();", minute_tick)
+        self.assertIn("WeatherAirQuality.syncIfDue", minute_tick)
+
+        resume_start = MAIN.index("protected void onResume()")
+        resume_end = MAIN.index("private void reloadApps", resume_start)
+        resume = MAIN[resume_start:resume_end]
+        self.assertIn("updateHomeWeather();", resume)
+
+        start = MAIN.index("private void updateHomeWeather()")
+        end = MAIN.index("private void showHomeWeather", start)
+        refresh = MAIN[start:end]
+        self.assertIn("HomeWeather.due(this)", refresh)
+        self.assertIn("homeWeatherRunning", refresh)
+        self.assertIn('new Thread(() ->', refresh)
+
 if __name__ == "__main__":
     unittest.main()
