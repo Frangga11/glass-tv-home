@@ -25,6 +25,14 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("SAFE_VERTICAL_MARGIN_DP = 48f", GEOMETRY)
         self.assertIn("safeBottomInsetPx", GEOMETRY)
 
+    def test_right_prayer_shelf_uses_the_same_top_and_right_safe_inset(self):
+        start = MAIN.index("private void applyHomeShelfSafeMargins()")
+        end = MAIN.index("private void applyDockLayout()", start)
+        shelf = MAIN[start:end]
+        self.assertIn("params.setMarginEnd(inset)", shelf)
+        self.assertIn("params.topMargin = inset", shelf)
+        self.assertIn("params.setMarginStart(inset)", shelf)
+
     def test_header_navigation_keeps_the_owner_approved_order(self):
         root = ET.parse(LAYOUT).getroot()
         nav = next((node for node in root.iter()
