@@ -5,7 +5,7 @@
 - Owner decision: equal **29dp safe frame** on top, left, right and bottom; at density 2.0 this is **58px per edge**.
 - Source repository: `Frangga11/glass-tv-home`.
 - Source branch: `fix/home-balanced-frame-001`.
-- PR #79: **OPEN / DRAFT / UNMERGED**; current HEAD `354b855b65d95db688cf9a43af5b74e4a14a229b`.
+- PR #79: **OPEN / DRAFT / UNMERGED**; current HEAD `e9fdecdb4dd44eefeed1464fddaf8edd2e2ec5e0`.
 - Stacked PR #77: **OPEN / DRAFT / UNMERGED**; keep both unmerged.
 - Canonical docs branch: `docs/project-master-inventory`.
 
@@ -25,6 +25,7 @@
 - `launcher/app/src/main/res/drawable/header_glass_pill_bg.xml`
 - `launcher/app/src/test/java/com/gathin/tvhome/DockGeometryTest.java`
 - `tests/test_home_layout_bounds_contract.py`
+- `launcher/app/src/test/java/com/gathin/tvhome/DockLayoutModelTest.java`
 
 ## Quality and safety status
 - Repository/PR/head verification: **PASS**.
@@ -33,13 +34,13 @@
 - Unified capsule structure: **PASS** (static source structure).
 - DPAD behavior: **PARTIAL** (existing independent handlers preserved; runtime not yet tested).
 - Rendered four-edge measurement and before/after screenshot: **PENDING**.
-- CI #1559 / run `42484088913`: **IN PROGRESS** at checkpoint capture; do not claim build/test success.
+- CI #1559 / run `42484088913`: **FAIL** (309/310 tests; stale 34dp reserve assertion in DockLayoutModelTest). Corrected the test to 29dp. CI #1560 / run `42484233880`: **IN PROGRESS** for corrected HEAD.
 - Physical Mi TV Stick visual/focus/resume acceptance: **PENDING**.
 - APK installation, ADB, device/default-launcher setting changes: **NOT PERFORMED**.
 - PR merge: **NOT PERFORMED**.
 
 ## Next actions
-1. Wait for CI #1559 and inspect all required jobs.
+1. Wait for CI #1560 and inspect all required jobs.
 2. If CI passes, inspect the exact generated APK/artifact and report its integrity.
 3. Provide visual evidence only from a genuine rendered build; do not fabricate screenshots or infer final bounds from source values.
 4. Owner reviews APK and explicitly authorizes any physical TV test. No remote install or device-setting changes.
