@@ -349,6 +349,16 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void gridRowScrollDeltaHandlesRepeatedRowsAndFastDirectionReversals() {
+        int decoratedRowPitch = 340;
+        assertEquals(680, DockGeometry.gridRowScrollDeltaPx(0, 2, decoratedRowPitch, 0));
+        assertEquals(-340, DockGeometry.gridRowScrollDeltaPx(1, 0, decoratedRowPitch, 0));
+        assertEquals(340, DockGeometry.gridRowScrollDeltaPx(0, 1, decoratedRowPitch, 0));
+        assertEquals(-680, DockGeometry.gridRowScrollDeltaPx(2, 0, decoratedRowPitch, 0));
+        assertEquals(0, DockGeometry.gridRowScrollDeltaPx(1, 1, decoratedRowPitch, 0));
+    }
+
+    @Test
     public void dockTileScaleAndSpacingRemainConsistentAcrossFourFiveAndSixCapacities() {
         float density = 2f;
         int innerWidth = 1920;
