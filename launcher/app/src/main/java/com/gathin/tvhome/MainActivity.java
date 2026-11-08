@@ -3631,10 +3631,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int width = header.getWidth();
         if (width <= 0 || left.getHeight() <= 0 || right.getWidth() <= 0 || date.getWidth() <= 0) return;
 
-        // The location label is short; the weather/AQI line needs more room for both values.
-        // Give each a deliberate width rather than forcing the long AQI string into the location pill's width.
+        // The location pill defines the shared width for both left information pills.
+        // Keep this single calculation independent of either view's visibility.
+        int locationWidth = Math.round(width * 0.34f);
         if (location != null) {
-            int locationWidth = Math.round(width * 0.34f);
             ViewGroup.LayoutParams params = location.getLayoutParams();
             if (params.width != locationWidth) {
                 params.width = locationWidth;
