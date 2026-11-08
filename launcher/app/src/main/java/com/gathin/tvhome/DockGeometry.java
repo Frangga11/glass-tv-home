@@ -91,9 +91,14 @@ final class DockGeometry {
         return Math.max(0, viewportWidthPx);
     }
 
+    /** Exact visual clearance between the Islamic information package and horizontal Glass Dock. */
+    static int islamicShelfDockGapPx(float density) {
+        return Math.round(27.5f * density);
+    }
+
     /** Signed scroll delta to align a target Grid row; positive moves content upward, negative downward. */
-    static int gridRowScrollDeltaPx(int currentRow, int targetRow, int rowHeightPx, int currentTopOffsetPx) {
-        return (targetRow - currentRow) * rowHeightPx + currentTopOffsetPx;
+    static int gridRowScrollDeltaPx(int currentRow, int targetRow, int rowPitchPx, int currentTopOffsetPx) {
+        return (targetRow - currentRow) * rowPitchPx + currentTopOffsetPx;
     }
 
     /** One visible app row plus the RecyclerView's existing top breathing inset. */
