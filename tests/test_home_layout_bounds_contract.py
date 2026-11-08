@@ -205,6 +205,22 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
 
+    def test_deferred_dock_focus_retries_are_cancelled_by_newer_focus_requests(self):
+        start = MAIN.index("private void focusDockTile(int position)")
+        end = MAIN.index("private void focusTile(int position)", start)
+        dock_focus = MAIN[start:end]
+        self.assertIn("final int requestGeneration = ++gridFocusRequestGeneration;", dock_focus)
+        self.assertIn("focusDockTileWhenLaidOut(targetPosition, 3, requestGeneration);", dock_focus)
+        self.assertIn(
+            "private void focusDockTileWhenLaidOut(int position, int attemptsRemaining, int requestGeneration)",
+            dock_focus,
+        )
+        self.assertIn("if (requestGeneration != gridFocusRequestGeneration) return;", dock_focus)
+        self.assertIn(
+            "focusDockTileWhenLaidOut(position, attemptsRemaining - 1, requestGeneration)",
+            dock_focus,
+        )
+
     def test_visible_prayer_timetable_opens_popup_and_supports_dpad_activation(self):
         start = MAIN.index("View prayerTableView = findViewById(R.id.prayerTable);")
         end = MAIN.index("updatePrayerTimes();", start)
