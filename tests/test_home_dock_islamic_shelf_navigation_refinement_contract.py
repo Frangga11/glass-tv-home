@@ -77,7 +77,11 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertEqual(MAIN.count("islamicShelf.addOnLayoutChangeListener"), 1)
         self.assertIn("applyIslamicShelfPosition();", MAIN)
         self.assertIn("private void applyIslamicShelfPosition()", MAIN)
-        self.assertNotIn("if (heroBottom > 0) v.setY(heroBottom - v.getHeight())", MAIN)
+        shelf_listener_start = MAIN.index("islamicShelf.addOnLayoutChangeListener")
+        shelf_listener_end = MAIN.index("GradientDrawable islamicScrim", shelf_listener_start)
+        shelf_listener = MAIN[shelf_listener_start:shelf_listener_end]
+        self.assertIn("applyIslamicShelfPosition();", shelf_listener)
+        self.assertNotIn("heroBottom", shelf_listener)
         self.assertIn("applyIslamicShelfPosition();", MAIN[MAIN.index("private void showHero(int position)"):])
         self.assertIn("heroShelf.addOnLayoutChangeListener", MAIN)
         start = MAIN.index("private void hideShelf()")
