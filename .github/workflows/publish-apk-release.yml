@@ -74,3 +74,5 @@ jobs:
             Device installation and physical Mi TV Stick acceptance remain pending.
           prerelease: true
           files: launcher/app/build/outputs/apk/release/app-release.apk
+
+# This PR copy is retained for review; the base-branch workflow runs the PR #79 release job.
