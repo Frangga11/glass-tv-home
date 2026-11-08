@@ -36,3 +36,30 @@ Implementation in progress on `fix/home-balanced-frame-001`, stacked on PR #77 (
 - CI success is source/build validation only. It does not replace visual emulator inspection or owner testing on the TV.
 - Do not use the previous PR #78 APK for device verification.
 - No merge authorized.
+
+
+## Final cross-audit and stale-focus correction — 8 November 2026
+
+### Audit finding
+A second source review found that the earlier focus-generation fix did not invalidate pending Grid focus requests when focus moved to the Dock or header. The first reveal callback also re-entered `focusTile()` without checking whether its request generation was still current. This left a narrow but real stale-callback path that could steal focus after a newer remote action.
+
+### Correction applied
+- Increment the Grid focus generation when a Dock tile receives focus.
+- Increment the generation when any top/header pill receives focus.
+- Increment the generation when Home pauses, invalidating callbacks queued before another Activity takes the window.
+- Guard the deferred first-reveal callback against its captured generation before it can enqueue a follow-on focus request.
+- Added a Python source-contract regression test covering Dock, header, lifecycle cancellation and first-reveal callback guarding.
+
+### Source-control dependency check
+- PR #77 head at audit time: `0ea3746f0304b7042a018eeebf850d759f357bf8`.
+- PR #79 original base SHA: `0aeb3851ddce5deb47e3c5f96db44631b0343577`.
+- Compare shows PR #79's base was one commit behind PR #77; that single intervening PR #77 commit changed the CI workflow. The workflow content on the two branches was inspected and is identical. This is a dependency/ancestry hygiene item to reconcile before merge, not evidence of a functional source conflict.
+- Do not merge PR #79 before the PR #77 dependency is reconciled and the final exact-head CI passes.
+
+### Validation boundary
+- Previous PR #77 exact-head CI #1506: PASS.
+- Previous PR #79 exact-head CI #1526: PASS; both CI jobs succeeded and the PR test-APK artifact step completed. This is not device acceptance.
+- New source and regression-test commits require a fresh exact-head CI run.
+- Mi TV Stick visual, DPAD, overscan and whole-Home regression acceptance remain NOT RUN.
+- No APK installed; no ADB/device settings or launcher configuration changed.
+- No PR merged; PR #79 remains Draft.
