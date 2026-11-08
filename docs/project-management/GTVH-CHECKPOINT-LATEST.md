@@ -72,6 +72,7 @@ The response to this phrase must always load this exact file from `docs/project-
 | Implementation CI #1581 | `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5` / run `42486917618` | PASS; both required jobs, Android tests and release build |
 | Test-only CI #1582 | `49f2777cee006a5afd50a33b85cb90a61a077e40` / run `42487572059` | PASS; 160 Python tests, 1 skipped; all 3 new tests passed; Android unit tests + release build |
 | Docs-only tip CI #1583 | `c15e4383d7dd3f148b31a19f5e9b85423936b56d` / run `42487822397` | PASS; both jobs completed SUCCESS |
+| Weather/AQI width refinement CI #1587 | `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a` / run `42489445766` | PASS; both jobs, 161 Python tests (1 skipped), Android unit tests + release build |
 
 - Release APK diagnostic from CI #1582: **1,627,577 bytes**.
 - Candidate test artifact: **#13619209786**. This is the latest candidate artifact recorded for the test-only source/test commit; no installation has occurred.
@@ -210,13 +211,13 @@ All are on `docs/project-master-inventory` and must link back to this checkpoint
 Supporting-document synchronization commits:
 | File | Commit |
 |---|---|
-| README.md | `63430cb39306b88354d3a579a2541294723bce9f` |
-| MASTER_PROJECT.md | `acfa06bb73fd4aa1184241b323599a290d6ebe7e` |
-| INVENTORY.md | `1a06b484ca00e4878a0051519ce6ceb030d3f6bc` |
-| DECISION_LOG.md | `654a98bdd110c4b1698f5b99ad85a6e5bace8977` |
-| AUDIT_REGISTER.md | `e9878ea0aaccaa856039e7542fe7dc875b966f4c` |
-| HANDOVER.md | `49b14ad8c151e0306dff16b0392b48cfbaab2930` |
-| GTVH_HOME_SCREEN_CROSS_AUDIT_001.md | `dec4c670083f535aea45bbbc9dff4159f2770ad9` |
+| README.md | `cfc2255a33d394249093f6d33f8308e56a258441` |
+| MASTER_PROJECT.md | `357595932bf21ca6b9a7c34f5e0787dbb30bb9e5` |
+| INVENTORY.md | `0643f40e8b49ead62bd7f8685c549c3ffb52811b` |
+| DECISION_LOG.md | `e425cee59b2b5a27c19bbcb05ee20705cdf5b10f` |
+| AUDIT_REGISTER.md | `d67529bce5ea5280de832882370a8c6759bb78ec` |
+| HANDOVER.md | `6b26260c43323d19e9cdd88a35207fea56711d3e` |
+| GTVH_HOME_SCREEN_CROSS_AUDIT_001.md | `e3dff63f914b8244ecacf39bb975e188b09a6d80` |
 
 ## 9. Active refinement — GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-001 (8 November 2026)
 
@@ -225,7 +226,8 @@ Supporting-document synchronization commits:
 - Source implementation commit: `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`. Regression-test commit / current PR #79 HEAD: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`.
 - Regression contract checks one shared width calculation and assignment to both views, common left anchors, weather single-line/end-ellipsis, and that weather text refresh does not alter layout parameters.
 - Compared with prior PR #79 HEAD `c15e4383d7dd3f148b31a19f5e9b85423936b56d`, exactly two files changed: `MainActivity.java` and `tests/test_home_layout_bounds_contract.py` (4 commits ahead, 0 behind).
-- CI #1587 / run `42489445766`: Lists/tools/docs job PASS; Launcher build/unit-tests job IN PROGRESS at checkpoint update. No full CI PASS claim yet.
+- CI #1587 / run `42489445766`: **BOTH JOBS SUCCESS**. Python suite 161 tests, OK (1 skipped); new pill-width regression test PASS; Android `testReleaseUnitTest` + `assembleRelease` BUILD SUCCESSFUL.
+- Release APK diagnostic: **1,627,545 bytes**. CI artifact ID `13621187055`; ZIP size `1,426,725 bytes`.
 - Physical 1920×1080 / 320dpi visual check, ID/EN content-length matrix, and Mi TV Stick acceptance remain PENDING. No APK install, ADB, device-setting mutation, force-push, or PR merge.
 
 ## 10. Final checkpoint decision
