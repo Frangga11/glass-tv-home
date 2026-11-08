@@ -731,7 +731,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Center navigation: Profile | active Home | Settings, matching the approved reference. -->
+            <!-- Center navigation: active Home | Profile | Settings, preserving the approved original order. -->
             <LinearLayout
                 android:id="@+id/navPill"
                 android:layout_width="wrap_content"
@@ -745,21 +745,6 @@
                 android:padding="3dp"
                 android:clipChildren="false"
                 android:clipToPadding="false">
-                <TextView
-                    android:id="@+id/btnCandyBox"
-                    style="@style/TopMenuButton"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginStart="0dp"
-                    android:gravity="center"
-                    android:drawablePadding="5dp"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
-                    android:textSize="13sp"
-                    android:text="Profil"
-                    android:contentDescription="Select User &amp; Child Mode"
-                    android:background="@drawable/header_nav_tab_bg" />
                 <TextView
                     android:id="@+id/btnHome"
                     android:layout_width="0dp"
@@ -779,6 +764,21 @@
                     android:focusable="true"
                     android:clickable="true"
                     android:contentDescription="Beranda" />
+                <TextView
+                    android:id="@+id/btnCandyBox"
+                    style="@style/TopMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="0dp"
+                    android:gravity="center"
+                    android:drawablePadding="5dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:textSize="13sp"
+                    android:text="Profil"
+                    android:contentDescription="Select User &amp; Child Mode"
+                    android:background="@drawable/header_nav_tab_bg" />
                 <FrameLayout
                     android:id="@+id/btnSettingsContainer"
                     android:layout_width="0dp"
