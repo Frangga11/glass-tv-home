@@ -670,7 +670,7 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 
 ## 20. GTVH-HOME-PRAYER-TIMES-REFRESH-AND-NEXT-SUBUH-FIX-001 — 9 November 2026
 
-**Status: IMPLEMENTATION COMMITTED / CI PENDING / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+**Status: IMPLEMENTATION COMMITTED / EXACT-HEAD CI PASS / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
 
 - PR [#86](https://github.com/Frangga11/glass-tv-home/pull/86): OPEN / DRAFT / UNMERGED.
 - Branch: `fix/prayer-times-refresh-next-subuh-001`.
@@ -680,7 +680,9 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Fixes active refresh checks on Home resume and minute tick; prevents overlapping sync jobs and adds a six-hour retry cooldown keyed by active zone and month; centralizes next-prayer selection; after Isya, the Home prayer row, compact display, and full schedule use tomorrow's Subuh time instead of highlighting today's elapsed Subuh.
 - Provider URL, Kemenag validation, astronomical fallback parameters, timezone rules, shelf geometry, Arabic styling and WeeklyAyah data remain unchanged.
 - Android unit tests cover skipping sunrise, selection before/after prayer times, no same-day prayer after Isya, tomorrow's Subuh and fallback timestamp. Python contracts cover sync guard/cooldown, resume/minute refresh and view consistency.
-- Exact-head CI has not yet appeared in GitHub Actions at this checkpoint. Do not claim CI success until run IDs and job logs are checked.
+- CI #1642 / run `42524091486`: **SUCCESS** on exact HEAD `746beaba2648b167dc174dfd3a61f5e859ed9fc2`.
+- Python suite: **192 tests, 1 skipped**; four new regression contracts passed. Android `testReleaseUnitTest` and `assembleRelease`: **PASS / BUILD SUCCESSFUL**.
+- Release APK diagnostic: **1,625,865 bytes**. Publisher workflow #97 skipped because PR #86 is Draft; no APK release asset is claimed.
 - Physical Mi TV Stick acceptance pending: validate minute/month boundary refresh, offline retry behavior, after-Isya Subuh row and consistency between compact Home timetable and full schedule.
 - Keep PR #86 DRAFT / UNMERGED. No merge or physical device test has been performed.
 
