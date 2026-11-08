@@ -106,12 +106,10 @@
     <string name="media_open_spotify">Buka Spotify</string>
     <string name="media_close_stop">Tutup &amp; Hentikan</string>
     <string name="ota_support_title">Pembaruan Sistem &amp; Dukungan</string>
-    <string name="ota_version_subtitle">Glass TV Home • Mesin Pembaruan Otomatis (OTA)</string>
-    <string name="ota_auto_update_active">✅ Pembaruan Otomatis: Aktif</string>
-    <string name="ota_update_description">Pembaruan diunduh dan dipasang di latar belakang tanpa mengganggu tontonan.</string>
+    <string name="ota_version_subtitle">Glass TV Home • Pembaruan Manual</string>
+    <string name="ota_manual_update_status">Pembaruan diperiksa dan dipasang secara manual.</string>
+    <string name="ota_update_description">Pembaruan diperiksa dan dipasang hanya saat Anda memilihnya.</string>
     <string name="ota_check_now">🔄 Periksa Pembaruan Sekarang</string>
-    <string name="ota_change_time">⏱️ Ubah Waktu Pembaruan Otomatis</string>
-    <string name="ota_disable">⚡ Matikan Pembaruan Otomatis</string>
     <string name="coffee_support">Dukung Pengembangan</string>
     <string name="coffee_payment_method">QR Pembayaran • GXBank</string>
     <string name="coffee_qr_description">Pindai dengan kamera ponsel atau aplikasi perbankan</string>
@@ -162,7 +160,7 @@
     <string name="update_dialog_message">Versi saat ini: v%1$s\nVersi terbaru: v%2$s\n\n📋 Catatan pembaruan:\n%3$s\n\nApakah Anda ingin memperbarui sekarang?</string>
     <string name="update_now_action">⚡ Perbarui Sekarang</string>
     <string name="update_later_action">⏭️ Lewati / Nanti Saja</string>
-    <string name="update_deferred">Pembaruan ditunda. Titik merah 🔴 tetap muncul pada tombol Pengaturan.</string>
+    <string name="update_deferred">Pembaruan ditunda.</string>
     <string name="install_permission_title">⚠️ Izin Instalasi Diperlukan</string>
     <string name="install_permission_message">Aktifkan opsi Allow from this source agar Glass TV Home dapat memasang pembaruan otomatis.</string>
     <string name="open_settings_action">Buka Pengaturan</string>
@@ -209,14 +207,6 @@
     <string name="sound_effects_title">🔊 Pilih Efek Suara</string>
     <string name="sound_effects_off">🔇 Efek suara dimatikan</string>
     <string name="sound_effects_selected">🔊 Efek suara: %1$s</string>
-    <string name="auto_update_schedule_title">⏱️ Pilih Waktu Pembaruan Otomatis Harian</string>
-    <string name="auto_update_time_selected">Waktu pembaruan otomatis diatur ke: %1$s</string>
-    <string name="auto_update_time_0330_option">🌙 03:30 AM (Waktu terbaik: tidur &amp; Subuh)</string>
-    <string name="auto_update_time_0400_option">🌙 04:00 AM (Dini hari)</string>
-    <string name="auto_update_time_0500_option">🌙 05:00 AM (Subuh)</string>
-    <string name="auto_update_time_1200_option">☀️ 12:00 PM (Tengah hari)</string>
-    <string name="auto_update_time_0200_option">🌃 02:00 AM (Tengah malam)</string>
-
     <string name="standby_photo_required">Pilih foto terlebih dahulu untuk mode foto.</string>
     <string name="standby_mode_save_failed">Gagal menyimpan perubahan mode Layar Siaga. Pengaturan sebelumnya tetap digunakan.</string>
     <string name="standby_picker_unavailable">Pemilih foto tidak tersedia pada perangkat ini.</string>
@@ -303,7 +293,7 @@
     <string name="qr_waiting_for_photo">📡 Menunggu foto dikirim dari ponsel...</string>
 
     <string name="current_user_content_description">Pengguna saat ini: %1$s%2$s</string>
-    <string name="ota_version_subtitle_dynamic">Glass TV Home v%1$s • Mesin Pembaruan Otomatis (OTA)</string>
+    <string name="ota_version_subtitle_dynamic">Glass TV Home v%1$s • Pembaruan Manual</string>
     <string name="coffee_thanks">☕ Terima kasih atas dukungan Anda! (@imsomangge)</string>
     <string name="sound_ps5_option">🎮 PlayStation 5 (Bunyi Default)</string>
     <string name="sound_switch_option">🕹️ Nintendo Switch (Klik &amp; Snap Pop)</string>
@@ -327,12 +317,6 @@
     <string name="standby_clock_mode_enabled">Tampilan jam bawaan digunakan.</string>
     <string name="azan_popup_enabled">✅ Popup Azan diaktifkan.</string>
     <string name="azan_popup_disabled">⭕ Popup Azan dimatikan.</string>
-    <string name="auto_update_status_enabled">✅ Auto-Update: Aktif (%1$s)</string>
-    <string name="auto_update_status_disabled">⭕ Auto-Update: Dimatikan</string>
-    <string name="auto_update_disable_action">❌ Matikan Auto-Update</string>
-    <string name="auto_update_enable_action">⚡ Hidupkan Auto-Update</string>
-    <string name="auto_update_enabled_at">✅ Auto-Update dihidupkan (%1$s)</string>
-    <string name="auto_update_disabled">⭕ Auto-Update dimatikan</string>
     <string name="now_playing_fallback_title">Lagu sedang diputar</string>
     <string name="now_playing_fallback_artist">Musik</string>
     <string name="playback_status_playing">▶ Sedang diputar</string>
@@ -474,7 +458,7 @@
     <string name="ui_resolution_title">🖥️ Resolusi Antarmuka</string>
     <string name="app_language_title">🌐 Bahasa Aplikasi</string>
     <string name="app_language_summary">Pilih Bahasa Indonesia atau English.</string>
-    <string name="update_available_title">🚀 Pembaruan Glass TV tersedia 🔴</string>
+    <string name="update_available_title">Pembaruan Glass TV tersedia</string>
     <string name="check_updates_title">🚀 Periksa Pembaruan Glass TV</string>
     <string name="update_available_summary">Versi baru %1$s siap dipasang.</string>
     <string name="check_updates_summary">Periksa apakah versi terbaru Glass TV Home tersedia.</string>
