@@ -1350,3 +1350,35 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - Changed source: `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java` (shared shelf anchor, prayer text gradient, ayah focus/frame styling); `launcher/app/src/main/res/layout/activity_main.xml` (location/title order and spacing); added `tests/test_home_wallpaper_text_refinement_contract.py`.
 - Unchanged: `DockGeometry.java`, Dock/Grid layout and ordering, Header/capsules, global safe frame, wallpaper providers/rotation, prayer data/provider/order and remote navigation routes.
 - CI PASS; rendered/device acceptance pending. Full evidence: `GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md`.
+
+---
+
+## Home source inventory addendum — GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003
+
+- Source PR #83: https://github.com/Frangga11/glass-tv-home/pull/83; branch `fix/home-ui-proportion-glass-focus-refinement-003`; exact HEAD `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`; base PR #82 exact HEAD `d6f594933b712b36b0660e119a0d4ee8b7de3134`.
+- Changed 20 files:
+  - `.github/workflows/ci.yml`
+  - `.github/workflows/publish-apk-release.yml`
+  - `launcher/app/src/main/java/com/gathin/tvhome/AppUpdateManager.java`
+  - `launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java`
+  - `launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java`
+  - `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+  - `launcher/app/src/main/java/com/gathin/tvhome/ModernSettingsDialog.java`
+  - `launcher/app/src/main/res/drawable/header_glass_pill_bg.xml`
+  - `launcher/app/src/main/res/drawable/header_nav_tab_bg.xml`
+  - `launcher/app/src/main/res/drawable/pill_bg.xml`
+  - `launcher/app/src/main/res/layout/activity_main.xml`
+  - `launcher/app/src/main/res/layout/dialog_ota_coffee.xml`
+  - `launcher/app/src/main/res/values-en/strings.xml`
+  - `launcher/app/src/main/res/values-id/strings.xml`
+  - `launcher/app/src/main/res/values/strings.xml`
+  - `launcher/app/src/test/java/com/gathin/tvhome/DockLayoutModelTest.java`
+  - `tests/test_f06_localization_ui_contract.py`
+  - `tests/test_home_dock_islamic_shelf_navigation_refinement_contract.py`
+  - `tests/test_home_ui_proportion_glass_focus_refinement_contract.py`
+  - `tests/test_home_wallpaper_text_refinement_contract.py`
+- PR #83 implements manual-only updates, 36dp navigation capsule, 4dp icon/text spacing, 12dp horizontal Dock extra height, 1.045 horizontal Dock icon optical scale, 1dp Daily Doa/prayer divider, softer Islamic Shelf scrim, shared 20dp glass and Glider focus.
+- Grid icon bounds (48dp), Dock icon bounds (44dp), APK download/install permission and PackageInstaller pipeline remain intact.
+- CI #1637 PASS; 184 Python tests (1 skipped); Android app/installer Release unit tests and `assembleRelease` PASS.
+- Publisher #92 PASS; APK 1,625,213 bytes; SHA-256 `2d14894da872f616188bace686be5f85021766914bbe65260cc76a7848baee26`; [release page](https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-pr83-947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803).
+- No physical Mi TV Stick test or PR merge. Physical acceptance pending.
