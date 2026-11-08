@@ -334,12 +334,18 @@ public class DockLayoutModelTest {
     }
 
     @Test
-    public void gridRowScrollDeltaMakesDownAndUpTrueOpposites() {
-        int rowHeight = 320;
-        assertEquals(320, DockGeometry.gridRowScrollDeltaPx(0, 1, rowHeight, 0));
-        assertEquals(-320, DockGeometry.gridRowScrollDeltaPx(1, 0, rowHeight, 0));
-        assertEquals(280, DockGeometry.gridRowScrollDeltaPx(0, 1, rowHeight, -40));
-        assertEquals(-40, DockGeometry.gridRowScrollDeltaPx(0, 0, rowHeight, -40));
+    public void islamicShelfDockClearanceIsExactlyTwentySevenPointFiveDp() {
+        assertEquals(55, DockGeometry.islamicShelfDockGapPx(2f));
+        assertEquals(41, DockGeometry.islamicShelfDockGapPx(1.5f));
+    }
+
+    @Test
+    public void gridRowScrollDeltaUsesDecoratedPitchAndMakesDownUpTrueOpposites() {
+        int decoratedRowPitch = 340;
+        assertEquals(340, DockGeometry.gridRowScrollDeltaPx(0, 1, decoratedRowPitch, 0));
+        assertEquals(-340, DockGeometry.gridRowScrollDeltaPx(1, 0, decoratedRowPitch, 0));
+        assertEquals(300, DockGeometry.gridRowScrollDeltaPx(0, 1, decoratedRowPitch, -40));
+        assertEquals(-40, DockGeometry.gridRowScrollDeltaPx(0, 0, decoratedRowPitch, -40));
     }
 
     @Test
