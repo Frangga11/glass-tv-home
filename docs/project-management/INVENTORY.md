@@ -1,3 +1,9 @@
+> **CANONICAL CHECKPOINT — READ THIS FIRST**  
+> The only authoritative restart point is [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) on branch `docs/project-master-inventory`. Start every continuation there; do not resume from historical checkpoint blocks, old PR descriptions, or branch-local notes. This file is supporting detail/history and must not establish a competing current state.  
+> **Checkpoint authority:** GitHub repository `Frangga11/glass-tv-home`; canonical docs branch `docs/project-master-inventory`; single entry file `docs/project-management/GTVH-CHECKPOINT-LATEST.md`. The latest checkpoint supersedes all older status statements below.  
+
+---
+
 # CURRENT CHECKPOINT — GTVH-HOME-SCREEN-CROSS-AUDIT-001 — 8 NOVEMBER 2026
 
 ## Current source and validation
