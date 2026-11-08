@@ -2288,3 +2288,36 @@ Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LA
 ### Session closure — 9 November 2026
 
 The FIX-002 implementation session is closed at checkpoint. Resume from canonical `GTVH-CHECKPOINT-LATEST.md`; next action is physical Mi TV Stick acceptance using the exact-head PR #82 APK. PR #80/#81/#82 remain OPEN / DRAFT / UNMERGED. Do not merge or declare final until measured 27.5dp clearance and the actual DOWN/UP row behavior are confirmed on device. No further source change is authorized until device findings are recorded.
+
+---
+
+# CURRENT HANDOVER — GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003 — 9 NOVEMBER 2026
+
+## Canonical restart
+- Read `GTVH-CHECKPOINT-LATEST.md` first on `docs/project-master-inventory`.
+- Source repository: `Frangga11/glass-tv-home`.
+- Active source PR: [#83](https://github.com/Frangga11/glass-tv-home/pull/83), OPEN / DRAFT / UNMERGED.
+- Source branch: `fix/home-ui-proportion-glass-focus-refinement-003`.
+- Exact source HEAD: `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
+- Base: PR #82 branch `fix/home-islamic-shelf-vertical-position-grid-row-scroll-002`, exact base HEAD `d6f594933b712b36b0660e119a0d4ee8b7de3134`.
+- PRs #80/#81/#82 remain unmerged; no merge was performed.
+
+## Completed implementation
+- Manual-only update checks; no automatic launch/resume prompt or Settings red badge; APK install path retained.
+- Navigation capsule 36dp, 2dp inner padding and 4dp icon/text gap.
+- Horizontal Dock extra height 12dp; horizontal Dock icon optical scale 1.045; Grid icon bounds unchanged.
+- Daily Doa divider and softened Islamic Shelf scrim.
+- Shared 20dp glass radius and shared Glider focus indicator across the header pills.
+- Regression coverage updated and added.
+
+## Exact-head validation
+- CI #1637 / run `42509424284`: SUCCESS. Python 184 tests, OK (1 skipped); Android app/installer Release unit tests and Release build passed.
+- Publisher #92 / run `42509424259`: SUCCESS; exact-head APK published.
+- APK: `Glass-TV-Home-PR83-947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803.apk`; 1,625,213 bytes; SHA-256 `2d14894da872f616188bace686be5f85021766914bbe65260cc76a7848baee26`.
+- Release: https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-pr83-947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803.
+- CI artifact ID `13628113675`; ZIP size 1,427,011 bytes; ZIP digest `7caf8c43502a4db15c61a098bf1d55559ecf6a0fdf2f8eb73eeaecf0d32dbd08`; expires 15 November 2026.
+
+## Remaining owner action
+Install the exact-head APK on Mi TV Stick at 1920×1080 / density 320. Verify manual OTA behavior, all seven focus targets, navigation capsule proportions, Dock icon/height, wallpaper/Islamic Shelf readability, divider, clipping and regressions. Record screenshot/video and actual remote behavior. Do not merge or mark final before physical acceptance.
+
+Detailed evidence: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md](GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md).
