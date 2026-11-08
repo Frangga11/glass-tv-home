@@ -2357,28 +2357,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             DockPreferences preferences = DockPreferences.load(this);
             int innerWidth = Math.max(0, gridWrap.getWidth()
                     - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
-            int tileWidth = DockGeometry.horizontalDockTileWidthPx(innerWidth, preferences.capacity, density);
+            int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, preferences.capacity, density);
             int tileHeight = DockGeometry.tileHeightPx(tileWidth);
-            int horizontalDockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
-            shelfDockTop = shelfAnchorRect.bottom - horizontalDockHeight
+            // Keep the established shelf baseline; compact Dock geometry must not pull the
+            // prayer/Ayah panel vertically when its card or host is refined.
+            int shelfAnchorHeight = DockGeometry.horizontalShelfAnchorHeightPx(tileHeight, density);
+            shelfDockTop = shelfAnchorRect.bottom - shelfAnchorHeight
                     + DockGeometry.dockItemTopOffsetPx(density);
         } else {
             // Use the first Dock card as the stable horizontal anchor, never the currently focused card.
             RecyclerView.ViewHolder first = dockRecycler == null
                     ? null : dockRecycler.findViewHolderForAdapterPosition(0);
             View firstCard = first == null ? null : first.itemView.findViewById(R.id.card);
+            int innerWidth = Math.max(0, gridWrap.getWidth()
+                    - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
+            DockPreferences preferences = DockPreferences.load(this);
+            int baseTileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, preferences.capacity, density);
+            int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(innerWidth, preferences.capacity, density);
+            int baseTileHeight = DockGeometry.tileHeightPx(baseTileWidth);
+            int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
             if (firstCard != null) {
                 root.offsetDescendantRectToMyCoords(firstCard, shelfAnchorRect);
-                shelfDockTop = shelfAnchorRect.top;
+                // Restore the pre-refinement card-top baseline after the Dock card shrinks.
+                shelfDockTop = shelfAnchorRect.top - (baseTileHeight - dockTileHeight);
             } else {
                 root.offsetDescendantRectToMyCoords(gridWrap, shelfAnchorRect);
-                int innerWidth = Math.max(0, gridWrap.getWidth()
-                        - gridWrap.getPaddingLeft() - gridWrap.getPaddingRight());
-                int tileWidth = DockGeometry.horizontalDockTileWidthPx(
-                        innerWidth, DockPreferences.load(this).capacity, density);
-                int tileHeight = DockGeometry.tileHeightPx(tileWidth);
                 shelfDockTop = shelfAnchorRect.bottom
-                        - DockGeometry.horizontalDockHeightPx(tileHeight, density)
+                        - DockGeometry.horizontalShelfAnchorHeightPx(baseTileHeight, density)
                         + DockGeometry.dockItemTopOffsetPx(density);
             }
         }
