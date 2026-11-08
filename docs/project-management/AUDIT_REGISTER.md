@@ -2154,10 +2154,10 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 
 ## Corrective audit — GTVH-HOME-WALLPAPER-TEXT-REFINEMENT-001 (8 Nov 2026)
 
-- **Current corrective HEAD:** `894544cb89191a08980cf1d7a16c7fefbe5acdc7`, PR #80 OPEN / DRAFT / UNMERGED.
+- **Current corrective HEAD:** `a085be150ebcf1d48b825ed7ac43b172261f3aa0`, PR #80 OPEN / DRAFT / UNMERGED.
 - **Root cause:** prior PR #80 code applied a 5mm downward shift (31.5dp at density 2.0), reducing nominal clearance above the Dock tray to about 4.5dp. This contradicted the intended balanced spacing.
 - **Correction:** title/description shelf now has a nominal 32.5dp Dock-tray clearance and 32dp minimum clamp; this is about 28dp upward from the prior PR #80 rendering. Daily Ayah rises 18dp; prayer header/table rise 24dp total (18dp parent + 6dp child translation).
-- **Prayer text:** removed per-text gradient shader and runtime default Typeface overrides; solid high-contrast colors retain the XML Inter family. Names 13sp; times 17sp.
+- **Prayer text:** removed per-text gradient shader and runtime default Typeface overrides; solid high-contrast colors retain the XML Inter family. All six names 13sp; all six times 17sp.
 - **Daily Ayah:** Arabic 20sp / translation 14sp at 1080p (22sp / 15sp at 4K), native Amiri Quran, RTL and high-quality line breaking retained. Added only a subtle transparent-to-dark scrim; no border/panel. Focus-only outline and click/DPAD remain.
 - **Protected:** DockGeometry and Dock/Grid behavior, Header/capsules/navigation, wallpaper image/crop/provider/rotation, prayer data/provider/order, safe frame and unrelated components.
 - **Changed files:** MainActivity.java, activity_main.xml, test_home_wallpaper_text_refinement_contract.py.
