@@ -13,7 +13,7 @@ final class DockGeometry {
     private static final float DOCK_ITEM_BOTTOM_OFFSET_DP = 12f;
     private static final float HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 8f;
     private static final float TRAY_PADDING_DP = 14f;
-    private static final float DOCK_EXTRA_HEIGHT_DP = 14f;
+    private static final float DOCK_EXTRA_HEIGHT_DP = 12f;
     /** Legacy shelf baseline keeps the information panels stationary while Dock cards shrink. */
     private static final float SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP = 18f;
     private static final float DOCK_TILE_SCALE = 0.95f;
