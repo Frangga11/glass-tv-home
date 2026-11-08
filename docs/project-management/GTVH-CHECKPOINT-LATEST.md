@@ -606,3 +606,15 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 
 ### Current decision
 **WAITING FOR ONE OWNER DECISION:** Should I merge only the active stacked chain into each PR's configured parent branch and skip superseded #78, or should I integrate the entire dependency chain into `main` (including prerequisite PRs #70–#72, with #78 reconciled separately)?
+
+
+---
+
+## Owner decision update — PR #78 removed from integration — 9 November 2026
+
+- Owner confirmed PR #78 was created in error and instructed that work focus on the remaining PRs.
+- PR #78 [closed on GitHub](https://github.com/Frangga11/glass-tv-home/pull/78); verified state CLOSED, merged=false. Its description records that it must not be merged or revived. GitHub does not provide permanent deletion of an existing PR; closing is the correct disposition.
+- PR #78 is excluded from all future merge plans and active Home stack calculations. Its old-main overlap with #79 is no longer an unresolved integration choice.
+- Remaining Home path under review: #77 → #79 → #80 → #81 → #82 → #83. This does not itself resolve the upstream #70–#72 prerequisites or the #77/#79 ancestry discrepancy (117 ahead / 5 behind from the recorded merge base).
+- No PR among #77, #79–#83 has been merged by this action. Before merging, re-fetch live PR refs, verify exact-head CI/reviews/unresolved threads and reconcile #77/#79 ancestry. Physical Mi TV Stick acceptance remains pending and must be explicitly recorded if the owner chooses to override that gate.
+- This section supersedes earlier checkpoint text that described PR #78 as awaiting owner disposition or possible reconciliation. PR #78 is CLOSED / EXCLUDED.
