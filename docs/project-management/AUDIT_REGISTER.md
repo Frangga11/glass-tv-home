@@ -1925,3 +1925,16 @@ Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exa
 | Stale-focus correction | PASS | Exact-head CI #1529 passed both jobs at prior head `ddd8750a688460cf1c8bc4b27c77189294301844` |
 | Latest exact-head CI | IN PROGRESS | Run #1534 for `1fff5b7b8eea4ee53198fe3e65f6c75c91340be3` |
 | Physical TV acceptance | PENDING | Not run |
+
+
+## Resume checkpoint — GTVH-HOME-FINAL-CROSS-AUDIT-001 CI and build review (8 November 2026)
+
+- PR #79 `fix/home-balanced-frame-001` latest exact HEAD: `1fff5b7b8eea4ee53198fe3e65f6c75c91340be3`; OPEN / DRAFT / UNMERGED; GitHub reports mergeable=true. PR #77 `fix/home-layout-consolidated-001` HEAD: `0ea3746f0304b7042a018eeebf850d759f357bf8`; OPEN / DRAFT / UNMERGED; mergeable=true.
+- Exact-head PR #79 CI #1534 / run `42477517935` completed SUCCESS. Both jobs passed: Lists/tools/docs and Launcher build/unit tests. Release build, `testReleaseUnitTest`, APK size diagnostics and test-APK publication all completed successfully.
+- PR #77 exact-head CI #1506 / run `42462553724` also completed SUCCESS.
+- Release APK measured `1,624,589 bytes` (about 1,586 KiB), above the historical 1.5 MiB reference (1,572,864 bytes) by 51,725 bytes (~3.3%). CI warning is non-blocking. Largest entries: `classes.dex` 378,210 compressed bytes; `res/SR.ttf` 200,452; `assets/kabut-pagi-dempo.jpg` 230,997 (uncompressed / equal compressed). Review size delta before release; no size regression baseline has yet been established in this audit.
+- Test APK artifact uploaded for run #1534: artifact ID `13615852690`, ZIP size 1,423,863 bytes, SHA-256 `b11d3b46ed25b1a54b3107f9b080587b628cdda48c97f97e44888d6b6ed59e86`; retention expires 15 Nov 2026. This is a CI artifact only, not a device acceptance result.
+- PR dependency check: PR #79 targets PR #77 branch. Comparing PR #77 head to PR #79 head reports 53 commits ahead / 1 behind from merge base `0aeb3851ddce5deb47e3c5f96db44631b0343577`. GitHub currently reports both PRs mergeable. The CI workflow file content at both exact heads is byte-identical (blob `5d271a43c5bfada87d85b144740a0074aea3e56b`). Preserve the stacked dependency and verify the final PR diff/ancestry after PR #77 integration; do not force-push or merge as part of this audit.
+- Source follow-ups previously committed on PR #79 remain: stale Grid focus callback generation guard/cancellation and bilingual altitude formatting (`%1$d mdpl` / `%1$d m ASL`).
+- Overall source/CI status: PASS for exact current head; overall Home layout acceptance remains PARTIAL because physical Mi TV Stick visual/DPAD/overscan and whole-Home regression tests have not been performed.
+- No APK installed; no ADB/device settings/default-launcher mutation; no PR merged. Keep both PRs Draft until owner device acceptance and final ancestry review.
