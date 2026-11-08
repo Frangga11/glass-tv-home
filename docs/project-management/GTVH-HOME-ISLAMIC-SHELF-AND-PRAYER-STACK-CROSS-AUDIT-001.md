@@ -16,7 +16,7 @@ All six PRs remain OPEN / DRAFT / UNMERGED. GitHub reports mergeable=true for ea
 | #85 | `a5eaae843f8998c53238870609102e4c20b05ded` | #1640 / `42523437010` | 188 / 1 skipped | PASS | 1,625,337 B |
 | #86 | `746beaba2648b167dc174dfd3a61f5e859ed9fc2` | #1642 / `42524091486` | 192 / 1 skipped | PASS | 1,625,865 B |
 | #87 | `91f1152361d9b4db70a74f8f6b30ad38f60b4211` | #1647 / `42524629431` | 198 / 1 skipped | PASS | 1,626,169 B |
-| #88 | `a4b979540def5fc1414e66eec6df516a1ef22fe8` | #1649 / `42524805149` | 201 / 1 skipped | PASS | 1,626,381 B |
+| #88 | `a4b979540def5fc1414e66eec6df516a1ef22fe8` | #1648 / `42524805149` | 201 / 1 skipped | PASS | 1,626,381 B |
 | #89 | `4038c08f4825f7bacf965bc6708505d3c8c30ebc` | #1649 / `42525047258` | 202 / 1 skipped | PASS | 1,626,745 B |
 
 For all six runs, both CI jobs completed successfully. Android `testReleaseUnitTest` and `assembleRelease` completed successfully. APK sizes are diagnostics from the validation build; publisher workflows were skipped because PRs remain Draft, so no published APK release asset is claimed.
