@@ -3637,6 +3637,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void cancelHorizontalGridRowTransition() {
         horizontalGridTransitionGeneration++;
         pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
+        pendingHorizontalGridKey = null;
         horizontalGridTransitionRunning = false;
         horizontalGridTransitionRetries = 0;
         android.animation.ValueAnimator previous = horizontalGridScrollAnimator;
@@ -3650,6 +3651,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (grid == null || adapter == null || targetPosition < 0
                 || targetPosition >= adapter.getItemCount()) return;
         pendingHorizontalGridPosition = targetPosition;
+        pendingHorizontalGridKey = adapter.keyAt(targetPosition);
         horizontalGridTransitionRunning = true;
         horizontalGridTransitionRetries = 0;
         final int transitionGeneration = ++horizontalGridTransitionGeneration;
@@ -3662,19 +3664,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 transitionGeneration, focusGeneration));
     }
 
+    /** Resolve by stable component identity first; clamp only if that app disappeared. */
+    private int resolvePendingHorizontalGridPosition() {
+        if (adapter == null || adapter.getItemCount() <= 0) return RecyclerView.NO_POSITION;
+        int resolved = pendingHorizontalGridKey == null
+                ? RecyclerView.NO_POSITION : adapter.positionOf(pendingHorizontalGridKey);
+        if (resolved < 0) {
+            resolved = Math.max(0, Math.min(pendingHorizontalGridPosition, adapter.getItemCount() - 1));
+        }
+        pendingHorizontalGridPosition = resolved;
+        pendingHorizontalGridKey = adapter.keyAt(resolved);
+        return resolved;
+    }
+
     private void startHorizontalGridRowTransition(int transitionGeneration, int focusGeneration) {
         if (!horizontalGridTransitionRunning
                 || transitionGeneration != horizontalGridTransitionGeneration
                 || focusGeneration != gridFocusRequestGeneration
                 || pendingHorizontalGridPosition < 0
-                || adapter == null || grid == null
-                || pendingHorizontalGridPosition >= adapter.getItemCount()) return;
+                || adapter == null || grid == null) return;
+        int target = resolvePendingHorizontalGridPosition();
+        if (target == RecyclerView.NO_POSITION) {
+            cancelHorizontalGridRowTransition();
+            if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+            else focusTopBarFallback();
+            return;
+        }
         GridLayoutManager manager = grid.getLayoutManager() instanceof GridLayoutManager
                 ? (GridLayoutManager) grid.getLayoutManager() : null;
-        int target = pendingHorizontalGridPosition;
         if (manager == null) {
             horizontalGridTransitionRunning = false;
             pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
+            pendingHorizontalGridKey = null;
             focusTopBarFallback();
             return;
         }
@@ -3689,6 +3710,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             } else {
                 horizontalGridTransitionRunning = false;
                 pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
+                pendingHorizontalGridKey = null;
                 focusTopBarFallback();
             }
             return;
@@ -3718,7 +3740,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
      */
     private void animateHorizontalGridRowScroll(int dy, long duration,
                                                   int transitionGeneration, int focusGeneration) {
-        if (dy == 0 || grid == null) {
+        if (grid == null) return;
+        if (dy == 0) {
             grid.postOnAnimation(() -> settleHorizontalGridRowTransition(
                     transitionGeneration, focusGeneration));
             return;
@@ -3765,9 +3788,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 || transitionGeneration != horizontalGridTransitionGeneration
                 || focusGeneration != gridFocusRequestGeneration
                 || pendingHorizontalGridPosition < 0
-                || adapter == null || grid == null
-                || pendingHorizontalGridPosition >= adapter.getItemCount()) return;
-        int target = pendingHorizontalGridPosition;
+                || adapter == null || grid == null) return;
+        int target = resolvePendingHorizontalGridPosition();
+        if (target == RecyclerView.NO_POSITION) {
+            cancelHorizontalGridRowTransition();
+            if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+            else focusTopBarFallback();
+            return;
+        }
         GridLayoutManager manager = grid.getLayoutManager() instanceof GridLayoutManager
                 ? (GridLayoutManager) grid.getLayoutManager() : null;
         View targetView = manager == null ? null : manager.findViewByPosition(target);
@@ -3778,6 +3806,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             } else {
                 horizontalGridTransitionRunning = false;
                 pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
+                pendingHorizontalGridKey = null;
                 focusTopBarFallback();
             }
             return;
@@ -3796,14 +3825,57 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // Do not silently focus a row whose final geometry is still wrong.
             horizontalGridTransitionRunning = false;
             pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
+            pendingHorizontalGridKey = null;
             focusTopBarFallback();
             return;
         }
 
+        String targetKey = pendingHorizontalGridKey;
         pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
+        pendingHorizontalGridKey = null;
         horizontalGridTransitionRunning = false;
         horizontalGridTransitionRetries = 0;
-        focusTileWhenLaidOut(target, focusGeneration, 8);
+        focusHorizontalGridRowTargetWhenLaidOut(targetKey, target, focusGeneration, 8);
+    }
+
+    /**
+     * Focuses the already-visible row target without any scrollToPosition fallback.
+     * If the inventory changed during motion, resolve by stable app key and queue a new
+     * measured transition instead of focusing a different adapter item.
+     */
+    private void focusHorizontalGridRowTargetWhenLaidOut(String key, int fallbackPosition,
+                                                          int requestGeneration, int attemptsRemaining) {
+        if (requestGeneration != gridFocusRequestGeneration || adapter == null || grid == null) return;
+        int count = adapter.getItemCount();
+        if (count <= 0) {
+            focusTopBarFallback();
+            return;
+        }
+        int position = key == null ? RecyclerView.NO_POSITION : adapter.positionOf(key);
+        if (position < 0) {
+            position = Math.max(0, Math.min(fallbackPosition, count - 1));
+        }
+        GridLayoutManager manager = grid.getLayoutManager() instanceof GridLayoutManager
+                ? (GridLayoutManager) grid.getLayoutManager() : null;
+        int firstComplete = manager == null ? RecyclerView.NO_POSITION
+                : manager.findFirstCompletelyVisibleItemPosition();
+        if (firstComplete != RecyclerView.NO_POSITION
+                && firstComplete / COLUMNS != position / COLUMNS) {
+            requestHorizontalGridRow(position);
+            return;
+        }
+        RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
+        View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
+        if (card != null && card.isShown() && card.isFocusable()) {
+            if (card.isFocused()) onTileFocused(position, card);
+            else if (card.requestFocus()) return;
+        }
+        if (attemptsRemaining > 0) {
+            grid.postOnAnimation(() -> focusHorizontalGridRowTargetWhenLaidOut(
+                    key, fallbackPosition, requestGeneration, attemptsRemaining - 1));
+        } else {
+            focusTopBarFallback();
+        }
     }
 
     /** Aligns a horizontal overflow row to the fixed baseline immediately above the glass. */
