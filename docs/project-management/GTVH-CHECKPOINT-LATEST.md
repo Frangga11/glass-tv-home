@@ -618,3 +618,23 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Remaining Home path under review: #77 → #79 → #80 → #81 → #82 → #83. This does not itself resolve the upstream #70–#72 prerequisites or the #77/#79 ancestry discrepancy (117 ahead / 5 behind from the recorded merge base).
 - No PR among #77, #79–#83 has been merged by this action. Before merging, re-fetch live PR refs, verify exact-head CI/reviews/unresolved threads and reconcile #77/#79 ancestry. Physical Mi TV Stick acceptance remains pending and must be explicitly recorded if the owner chooses to override that gate.
 - This section supersedes earlier checkpoint text that described PR #78 as awaiting owner disposition or possible reconciliation. PR #78 is CLOSED / EXCLUDED.
+
+
+---
+
+## 18. GTVH-HOME-ISLAMIC-SHELF-SINGLE-ANCHOR-FIX-004 — 9 November 2026
+
+**Status: SOURCE FIX COMMITTED / EXACT-HEAD CI IN PROGRESS / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+
+- PR [#84](https://github.com/Frangga11/glass-tv-home/pull/84): OPEN / DRAFT / UNMERGED.
+- Branch: `fix/home-islamic-shelf-single-anchor-004`.
+- Exact current HEAD: `d821842c2211cb6e65bbde506253cde7b3929771`.
+- Base: PR #83 branch `fix/home-ui-proportion-glass-focus-refinement-003`, exact base HEAD `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
+- Root cause confirmed: `MainActivity` had two layout listeners writing the Islamic Shelf Y position from different baselines. The retained listener used `islamicShelfBottomAnchor`; a legacy listener used `heroBottom`. In horizontal mode, those baselines differ by the 10dp internal shelf offset. Interleaving layout and focus callbacks could therefore overwrite the measured anchor and create a vertical jump.
+- Corrective change: removed only the legacy Islamic Shelf listener. Retained the one listener calling `applyIslamicShelfPosition()`, the same anchor application in `showHero()`, measured tray-edge positioning, and the exact 27.5dp gap. `heroBottom` remains in use for the independent wallpaper `heroShelf`.
+- Added regression coverage requiring exactly one Islamic Shelf layout listener and forbidding `heroBottom` in that listener.
+- Scope preserved: no Dock geometry, focus navigation, wallpaper safe frame, prayer calculation/data source, WeeklyAyah/Quran content, typography, Glider, or glass styling changes.
+- CI #1639 / run `42523095371` was IN_PROGRESS when recorded. Do not claim CI pass until exact-head results are available.
+- No physical Mi TV Stick install, ADB measurement, screenshot review, or remote acceptance performed.
+- **Next:** verify exact-head CI, then physical test on Mi TV Stick at 1920×1080 / density 320. Confirm the Islamic Shelf bottom anchor and 27.5dp (55px) clearance remain unchanged through repeated focus transitions, ayah remeasurement, and Dock capacities 4/5/6. Keep PR #84 DRAFT / UNMERGED until physical acceptance.
+- Detailed audit: [GTVH-HOME-ISLAMIC-SHELF-SINGLE-ANCHOR-FIX-004-AUDIT.md](GTVH-HOME-ISLAMIC-SHELF-SINGLE-ANCHOR-FIX-004-AUDIT.md).
