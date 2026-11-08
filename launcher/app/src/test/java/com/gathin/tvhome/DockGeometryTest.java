@@ -6,13 +6,13 @@ import static org.junit.Assert.assertEquals;
 public class DockGeometryTest {
     @Test
     public void homeFrameUsesEqualHorizontalAndVerticalSafeMargins() {
-        assertEquals(48, DockGeometry.safeHorizontalMarginDp());
-        assertEquals(48, DockGeometry.safeVerticalMarginDp());
+        assertEquals(34, DockGeometry.safeHorizontalMarginDp());
+        assertEquals(34, DockGeometry.safeVerticalMarginDp());
     }
 
     @Test
     public void safeInsetsConvertUsingTheSameDisplayDensity() {
-        assertEquals(96, DockGeometry.safeHorizontalInsetPx(2f));
-        assertEquals(96, DockGeometry.safeBottomInsetPx(2f));
+        assertEquals(68, DockGeometry.safeHorizontalInsetPx(2f));
+        assertEquals(68, DockGeometry.safeBottomInsetPx(2f));
     }
 }
