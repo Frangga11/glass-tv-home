@@ -4,7 +4,7 @@
 **Source repository:** Frangga11/glass-tv-home  
 **Source branch:** `fix/home-balanced-frame-001`  
 **PR:** #79 — OPEN / DRAFT / UNMERGED  
-**Source HEAD:** `354b855b65d95db688cf9a43af5b74e4a14a229b`  
+**Source HEAD:** `e9fdecdb4dd44eefeed1464fddaf8edd2e2ec5e0`  
 **Stacked base:** PR #77, `fix/home-layout-consolidated-001` — OPEN / DRAFT / UNMERGED  
 **Owner decision:** uniform 29dp safe frame on all four edges.
 
@@ -61,6 +61,7 @@ Time format attributes and `updateDateAndPeriod()` logic were not changed. No We
 5. `launcher/app/src/test/java/com/gathin/tvhome/DockGeometryTest.java`
    - safe frame assertions updated to 29dp / 58px at density 2.
 6. `tests/test_home_layout_bounds_contract.py`
+7. `launcher/app/src/test/java/com/gathin/tvhome/DockLayoutModelTest.java`
    - safe-frame expectation updated;
    - compact clock/date and shared capsule structural regression tests added.
 
@@ -77,7 +78,7 @@ No files in Dock adapter, Grid adapter, wallpaper provider, Weather/AQI provider
 | Unified capsule structure | PASS (static) | One parent GlassDrawable; tab surfaces transparent; selectors retained. |
 | DPAD focus behavior | PARTIAL | Existing individual focus and key handlers retained; no runtime TV test. |
 | Four-edge measured screenshot comparison | PENDING | No rendered before/after screenshot captured in this static GitHub audit. |
-| Build / unit tests at updated HEAD | PENDING | CI #1559 / run 42484088913 was in progress at checkpoint capture. |
+| Build / unit tests at updated HEAD | PENDING | CI #1559 / run 42484088913: **FAIL**; one legacy geometry assertion still expected a 34dp Grid reserve. Updated `DockLayoutModelTest` to assert the approved 29dp safe reserve. CI #1560 / run 42484233880 is **IN PROGRESS** for corrected HEAD. |
 | Physical Mi TV Stick acceptance | PENDING | Explicitly deferred by owner. |
 | APK install / ADB / launcher setting changes | NOT PERFORMED | Prohibited by owner. |
 | PR merge | NOT PERFORMED | PR #79 and #77 remain unmerged. |
