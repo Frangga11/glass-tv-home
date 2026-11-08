@@ -3664,7 +3664,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int targetRow = target / COLUMNS;
         int rowHeight = firstView.getHeight();
         int currentTopOffset = firstView.getTop() - grid.getPaddingTop();
-        int dy = (targetRow - currentRow) * rowHeight - currentTopOffset;
+        int dy = (targetRow - currentRow) * rowHeight + currentTopOffset;
         if (dy == 0) {
             settleHorizontalGridRowTransition(transitionGeneration, focusGeneration);
             return;
