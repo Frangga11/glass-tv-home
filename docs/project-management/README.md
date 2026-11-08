@@ -251,3 +251,8 @@ Canonical checkpoint: [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md). Th
 - Regression contract checks shared width assignment, common left anchors, weather single-line/end ellipsis, and confirms weather content refresh does not rewrite layout parameters.
 - CI #1587 / run `42489445766`: Lists/tools/docs job PASS; Android unit-test + release-build job IN PROGRESS at documentation sync. No CI PASS claim yet for the Android job.
 - No APK installation, ADB, physical TV validation, force-push, PR merge, or device setting changes. Rendered 1920×1080 / 320dpi acceptance remains pending.
+
+
+## CI #1587 final validation — 8 Nov 2026
+
+CI #1587 / run `42489445766` completed **SUCCESS** on PR #79 head `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. Both required jobs passed. Python regression suite: **161 tests, OK (1 skipped)**; the new `test_weather_aqi_pill_matches_location_pill_width_and_left_anchor` passed. Android `testReleaseUnitTest` and `assembleRelease`: **BUILD SUCCESSFUL**. Release APK diagnostic: **1,627,545 bytes**; CI artifact ID **13621187055**, ZIP size **1,426,725 bytes**. CI proves source/build/test contracts only; no rendered Mi TV Stick or physical visual acceptance is claimed. PR #79 remains OPEN / DRAFT / UNMERGED.
