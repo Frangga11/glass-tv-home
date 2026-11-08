@@ -865,3 +865,24 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Physical Mi TV Stick visual acceptance remains pending. Specifically inspect two-line Arabic for harakat/glyph collision, Arabic-to-translation gap (currently 0dp; evaluate visual breathing room), translation line spacing, spacing to “Baca ayat lengkap”, and prayer header/summary with no source suffix.
 - PR #92 remains OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, device install, ADB session, or default-launcher change performed.
 - **Decision:** exact-head automated validation PASS; APK artifact downloaded and SHA-256 verified; physical device acceptance PENDING; final merge BLOCKED until user tests and reports results.
+
+---
+
+## 30. GTVH-HOME-ISLAMIC-SHELF-ARABIC-RIGHT-ALIGN-CORRECTIVE-001 — 9 November 2026
+
+**Status: EXACT-HEAD CI PASS / APK ARTIFACT DOWNLOADED AND SHA-256 VERIFIED / PHYSICAL MI TV STICK ACCEPTANCE PENDING / NOT FINAL.**
+
+- User requested a corrective refinement to make the Home Islamic Shelf Arabic verse reliably right-aligned, consistent with the approved RTL design rule.
+- Draft PR [#93](https://github.com/Frangga11/glass-tv-home/pull/93): OPEN / DRAFT / UNMERGED. Branch `fix/home-islamic-shelf-arabic-right-align-corrective-001`; latest exact HEAD `5b46ef0cea39fa439316e48bf85a3cbbb0944820`; base PR #92 branch `fix/home-islamic-shelf-ayah-spacing-and-prayer-label-001`, exact base HEAD `51cba1bc8bdaa2d80f017b3e83653c9a94f21904`.
+- Implementation changes:
+  - `MainActivity.java`: Home Shelf Arabic TextView and Indonesian translation TextView receive the same explicit runtime line-box width derived from `islamicMaxWidth`; Arabic explicit RTL + `Gravity.END` remains intact, translation explicit LTR + `Gravity.START` remains intact.
+  - `tests/test_home_islamic_shelf_arabic_typography_contract.py`: regression contract checks shared line-box width and explicit Arabic RTL/right alignment.
+  - `.github/workflows/ci.yml`: PR #93 added to the existing Home layout APK artifact upload allowlist; workflow-only change, no application runtime behavior change.
+- Source typography and visual settings retained: Arabic font, warm gold color, -2dp / 0.92 line spacing, font padding enabled, two-line maximum; translation spacing and Shelf geometry unchanged. No Quran content, prayer calculation, navigation, focus, or Dock behavior changed.
+- Exact-head CI #1656 / run `42529068497` on HEAD `5b46ef0cea39fa439316e48bf85a3cbbb0944820`: **SUCCESS**. Both jobs completed SUCCESS: Launcher build/unit tests/release build/APK size diagnostics/artifact upload; Lists/tools/docs checks.
+- Workflow artifact #13636433567, ZIP name `glass-tv-home-dock-visual-parity-e1a4b4949edd56981b8e8c893cc41f66f9b6c324`, size 1,428,120 bytes, digest `sha256:a9a71e64bce13856b0187d3d3da569cc21fdc6ca31ad3739b9e5f24a872fcbdd`, expires 15 November 2026 UTC. Artifact downloaded and inspected; contains `app-release.apk`.
+- Verified APK: `/mnt/data/Glass-TV-Home-PR93.apk`, size **1,626,537 bytes**, SHA-256 `304359db1deb6ffcb87c0fc67bc60cd0a035fe6224ea7d1a1c789fb0bc53eff9`. The file is an Android APK with APK Signing Block. This is the artifact built from the exact PR #93 HEAD above.
+- PR #93 remains OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, device installation, ADB session, or default-launcher change performed.
+- Physical Mi TV Stick acceptance remains pending. Test one-line and two-line Arabic verses, right-edge alignment, harakat/glyph clipping, Indonesian translation left alignment, and preservation of the spacing/hint/prayer display refinements from PR #92.
+- **Decision:** automated source/build gate PASS; APK downloaded and hash verified; device visual acceptance PENDING; final merge BLOCKED until user reports device results.
+- **Next step:** install this exact PR #93 APK on the Mi TV Stick and inspect the Arabic right edge and glyph/harakat integrity. If any row still appears off, capture a straight-on screenshot and record the specific verse/layout state before another source change.
