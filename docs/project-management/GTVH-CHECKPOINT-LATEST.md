@@ -690,3 +690,23 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 ### Detailed audit — PR #86
 - [GTVH-HOME-PRAYER-TIMES-REFRESH-AND-NEXT-SUBUH-FIX-001-AUDIT.md](GTVH-HOME-PRAYER-TIMES-REFRESH-AND-NEXT-SUBUH-FIX-001-AUDIT.md) records the verified source findings, implementation, tests and outstanding acceptance gates.
 - At checkpoint update, exact-head CI #1642 / run `42524091486` is still running; Python/docs job has passed, Android job remains in progress. Publisher workflow skipped because PR #86 is Draft.
+
+
+---
+
+## 21. GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001 — 9 November 2026
+
+**Status: IMPLEMENTATION COMMITTED / CI PENDING / PHYSICAL ACCEPTANCE PENDING / NOT FINAL.**
+
+- PR [#87](https://github.com/Frangga11/glass-tv-home/pull/87): OPEN / DRAFT / UNMERGED.
+- Branch: `fix/daily-ayah-cache-status-label-001`.
+- Exact current HEAD: `4c9d049461b217ed20d134f4f430f2b812c383e7`.
+- Base: PR #86 branch `fix/prayer-times-refresh-next-subuh-001`, exact base HEAD `746beaba2648b167dc174dfd3a61f5e859ed9fc2`.
+- 10 commits ahead / 0 behind; 8 changed files.
+- Corrects misleading Doa Harian labels because the current module contains a rotating set of Quran verses only; labels now say Ayat Pilihan Harian / Daily Selected Verse.
+- Cache validity now requires current day key, Arabic text and at least one translation rather than every language field. Incomplete API responses are rejected before cache replacement. Translation fallback now tries other available language resources.
+- Shelf label distinguishes current content, previous saved content (`TERSIMPAN`) and local fallback (`DATA LOKAL`).
+- Cross-audit discovered PR #85 XML Arabic line-spacing values were overridden by a runtime `setLineSpacing(3dp,1.08f)` call. PR #87 removes that runtime override so PR #85 XML settings can control rendering.
+- Exact-head CI for PR #87 is pending verification; no CI pass or APK size is claimed.
+- Physical Mi TV Stick acceptance remains pending.
+- Detailed audit: [GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001-AUDIT.md](GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001-AUDIT.md).
