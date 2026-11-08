@@ -7,7 +7,39 @@
 **Current Home implementation PR:** [PR #99](https://github.com/Frangga11/glass-tv-home/pull/99) — spacing/capsule refinement stacked on PR #83; PR #99 OPEN / DRAFT / UNMERGED. Parent PRs #80/#81/#82/#83 retain their prior states.  
 **Latest documentation sync:** PR #99 spacing/capsule audit and CI/artifact checkpoint synchronized on `docs/project-master-inventory`; latest preceding audit-report correction commit `62f90762d6a417477c046e50dd576fb6c3362da2`.
 
-## INTEGRATION BLOCKER — PR #99 DOES NOT CONTAIN ISLAMIC SHELF / PRAYER / DAILY AYAH STACK — 9 NOVEMBER 2026
+## CURRENT AUTHORITATIVE UPDATE — CUMULATIVE HOME SPACING/CAPSULE REFINEMENT — 9 NOVEMBER 2026
+
+**Workstream:** `GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002`  
+**Status:** INTEGRATION CANDIDATE CREATED / AUTOMATED VALIDATION IN PROGRESS / NOT FINAL.
+
+- Active cumulative PR: [#100](https://github.com/Frangga11/glass-tv-home/pull/100), OPEN / DRAFT / UNMERGED.
+- Source branch: `integration/home-spacing-capsule-height-pr89-cumulative-001`.
+- Current exact HEAD: `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b`.
+- Exact base: PR #89 branch `fix/daily-ayah-offline-retry-backoff-001`, HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc`.
+- This candidate inherits the complete sequential stack PR #84 → #85 → #86 → #87 → #88 → #89, then reapplies PR #99 geometry/capsule changes. PR #99 itself remains OPEN / DRAFT / UNMERGED and is not the cumulative candidate.
+- Candidate compare against exact PR #89 base: 2 commits ahead, 0 behind; exactly 11 changed files (3 production, 7 regression tests, 1 CI workflow). No out-of-scope production files.
+- The overlapping Islamic-shelf contract was reconciled deliberately: the obsolete 27.5dp assertion was replaced with the 30dp measured-tray assertion while retaining PR #84's additional single-bottom-anchor regression test.
+- CI workflow APK artifact allowlist now explicitly includes PR #100.
+- Exact-head CI run #1677 / run `42533185178`, head `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b`: Lists/tools/docs job ID `128891684465` SUCCESS; Python suite **208 tests, OK (1 skipped)**. Launcher build/unit-test job ID `128891684759` was still IN PROGRESS at this checkpoint update; release APK size/artifact/hash are pending.
+- The earlier run `42533180445` is a duplicate PR-trigger run on the same exact HEAD; do not use it as a separate source candidate.
+- Rendered 1920×1080 visual audit and physical Mi TV Stick acceptance remain PENDING. No ADB, TV installation, device-setting change, or merge has been performed.
+- Keep PR #84–#89, PR #99 and PR #100 OPEN / DRAFT / UNMERGED until all reconciliation, CI, artifact verification, visual acceptance and owner approval gates are complete.
+
+### Approved requirements retained
+- Left/right/bottom safe frame 30dp; top remains 29dp.
+- MIC/Assistant, Wi-Fi and Beranda/Profile/Settings capsule height 30dp; Inputs excluded.
+- Beranda/Profile icon-label gap 2dp; Settings remains 4dp.
+- Wallpaper description and prayer-table visible lower edges each 30dp above the measured horizontal Glass Dock tray.
+- Preserve prayer/Ayah logic and content, typography, icons, glass, blur, colors, shadows, focus/click/DPAD, Dock/Grid sizing/order, preferences and storage.
+
+### Next action
+Wait for exact-head launcher CI to complete; verify release APK artifact and SHA-256; update the dedicated refinement-002 audit report and supporting project records; then perform rendered visual review before any TV installation request.
+
+---
+
+## HISTORICAL INTEGRATION BLOCKER — PR #99 DID NOT CONTAIN THE ISLAMIC SHELF / PRAYER / DAILY AYAH STACK — 9 NOVEMBER 2026
+
+> **Resolution:** The owner authorized repeating PR #99 from PR #89. The cumulative candidate is now PR #100 as documented above. The original findings below remain as historical root-cause evidence; their “next action after owner approval” is superseded by PR #100's current status.
 
 Root cause confirmed by live PR metadata and changed-file inventories:
 - PR #99 base SHA is PR #83 HEAD `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`. Its APK/CI run `42531805446` was built from PR #99 HEAD `443d8491109c416915955c8a9ceb202860916a6b`; therefore it contains the PR #83 ancestry plus PR #99 spacing/capsule changes, but not the separate subsequent Islamic/prayer/daily-ayah chain.
