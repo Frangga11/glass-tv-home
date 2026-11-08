@@ -21,7 +21,7 @@
 **Canonical documentation branch:** `docs/project-master-inventory`  
 **Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
 **Current Home implementation PR:** [PR #99](https://github.com/Frangga11/glass-tv-home/pull/99) — spacing/capsule refinement stacked on PR #83; PR #99 OPEN / DRAFT / UNMERGED. Parent PRs #80/#81/#82/#83 retain their prior states.  
-**Latest documentation sync:** PR #99 spacing/capsule audit and CI/artifact checkpoint synchronized on `docs/project-master-inventory`; see this commit and branch tip for the latest documentation revision.
+**Latest documentation sync:** PR #99 spacing/capsule audit and CI/artifact checkpoint synchronized on `docs/project-master-inventory`; latest preceding audit-report correction commit `62f90762d6a417477c046e50dd576fb6c3362da2`.
 
 ---
 
