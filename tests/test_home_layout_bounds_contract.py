@@ -256,8 +256,16 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("KEYCODE_DPAD_CENTER", binding)
         self.assertIn("KEYCODE_ENTER", binding)
         self.assertIn("KEYCODE_DPAD_DOWN", binding)
+        self.assertIn("KEYCODE_DPAD_UP", binding)
+        self.assertIn("R.id.btnAssistant", binding)
         self.assertIn("setOnFocusChangeListener", binding)
         self.assertIn("showPrayerPopup();", binding)
+
+        start = MAIN.index("View.OnKeyListener pillKeys")
+        end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
+        header_keys = MAIN[start:end]
+        self.assertIn("v.getId() == R.id.btnAssistant", header_keys)
+        self.assertIn("findViewById(R.id.prayerTable)", header_keys)
 
     def test_supported_paused_media_session_remains_available_on_home(self):
         start = NOW_PLAYING.index("public boolean hasMusic()")
