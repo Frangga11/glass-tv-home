@@ -133,19 +133,20 @@
                 android:maxWidth="400dp"
                 android:gravity="end"
                 android:textDirection="rtl"
-                android:textColor="#FFFFF2D8"
+                android:textColor="#FFFFC45A"
                 android:textSize="20sp"
                 android:fontFamily="@font/amiri_quran"
-                android:lineSpacingExtra="2dp"
+                android:lineSpacingExtra="-1dp"
+                android:lineSpacingMultiplier="0.94"
                 android:breakStrategy="high_quality"
                 android:hyphenationFrequency="none"
                 android:includeFontPadding="true"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:shadowColor="#99000000"
+                android:shadowColor="#CC3A1800"
                 android:shadowDx="0"
-                android:shadowDy="1"
-                android:shadowRadius="2" />
+                android:shadowDy="2"
+                android:shadowRadius="3" />
 
             <TextView
                 android:id="@+id/ayahText"
