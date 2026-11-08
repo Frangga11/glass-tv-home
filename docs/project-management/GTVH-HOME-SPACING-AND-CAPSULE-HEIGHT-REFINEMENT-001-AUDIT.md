@@ -109,3 +109,18 @@ PR contains 8 files total. Production changes are limited to the three files abo
 - CI #1672 / run `42531805446`: Lists/tools/docs job completed SUCCESS; Python suite **190 tests, OK (1 skipped)** on PR #99 exact HEAD `443d8491109c416915955c8a9ceb202860916a6b`.
 - Launcher build/unit-test job remains IN PROGRESS; Android `testReleaseUnitTest`, `assembleRelease`, APK size diagnostics and QA artifact upload are not yet verified.
 - Status remains **BELUM FINAL**. No APK installation, ADB, device setting change, visual acceptance or merge.
+
+
+## Exact-head CI and APK verification addendum — 9 November 2026
+
+**Status: AUTOMATED GATES PASS / APK DOWNLOADED AND SHA-256 VERIFIED / RENDERED VISUAL AUDIT PENDING / NOT FINAL.**
+
+- Correct active PR: [#99](https://github.com/Frangga11/glass-tv-home/pull/99), OPEN / DRAFT / UNMERGED. Branch `verify/home-spacing-capsule-height-refinement-001-qa`, exact HEAD `443d8491109c416915955c8a9ceb202860916a6b`, base PR #83 at `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
+- Exact-head CI #1672 / run `42531805446`: both required jobs SUCCESS. Python **190 tests, OK (1 skipped)**; Android `testReleaseUnitTest` and `assembleRelease` completed; Gradle reports **BUILD SUCCESSFUL**. CI #1671 / run `42531795756` also completed successfully as a duplicate PR event.
+- Release APK: **1,625,337 bytes**. Workflow artifact #13637424249, ZIP **1,426,876 bytes**, SHA-256 `1d2955027a07a2a80e7eb3398821639b6595542768860b35a4b6d185f5e38ff4`, expires 15 November 2026 UTC.
+- Downloaded archive inspected; it contains exactly one `app-release.apk`. Extracted APK size **1,625,337 bytes**, SHA-256 `96d2bae44ac33a7c250467e37cb2d35c4d4cb85fc767993dc9625e6bd1e0eead`; recognized as an Android APK with APK Signing Block.
+- Final PR changed-file inventory is 11 files: 3 production, 7 regression tests, 1 CI workflow. No other production file changed.
+- APK-size diagnostic notes 1.5 MiB historical reference exceeded (actual 1,587 KiB); warning is explicitly non-blocking. Review size delta in normal QA, but it does not invalidate successful build/tests.
+- The audit measurements remain source/layout-derived. No rendered 1920×1080 screenshot or physical Mi TV Stick result has been captured. Therefore visual edge clearance, capsule appearance and final on-device behavior are **not yet accepted**.
+- No ADB, device installation, setting changes, merge, or PR readiness change performed.
+- **Decision: BELUM FINAL.** Automated CI and artifact verification pass; rendered visual audit is the only outstanding pre-device gate. Keep PR #99 draft/unmerged.
