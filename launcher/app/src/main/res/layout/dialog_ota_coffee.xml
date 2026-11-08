@@ -73,10 +73,10 @@
                 android:layout_marginBottom="12dp">
 
                 <TextView
-                    android:id="@+id/tvAutoStatus"
+                    android:id="@+id/tvManualStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/ota_auto_update_active"
+                    android:text="@string/ota_manual_update_status"
                     android:textColor="#FFFFFFFF"
                     android:textSize="13sp"
                     android:fontFamily="@font/inter"
@@ -106,44 +106,10 @@
                 android:gravity="center"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@+id/btnChangeTime"
-                android:nextFocusRight="@+id/btnClose"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:id="@+id/btnChangeTime"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_dialog_btn"
-                android:text="@string/ota_change_time"
-                android:textColor="#FFFFFFFF"
-                android:textSize="12.5sp"
-                android:fontFamily="@font/inter"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:focusable="true"
-                android:clickable="true"
-                android:nextFocusUp="@+id/btnCheckNow"
-                android:nextFocusDown="@+id/btnToggleAuto"
-                android:nextFocusRight="@+id/btnClose"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:id="@+id/btnToggleAuto"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_dialog_btn"
-                android:text="@string/ota_disable"
-                android:textColor="#FFFFFFFF"
-                android:textSize="12.5sp"
-                android:fontFamily="@font/inter"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:focusable="true"
-                android:clickable="true"
-                android:nextFocusUp="@+id/btnChangeTime"
                 android:nextFocusDown="@+id/btnClose"
-                android:nextFocusRight="@+id/btnClose" />
+                android:nextFocusRight="@+id/btnClose"
+                android:layout_marginBottom="8dp" />
+
         </LinearLayout>
 
         <!-- Divider Line -->
@@ -253,7 +219,7 @@
             android:gravity="center"
             android:focusable="true"
             android:clickable="true"
-            android:nextFocusUp="@+id/btnToggleAuto"
-            android:nextFocusLeft="@+id/btnToggleAuto" />
+            android:nextFocusUp="@+id/btnCheckNow"
+            android:nextFocusLeft="@+id/btnCheckNow" />
     </LinearLayout>
 </LinearLayout>

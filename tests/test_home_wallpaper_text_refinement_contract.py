@@ -67,7 +67,7 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
         self.assertEqual(arabic.get(ANDROID + "fontFamily"), "@font/amiri_quran")
 
     def test_daily_ayah_scrim_is_subtle_and_has_no_idle_outline(self):
-        self.assertIn("new int[]{0x00000000, 0x1F000000, 0x44000000}", MAIN)
+        self.assertIn("new int[]{0x00000000, 0x12000000, 0x26000000}", MAIN)
         self.assertIn("focusSurface.setStroke(hasFocus ? Math.max(1, Math.round(density)) : 0,", MAIN)
         self.assertIn("hintBg.setStroke(0, 0x00000000)", MAIN)
         self.assertIn("ayahBlock.setOnKeyListener", MAIN)

@@ -1352,7 +1352,7 @@ public final class ModernSettingsDialog {
                 rightContent.addView(buildCardRow(activity, density, outfit, otaTitle, otaSub,
                         () -> {
                             if (hasUpdate) AppUpdateManager.checkForUpdates(activity, true);
-                            else activity.showAutoUpdateDialog();
+                            else activity.showManualUpdateDialog();
                         }));
                 rightContent.addView(buildCardRow(activity, density, outfit,
                         activity.getString(R.string.android_settings_title), activity.getString(R.string.android_settings_summary),

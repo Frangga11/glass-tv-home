@@ -11,20 +11,27 @@ RES = ROOT / "launcher" / "app" / "src" / "main" / "res"
 
 
 class F06LocalizationUiContractTest(unittest.TestCase):
-    def test_update_schedule_labels_use_localized_resources(self):
+    def test_manual_update_labels_use_localized_resources(self):
+        def read_value(locale, key):
+            root = ET.parse(RES / locale / "strings.xml").getroot()
+            for node in root.findall("string"):
+                if node.attrib.get("name") == key:
+                    return node.text or ""
+            self.fail(f"Missing {key} in {locale}")
+
+        self.assertEqual(
+            "Pembaruan diperiksa dan dipasang secara manual.",
+            read_value("values-id", "ota_manual_update_status"),
+        )
+        self.assertEqual(
+            "Updates are checked and installed manually.",
+            read_value("values-en", "ota_manual_update_status"),
+        )
+        self.assertIn("Pembaruan Manual", read_value("values-id", "ota_version_subtitle_dynamic"))
+        self.assertIn("Manual Updates", read_value("values-en", "ota_version_subtitle_dynamic"))
         source = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
-        method = source.split("private void showUpdateTimePickerDialog()", 1)[1].split(
-            "\n    private ", 1
-        )[0]
-        for key in (
-            "auto_update_time_0330_option",
-            "auto_update_time_0400_option",
-            "auto_update_time_0500_option",
-            "auto_update_time_1200_option",
-            "auto_update_time_0200_option",
-        ):
-            self.assertIn(f"R.string.{key}", method)
-        self.assertNotRegex(method, r"(Cadangan Terbaik|Awal Pagi|Tengah Hari|Tengah Malam)")
+        self.assertIn("showManualUpdateDialog()", source)
+        self.assertNotIn("showUpdateTimePickerDialog()", source)
 
     def test_weather_high_low_labels_use_localized_resource(self):
         source = (JAVA / "WeatherActivity.java").read_text(encoding="utf-8")

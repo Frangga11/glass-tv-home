@@ -42,16 +42,11 @@ public final class AppUpdateManager {
     private static final String VERSION_URL = "https://raw.githubusercontent.com/aqmangge/glass-tv-home/main/release/version.json";
     private static final String PREFS_NAME = "update_prefs";
     private static final String KEY_LAST_CHECK = "last_check_timestamp";
-    public static final String KEY_AUTO_UPDATE = "pref_auto_update";
-    public static final String KEY_AUTO_UPDATE_TIME = "pref_auto_update_time";
-    public static final String DEFAULT_AUTO_UPDATE_TIME = "03:30 AM";
-
     public static final String KEY_UPDATE_AVAILABLE = "update_available";
     public static final String KEY_NEW_VERSION_NAME = "new_version_name";
     public static final String KEY_NEW_VERSION_CODE = "new_version_code";
     public static final String KEY_NEW_CHANGELOG = "new_changelog";
     public static final String KEY_NEW_APK_URL = "new_apk_url";
-    public static final String KEY_SKIPPED_VERSION_CODE = "skipped_version_code";
 
     // Check requests are deliberately shorter than APK downloads; do not alter OTA policy intervals.
     private static final int CHECK_CONNECT_TIMEOUT_MS = 6000;
@@ -89,13 +84,7 @@ public final class AppUpdateManager {
         return sp.getString(KEY_NEW_APK_URL, "");
     }
 
-    public static void skipUpdate(Context context, int versionCode) {
-        if (context == null) return;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        sp.edit().putInt(KEY_SKIPPED_VERSION_CODE, versionCode).apply();
-    }
-
-    public static void clearUpdateBadge(Context context) {
+    public static void clearUpdateState(Context context) {
         if (context == null) return;
         SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         sp.edit()
@@ -105,40 +94,6 @@ public final class AppUpdateManager {
                 .remove(KEY_NEW_CHANGELOG)
                 .remove(KEY_NEW_APK_URL)
                 .apply();
-    }
-
-    public static boolean isAutoUpdateEnabled(Context context) {
-        if (context == null) return true;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        return sp.getBoolean(KEY_AUTO_UPDATE, true); // default ON
-    }
-
-    public static void setAutoUpdateEnabled(Context context, boolean enabled) {
-        if (context == null) return;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        sp.edit().putBoolean(KEY_AUTO_UPDATE, enabled).apply();
-    }
-
-    public static String getAutoUpdateTime(Context context) {
-        if (context == null) return DEFAULT_AUTO_UPDATE_TIME;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        return sp.getString(KEY_AUTO_UPDATE_TIME, DEFAULT_AUTO_UPDATE_TIME);
-    }
-
-    public static void setAutoUpdateTime(Context context, String time) {
-        if (context == null) return;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        sp.edit().putString(KEY_AUTO_UPDATE_TIME, time != null ? time : DEFAULT_AUTO_UPDATE_TIME).apply();
-    }
-
-    public static void checkAutoUpdateIfDue(Activity activity) {
-        if (activity == null || !isAutoUpdateEnabled(activity)) return;
-        SharedPreferences sp = activity.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        long lastCheck = sp.getLong(KEY_LAST_CHECK, 0);
-        // Check once every 12 hours at least
-        if (System.currentTimeMillis() - lastCheck >= 12 * 3600 * 1000L) {
-            checkForUpdates(activity, false);
-        }
     }
 
     public interface CheckCallback {
@@ -213,19 +168,11 @@ public final class AppUpdateManager {
                                 .putString(KEY_NEW_APK_URL, apkUrl)
                                 .apply();
 
-                        if (activity instanceof MainActivity) {
-                            ((MainActivity) activity).updateSettingsBadge();
-                        }
-
-                        int skippedCode = sp.getInt(KEY_SKIPPED_VERSION_CODE, 0);
-                        if (manualCheck || skippedCode < remoteVersionCode) {
-                            showUpdateDialog(activity, remoteVersionName, currentVersionName, changelog, apkUrl, remoteVersionCode);
+                        if (manualCheck) {
+                            showUpdateDialog(activity, remoteVersionName, currentVersionName, changelog, apkUrl);
                         }
                     } else {
-                        clearUpdateBadge(activity);
-                        if (activity instanceof MainActivity) {
-                            ((MainActivity) activity).updateSettingsBadge();
-                        }
+                        clearUpdateState(activity);
                         if (manualCheck) {
                             TvFeedback.show(activity, activity.getString(R.string.update_latest_version, currentVersionName), Toast.LENGTH_LONG);
                         }
@@ -245,7 +192,7 @@ public final class AppUpdateManager {
         });
     }
 
-    private static void showUpdateDialog(Activity activity, String newVersionName, String currentVersionName, String changelog, String apkUrl, int remoteVersionCode) {
+    private static void showUpdateDialog(Activity activity, String newVersionName, String currentVersionName, String changelog, String apkUrl) {
         if (activity == null || activity.isFinishing()) return;
         SoundEffects.playSelect();
 
@@ -263,7 +210,6 @@ public final class AppUpdateManager {
 
         builder.setNegativeButton(R.string.update_later_action, (dialog, which) -> {
             SoundEffects.playSelect();
-            skipUpdate(activity, remoteVersionCode);
             dialog.dismiss();
             TvFeedback.show(activity, activity.getString(R.string.update_deferred), Toast.LENGTH_SHORT);
         });

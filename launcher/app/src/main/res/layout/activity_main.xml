@@ -101,7 +101,7 @@
             android:id="@+id/ayahBlock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="0dp"
             android:orientation="vertical"
             android:gravity="end"
             android:padding="6dp"
@@ -183,6 +183,15 @@
                 android:fontFamily="@font/inter"
                 android:fontVariationSettings="'wght' 700"
                 android:includeFontPadding="false" />
+            <View
+                android:id="@+id/prayerSectionDivider"
+                android:layout_width="180dp"
+                android:layout_height="1dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="2dp"
+                android:background="#55FFFFFF"
+                android:alpha="0.55" />
         </LinearLayout>
 
         <!-- Waktu Solat Header (e.g. WAKTU SOLAT • 11 JAMADILAWAL 1448H) -->
@@ -762,13 +771,13 @@
             <LinearLayout
                 android:id="@+id/navPill"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="36dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:background="@drawable/header_glass_pill_bg"
-                android:padding="3dp"
+                android:padding="2dp"
                 android:clipChildren="false"
                 android:clipToPadding="false">
                 <TextView
@@ -778,7 +787,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:drawableStart="@drawable/ic_header_home"
-                    android:drawablePadding="5dp"
+                    android:drawablePadding="4dp"
                     android:paddingStart="6dp"
                     android:paddingEnd="6dp"
                     android:textColor="#FFFFFFFF"
@@ -787,7 +796,7 @@
                     android:fontVariationSettings="'wght' 600"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:background="@drawable/header_nav_tab_bg"
+                    android:background="@android:color/transparent"
                     android:focusable="true"
                     android:clickable="true"
                     android:contentDescription="Beranda" />
@@ -799,7 +808,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="0dp"
                     android:gravity="center"
-                    android:drawablePadding="5dp"
+                    android:drawablePadding="4dp"
                     android:paddingStart="6dp"
                     android:paddingEnd="6dp"
                     android:textSize="13sp"
@@ -808,7 +817,7 @@
                     android:ellipsize="end"
                     android:drawableStart="@drawable/ic_shield_child"
                     android:contentDescription="@string/user_profile_content_description"
-                    android:background="@drawable/header_nav_tab_bg" />
+                    android:background="@android:color/transparent" />
                 <FrameLayout
                     android:id="@+id/btnSettingsContainer"
                     android:layout_width="0dp"
@@ -823,7 +832,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="0dp"
                         android:gravity="center"
-                        android:drawablePadding="5dp"
+                        android:drawablePadding="4dp"
                         android:paddingStart="6dp"
                         android:paddingEnd="6dp"
                         android:textSize="13sp"
@@ -832,16 +841,8 @@
                         android:ellipsize="end"
                         android:contentDescription="@string/settings"
                         android:drawableStart="@drawable/ic_settings"
-                        android:background="@drawable/header_nav_tab_bg" />
-                    <View
-                        android:id="@+id/badgeSettingsUpdate"
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:layout_gravity="top|end"
-                        android:layout_marginTop="1dp"
-                        android:layout_marginEnd="3dp"
-                        android:visibility="gone"
-                        android:background="@drawable/badge_dot_red" />
+                        android:background="@android:color/transparent" />
+
                 </FrameLayout>
             </LinearLayout>
 

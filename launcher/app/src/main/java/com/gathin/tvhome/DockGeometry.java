@@ -13,7 +13,7 @@ final class DockGeometry {
     private static final float DOCK_ITEM_BOTTOM_OFFSET_DP = 12f;
     private static final float HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 8f;
     private static final float TRAY_PADDING_DP = 14f;
-    private static final float DOCK_EXTRA_HEIGHT_DP = 14f;
+    private static final float DOCK_EXTRA_HEIGHT_DP = 12f;
     /** Legacy shelf baseline keeps the information panels stationary while Dock cards shrink. */
     private static final float SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP = 18f;
     private static final float DOCK_TILE_SCALE = 0.95f;
@@ -170,7 +170,7 @@ final class DockGeometry {
         return (int) (DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
 
-    /** Horizontal Dock host has 4dp less spare height; the other 4dp reduction comes from the shorter card. */
+    /** The Dock host is 6dp shorter than the shelf baseline; its 0.95 tile scale further reduces the card. */
     static int horizontalDockItemBottomOffsetPx(float density) {
         return (int) (HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
