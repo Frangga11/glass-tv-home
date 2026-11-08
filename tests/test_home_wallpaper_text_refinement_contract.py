@@ -44,10 +44,15 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
         self.assertNotIn("labels[i].setTypeface(Typeface.DEFAULT", MAIN)
         self.assertNotIn("times[i].setTypeface(Typeface.DEFAULT", MAIN)
         root = ET.parse(LAYOUT).getroot()
-        prayer_times = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/timeSubuh")
-        prayer_names = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/lblSubuh")
-        self.assertEqual(prayer_times.get(ANDROID + "textSize"), "17sp")
-        self.assertEqual(prayer_names.get(ANDROID + "textSize"), "13sp")
+        table = next(node for node in root.iter() if node.get(ANDROID + "id") == "@+id/prayerTable")
+        prayer_times = [node for node in table.iter()
+                        if (node.get(ANDROID + "id") or "").startswith("@+id/time")]
+        prayer_names = [node for node in table.iter()
+                        if (node.get(ANDROID + "id") or "").startswith("@+id/lbl")]
+        self.assertEqual(len(prayer_times), 6)
+        self.assertEqual(len(prayer_names), 6)
+        self.assertTrue(all(node.get(ANDROID + "textSize") == "17sp" for node in prayer_times))
+        self.assertTrue(all(node.get(ANDROID + "textSize") == "13sp" for node in prayer_names))
 
     def test_daily_ayah_uses_larger_native_arabic_and_translation_text(self):
         self.assertIn("ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL)", MAIN)
