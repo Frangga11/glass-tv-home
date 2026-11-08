@@ -1323,3 +1323,8 @@ Changed on PR #79 branch `fix/home-balanced-frame-001`:
 - `tests/test_home_layout_bounds_contract.py` — regression contract for equal width source, common left anchors, weather text ellipsis, and content updates not changing layout parameters.
 
 No XML layout, resource strings, weather provider, location model, Header navigation, safe frame, or other Home component files changed in this refinement. Compare from previous PR #79 HEAD `c15e4383d7dd3f148b31a19f5e9b85423936b56d` to current test HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`: exactly these two files changed (4 commits ahead). CI #1587 Android job is pending.
+
+
+## CI #1587 final validation — 8 Nov 2026
+
+CI #1587 / run `42489445766` completed **SUCCESS** on PR #79 head `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. Both required jobs passed. Python regression suite: **161 tests, OK (1 skipped)**; the new `test_weather_aqi_pill_matches_location_pill_width_and_left_anchor` passed. Android `testReleaseUnitTest` and `assembleRelease`: **BUILD SUCCESSFUL**. Release APK diagnostic: **1,627,545 bytes**; CI artifact ID **13621187055**, ZIP size **1,426,725 bytes**. CI proves source/build/test contracts only; no rendered Mi TV Stick or physical visual acceptance is claimed. PR #79 remains OPEN / DRAFT / UNMERGED.
