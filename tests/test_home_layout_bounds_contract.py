@@ -296,8 +296,15 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         end = MAIN.index("private void showHomeWeather", start)
         refresh = MAIN[start:end]
         self.assertIn("HomeWeather.due(this)", refresh)
+        self.assertIn("!isDynamicWeatherEffectsEnabled()", refresh)
         self.assertIn("homeWeatherRunning", refresh)
         self.assertIn('new Thread(() ->', refresh)
+
+        toggle_start = MAIN.index("void setDynamicWeatherEffectsEnabled(boolean enabled)")
+        toggle_end = MAIN.index("private void applyIconGlowPreference()", toggle_start)
+        toggle = MAIN[toggle_start:toggle_end]
+        self.assertIn("updateWeatherOverlay(HomeWeather.last(this));", toggle)
+        self.assertIn("if (enabled) updateHomeWeather();", toggle)
 
 if __name__ == "__main__":
     unittest.main()
