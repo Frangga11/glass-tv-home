@@ -491,13 +491,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    if (btnHome != null) { btnHome.requestFocus(); return true; }
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                     View location = findViewById(R.id.locationPill);
                     if (location != null && location.getVisibility() == View.VISIBLE) {
                         location.requestFocus();
                         return true;
                     }
+                    return true;
                 }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return true;
                 return false;
             });
             weatherAirQualityView.setOnFocusChangeListener((v, hasFocus) -> {
