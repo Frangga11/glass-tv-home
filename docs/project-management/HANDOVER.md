@@ -2055,3 +2055,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Direct release page: https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-ci1545-20261108
 - Direct APK asset: https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-ci1545-20261108/app-release.apk
 - PR #79 remains OPEN / DRAFT / UNMERGED. No APK installation, ADB, device/default-launcher settings mutation, or merge. Physical Mi TV Stick acceptance remains PENDING. User must confirm the browser's received filename; the server-side GitHub asset metadata is correct, but actual Samsung Browser download confirmation has not yet been observed.
+
+
+## Home Screen remediation checkpoint — 8 November 2026
+- Active audit: `GTVH-HOME-SCREEN-CROSS-AUDIT-001`; source branch `fix/home-balanced-frame-001`; exact source/test HEAD `701487f7f708d0b4342b613205fde9fba7c0dd72`.
+- PR #79 remains OPEN / DRAFT / UNMERGED, stacked on PR #77. No merge or device operation.
+- Applied source corrections: HOME-001 retain supported paused/buffering/connecting media sessions with playback state snapshotted off the UI path; HOME-002 visible prayer table opens popup and supports DPAD activation; HOME-003 generation-guarded Dock retries; HOME-004 combined Weather/AQI scale + Header highlight listener; HOME-005 Home atmospheric overlay refresh on resume using its existing due cadence.
+- Added source-contract regression coverage for all five findings.
+- Exact-head CI for this HEAD has not yet appeared in workflow/status results. Earlier CI #1560 does not validate these later commits; tests are not claimed passing.
+- APK installation, ADB, device settings/default launcher mutation, physical Mi TV Stick verification and merge remain prohibited/pending separate owner authorization.
+- Canonical detailed record: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
