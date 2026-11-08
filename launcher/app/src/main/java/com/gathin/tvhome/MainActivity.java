@@ -3575,13 +3575,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void updateWeatherAqi() {
-        HomeWeather.Line last = HomeWeather.last(this);
-        if (last != null) {
-            showHomeWeather(last);
-        } else if (weatherAirQualityView != null) {
-            weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));
-        }
-        updateHomeWeather();
+        if (weatherAirQualityView == null) return;
+        // The Home pill and Weather dashboard must read the same location-scoped cache.
+        // Do not let the legacy lightweight HomeWeather cache overwrite the full G3B line:
+        // it can contain temperature only while the dashboard already has a valid AQI record.
+        weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));
     }
 
     private void updateHomeWeather() {
