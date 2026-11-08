@@ -118,6 +118,13 @@ final class WeeklyAyah {
         return hasUsableContent(prefs(ctx));
     }
 
+    /** Avoid creating a background thread on every Home minute tick while retry is cooling down. */
+    static boolean shouldAttemptRefresh(Context ctx) {
+        if (stored(ctx) != null) return false;
+        SharedPreferences p = prefs(ctx);
+        return isRetryDue(p.getInt(KEY_LAST_ATTEMPT_DAY, Integer.MIN_VALUE),
+                p.getLong(KEY_LAST_ATTEMPT_MS, 0L), day(), System.currentTimeMillis());
+    }
     private static boolean hasUsableContent(SharedPreferences p) {
         String arabic = p.getString("arabic", "");
         boolean hasTranslation = !p.getString("translation", "").trim().isEmpty()
