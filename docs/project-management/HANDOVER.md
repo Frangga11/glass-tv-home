@@ -41,8 +41,9 @@
 2. Decide and wire a visible prayer timetable popup entry point if interaction is intended.
 3. Guard Dock delayed focus retries against stale requests.
 4. Combine Weather focus feedback with the shared Header listener.
-5. Run exact-head CI after source corrections.
-6. Obtain explicit owner authorization before any physical Mi TV Stick test.
+5. Decide whether to restore or retire the dormant Home atmospheric weather overlay refresh path.
+6. Run exact-head CI after source corrections.
+7. Obtain explicit owner authorization before any physical Mi TV Stick test.
 
 Mandatory workflow: Trigger → Input → Verification → Work/Analysis → Decision Point → Output → Quality Check → Final/Not Final. Label PASS / FAIL / PARTIAL / PENDING. Never claim device acceptance from source or CI alone.
 
