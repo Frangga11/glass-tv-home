@@ -849,8 +849,8 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 
 - User requested tighter vertical rhythm for the daily selected ayah preview and removal of the added local/official prayer-source labels.
 - Based on PR #91 exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`, branch `fix/home-islamic-shelf-ayah-spacing-and-prayer-label-001`.
-- Draft PR [#92](https://github.com/Frangga11/glass-tv-home/pull/92): OPEN / DRAFT / UNMERGED. Exact HEAD `5195921dbce1947862c3a49c6fcde1ce8b42f6d6`; base PR #91 branch at exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`. Six commits ahead, zero behind.
-- Six files changed:
+- Draft PR [#92](https://github.com/Frangga11/glass-tv-home/pull/92): OPEN / DRAFT / UNMERGED. Exact HEAD `59d63a3c9854b646876aade98e26fc74a39d3140`; base PR #91 branch at exact HEAD `ee8bfb34db8c00a801ac260428f52ead1c7c6662`. Six commits ahead, zero behind.
+- Seven files changed:
   - `activity_main.xml`: Arabic top margin 3dp→1dp; Arabic line spacing -1dp/0.94→-2dp/0.92; Arabic font padding remains enabled. Translation top margin 2dp→0dp; translation line spacing 2dp→0dp and multiplier 1.04. “Read full verse” hint top margin 7dp→3dp.
   - `MainActivity.java`: runtime translation line spacing set to 0px / 1.04; prayer header restored to location + Hijri date without source suffix.
   - `PrayerTimes.java`: remove visible KEMENAG RI / PERKIRAAN suffix from compact prayer summary; prayer calculations and source validation untouched.
@@ -858,7 +858,7 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
   - Regression tests updated for compact Shelf spacing and restored prayer display.
 - No Quran content, translation selection, cache/network/retry behavior, prayer-time calculation, Kemenag validation, local fallback calculations, Shelf geometry, focus/navigation, or Dock behavior changed.
 - PR #91 exact-head CI #1651 / run `42526843055`: **SUCCESS** (Android build/unit tests and Python/docs jobs passed); publisher skipped because Draft.
-- PR #92 exact-head CI #1652 / run `42527386710`: **IN PROGRESS** at checkpoint update. Publisher run `42527386843` / #107: SKIPPED because Draft; no APK artifact is claimed.
+- Initial PR #92 CI #1652 / run `42527386710`: Lists/tools/docs job failed because the existing Arabic typography contract still expected the former `-1dp / 0.94` values; all new ayah-spacing and prayer-label removal contracts passed. Updated the stale regression expectation to `-2dp / 0.92` in a corrective test commit. The Android build job on the initial run was still in progress at inspection. The corrected exact HEAD `59d63a3c9854b646876aade98e26fc74a39d3140` requires a fresh exact-head CI result; no CI pass is claimed yet. Publisher run `42527386843` / #107: SKIPPED because Draft; no APK artifact is claimed.
 - PR #92 remains OPEN / DRAFT / UNMERGED. No merge, retarget, force-push, or device install performed.
 - Physical Mi TV Stick visual acceptance remains pending. Specifically inspect two-line Arabic for harakat/glyph collision, translation line spacing, spacing to the “Baca ayat lengkap” hint, and prayer header/summary with no source suffix.
 - Decision: source implementation committed; PR #91 CI pass; PR #92 automated validation pending; physical acceptance pending; final merge blocked.
