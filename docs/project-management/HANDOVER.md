@@ -4,6 +4,34 @@
 
 ---
 
+# CURRENT HANDOVER — CUMULATIVE HOME REFINEMENT — 9 NOVEMBER 2026
+
+## Restart target
+- Read [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) first.
+- Continue from [PR #100](https://github.com/Frangga11/glass-tv-home/pull/100), branch `integration/home-spacing-capsule-height-pr89-cumulative-001`.
+- Exact current source HEAD: `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b`.
+- Exact base PR #89 HEAD: `4038c08f4825f7bacf965bc6708505d3c8c30ebc`; cumulative ancestry includes PR #84–#89.
+- PR #100 is OPEN / DRAFT / UNMERGED. Keep PR #84–#89 and #99 open/draft/unmerged too.
+
+## Work already done
+- Reapplied PR #99's three production-file changes, seven regression-test changes, and CI artifact allowlist adjustment onto PR #89.
+- Reconciled the overlapping shelf test while retaining PR #84's single-anchor regression.
+- Added PR #100 to the Home layout APK artifact allowlist.
+- Candidate diff: 2 commits ahead, 0 behind exact PR #89 base; 11 changed files.
+- Exact-head CI #1677 / run `42533185178`: Python 208 tests, 1 skipped; Lists/tools/docs job PASS; Android build/unit test still pending at this checkpoint update.
+
+## Next steps
+1. Wait for launcher unit tests and release build on exact HEAD `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b`.
+2. Verify APK artifact publication, download, archive contents, APK size and SHA-256.
+3. Update the dedicated refinement-002 audit report and canonical checkpoint with exact results.
+4. Perform rendered 1920×1080 visual review. Do not install on Mi TV Stick or use ADB before visual acceptance.
+5. Keep all PRs Draft/unmerged until the full reconciliation and owner approval gates pass.
+
+## Locked scope
+30dp left/right/bottom, 29dp top; target capsules 30dp excluding Inputs; Home/Profile icon-label gap 2dp, Settings 4dp; wallpaper/prayer visible lower edges 30dp above measured horizontal Glass Dock. Preserve PR #84–#89 prayer, daily Ayah, Arabic typography, navigation, focus, DPAD and data behavior.
+
+---
+
 # CURRENT CHECKPOINT — GTVH-HOME-SCREEN-CROSS-AUDIT-001 — 8 NOVEMBER 2026
 
 ## Canonical restart point
