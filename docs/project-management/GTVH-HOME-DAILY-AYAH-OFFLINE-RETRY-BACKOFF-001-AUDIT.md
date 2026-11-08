@@ -1,7 +1,7 @@
 # GTVH-HOME-DAILY-AYAH-OFFLINE-RETRY-BACKOFF-001 — Audit & Implementation
 
 **Date:** 9 November 2026  
-**Status:** IMPLEMENTATION COMMITTED · PYTHON CI PASS · ANDROID CI IN PROGRESS · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
+**Status:** IMPLEMENTATION COMMITTED · EXACT-HEAD CI PASS · PHYSICAL ACCEPTANCE PENDING · NOT FINAL
 
 ## Source authority
 - Repository: `Frangga11/glass-tv-home`
@@ -26,12 +26,14 @@
 ## Regression coverage
 - Android unit tests: same-day cooldown, cooldown expiry, new-day reset and first attempt.
 - Python contract verifies single-flight guard, persisted cooldown keys and MainActivity preflight.
-- Exact-head CI #1649 / run `42525047258`: Python/docs job **SUCCESS**, **202 tests, 1 skipped**; Android unit/release build is still **IN PROGRESS**.
-- APK size and Android test result are not claimed until the second job completes.
+- Exact-head CI #1649 / run `42525047258`: **SUCCESS**; both jobs passed.
+- Python/docs suite: **202 tests, 1 skipped**.
+- Android `testReleaseUnitTest` and `assembleRelease`: **PASS / BUILD SUCCESSFUL**.
+- APK diagnostic: **1,626,745 bytes**. Publisher workflow skipped because PR #89 is Draft; no APK release asset was published.
 - Publisher workflow #104 skipped because PR #89 is Draft; no APK release asset is claimed.
 
 ## Acceptance gates
-1. Exact-head CI passes Android `testReleaseUnitTest`, `assembleRelease` and APK diagnostics.
+1. Exact-head CI has passed Android `testReleaseUnitTest`, `assembleRelease` and APK diagnostics.
 2. Physical offline test: cache yesterday's verse, disable network, keep Home open for more than 30 minutes; confirm there is no minute-by-minute request storm and the saved verse remains labelled `TERSIMPAN`.
 3. Restore network after cooldown; confirm today's verse updates and freshness label changes to current.
 4. Restart Activity/process during cooldown; confirm persisted cooldown still suppresses repeated requests.
