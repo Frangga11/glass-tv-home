@@ -33,6 +33,16 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("params.topMargin = inset", shelf)
         self.assertIn("params.setMarginStart(inset)", shelf)
 
+    def test_bottom_dock_tray_uses_the_same_safe_frame_as_top_and_sides(self):
+        start = MAIN.index("private void applyDockLayout()")
+        end = MAIN.index("private void updateHomeTabIndicator()", start)
+        dock_layout = MAIN[start:end]
+        self.assertIn(
+            "dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density)",
+            dock_layout,
+        )
+        self.assertIn("return safeBottomInsetPx(density) - trayBottomInset", GEOMETRY)
+
     def test_header_navigation_keeps_the_owner_approved_order(self):
         root = ET.parse(LAYOUT).getroot()
         nav = next((node for node in root.iter()
