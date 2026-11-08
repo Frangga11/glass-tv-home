@@ -132,6 +132,10 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         # Lifecycle completion must still happen when the stale restore is skipped.
         self.assertIn("tilesReady = true;", restore)
         self.assertIn("resuming = false;", restore)
+        global_focus_start = MAIN.index("addOnGlobalFocusChangeListener((oldF, newF) -> {")
+        global_focus_end = MAIN.index("packageFilter.addAction", global_focus_start)
+        global_focus = MAIN[global_focus_start:global_focus_end]
+        self.assertIn("if (newF != null && !onTile) gridFocusRequestGeneration++;", global_focus)
 
     def test_location_altitude_uses_bilingual_resources_without_approximation_symbol(self):
         self.assertIn(
