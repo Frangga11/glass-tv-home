@@ -2602,17 +2602,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
             if (hasDock) {
-                // Match the Home shelves: mainContent already supplies the left 56dp inset.
-                // The Islamic shelf ends 8dp farther right, so the Dock host gets the same
-                // asymmetric +8dp extension rather than another symmetric safe inset.
-                int dockViewportWidth = gridWrap.getWidth() + Math.round(8 * density);
+                // The Dock host, clock/header and both Home shelves share the same 48dp frame.
+                // Do not extend the host or apply a second inset: its left and right edges must match.
+                int dockViewportWidth = gridWrap.getWidth();
                 int inner = DockGeometry.horizontalContentWidthPx(dockViewportWidth, density);
                 gridParams.width = DockGeometry.horizontalGridWidthPx(inner, preferences.capacity);
                 gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
                 dockParams.gravity = Gravity.BOTTOM | Gravity.START;
                 dockParams.width = dockViewportWidth;
                 dockAdapter.setHorizontalViewportWidth(dockViewportWidth);
-                dockParams.rightMargin = -Math.round(8 * density);
+                dockParams.rightMargin = 0;
                 int tileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
                 int tileHeight = DockGeometry.tileHeightPx(tileWidth);
                 int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
@@ -2641,9 +2640,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
-                // rightMargin is -8dp above so the Dock's right edge matches the Islamic shelf.
-                // Place the glass tray itself on the P2 27dp bottom safe margin. The
-                // RecyclerView host extends below its tray to contain the label/focus area.
+                // Place the glass tray on the same 48dp bottom safe margin as the top and side edges.
+                // The RecyclerView host extends around its tray to contain labels and focus effects.
                 dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
                 if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
                     grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
