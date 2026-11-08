@@ -10,7 +10,7 @@
 ## CURRENT AUTHORITATIVE UPDATE — CUMULATIVE HOME SPACING/CAPSULE REFINEMENT — 9 NOVEMBER 2026
 
 **Workstream:** `GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002`  
-**Status:** INTEGRATION CANDIDATE CREATED / AUTOMATED VALIDATION IN PROGRESS / NOT FINAL.
+**Status:** CUMULATIVE SOURCE + AUTOMATED CI + RELEASE APK VERIFIED / RENDERED VISUAL ACCEPTANCE PENDING — NOT FINAL.
 
 - Active cumulative PR: [#100](https://github.com/Frangga11/glass-tv-home/pull/100), OPEN / DRAFT / UNMERGED.
 - Source branch: `integration/home-spacing-capsule-height-pr89-cumulative-001`.
@@ -21,7 +21,8 @@
 - The overlapping Islamic-shelf contract was reconciled deliberately: the obsolete 27.5dp assertion was replaced with the 30dp measured-tray assertion while retaining PR #84's additional single-bottom-anchor regression test.
 - CI workflow APK artifact allowlist now explicitly includes PR #100.
 - Exact-head CI run #1677 / run `42533185178`, head `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b`: Lists/tools/docs job ID `128891684465` SUCCESS; Python suite **208 tests, OK (1 skipped)**. Launcher build/unit-test job ID `128891684759` was still IN PROGRESS at this checkpoint update; release APK size/artifact/hash are pending.
-- The earlier run `42533180445` is a duplicate PR-trigger run on the same exact HEAD; do not use it as a separate source candidate.
+- Release APK: **1,626,857 bytes**. Artifact #13638675606, ZIP size **1,428,688 bytes**, ZIP SHA-256 `e1428796d54847cd7e33c5c761b7339ad76c6eea004b8e26c39f6499d9502521`; ZIP contains exactly one `app-release.apk`. Extracted APK SHA-256 `b7ae8aa3919e0818b0879b8996427ea6eab9b91f14bf0fcff84b80fad32f292a`. APK is 53,993 bytes above the historical 1.5 MiB reference; warning is non-blocking. The earlier run `42533180445` is a duplicate PR-trigger run on the same exact HEAD; do not use it as a separate source candidate.
+- Dedicated audit report: [GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md](GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md).
 - Rendered 1920×1080 visual audit and physical Mi TV Stick acceptance remain PENDING. No ADB, TV installation, device-setting change, or merge has been performed.
 - Keep PR #84–#89, PR #99 and PR #100 OPEN / DRAFT / UNMERGED until all reconciliation, CI, artifact verification, visual acceptance and owner approval gates are complete.
 
@@ -33,7 +34,7 @@
 - Preserve prayer/Ayah logic and content, typography, icons, glass, blur, colors, shadows, focus/click/DPAD, Dock/Grid sizing/order, preferences and storage.
 
 ### Next action
-Wait for exact-head launcher CI to complete; verify release APK artifact and SHA-256; update the dedicated refinement-002 audit report and supporting project records; then perform rendered visual review before any TV installation request.
+Perform rendered 1920×1080 visual review against the approved safe-frame, capsule-height and shelf-to-tray measurements. Physical Mi TV Stick acceptance remains blocked until visual review passes. No ADB or installation before that gate.
 
 ---
 
