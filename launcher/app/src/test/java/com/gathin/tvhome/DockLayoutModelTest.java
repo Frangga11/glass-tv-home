@@ -298,6 +298,9 @@ public class DockLayoutModelTest {
             int innerWidth = 1920;
             int largestTileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, 4, density);
             int largestTileHeight = DockGeometry.tileHeightPx(largestTileWidth);
+            assertEquals(DockGeometry.itemHeightPx(largestTileHeight, density)
+                            + Math.round(18f * density),
+                    DockGeometry.horizontalShelfAnchorHeightPx(largestTileHeight, density));
             int gridReserve = DockGeometry.horizontalGridBottomReservePx(largestTileWidth, density);
             int legacyGridReserve = DockGeometry.itemHeightPx(largestTileHeight, density)
                     + Math.round(29f * density);
@@ -308,6 +311,13 @@ public class DockLayoutModelTest {
                 int tileHeight = DockGeometry.tileHeightPx(tileWidth);
                 int itemHeight = DockGeometry.itemHeightPx(tileHeight, density);
                 int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+                int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(innerWidth, capacity, density);
+                int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
+                int oldHostHeight = DockGeometry.itemHeightPx(tileHeight, density)
+                        + Math.round(18f * density);
+                assertEquals(8f * density,
+                        oldHostHeight - DockGeometry.horizontalDockHeightPx(dockTileHeight, density),
+                        1.5f * density);
                 float trayHeight = tileHeight + 28f * density;
 
                 assertEquals(tileHeight + Math.round(45f * density), itemHeight);
