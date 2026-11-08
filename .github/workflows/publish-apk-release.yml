@@ -71,7 +71,7 @@ jobs:
         with:
           tag_name: glass-tv-home-pr${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
           target_commitish: ${{ github.event.pull_request.head.sha }}
-          name: Glass TV Home — PR #${{ github.event.pull_request.number }} QA APK
+          name: "Glass TV Home — PR #${{ github.event.pull_request.number }} QA APK"
           body: |
             Android release APK built from exact PR #${{ github.event.pull_request.number }} source HEAD:
             ${{ github.event.pull_request.head.sha }}
