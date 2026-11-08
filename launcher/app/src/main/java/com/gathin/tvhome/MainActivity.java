@@ -2940,6 +2940,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", enabled).apply();
         testWeatherOverride = null;
         updateWeatherOverlay(HomeWeather.last(this));
+        if (enabled) updateHomeWeather();
     }
 
     private void applyIconGlowPreference() {
@@ -3697,7 +3698,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void updateHomeWeather() {
-        if (weatherAirQualityView == null || homeWeatherRunning || !HomeWeather.due(this)) return;
+        if (weatherAirQualityView == null || !isDynamicWeatherEffectsEnabled()
+                || homeWeatherRunning || !HomeWeather.due(this)) return;
         homeWeatherRunning = true;
         Location.Zone zone = Location.chosen(this);
         final double lat = (zone != null) ? zone.lat : -4.0212;
