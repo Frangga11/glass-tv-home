@@ -177,7 +177,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private static final float HOME_SHELF_BASELINE_OFFSET_DP = 3.5f;
     /** Minimum visual clearance between the information shelf and Dock tray. */
     private static final float MIN_HOME_SHELF_TRAY_GAP_DP = 32f;
-    /** The daily Ayah rises 18dp; prayer header/table receive a further 6dp lift. */
+    /** Vertical Dock fallback retains its established inter-shelf spacing. */
     private static final float ISLAMIC_SHELF_BOTTOM_OFFSET_DP = 10f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
@@ -2380,11 +2380,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return;
             }
-            // The Islamic shelf is the package's lower edge. Keep the existing 10dp
-            // internal vertical relationship between the wallpaper shelf and Islamic shelf.
-            islamicShelfBottomAnchor = trayTop - DockGeometry.islamicShelfDockGapPx(density);
-            heroBottom = islamicShelfBottomAnchor
-                    - Math.round(ISLAMIC_SHELF_BOTTOM_OFFSET_DP * density);
+            // Anchor both visible information bottoms to the measured Glass tray edge.
+            // prayerTable is translated upward in XML; compensate that runtime translation
+            // so its visible bottom, not the container bottom, receives the exact 30dp gap.
+            int shelfGapPx = DockGeometry.islamicShelfDockGapPx(density);
+            heroBottom = trayTop - shelfGapPx;
+            islamicShelfBottomAnchor = heroBottom + islamicShelfVisualBottomOffsetPx();
         }
 
         homeShelfAnchorReady = true;
@@ -2418,6 +2419,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (firstCardTop == Integer.MAX_VALUE) return Integer.MIN_VALUE;
         return firstCardTop - Math.round(DockGeometry.trayPaddingPx(density));
+    }
+
+    private int islamicShelfVisualBottomOffsetPx() {
+        View prayerTable = findViewById(R.id.prayerTable);
+        if (prayerTable == null || prayerTable.getVisibility() != View.VISIBLE) return 0;
+        return Math.max(0, -Math.round(prayerTable.getTranslationY()));
     }
 
     private void applyIslamicShelfPosition() {
@@ -2716,7 +2723,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         return true;
     }
 
-    /** Applies the frozen P2 horizontal safe inset to both Home information shelves. */
+    /** Applies the 30dp horizontal safe inset while preserving the 29dp top safe edge. */
     private void applyHomeShelfSafeMargins() {
         int inset = DockGeometry.safeHorizontalInsetPx(density);
         if (heroShelf != null && heroShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
@@ -2727,7 +2734,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (islamicShelf != null && islamicShelf.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) islamicShelf.getLayoutParams();
             params.setMarginEnd(inset);
-            params.topMargin = inset;
+            params.topMargin = DockGeometry.safeTopInsetPx(density);
             islamicShelf.setLayoutParams(params);
         }
     }
@@ -2799,7 +2806,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dockParams.leftMargin = 0;
             dockParams.topMargin = 0;
             dockParams.rightMargin = 0;
-            dockParams.bottomMargin = 0;
+            dockParams.bottomMargin = DockGeometry.safeBottomInsetPx(density);
             if (grid.getPaddingTop() != 0 || grid.getPaddingBottom() != gridBasePaddingBottom) {
                 grid.setPadding(grid.getPaddingLeft(), 0, grid.getPaddingRight(), gridBasePaddingBottom);
             }
@@ -2809,7 +2816,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
             if (hasDock) {
-                // The Dock host, clock/header and both Home shelves share the same 34dp frame.
+                // The Dock host, clock/header and both Home shelves share the 30dp horizontal safe frame.
                 // Do not extend the host or apply a second inset: its left and right edges must match.
                 int dockViewportWidth = gridWrap.getWidth();
                 int inner = DockGeometry.horizontalContentWidthPx(dockViewportWidth, density);
@@ -2849,7 +2856,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
-                // Place the glass tray on the same 34dp bottom safe margin as the top and side edges.
+                // Place the glass tray on the 30dp bottom safe margin; the top edge remains 29dp.
                 // The RecyclerView host extends around its tray to contain labels and focus effects.
                 dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
                 if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
