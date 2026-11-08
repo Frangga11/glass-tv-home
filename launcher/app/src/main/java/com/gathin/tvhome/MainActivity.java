@@ -831,35 +831,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) { focusTile(lastFocused % COLUMNS); return true; }
             View target = null;
+            int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                switch (v.getId()) {
-                    case R.id.btnHome: target = weatherAirQualityView; break;
-                    case R.id.btnCandyBox: target = btnHome; break;
-                    case R.id.btnSettings: target = btnCandyBox; break;
-                    case R.id.btnInputs: target = btnSettings; break;
-                    case R.id.btnWifi:
-                        target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings; break;
-                    case R.id.btnAssistant: target = btnWifi; break;
-                    default: return false;
-                }
+                if (id == R.id.btnHome) target = weatherAirQualityView;
+                else if (id == R.id.btnCandyBox) target = btnHome;
+                else if (id == R.id.btnSettings) target = btnCandyBox;
+                else if (id == R.id.btnInputs) target = btnSettings;
+                else if (id == R.id.btnWifi)
+                    target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings;
+                else if (id == R.id.btnAssistant) target = btnWifi;
+                else return false;
                 if (target != null && target.getVisibility() == View.VISIBLE) { target.requestFocus(); return true; }
-                return v.getId() == R.id.btnHome || v.getId() == R.id.btnInputs;
+                return id == R.id.btnHome || id == R.id.btnInputs;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                switch (v.getId()) {
-                    case R.id.btnHome: target = btnCandyBox; break;
-                    case R.id.btnCandyBox: target = btnSettings; break;
-                    case R.id.btnSettings:
-                        target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs
-                                : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant); break;
-                    case R.id.btnInputs:
-                        target = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant; break;
-                    case R.id.btnWifi: target = btnAssistant; break;
-                    case R.id.btnAssistant: return true;
-                    default: return false;
-                }
+                if (id == R.id.btnHome) target = btnCandyBox;
+                else if (id == R.id.btnCandyBox) target = btnSettings;
+                else if (id == R.id.btnSettings)
+                    target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs
+                            : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant);
+                else if (id == R.id.btnInputs)
+                    target = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant;
+                else if (id == R.id.btnWifi) target = btnAssistant;
+                else if (id == R.id.btnAssistant) return true;
+                else return false;
                 if (target != null && target.getVisibility() == View.VISIBLE) { target.requestFocus(); return true; }
-                return v.getId() == R.id.btnAssistant;
+                return id == R.id.btnAssistant;
             }
             return false;
         };
