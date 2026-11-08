@@ -29,7 +29,7 @@
 |---|---|---|
 | Clock / AM-PM / Gregorian date / Shamsi date | PASS | Views and update path exist; compact text sizing is source-verified. Runtime readability remains pending. |
 | Location pill / altitude | PASS | Selected zone is rendered; missing/invalid zone hides the pill; click opens LocationActivity. |
-| Weather / AQI pill | PARTIAL | Shared G3B cache/formatter and WeatherActivity click path are wired. Its dedicated focus-scale listener is overwritten by the later shared Header listener. |
+| Weather / AQI pill and atmospheric overlay | PARTIAL / FAIL | G3B cache/formatter and WeatherActivity click path are wired; focus-scale listener is overwritten. Separate dynamic weather overlay refresh has no production entry point (HOME-004/005). |
 | Now Playing card | FAIL | Paused/buffering session selection conflicts with `MediaInfo.hasMusic()`; see HOME-001. |
 | Home / Profile / Settings navigation | PASS | Correct order and independent clickable/focusable segments; runtime DPAD acceptance pending. |
 | Inputs / Wi-Fi / Assistant | PASS (source) | Visibility/availability gates and click/key routes are present; OEM/system handler behavior remains runtime pending. |
@@ -96,7 +96,7 @@
 4. Restore the weather pill's combined focus feedback.
 5. Restore or retire the dormant Home atmospheric weather overlay refresh path (HOME-005).
 6. Run exact-head CI after any source corrections.
-6. Only after owner authorization, perform rendered screenshot, DPAD, lifecycle/resume, weather/prayer refresh, Now Playing pause/resume, and visual acceptance on Mi TV Stick.
+7. Only after owner authorization, perform rendered screenshot, DPAD, lifecycle/resume, weather/prayer refresh, Now Playing pause/resume, and visual acceptance on Mi TV Stick.
 
 ## Safety boundary
 - No APK installed.
