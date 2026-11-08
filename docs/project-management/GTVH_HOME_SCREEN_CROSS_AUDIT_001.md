@@ -175,3 +175,18 @@ No APK installation, ADB, device settings/default launcher mutation, physical Mi
 - Regression coverage asserts both the disabled guard and the enable-triggered refresh.
 
 Latest source/test HEAD: 97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5. PR #79 remains OPEN / DRAFT / UNMERGED. Exact-head CI has not yet been observed for this commit; tests remain unclaimed as passing. Earlier CI #1579 is on an earlier commit and cannot validate this change. Device acceptance remains NOT RUN.
+
+
+## Final follow-up validation — 8 November 2026
+
+A follow-up source/test commit extended HOME-002 regression coverage to assert DPAD Up return routing and the Header Assistant → visible prayer timetable focus path.
+
+- **Latest PR #79 head:** `765634e7d806f48bc38014119cd170a8697ea442`.
+- **CI #1579 / run `42486810729`: SUCCESS**. The run is associated with the latest head above; its PR merge ref `09c7b98534f151cb292f1b03c50b9d9ed21c3c90` has commit message confirming it merges that exact head into the PR base.
+- Both jobs passed: Lists/tools/docs; Launcher build/unit tests.
+- Release build: **BUILD SUCCESSFUL**.
+- Release APK diagnostic size: **1,627,581 bytes**.
+- Test APK artifact upload completed (artifact ID `13620310383`).
+- Companion APK release workflow run #34 / `42486810748`: SUCCESS.
+
+**Current gate:** all five remediation findings have source corrections and latest-head CI validation PASS. Whole Home Screen end-to-end acceptance remains **PARTIAL / NOT PASS** pending separately authorized Mi TV Stick rendered, DPAD, lifecycle, Now Playing pause/resume, prayer popup, Weather/AQI focus, and atmospheric overlay verification. No APK installed, no ADB/device settings/default launcher changes, and no PR merged.
