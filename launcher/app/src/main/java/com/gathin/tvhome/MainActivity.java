@@ -821,24 +821,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Backdrop.watch(dockRecycler);
         setUpGlider();
-        // Inputs keeps its established custom glass surface. New header pills keep their
-        // dedicated drawable so the nav's selected state remains visible under the focus glider.
-        View inputsPill = findViewById(R.id.btnInputs);
-        if (inputsPill != null) {
-            float radius = 21f * density;
-            inputsPill.setBackground(new GlassDrawable(inputsPill, radius, density, glider));
-            glider.addCompanion(inputsPill);
-            Backdrop.watch(inputsPill);
-            inputsPill.setOnFocusChangeListener((v, has) -> {
-                if (has) moveTopHighlight(v);
-            });
-        }
-        for (int id : new int[]{R.id.locationPill, R.id.weatherAirQuality, R.id.btnWifi,
-                R.id.btnAssistant, R.id.btnHome, R.id.btnCandyBox, R.id.btnSettings}) {
+        // Preserve the established GlassDrawable/Backdrop treatment on every header control.
+        // The three navigation tabs use a foreground selector so the active Beranda state remains
+        // visible without replacing the liquid-glass background.
+        for (int id : new int[]{R.id.locationPill, R.id.weatherAirQuality, R.id.btnInputs,
+                R.id.btnWifi, R.id.btnAssistant, R.id.btnHome, R.id.btnCandyBox, R.id.btnSettings}) {
             View pill = findViewById(id);
             if (pill == null) continue;
+            float radius = 21f * density;
+            pill.setBackground(new GlassDrawable(pill, radius, density, glider));
             glider.addCompanion(pill);
             Backdrop.watch(pill);
+            if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings) {
+                pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
+            }
             pill.setOnFocusChangeListener((v, has) -> {
                 if (has) {
                     moveTopHighlight(v);
