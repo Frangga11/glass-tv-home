@@ -1,0 +1,76 @@
+name: Publish Glass TV Home APK Release
+
+on:
+  push:
+    branches:
+      - fix/home-balanced-frame-001
+    paths:
+      - .github/workflows/publish-apk-release.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    name: Build and publish direct APK asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout CI-validated source
+        uses: actions/checkout@v4
+        with:
+          ref: c058935ed4398f5c7964d753fcf35a9cf77989bb
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platforms;android-34 build-tools;34.0.0
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build release APK from CI-validated commit
+        working-directory: launcher
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon testReleaseUnitTest assembleRelease
+
+      - name: Verify APK identity and extension
+        run: |
+          test -f launcher/app/build/outputs/apk/release/app-release.apk
+          python3 - <<'PY'
+          import hashlib
+          import os
+          import zipfile
+
+          path = "launcher/app/build/outputs/apk/release/app-release.apk"
+          expected_size = 1624589
+          expected_sha256 = "6c7981a6c71aa5fc6f5146ba5a6023b9fdbfc527c887d1c367dc500d04fd3b10"
+          actual_size = os.path.getsize(path)
+          with open(path, "rb") as f:
+              digest = hashlib.sha256(f.read()).hexdigest()
+          assert actual_size == expected_size, f"Unexpected APK size: {actual_size}"
+          assert digest == expected_sha256, f"Unexpected APK SHA-256: {digest}"
+          assert zipfile.is_zipfile(path), "APK is not a valid ZIP-based Android package"
+          print(f"Verified APK: {path}")
+          print(f"Size: {actual_size}")
+          print(f"SHA-256: {digest}")
+          PY
+
+      - name: Publish direct .apk release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: glass-tv-home-ci1545-20261108
+          target_commitish: c058935ed4398f5c7964d753fcf35a9cf77989bb
+          name: Glass TV Home — CI #1545 QA APK
+          body: |
+            QA-only prerelease built from CI-validated source/test commit c058935ed4398f5c7964d753fcf35a9cf77989bb.
+            This release asset is the raw Android APK, not a ZIP wrapper.
+            Device installation and physical Mi TV Stick acceptance remain pending.
+          prerelease: true
+          files: launcher/app/build/outputs/apk/release/app-release.apk
