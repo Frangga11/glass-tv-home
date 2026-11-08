@@ -76,9 +76,10 @@ The original `btnInputs` XML element is identical to baseline. The same view ID 
 - XML subtrees are byte-for-byte identical to `main` for `heroShelf`, `islamicShelf`, `ayahBlock`, `prayerHeader`, all five prayer-time fields, `gridWrap`, `grid`, `glass`, and `nowPlayingCard`.
 - Java method bodies are byte-for-byte identical for `setHeroText()`, `showHero()`, `hideHero()`, `updatePrayerTimes()`, `updateIslamicShelf()`, `parkDock()`, `updateTopFade()`, `setWallpaper()`, `showNextWallpaper()`, and the five preserved popup/action functions listed above.
 - The existing `btnInputs` XML element remains identical to baseline and is still the first child of `topButtons`.
+- Final source-level recheck confirms no duplicate XML view IDs and all new resource references resolve in the successful Android resource/build pipeline.
 - The dock is parked using the existing bottom-anchored `parkDock()` calculation. Its method and `DockDecoration` implementation are unchanged; increasing the header stack does not alter the dock's bottom anchor.
 - The only intended header layout growth is the added location pill above the existing weather pill. No title/description, ayah, prayer schedule, wallpaper, grid, dock, or glass geometry source code was modified.
-- The approved navigation order is Profile → active Home → Settings. Header remeasurement now listens to root, left-group, and right-group layout changes so changes in date/Inputs visibility cannot leave the centered capsule stale.
+- The approved 1672×940 reference is `Kabut Pagi Dempo di Pagar Alam.png`: Profile → active Home → Settings. The earlier implementation's Home/Profile order was found in cross-audit and corrected before the final test build. Header remeasurement listens to root, left-group, and right-group layout changes so changes in date/Inputs visibility cannot leave the centered capsule stale.
 
 ## Integration safety
 
