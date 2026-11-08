@@ -15,8 +15,8 @@ final class DockGeometry {
     private static final float DOCK_EXTRA_HEIGHT_DP = 18f;
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
     private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
-    private static final float SAFE_HORIZONTAL_MARGIN_DP = 34f;
-    private static final float SAFE_VERTICAL_MARGIN_DP = 34f;
+    private static final float SAFE_HORIZONTAL_MARGIN_DP = 29f;
+    private static final float SAFE_VERTICAL_MARGIN_DP = 29f;
     private static final float SHELF_TO_TRAY_GAP_DP = 36f;
 
     private DockGeometry() { }
@@ -58,7 +58,7 @@ final class DockGeometry {
     }
 
     /**
-     * The Dock host is already inside activity_main's shared 34dp Home content inset.
+     * The Dock host is already inside activity_main's shared 29dp Home content inset.
      * Applying another inset here would double-inset the Dock and make its tray narrower
      * than the left information and right prayer/ayah shelves.
      */
