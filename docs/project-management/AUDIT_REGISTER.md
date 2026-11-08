@@ -2173,3 +2173,20 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - APK diagnostic: **1,627,685 bytes**; historical 1.5 MiB threshold warning is non-blocking. Publisher workflow #54 skipped; no direct release APK. Visual parity artifact ID `13624193020` is a ZIP, 1,426,812 bytes, expires 15 Nov 2026.
 - PR diff has four files, including a CI workflow change to include PR #80 in the visual-parity artifact step. App source correction remains confined to MainActivity.java and activity_main.xml; focused regression test file is the third scoped change. No unrelated application modules were edited.
 - Rendered 1920×1080 review and physical Mi TV Stick acceptance pending. No install, ADB, device settings change or merge.
+
+
+---
+
+## GTVH-HOME-DOCK-ISLAMIC-SHELF-NAVIGATION-REFINEMENT-001 — 8 Nov 2026
+
+**Status: SOURCE PASS / EXACT-HEAD CI PASS / VISUAL + PHYSICAL ACCEPTANCE PENDING / NOT FINAL**
+
+- PR #81 OPEN / DRAFT / UNMERGED; branch `fix/home-dock-islamic-shelf-navigation-001`; HEAD `2130675f1f2723f8e7c895cbc6ac63327d2efd60`; stacked on PR #80 HEAD `a085be150ebcf1d48b825ed7ac43b172261f3aa0`.
+- **DOCK-001 — geometry coupling:** DockAdapter reused AppAdapter Grid sizing and XML 48dp icon. Corrected with Dock-only 0.95 scale, 44dp Dock icon, 32dp nominal gap, and unchanged Grid geometry.
+- **DOCK-002 — host/decor clipping risk:** reducing only host height would mismatch RecyclerView decoration insets. Corrected total host height by ~8dp (card-height shrink + spare host 18dp→14dp) and horizontal insets 6dp/8dp; vertical 6dp/12dp unchanged.
+- **ISLAMIC-001 — focus-dependent anchor:** showHero() used focused card Y. Replaced with first Dock card/stable virtual anchor, preserved pre-refinement baseline, and pinned Islamic shelf bottom edge through content-height changes. Visibility fade retained; hideShelf() does not alter position.
+- **NAV-001 — instant row jump:** DPAD row transitions now use signed smoothScrollBy geometry, pending target positions, generation guards, rapid-input cancellation, partial-last-row clamping and onPause cancellation. DOWN moves content upward; UP moves it downward.
+- **CI evidence:** run #1620 / `42501726878`, exact HEAD; both jobs SUCCESS. Python 176 tests, 1 skipped. Android app/installer release unit-test tasks and Release assemble successful; BUILD SUCCESSFUL in 1m19.
+- **APK:** 1,629,469 bytes; SHA-256 `caa3289641184e516b5758b8ce647d7bc33616ee55cb5f022576e53add572e24`. CI artifact ID `13625911589`, ZIP size 1,428,433 bytes. Historical 1.5 MiB warning is non-blocking.
+- **Outstanding:** 1920×1080 visual review and physical Mi TV Stick acceptance. No install, ADB, device settings change or merge. Keep PR #81 draft/unmerged until acceptance.
+- Detailed evidence: [GTVH_HOME_DOCK_ISLAMIC_SHELF_NAVIGATION_REFINEMENT_001_AUDIT.md](GTVH_HOME_DOCK_ISLAMIC_SHELF_NAVIGATION_REFINEMENT_001_AUDIT.md).
