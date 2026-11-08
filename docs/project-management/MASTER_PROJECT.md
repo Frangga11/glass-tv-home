@@ -1573,3 +1573,12 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 - Exact-head CI for this HEAD has not yet appeared in workflow/status results. Earlier CI #1560 does not validate these later commits; tests are not claimed passing.
 - APK installation, ADB, device settings/default launcher mutation, physical Mi TV Stick verification and merge remain prohibited/pending separate owner authorization.
 - Canonical detailed record: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
+
+
+## Exact-head CI result — 8 November 2026
+- PR #79 exact head `701487f7f708d0b4342b613205fde9fba7c0dd72`; CI #1574 / run `42486582167` completed **SUCCESS** on PR merge ref `fa5e4feb4ba451d6209762278ce18a6337edbdba`, which includes that exact head.
+- Both jobs passed: Lists/tools/docs; Launcher build/unit tests. Release build: **BUILD SUCCESSFUL**.
+- Release APK size diagnostic: **1,627,417 bytes**. PR test APK artifact upload succeeded (artifact ID `13619931751`).
+- Five Home Screen remediation fixes and their source-contract/build CI validation are PASS. End-to-end acceptance on Mi TV Stick remains pending; no APK installation, ADB, device settings/default launcher changes, or physical test.
+- PR #79 and dependency PR #77 remain OPEN / DRAFT / UNMERGED.
+- Detailed record: `GTVH_HOME_SCREEN_CROSS_AUDIT_001.md`.
