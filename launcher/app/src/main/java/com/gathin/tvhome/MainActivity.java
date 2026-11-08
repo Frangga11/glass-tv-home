@@ -3613,27 +3613,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void showHomeWeather(HomeWeather.Line line) {
         if (weatherAirQualityView == null) return;
-        if (line == null) {
-            weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));
-            return;
-        }
-        String sep = line.weather.isEmpty() || line.aqi.isEmpty() ? "" : "     ·     ";
-        android.text.SpannableString text = new android.text.SpannableString(line.weather + sep + line.aqi);
-        if (!line.aqi.isEmpty()) {
-            text.setSpan(new android.text.style.ForegroundColorSpan(line.aqiColor), text.length() - line.aqi.length(),
-                    text.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        weatherAirQualityView.setText(text);
-        if (line.icon != 0) {
-            Drawable d = getDrawable(line.icon);
-            int px = Math.round(20 * density);
-            d.setBounds(0, 0, px, px);
-            weatherAirQualityView.setCompoundDrawables(d, null, null, null);
-            weatherAirQualityView.setCompoundDrawablePadding(Math.round(8 * density));
-        } else {
-            weatherAirQualityView.setCompoundDrawables(null, null, null, null);
-        }
-        updateWeatherOverlay(line);
+        // Keep the visible weather/AQI text on the same location-scoped G3B cache as WeatherActivity.
+        // The legacy HomeWeather refresh is retained only for its atmospheric wallpaper overlay;
+        // it must never overwrite the shared weather/AQI line or hide an available AQI value.
+        updateWeatherAqi();
+        if (line != null) updateWeatherOverlay(line);
     }
 
     public void ensureWeatherOverlayView() {
