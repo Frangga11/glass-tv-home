@@ -12,7 +12,9 @@ final class DockGeometry {
     private static final float DOCK_ITEM_TOP_OFFSET_DP = 6f;
     private static final float DOCK_ITEM_BOTTOM_OFFSET_DP = 12f;
     private static final float TRAY_PADDING_DP = 14f;
-    private static final float DOCK_EXTRA_HEIGHT_DP = 18f;
+    private static final float DOCK_EXTRA_HEIGHT_DP = 10f;
+    private static final float DOCK_TILE_SCALE = 0.92f;
+    private static final float DOCK_SLOT_GAP_DP = 32f;
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
     private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
     private static final float SAFE_HORIZONTAL_MARGIN_DP = 29f;
@@ -39,6 +41,26 @@ final class DockGeometry {
     static int horizontalTileWidthPx(int safeContentWidthPx, int capacity, float density) {
         int gridWidth = horizontalGridWidthPx(safeContentWidthPx, capacity);
         return AppAdapter.tileWidthPx(gridWidth, horizontalGridColumns(), density);
+    }
+
+    /** Dock-only tile width: shrink the Dock without changing AppAdapter/Grid geometry. */
+    static int horizontalDockTileWidthPx(int safeContentWidthPx, int capacity, float density) {
+        int base = horizontalTileWidthPx(safeContentWidthPx, capacity, density);
+        return Math.max(Math.round(80 * density), Math.round(base * DOCK_TILE_SCALE));
+    }
+
+    /** Dock-only vertical tile width, scaled from the established 112–170dp rail range. */
+    static int verticalDockTileWidthPx(int innerWidthPx, float density) {
+        int base = Math.max(Math.round(112 * density),
+                Math.min(Math.round(170 * density), innerWidthPx - Math.round(20 * density)));
+        return Math.max(Math.round(80 * density), Math.round(base * DOCK_TILE_SCALE));
+    }
+
+    /** Keep a consistent visual gap after shrinking Dock cards; the glass tray remains full width. */
+    static int horizontalDockSlotWidthPx(int safeContentWidthPx, int capacity, float density) {
+        int cell = horizontalSlotWidthPx(safeContentWidthPx, capacity);
+        int tile = horizontalDockTileWidthPx(safeContentWidthPx, capacity, density);
+        return Math.min(cell, tile + Math.round(DOCK_SLOT_GAP_DP * density));
     }
 
     static int safeHorizontalMarginDp() {
