@@ -78,6 +78,9 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("horizontalGridScrollAwaitingIdle", MAIN)
         self.assertIn("pendingHorizontalGridPosition", MAIN)
         self.assertIn("grid.stopScroll()", MAIN)
+        pause_start = MAIN.index("protected void onPause()")
+        pause_end = MAIN.index("public void onWindowFocusChanged", pause_start)
+        self.assertIn("cancelHorizontalGridRowTransition();", MAIN[pause_start:pause_end])
 
     def test_dpad_down_and_up_use_pending_row_and_clamp_incomplete_last_row(self):
         start = MAIN.index("public boolean onTileVerticalKey")
