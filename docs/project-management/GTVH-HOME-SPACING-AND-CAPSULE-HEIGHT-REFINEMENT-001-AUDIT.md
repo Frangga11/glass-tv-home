@@ -2,11 +2,11 @@
 
 **Date:** 9 November 2026  
 **Repository:** `Frangga11/glass-tv-home`  
-**PR:** [#97](https://github.com/Frangga11/glass-tv-home/pull/97)  
+**PR:** [#99](https://github.com/Frangga11/glass-tv-home/pull/99)  
 **Branch:** `verify/home-spacing-capsule-height-refinement-001-qa`  
 **Exact HEAD:** `443d8491109c416915955c8a9ceb202860916a6b`  
 **Base:** `fix/home-ui-proportion-glass-focus-refinement-003` at `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`  
-**Status:** BELUM FINAL — CI Android/release build and visual acceptance pending.
+**Status:** AUTOMATED CI PASS / APK VERIFIED / RENDERED VISUAL ACCEPTANCE PENDING — BELUM FINAL.
 
 ## 1. Owner-approved requirements
 
@@ -85,7 +85,7 @@ PR contains 8 files total. Production changes are limited to the three files abo
 
 ## CI correction checkpoint — PR #99 — 9 November 2026
 
-- PR #97 is now CLOSED / NOT MERGED and superseded by [PR #99](https://github.com/Frangga11/glass-tv-home/pull/98). PR #99 is OPEN / DRAFT / UNMERGED; base remains PR #83 at `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
+- PR #97 is now CLOSED / NOT MERGED and superseded by [PR #99](https://github.com/Frangga11/glass-tv-home/pull/99). PR #99 is OPEN / DRAFT / UNMERGED; base remains PR #83 at `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
 - Active source branch: `verify/home-spacing-capsule-height-refinement-001-qa`; exact HEAD: `443d8491109c416915955c8a9ceb202860916a6b`.
 - PR #99 retains the three production files and adds two Android unit-test updates to the five Python test changes: total 10 files (3 production, 7 test). No unrelated production files added.
 - Exact-head CI #1670 / run `42531675366` and #1669 / run `42531662425` are in progress at checkpoint capture. Previous exact-head Python suite passed 190 tests (1 skipped); Lists/tools/docs passed. Previous Android unit tests compiled production Java and found four stale test assertions (old 29dp safe frame and 27.5dp shelf gap). PR #99 updates those two Android test files to assert 30dp geometry; exact-head Android retest remains PENDING.
