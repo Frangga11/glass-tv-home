@@ -1259,3 +1259,9 @@ Previous CI #1506 and #1526 predate the latest stale-focus correction and must n
 - Header: clock 44sp; AM/PM/date/Shamsi date 11sp; single shared navigation capsule with independent transparent focus targets; capsule radius 20dp, segment radius 14dp, other Header glass pills 21dp.
 - Source implementation and regression files listed in `GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md`.
 - CI #1559 pending at checkpoint; runtime TV test and screenshot evidence pending; PR #79 and #77 remain draft/unmerged.
+
+
+## CI correction — GTVH-HOME-HEADER-REFINEMENT-001
+- Updated source HEAD: `e9fdecdb4dd44eefeed1464fddaf8edd2e2ec5e0`.
+- CI #1559 failed 1/310 tests because DockLayoutModelTest retained the old 34dp safe-reserve expectation; test corrected to 29dp.
+- CI #1560 / run `42484233880` is pending/in progress; no build pass claimed.
