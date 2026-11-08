@@ -144,6 +144,14 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("if (card.isFocused()) onTileFocused(position, card);", focus_restore)
         self.assertIn("else card.requestFocus();", focus_restore)
 
+        dock_start = MAIN.index("private void focusDockTileWhenLaidOut")
+        dock_end = MAIN.index("private void focusTile(int position)", dock_start)
+        dock_restore = MAIN[dock_start:dock_end]
+        self.assertIn(
+            "if (card.isFocused()) onDockTileFocused(dockAdapter.keyAt(position), card);",
+            dock_restore,
+        )
+
     def test_location_altitude_uses_bilingual_resources_without_approximation_symbol(self):
         self.assertIn(
             "getString(R.string.location_altitude_format, zone.altitudeMeters)",
