@@ -46,7 +46,7 @@ The following method bodies were compared with `main` and are unchanged:
 - `showInputs()`
 - `triggerGoogleAssistant()`
 
-The original `btnInputs` XML element is identical to baseline. The same view ID and existing click listener remain. D-pad key routing was updated only to reflect the new visual header order.
+The original `btnInputs` XML element is identical to baseline. The same view ID and existing click listener remain. D-pad key routing mirrors the approved reference order: Location → weather/AQI → Profile → Home → Settings → Inputs → Wi-Fi → Assistant.
 
 ## Layout values
 
@@ -68,8 +68,17 @@ The original `btnInputs` XML element is identical to baseline. The same view ID 
 - No new Java/compiler warnings were introduced; the deprecation notices in the implementation run match the baseline run.
 - No Android emulator screenshot/layout test has yet been run at 1280×720, 1920×1080 or 3840×2160.
 - No physical-TV regression test has yet been run. CI success does not prove remote navigation, popup anchoring, focus rendering or overscan behavior on hardware.
-- Location text follows `Location.chosen()` and the pill opens the existing `LocationActivity`. The existing weather/AQI provider separately reads `AppLocationManager` preferences; if those two preference stores differ on the device, the location label may not match the weather/AQI source. They were not rewired because the task forbids changing data ownership/logic.
+- Cross-check of `LocationActivity` confirms that selecting a zone updates both `Location` and `AppLocationManager`, clears the `HomeWeather` cache, and reschedules Azan. The location label and weather/AQI source therefore follow the same selected zone; no provider ownership changes were required.
 - Do not merge until the latest CI passes and the three-resolution visual/focus checks are completed or explicitly accepted as deferred.
+
+## Cross-audit against untouched Home Screen regions
+
+- XML subtrees are byte-for-byte identical to `main` for `heroShelf`, `islamicShelf`, `ayahBlock`, `prayerHeader`, all five prayer-time fields, `gridWrap`, `grid`, `glass`, and `nowPlayingCard`.
+- Java method bodies are byte-for-byte identical for `setHeroText()`, `showHero()`, `hideHero()`, `updatePrayerTimes()`, `updateIslamicShelf()`, `parkDock()`, `updateTopFade()`, `setWallpaper()`, `showNextWallpaper()`, and the five preserved popup/action functions listed above.
+- The existing `btnInputs` XML element remains identical to baseline and is still the first child of `topButtons`.
+- The dock is parked using the existing bottom-anchored `parkDock()` calculation. Its method and `DockDecoration` implementation are unchanged; increasing the header stack does not alter the dock's bottom anchor.
+- The only intended header layout growth is the added location pill above the existing weather pill. No title/description, ayah, prayer schedule, wallpaper, grid, dock, or glass geometry source code was modified.
+- The approved navigation order is Profile → active Home → Settings. Header remeasurement now listens to root, left-group, and right-group layout changes so changes in date/Inputs visibility cannot leave the centered capsule stale.
 
 ## Integration safety
 
