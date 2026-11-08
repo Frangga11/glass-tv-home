@@ -11,7 +11,7 @@
 - Keep PR #84–#89, #99 and #100 OPEN / DRAFT / UNMERGED. No merge or device installation until full audit and explicit acceptance.
 - Preserve approved scope: 30dp left/right/bottom, 29dp top; target capsules 30dp except Inputs; Home/Profile icon-label gap 2dp, Settings 4dp; visible wallpaper/prayer lower edges 30dp above measured horizontal Glass Dock.
 - Preserve all PR #84–#89 behavior and regression tests. The overlapping shelf contract was reconciled without deleting PR #84's single-anchor test.
-- CI #1677 / run `42533185178`: Python 208 tests (1 skipped) and Lists/tools/docs job PASS; Android/release job pending at time of documentation. Visual/device acceptance pending.
+- CI #1677 / run `42533185178`: both jobs SUCCESS; Python 208 tests (1 skipped); Android `testReleaseUnitTest` and release build PASS. APK 1,626,857 bytes; artifact #13638675606 ZIP SHA-256 `e1428796d54847cd7e33c5c761b7339ad76c6eea004b8e26c39f6499d9502521`; extracted APK SHA-256 `b7ae8aa3919e0818b0879b8996427ea6eab9b91f14bf0fcff84b80fad32f292a`. Audit: [REFINEMENT-002 report](GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md). Visual/device acceptance pending.
 
 ---
 
