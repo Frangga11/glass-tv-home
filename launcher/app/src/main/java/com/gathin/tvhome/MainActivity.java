@@ -1865,32 +1865,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final int returnSlot = lastFocused;
         final boolean returnFocusWasTopPill = lastFocusWasTopPill;
         final String returnTopPillKey = lastFocusedTopPillKey;
-        // A user's newer DPAD destination (Dock/header) must win over this resume restoration.
+        // A user's newer DPAD destination must win over this queued resume restoration.
         final int restoreGeneration = gridFocusRequestGeneration;
         grid.post(() -> {
             boolean supersededByNewFocus = restoreGeneration != gridFocusRequestGeneration;
             if (!supersededByNewFocus) {
                 int dockPos = dockAdapter == null ? -1 : dockAdapter.positionOf(returnKey);
-            int pos = adapter.positionOf(returnKey);
-            boolean restoredTopPill = false;
-            if (returnFocusWasTopPill) {
-                View pill = findTopPill(returnTopPillKey);
-                restoredTopPill = pill != null && pill.getVisibility() == View.VISIBLE
-                        && pill.isFocusable() && pill.requestFocus();
+                int pos = adapter.positionOf(returnKey);
+                boolean restoredTopPill = false;
+                if (returnFocusWasTopPill) {
+                    View pill = findTopPill(returnTopPillKey);
+                    restoredTopPill = pill != null && pill.getVisibility() == View.VISIBLE
+                            && pill.isFocusable() && pill.requestFocus();
+                    if (!restoredTopPill) {
+                        lastFocusWasTopPill = false;
+                        lastFocusedTopPillKey = null;
+                        getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
+                                .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
+                                .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
+                    }
+                }
                 if (!restoredTopPill) {
-                    lastFocusWasTopPill = false;
-                    lastFocusedTopPillKey = null;
-                    getSharedPreferences(NavigationState.PREFS, MODE_PRIVATE).edit()
-                            .putBoolean(NavigationState.HOME_FOCUS_TOP_PILL, false)
-                            .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
+                    if (dockPos >= 0) {
+                        lastFocusedDock = true;
+                        lastDockFocusedKey = returnKey;
+                        focusDockTile(dockPos);
+                    } else {
+                        lastFocusedDock = false;
+                        focusTile(pos >= 0 ? pos : returnSlot);
+                    }
                 }
             }
-            if (!restoredTopPill) {
-                if (dockPos >= 0) { lastFocusedDock = true; lastDockFocusedKey = returnKey; focusDockTile(dockPos); }
-                else { lastFocusedDock = false; focusTile(pos >= 0 ? pos : returnSlot); }
-            }
-            }
-            // Finish the resume lifecycle even when a newer focus destination superseded restoration.
+            // Complete resume bookkeeping even when a newer focus destination superseded restoration.
             tilesReady = true;
             resuming = false;
             View now = getCurrentFocus();
