@@ -127,29 +127,21 @@ final class AppLanguage {
     }
 
     public static String getAyahLabel(Context ctx, String reference) {
+        return getAyahLabel(ctx, reference, true, true);
+    }
+
+    public static String getAyahLabel(Context ctx, String reference, boolean current, boolean cached) {
         String lang = getLanguage(ctx);
-        String prefix;
-        switch (lang) {
-            case LANG_EN:
-                prefix = "DAILY PRAYER";
-                break;
-            case LANG_ID:
-            case LANG_MS:
-            default:
-                prefix = "DOA HARIAN";
-                break;
+        boolean english = LANG_EN.equals(lang);
+        String prefix = english ? "DAILY VERSE" : "AYAT PILIHAN";
+        if (!current) {
+            if (cached) prefix += english ? " • SAVED COPY" : " • TERSIMPAN";
+            else prefix += english ? " • LOCAL FALLBACK" : " • DATA LOKAL";
         }
         if (reference != null && !reference.isEmpty()) {
             return prefix + "  •  " + reference.toUpperCase(Locale.ROOT);
         }
-        switch (lang) {
-            case LANG_EN:
-                return prefix + "  •  VERSE OF THE DAY";
-            case LANG_ID:
-            case LANG_MS:
-            default:
-                return prefix + "  •  AYAT PILIHAN";
-        }
+        return prefix + (english ? " • VERSE OF THE DAY" : " • HARIAN");
     }
 
     public static String getNextPrayerPrefix(Context ctx) {
