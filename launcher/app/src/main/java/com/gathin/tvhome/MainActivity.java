@@ -4268,11 +4268,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 13f : 11f);
         }
         if (ayahArabic != null) {
+            // A fixed shared line box gives RTL Arabic a stable right edge.
+            ViewGroup.LayoutParams arabicParams = ayahArabic.getLayoutParams();
+            if (arabicParams != null && arabicParams.width != islamicMaxWidth) {
+                arabicParams.width = islamicMaxWidth;
+                ayahArabic.setLayoutParams(arabicParams);
+            }
             ayahArabic.setMaxWidth(islamicMaxWidth);
             ayahArabic.setSingleLine(false);
             ayahArabic.setMaxLines(2);
             ayahArabic.setEllipsize(TextUtils.TruncateAt.END);
             ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL);
+            ayahArabic.setGravity(Gravity.END);
             ayahArabic.setIncludeFontPadding(true);
             ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
@@ -4280,13 +4287,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahArabic.setText(a.arabic.trim());
         }
         if (ayahText != null) {
+            // Keep translation in the same measured column as the Arabic preview.
+            ViewGroup.LayoutParams translationParams = ayahText.getLayoutParams();
+            if (translationParams != null && translationParams.width != islamicMaxWidth) {
+                translationParams.width = islamicMaxWidth;
+                ayahText.setLayoutParams(translationParams);
+            }
+            ayahText.setTextDirection(View.TEXT_DIRECTION_LTR);
+            ayahText.setGravity(Gravity.START);
             ayahText.setMaxWidth(islamicMaxWidth);
             ayahText.setSingleLine(false);
             ayahText.setMaxLines(2);
             ayahText.setEllipsize(TextUtils.TruncateAt.END);
             ayahText.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahText.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
-            ayahText.setLineSpacing(Math.round(2 * density), 1.12f);
+            ayahText.setLineSpacing(0, 1.04f);
             String tr = a.translation(AppLanguage.getLanguage(this));
             ayahText.setText(tr != null ? tr.trim() : "");
             ayahText.setTextSize(TypedValue.COMPLEX_UNIT_SP, is4K ? 15f : 14f);
@@ -4404,7 +4419,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 getResources().getDisplayMetrics().widthPixels >= 3840 ? 34f : 28f);
         arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
         arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
-        arabic.setGravity(Gravity.CENTER);
+        arabic.setGravity(Gravity.END);
         arabic.setIncludeFontPadding(true);
         arabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
         arabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
@@ -4431,6 +4446,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         translation.setTextColor(0xF2FFFFFF);
         translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
         translation.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
+        translation.setTextDirection(View.TEXT_DIRECTION_LTR);
         translation.setGravity(Gravity.START);
         translation.setLineSpacing(Math.round(5 * density), 1.18f);
         translation.setMaxLines(Integer.MAX_VALUE);

@@ -144,12 +144,6 @@ final class AppLanguage {
         return prefix + (english ? " • VERSE OF THE DAY" : " • HARIAN");
     }
 
-    public static String getPrayerDataSourceLabel(Context ctx, boolean officialKemenag) {
-        String lang = getLanguage(ctx);
-        if (LANG_EN.equals(lang)) return officialKemenag ? "KEMENAG RI" : "LOCAL ESTIMATE";
-        if (LANG_MS.equals(lang)) return officialKemenag ? "SUMBER KEMENAG RI" : "ANGGARAN SETEMPAT";
-        return officialKemenag ? "KEMENAG RI" : "PERKIRAAN LOKAL";
-    }
     public static String getNextPrayerPrefix(Context ctx) {
         String lang = getLanguage(ctx);
         switch (lang) {
