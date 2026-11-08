@@ -11,7 +11,7 @@
 - Base: PR #89 exact HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc`; includes the sequential PR #84–#89 Islamic shelf, Arabic typography, prayer refresh, daily Ayah cache/source/offline-retry stack.
 - PR #99 was based on PR #83 and is retained as a non-cumulative source PR. Its geometry/capsule changes were reapplied on top of #89 with a deliberate test-contract reconciliation; PR #84's extra single-anchor regression test remains.
 - Exactly 11 changed files: 3 production, 7 regression tests, 1 CI workflow allowlist. CI artifact allowlist includes #100.
-- Exact-head CI #1677 / run `42533185178`: Python suite 208 tests, OK (1 skipped); Lists/tools/docs job PASS; Launcher build/unit tests still running at this record. APK/artifact and rendered visual review pending.
+- Exact-head CI #1677 / run `42533185178`: both required jobs SUCCESS; Python 208 tests, OK (1 skipped); Android `testReleaseUnitTest` + `assembleRelease` BUILD SUCCESSFUL. Release APK 1,626,857 bytes. Artifact #13638675606 ZIP 1,428,688 bytes, SHA-256 `e1428796d54847cd7e33c5c761b7339ad76c6eea004b8e26c39f6499d9502521`; extracted APK SHA-256 `b7ae8aa3919e0818b0879b8996427ea6eab9b91f14bf0fcff84b80fad32f292a`. Dedicated report: [REFINEMENT-002 audit](GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md). Rendered visual review remains pending.
 - Owner-approved geometry: 30dp left/right/bottom, 29dp top; targeted capsules 30dp (Inputs excluded); Home/Profile drawable gap 2dp, Settings 4dp; wallpaper/prayer visible lower edges 30dp above measured horizontal Dock tray.
 - No merge, ADB, TV installation or device-setting change. All source PRs remain Draft/unmerged pending exact-head validation and visual acceptance.
 
