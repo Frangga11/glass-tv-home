@@ -205,6 +205,20 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
 
+    def test_home_atmospheric_weather_overlay_refreshes_on_resume_when_due(self):
+        start = MAIN.index("protected void onResume()")
+        end = MAIN.index("protected void onPause()", start)
+        resume = MAIN[start:end]
+        self.assertIn("updateWeatherAqi();", resume)
+        self.assertIn("WeatherAirQuality.syncIfDue(this, this::updateWeatherAqi);", resume)
+        self.assertIn("updateHomeWeather();", resume)
+        start = MAIN.index("private void showHomeWeather(HomeWeather.Line line)")
+        end = MAIN.index("public void ensureWeatherOverlayView()", start)
+        display = MAIN[start:end]
+        self.assertIn("updateWeatherAqi();", display)
+        self.assertIn("updateWeatherOverlay(line);", display)
+        self.assertNotIn("weatherAirQualityView.setText", display)
+
     def test_weather_pill_focus_scale_and_header_highlight_share_one_listener(self):
         self.assertNotIn("weatherAirQualityView.setOnFocusChangeListener", MAIN)
         start = MAIN.index("for (int id : new int[]{R.id.locationPill, R.id.weatherAirQuality")
