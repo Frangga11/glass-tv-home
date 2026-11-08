@@ -3525,13 +3525,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int width = header.getWidth();
         if (width <= 0 || left.getHeight() <= 0 || right.getWidth() <= 0 || date.getWidth() <= 0) return;
 
-        int informationPillWidth = Math.round(width * 0.30f);
-        for (View pill : new View[]{location, weather}) {
-            if (pill == null) continue;
-            ViewGroup.LayoutParams params = pill.getLayoutParams();
-            if (params.width != informationPillWidth) {
-                params.width = informationPillWidth;
-                pill.setLayoutParams(params);
+        // The location label is short; the weather/AQI line needs more room for both values.
+        // Give each a deliberate width rather than forcing the long AQI string into the location pill's width.
+        if (location != null) {
+            int locationWidth = Math.round(width * 0.34f);
+            ViewGroup.LayoutParams params = location.getLayoutParams();
+            if (params.width != locationWidth) {
+                params.width = locationWidth;
+                location.setLayoutParams(params);
+            }
+        }
+        if (weather != null) {
+            int weatherWidth = Math.round(width * 0.44f);
+            ViewGroup.LayoutParams params = weather.getLayoutParams();
+            if (params.width != weatherWidth) {
+                params.width = weatherWidth;
+                weather.setLayoutParams(params);
             }
         }
 
