@@ -3406,6 +3406,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             focusTile(0);
             return;
         }
+        final int requestGeneration = ++gridFocusRequestGeneration;
         final int targetPosition = NavigationState.resolveHomePosition(-1, position, dockAdapter.getItemCount());
         RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
         if (vh != null) {
@@ -3418,10 +3419,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         dockRecycler.scrollToPosition(targetPosition);
-        focusDockTileWhenLaidOut(targetPosition, 3);
+        focusDockTileWhenLaidOut(targetPosition, 3, requestGeneration);
     }
 
-    private void focusDockTileWhenLaidOut(int position, int attemptsRemaining) {
+    private void focusDockTileWhenLaidOut(int position, int attemptsRemaining, int requestGeneration) {
+        if (requestGeneration != gridFocusRequestGeneration) return;
         if (dockAdapter == null || position < 0 || position >= dockAdapter.getItemCount()) return;
         RecyclerView.ViewHolder next = dockRecycler.findViewHolderForAdapterPosition(position);
         View card = next != null ? next.itemView.findViewById(R.id.card) : null;
@@ -3431,7 +3433,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         if (attemptsRemaining > 0) {
-            dockRecycler.postOnAnimation(() -> focusDockTileWhenLaidOut(position, attemptsRemaining - 1));
+            dockRecycler.postOnAnimation(() -> focusDockTileWhenLaidOut(position, attemptsRemaining - 1, requestGeneration));
         } else {
             focusTopBarFallback();
         }
