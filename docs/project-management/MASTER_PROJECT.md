@@ -1456,3 +1456,12 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 - Compared PR #79 exact-head release APK (`1,624,589 bytes`) against PR #77 exact-head CI #1506 release APK (`1,622,585 bytes`). The PR #79 build is only **2,004 bytes (+0.12%)** larger than the parent PR #77 build.
 - Both builds already exceed the historical 1.5 MiB warning threshold; therefore the threshold warning is pre-existing, not a material regression introduced by the balanced-frame/header changes. Continue monitoring APK size, but do not classify this PR as causing the full 51,725-byte threshold overage.
 - Parent artifact: ID `13609978757`, ZIP 1,422,754 bytes. Latest PR #79 artifact: ID `13615852690`, ZIP 1,423,863 bytes. These are compressed artifact archive sizes; compare release APK payload sizes separately as above.
+
+
+## Resume focus-restoration audit follow-up — 8 November 2026
+
+- Further lifecycle audit found `restoreFocus()` queued a resume callback that could force the saved focus destination after a newer DPAD focus action. Fixed by capturing `gridFocusRequestGeneration` and skipping stale restoration; resume bookkeeping still completes.
+- Expanded cancellation: global focus observer now invalidates queued Grid/resume focus work whenever focus moves to any non-Grid destination, covering header, Dock, prayer/media controls and popups. Added Python regression tests for resume-generation guard and global non-Grid invalidation.
+- PR #79 branch `fix/home-balanced-frame-001` latest recorded head `162cfdeb681cdd52e160c13d756679f84c0a3f2a` (docs-only commit after source/test head `434d32afb424c4625a45979cc08d632be6443cc3`). Remains OPEN / DRAFT / UNMERGED; PR #77 dependency remains in place.
+- Exact-head source/test CI #1540 / run `42478445302` validates source/test head `434d32afb424c4625a45979cc08d632be6443cc3`: Lists/tools/docs job PASS; Android build + JVM tests IN PROGRESS. Do not mark source validation PASS until the Android job completes. A prior run #1537 validated an earlier source revision and is not a substitute.
+- Physical Mi TV Stick DPAD/return-from-app/visual/overscan acceptance remains PENDING. No APK installed, no ADB/device settings/default-launcher mutation, no PR merged.
