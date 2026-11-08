@@ -25,6 +25,10 @@ class DailyAyahCacheAndLabelContract(unittest.TestCase):
         self.assertNotIn("text_indonesian", stored)
         self.assertIn("boolean hasTranslation", self.weekly)
 
+    def test_cache_uses_exact_day_index_not_repeating_verse_key_alone(self):
+        self.assertIn("KEY_DAY_INDEX = \"day_index\"", self.weekly)
+        self.assertIn("p.getInt(KEY_DAY_INDEX, Integer.MIN_VALUE) != day()", self.weekly)
+        self.assertIn(".putInt(KEY_DAY_INDEX, dayIndex)", self.weekly)
     def test_stale_or_local_fallback_state_is_visible(self):
         self.assertIn("static boolean hasCached(Context ctx)", self.weekly)
         self.assertIn("WeeklyAyah.stored(this) != null, WeeklyAyah.hasCached(this)", self.main)
