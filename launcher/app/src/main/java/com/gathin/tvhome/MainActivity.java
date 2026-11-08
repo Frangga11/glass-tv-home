@@ -2829,7 +2829,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.topMargin = 0;
                 // Place the glass tray on the same 34dp bottom safe margin as the top and side edges.
                 // The RecyclerView host extends around its tray to contain labels and focus effects.
-                dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+                dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
                 if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
                     grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
                             grid.getPaddingRight(), 0);
