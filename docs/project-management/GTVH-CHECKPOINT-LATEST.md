@@ -1,11 +1,11 @@
 # GTVH-CHECKPOINT-LATEST
 **Status:** CANONICAL / SINGLE ENTRY POINT  
-**Checkpoint date:** 8 November 2026  
+**Checkpoint date:** 9 November 2026  
 **Repository:** Frangga11/glass-tv-home  
 **Canonical documentation branch:** `docs/project-master-inventory`  
 **Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
-**Current Home implementation PR:** [PR #79](https://github.com/Frangga11/glass-tv-home/pull/79)  
-**Latest documentation checkpoint commit:** this file's creation commit (branch tip after all supporting-file updates).
+**Current Home implementation PR:** [PR #82](https://github.com/Frangga11/glass-tv-home/pull/82) — stacked on PR #81; PRs #80/#81/#82 remain unmerged.  
+**Latest documentation sync:** supporting audit, handover and register updated immediately before this checkpoint update on `docs/project-master-inventory`; see the branch tip for the resulting commit SHA.
 
 ---
 
@@ -449,3 +449,28 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 - Release APK: **1,629,469 bytes**; SHA-256 `caa3289641184e516b5758b8ce647d7bc33616ee55cb5f022576e53add572e24`. CI artifact ZIP ID `13625911589`, size 1,428,433 bytes, SHA-256 `e9dbc0307aa7823d019ccf464e21e633f6dfe1a3a5906407feee3ada6fa1ea41`. APK extracted and verified; publisher workflow skipped by design.
 - No rendered 1920×1080 visual review, physical Mi TV Stick test, ADB, installation, device setting change or merge was performed.
 - **Next action:** owner tests exact-head APK on Mi TV Stick using all required remote/focus/panel/capacity scenarios. Keep PR #81 DRAFT and unmerged until physical acceptance.
+
+
+---
+
+## 16. GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002 — 9 November 2026
+
+**Status: SOURCE PASS · EXACT-HEAD CI PASS · RELEASE APK PUBLISHED · PHYSICAL ACCEPTANCE PENDING · NOT FINAL**
+
+- **Current PR:** [PR #82](https://github.com/Frangga11/glass-tv-home/pull/82), OPEN / DRAFT / UNMERGED.
+- **Branch:** `fix/home-islamic-shelf-vertical-position-grid-row-scroll-002`.
+- **Exact source HEAD:** `37bd6343f9b4b535f477c307770f49778320b032`.
+- **Base:** `fix/home-dock-islamic-shelf-navigation-001`, current tip `3cd36b8a5fbc788a7b15e178e4aaf0606e919c61` (PR #81). PR #80 remains OPEN / DRAFT / UNMERGED at `a085be150ebcf1d48b825ed7ac43b172261f3aa0`; PR #81 remains OPEN / DRAFT / UNMERGED. PR #81 application source was not changed for this follow-up; only workflow eligibility was extended to support exact-head PR #82 artifact and direct APK delivery.
+- **A — Islamic package:** horizontal Glass tray top is measured from laid-out Dock card coordinates and DockDecoration's tray inset in root coordinates. Islamic package lower edge targets exactly 27.5dp (55px at density 2.0) above that visual tray edge. Existing 10dp internal hero/Islamic shelf relationship and content layout are preserved. Runtime/device confirmation is pending.
+- **B — Grid:** previous raw child-height smooth scroll replaced with decorated row-pitch geometry and a cancellable ValueAnimator driving actual RecyclerView.scrollBy() content movement. Expanded horizontal viewport clips to its padded content area, destination row is aligned by decorated top, focus resolves by stable app key, stale animations are invalidated, and transition/focus settlement has no scrollToPositionWithOffset jump fallback.
+- **C — typography:** prayer and daily-doa headings Inter weight 700; six localized prayer-name labels uppercase and weight 650. Existing 13sp/17sp text sizes, font family, colors, positions, prayer data, Arabic/RTL and translations are unchanged.
+- **Changed PR #82 files (7):** `.github/workflows/ci.yml`, `.github/workflows/publish-apk-release.yml`, `DockGeometry.java`, `MainActivity.java`, `activity_main.xml`, `DockLayoutModelTest.java`, and `test_home_dock_islamic_shelf_navigation_refinement_contract.py`.
+- **Exact-head CI #1629 / run `42505054837`: SUCCESS**, both jobs passed. Python **177 tests, OK (1 skipped)**. Android app/installer Release unit tests and Release assemble passed; **BUILD SUCCESSFUL in 1m14s**.
+- **Exact-head publisher #84 / run `42505054798`: SUCCESS.** Release APK size **1,630,737 bytes**; SHA-256 `3416c4ec0a956263a05fd923638f8b27d06c5fce619e8a328accc057c01bd777`.
+- **Direct APK:** [Glass-TV-Home-PR82-37bd6343f9b4b535f477c307770f49778320b032.apk](https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-pr82-37bd6343f9b4b535f477c307770f49778320b032/Glass-TV-Home-PR82-37bd6343f9b4b535f477c307770f49778320b032.apk).
+- CI visual-parity artifact ZIP ID `13627675055`, size 1,429,685 bytes, SHA-256 `1e158a07b761627e98f6d84c986e616bd4ebd91c45090af657477c311ce40342`; this ZIP is not the direct APK asset.
+- An initial compile attempt caught a missing pending app-key field declaration; it was corrected and guarded by a regression assertion. Final exact-head CI and APK publisher both pass.
+- **Physical acceptance remains mandatory:** Mi TV Stick 1920×1080 / density320 measurement of 27.5dp, package stability during focus changes, DOWN/UP opposite real row motion, repeated and rapid reversals, incomplete last row, app-count change, return-to-Home focus, Dock capacities 4/5/6, typography clipping/overlap and locked-component regression.
+- No assistant-side physical installation, ADB, device setting change, screenshot review or merge was performed. Keep PR #82 DRAFT / UNMERGED until owner confirms the physical tests.
+- Detailed audit: [GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md](GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md).
+- **Next action:** owner installs the exact-head APK on Mi TV Stick and reports the measured gap and remote-navigation result. Do not declare final or merge before physical acceptance.
