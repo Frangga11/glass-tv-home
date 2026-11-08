@@ -48,6 +48,7 @@ class HomeSpacingCapsuleHeightRefinementContractTest(unittest.TestCase):
 
     def test_bottom_safe_margin_and_shelf_gap_use_density_aware_30dp(self):
         self.assertIn("return Math.round(SAFE_VERTICAL_MARGIN_DP * density);", GEOMETRY)
+        self.assertIn("dockParams.bottomMargin = DockGeometry.safeBottomInsetPx(density);", MAIN)
         self.assertIn("return Math.round(30f * density);", GEOMETRY)
         # At the device's 320dpi density (2px per dp), 30dp is 60px.
         self.assertEqual(round(30 * (320 / 160)), 60)
