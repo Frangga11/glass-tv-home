@@ -21,7 +21,7 @@
 - Main layout structural check: 63 unique IDs; no duplicate ID declarations. All 52 unique MainActivity onCreate ID references exist in activity_main.xml.
 - Confirmed findings:
   1. **HOME-001 P2 FAIL:** Now Playing card disappears for paused/buffering media because `MediaInfo.hasMusic()` requires `isPlaying == true`, despite the manager selecting paused/buffering sessions. Home cannot resume paused playback from its card.
-  2. **HOME-002 P2 FAIL (entry path):** prayer detail popup is wired only to the hidden `prayerTimes` fallback view (`GONE)); visible `prayerTable` / `prayerHeader` have no click/DPAD entry path.
+  2. **HOME-002 P2 FAIL (entry path):** prayer detail popup is wired only to the hidden `prayerTimes` fallback view (`GONE`); visible `prayerTable` / `prayerHeader` have no click/DPAD entry path.
   3. **HOME-003 P2 PARTIAL/RISK:** delayed Dock focus retries lack a generation/cancellation guard unlike Grid focus retries; potential stale focus steal.
   4. **HOME-004 P3 PARTIAL:** Weather pill focus-scale listener is overwritten by the later shared Header focus listener.
 - Component source matrix: clock/date, location, header tabs, Inputs/Wi-Fi/Assistant, wallpaper/hero, ayah shelf, app inventory and core Dock geometry have source-level wiring; runtime and physical acceptance remain pending.
