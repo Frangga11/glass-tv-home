@@ -3447,6 +3447,115 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (shamsi) shamsiDate.setText(Shamsi.today());
     }
 
+    private void updateHeaderTabLabels() {
+        boolean indonesian = "id".equals(AppLanguage.getLanguage(this));
+        if (btnHome instanceof TextView) {
+            ((TextView) btnHome).setText(indonesian ? "Beranda" : "Home");
+            ((TextView) btnHome).setContentDescription(indonesian ? "Beranda" : "Home");
+        }
+        if (btnCandyBox instanceof TextView) {
+            ((TextView) btnCandyBox).setText(indonesian ? "Profil" : "Profile");
+        }
+        View settings = findViewById(R.id.btnSettings);
+        if (settings instanceof TextView) {
+            ((TextView) settings).setText(indonesian ? "Pengaturan" : "Settings");
+        }
+        if (root != null) root.post(this::applyHeaderWidths);
+    }
+
+    private void updateLocationPill() {
+        TextView name = findViewById(R.id.locationName);
+        TextView altitude = findViewById(R.id.locationAltitude);
+        View pill = findViewById(R.id.locationPill);
+        if (name == null || altitude == null || pill == null) return;
+        Location.Zone zone = Location.chosen(this);
+        if (zone == null || zone.town == null || zone.town.trim().isEmpty()) {
+            pill.setVisibility(View.GONE);
+            return;
+        }
+        pill.setVisibility(View.VISIBLE);
+        name.setText(zone.town);
+        View divider = findViewById(R.id.locationAltitudeDivider);
+        View mountain = findViewById(R.id.locationMountainIcon);
+        if (zone.altitudeMeters != null && zone.altitudeMeters > 0) {
+            altitude.setText("± " + zone.altitudeMeters + " mdpl");
+            altitude.setVisibility(View.VISIBLE);
+            if (divider != null) divider.setVisibility(View.VISIBLE);
+            if (mountain != null) mountain.setVisibility(View.VISIBLE);
+        } else {
+            altitude.setText("");
+            altitude.setVisibility(View.GONE);
+            if (divider != null) divider.setVisibility(View.GONE);
+            if (mountain != null) mountain.setVisibility(View.GONE);
+        }
+        if (root != null) root.post(this::applyHeaderWidths);
+    }
+
+    private void updateHomeTabIndicator() {
+        if (btnHome == null) return;
+        boolean active = activityResumed && !hiddenSinceResume && !screensaverActive
+                && !wallpaperFullscreen && !isFinishing() && !isDestroyed();
+        btnHome.setSelected(active);
+        btnHome.setElevation(active ? 8f * density : 0f);
+        btnHome.invalidate();
+    }
+
+    /**
+     * Sizes the left information pills and center navigation inside the same measured header frame.
+     * The left edge comes from dateBlock's content, not leftBlock's potentially constrained width.
+     */
+    private void applyHeaderWidths() {
+        View left = findViewById(R.id.leftBlock);
+        View date = findViewById(R.id.dateBlock);
+        View right = findViewById(R.id.topButtons);
+        View nav = findViewById(R.id.navPill);
+        View location = findViewById(R.id.locationPill);
+        View weather = findViewById(R.id.weatherAirQuality);
+        if (left == null || date == null || right == null || nav == null
+                || !(left.getParent() instanceof ViewGroup)) return;
+        ViewGroup header = (ViewGroup) left.getParent();
+        int width = header.getWidth();
+        if (width <= 0 || left.getHeight() <= 0 || right.getWidth() <= 0 || date.getWidth() <= 0) return;
+
+        int informationPillWidth = Math.round(width * 0.30f);
+        for (View pill : new View[]{location, weather}) {
+            if (pill == null) continue;
+            ViewGroup.LayoutParams params = pill.getLayoutParams();
+            if (params.width != informationPillWidth) {
+                params.width = informationPillWidth;
+                pill.setLayoutParams(params);
+            }
+        }
+
+        int gap = Math.round(12f * density);
+        int leftContentEnd = left.getLeft() + date.getRight() + gap;
+        int rightContentStart = right.getLeft() - gap;
+        int desired = Math.round(width * 0.39f);
+        int available = HomeHeaderGeometry.centeredWidthPx(width, leftContentEnd, rightContentStart, desired);
+        if (available <= 0) {
+            android.util.Log.e("TvHome.Header", "No measured space for centered Home navigation; header geometry needs review");
+            return;
+        }
+        ViewGroup.LayoutParams navParams = nav.getLayoutParams();
+        if (navParams.width != available) {
+            navParams.width = available;
+            nav.setLayoutParams(navParams);
+        }
+        if (nav.getVisibility() != View.VISIBLE) nav.setVisibility(View.VISIBLE);
+        if (nav.getLayoutParams() instanceof android.widget.RelativeLayout.LayoutParams) {
+            android.widget.RelativeLayout.LayoutParams params =
+                    (android.widget.RelativeLayout.LayoutParams) nav.getLayoutParams();
+            int centeredTop = Math.max(0, (left.getHeight() - nav.getHeight()) / 2);
+            if (params.topMargin != centeredTop) {
+                params.topMargin = centeredTop;
+                nav.setLayoutParams(params);
+            }
+        }
+        if (available < Math.round(210f * density)) {
+            android.util.Log.w("TvHome.Header", "Centered navigation is compressed to " + available + "px at this resolution");
+        }
+    }
+
     private void updatePrayerTimes() {
         if (prayerTimesView != null) {
             prayerTimesView.setText(PrayerTimes.getFormatted(this));
