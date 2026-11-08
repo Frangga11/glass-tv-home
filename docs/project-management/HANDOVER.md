@@ -1,52 +1,51 @@
-# CURRENT CHECKPOINT — GTVH-HOME-HEADER-REFINEMENT-001 — 8 NOVEMBER 2026
+# CURRENT CHECKPOINT — GTVH-HOME-SCREEN-CROSS-AUDIT-001 — 8 NOVEMBER 2026
 
-## Active workstream
-- Workstream: `GTVH-HOME-HEADER-REFINEMENT-001`.
-- Owner decision: equal **29dp safe frame** on top, left, right and bottom; at density 2.0 this is **58px per edge**.
-- Source repository: `Frangga11/glass-tv-home`.
-- Source branch: `fix/home-balanced-frame-001`.
-- PR #79: **OPEN / DRAFT / UNMERGED**; current HEAD `e9fdecdb4dd44eefeed1464fddaf8edd2e2ec5e0`.
-- Stacked PR #77: **OPEN / DRAFT / UNMERGED**; keep both unmerged.
-- Canonical docs branch: `docs/project-master-inventory`.
+## Canonical restart point
+- Active workstream: `GTVH-HOME-SCREEN-CROSS-AUDIT-001`.
+- Source repository/branch: `Frangga11/glass-tv-home` / `fix/home-balanced-frame-001`.
+- Exact source HEAD audited: `e9fdecdb4dd44eefeed1464fddaf8edd2e2ec5e0`.
+- PR #79: OPEN / DRAFT / UNMERGED. Stacked PR #77 remains unmerged. Do not merge either PR.
+- Owner-approved Header geometry remains equal 29dp safe frame on all four edges (58px at 320dpi), shared 20dp navigation capsule, and compact clock/date sizing.
 
-## Implemented source changes
-- Clock 56sp → 44sp; AM/PM and Gregorian date 13sp → 11sp; Shamsi date 13sp → 11sp. Formatting and time/date update logic are unchanged.
-- `mainContent` top/start/end insets 34dp → 29dp.
-- `DockGeometry` horizontal and vertical safe margins 34dp → 29dp; bottom placement derives from the same 29dp value.
-- Header navigation now has one shared parent glass surface (`navPill`, 20dp radius); its three independent focus/click targets have transparent backgrounds and retain the 14dp state selector.
-- Other Header glass pills retain 21dp runtime radius.
-- Per-tab focus scaling removed to keep segment geometry stable.
-- Updated geometry tests and added static regression coverage for clock sizing and unified capsule structure.
+## Latest exact-head CI
+- CI #1560 / run `42484233880`: **SUCCESS** on exact HEAD `e9fdecdb4dd44eefeed1464fddaf8edd2e2ec5e0`.
+- Both jobs passed: Lists/tools/docs; Launcher build and unit tests.
+- Release build: **BUILD SUCCESSFUL**.
+- APK size: **1,624,625 bytes**.
+- Uploaded validation artifact: `glass-tv-home-dock-visual-parity-b85cd558f614c4282bf610a81dc1bc8827f50e6d`, 1,424,041 bytes. Artifact ZIP SHA-256: `5fa3ea60f7e727b8e4ac663e08ea7488564a70b7acb60e4c3a7040fd821b9f86`.
+- This is build/source validation only; no APK installation or device test.
 
-## Changed source files
-- `launcher/app/src/main/res/layout/activity_main.xml`
-- `launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java`
-- `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
-- `launcher/app/src/main/res/drawable/header_glass_pill_bg.xml`
-- `launcher/app/src/test/java/com/gathin/tvhome/DockGeometryTest.java`
-- `tests/test_home_layout_bounds_contract.py`
-- `launcher/app/src/test/java/com/gathin/tvhome/DockLayoutModelTest.java`
+## Whole Home Screen cross-audit
+- Dedicated audit: [GTVH_HOME_SCREEN_CROSS_AUDIT_001.md](GTVH_HOME_SCREEN_CROSS_AUDIT_001.md).
+- Overall result: **PARTIAL / NOT PASS**.
+- Main layout structural check: 63 unique IDs; no duplicate ID declarations. All 52 unique MainActivity onCreate ID references exist in activity_main.xml.
+- Confirmed findings:
+  1. **HOME-001 P2 FAIL:** Now Playing card disappears for paused/buffering media because `MediaInfo.hasMusic()` requires `isPlaying == true`, despite the manager selecting paused/buffering sessions. Home cannot resume paused playback from its card.
+  2. **HOME-002 P2 FAIL (entry path):** prayer detail popup is wired only to the hidden `prayerTimes` fallback view (`GONE)); visible `prayerTable` / `prayerHeader` have no click/DPAD entry path.
+  3. **HOME-003 P2 PARTIAL/RISK:** delayed Dock focus retries lack a generation/cancellation guard unlike Grid focus retries; potential stale focus steal.
+  4. **HOME-004 P3 PARTIAL:** Weather pill focus-scale listener is overwritten by the later shared Header focus listener.
+- Component source matrix: clock/date, location, header tabs, Inputs/Wi-Fi/Assistant, wallpaper/hero, ayah shelf, app inventory and core Dock geometry have source-level wiring; runtime and physical acceptance remain pending.
+- Existing E06 audit concerns the four controls inside the Home Screen Settings destination, not the complete main Home screen.
 
-## Quality and safety status
-- Repository/PR/head verification: **PASS**.
-- 29dp source geometry and 58px density conversion: **PASS** (static source/unit assertions).
-- Clock/date sizes: **PASS** (XML attributes verified).
-- Unified capsule structure: **PASS** (static source structure).
-- DPAD behavior: **PARTIAL** (existing independent handlers preserved; runtime not yet tested).
-- Rendered four-edge measurement and before/after screenshot: **PENDING**.
-- CI #1559 / run `42484088913`: **FAIL** (309/310 tests; stale 34dp reserve assertion in DockLayoutModelTest). Corrected the test to 29dp. CI #1560 / run `42484233880`: **IN PROGRESS** for corrected HEAD.
-- Physical Mi TV Stick visual/focus/resume acceptance: **PENDING**.
-- APK installation, ADB, device/default-launcher setting changes: **NOT PERFORMED**.
-- PR merge: **NOT PERFORMED**.
+## Safety / acceptance gates
+- Source/build CI: **PASS**.
+- Static Home source audit: **PARTIAL / NOT PASS**.
+- Rendered screen, actual DPAD/focus, lifecycle/resume, weather/prayer live data and Now Playing pause/resume: **PENDING**.
+- Crash/error log inspection: **PENDING** (no runtime session/logcat).
+- APK installation, ADB, device settings/default-launcher changes: **NOT PERFORMED**.
+- No source-code changes made during this audit; only audit documentation was updated.
+- PR #79 and PR #77 remain OPEN/DRAFT/UNMERGED.
 
 ## Next actions
-1. Wait for CI #1560 and inspect all required jobs.
-2. If CI passes, inspect the exact generated APK/artifact and report its integrity.
-3. Provide visual evidence only from a genuine rendered build; do not fabricate screenshots or infer final bounds from source values.
-4. Owner reviews APK and explicitly authorizes any physical TV test. No remote install or device-setting changes.
-5. Keep PR #79 and #77 unmerged until acceptance.
+1. Resolve HOME-001 and add paused-session regression coverage.
+2. Decide and wire a visible prayer timetable popup entry point if interaction is intended.
+3. Guard Dock delayed focus retries against stale requests.
+4. Combine Weather focus feedback with the shared Header listener.
+5. Run exact-head CI after source corrections.
+6. Obtain explicit owner authorization before any physical Mi TV Stick test.
 
-Detailed record: [GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md](GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md).
+Mandatory workflow: Trigger → Input → Verification → Work/Analysis → Decision Point → Output → Quality Check → Final/Not Final. Label PASS / FAIL / PARTIAL / PENDING. Never claim device acceptance from source or CI alone.
+
 
 ---
 
