@@ -204,3 +204,13 @@ Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G
 - APK diagnostic 1,620,193 bytes (+2,820 bytes / approximately 0.17% vs G3E); informational under D-023, no artifact published.
 - Canonical evidence: [G3F audit](UI_REFRESH_G3F_AUDIT_2026-11-07.md) and [G3F checkpoint](UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md).
 - Physical Android TV/Mi TV Stick acceptance remains PENDING / NOT RUN. No APK install/publication, ADB, physical-device mutation, merge or integration/main change. Next: separately approved G4 integration/reconciliation planning.
+
+
+## Home Screen cross-audit and header refinement — 8 November 2026
+
+- Current implementation candidate: PR #79, branch `fix/home-balanced-frame-001`, exact HEAD `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`.
+- Owner-approved Home safe frame is **29dp on all four edges** (58px at the Mi TV Stick's 320dpi logical density); preserve existing Dock/Grid sizing and behavior.
+- HOME-001–HOME-005 source remediation and regression coverage are complete: Now Playing paused/buffering session retention; visible prayer timetable activation/focus routes; generation-guarded deferred Dock/Grid focus; composed Weather/AQI focus animation; and due-gated atmospheric overlay refresh with preference guard.
+- Exact-head CI #1581 / run `42486917618`: both required jobs SUCCESS; release build SUCCESS; APK diagnostic size 1,627,577 bytes; test artifact #13620161574. Companion release workflow #36 / run `42486917728`: SUCCESS.
+- Status: **SOURCE + EXACT-HEAD CI PASS; WHOLE-HOME DEVICE ACCEPTANCE PENDING**. PR #79 and dependency PR #77 remain OPEN / DRAFT / UNMERGED. No APK installation, ADB, device setting/default-launcher mutation, or physical TV test.
+- Detailed evidence: [Home Screen cross-audit](GTVH_HOME_SCREEN_CROSS_AUDIT_001.md).
