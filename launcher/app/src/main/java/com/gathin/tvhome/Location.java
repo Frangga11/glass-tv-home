@@ -14,6 +14,7 @@ final class Location {
     static final class Zone {
         final String code, state, town, districts;
         final double lat, lon;
+        final Integer altitudeMeters;
 
         Zone(String[] r) {
             code = r[0];
@@ -22,10 +23,12 @@ final class Location {
             districts = r[3];
             lat = Double.parseDouble(r[4]);
             lon = Double.parseDouble(r[5]);
+            altitudeMeters = r.length > 6 && !r[6].trim().isEmpty()
+                    ? Integer.valueOf(r[6]) : null;
         }
     }
 
-    /** Code, state, main town, districts, latitude, longitude. */
+    /** Code, state, main town, districts, latitude, longitude, optional altitude in metres. */
     private static final String[][] ZONES = {
 
 
@@ -43,7 +46,7 @@ final class Location {
         {"ID_PKU", "Indonesia: Riau", "Pekanbaru", "Kota Pekanbaru, Kampar, Siak, Dumai", "0.5071", "101.4478"},
         {"ID_BTH", "Indonesia: Kepulauan Riau", "Batam", "Kota Batam, Tanjung Pinang, Bintan, Karimun", "1.1301", "104.0529"},
         {"ID_PLM", "Indonesia: Sumatera Selatan", "Palembang", "Kota Palembang, Banyuasin, Ogan Ilir", "-2.9761", "104.7754"},
-        {"ID_PGA", "Indonesia: Sumatera Selatan", "Pagar Alam", "Kota Pagar Alam, Dempo Tengah, Dempo Utara, Dempo Selatan, Pagar Alam Utara, Pagar Alam Selatan", "-4.0212", "103.2517"},
+        {"ID_PGA", "Indonesia: Sumatera Selatan", "Pagar Alam", "Kota Pagar Alam, Dempo Tengah, Dempo Utara, Dempo Selatan, Pagar Alam Utara, Pagar Alam Selatan", "-4.0212", "103.2517", "800"},
         {"ID_BDJ", "Indonesia: Kalimantan Selatan", "Banjarmasin", "Kota Banjarmasin, Banjarbaru, Kab. Banjar", "-3.3194", "114.5908"},
         {"ID_BPN", "Indonesia: Kalimantan Timur", "Balikpapan & IKN", "Kota Balikpapan, Penajam Paser Utara (IKN)", "-1.2379", "116.8529"},
         {"ID_SMD", "Indonesia: Kalimantan Timur", "Samarinda", "Kota Samarinda, Kutai Kartanegara", "-0.5022", "117.1536"},
