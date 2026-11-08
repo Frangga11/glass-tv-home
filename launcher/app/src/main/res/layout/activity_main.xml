@@ -747,7 +747,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:drawableStart="@drawable/ic_home_settings"
+                    android:drawableStart="@drawable/ic_header_home"
                     android:drawablePadding="7dp"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
@@ -766,6 +766,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:layout_marginStart="0dp"
                     android:gravity="center"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
@@ -785,6 +786,7 @@
                         style="@style/TopMenuButton"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginStart="0dp"
                         android:gravity="center"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
@@ -821,6 +823,7 @@
                     android:text="@string/inputs"
                     android:drawableStart="@drawable/ic_input" />
                 <View
+                    android:id="@+id/headerInputsDivider"
                     android:layout_width="1dp"
                     android:layout_height="22dp"
                     android:layout_marginStart="10dp"
