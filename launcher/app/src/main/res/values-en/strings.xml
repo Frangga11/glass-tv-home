@@ -73,6 +73,7 @@
     <string name="standby_return_hint">Press any button to return</string>
 
     <string name="weather_my_location">MY LOCATION</string>
+    <string name="location_altitude_format">%1$d m ASL</string>
     <string name="weather_drizzle">Drizzle</string>
     <string name="weather_wind_label">💨  WIND</string>
     <string name="weather_moon_phase_label">🌕  MOON PHASE</string>
