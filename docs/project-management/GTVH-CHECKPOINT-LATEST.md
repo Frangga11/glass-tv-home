@@ -638,3 +638,9 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - No physical Mi TV Stick install, ADB measurement, screenshot review, or remote acceptance performed.
 - **Next:** verify exact-head CI, then physical test on Mi TV Stick at 1920×1080 / density 320. Confirm the Islamic Shelf bottom anchor and 27.5dp (55px) clearance remain unchanged through repeated focus transitions, ayah remeasurement, and Dock capacities 4/5/6. Keep PR #84 DRAFT / UNMERGED until physical acceptance.
 - Detailed audit: [GTVH-HOME-ISLAMIC-SHELF-SINGLE-ANCHOR-FIX-004-AUDIT.md](GTVH-HOME-ISLAMIC-SHELF-SINGLE-ANCHOR-FIX-004-AUDIT.md).
+
+
+### CI progress update — exact HEAD d821842c2211cb6e65bbde506253cde7b3929771
+- CI #1639 / run `42523095371`: Python regression suite **PASS — 184 tests, 1 skipped** (confirmed from completed GitHub Actions job logs).
+- Android `testReleaseUnitTest` and `assembleRelease` job remained **IN_PROGRESS** at the time of this update; no final CI result or APK artifact is claimed yet.
+- Physical Mi TV Stick acceptance remains pending.
