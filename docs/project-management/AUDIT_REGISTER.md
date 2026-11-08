@@ -2067,4 +2067,4 @@ Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exa
 
 | Audit ID | Date | Scope | Status | Canonical record |
 |---|---|---|---|---|
-| GTVH-HOME-HEADER-REFINEMENT-001 | 2026-11-08 | Header capsule, clock/date proportions, 29dp four-edge safe frame, Header radii | IMPLEMENTATION PARTIAL; CI and visual/device acceptance PENDING | `GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md` |
+| GTVH-HOME-HEADER-REFINEMENT-001 | 2026-11-08 | Header capsule, clock/date proportions, 29dp four-edge safe frame, Header radii | IMPLEMENTATION PARTIAL; CI #1559 FAIL (stale 34dp test expectation corrected); CI #1560 PENDING; visual/device acceptance PENDING | `GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md` |
