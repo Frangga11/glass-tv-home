@@ -239,3 +239,15 @@ Project F is officially closed at HOST/SOURCE EXIT PASS for F01–F07. Project G
 - Updated PR-branch reconciliation document to replace the obsolete intermediate 34dp safe frame with the approved 29dp frame. PR-branch docs-only commit: `c15e4383d7dd3f148b31a19f5e9b85423936b56d`. CI #1583 is validating that documentation-only tip; no need to change application source.
 - Release workflow #37 is explicitly **not** the current candidate: its logs show CI #1545 / older commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`. Do not cite that release asset as the latest PR #79 APK.
 - PR #79 remains OPEN / DRAFT / UNMERGED; physical Mi TV Stick acceptance remains NOT RUN. No APK installation, ADB, device settings/default launcher mutation or merge.
+
+
+## Latest Home Header refinement — weather/AQI pill width (8 Nov 2026)
+
+Canonical checkpoint: [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md). The active task `GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-001` fixes the weather/AQI capsule width without changing the location/altitude reference. Source PR #79 remains OPEN / DRAFT / UNMERGED.
+
+- Root cause: `applyHeaderWidths()` assigned 34% of measured Header width to `locationPill` and 44% to `weatherAirQuality`; both XML views already align to the same parent-start edge.
+- Fix: calculate the existing location width once (`Math.round(width * 0.34f)`) and apply that exact value to both views. No margin, padding, X-position, vertical geometry, font, icon, radius, or data-provider changes.
+- Source commit: `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`; regression-test commit / current PR #79 HEAD: `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`.
+- Regression contract checks shared width assignment, common left anchors, weather single-line/end ellipsis, and confirms weather content refresh does not rewrite layout parameters.
+- CI #1587 / run `42489445766`: Lists/tools/docs job PASS; Android unit-test + release-build job IN PROGRESS at documentation sync. No CI PASS claim yet for the Android job.
+- No APK installation, ADB, physical TV validation, force-push, PR merge, or device setting changes. Rendered 1920×1080 / 320dpi acceptance remains pending.
