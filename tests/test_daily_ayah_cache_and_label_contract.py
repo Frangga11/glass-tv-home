@@ -54,8 +54,8 @@ class DailyAyahCacheAndLabelContract(unittest.TestCase):
 
     def test_runtime_does_not_override_xml_arabic_line_spacing(self):
         self.assertNotIn("ayahArabic.setLineSpacing(", self.main)
-        self.assertIn("android:lineSpacingExtra=\"-1dp\"", self.layout)
-        self.assertIn("android:lineSpacingMultiplier=\"0.94\"", self.layout)
+        self.assertIn("android:lineSpacingExtra=\"-2dp\"", self.layout)
+        self.assertIn("android:lineSpacingMultiplier=\"0.92\"", self.layout)
 
     def test_arabic_ayah_is_rtl_right_aligned_and_translation_is_ltr_left_aligned(self):
         shelf_arabic = self.layout[self.layout.index('android:id="@+id/ayahArabic"'):self.layout.index('android:id="@+id/ayahText"')]
@@ -72,6 +72,20 @@ class DailyAyahCacheAndLabelContract(unittest.TestCase):
         self.assertIn('arabic.setGravity(Gravity.END)', self.main)
         self.assertIn('translation.setTextDirection(View.TEXT_DIRECTION_LTR)', self.main)
         self.assertIn('translation.setGravity(Gravity.START)', self.main)
+
+    def test_daily_ayah_shelf_uses_compact_but_safe_vertical_spacing(self):
+        arabic = self.layout[self.layout.index('android:id="@+id/ayahArabic"'):self.layout.index('android:id="@+id/ayahText"')]
+        translation = self.layout[self.layout.index('android:id="@+id/ayahText"'):self.layout.index('android:id="@+id/ayahOpenHint"')]
+        hint = self.layout[self.layout.index('android:id="@+id/ayahOpenHint"'):self.layout.index('</LinearLayout>', self.layout.index('android:id="@+id/ayahOpenHint"'))]
+        self.assertIn('android:layout_marginTop="1dp"', arabic)
+        self.assertIn('android:lineSpacingExtra="-2dp"', arabic)
+        self.assertIn('android:lineSpacingMultiplier="0.92"', arabic)
+        self.assertIn('android:layout_marginTop="0dp"', translation)
+        self.assertIn('android:lineSpacingExtra="0dp"', translation)
+        self.assertIn('android:lineSpacingMultiplier="1.04"', translation)
+        self.assertIn('ayahText.setLineSpacing(0, 1.04f)', self.main)
+        self.assertIn('android:layout_marginTop="3dp"', hint)
+        self.assertIn('android:includeFontPadding="true"', arabic)
 
     def test_failed_incomplete_payload_is_not_written_to_cache(self):
         self.assertIn("Incomplete Quran verse payload", self.weekly)
