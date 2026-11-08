@@ -2077,3 +2077,11 @@ Source branch `fix/home-balanced-frame-001`, exact source/test HEAD `97f7e0c96d1
 - CI #1579 / run `42486810729`: **SUCCESS**; both jobs passed, release build successful, APK diagnostic size 1,627,581 bytes.
 - Status: **SOURCE + LATEST-HEAD CI VALIDATION PASS; DEVICE ACCEPTANCE PENDING; OVERALL HOME SCREEN NOT PASS**.
 - PR #79 and PR #77 remain open/draft/unmerged; no device operations.
+
+
+### Final latest-head validation — 8 November 2026
+- Latest PR #79 head: `97f7e0c96d1c1dcd431cdc6edec31bf4837e11a5`.
+- CI #1581 / run `42486917618`: **SUCCESS**; both jobs passed, release build successful, APK diagnostic size 1,627,577 bytes.
+- Regression coverage includes the dynamic-weather-effects disabled guard and settings-toggle refresh behavior.
+- Status: **HOME-001–HOME-005 SOURCE + LATEST-HEAD CI PASS; DEVICE ACCEPTANCE PENDING; OVERALL HOME SCREEN NOT PASS**.
+- PR #79 remains open/draft/unmerged; PR #77 remains unmerged. No device operations.
