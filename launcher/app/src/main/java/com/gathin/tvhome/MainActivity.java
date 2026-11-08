@@ -830,13 +830,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
 
-        // D-pad order mirrors the reference: Location -> weather -> Profile -> Home -> Settings -> Inputs -> Wi-Fi -> Assistant.
+        // Spatial D-pad: Location ↓ Weather; both lead right to Profile → Home → Settings → Inputs → Wi-Fi → Assistant.
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
                     || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) { v.performClick(); return true; }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) { focusTile(lastFocused % COLUMNS); return true; }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (v.getId() == R.id.locationPill && weatherAirQualityView != null
+                        && weatherAirQualityView.getVisibility() == View.VISIBLE) {
+                    weatherAirQualityView.requestFocus();
+                    return true;
+                }
+                focusTile(lastFocused % COLUMNS);
+                return true;
+            }
             View target = null;
             int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
@@ -857,9 +865,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return id == R.id.btnHome || id == R.id.btnInputs;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                if (id == R.id.locationPill)
-                    target = weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
-                            ? weatherAirQualityView : btnHome;
+                if (id == R.id.locationPill) target = btnCandyBox;
                 else if (id == R.id.btnCandyBox) target = btnHome;
                 else if (id == R.id.btnHome) target = btnSettings;
                 else if (id == R.id.btnSettings)
