@@ -16,7 +16,7 @@ final class DockGeometry {
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
     private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
     private static final float SAFE_HORIZONTAL_MARGIN_DP = 48f;
-    private static final float SAFE_VERTICAL_MARGIN_DP = 27f;
+    private static final float SAFE_VERTICAL_MARGIN_DP = 48f;
     private static final float SHELF_TO_TRAY_GAP_DP = 36f;
 
     private DockGeometry() { }
@@ -39,6 +39,14 @@ final class DockGeometry {
     static int horizontalTileWidthPx(int safeContentWidthPx, int capacity, float density) {
         int gridWidth = horizontalGridWidthPx(safeContentWidthPx, capacity);
         return AppAdapter.tileWidthPx(gridWidth, horizontalGridColumns(), density);
+    }
+
+    static int safeHorizontalMarginDp() {
+        return (int) SAFE_HORIZONTAL_MARGIN_DP;
+    }
+
+    static int safeVerticalMarginDp() {
+        return (int) SAFE_VERTICAL_MARGIN_DP;
     }
 
     static int safeHorizontalInsetPx(float density) {
