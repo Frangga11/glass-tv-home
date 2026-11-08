@@ -68,6 +68,7 @@ The original `btnInputs` XML element is identical to baseline. The same view ID 
 - No new Java/compiler warnings were introduced; the deprecation notices in the implementation run match the baseline run.
 - No Android emulator screenshot/layout test has yet been run at 1280×720, 1920×1080 or 3840×2160.
 - No physical-TV regression test has yet been run. CI success does not prove remote navigation, popup anchoring, focus rendering or overscan behavior on hardware.
+- Location text follows `Location.chosen()` and the pill opens the existing `LocationActivity`. The existing weather/AQI provider separately reads `AppLocationManager` preferences; if those two preference stores differ on the device, the location label may not match the weather/AQI source. They were not rewired because the task forbids changing data ownership/logic.
 - Do not merge until the latest CI passes and the three-resolution visual/focus checks are completed or explicitly accepted as deferred.
 
 ## Integration safety
