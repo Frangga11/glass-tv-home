@@ -364,6 +364,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         public void run() {
             updateShamsiDate();
             updatePrayerTimes();
+            PrayerTimes.syncIfDue(MainActivity.this, MainActivity.this::updatePrayerTimes);
             updateDateAndPeriod();
             updateWifiLabel();
             updateWeatherAqi();
@@ -1820,6 +1821,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         reloadApps(true);
         updateShamsiDate();
         updatePrayerTimes();
+        PrayerTimes.syncIfDue(this, this::updatePrayerTimes);
         updateDateAndPeriod();
         updateWifiLabel();
         ModernSettingsDialog.onHostResumed(this);

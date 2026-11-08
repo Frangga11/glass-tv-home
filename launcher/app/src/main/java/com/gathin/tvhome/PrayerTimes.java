@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Indonesian prayer timetable support with a validated Kemenag data mirror and a local
@@ -38,6 +39,9 @@ final class PrayerTimes {
     private static final String KEY_JSON = "takwim_indonesia_annual";
     private static final String KEY_MONTH = "takwim_month";
     private static final String KEY_YEAR = "takwim_year";
+    private static final String KEY_LAST_SYNC_ATTEMPT = "last_sync_attempt_ms";
+    private static final long SYNC_RETRY_COOLDOWN_MS = 6L * 60L * 60L * 1000L;
+    private static final AtomicBoolean SYNC_RUNNING = new AtomicBoolean(false);
 
     // Default coordinates and timezone for Kota Pagar Alam.
     private static final double LATITUDE = -4.0212;
@@ -97,12 +101,18 @@ final class PrayerTimes {
     }
 
     private static void syncInternal(Context context, Runnable onUpdated, boolean force) {
+        if (!SYNC_RUNNING.compareAndSet(false, true)) return;
         new Thread(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                long attemptTime = System.currentTimeMillis();
                 Calendar now = calendar(context);
                 int currentMonth = now.get(Calendar.YEAR) * 100 + (now.get(Calendar.MONTH) + 1);
                 String zone = getJakimZone(context);
+                String attemptKey = KEY_LAST_SYNC_ATTEMPT + "_" + String.valueOf(zone) + "_" + currentMonth;
+                long lastAttempt = prefs.getLong(attemptKey, 0L);
+                if (!force && lastAttempt > 0L && attemptTime - lastAttempt < SYNC_RETRY_COOLDOWN_MS) return;
+                prefs.edit().putLong(attemptKey, attemptTime).apply();
                 String cachedZone = prefs.getString("cached_zone", "");
 
                 if (zone != null && zone.startsWith("ID_")) {
@@ -184,6 +194,8 @@ final class PrayerTimes {
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Prayer sync offline/failed: " + e.getMessage());
+            } finally {
+                SYNC_RUNNING.set(false);
             }
         }, "prayer-sync").start();
     }
@@ -469,6 +481,30 @@ final class PrayerTimes {
         }
     }
 
+    /** Returns the next prayer index, or -1 when all five prayers have passed today. */
+    static int findNextPrayerIndex(long[] times, long nowMs) {
+        if (times == null || times.length < 6) return -1;
+        for (int i = 0; i < 6; i++) {
+            if (i == 1) continue; // Sunrise is not one of the five obligatory prayers.
+            if (times[i] > nowMs) return i;
+        }
+        return -1;
+    }
+
+    /** Tomorrow Subuh timestamp; fallback preserves a future timestamp if tomorrow data is absent. */
+    static long nextSubuhTime(long[] todayTimes, long[] tomorrowTimes) {
+        if (tomorrowTimes != null && tomorrowTimes.length > 0 && tomorrowTimes[0] > 0L) return tomorrowTimes[0];
+        return todayTimes != null && todayTimes.length > 0 ? todayTimes[0] + 86400000L : 0L;
+    }
+
+    private static long[] getTomorrowTimes(Context context, Calendar now, long[] todayTimes) {
+        Calendar tomorrow = (Calendar) now.clone();
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        long[] times = getTimesForDate(context, tomorrow);
+        if (times == null || times.length < 6) times = calculateFallback(context, tomorrow);
+        return times != null && times.length >= 6 ? times : new long[]{nextSubuhTime(todayTimes, null)};
+    }
+
     /** Returns all 6 prayers for today with formatted times and status. */
     static PrayerItem[] getPrayerItems(Context context) {
         Calendar now = calendar(context);
@@ -477,15 +513,12 @@ final class PrayerTimes {
             times = calculateFallback(context, now);
         }
         long nowMs = now.getTimeInMillis();
-        int nextIdx = -1;
-        for (int i = 0; i < times.length; i++) {
-            if (i == 1) continue;
-            if (times[i] > nowMs) {
-                nextIdx = i;
-                break;
-            }
+        int nextIdx = findNextPrayerIndex(times, nowMs);
+        long[] displayTimes = times.clone();
+        if (nextIdx == -1) {
+            nextIdx = 0;
+            displayTimes[0] = nextSubuhTime(times, getTomorrowTimes(context, now, times));
         }
-        if (nextIdx == -1) nextIdx = 0;
 
         SimpleDateFormat timeFmt = prayerTimeFormat(context, "HH:mm");
         String[] prayerNames = AppLanguage.getPrayerNames(context);
@@ -493,9 +526,9 @@ final class PrayerTimes {
         for (int i = 0; i < 6; i++) {
             items[i] = new PrayerItem(
                     prayerNames[i],
-                    timeFmt.format(new Date(times[i])),
+                    timeFmt.format(new Date(displayTimes[i])),
                     i == nextIdx,
-                    times[i] < nowMs
+                    displayTimes[i] < nowMs
             );
         }
         return items;
@@ -511,17 +544,12 @@ final class PrayerTimes {
         }
 
         long nowMs = now.getTimeInMillis();
-        int nextIdx = -1;
-
-        // Find next prayer (skip Syuruk idx 1)
-        for (int i = 0; i < times.length; i++) {
-            if (i == 1) continue;
-            if (times[i] > nowMs) {
-                nextIdx = i;
-                break;
-            }
+        int nextIdx = findNextPrayerIndex(times, nowMs);
+        long[] displayTimes = times.clone();
+        if (nextIdx == -1) {
+            nextIdx = 0;
+            displayTimes[0] = nextSubuhTime(times, getTomorrowTimes(context, now, times));
         }
-        if (nextIdx == -1) nextIdx = 0; // After Isyak -> Subuh next morning
 
         SimpleDateFormat timeFmt = prayerTimeFormat(context, "HH:mm");
         String[] prayerNames = AppLanguage.getPrayerNames(context);
@@ -531,14 +559,7 @@ final class PrayerTimes {
 
         // LINE 1: LOCATION  •  NEXT / SETERUSNYA: ASAR 16:18
         String nextName = prayerNames[nextIdx].toUpperCase(Locale.ROOT);
-        long displayTimeMs = times[nextIdx];
-        if (nextIdx == 0 && times[0] < nowMs) {
-            Calendar tomorrow = (Calendar) now.clone();
-            tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-            long[] tomTimes = getTimesForDate(context, tomorrow);
-            if (tomTimes == null || tomTimes.length < 6) tomTimes = calculateFallback(context, tomorrow);
-            if (tomTimes != null && tomTimes.length > 0) displayTimeMs = tomTimes[0];
-        }
+        long displayTimeMs = displayTimes[nextIdx];
         String nextTime = timeFmt.format(new Date(displayTimeMs));
 
         int l1Start = sb.length();
@@ -561,7 +582,7 @@ final class PrayerTimes {
             int start = sb.length();
 
             String name = prayerNames[idx].toUpperCase(Locale.ROOT);
-            String timeStr = timeFmt.format(new Date(times[idx]));
+            String timeStr = timeFmt.format(new Date(displayTimes[idx]));
 
             sb.append(name).append(" ").append(timeStr);
             if (isNext) {
@@ -737,22 +758,19 @@ final class PrayerTimes {
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
         long nowMs = now.getTimeInMillis();
-        int nextIdx = -1;
-        for (int i = 0; i < times.length; i++) {
-            if (i == 1) continue; // Skip Syuruk (sunrise)
-            if (times[i] > nowMs) {
-                nextIdx = i;
-                break;
-            }
+        int nextIdx = findNextPrayerIndex(times, nowMs);
+        long[] displayTimes = times.clone();
+        if (nextIdx == -1) {
+            nextIdx = 0;
+            displayTimes[0] = nextSubuhTime(times, getTomorrowTimes(context, now, times));
         }
-        if (nextIdx == -1) nextIdx = 0;
 
         SimpleDateFormat sdf = prayerTimeFormat(context, "h:mm a");
         String[] prayerNames = AppLanguage.getPrayerNames(context);
         for (int i = 0; i < times.length; i++) {
             boolean isNext = (i == nextIdx);
-            boolean isPast = (times[i] < nowMs);
-            list.add(new ScheduleItem(prayerNames[i], sdf.format(new Date(times[i])), isNext, isPast));
+            boolean isPast = (displayTimes[i] < nowMs);
+            list.add(new ScheduleItem(prayerNames[i], sdf.format(new Date(displayTimes[i])), isNext, isPast));
         }
         return list;
     }
@@ -764,14 +782,7 @@ final class PrayerTimes {
         if (times == null || times.length < 6) times = calculateFallback(context, now);
 
         long nowMs = now.getTimeInMillis();
-        int nextIdx = -1;
-        for (int i = 0; i < times.length; i++) {
-            if (i == 1) continue; // Skip Syuruk (sunrise)
-            if (times[i] > nowMs) {
-                nextIdx = i;
-                break;
-            }
-        }
+        int nextIdx = findNextPrayerIndex(times, nowMs);
 
         String[] prayerNames = AppLanguage.getPrayerNames(context);
         long nextTimeMs;
@@ -782,13 +793,7 @@ final class PrayerTimes {
         } else {
             // All prayers today have passed (after Isyak) -> Next is tomorrow's Subuh
             prayerName = prayerNames[0];
-            Calendar tomorrow = (Calendar) now.clone();
-            tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-            long[] tomTimes = getTimesForDate(context, tomorrow);
-            if (tomTimes == null || tomTimes.length < 6) {
-                tomTimes = calculateFallback(context, tomorrow);
-            }
-            nextTimeMs = (tomTimes != null && tomTimes.length > 0) ? tomTimes[0] : (times[0] + 86400000L);
+            nextTimeMs = nextSubuhTime(times, getTomorrowTimes(context, now, times));
         }
 
         SimpleDateFormat sdf = prayerTimeFormat(context, "h:mm a");
