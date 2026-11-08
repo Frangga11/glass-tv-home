@@ -190,7 +190,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private TextView btnWifi;
     private View btnAssistant;
     private View btnCandyBox;
+    private View btnHome;
     private View badgeSettingsUpdate;
+    private boolean activityResumed;
     private TextView ampmView, dateView;
     private TextView shamsiDate;
     private TextView prayerTimesView;
@@ -480,7 +482,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         heroName = findViewById(R.id.heroName);
         heroDesc = findViewById(R.id.heroDesc);
         heroWhere = findViewById(R.id.heroWhere);
-        int usable = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
+        int usable = getResources().getDisplayMetrics().widthPixels - Math.round(96 * density);
         heroMaxWidth = Math.round(usable * HERO_WIDTH_SHARE);
         heroNameMaxWidth = Math.round(usable * HERO_NAME_WIDTH_SHARE);
         if (heroName != null) heroName.setMaxWidth(heroNameMaxWidth);
@@ -731,7 +733,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ayahOpenHint.setBackground(hintBg);
             }
 
-            int uWidth = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
+            int uWidth = getResources().getDisplayMetrics().widthPixels - Math.round(96 * density);
             int iMaxWidth = Math.round(uWidth * 0.46f);
             if (ayahArabic != null) ayahArabic.setMaxWidth(iMaxWidth);
             if (ayahText != null) ayahText.setMaxWidth(iMaxWidth);
@@ -819,15 +821,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Backdrop.watch(dockRecycler);
         setUpGlider();
-        for (int id : new int[]{R.id.btnInputs, R.id.btnWifi, R.id.btnAssistant, R.id.btnCandyBox, R.id.btnSettings}) {
+        // Inputs keeps its established custom glass surface. New header pills keep their
+        // dedicated drawable so the nav's selected state remains visible under the focus glider.
+        View inputsPill = findViewById(R.id.btnInputs);
+        if (inputsPill != null) {
+            float radius = 21f * density;
+            inputsPill.setBackground(new GlassDrawable(inputsPill, radius, density, glider));
+            glider.addCompanion(inputsPill);
+            Backdrop.watch(inputsPill);
+            inputsPill.setOnFocusChangeListener((v, has) -> {
+                if (has) moveTopHighlight(v);
+            });
+        }
+        for (int id : new int[]{R.id.locationPill, R.id.weatherAirQuality, R.id.btnWifi,
+                R.id.btnAssistant, R.id.btnHome, R.id.btnCandyBox, R.id.btnSettings}) {
             View pill = findViewById(id);
             if (pill == null) continue;
-            float radius = 21f * density;
-            pill.setBackground(new GlassDrawable(pill, radius, density, glider));
             glider.addCompanion(pill);
             Backdrop.watch(pill);
             pill.setOnFocusChangeListener((v, has) -> {
-                if (has) moveTopHighlight(v);
+                if (has) {
+                    moveTopHighlight(v);
+                    if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings)
+                        v.animate().scaleX(1.04f).scaleY(1.04f).setDuration(reducedMotion ? 0 : 140).start();
+                } else if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings) {
+                    v.animate().scaleX(1f).scaleY(1f).setDuration(reducedMotion ? 0 : 140).start();
+                }
             });
         }
         if (prayerTimesView != null) {
@@ -906,10 +925,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         btnInputs = findViewById(R.id.btnInputs);
         btnAssistant = findViewById(R.id.btnAssistant);
+        btnHome = findViewById(R.id.btnHome);
         btnCandyBox = findViewById(R.id.btnCandyBox);
         View btnSettings = findViewById(R.id.btnSettings);
         badgeSettingsUpdate = findViewById(R.id.badgeSettingsUpdate);
         updateSettingsBadge();
+        updateHeaderTabLabels();
+        updateLocationPill();
+        if (btnHome != null) btnHome.setOnClickListener(v -> returnToMainScreen());
         if (btnInputs != null) btnInputs.setOnClickListener(v -> showInputs());
         if (btnWifi != null) {
             btnWifi.setOnClickListener(v -> showWifiPopup());
@@ -3640,7 +3663,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
 
-        int usable = getResources().getDisplayMetrics().widthPixels - (int) ((55 + 56) * density);
+        int usable = getResources().getDisplayMetrics().widthPixels - Math.round(96 * density);
         int islamicMaxWidth = Math.round(usable * 0.46f);
         boolean is4K = (getResources().getDisplayMetrics().widthPixels >= 3840
                 || getResources().getDisplayMetrics().heightPixels >= 2160);
