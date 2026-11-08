@@ -3,7 +3,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 PRAYER = ROOT / "launcher/app/src/main/java/com/gathin/tvhome/PrayerTimes.java"
-MAIN = ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java
+MAIN = ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java"
 
 class PrayerTimesRefreshAndNextSubuhContract(unittest.TestCase):
     @classmethod
