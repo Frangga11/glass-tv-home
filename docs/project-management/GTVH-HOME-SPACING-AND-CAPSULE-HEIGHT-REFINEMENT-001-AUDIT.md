@@ -3,8 +3,8 @@
 **Date:** 9 November 2026  
 **Repository:** `Frangga11/glass-tv-home`  
 **PR:** [#97](https://github.com/Frangga11/glass-tv-home/pull/97)  
-**Branch:** `verify/home-spacing-capsule-height-refinement-001-validated`  
-**Exact HEAD:** `bb10228f930cc0b0e8c3dbf526aad9b0c94112fd`  
+**Branch:** `verify/home-spacing-capsule-height-refinement-001-android-tests`  
+**Exact HEAD:** `4817edd2c7109fa7ab8c253bbb5d8037ec55a511`  
 **Base:** `fix/home-ui-proportion-glass-focus-refinement-003` at `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`  
 **Status:** BELUM FINAL — CI Android/release build and visual acceptance pending.
 
@@ -47,6 +47,8 @@ Production:
 - `launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java`
 
 Regression:
+- `launcher/app/src/test/java/com/gathin/tvhome/DockGeometryTest.java`
+- `launcher/app/src/test/java/com/gathin/tvhome/DockLayoutModelTest.java`
 - `tests/test_home_spacing_capsule_height_refinement_contract.py` (new)
 - `tests/test_home_dock_islamic_shelf_navigation_refinement_contract.py`
 - `tests/test_home_layout_bounds_contract.py`
@@ -59,8 +61,8 @@ PR contains 8 files total. Production changes are limited to the three files abo
 
 - Python CI: **PASS — 190 tests, 1 skipped**.
 - Lists/tools/docs CI job: **PASS**.
-- Android `testReleaseUnitTest`: PENDING exact-head CI run #1668.
-- Android `assembleRelease`: PENDING exact-head CI run #1668.
+- Android `testReleaseUnitTest`: exact-head retest PENDING CI #1669/#1670 after updating four stale assertions in `DockGeometryTest` and `DockLayoutModelTest`.
+- Android `assembleRelease`: PENDING exact-head CI #1669/#1670.
 - APK artifact, size and SHA-256: PENDING.
 - Rendered 1920×1080 visual audit: PENDING.
 - Mi TV Stick physical acceptance: NOT PERFORMED by design; wait until automated and visual audits pass.
@@ -71,8 +73,18 @@ PR contains 8 files total. Production changes are limited to the three files abo
 - PR #94: CLOSED / NOT MERGED; superseded.
 - PR #95: CLOSED / NOT MERGED; superseded.
 - PR #96: CLOSED / NOT MERGED; superseded.
-- PR #97: OPEN / DRAFT / UNMERGED; active review and CI target.
+- PR #98: OPEN / DRAFT / UNMERGED; active review and CI target.
 
 ## 7. Final decision
 
 **BELUM FINAL.** Python regression tests pass, but Android unit tests, release build, APK verification and rendered visual audit remain outstanding. No APK should be installed on the TV and no merge should occur before all gates pass.
+
+
+## CI correction checkpoint — PR #98 — 9 November 2026
+
+- PR #97 is now CLOSED / NOT MERGED and superseded by [PR #98](https://github.com/Frangga11/glass-tv-home/pull/98). PR #98 is OPEN / DRAFT / UNMERGED; base remains PR #83 at `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
+- Active source branch: `verify/home-spacing-capsule-height-refinement-001-android-tests`; exact HEAD: `4817edd2c7109fa7ab8c253bbb5d8037ec55a511`.
+- PR #98 retains the three production files and adds two Android unit-test updates to the five Python test changes: total 10 files (3 production, 7 test). No unrelated production files added.
+- Exact-head CI #1670 / run `42531675366` and #1669 / run `42531662425` are in progress at checkpoint capture. Previous exact-head Python suite passed 190 tests (1 skipped); Lists/tools/docs passed. Previous Android unit tests compiled production Java and found four stale test assertions (old 29dp safe frame and 27.5dp shelf gap). PR #98 updates those two Android test files to assert 30dp geometry; exact-head Android retest remains PENDING.
+- No APK QA asset, rendered 1920×1080 visual audit, or physical Mi TV Stick acceptance is available. No ADB, installation, device setting changes or merge.
+- **Status remains BELUM FINAL.** Await exact-head Android unit tests and release build, APK size/hash verification, then rendered visual audit. Do not install or request TV testing before all automated and visual gates pass.
