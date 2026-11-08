@@ -139,3 +139,17 @@
 2. Review the complete PR diff for unintended changes and verify the stacked PR #77 dependency remains intact.
 3. After CI passes, perform static regression review and update the audit status.
 4. Only after separate owner authorization, verify visible prayer popup activation, Now Playing pause/resume, Dock/header DPAD focus, Weather/AQI focus feedback, overlay refresh/lifecycle, and whole-screen rendering on Mi TV Stick.
+
+
+## Exact-head CI result — 8 November 2026
+
+- PR #79 head: `701487f7f708d0b4342b613205fde9fba7c0dd72`.
+- CI #1574 / run `42486582167`: **SUCCESS** on the PR merge ref `fa5e4feb4ba451d6209762278ce18a6337edbdba`, whose merge commit message confirms it includes the exact PR head above.
+- Job 1, **Lists, tools and docs**: SUCCESS.
+- Job 2, **Launcher build and unit tests**: SUCCESS.
+- Release build: `BUILD SUCCESSFUL`.
+- Release APK size diagnostic: **1,627,417 bytes**.
+- The PR #79 artifact upload step completed successfully (artifact ID `13619931751`).
+- The companion APK release workflow run #29 / `42486582644` also completed SUCCESS; this is a workflow result, not authorization to install or test the APK.
+
+**Updated assessment:** the five source-level corrections and their CI regression/build validation are **PASS**. Whole Home Screen end-to-end acceptance remains **PARTIAL / NOT PASS** until authorized Mi TV Stick rendered, DPAD, lifecycle, media, prayer, and weather-overlay verification is performed. No APK installed, no ADB/device settings/default launcher changes, and no PR merged.
