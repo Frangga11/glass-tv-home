@@ -3496,7 +3496,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View divider = findViewById(R.id.locationAltitudeDivider);
         View mountain = findViewById(R.id.locationMountainIcon);
         if (zone.altitudeMeters != null && zone.altitudeMeters > 0) {
-            altitude.setText("± " + zone.altitudeMeters + " mdpl");
+            altitude.setText(getString(R.string.location_altitude_format, zone.altitudeMeters));
             altitude.setVisibility(View.VISIBLE);
             if (divider != null) divider.setVisibility(View.VISIBLE);
             if (mountain != null) mountain.setVisibility(View.VISIBLE);
