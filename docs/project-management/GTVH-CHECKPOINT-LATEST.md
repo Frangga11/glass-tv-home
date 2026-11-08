@@ -475,3 +475,14 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 - No assistant-side physical installation, ADB, device setting change, screenshot review or merge was performed. Keep PR #82 DRAFT / UNMERGED until owner confirms the physical tests.
 - Detailed audit: [GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md](GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md).
 - **Next action:** owner installs the exact-head APK on Mi TV Stick and reports the measured gap and remote-navigation result. Do not declare final or merge before physical acceptance.
+
+
+### Session closure — 9 November 2026
+
+**Work session status: CLOSED AT CHECKPOINT.** The FIX-002 source implementation, exact-head automated validation, APK publication and documentation sync are complete. This closure does **not** mean physical acceptance or PR merge.
+
+- Resume from PR #82 exact HEAD `d6f594933b712b36b0660e119a0d4ee8b7de3134` on `fix/home-islamic-shelf-vertical-position-grid-row-scroll-002`.
+- Resume documentation from `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`.
+- First next action: install the exact-head APK on the Mi TV Stick and perform the physical acceptance checklist above. Record observed 27.5dp clearance and actual DOWN/UP row movement before changing PR status.
+- Leave PR #80, #81 and #82 OPEN / DRAFT / UNMERGED. Do not merge or claim final acceptance without physical evidence.
+- No further source changes are authorized by this checkpoint; any discrepancy from device testing must be recorded first, then handled as a separately scoped corrective change.
