@@ -2135,3 +2135,8 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 Resume only from `GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. Active task: `GTVH-HOME-WEATHER-PILL-WIDTH-REFINEMENT-001` in PR #79, branch `fix/home-balanced-frame-001`.
 
 Current PR HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`; implementation commit `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`. Location width remains the 34% reference; weather/AQI now uses that same width. Both left anchors remain unchanged. Regression test added. CI #1587 / run `42489445766` Lists/tools/docs PASS; Android test/build still in progress at handover. Next: verify CI conclusion and test output; update checkpoint and supporting docs with final exact status. Then, only when a device test is separately authorized, visually verify 1920×1080 at 320dpi, ID/EN, long location/weather/AQI values, clipping and Header non-regression. Do not merge PR #79 or install APK as part of this task.
+
+
+## CI #1587 final validation — 8 Nov 2026
+
+CI #1587 / run `42489445766` completed **SUCCESS** on PR #79 head `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. Both required jobs passed. Python regression suite: **161 tests, OK (1 skipped)**; the new `test_weather_aqi_pill_matches_location_pill_width_and_left_anchor` passed. Android `testReleaseUnitTest` and `assembleRelease`: **BUILD SUCCESSFUL**. Release APK diagnostic: **1,627,545 bytes**; CI artifact ID **13621187055**, ZIP size **1,426,725 bytes**. CI proves source/build/test contracts only; no rendered Mi TV Stick or physical visual acceptance is claimed. PR #79 remains OPEN / DRAFT / UNMERGED.
