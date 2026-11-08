@@ -4,8 +4,8 @@
 **Repository:** Frangga11/glass-tv-home  
 **Canonical documentation branch:** `docs/project-master-inventory`  
 **Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
-**Current Home implementation PR:** [PR #82](https://github.com/Frangga11/glass-tv-home/pull/82) — stacked on PR #81; PRs #80/#81/#82 remain unmerged.  
-**Latest documentation sync:** audit report, handover, audit register and this checkpoint were updated together on `docs/project-master-inventory`; see the branch tip for the final documentation commit SHA.
+**Current Home implementation PR:** [PR #83](https://github.com/Frangga11/glass-tv-home/pull/83) — stacked on PR #82; PRs #80/#81/#82/#83 remain OPEN / DRAFT / UNMERGED.  
+**Latest documentation sync:** PR #83 audit report, handover, audit register, decision log, inventory and this checkpoint were updated together on `docs/project-master-inventory`; see the branch tip for the final documentation commit SHA.
 
 ---
 
@@ -486,3 +486,81 @@ This section supersedes the earlier downward 5mm movement and 12dp minimum-gap v
 - First next action: install the exact-head APK on the Mi TV Stick and perform the physical acceptance checklist above. Record observed 27.5dp clearance and actual DOWN/UP row movement before changing PR status.
 - Leave PR #80, #81 and #82 OPEN / DRAFT / UNMERGED. Do not merge or claim final acceptance without physical evidence.
 - No further source changes are authorized by this checkpoint; any discrepancy from device testing must be recorded first, then handled as a separately scoped corrective change.
+
+---
+
+## 17. Latest checkpoint — GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003 — 9 November 2026
+
+**Workstream status: IMPLEMENTATION COMPLETE / EXACT-HEAD CI PASS / RELEASE APK PUBLISHED / PHYSICAL ACCEPTANCE PENDING. NOT FINAL.**
+
+### Source and PR authority
+- Repository: `Frangga11/glass-tv-home`.
+- Source PR: [#83 — GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003](https://github.com/Frangga11/glass-tv-home/pull/83).
+- PR #83: OPEN / DRAFT / UNMERGED; mergeable at last verification.
+- Source branch: `fix/home-ui-proportion-glass-focus-refinement-003`.
+- Exact source HEAD: `947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803`.
+- Base branch: `fix/home-islamic-shelf-vertical-position-grid-row-scroll-002`.
+- Exact base HEAD: `d6f594933b712b36b0660e119a0d4ee8b7de3134`; PR #82 remains unmerged.
+- PR #80, #81 and #82 were not merged or rewritten. No merge was performed for PR #83.
+- PR #83 is 27 commits ahead of its exact base and changes 20 files.
+
+### Completed implementation A–G
+- **A — Manual updates:** automatic launch/resume update checks and auto-update scheduling controls removed; non-manual check cannot display update prompt; Settings red badge removed. Manual check, version comparison, APK download, install permission and PackageInstaller pipeline retained.
+- **B — Navigation proportions:** capsule height 40dp → 36dp; inner padding 3dp → 2dp; content remains centered.
+- **C — Icon/text spacing:** Beranda, Profil and Pengaturan drawable spacing 5dp → 4dp.
+- **D — Glass Dock:** horizontal Dock extra host height 14dp → 12dp; horizontal Dock icons use optical scaleX 1.045; 44dp Dock icon bounds and 48dp Grid icon bounds retained.
+- **E — Islamic Shelf:** 1dp / 180dp Daily Doa divider placed inside the visible Doa block; scrim gradient changed from 0x1F/0x44 to 0x12/0x26.
+- **F — Focus/glass:** all header pills share 20dp GlassDrawable radius and one Glider focus indicator; duplicate focused foreground state removed from navigation selector; selected Beranda tint retained.
+- **G — Quality:** Dock geometry unit test, wallpaper scrim and localization contracts updated; dedicated UI refinement regression contract added; CI/publisher workflow eligibility extended to PR #83.
+
+### Exact-head validation and APK
+- CI #1637 / run `42509424284`: **SUCCESS**, both jobs passed.
+- Python suite: **184 tests, OK (1 skipped)**.
+- Android app and installer `testReleaseUnitTest`: PASS.
+- Android `assembleRelease`: PASS; `BUILD SUCCESSFUL`.
+- Direct APK Publisher #92 / run `42509424259`: **SUCCESS**; exact PR HEAD checked out, Release tests/build passed, APK verified and direct asset uploaded.
+- APK: `Glass-TV-Home-PR83-947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803.apk`.
+- Exact APK size: **1,625,213 bytes**.
+- SHA-256: `2d14894da872f616188bace686be5f85021766914bbe65260cc76a7848baee26`.
+- [Download / view PR #83 QA APK release](https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-pr83-947f33cf7181bb06c77dcdba1cf7b7ff3e7d9803).
+- CI validation artifact ID `13628113675`; ZIP size 1,427,011 bytes; ZIP SHA-256 `7caf8c43502a4db15c61a098bf1d55559ecf6a0fdf2f8eb73eeaecf0d32dbd08`; expires 15 November 2026.
+- Historical 1.5 MiB warning is non-blocking. PR #83 APK is 5,524 bytes smaller than PR #82's 1,630,737-byte APK, but remains 52,349 bytes above the 1.5 MiB diagnostic reference.
+
+### Changed source/test/workflow files
+- `.github/workflows/ci.yml`
+- `.github/workflows/publish-apk-release.yml`
+- `launcher/app/src/main/java/com/gathin/tvhome/AppUpdateManager.java`
+- `launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java`
+- `launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java`
+- `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+- `launcher/app/src/main/java/com/gathin/tvhome/ModernSettingsDialog.java`
+- `launcher/app/src/main/res/drawable/header_glass_pill_bg.xml`
+- `launcher/app/src/main/res/drawable/header_nav_tab_bg.xml`
+- `launcher/app/src/main/res/drawable/pill_bg.xml`
+- `launcher/app/src/main/res/layout/activity_main.xml`
+- `launcher/app/src/main/res/layout/dialog_ota_coffee.xml`
+- `launcher/app/src/main/res/values-en/strings.xml`
+- `launcher/app/src/main/res/values-id/strings.xml`
+- `launcher/app/src/main/res/values/strings.xml`
+- `launcher/app/src/test/java/com/gathin/tvhome/DockLayoutModelTest.java`
+- `tests/test_f06_localization_ui_contract.py`
+- `tests/test_home_dock_islamic_shelf_navigation_refinement_contract.py`
+- `tests/test_home_ui_proportion_glass_focus_refinement_contract.py`
+- `tests/test_home_wallpaper_text_refinement_contract.py`
+
+### Physical acceptance — mandatory outstanding gate
+No physical Mi TV Stick installation, ADB session, screenshot capture, device setting change or remote-control acceptance has been performed. The exact-head APK is built and published, but visual/runtime acceptance remains the owner's next action.
+
+Test on Mi TV Stick at **1920×1080 / density 320**:
+1. Confirm no update reminder on cold launch or resume and no Settings red dot.
+2. Open Settings and manually check for updates; verify latest-version feedback and, if an update is available, download/permission/PackageInstaller handoff.
+3. Check 36dp navigation capsule, 2dp padding, 4dp icon/text spacing, centering and no clipping.
+4. Check Dock height, 1.045 icon optical width, alignment, focus and animation.
+5. Check prayer/Doa divider and wallpaper visibility with the softened gradient.
+6. Navigate Location, Weather, Beranda, Profil, Pengaturan, Wi-Fi and Microphone using the remote; inspect normal, focused, pressed and disabled states where applicable.
+7. Run regression checks for Home components, app launch/return focus, Grid navigation, Wi-Fi, Assistant, prayer data and Islamic Shelf visibility.
+
+### Final decision / next action
+**BELUM FINAL.** Source implementation, automated tests, Android Release build, APK size/hash verification and direct APK publication are complete. Physical acceptance remains pending. Owner installs the exact-head APK and reports screenshots/observations; only then should any discrepancy be triaged. Keep PR #83 OPEN / DRAFT / UNMERGED. Do not merge or mark final without physical acceptance.
+
+Detailed audit: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md](GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md).
