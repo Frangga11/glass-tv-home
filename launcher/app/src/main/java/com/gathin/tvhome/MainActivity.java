@@ -3633,7 +3633,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // The location pill defines the shared width for both left information pills.
         // Keep this single calculation independent of either view's visibility.
-        int locationWidth = Math.round(width * 0.34f);
+        int locationWidth = Math.round(width * 0.30f);
         if (location != null) {
             ViewGroup.LayoutParams params = location.getLayoutParams();
             if (params.width != locationWidth) {
