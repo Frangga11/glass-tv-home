@@ -178,6 +178,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private View btnInputs;
     private TextView btnWifi;
     private View btnAssistant;
+    private View btnHome;
     private View btnCandyBox;
     private View badgeSettingsUpdate;
     private TextView ampmView, dateView;
@@ -490,14 +491,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    View target = (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) ? btnInputs
-                            : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) ? btnWifi
-                            : findViewById(R.id.btnSettings);
-                    if (target != null) {
-                        target.requestFocus();
-                        return true;
-                    }
+                    if (btnHome != null) { btnHome.requestFocus(); return true; }
                 }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return true;
                 return false;
             });
             weatherAirQualityView.setOnFocusChangeListener((v, hasFocus) -> {
@@ -680,8 +676,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.setItemAnimator(null);
         tray = new DockDecoration(COLUMNS, density);
         grid.addItemDecoration(tray);
-        // The top-right buttons line up with the dock, which is only known once the tiles are laid out.
-        grid.getViewTreeObserver().addOnGlobalLayoutListener(this::alignTopButtons);
+        // Header groups are anchored to the screen and no longer follow the dock.
         // Glass shows the blurred wallpaper behind it: the dock tray (drawn by the grid) and the
         // top-bar pills redraw when a new blurred copy is ready.
         Backdrop.watch(grid);
@@ -694,15 +689,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         // The grid only shows the shape on the tray.
         glider.addCompanion(grid, tray.area);
-        for (int id : new int[]{R.id.btnInputs, R.id.btnWifi, R.id.btnAssistant, R.id.btnCandyBox, R.id.btnSettings}) {
+        // Keep the original Inputs drawable and focus behaviour intact.
+        View inputsPill = findViewById(R.id.btnInputs);
+        if (inputsPill != null) {
+            float radius = 21f * density;
+            inputsPill.setBackground(new GlassDrawable(inputsPill, radius, density, glider));
+            glider.addCompanion(inputsPill);
+            Backdrop.watch(inputsPill);
+            inputsPill.setOnFocusChangeListener((v, has) -> {
+                if (has) moveTopHighlight(v);
+            });
+        }
+        // New glass pills retain their own selected/focused drawable while the glider tracks focus.
+        for (int id : new int[]{R.id.btnWifi, R.id.btnAssistant, R.id.btnHome, R.id.btnCandyBox, R.id.btnSettings}) {
             View pill = findViewById(id);
             if (pill == null) continue;
-            float radius = 21f * density;
-            pill.setBackground(new GlassDrawable(pill, radius, density, glider));
             glider.addCompanion(pill);
             Backdrop.watch(pill);
             pill.setOnFocusChangeListener((v, has) -> {
-                if (has) moveTopHighlight(v);
+                if (has) {
+                    moveTopHighlight(v);
+                    if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings)
+                        v.animate().scaleX(1.05f).scaleY(1.05f).setDuration(reducedMotion ? 0 : 150).start();
+                } else if (id == R.id.btnHome || id == R.id.btnCandyBox || id == R.id.btnSettings) {
+                    v.animate().scaleX(1f).scaleY(1f).setDuration(reducedMotion ? 0 : 150).start();
+                }
             });
         }
         if (prayerTimesView != null) {
@@ -778,8 +789,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         btnInputs = findViewById(R.id.btnInputs);
         btnAssistant = findViewById(R.id.btnAssistant);
+        btnHome = findViewById(R.id.btnHome);
         btnCandyBox = findViewById(R.id.btnCandyBox);
         View btnSettings = findViewById(R.id.btnSettings);
+        if (btnHome != null) btnHome.setOnClickListener(v -> returnToMainScreen());
+        updateHeaderTabLabels();
         badgeSettingsUpdate = findViewById(R.id.badgeSettingsUpdate);
         updateSettingsBadge();
         if (btnInputs != null) btnInputs.setOnClickListener(v -> showInputs());
@@ -809,112 +823,54 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
         }
 
-        // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
-        // jump to a tile far below when there is nothing in that direction.
+        // D-pad order: weather -> Home -> Profile -> Settings -> Inputs -> Wi-Fi -> Assistant.
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
-                v.performClick();
-                return true;
-            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
+                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) { v.performClick(); return true; }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                // Back to the dock tile Up came from, not wherever the focus finder lands.
-                focusTile(lastFocused % COLUMNS);
-                return true;
-            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) { focusTile(lastFocused % COLUMNS); return true; }
+            View target = null;
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (v.getId() == R.id.btnSettings) {
-                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
-                        btnCandyBox.requestFocus();
-                        return true;
-                    }
-                    if (btnAssistant != null && btnAssistant.getVisibility() == View.VISIBLE) {
-                        btnAssistant.requestFocus();
-                        return true;
-                    }
-                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
-                        btnWifi.requestFocus();
-                        return true;
-                    }
+                switch (v.getId()) {
+                    case R.id.btnHome: target = weatherAirQualityView; break;
+                    case R.id.btnCandyBox: target = btnHome; break;
+                    case R.id.btnSettings: target = btnCandyBox; break;
+                    case R.id.btnInputs: target = btnSettings; break;
+                    case R.id.btnWifi:
+                        target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings; break;
+                    case R.id.btnAssistant: target = btnWifi; break;
+                    default: return false;
                 }
-                if (v.getId() == R.id.btnCandyBox) {
-                    if (btnAssistant != null && btnAssistant.getVisibility() == View.VISIBLE) {
-                        btnAssistant.requestFocus();
-                        return true;
-                    }
-                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
-                        btnWifi.requestFocus();
-                        return true;
-                    }
-                    if (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) {
-                        btnInputs.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnAssistant) {
-                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
-                        btnWifi.requestFocus();
-                        return true;
-                    }
-                    if (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) {
-                        btnInputs.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnInputs || (v.getId() == R.id.btnWifi && (btnInputs == null || btnInputs.getVisibility() != View.VISIBLE))) {
-                    if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE) {
-                        weatherAirQualityView.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnInputs && prayerTimesView != null && prayerTimesView.getVisibility() == View.VISIBLE) {
-                    prayerTimesView.requestFocus();
-                    return true;
-                }
-                return v.getId() == R.id.btnInputs
-                        || (v.getId() == R.id.btnWifi && (btnInputs == null || btnInputs.getVisibility() != View.VISIBLE));
+                if (target != null && target.getVisibility() == View.VISIBLE) { target.requestFocus(); return true; }
+                return v.getId() == R.id.btnHome || v.getId() == R.id.btnInputs;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                if (v.getId() == R.id.btnWifi) {
-                    if (btnAssistant != null && btnAssistant.getVisibility() == View.VISIBLE) {
-                        btnAssistant.requestFocus();
-                        return true;
-                    }
-                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
-                        btnCandyBox.requestFocus();
-                        return true;
-                    }
-                    if (btnSettings != null) {
-                        btnSettings.requestFocus();
-                        return true;
-                    }
+                switch (v.getId()) {
+                    case R.id.btnHome: target = btnCandyBox; break;
+                    case R.id.btnCandyBox: target = btnSettings; break;
+                    case R.id.btnSettings:
+                        target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs
+                                : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant); break;
+                    case R.id.btnInputs:
+                        target = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant; break;
+                    case R.id.btnWifi: target = btnAssistant; break;
+                    case R.id.btnAssistant: return true;
+                    default: return false;
                 }
-                if (v.getId() == R.id.btnAssistant) {
-                    if (btnCandyBox != null && btnCandyBox.getVisibility() == View.VISIBLE) {
-                        btnCandyBox.requestFocus();
-                        return true;
-                    }
-                    if (btnSettings != null) {
-                        btnSettings.requestFocus();
-                        return true;
-                    }
-                }
-                if (v.getId() == R.id.btnCandyBox) {
-                    if (btnSettings != null) {
-                        btnSettings.requestFocus();
-                        return true;
-                    }
-                }
-                return v.getId() == R.id.btnSettings;
+                if (target != null && target.getVisibility() == View.VISIBLE) { target.requestFocus(); return true; }
+                return v.getId() == R.id.btnAssistant;
             }
             return false;
         };
+        if (btnHome != null) btnHome.setOnKeyListener(pillKeys);
         if (btnInputs != null) btnInputs.setOnKeyListener(pillKeys);
         if (btnWifi != null) btnWifi.setOnKeyListener(pillKeys);
         if (btnAssistant != null) btnAssistant.setOnKeyListener(pillKeys);
         if (btnCandyBox != null) btnCandyBox.setOnKeyListener(pillKeys);
         if (btnSettings != null) btnSettings.setOnKeyListener(pillKeys);
+        root.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> applyHeaderWidths());
+        root.post(this::applyHeaderWidths);
 
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
@@ -1283,11 +1239,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) return;
         if (hiddenSinceResume) return;
+        // Single home pressed on Home
+        returnToMainScreen();
+    }
+
+    /** Shared by the remote Home key and the on-screen Home tab. */
+    private void returnToMainScreen() {
         if (screensaverActive) {
             dismissScreensaver();
             return;
         }
-        // Single home pressed on Home
         if (cardPrompt != null) cardPrompt.dismiss();
         if (openPopup != null) openPopup.dismiss();
         closeMenu(false);
@@ -1331,6 +1292,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         updateInputsButton();
         updateTopBarUserIcon();
         updateSettingsBadge();
+        updateHeaderTabLabels();
+        updateLocationPill();
+        updateHomeTabIndicator();
         handler.postDelayed(() -> AppUpdateManager.checkForUpdates(this, false), 1500);
         Location.Zone chosenPlace = Location.chosen(this);
         String zoneCode = (chosenPlace != null) ? chosenPlace.code : "WLY01";
@@ -1347,6 +1311,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             weatherOverlayView.startAnimation();
         }
         hiddenSinceResume = false;
+        updateHomeTabIndicator();
     }
 
     /** Rebuilds the tiles (and the module cards), then puts focus back where it was. */
@@ -1447,6 +1412,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        updateHomeTabIndicator();
         if (hasFocus) showCardPrompt();
     }
 
@@ -1560,6 +1526,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 wallView.setColorFilter(0xFF7A7A7A, android.graphics.PorterDuff.Mode.MULTIPLY);
             }
         }
+        updateHomeTabIndicator();
     }
 
     // ---- glass highlight -------------------------------------------------------------------------
@@ -1734,25 +1701,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * column count and the screen, so the edge is measured rather than written down.
      */
     private void alignTopButtons() {
-        // This runs on every layout pass, which during a grid scroll is every frame, so it keeps
-        // its views and rectangles rather than looking them up or allocating each time.
-        if (topRow == null) {
-            topRow = findViewById(R.id.topButtons);
-            topSettings = findViewById(R.id.btnSettings);
-        }
-        if (topRow == null || topSettings.getWidth() == 0) return;
-        RecyclerView.ViewHolder last = grid.findViewHolderForAdapterPosition(COLUMNS - 1);
-        if (last == null) return;
-        View card = last.itemView.findViewById(R.id.card);
-        if (card == null || card.getWidth() == 0) return;
-        // Layout positions, not drawn ones: a focused card is scaled up, and the row's own shift
-        // must not be counted twice.
-        alignCard.set(0, 0, card.getWidth(), card.getHeight());
-        root.offsetDescendantRectToMyCoords(card, alignCard);
-        alignButton.set(0, 0, topSettings.getWidth(), topSettings.getHeight());
-        root.offsetDescendantRectToMyCoords(topSettings, alignButton);
-        float shift = alignCard.right - alignButton.right;
-        if (Math.abs(topRow.getTranslationX() - shift) >= 1f) topRow.setTranslationX(shift);
+        // Retained for compatibility: the header is screen-anchored, not dock-anchored.
+        if (topRow == null) topRow = findViewById(R.id.topButtons);
+        if (topRow != null && topRow.getTranslationX() != 0f) topRow.setTranslationX(0f);
     }
 
     /**
@@ -1770,7 +1721,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private boolean isTopPill(View v) {
         int id = v.getId();
-        return id == R.id.btnInputs || id == R.id.btnWifi || id == R.id.btnAssistant || id == R.id.btnCandyBox || id == R.id.btnSettings;
+        return id == R.id.btnHome || id == R.id.btnInputs || id == R.id.btnWifi
+                || id == R.id.btnAssistant || id == R.id.btnCandyBox || id == R.id.btnSettings;
     }
 
     /** Sends the focus shape onto a pill: from a tile it glides up and narrows into the pill. */
@@ -2357,7 +2309,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void focusTile(int position) {
         if (adapter.getItemCount() == 0) {
-            (btnWifi.getVisibility() == View.VISIBLE ? btnWifi : findViewById(R.id.btnSettings)).requestFocus();
+            View fallback = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnHome;
+            if (fallback != null) fallback.requestFocus();
             return;
         }
         final int pos = Math.max(0, Math.min(position, adapter.getItemCount() - 1));
@@ -2792,6 +2745,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     void updateTopBarUserIcon() {
         if (btnCandyBox instanceof TextView) {
             TextView tv = (TextView) btnCandyBox;
+            tv.setText("id".equals(AppLanguage.getLanguage(this)) ? "Profil" : "Profile");
             ProfileManager.UserProfile active = ProfileManager.getActiveProfile(this);
             boolean isChild = ChildModeManager.isChildModeEnabled(this);
             int size = Math.round(26 * density);
@@ -2804,6 +2758,82 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 tv.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(isChild ? 0xFFF59E0B : 0xFFFFFFFF));
             }
             tv.setContentDescription("Pengguna Semasa: " + active.name + (isChild ? " (Mod Kanak-kanak)" : ""));
+        }
+    }
+
+    private void updateHeaderTabLabels() {
+        boolean indonesia = "id".equals(AppLanguage.getLanguage(this));
+        if (btnHome instanceof TextView) ((TextView) btnHome).setText(indonesia ? "Beranda" : "Home");
+        if (btnCandyBox instanceof TextView) ((TextView) btnCandyBox).setText(indonesia ? "Profil" : "Profile");
+        View settings = findViewById(R.id.btnSettings);
+        if (settings instanceof TextView) ((TextView) settings).setText(indonesia ? "Pengaturan" : "Settings");
+    }
+
+    private void updateLocationPill() {
+        TextView name = findViewById(R.id.locationName);
+        TextView altitude = findViewById(R.id.locationAltitude);
+        if (name == null || altitude == null) return;
+        Location.Zone zone = Location.chosen(this);
+        if (zone == null || zone.town == null || zone.town.trim().isEmpty()) {
+            View pill = findViewById(R.id.locationPill);
+            if (pill != null) pill.setVisibility(View.GONE);
+            return;
+        }
+        name.setText(zone.town);
+        if (zone.altitudeMeters != null && zone.altitudeMeters > 0) {
+            altitude.setText("± " + zone.altitudeMeters + " mdpl");
+            altitude.setVisibility(View.VISIBLE);
+        } else {
+            altitude.setText("");
+            altitude.setVisibility(View.GONE);
+        }
+    }
+
+    private void updateHomeTabIndicator() {
+        if (btnHome == null) return;
+        boolean active = getLifecycle().getCurrentState().isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)
+                && hasWindowFocus() && !hiddenSinceResume && !screensaverActive && !wallpaperFullscreen
+                && !isFinishing() && !isDestroyed();
+        btnHome.setSelected(active);
+        btnHome.setElevation(active ? 8f * density : 0f);
+        btnHome.invalidate();
+    }
+
+    private void applyHeaderWidths() {
+        if (root == null) return;
+        View location = findViewById(R.id.locationPill);
+        View weather = findViewById(R.id.weatherAirQuality);
+        View nav = findViewById(R.id.navPill);
+        View left = findViewById(R.id.leftBlock);
+        View right = findViewById(R.id.topButtons);
+        int screen = root.getWidth();
+        if (screen <= 0) return;
+        int pillWidth = Math.round(screen * 0.265f);
+        if (location != null) {
+            ViewGroup.LayoutParams lp = location.getLayoutParams();
+            if (lp.width != pillWidth) { lp.width = pillWidth; location.setLayoutParams(lp); }
+        }
+        if (weather != null) {
+            ViewGroup.LayoutParams lp = weather.getLayoutParams();
+            if (lp.width != pillWidth) { lp.width = pillWidth; weather.setLayoutParams(lp); }
+        }
+        if (nav != null) {
+            int desired = Math.round(screen * 0.39f);
+            int max = desired;
+            if (left != null && right != null && left.getWidth() > 0 && right.getWidth() > 0) {
+                int[] lp = new int[2], rp = new int[2], rootPos = new int[2];
+                left.getLocationOnScreen(lp);
+                right.getLocationOnScreen(rp);
+                root.getLocationOnScreen(rootPos);
+                int center = screen / 2;
+                int leftEdge = lp[0] - rootPos[0] + left.getWidth() + Math.round(12 * density);
+                int rightEdge = rp[0] - rootPos[0] - Math.round(12 * density);
+                max = Math.max(0, Math.min(desired, 2 * Math.min(center - leftEdge, rightEdge - center)));
+            }
+            ViewGroup.LayoutParams lp = nav.getLayoutParams();
+            if (lp.width != max) { lp.width = max; nav.setLayoutParams(lp); }
+            if (max < Math.round(240 * density))
+                android.util.Log.w("TvHome.Header", "Navigation pill constrained to " + max + "px to protect left/right header controls");
         }
     }
 
@@ -5432,6 +5462,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             setWallpaperFullscreen(false);
         }
         screensaverActive = true;
+        updateHomeTabIndicator();
         if (screensaverView == null) {
             screensaverView = getLayoutInflater().inflate(R.layout.view_nightstand, root, false);
             screensaverView.setOnClickListener(v -> dismissScreensaver());
@@ -5511,6 +5542,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 screensaverView.setVisibility(View.GONE);
             }
         }).start();
+        updateHomeTabIndicator();
         android.util.Log.i("TvHome", "Nightstand screensaver dismissed");
     }
 
