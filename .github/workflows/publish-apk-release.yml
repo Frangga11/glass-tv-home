@@ -73,3 +73,5 @@ jobs:
           prerelease: true
           files: launcher/app/build/outputs/apk/release/app-release.apk
           fail_on_unmatched_files: true
+
+# APK-ONLY DELIVERY GUARD: publish the verified app-release.apk asset directly; never distribute ZIP/BIN.
