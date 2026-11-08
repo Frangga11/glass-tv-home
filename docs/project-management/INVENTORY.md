@@ -1252,3 +1252,10 @@ Previous CI #1506 and #1526 predate the latest stale-focus correction and must n
 - Direct release page: https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-ci1545-20261108
 - Direct APK asset: https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-ci1545-20261108/app-release.apk
 - PR #79 remains OPEN / DRAFT / UNMERGED. No APK installation, ADB, device/default-launcher settings mutation, or merge. Physical Mi TV Stick acceptance remains PENDING. User must confirm the browser's received filename; the server-side GitHub asset metadata is correct, but actual Samsung Browser download confirmation has not yet been observed.
+
+
+## Active refinement — GTVH-HOME-HEADER-REFINEMENT-001 (8 November 2026)
+- Owner-approved safe frame: 29dp on all four edges (58px at density 2.0); source PR #79 HEAD `354b855b65d95db688cf9a43af5b74e4a14a229b`.
+- Header: clock 44sp; AM/PM/date/Shamsi date 11sp; single shared navigation capsule with independent transparent focus targets; capsule radius 20dp, segment radius 14dp, other Header glass pills 21dp.
+- Source implementation and regression files listed in `GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md`.
+- CI #1559 pending at checkpoint; runtime TV test and screenshot evidence pending; PR #79 and #77 remain draft/unmerged.
