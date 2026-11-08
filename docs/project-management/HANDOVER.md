@@ -2321,3 +2321,16 @@ The FIX-002 implementation session is closed at checkpoint. Resume from canonica
 Install the exact-head APK on Mi TV Stick at 1920×1080 / density 320. Verify manual OTA behavior, all seven focus targets, navigation capsule proportions, Dock icon/height, wallpaper/Islamic Shelf readability, divider, clipping and regressions. Record screenshot/video and actual remote behavior. Do not merge or mark final before physical acceptance.
 
 Detailed evidence: [GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md](GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md).
+
+---
+
+# PRE-MERGE HANDOVER — PR #77–#83 — 9 NOVEMBER 2026
+
+- Owner requested a checkpoint and merge of PR #77–#83. No merge has been executed yet.
+- Live refs, exact HEADs, base branches, CI status and ancestry are recorded in `GTVH-CHECKPOINT-LATEST.md` section “Pre-merge integration audit”.
+- Active stacked Home path: #77 → #79 → #80 → #81 → #82 → #83.
+- PR #78 is a separate old-main header branch overlapping eight files with #79; PR #79's own reconciliation document says #78 is not a valid candidate for the newer G3A–G4 / #77 stack. Do not merge #78 alongside #79 without explicit reconciliation.
+- #77's base is PR #72 head branch; #72 is based on #71 head; #71 is based on #70 head. These are all OPEN / DRAFT / UNMERGED. Merging #77–#83 into their configured stacked bases alone will not deliver the chain to `main`.
+- #77 current head vs #79 head comparison: 117 ahead / 5 behind. GitHub reports mergeable, but ancestry needs reconciliation.
+- Exact-head CI for #77, #78, #79, #80, #81, #82 and #83 all reports success (runs #1591, #1500, #1592, #1599, #1628, #1630 and #1637 respectively). Physical Mi TV Stick acceptance remains pending.
+- Await owner's decision: merge the active stack into each configured base (skip #78), or integrate the upstream dependency chain to `main` including #70–#72 and reconcile #78 separately. Do not force-push or change PR bases until confirmed.
