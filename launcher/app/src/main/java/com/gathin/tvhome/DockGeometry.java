@@ -58,9 +58,9 @@ final class DockGeometry {
     }
 
     /**
-     * The Dock host is already inside activity_main's 56dp Home content inset.
-     * Applying the old extra 48dp inset here double-inset the Dock and made its tray
-     * visibly narrower than the left weather/clock and right prayer/ayah shelves.
+     * The Dock host is already inside activity_main's shared 48dp Home content inset.
+     * Applying another inset here would double-inset the Dock and make its tray narrower
+     * than the left information and right prayer/ayah shelves.
      */
     static int horizontalContentWidthPx(int viewportWidthPx, float density) {
         return Math.max(0, viewportWidthPx);
