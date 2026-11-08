@@ -137,6 +137,13 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         global_focus = MAIN[global_focus_start:global_focus_end]
         self.assertIn("if (newF != null && !onTile) gridFocusRequestGeneration++;", global_focus)
 
+    def test_horizontal_grid_focus_restore_reapplies_glass_for_already_focused_card(self):
+        start = MAIN.index("private void focusTileWhenLaidOut")
+        end = MAIN.index("// ---- top bar", start)
+        focus_restore = MAIN[start:end]
+        self.assertIn("if (card.isFocused()) onTileFocused(position, card);", focus_restore)
+        self.assertIn("else card.requestFocus();", focus_restore)
+
     def test_location_altitude_uses_bilingual_resources_without_approximation_symbol(self):
         self.assertIn(
             "getString(R.string.location_altitude_format, zone.altitudeMeters)",
