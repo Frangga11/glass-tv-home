@@ -48,8 +48,8 @@
     <string name="recent_apps_activity_label">Aplikasi Terbaru</string>
     <string name="media_listener_service_label">Layanan Media Glass TV</string>
 
-    <string name="daily_prayer_label">DOA HARIAN  •  AYAT PILIHAN</string>
-    <string name="daily_ayah_popup_title">Ayat Harian</string>
+    <string name="daily_prayer_label">AYAT PILIHAN HARIAN</string>
+    <string name="daily_ayah_popup_title">Ayat Pilihan Harian</string>
     <string name="daily_ayah_open">BACA AYAT LENGKAP  ›</string>
     <string name="daily_ayah_meaning_label">MAKSUDNYA</string>
     <string name="daily_ayah_close">Tutup</string>
@@ -202,7 +202,7 @@
     <string name="weather_summary_title">🌦️ Informasi Cuaca &amp; Kualitas Udara</string>
     <string name="weather_summary_body">📍 Lokasi: %1$s\n\n📊 Kondisi terkini: %2$s\n\nℹ️ Sumber: Open-Meteo / CAMS (CC BY 4.0). US AQI merupakan estimasi model, bukan pengukuran ISPU resmi di stasiun setempat.\n\n📌 Periksa nilai AQI dan ikuti peringatan resmi BMKG atau instansi terkait sebelum beraktivitas di luar ruangan.</string>
     <string name="prayer_summary_title">🕌 Jadwal Salat &amp; Ayat Pilihan Hari Ini</string>
-    <string name="prayer_summary_body">📍 Lokasi: %1$s • %2$s\n\n⏳ Salat berikutnya: %3$s\n\n📖 Ayat pilihan / doa harian:\n%4$s</string>
+    <string name="prayer_summary_body">📍 Lokasi: %1$s • %2$s\n\n⏳ Salat berikutnya: %3$s\n\n📖 Ayat pilihan harian:\n%4$s</string>
     <string name="ok_action">OK</string>
     <string name="sound_effects_title">🔊 Pilih Efek Suara</string>
     <string name="sound_effects_off">🔇 Efek suara dimatikan</string>
@@ -375,10 +375,10 @@
     <string name="change_pin_title">🔢 Ubah PIN Keamanan</string>
     <string name="change_pin_summary">Ubah PIN kontrol orang tua 4 digit (PIN saat ini: %1$s)</string>
     <string name="default_pin_label">0000 [Bawaan]</string>
-    <string name="daily_prayer_panel_title">Panel Doa Harian &amp; Waktu Salat</string>
+    <string name="daily_prayer_panel_title">Panel Ayat Pilihan &amp; Waktu Salat</string>
     <string name="daily_prayer_panel_summary">Tampilkan ayat pilihan dan jadwal salat sesuai waktu setempat</string>
-    <string name="daily_ayah_title">📖 Ayat &amp; Doa Harian</string>
-    <string name="daily_ayah_summary">Tampilkan ayat Al-Qur\'an dan doa harian di atas jadwal salat</string>
+    <string name="daily_ayah_title">📖 Ayat Pilihan Harian</string>
+    <string name="daily_ayah_summary">Tampilkan satu ayat Al-Qur\'an pilihan harian di atas jadwal salat</string>
     <string name="interface_sound_title">🔊 Efek Suara Antarmuka</string>
     <string name="interface_sound_summary">Pilih profil suara: PlayStation, Nintendo Switch, Xbox, atau tanpa suara</string>
     <string name="azan_settings_title">🕌 Pengaturan Azan</string>
