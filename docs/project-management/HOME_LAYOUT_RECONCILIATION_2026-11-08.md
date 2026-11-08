@@ -106,3 +106,12 @@ The horizontal branch of `focusTile()` delegates to `focusTileWhenLaidOut()`. Th
 
 ### Dependency audit result
 The sole PR #77-side commit after merge base is `0ea3746f0304b7042a018eeebf850d759f357bf8` (`ci(home): publish balanced-frame test APK for stacked PR 79`). PR #79 independently contains `f38b9663e2422ef793f075acc47f800200f677f7` (`ci(home): publish corrected Home layout test APK for PR 79`), with an identical patch and identical resulting workflow blob `5d271a43c5bfada87d85b144740a0074aea3e56b`. The apparent one-commit divergence is a duplicate equivalent CI change, not missing functional source. Do not cherry-pick or merge either duplicate commit solely to reconcile this. Both PRs remain OPEN / DRAFT / UNMERGED; no force-push or device action.
+
+
+### Retained-focus restoration patch correction — 8 November 2026
+
+- First implementation attempt matched the similarly shaped Dock helper instead of the horizontal Grid helper. CI #1543 correctly failed the new source-contract test because the Grid path remained unchanged. The incorrect Dock edit was corrected before acceptance; CI #1543 is recorded as **FAIL / implementation-location mismatch**, not as a product test pass.
+- Corrected source commit `728fb356be892b15c4903ea97ff950b1fbdde9fc` now handles both paths deliberately: already-focused Grid card calls `onTileFocused(position, card)`; already-focused Dock card calls `onDockTileFocused(dockAdapter.keyAt(position), card)`. Non-focused cards still use `requestFocus()`.
+- Updated regression test commit `c058935ed4398f5c7964d753fcf35a9cf77989bb` asserts both Grid and Dock retained-focus behavior.
+- CI #1545 / run `42479472690` is running on exact source/test commit `c058935ed4398f5c7964d753fcf35a9cf77989bb`; no PASS claim until both jobs complete.
+- No device test, APK installation, ADB, default-launcher/device settings mutation, force-push, or merge.
