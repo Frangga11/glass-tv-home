@@ -21,11 +21,9 @@
 - Exact-head CI #1677 / run `42533185178`: both jobs SUCCESS; Python 208 tests (1 skipped); Android unit tests + release build PASS. APK 1,626,857 bytes; artifact #13638675606 ZIP SHA-256 `e1428796d54847cd7e33c5c761b7339ad76c6eea004b8e26c39f6499d9502521`; extracted APK SHA-256 `b7ae8aa3919e0818b0879b8996427ea6eab9b91f14bf0fcff84b80fad32f292a`. See [REFINEMENT-002 audit](GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md).
 
 ## Next steps
-1. Wait for launcher unit tests and release build on exact HEAD `2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b`.
-2. Verify APK artifact publication, download, archive contents, APK size and SHA-256.
-3. Update the dedicated refinement-002 audit report and canonical checkpoint with exact results.
-4. Perform rendered 1920×1080 visual review. Do not install on Mi TV Stick or use ADB before visual acceptance.
-5. Keep all PRs Draft/unmerged until the full reconciliation and owner approval gates pass.
+1. Perform rendered 1920×1080 visual review against the approved safe-frame, capsule-height and shelf-to-tray measurements.
+2. If visual review passes, prepare physical Mi TV Stick acceptance; do not use ADB or install before that gate.
+3. Keep PR #84–#89, #99 and #100 OPEN / DRAFT / UNMERGED until the full reconciliation and owner approval gates pass.
 
 ## Locked scope
 30dp left/right/bottom, 29dp top; target capsules 30dp excluding Inputs; Home/Profile icon-label gap 2dp, Settings 4dp; wallpaper/prayer visible lower edges 30dp above measured horizontal Glass Dock. Preserve PR #84–#89 prayer, daily Ayah, Arabic typography, navigation, focus, DPAD and data behavior.
