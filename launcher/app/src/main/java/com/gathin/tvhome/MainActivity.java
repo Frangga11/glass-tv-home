@@ -785,17 +785,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     focusLastTile();
                     return true;
                 }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                    View assistant = findViewById(R.id.btnAssistant);
-                    View wifi = findViewById(R.id.btnWifi);
-                    View inputs = findViewById(R.id.btnInputs);
-                    View settings = findViewById(R.id.btnSettings);
-                    if (assistant != null && assistant.getVisibility() == View.VISIBLE) assistant.requestFocus();
-                    else if (wifi != null && wifi.getVisibility() == View.VISIBLE) wifi.requestFocus();
-                    else if (inputs != null && inputs.getVisibility() == View.VISIBLE) inputs.requestFocus();
-                    else if (settings != null) settings.requestFocus();
-                    return true;
-                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
                 if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
                     showPrayerPopup();
                     return true;
@@ -826,7 +816,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     focusLastTile();
                     return true;
                 }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                    View assistant = findViewById(R.id.btnAssistant);
+                    View wifi = findViewById(R.id.btnWifi);
+                    View inputs = findViewById(R.id.btnInputs);
+                    View settings = findViewById(R.id.btnSettings);
+                    if (assistant != null && assistant.getVisibility() == View.VISIBLE) assistant.requestFocus();
+                    else if (wifi != null && wifi.getVisibility() == View.VISIBLE) wifi.requestFocus();
+                    else if (inputs != null && inputs.getVisibility() == View.VISIBLE) inputs.requestFocus();
+                    else if (settings != null) settings.requestFocus();
+                    return true;
+                }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
                     showPrayerPopup();
                     return true;
