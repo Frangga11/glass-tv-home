@@ -4228,7 +4228,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     void updateAyah() {
-        if (ayahBlock == null || ayahRunning || !WeeklyAyah.shown(this) || WeeklyAyah.stored(this) != null) return;
+        if (ayahBlock == null || ayahRunning || !WeeklyAyah.shown(this) || !WeeklyAyah.shouldAttemptRefresh(this)) return;
         ayahRunning = true;
         new Thread(() -> {
             WeeklyAyah.Ayah a = WeeklyAyah.refresh(getApplicationContext());
