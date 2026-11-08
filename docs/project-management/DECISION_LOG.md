@@ -719,3 +719,10 @@ Implementation is isolated in PR #97, base PR #83 exact HEAD `947f33cf7181bb06c7
 - CI artifact is built from GitHub's PR merge ref `569500eacf0669f8d7bc5f191328a9d49790cf1e`, which merges source HEAD above into base. It is not a production release publication; the separate release-publisher workflow was skipped by design for a PR.
 - Final static package integrity and changed-file scope checks are recorded. Rendered 1920×1080 visual audit is NOT RUN: current available execution environment has no Android emulator, ADB, aapt/apkanalyzer or screenshot renderer. Physical Mi TV Stick acceptance remains NOT RUN. No ADB, installation, launcher setting mutation, or merge.
 - **Status: AUTOMATED QA PASS; VISUAL / DEVICE ACCEPTANCE PENDING; OVERALL BELUM FINAL.** Keep PR #101 draft/unmerged. Next gate is a genuine rendered 1920×1080 visual inspection; only after it passes may owner-approved Mi TV Stick acceptance proceed. No installation or merge without explicit owner authorization.
+
+### 9 November 2026 — PR #101 cumulative QA decision
+- Decision: accept exact-head automated CI and APK package-integrity checks as PASS; do not promote to final/device-ready status while rendered visual audit is unavailable.
+- Evidence: CI run `42535212323` SUCCESS (211 Python tests, 1 skipped; Android unit tests and release build SUCCESS); APK artifact `13639167072`; APK SHA-256 `5423f7746d6b771fcb0c76ca3fcdca5186c5957d2967f66437554cb6e7d62398`.
+- APK size diagnostic is a non-blocking warning: 1,626,525 bytes, 53,661 above historical 1.5 MiB threshold, but +1,312 bytes (+0.081%) against PR #83 baseline.
+- No install, ADB, default-launcher mutation, PR merge or source PR closure. PR #101 remains OPEN / DRAFT / UNMERGED.
+- Gate remaining: real 1920×1080 rendered visual audit; then owner-authorized Mi TV Stick acceptance. Final merge requires explicit owner approval.
