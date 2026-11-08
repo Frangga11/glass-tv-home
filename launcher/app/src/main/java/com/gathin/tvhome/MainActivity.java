@@ -1865,8 +1865,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final int returnSlot = lastFocused;
         final boolean returnFocusWasTopPill = lastFocusWasTopPill;
         final String returnTopPillKey = lastFocusedTopPillKey;
+        // A user's newer DPAD destination (Dock/header) must win over this resume restoration.
+        final int restoreGeneration = gridFocusRequestGeneration;
         grid.post(() -> {
-            int dockPos = dockAdapter == null ? -1 : dockAdapter.positionOf(returnKey);
+            boolean supersededByNewFocus = restoreGeneration != gridFocusRequestGeneration;
+            if (!supersededByNewFocus) {
+                int dockPos = dockAdapter == null ? -1 : dockAdapter.positionOf(returnKey);
             int pos = adapter.positionOf(returnKey);
             boolean restoredTopPill = false;
             if (returnFocusWasTopPill) {
@@ -1885,6 +1889,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (dockPos >= 0) { lastFocusedDock = true; lastDockFocusedKey = returnKey; focusDockTile(dockPos); }
                 else { lastFocusedDock = false; focusTile(pos >= 0 ? pos : returnSlot); }
             }
+            }
+            // Finish the resume lifecycle even when a newer focus destination superseded restoration.
             tilesReady = true;
             resuming = false;
             View now = getCurrentFocus();
