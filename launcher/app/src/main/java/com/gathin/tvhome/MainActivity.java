@@ -481,6 +481,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
             weatherAirQualityView.setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                    View location = findViewById(R.id.locationPill);
+                    if (location != null && location.getVisibility() == View.VISIBLE) {
+                        location.requestFocus();
+                        return true;
+                    }
+                }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                     if (nowPlayingCard != null && nowPlayingCard.getVisibility() == View.VISIBLE) {
                         if (cardTrackInfo != null) cardTrackInfo.requestFocus();
