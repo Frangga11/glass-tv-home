@@ -30,7 +30,7 @@
 - Direct access to the exact app JSON URL was unavailable in the audit browser. Therefore these are independent cross-reference values, not proof that the current device cache contains the same JSON. Exact endpoint payload and on-device display still require verification.
 
 ## Acceptance gates
-1. Exact-head CI #1649 / run `42524805149`: **SUCCESS**; Python suite **201 tests, 1 skipped**; Android `testReleaseUnitTest` and `assembleRelease` **PASS / BUILD SUCCESSFUL**; APK diagnostic **1,626,381 bytes**. Publisher workflow skipped because PR #88 is Draft; no APK release asset was published.
+1. Exact-head CI #1648 / run `42524805149`: **SUCCESS**; Python suite **201 tests, 1 skipped**; Android `testReleaseUnitTest` and `assembleRelease` **PASS / BUILD SUCCESSFUL**; APK diagnostic **1,626,381 bytes**. Publisher workflow skipped because PR #88 is Draft; no APK release asset was published.
 2. Physical Mi TV Stick review confirms the longer source-bearing header does not clip, overlap or shift the prayer table at 1920×1080 / density 320.
 3. When a validated annual Kemenag dataset is present, both the Islamic Shelf header and compact prayer summary show Kemenag RI.
 4. When the annual dataset is absent, damaged or invalid, both views show the local-estimate label. Never label fallback calculations as Kemenag data.
