@@ -4,13 +4,14 @@ package com.gathin.tvhome;
  * Single source of truth for the horizontal Dock's visual geometry.
  *
  * Horizontal Dock/Grid geometry shares the P2 safe content frame, a five-column
- * slot model, 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
+ * slot model, 6/4dp horizontal and 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
  * breathing room, and a 36dp shelf-to-tray gap. The Dock and Grid remain independent
  * RecyclerViews but derive their card and slot sizes from this class.
  */
 final class DockGeometry {
     private static final float DOCK_ITEM_TOP_OFFSET_DP = 6f;
     private static final float DOCK_ITEM_BOTTOM_OFFSET_DP = 12f;
+    private static final float HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 4f;
     private static final float TRAY_PADDING_DP = 14f;
     private static final float DOCK_EXTRA_HEIGHT_DP = 10f;
     /** Legacy shelf baseline keeps the information panels stationary while Dock cards shrink. */
@@ -157,6 +158,11 @@ final class DockGeometry {
 
     static int dockItemBottomOffsetPx(float density) {
         return (int) (DOCK_ITEM_BOTTOM_OFFSET_DP * density);
+    }
+
+    /** Horizontal Dock host is 8dp shorter, so its bottom decoration inset is reduced by 8dp. */
+    static int horizontalDockItemBottomOffsetPx(float density) {
+        return (int) (HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
 
     static float trayPaddingPx(float density) {
