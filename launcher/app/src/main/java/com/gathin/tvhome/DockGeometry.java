@@ -91,6 +91,11 @@ final class DockGeometry {
         return Math.max(0, viewportWidthPx);
     }
 
+    /** Signed scroll delta to align a target Grid row; positive moves content upward, negative downward. */
+    static int gridRowScrollDeltaPx(int currentRow, int targetRow, int rowHeightPx, int currentTopOffsetPx) {
+        return (targetRow - currentRow) * rowHeightPx + currentTopOffsetPx;
+    }
+
     /** One visible app row plus the RecyclerView's existing top breathing inset. */
     static int horizontalGridViewportHeightPx(int tileWidthPx, float density, int topPaddingPx) {
         int itemHeight = itemHeightPx(tileHeightPx(tileWidthPx), density);
