@@ -1,0 +1,83 @@
+name: Publish Glass TV Home APK Release
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish-direct-apk:
+    if: github.event.pull_request.number == 79
+    name: Build PR #79 and publish direct APK asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR #79 source HEAD
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platforms;android-34 build-tools;34.0.0
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests and build release APK from exact PR HEAD
+        working-directory: launcher
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon testReleaseUnitTest assembleRelease
+
+      - name: Verify APK and prepare direct .apk asset
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          APK="launcher/app/build/outputs/apk/release/app-release.apk"
+          test -f "$APK"
+          mkdir -p dist
+          OUTPUT="dist/Glass-TV-Home-PR79-${SOURCE_SHA}.apk"
+          cp "$APK" "$OUTPUT"
+          python3 - "$OUTPUT" <<'PY'
+          import hashlib
+          import os
+          import sys
+          import zipfile
+
+          path = sys.argv[1]
+          assert zipfile.is_zipfile(path), "Output is not a valid APK package"
+          with zipfile.ZipFile(path) as apk:
+              assert "AndroidManifest.xml" in apk.namelist(), "AndroidManifest.xml missing"
+          with open(path, "rb") as stream:
+              digest = hashlib.sha256(stream.read()).hexdigest()
+          print(f"Verified APK: {path}")
+          print(f"Size: {os.path.getsize(path)} bytes")
+          print(f"SHA-256: {digest}")
+          PY
+
+      - name: Publish APK binary as direct GitHub Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: glass-tv-home-pr79-${{ github.event.pull_request.head.sha }}
+          target_commitish: ${{ github.event.pull_request.head.sha }}
+          name: Glass TV Home — PR #79 QA APK
+          body: |
+            Android release APK built from exact PR #79 source HEAD:
+            ${{ github.event.pull_request.head.sha }}
+
+            Unit tests and assembleRelease passed in this workflow.
+            The downloadable asset is the APK binary itself (.apk), not a ZIP/BIN archive.
+            Physical Mi TV Stick acceptance remains pending owner testing.
+          prerelease: true
+          files: dist/Glass-TV-Home-PR79-${{ github.event.pull_request.head.sha }}.apk
+          fail_on_unmatched_files: true
