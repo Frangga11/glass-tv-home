@@ -977,8 +977,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockRecycler.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             int measuredWidth = Math.max(0, right - left);
             if (dockAdapter != null && measuredWidth > 0) dockAdapter.setHorizontalViewportWidth(measuredWidth);
-            if (heroShown && (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom)) {
-                updateHomeShelfAnchor();
+            if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
+                homeShelfAnchorReady = false;
+                if (heroShown) updateHomeShelfAnchor();
             }
         });
         applyDockLayout();
@@ -989,7 +990,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         gridWrap.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
             parkDock();
             updateTopFade();
-            if (heroShown && (l != ol || t != ot || r != or || b != ob)) updateHomeShelfAnchor();
+            if (l != ol || t != ot || r != or || b != ob) {
+                homeShelfAnchorReady = false;
+                if (heroShown) updateHomeShelfAnchor();
+            }
         });
         grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> updateTopFade());
 
@@ -2030,6 +2034,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         super.onPause();
         // Invalidate focus work queued before Home yielded the window to another Activity.
         gridFocusRequestGeneration++;
+        cancelHorizontalGridRowTransition();
         activityResumed = false;
         updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
