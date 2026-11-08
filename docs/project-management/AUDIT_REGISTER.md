@@ -8,7 +8,7 @@
 
 | Workstream | Candidate | Scope / ancestry | Automated result at checkpoint | Remaining |
 |---|---|---|---|---|
-| GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002 | [PR #100](https://github.com/Frangga11/glass-tv-home/pull/100), Draft/Open | Base exact PR #89 HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc`; inherits PR #84–#89, then reapplies PR #99 geometry; 11 files | CI #1677 / run `42533185178`: Python 208 tests, 1 skipped; Lists/tools/docs PASS; Android build/unit tests pending | Release APK/artifact/hash, rendered 1920×1080 visual audit, physical device acceptance |
+| GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002 | [PR #100](https://github.com/Frangga11/glass-tv-home/pull/100), Draft/Open | Base exact PR #89 HEAD `4038c08f4825f7bacf965bc6708505d3c8c30ebc`; inherits PR #84–#89, then reapplies PR #99 geometry; 11 files | CI #1677 / run `42533185178`: both jobs PASS; Python 208 (1 skipped); Android unit tests + release build PASS; APK/artifact hashes verified | Rendered 1920×1080 visual audit, physical device acceptance |
 | Source PR #99 | [PR #99](https://github.com/Frangga11/glass-tv-home/pull/99), Draft/Open | Based on PR #83; not cumulative with PR #84–#89 | Previous isolated CI passed; not accepted as cumulative APK | Retain as historical source PR; do not use its APK as the integrated build |
 
 **Integration control:** The PR #99 shelf test hunk conflicted with PR #84's additional regression test. PR #100 replaces only the obsolete 27.5dp assertion with the 30dp measured-tray contract and retains PR #84's single-bottom-anchor test. No merge, ADB, device installation or setting change.
