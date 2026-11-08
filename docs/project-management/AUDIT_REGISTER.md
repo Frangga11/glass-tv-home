@@ -2063,3 +2063,8 @@ Current PR #79 exact head: `ddd8750a688460cf1c8bc4b27c77189294301844`. Fresh exa
 - Direct release page: https://github.com/Frangga11/glass-tv-home/releases/tag/glass-tv-home-ci1545-20261108
 - Direct APK asset: https://github.com/Frangga11/glass-tv-home/releases/download/glass-tv-home-ci1545-20261108/app-release.apk
 - PR #79 remains OPEN / DRAFT / UNMERGED. No APK installation, ADB, device/default-launcher settings mutation, or merge. Physical Mi TV Stick acceptance remains PENDING. User must confirm the browser's received filename; the server-side GitHub asset metadata is correct, but actual Samsung Browser download confirmation has not yet been observed.
+
+
+| Audit ID | Date | Scope | Status | Canonical record |
+|---|---|---|---|---|
+| GTVH-HOME-HEADER-REFINEMENT-001 | 2026-11-08 | Header capsule, clock/date proportions, 29dp four-edge safe frame, Header radii | IMPLEMENTATION PARTIAL; CI and visual/device acceptance PENDING | `GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md` |
