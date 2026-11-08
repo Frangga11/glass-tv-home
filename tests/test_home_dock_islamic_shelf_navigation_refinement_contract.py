@@ -36,6 +36,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
     def test_dock_host_loses_only_eight_dp_of_extra_height(self):
         self.assertIn("DOCK_EXTRA_HEIGHT_DP = 10f", GEOMETRY)
         self.assertIn("return itemHeightPx(tileHeightPx, density) + Math.round(DOCK_EXTRA_HEIGHT_DP * density);", GEOMETRY)
+        self.assertIn("horizontalShelfAnchorHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
         self.assertIn("horizontalGridBottomMarginPx", GEOMETRY)
 
