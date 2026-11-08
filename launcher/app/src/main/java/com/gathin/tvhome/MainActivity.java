@@ -165,6 +165,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private static final float HERO_TITLE_MAX_SP = 40f;
     /** The breathing room between the shelf's last line and the top of the app container (50dp gives airy, balanced spacing). */
     private static final float HERO_TITLE_MIN_SP = 26f;
+    /** Requested downward movement for both Home information shelves. */
+    private static final float HOME_SHELF_DROP_MM = 5f;
+    /** Keep a small physical gap between the information shelves and the Dock tray. */
+    private static final float MIN_HOME_SHELF_TRAY_GAP_DP = 12f;
     /** The shelf's width in pixels, worked out once from the screen. */
     private int heroMaxWidth, heroNameMaxWidth;
     private View heroShelf;
@@ -715,10 +719,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 });
                 ayahBlock.setOnFocusChangeListener((v, hasFocus) -> {
                     GradientDrawable focusSurface = new GradientDrawable();
-                    focusSurface.setColor(hasFocus ? 0x553B5872 : 0x00000000);
+                    focusSurface.setColor(hasFocus ? 0x443B5872 : 0x00000000);
                     focusSurface.setCornerRadius(10 * density);
-                    focusSurface.setStroke(Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
-                            hasFocus ? 0xFF7DD3FC : 0x22FFFFFF);
+                    // No idle frame: retain a restrained outline only while the remote focuses the verse.
+                    focusSurface.setStroke(hasFocus ? Math.max(1, Math.round(density)) : 0,
+                            hasFocus ? 0x997DD3FC : 0x00000000);
                     v.setBackground(focusSurface);
                     if (hasFocus) SoundEffects.playNav();
                 });
@@ -726,9 +731,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (ayahOpenHint != null) {
                 ayahOpenHint.setText(R.string.daily_ayah_open);
                 GradientDrawable hintBg = new GradientDrawable();
-                hintBg.setColor(0x334B6680);
+                hintBg.setColor(0x224B6680);
                 hintBg.setCornerRadius(8 * density);
-                hintBg.setStroke(Math.max(1, Math.round(density)), 0x557DD3FC);
+                hintBg.setStroke(0, 0x00000000);
                 ayahOpenHint.setBackground(hintBg);
             }
 
@@ -2326,7 +2331,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             shelfDockTop = shelfAnchorRect.bottom - horizontalDockHeight
                     + DockGeometry.dockItemTopOffsetPx(density);
         }
-        heroBottom = shelfDockTop - DockGeometry.shelfBottomOffsetFromTileTopPx(density);
+        int shelfGapPx = DockGeometry.shelfBottomOffsetFromTileTopPx(density);
+        int requestedDropPx = Math.round(HOME_SHELF_DROP_MM * (160f / 25.4f) * density);
+        int maximumSafeDropPx = Math.max(0, shelfGapPx - Math.round(MIN_HOME_SHELF_TRAY_GAP_DP * density));
+        int shelfDropPx = Math.min(requestedDropPx, maximumSafeDropPx);
+        heroBottom = shelfDockTop - shelfGapPx + shelfDropPx;
 
         if (islamicShelf != null) {
             float iy = heroBottom - islamicShelf.getHeight();
@@ -3832,6 +3841,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (prayerHeader != null) {
             String pPrefix = AppLanguage.getPrayerHeaderPrefix(this);
             prayerHeader.setText(pPrefix + " " + zoneTitle + "  •  " + PrayerTimes.getHijriDate(this).toUpperCase(Locale.ROOT));
+            applyPrayerTextGradient(prayerHeader, false, false);
         }
 
         PrayerTimes.PrayerItem[] items = PrayerTimes.getPrayerItems(this);
@@ -3859,8 +3869,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         }
                     }
                 }
+                applyPrayerTextGradient(labels[i], items[i].isNext, false);
+                applyPrayerTextGradient(times[i], items[i].isNext, true);
             }
         }
+    }
+
+    /** Subtle cool-to-warm text gradients improve contrast without adding a panel behind the timetable. */
+    private void applyPrayerTextGradient(TextView view, boolean isNext, boolean isTime) {
+        if (view == null || view.getText() == null || view.getText().length() == 0) return;
+        float textWidth = Math.max(1f, view.getPaint().measureText(view.getText().toString()));
+        final int[] colors;
+        if (isNext) {
+            colors = isTime
+                    ? new int[]{0xFFFFF3D5, 0xFFFFC36D}
+                    : new int[]{0xFFFFE9B8, 0xFFFFC56B};
+        } else {
+            colors = isTime
+                    ? new int[]{0xFFF5FBFF, 0xFFFFE2B8}
+                    : new int[]{0xFFD9EAF5, 0xFFF3E6D2};
+        }
+        view.getPaint().setShader(new android.graphics.LinearGradient(
+                0f, 0f, textWidth, 0f, colors, null, Shader.TileMode.CLAMP));
+        view.invalidate();
     }
 
     void updateAyah() {

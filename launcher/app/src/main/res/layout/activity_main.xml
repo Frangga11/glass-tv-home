@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:alpha="0" />
 
-    <!-- Top shelf: the place's name, its country and what it is about, positioned above the dock in code.
+    <!-- Top shelf: location, wallpaper title and description, positioned above the dock in code.
          The width is capped in code to a share of the space between the side paddings, so the
          description wraps in a column instead of running the width of the screen. -->
     <LinearLayout
@@ -26,9 +26,29 @@
         android:alpha="0">
 
         <TextView
+            android:id="@+id/heroWhere"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:textColor="#E6FFFFFF"
+            android:textSize="13sp"
+            android:fontFamily="@font/inter"
+            android:fontVariationSettings="'wght' 600"
+            android:letterSpacing="0.18"
+            android:textAllCaps="false"
+            android:includeFontPadding="false"
+            android:shadowColor="#99000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:singleLine="true"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/heroName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:textColor="#FFFFFFFF"
             android:textSize="36sp"
             android:fontFamily="@font/inter"
