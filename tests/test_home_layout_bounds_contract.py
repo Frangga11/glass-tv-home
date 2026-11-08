@@ -12,17 +12,17 @@ ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 
 class HomeLayoutBoundsContractTest(unittest.TestCase):
-    def test_home_content_uses_equal_48dp_top_and_side_safe_margins(self):
+    def test_home_content_uses_equal_34dp_top_and_side_safe_margins(self):
         root = ET.parse(LAYOUT).getroot()
         main_content = next((node for node in root.iter()
                              if node.get(ANDROID + "id") == "@+id/mainContent"), None)
         self.assertIsNotNone(main_content)
-        self.assertEqual(main_content.get(ANDROID + "paddingStart"), "48dp")
-        self.assertEqual(main_content.get(ANDROID + "paddingEnd"), "48dp")
-        self.assertEqual(main_content.get(ANDROID + "paddingTop"), "48dp")
+        self.assertEqual(main_content.get(ANDROID + "paddingStart"), "34dp")
+        self.assertEqual(main_content.get(ANDROID + "paddingEnd"), "34dp")
+        self.assertEqual(main_content.get(ANDROID + "paddingTop"), "34dp")
 
-        self.assertIn("SAFE_HORIZONTAL_MARGIN_DP = 48f", GEOMETRY)
-        self.assertIn("SAFE_VERTICAL_MARGIN_DP = 48f", GEOMETRY)
+        self.assertIn("SAFE_HORIZONTAL_MARGIN_DP = 34f", GEOMETRY)
+        self.assertIn("SAFE_VERTICAL_MARGIN_DP = 34f", GEOMETRY)
         self.assertIn("safeBottomInsetPx", GEOMETRY)
 
     def test_right_prayer_shelf_uses_the_same_top_and_right_safe_inset(self):
