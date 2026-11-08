@@ -13,6 +13,7 @@ HOME_XML = ROOT / "launcher/app/src/main/res/layout/activity_main.xml"
 OTA_XML = ROOT / "launcher/app/src/main/res/layout/dialog_ota_coffee.xml"
 NAV_BG = ROOT / "launcher/app/src/main/res/drawable/header_nav_tab_bg.xml"
 GLASS_BG = ROOT / "launcher/app/src/main/res/drawable/header_glass_pill_bg.xml"
+PILL_BG = ROOT / "launcher/app/src/main/res/drawable/pill_bg.xml"
 ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 
@@ -116,8 +117,12 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         self.assertFalse(any("state_focused" in key for node in nav_bg.iter()
                              for key in node.attrib))
         glass_bg = ET.parse(GLASS_BG).getroot()
-        self.assertTrue(any(node.get(ANDROID + "radius") == "20dp"
-                            for node in glass_bg.iter()))
+        pill_bg = ET.parse(PILL_BG).getroot()
+        for drawable in (glass_bg, pill_bg):
+            self.assertTrue(any(node.get(ANDROID + "radius") == "20dp"
+                                for node in drawable.iter()))
+            self.assertFalse(any("state_focused" in key for node in drawable.iter()
+                                 for key in node.attrib))
 
 
 if __name__ == "__main__":
