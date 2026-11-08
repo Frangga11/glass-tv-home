@@ -45,3 +45,9 @@ Added `tests/test_home_islamic_shelf_arabic_typography_contract.py` to verify:
 - CI #1640 / run `42523437010`: **SUCCESS** on the exact branch HEAD above.
 - Android unit/release validation and APK size diagnostics passed. Publisher workflow skipped due to Draft state; this is not a CI failure.
 - Physical Mi TV Stick visual acceptance remains pending; inspect Arabic diacritics/harakat on one-line and two-line verses over bright and dark wallpapers.
+
+
+### Cross-audit finding — runtime typography override discovered in PR #87
+- A later source cross-check found `MainActivity.showAyah()` called `ayahArabic.setLineSpacing(3dp, 1.08f)`, overriding the XML values `lineSpacingExtra=-1dp` and `lineSpacingMultiplier=0.94` introduced by this PR.
+- Therefore the XML typography settings were not guaranteed to control runtime rendering at PR #85 HEAD. PR [#87](https://github.com/Frangga11/glass-tv-home/pull/87) removes that runtime override so the approved XML values can take effect.
+- This does not invalidate PR #85's source XML change, but visual acceptance must evaluate the combined stack through PR #87, not PR #85 alone.
