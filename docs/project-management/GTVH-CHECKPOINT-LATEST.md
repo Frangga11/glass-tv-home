@@ -240,3 +240,16 @@ Supporting-document synchronization commits:
 **Documentation architecture:** one canonical checkpoint entry point established by this file; supporting documents are subordinate detail/history.
 
 **Next session must start here and nowhere else.**
+
+
+## Mandatory APK delivery rule — 8 November 2026 (OWNER DIRECTIVE)
+
+**NON-NEGOTIABLE: every user-facing build delivery must be a direct Android package file ending exactly in .apk. Never deliver .bin, .zip, or a renamed archive as the installable app.**
+
+- Build the Android release APK (assembleRelease) from the exact verified source HEAD.
+- The final user-facing deliverable is the actual APK binary, directly downloadable and installable on Android TV; its filename must end in .apk.
+- If GitHub Actions stores/transfers the build artifact inside a ZIP archive, that ZIP is an internal transport container only. Extract the APK, verify the extracted file is a valid Android package, and distribute only the extracted .apk to the owner.
+- Never send the workflow-artifact ZIP itself to the owner. Never change an archive's extension to .apk; verify file type, size, SHA-256, and exact source commit/build run.
+- Before delivery, check the final link/filename and confirm that it points directly to the APK asset, not a ZIP/BIN attachment.
+- If a direct .apk cannot be produced or verified, stop and report the blocker; do not substitute ZIP/BIN.
+- This rule supersedes any older handover wording that treated the workflow ZIP as the deliverable. CI artifact archive sizes are diagnostic metadata only.
