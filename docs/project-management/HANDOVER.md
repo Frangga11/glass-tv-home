@@ -2283,3 +2283,8 @@ Latest verified direct APK and build evidence are recorded in GTVH-CHECKPOINT-LA
 - Detailed evidence: `GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md`.
 - **Not final:** no physical Mi TV Stick installation, ADB, device setting change, rendered screenshot review or owner acceptance has occurred. CI proves source/build contracts, not actual visual scroll behavior.
 - Next: owner installs only the exact-head APK on Mi TV Stick 1920×1080 / density320; verifies 27.5dp gap, stable package, DOWN/UP opposite real content movement, fast reversals, incomplete last row, capacity 4/5/6, app return focus and locked-component regressions. Capture screenshot/video if any discrepancy. Keep PR #82 DRAFT / UNMERGED until acceptance.
+
+
+### Session closure — 9 November 2026
+
+The FIX-002 implementation session is closed at checkpoint. Resume from canonical `GTVH-CHECKPOINT-LATEST.md`; next action is physical Mi TV Stick acceptance using the exact-head PR #82 APK. PR #80/#81/#82 remain OPEN / DRAFT / UNMERGED. Do not merge or declare final until measured 27.5dp clearance and the actual DOWN/UP row behavior are confirmed on device. No further source change is authorized until device findings are recorded.
