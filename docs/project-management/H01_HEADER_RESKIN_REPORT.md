@@ -64,6 +64,7 @@ The original `btnInputs` XML element is identical to baseline. The same view ID 
 ## Verification limits
 
 - Implementation commit `95b255a7d2b83195e33040ebcae96d392e5a5591` passed GitHub Actions run #1476 (`42454944257`): `testReleaseUnitTest` + `assembleRelease`, launcher size check, and release APK publication all PASS.
+- Final branch-head commit `edab5b48b194a763d607322e616708a7b1624b6b` passed GitHub Actions run #1478 (`42455070812`), including the documentation update. Release APK artifact: [glass-tv-home-pagar-alam-release](https://github.com/Frangga11/glass-tv-home/actions/runs/42455070812/artifacts/13607336506) (1,095,824 bytes).
 - No new Java/compiler warnings were introduced; the deprecation notices in the implementation run match the baseline run.
 - No Android emulator screenshot/layout test has yet been run at 1280×720, 1920×1080 or 3840×2160.
 - No physical-TV regression test has yet been run. CI success does not prove remote navigation, popup anchoring, focus rendering or overscan behavior on hardware.
