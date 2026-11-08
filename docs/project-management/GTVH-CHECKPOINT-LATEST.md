@@ -6,6 +6,16 @@
 **Canonical path:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md`  
 **Current cumulative Home implementation PR:** [PR #100](https://github.com/Frangga11/glass-tv-home/pull/100) — spacing/capsule refinement reapplied on the complete PR #84–#89 stack; PR #100 OPEN / DRAFT / UNMERGED. Source PR #99 remains OPEN / DRAFT / UNMERGED on its isolated PR #83 base.  
 **Latest documentation sync:** cumulative PR #100 CI/APK audit, inventory, decision log, master project and handover synchronized on `docs/project-master-inventory`; this checkpoint records the current authoritative state.
+## CURRENT CRITICAL RECONCILIATION — PR #91–#93 NOT YET IN PR #100 — 9 NOVEMBER 2026
+
+**Status: AUDIT GAP CONFIRMED / NOT FINAL.** Live GitHub metadata, exact commit comparisons, changed-file inventories and patches establish that PR #100 (2de055a3b08fa9a0e5c4d2bb86d2884dbd71f43b) contains PR #84–#89 plus geometry/capsule changes, but does not contain the later PR #91–#93 Islamic Shelf / Arabic alignment sequence.
+
+- PR #91 HEAD ee8bfb34db8c00a801ac260428f52ead1c7c6662: Arabic RTL + right gravity in Home Shelf and full reader; Indonesian translation LTR + left gravity.
+- PR #92 branch fix/home-islamic-shelf-ayah-spacing-and-prayer-label-001, final test commit 59d63a3c9854b646876aade98e26fc74a39d3140: Arabic top 1dp, line spacing -2dp/0.92, Arab-to-translation gap 0dp, translation line spacing 0dp/1.04, hint gap 3dp, font padding retained; prayer source labels removed from header/summary while calculations/fallback remain untouched.
+- PR #93 branch fix/home-islamic-shelf-arabic-right-align-corrective-001, HEAD 5b46ef0cea39fa439316e48bf85a3cbbb0944820: shared fixed runtime line-box width for Arabic preview and translation to give RTL a stable right edge. PR #93 CI #1656 / run 42529068497 passed on its own #92 ancestry, not on PR #100.
+- PR #100 does not change AppLanguage.java, PrayerTimes.java, or the PR #92/#93 regression files. It overlaps MainActivity/layout/CI, so a blind cherry-pick is unsafe.
+
+**Mandatory next step:** create a new cumulative candidate containing PR #84–#89 + PR #91–#93 + geometry PR #100, manually reconcile overlapping MainActivity/XML/CI changes, then rerun full tests/build/artifact checks. PR #100 is now a verified but incomplete candidate, not the latest complete build. Keep all source PRs Draft/unmerged; no ADB, TV install or merge before rendered 1920×1080 audit and explicit owner approval. See GTVH-HOME-CUMULATIVE-RECONCILIATION-003.md.
 
 ## CURRENT AUTHORITATIVE UPDATE — CUMULATIVE HOME SPACING/CAPSULE REFINEMENT — 9 NOVEMBER 2026
 
