@@ -33,7 +33,7 @@
 - Python contracts verify optional translation cache validity, freshness labelling, truthful module naming, XML typography ownership, and rejection of incomplete API payloads.
 - Android unit tests verify translation fallback to Malay/English for Indonesian, English and Malay language settings.
 - First CI #1644 / run `42524504080` on the earlier head failed the Python/docs job with two test assertion issues: the cache contract included the shared helper's optional-language fields in its inspected slice, and the existing localization contract still expected the old popup title. The Android build job was still running at the time.
-- Corrective changes narrowed the contract to the `stored()` method and updated the localization expectations. A further regression assertion now covers the exact day index. These corrections are committed on the current PR branch; a fresh exact-head CI result is pending. Do not claim CI pass until the new run and job logs are checked.
+- Corrective changes narrowed the contract to the `stored()` method and updated the localization expectations. A further regression assertion now covers the exact day index. These corrections are committed on the current PR branch. Fresh CI #1647 / run `42524629431` on exact HEAD `91f1152361d9b4db70a74f8f6b30ad38f60b4211`: Python/docs job **SUCCESS**, **198 tests, 1 skipped**, including all six new ayah/cache contracts and updated localization contract; Android job is still **IN PROGRESS**. Do not claim CI pass until the new run and job logs are checked.
 
 ## Acceptance gates
 1. Exact-head CI passes Python contracts, Android translation unit tests, Release unit tests/build and APK diagnostics.
