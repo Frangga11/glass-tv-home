@@ -2358,9 +2358,66 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (last != null) {
             showHomeWeather(last);
         } else if (weatherAirQualityView != null) {
-            weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));
+            weatherAirQualityView.setText(styleWeatherHeader(WeatherAirQuality.getFormatted(this), 0));
         }
         updateHomeWeather();
+    }
+
+    /** Presentation-only formatting; the existing weather/AQI values and refresh sources are untouched. */
+    private CharSequence styleWeatherHeader(CharSequence source, int apiColor) {
+        if (source == null) return "";
+        String value = source.toString()
+                .replace("°  ", "°C  ")
+                .replace("° ", "°C ")
+                .replace("  •  ", "  |  🍃  ")
+                .replace("US AQI ", "AQI ")
+                .replace("API ", "AQI ");
+        if ("id".equals(AppLanguage.getLanguage(this))) {
+            value = value.replace("Moderate", "Sedang").replace("Good", "Baik");
+        }
+        android.text.SpannableString styled = new android.text.SpannableString(value);
+        int degree = value.indexOf("°C");
+        if (degree >= 0) {
+            int tempStart = value.lastIndexOf(' ', degree);
+            tempStart = tempStart < 0 ? 0 : tempStart + 1;
+            styled.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), tempStart,
+                    degree + 2, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            styled.setSpan(new android.text.style.RelativeSizeSpan(1.12f), tempStart,
+                    degree + 2, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            int conditionStart = degree + 3;
+            int separator = value.indexOf("  |", conditionStart);
+            if (separator < 0) separator = value.length();
+            if (conditionStart < separator)
+                styled.setSpan(new android.text.style.RelativeSizeSpan(0.88f), conditionStart,
+                        separator, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        int aqi = value.indexOf("AQI ");
+        if (aqi >= 0) {
+            int numberStart = aqi + 4;
+            int numberEnd = numberStart;
+            while (numberEnd < value.length() && Character.isDigit(value.charAt(numberEnd))) numberEnd++;
+            if (numberEnd > numberStart) {
+                styled.setSpan(new android.text.style.ForegroundColorSpan(0xFFFFD60A), numberStart,
+                        numberEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                styled.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), numberStart,
+                        numberEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                styled.setSpan(new android.text.style.RelativeSizeSpan(1.12f), numberStart,
+                        numberEnd, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                int statusStart = numberEnd + 1;
+                if (statusStart < value.length()) {
+                    styled.setSpan(new android.text.style.BackgroundColorSpan(0xFF2E9D4B), statusStart,
+                            value.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    styled.setSpan(new android.text.style.ForegroundColorSpan(0xFFFFFFFF), statusStart,
+                            value.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            }
+        }
+        if (apiColor != 0 && aqi >= 0) {
+            // Preserve the source category colour as a subtle cue without changing the AQI value.
+            styled.setSpan(new android.text.style.ForegroundColorSpan(apiColor), aqi, aqi + 3,
+                    android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return styled;
     }
 
     private void updateHomeWeather() {
@@ -2384,13 +2441,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));
             return;
         }
-        String sep = line.weather.isEmpty() || line.api.isEmpty() ? "" : "     ·     ";
-        android.text.SpannableString text = new android.text.SpannableString(line.weather + sep + line.api);
-        if (!line.api.isEmpty()) {
-            text.setSpan(new android.text.style.ForegroundColorSpan(line.apiColor), text.length() - line.api.length(),
+        String weather = line.weather.replace("°  ", "°C  ");
+        String api = line.api.replaceFirst("(?i)^API ", "AQI ");
+        if ("id".equals(AppLanguage.getLanguage(this))) api = api.replace("Moderate", "Sedang");
+        String sep = weather.isEmpty() || api.isEmpty() ? "" : "  |  🍃  ";
+        android.text.SpannableString text = new android.text.SpannableString(weather + sep + api);
+        if (!api.isEmpty()) {
+            int apiStart = text.length() - api.length();
+            text.setSpan(new android.text.style.ForegroundColorSpan(line.apiColor), apiStart,
                     text.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        weatherAirQualityView.setText(text);
+        weatherAirQualityView.setText(styleWeatherHeader(text, line.apiColor));
         if (line.icon != 0) {
             Drawable d = getDrawable(line.icon);
             int px = Math.round(20 * density);
