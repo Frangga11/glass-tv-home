@@ -54,6 +54,7 @@ public final class NowPlayingManager {
         public final String appName;
         public final MediaController controller;
         public final Bitmap albumArt;
+        public final boolean isActiveSession;
 
         public MediaInfo(boolean isPlaying, String title, String artist, String packageName, String appName, MediaController controller, Bitmap albumArt) {
             this.isPlaying = isPlaying;
@@ -63,6 +64,12 @@ public final class NowPlayingManager {
             this.appName = appName != null ? appName : "";
             this.controller = controller;
             this.albumArt = albumArt;
+            PlaybackState state = controller != null ? controller.getPlaybackState() : null;
+            int playbackState = state != null ? state.getState() : PlaybackState.STATE_NONE;
+            this.isActiveSession = playbackState == PlaybackState.STATE_PLAYING
+                    || playbackState == PlaybackState.STATE_PAUSED
+                    || playbackState == PlaybackState.STATE_BUFFERING
+                    || playbackState == PlaybackState.STATE_CONNECTING;
         }
 
         /**
@@ -71,14 +78,7 @@ public final class NowPlayingManager {
          * remain available on Home so the user can resume without reopening the app.
          */
         public boolean hasMusic() {
-            if (!isAllowedMusicApp(packageName) || controller == null) return false;
-            PlaybackState state = controller.getPlaybackState();
-            if (state == null) return false;
-            int playbackState = state.getState();
-            return playbackState == PlaybackState.STATE_PLAYING
-                    || playbackState == PlaybackState.STATE_PAUSED
-                    || playbackState == PlaybackState.STATE_BUFFERING
-                    || playbackState == PlaybackState.STATE_CONNECTING;
+            return isAllowedMusicApp(packageName) && isActiveSession;
         }
 
         public String getDisplayText() {
