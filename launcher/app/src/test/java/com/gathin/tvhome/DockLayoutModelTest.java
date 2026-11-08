@@ -300,7 +300,7 @@ public class DockLayoutModelTest {
             int largestTileHeight = DockGeometry.tileHeightPx(largestTileWidth);
             int gridReserve = DockGeometry.horizontalGridBottomReservePx(largestTileWidth, density);
             int legacyGridReserve = DockGeometry.itemHeightPx(largestTileHeight, density)
-                    + Math.round(34f * density);
+                    + Math.round(29f * density);
             assertEquals(legacyGridReserve, gridReserve);
 
             for (int capacity : new int[]{4, 5, 6}) {
