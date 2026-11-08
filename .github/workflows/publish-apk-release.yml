@@ -3,57 +3,73 @@ name: Publish Glass TV Home APK Release
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 permissions:
-  actions: read
   contents: write
 
 jobs:
-  publish-validated-apk:
-    if: github.event.pull_request.number == 79
-    name: Publish exact CI-validated APK as direct release asset
+  build-and-publish-direct-apk:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.number == 79
+    name: Build exact PR HEAD and publish direct APK asset
     runs-on: ubuntu-latest
     steps:
-      - name: Download exact APK artifact from CI #1545
-        uses: actions/download-artifact@v4
+      - name: Checkout exact PR source HEAD
+        uses: actions/checkout@v4
         with:
-          name: glass-tv-home-dock-visual-parity-5036c61e785b1b457b90954c3baa3e72b181cd06
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          run-id: 42479472690
-          path: downloaded-apk
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Verify exact APK artifact
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platforms;android-34 build-tools;34.0.0
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests and build release APK
+        working-directory: launcher
         run: |
-          test -f downloaded-apk/app-release.apk
+          chmod +x gradlew
+          ./gradlew --no-daemon testReleaseUnitTest assembleRelease
+
+      - name: Verify direct APK output
+        run: |
+          test -f launcher/app/build/outputs/apk/release/app-release.apk
           python3 - <<'PY'
           import hashlib
           import os
           import zipfile
 
-          path = "downloaded-apk/app-release.apk"
-          expected_size = 1624589
-          expected_sha256 = "6c7981a6c71aa5fc6f5146ba5a6023b9fdbfc527c887d1c367dc500d04fd3b10"
-          actual_size = os.path.getsize(path)
-          with open(path, "rb") as f:
-              digest = hashlib.sha256(f.read()).hexdigest()
-          assert actual_size == expected_size, f"Unexpected APK size: {actual_size}"
-          assert digest == expected_sha256, f"Unexpected APK SHA-256: {digest}"
-          assert zipfile.is_zipfile(path), "APK is not a valid ZIP-based Android package"
-          print(f"Verified exact CI #1545 APK: {path}")
-          print(f"Size: {actual_size}")
+          path = "launcher/app/build/outputs/apk/release/app-release.apk"
+          assert zipfile.is_zipfile(path), "Build output is not a valid APK package"
+          with zipfile.ZipFile(path) as apk:
+              names = set(apk.namelist())
+              assert "AndroidManifest.xml" in names, "APK manifest is missing"
+          with open(path, "rb") as stream:
+              digest = hashlib.sha256(stream.read()).hexdigest()
+          print(f"APK file: {path}")
+          print(f"Size: {os.path.getsize(path)} bytes")
           print(f"SHA-256: {digest}")
           PY
 
       - name: Publish direct .apk release asset
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: glass-tv-home-ci1545-20261108
-          target_commitish: c058935ed4398f5c7964d753fcf35a9cf77989bb
-          name: Glass TV Home — CI #1545 QA APK
+          tag_name: glass-tv-home-pr79-${{ github.event.pull_request.head.sha || github.sha }}
+          target_commitish: ${{ github.event.pull_request.head.sha || github.sha }}
+          name: Glass TV Home — PR #79 QA APK
           body: |
-            Exact APK artifact from CI #1545, not a rebuild.
-            Validated source/test commit: c058935ed4398f5c7964d753fcf35a9cf77989bb.
-            Device installation and physical Mi TV Stick acceptance remain pending.
+            Release APK built from the exact PR #79 source HEAD shown in this release tag.
+            Unit tests and assembleRelease are run in this workflow.
+            The downloadable asset is the APK itself; no ZIP/BIN is distributed.
+            Physical Mi TV Stick acceptance remains pending until owner testing.
           prerelease: true
-          files: downloaded-apk/app-release.apk
+          files: launcher/app/build/outputs/apk/release/app-release.apk
+          fail_on_unmatched_files: true
