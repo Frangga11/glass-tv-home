@@ -4,16 +4,16 @@ package com.gathin.tvhome;
  * Single source of truth for the horizontal Dock's visual geometry.
  *
  * Horizontal Dock/Grid geometry shares the P2 safe content frame, a five-column
- * slot model, 6/4dp horizontal and 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
+ * slot model, 6/8dp horizontal and 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
  * breathing room, and a 36dp shelf-to-tray gap. The Dock and Grid remain independent
  * RecyclerViews but derive their card and slot sizes from this class.
  */
 final class DockGeometry {
     private static final float DOCK_ITEM_TOP_OFFSET_DP = 6f;
     private static final float DOCK_ITEM_BOTTOM_OFFSET_DP = 12f;
-    private static final float HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 4f;
+    private static final float HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 8f;
     private static final float TRAY_PADDING_DP = 14f;
-    private static final float DOCK_EXTRA_HEIGHT_DP = 10f;
+    private static final float DOCK_EXTRA_HEIGHT_DP = 14f;
     /** Legacy shelf baseline keeps the information panels stationary while Dock cards shrink. */
     private static final float SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP = 18f;
     private static final float DOCK_TILE_SCALE = 0.95f;
@@ -165,7 +165,7 @@ final class DockGeometry {
         return (int) (DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
 
-    /** Horizontal Dock host is 8dp shorter, so its bottom decoration inset is reduced by 8dp. */
+    /** Horizontal Dock host has 4dp less spare height; the other 4dp reduction comes from the shorter card. */
     static int horizontalDockItemBottomOffsetPx(float density) {
         return (int) (HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
