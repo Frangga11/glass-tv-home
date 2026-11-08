@@ -1643,3 +1643,8 @@ Current PR #76 head `f085c41356e2e5f53ca13f51bc0676bdb82d350a`, based on PR #75 
 The Home Header left information pills now use one shared width source. `locationPill` remains the reference at its pre-existing 34% measured Header width; `weatherAirQuality` receives the same runtime width. Both retain their existing `layout_alignParentStart` anchor, so left and right edges coincide without offsets. Weather content remains single-line and end-ellipsized. The weather/AQI provider, location/altitude data, pill padding, font, icons, radius, click/DPAD/focus behavior, and all other Header geometry are unchanged.
 
 Implementation: `MainActivity.applyHeaderWidths()`; source commit `3c9821864a08bb50f6f1b13473964f8d5b5baeb7`. Regression source contract added in `tests/test_home_layout_bounds_contract.py`, commit/current PR #79 HEAD `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. CI #1587 / run `42489445766` has its Lists/tools/docs job PASS and Android build/test job IN PROGRESS. Visual device acceptance is not claimed.
+
+
+## CI #1587 final validation — 8 Nov 2026
+
+CI #1587 / run `42489445766` completed **SUCCESS** on PR #79 head `65544d9eea9bd0a5ae5156a9bd58724b1817fd2a`. Both required jobs passed. Python regression suite: **161 tests, OK (1 skipped)**; the new `test_weather_aqi_pill_matches_location_pill_width_and_left_anchor` passed. Android `testReleaseUnitTest` and `assembleRelease`: **BUILD SUCCESSFUL**. Release APK diagnostic: **1,627,545 bytes**; CI artifact ID **13621187055**, ZIP size **1,426,725 bytes**. CI proves source/build/test contracts only; no rendered Mi TV Stick or physical visual acceptance is claimed. PR #79 remains OPEN / DRAFT / UNMERGED.
