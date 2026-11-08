@@ -77,7 +77,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
 
     def test_row_navigation_uses_signed_smooth_scroll_and_generation_guards(self):
         self.assertIn("grid.smoothScrollBy(0, dy", MAIN)
-        self.assertIn("int dy = (targetRow - currentRow) * rowHeight - currentTopOffset;", MAIN)
+        self.assertIn("int dy = (targetRow - currentRow) * rowHeight + currentTopOffset;", MAIN)
         self.assertIn("horizontalGridTransitionGeneration", MAIN)
         self.assertIn("horizontalGridScrollAwaitingIdle", MAIN)
         self.assertIn("pendingHorizontalGridPosition", MAIN)
