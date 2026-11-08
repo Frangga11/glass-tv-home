@@ -2610,7 +2610,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridParams.rightMargin = 0;
             gridParams.bottomMargin = 0;
             if (hasDock) {
-                // The Dock host, clock/header and both Home shelves share the same 48dp frame.
+                // The Dock host, clock/header and both Home shelves share the same 34dp frame.
                 // Do not extend the host or apply a second inset: its left and right edges must match.
                 int dockViewportWidth = gridWrap.getWidth();
                 int inner = DockGeometry.horizontalContentWidthPx(dockViewportWidth, density);
