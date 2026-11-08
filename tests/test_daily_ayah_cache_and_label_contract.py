@@ -20,7 +20,7 @@ class DailyAyahCacheAndLabelContract(unittest.TestCase):
         cls.en_strings = EN_STRINGS.read_text(encoding="utf-8")
 
     def test_current_verse_cache_does_not_require_every_optional_translation(self):
-        stored = self.weekly[self.weekly.index("static Ayah stored"):self.weekly.index("static void clearCache")]
+        stored = self.weekly[self.weekly.index("static Ayah stored"):self.weekly.index("/** True when any valid verse", self.weekly.index("static Ayah stored"))]
         self.assertIn("hasUsableContent(p)", stored)
         self.assertNotIn("text_indonesian", stored)
         self.assertIn("boolean hasTranslation", self.weekly)
