@@ -47,6 +47,17 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertNotIn("@+id/btnCandyBox", ids)
         self.assertNotIn("@+id/btnSettingsContainer", ids)
 
+    def test_header_labels_truncate_inside_their_own_slots(self):
+        root = ET.parse(LAYOUT).getroot()
+        expected = ("locationName", "locationAltitude", "weatherAirQuality",
+                    "btnHome", "btnCandyBox", "btnSettings")
+        for view_id in expected:
+            node = next((item for item in root.iter()
+                         if item.get(ANDROID + "id") == f"@+id/{view_id}"), None)
+            self.assertIsNotNone(node, view_id)
+            self.assertEqual(node.get(ANDROID + "singleLine"), "true", view_id)
+            self.assertEqual(node.get(ANDROID + "ellipsize"), "end", view_id)
+
     def test_center_navigation_is_sized_from_measured_side_controls(self):
         self.assertIn("HomeHeaderGeometry.centeredWidthPx", MAIN)
         self.assertIn("date.getRight()", MAIN)
