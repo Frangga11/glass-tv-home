@@ -170,7 +170,7 @@ final class DockGeometry {
         return (int) (DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
 
-    /** Horizontal Dock host has 4dp less spare height; the other 4dp reduction comes from the shorter card. */
+    /** The Dock host is 6dp shorter than the shelf baseline; its 0.95 tile scale further reduces the card. */
     static int horizontalDockItemBottomOffsetPx(float density) {
         return (int) (HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP * density);
     }
