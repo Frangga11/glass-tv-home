@@ -232,6 +232,19 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(recent.find("solid").attrib[ns + "color"], "#C83B4651")
         self.assertEqual(recent.find("stroke").attrib[ns + "color"], "#99DCE5ED")
 
+    def test_profile_active_state_is_silver_and_distinct_from_cyan_focus(self):
+        modern = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
+        switch = (JAVA / "UserSwitchDialog.java").read_text(encoding="utf-8")
+        self.assertIn("tvTag.setTextColor(TvUiTokens.ACCENT_SECTION)", modern)
+        self.assertIn("pRow.setSelected(isCur)", modern)
+        self.assertIn("TvFocusIndicator.createSelectableRoundedStateBackground(", modern)
+        self.assertIn("activeLabel.setTextColor(TvUiTokens.ACCENT_SECTION)", switch)
+        self.assertIn("itemCol.setSelected(isActive)", switch)
+        self.assertIn("TvFocusIndicator.createSelectableRoundedStateBackground(", switch)
+        indicator = (JAVA / "TvFocusIndicator.java").read_text(encoding="utf-8")
+        self.assertIn("states.addState(new int[]{android.R.attr.state_focused}, focused)", indicator)
+        self.assertIn("states.addState(new int[]{android.R.attr.state_selected}, selected)", indicator)
+
     def test_dynamic_location_cards_expose_disabled_pressed_and_focus_states(self):
         source = (JAVA / "LocationActivity.java").read_text(encoding="utf-8")
         self.assertGreaterEqual(source.count("new int[]{-android.R.attr.state_enabled}, disabled"), 2)
