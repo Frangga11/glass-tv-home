@@ -137,7 +137,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
             "input_row_bg.xml": ["enabled", "pressed", "focused"],
             "bg_location_zone_card.xml": ["enabled", "pressed", "focused"],
             "bg_track_info_selector.xml": ["enabled", "pressed", "focused"],
-            "header_nav_tab_bg.xml": ["enabled", "pressed", "selected"],
+            "header_nav_tab_bg.xml": ["enabled", "focused", "pressed", "selected"],
             "bg_recent_card_focus.xml": ["enabled", "pressed", "focused"],
             "bg_tv_focus_outline.xml": ["enabled", "pressed", "focused"],
         }
