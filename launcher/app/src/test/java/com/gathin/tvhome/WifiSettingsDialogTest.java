@@ -35,7 +35,7 @@ public class WifiSettingsDialogTest {
         assertNotNull(networkList);
         assertTrue(networkList instanceof android.widget.ScrollView);
         assertTrue(((android.widget.ScrollView) networkList).isVerticalScrollBarEnabled());
-        assertEquals(Math.round(activity.getResources().getDisplayMetrics().density * 88f),
+        assertEquals(Math.round(activity.getResources().getDisplayMetrics().density * 120f),
                 networkList.getLayoutParams().height);
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
