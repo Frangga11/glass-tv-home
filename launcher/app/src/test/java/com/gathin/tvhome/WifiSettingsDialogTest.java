@@ -56,9 +56,16 @@ public class WifiSettingsDialogTest {
     }
 
     @Test public void popupUsesConstrainedWidthAndVerticalFirstLayout() {
-        assertEquals(0.2035f, WifiSettingsDialog.popupWidthFraction(), 0.0001f);
-        assertEquals(0.43f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
+        assertEquals(0.225f, WifiSettingsDialog.popupWidthFraction(), 0.0001f);
+        assertEquals(0.69f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
         assertEquals(14f, WifiSettingsDialog.popupTextSizeSp(), 0.001f);
+        assertEquals(17f, WifiSettingsDialog.popupTitleSizeSp(), 0.001f);
+        assertEquals(13f, WifiSettingsDialog.popupSectionSizeSp(), 0.001f);
+        assertEquals(11f, WifiSettingsDialog.popupMetaSizeSp(), 0.001f);
+        assertEquals(13f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
+        assertEquals(4, WifiSettingsDialog.visibleNetworkRowCount());
+        assertEquals(40, WifiSettingsDialog.networkRowHeightDp());
+        assertEquals(4, WifiSettingsDialog.networkRowGapDp());
     }
 
     @Test public void dialogProvidesPermissionGuidanceAndDpadControls() {
