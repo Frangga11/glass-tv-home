@@ -44,6 +44,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("applyAnchoredPopup();", wifi_dialog)
         self.assertIn("params.gravity = anchoredWindowGravity();", wifi_dialog)
         self.assertIn("return Gravity.TOP | Gravity.RIGHT;", wifi_dialog)
+        self.assertIn("params.dimAmount = popupDimAmount();", wifi_dialog)
+        self.assertIn("return 0.08f;", wifi_dialog)
 
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
