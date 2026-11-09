@@ -1,0 +1,108 @@
+"""Regression contracts for the global Frosted Silver Glass visual system."""
+from pathlib import Path
+import re
+import unittest
+import xml.etree.ElementTree as ET
+
+ROOT = Path(__file__).resolve().parents[1]
+JAVA = ROOT / "launcher/app/src/main/java/com/gathin/tvhome"
+RES = ROOT / "launcher/app/src/main/res"
+
+
+def java_int(name):
+    source = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+    match = re.search(rf"static final int {name} = (0x[0-9A-Fa-f]+);", source)
+    if not match:
+        raise AssertionError(f"Missing Java token: {name}")
+    return match.group(1).upper()
+
+
+def java_float(name):
+    source = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+    match = re.search(rf"static final float {name} = ([0-9.]+)f;", source)
+    if not match:
+        raise AssertionError(f"Missing Java float token: {name}")
+    return float(match.group(1))
+
+
+class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
+    def test_java_and_xml_semantic_palette_stay_synchronized(self):
+        xml = ET.parse(RES / "values/colors.xml").getroot()
+        values = {node.attrib["name"]: node.text.strip().upper()
+                  for node in xml.findall("color")}
+        mapping = {
+            "SHELL": "tv_ui_shell",
+            "SURFACE": "tv_ui_surface",
+            "SURFACE_FOCUSED": "tv_ui_surface_focused",
+            "SURFACE_SELECTED": "tv_ui_surface_selected",
+            "POPUP_SURFACE": "tv_ui_popup_surface",
+            "DOCK_SURFACE": "tv_ui_dock_surface",
+            "TEXT_PRIMARY": "tv_ui_text_primary",
+            "TEXT_SECONDARY": "tv_ui_text_secondary",
+            "ACCENT_BLUE": "tv_ui_accent_blue",
+            "ACCENT_CYAN": "tv_ui_focus_cyan",
+            "BORDER": "tv_ui_border",
+            "FOCUS_HALO": "tv_ui_focus_halo",
+            "NAV_SELECTION_BORDER": "tv_ui_selected_border",
+        }
+        for java_name, xml_name in mapping.items():
+            with self.subTest(token=java_name):
+                self.assertEqual(values[xml_name], java_int(java_name))
+
+    def test_focused_selected_and_pressed_are_distinct_states(self):
+        self.assertNotEqual(java_int("FOCUS_BORDER"), java_int("NAV_SELECTION_BORDER"))
+        selector = ET.parse(RES / "drawable/selector_glass_dialog_list_item_bg.xml").getroot()
+        ns = "{http://schemas.android.com/apk/res/android}"
+        states = {item.attrib.get(ns + "state_focused"): item for item in selector.findall("item")}
+        self.assertIn("true", states)
+        focused = states["true"].find("shape/stroke")
+        activated = next(item for item in selector.findall("item")
+                         if item.attrib.get(ns + "state_activated") == "true")
+        selected = activated.find("shape/stroke")
+        self.assertEqual(focused.attrib[ns + "color"], "@color/tv_ui_focus_cyan")
+        self.assertEqual(selected.attrib[ns + "color"], "@color/tv_ui_selected_border")
+
+    def test_dpad_focus_does_not_scale_or_translate_tiles(self):
+        adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
+        self.assertEqual(java_float("CARD_FOCUS_SCALE"), 1.0)
+        self.assertEqual(java_float("NAV_FOCUS_SCALE"), 1.0)
+        self.assertIn("static final float FOCUS_SCALE = 1.0f;", adapter)
+        self.assertIn("static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f;", adapter)
+        self.assertIn("/ LAYOUT_FOCUS_RESERVATION_SCALE", adapter)
+        self.assertNotIn(".translationY(focused ? density * 4f : -density * 6f)", adapter)
+        self.assertIn(".translationY(0f)", adapter)
+
+    def test_glass_rim_uses_neutral_silver_and_restrained_cyan(self):
+        source = (JAVA / "GlassRim.java").read_text(encoding="utf-8")
+        self.assertIn("0xD9E2E8EE", source)
+        self.assertIn("0x8050DDF2", source)
+        self.assertNotIn("0xC084FC", source)
+        self.assertNotIn("0xFDE047", source)
+
+    def test_core_surfaces_keep_opaque_fallback_and_silver_identity(self):
+        fallback = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
+        tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+        self.assertIn("solidSurface.setColor(TvUiTokens.POPUP_SURFACE)", fallback)
+        self.assertIn("solidBorder.setColor(TvUiTokens.BORDER)", fallback)
+        self.assertEqual(int(java_int("POPUP_SURFACE")[2:4], 16), 255)
+        self.assertEqual(int(java_int("DOCK_SURFACE")[2:4], 16), 255)
+        self.assertIn("0x88343E48", tokens)
+
+    def test_changed_drawable_resources_are_valid_xml(self):
+        names = [
+            "bg_glass_dialog.xml", "glass_panel.xml", "bg_floating_dock.xml",
+            "bg_location_pill.xml", "bg_tv_focus_outline.xml",
+            "bg_app_pill_focused.xml", "bg_app_pill_unfocused.xml",
+            "selector_glass_dialog_button_bg.xml",
+            "selector_glass_dialog_list_item_bg.xml", "header_nav_tab_bg.xml",
+            "bg_recent_apps_glass.xml", "bg_media_app_pill.xml", "bg_np_round_btn.xml",
+            "input_row_bg.xml", "bg_dialog_btn.xml", "bg_location_state_pill.xml",
+            "prayer_pill_bg.xml", "bg_track_info_selector.xml",
+        ]
+        for name in names:
+            with self.subTest(resource=name):
+                ET.parse(RES / "drawable" / name)
+
+
+if __name__ == "__main__":
+    unittest.main()
