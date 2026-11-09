@@ -1,3 +1,24 @@
+<!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
+## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
+
+**Single source of truth:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. Every session starts there. This file alone governs current status, active workstream, dependency order, decisions, quality gates, and next action. Supporting documents provide detailed evidence/history and must not create competing restart points.
+
+**Current source candidate:** PR [#103](https://github.com/Frangga11/glass-tv-home/pull/103), `GTVH-HOME-WALLPAPER-PRAYER-ZERO-GAP-ARABIC-RTL-FIX-103`; OPEN / DRAFT / UNMERGED. Branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`; exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`; base PR #101 at `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`; 7 commits ahead / 0 behind; 5 changed files (2 production, 3 regression tests).
+
+**Latest verified automation:** exact-head CI #1689 / run [42566072365](https://github.com/Frangga11/glass-tv-home/actions/runs/42566072365) SUCCESS; both required jobs passed; Gradle release build successful. APK size 1,626,637 bytes; 53,773 bytes above historical 1.5 MiB reference, diagnostic/non-blocking. No PR artifact ZIP was published for this Draft run.
+
+**Remaining gates:** genuine rendered 1920×1080 visual review and physical Mi TV Stick acceptance are NOT RUN / PENDING. No ADB, installation, launcher-setting change, or merge. Overall PR #103 is NOT FINAL. Do not claim visual/device acceptance.
+
+**Cumulative base:** PR #101 branch `integration/home-islamic-prayer-spacing-cumulative-101`, base HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`, remains unmerged. PR #103 is a corrective child candidate; do not flatten, retarget, merge, or alter its ancestry without an explicit reconciliation and owner approval.
+
+**Newly approved future workstream:** `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001` — global visual reskin using Frosted Silver Glass + Electric Cyan DPAD Focus. Scope includes Home Screen, dock, Beranda–Profil–Pengaturan navigation, Wi-Fi/microphone, location/altitude, weather/AQI, popups/dialogs, settings/profile, prayer schedule, selected Ayah, Arabic and translation, and all other audited glass surfaces. Design/prompt approved by owner; implementation has NOT started; no branch, PR, source modification, prototype, or QA result is claimed.
+
+**Global execution constraints:** RE-SKIN, NOT REWIRE. Preserve working IDs, listeners, events, data logic, navigation, DPAD behavior, wallpaper logic, component geometry, and prior approved work. Only change geometry where an audited, evidenced requirement is approved. Prioritize function, readability, stability, and device performance over decorative effects. Do not merge or install without the required evidence and explicit owner approval.
+
+**Document roles:** CHECKPOINT = sole status/restart authority; MASTER_PROJECT = scope/architecture/roadmap; INVENTORY = files/components/branches/PR/dependencies; DECISION_LOG = approved decisions and constraints; AUDIT_REGISTER = evidence, findings, quality gates; HANDOVER = exact resume instructions. Update all six in the same documentation synchronization pass. Keep chronology; mark superseded statements rather than deleting history.
+
+---
+
 > **CANONICAL CHECKPOINT — READ THIS FIRST**  
 > The only authoritative restart point is [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) on branch `docs/project-master-inventory`. Start every continuation there; do not resume from historical checkpoint blocks, old PR descriptions, or branch-local notes. This file is supporting detail/history and must not establish a competing current state.  
 > **Checkpoint authority:** GitHub repository `Frangga11/glass-tv-home`; canonical docs branch `docs/project-master-inventory`; single entry file `docs/project-management/GTVH-CHECKPOINT-LATEST.md`. The latest checkpoint supersedes all older status statements below.  
@@ -2320,3 +2341,19 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - Rendered 1920×1080 visual audit: NOT RUN (no Android emulator/renderer available in current execution environment).
 - Physical Mi TV Stick acceptance: NOT RUN; ADB/install/launcher mutation: NOT PERFORMED.
 - Overall: NOT FINAL; PR #101 OPEN / DRAFT / UNMERGED.
+
+## Documentation synchronization audit — 9 November 2026
+
+**Audit objective:** reconcile six project-management documents into one authoritative checkpoint without deleting historical evidence or changing application source.
+
+**Findings:**
+1. The checkpoint contained the newer PR #103 exact-head CI completion, while supporting documents still ended with PR #101 cumulative QA snapshots.
+2. Older PR #100 / PR #101 integration-gap statements remain useful historical evidence but can mislead if read as current status.
+3. The newly approved Frosted Silver Glass workstream had an approved prompt but was not yet represented as a formal decision/roadmap item in the repository documentation.
+4. The project already had a canonical single-door rule, but supporting docs did not consistently identify their subordinate roles.
+
+**Reconciliation:** add the same current-authority block to CHECKPOINT, MASTER_PROJECT, INVENTORY, DECISION_LOG, AUDIT_REGISTER, and HANDOVER; add role-specific current entries; retain historical sections; mark superseded statuses through explicit precedence language.
+
+**Evidence:** live PR #103 metadata confirms OPEN / DRAFT / UNMERGED, source HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`, base `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`, 7 ahead / 0 behind, 5 changed files. Exact-head CI #1689 / run `42566072365` is SUCCESS. APK diagnostic is 1,626,637 bytes; no artifact ZIP published. Rendered visual audit and physical device acceptance remain pending.
+
+**Disposition:** documentation synchronization only. No source changes, PR state changes, device actions, or merge. Follow-up audit: verify all six updated files at the resulting documentation commit and verify each points to the same canonical checkpoint.
