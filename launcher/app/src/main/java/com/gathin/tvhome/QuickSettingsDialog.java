@@ -61,7 +61,7 @@ final class QuickSettingsDialog {
         header.setGravity(Gravity.CENTER_VERTICAL);
         TextView title = new TextView(activity);
         title.setText(R.string.quick_settings_title);
-        title.setTextSize(TvUiTokens.PAGE_HEADER_SP);
+        title.setTextSize(15f);
         title.setTextColor(TvUiTokens.TEXT_PRIMARY);
         title.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         title.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -74,7 +74,7 @@ final class QuickSettingsDialog {
         close.setContentDescription(activity.getString(R.string.close_label));
         close.setTag("quick_settings_close");
         header.addView(close, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, TvUiTokens.MIN_DPAD_TARGET_DP)));
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 36)));
         content.addView(header);
         bind(close, dialogHolder, null);
         addDivider(activity, content, density, 5);
