@@ -56,7 +56,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("TextUtils.TruncateAt.MARQUEE", wifi_dialog)
         self.assertIn("row.setOnFocusChangeListener", wifi_dialog)
         self.assertIn("new ConnectedCheckDrawable(activity, networkStatusIconColor(), networkStatusIconSizeDp())", wifi_dialog)
-        self.assertIn("static int networkStatusIconSizeDp() { return 16; }", wifi_dialog)
+        self.assertIn("static int networkStatusIconSizeDp() { return 22; }", wifi_dialog)
         self.assertIn("static int networkStatusIconColor()", wifi_dialog)
         self.assertIn("static int visibleNetworkRowCount() { return 4; }", wifi_dialog)
         self.assertIn("static int networkRowHeightDp() { return 35; }", wifi_dialog)
