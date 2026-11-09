@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.view.View;
+import android.view.Gravity;
 import android.os.Looper;
 
 import org.junit.Test;
@@ -21,6 +22,21 @@ import org.robolectric.annotation.Config;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class WifiSettingsDialogTest {
+    @Test public void popupUsesCompactTopRightGeometryAndLowBackdropDim() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> { });
+        assertNotNull(dialog);
+        android.view.Window window = dialog.getWindow();
+        assertNotNull(window);
+        android.view.WindowManager.LayoutParams params = window.getAttributes();
+        assertEquals(Math.round(activity.getResources().getDisplayMetrics().widthPixels * 0.19f), params.width);
+        assertEquals(Math.round(activity.getResources().getDisplayMetrics().heightPixels * 0.39f), params.height);
+        assertEquals(Gravity.TOP | Gravity.END, params.gravity);
+        assertTrue(params.dimAmount <= 0.10f);
+        dialog.dismiss();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+    }
+
     @Test public void dialogProvidesPermissionGuidanceAndDpadControls() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         final int[] returns = {0};
