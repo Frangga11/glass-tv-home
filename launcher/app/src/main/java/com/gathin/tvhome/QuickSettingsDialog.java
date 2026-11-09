@@ -263,10 +263,10 @@ final class QuickSettingsDialog {
         tile.setClickable(true);
         tile.setGravity(Gravity.CENTER_VERTICAL);
         tile.setPadding(dp(density, 6), dp(density, 2), dp(density, 6), dp(density, 2));
-        tile.setMinHeight(dp(density, Math.min(minHeightDp, 28)));
+        tile.setMinHeight(dp(density, Math.min(minHeightDp, 32)));
         tile.setMaxLines(2);
         tile.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        tile.setTextSize(10f);
+        tile.setTextSize(12f);
         tile.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.NORMAL);
         tile.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tile.setText(buildLabel(title, summary));
@@ -301,7 +301,7 @@ final class QuickSettingsDialog {
         link.setPadding(dp(density, 7), dp(density, 2), dp(density, 7), dp(density, 2));
         link.setMinHeight(dp(density, heightDp));
         link.setText(titleRes);
-        link.setTextSize(10f);
+        link.setTextSize(11f);
         link.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         link.setTextColor(TvUiTokens.TEXT_PRIMARY);
         link.setContentDescription(activity.getString(titleRes));
