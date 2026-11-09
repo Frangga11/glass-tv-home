@@ -1,3 +1,28 @@
+<!-- CURRENT AUTHORITATIVE HANDOVER UPDATE — 9 NOVEMBER 2026, 17:01 WIB. Supersedes previous restart instructions below; history retained. -->
+## CURRENT RESTART — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
+**Start here:** read `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. It is the only authoritative status and restart point.
+
+**Active source:** PR [#104](https://github.com/Frangga11/glass-tv-home/pull/104), branch `feature/global-frosted-silver-glass-001`, exact HEAD `b34d785dced9b5e47e65adf9865b1f4deada532d`, OPEN / DRAFT / UNMERGED. Base is PR #103 branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`, exact SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Keep this ancestry; do not retarget, squash via force-push, merge or install.
+
+**Protected parent:** PR #103 remains OPEN / DRAFT / UNMERGED. Its Arabic RTL and Home spacing work must remain intact. Its CI #1689 and APK size are evidence for PR #103 only.
+
+### Immediate next steps
+1. Inspect exact-head CI #1691 / run 42599100302. If it fails, inspect the failing job/log and fix only evidenced issues.
+2. Re-run exact-head CI after each correction; record final run, APK size and artifact identity.
+3. Finish G1 sweep of all remaining drawable, values, layout and dynamically generated UI surfaces. Do not mark source audit PASS until every glass surface is mapped.
+4. Complete G3 prototype visual review with matched 1920×1080 captures on bright, dark and mixed wallpapers.
+5. Continue G4 in small resource families. Preserve IDs, listeners, actions, focus graph, geometry, data and Arabic RTL.
+6. G5 reconcile shared resources and search for stale blue/white focus treatments.
+7. G6 run functional, visual, DPAD, typography and performance tests; physical Mi TV Stick acceptance is separate and must be owner-tested.
+8. Synchronize all six project documents in one pass and update this checkpoint.
+
+**Current gates:** source audit PARTIAL; design system IN PROGRESS; CI IN PROGRESS; functional, visual, runtime DPAD and performance QA NOT RUN; device acceptance PENDING. Keep PR #104 Draft and unmerged. No installation or default launcher change without explicit owner approval.
+
+**Audit/design report:** `docs/project-management/GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on the PR #104 branch.
+
+---
+
 <!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
 ## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
 
