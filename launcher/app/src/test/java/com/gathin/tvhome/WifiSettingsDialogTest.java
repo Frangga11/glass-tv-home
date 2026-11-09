@@ -43,12 +43,14 @@ public class WifiSettingsDialogTest {
         assertNotNull(root);
         assertNotNull(header);
         assertNotNull(footer);
-        assertEquals(android.widget.LinearLayout.HORIZONTAL, ((android.widget.LinearLayout) footer).getOrientation());
+        assertEquals(android.widget.LinearLayout.VERTICAL, ((android.widget.LinearLayout) footer).getOrientation());
         View rescan = window.getDecorView().findViewWithTag("wifi_rescan");
         View settings = window.getDecorView().findViewWithTag("wifi_open_settings");
         assertNotNull(rescan);
         assertNotNull(settings);
         assertEquals(rescan.getLayoutParams().height, settings.getLayoutParams().height);
+        assertEquals(android.view.ViewGroup.LayoutParams.MATCH_PARENT, rescan.getLayoutParams().width);
+        assertEquals(android.view.ViewGroup.LayoutParams.MATCH_PARENT, settings.getLayoutParams().width);
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
