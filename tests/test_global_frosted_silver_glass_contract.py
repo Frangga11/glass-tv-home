@@ -82,6 +82,16 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
                        if item.attrib.get(ns + "state_focused") == "true")
         self.assertEqual(focused.find("shape/stroke").attrib[ns + "color"], "@color/tv_ui_focus_cyan")
 
+    def test_wallpaper_interval_rows_keep_selected_state_without_focus_zoom(self):
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        start = main.index("for (int i = 0; i < options.size(); i++)")
+        end = main.index("final int chosenMin = opt.minutes;", start)
+        row = main[start:end]
+        self.assertIn("row.setSelected(isActive)", row)
+        self.assertIn("TvFocusIndicator.createSelectableRoundedStateBackground(", row)
+        self.assertNotIn("scaleX(", row)
+        self.assertNotIn("scaleY(", row)
+
     def test_media_popup_dpad_focus_does_not_zoom_controls(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         listener = main.split("View.OnFocusChangeListener btnFocus", 1)[1].split("dialog.show();", 1)[0]
