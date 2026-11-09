@@ -2001,3 +2001,13 @@ Implemented Wi-Fi-only changes: compact anchored top-right dialog, pointer align
 - No source, branch, merge, rebase, reset, force-push, ADB/install, or device setting was changed in this continuation. PR #104 body was synchronized to current HEAD/CI and explicitly records Wi-Fi protection.
 - Overall status: SOURCE / AUTOMATED CI PASS; VISUAL / RUNTIME / PERFORMANCE / DEVICE ACCEPTANCE PENDING; FINAL NOT READY.
 - Next action: continue non-Wi-Fi GTVH-GLOBAL-VISUAL-QA-001 source-to-render verification. Only implement a source correction when a reproducible defect is evidenced; preserve RE-SKIN, NOT REWIRE and all approved geometry.
+
+
+## 10 NOVEMBER 2026 — GTVH-HOME-LUXURY-REALISTIC-GLASS-FOCUS-001
+- Source PR #110: https://github.com/Frangga11/glass-tv-home/pull/110 — OPEN / DRAFT / UNMERGED; branch `feature/home-luxury-realistic-glass-focus-001`; exact HEAD `6c44212e20841230638abf7c7ff8bdda032241be`; stacked on PR #108 exact HEAD `9b49f26180430dc63ef2ab8cf20bcba845e067ea`.
+- Refined shared header glass: lower dark veil alpha, stronger silver-cyan rim/window reflections, persistent capsule glass beneath DPAD focus, and state-aware silver-cyan icon tint across navigation, Wi-Fi/microphone and location/altitude icons.
+- Added a background-only Realistic Glass surface behind the existing Islamic Shelf (prayer timetable + Ayat Pilihan), without changing child geometry, content, prayer data, RTL or spacing.
+- Retained Islamic gold `#FFFFC45A` and black shadow `#CC000000` from parent PR #108 for next-prayer label/time and Ayat Pilihan Arabic.
+- Added `tests/test_home_luxury_glass_focus_contract.py` for glass persistence, rim reflection, icon tint, Islamic shelf glass and Islamic gold/shadow.
+- Exact-head CI #1875 / run `42720524182` was IN PROGRESS at checkpoint sync; release publication workflow run `42720524808` was SKIPPED. Do not claim CI PASS until exact-head run concludes.
+- No merge, ADB, device install, default-launcher change or release publication. 1920x1080 rendered review and physical Mi TV Stick acceptance remain pending. Preserve RE-SKIN NOT REWIRE and all existing functional/geometry constraints.
