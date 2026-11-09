@@ -38,6 +38,17 @@ class HomeSpacingCapsuleHeightRefinementContractTest(unittest.TestCase):
         # Inputs is intentionally excluded from the five requested capsules.
         self.assertIsNone(by_id["@+id/btnInputs"].get(ANDROID + "layout_height"))
 
+    def test_location_and_weather_capsules_have_exact_4dp_vertical_gap(self):
+        root = ET.parse(HOME_XML).getroot()
+        by_id = {node.get(ANDROID + "id"): node for node in root.iter()
+                 if node.get(ANDROID + "id")}
+        location = by_id["@+id/locationPill"]
+        weather = by_id["@+id/weatherAirQuality"]
+        self.assertEqual(location.get(ANDROID + "layout_height"), "30dp")
+        self.assertEqual(weather.get(ANDROID + "layout_height"), "30dp")
+        self.assertEqual(weather.get(ANDROID + "layout_below"), "@id/locationPill")
+        self.assertEqual(weather.get(ANDROID + "layout_marginTop"), "4dp")
+
     def test_home_and_profile_icon_label_spacing_is_compact_but_settings_is_untouched(self):
         root = ET.parse(HOME_XML).getroot()
         by_id = {node.get(ANDROID + "id"): node for node in root.iter()
