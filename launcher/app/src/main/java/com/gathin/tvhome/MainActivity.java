@@ -793,7 +793,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (shamsi) {
             shamsiDate.setVisibility(View.VISIBLE);
             TextView date = findViewById(R.id.date);
-            date.setTextSize(11f);
+            date.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
             date.setPadding(0, (int) (4 * density), 0, 0);
         }
         prayerTimesView = findViewById(R.id.prayerTimes);
@@ -917,7 +917,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // The three tabs are transparent focus targets inside one shared capsule.
                 // Their selector paints only the active/focused segment; it is not a second glass pill.
                 pill.setBackgroundColor(android.graphics.Color.TRANSPARENT);
-                pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
+                pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg));
             } else {
                 pill.setBackground(new GlassDrawable(pill, 20f * density, density, glider));
             }
