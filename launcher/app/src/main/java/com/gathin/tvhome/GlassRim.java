@@ -36,26 +36,24 @@ final class GlassRim {
 
         float alphaFactor = ((shine >>> 24) & 0xFF) / 255f;
 
-        // Thin-film iridescent interference spectrum inspired by ReactDrops soap-bubble:
-        // Pure brilliant specular white -> electric cyan -> soap violet -> gold pearl glint -> clear glass -> ambient twilight bounce -> specular return
+        // Neutral silver edge: white highlight, cool silver body, restrained cyan reflection.
         int cWhiteGlint = modulateAlpha(0xFFFFFFFF, alphaFactor);
-        int cCyanShimmer = modulateAlpha(0xCC67E8F9, alphaFactor);
-        int cVioletSoap = modulateAlpha(0xB3C084FC, alphaFactor);
-        int cGoldSheen = modulateAlpha(0x80FDE047, alphaFactor);
+        int cSilverSheen = modulateAlpha(0xD9E2E8EE, alphaFactor);
+        int cCyanReflection = modulateAlpha(0x8050DDF2, alphaFactor);
         int cClearWaist = modulateAlpha(faint != 0 ? faint : 0x22FFFFFF, alphaFactor);
-        int cTwilightLilac = modulateAlpha(0x59818CF8, alphaFactor);
-        int cSkyCyan = modulateAlpha(0x8038BDF8, alphaFactor);
+        int cSilverBounce = modulateAlpha(0x667D8D9B, alphaFactor);
+        int cCoolSilver = modulateAlpha(0x80DCE5ED, alphaFactor);
         int cWhiteRim = modulateAlpha(0xD9FFFFFF, alphaFactor);
 
         int[] colors = new int[]{
                 cWhiteGlint,
-                cCyanShimmer,
-                cVioletSoap,
-                cGoldSheen,
+                cSilverSheen,
+                cCyanReflection,
+                cSilverSheen,
                 cClearWaist,
                 cClearWaist,
-                cTwilightLilac,
-                cSkyCyan,
+                cSilverBounce,
+                cCoolSilver,
                 cWhiteRim
         };
 
@@ -73,14 +71,14 @@ final class GlassRim {
 
         paint.setShader(new LinearGradient(0f, 0f, 1f, 1f, colors, stops, Shader.TileMode.CLAMP));
 
-        // Secondary overhead "Window Light" specular highlight running along the top bevel
+        // A soft white-to-cyan reflection, not a second focus glow.
         windowLightPaint.setStyle(Paint.Style.STROKE);
         windowLightPaint.setStrokeWidth(Math.max(1f, strokePx * 0.9f));
         int[] wlColors = new int[]{
                 0x00FFFFFF,
                 0x00FFFFFF,
-                0xD9FFFFFF,
-                0x8067E8F9,
+                0xBFFFFFFF,
+                0x5567E8F9,
                 0x00FFFFFF,
                 0x00FFFFFF
         };
