@@ -4272,8 +4272,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahArabic.setSingleLine(false);
             ayahArabic.setMaxLines(2);
             ayahArabic.setEllipsize(TextUtils.TruncateAt.END);
+            // Text direction controls Arabic shaping; layout direction controls relative gravity.
+            // Keep physical alignment LTR/right while the glyph run itself remains RTL.
+            ayahArabic.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
             ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL);
-            ayahArabic.setGravity(Gravity.END);
+            ayahArabic.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY);
+            ayahArabic.setGravity(Gravity.RIGHT | Gravity.TOP);
             ayahArabic.setIncludeFontPadding(true);
             ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
