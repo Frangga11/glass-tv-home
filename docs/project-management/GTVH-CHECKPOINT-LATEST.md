@@ -13,7 +13,7 @@
 
 **Progress:** G1 inventory counts and major surface map established; full stale-resource/source sweep remains in progress. G2 shared silver/cyan tokens implemented. G3 initial Home/dock, popup and focus prototype implementation exists in source; rendered visual validation pending. G4 global implementation is partial. G5 integration, G6 full QA and G7 final acceptance remain open.
 
-**Baseline inventory at PR #103:** 17 app layout XML, 121 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files, 35 Python regression-test files. Counts are files, not unique glass components.
+**Baseline inventory at PR #103:** 17 app layout XML, 112 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files, 35 Python regression-test files. Counts are files, not unique glass components.
 
 **Implemented initial pass:** synchronized Java/XML palette; neutral silver/cyan GlassRim; Electric Cyan outline in Glider and GlassView; focus scale neutralized while preserving 1.07 AppAdapter layout reservation; selected state separated from focus; shared Home, dock, popup, location, weather, prayer, media, recent-app, installer and dynamic settings surfaces; regression contracts; CI artifact allowlist. Detailed evidence: `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on PR #104.
 
@@ -38,7 +38,7 @@
 
 **Progress:** G1 inventory counts and major surface map established; full stale-resource/source sweep remains in progress. G2 shared silver/cyan tokens implemented. G3 initial Home/dock, popup and focus prototype implementation is in source; rendered visual validation pending. G4 global implementation is partial. G5 integration, G6 full QA and G7 final acceptance remain open.
 
-**Baseline inventory at PR #103:** 17 app layout XML, 121 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files, 35 Python regression-test files. Counts are files, not unique glass components.
+**Baseline inventory at PR #103:** 17 app layout XML, 112 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files, 35 Python regression-test files. Counts are files, not unique glass components.
 
 **Implemented initial pass:** synchronized Java/XML palette; neutral silver/cyan GlassRim; Electric Cyan outline in Glider and GlassView; focus scale neutralized while preserving the 1.07 AppAdapter layout reservation; selected state separated from focus; shared Home, dock, popup, location, weather, prayer, media, recent-app, installer and dynamic settings surfaces; regression contracts; CI artifact allowlist. Detailed evidence: `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on PR #104.
 
@@ -63,7 +63,7 @@
 
 **Progress:** G1 inventory counts and major surface map established; full stale-resource/source sweep continues. G2 shared silver/cyan tokens and material foundation implemented. G3 initial Home/dock, popup and focus prototype implementation exists in source; rendered visual validation is pending. G4 global implementation is partial. G5 integration, G6 full QA and G7 final acceptance are not complete.
 
-**Baseline inventory at PR #103:** 17 app layout XML, 121 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files and 35 Python regression-test files. Counts are files, not unique glass components.
+**Baseline inventory at PR #103:** 17 app layout XML, 112 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files and 35 Python regression-test files. Counts are files, not unique glass components.
 
 **Implemented initial pass:** shared Java/XML palette; neutral silver/cyan GlassRim; Electric Cyan outline in Glider and GlassView; focus scale neutralized while preserving AppAdapter's 1.07 layout reservation; selected state separated from focus; shared Home, dock, popup, location, weather, prayer, media, recent-app and installer glass resources; LocationActivity and AzanActivity material; new regression contracts; CI artifact allowlist. Audit/design record: `docs/project-management/GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on the PR #104 branch.
 
