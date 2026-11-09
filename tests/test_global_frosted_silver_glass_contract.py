@@ -211,21 +211,23 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(int(java_int("DOCK_SURFACE")[1:3], 16), 255)
         self.assertIn("0x88343E48", tokens)
 
-    def test_dynamic_islamic_text_and_active_prayer_use_silver_tokens(self):
+    def test_dynamic_islamic_text_and_active_prayer_use_protected_gold_tokens(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
-        self.assertIn("labels[i].setTextColor(TvUiTokens.ACCENT_SECTION)", main)
-        self.assertIn("times[i].setTextColor(TvUiTokens.ACCENT_SECTION)", main)
-        self.assertIn("arabic.setTextColor(TvUiTokens.TEXT_PRIMARY)", main)
+        tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+        self.assertIn("labels[i].setTextColor(TvUiTokens.ISLAMIC_GOLD)", main)
+        self.assertIn("times[i].setTextColor(TvUiTokens.ISLAMIC_GOLD)", main)
+        self.assertIn("labels[i].setShadowLayer(3f * density", main)
+        self.assertIn("times[i].setShadowLayer(3f * density", main)
+        self.assertIn("ayahArabic.setTextColor(TvUiTokens.ISLAMIC_GOLD)", main)
+        self.assertIn("ayahArabic.setShadowLayer(3f * density", main)
+        self.assertIn("static final int ISLAMIC_GOLD = 0xFFFFC45A", tokens)
+        self.assertIn("static final int ISLAMIC_TEXT_SHADOW = 0xCC000000", tokens)
         self.assertIn("meaningLabel.setTextColor(TvUiTokens.TEXT_SECONDARY)", main)
         self.assertIn("hijri.setTextColor(TvUiTokens.TEXT_SECONDARY)", main)
         self.assertIn("arabic.setTextDirection(View.TEXT_DIRECTION_RTL)", main)
         self.assertIn("arabic.setGravity(Gravity.END)", main)
-        self.assertNotIn("0xFFFFD27A", main)
-        self.assertNotIn("0xFFFFD38A", main)
-        self.assertNotIn("0xFFFFC56B", main)
-        self.assertNotIn("0xD9E6E0D2", main)
 
-    def test_islamic_arabic_visual_uses_silver_and_preserves_rtl(self):
+    def test_islamic_arabic_visual_uses_gold_and_preserves_rtl(self):
         ns = "{http://schemas.android.com/apk/res/android}"
         home = ET.parse(RES / "layout/activity_main.xml").getroot()
         ayah = next(node for node in home.iter()
@@ -233,7 +235,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(ayah.attrib[ns + "textDirection"], "rtl")
         self.assertEqual(ayah.attrib[ns + "layoutDirection"], "ltr")
         self.assertEqual(ayah.attrib[ns + "gravity"], "end")
-        self.assertEqual(ayah.attrib[ns + "textColor"], "@color/tv_ui_text_primary")
+        self.assertEqual(ayah.attrib[ns + "textColor"], "@color/tv_ui_islamic_gold")
         self.assertEqual(ayah.attrib[ns + "fontFamily"], "@font/amiri_quran")
         self.assertEqual(ayah.attrib[ns + "shadowColor"], "#CC000000")
         translation = next(node for node in home.iter()
