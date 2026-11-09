@@ -1770,3 +1770,6 @@ Current authority: `GTVH-CHECKPOINT-LATEST.md`. Active audit: `GTVH-GLOBAL-FROST
 
 ### Latest inventory status — 9 November 2026
 Active workstream audit file now includes Section 12 (changed XML resource diff and geometry-risk scan). PR #104 current HEAD `6660b9721f0d03575370ba8570a07b40c1425f4c`; source HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`. CI #1762 PASS on preceding HEAD `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; current audit-only HEAD needs its own CI. Four review items: RAM pill padding, Recent Apps card radius, Ayah text color/shadow, installer startup window color. Full unchanged-resource classification and acceptance gates remain pending. Canonical status in GTVH-CHECKPOINT-LATEST.md.
+
+### Recovery inventory — 9 November 2026
+Latest active branch PR #104 HEAD `1d480afe88072094cd8169ab8ed8d2d8d9ae0bbe`; source/test HEAD `75481d456556655076c51735f33f19a131e17190`. Recent Apps RAM pill padding restored to 20dp/9dp and regression guarded. CI #1763 PASS on prior HEAD; CI #1764 pending Android validation at checkpoint. Remaining rendered visual and device acceptance gates listed in GTVH-CHECKPOINT-LATEST.md and audit Section 13.
