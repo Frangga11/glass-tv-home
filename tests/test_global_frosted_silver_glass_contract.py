@@ -94,7 +94,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
         self.assertIn("solidSurface.setColor(TvUiTokens.POPUP_SURFACE)", fallback)
         self.assertIn("solidBorder.setColor(TvUiTokens.BORDER)", fallback)
-        self.assertEqual(int(java_int("POPUP_SURFACE")[2:4], 16), 255)
+        self.assertEqual(int(java_int("POPUP_SURFACE")[1:3], 16), 255)
         self.assertEqual(int(java_int("DOCK_SURFACE")[2:4], 16), 255)
         self.assertIn("0x88343E48", tokens)
 
