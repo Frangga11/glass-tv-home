@@ -6,6 +6,31 @@
 | Workstream | GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 |
 | PR | #104 — OPEN / DRAFT / UNMERGED |
 | Branch | feature/global-frosted-silver-glass-001 |
+| Current exact HEAD | e6712777ca3ecd5c3e1714c5e2725aa9c5cddc3e |
+| Last source-code CI PASS | #1703 — source HEAD 03408e7585e1cacd3fe32727502bca61752c5438 |
+| Base PR / exact SHA | #103 / a3d697c793e23a59f9f9953e2074d83daa210cf9 |
+| Commits / changed files | 69 / 50 |
+| Automated tests | 223 Python PASS, 1 skipped; Android build/unit tests PASS |
+| APK | 1,627,069 bytes |
+| APK SHA256 | e146f9e80c333acbb72c34bb64f96b2be385583e60400239ab04b5c6f5474671 |
+| Device installation | Not performed; hold until G1/G4 complete and owner authorization |
+
+Baseline at PR #103: 17 app layouts; 121 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
+
+Audited surface families: Home shell/header/navigation, location/elevation, weather/AQI, wallpaper/hero, Islamic shelf, prayer/selected Ayah, app dock/tiles, recent apps/media, Wi-Fi, Quick Settings, Global Settings, profile/avatar/Child Mode, wallpaper/location, modal surfaces, weather dashboard, floating Azan card, shared renderers/tokens and companion installer.
+
+Initial changes include shared palette/colors, AppAdapter, Glider, GlassView, GlassRim, MainActivity dynamic dialogs, ModernSettingsDialog, QuickSettingsDialog, LocationActivity, AzanActivity, Home/dock/dialog/location/prayer/media/recent-app/tile/weather drawables, installer glass resources, regression tests and CI artifact allowlist. Full stale-resource sweep is still in progress.
+
+---
+
+<!-- CURRENT AUTHORITATIVE INVENTORY UPDATE — 9 NOVEMBER 2026. Supersedes earlier current inventory status below. -->
+## Active Global Visual Workstream — Inventory Update
+
+| Item | Current value |
+|---|---|
+| Workstream | GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 |
+| PR | #104 — OPEN / DRAFT / UNMERGED |
+| Branch | feature/global-frosted-silver-glass-001 |
 | Current exact HEAD | 03408e7585e1cacd3fe32727502bca61752c5438 |
 | Last source-code validated HEAD | 7535a311639c07ab77abd004664510fca216b00b |
 | Base PR / exact SHA | #103 / a3d697c793e23a59f9f9953e2074d83daa210cf9 |
