@@ -203,6 +203,14 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(recent.find("solid").attrib[ns + "color"], "#C83B4651")
         self.assertEqual(recent.find("stroke").attrib[ns + "color"], "#99DCE5ED")
 
+    def test_dynamic_location_cards_expose_disabled_pressed_and_focus_states(self):
+        source = (JAVA / "LocationActivity.java").read_text(encoding="utf-8")
+        self.assertGreaterEqual(source.count("new int[]{-android.R.attr.state_enabled}, disabled"), 2)
+        self.assertGreaterEqual(source.count("new int[]{android.R.attr.state_pressed}, pressed"), 2)
+        self.assertGreaterEqual(source.count("new int[]{android.R.attr.state_focused}, on"), 2)
+        self.assertIn("TvUiTokens.DISABLED_SURFACE", source)
+        self.assertIn("TvUiTokens.DISABLED_BORDER", source)
+
     def test_dynamic_dialog_focus_surfaces_use_shared_cyan_tokens(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertIn("on.setColor(TvUiTokens.SURFACE_FOCUSED)", main)
