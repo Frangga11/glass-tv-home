@@ -246,7 +246,9 @@ final class WifiSettingsDialog {
         int popupHeight = Math.round(screenHeight * 0.39f);
         int popupLeft = Math.max(8, screenWidth - popupWidth - 8);
         int popupTop = 8;
-        int pointerCenter = Math.round(popupWidth * 0.72f);
+        int contentInset = dp(activity.getResources().getDisplayMetrics().density, 12);
+        int pointerWidth = popupWidth - contentInset * 2;
+        int pointerCenter = Math.round(pointerWidth * 0.72f);
         if (anchor != null && anchor.getWidth() > 0 && anchor.getHeight() > 0) {
             int[] location = new int[2];
             anchor.getLocationOnScreen(location);
@@ -254,7 +256,8 @@ final class WifiSettingsDialog {
             int popupRight = Math.min(screenWidth - 8, anchorCenter + popupWidth / 2);
             popupLeft = Math.max(8, popupRight - popupWidth);
             popupTop = Math.min(screenHeight - popupHeight - 8, location[1] + anchor.getHeight() + 14);
-            pointerCenter = Math.max(16, Math.min(popupWidth - 16, anchorCenter - popupLeft));
+            pointerCenter = Math.max(16, Math.min(pointerWidth - 16,
+                    anchorCenter - popupLeft - contentInset));
         }
         pointer.setTag(pointerCenter);
         pointer.invalidate();
