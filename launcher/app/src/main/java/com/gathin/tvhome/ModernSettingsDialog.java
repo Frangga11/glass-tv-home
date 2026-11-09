@@ -945,7 +945,7 @@ public final class ModernSettingsDialog {
                         TextView tvTag = new TextView(activity);
                         tvTag.setText(R.string.active_label);
                         tvTag.setTextSize(11f);
-                        tvTag.setTextColor(TvUiTokens.ACCENT_CYAN);
+                        tvTag.setTextColor(TvUiTokens.ACCENT_SECTION);
                         tvTag.setTypeface(outfit, Typeface.BOLD);
                         pRow.addView(tvTag);
                     } else if (allProfiles.size() > 1) {
@@ -957,14 +957,15 @@ public final class ModernSettingsDialog {
                         pRow.addView(tvDel);
                     }
 
+                    pRow.setSelected(isCur);
+                    pRow.setBackground(TvFocusIndicator.createSelectableRoundedStateBackground(
+                            density, 12f, TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_SELECTED,
+                            TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                            TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
                     pRow.setOnFocusChangeListener((v, hasFocus) -> {
-                        GradientDrawable g = new GradientDrawable();
-                        g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : (isCur ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE_IDLE));
-                        g.setCornerRadius(12 * density);
-                        if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
-                        else if (isCur) g.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
-                        v.setBackground(g);
-                        v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+                        v.animate().cancel();
+                        v.setScaleX(1.0f);
+                        v.setScaleY(1.0f);
                     });
 
                     pRow.setOnKeyListener((v, keyCode, event) -> {
