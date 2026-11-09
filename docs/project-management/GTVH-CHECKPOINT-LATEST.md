@@ -1921,3 +1921,14 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 - Corrective source branch HEAD: 22b6e7328c7bcecf9f0edef1567e9fea48a2292c.
 - Run #1871 was triggered against the prior HEAD 711188716d4ce3011ff540546a9232707444a45f and is not evidence of a passing final HEAD. Await a fresh exact-head CI run for 22b6e7328c7bcecf9f0edef1567e9fea48a2292c.
 - Current acceptance remains: implementation committed; CI/build for corrected HEAD pending; Mi TV Stick visual/DPAD acceptance pending; PR #109 remains draft/unmerged.
+### EXACT-HEAD CI COMPLETION — NAVIGATION FOCUS / 2DP SPACING — 10 NOVEMBER 2026
+
+- Corrected source HEAD: 22b6e7328c7bcecf9f0edef1567e9fea48a2292c.
+- CI run #1872 / run ID 42718463884 on that exact HEAD: SUCCESS. Both jobs completed successfully.
+- Lists/tools/docs regression suite: 246 tests, OK (1 skipped).
+- Launcher unit tests and release APK build: successful; release APK generated at launcher/app/build/outputs/apk/release/app-release.apk.
+- Release APK exact size: 1,630,061 bytes. This is above the historical 1.5 MiB reference and raises a non-blocking diagnostic warning; CI remains successful.
+- Uploaded artifact: glass-tv-home-dock-visual-parity-3d4ce939c6bed2517fb958fdbb95a6505c07cf6d; artifact ID 13718543251; archive size 1,431,323 bytes; expires 16 November 2026. Download from Actions run https://github.com/Frangga11/glass-tv-home/actions/runs/42718463884.
+- Navigation-specific Frosted Silver focus and 2dp icon-label spacing are included in this exact-head artifact.
+- PR #109 remains OPEN / DRAFT / UNMERGED. Protected Wi-Fi base remains 774eb99faa48e109b3532533425bbb4cdee07a4a.
+- Physical Mi TV Stick visual/DPAD acceptance is still pending; CI success is not a substitute for rendered-device acceptance. Verify silver focus contrast/visibility, stable glass during focus movement, equal navigation segments, and 2dp icon-label gap.
