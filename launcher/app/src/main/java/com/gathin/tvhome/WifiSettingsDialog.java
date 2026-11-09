@@ -649,8 +649,7 @@ final class WifiSettingsDialog {
             if (child.isFocusable() && child.getVisibility() == View.VISIBLE) focusOrder.add(child);
         }
         if (rescan.getVisibility() == View.VISIBLE) focusOrder.add(rescan);
-        else focusOrder.add(androidSettings);
-        focusOrder.add(close);
+        focusOrder.add(androidSettings);
         for (int i = 0; i < focusOrder.size(); i++) {
             View view = focusOrder.get(i);
             int previous = i > 0 ? focusOrder.get(i - 1).getId() : view.getId();
@@ -664,8 +663,8 @@ final class WifiSettingsDialog {
         androidSettings.setNextFocusLeftId(rescan.getId());
         androidSettings.setNextFocusRightId(androidSettings.getId());
         if (rescan.getVisibility() == View.VISIBLE) {
-            androidSettings.setNextFocusUpId(rescan.getNextFocusUpId());
-            androidSettings.setNextFocusDownId(rescan.getNextFocusDownId());
+            androidSettings.setNextFocusUpId(rescan.getId());
+            androidSettings.setNextFocusDownId(androidSettings.getId());
         }
     }
 
