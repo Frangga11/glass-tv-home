@@ -4745,7 +4745,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             @Override public void openAndroidSettings() {
                 openSystemSettings(systemIntent(Settings.ACTION_SETTINGS));
             }
-        }, initialFocus, () -> {
+        }, initialFocus, anchor, () -> {
             if (!isFinishing() && !isDestroyed() && anchor.isAttachedToWindow()) {
                 anchor.requestFocus();
             }
