@@ -134,3 +134,36 @@ Required automated contracts:
 - No real-time blur or unbounded animation allocation.
 
 No visual, functional, DPAD, performance or device gate may be marked PASS without corresponding evidence. Rendered 1920×1080 review and physical Mi TV Stick acceptance remain pending until actually performed.
+
+
+## 9. Force-close recovery, corrective implementation and exact-head validation — 9 November 2026
+
+**Recovery point:** continue from the existing PR #104 branch. No branch reset, force-push, rebase, retarget, merge, ADB, device install, or launcher-setting mutation was performed.
+
+**Corrective source changes after the first failed CI:**
+- Corrected TvFocusIndicator.createOvalStateBackground() so normalFill is an int; this resolved the Android Java float-to-int compile error.
+- Updated the legacy Home weather/header regression contract. It now asserts the shared header listener includes weatherAirQuality, increments the focus request generation, moves the top highlight, and does not scale/resize the header control. It no longer expects the removed per-weather scale behavior.
+- Replaced the wallpaper interval row's locally built state list with the shared selectable state background. Disabled, pressed, focused and selected states now use shared semantics; active selection remains independent from DPAD focus.
+- Removed no-op scaleX(1.0f)/scaleY(1.0f) animations from WeatherActivity; focus changes elevation only.
+- Completed dynamic settings/profile focus treatment: settings search, edit-name cards, settings cards/rows, Done/Close actions and profile switch surfaces use shared silver/cyan stateful backgrounds. Active profile state remains separate from cyan DPAD focus.
+- Added/updated regression coverage for wallpaper interval selection, shared focus-state helpers, dynamic profile selection, weather/header focus, recent-app cards, disabled/pressed/focused state order and Islamic typography preservation.
+- Recent Apps and Close All no longer zoom on focus; Recent Apps exposes a dedicated cyan focus outline. Media popup and weather controls remain geometry-stable.
+- Dynamic Ayah and prayer content retain RTL/right alignment and their data/navigation behavior while visual color treatment uses the cool-silver token system.
+
+**First failed exact-head CI and disposition:**
+- CI #1753 / run 42605112203 failed for two identified causes: the oval state helper's normalFill type was wrong; a legacy weather test asserted the old focus-scale branch.
+- Both causes were corrected in source/test contracts. The test suite was not disabled or weakened; new assertions validate the current no-geometry-change design.
+
+**Corrective exact-head evidence:**
+- Source HEAD validated: 263b693b5be7e05fa37949259142f5bc8f091699.
+- CI #1757 / run [42605527816](https://github.com/Frangga11/glass-tv-home/actions/runs/42605527816): **SUCCESS**.
+- Lists/tools/docs: **SUCCESS**.
+- Python regression: **235 tests passed, 1 skipped**.
+- Android unit tests and release build: **BUILD SUCCESSFUL**.
+- Release APK build diagnostic: **1,628,165 bytes (1,590 KB)**. The size report is diagnostic, not a blocking threshold.
+- Workflow uploaded artifact ID **13668281444**, named glass-tv-home-dock-visual-parity-6aeffba4caf3eb37b2cce6ae7d70daaf50e5eac7, size **1,429,132 bytes**. This is the Home layout test artifact; do not label it as the release APK.
+- Exact PR #104 remains **OPEN / DRAFT / UNMERGED**. No release APK has been installed on the Mi TV Stick.
+
+**Still pending / not claimed PASS:** rendered 1920×1080 screenshot review, bright/dark/mixed wallpaper readability comparison, full end-to-end function regression, live DPAD focus-path test, performance/GPU profiling, and owner-authorized physical Mi TV Stick acceptance. No real device test has been performed in this recovery pass.
+
+**Current disposition:** source fixes and exact-head automated CI are PASS; visual, functional, performance and device acceptance remain PENDING. PR #104 remains Draft/unmerged. Overall workstream remains **BELUM FINAL** until all required acceptance evidence is recorded.
