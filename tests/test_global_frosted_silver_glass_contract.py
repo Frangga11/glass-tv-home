@@ -98,6 +98,42 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertNotIn(".scaleX(hasFocus", indicator)
         self.assertNotIn(".scaleY(hasFocus", indicator)
 
+    def test_interactive_glass_selectors_distinguish_disabled_pressed_and_focus(self):
+        ns = "{http://schemas.android.com/apk/res/android}"
+        expected = {
+            "bg_dialog_btn.xml": ["enabled", "pressed", "focused"],
+            "bg_np_round_btn.xml": ["enabled", "pressed", "focused"],
+            "bg_circle_close_all.xml": ["enabled", "pressed", "focused"],
+            "bg_location_pill.xml": ["enabled", "pressed", "focused"],
+            "weather_card_bg.xml": ["enabled", "pressed", "focused"],
+            "weather_pill_bg.xml": ["enabled", "pressed", "focused"],
+            "selector_glass_dialog_button_bg.xml": ["enabled", "pressed", "focused"],
+            "selector_glass_dialog_list_item_bg.xml": ["enabled", "pressed", "focused", "activated"],
+            "bg_location_state_pill.xml": ["enabled", "pressed", "focused", "selected"],
+            "prayer_pill_bg.xml": ["enabled", "pressed", "focused"],
+            "input_row_bg.xml": ["enabled", "pressed", "focused"],
+            "bg_location_zone_card.xml": ["enabled", "pressed", "focused"],
+            "bg_track_info_selector.xml": ["enabled", "pressed", "focused"],
+            "header_nav_tab_bg.xml": ["enabled", "pressed", "selected"],
+            "bg_recent_card_focus.xml": ["enabled", "pressed", "focused"],
+            "bg_tv_focus_outline.xml": ["enabled", "pressed", "focused"],
+        }
+        for filename, states in expected.items():
+            root = ET.parse(RES / "drawable" / filename).getroot()
+            actual = []
+            for item in root.findall("item"):
+                state = next((name for name in ("enabled", "pressed", "focused", "activated", "selected")
+                              if item.attrib.get(ns + "state_" + name) == ("false" if name == "enabled" else "true")), None)
+                if state:
+                    actual.append(state)
+            with self.subTest(resource=filename):
+                self.assertEqual(actual[:len(states)], states)
+
+        text_selector = ET.parse(RES / "drawable/dialog_btn_text.xml").getroot()
+        disabled = text_selector.findall("item")[0]
+        self.assertEqual(disabled.attrib.get(ns + "state_enabled"), "false")
+        self.assertEqual(disabled.attrib.get(ns + "color"), "@color/tv_ui_disabled_text")
+
     def test_pressed_state_precedes_focused_and_selected_selector_states(self):
         ns = "{http://schemas.android.com/apk/res/android}"
         button = ET.parse(RES / "drawable/selector_glass_dialog_button_bg.xml").getroot()
