@@ -73,6 +73,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 35)", wifi_dialog)
         self.assertIn("wifiToggle.setMinHeight(dp(density, 35));", wifi_dialog)
         self.assertIn("wifiToggle.setGravity(Gravity.CENTER);", wifi_dialog)
+        self.assertIn("rescan.setMinHeight(dp(density, 35));", wifi_dialog)
+        self.assertIn("androidSettings.setMinHeight(dp(density, 35));", wifi_dialog)
         self.assertIn("scanState = text(R.string.wifi_scan_idle, popupMetaSizeSp()", wifi_dialog)
         self.assertIn("view.setMaxLines(1);", wifi_dialog)
         self.assertNotIn('label = "⌁  " + label', wifi_dialog)
