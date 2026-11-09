@@ -809,3 +809,12 @@ Implementation is isolated in PR #97, base PR #83 exact HEAD `947f33cf7181bb06c7
 **Execution order:** repository/dependency audit → component inventory and baseline → design tokens → representative prototype → owner review → staged global reskin → shared-resource reconciliation → regression/visual/DPAD/performance QA → checkpoint. No implementation is yet authorized as completed; design approval only. Keep PRs Draft until evidence gates and explicit owner approval.
 
 **Precedence:** This decision supplements but does not supersede earlier locked component-specific decisions (including existing Home geometry, typography, wallpaper, Islamic content, profile/security, and DPAD rules). Where conflict is detected, stop and record it; do not silently override the older approved behavior.
+
+
+## Decision — Global Frosted Silver Glass recovery and focus-state contract — 9 November 2026
+- Active workstream: GTVH-GLOBAL-FROSTED-SILVER-GLASS-001, PR #104 Draft/unmerged, dependent on PR #103.
+- DPAD focus is geometry-stable: no scale, translation, resize or reposition. Preserve the existing tile layout reservation (1.07) independently from visual focus scale.
+- Normal, Focused, Selected, Pressed and Disabled are distinct states. Persistent selected/active state must not be conflated with transient cyan focus.
+- Dynamic settings/profile, wallpaper interval, Recent Apps, weather and Islamic surfaces use the shared silver/cyan state contract; existing actions, data logic, IDs and navigation remain unchanged.
+- Exact-head CI #1758 on b737b617aa53fbfc112ccdfe8a7cd4959043d3ec PASS (235 Python tests passed, 1 skipped; Android unit tests and release build successful). Visual/functional/performance/device acceptance remains pending.
+- Full status, constraints and restart sequence: docs/project-management/GTVH-CHECKPOINT-LATEST.md.
