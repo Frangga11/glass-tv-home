@@ -187,3 +187,28 @@ No visual, functional, DPAD, performance or device gate may be marked PASS witho
 **Remaining gates:** full stale-resource/source sweep; matched rendered 1920×1080 review on bright/dark/mixed wallpapers; full end-to-end runtime functional regression; live DPAD path; GPU/performance profiling; physical Mi TV Stick acceptance only after G1/G4 completion and explicit owner authorization.
 
 **Disposition:** Dock rim cyan token drift corrected; exact-head automated CI PASS. Source audit and global implementation remain PARTIAL; visual/runtime/performance/device acceptance remain NOT RUN / PENDING. PR #104 remains OPEN / DRAFT / UNMERGED; overall workstream **BELUM FINAL**.
+
+
+## 11. G1/G4 continuation — exact-head CI closure and hard-coded color classification — 9 November 2026
+
+**Exact-head automation closure:** PR #104 HEAD `4575b09b262ad664f6766ce286d5e5ed90e92780`; CI #1761 / run [42609316862](https://github.com/Frangga11/glass-tv-home/actions/runs/42609316862) is now **SUCCESS**. Both jobs completed successfully:
+- Lists, tools and docs.
+- Android launcher unit tests, `testReleaseUnitTest assembleRelease`, APK size diagnostics and workflow artifact publication.
+
+This CI run validates the current PR HEAD, including the source correction already validated at source HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a` and the subsequent audit-document update. The published artifact remains the workflow's Home layout visual-parity artifact; do not mislabel it as a separately verified release APK. Exact release APK byte size was not extracted from the run evidence.
+
+**Java hard-coded color classification pass (targeted source review):**
+- `TvUiTokens.java` and `values/colors.xml` contain the shared neutral/cyan semantic palette and its XML mirror. Existing parity contract remains the automated guard.
+- `GlassRim.java` and `Glider.java` contain intentional white/silver specular highlights, translucent window-light gradients and black shadow values. These are material-lighting/shadow layers, not competing interactive focus palettes; no change made without rendered evidence.
+- `RecentAppsAdapter.java` uses per-app brand/icon colors and shadow colors; these are identity/rendering values, not global surface/focus tokens.
+- `AppAdapter.java` derives icon/background colors from app imagery and uses a neutral fallback; not a global UI palette path.
+- `ModernSettingsDialog.java` uses semantic success/warning/danger colors for state labels, including green success/active values; retained as semantic status colors rather than converting them to cyan.
+- `LocationActivity.java` uses white/silver text, a green current-location badge, and translucent neutral card fill/border. The current-location green is semantic status; card fill/border are a localized glass fallback. The surface state helper already uses shared tokens for focused/selected/pressed/disabled states. No behavioral or appearance change made without screenshot comparison.
+- `AzanActivity.java` uses a warm gold takbir accent as a distinct devotional content accent and neutral glass/silver card treatment; retained intentionally, not treated as a focus color.
+- `DockBreathingBorderView.java` no longer contains the legacy cyan RGB drift; both glow and rim derive from `TvUiTokens.ACCENT_CYAN`.
+
+**Disposition of this pass:** no additional source correction was justified by static color inspection alone. Brand identity, semantic status, devotional content accent, specular reflection, shadow and translucency are explicitly classified rather than mechanically recolored. No IDs, listeners, geometry, navigation, data, persistence, RTL or lifecycle behavior changed in this pass.
+
+**Open gates remain:** full classification of all 141 drawable/values resources is not yet complete; rendered 1920×1080 review on bright/dark/mixed wallpapers, end-to-end runtime functional regression, live DPAD path, GPU/performance profiling and owner-authorized physical Mi TV Stick acceptance remain NOT RUN / PENDING. CI PASS does not imply visual/device PASS.
+
+**Current status:** PR #104 OPEN / DRAFT / UNMERGED; current HEAD `4575b09b262ad664f6766ce286d5e5ed90e92780`; exact-head CI #1761 PASS. Overall workstream **BELUM FINAL**.
