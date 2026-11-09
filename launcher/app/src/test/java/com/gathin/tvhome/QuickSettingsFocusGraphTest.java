@@ -20,7 +20,7 @@ public class QuickSettingsFocusGraphTest {
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CLOSE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.POWER,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.LANGUAGE, QuickSettingsFocusGraph.RIGHT));
-        assertEquals(QuickSettingsFocusGraph.CACHE,
+        assertEquals(QuickSettingsFocusGraph.WALLPAPER_MANAGE,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.POWER, QuickSettingsFocusGraph.DOWN));
     }
 
