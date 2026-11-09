@@ -918,6 +918,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // Their selector handles press feedback only; DPAD focus is the shared Glider overlay.
                 pill.setBackgroundColor(android.graphics.Color.TRANSPARENT);
                 pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
+                if (pill instanceof TextView) {
+                    TextView tab = (TextView) pill;
+                    Drawable[] icons = tab.getCompoundDrawablesRelative();
+                    if (icons[0] != null) {
+                        Drawable icon = icons[0].mutate();
+                        int iconSize = Math.round(20f * density);
+                        icon.setBounds(0, 0, iconSize, iconSize);
+                        icon.setTint(Color.WHITE);
+                        tab.setCompoundDrawablesRelative(icon, icons[1], icons[2], icons[3]);
+                    }
+                }
             } else {
                 pill.setBackground(new GlassDrawable(pill, 20f * density, density, glider));
             }
