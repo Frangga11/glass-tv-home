@@ -203,7 +203,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertEqual(nav.get(ANDROID + "background"), "@drawable/header_glass_pill_bg")
         self.assertIn("navCapsule.setBackground(new GlassDrawable(navCapsule", MAIN)
         self.assertIn("pill.setBackgroundColor(android.graphics.Color.TRANSPARENT)", MAIN)
-        self.assertIn("pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg))", MAIN)
+        self.assertIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg))", MAIN)
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
 
