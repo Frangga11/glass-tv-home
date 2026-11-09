@@ -77,7 +77,10 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         source = (JAVA / "Glider.java").read_text(encoding="utf-8")
         self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", source)
         self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", source)
+        self.assertIn("focusStroke.setAlpha(Math.round(220 * opacity))", source)
         self.assertNotIn("FOCUS_ALPHA", source)
+        grid_focus = (JAVA / "GlassView.java").read_text(encoding="utf-8")
+        self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", grid_focus)
 
     def test_glass_rim_uses_neutral_silver_and_restrained_cyan(self):
         source = (JAVA / "GlassRim.java").read_text(encoding="utf-8")
