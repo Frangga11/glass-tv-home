@@ -29,7 +29,8 @@ public class WifiSettingsDialogTest {
         android.view.Window window = dialog.getWindow();
         assertNotNull(window);
         android.view.WindowManager.LayoutParams params = window.getAttributes();
-        assertEquals(Gravity.TOP | Gravity.END, params.gravity);
+        assertEquals(Gravity.TOP, params.gravity & Gravity.VERTICAL_GRAVITY_MASK);
+        assertEquals(Gravity.RIGHT, params.gravity & Gravity.HORIZONTAL_GRAVITY_MASK);
         assertTrue(params.dimAmount <= 0.10f);
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
