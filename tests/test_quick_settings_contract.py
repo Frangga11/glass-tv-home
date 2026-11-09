@@ -15,10 +15,16 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 class QuickSettingsContractTest(unittest.TestCase):
     def test_dialog_uses_shared_modal_and_focus_contracts(self):
-        self.assertIn("TvDialogStyle.apply(dialog, activity, 560, 440)", DIALOG)
-        self.assertIn("GridLayout grid", DIALOG)
-        self.assertIn("grid.setColumnCount(2)", DIALOG)
-        self.assertIn("grid.setRowCount(5)", DIALOG)
+        self.assertIn("TvDialogStyle.apply(dialog, activity, 360, 360)", DIALOG)
+        self.assertIn("metrics.widthPixels * 0.26f", DIALOG)
+        self.assertIn("metrics.heightPixels * 0.60f", DIALOG)
+        self.assertIn("window.setGravity(Gravity.TOP | Gravity.LEFT)", DIALOG)
+        self.assertIn("close.setFocusable(false)", DIALOG)
+        self.assertIn("GridLayout primary", DIALOG)
+        self.assertIn("primary.setColumnCount(2)", DIALOG)
+        self.assertIn("primary.setRowCount(3)", DIALOG)
+        self.assertIn("settingsActions.setOrientation(LinearLayout.VERTICAL)", DIALOG)
+        self.assertIn("QuickSettingsDialog.show(this", MAIN)
         self.assertIn(".setView(content)", DIALOG)
         self.assertNotIn("ScrollView", DIALOG)
         self.assertIn("TvUiTokens.", DIALOG)
