@@ -69,9 +69,9 @@ public class AzanActivity extends Activity {
         card.setPadding(dp(30), dp(20), dp(34), dp(20));
         GradientDrawable glass = new GradientDrawable();
         // Safe default dark glass background tint: readable over bright content even without window blur
-        glass.setColor(0xE0141C2C);
+        glass.setColor(0xD936414B);
         glass.setCornerRadius(dp(28));
-        glass.setStroke(Math.max(1, dp(1.5f)), 0x59FFFFFF);
+        glass.setStroke(Math.max(1, dp(1.5f)), 0x80DCE5ED);
         card.setBackground(glass);
         card.setClipToOutline(true);
         card.setElevation(dp(16));
@@ -118,7 +118,7 @@ public class AzanActivity extends Activity {
         card.setOnClickListener(v -> finish());
         card.setOnFocusChangeListener((view, hasFocus) -> {
             glass.setStroke(Math.max(1, dp(hasFocus ? 2f : 1.5f)),
-                    hasFocus ? 0xFF00E5FF : 0x59FFFFFF);
+                    hasFocus ? TvUiTokens.FOCUS_BORDER : 0x80DCE5ED);
             glass.invalidateSelf();
         });
 
@@ -134,7 +134,7 @@ public class AzanActivity extends Activity {
                 WindowManager wm = getSystemService(WindowManager.class);
                 if (wm != null && wm.isCrossWindowBlurEnabled() && w.getDecorView() != null) {
                     w.setBackgroundBlurRadius(dp(30));
-                    glass.setColor(0xB3101826);
+                    glass.setColor(0xB32C3741);
                 }
             } catch (Throwable t) {
                 // Graceful fallback: keep solid frosted glass tint without crashing
