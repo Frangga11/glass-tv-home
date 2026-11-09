@@ -188,24 +188,44 @@ public class LocationActivity extends Activity {
         sel.setColor(TvUiTokens.SURFACE_SELECTED);
         sel.setCornerRadius(dp(22));
         sel.setStroke(dp(1), TvUiTokens.NAV_SELECTION_BORDER);
+        GradientDrawable pressed = new GradientDrawable();
+        pressed.setColor(TvUiTokens.SURFACE_SELECTED);
+        pressed.setCornerRadius(dp(22));
+        pressed.setStroke(dp(1), TvUiTokens.FOCUS_BORDER);
+        GradientDrawable disabled = new GradientDrawable();
+        disabled.setColor(TvUiTokens.DISABLED_SURFACE);
+        disabled.setCornerRadius(dp(22));
+        disabled.setStroke(dp(1), TvUiTokens.DISABLED_BORDER);
         StateListDrawable s = new StateListDrawable();
+        s.addState(new int[]{-android.R.attr.state_enabled}, disabled);
+        s.addState(new int[]{android.R.attr.state_pressed}, pressed);
         s.addState(new int[]{android.R.attr.state_focused}, on);
         s.addState(new int[]{android.R.attr.state_selected}, sel);
         s.addState(new int[]{}, new GradientDrawable());
         return s;
     }
 
-    /** A zone: glass, with a bright ring when focused. */
+    /** A zone: glass, with distinct disabled, pressed and cyan-focused states. */
     private StateListDrawable card() {
         GradientDrawable on = new GradientDrawable();
         on.setColor(TvUiTokens.FOCUS_HALO);
         on.setCornerRadius(dp(14));
         on.setStroke(dp(2), TvUiTokens.FOCUS_BORDER);
+        GradientDrawable pressed = new GradientDrawable();
+        pressed.setColor(TvUiTokens.SURFACE_SELECTED);
+        pressed.setCornerRadius(dp(14));
+        pressed.setStroke(dp(1), TvUiTokens.FOCUS_BORDER);
         GradientDrawable off = new GradientDrawable();
         off.setColor(0x223F4B56);
         off.setCornerRadius(dp(14));
         off.setStroke(dp(1), 0x55DCE5ED);
+        GradientDrawable disabled = new GradientDrawable();
+        disabled.setColor(TvUiTokens.DISABLED_SURFACE);
+        disabled.setCornerRadius(dp(14));
+        disabled.setStroke(dp(1), TvUiTokens.DISABLED_BORDER);
         StateListDrawable s = new StateListDrawable();
+        s.addState(new int[]{-android.R.attr.state_enabled}, disabled);
+        s.addState(new int[]{android.R.attr.state_pressed}, pressed);
         s.addState(new int[]{android.R.attr.state_focused}, on);
         s.addState(new int[]{}, off);
         return s;
