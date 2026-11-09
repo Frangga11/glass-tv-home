@@ -309,6 +309,11 @@ final class Glider extends View {
         rim.paint.setAlpha(Math.round(255 * opacity));
         canvas.drawRoundRect(shape, r - half, r - half, rim.paint);
         rim.drawWindowLight(canvas, shape, r - half, opacity);
+        float focusHalf = focusStroke.getStrokeWidth() / 2f;
+        shape.inset(focusHalf, focusHalf);
+        focusStroke.setAlpha(Math.round(220 * opacity));
+        canvas.drawRoundRect(shape, Math.max(0f, r - half - focusHalf),
+                Math.max(0f, r - half - focusHalf), focusStroke);
     }
 
     private void drawShadow(Canvas canvas, float radius) {
