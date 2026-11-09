@@ -1,3 +1,24 @@
+<!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
+## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
+
+**Single source of truth:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. Every session starts there. This file alone governs current status, active workstream, dependency order, decisions, quality gates, and next action. Supporting documents provide detailed evidence/history and must not create competing restart points.
+
+**Current source candidate:** PR [#103](https://github.com/Frangga11/glass-tv-home/pull/103), `GTVH-HOME-WALLPAPER-PRAYER-ZERO-GAP-ARABIC-RTL-FIX-103`; OPEN / DRAFT / UNMERGED. Branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`; exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`; base PR #101 at `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`; 7 commits ahead / 0 behind; 5 changed files (2 production, 3 regression tests).
+
+**Latest verified automation:** exact-head CI #1689 / run [42566072365](https://github.com/Frangga11/glass-tv-home/actions/runs/42566072365) SUCCESS; both required jobs passed; Gradle release build successful. APK size 1,626,637 bytes; 53,773 bytes above historical 1.5 MiB reference, diagnostic/non-blocking. No PR artifact ZIP was published for this Draft run.
+
+**Remaining gates:** genuine rendered 1920×1080 visual review and physical Mi TV Stick acceptance are NOT RUN / PENDING. No ADB, installation, launcher-setting change, or merge. Overall PR #103 is NOT FINAL. Do not claim visual/device acceptance.
+
+**Cumulative base:** PR #101 branch `integration/home-islamic-prayer-spacing-cumulative-101`, base HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`, remains unmerged. PR #103 is a corrective child candidate; do not flatten, retarget, merge, or alter its ancestry without an explicit reconciliation and owner approval.
+
+**Newly approved future workstream:** `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001` — global visual reskin using Frosted Silver Glass + Electric Cyan DPAD Focus. Scope includes Home Screen, dock, Beranda–Profil–Pengaturan navigation, Wi-Fi/microphone, location/altitude, weather/AQI, popups/dialogs, settings/profile, prayer schedule, selected Ayah, Arabic and translation, and all other audited glass surfaces. Design/prompt approved by owner; implementation has NOT started; no branch, PR, source modification, prototype, or QA result is claimed.
+
+**Global execution constraints:** RE-SKIN, NOT REWIRE. Preserve working IDs, listeners, events, data logic, navigation, DPAD behavior, wallpaper logic, component geometry, and prior approved work. Only change geometry where an audited, evidenced requirement is approved. Prioritize function, readability, stability, and device performance over decorative effects. Do not merge or install without the required evidence and explicit owner approval.
+
+**Document roles:** CHECKPOINT = sole status/restart authority; MASTER_PROJECT = scope/architecture/roadmap; INVENTORY = files/components/branches/PR/dependencies; DECISION_LOG = approved decisions and constraints; AUDIT_REGISTER = evidence, findings, quality gates; HANDOVER = exact resume instructions. Update all six in the same documentation synchronization pass. Keep chronology; mark superseded statements rather than deleting history.
+
+---
+
 > **CANONICAL CHECKPOINT — READ THIS FIRST**  
 > The only authoritative restart point is [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) on branch `docs/project-master-inventory`. Start every continuation there; do not resume from historical checkpoint blocks, old PR descriptions, or branch-local notes. This file is supporting detail/history and must not establish a competing current state.  
 > **Checkpoint authority:** GitHub repository `Frangga11/glass-tv-home`; canonical docs branch `docs/project-master-inventory`; single entry file `docs/project-management/GTVH-CHECKPOINT-LATEST.md`. The latest checkpoint supersedes all older status statements below.  
@@ -1706,3 +1727,11 @@ PR #80 is a scoped stacked follow-up to PR #79. It changes only `MainActivity.ja
 PR #101 automated validation has passed on exact source HEAD `b8389e1f90b9fb7f65d91cfd0d7a41782f343d83`: CI #1681 SUCCESS; 211 Python tests (1 skipped), Android app/installer unit tests, and Release build passed. APK artifact `13639167072` verified; extracted APK 1,626,525 bytes, SHA-256 `5423f7746d6b771fcb0c76ca3fcdca5186c5957d2967f66437554cb6e7d62398`. Scope is 16 files (5 production/source/workflow, 11 tests). APK size warning is non-blocking; increase vs PR #83 baseline is 1,312 bytes (+0.081%).
 
 This does NOT constitute visual/device acceptance. A real 1920×1080 rendered audit and physical Mi TV Stick acceptance remain pending. PR #101 stays OPEN / DRAFT / UNMERGED; no ADB, installation, launcher setting mutation or merge has been performed. Do not mark project item final until visual and owner acceptance gates close.
+
+## Master project reconciliation — PR #103 and next workstream — 9 November 2026
+
+- Current implementation baseline and outstanding acceptance gates are governed by the canonical checkpoint, not the older PR #101 summary sections in this file.
+- PR #103 is the active corrective candidate on top of PR #101; exact HEAD, base, CI result, APK diagnostic, and pending visual/device gates are recorded in the authoritative sync block above.
+- Approved next workstream: GTVH-GLOBAL-FROSTED-SILVER-GLASS-001. This is a global design-system/reskin project, not a rewrite. It must begin with inventory and baseline audit, then tokens/prototype, staged implementation, integration, regression, visual/performance QA, and checkpoint.
+- The global scope includes all Home and glass surfaces, popups/dialogs, Wi-Fi, settings, profile, weather/AQI, location/altitude, prayer schedule, selected Ayah, Arabic/translation, and any further glass surfaces found in source audit.
+- No implementation status is implied by design approval. Do not claim prototype, code, CI, visual QA, or device acceptance until evidence exists.
