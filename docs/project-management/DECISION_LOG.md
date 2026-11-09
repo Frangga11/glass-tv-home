@@ -958,3 +958,23 @@ All six core management documents are synchronized to this same checkpoint ID an
 **Quality gate:** each finding must state trigger, input/evidence, verification, root cause, exact file/line, proposed action, preservation impact, test and outcome. If evidence is missing, status remains PENDING / NOT RUN. Overall Wi-Fi status: **AUDIT IN PROGRESS — BELUM FINAL**.
 
 **Canonical single-door authority:** `GTVH-CHECKPOINT-LATEST.md`. This focus lock is mirrored into all six core management documents in one synchronized documentation commit. Application PR #104 remains separate and unchanged.
+
+
+## Checkpoint — GTVH-WIFI-POPUP-REFERENCE-001 — 9 November 2026
+
+**Current application workstream:** Wi-Fi Popup only. Implementation is isolated in PR #105, OPEN / DRAFT / UNMERGED. Application repository: `Frangga11/glass-tv-home`. Source branch: `feature/wifi-popup-reference-001`. Exact current application HEAD: `2f78339b16d87608919cd162ad216b7dd9feff58`. PR base: `feature/global-frosted-silver-glass-001`, base HEAD at PR creation: `b14ba7a35659ea404b88a56175e706e458c8459f`. Parent PR #104 remains separate and unmerged.
+
+**Changed files (3):**
+- `launcher/app/src/main/java/com/gathin/tvhome/WifiSettingsDialog.java` — compact top-right popup, anchor to existing `btnWifi`, pointer triangle, restrained dim, bounded scrollable network area, compact header state control, connected-network markers and vertical action layout; existing Android scan/status/permission/handoff lifecycle retained.
+- `launcher/app/src/test/java/com/gathin/tvhome/WifiSettingsDialogTest.java` — compact geometry/backdrop contract test.
+- `tests/test_quick_settings_contract.py` — update the directly related Wi-Fi child-route contract to expect anchored popup invocation instead of the prior centered dialog style. No Quick Settings production code changed.
+
+**Preservation / platform constraint:** Frosted Silver-Cyan Glass tokens are retained. Android remains authoritative for Wi-Fi radio changes, authentication and connection management. The compact ON/OFF state control reflects actual radio state and opens Android Wi-Fi Settings; it does not attempt a prohibited direct Wi-Fi radio toggle from an ordinary launcher app on Android 11. Network selection continues to hand off to Android Settings.
+
+**Validation:** CI for the exact current HEAD is RUNNING / PENDING. An earlier CI attempt on superseded HEAD `53732374de9f6d2a8f3846a5ed18a28af4c43f6e` had one lists/tools/docs contract failure because `tests/test_quick_settings_contract.py` still expected the old centered-dialog call; this assertion was updated on the current branch. Android build/unit-test job was still running at last inspection. No visual capture, Mi TV Stick DPAD/runtime acceptance, ADB or APK installation has been performed. No merge or retarget performed.
+
+**Scope audit:** application PR diff is limited to the Wi-Fi popup class and two directly related tests. No Home Screen layout/header, wallpaper, Weather/AQI, Hero Shelf, Islamic Shelf, dock/grid, profile/avatar, global settings, WeatherActivity, global tokens or unrelated data logic changed.
+
+**Open quality gates:** verify exact-HEAD CI PASS; inspect final diff and test logs; visual geometry/anchor/pointer/scrollbar and focus QA on 1920×1080; DPAD traversal and focus restoration; Android 11 Wi-Fi state/scan/Settings handoff; APK validity/size; regression evidence. Current overall status: **IMPLEMENTATION IN PROGRESS — BELUM FINAL**.
+
+**Canonical single-door authority:** `GTVH-CHECKPOINT-LATEST.md`. PR #105 remains OPEN / DRAFT / UNMERGED. Do not merge or install to the TV before all required gates are evidenced and explicitly authorized.
