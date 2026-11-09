@@ -705,7 +705,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wifi_grant_location_permission">Izinkan akses lokasi untuk pemindaian Wi-Fi</string>
     <string name="wifi_enable_location">Buka pengaturan Lokasi Android</string>
     <string name="wifi_rescan">Pindai ulang</string>
-    <string name="wifi_open_android_settings">Buka Pengaturan Wi-Fi Android</string>
+    <string name="wifi_open_android_settings">Pengaturan Wi-Fi  &gt;</string>
     <string name="wifi_network_row">%1$s  ·  %2$s  ·  Sinyal %3$s/4</string>
     <string name="wifi_security_wpa3">WPA3</string>
     <string name="wifi_security_wep">WEP</string>
