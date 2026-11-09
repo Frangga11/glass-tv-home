@@ -6,12 +6,15 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.graphics.Typeface;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.text.style.ReplacementSpan;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -203,6 +206,39 @@ final class WeatherAirQuality {
     }
 
     private WeatherAirQuality() {
+    }
+
+    /** A true centered vertical divider, matching the header's location/elevation separator. */
+    static final class WeatherDividerSpan extends ReplacementSpan {
+        private final float density;
+
+        WeatherDividerSpan(float density) {
+            this.density = Math.max(0.1f, density);
+        }
+
+        @Override
+        public int getSize(Paint paint, CharSequence text, int start, int end,
+                           Paint.FontMetricsInt fm) {
+            return Math.round(25f * density);
+        }
+
+        @Override
+        public void draw(Canvas canvas, CharSequence text, int start, int end,
+                         float x, int top, int y, int bottom, Paint paint) {
+            int oldColor = paint.getColor();
+            Paint.Style oldStyle = paint.getStyle();
+            float oldStrokeWidth = paint.getStrokeWidth();
+            paint.setColor(0x66FFFFFF);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(Math.max(1f, density));
+            float centerX = x + 12.5f * density;
+            float centerY = (top + bottom) / 2f;
+            float halfHeight = 10f * density;
+            canvas.drawLine(centerX, centerY - halfHeight, centerX, centerY + halfHeight, paint);
+            paint.setColor(oldColor);
+            paint.setStyle(oldStyle);
+            paint.setStrokeWidth(oldStrokeWidth);
+        }
     }
 
     /** Forces an immediate background sync regardless of cache freshness. */
@@ -405,8 +441,9 @@ final class WeatherAirQuality {
         sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), weatherStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.setSpan(new StyleSpan(Typeface.BOLD), weatherStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         int separatorStart = sb.length();
-        sb.append("  •  ");
-        sb.setSpan(new ForegroundColorSpan(0x80FFFFFF), separatorStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.append("\uFFFC");
+        sb.setSpan(new WeatherDividerSpan(context.getResources().getDisplayMetrics().density),
+                separatorStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         int aqiStart = sb.length();
         sb.append(aqiText);
         sb.setSpan(new ForegroundColorSpan(aqi < 0 ? 0xFF9E9E9E : getAqiColor(aqi)), aqiStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
