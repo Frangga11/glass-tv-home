@@ -10,9 +10,13 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.Rect;
+import android.util.TypedValue;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -299,6 +303,9 @@ final class WifiSettingsDialog {
     }
 
     static float popupTextSizeSp() { return 14f; }
+    static float networkTextSizePx() { return 25f; }
+    static int networkStatusIconSizeDp() { return 16; }
+    static int networkStatusIconColor() { return Color.rgb(72, 205, 132); }
 
     static float popupTitleSizeSp() { return 17f; }
     static float popupSectionSizeSp() { return 13f; }
@@ -566,26 +573,23 @@ final class WifiSettingsDialog {
             ScanResult connectedResult = strongest.get(connectedSsid);
             String connectedSecurity = connectedResult == null ? ""
                     : securityLabel(connectedResult.capabilities);
-            String connectedLabel = connectedSsid + "  ·  "
-                    + activity.getString(R.string.wifi_status_connected);
-            TextView connectedRow = action(connectedLabel, "wifi_network:" + connectedSsid,
+            TextView connectedRow = action(connectedSsid, "wifi_network:" + connectedSsid,
                     activity.getResources().getDisplayMetrics().density,
                     () -> dismissThen(openSystemWifiSettings));
             connectedRow.setMaxLines(1);
             connectedRow.setEllipsize(android.text.TextUtils.TruncateAt.END);
             connectedRow.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, networkRowHeightDp()));
-            connectedRow.setTextSize(popupTextSizeSp());
+            connectedRow.setTextSize(TypedValue.COMPLEX_UNIT_PX, networkTextSizePx());
             connectedRow.setGravity(Gravity.CENTER_VERTICAL);
             connectedRow.setPadding(dp(activity.getResources().getDisplayMetrics().density, 10), 0,
                     dp(activity.getResources().getDisplayMetrics().density, 10), 0);
             connectedRow.setLayoutParams(networkRowLayoutParams(activity.getResources().getDisplayMetrics().density));
             connectedRow.setEllipsize(android.text.TextUtils.TruncateAt.END);
             connectedRow.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0,
-                    (connectedSecurity.isEmpty()
-                            || connectedSecurity.equals(activity.getString(R.string.wifi_security_open)))
-                            ? 0 : R.drawable.ic_lock, 0);
+                    new ConnectedCheckDrawable(activity, networkStatusIconColor(), networkStatusIconSizeDp()), 0);
             connectedRow.setCompoundDrawablePadding(dp(
                     activity.getResources().getDisplayMetrics().density, 6));
+            configureNetworkMarquee(connectedRow);
             networkRows.addView(connectedRow);
             connectedAdded = true;
         }
@@ -613,7 +617,8 @@ final class WifiSettingsDialog {
                 row.setPadding(dp(activity.getResources().getDisplayMetrics().density, 10), 0,
                         dp(activity.getResources().getDisplayMetrics().density, 10), 0);
                 row.setLayoutParams(networkRowLayoutParams(activity.getResources().getDisplayMetrics().density));
-                row.setTextSize(popupTextSizeSp());
+                row.setTextSize(TypedValue.COMPLEX_UNIT_PX, networkTextSizePx());
+                configureNetworkMarquee(row);
                 row.setCompoundDrawablePadding(dp(
                         activity.getResources().getDisplayMetrics().density, 6));
                 networkRows.addView(row);
@@ -640,6 +645,44 @@ final class WifiSettingsDialog {
             View fallback = firstFocusableControl();
             if (fallback != null) fallback.requestFocus();
         }
+    }
+
+    private void configureNetworkMarquee(TextView row) {
+        row.setSingleLine(true);
+        row.setMaxLines(1);
+        row.setHorizontallyScrolling(true);
+        row.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
+        row.setMarqueeRepeatLimit(-1);
+        row.setSelected(false);
+        row.setOnFocusChangeListener((view, hasFocus) -> view.setSelected(hasFocus));
+    }
+
+    private static final class ConnectedCheckDrawable extends Drawable {
+        private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        ConnectedCheckDrawable(Context context, int color, int sizeDp) {
+            float density = context.getResources().getDisplayMetrics().density;
+            paint.setColor(color);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(Math.max(2f, density * 2f));
+            paint.setStrokeCap(Paint.Cap.ROUND);
+            paint.setStrokeJoin(Paint.Join.ROUND);
+            int size = dp(density, sizeDp);
+            setBounds(0, 0, size, size);
+        }
+
+        @Override public void draw(Canvas canvas) {
+            Rect bounds = getBounds();
+            Path check = new Path();
+            check.moveTo(bounds.left + bounds.width() * 0.18f, bounds.top + bounds.height() * 0.53f);
+            check.lineTo(bounds.left + bounds.width() * 0.42f, bounds.top + bounds.height() * 0.76f);
+            check.lineTo(bounds.left + bounds.width() * 0.84f, bounds.top + bounds.height() * 0.25f);
+            canvas.drawPath(check, paint);
+        }
+
+        @Override public void setAlpha(int alpha) { paint.setAlpha(alpha); }
+        @Override public void setColorFilter(android.graphics.ColorFilter filter) { paint.setColorFilter(filter); }
+        @Override public int getOpacity() { return android.graphics.PixelFormat.TRANSLUCENT; }
     }
 
     private String securityLabel(String capabilities) {
