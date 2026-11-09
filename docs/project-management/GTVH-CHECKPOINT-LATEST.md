@@ -1,3 +1,28 @@
+<!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026, 17:01 WIB — GLOBAL FROSTED SILVER GLASS UPDATE. This block supersedes every earlier current-status block below. Historical records remain intact. -->
+## CURRENT AUTHORITATIVE PROJECT SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
+**Single source of truth:** this file on `docs/project-master-inventory`. Supporting docs below are synchronized detail; they do not create alternate restart points.
+
+**Active workstream:** `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001` — global Frosted Silver Glass + Electric Cyan DPAD Focus, RE-SKIN NOT REWIRE.
+
+**Active PR:** [#104](https://github.com/Frangga11/glass-tv-home/pull/104), OPEN / DRAFT / UNMERGED. Branch `feature/global-frosted-silver-glass-001`; exact HEAD `b34d785dced9b5e47e65adf9865b1f4deada532d`; base PR #103 branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`, exact base SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`; 51 commits, 0 behind, 40 changed files. No merge, retarget, flatten, reset, force-push, install, ADB or default-launcher change.
+
+**Protected parent:** PR [#103](https://github.com/Frangga11/glass-tv-home/pull/103) remains OPEN / DRAFT / UNMERGED at HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`; base PR #101 HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`. Its exact-head CI #1689 passed; APK 1,626,637 bytes. Visual and physical Mi TV Stick acceptance remain pending. Preserve ancestry and all Arabic RTL, Ayah spacing, prayer and cumulative Home work.
+
+**Latest CI for PR #104:** run #1691 / [42599100302](https://github.com/Frangga11/glass-tv-home/actions/runs/42599100302) is IN PROGRESS on exact HEAD `b34d785dced9b5e47e65adf9865b1f4deada532d`. Previous-head run #1690 / [42599046834](https://github.com/Frangga11/glass-tv-home/actions/runs/42599046834) is also IN PROGRESS at `377ccf4dcbbfaeb78d2c7bba42f42f64c8bde02c`. No CI PASS or APK size is claimed for PR #104 yet. PR #104 is included in the CI APK artifact allowlist.
+
+**Progress:** G1 inventory counts and major surface map established; full stale-resource/source sweep continues. G2 shared silver/cyan tokens and material foundation implemented. G3 initial Home/dock, popup and focus prototype implementation exists in source; rendered visual validation is pending. G4 global implementation is partial. G5 integration, G6 full QA and G7 final acceptance are not complete.
+
+**Baseline inventory at PR #103:** 17 app layout XML, 121 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files and 35 Python regression-test files. Counts are files, not unique glass components.
+
+**Implemented initial pass:** shared Java/XML palette; neutral silver/cyan GlassRim; Electric Cyan outline in Glider and GlassView; focus scale neutralized while preserving AppAdapter's 1.07 layout reservation; selected state separated from focus; shared Home, dock, popup, location, weather, prayer, media, recent-app and installer glass resources; LocationActivity and AzanActivity material; new regression contracts; CI artifact allowlist. Audit/design record: `docs/project-management/GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on the PR #104 branch.
+
+**Quality gates:** Source Audit PARTIAL / IN PROGRESS; Design System IN PROGRESS; Build & CI IN PROGRESS; Functional QA NOT RUN; Visual QA NOT RUN; DPAD runtime QA NOT RUN; Performance runtime QA NOT RUN; Device Acceptance PENDING. No unverified PASS claims.
+
+**Next action:** inspect exact-head CI #1691; fix any failures without widening scope; complete the remaining source/resource inventory; validate prototype screenshots at 1920×1080 on bright, dark and mixed wallpapers; then run functional, DPAD, typography, performance and physical Mi TV Stick acceptance. Keep PR #104 Draft and unmerged until all gates and explicit owner approval.
+
+---
+
 <!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
 ## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
 
