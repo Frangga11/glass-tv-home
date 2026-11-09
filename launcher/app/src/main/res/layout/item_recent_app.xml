@@ -45,6 +45,7 @@
         android:layout_width="420dp"
         android:layout_height="250dp"
         android:background="@drawable/bg_recent_card"
+        android:foreground="@drawable/bg_recent_card_focus"
         android:clickable="true"
         android:elevation="28dp"
         android:focusable="true"
