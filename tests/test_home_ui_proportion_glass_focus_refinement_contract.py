@@ -82,7 +82,7 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         for node_id, node in segments.items():
             self.assertEqual(node.get(ANDROID + "gravity"), "center")
             self.assertEqual(node.get(ANDROID + "drawablePadding"),
-                             "2dp" if node_id in ("@+id/btnHome", "@+id/btnCandyBox") else "4dp")
+                             "1dp" if node_id in ("@+id/btnHome", "@+id/btnCandyBox") else "4dp")
             self.assertEqual(node.get(ANDROID + "layout_height"), "match_parent")
         settings_container = next(node for node in nav.iter()
                                   if node.get(ANDROID + "id") == "@+id/btnSettingsContainer")
@@ -118,8 +118,8 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         self.assertIn("glider.setStyle(Glider.DARK)", MAIN)
         self.assertIn("Math.min(20f * density, pill.getHeight() / 2f)", MAIN)
         nav_bg = ET.parse(NAV_BG).getroot()
-        self.assertFalse(any("state_focused" in key for node in nav_bg.iter()
-                             for key in node.attrib))
+        self.assertTrue(any("state_focused" in key for node in nav_bg.iter()
+                            for key in node.attrib))
         glass_bg = ET.parse(GLASS_BG).getroot()
         pill_bg = ET.parse(PILL_BG).getroot()
         for drawable in (glass_bg, pill_bg):
