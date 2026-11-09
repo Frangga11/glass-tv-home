@@ -43,6 +43,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
             "ACCENT_CYAN": "tv_ui_focus_cyan",
             "BORDER": "tv_ui_border",
             "FOCUS_HALO": "tv_ui_focus_halo",
+            "GLASS_VEIL_COLOR": "tv_ui_glass_veil",
             "NAV_SELECTION_BORDER": "tv_ui_selected_border",
         }
         for java_name, xml_name in mapping.items():
