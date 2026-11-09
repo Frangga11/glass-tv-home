@@ -28,9 +28,7 @@ import java.util.List;
  */
 final class Glider extends View {
 
-    /** About 63% black: bright text reads on it, and every place that uses it matches. */
-    static final int FOCUS_ALPHA = 0xA0;
-    /** The top menu's look: a dark fill. */
+    /** The top menu's Electric Cyan focus treatment. */
     static final int DARK = 0;
     /** Between apps: a pane of glass, the same as the pills and the tray. */
     static final int GLASS = 1;
@@ -61,6 +59,7 @@ final class Glider extends View {
     private final float[] edges = new float[5];
     private final SpringAnimation[] springs = new SpringAnimation[5];
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint focusStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Backdrop.Fill glass = new Backdrop.Fill();
     private final Paint veil = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final GlassRim rim;
@@ -100,6 +99,9 @@ final class Glider extends View {
         this.reducedMotion = reducedMotion;
         float density = context.getResources().getDisplayMetrics().density;
         veil.setColor(0x14FFFFFF);
+        focusStroke.setStyle(Paint.Style.STROKE);
+        focusStroke.setStrokeWidth(2f * density);
+        focusStroke.setColor(TvUiTokens.FOCUS_BORDER);
         rim = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF);
         shadowBlur = 22f * density;
         shadowDrop = 8f * density;
@@ -283,8 +285,15 @@ final class Glider extends View {
         float r = Math.min(edges[RADIUS], Math.min(b - t, edges[RIGHT] - edges[LEFT]) / 2f);
         shape.set(edges[LEFT] + dx, t + dy, edges[RIGHT] + dx, b + dy);
         if (style == DARK) {
-            paint.setColor((int) (FOCUS_ALPHA * opacity) << 24);
+            // Focus is an overlay only: translucent cyan fill plus an inset cyan outline.
+            // It never scales or changes the focused component's measured bounds.
+            paint.setColor(TvUiTokens.FOCUS_HALO);
+            paint.setAlpha(Math.round(((TvUiTokens.FOCUS_HALO >>> 24) & 0xFF) * opacity));
             canvas.drawRoundRect(shape, r, r, paint);
+            float half = focusStroke.getStrokeWidth() / 2f;
+            shape.inset(half, half);
+            focusStroke.setAlpha(Math.round(255 * opacity));
+            canvas.drawRoundRect(shape, Math.max(0f, r - half), Math.max(0f, r - half), focusStroke);
             return;
         }
         // Glass: the selected app's shadow, what is behind it softened, an even veil, and the
