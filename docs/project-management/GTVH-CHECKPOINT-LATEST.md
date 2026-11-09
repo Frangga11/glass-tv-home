@@ -1343,3 +1343,14 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - Each supporting document points back to this canonical checkpoint; each current-status record identifies PR #104, branch feature/global-frosted-silver-glass-001 and source HEAD b737b617aa53fbfc112ccdfe8a7cd4959043d3ec. The detailed CI run identifier 42605960427 is recorded in the checkpoint, master, audit register and handover; the inventory and decision log retain their shorter summary entries.
 - The workstream audit file remains in docs/project-management/GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md and is catalogued in INVENTORY.md.
 - This documentation pass changes no application source, PR ancestry, PR state, device state or launcher setting. PR #104 remains OPEN / DRAFT / UNMERGED.
+
+## Continuation checkpoint — CI #1761 closure and targeted source color audit — 9 November 2026
+
+- Active workstream: GTVH-GLOBAL-FROSTED-SILVER-GLASS-001.
+- PR #104: OPEN / DRAFT / UNMERGED; branch `feature/global-frosted-silver-glass-001`; current PR HEAD after audit-note update: `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; protected PR #103 base remains `a3d697c793e23a59f9f9953e2074d83daa210cf9`.
+- Latest source-code HEAD remains `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`; latest PR-head CI #1761 / run `42609316862` completed SUCCESS on immediately preceding PR HEAD `4575b09b262ad664f6766ce286d5e5ed90e92780`. Both Lists/tools/docs and Android unit-test/release-build jobs passed. The subsequent HEAD `05d50e73...` is audit-document-only and must receive its own CI before being called exact-head validated.
+- Targeted Java hard-coded-color classification: no additional source change justified. Specular silver/cyan highlights, shadows, app-brand icon colors, semantic success/warning/danger, current-location status green and devotional gold accent were distinguished from global interactive palette values. The dock's former legacy cyan drift remains corrected and regression-guarded.
+- Full 141-resource classification remains PARTIAL. Rendered 1920×1080 bright/dark/mixed wallpaper review, end-to-end runtime function regression, live DPAD path, GPU/performance profiling and owner-authorized Mi TV Stick acceptance remain NOT RUN / PENDING.
+- No merge, rebase, reset, force-push, ADB, TV install or launcher-setting mutation. RE-SKIN NOT REWIRE. Overall **BELUM FINAL**.
+- Workstream audit: `docs/project-management/GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md`, Section 11.
+- Next execution: complete drawable/values resource classification, then obtain genuine rendered visual evidence before any further color changes; follow with runtime/DPAD/performance gates and device acceptance only with explicit owner approval.
