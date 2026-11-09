@@ -1885,3 +1885,14 @@ The exact-HEAD source compiles in the preceding run, but two unit tests failed; 
 **Pending acceptance:** exact-HEAD CI PASS; final PR diff review; 1920×1080 visual geometry/anchor/pointer/scrollbar QA; DPAD traversal and focus restoration; Android 11 actual scan/status/Settings handoff; APK validity and size diagnostics. No visual/runtime Mi TV Stick evidence, ADB or APK installation has been performed. No merge or retarget.
 
 **Overall status: BELUM FINAL — IMPLEMENTATION / CI VALIDATION IN PROGRESS.** PR #105 remains OPEN / DRAFT / UNMERGED. Canonical single-door authority remains `GTVH-CHECKPOINT-LATEST.md`.
+
+
+## Wi-Fi popup validation correction — 9 November 2026
+
+Application PR #105 current HEAD: `94ac6baa6d177cde21237d578af665a3978f285e`, branch `feature/wifi-popup-reference-001`, base remains `feature/global-frosted-silver-glass-001` at `b14ba7a35659ea404b88a56175e706e458c8459f`.
+
+The latest exact-HEAD CI run is `42625652808` and remains RUNNING / PENDING at the time of this update. Previous run `42625324843` still failed only the Robolectric window-gravity assertion at line 32; Java compilation succeeded. Robolectric did not expose the Dialog window gravity mutation through `getAttributes()` as expected, even after applying attributes after sizing. The current revision centralizes the intended absolute gravity in `anchoredWindowGravity()`, uses that value in the actual window LayoutParams, and tests the explicit gravity contract plus the independent window dim and scroll viewport. This test adaptation does **not** count as physical visual verification; actual screen placement remains a pending runtime gate.
+
+No additional production modules are in scope. Application PR #105 still has only the Wi-Fi dialog implementation, its direct unit test, and the direct Wi-Fi route source contract. No Home Screen, header, wallpaper, Weather/AQI, shelf, dock/grid, profile/avatar, global settings, WeatherActivity or shared global token changes. No ADB, APK install, device test or merge.
+
+Overall status remains **BELUM FINAL — exact-HEAD CI pending; visual/runtime acceptance not performed**.
