@@ -1764,3 +1764,6 @@ Directory audit result: **96 Markdown files + 1 `prototypes/` directory**. All f
 
 ### Current authority — 9 November 2026
 The canonical current status and restart instructions are in GTVH-CHECKPOINT-LATEST.md only. Active workstream evidence is GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md. PR #104 remains OPEN / DRAFT / UNMERGED; exact-head CI #1758 PASS at b737b617aa53fbfc112ccdfe8a7cd4959043d3ec. Visual, functional, performance and Mi TV Stick acceptance remain pending. Historical entries are evidence only and do not supersede the canonical checkpoint.
+
+### Latest active workstream inventory correction — 9 November 2026
+Current authority: `GTVH-CHECKPOINT-LATEST.md`. Active audit: `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` (now includes Section 11 targeted hard-coded-color classification and CI #1761 closure). PR #104 current HEAD `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; source HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`. CI #1761 PASS on preceding HEAD `4575b09b262ad664f6766ce286d5e5ed90e92780`; new audit-only commit awaits its own CI. Full 141-resource classification and rendered/runtime/DPAD/performance/device acceptance remain pending. Older status entries are historical only.
