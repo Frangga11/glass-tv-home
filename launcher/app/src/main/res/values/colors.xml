@@ -10,7 +10,8 @@
     <color name="tv_ui_text_primary">#FFFFFFFF</color>
     <color name="tv_ui_text_secondary">#FFE2E8EE</color>
     <color name="tv_ui_accent_blue">#FF4CA9C4</color>
-    <color name="tv_ui_focus_cyan">#FFDCE5ED</color>
+    <color name="tv_ui_focus_cyan">#FF00E5FF</color>
+    <color name="tv_ui_focus_border">#FFDCE5ED</color>
     <color name="tv_ui_islamic_gold">#FFFFC45A</color>
     <color name="tv_ui_islamic_text_shadow">#CC000000</color>
     <color name="tv_ui_border">#FF9EABB8</color>
