@@ -1,8 +1,10 @@
 package com.gathin.tvhome;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -50,16 +52,39 @@ final class TvFocusIndicator {
                                       int normalText, int focusedText,
                                       float focusedScale) {
         if (view == null) return;
+        StateListDrawable background = new StateListDrawable();
+        GradientDrawable disabled = new GradientDrawable();
+        disabled.setColor(TvUiTokens.DISABLED_SURFACE);
+        disabled.setCornerRadius(radiusDp * density);
+        disabled.setStroke(Math.max(1, Math.round(density)), TvUiTokens.DISABLED_BORDER);
+        GradientDrawable pressed = new GradientDrawable();
+        pressed.setColor(TvUiTokens.SURFACE_SELECTED);
+        pressed.setCornerRadius(radiusDp * density);
+        pressed.setStroke(Math.max(1, Math.round(density)), focusedStroke);
+        GradientDrawable focused = new GradientDrawable();
+        focused.setColor(focusedFill);
+        focused.setCornerRadius(radiusDp * density);
+        focused.setStroke(Math.max(1, Math.round(2f * density)), focusedStroke);
+        GradientDrawable normal = new GradientDrawable();
+        normal.setColor(normalFill);
+        normal.setCornerRadius(radiusDp * density);
+        normal.setStroke(Math.max(1, Math.round(density)), normalStroke);
+        background.addState(new int[]{-android.R.attr.state_enabled}, disabled);
+        background.addState(new int[]{android.R.attr.state_pressed}, pressed);
+        background.addState(new int[]{android.R.attr.state_focused}, focused);
+        background.addState(new int[]{}, normal);
+        view.setBackground(background);
+        view.setTextColor(new ColorStateList(
+                new int[][]{
+                        new int[]{-android.R.attr.state_enabled},
+                        new int[]{android.R.attr.state_pressed},
+                        new int[]{android.R.attr.state_focused},
+                        new int[]{}
+                },
+                new int[]{TvUiTokens.DISABLED_TEXT, focusedText, focusedText, normalText}
+        ));
+        // Keep focusedScale in the signature for existing callers; focus must not alter geometry.
         view.setOnFocusChangeListener((target, hasFocus) -> {
-            GradientDrawable background = new GradientDrawable();
-            background.setColor(hasFocus ? focusedFill : normalFill);
-            background.setCornerRadius(radiusDp * density);
-            background.setStroke(
-                    Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
-                    hasFocus ? focusedStroke : normalStroke);
-            view.setBackground(background);
-            view.setTextColor(hasFocus ? focusedText : normalText);
-            // Keep focusedScale in the signature for existing callers; focus must not alter geometry.
             target.animate().cancel();
             target.setScaleX(1.0f);
             target.setScaleY(1.0f);
