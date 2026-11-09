@@ -28,7 +28,7 @@ import java.util.List;
  */
 final class Glider extends View {
 
-    /** The top menu's Electric Cyan focus treatment. */
+    /** The shared premium silver-glass DPAD focus treatment. */
     static final int DARK = 0;
     /** Between apps: a pane of glass, the same as the pills and the tray. */
     static final int GLASS = 1;
@@ -285,7 +285,7 @@ final class Glider extends View {
         float r = Math.min(edges[RADIUS], Math.min(b - t, edges[RIGHT] - edges[LEFT]) / 2f);
         shape.set(edges[LEFT] + dx, t + dy, edges[RIGHT] + dx, b + dy);
         if (style == DARK) {
-            // Focus is an overlay only: translucent cyan fill plus an inset cyan outline.
+            // Focus is an overlay only: translucent silver-glass fill plus a cool silver rim.
             // It never scales or changes the focused component's measured bounds.
             paint.setColor(TvUiTokens.FOCUS_HALO);
             paint.setAlpha(Math.round(((TvUiTokens.FOCUS_HALO >>> 24) & 0xFF) * opacity));
