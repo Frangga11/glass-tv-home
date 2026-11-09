@@ -1,3 +1,21 @@
+## AUTHORITATIVE CHECKPOINT UPDATE — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS
+
+- PR #104 remains OPEN / DRAFT / UNMERGED: https://github.com/Frangga11/glass-tv-home/pull/104
+- Exact current PR HEAD: `4575b09b262ad664f6766ce286d5e5ed90e92780`; the newest commit adds audit documentation only.
+- Latest source-code HEAD: `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`; protected PR #103 base SHA: `a3d697c793e23a59f9f9953e2074d83daa210cf9`.
+- G4 correction: `DockBreathingBorderView.java` now derives glow and lower rim-gradient RGB from `TvUiTokens.ACCENT_CYAN` (#00E5FF), replacing legacy #38BDF8. Animation timing, alpha, stroke widths, geometry, lifecycle and DPAD behavior unchanged.
+- Regression guard: `test_dock_breathing_rim_uses_shared_electric_cyan_token`.
+- Exact source-head CI #1760 / run 42608935919: SUCCESS on `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`; Python unittest discovery and Android `testReleaseUnitTest assembleRelease` jobs both passed. Artifact ID 13670145336 is the workflow Home layout visual-parity artifact; exact APK byte size for this head was not captured.
+- Current docs-only PR-head CI #1761 / run 42609316862: IN PROGRESS on `4575b09b262ad664f6766ce286d5e5ed90e92780`; do not claim exact-current-head CI until it completes.
+- G1 inventory cross-check: 141 app drawable/values resources enumerated; 36 changed, 105 unchanged. Unchanged resources require semantic classification; unchanged does not automatically mean defect. Full stale-resource sweep remains PARTIAL.
+- Remaining gates: full G1/G4 source-resource sweep; matched 1920×1080 visual review on bright/dark/mixed wallpapers; full runtime functional regression; live DPAD focus path; GPU/performance profiling; owner-authorized physical Mi TV Stick acceptance.
+- Preserve RE-SKIN NOT REWIRE, PR #103 ancestry, IDs/listeners/handlers/data/navigation/focus graph/geometry/wallpaper/Arabic RTL. No merge, retarget, reset, force-push, ADB/install or default-launcher change.
+- Overall status: source-code correction and CI #1760 PASS; exact current docs-head CI pending; runtime acceptance pending; **BELUM FINAL**.
+
+**Resume protocol:** start from this checkpoint. Verify PR #104 head and CI #1761 conclusion. If it passes, retain #1760 as source-code validation evidence; then continue the remaining G1/G4 source-resource audit. No physical-device test until owner authorization after G1/G4. Do not claim visual or runtime PASS without actual evidence.
+
+---
+
 ## AUTHORITATIVE CONTINUATION SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — 9 NOVEMBER 2026
 
 - Active PR #104: OPEN / DRAFT / UNMERGED — https://github.com/Frangga11/glass-tv-home/pull/104
