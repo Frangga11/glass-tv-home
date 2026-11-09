@@ -224,6 +224,16 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertIn("TvUiTokens.DISABLED_SURFACE", source)
         self.assertIn("TvUiTokens.DISABLED_BORDER", source)
 
+    def test_home_islamic_and_manual_update_focus_use_cyan_not_legacy_blue(self):
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        self.assertNotIn("0xFF7DD3FC", main)
+        self.assertNotIn("0x997DD3FC", main)
+        self.assertNotIn("0x443B5872", main)
+        self.assertNotIn("0x553B5872", main)
+        self.assertIn("focusSurface.setColor(hasFocus ? TvUiTokens.FOCUS_HALO", main)
+        self.assertIn("hasFocus ? TvUiTokens.FOCUS_BORDER", main)
+        self.assertIn("btnCheckNow.setTextColor(TvUiTokens.TEXT_PRIMARY)", main)
+
     def test_dynamic_dialog_focus_surfaces_use_shared_cyan_tokens(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertIn("on.setColor(TvUiTokens.SURFACE_FOCUSED)", main)
