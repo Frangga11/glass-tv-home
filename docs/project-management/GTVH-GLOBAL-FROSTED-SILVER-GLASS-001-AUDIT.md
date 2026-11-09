@@ -286,3 +286,31 @@ Current PR tree inventory:
 - CI #1764, #1766 and #1767 PASS.
 - Recent Apps runtime clipping/stroke, wallpaper contrast, installer startup transition, rendered 1920×1080 review, functional/DPAD runtime, GPU/performance and physical-device acceptance remain PENDING / NOT RUN.
 - PR #104 remains OPEN / DRAFT / UNMERGED. No merge, ADB, install or default-launcher change. PR #103 remains protected. Overall BELUM FINAL.
+
+
+## 15. Visual QA source correction — Recent Apps normal border retention — 9 November 2026
+
+### Trigger and root cause
+- Source inspection found that `RecentAppsAdapter.AppViewHolder.bind()` creates a per-app `GradientDrawable` and assigns it to `cardContainer`, replacing the XML `bg_recent_card.xml` background.
+- The XML normal surface declares a 1dp `#99DCE5ED` stroke and 26dp corners, but the dynamic drawable originally set only fill and corner radius. Therefore the normal silver border was not retained at runtime. This was a source-confirmed defect, not merely a visual hypothesis.
+
+### Scoped correction
+- Restored the normal 1dp `#99DCE5ED` stroke on the dynamic card drawable before assigning it as the card background.
+- Preserved 26dp corner radius, package-specific card fill, app squircle treatment, elevation/shadows, separate foreground focus selector and Electric Cyan focused outline.
+- No view IDs, listeners, handlers, navigation, DPAD behavior, persistence, lifecycle, data logic, card dimensions or approved geometry changed.
+- No PR #103 changes, merge, ADB session or device installation.
+
+### Regression protection
+- Extended `tests/test_global_frosted_silver_glass_contract.py` to assert the runtime dynamic drawable retains the 1dp silver stroke and 26dp radius before it is assigned to the card.
+- Source commit: `811bccae770d225218583138968f85f083fed516`.
+- Regression test commit: `9a1ad0e3911afe63d3076240f7b9bac02e6e1cea`.
+- CI #1769 / run `42614272249` triggered on exact PR HEAD `9a1ad0e3911afe63d3076240f7b9bac02e6e1cea`; both jobs were IN PROGRESS at audit update. Do not claim PASS until completed.
+
+### Remaining visual/runtime disposition
+- Source now preserves the declared normal border. The rendered card edge, clipping, 26dp normal/focused radius match and focus outline must still be inspected at 1920×1080.
+- Islamic Ayah source remains white/near-white with black shadow, Amiri Quran Arabic font, RTL Arabic and right alignment; bright/dark/mixed wallpaper contrast is not visually verified.
+- Installer theme windowBackground and first content root both use #2C333B; system bars remain #0C0E14. Startup flash absence is not claimed without runtime observation.
+- Resource role classification remains intact; no mechanical recoloring. No additional token change is justified by the current source evidence.
+- Five-state rendered review, end-to-end functional regression, live DPAD path, installer startup observation, GPU/performance profiling and physical Mi TV Stick acceptance remain PENDING / NOT RUN. Physical device use still requires explicit owner authorization.
+
+**Disposition:** Recent Apps normal-border source defect corrected and regression-guarded; CI pending at this checkpoint. Workstream remains **BELUM FINAL**. PR #104 remains OPEN / DRAFT / UNMERGED.
