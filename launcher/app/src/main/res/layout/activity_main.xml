@@ -815,6 +815,7 @@
                     android:includeFontPadding="false"
                     android:textSize="14sp"
                     android:fontFamily="@font/inter"
+                    android:letterSpacing="0.01"
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:background="@android:color/transparent"
