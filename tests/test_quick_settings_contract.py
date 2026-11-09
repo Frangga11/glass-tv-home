@@ -47,6 +47,20 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("params.dimAmount = popupDimAmount();", wifi_dialog)
         self.assertIn("return 0.08f;", wifi_dialog)
 
+    def test_wifi_popup_refinement_preserves_compact_width_and_balanced_type(self):
+        wifi_dialog = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("return 0.1976f;", wifi_dialog)
+        self.assertIn("return 0.43f;", wifi_dialog)
+        self.assertIn("return 14f;", wifi_dialog)
+        self.assertIn("networksHeading.setGravity(Gravity.CENTER);", wifi_dialog)
+        self.assertIn("scanState.setGravity(Gravity.CENTER);", wifi_dialog)
+        self.assertIn("new RelativeSizeSpan(0.78f)", wifi_dialog)
+        self.assertIn("view.setMaxLines(1);", wifi_dialog)
+        self.assertNotIn('label = "⌁  " + label', wifi_dialog)
+        for resource in ("values/strings.xml", "values-id/strings.xml"):
+            content = (RES / resource).read_text(encoding="utf-8")
+            self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi  &gt;', content)
+
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
             "setNextFocusLeftId",
