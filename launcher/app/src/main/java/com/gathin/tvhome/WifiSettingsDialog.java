@@ -525,7 +525,6 @@ final class WifiSettingsDialog {
             TextView connectedRow = action(connectedLabel, "wifi_network:" + connectedSsid,
                     activity.getResources().getDisplayMetrics().density,
                     () -> dismissThen(openSystemWifiSettings));
-            connectedRow.setBackground(TvDialogStyle.createDialogSurface(activity));
             networkRows.addView(connectedRow);
             connectedAdded = true;
         }
@@ -570,10 +569,6 @@ final class WifiSettingsDialog {
             View fallback = firstFocusableControl();
             if (fallback != null) fallback.requestFocus();
         }
-    }
-
-    private boolean isConnectedNetwork(String ssid) {
-        return connectedSsid != null && connectedSsid.equals(ssid);
     }
 
     private String securityLabel(String capabilities) {
