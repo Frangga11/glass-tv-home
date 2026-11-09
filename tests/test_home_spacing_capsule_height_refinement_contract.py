@@ -71,6 +71,22 @@ class HomeSpacingCapsuleHeightRefinementContractTest(unittest.TestCase):
         self.assertIn("return Math.max(0, -Math.round(prayerTable.getTranslationY()));", MAIN)
         self.assertIn("int shelfGapPx = DockGeometry.islamicShelfDockGapPx(density);", MAIN)
 
+    def test_wallpaper_title_and_description_use_requested_anchor_gaps(self):
+        root = ET.parse(HOME_XML).getroot()
+        by_id = {node.get(ANDROID + "id"): node for node in root.iter()
+                 if node.get(ANDROID + "id")}
+        self.assertEqual(by_id["@+id/heroName"].get(ANDROID + "layout_marginTop"), "0dp")
+        self.assertEqual(by_id["@+id/heroDesc"].get(ANDROID + "layout_marginTop"), "5dp")
+
+    def test_ayah_to_prayer_header_has_zero_effective_visual_gap(self):
+        root = ET.parse(HOME_XML).getroot()
+        by_id = {node.get(ANDROID + "id"): node for node in root.iter()
+                 if node.get(ANDROID + "id")}
+        block_margin = float(by_id["@+id/ayahBlock"].get(ANDROID + "layout_marginBottom").replace("dp", ""))
+        header_translation = float(by_id["@+id/prayerHeader"].get(ANDROID + "translationY").replace("dp", ""))
+        self.assertEqual(block_margin + header_translation, 0.0)
+        self.assertEqual(by_id["@+id/prayerHeader"].get(ANDROID + "layout_marginTop"), "0dp")
+
     def test_existing_prayer_translation_and_navigation_behavior_are_not_rewritten(self):
         root = ET.parse(HOME_XML).getroot()
         by_id = {node.get(ANDROID + "id"): node for node in root.iter()
