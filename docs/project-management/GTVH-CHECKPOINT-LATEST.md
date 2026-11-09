@@ -1361,3 +1361,11 @@ PR #104 current HEAD: `6660b9721f0d03575370ba8570a07b40c1425f4c` (audit-only com
 - Open geometry/visual flags: bg_ram_pill intrinsic padding shrank 20dp/9dp to 12dp/5dp (verify usage and restore unless owner-approved); bg_recent_card radius 24dp→26dp (verify rendered radius consistency); static Ayah color gold→white plus shadow change (verify readability/intent); installer theme window/status/navigation background remains #0C0E14 while content root is #2C333B (verify startup transition).
 - Full unchanged-resource semantic classification, rendered 1920×1080 bright/dark/mixed wallpaper review, runtime functional/DPAD, GPU/performance and physical Mi TV Stick acceptance remain pending. PR #104 OPEN / DRAFT / UNMERGED; no device install or merge. Overall BELUM FINAL.
 - Detailed findings: GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md Section 12.
+
+## Recovery continuation — force-close backlog resumed — 9 November 2026
+- PR #104 remains OPEN / DRAFT / UNMERGED; current HEAD `1d480afe88072094cd8169ab8ed8d2d8d9ae0bbe`; protected PR #103 base remains `a3d697c793e23a59f9f9953e2074d83daa210cf9`.
+- CI #1763 / run `42610968348` SUCCESS on prior audit HEAD `6660b9721f0d03575370ba8570a07b40c1425f4c`.
+- Restored Recent Apps RAM pill drawable padding from unintended 12dp/5dp back to original 20dp horizontal / 9dp vertical after confirming `activity_recent_apps.xml` uses `@drawable/bg_ram_pill`. Added regression guard `test_recent_apps_ram_pill_preserves_original_content_insets`.
+- Source/test HEAD `75481d456556655076c51735f33f19a131e17190`; CI #1764 / run `42611753895`: Lists/tools/docs PASS; Android unit-test/release-build still in progress at checkpoint time. The subsequent audit-only HEAD `1d480afe...` needs its own CI.
+- Remaining: rendered review of Recent Apps card 26dp radius; Ayah white text/black shadow contrast; installer startup window background; full unchanged-resource classification; rendered 1920×1080 bright/dark/mixed wallpaper; runtime/DPAD/performance; owner-authorized Mi TV Stick acceptance.
+- No merge, ADB, install or launcher setting changes. Detailed audit Section 13. Overall BELUM FINAL.
