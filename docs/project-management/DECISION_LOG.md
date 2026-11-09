@@ -1,3 +1,21 @@
+<!-- CURRENT AUTHORITATIVE DECISION STATUS — RECOVERY SYNC 18:19 WIB -->
+## AUTHORITATIVE RECOVERY SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — 9 NOVEMBER 2026, 18:19 WIB
+
+- **Active source PR:** [#104](https://github.com/Frangga11/glass-tv-home/pull/104), OPEN / DRAFT / UNMERGED.
+- **Source branch / exact PR HEAD:** `feature/global-frosted-silver-glass-001` / `b737b617aa53fbfc112ccdfe8a7cd4959043d3ec`.
+- **Protected base:** PR #103, `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`, exact SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Preserve ancestry and all inherited RTL, prayer, Arabic alignment and Home corrections.
+- **Force-close recovery:** corrected `TvFocusIndicator.createOvalStateBackground()` parameter type; updated the obsolete Home weather/header focus contract to the shared listener/no-resize behavior; aligned wallpaper interval selection with shared state semantics; removed no-op WeatherActivity scale animations; completed shared focus styling for dynamic settings/profile surfaces; added regression coverage. No test was disabled or weakened.
+- **Exact PR-head CI:** [#1758 / run 42605960427](https://github.com/Frangga11/glass-tv-home/actions/runs/42605960427) SUCCESS; both required jobs succeeded. Python regression **235 passed, 1 skipped**; Android unit tests and release build **BUILD SUCCESSFUL**.
+- **APK diagnostic:** 1,628,165 bytes (1,590 KB), non-blocking size diagnostic. Artifact `13668172465` is a Home layout test artifact, **not** the release APK.
+- **Implemented:** neutral cool-silver Java/XML tokens; Electric Cyan DPAD outline; distinct selected/active state; geometry-stable focus; shared Home/dock/dialog/location/weather/prayer/media/Recent Apps/settings/profile/installer reskin; Arabic RTL/data/navigation preserved.
+- **Still NOT PASS / pending:** full remaining source/resource stale-style sweep; rendered 1920×1080 comparison on bright/dark/mixed wallpapers; full runtime functional regression; live DPAD path; GPU/performance profiling; owner-authorized Mi TV Stick acceptance.
+- **Guardrails:** RE-SKIN, NOT REWIRE. Preserve IDs, listeners, handlers, data, persistence, navigation, focus graph, geometry, wallpaper and Arabic RTL. No merge, rebase, reset, force-push, retarget, ADB/install, default-launcher change or device test until required audit gates and explicit owner authorization.
+- **Disposition:** automated source/build CI PASS; overall workstream **BELUM FINAL**. Keep PR #104 OPEN / DRAFT / UNMERGED.
+
+**Decisions retained:** D-010 neutral Frosted Silver Glass; D-011 cyan is focus while selected/active remains silver; D-012 focus does not change geometry; D-013 cached blur only/no new Android 11 dependency; D-014 visual reskin only with behavior/data/RTL preserved; D-015 protect PR #103 ancestry and hold Draft/unmerged through QA and owner approval. Recovery fixes implement, not supersede, these decisions.
+
+---
+
 <!-- CURRENT AUTHORITATIVE DECISION UPDATE — 9 NOVEMBER 2026. Supersedes conflicting earlier current decisions below. -->
 ## Approved decisions — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
 
