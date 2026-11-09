@@ -1,3 +1,23 @@
+<!-- CURRENT AUTHORITATIVE WORKSTREAM UPDATE — 9 NOVEMBER 2026, 17:01 WIB. Supersedes older current-status statements below; history retained. -->
+## Global Visual Workstream — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
+The owner-approved global visual identity is **Frosted Silver Glass + Electric Cyan DPAD Focus**. Execution is staged G1 Repository/Baseline Audit → G2 Design System → G3 Prototype → G4 Global Implementation → G5 Integration → G6 Regression/QA → G7 Final Checkpoint.
+
+Current implementation candidate: PR #104 OPEN / DRAFT / UNMERGED on `feature/global-frosted-silver-glass-001`, exact HEAD `b34d785dced9b5e47e65adf9865b1f4deada532d`, based directly on PR #103 exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Parent PR #103 and PR #101 remain open and protected. Do not change ancestry or merge without explicit owner approval.
+
+Design rules:
+- Neutral cool-silver material; soft white highlights; restrained cyan reflection; no violet/gold iridescence.
+- Electric Cyan outline is the DPAD focus state. Selected/active remains a distinct, persistent silver state.
+- Normal, focused, selected, pressed and disabled are distinct.
+- Focus must not scale, resize, translate or reposition a component.
+- Preserve pre-existing layout reservation and measured geometry; AppAdapter visual focus scale is 1.0 while its historical 1.07 tile-layout reservation remains.
+- Use cached wallpaper blur already implemented by Backdrop; no real-time blur or new dependency on Android 11.
+- Preserve all IDs, listeners, actions, data/persistence, navigation, wallpaper, DPAD focus graph, Arabic shaping/RTL and physical right alignment.
+
+Current status: shared design tokens, material rim, core focus renderers, Home/dock/popup/location/weather/prayer/media/recent-app/installer surfaces and regression contracts have an initial implementation. G1 full source sweep and G4 global coverage remain in progress. Exact-head CI #1691 is in progress; visual, functional, DPAD runtime, performance and device acceptance remain pending. The detailed current restart authority is `GTVH-CHECKPOINT-LATEST.md`; audit/design details are in `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on PR #104.
+
+---
+
 <!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
 ## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
 
