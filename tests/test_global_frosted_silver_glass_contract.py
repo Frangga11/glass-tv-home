@@ -98,18 +98,30 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(int(java_int("DOCK_SURFACE")[2:4], 16), 255)
         self.assertIn("0x88343E48", tokens)
 
+    def test_dynamic_dialog_focus_surfaces_use_shared_cyan_tokens(self):
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("on.setColor(TvUiTokens.SURFACE_FOCUSED)", main)
+        self.assertIn("on.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER)", main)
+        self.assertNotIn("new int[]{0xFF000000", main)
+        settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertNotIn("0xFF176B87", settings)
+        self.assertNotIn("0xFF4A4E5C", settings)
+
     def test_changed_drawable_resources_are_valid_xml(self):
         names = [
             "bg_glass_dialog.xml", "glass_panel.xml", "bg_floating_dock.xml",
             "bg_location_pill.xml", "bg_tv_focus_outline.xml",
-            "bg_app_pill_focused.xml", "bg_app_pill_unfocused.xml",
-            "selector_glass_dialog_button_bg.xml",
-            "selector_glass_dialog_list_item_bg.xml", "header_nav_tab_bg.xml",
-            "bg_recent_apps_glass.xml", "bg_media_app_pill.xml", "bg_np_round_btn.xml",
-            "input_row_bg.xml", "bg_dialog_btn.xml", "bg_location_state_pill.xml",
-            "prayer_pill_bg.xml", "bg_track_info_selector.xml", "tile_bg.xml",
-            "bg_ram_pill.xml", "bg_circle_close_all.xml", "header_glass_pill_bg.xml",
-            "bg_recent_card.xml", "bg_app_squircle.xml",
+            "bg_app_pill.xml", "bg_app_pill_focused.xml", "bg_app_pill_unfocused.xml",
+            "selector_glass_dialog_button_bg.xml", "selector_glass_dialog_list_item_bg.xml",
+            "header_nav_tab_bg.xml", "bg_recent_apps_glass.xml", "bg_media_app_pill.xml",
+            "bg_np_round_btn.xml", "input_row_bg.xml", "bg_dialog_btn.xml",
+            "bg_location_state_pill.xml", "bg_location_zone_card.xml", "prayer_pill_bg.xml",
+            "bg_track_info_selector.xml", "tile_bg.xml", "bg_ram_pill.xml",
+            "bg_circle_close_all.xml", "header_glass_pill_bg.xml", "bg_recent_card.xml",
+            "bg_app_squircle.xml", "dialog_btn_text.xml", "pill_text.xml",
+            "pill_text_dim.xml", "pill_text_mid.xml", "top_text.xml", "top_text_dim.xml",
+            "weather_card_bg.xml", "weather_pill_bg.xml", "bg_weather_tab_active.xml",
+            "selector_daily_row_bg.xml",
         ]
         for name in names:
             with self.subTest(resource=name):
