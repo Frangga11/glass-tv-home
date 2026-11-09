@@ -2474,3 +2474,12 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 **Evidence:** live PR #103 metadata confirms OPEN / DRAFT / UNMERGED, source HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`, base `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`, 7 ahead / 0 behind, 5 changed files. Exact-head CI #1689 / run `42566072365` is SUCCESS. APK diagnostic is 1,626,637 bytes; no artifact ZIP published. Rendered visual audit and physical device acceptance remain pending.
 
 **Disposition:** documentation synchronization only. No source changes, PR state changes, device actions, or merge. Follow-up audit: verify all six updated files at the resulting documentation commit and verify each points to the same canonical checkpoint.
+
+
+## Audit record — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 force-close recovery — 9 November 2026
+- First corrective CI #1753 failed on a Java type mismatch in the oval state helper and a stale weather focus-scale test. Both root causes were corrected; no tests were disabled.
+- Corrective exact PR HEAD b737b617aa53fbfc112ccdfe8a7cd4959043d3ec passed CI #1758 / run 42605960427: 235 Python tests passed, 1 skipped; Android unit tests and release build successful; release APK size diagnostic 1,628,165 bytes.
+- Test artifact ID 13668172465 is the Home layout test artifact, not the release APK.
+- DPAD geometry, active/selected state separation, Arabic RTL/right alignment and existing functionality are protected by updated contracts.
+- Remaining open audits: rendered 1920×1080 visual comparison, functional and live DPAD QA, performance/GPU profiling, and owner-authorized Mi TV Stick acceptance.
+- PR #104 stays OPEN / DRAFT / UNMERGED. Canonical status/restart authority: GTVH-CHECKPOINT-LATEST.md.
