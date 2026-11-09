@@ -29,11 +29,15 @@ public class QuickSettingsFocusGraphTest {
         assertEquals(QuickSettingsFocusGraph.INTERVAL,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.RIGHT));
         assertEquals(QuickSettingsFocusGraph.WALLPAPER_MANAGE,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.DOWN));
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.RIGHT));
         assertEquals(QuickSettingsFocusGraph.NEXT_PHOTO,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.DOWN));
+        assertEquals(QuickSettingsFocusGraph.INTERVAL,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WALLPAPER_MANAGE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.GLASS_SETTINGS,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.DOWN));
+        assertEquals(QuickSettingsFocusGraph.WALLPAPER_MANAGE,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.POWER, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.ANDROID_SETTINGS,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.GLASS_SETTINGS, QuickSettingsFocusGraph.RIGHT));
     }
