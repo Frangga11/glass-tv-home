@@ -8,11 +8,9 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 
 /**
- * The edge of a glass shape in ReactDrops Soap Bubble / Liquid Glass style:
- * Captures light with thin-film prismatic iridescence (diamond white glint,
- * iridescent cyan, soap violet, and golden pearl shimmer) along the top-left,
- * transitioning into clean translucent waist and soft ambient twilight bounce on the bottom-right.
- * Also renders an overhead "Window Light" specular reflection glint along the top curve.
+ * The edge of a Frosted Silver Glass surface.
+ * Uses cool silver highlights with a restrained Electric Cyan reflection and no decorative
+ * violet/gold interference colors. Also renders a soft overhead window-light glint.
  */
 final class GlassRim {
 
