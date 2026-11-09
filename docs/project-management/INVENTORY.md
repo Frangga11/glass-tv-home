@@ -1913,3 +1913,23 @@ Additional isolated corrections:
 PR diff remains restricted to `WifiSettingsDialog.java`, `WifiSettingsDialogTest.java`, and `tests/test_quick_settings_contract.py`. No unrelated production module, Home Screen component, global token, data logic or other workstream was modified. No ADB, APK installation, Mi TV Stick runtime QA or merge.
 
 **Status: BELUM FINAL — exact-HEAD CI queued; visual/runtime acceptance pending.** PR #105 OPEN / DRAFT / UNMERGED.
+
+
+## Wi-Fi popup exact-HEAD CI result — 9 November 2026
+
+**Current application candidate:** PR #105, OPEN / DRAFT / UNMERGED. Repository `Frangga11/glass-tv-home`; branch `feature/wifi-popup-reference-001`; exact HEAD `4fd825cebfe2a17ec7cc55882be13e96bdf13249`; base branch `feature/global-frosted-silver-glass-001`, base HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`.
+
+**Exact-HEAD CI:** run `42626329175` — **SUCCESS**. Lists/tools/docs job PASS. Launcher build and unit-test job PASS. Release build completed successfully (`BUILD SUCCESSFUL`). Release APK size diagnostic: **1,629,701 bytes**. Test APK publishing was skipped by workflow policy; no APK was installed to a device.
+
+**Application PR scope:** exactly three changed files:
+- `launcher/app/src/main/java/com/gathin/tvhome/WifiSettingsDialog.java`
+- `launcher/app/src/test/java/com/gathin/tvhome/WifiSettingsDialogTest.java`
+- `tests/test_quick_settings_contract.py`
+
+Implemented Wi-Fi-only changes: compact anchored top-right dialog, pointer aligned to the existing Wi-Fi anchor after content insets, baseline Frosted Silver-Cyan Glass tokens retained, low dim policy (0.08), bounded 88dp scrollable network list, connected network promoted to first row, existing Wi-Fi/lock/settings icons reused, vertically stacked rescan/settings actions, explicit absolute gravity and dim policy contracts. Existing scan, permission, status, Android Settings handoff and parent lifecycle remain the system integration path. No direct Android Wi-Fi radio toggle API was added.
+
+**Scope audit:** no Home Screen layout/header, wallpaper, Weather/AQI, Hero Shelf, Islamic Shelf, dock/grid, profile/avatar, global settings, WeatherActivity, global token or unrelated data-logic changes. Parent PR #104 and other workstreams remain untouched. PR #105 is not merged or retargeted.
+
+**Remaining acceptance gates:** rendered visual inspection at 1920×1080; real Mi TV Stick Android 11 popup position/size/triangle/scrollbar verification; DPAD traversal, scroll-to-focused and focus restoration; actual Wi-Fi on/off state, scan/permission behavior and Android Settings handoff on device. No ADB, APK installation or physical device test was performed in this session.
+
+**Overall status: BUILD / UNIT-TEST CI PASS — VISUAL AND PHYSICAL RUNTIME ACCEPTANCE PENDING — BELUM FINAL.** PR #105 remains OPEN / DRAFT / UNMERGED. Do not merge or install before remaining acceptance evidence and explicit owner approval.
