@@ -121,7 +121,7 @@ public class QuickSettingsDialogTest {
         RecordingActions actions = new RecordingActions();
         final int[] dismissed = {0};
         AlertDialog dialog = QuickSettingsDialog.show(activity, actions,
-                QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
+                QuickSettingsFocusGraph.WIFI, new View(activity), () -> dismissed[0]++);
         assertNotNull(dialog);
         dialog.cancel();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
