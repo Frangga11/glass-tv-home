@@ -167,3 +167,23 @@ No visual, functional, DPAD, performance or device gate may be marked PASS witho
 **Still pending / not claimed PASS:** rendered 1920×1080 screenshot review, bright/dark/mixed wallpaper readability comparison, full end-to-end function regression, live DPAD focus-path test, performance/GPU profiling, and owner-authorized physical Mi TV Stick acceptance. No real device test has been performed in this recovery pass.
 
 **Current disposition:** source fixes and exact-head automated CI are PASS; visual, functional, performance and device acceptance remain PENDING. PR #104 remains Draft/unmerged. Overall workstream remains **BELUM FINAL** until all required acceptance evidence is recorded.
+
+
+## 10. G1/G4 continuation — Dock breathing rim token drift correction — 9 November 2026
+
+**Finding:** the resource/source cross-check identified one remaining decorative dock focus/rim path outside the initial changed-file set: `DockBreathingBorderView.java` used hard-coded RGB `(56, 189, 248)` / `#38BDF8` for both the atmospheric glow and lower edge of the rim gradient. This was inconsistent with the approved shared Electric Cyan token `TvUiTokens.ACCENT_CYAN = #00E5FF`.
+
+**Correction on the same PR #104 branch:**
+- Both glow and gradient cyan now derive their RGB channels from `TvUiTokens.ACCENT_CYAN`.
+- No change to animator duration/repeat/interpolator, alpha envelope, stroke widths, bounds, corner radius, drawing order, visibility lifecycle, IDs, listeners, dock geometry or DPAD behavior.
+- Added `test_dock_breathing_rim_uses_shared_electric_cyan_token` to prevent recurrence and verify the shared token is used for both paint paths.
+
+**Commits:** source correction `0f90e90cb0d99ccd9c34ec1e36f5976af4fb9120`; regression contract `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`.
+
+**Exact-head automation:** CI #1760 / [run 42608935919](https://github.com/Frangga11/glass-tv-home/actions/runs/42608935919) **SUCCESS** on exact PR HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`. Both required jobs succeeded: Python unittest discovery and Android `testReleaseUnitTest assembleRelease`. Artifact ID `13670145336`, uploaded as the workflow's Home layout visual-parity artifact (1,429,060 bytes). This artifact is not separately represented as an independently downloadable release APK in the evidence collected here. Exact APK byte size was not captured in the available run summary; do not copy the previous-head size forward as if it were measured for this head.
+
+**G1 inventory cross-check:** 141 app drawable/values files were enumerated against the PR #103 baseline; 36 differ and 105 are unchanged. Unchanged icons, weather artwork, localization strings and resources already using semantic tokens are not defects merely because they were untouched. A complete stale-color/style classification of every unchanged item remains open; this is a scoped inventory result, not a full audit PASS.
+
+**Remaining gates:** full stale-resource/source sweep; matched rendered 1920×1080 review on bright/dark/mixed wallpapers; full end-to-end runtime functional regression; live DPAD path; GPU/performance profiling; physical Mi TV Stick acceptance only after G1/G4 completion and explicit owner authorization.
+
+**Disposition:** Dock rim cyan token drift corrected; exact-head automated CI PASS. Source audit and global implementation remain PARTIAL; visual/runtime/performance/device acceptance remain NOT RUN / PENDING. PR #104 remains OPEN / DRAFT / UNMERGED; overall workstream **BELUM FINAL**.
