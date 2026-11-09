@@ -1888,3 +1888,7 @@ All six core management documents were re-read and aligned to the same checkpoin
 
 ## Current authority — VISUAL-EVIDENCE-002 — 9 November 2026
 See canonical `GTVH-CHECKPOINT-LATEST.md`. PR #104 remains OPEN / DRAFT / UNMERGED at exact HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`; CI #1772 / run `42614429069` PASS. Inspected CI artifact `13672026508`: it contains only `app-release.apk`, no screenshots or visual/performance reports. Existing repository screenshot assets are not tied to exact HEAD + target-device capture metadata and are not accepted as current runtime evidence. No ADB or installation was performed. Rendered visual, five-state, wallpaper contrast, installer startup, DPAD/runtime and GPU/performance remain PENDING / NOT RUN. No source change is justified without evidence. Physical-device testing requires explicit authorization.
+
+
+### Common checkpoint seal — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-EVIDENCE-002 — 9 November 2026
+All six core management documents are synchronized to this same checkpoint ID and exact application PR HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`. CI #1772 / run `42614429069` is PASS. CI artifact `13672026508` contains only `app-release.apk`, not visual evidence. Rendered visual, runtime/DPAD and GPU/performance gates remain PENDING / NOT RUN. Canonical single-door authority: `GTVH-CHECKPOINT-LATEST.md`. PR #104 remains OPEN / DRAFT / UNMERGED; no ADB or APK installation; PR #103 unchanged.

@@ -1526,3 +1526,7 @@ Obtain an actual capture set from the target runtime: 1920×1080 Mi TV Stick And
 
 ## Safeguards / final status
 RE-SKIN, NOT REWIRE. PR #104 remains OPEN / DRAFT / UNMERGED; do not modify PR #103; do not merge. No ADB or APK install without explicit authorization. Overall status: **BELUM FINAL — exact-head CI PASS; visual/runtime/performance acceptance still unverified.**
+
+
+### Common checkpoint seal — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-EVIDENCE-002 — 9 November 2026
+All six core management documents are synchronized to this same checkpoint ID and exact application PR HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`. CI #1772 / run `42614429069` is PASS. CI artifact `13672026508` contains only `app-release.apk`, not visual evidence. Rendered visual, runtime/DPAD and GPU/performance gates remain PENDING / NOT RUN. Canonical single-door authority: `GTVH-CHECKPOINT-LATEST.md`. PR #104 remains OPEN / DRAFT / UNMERGED; no ADB or APK installation; PR #103 unchanged.

@@ -2647,3 +2647,7 @@ All six core management documents were re-read and aligned to the same checkpoin
 
 ## Handover — VISUAL-EVIDENCE-002 — 9 November 2026
 Resume from `GTVH-CHECKPOINT-LATEST.md`. PR #104 remains OPEN / DRAFT / UNMERGED at `b14ba7a35659ea404b88a56175e706e458c8459f`; protected base `a3d697c793e23a59f9f9953e2074d83daa210cf9`. CI #1772 PASS. Artifact ID `13672026508` contains only `app-release.apk`, not screenshots. Existing repo screenshot assets are not traceable to exact HEAD and target-device capture conditions. No ADB/install/device access performed. Next required input is an actual 1920×1080 Mi TV Stick Android TV 11 capture set with exact build/HEAD metadata and required wallpapers/states; otherwise obtain explicit authorization before device testing. Do not merge PR #104 or modify PR #103. RE-SKIN NOT REWIRE. Overall BELUM FINAL.
+
+
+### Common checkpoint seal — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-EVIDENCE-002 — 9 November 2026
+All six core management documents are synchronized to this same checkpoint ID and exact application PR HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`. CI #1772 / run `42614429069` is PASS. CI artifact `13672026508` contains only `app-release.apk`, not visual evidence. Rendered visual, runtime/DPAD and GPU/performance gates remain PENDING / NOT RUN. Canonical single-door authority: `GTVH-CHECKPOINT-LATEST.md`. PR #104 remains OPEN / DRAFT / UNMERGED; no ADB or APK installation; PR #103 unchanged.
