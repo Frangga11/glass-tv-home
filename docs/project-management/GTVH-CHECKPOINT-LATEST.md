@@ -1,3 +1,22 @@
+## AUTHORITATIVE CONTINUATION SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — 9 NOVEMBER 2026
+
+- Active PR #104: OPEN / DRAFT / UNMERGED — https://github.com/Frangga11/glass-tv-home/pull/104
+- Source branch: `feature/global-frosted-silver-glass-001`; current exact PR HEAD: `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`.
+- Protected parent PR #103 exact base SHA: `a3d697c793e23a59f9f9953e2074d83daa210cf9`; preserve all parent ancestry and cumulative Arabic RTL, prayer, Home and spacing fixes.
+- New G4 corrective finding: `DockBreathingBorderView.java` still used legacy cyan RGB (56,189,248 / #38BDF8) for the dock breathing glow and lower rim gradient. Both now derive RGB channels from `TvUiTokens.ACCENT_CYAN` (#00E5FF). Animation timing, alpha envelope, stroke widths, geometry, lifecycle and focus/navigation behavior were not changed.
+- Added regression contract `test_dock_breathing_rim_uses_shared_electric_cyan_token` to prevent legacy RGB drift and require the shared semantic token.
+- Commits: `0f90e90cb0d99ccd9c34ec1e36f5976af4fb9120` (source correction); `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a` (regression contract).
+- Exact-head CI #1760 / run 42608935919 is **IN PROGRESS** on HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`. Lists/tools/docs job PASS; Android launcher/unit-test/release-build job still running. Do not claim final CI PASS or APK diagnostic for this head until the run completes.
+- Prior exact-head CI #1758 on `b737b617aa53fbfc112ccdfe8a7cd4959043d3ec` remains PASS (235 Python passed, 1 skipped; Android unit tests/release build successful). That evidence does not validate the new dock color correction.
+- G1 resource cross-check: 141 drawable/values files in scope; 36 changed and 105 unchanged. Unchanged assets/localization/semantic resources are not automatically defects. The full stale-resource sweep remains PARTIAL; the dock breathing cyan was one evidenced gap and is now corrected.
+- Runtime/visual gates remain NOT RUN: rendered 1920×1080 bright/dark/mixed wallpaper review, full end-to-end functional regression, live DPAD path, GPU/performance profiling and owner-authorized Mi TV Stick acceptance.
+- Guardrails: RE-SKIN, NOT REWIRE. Preserve IDs, listeners, handlers, data, persistence, navigation, focus graph, geometry, wallpaper, Arabic shaping/RTL and PR #103 ancestry. No merge, rebase, reset, force-push, retarget, ADB/install or default-launcher change.
+- Overall disposition: source correction committed; exact-head CI pending; G1/G4 partial; overall **BELUM FINAL**. Keep PR #104 OPEN / DRAFT / UNMERGED.
+
+**Next action:** wait for exact-head CI #1760. If it passes, record its test/build/APK evidence, update the PR audit report and all six canonical documents in one synchronization pass. Then continue the remaining G1/G4 stale-resource sweep. The checkpoint remains the only restart authority.
+
+---
+
 ## STATIC DIFF CROSS-CHECK — 9 NOVEMBER 2026, 18:26 WIB
 
 - Re-read the complete PR #104 unified diff: **65 changed files**.
