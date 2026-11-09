@@ -364,6 +364,15 @@ final class WeatherAirQuality {
     }
 
     static CharSequence getFormatted(Context context) {
+        return getFormatted(context, false);
+    }
+
+    /** Compact Home-only line; full condition wording remains available to WeatherActivity. */
+    static CharSequence getHomeFormatted(Context context) {
+        return getFormatted(context, true);
+    }
+
+    private static CharSequence getFormatted(Context context, boolean compact) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         boolean isEnglish = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(context));
         String weatherJson = prefs.getString(KEY_WEATHER_JSON, null);
@@ -376,8 +385,9 @@ final class WeatherAirQuality {
         if (legacyJasCache || !cacheMatchesLocation(prefs, KEY_AQI_LAT, KEY_AQI_LON, selectedLat, selectedLon)) {
             aqiJson = null;
         }
-        String weatherText = isEnglish ? "Weather unavailable" : "Cuaca tidak tersedia";
-        String aqiText = isEnglish ? "US AQI unavailable" : "US AQI tidak tersedia";
+        String weatherText = compact ? (isEnglish ? "Weather —" : "Cuaca —")
+                : (isEnglish ? "Weather unavailable" : "Cuaca tidak tersedia");
+        String aqiText = compact ? "AQI —" : (isEnglish ? "US AQI unavailable" : "US AQI tidak tersedia");
         int aqi = -1;
         try {
             if (weatherJson != null) {
@@ -386,7 +396,8 @@ final class WeatherAirQuality {
                     int temp = roundedValue(current, "temperature_2m");
                     int code = intValue(current, "weather_code");
                     if (temp >= -100 && temp <= 100) {
-                        weatherText = getWeatherIcon(code) + " " + temp + "° " + getWeatherCondition(code, isEnglish);
+                        weatherText = compact ? getWeatherIcon(code) + " " + temp + "°"
+                                : getWeatherIcon(code) + " " + temp + "° " + getWeatherCondition(code, isEnglish);
                     }
                 }
             }
@@ -397,7 +408,8 @@ final class WeatherAirQuality {
         } catch (Exception e) {
             Log.w(TAG, "Unable to format cached weather/AQI: " + e.getMessage());
         }
-        if (aqi >= 0) aqiText = "US AQI " + aqi + " " + getAqiStatus(aqi, isEnglish);
+        if (aqi >= 0) aqiText = compact ? "AQI " + aqi
+                : "US AQI " + aqi + " " + getAqiStatus(aqi, isEnglish);
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
         int weatherStart = sb.length();
