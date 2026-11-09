@@ -304,8 +304,8 @@ final class WifiSettingsDialog {
 
     static float popupTextSizeSp() { return 14f; }
     static float networkTextSizePx() { return 25f; }
-    static int networkStatusIconSizeDp() { return 16; }
-    static int networkStatusIconColor() { return Color.rgb(72, 205, 132); }
+    static int networkStatusIconSizeDp() { return 22; }
+    static int networkStatusIconColor() { return Color.rgb(80, 255, 145); }
 
     static float popupTitleSizeSp() { return 17f; }
     static float popupSectionSizeSp() { return 13f; }
@@ -666,7 +666,7 @@ final class WifiSettingsDialog {
             float density = context.getResources().getDisplayMetrics().density;
             paint.setColor(color);
             paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(Math.max(2f, density * 2f));
+            paint.setStrokeWidth(Math.max(2.8f, density * 2.8f));
             paint.setStrokeCap(Paint.Cap.ROUND);
             paint.setStrokeJoin(Paint.Join.ROUND);
             int size = dp(density, sizeDp);
