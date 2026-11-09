@@ -903,7 +903,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
-            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider));
+            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider, 1f, true));
             glider.addCompanion(navCapsule);
             Backdrop.watch(navCapsule);
         }
@@ -1021,7 +1021,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View btnSettings = findViewById(R.id.btnSettings);
         updateHeaderTabLabels();
         updateLocationPill();
-        if (btnHome != null) btnHome.setOnClickListener(v -> updateHomeTabIndicator());
         if (btnInputs != null) btnInputs.setOnClickListener(v -> showInputs());
         if (btnWifi != null) {
             btnWifi.setOnClickListener(v -> showWifiPopup());
@@ -1779,7 +1778,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onStop() {
         hiddenSinceResume = true;
-        updateHomeTabIndicator();
         handler.removeCallbacks(cacheClean);
         handler.removeCallbacks(nowPlayingPoll);
         super.onStop();
@@ -1821,7 +1819,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updateTopBarUserIcon();
         updateHeaderTabLabels();
         updateLocationPill();
-        updateHomeTabIndicator();
         Location.Zone chosenPlace = Location.chosen(this);
         String zoneCode = (chosenPlace != null) ? chosenPlace.code : "WLY01";
         Azan.schedule(this, zoneCode);
@@ -1837,7 +1834,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             weatherOverlayView.startAnimation();
         }
         hiddenSinceResume = false;
-        updateHomeTabIndicator();
         WifiSettingsDialog.onHostResumed();
     }
 
@@ -2012,7 +2008,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         gridFocusRequestGeneration++;
         cancelHorizontalGridRowTransition();
         activityResumed = false;
-        updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
         handler.removeCallbacks(minuteTick);
         handler.removeCallbacks(wallTick);
@@ -2030,7 +2025,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        updateHomeTabIndicator();
         if (hasFocus) showCardPrompt();
     }
 
@@ -2154,7 +2148,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 wallView.setColorFilter(0xFF7A7A7A, android.graphics.PorterDuff.Mode.MULTIPLY);
             }
         }
-        updateHomeTabIndicator();
     }
 
     // ---- glass highlight -------------------------------------------------------------------------
@@ -3961,15 +3954,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (mountain != null) mountain.setVisibility(View.GONE);
         }
         if (root != null) root.post(this::applyHeaderWidths);
-    }
-
-    private void updateHomeTabIndicator() {
-        if (btnHome == null) return;
-        boolean active = activityResumed && !hiddenSinceResume && !screensaverActive
-                && !wallpaperFullscreen && !isFinishing() && !isDestroyed();
-        btnHome.setSelected(active);
-        btnHome.setElevation(active ? 8f * density : 0f);
-        btnHome.invalidate();
     }
 
     /**
@@ -7570,7 +7554,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             setWallpaperFullscreen(false);
         }
         screensaverActive = true;
-        updateHomeTabIndicator();
         if (screensaverView == null) {
             screensaverView = getLayoutInflater().inflate(R.layout.view_nightstand, root, false);
             screensaverView.setOnClickListener(v -> dismissScreensaver());
@@ -7690,7 +7673,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void dismissScreensaver() {
         if (!screensaverActive || screensaverView == null) return;
         screensaverActive = false;
-        updateHomeTabIndicator();
         handler.removeCallbacks(standbyPhotoTick);
         screensaverView.animate().alpha(0f).setDuration(350).withEndAction(() -> {
             if (!screensaverActive && screensaverView != null) {
