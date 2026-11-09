@@ -41,6 +41,18 @@ class HomeIslamicShelfArabicTypographyContract(unittest.TestCase):
         self.assertIn("ayahArabic.setGravity(Gravity.END)", main)
         self.assertIn("ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL)", main)
 
+    def test_arabic_alignment_separates_rtl_text_from_physical_right_edge(self):
+        arabic = self.views["ayahArabic"]
+        ns = "{http://schemas.android.com/apk/res/android}"
+        self.assertEqual(arabic.attrib[ns + "layoutDirection"], "ltr")
+        self.assertEqual(arabic.attrib[ns + "gravity"], "right")
+        main = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("ayahArabic.setLayoutDirection(View.LAYOUT_DIRECTION_LTR)", main)
+        self.assertIn("ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL)", main)
+        self.assertIn("ayahArabic.setGravity(Gravity.RIGHT | Gravity.TOP)", main)
+        self.assertIn("ayahArabic.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY)", main)
+        self.assertNotIn("ayahArabic.setGravity(Gravity.END)", main)
+
     def test_arabic_text_has_soft_depth_shadow(self):
         arabic = self.views["ayahArabic"]
         ns = "{http://schemas.android.com/apk/res/android}"
