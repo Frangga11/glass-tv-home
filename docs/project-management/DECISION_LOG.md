@@ -930,3 +930,6 @@ All six core management documents were re-read and aligned to the same checkpoin
 
 ## Decision — do not infer visual acceptance from legacy assets or APK artifact — 9 November 2026
 CI #1772 artifact `13672026508` was inspected and contains only `app-release.apk`; it has no screenshots or profiling output. Repository screenshot assets have no provenance tying them to exact PR #104 HEAD and the required target device/resolution/states. Decision: do not treat those assets as current Visual QA evidence; do not make unsupported source changes. Keep visual, five-state, runtime/DPAD, installer startup and GPU/performance gates pending until actual capture evidence exists. No ADB/install without explicit authorization. Canonical authority: `GTVH-CHECKPOINT-LATEST.md`.
+
+
+Checkpoint ID linkage: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-EVIDENCE-002**. Canonical current status: `GTVH-CHECKPOINT-LATEST.md`.
