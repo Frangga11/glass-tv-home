@@ -195,14 +195,13 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             cardContainer.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) {
                     itemView.setTranslationZ(60f);
-                    v.animate().scaleX(1.06f).scaleY(1.06f).setDuration(160).start();
+                    // DPAD focus is communicated by the cyan pill outline, never by resizing the card.
                     topPill.setBackgroundResource(R.drawable.bg_app_pill_focused);
-                    tvAppLabel.setTextColor(0xFF14161D);
+                    tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY);
                 } else {
                     itemView.setTranslationZ(0f);
-                    v.animate().scaleX(0.94f).scaleY(0.94f).setDuration(160).start();
                     topPill.setBackgroundResource(R.drawable.bg_app_pill_unfocused);
-                    tvAppLabel.setTextColor(0xFFFFFFFF);
+                    tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY);
                 }
             });
 
