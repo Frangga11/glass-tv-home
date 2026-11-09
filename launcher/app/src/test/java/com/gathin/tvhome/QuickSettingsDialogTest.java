@@ -90,16 +90,19 @@ public class QuickSettingsDialogTest {
         View language = find(dialog, "quick_settings_language");
         View power = find(dialog, "quick_settings_power");
         View cache = find(dialog, "quick_settings_cache");
+        View manageWallpaper = find(dialog, "quick_settings_manage_wallpaper");
         assertNotNull(wifi);
         assertNotNull(restart);
         assertNotNull(language);
         assertNotNull(power);
         assertNotNull(cache);
+        assertNotNull(manageWallpaper);
         assertEquals(restart.getId(), wifi.getNextFocusRightId());
         assertEquals(wifi.getId(), wifi.getNextFocusLeftId());
         assertEquals(language.getId(), wifi.getNextFocusDownId());
         assertEquals(power.getId(), language.getNextFocusRightId());
-        assertEquals(cache.getId(), power.getNextFocusDownId());
+        assertEquals(manageWallpaper.getId(), power.getNextFocusDownId());
+        assertEquals(manageWallpaper.getId(), cache.getNextFocusRightId());
         dialog.cancel();
     }
 
