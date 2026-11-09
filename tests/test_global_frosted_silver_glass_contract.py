@@ -198,7 +198,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
     def test_glass_rim_uses_neutral_silver_and_restrained_cyan(self):
         source = (JAVA / "GlassRim.java").read_text(encoding="utf-8")
         self.assertIn("0xD9E2E8EE", source)
-        self.assertIn("0x8050DDF2", source)
+        self.assertIn("0xA650DDF2", source)
         self.assertNotIn("0xC084FC", source)
         self.assertNotIn("0xFDE047", source)
 
