@@ -307,5 +307,15 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
                 ET.parse(RES / "drawable" / name)
 
 
+    def test_dock_breathing_rim_uses_shared_electric_cyan_token(self):
+        source = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
+        self.assertGreaterEqual(source.count("TvUiTokens.ACCENT_CYAN"), 2)
+        self.assertIn("Color.red(TvUiTokens.ACCENT_CYAN)", source)
+        self.assertIn("Color.green(TvUiTokens.ACCENT_CYAN)", source)
+        self.assertIn("Color.blue(TvUiTokens.ACCENT_CYAN)", source)
+        self.assertNotIn("56, 189, 248", source)
+        self.assertNotIn("#38BDF8", source)
+
+
 if __name__ == "__main__":
     unittest.main()
