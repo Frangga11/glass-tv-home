@@ -13,9 +13,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.GradientDrawable;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.RelativeSizeSpan;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -114,7 +111,7 @@ final class WifiSettingsDialog {
         content.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(density, 12), 0, dp(density, 12), dp(density, 8));
+        content.setPadding(dp(density, 14), 0, dp(density, 14), dp(density, 10));
         pointer = new View(activity) {
             private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             @Override protected void onDraw(Canvas canvas) {
@@ -141,7 +138,7 @@ final class WifiSettingsDialog {
             }
         };
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
-        TextView title = text(R.string.wifi, popupTextSizeSp(), true, density);
+        TextView title = text(R.string.wifi, popupTitleSizeSp(), true, density);
         title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0, 0, 0);
         title.setCompoundDrawablePadding(dp(density, 6));
         LinearLayout header = new LinearLayout(activity);
@@ -150,7 +147,7 @@ final class WifiSettingsDialog {
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         wifiToggle = action("ON", "wifi_toggle", density, () -> dismissThen(openSystemWifiSettings));
-        wifiToggle.setMinHeight(dp(density, 38));
+        wifiToggle.setMinHeight(dp(density, 40));
         header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 48), ViewGroup.LayoutParams.WRAP_CONTENT));
         content.addView(header);
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
@@ -162,12 +159,13 @@ final class WifiSettingsDialog {
         status.setBackground(connectedSurface);
         status.setVisibility(View.GONE);
 
-        TextView networksHeading = text(R.string.wifi_available_networks, popupTextSizeSp(), true, density);
-        networksHeading.setGravity(Gravity.CENTER);
+        TextView networksHeading = text(R.string.wifi_available_networks, popupSectionSizeSp(), true, density);
+        networksHeading.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        networksHeading.setPadding(0, dp(density, 5), 0, dp(density, 1));
         content.addView(networksHeading);
-        scanState = text(R.string.wifi_scan_idle, popupTextSizeSp(), false, density);
-        scanState.setGravity(Gravity.CENTER);
-        scanState.setPadding(0, dp(density, 4), 0, dp(density, 6));
+        scanState = text(R.string.wifi_scan_idle, popupMetaSizeSp(), false, density);
+        scanState.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        scanState.setPadding(0, 0, 0, dp(density, 5));
         content.addView(scanState);
 
         permissionAction = action(R.string.wifi_grant_location_permission, "wifi_permission", density,
@@ -196,11 +194,11 @@ final class WifiSettingsDialog {
                 () -> dismissThen(openSystemWifiSettings));
         androidSettings.setGravity(Gravity.CENTER);
         rescan.setGravity(Gravity.CENTER);
-        rescan.setTextSize(popupTextSizeSp());
-        rescan.setMinHeight(dp(density, 38));
+        rescan.setTextSize(popupFooterSizeSp());
+        rescan.setMinHeight(dp(density, 40));
         androidSettings.setGravity(Gravity.CENTER);
-        androidSettings.setTextSize(popupTextSizeSp());
-        androidSettings.setMinHeight(dp(density, 38));
+        androidSettings.setTextSize(popupFooterSizeSp());
+        androidSettings.setMinHeight(dp(density, 40));
         androidSettings.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
         androidSettings.setCompoundDrawablePadding(dp(density, 6));
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
@@ -209,11 +207,11 @@ final class WifiSettingsDialog {
         actions.setOrientation(LinearLayout.VERTICAL);
         actions.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams actionWidth = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 38));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 40));
         actionWidth.bottomMargin = dp(density, 4);
         rescan.setLayoutParams(actionWidth);
         LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 38));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 40));
         androidSettings.setLayoutParams(settingsWidth);
         actions.addView(rescan);
         actions.addView(androidSettings);
@@ -291,16 +289,22 @@ final class WifiSettingsDialog {
     }
 
     static float popupWidthFraction() {
-        return 0.2035f; // Maximum additional 3% relative to the prior 19.76% width.
+        return 0.225f; // Balanced 22.5% screen width for readable SSIDs and consistent icon spacing.
     }
 
     static float popupHeightFraction() {
-        return 0.43f; // Preserve the compact width; allocate more vertical room.
+        return 0.69f; // Reserve enough fixed vertical space for four complete network rows and the footer.
     }
 
-    static float popupTextSizeSp() {
-        return 14f;
-    }
+    static float popupTextSizeSp() { return 14f; }
+
+    static float popupTitleSizeSp() { return 17f; }
+    static float popupSectionSizeSp() { return 13f; }
+    static float popupMetaSizeSp() { return 11f; }
+    static float popupFooterSizeSp() { return 13f; }
+    static int visibleNetworkRowCount() { return 4; }
+    static int networkRowHeightDp() { return 40; }
+    static int networkRowGapDp() { return 4; }
 
     static int anchoredWindowGravity() {
         return Gravity.TOP | Gravity.RIGHT;
@@ -559,21 +563,19 @@ final class WifiSettingsDialog {
             ScanResult connectedResult = strongest.get(connectedSsid);
             String connectedSecurity = connectedResult == null ? ""
                     : securityLabel(connectedResult.capabilities);
-            String connectedLabel = connectedSsid + "\n"
+            String connectedLabel = connectedSsid + "  ·  "
                     + activity.getString(R.string.wifi_status_connected);
             TextView connectedRow = action(connectedLabel, "wifi_network:" + connectedSsid,
                     activity.getResources().getDisplayMetrics().density,
                     () -> dismissThen(openSystemWifiSettings));
-            SpannableString connectedText = new SpannableString(connectedLabel);
-            int statusStart = connectedSsid.length() + 1;
-            connectedText.setSpan(new RelativeSizeSpan(0.78f), statusStart,
-                    connectedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            connectedRow.setText(connectedText);
-            connectedRow.setMaxLines(2);
-            connectedRow.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 38));
+            connectedRow.setMaxLines(1);
+            connectedRow.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            connectedRow.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, networkRowHeightDp()));
             connectedRow.setTextSize(popupTextSizeSp());
-            connectedRow.setGravity(Gravity.CENTER);
-            connectedRow.setLineSpacing(dp(activity.getResources().getDisplayMetrics().density, 1), 1f);
+            connectedRow.setGravity(Gravity.CENTER_VERTICAL);
+            connectedRow.setPadding(dp(activity.getResources().getDisplayMetrics().density, 10), 0,
+                    dp(activity.getResources().getDisplayMetrics().density, 10), 0);
+            connectedRow.setLayoutParams(networkRowLayoutParams(activity.getResources().getDisplayMetrics().density));
             connectedRow.setEllipsize(android.text.TextUtils.TruncateAt.END);
             connectedRow.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0,
                     (connectedSecurity.isEmpty()
@@ -601,8 +603,13 @@ final class WifiSettingsDialog {
                 row.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0,
                         security.equals(activity.getString(R.string.wifi_security_open))
                                 ? 0 : R.drawable.ic_lock, 0);
-                row.setGravity(Gravity.CENTER);
-                row.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, 38));
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setMaxLines(1);
+                row.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                row.setMinHeight(dp(activity.getResources().getDisplayMetrics().density, networkRowHeightDp()));
+                row.setPadding(dp(activity.getResources().getDisplayMetrics().density, 10), 0,
+                        dp(activity.getResources().getDisplayMetrics().density, 10), 0);
+                row.setLayoutParams(networkRowLayoutParams(activity.getResources().getDisplayMetrics().density));
                 row.setTextSize(popupTextSizeSp());
                 row.setCompoundDrawablePadding(dp(
                         activity.getResources().getDisplayMetrics().density, 6));
@@ -776,6 +783,13 @@ final class WifiSettingsDialog {
             if (pendingReturn == this) pendingReturn = null;
             notifyReturnToParent();
         }
+    }
+
+    private static LinearLayout.LayoutParams networkRowLayoutParams(float density) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, networkRowHeightDp()));
+        params.bottomMargin = dp(density, networkRowGapDp());
+        return params;
     }
 
     private static int dp(float density, int value) {
