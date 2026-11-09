@@ -1777,3 +1777,16 @@ Latest active branch PR #104 HEAD `1d480afe88072094cd8169ab8ed8d2d8d9ae0bbe`; so
 
 ### Resource inventory completion — 9 November 2026
 Current PR #104 tree contains 113 app drawable XML resources, grouped by primary role: 28 glass surfaces/backgrounds, 14 state/status/text selectors, 15 weather/AQI artwork resources, and 56 content/navigation icons. Six installer drawable resources are separate (buttons, card/input surfaces and two icons). App values inventory contains 19 files: 4 base values XMLs (`colors.xml`, `config.xml`, `strings.xml`, `styles.xml`), 14 locale-specific strings overlays, and 1 API-28 styles overlay. These are file-role counts, not proof every literal color is a global token. Color usage is classified as global semantic tokens, semantic state/status, brand/content accents, specular highlights, shadows/depth, alpha/transparency variants and icon/weather artwork. No mechanical recoloring.
+
+
+### Detailed color-role classification — source inventory review — 9 November 2026
+- Global design tokens in `TvUiTokens.java` and `res/values/colors.xml`: shell/surface/focused/selected/popup/dock, primary/secondary text, neutral border, Electric Cyan focus, disabled surface/border/text, selected fill/border, focus halo and glass veil. Java/XML parity remains guarded by tests.
+- Semantic state colors: focused/pressed/selected/disabled selector states use cyan focus, silver selected and muted disabled tokens; do not conflate selected state with current DPAD focus.
+- Brand/content accents: app identity colors are intentionally generated per package in RecentAppsAdapter; devotional gold and other content-specific accents are not global focus colors. Preserve identity semantics.
+- Status colors: red badge and green status indicators, plus semantic success/warning/danger values, remain status semantics and are not converted to cyan.
+- Shadow/depth: black translucent shadow/gradient layers and view elevation are depth treatment; retain separately from surface fills.
+- Specular/highlight: translucent white/silver rim, top-light gradients and white highlight layers are material reflections, not text or status colors.
+- Alpha variants: translucent silver/white/cyan fills and borders (including 0x-prefixed alpha colors) are intentional surface-state treatments. Preserve per-component alpha; do not normalize globally.
+- Artwork: 15 weather/AQI illustrations and 56 content/navigation icons are artwork assets, not global surface tokens. Brand/icon artwork remains unchanged absent a visual defect.
+- Source-reviewed representative surface and selector files confirm neutral fallback surfaces, cyan focus rings, silver selected borders, disabled alpha, and white specular gradients. The full resource-role inventory is classified; pixel-level contrast on all wallpapers still requires rendered QA.
+- CI #1764, #1766, #1767 and #1768 all PASS; latest PR #104 HEAD `93977dd887e042a0c30113140bbd9fc838886281`.

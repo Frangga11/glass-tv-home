@@ -2607,3 +2607,13 @@ Confirmed `bg_ram_pill.xml` is referenced by `activity_recent_apps.xml`. Restore
 - Resource inventory: 113 app drawables categorized into 28 surfaces/backgrounds, 14 selectors/status/text, 15 weather/AQI artwork and 56 content/navigation icons; 6 installer drawables separate; 19 app values files (4 base, 14 locale strings, 1 API-28 style overlay).
 - Corrective commit `e5a4f47aabda630af984a315969637e67d0627c9`. CI #1767: docs/tools job SUCCESS, Android job IN PROGRESS at record time.
 - Visual 1920×1080, wallpaper contrast, live DPAD/runtime, GPU/performance and owner-authorized device gates remain PENDING. No install/ADB/merge.
+
+
+## Audit closeout — exact-head automated validation — 9 November 2026
+- Latest PR #104 HEAD `93977dd887e042a0c30113140bbd9fc838886281`; OPEN / DRAFT / UNMERGED; protected base `a3d697c793e23a59f9f9953e2074d83daa210cf9`.
+- CI #1764 / run `42611753895`, #1766 / run `42611799280`, #1767 / run `42612524215`, and #1768 / run `42612984819`: all PASS, both jobs completed on each run. #1768 validates latest PR HEAD.
+- Installer window/root mismatch corrected; status/navigation bars unchanged; regression contract included in source/test commit.
+- Recent Apps 26dp normal/focus shape source verified; dynamic background replacement means runtime stroke/clipping remains pending.
+- Ayah white/black-shadow/Amiri/RTL source contract verified; wallpaper contrast pending.
+- Full resource-role classification recorded in INVENTORY.md; no mechanical recoloring.
+- 1920×1080 rendered QA, wallpaper contrast, end-to-end runtime, DPAD, GPU/performance and physical device remain NOT RUN / PENDING. No merge, ADB or install.

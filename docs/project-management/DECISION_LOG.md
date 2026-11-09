@@ -907,3 +907,7 @@ Verified `activity_recent_apps.xml` uses `@drawable/bg_ram_pill`; drawable paddi
 
 ## Decision — installer launch surface alignment — 9 November 2026
 Static source inspection confirmed installer theme `android:windowBackground` #0C0E14 differs from the first activity root #2C333B. Align only the window background to #2C333B to reduce potential first-frame color mismatch. Keep status and navigation bars #0C0E14: no measured evidence justifies changing system-bar treatment. Added Python regression test asserting window/root parity and unchanged system bars. Commit `e5a4f47aabda630af984a315969637e67d0627c9`; CI #1767 Android validation pending at decision time. Actual startup flash remains a runtime observation, not claimed verified absent.
+
+
+## Decision closeout — Installer and color-role preservation — 9 November 2026
+Installer windowBackground is now #2C333B to match activity root; status/navigation bars remain #0C0E14 because no measured reason supports changing them. CI #1767 validates the source/test correction and CI #1768 validates the latest PR audit HEAD; both jobs PASS in both runs. Keep semantic status colors, app-brand colors, devotional/content accents, black shadows, white specular highlights and per-surface alpha variants distinct from global tokens. No mechanical recoloring. PR #104 remains OPEN / DRAFT / UNMERGED; visual/runtime acceptance pending.
