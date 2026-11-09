@@ -198,12 +198,13 @@ public class LocationActivity extends Activity {
     /** A zone: glass, with a bright ring when focused. */
     private StateListDrawable card() {
         GradientDrawable on = new GradientDrawable();
-        on.setColor(0x2600E5FF);
+        on.setColor(TvUiTokens.FOCUS_HALO);
         on.setCornerRadius(dp(14));
         on.setStroke(dp(2), TvUiTokens.FOCUS_BORDER);
         GradientDrawable off = new GradientDrawable();
         off.setColor(0x223F4B56);
         off.setCornerRadius(dp(14));
+        off.setStroke(dp(1), 0x55DCE5ED);
         StateListDrawable s = new StateListDrawable();
         s.addState(new int[]{android.R.attr.state_focused}, on);
         s.addState(new int[]{}, off);
