@@ -2305,14 +2305,10 @@ public final class ModernSettingsDialog {
         btnDone.setFocusable(true);
         btnDone.setClickable(true);
 
-        GradientDrawable btnBg = new GradientDrawable();
-        btnBg.setColor(TvUiTokens.SUCCESS);
-        btnBg.setCornerRadius(10 * density);
-        btnDone.setBackground(btnBg);
-
-        btnDone.setBackground(TvFocusIndicator.createRoundedStateBackground(
-                density, 10f, TvUiTokens.SUCCESS, TvUiTokens.SUCCESS,
-                TvUiTokens.SUCCESS, TvUiTokens.FOCUS_BORDER));
+        TvFocusIndicator.applyRoundedTextFocus(btnDone, density, 10f,
+                TvUiTokens.SUCCESS, TvUiTokens.SUCCESS, TvUiTokens.SUCCESS,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_PRIMARY,
+                TvUiTokens.TEXT_PRIMARY, 1.0f);
 
         final boolean[] savedSelection = new boolean[]{false};
         btnDone.setOnClickListener(v -> {
@@ -2493,9 +2489,10 @@ public final class ModernSettingsDialog {
         btnClose.setBackground(closeBg);
         btnClose.setFocusable(true);
         btnClose.setPadding((int) (16 * density), (int) (8 * density), (int) (16 * density), (int) (8 * density));
-        btnClose.setBackground(TvFocusIndicator.createRoundedStateBackground(
-                density, 10f, TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
-                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER));
+        TvFocusIndicator.applyRoundedTextFocus(btnClose, density, 10f,
+                TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_PRIMARY,
+                TvUiTokens.TEXT_PRIMARY, 1.0f);
         btnClose.setOnClickListener(v -> {
             SoundEffects.playSelect();
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
