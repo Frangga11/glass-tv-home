@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.GradientDrawable;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.location.LocationManager;
@@ -194,10 +195,11 @@ final class WifiSettingsDialog {
 
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
         rescan.setText("↻  " + activity.getString(R.string.wifi_rescan));
-        androidSettings = action("Pengaturan Wi-Fi  >", "wifi_open_settings", density,
+        androidSettings = action(R.string.wifi_open_android_settings, "wifi_open_settings", density,
                 () -> dismissThen(openSystemWifiSettings));
         androidSettings.setGravity(Gravity.CENTER);
         rescan.setGravity(Gravity.CENTER);
+        rescan.setTextSize(popupTextSizeSp());
         androidSettings.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
         androidSettings.setCompoundDrawablePadding(dp(density, 6));
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
@@ -554,15 +556,21 @@ final class WifiSettingsDialog {
             ScanResult connectedResult = strongest.get(connectedSsid);
             String connectedSecurity = connectedResult == null ? ""
                     : securityLabel(connectedResult.capabilities);
-            String connectedLabel = connectedSsid + "\\n"
+            String connectedLabel = connectedSsid + "\n"
                     + activity.getString(R.string.wifi_status_connected);
             TextView connectedRow = action(connectedLabel, "wifi_network:" + connectedSsid,
                     activity.getResources().getDisplayMetrics().density,
                     () -> dismissThen(openSystemWifiSettings));
+            SpannableString connectedText = new SpannableString(connectedLabel);
+            int statusStart = connectedSsid.length() + 1;
+            connectedText.setSpan(new RelativeSizeSpan(0.78f), statusStart,
+                    connectedText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            connectedRow.setText(connectedText);
             connectedRow.setMaxLines(2);
             connectedRow.setTextSize(popupTextSizeSp());
-            connectedRow.setGravity(Gravity.CENTER_VERTICAL);
+            connectedRow.setGravity(Gravity.CENTER);
             connectedRow.setLineSpacing(dp(activity.getResources().getDisplayMetrics().density, 1), 1f);
+            connectedRow.setEllipsize(android.text.TextUtils.TruncateAt.END);
             connectedRow.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0,
                     (connectedSecurity.isEmpty()
                             || connectedSecurity.equals(activity.getString(R.string.wifi_security_open)))
