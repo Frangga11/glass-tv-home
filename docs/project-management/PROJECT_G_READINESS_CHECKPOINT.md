@@ -96,3 +96,11 @@ This readiness document contains an earlier work-package numbering (G03 integrat
 **Current G03 blocker:** no connected Mi TV Stick/ADB/signature-verification tools in the execution host. Explicit user readiness approval remains required before installation, package replacement, HOME/default launcher change, ADB setting, permission or data mutation. G03 remains OPEN/BLOCKED / NOT FINAL. See [G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md](G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md).
 
 Preserve the original historical work-package descriptions above for audit traceability; this addendum is the current controlling roadmap/status.
+
+## Current authority clarification — 9 November 2026
+
+This document remains the historical Project G readiness snapshot for the earlier G01–G03 candidate and its preflight evidence. Its dated branch, APK, and blocker statements are not the current source candidate. The current implementation and acceptance state is PR #103 as recorded in `GTVH-CHECKPOINT-LATEST.md`.
+
+Do not use the older G-stage numbering or branch SHA here to resume current Home work. The canonical checkpoint governs current sequencing. PR #103 exact-head CI passed; visual 1920×1080 review and physical Mi TV Stick acceptance remain pending. No device installation, ADB, launcher-setting change, or merge is authorized by this historical document.
+
+The newly approved Frosted Silver Glass refinement is a separate future workstream and must not be treated as a completed Project G acceptance gate.
