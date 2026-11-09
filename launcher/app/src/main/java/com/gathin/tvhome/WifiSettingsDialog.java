@@ -178,7 +178,7 @@ final class WifiSettingsDialog {
         networkScroll.addView(networkRows, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         content.addView(networkScroll, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 150));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 88)));
 
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
         androidSettings = action(R.string.wifi_open_android_settings, "wifi_open_settings", density,
@@ -254,13 +254,13 @@ final class WifiSettingsDialog {
         WindowManager.LayoutParams params = window.getAttributes();
         params.width = popupWidth;
         params.height = popupHeight;
-        params.gravity = Gravity.TOP | Gravity.END;
+        params.gravity = Gravity.TOP | Gravity.RIGHT;
         params.x = Math.max(0, screenWidth - popupLeft - popupWidth);
         params.y = Math.max(0, popupTop);
         params.dimAmount = 0.08f;
         window.setAttributes(params);
         window.setLayout(popupWidth, popupHeight);
-        window.setGravity(Gravity.TOP | Gravity.END);
+        window.setGravity(Gravity.TOP | Gravity.RIGHT);
         window.setBackgroundDrawable(TvDialogStyle.createDialogSurface(activity));
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         window.setDimAmount(0.08f);
@@ -485,6 +485,7 @@ final class WifiSettingsDialog {
             if (tag.startsWith("wifi_network:")) focusedSsid = tag.substring("wifi_network:".length());
         }
         networkRows.removeAllViews();
+        refreshStatus();
         List<ScanResult> results = Collections.emptyList();
         boolean canReadResults = WifiScanPolicy.mayRequestScan(
                 hasLocationPermission(), isLocationEnabled(), wifiEnabled());
@@ -506,7 +507,9 @@ final class WifiSettingsDialog {
             if (previous == null || result.level > previous.level) strongest.put(ssid, result);
         }
         List<ScanResult> sorted = new ArrayList<>(strongest.values());
-        sorted.sort(Comparator.comparingInt((ScanResult item) -> item.level).reversed());
+        sorted.sort(Comparator
+                .comparing((ScanResult item) -> !isConnectedNetwork(item.SSID))
+                .thenComparing(Comparator.comparingInt((ScanResult item) -> item.level).reversed()));
         if (sorted.isEmpty() && !scanPending && canReadResults) {
             TextView empty = text(R.string.wifi_scan_empty, TvUiTokens.CARD_SUBTITLE_SP, false,
                     activity.getResources().getDisplayMetrics().density);
@@ -518,8 +521,7 @@ final class WifiSettingsDialog {
                 String security = securityLabel(result.capabilities);
                 String label = activity.getString(R.string.wifi_network_row, result.SSID, security,
                         signalLabel(result.level));
-                boolean connected = status.getText() != null
-                        && status.getText().toString().contains(result.SSID);
+                boolean connected = isConnectedNetwork(result.SSID);
                 label = (connected ? "✓  " : "⌁  ") + label
                         + (security.equals(activity.getString(R.string.wifi_security_open)) ? "" : "  🔒");
                 TextView row = action(label, "wifi_network:" + result.SSID,
@@ -529,7 +531,6 @@ final class WifiSettingsDialog {
                 focusOrder.add(row);
             }
         }
-        refreshStatus();
         connectFocusOrder();
         if (focusedSsid != null) {
             boolean restored = false;
@@ -549,6 +550,11 @@ final class WifiSettingsDialog {
             View fallback = firstFocusableControl();
             if (fallback != null) fallback.requestFocus();
         }
+    }
+
+    private boolean isConnectedNetwork(String ssid) {
+        CharSequence current = status.getText();
+        return current != null && ssid != null && current.toString().contains(ssid);
     }
 
     private String securityLabel(String capabilities) {
