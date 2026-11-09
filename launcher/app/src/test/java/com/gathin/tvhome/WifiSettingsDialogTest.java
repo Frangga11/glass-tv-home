@@ -30,7 +30,7 @@ public class WifiSettingsDialogTest {
         assertNotNull(window);
         android.view.WindowManager.LayoutParams params = window.getAttributes();
         assertEquals(Gravity.TOP | Gravity.RIGHT, WifiSettingsDialog.anchoredWindowGravity());
-        assertTrue(params.dimAmount <= 0.10f);
+        assertTrue(WifiSettingsDialog.popupDimAmount() <= 0.10f);
         View networkList = window.getDecorView().findViewWithTag("wifi_network_list");
         assertNotNull(networkList);
         assertTrue(networkList instanceof android.widget.ScrollView);
