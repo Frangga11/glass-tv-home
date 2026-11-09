@@ -135,7 +135,7 @@
                 android:layoutDirection="ltr"
                 android:gravity="end"
                 android:textDirection="rtl"
-                android:textColor="#FFFFC45A"
+                android:textColor="@color/tv_ui_text_primary"
                 android:textSize="20sp"
                 android:fontFamily="@font/amiri_quran"
                 android:lineSpacingExtra="-2dp"
@@ -145,7 +145,7 @@
                 android:includeFontPadding="true"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:shadowColor="#CC3A1800"
+                android:shadowColor="#CC000000"
                 android:shadowDx="0"
                 android:shadowDy="2"
                 android:shadowRadius="3" />
