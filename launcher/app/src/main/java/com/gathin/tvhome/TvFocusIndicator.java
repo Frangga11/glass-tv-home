@@ -26,7 +26,7 @@ final class TvFocusIndicator {
                 normalFill, focusedFill, normalStroke, focusedStroke);
     }
 
-    static StateListDrawable createOvalStateBackground(float density, float normalFill,
+    static StateListDrawable createOvalStateBackground(float density, int normalFill,
             int focusedFill, int normalStroke, int focusedStroke) {
         return createStateBackground(density, 0f, GradientDrawable.OVAL,
                 normalFill, focusedFill, normalStroke, focusedStroke);
