@@ -196,10 +196,10 @@ final class WifiSettingsDialog {
         androidSettings.setGravity(Gravity.CENTER);
         rescan.setGravity(Gravity.CENTER);
         rescan.setTextSize(popupFooterSizeSp());
-        rescan.setMinHeight(dp(density, 40));
+        rescan.setMinHeight(dp(density, 35));
         androidSettings.setGravity(Gravity.CENTER);
         androidSettings.setTextSize(popupFooterSizeSp());
-        androidSettings.setMinHeight(dp(density, 40));
+        androidSettings.setMinHeight(dp(density, 35));
         androidSettings.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
         androidSettings.setCompoundDrawablePadding(dp(density, 6));
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
@@ -700,7 +700,7 @@ final class WifiSettingsDialog {
         view.setFocusableInTouchMode(true);
         view.setClickable(true);
         if (view.getGravity() == 0) view.setGravity(Gravity.CENTER_VERTICAL);
-        view.setMinHeight(Math.max(38, Math.round(density * 26)));
+        view.setMinHeight(Math.max(35, Math.round(density * 26)));
         view.setPadding(dp(density, 10), dp(density, 3), dp(density, 10), dp(density, 3));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
