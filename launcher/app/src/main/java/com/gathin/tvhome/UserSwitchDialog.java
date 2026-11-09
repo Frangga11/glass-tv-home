@@ -231,14 +231,9 @@ public final class UserSwitchDialog {
         tvAddLbl.setPadding(0, (int) (6 * density), 0, 0);
         addCol.addView(tvAddLbl);
 
-        addCol.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE_IDLE);
-            g.setCornerRadius(14 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
-            v.setBackground(g);
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-        });
+        addCol.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                density, 14f, TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
+                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER));
 
         addCol.setOnClickListener(v -> {
             SoundEffects.playSelect();
@@ -261,18 +256,9 @@ public final class UserSwitchDialog {
         btnClose.setFocusable(true);
         btnClose.setClickable(true);
 
-        GradientDrawable cBg = new GradientDrawable();
-        cBg.setColor(TvUiTokens.SURFACE);
-        cBg.setCornerRadius(10 * density);
-        btnClose.setBackground(cBg);
-
-        btnClose.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
-            g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
-            v.setBackground(g);
-        });
+        TvFocusIndicator.applyRoundedTextFocus(btnClose, density, 10f,
+                TvUiTokens.SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
 
         btnClose.setOnClickListener(v -> {
             SoundEffects.playSelect();
@@ -486,16 +472,10 @@ public final class UserSwitchDialog {
         btnCancel.setTypeface(font, Typeface.NORMAL);
         btnCancel.setFocusable(true);
         btnCancel.setClickable(true);
-        GradientDrawable cBg = new GradientDrawable();
-        cBg.setColor(TvUiTokens.INPUT_SURFACE);
-        cBg.setCornerRadius(8 * density);
-        btnCancel.setBackground(cBg);
         btnCancel.setPadding((int) (16 * density), 0, (int) (16 * density), 0);
-        btnCancel.setOnFocusChangeListener((v, hasFocus) -> {
-            cBg.setStroke((int) (2 * density), hasFocus ? TvUiTokens.FOCUS_BORDER : 0);
-            btnCancel.setTextColor(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-        });
+        TvFocusIndicator.applyRoundedTextFocus(btnCancel, density, 8f,
+                TvUiTokens.INPUT_SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
         btnCancel.setOnClickListener(v -> {
             if (dHolder[0] != null) dHolder[0].dismiss();
         });
@@ -508,15 +488,10 @@ public final class UserSwitchDialog {
         btnSave.setTypeface(font, Typeface.BOLD);
         btnSave.setFocusable(true);
         btnSave.setClickable(true);
-        GradientDrawable sBg = new GradientDrawable();
-        sBg.setColor(TvUiTokens.SUCCESS); // Emerald
-        sBg.setCornerRadius(8 * density);
-        btnSave.setBackground(sBg);
         btnSave.setPadding((int) (16 * density), 0, (int) (16 * density), 0);
-        btnSave.setOnFocusChangeListener((v, hasFocus) -> {
-            sBg.setStroke((int) (2 * density), hasFocus ? TvUiTokens.FOCUS_BORDER : 0);
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-        });
+        TvFocusIndicator.applyRoundedTextFocus(btnSave, density, 8f,
+                TvUiTokens.SUCCESS, TvUiTokens.SUCCESS, TvUiTokens.SUCCESS,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
 
         btnSave.setOnClickListener(v -> {
             String name = et.getText().toString().trim();
