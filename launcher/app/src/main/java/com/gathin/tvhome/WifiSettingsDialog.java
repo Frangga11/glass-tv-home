@@ -135,6 +135,7 @@ final class WifiSettingsDialog {
                 paint.setColor(TvUiTokens.FOCUS_BORDER);
                 paint.setStyle(Paint.Style.STROKE);
                 paint.setStrokeWidth(Math.max(1f, density));
+                // Omit the pointer baseline so its diagonal edges visually continue the popup outline.
                 Path pointerEdges = new Path();
                 pointerEdges.moveTo(center - h, h);
                 pointerEdges.lineTo(center, 0);
