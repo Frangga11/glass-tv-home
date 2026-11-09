@@ -140,6 +140,8 @@ final class WifiSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView title = text(R.string.wifi, 18f, true, density);
+        title.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0, 0, 0);
+        title.setCompoundDrawablePadding(dp(density, 6));
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
@@ -183,8 +185,11 @@ final class WifiSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 88)));
 
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
+        rescan.setText("↻  " + activity.getString(R.string.wifi_rescan));
         androidSettings = action(R.string.wifi_open_android_settings, "wifi_open_settings", density,
                 () -> dismissThen(openSystemWifiSettings));
+        androidSettings.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
+        androidSettings.setCompoundDrawablePadding(dp(density, 6));
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
         LinearLayout actions = new LinearLayout(activity);
         actions.setOrientation(LinearLayout.VERTICAL);
@@ -526,6 +531,10 @@ final class WifiSettingsDialog {
             TextView connectedRow = action(connectedLabel, "wifi_network:" + connectedSsid,
                     activity.getResources().getDisplayMetrics().density,
                     () -> dismissThen(openSystemWifiSettings));
+            connectedRow.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0,
+                    connectedSecurity.isEmpty() ? 0 : R.drawable.ic_lock, 0);
+            connectedRow.setCompoundDrawablePadding(dp(
+                    activity.getResources().getDisplayMetrics().density, 6));
             networkRows.addView(connectedRow);
             connectedAdded = true;
         }
@@ -546,6 +555,11 @@ final class WifiSettingsDialog {
                 TextView row = action(label, "wifi_network:" + result.SSID,
                         activity.getResources().getDisplayMetrics().density,
                         () -> dismissThen(openSystemWifiSettings));
+                row.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0,
+                        security.equals(activity.getString(R.string.wifi_security_open))
+                                ? 0 : R.drawable.ic_lock, 0);
+                row.setCompoundDrawablePadding(dp(
+                        activity.getResources().getDisplayMetrics().density, 6));
                 networkRows.addView(row);
                 focusOrder.add(row);
                 added++;
