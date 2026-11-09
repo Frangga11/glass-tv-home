@@ -241,13 +241,8 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
 
             btnCircle.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    itemView.setTranslationZ(60f);
-                    btnCircle.animate().scaleX(1.16f).scaleY(1.16f).setDuration(160).start();
-                } else {
-                    itemView.setTranslationZ(0f);
-                    btnCircle.animate().scaleX(1.0f).scaleY(1.0f).setDuration(160).start();
-                }
+                // bg_circle_close_all supplies the cyan focus ring; retain stack ordering without zoom.
+                itemView.setTranslationZ(hasFocus ? 60f : 0f);
             });
 
             btnCircle.setOnClickListener(v -> {
