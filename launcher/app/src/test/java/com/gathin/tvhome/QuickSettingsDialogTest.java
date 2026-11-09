@@ -101,8 +101,11 @@ public class QuickSettingsDialogTest {
         assertEquals(wifi.getId(), wifi.getNextFocusLeftId());
         assertEquals(language.getId(), wifi.getNextFocusDownId());
         assertEquals(power.getId(), language.getNextFocusRightId());
-        assertEquals(manageWallpaper.getId(), power.getNextFocusDownId());
+        assertEquals(cache.getId(), power.getNextFocusDownId());
         assertEquals(manageWallpaper.getId(), cache.getNextFocusDownId());
+        View nextPhoto = find(dialog, "quick_settings_next_photo");
+        assertNotNull(nextPhoto);
+        assertEquals(nextPhoto.getId(), manageWallpaper.getNextFocusDownId());
         View glass = find(dialog, "quick_settings_glass_settings");
         View android = find(dialog, "quick_settings_android_settings");
         View close = find(dialog, "quick_settings_close");
