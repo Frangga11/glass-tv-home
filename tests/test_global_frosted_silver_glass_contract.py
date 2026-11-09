@@ -140,11 +140,21 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
     def test_pressed_state_precedes_focused_and_selected_selector_states(self):
         ns = "{http://schemas.android.com/apk/res/android}"
         button = ET.parse(RES / "drawable/selector_glass_dialog_button_bg.xml").getroot()
-        button_states = [item.attrib.get(ns + "state_pressed") == "true" for item in button.findall("item")]
-        self.assertTrue(button_states[0], "Pressed must be evaluated before focused")
+        button_items = button.findall("item")
+        button_pressed = next(i for i, item in enumerate(button_items)
+                              if item.attrib.get(ns + "state_pressed") == "true")
+        button_focused = next(i for i, item in enumerate(button_items)
+                              if item.attrib.get(ns + "state_focused") == "true")
+        self.assertLess(button_pressed, button_focused)
+        self.assertEqual(button_items[0].attrib.get(ns + "state_enabled"), "false")
         rows = ET.parse(RES / "drawable/selector_glass_dialog_list_item_bg.xml").getroot()
-        row_states = [item.attrib.get(ns + "state_pressed") == "true" for item in rows.findall("item")]
-        self.assertTrue(row_states[0], "Pressed must be evaluated before focused/activated")
+        row_items = rows.findall("item")
+        row_pressed = next(i for i, item in enumerate(row_items)
+                           if item.attrib.get(ns + "state_pressed") == "true")
+        row_focused = next(i for i, item in enumerate(row_items)
+                           if item.attrib.get(ns + "state_focused") == "true")
+        self.assertLess(row_pressed, row_focused)
+        self.assertEqual(row_items[0].attrib.get(ns + "state_enabled"), "false")
 
     def test_dpad_focus_does_not_scale_or_translate_tiles(self):
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
