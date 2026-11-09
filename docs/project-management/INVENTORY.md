@@ -1692,3 +1692,7 @@ Directory audit result: **96 Markdown files + 1 `prototypes/` directory**. All f
 - `prototypes/` — 6 entries currently listed: UI_REFRESH_G1_GLOBAL_UI_PROTOTYPE_V6.html, UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V1.html, UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V2.html, UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V3.html, UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V4.html, UI_REFRESH_TRIGGER4_VISUAL_PROTOTYPE_V5.html.
 
 **Catalog rule:** This list accounts for the project-management document set as it existed during this audit. New documents must be registered here and linked from the canonical checkpoint if they change current status or define a new workstream. Historical evidence must not be rewritten merely to make dates/statuses look current.
+
+
+### Current authority — 9 November 2026
+The canonical current status and restart instructions are in GTVH-CHECKPOINT-LATEST.md only. Active workstream evidence is GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md. PR #104 remains OPEN / DRAFT / UNMERGED; exact-head CI #1758 PASS at b737b617aa53fbfc112ccdfe8a7cd4959043d3ec. Visual, functional, performance and Mi TV Stick acceptance remain pending. Historical entries are evidence only and do not supersede the canonical checkpoint.
