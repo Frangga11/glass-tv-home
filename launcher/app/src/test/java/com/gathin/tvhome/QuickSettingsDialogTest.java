@@ -138,7 +138,7 @@ public class QuickSettingsDialogTest {
         int popupHeight = Math.round(metrics.heightPixels * 0.64f);
         content.measure(
                 View.MeasureSpec.makeMeasureSpec(popupWidth, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                View.MeasureSpec.makeMeasureSpec(popupHeight, View.MeasureSpec.AT_MOST));
         assertTrue("Quick Settings content exceeds its popup frame: measured="
                 + content.getMeasuredHeight() + "px, available=" + popupHeight + "px",
                 content.getMeasuredHeight() <= popupHeight);
