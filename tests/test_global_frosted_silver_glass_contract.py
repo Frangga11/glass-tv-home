@@ -68,6 +68,24 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertNotIn("scaleX(1.06f)", source)
         self.assertNotIn("scaleX(0.94f)", source)
         self.assertIn("tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY)", source)
+        layout = ET.parse(RES / "layout/item_recent_app.xml").getroot()
+        ns = "{http://schemas.android.com/apk/res/android}"
+        card = next(node for node in layout.iter()
+                    if node.attrib.get("{http://schemas.android.com/apk/res/android}id") == "@+id/cardContainer")
+        self.assertEqual(card.attrib.get(ns + "foreground"), "@drawable/bg_recent_card_focus")
+        ring = ET.parse(RES / "drawable/bg_recent_card_focus.xml").getroot()
+        focused = next(item for item in ring.findall("item")
+                       if item.attrib.get(ns + "state_focused") == "true")
+        self.assertEqual(focused.find("shape/stroke").attrib[ns + "color"], "@color/tv_ui_focus_cyan")
+
+    def test_weather_and_shared_focus_helpers_never_scale_controls(self):
+        weather = (JAVA / "WeatherActivity.java").read_text(encoding="utf-8")
+        helper = weather.split("private void setupFocusAnimation", 1)[1].split("private void setupCardFocus", 1)[0]
+        self.assertNotIn("scaleX(", helper)
+        self.assertNotIn("scaleY(", helper)
+        indicator = (JAVA / "TvFocusIndicator.java").read_text(encoding="utf-8")
+        self.assertNotIn(".scaleX(hasFocus", indicator)
+        self.assertNotIn(".scaleY(hasFocus", indicator)
 
     def test_pressed_state_precedes_focused_and_selected_selector_states(self):
         ns = "{http://schemas.android.com/apk/res/android}"
@@ -127,6 +145,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
             "bg_glass_dialog.xml", "glass_panel.xml", "bg_floating_dock.xml",
             "bg_location_pill.xml", "bg_tv_focus_outline.xml",
             "bg_app_pill.xml", "bg_app_pill_focused.xml", "bg_app_pill_unfocused.xml",
+            "bg_recent_card_focus.xml",
             "selector_glass_dialog_button_bg.xml", "selector_glass_dialog_list_item_bg.xml",
             "header_nav_tab_bg.xml", "bg_recent_apps_glass.xml", "bg_media_app_pill.xml",
             "bg_np_round_btn.xml", "input_row_bg.xml", "bg_dialog_btn.xml",
