@@ -41,6 +41,12 @@ public class WifiSettingsDialogTest {
         Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 
+    @Test public void popupUsesConstrainedWidthAndVerticalFirstLayout() {
+        assertEquals(0.1976f, WifiSettingsDialog.popupWidthFraction(), 0.0001f);
+        assertEquals(0.43f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
+        assertEquals(14f, WifiSettingsDialog.popupTextSizeSp(), 0.001f);
+    }
+
     @Test public void dialogProvidesPermissionGuidanceAndDpadControls() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         final int[] returns = {0};
