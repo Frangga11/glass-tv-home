@@ -206,13 +206,14 @@ final class WifiSettingsDialog {
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
         LinearLayout actions = new LinearLayout(activity);
         actions.setTag("wifi_popup_footer");
-        actions.setOrientation(LinearLayout.HORIZONTAL);
+        actions.setOrientation(LinearLayout.VERTICAL);
         actions.setGravity(Gravity.CENTER_VERTICAL);
-        LinearLayout.LayoutParams actionWidth = new LinearLayout.LayoutParams(0, dp(density, 38), 1f);
-        actionWidth.rightMargin = dp(density, 4);
+        LinearLayout.LayoutParams actionWidth = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 38));
+        actionWidth.bottomMargin = dp(density, 4);
         rescan.setLayoutParams(actionWidth);
-        LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(0, dp(density, 38), 1f);
-        settingsWidth.leftMargin = dp(density, 4);
+        LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 38));
         androidSettings.setLayoutParams(settingsWidth);
         actions.addView(rescan);
         actions.addView(androidSettings);
