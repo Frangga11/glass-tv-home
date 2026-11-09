@@ -893,3 +893,10 @@ Implementation is isolated in PR #97, base PR #83 exact HEAD `947f33cf7181bb06c7
 - No further source edit was justified by the targeted Java color review alone.
 - PR #104 current HEAD `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; source HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`. CI #1761 PASS on preceding PR HEAD `4575b09b262ad664f6766ce286d5e5ed90e92780`; docs-only current commit requires its own CI.
 - Full resource classification and visual/runtime/DPAD/performance/device acceptance remain pending. Canonical checkpoint governs next actions.
+
+## Decision — geometry deviations require explicit disposition — 9 November 2026
+- Do not silently accept intrinsic padding changes as a reskin-only edit. Verify whether `bg_ram_pill.xml` is referenced; restore its previous 20dp horizontal / 9dp vertical padding unless a measured visual defect and owner-approved exception justify the 12dp / 5dp change.
+- Check `bg_recent_card.xml` 24dp→26dp radius against the approved Recent Apps geometry and its focus drawable.
+- Check static Ayah gold→white text and shadow change against readability on bright/dark wallpaper; retain Arabic direction/gravity/typeface.
+- Check installer theme startup window/status/navigation #0C0E14 fallback against content root #2C333B; preserve if intentionally preventing startup flash.
+- PR #104 current HEAD `6660b9721f0d03575370ba8570a07b40c1425f4c`; CI #1762 PASS on preceding HEAD `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; current docs-only commit needs CI.
