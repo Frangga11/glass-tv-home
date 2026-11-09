@@ -33,6 +33,7 @@ class HomeHeaderNavigationSymmetryContractTest(unittest.TestCase):
         self.assertIn("new WeatherDividerSpan(context.getResources().getDisplayMetrics().density)", self.weather)
         self.assertIn('sb.append("\\uFFFC")', self.weather)
         self.assertNotIn('sb.append("  •  ")', self.weather)
+        self.assertNotIn("StyleSpan(Typeface.BOLD)", self.weather)
 
     def test_header_information_typography_is_14sp_inter_semibold(self):
         ids = ("@+id/ampm", "@+id/date", "@+id/locationName",
