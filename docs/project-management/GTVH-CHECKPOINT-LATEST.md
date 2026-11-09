@@ -1914,3 +1914,10 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 - Exact-head CI run #1871 / run ID 42718323142 is IN PROGRESS at this checkpoint. Do not claim tests/build pass until the run completes.
 - Physical Mi TV Stick visual/DPAD acceptance remains pending. Review silver focus visibility and contrast over bright/dark wallpapers, and confirm the 2dp icon-label gap is legible at 1920×1080.
 - Next gate: wait for run #1871; if successful, deliver the new APK artifact for owner device acceptance. Do not merge or mark PR ready without owner approval.
+### REGRESSION EXPECTATION CORRECTION — 10 NOVEMBER 2026
+
+- CI run #1871 / 42718323142 exposed one stale test expectation in test_home_ui_proportion_glass_focus_refinement_contract.py: it still expected the previous 4dp icon-label gap. The source correctly contained 2dp.
+- Updated that remaining regression assertion to 2dp; no product source behavior changed in this corrective commit.
+- Corrective source branch HEAD: 22b6e7328c7bcecf9f0edef1567e9fea48a2292c.
+- Run #1871 was triggered against the prior HEAD 711188716d4ce3011ff540546a9232707444a45f and is not evidence of a passing final HEAD. Await a fresh exact-head CI run for 22b6e7328c7bcecf9f0edef1567e9fea48a2292c.
+- Current acceptance remains: implementation committed; CI/build for corrected HEAD pending; Mi TV Stick visual/DPAD acceptance pending; PR #109 remains draft/unmerged.
