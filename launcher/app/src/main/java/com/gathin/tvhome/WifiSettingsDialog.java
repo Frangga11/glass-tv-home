@@ -57,6 +57,7 @@ final class WifiSettingsDialog {
     private final Runnable returnToParent;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final TextView status;
+    private final TextView wifiToggle;
     private final LinearLayout networkRows;
     private final TextView scanState;
     private final TextView rescan;
@@ -138,7 +139,14 @@ final class WifiSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView title = text(R.string.wifi, 18f, true, density);
-        content.addView(title);
+        LinearLayout header = new LinearLayout(activity);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        wifiToggle = action("ON", "wifi_toggle", density, () -> dismissThen(openSystemWifiSettings));
+        wifiToggle.setMinHeight(dp(density, 28));
+        header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 48), ViewGroup.LayoutParams.WRAP_CONTENT));
+        content.addView(header);
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
         GradientDrawable connectedSurface = new GradientDrawable();
@@ -444,6 +452,7 @@ final class WifiSettingsDialog {
 
         if (!wifi) {
             status.setText(wifiEnabled() ? R.string.wifi_status_not_connected : R.string.wifi_status_off);
+            wifiToggle.setText(wifiEnabled() ? "ON" : "OFF");
             return;
         }
 
@@ -460,6 +469,7 @@ final class WifiSettingsDialog {
         status.setText(ssid == null
                 ? activity.getString(R.string.wifi_status_connected)
                 : activity.getString(R.string.wifi_status_connected_to, ssid));
+        wifiToggle.setText(wifiEnabled() ? "ON" : "OFF");
     }
 
     private void showCachedResults() {
@@ -505,6 +515,10 @@ final class WifiSettingsDialog {
                 String security = securityLabel(result.capabilities);
                 String label = activity.getString(R.string.wifi_network_row, result.SSID, security,
                         signalLabel(result.level));
+                boolean connected = status.getText() != null
+                        && status.getText().toString().contains(result.SSID);
+                label = (connected ? "✓  " : "⌁  ") + label
+                        + (security.equals(activity.getString(R.string.wifi_security_open)) ? "" : "  🔒");
                 TextView row = action(label, "wifi_network:" + result.SSID,
                         activity.getResources().getDisplayMetrics().density,
                         () -> dismissThen(openSystemWifiSettings));
@@ -615,6 +629,7 @@ final class WifiSettingsDialog {
     }
 
     private View firstFocusableControl() {
+        if (wifiToggle.isFocusable() && wifiToggle.getVisibility() == View.VISIBLE) return wifiToggle;
         if (permissionAction.getVisibility() == View.VISIBLE) return permissionAction;
         if (locationAction.getVisibility() == View.VISIBLE) return locationAction;
         for (int i = 0; i < networkRows.getChildCount(); i++) {
@@ -626,6 +641,7 @@ final class WifiSettingsDialog {
 
     private void connectFocusOrder() {
         focusOrder.clear();
+        focusOrder.add(wifiToggle);
         if (permissionAction.getVisibility() == View.VISIBLE) focusOrder.add(permissionAction);
         if (locationAction.getVisibility() == View.VISIBLE) focusOrder.add(locationAction);
         for (int i = 0; i < networkRows.getChildCount(); i++) {
