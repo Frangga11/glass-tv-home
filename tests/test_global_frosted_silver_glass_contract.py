@@ -131,6 +131,20 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(int(java_int("DOCK_SURFACE")[1:3], 16), 255)
         self.assertIn("0x88343E48", tokens)
 
+    def test_islamic_arabic_visual_uses_silver_and_preserves_rtl(self):
+        ns = "{http://schemas.android.com/apk/res/android}"
+        home = ET.parse(RES / "layout/activity_main.xml").getroot()
+        ayah = next(node for node in home.iter()
+                    if node.attrib.get(ns + "id") == "@+id/ayahArabic")
+        self.assertEqual(ayah.attrib[ns + "textDirection"], "rtl")
+        self.assertEqual(ayah.attrib[ns + "layoutDirection"], "ltr")
+        self.assertEqual(ayah.attrib[ns + "gravity"], "end")
+        self.assertEqual(ayah.attrib[ns + "textColor"], "@color/tv_ui_text_primary")
+        nightstand = ET.parse(RES / "layout/view_nightstand.xml").getroot()
+        hijri = next(node for node in nightstand.iter()
+                     if node.attrib.get(ns + "id") == "@+id/nightstandHijri")
+        self.assertEqual(hijri.attrib[ns + "textColor"], "@color/tv_ui_text_secondary")
+
     def test_remaining_location_and_recent_surfaces_keep_silver_fallbacks(self):
         ns = "{http://schemas.android.com/apk/res/android}"
         zone = ET.parse(RES / "drawable/bg_location_zone_card.xml").getroot()
