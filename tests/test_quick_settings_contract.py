@@ -27,6 +27,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("QuickSettingsDialog.show(this", MAIN)
         self.assertIn(".setView(content)", DIALOG)
         self.assertNotIn("ScrollView", DIALOG)
+        self.assertIn("tile.setTextSize(12f)", DIALOG)
+        self.assertIn("Math.min(minHeightDp, 32)", DIALOG)
         self.assertIn("TvUiTokens.", DIALOG)
         self.assertIn("TvFocusIndicator.applyRoundedTextFocus", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
