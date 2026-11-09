@@ -1732,3 +1732,54 @@ Implemented Wi-Fi-only changes: compact anchored top-right dialog, pointer align
 4. Keep PR #105 OPEN / DRAFT / UNMERGED. Record the 22dp latest-head CI caveat if a later audit asks for strict release readiness.
 
 **Disposition:** Wi-Fi popup scope = **CLOSED BY OWNER ACCEPTANCE**. PR #105 remains unmerged and draft. Latest 22dp source change is recorded; its exact-head CI/runtime evidence is not claimed.
+
+---
+
+## FINAL RECONCILIATION — Wi-Fi popup complete through latest APK build
+
+**Timestamp:** 9 Nov 2026, 23:30 WIB  
+**Workstream:** GTVH-WIFI-POPUP-REFERENCE-001  
+**This entry supersedes the earlier checkpoint caveat that the 22dp checkmark HEAD had no CI result or latest APK.**
+
+### Exact source and CI
+- Repository: `Frangga11/glass-tv-home`
+- PR #105: https://github.com/Frangga11/glass-tv-home/pull/105
+- Branch: `feature/wifi-popup-reference-001`
+- Exact source HEAD: `774eb99faa48e109b3532533425bbb4cdee07a4a`
+- CI run #1825, run ID `42654291224`: **SUCCESS on the exact source HEAD above**.
+- Both jobs passed: `Lists, tools and docs`; `Launcher build and unit tests`.
+- Launcher job steps passed: unit tests and release build, APK size diagnostics, APK size report and APK artifact upload.
+- PR metadata/body reconciled with final visual decisions and evidence. PR remains OPEN / DRAFT / UNMERGED.
+
+### Latest APK artifact and verification
+- Workflow artifact ID: `13691197573`
+- Artifact name: `glass-tv-home-dock-visual-parity-274f8d400db77b694a9e22fc0accbce823ea6871`
+- Artifact archive: `glass-tv-home-wifi-popup-final-ci1825.zip`
+- Archive contained `app-release.apk`, 1,629,885 bytes.
+- Extracted deliverable: `/mnt/data/GlassTVHome-WiFi-CI1825.apk`
+- APK file size: **1,629,885 bytes** (about 1.55 MiB).
+- APK identified by file utility as Android package; ZIP integrity test passed; `AndroidManifest.xml` and `classes.dex` present.
+- APK SHA-256: `2a936e3aa551cd7a7d49c5ec7828a6e8826143400a9fb04393253f366800acae`.
+- Exact-branch Gradle config: applicationId `com.gathin.tvhome`; versionCode `40`; versionName `4.0.0`; minSdk `26`; targetSdk `34`. Note: metadata was verified from source Gradle configuration; binary manifest metadata was not independently decoded.
+- APK delivered to user via sandbox link in the conversation. Do not substitute earlier CI #1823 APK (that was built from an earlier SHA).
+
+### Final visual and implementation decisions
+- SSID: 25 physical px, one line; long SSID marquee only while focused.
+- Connected network first; no separate “Terhubung” label.
+- Green connected checkmark: 22dp, 2.8dp stroke, RGB (80, 255, 145).
+- Secured non-connected networks retain lock icon; open networks have no lock.
+- Frosted Silver-Cyan baseline, popup geometry, anchored pointer, footer, DPAD/scroll behavior and Android-owned Wi-Fi operations preserved.
+- Runtime screenshot feedback about the tiny checkmark was incorporated in the 22dp refinement, and that exact source HEAD passed CI #1825.
+
+### Quality and scope disposition
+- CI/build evidence for exact latest HEAD: **PASS**.
+- APK packaging and archive integrity: **PASS**.
+- Binary package/version metadata decode: **NOT PERFORMED**; values above are from exact branch Gradle config.
+- Final 22dp build install/retest on Mi TV Stick: **NOT PERFORMED**. User explicitly accepted the Wi-Fi popup as clear/clean; record as owner acceptance, not fresh physical-device verification.
+- No unrelated UI/data modules modified in the final refinement.
+- No device installation or ADB action performed.
+- PR #105 remains OPEN / DRAFT / UNMERGED; no merge or promotion to ready-for-review authorized.
+- Workstream status: **CLOSED BY OWNER ACCEPTANCE; latest exact-HEAD CI and APK build completed**.
+
+### Handover
+Wi-Fi popup workstream is complete through latest APK generation and evidence reconciliation. Start the next repair as a separate scoped workstream/PR. Preserve the project method: audit → root cause → plan → scoped implementation → tests/CI → build → artifact verification → docs sync. Do not reopen Wi-Fi unless the user reports a new defect or explicitly requests it.
