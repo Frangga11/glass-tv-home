@@ -745,7 +745,7 @@ public class WeatherActivity extends Activity {
                 view.setScaleY(1f);
                 view.setTranslationZ(elev);
             } else {
-                view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+                view.animate().translationZ(elev).setDuration(120).start();
             }
         });
     }
