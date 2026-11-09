@@ -15,6 +15,9 @@ final class TvUiTokens {
     static final int POPUP_SURFACE = 0xFF303A44;
     static final int DOCK_SURFACE = 0xFF242E38;
     static final int BORDER = 0xFF9EABB8;
+    static final int DISABLED_SURFACE = 0x223F4A55;
+    static final int DISABLED_BORDER = 0x559EABB8;
+    static final int DISABLED_TEXT = 0x668B98A5;
 
     // Typography and accents.
     static final int TEXT_PRIMARY = 0xFFFFFFFF;
