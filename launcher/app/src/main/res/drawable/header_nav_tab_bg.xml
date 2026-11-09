@@ -11,14 +11,14 @@
     <item android:state_focused="true">
         <shape android:shape="rectangle">
             <solid android:color="#35DCE5ED" />
-            <stroke android:width="1dp" android:color="@color/tv_ui_focus_cyan" />
+            <stroke android:width="1dp" android:color="@color/tv_ui_focus_border" />
             <corners android:radius="14dp" />
         </shape>
     </item>
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <solid android:color="#26343F4A" />
-            <stroke android:width="1dp" android:color="@color/tv_ui_focus_cyan" />
+            <stroke android:width="1dp" android:color="@color/tv_ui_focus_border" />
             <corners android:radius="14dp" />
         </shape>
     </item>
