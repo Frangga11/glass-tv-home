@@ -178,14 +178,16 @@ public class LocationActivity extends Activity {
         if (land != null) stateRow.setNextFocusRightId(land.getId());
     }
 
-    /** A state: white when focused, a faint pill when it is the one shown on the right. */
+    /** A state: cyan focus outline; persistent selected state uses a quiet silver fill. */
     private StateListDrawable pill() {
         GradientDrawable on = new GradientDrawable();
         on.setColor(TvUiTokens.SURFACE_FOCUSED);
         on.setCornerRadius(dp(22));
+        on.setStroke(dp(2), TvUiTokens.FOCUS_BORDER);
         GradientDrawable sel = new GradientDrawable();
         sel.setColor(TvUiTokens.SURFACE_SELECTED);
         sel.setCornerRadius(dp(22));
+        sel.setStroke(dp(1), TvUiTokens.NAV_SELECTION_BORDER);
         StateListDrawable s = new StateListDrawable();
         s.addState(new int[]{android.R.attr.state_focused}, on);
         s.addState(new int[]{android.R.attr.state_selected}, sel);
