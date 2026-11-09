@@ -67,6 +67,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         source = (JAVA / "RecentAppsAdapter.java").read_text(encoding="utf-8")
         self.assertNotIn("scaleX(1.06f)", source)
         self.assertNotIn("scaleX(0.94f)", source)
+        self.assertNotIn("scaleX(1.16f)", source)
         self.assertIn("tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY)", source)
         layout = ET.parse(RES / "layout/item_recent_app.xml").getroot()
         ns = "{http://schemas.android.com/apk/res/android}"
