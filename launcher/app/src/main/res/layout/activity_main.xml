@@ -915,7 +915,8 @@
                     android:textSize="14sp"
                     android:fontFamily="@font/inter"
                     android:letterSpacing="0.01"
-                    android:fontVariationSettings="\'wght\' 600"
+                    android:fontVariationSettings="'wght' 600"
+                    android:includeFontPadding="false"
                     android:drawableStart="@drawable/ic_wifi" />
 
                 <TextView
