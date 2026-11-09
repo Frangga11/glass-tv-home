@@ -1,3 +1,24 @@
+<!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
+## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
+
+**Single source of truth:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. Every session starts there. This file alone governs current status, active workstream, dependency order, decisions, quality gates, and next action. Supporting documents provide detailed evidence/history and must not create competing restart points.
+
+**Current source candidate:** PR [#103](https://github.com/Frangga11/glass-tv-home/pull/103), `GTVH-HOME-WALLPAPER-PRAYER-ZERO-GAP-ARABIC-RTL-FIX-103`; OPEN / DRAFT / UNMERGED. Branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`; exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`; base PR #101 at `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`; 7 commits ahead / 0 behind; 5 changed files (2 production, 3 regression tests).
+
+**Latest verified automation:** exact-head CI #1689 / run [42566072365](https://github.com/Frangga11/glass-tv-home/actions/runs/42566072365) SUCCESS; both required jobs passed; Gradle release build successful. APK size 1,626,637 bytes; 53,773 bytes above historical 1.5 MiB reference, diagnostic/non-blocking. No PR artifact ZIP was published for this Draft run.
+
+**Remaining gates:** genuine rendered 1920×1080 visual review and physical Mi TV Stick acceptance are NOT RUN / PENDING. No ADB, installation, launcher-setting change, or merge. Overall PR #103 is NOT FINAL. Do not claim visual/device acceptance.
+
+**Cumulative base:** PR #101 branch `integration/home-islamic-prayer-spacing-cumulative-101`, base HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`, remains unmerged. PR #103 is a corrective child candidate; do not flatten, retarget, merge, or alter its ancestry without an explicit reconciliation and owner approval.
+
+**Newly approved future workstream:** `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001` — global visual reskin using Frosted Silver Glass + Electric Cyan DPAD Focus. Scope includes Home Screen, dock, Beranda–Profil–Pengaturan navigation, Wi-Fi/microphone, location/altitude, weather/AQI, popups/dialogs, settings/profile, prayer schedule, selected Ayah, Arabic and translation, and all other audited glass surfaces. Design/prompt approved by owner; implementation has NOT started; no branch, PR, source modification, prototype, or QA result is claimed.
+
+**Global execution constraints:** RE-SKIN, NOT REWIRE. Preserve working IDs, listeners, events, data logic, navigation, DPAD behavior, wallpaper logic, component geometry, and prior approved work. Only change geometry where an audited, evidenced requirement is approved. Prioritize function, readability, stability, and device performance over decorative effects. Do not merge or install without the required evidence and explicit owner approval.
+
+**Document roles:** CHECKPOINT = sole status/restart authority; MASTER_PROJECT = scope/architecture/roadmap; INVENTORY = files/components/branches/PR/dependencies; DECISION_LOG = approved decisions and constraints; AUDIT_REGISTER = evidence, findings, quality gates; HANDOVER = exact resume instructions. Update all six in the same documentation synchronization pass. Keep chronology; mark superseded statements rather than deleting history.
+
+---
+
 > **CANONICAL CHECKPOINT — READ THIS FIRST**  
 > The only authoritative restart point is [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) on branch `docs/project-master-inventory`. Start every continuation there; do not resume from historical checkpoint blocks, old PR descriptions, or branch-local notes. This file is supporting detail/history and must not establish a competing current state.  
 > **Checkpoint authority:** GitHub repository `Frangga11/glass-tv-home`; canonical docs branch `docs/project-master-inventory`; single entry file `docs/project-management/GTVH-CHECKPOINT-LATEST.md`. The latest checkpoint supersedes all older status statements below.  
@@ -2436,3 +2457,15 @@ Resume PR #101 from source HEAD `b8389e1f90b9fb7f65d91cfd0d7a41782f343d83` on `i
 Automated QA is complete: CI #1681 / run `42535212323` SUCCESS; Python 211 tests (1 skipped), Android app/installer unit tests and Release build PASS. Artifact `13639167072` contains `app-release.apk`; size 1,626,525 bytes; SHA-256 `5423f7746d6b771fcb0c76ca3fcdca5186c5957d2967f66437554cb6e7d62398`; package ZIP integrity PASS. Size warning is non-blocking and delta vs PR #83 is only +1,312 bytes (+0.081%).
 
 Do NOT claim visual pass: no rendered 1920×1080 screenshot exists. Current execution environment lacks Android emulator/renderer. Next required work: arrange genuine rendering/visual audit, then explicit owner-authorized Mi TV Stick acceptance. No ADB/install/default-launcher changes or merge before those gates and explicit approval.
+
+## Authoritative handover — single-door restart — 9 November 2026
+
+**Resume instruction:** first read `docs/project-management/GTVH-CHECKPOINT-LATEST.md` from branch `docs/project-master-inventory`. Do not resume from chat summaries or older PR notes.
+
+**Current implementation work:** PR #103, OPEN / DRAFT / UNMERGED, branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`, HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`, base PR #101 HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`. Exact-head CI #1689 PASS. Rendered 1920×1080 visual review and physical Mi TV Stick acceptance remain pending. Do not install, alter launcher settings, or merge without explicit owner authorization.
+
+**Next sequence:** (1) complete this six-document sync and verify its commit; (2) preserve PR #103 as Draft/unmerged; (3) arrange genuine visual review for PR #103; (4) after visual pass, request owner-authorized device acceptance; (5) only after those gates, update checkpoint and decide next integration step.
+
+**Upcoming workstream:** GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 is approved in concept and prompt only. It has not started. Do not create source changes until the existing checkpoint gates and dependency status are reviewed and a complete component inventory/baseline is ready.
+
+**Safety:** preserve all earlier approved functionality and component-specific geometry. No blind cherry-picks, rebases, branch resets, force pushes, merges, device installs, or launcher-setting changes.
