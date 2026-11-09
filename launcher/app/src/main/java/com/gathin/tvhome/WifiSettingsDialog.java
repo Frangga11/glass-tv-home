@@ -196,6 +196,7 @@ final class WifiSettingsDialog {
         actions.addView(rescan);
         actions.addView(androidSettings);
         content.addView(actions);
+        content.addView(close);
         close.setVisibility(View.GONE);
 
         AlertDialog built = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
@@ -258,6 +259,8 @@ final class WifiSettingsDialog {
         params.y = Math.max(0, popupTop);
         params.dimAmount = 0.08f;
         window.setAttributes(params);
+        window.setLayout(popupWidth, popupHeight);
+        window.setGravity(Gravity.TOP | Gravity.END);
         window.setBackgroundDrawable(TvDialogStyle.createDialogSurface(activity));
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         window.setDimAmount(0.08f);
