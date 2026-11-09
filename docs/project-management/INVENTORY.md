@@ -1,3 +1,34 @@
+<!-- CURRENT AUTHORITATIVE INVENTORY UPDATE — 9 NOVEMBER 2026. Supersedes earlier current inventory status below. -->
+## Active Global Visual Workstream — Inventory Update
+
+| Item | Current value |
+|---|---|
+| Workstream | GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 |
+| PR | #104 — OPEN / DRAFT / UNMERGED |
+| Branch | feature/global-frosted-silver-glass-001 |
+| Current exact HEAD | 03408e7585e1cacd3fe32727502bca61752c5438 |
+| Last source-code validated HEAD | 7535a311639c07ab77abd004664510fca216b00b |
+| Base PR / exact SHA | #103 / a3d697c793e23a59f9f9953e2074d83daa210cf9 |
+| Commits / changed files | 68 / 50 |
+| CI #1702 | PASS — source HEAD 7535a311 |
+| CI #1703 | IN PROGRESS — docs-only HEAD 03408e7 |
+| APK | 1,627,069 bytes |
+| APK SHA256 | e5e5dfbcff4a2944c4bc8d3be38deb27743b1b358b542bf82a6a0effab530054 |
+| Merge / device install | Not performed |
+
+### Baseline inventory at PR #103
+17 app layouts; 121 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
+
+### Audited visual surface families
+Home shell/header/navigation, location/elevation, weather/AQI, wallpaper/hero, Islamic shelf, prayer and selected Ayah; app dock/tiles, recent apps and media; Wi-Fi, Quick Settings, Global Settings, profile/avatar/Child Mode, wallpaper/location and modal surfaces; weather dashboard/cards/rows; floating Azan card; shared renderers/tokens; companion installer glass surfaces.
+
+### Initial changed source/resource inventory
+Shared palette/colors; AppAdapter focus behavior; Glider and GlassView focus rendering; GlassRim; MainActivity dynamic dialogs; ModernSettingsDialog; QuickSettingsDialog; LocationActivity; AzanActivity; Home/dock/dialog/location/prayer/media/recent-app/tile/weather drawable resources; installer glass resources/theme accents; regression tests; CI APK artifact allowlist; audit/design report.
+
+Full component and changed-file evidence is on PR #104 and `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md`. Remaining source/resource sweep is not complete; do not infer full visual acceptance from the inventory count.
+
+---
+
 <!-- CURRENT AUTHORITATIVE INVENTORY UPDATE — 9 NOVEMBER 2026, 17:01 WIB. Supersedes earlier current inventory status below. -->
 ## Active Global Visual Workstream — Inventory Update
 
