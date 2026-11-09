@@ -171,6 +171,9 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             float density = itemView.getResources().getDisplayMetrics().density;
             GradientDrawable cardBg = new GradientDrawable();
             cardBg.setColor(cardColor);
+            // Preserve the normal 1dp silver border from bg_recent_card.xml; this dynamic
+            // drawable replaces that XML background for app-specific preview fills.
+            cardBg.setStroke(Math.round(1f * density), 0x99DCE5ED);
             cardBg.setCornerRadius(26 * density);
             cardContainer.setBackground(cardBg);
 
