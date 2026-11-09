@@ -73,6 +73,12 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertNotIn(".translationY(focused ? density * 4f : -density * 6f)", adapter)
         self.assertIn(".translationY(0f)", adapter)
 
+    def test_top_navigation_glider_uses_cyan_outline_not_dark_focus_fill(self):
+        source = (JAVA / "Glider.java").read_text(encoding="utf-8")
+        self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", source)
+        self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", source)
+        self.assertNotIn("FOCUS_ALPHA", source)
+
     def test_glass_rim_uses_neutral_silver_and_restrained_cyan(self):
         source = (JAVA / "GlassRim.java").read_text(encoding="utf-8")
         self.assertIn("0xD9E2E8EE", source)
