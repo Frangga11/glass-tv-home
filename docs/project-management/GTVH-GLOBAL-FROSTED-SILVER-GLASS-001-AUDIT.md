@@ -245,3 +245,44 @@ This CI run validates the current PR HEAD, including the source correction alrea
 **Remaining review items:** Recent Apps card radius 24dp→26dp is paired with the new focus overlay's 26dp radius; visually confirm on rendered output. Static Ayah text changed gold→white and shadow warm-brown→black; confirm readability on bright/dark wallpaper. Installer theme window background remains dark while content root is silver; confirm startup transition before changing system/window colors. No speculative change made to these items.
 
 **Current status:** PR #104 OPEN / DRAFT / UNMERGED; current source/test HEAD `75481d456556655076c51735f33f19a131e17190`; CI #1764 pending. Full resource classification, rendered 1920×1080, runtime functional/DPAD, performance and owner-authorized physical-device gates remain pending. Overall **BELUM FINAL**.
+
+
+## 14. Source audit continuation — Recent Apps, Islamic Ayah, Installer, resource taxonomy — 9 November 2026
+
+### CI evidence
+- CI #1764 / run `42611753895`: both required jobs completed SUCCESS.
+- CI #1766 / run `42611799280`: both required jobs completed SUCCESS.
+- Installer correction commit `e5a4f47aabda630af984a315969637e67d0627c9`: CI #1767 / run `42612524215` completed SUCCESS; both Lists/tools/docs and Launcher build/unit tests jobs passed, including all reported steps.
+
+### Recent Apps card
+- `bg_recent_card.xml` normal surface declares 26dp corner radius.
+- `bg_recent_card_focus.xml` declares 26dp for disabled, pressed and focused states; focused state uses shared Electric Cyan outline.
+- `item_recent_app.xml` card foreground is the state selector; parent and card container set clipChildren/clipToPadding false.
+- Runtime detail: `RecentAppsAdapter.AppViewHolder.bind()` constructs a per-app `GradientDrawable`, sets corner radius to 26dp, and calls `cardContainer.setBackground(cardBg)`. This replaces the XML normal background at bind time. The dynamic background still has 26dp radius; however, XML normal stroke is not guaranteed to remain at runtime. Foreground focus selector is separate. No source evidence that outline changes measured card dimensions; rendered clipping and focus outline remain to be checked at 1920×1080.
+
+### Islamic Ayah
+- `ayahArabic`: `@color/tv_ui_text_primary` (white), black shadow, `@font/amiri_quran`, `textDirection=rtl`, `gravity=end`; container layoutDirection remains ltr to preserve existing alignment contract.
+- `ayahText`: near-white (#F2FFFFFF) and black shadow. Existing width cap, two-line cap, spacing and translation logic preserved.
+- `WeeklyAyah.java` data, API, cache, translation fallback and day-selection logic unchanged.
+- Source configuration is consistent with approved white-text/black-shadow requirement. Contrast on bright/dark/mixed wallpapers is NOT VERIFIED until matched rendered captures exist.
+
+### Installer startup surface
+- Before correction, `Theme.Installer` `android:windowBackground` was #0C0E14 while `activity_main.xml` root was #2C333B.
+- Corrected `windowBackground` to #2C333B in commit `e5a4f47aabda630af984a315969637e67d0627c9`, aligning pre-content window fill with first content root.
+- Status bar and navigation bar intentionally remain #0C0E14; no evidence justified changing system-bar styling.
+- Added `tests/test_installer_window_surface_contract.py`, asserting window/root parity and unchanged system-bar colors.
+- Source mismatch is corrected. Actual startup flash absence is NOT claimed without runtime observation.
+
+### Drawable and values classification
+Current PR tree inventory:
+- 113 app drawable XML files: 28 glass surfaces/backgrounds; 14 state/status/text selectors; 15 weather/AQI illustrations; 56 content/navigation icons.
+- 6 installer drawable XML files tracked separately.
+- 19 app values resources: 4 base XMLs (colors/config/strings/styles), 14 locale-specific strings overlays, 1 API-28 styles overlay.
+- Color role taxonomy: global design tokens; semantic state/status colors; brand/content accent colors; specular highlights; shadows/depth; alpha/transparency variants; icon/weather artwork colors. These roles are not interchangeable. No mechanical recoloring is approved.
+- This is a resource-role classification, not a claim that every literal in every drawable has been visually validated against all wallpaper types.
+
+### Current disposition
+- Static source audit for all four requested areas complete to the extent possible.
+- CI #1764, #1766 and #1767 PASS.
+- Recent Apps runtime clipping/stroke, wallpaper contrast, installer startup transition, rendered 1920×1080 review, functional/DPAD runtime, GPU/performance and physical-device acceptance remain PENDING / NOT RUN.
+- PR #104 remains OPEN / DRAFT / UNMERGED. No merge, ADB, install or default-launcher change. PR #103 remains protected. Overall BELUM FINAL.
