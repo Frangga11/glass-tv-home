@@ -742,12 +742,13 @@ public final class ModernSettingsDialog {
                 uploadAvatarButton.setAllCaps(false);
                 uploadAvatarButton.setFocusable(true);
                 GradientDrawable uploadAvatarBg = new GradientDrawable();
-                uploadAvatarBg.setColor(0xFF176B87);
+                uploadAvatarBg.setColor(TvUiTokens.SURFACE_SELECTED);
                 uploadAvatarBg.setCornerRadius(10 * density);
                 uploadAvatarButton.setBackground(uploadAvatarBg);
                 TvFocusIndicator.applyRoundedTextFocus(uploadAvatarButton, density, 10f,
-                        0xFF176B87, 0xFF1B7189, 0xFF2C7F98, TvUiTokens.TEXT_PRIMARY,
-                        TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
+                        TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                        TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_PRIMARY,
+                        TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
                 uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
                     ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
                     boolean updatedChildMode = ChildModeManager.isChildModeEnabled(activity, updated.id);
@@ -777,12 +778,13 @@ public final class ModernSettingsDialog {
                 defaultAvatarButton.setAllCaps(false);
                 defaultAvatarButton.setFocusable(true);
                 GradientDrawable defaultAvatarBg = new GradientDrawable();
-                defaultAvatarBg.setColor(0xFF292D37);
+                defaultAvatarBg.setColor(TvUiTokens.SURFACE);
                 defaultAvatarBg.setCornerRadius(10 * density);
                 defaultAvatarButton.setBackground(defaultAvatarBg);
                 TvFocusIndicator.applyRoundedTextFocus(defaultAvatarButton, density, 10f,
-                        0xFF292D37, 0xFF3B4354, 0xFF454B5A, TvUiTokens.TEXT_PRIMARY,
-                        TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
+                        TvUiTokens.SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                        TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_SECONDARY,
+                        TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
                 LinearLayout.LayoutParams defaultAvatarLp = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density));
                 defaultAvatarLp.topMargin = (int) (6 * density);
@@ -2011,7 +2013,7 @@ public final class ModernSettingsDialog {
         card.setPadding((int) (16 * density), (int) (10 * density), (int) (16 * density), (int) (10 * density));
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF22252E);
+        bg.setColor(TvUiTokens.SURFACE);
         bg.setCornerRadius(12 * density);
         card.setBackground(bg);
 
@@ -2047,10 +2049,10 @@ public final class ModernSettingsDialog {
         GradientDrawable etBg = new GradientDrawable();
         etBg.setColor(TvUiTokens.INPUT_SURFACE);
         etBg.setCornerRadius(10 * density);
-        etBg.setStroke((int) (1 * density), 0xFF4A4E5C);
+        etBg.setStroke((int) (1 * density), TvUiTokens.BORDER);
         et.setBackground(etBg);
         TvFocusIndicator.applyRoundedTextFocus(et, density, 10f,
-                TvUiTokens.INPUT_SURFACE, 0xFF333B4B, 0xFF4A4E5C, TvUiTokens.ACCENT_SECTION,
+                TvUiTokens.INPUT_SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
 
         FrameLayout container = new FrameLayout(activity);
