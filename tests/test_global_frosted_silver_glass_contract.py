@@ -51,7 +51,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
                 self.assertEqual(values[xml_name], java_int(java_name))
 
     def test_focused_selected_and_pressed_are_distinct_states(self):
-        self.assertNotEqual(java_int("FOCUS_BORDER"), java_int("NAV_SELECTION_BORDER"))
+        self.assertNotEqual(java_int("ACCENT_CYAN"), java_int("NAV_SELECTION_BORDER"))
         selector = ET.parse(RES / "drawable/selector_glass_dialog_list_item_bg.xml").getroot()
         ns = "{http://schemas.android.com/apk/res/android}"
         states = {item.attrib.get(ns + "state_focused"): item for item in selector.findall("item")}
@@ -98,7 +98,9 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
             "selector_glass_dialog_list_item_bg.xml", "header_nav_tab_bg.xml",
             "bg_recent_apps_glass.xml", "bg_media_app_pill.xml", "bg_np_round_btn.xml",
             "input_row_bg.xml", "bg_dialog_btn.xml", "bg_location_state_pill.xml",
-            "prayer_pill_bg.xml", "bg_track_info_selector.xml",
+            "prayer_pill_bg.xml", "bg_track_info_selector.xml", "tile_bg.xml",
+            "bg_ram_pill.xml", "bg_circle_close_all.xml", "header_glass_pill_bg.xml",
+            "bg_recent_card.xml", "bg_app_squircle.xml",
         ]
         for name in names:
             with self.subTest(resource=name):
