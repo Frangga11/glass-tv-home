@@ -5087,7 +5087,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         soundTag.setTextSize(12.5f);
         soundTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         soundTag.setFontVariationSettings("'wght' 700");
-        soundTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
+        soundTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.ACCENT_CYAN}));
         rightCol.addView(soundRow);
 
         // Bahagian D: Ujian Azan
@@ -5155,7 +5155,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         closeTag.setTextSize(12.5f);
         closeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         closeTag.setFontVariationSettings("'wght' 700");
-        closeTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0x88FFFFFF}));
+        closeTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_SECONDARY}));
         rightCol.addView(closeRow);
 
         twoCols.addView(rightCol);
@@ -5237,8 +5237,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         tag.setTextSize(13);
         tag.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         tag.setFontVariationSettings(on ? "'wght' 700" : "'wght' 600");
-        int color = on ? 0xFF38BDF8 : 0x99FFFFFF;
-        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, color}));
+        int color = on ? TvUiTokens.ACCENT_CYAN : TvUiTokens.TEXT_SECONDARY;
+        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, color}));
     }
 
     private void updatePrayerTag(TextView tag, boolean on) {
@@ -5254,7 +5254,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView tv = new TextView(this);
         tv.setText(title);
         tv.setTextSize(11.5f);
-        tv.setTextColor(0xFF38BDF8);
+        tv.setTextColor(TvUiTokens.ACCENT_SECTION);
         tv.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         tv.setFontVariationSettings("'wght' 700");
         tv.setLetterSpacing(0.08f);
@@ -5273,11 +5273,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         StateListDrawable bg = new StateListDrawable();
         GradientDrawable on = new GradientDrawable();
-        on.setColor(0xFFFFFFFF);
+        on.setColor(TvUiTokens.SURFACE_FOCUSED);
         on.setCornerRadius(9 * density);
+        on.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
         GradientDrawable off = new GradientDrawable();
-        off.setColor(0x1AFFFFFF);
+        off.setColor(0x223F4B56);
         off.setCornerRadius(9 * density);
+        off.setStroke(Math.max(1, (int) density), 0x55DCE5ED);
         bg.addState(new int[]{android.R.attr.state_focused}, on);
         bg.addState(new int[]{}, off);
         row.setBackground(bg);
@@ -5290,7 +5292,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView rowTitle = new TextView(this);
         rowTitle.setText(title);
         rowTitle.setTextSize(15);
-        rowTitle.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
+        rowTitle.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY}));
         rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         rowTitle.setFontVariationSettings("'wght' 700");
         rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
@@ -5308,7 +5310,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             TextView rowSub = new TextView(this);
             rowSub.setText(subtitle);
             rowSub.setTextSize(12.5f);
-            rowSub.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF1E293B, 0xD9FFFFFF}));
+            rowSub.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_SECONDARY}));
             rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowSub.setFontVariationSettings("'wght' 600");
             rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
