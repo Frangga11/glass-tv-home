@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Looper;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -115,6 +116,47 @@ public class QuickSettingsDialogTest {
         assertEquals(android.getId(), glass.getNextFocusDownId());
         assertEquals(glass.getId(), android.getNextFocusUpId());
         assertFalse(close.isFocusable());
+        dialog.cancel();
+    }
+
+
+    @Test
+    public void allQuickSettingsContentFitsInsideTheMiTvStickPopupFrame() {
+        Activity activity = newActivity();
+        android.util.DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+        metrics.widthPixels = 1920;
+        metrics.heightPixels = 1080;
+        metrics.density = 2.0f;
+        metrics.scaledDensity = 2.0f;
+
+        AlertDialog dialog = QuickSettingsDialog.show(activity, new RecordingActions(),
+                QuickSettingsFocusGraph.WIFI, new View(activity), null);
+        assertNotNull(dialog);
+        View content = find(dialog, "quick_settings_content");
+        assertNotNull(content);
+
+        int popupWidth = Math.round(metrics.widthPixels * 0.26f);
+        int popupHeight = Math.round(metrics.heightPixels * 0.64f);
+        content.measure(
+                View.MeasureSpec.makeMeasureSpec(popupWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        assertTrue("Quick Settings content exceeds its popup frame: measured="
+                + content.getMeasuredHeight() + "px, available=" + popupHeight + "px",
+                content.getMeasuredHeight() <= popupHeight);
+
+        content.layout(0, 0, content.getMeasuredWidth(), content.getMeasuredHeight());
+        String[] tags = {
+                "quick_settings_wifi", "quick_settings_restart", "quick_settings_language",
+                "quick_settings_power", "quick_settings_cache", "quick_settings_manage_wallpaper",
+                "quick_settings_next_photo", "quick_settings_interval",
+                "quick_settings_glass_settings", "quick_settings_android_settings"
+        };
+        for (String tag : tags) {
+            View control = find(dialog, tag);
+            assertNotNull("missing " + tag, control);
+            assertTrue(tag + " extends below the content frame",
+                    control.getBottom() <= content.getMeasuredHeight());
+        }
         dialog.cancel();
     }
 
