@@ -74,9 +74,9 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
 
     def test_daily_ayah_scrim_is_subtle_and_has_no_idle_outline(self):
         self.assertIn("new int[]{0x00000000, 0x12000000, 0x26000000}", MAIN)
-        self.assertIn("focusSurface.setColor(hasFocus ? TvUiTokens.FOCUS_HALO", MAIN)
-        self.assertIn("focusSurface.setStroke(hasFocus ? Math.max(1, Math.round(2f * density)) : 0,", MAIN)
-        self.assertIn("hasFocus ? TvUiTokens.FOCUS_BORDER", MAIN)
+        self.assertIn("TvFocusIndicator.createRoundedStateBackground(", MAIN)
+        self.assertIn("TvUiTokens.FOCUS_HALO", MAIN)
+        self.assertIn("TvUiTokens.FOCUS_BORDER", MAIN)
         self.assertIn("hintBg.setStroke(Math.max(1, Math.round(density)), 0x55DCE5ED)", MAIN)
         self.assertIn("ayahBlock.setOnKeyListener", MAIN)
         self.assertIn("showDailyAyahDialog();", MAIN)
