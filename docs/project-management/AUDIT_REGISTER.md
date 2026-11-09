@@ -4,7 +4,7 @@
 **Source baseline:** PR #103 HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Candidate PR #104 OPEN / DRAFT / UNMERGED; branch `feature/global-frosted-silver-glass-001`; current HEAD `e6712777ca3ecd5c3e1714c5e2725aa9c5cddc3e`. The last commit is audit documentation only. Last source-code validation: CI #1703 on HEAD `03408e7585e1cacd3fe32727502bca61752c5438`.
 
 ### G1 — Inventory and findings
-- Baseline: 17 layouts, 121 app drawables, 19 values XML, 100 Java source files, 59 Java unit-test files, 35 Python regression-test files.
+- Baseline: 17 layouts, 112 app drawables, 19 values XML, 100 Java source files, 59 Java unit-test files, 35 Python regression-test files.
 - Shared material system previously used deep-blue semantic surfaces and violet/gold rim reflections.
 - Some focus paths used 1.015× and app tiles 1.07× visual zoom; focus and selected treatments overlapped in selectors.
 - Backdrop already uses precomputed/cached wallpaper blur; no new blur dependency required.
@@ -44,7 +44,7 @@ Do not claim PASS without evidence. Do not install/test the APK on the TV until 
 **Source baseline:** PR #103 HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Candidate PR #104 OPEN / DRAFT / UNMERGED, branch `feature/global-frosted-silver-glass-001`, current HEAD `03408e7585e1cacd3fe32727502bca61752c5438`. Last source-code validation HEAD `7535a311639c07ab77abd004664510fca216b00b`.
 
 ### G1 — Inventory and findings
-- Baseline: 17 layouts, 121 app drawables, 19 values XML, 100 Java source files, 59 Java unit-test files, 35 Python regression-test files.
+- Baseline: 17 layouts, 112 app drawables, 19 values XML, 100 Java source files, 59 Java unit-test files, 35 Python regression-test files.
 - Shared material system previously used deep-blue semantic surfaces and violet/gold rim reflections.
 - Some focus paths used 1.015× and app tiles 1.07× visual zoom; focus and selected treatments overlapped in selectors.
 - Backdrop already uses precomputed/cached wallpaper blur; no new blur dependency required.
@@ -84,7 +84,7 @@ Do not claim PASS without evidence. PR #103 CI #1689 is evidence for PR #103 onl
 **Source baseline:** PR #103 HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`. New candidate PR #104 HEAD `b34d785dced9b5e47e65adf9865b1f4deada532d`, base PR #103, OPEN / DRAFT / UNMERGED.
 
 ### G1 — Inventory and findings
-- Baseline: 17 layouts, 121 app drawables, 19 values XML, 100 Java source files, 59 Java unit-test files, 35 Python regression-test files.
+- Baseline: 17 layouts, 112 app drawables, 19 values XML, 100 Java source files, 59 Java unit-test files, 35 Python regression-test files.
 - Shared material system existed but used deep-blue semantic surfaces and violet/gold rim reflections.
 - Some focus paths used 1.015× and app tiles used 1.07× visual zoom; focus and selected treatments overlapped in selectors.
 - Backdrop already uses precomputed/cached wallpaper blur; no new blur dependency required.
