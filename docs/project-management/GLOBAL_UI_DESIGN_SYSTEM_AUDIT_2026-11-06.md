@@ -232,3 +232,13 @@ The repository currently contains multiple Draft feature branches. They are not 
 3. Obtain explicit visual-owner acceptance before freezing tokens or starting global mass styling.
 
 No production source was changed in this follow-up. No PR merged, no APK published/installed, no ADB/device-setting change, and no physical TV test.
+
+## Owner-approved material direction update — 9 November 2026
+
+The audit status and conclusions above describe the earlier GTVH-UIR-002 reference-board/shared-foundation investigation at its recorded baseline. They are retained as historical evidence and are not silently reclassified as PASS.
+
+A separate workstream has now been approved by the owner: `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001`, with Frosted Silver Glass material and Electric Cyan DPAD focus. This approval authorizes the design direction and preparation of a scoped prototype; it does not claim source implementation, mass rollout, CI, visual acceptance, or device acceptance.
+
+For the new workstream, the silver material palette supersedes the previous blue-tinted glass material direction. Existing approved composition, layout, typography, component geometry, interaction contracts, focus/selection behavior, and content remain protected. Any conflict between old reference-board material styling and the new silver decision is resolved only for material/color treatment; all non-material requirements remain binding.
+
+The full source inventory, baseline, prototype, owner review, and staged QA gates are required before global implementation. See `GTVH-CHECKPOINT-LATEST.md` and `DECISION_LOG.md`.
