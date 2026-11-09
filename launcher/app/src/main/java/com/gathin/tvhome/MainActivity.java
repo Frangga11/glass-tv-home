@@ -5111,7 +5111,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         testTag.setTextSize(13);
         testTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         testTag.setFontVariationSettings("'wght' 700");
-        testTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
+        testTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.ACCENT_CYAN}));
         rightCol.addView(testRow);
 
         // Info Card
@@ -5246,8 +5246,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         tag.setTextSize(13);
         tag.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         tag.setFontVariationSettings(on ? "'wght' 700" : "'wght' 600");
-        int color = on ? 0xFF38BDF8 : 0x99FFFFFF;
-        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, color}));
+        int color = on ? TvUiTokens.ACCENT_CYAN : TvUiTokens.TEXT_SECONDARY;
+        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, color}));
     }
 
     private TextView createDialogSectionHeader(String title) {
@@ -6047,7 +6047,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 activeTag = new TextView(this);
                 activeTag.setText("✓ " + AppLanguage.strNowBadge(this));
                 activeTag.setTextSize(13);
-                activeTag.setTextColor(0xFF38BDF8);
+                activeTag.setTextColor(TvUiTokens.ACCENT_SECTION);
                 activeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
                 activeTag.setFontVariationSettings("'wght' 700");
                 topRow.addView(activeTag);
@@ -6240,7 +6240,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 activeTag = new TextView(this);
                 activeTag.setText("✓ " + AppLanguage.strNowBadge(this));
                 activeTag.setTextSize(13);
-                activeTag.setTextColor(0xFF38BDF8);
+                activeTag.setTextColor(TvUiTokens.ACCENT_SECTION);
                 activeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
                 activeTag.setFontVariationSettings("'wght' 700");
                 topRow.addView(activeTag);
@@ -6730,15 +6730,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         StateListDrawable bg = new StateListDrawable();
         GradientDrawable on = new GradientDrawable();
-        on.setColor(0xFFFFFFFF);
+        on.setColor(TvUiTokens.SURFACE_FOCUSED);
         on.setCornerRadius(12 * density);
+        on.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
         GradientDrawable off = new GradientDrawable();
-        off.setColor(0x1AFFFFFF);
+        off.setColor(0x223F4B56);
         off.setCornerRadius(12 * density);
+        off.setStroke(Math.max(1, (int) density), 0x55DCE5ED);
         bg.addState(new int[]{android.R.attr.state_focused}, on);
         bg.addState(new int[]{}, off);
         btn.setBackground(bg);
-        btn.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
+        btn.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY}));
 
         btn.setOnClickListener(v -> onClick.run());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
