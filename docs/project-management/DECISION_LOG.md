@@ -900,3 +900,6 @@ Implementation is isolated in PR #97, base PR #83 exact HEAD `947f33cf7181bb06c7
 - Check static Ayah gold→white text and shadow change against readability on bright/dark wallpaper; retain Arabic direction/gravity/typeface.
 - Check installer theme startup window/status/navigation #0C0E14 fallback against content root #2C333B; preserve if intentionally preventing startup flash.
 - PR #104 current HEAD `6660b9721f0d03575370ba8570a07b40c1425f4c`; CI #1762 PASS on preceding HEAD `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; current docs-only commit needs CI.
+
+## Recovery decision — restore RAM pill geometry — 9 November 2026
+Verified `activity_recent_apps.xml` uses `@drawable/bg_ram_pill`; drawable padding therefore affects real content insets. Restored original 20dp left/right and 9dp top/bottom while retaining new silver colors and border. Added automated regression guard for all four values. No dimensions, IDs, listeners, navigation or data logic changed. CI #1764 still in progress on source/test HEAD `75481d456556655076c51735f33f19a131e17190`; current audit-only PR HEAD `1d480afe88072094cd8169ab8ed8d2d8d9ae0bbe` awaits its own run.
