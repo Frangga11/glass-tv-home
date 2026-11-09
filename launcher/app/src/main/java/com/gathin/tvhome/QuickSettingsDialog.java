@@ -55,6 +55,7 @@ final class QuickSettingsDialog {
         content.setPadding(dp(density, 14), dp(density, 8), dp(density, 14), dp(density, 8));
         content.setClipChildren(false);
         content.setClipToPadding(false);
+        content.setTag("quick_settings_content");
 
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -208,7 +209,7 @@ final class QuickSettingsDialog {
             if (window != null) {
                 android.util.DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
                 int popupWidth = Math.round(metrics.widthPixels * 0.26f);
-                int popupHeight = Math.round(metrics.heightPixels * 0.60f);
+                int popupHeight = Math.round(metrics.heightPixels * 0.64f);
                 int[] anchorPosition = new int[2];
                 anchor.getLocationOnScreen(anchorPosition);
                 int gap = dp(density, 8);
