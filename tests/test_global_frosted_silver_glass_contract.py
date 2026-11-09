@@ -63,6 +63,21 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(focused.attrib[ns + "color"], "@color/tv_ui_focus_cyan")
         self.assertEqual(selected.attrib[ns + "color"], "@color/tv_ui_selected_border")
 
+    def test_recent_apps_focus_does_not_scale_cards_and_keeps_readable_label(self):
+        source = (JAVA / "RecentAppsAdapter.java").read_text(encoding="utf-8")
+        self.assertNotIn("scaleX(1.06f)", source)
+        self.assertNotIn("scaleX(0.94f)", source)
+        self.assertIn("tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY)", source)
+
+    def test_pressed_state_precedes_focused_and_selected_selector_states(self):
+        ns = "{http://schemas.android.com/apk/res/android}"
+        button = ET.parse(RES / "drawable/selector_glass_dialog_button_bg.xml").getroot()
+        button_states = [item.attrib.get(ns + "state_pressed") == "true" for item in button.findall("item")]
+        self.assertTrue(button_states[0], "Pressed must be evaluated before focused")
+        rows = ET.parse(RES / "drawable/selector_glass_dialog_list_item_bg.xml").getroot()
+        row_states = [item.attrib.get(ns + "state_pressed") == "true" for item in rows.findall("item")]
+        self.assertTrue(row_states[0], "Pressed must be evaluated before focused/activated")
+
     def test_dpad_focus_does_not_scale_or_translate_tiles(self):
         adapter = (JAVA / "AppAdapter.java").read_text(encoding="utf-8")
         self.assertEqual(java_float("CARD_FOCUS_SCALE"), 1.0)
