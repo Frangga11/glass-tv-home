@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.drawable.GradientDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -24,6 +27,8 @@ import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -59,6 +64,7 @@ final class WifiSettingsDialog {
     private final TextView locationAction;
     private final TextView androidSettings;
     private final TextView close;
+    private final View pointer;
     private final AlertDialog dialog;
     private final List<View> focusOrder = new ArrayList<>();
     private boolean receiverRegistered;
@@ -106,14 +112,35 @@ final class WifiSettingsDialog {
 
         LinearLayout content = new LinearLayout(activity);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(density, 24), dp(density, 18), dp(density, 24), dp(density, 18));
+        content.setPadding(dp(density, 12), 0, dp(density, 12), dp(density, 8));
+        pointer = new View(activity) {
+            private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            @Override protected void onDraw(Canvas canvas) {
+                super.onDraw(canvas);
+                float w = getWidth(), h = getHeight();
+                float center = Math.max(h, Math.min(w - h, getTag() instanceof Integer ? (Integer) getTag() : w * 0.72f));
+                Path triangle = new Path();
+                triangle.moveTo(center - h, h);
+                triangle.lineTo(center, 0);
+                triangle.lineTo(center + h, h);
+                triangle.close();
+                paint.setColor(TvUiTokens.POPUP_SURFACE);
+                paint.setStyle(Paint.Style.FILL);
+                canvas.drawPath(triangle, paint);
+                paint.setColor(TvUiTokens.FOCUS_BORDER);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(Math.max(1f, density));
+                canvas.drawPath(triangle, paint);
+            }
+        };
+        content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
         scroll.addView(content, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        TextView title = text(R.string.wifi, TvUiTokens.PAGE_HEADER_SP, true, density);
+        TextView title = text(R.string.wifi, 18f, true, density);
         content.addView(title);
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
-        status.setPadding(dp(density, 16), dp(density, 12), dp(density, 16), dp(density, 12));
+        status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
         GradientDrawable connectedSurface = new GradientDrawable();
         connectedSurface.setColor(TvUiTokens.SURFACE_IDLE);
         connectedSurface.setCornerRadius(dp(density, (int) TvUiTokens.CARD_RADIUS_DP));
@@ -121,9 +148,9 @@ final class WifiSettingsDialog {
         status.setBackground(connectedSurface);
         content.addView(status);
 
-        TextView networksHeading = text(R.string.wifi_available_networks, TvUiTokens.SECTION_TITLE_SP, true, density);
+        TextView networksHeading = text(R.string.wifi_available_networks, 14f, true, density);
         content.addView(networksHeading);
-        scanState = text(R.string.wifi_scan_idle, TvUiTokens.CARD_SUBTITLE_SP, false, density);
+        scanState = text(R.string.wifi_scan_idle, 10f, false, density);
         scanState.setPadding(0, dp(density, 4), 0, dp(density, 6));
         content.addView(scanState);
 
@@ -135,28 +162,35 @@ final class WifiSettingsDialog {
         networkRows.setOrientation(LinearLayout.VERTICAL);
         content.addView(permissionAction);
         content.addView(locationAction);
-        content.addView(networkRows, new LinearLayout.LayoutParams(
+        ScrollView networkScroll = new ScrollView(activity);
+        networkScroll.setFillViewport(false);
+        networkScroll.setVerticalScrollBarEnabled(true);
+        networkScroll.setScrollbarFadingEnabled(false);
+        networkScroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        networkScroll.addView(networkRows, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        content.addView(networkScroll, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 150));
 
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
         androidSettings = action(R.string.wifi_open_android_settings, "wifi_open_settings", density,
                 () -> dismissThen(openSystemWifiSettings));
         close = action(R.string.close_label, "wifi_close", density, () -> dismissThen(null));
         LinearLayout actions = new LinearLayout(activity);
-        actions.setOrientation(LinearLayout.HORIZONTAL);
+        actions.setOrientation(LinearLayout.VERTICAL);
         actions.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams actionWidth = new LinearLayout.LayoutParams(
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        actionWidth.rightMargin = dp(density, 6);
+        actionWidth.rightMargin = 0;
         rescan.setLayoutParams(actionWidth);
         LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        settingsWidth.leftMargin = dp(density, 6);
+        settingsWidth.leftMargin = 0;
         androidSettings.setLayoutParams(settingsWidth);
         actions.addView(rescan);
         actions.addView(androidSettings);
         content.addView(actions);
-        content.addView(close);
+        close.setVisibility(View.GONE);
 
         AlertDialog built = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setView(scroll)
@@ -176,7 +210,7 @@ final class WifiSettingsDialog {
             if (action != null && !activity.isFinishing() && !activity.isDestroyed()) action.run();
         });
         dialog.setOnShowListener(d -> {
-            TvDialogStyle.apply(dialog, activity, 760, 620);
+            applyAnchoredPopup();
             refreshStatus();
             updatePrerequisites();
             registerScanReceiver();
@@ -186,6 +220,41 @@ final class WifiSettingsDialog {
             View initial = firstFocusableControl();
             if (initial != null) initial.requestFocus();
         });
+    }
+
+    private void applyAnchoredPopup() {
+        Window window = dialog.getWindow();
+        if (window == null) return;
+        View anchor = activity.findViewById(R.id.btnWifi);
+        int screenWidth = activity.getResources().getDisplayMetrics().widthPixels;
+        int screenHeight = activity.getResources().getDisplayMetrics().heightPixels;
+        int popupWidth = Math.round(screenWidth * 0.19f);
+        int popupHeight = Math.round(screenHeight * 0.39f);
+        int popupLeft = Math.max(8, screenWidth - popupWidth - 8);
+        int popupTop = 8;
+        int pointerCenter = Math.round(popupWidth * 0.72f);
+        if (anchor != null && anchor.getWidth() > 0 && anchor.getHeight() > 0) {
+            int[] location = new int[2];
+            anchor.getLocationOnScreen(location);
+            int anchorCenter = location[0] + anchor.getWidth() / 2;
+            int popupRight = Math.min(screenWidth - 8, anchorCenter + popupWidth / 2);
+            popupLeft = Math.max(8, popupRight - popupWidth);
+            popupTop = Math.min(screenHeight - popupHeight - 8, location[1] + anchor.getHeight() + 14);
+            pointerCenter = Math.max(16, Math.min(popupWidth - 16, anchorCenter - popupLeft));
+        }
+        pointer.setTag(pointerCenter);
+        pointer.invalidate();
+        WindowManager.LayoutParams params = window.getAttributes();
+        params.width = popupWidth;
+        params.height = popupHeight;
+        params.gravity = Gravity.TOP | Gravity.END;
+        params.x = Math.max(0, screenWidth - popupLeft - popupWidth);
+        params.y = Math.max(0, popupTop);
+        params.dimAmount = 0.08f;
+        window.setAttributes(params);
+        window.setBackgroundDrawable(TvDialogStyle.createDialogSurface(activity));
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setDimAmount(0.08f);
     }
 
     static AlertDialog show(Activity activity, Runnable openSystemWifiSettings, Runnable returnToParent) {
@@ -512,7 +581,7 @@ final class WifiSettingsDialog {
     private TextView action(String label, String tag, float density, Runnable callback) {
         TextView view = new TextView(activity);
         view.setText(label);
-        styleText(view, TvUiTokens.CARD_TITLE_SP, true, density);
+        styleText(view, 11f, true, density);
         return prepareAction(view, tag, density, callback);
     }
 
@@ -523,11 +592,11 @@ final class WifiSettingsDialog {
         view.setFocusableInTouchMode(true);
         view.setClickable(true);
         view.setGravity(Gravity.CENTER_VERTICAL);
-        view.setMinHeight(dp(density, TvUiTokens.MIN_DPAD_TARGET_DP));
-        view.setPadding(dp(density, 16), dp(density, 8), dp(density, 16), dp(density, 8));
+        view.setMinHeight(Math.max(32, Math.round(density * 20)));
+        view.setPadding(dp(density, 10), dp(density, 3), dp(density, 10), dp(density, 3));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.topMargin = dp(density, 5);
+        lp.topMargin = dp(density, 2);
         view.setLayoutParams(lp);
         TvFocusIndicator.applyRoundedTextFocus(view, density, TvUiTokens.ROW_RADIUS_DP,
                 TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
