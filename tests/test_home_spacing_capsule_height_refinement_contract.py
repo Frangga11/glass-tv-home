@@ -53,7 +53,7 @@ class HomeSpacingCapsuleHeightRefinementContractTest(unittest.TestCase):
         root = ET.parse(HOME_XML).getroot()
         by_id = {node.get(ANDROID + "id"): node for node in root.iter()
                  if node.get(ANDROID + "id")}
-        self.assertEqual(by_id["@+id/btnHome"].get(ANDROID + "drawablePadding"), "2dp")
+        self.assertEqual(by_id["@+id/btnHome"].get(ANDROID + "drawablePadding"), "1dp")
         self.assertEqual(by_id["@+id/btnCandyBox"].get(ANDROID + "drawablePadding"), "2dp")
         self.assertEqual(by_id["@+id/btnSettings"].get(ANDROID + "drawablePadding"), "4dp")
 
