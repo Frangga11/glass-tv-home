@@ -191,7 +191,7 @@ final class WifiSettingsDialog {
         networkScroll.addView(networkRows, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         content.addView(networkScroll, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 88)));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 120)));
 
         rescan = action(R.string.wifi_rescan, "wifi_rescan", density, this::requestScan);
         rescan.setText("↻  " + activity.getString(R.string.wifi_rescan));
