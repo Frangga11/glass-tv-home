@@ -77,7 +77,7 @@ class HomeHeaderNavigationSymmetryContractTest(unittest.TestCase):
                              for item in selector.findall("item")))
 
     def test_navigation_glass_remains_visible_under_shared_focus_glider(self):
-        self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, null)", self.main)
+        self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, glider, 1f, true)", self.main)
         self.assertIn("glider.addCompanion(navCapsule)", self.main)
         self.assertIn("glider.setStyle(Glider.DARK)", self.main)
         self.assertIn("int iconSize = Math.round(20f * density)", self.main)
