@@ -1494,3 +1494,35 @@ Proceed with genuine rendered 1920×1080 visual evidence, then runtime/DPAD and 
  
 ### Final six-document synchronization seal — VISUAL-QA-001 — 9 November 2026
 All six core management documents were re-read and aligned to the same checkpoint ID: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-QA-001**. Current PR #104 HEAD is `b14ba7a35659ea404b88a56175e706e458c8459f`; exact-head CI #1772 / run `42614429069` is SUCCESS. Canonical restart authority remains `GTVH-CHECKPOINT-LATEST.md`. This synchronization does not change application source, PR state, device state or merge status. Overall remains **BELUM FINAL** pending rendered visual, runtime/DPAD, GPU/performance and authorized physical-device acceptance.
+
+
+# AUTHORITATIVE CHECKPOINT — VISUAL EVIDENCE AVAILABILITY AUDIT — 9 NOVEMBER 2026
+Checkpoint: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-EVIDENCE-002**
+
+## Repository / PR state
+- Repository: Frangga11/glass-tv-home.
+- PR #104: OPEN / DRAFT / UNMERGED.
+- Branch: feature/global-frosted-silver-glass-001.
+- Exact PR HEAD: b14ba7a35659ea404b88a56175e706e458c8459f.
+- Protected base: a3d697c793e23a59f9f9953e2074d83daa210cf9.
+- PR #103: unchanged; remains OPEN / DRAFT / UNMERGED at its protected HEAD.
+- Exact-head CI #1772 / run 42614429069: SUCCESS on b14ba7a35659ea404b88a56175e706e458c8459f.
+
+## Trigger / input / verification
+- Inspected artifacts attached to CI #1772. Artifact ID 13672026508, archive `ci-1772-visual-parity.zip`, contains exactly one file: `app-release.apk` (1,628,189 bytes). It contains no screenshot, video, visual diff or profiling report.
+- Repository contains image assets such as `docs/screenshots/recent-apps-live.png` and `docs/screenshots/home-live.png`; these are not tied by capture metadata to the exact current PR HEAD, Mi TV Stick Android TV 11, 1920×1080 and the required visual states. They are therefore not accepted as current runtime evidence.
+- No current screenshot set or screen recording for Recent Apps normal/focused, Islamic Ayah on bright/dark/mixed wallpapers, installer startup, or five-state UI was located in the CI #1772 artifact.
+- No ADB, APK installation, remote device control or physical device interaction was performed.
+
+## Findings / decision
+- The prior source-level and CI results remain valid; no new visual or runtime PASS can be claimed.
+- No code correction is justified without rendered evidence. Do not modify approved geometry, wiring, IDs, listeners, handlers, navigation, persistence, lifecycle or data.
+- Visual screenshot comparison, clipping/outline inspection, wallpaper contrast, installer flash observation, five-state rendering, DPAD runtime and GPU/performance profiling remain **PENDING / NOT RUN**.
+- Physical Mi TV Stick acceptance requires explicit owner authorization before ADB or APK installation.
+- Existing source corrections remain: Recent Apps dynamic 1dp `#99DCE5ED` border + 26dp radius; Ayah Amiri/RTL/white/black-shadow contract; Installer window/root #2C333B and system bars #0C0E14.
+
+## Next action
+Obtain an actual capture set from the target runtime: 1920×1080 Mi TV Stick Android TV 11, with build/PR HEAD recorded, bright/dark/mixed wallpaper samples, Recent Apps normal and focused states, Islamic Ayah, installer launch video/frame capture, and Normal/Focused/Selected/Pressed/Disabled states. DPAD and GPU/performance measurements must come from an authorized runtime session. Until such evidence is supplied or device testing is explicitly authorized, keep all these gates pending.
+
+## Safeguards / final status
+RE-SKIN, NOT REWIRE. PR #104 remains OPEN / DRAFT / UNMERGED; do not modify PR #103; do not merge. No ADB or APK install without explicit authorization. Overall status: **BELUM FINAL — exact-head CI PASS; visual/runtime/performance acceptance still unverified.**

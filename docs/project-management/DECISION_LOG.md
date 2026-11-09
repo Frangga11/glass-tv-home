@@ -926,3 +926,7 @@ Checkpoint linkage: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-QA-001**. Ca
  
 ### Final six-document synchronization seal — VISUAL-QA-001 — 9 November 2026
 All six core management documents were re-read and aligned to the same checkpoint ID: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-QA-001**. Current PR #104 HEAD is `b14ba7a35659ea404b88a56175e706e458c8459f`; exact-head CI #1772 / run `42614429069` is SUCCESS. Canonical restart authority remains `GTVH-CHECKPOINT-LATEST.md`. This synchronization does not change application source, PR state, device state or merge status. Overall remains **BELUM FINAL** pending rendered visual, runtime/DPAD, GPU/performance and authorized physical-device acceptance.
+
+
+## Decision — do not infer visual acceptance from legacy assets or APK artifact — 9 November 2026
+CI #1772 artifact `13672026508` was inspected and contains only `app-release.apk`; it has no screenshots or profiling output. Repository screenshot assets have no provenance tying them to exact PR #104 HEAD and the required target device/resolution/states. Decision: do not treat those assets as current Visual QA evidence; do not make unsupported source changes. Keep visual, five-state, runtime/DPAD, installer startup and GPU/performance gates pending until actual capture evidence exists. No ADB/install without explicit authorization. Canonical authority: `GTVH-CHECKPOINT-LATEST.md`.
