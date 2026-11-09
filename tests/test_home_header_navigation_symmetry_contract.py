@@ -64,7 +64,7 @@ class HomeHeaderNavigationSymmetryContractTest(unittest.TestCase):
                 self.assertEqual(node.get(ANDROID + "textSize"), "14sp")
                 self.assertEqual(node.get(ANDROID + "fontVariationSettings"), "'wght' 600")
                 self.assertEqual(node.get(ANDROID + "gravity"), "center")
-                self.assertEqual(node.get(ANDROID + "drawablePadding"), "4dp")
+                self.assertEqual(node.get(ANDROID + "drawablePadding"), "2dp")
                 self.assertEqual(node.get(ANDROID + "paddingStart"), "4dp")
                 self.assertEqual(node.get(ANDROID + "paddingEnd"), "4dp")
 
@@ -78,6 +78,10 @@ class HomeHeaderNavigationSymmetryContractTest(unittest.TestCase):
 
     def test_navigation_glass_remains_visible_under_shared_focus_glider(self):
         self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, glider, 1f, true)", self.main)
+        self.assertIn("Glider.NAV_SILVER", self.main)
+        self.assertIn("navigationTab ? Glider.NAV_SILVER : Glider.DARK", self.main)
+        self.assertIn("0x38DCE5ED", (JAVA / "Glider.java").read_text(encoding="utf-8"))
+        self.assertIn("0x73DCE5ED", (JAVA / "Glider.java").read_text(encoding="utf-8"))
         self.assertIn("glider.addCompanion(navCapsule)", self.main)
         self.assertIn("glider.setStyle(Glider.DARK)", self.main)
         self.assertIn("int iconSize = Math.round(20f * density)", self.main)

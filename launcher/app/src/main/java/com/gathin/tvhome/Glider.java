@@ -32,6 +32,8 @@ final class Glider extends View {
     static final int DARK = 0;
     /** Between apps: a pane of glass, the same as the pills and the tray. */
     static final int GLASS = 1;
+    /** Navigation tabs: restrained frosted-silver focus, separate from the electric-cyan dark focus. */
+    static final int NAV_SILVER = 2;
 
     private static final class Edge extends FloatPropertyCompat<Glider> {
         private final int which;
@@ -75,6 +77,7 @@ final class Glider extends View {
     private int shadowW, shadowH;
     private final Paint shadowPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
     private final float shadowBlur, shadowDrop;
+    private final float density;
     /** How far the shadow is shown: it comes in as the glider turns to glass, and goes with the dark. */
     private float shadowMix;
     private ValueAnimator shadowFade;
@@ -98,6 +101,7 @@ final class Glider extends View {
         super(context);
         this.reducedMotion = reducedMotion;
         float density = context.getResources().getDisplayMetrics().density;
+        this.density = density;
         veil.setColor(0x14FFFFFF);
         focusStroke.setStyle(Paint.Style.STROKE);
         focusStroke.setStrokeWidth(2f * density);
@@ -285,11 +289,25 @@ final class Glider extends View {
         float r = Math.min(edges[RADIUS], Math.min(b - t, edges[RIGHT] - edges[LEFT]) / 2f);
         shape.set(edges[LEFT] + dx, t + dy, edges[RIGHT] + dx, b + dy);
         if (style == DARK) {
-            // Focus is an overlay only: translucent cyan fill plus an inset cyan outline.
-            // It never scales or changes the focused component's measured bounds.
+            // Existing electric-cyan focus remains unchanged for non-navigation top menus.
             paint.setColor(TvUiTokens.FOCUS_HALO);
             paint.setAlpha(Math.round(((TvUiTokens.FOCUS_HALO >>> 24) & 0xFF) * opacity));
             canvas.drawRoundRect(shape, r, r, paint);
+            focusStroke.setStrokeWidth(2f * density);
+            focusStroke.setColor(TvUiTokens.FOCUS_BORDER);
+            float half = focusStroke.getStrokeWidth() / 2f;
+            shape.inset(half, half);
+            focusStroke.setAlpha(Math.round(255 * opacity));
+            canvas.drawRoundRect(shape, Math.max(0f, r - half), Math.max(0f, r - half), focusStroke);
+            return;
+        }
+        if (style == NAV_SILVER) {
+            // Navigation uses a quiet frosted-silver surface, not the electric-cyan accent.
+            paint.setColor(0x38DCE5ED); // 22% silver fill
+            paint.setAlpha(Math.round(0x38 * opacity));
+            canvas.drawRoundRect(shape, r, r, paint);
+            focusStroke.setStrokeWidth(1f * density);
+            focusStroke.setColor(0x73DCE5ED); // 45% silver edge
             float half = focusStroke.getStrokeWidth() / 2f;
             shape.inset(half, half);
             focusStroke.setAlpha(Math.round(255 * opacity));

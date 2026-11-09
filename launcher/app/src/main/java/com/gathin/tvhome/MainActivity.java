@@ -2564,9 +2564,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
         // The pills do not scroll with the grid, so the shape stops following the grid's scroll.
         glassShown = false;
-        // Up to the top menu it is dark at once, and travels that way.
+        // Navigation tabs use the agreed frosted-silver focus; other top controls retain their existing style.
         gliderOnPill = true;
-        glider.setStyle(Glider.DARK);
+        boolean navigationTab = pill.getId() == R.id.btnHome
+                || pill.getId() == R.id.btnCandyBox || pill.getId() == R.id.btnSettings;
+        glider.setStyle(navigationTab ? Glider.NAV_SILVER : Glider.DARK);
         glider.moveTo(l, t, l + pill.getWidth(), t + pill.getHeight(), Math.min(20f * density, pill.getHeight() / 2f));
     }
 

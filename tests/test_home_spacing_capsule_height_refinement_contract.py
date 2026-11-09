@@ -54,7 +54,7 @@ class HomeSpacingCapsuleHeightRefinementContractTest(unittest.TestCase):
         by_id = {node.get(ANDROID + "id"): node for node in root.iter()
                  if node.get(ANDROID + "id")}
         for view_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
-            self.assertEqual(by_id[view_id].get(ANDROID + "drawablePadding"), "4dp")
+            self.assertEqual(by_id[view_id].get(ANDROID + "drawablePadding"), "2dp")
             self.assertEqual(by_id[view_id].get(ANDROID + "paddingStart"), "4dp")
             self.assertEqual(by_id[view_id].get(ANDROID + "paddingEnd"), "4dp")
 
