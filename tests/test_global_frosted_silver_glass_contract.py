@@ -100,6 +100,8 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertIn("new int[]{android.R.attr.state_pressed}, pressed", indicator)
         self.assertIn("new int[]{-android.R.attr.state_enabled}, disabled", indicator)
         self.assertIn("TvUiTokens.DISABLED_TEXT", indicator)
+        self.assertIn("createRoundedStateBackground", indicator)
+        self.assertIn("createOvalStateBackground", indicator)
 
     def test_interactive_glass_selectors_distinguish_disabled_pressed_and_focus(self):
         ns = "{http://schemas.android.com/apk/res/android}"
@@ -245,8 +247,10 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertNotIn("0x443B5872", main)
         self.assertNotIn("0x553B5872", main)
         self.assertNotIn("0x8064D2FF", main)
-        self.assertIn("focusSurface.setColor(hasFocus ? TvUiTokens.FOCUS_HALO", main)
-        self.assertIn("hasFocus ? TvUiTokens.FOCUS_BORDER", main)
+        self.assertIn("TvFocusIndicator.createRoundedStateBackground(", main)
+        self.assertIn("TvFocusIndicator.createOvalStateBackground(", main)
+        self.assertIn("TvUiTokens.FOCUS_HALO", main)
+        self.assertIn("TvUiTokens.FOCUS_BORDER", main)
         self.assertIn("btnCheckNow.setTextColor(TvUiTokens.TEXT_PRIMARY)", main)
 
     def test_dynamic_dialog_focus_surfaces_use_shared_cyan_tokens(self):
