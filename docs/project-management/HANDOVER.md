@@ -1,6 +1,30 @@
 <!-- CURRENT AUTHORITATIVE HANDOVER UPDATE — 9 NOVEMBER 2026. Supersedes previous restart instructions below; history retained. -->
 ## CURRENT RESTART — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
 
+**Start here:** read `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. It is the only authoritative status/restart point.
+
+**Active source:** PR #104 OPEN / DRAFT / UNMERGED; branch `feature/global-frosted-silver-glass-001`; current HEAD `e6712777ca3ecd5c3e1714c5e2725aa9c5cddc3e`. Base PR #103 exact SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Last source-code CI PASS #1703 on HEAD `03408e7585e1cacd3fe32727502bca61752c5438`; current head adds only audit markdown. Keep ancestry; do not retarget, force-push, merge or install.
+
+**Automated evidence:** CI #1703 PASS; 223 Python tests passed, 1 skipped; Android unit tests and release build successful. APK 1,627,069 bytes; SHA256 `e146f9e80c333acbb72c34bb64f96b2be385583e60400239ab04b5c6f5474671`. APK is archived for later acceptance, not immediate device testing.
+
+### Immediate next steps
+1. Complete the remaining G1 sweep of drawable, values, layout and dynamically generated UI surfaces.
+2. Complete G3 prototype visual review with matched 1920×1080 captures on bright, dark and mixed wallpapers.
+3. Continue G4 in small resource families; preserve IDs, listeners, actions, focus graph, geometry, data and Arabic RTL.
+4. G5 reconcile shared resources and search for stale blue/white focus treatments.
+5. G6 run functional, visual, DPAD, typography and performance tests.
+6. Only after G1/G4 completion and explicit owner authorization, obtain physical Mi TV Stick acceptance.
+7. Synchronize all six project documents in one pass and update this checkpoint.
+
+**Current gates:** source audit PARTIAL; design system IN PROGRESS; build/CI PASS; functional, visual, runtime DPAD and performance QA NOT RUN; device acceptance PENDING. Keep PR #104 Draft and unmerged. No installation or default launcher change without explicit owner approval.
+
+**Audit/design report:** `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on PR #104 branch.
+
+---
+
+<!-- CURRENT AUTHORITATIVE HANDOVER UPDATE — 9 NOVEMBER 2026. Supersedes previous restart instructions below; history retained. -->
+## CURRENT RESTART — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
 **Start here:** read `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. It is the only authoritative status and restart point.
 
 **Active source:** PR #104 OPEN / DRAFT / UNMERGED, branch `feature/global-frosted-silver-glass-001`, current HEAD `03408e7585e1cacd3fe32727502bca61752c5438`. Base PR #103 exact SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Last source-code validated HEAD `7535a311639c07ab77abd004664510fca216b00b`. The latest commit only updates the audit report. Keep ancestry; do not retarget, force-push, merge or install.
