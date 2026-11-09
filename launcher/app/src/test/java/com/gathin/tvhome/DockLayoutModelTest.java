@@ -303,7 +303,7 @@ public class DockLayoutModelTest {
                     DockGeometry.horizontalShelfAnchorHeightPx(largestTileHeight, density));
             int gridReserve = DockGeometry.horizontalGridBottomReservePx(largestTileWidth, density);
             int legacyGridReserve = DockGeometry.itemHeightPx(largestTileHeight, density)
-                    + Math.round(29f * density);
+                    + Math.round(30f * density);
             assertEquals(legacyGridReserve, gridReserve);
 
             for (int capacity : new int[]{4, 5, 6}) {
@@ -334,9 +334,9 @@ public class DockLayoutModelTest {
     }
 
     @Test
-    public void islamicShelfDockClearanceIsExactlyTwentySevenPointFiveDp() {
-        assertEquals(55, DockGeometry.islamicShelfDockGapPx(2f));
-        assertEquals(41, DockGeometry.islamicShelfDockGapPx(1.5f));
+    public void islamicShelfDockClearanceIsExactlyThirtyDp() {
+        assertEquals(60, DockGeometry.islamicShelfDockGapPx(2f));
+        assertEquals(45, DockGeometry.islamicShelfDockGapPx(1.5f));
     }
 
     @Test

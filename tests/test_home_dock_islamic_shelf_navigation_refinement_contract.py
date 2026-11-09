@@ -55,19 +55,20 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("horizontalGridViewportHeightPx(gridTileWidth", sizing)
         self.assertIn("horizontalGridBottomMarginPx(dockTileHeight", sizing)
 
-    def test_islamic_shelf_anchor_uses_measured_tray_edge_and_exact_27_5dp_gap(self):
+    def test_home_information_edges_use_measured_tray_edge_and_exact_30dp_gap(self):
         start = MAIN.index("private void updateHomeShelfAnchor()")
         end = MAIN.index("private void showHero(int position)", start)
         anchor = MAIN[start:end]
         self.assertIn("horizontalDockTrayTopInRoot()", anchor)
         self.assertIn("DockGeometry.islamicShelfDockGapPx(density)", anchor)
-        self.assertIn("islamicShelfBottomAnchor = trayTop -", anchor)
-        self.assertIn("heroBottom = islamicShelfBottomAnchor", anchor)
+        self.assertIn("heroBottom = trayTop - shelfGapPx", anchor)
+        self.assertIn("islamicShelfBottomAnchor = heroBottom + islamicShelfVisualBottomOffsetPx()", anchor)
+        self.assertIn("private int islamicShelfVisualBottomOffsetPx()", anchor)
         self.assertIn("private int horizontalDockTrayTopInRoot()", MAIN)
         self.assertIn("root.offsetDescendantRectToMyCoords(item, cardRect)", MAIN)
         self.assertIn("DockGeometry.trayPaddingPx(density)", MAIN)
         self.assertIn("static int islamicShelfDockGapPx(float density)", GEOMETRY)
-        self.assertIn("27.5f * density", GEOMETRY)
+        self.assertIn("30f * density", GEOMETRY)
         self.assertNotIn("showHero(position, r.top)", MAIN)
 
     def test_islamic_shelf_has_one_bottom_anchor_for_all_layout_changes_and_focus(self):
