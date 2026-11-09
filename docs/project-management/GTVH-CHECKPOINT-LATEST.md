@@ -1848,3 +1848,44 @@ Wi-Fi popup workstream is complete through latest APK generation and evidence re
 - No source, branch, merge, rebase, reset, force-push, ADB/install, or device setting was changed in this continuation. PR #104 body was synchronized to current HEAD/CI and explicitly records Wi-Fi protection.
 - Overall status: SOURCE / AUTOMATED CI PASS; VISUAL / RUNTIME / PERFORMANCE / DEVICE ACCEPTANCE PENDING; FINAL NOT READY.
 - Next action: continue non-Wi-Fi GTVH-GLOBAL-VISUAL-QA-001 source-to-render verification. Only implement a source correction when a reproducible defect is evidenced; preserve RE-SKIN, NOT REWIRE and all approved geometry.
+
+
+---
+
+## CHECKPOINT — 10 NOVEMBER 2026 — HOME HEADER & NAVIGATION SYMMETRY REFINEMENT
+
+**Workstream:** GTVH-HOME-HEADER-NAVIGATION-SYMMETRY-001  
+**Repository:** `Frangga11/glass-tv-home`  
+**PR:** #109 — https://github.com/Frangga11/glass-tv-home/pull/109  
+**Source branch:** `fix/home-header-navigation-symmetry-001`  
+**Exact source HEAD:** `5e0232c33dc949818856052aae46016f3b969cd3`  
+**Protected base branch:** `feature/wifi-popup-reference-001`  
+**Exact protected base SHA:** `774eb99faa48e109b3532533425bbb4cdee07a4a`  
+**Disposition:** OPEN / DRAFT / UNMERGED. No merge or ready-for-review promotion authorized.
+
+### Scope implemented
+- Added a 1dp × 22dp vertical separator between clock and date block, aligned vertically and using the same restrained white-alpha treatment as the location/elevation divider.
+- Replaced the weather/AQI bullet with a centered vertical ReplacementSpan divider: 1dp stroke, 20dp height, 12dp side spacing, #66FFFFFF. Existing weather TextView ID, click target, WeatherAirQuality provider/cache, AQI calculation, and Weather V4 dashboard remain intact.
+- Normalized AM/PM, date, Shamsi date, location, elevation, weather/AQI, Beranda, Profil, Pengaturan and Wi-Fi text to 14sp Inter Semibold.
+- Equalized Beranda / Profil / Pengaturan to three equal weighted segments, consistent 4dp icon/text gap and 4dp horizontal inner padding, centered content, consistent white icon/text treatment and normalized 20dp compound-icon bounds.
+- Removed the Home-only selected/elevation marker and removed the selected-state drawable treatment. All three navigation tabs now share the same neutral visual state.
+- Focus dimming root cause identified: the shared navigation GlassDrawable faded its glass layer to zero when Glider coverage increased, revealing the wallpaper underneath. The capsule now uses the explicit `paintsShape=true` composition so the glass remains visible and the Glider focus overlay is painted over it.
+
+### Strict protection / impact check
+- PR #109 is based on the exact accepted Wi-Fi final SHA above.
+- No changes to `WifiSettingsDialog.java`, Wi-Fi scan/permission/connection logic, Wi-Fi popup tokens, or Wi-Fi handoff.
+- Weather/AQI data and dashboard logic unchanged; only Home header rendering separator and typography are changed.
+- No changes to wallpaper, Hero Shelf, Islamic Shelf, dock/grid, WeatherActivity, or unrelated module/data behavior.
+- Existing view IDs, click actions for Profile/Settings, and DPAD focus graph are preserved. Home no longer has a special selected-only click indicator.
+- Changed files are limited to MainActivity, WeatherAirQuality, activity_main.xml, header_nav_tab_bg.xml, CI artifact allowlist and regression contracts.
+
+### Validation state
+- CI run #1870 / run ID `42715799845` on exact HEAD `5e0232c33dc949818856052aae46016f3b969cd3`.
+- Lists/tools/docs regression job: **PASS** (246 tests).
+- Launcher Gradle unit tests and release build: **IN PROGRESS** at checkpoint creation.
+- APK artifact and size: pending.
+- Physical Mi TV Stick visual/DPAD acceptance: pending; do not claim runtime PASS.
+- Earlier failed CI attempts exposed stale regression expectations and a duplicate Shamsi-date XML attribute. Those were corrected; exact-current-head Python contract suite now passes. Do not treat the earlier failed runs as the current result.
+
+### Handover / next gate
+Wait for exact-head Android unit tests and release build. If successful, verify the uploaded APK artifact and SHA-256, then deliver it for owner-authorized Mi TV Stick testing. Check especially: weather/AQI divider midpoint, clock/date divider vertical centering, three equal navigation segments and full labels, focus glass visibility during left/right DPAD movement. Keep PR #109 draft/unmerged until owner accepts the physical-device result.
