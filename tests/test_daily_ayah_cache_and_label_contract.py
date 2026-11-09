@@ -65,7 +65,7 @@ class DailyAyahCacheAndLabelContract(unittest.TestCase):
         self.assertIn('android:gravity="start"', shelf_translation)
         self.assertIn('android:textDirection="ltr"', shelf_translation)
         self.assertIn('ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL)', self.main)
-        self.assertIn('ayahArabic.setGravity(Gravity.END)', self.main)
+        self.assertIn('ayahArabic.setGravity(Gravity.RIGHT | Gravity.TOP)', self.main)
         self.assertIn('ayahText.setTextDirection(View.TEXT_DIRECTION_LTR)', self.main)
         self.assertIn('ayahText.setGravity(Gravity.START)', self.main)
         self.assertIn('arabic.setTextDirection(View.TEXT_DIRECTION_RTL)', self.main)
