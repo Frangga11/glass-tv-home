@@ -118,8 +118,8 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         self.assertIn("glider.setStyle(Glider.DARK)", MAIN)
         self.assertIn("Math.min(20f * density, pill.getHeight() / 2f)", MAIN)
         nav_bg = ET.parse(NAV_BG).getroot()
-        self.assertFalse(any("state_focused" in key for node in nav_bg.iter()
-                             for key in node.attrib))
+        self.assertTrue(any(node.get(ANDROID + "state_focused") == "true"
+                            for node in nav_bg.iter()))
         glass_bg = ET.parse(GLASS_BG).getroot()
         pill_bg = ET.parse(PILL_BG).getroot()
         for drawable in (glass_bg, pill_bg):
