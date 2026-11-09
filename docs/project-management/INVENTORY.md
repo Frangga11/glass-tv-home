@@ -15,7 +15,7 @@
 | APK SHA256 | e146f9e80c333acbb72c34bb64f96b2be385583e60400239ab04b5c6f5474671 |
 | Device installation | Not performed; hold until G1/G4 complete and owner authorization |
 
-Baseline at PR #103: 17 app layouts; 121 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
+Baseline at PR #103: 17 app layouts; 112 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
 
 Audited surface families: Home shell/header/navigation, location/elevation, weather/AQI, wallpaper/hero, Islamic shelf, prayer/selected Ayah, app dock/tiles, recent apps/media, Wi-Fi, Quick Settings, Global Settings, profile/avatar/Child Mode, wallpaper/location, modal surfaces, weather dashboard, floating Azan card, shared renderers/tokens and companion installer.
 
@@ -42,7 +42,7 @@ Initial changes include shared palette/colors, AppAdapter, Glider, GlassView, Gl
 | Merge / device install | Not performed |
 
 ### Baseline inventory at PR #103
-17 app layouts; 121 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
+17 app layouts; 112 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
 
 ### Audited visual surface families
 Home shell/header/navigation, location/elevation, weather/AQI, wallpaper/hero, Islamic shelf, prayer and selected Ayah; app dock/tiles, recent apps and media; Wi-Fi, Quick Settings, Global Settings, profile/avatar/Child Mode, wallpaper/location and modal surfaces; weather dashboard/cards/rows; floating Azan card; shared renderers/tokens; companion installer glass surfaces.
@@ -71,7 +71,7 @@ Full component and changed-file evidence is on PR #104 and `GTVH-GLOBAL-FROSTED-
 | Merge / device install | Not performed |
 
 ### Baseline file inventory at PR #103
-17 app layouts; 121 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
+17 app layouts; 112 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
 
 ### Audited visual surface families
 - Home shell/header/navigation, location/elevation, weather/AQI, wallpaper/hero, Islamic shelf, prayer and selected Ayah.
