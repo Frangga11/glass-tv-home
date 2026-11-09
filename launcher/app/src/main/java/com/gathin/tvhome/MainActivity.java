@@ -748,14 +748,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     }
                     return false;
                 });
+                ayahBlock.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                        density, 10f, 0x00000000, TvUiTokens.FOCUS_HALO,
+                        0x00000000, TvUiTokens.FOCUS_BORDER));
                 ayahBlock.setOnFocusChangeListener((v, hasFocus) -> {
-                    GradientDrawable focusSurface = new GradientDrawable();
-                    focusSurface.setColor(hasFocus ? TvUiTokens.FOCUS_HALO : 0x00000000);
-                    focusSurface.setCornerRadius(10 * density);
-                    // No idle frame: retain a restrained outline only while the remote focuses the verse.
-                    focusSurface.setStroke(hasFocus ? Math.max(1, Math.round(2f * density)) : 0,
-                            hasFocus ? TvUiTokens.FOCUS_BORDER : 0x00000000);
-                    v.setBackground(focusSurface);
                     if (hasFocus) SoundEffects.playNav();
                 });
             }
@@ -866,13 +862,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return false;
             });
+            prayerTableView.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                    density, 8f, 0x00000000, TvUiTokens.FOCUS_HALO,
+                    0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
             prayerTableView.setOnFocusChangeListener((v, hasFocus) -> {
-                GradientDrawable focusSurface = new GradientDrawable();
-                focusSurface.setColor(hasFocus ? TvUiTokens.FOCUS_HALO : 0x00000000);
-                focusSurface.setCornerRadius(8 * density);
-                focusSurface.setStroke(Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
-                        hasFocus ? TvUiTokens.FOCUS_BORDER : 0x55DCE5ED);
-                v.setBackground(focusSurface);
                 if (hasFocus) SoundEffects.playNav();
             });
         }
@@ -4369,22 +4362,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         close.setFocusable(true);
         close.setClickable(true);
         close.setContentDescription(getString(R.string.daily_ayah_close));
-        GradientDrawable closeBg = new GradientDrawable();
-        closeBg.setColor(0x33FFFFFF);
-        closeBg.setShape(GradientDrawable.OVAL);
-        closeBg.setStroke(Math.max(1, Math.round(density)), 0x66FFFFFF);
-        close.setBackground(closeBg);
+        close.setBackground(TvFocusIndicator.createOvalStateBackground(
+                density, 0x33FFFFFF, TvUiTokens.FOCUS_HALO,
+                0x66DCE5ED, TvUiTokens.FOCUS_BORDER));
         close.setOnClickListener(v -> {
             SoundEffects.playSelect();
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
         });
         close.setOnFocusChangeListener((v, focused) -> {
-            GradientDrawable state = new GradientDrawable();
-            state.setShape(GradientDrawable.OVAL);
-            state.setColor(focused ? TvUiTokens.FOCUS_HALO : 0x33FFFFFF);
-            state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
-                    focused ? TvUiTokens.FOCUS_BORDER : 0x66DCE5ED);
-            v.setBackground(state);
             if (focused) SoundEffects.playNav();
         });
         header.addView(close, new LinearLayout.LayoutParams(
@@ -4481,19 +4466,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         closeAction.setGravity(Gravity.CENTER);
         closeAction.setFocusable(true);
         closeAction.setClickable(true);
-        GradientDrawable actionBg = new GradientDrawable();
-        actionBg.setColor(0x223F4A55);
-        actionBg.setCornerRadius(10 * density);
-        actionBg.setStroke(Math.max(1, Math.round(density)), 0x55DCE5ED);
-        closeAction.setBackground(actionBg);
+        closeAction.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                density, 10f, 0x223F4A55, TvUiTokens.FOCUS_HALO,
+                0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
         closeAction.setOnClickListener(v -> dialogHolder[0].dismiss());
         closeAction.setOnFocusChangeListener((v, focused) -> {
-            GradientDrawable state = new GradientDrawable();
-            state.setColor(focused ? TvUiTokens.FOCUS_HALO : 0x223F4A55);
-            state.setCornerRadius(10 * density);
-            state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
-                    focused ? TvUiTokens.FOCUS_BORDER : 0x55DCE5ED);
-            v.setBackground(state);
             if (focused) SoundEffects.playNav();
         });
         panel.addView(closeAction, closeLp);
