@@ -41,6 +41,17 @@ class HomeLuxuryGlassFocusContractTest(unittest.TestCase):
         self.assertEqual(ids["@+id/locationMountainIcon"].get(ANDROID + "tint"),
                          "@color/header_icon_tint")
 
+    def test_header_and_islamic_focus_surfaces_share_runtime_glass(self):
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        for view_id in ("R.id.locationPill", "R.id.weatherAirQuality", "R.id.btnWifi",
+                        "R.id.btnAssistant", "R.id.btnHome", "R.id.btnCandyBox",
+                        "R.id.btnSettings"):
+            with self.subTest(view_id=view_id):
+                self.assertIn(view_id, main)
+        self.assertIn("R.id.islamicShelf", main)
+        self.assertIn("islamicGlassPanel.setBackground(new GlassDrawable(", main)
+        self.assertIn("Backdrop.watch(islamicGlassPanel)", main)
+
     def test_islamic_gold_and_black_shadow_remain_independent_of_global_glass(self):
         tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
