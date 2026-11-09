@@ -1,31 +1,36 @@
-# AUTHORITATIVE CHECKPOINT — GTVH-HOME-LUXURY-REALISTIC-GLASS-FOCUS-001
+# AUTHORITATIVE CHECKPOINT — GTVH-HOME-LUXURY-GLASS-DPAD-CURSOR-001
 **Checkpoint date:** 10 November 2026 (WIB)  
 **Repository:** [Frangga11/glass-tv-home](https://github.com/Frangga11/glass-tv-home)  
-**Source PR:** [#110 — Luxury Realistic Glass Focus + Islamic Gold](https://github.com/Frangga11/glass-tv-home/pull/110)  
+**Source PR:** [#110 — Luxury Glass DPAD Cursor + Islamic Gold](https://github.com/Frangga11/glass-tv-home/pull/110)  
 **Source branch:** `feature/home-luxury-realistic-glass-focus-001`  
-**Exact source HEAD:** `6c44212e20841230638abf7c7ff8bdda032241be`  
+**Exact source HEAD:** `87cf50166e69cf8a2690cc859d821222a34c4e68`  
 **Base branch / parent:** `fix/home-header-typography-focus-001` / PR #108 exact base HEAD `9b49f26180430dc63ef2ab8cf20bcba845e067ea`  
 **Disposition:** OPEN / DRAFT / UNMERGED — BELUM FINAL.
 
-## Owner-approved objective
-Apply an elegant, luxurious Realistic Frosted Glass refinement across Home header focus surfaces and the Islamic Shelf, retaining the existing Frosted Silver-Cyan identity. Restore/retain warm Islamic gold and black text shadow on the prayer timetable and Ayat Pilihan.
+## Owner clarification — authoritative color separation
+The owner clarified that “focus” means the **DPAD cursor/highlight**, not merely the visual state of focused components.
+
+1. **Global cursor:** all focus cursor states use the approved Frosted Silver-Cyan Glass treatment. Silver veil `#35DCE5ED`, polished silver border `#FFDCE5ED`; cyan remains only a restrained glass reflection/accent.
+2. **Islamic content gold (strictly scoped):**
+   - Ayat Pilihan: Qur'anic Arabic text only — gold-yellow-orange `#FFFFC45A` with black shadow `#CC000000`.
+   - Jadwal Salat: marked prayer-time label/time only — same gold and black shadow.
+3. The cursor remains a separate overlay from content colors. When it lands on the prayer schedule or Ayat Pilihan, the cursor is silver glass and the underlying Islamic content remains gold. Gold is not a cursor color and is not generalized to icons or other labels.
 
 ## Implemented source changes
-- `GlassDrawable.java`: reduced the dark veil alpha to 0x70 so the cached wallpaper glass reads more clearly; glass remains fully rendered under DPAD focus instead of fading out as the Glider crosses the capsule.
-- `GlassRim.java`: enriched silver-cyan reflection and window-light glints.
-- `header_glass_pill_bg.xml`: strengthened neutral glass fallback and silver edge.
-- `header_nav_tab_bg.xml`: slightly stronger cyan focus glass.
-- `header_icon_tint.xml`: new state-aware silver-cyan icon tint (focused cyan; neutral silver at rest).
-- `activity_main.xml`: applied consistent tint to Beranda, Profil, Pengaturan, Wi-Fi, microphone, location and altitude icons; no IDs or layout dimensions changed.
-- `MainActivity.java`: added one background-only runtime glass surface behind the existing Islamic Shelf (prayer timetable + Ayat Pilihan); child geometry, content, RTL, and spacing are preserved.
-- Added `tests/test_home_luxury_glass_focus_contract.py` covering glass persistence, rim highlights, icon tint, Islamic Shelf glass, Islamic gold and black shadow.
+- `Glider.java`, `GlassView.java`, and shared `TvFocusIndicator` token consumers: DPAD cursor border/halo now use the global silver focus tokens; navigation/focus graph and geometry are untouched.
+- `TvUiTokens.java`: `FOCUS_BORDER = #FFDCE5ED`; `FOCUS_HALO = #35DCE5ED`. Existing `ACCENT_CYAN` remains electric cyan and separate from the focus-border semantic token.
+- `values/colors.xml`: introduced `tv_ui_focus_border` as the XML mirror for the new silver focus-border token; retained `tv_ui_focus_cyan` as the independent electric-cyan accent.
+- Focus selectors: header navigation, prayer pill, location/weather, app pill, dialog, media, input, recent-card and shared TV focus selectors now use the silver border token and restrained silver halo.
+- `header_icon_tint.xml`: focused header icons use a soft silver-white tint; idle state remains neutral silver.
+- `GlassDrawable.java` and `GlassRim.java`: refined realistic frosted-glass veil, persistent glass under cursor, stronger silver-cyan reflection and subtle window-light glints.
+- `MainActivity.java`: background-only frosted surface behind the existing Islamic Shelf; no child geometry, content, RTL or spacing changes.
+- Regression contracts updated for global cursor palette, XML/Java token synchronization, and the separate Islamic gold treatment.
 
-## Islamic palette protection
-The parent PR #108 already contains and this branch retains:
+## Protected Islamic palette
 - `ISLAMIC_GOLD = 0xFFFFC45A` (#FFFFC45A).
 - `ISLAMIC_TEXT_SHADOW = 0xCC000000` (#CC000000).
-- Gold for the next-prayer label/time and Ayat Pilihan Arabic; black shadow retained for prayer labels/times and Arabic preview.
-No prayer calculation, prayer data, Ayah content/cache, or translation behavior changed.
+- Gold remains limited to the marked prayer label/time and Ayat Pilihan Arabic text; translation and unrelated metadata retain their existing colors.
+- No prayer calculation, prayer data, Ayah content/cache, translation behavior or RTL changes.
 
 ## Strict exclusions
 RE-SKIN, NOT REWIRE. Preserve IDs, listeners, handlers, navigation order, DPAD graph, data providers, persistence, lifecycle, approved geometry, Arabic RTL, Weather/AQI logic, Weather V4 dashboard, and accepted Wi-Fi popup. No changes to wallpaper, Dock/Grid, Hero Shelf, WeatherActivity, or unrelated modules. No merge, ADB, TV installation, default-launcher change, or release publication.
@@ -33,19 +38,21 @@ RE-SKIN, NOT REWIRE. Preserve IDs, listeners, handlers, navigation order, DPAD g
 ## Validation ledger
 | Gate | Status | Evidence |
 |---|---|---|
-| Source commits | COMPLETE | Exact HEAD `6c44212e20841230638abf7c7ff8bdda032241be` |
-| Changed-file scope | VERIFIED | 8 files |
-| Exact-head CI | IN PROGRESS | CI #1875 / run `42720524182` |
-| Release APK publication | SKIPPED | Run `42720524808`; not requested and not a release build |
-| 1920×1080 rendered visual review | PENDING | Must inspect real rendered output |
+| Source commits | COMPLETE | Exact HEAD `87cf50166e69cf8a2690cc859d821222a34c4e68` |
+| Scope / diff review | PENDING | Re-fetch final PR diff and changed-file list at exact HEAD |
+| First exact-head CI | FAILED — CORRECTED | Run `42721648302` failed one Lists/tools/docs test: XML focus cyan token was incorrectly repurposed, conflicting with the existing `ACCENT_CYAN` semantic mapping |
+| Corrective palette separation | COMPLETE | Electric cyan restored to `tv_ui_focus_cyan`; new silver `tv_ui_focus_border` mirrors `FOCUS_BORDER`; focus selector references migrated |
+| Corrected exact-head CI | QUEUED | Run `42721922767` for exact HEAD `87cf50166e69cf8a2690cc859d821222a34c4e68` |
+| Release APK publication | NOT YET VERIFIED | Latest release workflow must remain skipped; no release requested |
+| 1920×1080 rendered visual review | PENDING | Must inspect rendered output |
 | Live DPAD/focus acceptance | PENDING | Must inspect on Mi TV Stick |
 | Physical device acceptance | PENDING | No ADB/install authorized |
 | Merge/release | NOT AUTHORIZED | PR #110 remains Draft/unmerged |
 
 ## Next action
-Wait for exact-head CI #1875 on `6c44212e20841230638abf7c7ff8bdda032241be`. If CI passes, retrieve and inspect the QA artifact, verify APK integrity/size/hash, and report the artifact. Do not claim visual or physical-device PASS based on source tests or CI. Then request owner-authorized Mi TV Stick review. Keep PR #110 Draft/unmerged until all acceptance gates and explicit owner approval.
+Wait for corrected exact-head CI run `42721922767`. If it passes, retrieve the QA artifact and verify APK integrity/size/hash. If it fails, inspect the exact failing test/log and correct before any visual acceptance. Then perform a 1920×1080 visual review and request owner-authorized Mi TV Stick testing. Do not claim PASS from source inspection or partial CI. Keep PR #110 Draft/unmerged.
 
-**Single restart instruction:** “Lanjutkan dari GTVH-CHECKPOINT-LATEST.md — GTVH-HOME-LUXURY-REALISTIC-GLASS-FOCUS-001.”
+**Single restart instruction:** “Lanjutkan dari GTVH-CHECKPOINT-LATEST.md — GTVH-HOME-LUXURY-GLASS-DPAD-CURSOR-001.”
 
 ---
 
