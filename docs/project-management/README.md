@@ -288,3 +288,21 @@ The current source candidate is PR #103 (OPEN / DRAFT / UNMERGED; exact HEAD `a3
 The owner-approved upcoming workstream is `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001`. Its design prompt is approved; implementation has not started. The current checkpoint defines its sequence and safeguards.
 
 The project-management directory was inventoried on 9 November 2026: **96 Markdown files and one prototypes directory**. See the documentation catalog in INVENTORY.md. Historical feature audits remain intact and are evidence sources, not current status sources.
+
+
+## Checkpoint update — GTVH-WIFI-POPUP-REFERENCE-001 — 9 November 2026
+
+**Active workstream:** Wi-Fi Popup only. Application PR #105 remains OPEN / DRAFT / UNMERGED. Source branch `feature/wifi-popup-reference-001`; current application HEAD `09357a29527cffffb48f45389bc1f4a8c921395b`; base branch `feature/global-frosted-silver-glass-001`, base HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`.
+
+**Latest scoped changes:**
+- `WifiSettingsDialog.java`: anchored compact top-right window; absolute TOP|RIGHT attributes applied after sizing; pointer triangle; restrained 0.08 dim; bounded 88dp network viewport with persistent scrollbar; connected SSID promoted to first row; existing Wi-Fi/lock/settings vector assets reused; connected/available network lock semantics retained; Android scan/status/permission and Settings handoff lifecycle preserved.
+- `WifiSettingsDialogTest.java`: tests absolute top-right window gravity, restrained dim, and bounded scrollable network list.
+- `tests/test_quick_settings_contract.py`: direct Wi-Fi child route contract updated to require anchored popup invocation. No Quick Settings production code changed.
+
+**CI:** Exact-HEAD CI run `42625324843` is RUNNING / PENDING at time of this checkpoint. The preceding exact-HEAD run `42625057189` failed one Robolectric assertion on window gravity at test line 32; Java compilation succeeded. The window attribute application order was corrected in current HEAD and is awaiting exact-HEAD CI confirmation. Do not infer PASS until run `42625324843` completes successfully.
+
+**Scope audit:** PR diff remains limited to the three Wi-Fi-related files above. No Home Screen/header, wallpaper, Weather/AQI, Hero Shelf, Islamic Shelf, dock/grid, profile/avatar, global settings, WeatherActivity, global tokens or unrelated data logic changed. Existing Frosted Silver-Cyan Glass tokens and Android's ownership of radio/authentication/connection operations are preserved. The displayed ON/OFF control reflects actual Wi-Fi state and hands off to Android Wi-Fi Settings; it does not call prohibited direct radio-toggle APIs.
+
+**Pending acceptance:** exact-HEAD CI PASS; final PR diff review; 1920×1080 visual geometry/anchor/pointer/scrollbar QA; DPAD traversal and focus restoration; Android 11 actual scan/status/Settings handoff; APK validity and size diagnostics. No visual/runtime Mi TV Stick evidence, ADB or APK installation has been performed. No merge or retarget.
+
+**Overall status: BELUM FINAL — IMPLEMENTATION / CI VALIDATION IN PROGRESS.** PR #105 remains OPEN / DRAFT / UNMERGED. Canonical single-door authority remains `GTVH-CHECKPOINT-LATEST.md`.
