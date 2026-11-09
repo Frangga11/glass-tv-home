@@ -265,11 +265,15 @@ final class WifiSettingsDialog {
         WindowManager.LayoutParams params = window.getAttributes();
         params.width = popupWidth;
         params.height = popupHeight;
-        params.gravity = Gravity.TOP | Gravity.RIGHT;
+        params.gravity = anchoredWindowGravity();
         params.x = Math.max(0, screenWidth - popupLeft - popupWidth);
         params.y = Math.max(0, popupTop);
         params.dimAmount = 0.08f;
         window.setAttributes(params);
+    }
+
+    static int anchoredWindowGravity() {
+        return Gravity.TOP | Gravity.RIGHT;
     }
 
     static AlertDialog show(Activity activity, Runnable openSystemWifiSettings, Runnable returnToParent) {
