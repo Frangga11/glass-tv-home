@@ -1,6 +1,46 @@
 <!-- CURRENT AUTHORITATIVE AUDIT UPDATE — 9 NOVEMBER 2026. Supersedes older current audit status below; history retained. -->
 ## GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — Current Audit Evidence
 
+**Source baseline:** PR #103 HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Candidate PR #104 OPEN / DRAFT / UNMERGED; branch `feature/global-frosted-silver-glass-001`; current HEAD `e6712777ca3ecd5c3e1714c5e2725aa9c5cddc3e`. The last commit is audit documentation only. Last source-code validation: CI #1703 on HEAD `03408e7585e1cacd3fe32727502bca61752c5438`.
+
+### G1 — Inventory and findings
+- Baseline: 17 layouts, 121 app drawables, 19 values XML, 100 Java source files, 59 Java unit-test files, 35 Python regression-test files.
+- Shared material system previously used deep-blue semantic surfaces and violet/gold rim reflections.
+- Some focus paths used 1.015× and app tiles 1.07× visual zoom; focus and selected treatments overlapped in selectors.
+- Backdrop already uses precomputed/cached wallpaper blur; no new blur dependency required.
+- Full stale-resource/source sweep remains IN PROGRESS.
+
+### G2/G3 — Initial implementation
+- Java semantic tokens and XML colors synchronized to cool silver-grey; text and focus contrast tests retained.
+- GlassRim uses silver/white with restrained cyan; violet/gold interference removed.
+- Glider DARK/GLASS and GlassView use Electric Cyan focus outline.
+- AppAdapter visual focus scale is 1.0; separate 1.07 layout reservation remains unchanged. Focused label translation neutralized.
+- MainActivity dynamic Azan settings and information-action rows, ModernSettings avatar actions, Quick Settings divider and LocationActivity state pills aligned with shared silver/cyan tokens.
+- Core Home, dock, popup/dialog, location, weather, prayer, media, recent-app, tile and installer glass surfaces received initial reskin.
+- Regression contract suite: **223 passed, 1 skipped**.
+- Android unit tests and release build: **BUILD SUCCESSFUL**.
+- Exact CI run [#1703](https://github.com/Frangga11/glass-tv-home/actions/runs/42600150812): **SUCCESS**.
+- APK: 1,627,069 bytes; SHA256 `e146f9e80c333acbb72c34bb64f96b2be385583e60400239ab04b5c6f5474671`.
+
+### Quality gates
+| Gate | Status | Evidence |
+|---|---|---|
+| Source inventory | PARTIAL / IN PROGRESS | Counts and surface map recorded; full stale-resource sweep remains |
+| Design system | IN PROGRESS | Shared tokens and renderers changed; visual review pending |
+| Build & CI | PASS | Run #1703 on source HEAD 03408e7 |
+| Functional QA | NOT RUN | No runtime interaction test |
+| Visual QA | NOT RUN | No rendered 1920×1080 screenshot comparison |
+| DPAD runtime QA | NOT RUN | Source contracts only; no remote test |
+| Performance QA | NOT RUN | No runtime profiling |
+| Device acceptance | PENDING | No physical Mi TV Stick test |
+
+Do not claim PASS without evidence. Do not install/test the APK on the TV until the global audit and implementation are complete and owner authorizes it.
+
+---
+
+<!-- CURRENT AUTHORITATIVE AUDIT UPDATE — 9 NOVEMBER 2026. Supersedes older current audit status below; history retained. -->
+## GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — Current Audit Evidence
+
 **Source baseline:** PR #103 HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Candidate PR #104 OPEN / DRAFT / UNMERGED, branch `feature/global-frosted-silver-glass-001`, current HEAD `03408e7585e1cacd3fe32727502bca61752c5438`. Last source-code validation HEAD `7535a311639c07ab77abd004664510fca216b00b`.
 
 ### G1 — Inventory and findings
