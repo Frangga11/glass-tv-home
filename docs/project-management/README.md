@@ -278,3 +278,13 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - Scope: wallpaper location/title/description order; shared 5mm downward movement for both information shelves; prayer timetable text gradients; softer daily ayah frame. No other component is in scope.
 - CI run `42493469262`: Python suite **166 tests, OK (1 skipped)**; Android `testReleaseUnitTest` + `assembleRelease` **PASS**. APK diagnostic: `1,627,937` bytes (+376 bytes versus PR #79's last recorded build); the historical 1.5 MiB threshold warning is non-blocking.
 - Visual 1920×1080 review and physical Mi TV Stick acceptance remain pending. PR #80 is OPEN / DRAFT / UNMERGED; no install or merge performed. See `GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md` and canonical checkpoint.
+
+## Current documentation authority — 9 November 2026
+
+The current status and only restart route is [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md). This README and every other document in this directory are supporting navigation, history, or evidence; none may establish a competing current project state.
+
+The current source candidate is PR #103 (OPEN / DRAFT / UNMERGED; exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`, based on PR #101 HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`). Exact-head CI #1689 passed. Rendered 1920×1080 visual review and physical Mi TV Stick acceptance remain pending. No install, ADB, launcher-setting change, or merge.
+
+The owner-approved upcoming workstream is `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001`. Its design prompt is approved; implementation has not started. The current checkpoint defines its sequence and safeguards.
+
+The project-management directory was inventoried on 9 November 2026: **96 Markdown files and one prototypes directory**. See the documentation catalog in INVENTORY.md. Historical feature audits remain intact and are evidence sources, not current status sources.
