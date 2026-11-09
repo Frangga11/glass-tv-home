@@ -2908,3 +2908,20 @@ Implemented Wi-Fi-only changes: compact anchored top-right dialog, pointer align
 
 ### Handover
 Wi-Fi popup workstream is complete through latest APK generation and evidence reconciliation. Start the next repair as a separate scoped workstream/PR. Preserve the project method: audit → root cause → plan → scoped implementation → tests/CI → build → artifact verification → docs sync. Do not reopen Wi-Fi unless the user reports a new defect or explicitly requests it.
+
+
+## CONTINUATION SYNC — 10 NOVEMBER 2026 — POST WIFI ACCEPTANCE / GLOBAL VISUAL QA
+
+- Active global workstream: GTVH-GLOBAL-FROSTED-SILVER-GLASS-001.
+- PR #104 remains OPEN / DRAFT / UNMERGED. Current exact PR HEAD: b14ba7a35659ea404b88a56175e706e458c8459f. Protected PR #103 base: a3d697c793e23a59f9f9953e2074d83daa210cf9.
+- Latest PR #104 commit is documentation-only (Islamic Ayah regression coverage); no application source changed in that final commit. Current source tree is validated through exact HEAD b14ba7a35659ea404b88a56175e706e458c8459f.
+- Exact-head CI #1772 / run 42614429069: SUCCESS. Lists/tools/docs and Android launcher unit tests/release build both succeeded; read-only APK diagnostics succeeded.
+- Artifact ID 13672026508, size 1,429,103 bytes, is a Home layout visual-parity/test artifact, NOT a separately verified release APK. Release APK publication workflow was SKIPPED. Final release APK is NOT READY.
+- PR #105 Wi-Fi workstream remains OPEN / DRAFT / UNMERGED, exact HEAD 774eb99faa48e109b3532533425bbb4cdee07a4a; CI #1825 / run 42654291224 SUCCESS. Wi-Fi popup scope is CLOSED BY OWNER ACCEPTANCE and LOCKED / PROTECTED.
+- Wi-Fi isolation cross-check: WifiSettingsDialog.java blob SHA is identical at PR #104 protected base and current PR #104 HEAD (e21af100983feb449f68a9660578f756028a375a); TvDialogStyle.java is also identical (f690ac6a37c05911d303ae44f439176ee5b35bc7). PR #104 changes shared semantic tokens and bg_glass_dialog, but WifiSettingsDialog does not reference bg_glass_dialog or GlassDrawable; it does use shared TvUiTokens. PR #105 is based on exact PR #104 HEAD and its accepted CI validates the integrated token baseline. Do not alter Wi-Fi or its shared dependencies without an isolated impact check.
+- Recent Apps dynamic card normal 1dp silver stroke and 26dp radius are present in current source and regression-guarded. RAM pill original insets are restored and regression-guarded. Dock cyan token, installer window/root parity and Islamic Ayah typography/RTL have source/test coverage.
+- HOME-001 through HOME-005 remain documented as source-resolved with automated regression coverage; runtime acceptance is pending.
+- Remaining gates: rendered 1920x1080 bright/dark/mixed wallpaper review; five-state visual QA on non-Wi-Fi components; Recent Apps clipping/outline runtime verification; end-to-end functional and live DPAD regression; installer startup observation; GPU/performance profiling; owner-authorized Mi TV Stick acceptance; final release APK creation and SHA-256 validation.
+- No source, branch, merge, rebase, reset, force-push, ADB/install, or device setting was changed in this continuation. PR #104 body was synchronized to current HEAD/CI and explicitly records Wi-Fi protection.
+- Overall status: SOURCE / AUTOMATED CI PASS; VISUAL / RUNTIME / PERFORMANCE / DEVICE ACCEPTANCE PENDING; FINAL NOT READY.
+- Next action: continue non-Wi-Fi GTVH-GLOBAL-VISUAL-QA-001 source-to-render verification. Only implement a source correction when a reproducible defect is evidenced; preserve RE-SKIN, NOT REWIRE and all approved geometry.
