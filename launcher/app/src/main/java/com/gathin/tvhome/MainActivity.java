@@ -4203,11 +4203,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (labels[i] != null) {
                     labels[i].setText(items[i].name);
                     if (items[i].isNext) {
-                        labels[i].setTextColor(TvUiTokens.ACCENT_SECTION);
-                        if (times[i] != null) times[i].setTextColor(TvUiTokens.ACCENT_SECTION);
+                        labels[i].setTextColor(TvUiTokens.ISLAMIC_GOLD);
+                        if (times[i] != null) times[i].setTextColor(TvUiTokens.ISLAMIC_GOLD);
                     } else {
                         labels[i].setTextColor(TvUiTokens.TEXT_SECONDARY);
                         if (times[i] != null) times[i].setTextColor(TvUiTokens.TEXT_PRIMARY);
+                    }
+                    labels[i].setShadowLayer(3f * density, 0f, 1f * density, TvUiTokens.ISLAMIC_TEXT_SHADOW);
+                    if (times[i] != null) {
+                        times[i].setShadowLayer(3f * density, 0f, 1f * density, TvUiTokens.ISLAMIC_TEXT_SHADOW);
                     }
                 }
             }
@@ -4264,6 +4268,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             ayahArabic.setTextDirection(View.TEXT_DIRECTION_RTL);
             ayahArabic.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY);
             ayahArabic.setGravity(Gravity.RIGHT | Gravity.TOP);
+            ayahArabic.setTextColor(TvUiTokens.ISLAMIC_GOLD);
+            ayahArabic.setShadowLayer(3f * density, 0f, 2f * density, TvUiTokens.ISLAMIC_TEXT_SHADOW);
             ayahArabic.setIncludeFontPadding(true);
             ayahArabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
             ayahArabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
