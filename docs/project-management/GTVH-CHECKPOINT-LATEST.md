@@ -1445,3 +1445,48 @@ This is the current single-door checkpoint. Supporting management documents are 
 Wait for exact-head CI #1772 to complete. Then continue rendered visual QA using actual screenshots/evidence; do not substitute source inspection for rendered QA. Complete runtime/DPAD/performance only within the authorized test boundary. After each checkpoint, update all six management documents in one synchronized commit.
 
 **Overall status: BELUM FINAL.** Source correction and regression contracts are committed; exact-head CI pending; visual, runtime, performance and physical-device acceptance remain open.
+
+
+## AUTHORITATIVE CLOSEOUT — VISUAL QA SOURCE + EXACT-HEAD CI — 9 NOVEMBER 2026
+This closeout supersedes the preceding checkpoint's "CI pending" status. Checkpoint ID remains **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-QA-001**.
+
+### Exact repository state
+- PR #104: OPEN / DRAFT / UNMERGED.
+- Branch: `feature/global-frosted-silver-glass-001`.
+- Exact PR HEAD: `b14ba7a35659ea404b88a56175e706e458c8459f`.
+- Protected base: `a3d697c793e23a59f9f9953e2074d83daa210cf9`.
+- PR #103 unchanged.
+
+### Corrections and source verification
+- Recent Apps dynamic `GradientDrawable` now restores the 1dp `#99DCE5ED` normal border while preserving 26dp radius, per-app fill, dimensions and independent Electric Cyan focus foreground.
+- Regression contract protects normal border/radius.
+- Islamic Ayah contract protects Amiri Quran, RTL Arabic/right alignment, black shadow, near-white LTR translation and two-line cap.
+- Installer `windowBackground` and first content root both `#2C333B`; system bars remain `#0C0E14`.
+- Resource classification retained; no mechanical recoloring or unsupported token changes.
+
+### Exact-head CI — PASS
+- CI #1772 / run `42614429069` on exact PR HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`: SUCCESS; both jobs completed successfully.
+- Lists/tools/docs job: SUCCESS.
+- Launcher build and unit tests: SUCCESS.
+- Python regression: 239 tests run; 238 passed, 1 skipped by the existing documented README-count policy.
+- Android Gradle unit tests and release build: `BUILD SUCCESSFUL`.
+- Release APK diagnostic: 1,628,189 bytes (approximately 1.55 MiB). Build validation only; no APK installed on the TV.
+- Workflow artifact ID `13672026508` is a CI artifact, not rendered screenshot evidence.
+
+### Acceptance status — still BELUM FINAL
+- Source-level Recent Apps normal border correction: COMPLETE; regression-guarded.
+- Source-level Islamic Ayah typography/shadow configuration: VERIFIED; wallpaper contrast not rendered.
+- Installer window/root color parity: SOURCE + CI VERIFIED; startup flash observation NOT RUN.
+- Rendered 1920×1080 screenshot comparison, bright/dark/mixed wallpaper contrast, clipping and focus outline: PENDING / NOT RUN.
+- Five-state visual review (Normal, Focused, Selected, Pressed, Disabled): PENDING / NOT RUN.
+- End-to-end runtime regression and live DPAD navigation: PENDING / NOT RUN.
+- GPU/performance profiling: PENDING / NOT RUN.
+- Physical Mi TV Stick acceptance: PENDING; requires explicit owner authorization. No ADB or APK installation was performed.
+
+### Safeguards
+RE-SKIN, NOT REWIRE. No ID/listener/handler/navigation/persistence/lifecycle/data/approved-geometry changes. Do not merge PR #104 or modify PR #103. Never equate CI PASS with visual/runtime PASS.
+
+### Next action
+Proceed with genuine rendered 1920×1080 visual evidence, then runtime/DPAD and GPU/performance testing within the owner's authorization boundary. Keep PR #104 OPEN / DRAFT / UNMERGED until every acceptance gate is evidenced and explicitly approved.
+
+**Overall status: BELUM FINAL — exact-head CI PASS; visual, runtime, performance and device acceptance remain open.**

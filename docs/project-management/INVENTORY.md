@@ -1798,3 +1798,12 @@ Checkpoint: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-QA-001**; canonical 
 - Islamic Ayah: regression contract now checks Amiri Quran font, RTL Arabic, black shadow, near-white LTR translation and two-line cap.
 - Existing drawable/value role classification (113 app drawables, 6 installer drawables, 19 app values files) is retained. No mechanical recoloring; no further source token drift correction was supported by current evidence.
 - CI #1772 / run `42614429069` exact current PR HEAD was IN PROGRESS at checkpoint creation. Rendered visual/runtime/performance/device gates remain pending.
+
+
+## Visual QA closeout inventory — exact-head CI PASS — 9 November 2026
+Checkpoint **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-QA-001**. PR #104 exact HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`; CI #1772 / run `42614429069` PASS, both jobs complete.
+- Recent Apps dynamic background: explicit 1dp `#99DCE5ED` border and 26dp radius retained; foreground focus outline remains separate.
+- Islamic Ayah regression checks: Amiri Quran font, Arabic RTL/right alignment, black shadow; near-white LTR translation, black shadow and two-line cap.
+- Installer window/root both #2C333B; system bars #0C0E14.
+- Existing 113 app drawable / 6 installer drawable / 19 values-file classification and semantic role taxonomy unchanged.
+- CI PASS is not rendered visual or device evidence. Screenshot/wallpaper contrast, clipping/outline, runtime/DPAD, startup transition, GPU/performance and physical device remain pending.

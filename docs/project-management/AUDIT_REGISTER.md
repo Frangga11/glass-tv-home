@@ -2626,3 +2626,12 @@ Confirmed `bg_ram_pill.xml` is referenced by `activity_recent_apps.xml`. Restore
 - Current PR #104 HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`, OPEN / DRAFT / UNMERGED. CI #1772 / run `42614429069` was IN PROGRESS at checkpoint creation.
 - Rendered screenshot comparison, wallpaper contrast, clipping/outline, installer startup, five-state, runtime/DPAD, GPU/performance and physical-device acceptance remain NOT RUN / PENDING. No ADB/install/merge; PR #103 untouched.
 - Canonical single-door checkpoint: `GTVH-CHECKPOINT-LATEST.md`.
+
+
+## Audit closeout — VISUAL-QA-001 exact-head CI PASS — 9 November 2026
+- PR #104 exact HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`; OPEN / DRAFT / UNMERGED.
+- CI #1772 / run `42614429069`: SUCCESS, both jobs completed. Python 239 run / 238 pass / 1 skip; Android Gradle tests and release build successful. APK size diagnostic 1,628,189 bytes; no installation.
+- Recent Apps dynamic normal border restored (1dp `#99DCE5ED`) and 26dp radius regression-guarded.
+- Ayah Amiri/RTL/shadow/translation contract regression-guarded. Installer window/root #2C333B; system bars #0C0E14.
+- Visual screenshot/wallpaper contrast, five-state, runtime/DPAD, installer startup, GPU/performance and physical-device acceptance remain PENDING / NOT RUN.
+- Canonical single-door checkpoint: `GTVH-CHECKPOINT-LATEST.md`. No ADB/install/merge; PR #103 untouched.
