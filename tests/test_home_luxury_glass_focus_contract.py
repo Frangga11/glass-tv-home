@@ -26,7 +26,7 @@ class HomeLuxuryGlassFocusContractTest(unittest.TestCase):
         tint = ET.parse(RES / "color/header_icon_tint.xml").getroot()
         items = tint.findall("item")
         self.assertEqual(items[0].get(ANDROID + "state_focused"), "true")
-        self.assertEqual(items[0].get(ANDROID + "color"), "#FF8CEBFA")
+        self.assertEqual(items[0].get(ANDROID + "color"), "#FFF8FBFF")
         layout = ET.parse(RES / "layout/activity_main.xml").getroot()
         ids = {
             node.get(ANDROID + "id"): node
@@ -51,6 +51,20 @@ class HomeLuxuryGlassFocusContractTest(unittest.TestCase):
         self.assertIn("R.id.islamicShelf", main)
         self.assertIn("islamicGlassPanel.setBackground(new GlassDrawable(", main)
         self.assertIn("Backdrop.watch(islamicGlassPanel)", main)
+
+    def test_all_dpad_cursor_states_use_shared_frosted_silver_not_islamic_gold(self):
+        tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
+        glider = (JAVA / "Glider.java").read_text(encoding="utf-8")
+        colors = ET.parse(RES / "values/colors.xml").getroot()
+        color_map = {node.get("name"): (node.text or "").strip() for node in colors.findall("color")}
+        self.assertIn("FOCUS_BORDER = 0xFFDCE5ED", tokens)
+        self.assertIn("FOCUS_HALO = 0x35DCE5ED", tokens)
+        self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", glider)
+        self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", glider)
+        self.assertEqual(color_map["tv_ui_focus_cyan"], "#FFDCE5ED")
+        self.assertEqual(color_map["tv_ui_focus_halo"], "#35DCE5ED")
+        prayer = (RES / "drawable/prayer_pill_bg.xml").read_text(encoding="utf-8")
+        self.assertIn("@color/tv_ui_focus_halo", prayer)
 
     def test_islamic_gold_and_black_shadow_remain_independent_of_global_glass(self):
         tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
