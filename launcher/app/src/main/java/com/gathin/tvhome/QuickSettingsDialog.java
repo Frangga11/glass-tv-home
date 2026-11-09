@@ -263,7 +263,7 @@ final class QuickSettingsDialog {
         tile.setClickable(true);
         tile.setGravity(Gravity.CENTER_VERTICAL);
         tile.setPadding(dp(density, 6), dp(density, 2), dp(density, 6), dp(density, 2));
-        tile.setMinHeight(dp(density, Math.min(minHeightDp, 32)));
+        tile.setMinHeight(dp(density, Math.min(minHeightDp, 28)));
         tile.setMaxLines(2);
         tile.setEllipsize(android.text.TextUtils.TruncateAt.END);
         tile.setTextSize(10f);
