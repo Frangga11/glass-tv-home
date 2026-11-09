@@ -1,3 +1,24 @@
+<!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
+## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
+
+**Single source of truth:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. Every session starts there. This file alone governs current status, active workstream, dependency order, decisions, quality gates, and next action. Supporting documents provide detailed evidence/history and must not create competing restart points.
+
+**Current source candidate:** PR [#103](https://github.com/Frangga11/glass-tv-home/pull/103), `GTVH-HOME-WALLPAPER-PRAYER-ZERO-GAP-ARABIC-RTL-FIX-103`; OPEN / DRAFT / UNMERGED. Branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`; exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`; base PR #101 at `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`; 7 commits ahead / 0 behind; 5 changed files (2 production, 3 regression tests).
+
+**Latest verified automation:** exact-head CI #1689 / run [42566072365](https://github.com/Frangga11/glass-tv-home/actions/runs/42566072365) SUCCESS; both required jobs passed; Gradle release build successful. APK size 1,626,637 bytes; 53,773 bytes above historical 1.5 MiB reference, diagnostic/non-blocking. No PR artifact ZIP was published for this Draft run.
+
+**Remaining gates:** genuine rendered 1920×1080 visual review and physical Mi TV Stick acceptance are NOT RUN / PENDING. No ADB, installation, launcher-setting change, or merge. Overall PR #103 is NOT FINAL. Do not claim visual/device acceptance.
+
+**Cumulative base:** PR #101 branch `integration/home-islamic-prayer-spacing-cumulative-101`, base HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`, remains unmerged. PR #103 is a corrective child candidate; do not flatten, retarget, merge, or alter its ancestry without an explicit reconciliation and owner approval.
+
+**Newly approved future workstream:** `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001` — global visual reskin using Frosted Silver Glass + Electric Cyan DPAD Focus. Scope includes Home Screen, dock, Beranda–Profil–Pengaturan navigation, Wi-Fi/microphone, location/altitude, weather/AQI, popups/dialogs, settings/profile, prayer schedule, selected Ayah, Arabic and translation, and all other audited glass surfaces. Design/prompt approved by owner; implementation has NOT started; no branch, PR, source modification, prototype, or QA result is claimed.
+
+**Global execution constraints:** RE-SKIN, NOT REWIRE. Preserve working IDs, listeners, events, data logic, navigation, DPAD behavior, wallpaper logic, component geometry, and prior approved work. Only change geometry where an audited, evidenced requirement is approved. Prioritize function, readability, stability, and device performance over decorative effects. Do not merge or install without the required evidence and explicit owner approval.
+
+**Document roles:** CHECKPOINT = sole status/restart authority; MASTER_PROJECT = scope/architecture/roadmap; INVENTORY = files/components/branches/PR/dependencies; DECISION_LOG = approved decisions and constraints; AUDIT_REGISTER = evidence, findings, quality gates; HANDOVER = exact resume instructions. Update all six in the same documentation synchronization pass. Keep chronology; mark superseded statements rather than deleting history.
+
+---
+
 # GTVH-CHECKPOINT-LATEST
 
 
@@ -1083,3 +1104,12 @@ Prior project checkpoints require Mi TV Stick physical acceptance before final m
 - First CI #1687 failed on stale test expectations; the test contracts and over-broad divider/shelf gravity changes were corrected. The final exact-head CI #1689 now passes. This earlier failure is resolved; no open automated CI failure remains.
 - **Still pending:** genuine rendered 1920×1080 screenshot review for the exact edges and all unaffected surrounding elements; visual confirmation that Arabic glyphs align to the right edge; physical Mi TV Stick acceptance (only with owner authorization). No ADB, device install, launcher-setting change or merge performed.
 - **Status: SOURCE AUDIT PASS; EXACT-HEAD CI PASS; RELEASE BUILD PASS; APK SIZE WARNING (NON-BLOCKING); VISUAL / DEVICE ACCEPTANCE PENDING; OVERALL BELUM FINAL.** Keep PR #103 Draft/open/unmerged until visual review is complete and explicit owner approval is given.
+
+## DOCUMENT RECONCILIATION & SINGLE-DOOR SYNC — 9 NOVEMBER 2026
+
+- Reconciled current status against live PR #103 metadata and the latest exact-head CI evidence.
+- Current authoritative state is the PR #103 snapshot in the sync block above. Earlier PR #100/#101/#99 and older integration-gap entries remain historical evidence only; they must not be interpreted as current active restart instructions where superseded by PR #103.
+- The current next action is documentation synchronization complete → preserve PR #103 as Draft/unmerged → await/perform genuine rendered visual review → only then seek owner-authorized physical Mi TV Stick acceptance. No implementation of the new Silver Glass workstream begins before this handover point is acknowledged.
+- Frosted Silver Glass is approved as a future scoped workstream, not yet implemented. Its approved master prompt is the execution brief; this checkpoint governs sequencing and safeguards.
+- Supporting docs synchronized in the same documentation pass: MASTER_PROJECT.md, INVENTORY.md, DECISION_LOG.md, AUDIT_REGISTER.md, HANDOVER.md.
+- No application source, branch, PR state, device, or launcher setting was changed by this documentation reconciliation.
