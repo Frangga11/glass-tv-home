@@ -46,7 +46,7 @@ public class LocationActivity extends Activity {
         LinearLayout page = new LinearLayout(this);
         page.setOrientation(LinearLayout.VERTICAL);
         page.setPadding(dp(64), dp(40), dp(64), dp(28));
-        page.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{0xFF1E2A3A, 0xFF0A0E14}));
+        page.setBackground(new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[]{TvUiTokens.SHELL, TvUiTokens.DOCK_SURFACE}));
         String lang = AppLanguage.getLanguage(this);
         String title = AppLanguage.strLocation(this);
         String subtitle;
@@ -100,7 +100,7 @@ public class LocationActivity extends Activity {
             row.setClickable(true);
             row.setId(View.generateViewId());
             row.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {android.R.attr.state_selected}, {}},
-                    new int[]{0xFF000000, 0xFFFFFFFF, 0xB3FFFFFF}));
+                    new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_SECONDARY}));
             row.setBackground(pill());
             row.setOnFocusChangeListener((v, has) -> {
                 if (!has) return;
@@ -181,10 +181,10 @@ public class LocationActivity extends Activity {
     /** A state: white when focused, a faint pill when it is the one shown on the right. */
     private StateListDrawable pill() {
         GradientDrawable on = new GradientDrawable();
-        on.setColor(0xFFFFFFFF);
+        on.setColor(TvUiTokens.SURFACE_FOCUSED);
         on.setCornerRadius(dp(22));
         GradientDrawable sel = new GradientDrawable();
-        sel.setColor(0x24FFFFFF);
+        sel.setColor(TvUiTokens.SURFACE_SELECTED);
         sel.setCornerRadius(dp(22));
         StateListDrawable s = new StateListDrawable();
         s.addState(new int[]{android.R.attr.state_focused}, on);
@@ -196,11 +196,11 @@ public class LocationActivity extends Activity {
     /** A zone: glass, with a bright ring when focused. */
     private StateListDrawable card() {
         GradientDrawable on = new GradientDrawable();
-        on.setColor(0x33FFFFFF);
+        on.setColor(0x2600E5FF);
         on.setCornerRadius(dp(14));
-        on.setStroke(dp(2), 0xFF64D2FF);
+        on.setStroke(dp(2), TvUiTokens.FOCUS_BORDER);
         GradientDrawable off = new GradientDrawable();
-        off.setColor(0x14FFFFFF);
+        off.setColor(0x223F4B56);
         off.setCornerRadius(dp(14));
         StateListDrawable s = new StateListDrawable();
         s.addState(new int[]{android.R.attr.state_focused}, on);
