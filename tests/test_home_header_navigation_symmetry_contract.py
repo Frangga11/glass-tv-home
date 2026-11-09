@@ -79,6 +79,8 @@ class HomeHeaderNavigationSymmetryContractTest(unittest.TestCase):
         self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, null)", self.main)
         self.assertIn("glider.addCompanion(navCapsule)", self.main)
         self.assertIn("glider.setStyle(Glider.DARK)", self.main)
+        self.assertIn("int iconSize = Math.round(20f * density)", self.main)
+        self.assertIn("tab.setCompoundDrawablesRelative(icon, icons[1], icons[2], icons[3])", self.main)
         drawable = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
         self.assertIn("if (highlight != null && highlight.isShowing() && !paintsShape)", drawable)
         self.assertIn("if (paintsShape && highlight != null && highlight.isShowing())", drawable)
