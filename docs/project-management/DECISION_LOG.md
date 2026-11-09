@@ -978,3 +978,10 @@ All six core management documents are synchronized to this same checkpoint ID an
 **Open quality gates:** verify exact-HEAD CI PASS; inspect final diff and test logs; visual geometry/anchor/pointer/scrollbar and focus QA on 1920×1080; DPAD traversal and focus restoration; Android 11 Wi-Fi state/scan/Settings handoff; APK validity/size; regression evidence. Current overall status: **IMPLEMENTATION IN PROGRESS — BELUM FINAL**.
 
 **Canonical single-door authority:** `GTVH-CHECKPOINT-LATEST.md`. PR #105 remains OPEN / DRAFT / UNMERGED. Do not merge or install to the TV before all required gates are evidenced and explicitly authorized.
+
+
+### Wi-Fi popup implementation status correction — 9 November 2026
+
+The latest application PR #105 HEAD is now `454c91bdc4b02f556b12169254cf0d0a651a52e2` on `feature/wifi-popup-reference-001`. The PR contains three scoped files: `WifiSettingsDialog.java`, `WifiSettingsDialogTest.java`, and the Wi-Fi child-route assertion in `tests/test_quick_settings_contract.py`. The earlier test attempt exposed two failures in the new geometry/visibility tests (hidden Close node not retained in the view tree; Robolectric geometry assertion assumed fixed pixel values). Both were corrected; exact-current-HEAD CI run `42623905659` is in progress, with Lists/tools/docs job PASS and Android build/unit tests still RUNNING. Do not infer final PASS until the current run completes.
+
+The exact-HEAD source compiles in the preceding run, but two unit tests failed; therefore that run is **FAIL**, not accepted. No visual/runtime Mi TV Stick validation, ADB or APK installation has occurred. Overall status remains **BELUM FINAL — CURRENT-HEAD CI PENDING**. PR #105 remains OPEN / DRAFT / UNMERGED; no merge.
