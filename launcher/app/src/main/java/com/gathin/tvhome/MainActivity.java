@@ -7036,7 +7036,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         qrUrlText = new TextView(this);
         qrUrlText.setText("🌐 " + uploadUrl);
-        qrUrlText.setTextColor(0xFF38BDF8);
+        qrUrlText.setTextColor(TvUiTokens.ACCENT_BLUE);
         qrUrlText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         qrUrlText.setFontVariationSettings("'wght' 700");
         qrUrlText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
