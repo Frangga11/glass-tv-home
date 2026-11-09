@@ -1,3 +1,40 @@
+<!-- CURRENT AUTHORITATIVE AUDIT UPDATE — 9 NOVEMBER 2026, 17:01 WIB. This supersedes older current audit status below; historical evidence is retained. -->
+## GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — Initial Audit Evidence
+
+**Source baseline:** PR #103 HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`. New candidate PR #104 HEAD `b34d785dced9b5e47e65adf9865b1f4deada532d`, base PR #103, OPEN / DRAFT / UNMERGED.
+
+### G1 — Inventory and findings
+- Baseline: 17 layouts, 121 app drawables, 19 values XML, 100 Java source files, 59 Java unit-test files, 35 Python regression-test files.
+- Shared material system existed but used deep-blue semantic surfaces and violet/gold rim reflections.
+- Some focus paths used 1.015× and app tiles used 1.07× visual zoom; focus and selected treatments overlapped in selectors.
+- Backdrop already uses precomputed/cached wallpaper blur; no new blur dependency required.
+- Full stale-resource/source sweep remains IN PROGRESS; inventory counts do not equal full visual acceptance.
+
+### G2/G3 — Initial implementation
+- Java semantic tokens and XML colors updated to cool silver-grey; primary/secondary contrast contracts retained.
+- GlassRim uses silver/white with restrained cyan; violet/gold interference removed.
+- Glider DARK and GLASS states and GlassView now use Electric Cyan focus outline.
+- AppAdapter focus scale is 1.0; the separate 1.07 layout reservation remains unchanged. Focused label translation is neutralized.
+- Core Home, dock, popup/dialog, location, weather, prayer, media, recent-app and installer surfaces received the initial silver/cyan reskin.
+- Added `tests/test_global_frosted_silver_glass_contract.py` for token parity, selected/focused distinction, geometry, glass rim and drawable XML.
+- CI artifact allowlist includes PR #104.
+
+### Quality gates
+| Gate | Status | Evidence |
+|---|---|---|
+| Source inventory | PARTIAL / IN PROGRESS | Counts and surface map recorded; full stale-resource sweep remains |
+| Design system | IN PROGRESS | Tokens and shared renderers changed; exact-head tests pending |
+| Build & CI | IN PROGRESS | Run #1691 / 42599100302, exact HEAD b34d785d... |
+| Functional QA | NOT RUN | No runtime interaction test |
+| Visual QA | NOT RUN | No rendered 1920×1080 screenshot comparison |
+| DPAD runtime QA | NOT RUN | Source contracts only; no remote test |
+| Performance QA | NOT RUN | No runtime profiling |
+| Device acceptance | PENDING | No physical Mi TV Stick test |
+
+Do not claim PASS until evidence exists. PR #103 exact-head CI #1689 remains PASS for its own HEAD only; it does not validate PR #104.
+
+---
+
 <!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
 ## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
 
