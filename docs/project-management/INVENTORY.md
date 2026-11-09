@@ -1491,3 +1491,114 @@ PR #79 remains OPEN / DRAFT / UNMERGED. No physical device test is claimed. Owne
 - Before Frosted Silver implementation, produce a source-backed inventory of every glass surface, shared style/theme/drawable, popup/dialog, state, focus target, and resource dependency. Include Home, dock, navigation, Wi-Fi/microphone, location/altitude, weather/AQI, settings, profile, prayer, Ayah, Arabic/translation, and conditional/secondary screens.
 - Record each component's source path, owner/shared-resource relationship, current geometry, interaction/focus behavior, and whether it is in-scope. The inventory must distinguish shared components from one-off surfaces to prevent unintended global side effects.
 - Older PR lists and component snapshots remain historical; current active PR/status is governed only by GTVH-CHECKPOINT-LATEST.md.
+
+## Complete project-management documentation catalog — 9 November 2026
+
+Directory audit result: **96 Markdown files + 1 `prototypes/` directory**. All files below are accounted for. Detailed historical evidence is preserved in its focused document; current status is never inferred from a historical file. The canonical checkpoint remains the only current-status/restart authority.
+
+### Core control documents
+- GTVH-CHECKPOINT-LATEST.md — sole current checkpoint and restart point.
+- MASTER_PROJECT.md — project scope, architecture, baseline and roadmap.
+- INVENTORY.md — source/feature/PR/dependency and documentation inventory.
+- DECISION_LOG.md — approved decisions and constraints.
+- AUDIT_REGISTER.md — audit findings, evidence and closure status.
+- HANDOVER.md — concise resume instructions.
+- README.md — documentation navigation.
+- DOCUMENTATION_WORKFLOW.md — documentation governance.
+- OPERATIONS_LOG.md — chronological work log.
+- MERGE_QUALITY_POLICY.md — merge and quality gates.
+
+### Roadmaps, reconciliation and global UI
+- BUG_REPAIR_ROADMAP.md
+- UI_REFRESH_ROADMAP.md
+- PROJECT_G_READINESS_CHECKPOINT.md
+- GTVH-HOME-CUMULATIVE-RECONCILIATION-003.md
+- GLOBAL_UI_DESIGN_SYSTEM_AUDIT_2026-11-06.md
+- G01_BRANCH_RECONCILIATION_ADDENDUM.md
+- G01_COVERAGE_REAUDIT_2026-11-03.md
+- G01_FINAL_BUG_RESOLUTION_AUDIT.md
+- G03_DEVICE_ACCEPTANCE_PREFLIGHT_2026-11-05.md
+- R0_RECONCILIATION_AUDIT_2026-11-06.md
+- RESET_BASELINE_4.0.0_2026-11-07.md
+- HOME_DOCK_PATCH41_RECOVERY_2026-11-07.md
+- HOME_DOCK_VISUAL_PARITY_V2_2026-11-07.md
+- HOME_LAYOUT_CALIBRATION_AUDIT_2026-11-08.md
+- HOME_LAYOUT_FIX_2026-11-08.md
+- HOME_LAYOUT_FIX_2026-11-08_CROSS_AUDIT.md
+- PATCH41_DOCK_GLASS_ADOPTION_2026-11-07.md
+- UI_REFRESH_MASTER_VISUAL_REFERENCE_AUDIT_2026-11-06.md
+- UI_REFRESH_P0_BASELINE_2026-11-06.md
+- UI_REFRESH_P1_ACCEPTANCE_DISPOSITION_2026-11-06.md
+- UI_REFRESH_P1_FUNCTIONAL_INVENTORY_2026-11-06.md
+- UI_REFRESH_P2_SHARED_DESIGN_INTERACTION_CONTRACT_2026-11-06.md
+- UI_REFRESH_P3_V2_STATIC_INTERACTION_REAUDIT_2026-11-06.md
+- UI_REFRESH_P3_V3_BROWSER_WALKTHROUGH_PLAN_2026-11-06.md
+- UI_REFRESH_P3_V3_STATIC_QC_2026-11-06.md
+- UI_REFRESH_P3_V4_STATIC_QC_2026-11-06.md
+- UI_REFRESH_P3_VISUAL_PROTOTYPE_2026-11-06.md
+- UI_REFRESH_P4_IMPLEMENTATION_2026-11-06.md
+- UI_REFRESH_TRIGGER4_PROTOTYPE_VISUAL_VALIDATION_2026-11-06.md
+- UI_REFRESH_TRIGGER4_V5_STATIC_QC_2026-11-06.md
+- UI_REFRESH_G1_CHECKPOINT_2026-11-06.md
+- UI_REFRESH_G2_CHECKPOINT_2026-11-06.md
+- UI_REFRESH_G3A_CHECKPOINT_2026-11-07.md
+- UI_REFRESH_G3B_AUDIT_2026-11-07.md
+- UI_REFRESH_G3B_CHECKPOINT_2026-11-07.md
+- UI_REFRESH_G3C_CHECKPOINT_2026-11-07.md
+- UI_REFRESH_G3C_P1_CHECKPOINT_2026-11-07.md
+- UI_REFRESH_G3D_AUDIT_2026-11-07.md
+- UI_REFRESH_G3D_CHECKPOINT_2026-11-07.md
+- UI_REFRESH_G3E_AUDIT_2026-11-07.md
+- UI_REFRESH_G3E_CHECKPOINT_2026-11-07.md
+- UI_REFRESH_G3F_AUDIT_2026-11-07.md
+- UI_REFRESH_G3F_CHECKPOINT_2026-11-07.md
+- UI_REFRESH_G4_AUDIT_2026-11-07.md
+- UI_REFRESH_G4_CHECKPOINT_2026-11-07.md
+- UI_REFRESH_IMAGE2_BOTTOM_DOCK_CORRECTION_2026-11-07.md
+- UI_REFRESH_IMAGE2_HOME_LAYOUT_CHECKPOINT_2026-11-07.md
+
+### Feature audits and engineering evidence
+- APK_SIZE_AUDIT.md
+- AVATAR_AUDIT.md
+- B03_DIALOG_OPACITY_AUDIT.md
+- B06_FEEDBACK_AUDIT.md
+- B07_MENU_FOCUS_AUDIT.md
+- CROSS_PROJECT_WEATHER_AQI_AUDIT.md
+- E00_MASTER_INVENTORY_AND_DEPENDENCY_AUDIT.md
+- E02_E06_GIF_AVATAR_DOCK_AUDIT_2026-11-05.md
+- E02_PROFILE_AVATAR_LOCK_UI_AUDIT.md
+- E03_WALLPAPER_METADATA_AUDIT.md
+- E04_STANDBY_SCREENSAVER_AUDIT.md
+- E05_WIDGETS_INFORMATION_AUDIT.md
+- E08_WALLPAPER_SETTINGS_REDESIGN_AUDIT.md
+- F01_INTEGRATION_DEPENDENCY_AUDIT.md
+- F02_INTEGRATED_FUNCTIONAL_REGRESSION.md
+- F03_QR_COMMUNICATION_FEASIBILITY.md
+- F04_FEATURE_ISOLATION_AUDIT.md
+- F05_PERSISTENCE_RECOVERY_AUDIT.md
+- F06_LOCALIZATION_UI_AUDIT.md
+- F07_PERFORMANCE_STABILITY_AUDIT.md
+- GTVH-HOME-DAILY-AYAH-CACHE-STATUS-AND-LABEL-FIX-001-AUDIT.md
+- GTVH-HOME-DAILY-AYAH-OFFLINE-RETRY-BACKOFF-001-AUDIT.md
+- GTVH-HOME-ISLAMIC-SHELF-AND-PRAYER-STACK-CROSS-AUDIT-001.md
+- GTVH-HOME-ISLAMIC-SHELF-ARABIC-TYPOGRAPHY-001-AUDIT.md
+- GTVH-HOME-ISLAMIC-SHELF-SINGLE-ANCHOR-FIX-004-AUDIT.md
+- GTVH-HOME-ISLAMIC-SHELF-VERTICAL-POSITION-AND-GRID-ROW-SCROLL-FIX-002-AUDIT.md
+- GTVH-HOME-PRAYER-SOURCE-LABEL-TRANSPARENCY-001-AUDIT.md
+- GTVH-HOME-PRAYER-TIMES-REFRESH-AND-NEXT-SUBUH-FIX-001-AUDIT.md
+- GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-001-AUDIT.md
+- GTVH-HOME-SPACING-AND-CAPSULE-HEIGHT-REFINEMENT-002-AUDIT.md
+- GTVH-HOME-UI-PROPORTION-GLASS-AND-FOCUS-REFINEMENT-003-AUDIT.md
+- GTVH_HOME_DOCK_ISLAMIC_SHELF_NAVIGATION_REFINEMENT_001_AUDIT.md
+- GTVH_HOME_HEADER_REFINEMENT_001_AUDIT.md
+- GTVH_HOME_SCREEN_CROSS_AUDIT_001.md
+- GTVH_HOME_WALLPAPER_TEXT_REFINEMENT_001_AUDIT.md
+- PROFILE_AUDIT.md
+- WALLPAPER_AUDIT.md
+- UPSTREAM_FEATURE_ADOPTION_AUDIT_2026-11-05.md
+- UPSTREAM_FEATURE_ADOPTION_GIF_DOCK.md
+
+### Prototype directory
+- `prototypes/` — 6 entries currently listed: UI_REFRESH_G1_GLOBAL_UI_PROTOTYPE_V6.html, UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V1.html, UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V2.html, UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V3.html, UI_REFRESH_P3_INTERACTIVE_PROTOTYPE_V4.html, UI_REFRESH_TRIGGER4_VISUAL_PROTOTYPE_V5.html.
+
+**Catalog rule:** This list accounts for the project-management document set as it existed during this audit. New documents must be registered here and linked from the canonical checkpoint if they change current status or define a new workstream. Historical evidence must not be rewritten merely to make dates/statuses look current.
