@@ -2769,3 +2769,39 @@ Implemented Wi-Fi-only changes: compact anchored top-right dialog, pointer align
 **Remaining acceptance gates:** rendered visual inspection at 1920×1080; real Mi TV Stick Android 11 popup position/size/triangle/scrollbar verification; DPAD traversal, scroll-to-focused and focus restoration; actual Wi-Fi on/off state, scan/permission behavior and Android Settings handoff on device. No ADB, APK installation or physical device test was performed in this session.
 
 **Overall status: BUILD / UNIT-TEST CI PASS — VISUAL AND PHYSICAL RUNTIME ACCEPTANCE PENDING — BELUM FINAL.** PR #105 remains OPEN / DRAFT / UNMERGED. Do not merge or install before remaining acceptance evidence and explicit owner approval.
+
+
+## AUTHORITATIVE CHECKPOINT — GTVH-WIFI-POPUP-TYPOGRAPHY-REFINEMENT-001 — 9 NOVEMBER 2026
+
+**Active application workstream:** Wi-Fi popup only. PR [#105](https://github.com/Frangga11/glass-tv-home/pull/105) remains OPEN / DRAFT / UNMERGED. Source branch: `feature/wifi-popup-reference-001`. Exact current source HEAD: `4a4c472eb3d31008d9f0144471abe097db4beae5`. Base branch: `feature/global-frosted-silver-glass-001`, base SHA: `b14ba7a35659ea404b88a56175e706e458c8459f`.
+
+**User-approved visual requirements implemented in source:**
+- Pointer triangle's baseline stroke is omitted; diagonal edges are drawn as a continuous outline treatment to reduce the detached/overlay appearance.
+- Popup width is 19.76% of screen width, exactly 4% above the previous 19% width fraction. Height fraction increased from 39% to 43%, favoring vertical composition.
+- Network viewport increased from 88dp to 120dp.
+- “Jaringan di sekitar” heading and Android scan-state message are center-aligned.
+- Network row text and footer action text use a shared 14sp scale; SSIDs remain one line and ellipsize rather than wrap.
+- Connected network displays SSID on line one and connection status on line two, with the status reduced to 78% relative text size.
+- Network icon, SSID and lock icon share a centered horizontal row.
+- Footer settings label shortened to “Pengaturan Wi-Fi >”; rescan and settings footer labels are center-aligned and use 14sp.
+- Existing Frosted Silver-Cyan tokens, Android-owned scan/permission/status/settings handoff, DPAD focus graph and parent lifecycle are preserved.
+
+**Changed application PR files (6):**
+- `launcher/app/src/main/java/com/gathin/tvhome/WifiSettingsDialog.java`
+- `launcher/app/src/test/java/com/gathin/tvhome/WifiSettingsDialogTest.java`
+- `launcher/app/src/main/res/values/strings.xml`
+- `launcher/app/src/main/res/values-id/strings.xml`
+- `tests/test_quick_settings_contract.py`
+- `.github/workflows/ci.yml` (earlier artifact publishing allowlist correction for PR #105).
+
+**Validation evidence and limitations:**
+- CI run #1801 / run ID `42632211110` completed SUCCESS for earlier refinement HEAD `d0bf4829c1b1a0d89ee6725ae1b7eb509bfbfe2b`; both Lists/tools/docs and Launcher build/unit-test jobs passed, including release build and artifact upload.
+- After that successful run, the network viewport was increased to 120dp, resource label spacing was normalized, and a source comment was added. Current exact HEAD `4a4c472eb3d31008d9f0144471abe097db4beae5` has **no confirmed CI run yet**. Do not transfer the earlier PASS to the current HEAD.
+- No current-head APK artifact is available/verified.
+- Actual Mi TV Stick 1920×1080 visual and DPAD/runtime acceptance has not been performed. Pointer-to-top-border visual integration, typography legibility, actual Android scan/status behavior, scroll and focus traversal remain PENDING device evidence.
+
+**Scope audit:** no Home Screen, header, wallpaper, Weather/AQI, Hero Shelf, Islamic Shelf, dock/grid, profile/avatar, global settings, WeatherActivity, global tokens or unrelated data logic were changed. No ADB, APK installation, merge or retarget performed.
+
+**Disposition:** source refinement implemented; exact-current-HEAD CI pending; visual/runtime/device acceptance pending; overall **BELUM FINAL**. Keep PR #105 OPEN / DRAFT / UNMERGED.
+
+**Next action:** obtain CI evidence for exact HEAD `4a4c472eb3d31008d9f0144471abe097db4beae5`; if green, download and verify its APK artifact. Then install/test only when authorized, capture 1920×1080 screenshots/video, and review pointer integration, text proportions, SSID row alignment, footer size, vertical scroll and DPAD. Do not merge until owner acceptance.
