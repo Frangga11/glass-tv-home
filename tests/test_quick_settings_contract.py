@@ -15,7 +15,12 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 class QuickSettingsContractTest(unittest.TestCase):
     def test_dialog_uses_shared_modal_and_focus_contracts(self):
-        self.assertIn("TvDialogStyle.apply(dialog, activity, 560, 420)", DIALOG)
+        self.assertIn("TvDialogStyle.apply(dialog, activity, 560, 440)", DIALOG)
+        self.assertIn("GridLayout grid", DIALOG)
+        self.assertIn("grid.setColumnCount(2)", DIALOG)
+        self.assertIn("grid.setRowCount(5)", DIALOG)
+        self.assertIn(".setView(content)", DIALOG)
+        self.assertNotIn("ScrollView", DIALOG)
         self.assertIn("TvUiTokens.", DIALOG)
         self.assertIn("TvFocusIndicator.applyRoundedTextFocus", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
