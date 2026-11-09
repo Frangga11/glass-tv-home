@@ -14,4 +14,5 @@
     <color name="tv_ui_border">#FF9EABB8</color>
     <color name="tv_ui_selected_fill">#334C5C68</color>
     <color name="tv_ui_selected_border">#99DCE5ED</color>
+    <color name="tv_ui_focus_halo">#4000E5FF</color>
 </resources>
