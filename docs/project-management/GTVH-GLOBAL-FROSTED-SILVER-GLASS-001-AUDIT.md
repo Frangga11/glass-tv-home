@@ -314,3 +314,10 @@ Current PR tree inventory:
 - Five-state rendered review, end-to-end functional regression, live DPAD path, installer startup observation, GPU/performance profiling and physical Mi TV Stick acceptance remain PENDING / NOT RUN. Physical device use still requires explicit owner authorization.
 
 **Disposition:** Recent Apps normal-border source defect corrected and regression-guarded; CI pending at this checkpoint. Workstream remains **BELUM FINAL**. PR #104 remains OPEN / DRAFT / UNMERGED.
+
+
+### Section 15 addendum — Islamic Ayah regression coverage
+- Extended the existing XML contract to guard the Arabic Amiri Quran font and black shadow, plus the translation's near-white text, LTR direction, black shadow and two-line cap.
+- No additional UI/source change was made for Ayah; the checks codify the existing source configuration.
+- Test commit: `3f1d21b7be61e80c894c3f09346f10f6b5dcf8cc`.
+- This test-only update supersedes the earlier in-progress CI target for final automated validation; exact current PR HEAD must complete CI before a PASS claim.
