@@ -125,3 +125,9 @@ This policy was approved by the user on 1 November 2026 and applies to all subse
 No stage merge is required merely to mark that stage's development complete. Development completion, verification completion, grouped integration, final acceptance, and release are separate states. The final grouped merge is allowed only after all applicable gates pass. A green stage CI is necessary evidence, not permission to merge early.
 
 This v1.1 execution model supersedes the rolling-stage-merge instruction in v1.0 for B06 onward. The quality gates and risk-based bug audit method in v1.0 remain in force.
+
+## Current authority and reskin protection — 9 November 2026
+
+All current merge eligibility and acceptance status must be read from `GTVH-CHECKPOINT-LATEST.md`. A passing build/CI does not waive visual, functional, DPAD, performance, or device acceptance. PR #103 remains OPEN / DRAFT / UNMERGED; visual and physical device gates are pending. No merge or installation without explicit owner approval.
+
+For `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001`, apply RE-SKIN, NOT REWIRE. Preserve working behavior and prior approved component geometry. Require exact-scope diff review, shared-resource impact audit, regression evidence, and documented quality gates. Any unrelated defect or geometry change must be separated and explicitly approved.
