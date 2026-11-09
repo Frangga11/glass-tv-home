@@ -101,7 +101,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
                         "btnAssistant", "btnHome", "btnCandyBox", "btnSettings"):
             self.assertIn(f"R.id.{view_id}", header)
         self.assertIn("new GlassDrawable(pill", header)
-        self.assertIn("pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg))", header)
+        self.assertIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg))", header)
 
     def test_deferred_grid_focus_is_cancelled_by_newer_focus_destinations(self):
         dock_start = MAIN.index("public void onDockTileFocused(String key, View card)")
@@ -187,8 +187,8 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
 
     def test_clock_and_date_hierarchy_uses_compact_readable_sizes(self):
         root = ET.parse(LAYOUT).getroot()
-        expected = {"clock": "44sp", "ampm": "11sp", "date": "11sp",
-                    "shamsiDate": "11sp"}
+        expected = {"clock": "44sp", "ampm": "14sp", "date": "14sp",
+                    "shamsiDate": "14sp"}
         for view_id, size in expected.items():
             node = next((item for item in root.iter()
                          if item.get(ANDROID + "id") == f"@+id/{view_id}"), None)
