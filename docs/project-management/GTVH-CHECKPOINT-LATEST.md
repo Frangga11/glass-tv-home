@@ -1,3 +1,54 @@
+# AUTHORITATIVE CHECKPOINT — GTVH-HOME-LUXURY-REALISTIC-GLASS-FOCUS-001
+**Checkpoint date:** 10 November 2026 (WIB)  
+**Repository:** [Frangga11/glass-tv-home](https://github.com/Frangga11/glass-tv-home)  
+**Source PR:** [#110 — Luxury Realistic Glass Focus + Islamic Gold](https://github.com/Frangga11/glass-tv-home/pull/110)  
+**Source branch:** `feature/home-luxury-realistic-glass-focus-001`  
+**Exact source HEAD:** `6c44212e20841230638abf7c7ff8bdda032241be`  
+**Base branch / parent:** `fix/home-header-typography-focus-001` / PR #108 exact base HEAD `9b49f26180430dc63ef2ab8cf20bcba845e067ea`  
+**Disposition:** OPEN / DRAFT / UNMERGED — BELUM FINAL.
+
+## Owner-approved objective
+Apply an elegant, luxurious Realistic Frosted Glass refinement across Home header focus surfaces and the Islamic Shelf, retaining the existing Frosted Silver-Cyan identity. Restore/retain warm Islamic gold and black text shadow on the prayer timetable and Ayat Pilihan.
+
+## Implemented source changes
+- `GlassDrawable.java`: reduced the dark veil alpha to 0x70 so the cached wallpaper glass reads more clearly; glass remains fully rendered under DPAD focus instead of fading out as the Glider crosses the capsule.
+- `GlassRim.java`: enriched silver-cyan reflection and window-light glints.
+- `header_glass_pill_bg.xml`: strengthened neutral glass fallback and silver edge.
+- `header_nav_tab_bg.xml`: slightly stronger cyan focus glass.
+- `header_icon_tint.xml`: new state-aware silver-cyan icon tint (focused cyan; neutral silver at rest).
+- `activity_main.xml`: applied consistent tint to Beranda, Profil, Pengaturan, Wi-Fi, microphone, location and altitude icons; no IDs or layout dimensions changed.
+- `MainActivity.java`: added one background-only runtime glass surface behind the existing Islamic Shelf (prayer timetable + Ayat Pilihan); child geometry, content, RTL, and spacing are preserved.
+- Added `tests/test_home_luxury_glass_focus_contract.py` covering glass persistence, rim highlights, icon tint, Islamic Shelf glass, Islamic gold and black shadow.
+
+## Islamic palette protection
+The parent PR #108 already contains and this branch retains:
+- `ISLAMIC_GOLD = 0xFFFFC45A` (#FFFFC45A).
+- `ISLAMIC_TEXT_SHADOW = 0xCC000000` (#CC000000).
+- Gold for the next-prayer label/time and Ayat Pilihan Arabic; black shadow retained for prayer labels/times and Arabic preview.
+No prayer calculation, prayer data, Ayah content/cache, or translation behavior changed.
+
+## Strict exclusions
+RE-SKIN, NOT REWIRE. Preserve IDs, listeners, handlers, navigation order, DPAD graph, data providers, persistence, lifecycle, approved geometry, Arabic RTL, Weather/AQI logic, Weather V4 dashboard, and accepted Wi-Fi popup. No changes to wallpaper, Dock/Grid, Hero Shelf, WeatherActivity, or unrelated modules. No merge, ADB, TV installation, default-launcher change, or release publication.
+
+## Validation ledger
+| Gate | Status | Evidence |
+|---|---|---|
+| Source commits | COMPLETE | Exact HEAD `6c44212e20841230638abf7c7ff8bdda032241be` |
+| Changed-file scope | VERIFIED | 8 files |
+| Exact-head CI | IN PROGRESS | CI #1875 / run `42720524182` |
+| Release APK publication | SKIPPED | Run `42720524808`; not requested and not a release build |
+| 1920×1080 rendered visual review | PENDING | Must inspect real rendered output |
+| Live DPAD/focus acceptance | PENDING | Must inspect on Mi TV Stick |
+| Physical device acceptance | PENDING | No ADB/install authorized |
+| Merge/release | NOT AUTHORIZED | PR #110 remains Draft/unmerged |
+
+## Next action
+Wait for exact-head CI #1875 on `6c44212e20841230638abf7c7ff8bdda032241be`. If CI passes, retrieve and inspect the QA artifact, verify APK integrity/size/hash, and report the artifact. Do not claim visual or physical-device PASS based on source tests or CI. Then request owner-authorized Mi TV Stick review. Keep PR #110 Draft/unmerged until all acceptance gates and explicit owner approval.
+
+**Single restart instruction:** “Lanjutkan dari GTVH-CHECKPOINT-LATEST.md — GTVH-HOME-LUXURY-REALISTIC-GLASS-FOCUS-001.”
+
+---
+
 # GTVH-HOME-HEADER-TYPOGRAPHY-FOCUS-001 — SINGLE AUTHORITATIVE CHECKPOINT
 **Checkpoint date:** 10 November 2026 (WIB)  
 **Repository:** [Frangga11/glass-tv-home](https://github.com/Frangga11/glass-tv-home)  
