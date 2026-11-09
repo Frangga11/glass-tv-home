@@ -917,7 +917,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // The three tabs are transparent focus targets inside one shared capsule.
                 // Their selector paints only the active/focused segment; it is not a second glass pill.
                 pill.setBackgroundColor(android.graphics.Color.TRANSPARENT);
-                pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
+                pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg));
             } else {
                 pill.setBackground(new GlassDrawable(pill, 20f * density, density, glider));
             }
