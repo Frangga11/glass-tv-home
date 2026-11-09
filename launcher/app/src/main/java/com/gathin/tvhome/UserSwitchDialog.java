@@ -174,12 +174,6 @@ public final class UserSwitchDialog {
                     density, 14f, Color.TRANSPARENT, TvUiTokens.NAV_PROFILE_SELECTED,
                     TvUiTokens.SURFACE_FOCUSED, 0x00000000,
                     TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
-            itemCol.setOnFocusChangeListener((v, hasFocus) -> {
-                v.animate().cancel();
-                v.setScaleX(1.0f);
-                v.setScaleY(1.0f);
-            });
-
             itemCol.setOnClickListener(v -> {
                 SoundEffects.playSelect();
                 if (isActive) {
