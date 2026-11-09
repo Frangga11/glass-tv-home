@@ -58,6 +58,7 @@ final class WifiSettingsDialog {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final TextView status;
     private final TextView wifiToggle;
+    private String connectedSsid;
     private final LinearLayout networkRows;
     private final TextView scanState;
     private final TextView rescan;
@@ -154,7 +155,7 @@ final class WifiSettingsDialog {
         connectedSurface.setCornerRadius(dp(density, (int) TvUiTokens.CARD_RADIUS_DP));
         connectedSurface.setStroke(dp(density, 1), TvUiTokens.BORDER);
         status.setBackground(connectedSurface);
-        content.addView(status);
+        status.setVisibility(View.GONE);
 
         TextView networksHeading = text(R.string.wifi_available_networks, 14f, true, density);
         content.addView(networksHeading);
@@ -454,6 +455,7 @@ final class WifiSettingsDialog {
         } catch (RuntimeException ignored) { }
 
         if (!wifi) {
+            connectedSsid = null;
             status.setText(wifiEnabled() ? R.string.wifi_status_not_connected : R.string.wifi_status_off);
             wifiToggle.setText(wifiEnabled() ? "ON" : "OFF");
             return;
@@ -469,6 +471,7 @@ final class WifiSettingsDialog {
                 if (connectionInfo != null) ssid = cleanSsid(connectionInfo.getSSID());
             }
         } catch (RuntimeException ignored) { }
+        connectedSsid = ssid;
         status.setText(ssid == null
                 ? activity.getString(R.string.wifi_status_connected)
                 : activity.getString(R.string.wifi_status_connected_to, ssid));
@@ -507,28 +510,45 @@ final class WifiSettingsDialog {
             if (previous == null || result.level > previous.level) strongest.put(ssid, result);
         }
         List<ScanResult> sorted = new ArrayList<>(strongest.values());
-        sorted.sort(Comparator
-                .comparing((ScanResult item) -> !isConnectedNetwork(item.SSID))
-                .thenComparing(Comparator.comparingInt((ScanResult item) -> item.level).reversed()));
-        if (sorted.isEmpty() && !scanPending && canReadResults) {
+        sorted.sort(Comparator.comparingInt((ScanResult item) -> item.level).reversed());
+        boolean connectedAdded = false;
+        if (connectedSsid != null) {
+            ScanResult connectedResult = strongest.get(connectedSsid);
+            String connectedSecurity = connectedResult == null ? ""
+                    : securityLabel(connectedResult.capabilities);
+            String connectedLabel = "✓  " + connectedSsid + "  "
+                    + activity.getString(R.string.wifi_status_connected);
+            if (!connectedSecurity.isEmpty()
+                    && !connectedSecurity.equals(activity.getString(R.string.wifi_security_open))) {
+                connectedLabel += "  🔒";
+            }
+            TextView connectedRow = action(connectedLabel, "wifi_network:" + connectedSsid,
+                    activity.getResources().getDisplayMetrics().density,
+                    () -> dismissThen(openSystemWifiSettings));
+            connectedRow.setBackground(TvDialogStyle.createDialogSurface(activity));
+            networkRows.addView(connectedRow);
+            connectedAdded = true;
+        }
+        if (sorted.isEmpty() && !scanPending && canReadResults && !connectedAdded) {
             TextView empty = text(R.string.wifi_scan_empty, TvUiTokens.CARD_SUBTITLE_SP, false,
                     activity.getResources().getDisplayMetrics().density);
             networkRows.addView(empty);
         } else if (!sorted.isEmpty()) {
-            int count = Math.min(sorted.size(), 12);
-            for (int i = 0; i < count; i++) {
+            int added = connectedAdded ? 1 : 0;
+            for (int i = 0; i < sorted.size() && added < 12; i++) {
                 ScanResult result = sorted.get(i);
+                if (connectedSsid != null && connectedSsid.equals(cleanSsid(result.SSID))) continue;
                 String security = securityLabel(result.capabilities);
                 String label = activity.getString(R.string.wifi_network_row, result.SSID, security,
                         signalLabel(result.level));
-                boolean connected = isConnectedNetwork(result.SSID);
-                label = (connected ? "✓  " : "⌁  ") + label
+                label = "⌁  " + label
                         + (security.equals(activity.getString(R.string.wifi_security_open)) ? "" : "  🔒");
                 TextView row = action(label, "wifi_network:" + result.SSID,
                         activity.getResources().getDisplayMetrics().density,
                         () -> dismissThen(openSystemWifiSettings));
                 networkRows.addView(row);
                 focusOrder.add(row);
+                added++;
             }
         }
         connectFocusOrder();
@@ -553,8 +573,7 @@ final class WifiSettingsDialog {
     }
 
     private boolean isConnectedNetwork(String ssid) {
-        CharSequence current = status.getText();
-        return current != null && ssid != null && current.toString().contains(ssid);
+        return connectedSsid != null && connectedSsid.equals(ssid);
     }
 
     private String securityLabel(String capabilities) {
