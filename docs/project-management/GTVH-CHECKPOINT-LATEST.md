@@ -1,3 +1,28 @@
+<!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026 — GLOBAL FROSTED SILVER GLASS. Supersedes older current-status blocks below; historical records retained. -->
+## CURRENT AUTHORITATIVE PROJECT SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
+**Single source of truth:** this checkpoint on `docs/project-master-inventory`. The five supporting records are synchronized in this same pass.
+
+**Active PR:** [#104](https://github.com/Frangga11/glass-tv-home/pull/104) OPEN / DRAFT / UNMERGED. Branch `feature/global-frosted-silver-glass-001`; current exact HEAD `e6712777ca3ecd5c3e1714c5e2725aa9c5cddc3e`; base PR #103 branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`, exact base SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`; 69 commits, 50 changed files. The only commit after CI-validated source HEAD `03408e7585e1cacd3fe32727502bca61752c5438` updates the audit markdown; application source is unchanged.
+
+**Exact-head source CI:** [run #1703](https://github.com/Frangga11/glass-tv-home/actions/runs/42600150812) SUCCESS on source HEAD `03408e7`. Python regression: 223 passed, 1 skipped. Android unit tests and release build: BUILD SUCCESSFUL.
+
+**APK artifact:** 1,627,069 bytes (1,588 KB), SHA256 `e146f9e80c333acbb72c34bb64f96b2be385583e60400239ab04b5c6f5474671`. Artifact ID `13664798205`; artifact ZIP SHA256 `34da6ef190bde1aa7a49c3bc7eb564e969d0107c6e8f4e514b957486784f3a2e`. Size delta vs parent PR #103's 1,626,637 bytes: +432 bytes (~0.03%). APK is archived for later acceptance; **do not install/test on TV until G1 audit and G4 implementation are complete and owner authorizes it.**
+
+**Protected parent:** PR #103 remains OPEN / DRAFT / UNMERGED at HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`, base PR #101 HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`. Preserve its RTL, Ayah spacing, prayer and cumulative Home corrections.
+
+**Progress:** G1 inventory counts and major surface map established; full stale-resource/source sweep remains in progress. G2 shared silver/cyan tokens implemented. G3 initial Home/dock, popup and focus prototype implementation exists in source; rendered visual validation pending. G4 global implementation is partial. G5 integration, G6 full QA and G7 final acceptance remain open.
+
+**Baseline inventory at PR #103:** 17 app layout XML, 121 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files, 35 Python regression-test files. Counts are files, not unique glass components.
+
+**Implemented initial pass:** synchronized Java/XML palette; neutral silver/cyan GlassRim; Electric Cyan outline in Glider and GlassView; focus scale neutralized while preserving 1.07 AppAdapter layout reservation; selected state separated from focus; shared Home, dock, popup, location, weather, prayer, media, recent-app, installer and dynamic settings surfaces; regression contracts; CI artifact allowlist. Detailed evidence: `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on PR #104.
+
+**Quality gates:** Source Audit PARTIAL / IN PROGRESS; Design System IN PROGRESS; Build & CI PASS on exact source HEAD #1703; Functional QA NOT RUN; Visual QA NOT RUN; DPAD runtime QA NOT RUN; Performance runtime QA NOT RUN; Device Acceptance PENDING. No unverified PASS claims.
+
+**Next:** complete remaining source/resource inventory; validate rendered 1920×1080 prototypes on bright, dark and mixed wallpapers; run functional, DPAD, typography and performance regression; only then obtain physical Mi TV Stick acceptance. Keep PR #104 Draft and unmerged until all gates and explicit owner approval.
+
+---
+
 <!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS. Supersedes every older current-status block below; history retained. -->
 ## CURRENT AUTHORITATIVE PROJECT SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
 
