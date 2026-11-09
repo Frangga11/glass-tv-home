@@ -401,7 +401,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         weather_update_start = MAIN.index("private void updateWeatherAqi()")
         weather_update_end = MAIN.index("private void updateHomeWeather()", weather_update_start)
         weather_update = MAIN[weather_update_start:weather_update_end]
-        self.assertIn("weatherAirQualityView.setText(WeatherAirQuality.getFormatted(this));", weather_update)
+        self.assertIn("weatherAirQualityView.setText(WeatherAirQuality.getHomeFormatted(this));", weather_update)
         self.assertNotIn("setLayoutParams", weather_update)
 
 
