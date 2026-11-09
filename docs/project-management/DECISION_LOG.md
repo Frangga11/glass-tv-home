@@ -1,3 +1,24 @@
+<!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
+## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
+
+**Single source of truth:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. Every session starts there. This file alone governs current status, active workstream, dependency order, decisions, quality gates, and next action. Supporting documents provide detailed evidence/history and must not create competing restart points.
+
+**Current source candidate:** PR [#103](https://github.com/Frangga11/glass-tv-home/pull/103), `GTVH-HOME-WALLPAPER-PRAYER-ZERO-GAP-ARABIC-RTL-FIX-103`; OPEN / DRAFT / UNMERGED. Branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`; exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`; base PR #101 at `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`; 7 commits ahead / 0 behind; 5 changed files (2 production, 3 regression tests).
+
+**Latest verified automation:** exact-head CI #1689 / run [42566072365](https://github.com/Frangga11/glass-tv-home/actions/runs/42566072365) SUCCESS; both required jobs passed; Gradle release build successful. APK size 1,626,637 bytes; 53,773 bytes above historical 1.5 MiB reference, diagnostic/non-blocking. No PR artifact ZIP was published for this Draft run.
+
+**Remaining gates:** genuine rendered 1920×1080 visual review and physical Mi TV Stick acceptance are NOT RUN / PENDING. No ADB, installation, launcher-setting change, or merge. Overall PR #103 is NOT FINAL. Do not claim visual/device acceptance.
+
+**Cumulative base:** PR #101 branch `integration/home-islamic-prayer-spacing-cumulative-101`, base HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`, remains unmerged. PR #103 is a corrective child candidate; do not flatten, retarget, merge, or alter its ancestry without an explicit reconciliation and owner approval.
+
+**Newly approved future workstream:** `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001` — global visual reskin using Frosted Silver Glass + Electric Cyan DPAD Focus. Scope includes Home Screen, dock, Beranda–Profil–Pengaturan navigation, Wi-Fi/microphone, location/altitude, weather/AQI, popups/dialogs, settings/profile, prayer schedule, selected Ayah, Arabic and translation, and all other audited glass surfaces. Design/prompt approved by owner; implementation has NOT started; no branch, PR, source modification, prototype, or QA result is claimed.
+
+**Global execution constraints:** RE-SKIN, NOT REWIRE. Preserve working IDs, listeners, events, data logic, navigation, DPAD behavior, wallpaper logic, component geometry, and prior approved work. Only change geometry where an audited, evidenced requirement is approved. Prioritize function, readability, stability, and device performance over decorative effects. Do not merge or install without the required evidence and explicit owner approval.
+
+**Document roles:** CHECKPOINT = sole status/restart authority; MASTER_PROJECT = scope/architecture/roadmap; INVENTORY = files/components/branches/PR/dependencies; DECISION_LOG = approved decisions and constraints; AUDIT_REGISTER = evidence, findings, quality gates; HANDOVER = exact resume instructions. Update all six in the same documentation synchronization pass. Keep chronology; mark superseded statements rather than deleting history.
+
+---
+
 > **CANONICAL CHECKPOINT — READ THIS FIRST**  
 > The only authoritative restart point is [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) on branch `docs/project-master-inventory`. Start every continuation there; do not resume from historical checkpoint blocks, old PR descriptions, or branch-local notes. This file is supporting detail/history and must not establish a competing current state.  
 > **Checkpoint authority:** GitHub repository `Frangga11/glass-tv-home`; canonical docs branch `docs/project-master-inventory`; single entry file `docs/project-management/GTVH-CHECKPOINT-LATEST.md`. The latest checkpoint supersedes all older status statements below.  
@@ -726,3 +747,17 @@ Implementation is isolated in PR #97, base PR #83 exact HEAD `947f33cf7181bb06c7
 - APK size diagnostic is a non-blocking warning: 1,626,525 bytes, 53,661 above historical 1.5 MiB threshold, but +1,312 bytes (+0.081%) against PR #83 baseline.
 - No install, ADB, default-launcher mutation, PR merge or source PR closure. PR #101 remains OPEN / DRAFT / UNMERGED.
 - Gate remaining: real 1920×1080 rendered visual audit; then owner-authorized Mi TV Stick acceptance. Final merge requires explicit owner approval.
+
+## Approved design and governance decision — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — 9 November 2026
+
+**Decision:** Owner approves the unified Frosted Silver Glass visual identity with Electric Cyan DPAD focus for the entire Glass TV Home glass ecosystem.
+
+**Scope:** Home Screen, dock, Beranda–Profil–Pengaturan navigation, Wi-Fi/microphone, location/altitude, weather/AQI, popups/dialogs, settings/profile, prayer schedule, selected Ayah, Arabic/translation, and all other glass components identified by source inventory.
+
+**Design rules:** Cool/Frosted Silver material; controlled transparency and blur; subtle silver border/highlight/shadow; adaptive readability across light/dark wallpaper and room conditions; consistent geometry by component category; Electric Cyan focus with distinct Normal/Focused/Selected/Pressed/Disabled states; restrained transitions; rendering optimized for Mi TV Stick Android 11.
+
+**Non-negotiable constraints:** RE-SKIN, NOT REWIRE. Preserve functioning IDs, listeners, handlers, data logic, navigation, DPAD lifecycle, wallpaper behavior, and approved geometry. No broad layout changes, dependency additions, or unrelated fixes without evidence and explicit approval. If visual effects conflict with readability, performance, stability, or existing function, prioritize the latter.
+
+**Execution order:** repository/dependency audit → component inventory and baseline → design tokens → representative prototype → owner review → staged global reskin → shared-resource reconciliation → regression/visual/DPAD/performance QA → checkpoint. No implementation is yet authorized as completed; design approval only. Keep PRs Draft until evidence gates and explicit owner approval.
+
+**Precedence:** This decision supplements but does not supersede earlier locked component-specific decisions (including existing Home geometry, typography, wallpaper, Islamic content, profile/security, and DPAD rules). Where conflict is detected, stop and record it; do not silently override the older approved behavior.
