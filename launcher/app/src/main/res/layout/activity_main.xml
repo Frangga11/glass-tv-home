@@ -524,7 +524,6 @@
                     <!-- Shamsi date ("27 Mehr 1405"), shown when shamsi_date is on. -->
                     <TextView
                         android:id="@+id/shamsiDate"
-                    android:fontVariationSettings="'wght' 600"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -533,7 +532,7 @@
                         android:textColor="#E6FFFFFF"
                         android:textSize="14sp"
                         android:fontFamily="@font/inter"
-                        android:fontVariationSettings="'wght' 500"
+                        android:fontVariationSettings="'wght' 600"
                         android:letterSpacing="0.02"
                         android:includeFontPadding="false"
                         android:visibility="gone" />
