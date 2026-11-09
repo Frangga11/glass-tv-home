@@ -4,7 +4,8 @@
         <item name="colorPrimary">#E2E8EE</item>
         <item name="colorPrimaryDark">#2C333B</item>
         <item name="colorAccent">#00E5FF</item>
-        <item name="android:windowBackground">#0C0E14</item>
+        <!-- Match the first content frame to avoid a dark startup window behind the app root. -->
+        <item name="android:windowBackground">#2C333B</item>
         <item name="android:statusBarColor">#0C0E14</item>
         <item name="android:navigationBarColor">#0C0E14</item>
         <item name="android:textColor">#FFFFFF</item>
