@@ -317,3 +317,20 @@ The latest exact-HEAD CI run is `42625652808` and remains RUNNING / PENDING at t
 No additional production modules are in scope. Application PR #105 still has only the Wi-Fi dialog implementation, its direct unit test, and the direct Wi-Fi route source contract. No Home Screen, header, wallpaper, Weather/AQI, shelf, dock/grid, profile/avatar, global settings, WeatherActivity or shared global token changes. No ADB, APK install, device test or merge.
 
 Overall status remains **BELUM FINAL — exact-HEAD CI pending; visual/runtime acceptance not performed**.
+
+
+## Wi-Fi popup checkpoint — pointer and dim contract refinement — 9 November 2026
+
+Application PR #105 current source HEAD: `4fd825cebfe2a17ec7cc55882be13e96bdf13249` on `feature/wifi-popup-reference-001`; base `feature/global-frosted-silver-glass-001` at `b14ba7a35659ea404b88a56175e706e458c8459f`.
+
+Additional isolated corrections:
+- Pointer triangle center now accounts for the popup content's 12dp horizontal insets, keeping its tip aligned to the actual `btnWifi` anchor.
+- Absolute TOP|RIGHT gravity is centralized in `anchoredWindowGravity()`.
+- Restrained backdrop dim is centralized in `popupDimAmount()` (0.08).
+- Robolectric's Dialog `Window.getAttributes()` did not reliably expose the post-show gravity/dim mutations. Tests now validate the explicit policy helpers and separately validate the bounded 88dp scroll viewport/scrollbar; the Python source contract verifies the actual Window LayoutParams assignments. This adaptation is not visual acceptance evidence.
+
+**CI:** prior exact-HEAD run `42625652808` failed at the Robolectric dim-attribute assertion (test line 33); Java compilation succeeded. The latest current-HEAD CI run `42626329175` is QUEUED at checkpoint time. A preceding superseded run `42626075252` was still IN PROGRESS when checked. Do not infer PASS until a completed CI run for exact HEAD `4fd825cebfe2a17ec7cc55882be13e96bdf13249` reports success.
+
+PR diff remains restricted to `WifiSettingsDialog.java`, `WifiSettingsDialogTest.java`, and `tests/test_quick_settings_contract.py`. No unrelated production module, Home Screen component, global token, data logic or other workstream was modified. No ADB, APK installation, Mi TV Stick runtime QA or merge.
+
+**Status: BELUM FINAL — exact-HEAD CI queued; visual/runtime acceptance pending.** PR #105 OPEN / DRAFT / UNMERGED.
