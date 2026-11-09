@@ -4,6 +4,22 @@
 | ID | Decision | Status |
 |---|---|---|
 | D-010 | Global material identity is neutral Frosted Silver Glass with restrained Electric Cyan reflection. | APPROVED |
+| D-011 | Electric Cyan outline is DPAD focus; persistent selected/active state uses distinct silver treatment. | APPROVED |
+| D-012 | DPAD focus must not resize, scale, translate or reposition controls. Preserve historical layout reservation and all focus/navigation logic. | APPROVED |
+| D-013 | Keep cached wallpaper blur; do not add live blur or dependencies for Android 11. | APPROVED |
+| D-014 | Re-skin shared resources and dynamic UI surfaces only; preserve IDs, listeners, actions, data, persistence, navigation, Arabic shaping/RTL, wallpaper and correct geometry. | APPROVED |
+| D-015 | Protect PR #103 ancestry by basing PR #104 on its exact HEAD; keep Draft and unmerged until all QA and owner approval. | APPROVED |
+
+CI #1703 passed on source HEAD 03408e7 (223 Python tests passed, 1 skipped; Android unit tests and release build successful). Current PR HEAD e6712777 is a documentation-only audit update. APK size 1,627,069 bytes. Do not treat automated CI as visual, functional, performance or device acceptance.
+
+---
+
+<!-- CURRENT AUTHORITATIVE DECISION UPDATE — 9 NOVEMBER 2026. Supersedes conflicting earlier current decisions below. -->
+## Approved decisions — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
+| ID | Decision | Status |
+|---|---|---|
+| D-010 | Global material identity is neutral Frosted Silver Glass with restrained Electric Cyan reflection. | APPROVED |
 | D-011 | Electric Cyan outline is the DPAD focused state; persistent selected/active state uses a distinct silver treatment. | APPROVED |
 | D-012 | DPAD focus must not resize, scale, translate or reposition controls. Remove visual focus zoom while preserving historical layout reservation and all focus/navigation logic. | APPROVED |
 | D-013 | Keep existing cached wallpaper blur; do not add live blur or dependencies for Android 11. | APPROVED |
