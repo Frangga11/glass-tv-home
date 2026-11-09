@@ -307,6 +307,15 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
                 ET.parse(RES / "drawable" / name)
 
 
+    def test_recent_apps_ram_pill_preserves_original_content_insets(self):
+        ns = "{http://schemas.android.com/apk/res/android}"
+        ram = ET.parse(RES / "drawable/bg_ram_pill.xml").getroot()
+        padding = ram.find("padding")
+        self.assertEqual(padding.attrib[ns + "left"], "20dp")
+        self.assertEqual(padding.attrib[ns + "top"], "9dp")
+        self.assertEqual(padding.attrib[ns + "right"], "20dp")
+        self.assertEqual(padding.attrib[ns + "bottom"], "9dp")
+
     def test_dock_breathing_rim_uses_shared_electric_cyan_token(self):
         source = (JAVA / "DockBreathingBorderView.java").read_text(encoding="utf-8")
         self.assertGreaterEqual(source.count("TvUiTokens.ACCENT_CYAN"), 2)
