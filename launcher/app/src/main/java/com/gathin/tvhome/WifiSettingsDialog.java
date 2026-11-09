@@ -147,7 +147,8 @@ final class WifiSettingsDialog {
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         wifiToggle = action("ON", "wifi_toggle", density, () -> dismissThen(openSystemWifiSettings));
-        wifiToggle.setMinHeight(dp(density, 40));
+        wifiToggle.setMinHeight(dp(density, 35));
+        wifiToggle.setGravity(Gravity.CENTER);
         header.addView(wifiToggle, new LinearLayout.LayoutParams(dp(density, 48), ViewGroup.LayoutParams.WRAP_CONTENT));
         content.addView(header);
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
@@ -207,11 +208,11 @@ final class WifiSettingsDialog {
         actions.setOrientation(LinearLayout.VERTICAL);
         actions.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams actionWidth = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 40));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 35));
         actionWidth.bottomMargin = dp(density, 4);
         rescan.setLayoutParams(actionWidth);
         LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 40));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 35));
         androidSettings.setLayoutParams(settingsWidth);
         actions.addView(rescan);
         actions.addView(androidSettings);
@@ -256,7 +257,8 @@ final class WifiSettingsDialog {
         int screenWidth = activity.getResources().getDisplayMetrics().widthPixels;
         int screenHeight = activity.getResources().getDisplayMetrics().heightPixels;
         int popupWidth = Math.round(screenWidth * popupWidthFraction());
-        int popupHeight = Math.round(screenHeight * popupHeightFraction());
+        int popupHeight = Math.round(screenHeight * popupHeightFraction())
+                - dp(activity.getResources().getDisplayMetrics().density, popupHeightReductionDp());
         int popupLeft = Math.max(8, screenWidth - popupWidth - 8);
         int popupTop = 8;
         int contentInset = dp(activity.getResources().getDisplayMetrics().density, 12);
@@ -303,7 +305,8 @@ final class WifiSettingsDialog {
     static float popupMetaSizeSp() { return 11f; }
     static float popupFooterSizeSp() { return 13f; }
     static int visibleNetworkRowCount() { return 4; }
-    static int networkRowHeightDp() { return 40; }
+    static int popupHeightReductionDp() { return 35; }
+    static int networkRowHeightDp() { return 35; }
     static int networkRowGapDp() { return 4; }
 
     static int anchoredWindowGravity() {
