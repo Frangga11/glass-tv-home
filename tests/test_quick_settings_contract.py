@@ -59,7 +59,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertNotIn('label = "⌁  " + label', wifi_dialog)
         for resource in ("values/strings.xml", "values-id/strings.xml"):
             content = (RES / resource).read_text(encoding="utf-8")
-            self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi  &gt;', content)
+            self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi &gt;', content)
 
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
