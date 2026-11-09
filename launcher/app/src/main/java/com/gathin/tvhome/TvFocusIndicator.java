@@ -20,6 +20,52 @@ import android.widget.TextView;
 final class TvFocusIndicator {
     private TvFocusIndicator() { }
 
+    static StateListDrawable createRoundedStateBackground(float density, float radiusDp,
+            int normalFill, int focusedFill, int normalStroke, int focusedStroke) {
+        return createStateBackground(density, radiusDp, GradientDrawable.RECTANGLE,
+                normalFill, focusedFill, normalStroke, focusedStroke);
+    }
+
+    static StateListDrawable createOvalStateBackground(float density, float normalFill,
+            int focusedFill, int normalStroke, int focusedStroke) {
+        return createStateBackground(density, 0f, GradientDrawable.OVAL,
+                normalFill, focusedFill, normalStroke, focusedStroke);
+    }
+
+    private static StateListDrawable createStateBackground(float density, float radiusDp, int shape,
+            int normalFill, int focusedFill, int normalStroke, int focusedStroke) {
+        StateListDrawable states = new StateListDrawable();
+        GradientDrawable disabled = new GradientDrawable();
+        disabled.setShape(shape);
+        if (shape == GradientDrawable.RECTANGLE) disabled.setCornerRadius(radiusDp * density);
+        disabled.setColor(TvUiTokens.DISABLED_SURFACE);
+        disabled.setStroke(Math.max(1, Math.round(density)), TvUiTokens.DISABLED_BORDER);
+
+        GradientDrawable pressed = new GradientDrawable();
+        pressed.setShape(shape);
+        if (shape == GradientDrawable.RECTANGLE) pressed.setCornerRadius(radiusDp * density);
+        pressed.setColor(TvUiTokens.SURFACE_SELECTED);
+        pressed.setStroke(Math.max(1, Math.round(density)), TvUiTokens.FOCUS_BORDER);
+
+        GradientDrawable focused = new GradientDrawable();
+        focused.setShape(shape);
+        if (shape == GradientDrawable.RECTANGLE) focused.setCornerRadius(radiusDp * density);
+        focused.setColor(focusedFill);
+        focused.setStroke(Math.max(1, Math.round(2f * density)), focusedStroke);
+
+        GradientDrawable normal = new GradientDrawable();
+        normal.setShape(shape);
+        if (shape == GradientDrawable.RECTANGLE) normal.setCornerRadius(radiusDp * density);
+        normal.setColor(normalFill);
+        normal.setStroke(Math.max(1, Math.round(density)), normalStroke);
+
+        states.addState(new int[]{-android.R.attr.state_enabled}, disabled);
+        states.addState(new int[]{android.R.attr.state_pressed}, pressed);
+        states.addState(new int[]{android.R.attr.state_focused}, focused);
+        states.addState(new int[]{}, normal);
+        return states;
+    }
+
     static View attachAvatarFocusRing(FrameLayout frame, int frameSizePx, float density) {
         if (frame == null) return null;
 
