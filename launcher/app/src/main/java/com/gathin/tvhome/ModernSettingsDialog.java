@@ -448,7 +448,7 @@ public final class ModernSettingsDialog {
                 updateSidebarSelection.run();
                 if (renderRightPane[0] != null) renderRightPane[0].run();
             }
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+
         });
 
         profileCard.setOnKeyListener((v, keyCode, event) -> {
@@ -519,7 +519,7 @@ public final class ModernSettingsDialog {
                     updateSidebarSelection.run();
                     if (renderRightPane[0] != null) renderRightPane[0].run();
                 }
-                v.animate().scaleX(hasFocus ? TvUiTokens.NAV_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.NAV_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+    
             });
 
             row.setOnKeyListener((v, keyCode, event) -> {
@@ -954,12 +954,6 @@ public final class ModernSettingsDialog {
                             density, 12f, TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_SELECTED,
                             TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
                             TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
-                    pRow.setOnFocusChangeListener((v, hasFocus) -> {
-                        v.animate().cancel();
-                        v.setScaleX(1.0f);
-                        v.setScaleY(1.0f);
-                    });
-
                     pRow.setOnKeyListener((v, keyCode, event) -> {
                         if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                             if (sDpadLeftTarget != null) {
