@@ -40,7 +40,10 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("WifiSettingsDialog.show(this", MAIN)
         self.assertIn("returnToParent", MAIN)
         self.assertIn("returnToParent.run()", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
-        self.assertIn("applyAnchoredPopup();", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
+        wifi_dialog = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("applyAnchoredPopup();", wifi_dialog)
+        self.assertIn("params.gravity = anchoredWindowGravity();", wifi_dialog)
+        self.assertIn("return Gravity.TOP | Gravity.RIGHT;", wifi_dialog)
 
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
