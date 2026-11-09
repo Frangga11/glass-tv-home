@@ -1,3 +1,18 @@
+<!-- CURRENT AUTHORITATIVE WORKSTREAM UPDATE — 9 NOVEMBER 2026. Supersedes older current-status statements below; history retained. -->
+## Global Visual Workstream — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
+Owner-approved identity: **Frosted Silver Glass + Electric Cyan DPAD Focus**. Stages: G1 Repository/Baseline Audit → G2 Design System → G3 Prototype → G4 Global Implementation → G5 Integration → G6 Regression/QA → G7 Final Checkpoint.
+
+Current candidate PR #104 OPEN / DRAFT / UNMERGED, branch `feature/global-frosted-silver-glass-001`, exact HEAD `03408e7585e1cacd3fe32727502bca61752c5438`, based directly on PR #103 exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`. The last source-code validation was exact source HEAD `7535a311`; subsequent `03408e7` adds only audit documentation. CI #1702 passed on the source head; CI #1703 for the docs-only head is in progress.
+
+Initial CI evidence: 223 Python tests passed (1 skipped), Android unit tests and release build successful. APK size 1,627,069 bytes; SHA256 `e5e5dfbcff4a2944c4bc8d3be38deb27743b1b358b542bf82a6a0effab530054`. No device test has been performed.
+
+Design rules: neutral cool silver material; soft white highlights; restrained cyan reflection; no violet/gold iridescence. Electric Cyan outline is DPAD focus; persistent selected/active remains a distinct silver state. Normal, focused, selected, pressed and disabled are distinct. Focus must not scale, resize, translate or reposition controls. Preserve AppAdapter's 1.07 layout reservation while visual focus scale is 1.0. Reuse cached wallpaper blur; no live blur or new dependency on Android 11. Preserve IDs, listeners, actions, data/persistence, navigation, wallpaper, focus graph, Arabic shaping/RTL and physical right alignment.
+
+G1 full source sweep and G4 global coverage remain in progress. Functional, visual, runtime DPAD, performance and physical device acceptance remain pending. The only authoritative restart point is `GTVH-CHECKPOINT-LATEST.md`.
+
+---
+
 <!-- CURRENT AUTHORITATIVE WORKSTREAM UPDATE — 9 NOVEMBER 2026, 17:01 WIB. Supersedes older current-status statements below; history retained. -->
 ## Global Visual Workstream — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
 
