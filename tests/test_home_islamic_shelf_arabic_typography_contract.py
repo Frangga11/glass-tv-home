@@ -18,10 +18,10 @@ class HomeIslamicShelfArabicTypographyContract(unittest.TestCase):
             for node in cls.root.iter("TextView")
         }
 
-    def test_arabic_text_uses_global_silver_primary(self):
+    def test_arabic_text_uses_protected_islamic_gold(self):
         arabic = self.views["ayahArabic"]
         color = arabic.attrib["{http://schemas.android.com/apk/res/android}textColor"]
-        self.assertEqual(color, "@color/tv_ui_text_primary")
+        self.assertEqual(color, "@color/tv_ui_islamic_gold")
 
     def test_arabic_two_line_spacing_is_tight_but_not_collapsed(self):
         arabic = self.views["ayahArabic"]
@@ -65,8 +65,8 @@ class HomeIslamicShelfArabicTypographyContract(unittest.TestCase):
         arabic_start = self.source.index('android:id="@+id/ayahArabic"')
         translation_start = self.source.index('android:id="@+id/ayahText"', arabic_start)
         arabic_block = self.source[arabic_start:translation_start]
-        self.assertIn('android:textColor="@color/tv_ui_text_primary"', arabic_block)
-        self.assertNotIn('android:textColor="@color/tv_ui_text_primary"', self.source[translation_start:])
+        self.assertIn('android:textColor="@color/tv_ui_islamic_gold"', arabic_block)
+        self.assertNotIn('android:textColor="@color/tv_ui_islamic_gold"', self.source[translation_start:])
 
 
 if __name__ == "__main__":
