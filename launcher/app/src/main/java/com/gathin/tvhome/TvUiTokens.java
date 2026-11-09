@@ -25,6 +25,9 @@ final class TvUiTokens {
     static final int ACCENT_SECTION = 0xFFD6E0E8;
     static final int ACCENT_BLUE = 0xFF4CA9C4;
     static final int ACCENT_CYAN = 0xFF00E5FF;
+    // Warm Islamic accent is intentionally independent from the global silver/cyan theme.
+    static final int ISLAMIC_GOLD = 0xFFFFC45A;
+    static final int ISLAMIC_TEXT_SHADOW = 0xCC000000;
     static final int FOCUS_BORDER = ACCENT_CYAN;
     static final int FOCUS_HALO = 0x4000E5FF;
     static final int GLASS_VEIL_COLOR = 0x88343E48;
