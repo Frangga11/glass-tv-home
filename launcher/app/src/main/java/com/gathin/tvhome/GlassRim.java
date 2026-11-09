@@ -37,7 +37,7 @@ final class GlassRim {
         // Neutral silver edge: white highlight, cool silver body, restrained cyan reflection.
         int cWhiteGlint = modulateAlpha(0xFFFFFFFF, alphaFactor);
         int cSilverSheen = modulateAlpha(0xD9E2E8EE, alphaFactor);
-        int cCyanReflection = modulateAlpha(0x8050DDF2, alphaFactor);
+        int cCyanReflection = modulateAlpha(0xA650DDF2, alphaFactor);
         int cClearWaist = modulateAlpha(faint != 0 ? faint : 0x22FFFFFF, alphaFactor);
         int cSilverBounce = modulateAlpha(0x667D8D9B, alphaFactor);
         int cCoolSilver = modulateAlpha(0x80DCE5ED, alphaFactor);
@@ -75,8 +75,8 @@ final class GlassRim {
         int[] wlColors = new int[]{
                 0x00FFFFFF,
                 0x00FFFFFF,
-                0xBFFFFFFF,
-                0x5567E8F9,
+                0xD9FFFFFF,
+                0x8067E8F9,
                 0x00FFFFFF,
                 0x00FFFFFF
         };
