@@ -1,3 +1,19 @@
+<!-- CURRENT AUTHORITATIVE DECISION UPDATE — 9 NOVEMBER 2026, 17:01 WIB. Supersedes any conflicting earlier current decision below. -->
+## Approved decisions — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
+| ID | Decision | Status |
+|---|---|---|
+| D-010 | Global material identity is neutral Frosted Silver Glass with restrained Electric Cyan reflection. | APPROVED |
+| D-011 | Electric Cyan outline is the DPAD focused state; persistent selected/active state uses a distinct silver treatment. | APPROVED |
+| D-012 | DPAD focus must not resize, scale, translate or reposition controls. Remove visual focus zoom while preserving historical layout reservation and all focus/navigation logic. | APPROVED |
+| D-013 | Keep existing cached wallpaper blur; do not add live blur or dependencies for Android 11. | APPROVED |
+| D-014 | Re-skin shared resources and dynamic UI surfaces only; preserve IDs, listeners, events, actions, data, persistence, navigation, Arabic shaping/RTL, wallpaper and existing correct geometry. | APPROVED |
+| D-015 | Protect PR #103 ancestry by basing PR #104 directly on its exact HEAD; keep both Draft and unmerged until all QA and owner approval. | APPROVED |
+
+Initial implementation is on PR #104, branch `feature/global-frosted-silver-glass-001`, exact HEAD `b34d785dced9b5e47e65adf9865b1f4deada532d`, base PR #103 exact SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Exact-head CI #1691 is in progress. These decisions do not certify visual, functional, performance or device acceptance.
+
+---
+
 <!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
 ## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
 
