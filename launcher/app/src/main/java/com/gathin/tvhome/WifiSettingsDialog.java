@@ -172,6 +172,7 @@ final class WifiSettingsDialog {
         content.addView(permissionAction);
         content.addView(locationAction);
         ScrollView networkScroll = new ScrollView(activity);
+        networkScroll.setTag("wifi_network_list");
         networkScroll.setFillViewport(false);
         networkScroll.setVerticalScrollBarEnabled(true);
         networkScroll.setScrollbarFadingEnabled(false);
