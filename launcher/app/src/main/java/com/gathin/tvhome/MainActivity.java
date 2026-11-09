@@ -793,7 +793,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (shamsi) {
             shamsiDate.setVisibility(View.VISIBLE);
             TextView date = findViewById(R.id.date);
-            date.setTextSize(11f);
+            date.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
             date.setPadding(0, (int) (4 * density), 0, 0);
         }
         prayerTimesView = findViewById(R.id.prayerTimes);
