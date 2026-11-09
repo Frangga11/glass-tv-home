@@ -14,7 +14,7 @@ def java_int(name):
     match = re.search(rf"static final int {name} = (0x[0-9A-Fa-f]+);", source)
     if not match:
         raise AssertionError(f"Missing Java token: {name}")
-    return match.group(1).upper()
+    return "#" + match.group(1)[2:].upper()
 
 
 def java_float(name):
