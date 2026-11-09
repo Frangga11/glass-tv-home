@@ -1901,3 +1901,16 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 - Artifact uploaded successfully: `glass-tv-home-dock-visual-parity-39e09b6a9b9b498432f97360b866a609efbaa318`, artifact ID `13718306259`, archive size 1,431,157 bytes, SHA-256 `d6ae9a4aac4029d16d4fc7764b7ba4489bdf520662f910ac32f2dad809cdc434`. Artifact expires 16 Nov 2026.
 - Physical Mi TV Stick visual and DPAD acceptance remains pending. CI/build PASS does not establish runtime visual PASS.
 - PR #109 remains OPEN / DRAFT / UNMERGED. Wi-Fi protected base unchanged.
+
+### NAVIGATION FOCUS / SPACING REFINEMENT UPDATE — 10 NOVEMBER 2026
+
+- Owner approved replacing the electric-cyan focus on Beranda / Profil / Pengaturan with restrained Frosted Silver.
+- Implemented navigation-only Glider.NAV_SILVER: translucent silver fill #DCE5ED at 22% alpha, silver edge at 45% alpha, 1dp outline. Existing electric-cyan Glider.DARK treatment remains unchanged for non-navigation top controls and menu rows.
+- Updated moveTopHighlight() to select NAV_SILVER only for btnHome, btnCandyBox, and btnSettings. Existing focus movement, IDs, click handlers and DPAD graph remain unchanged.
+- Set icon-to-label android:drawablePadding to 2dp for all three navigation tabs (Beranda, Profil, Pengaturan); equal 4dp horizontal inner padding remains unchanged.
+- Regression contracts updated to require the 2dp spacing and verify navigation-only silver colors.
+- Exact source commit / PR #109 HEAD: 711188716d4ce3011ff540546a9232707444a45f.
+- PR #109 remains OPEN / DRAFT / UNMERGED. Protected Wi-Fi base remains 774eb99faa48e109b3532533425bbb4cdee07a4a; no Wi-Fi source files or accepted popup logic were changed.
+- Exact-head CI run #1871 / run ID 42718323142 is IN PROGRESS at this checkpoint. Do not claim tests/build pass until the run completes.
+- Physical Mi TV Stick visual/DPAD acceptance remains pending. Review silver focus visibility and contrast over bright/dark wallpapers, and confirm the 2dp icon-label gap is legible at 1920×1080.
+- Next gate: wait for run #1871; if successful, deliver the new APK artifact for owner device acceptance. Do not merge or mark PR ready without owner approval.
