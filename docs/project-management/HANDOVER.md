@@ -1,3 +1,16 @@
+## STATIC DIFF CROSS-CHECK — 9 NOVEMBER 2026, 18:26 WIB
+
+- Re-read the complete PR #104 unified diff: **65 changed files**.
+- Static interaction-preservation scan: no added/removed `setOnClickListener`, `setOnKeyListener`, `requestFocus`, `setFocusable` or `setClickable` calls in the diff.
+- Fourteen prior `setOnFocusChangeListener` blocks were removed. Review of their hunks shows they handled only focus surface/text styling and visual scaling; their presentation is now represented by state-list backgrounds or the shared geometry-neutral text-focus helper. The existing component action/key handlers remain in place.
+- Focus-scale cleanup removes prior scale animations; one app-label vertical translation is neutralized to `translationY(0f)`. No horizontal translation changes were found.
+- This is a **static diff/scope cross-check only**, not runtime functional or DPAD acceptance. Do not promote the functional/DPAD gates to PASS.
+- No application source was changed during this cross-check.
+
+**Current source candidate remains:** PR #104 OPEN / DRAFT / UNMERGED, branch `feature/global-frosted-silver-glass-001`, exact HEAD `b737b617aa53fbfc112ccdfe8a7cd4959043d3ec`; base PR #103 exact SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Exact-head CI #1758 / run 42605960427 PASS (235 Python PASS, 1 skipped; Android unit tests and release build PASS). Overall BELUM FINAL; visual/runtime/performance/device gates remain pending.
+
+---
+
 <!-- CURRENT AUTHORITATIVE HANDOVER — RECOVERY SYNC 18:19 WIB -->
 ## AUTHORITATIVE RECOVERY SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — 9 NOVEMBER 2026, 18:19 WIB
 
