@@ -1767,3 +1767,6 @@ The canonical current status and restart instructions are in GTVH-CHECKPOINT-LAT
 
 ### Latest active workstream inventory correction — 9 November 2026
 Current authority: `GTVH-CHECKPOINT-LATEST.md`. Active audit: `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` (now includes Section 11 targeted hard-coded-color classification and CI #1761 closure). PR #104 current HEAD `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; source HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`. CI #1761 PASS on preceding HEAD `4575b09b262ad664f6766ce286d5e5ed90e92780`; new audit-only commit awaits its own CI. Full 141-resource classification and rendered/runtime/DPAD/performance/device acceptance remain pending. Older status entries are historical only.
+
+### Latest inventory status — 9 November 2026
+Active workstream audit file now includes Section 12 (changed XML resource diff and geometry-risk scan). PR #104 current HEAD `6660b9721f0d03575370ba8570a07b40c1425f4c`; source HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`. CI #1762 PASS on preceding HEAD `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; current audit-only HEAD needs its own CI. Four review items: RAM pill padding, Recent Apps card radius, Ayah text color/shadow, installer startup window color. Full unchanged-resource classification and acceptance gates remain pending. Canonical status in GTVH-CHECKPOINT-LATEST.md.
