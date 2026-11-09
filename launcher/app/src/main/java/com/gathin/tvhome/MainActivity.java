@@ -4217,11 +4217,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (labels[i] != null) {
                     labels[i].setText(items[i].name);
                     if (items[i].isNext) {
-                        labels[i].setTextColor(0xFFFFD27A);
-                        if (times[i] != null) times[i].setTextColor(0xFFFFD27A);
+                        labels[i].setTextColor(TvUiTokens.ACCENT_SECTION);
+                        if (times[i] != null) times[i].setTextColor(TvUiTokens.ACCENT_SECTION);
                     } else {
-                        labels[i].setTextColor(0xFFF0F4FA);
-                        if (times[i] != null) times[i].setTextColor(0xFFFFFFFF);
+                        labels[i].setTextColor(TvUiTokens.TEXT_SECONDARY);
+                        if (times[i] != null) times[i].setTextColor(TvUiTokens.TEXT_PRIMARY);
                     }
                 }
             }
@@ -4412,7 +4412,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         TextView arabic = new TextView(this);
         arabic.setText(ayah.arabic.trim());
-        arabic.setTextColor(0xFFFFD38A);
+        arabic.setTextColor(TvUiTokens.TEXT_PRIMARY);
         arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP,
                 getResources().getDisplayMetrics().widthPixels >= 3840 ? 34f : 28f);
         arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
@@ -4429,7 +4429,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         TextView meaningLabel = new TextView(this);
         meaningLabel.setText(R.string.daily_ayah_meaning_label);
-        meaningLabel.setTextColor(0xFFFFD38A);
+        meaningLabel.setTextColor(TvUiTokens.TEXT_SECONDARY);
         meaningLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
         meaningLabel.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         LinearLayout.LayoutParams meaningLabelLp = new LinearLayout.LayoutParams(
@@ -6622,7 +6622,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         GradientDrawable cardBg = new GradientDrawable();
         cardBg.setColor(0x24FFFFFF);
         cardBg.setCornerRadius(14 * density);
-        cardBg.setStroke((int) (1.8f * density), 0x8064D2FF);
+        cardBg.setStroke((int) (1.8f * density), 0x80DCE5ED);
         statusCard.setBackground(cardBg);
 
         Location.Zone zone = Location.chosen(this);
@@ -6792,7 +6792,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (ayah != null && ayah.arabic != null && !ayah.arabic.trim().isEmpty()) {
             TextView arabic = new TextView(this);
             arabic.setText(ayah.arabic.trim());
-            arabic.setTextColor(0xFFFFC56B);
+            arabic.setTextColor(TvUiTokens.TEXT_PRIMARY);
             arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25f);
             arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
             arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
@@ -7701,7 +7701,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (clock != null) clock.setTextColor(0xFFFFFFFF);
             if (ampm != null) ampm.setTextColor(0xB3FFFFFF);
             if (date != null) date.setTextColor(0xE6FFFFFF);
-            if (hijri != null) hijri.setTextColor(0xD9E6E0D2);
+            if (hijri != null) hijri.setTextColor(TvUiTokens.TEXT_SECONDARY);
             if (prayer != null) {
                 prayer.setTextColor(0xFFFFFFFF);
                 prayer.setBackgroundResource(R.drawable.pill_bg);
