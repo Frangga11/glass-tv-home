@@ -69,6 +69,9 @@ final class QuickSettingsDialog {
         TextView close = createLink(activity, R.string.close_label, 36, density);
         close.setFocusable(false);
         close.setFocusableInTouchMode(false);
+        close.setText("×");
+        close.setTextSize(24f);
+        close.setContentDescription(activity.getString(R.string.close_label));
         close.setTag("quick_settings_close");
         header.addView(close, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, TvUiTokens.MIN_DPAD_TARGET_DP)));
