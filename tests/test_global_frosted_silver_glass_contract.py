@@ -198,6 +198,8 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertIn("arabic.setTextColor(TvUiTokens.TEXT_PRIMARY)", main)
         self.assertIn("meaningLabel.setTextColor(TvUiTokens.TEXT_SECONDARY)", main)
         self.assertIn("hijri.setTextColor(TvUiTokens.TEXT_SECONDARY)", main)
+        self.assertIn("arabic.setTextDirection(View.TEXT_DIRECTION_RTL)", main)
+        self.assertIn("arabic.setGravity(Gravity.END)", main)
         self.assertNotIn("0xFFFFD27A", main)
         self.assertNotIn("0xFFFFD38A", main)
         self.assertNotIn("0xFFFFC56B", main)
