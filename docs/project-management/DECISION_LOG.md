@@ -886,3 +886,10 @@ Implementation is isolated in PR #97, base PR #83 exact HEAD `947f33cf7181bb06c7
 - Dynamic settings/profile, wallpaper interval, Recent Apps, weather and Islamic surfaces use the shared silver/cyan state contract; existing actions, data logic, IDs and navigation remain unchanged.
 - Exact-head CI #1758 on b737b617aa53fbfc112ccdfe8a7cd4959043d3ec PASS (235 Python tests passed, 1 skipped; Android unit tests and release build successful). Visual/functional/performance/device acceptance remains pending.
 - Full status, constraints and restart sequence: docs/project-management/GTVH-CHECKPOINT-LATEST.md.
+
+## Decision/status update — targeted global glass color audit — 9 November 2026
+- Keep the shared Electric Cyan token authoritative for interactive focus; dock glow/rim now derives from `TvUiTokens.ACCENT_CYAN`.
+- Do not mechanically recolor material specular highlights, black shadows, app-brand icon colors, semantic success/warning/danger, current-location status green or the devotional gold accent. These are distinct rendering/semantic roles; changes require rendered visual evidence.
+- No further source edit was justified by the targeted Java color review alone.
+- PR #104 current HEAD `05d50e73e7da41fa900c5ba8e3c86f60392750ba`; source HEAD `27eca44f42b17fc9b3f7cf711b5bbf488ef4e12a`. CI #1761 PASS on preceding PR HEAD `4575b09b262ad664f6766ce286d5e5ed90e92780`; docs-only current commit requires its own CI.
+- Full resource classification and visual/runtime/DPAD/performance/device acceptance remain pending. Canonical checkpoint governs next actions.
