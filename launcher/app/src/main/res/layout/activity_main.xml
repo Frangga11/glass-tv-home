@@ -135,7 +135,7 @@
                 android:layoutDirection="ltr"
                 android:gravity="end"
                 android:textDirection="rtl"
-                android:textColor="@color/tv_ui_text_primary"
+                android:textColor="@color/tv_ui_islamic_gold"
                 android:textSize="20sp"
                 android:fontFamily="@font/amiri_quran"
                 android:lineSpacingExtra="-2dp"
