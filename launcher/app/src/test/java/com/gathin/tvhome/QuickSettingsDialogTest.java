@@ -134,8 +134,8 @@ public class QuickSettingsDialogTest {
         View content = find(dialog, "quick_settings_content");
         assertNotNull(content);
 
-        int popupWidth = Math.round(metrics.widthPixels * 0.26f);
-        int popupHeight = Math.round(metrics.heightPixels * 0.64f);
+        int popupWidth = Math.round(metrics.widthPixels * 0.32f);
+        int popupHeight = Math.round(metrics.heightPixels * 0.66f);
         content.measure(
                 View.MeasureSpec.makeMeasureSpec(popupWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(popupHeight, View.MeasureSpec.AT_MOST));
