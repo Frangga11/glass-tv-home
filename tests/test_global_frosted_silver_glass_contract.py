@@ -191,6 +191,18 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(int(java_int("DOCK_SURFACE")[1:3], 16), 255)
         self.assertIn("0x88343E48", tokens)
 
+    def test_dynamic_islamic_text_and_active_prayer_use_silver_tokens(self):
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("labels[i].setTextColor(TvUiTokens.ACCENT_SECTION)", main)
+        self.assertIn("times[i].setTextColor(TvUiTokens.ACCENT_SECTION)", main)
+        self.assertIn("arabic.setTextColor(TvUiTokens.TEXT_PRIMARY)", main)
+        self.assertIn("meaningLabel.setTextColor(TvUiTokens.TEXT_SECONDARY)", main)
+        self.assertIn("hijri.setTextColor(TvUiTokens.TEXT_SECONDARY)", main)
+        self.assertNotIn("0xFFFFD27A", main)
+        self.assertNotIn("0xFFFFD38A", main)
+        self.assertNotIn("0xFFFFC56B", main)
+        self.assertNotIn("0xD9E6E0D2", main)
+
     def test_islamic_arabic_visual_uses_silver_and_preserves_rtl(self):
         ns = "{http://schemas.android.com/apk/res/android}"
         home = ET.parse(RES / "layout/activity_main.xml").getroot()
@@ -230,6 +242,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertNotIn("0x997DD3FC", main)
         self.assertNotIn("0x443B5872", main)
         self.assertNotIn("0x553B5872", main)
+        self.assertNotIn("0x8064D2FF", main)
         self.assertIn("focusSurface.setColor(hasFocus ? TvUiTokens.FOCUS_HALO", main)
         self.assertIn("hasFocus ? TvUiTokens.FOCUS_BORDER", main)
         self.assertIn("btnCheckNow.setTextColor(TvUiTokens.TEXT_PRIMARY)", main)
