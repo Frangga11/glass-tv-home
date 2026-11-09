@@ -6144,23 +6144,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     (int) (8 * density));
             row.setSelected(isActive);
 
-            StateListDrawable bg = new StateListDrawable();
-            GradientDrawable focused = new GradientDrawable();
-            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
-            focused.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            focused.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
-            GradientDrawable selected = new GradientDrawable();
-            selected.setColor(TvUiTokens.NAV_ITEM_SELECTED);
-            selected.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            selected.setStroke(Math.max(1, (int) density), TvUiTokens.NAV_SELECTION_BORDER);
-            GradientDrawable normal = new GradientDrawable();
-            normal.setColor(TvUiTokens.SURFACE);
-            normal.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            normal.setStroke(Math.max(1, (int) density), TvUiTokens.BORDER);
-            bg.addState(new int[]{android.R.attr.state_focused}, focused);
-            bg.addState(new int[]{android.R.attr.state_selected}, selected);
-            bg.addState(new int[]{}, normal);
-            row.setBackground(bg);
+            row.setBackground(TvFocusIndicator.createSelectableRoundedStateBackground(
+                    density, TvUiTokens.CARD_RADIUS_DP, TvUiTokens.SURFACE,
+                    TvUiTokens.NAV_ITEM_SELECTED, TvUiTokens.SURFACE_FOCUSED,
+                    TvUiTokens.BORDER, TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
 
             LinearLayout topRow = new LinearLayout(this);
             topRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -6188,11 +6175,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 topRow.addView(activeTag);
             }
             row.addView(topRow);
-
-            row.setOnFocusChangeListener((v, hasFocus) -> {
-                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
-                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-            });
 
             final int chosenMin = opt.minutes;
             row.setOnClickListener(v -> {
