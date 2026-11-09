@@ -532,7 +532,9 @@ final class WifiSettingsDialog {
                     activity.getResources().getDisplayMetrics().density,
                     () -> dismissThen(openSystemWifiSettings));
             connectedRow.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0,
-                    connectedSecurity.isEmpty() ? 0 : R.drawable.ic_lock, 0);
+                    (connectedSecurity.isEmpty()
+                            || connectedSecurity.equals(activity.getString(R.string.wifi_security_open)))
+                            ? 0 : R.drawable.ic_lock, 0);
             connectedRow.setCompoundDrawablePadding(dp(
                     activity.getResources().getDisplayMetrics().density, 6));
             networkRows.addView(connectedRow);
