@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Blue-tinted glass with a dense, high-opacity veil for readable modal content. -->
+    <!-- Neutral silver-grey modal glass: dense enough for TV text, translucent enough to retain context. -->
     <item>
         <shape android:shape="rectangle">
             <gradient
                 android:type="linear"
                 android:angle="270"
-                android:startColor="#F20F3A72"
-                android:centerColor="#F20B2F61"
-                android:endColor="#F2082450" />
+                android:startColor="#E83B444D"
+                android:centerColor="#E5323C46"
+                android:endColor="#E82A333D" />
             <corners android:radius="24dp" />
-            <stroke android:width="2dp" android:color="@color/tv_ui_border" />
+            <stroke android:width="1.5dp" android:color="#99DCE5ED" />
         </shape>
     </item>
-    <!-- Restrained top sheen; focus remains the strongest luminous accent. -->
     <item android:top="0dp" android:bottom="220dp">
         <shape android:shape="rectangle">
             <gradient
                 android:type="linear"
                 android:angle="270"
-                android:startColor="#1FFFFFFF"
+                android:startColor="#28FFFFFF"
                 android:endColor="#00000000" />
             <corners android:topLeftRadius="24dp" android:topRightRadius="24dp" />
         </shape>
