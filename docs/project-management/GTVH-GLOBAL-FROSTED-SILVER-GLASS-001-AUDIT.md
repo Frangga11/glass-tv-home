@@ -102,14 +102,14 @@ The Java and XML token sources are synchronized and covered by regression tests.
 **PR:** #104 OPEN / DRAFT / UNMERGED.  
 **Branch:** `feature/global-frosted-silver-glass-001`.  
 **Base:** PR #103 exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`.  
-**Last CI-validated HEAD:** `7535a311639c07ab77abd004664510fca216b00b`.
+**Last exact-head CI validation:** HEAD `03408e7585e1cacd3fe32727502bca61752c5438`, run #1703 — SUCCESS.
 
 - Python regression: **223 tests passed, 1 skipped**.
 - Android unit tests and release build: **BUILD SUCCESSFUL**.
-- Exact CI run: [#1702](https://github.com/Frangga11/glass-tv-home/actions/runs/42599811383) — SUCCESS.
+- Exact CI run: [#1703](https://github.com/Frangga11/glass-tv-home/actions/runs/42600150812) — SUCCESS on HEAD `03408e7585e1cacd3fe32727502bca61752c5438`.
 - Release APK: **1,627,069 bytes** (1,588 KB).
-- Artifact ID: `13665501684`; artifact ZIP SHA256 `a570dc0585502c75cbf0862e3c8546263eccb6f5e3f6886cee7c8761ac6a5684`.
-- Extracted APK SHA256: `e5e5dfbcff4a2944c4bc8d3be38deb27743b1b358b542bf82a6a0effab530054`.
+- Artifact ID: `13664798205`; artifact ZIP SHA256 `34da6ef190bde1aa7a49c3bc7eb564e969d0107c6e8f4e514b957486784f3a2e`.
+- Extracted APK SHA256: `e146f9e80c333acbb72c34bb64f96b2be385583e60400239ab04b5c6f5474671`.
 - The APK is a CI build for owner testing only; no physical device test has been performed.
 
 **Interpretation:** source build and automated suites pass for the exact validated HEAD. Visual QA, full functional regression, runtime DPAD QA, performance profiling and physical Mi TV Stick acceptance remain pending.
