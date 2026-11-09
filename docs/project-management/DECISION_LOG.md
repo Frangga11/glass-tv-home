@@ -919,3 +919,6 @@ The adapter replaces the XML Recent Apps card background with a package-specific
 
 ## Decision closeout — source QA and CI acceptance boundary — 9 November 2026
 CI #1772 / run `42614429069` validates exact PR #104 HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`: both jobs PASS; 239 Python tests run (238 passed, 1 existing policy skip); Android Gradle tests and release build successful. Keep the Recent Apps 1dp `#99DCE5ED` dynamic normal border and 26dp radius. Preserve Ayah Amiri/RTL/black-shadow and near-white translation contract. Installer window/root remain #2C333B and system bars #0C0E14. Decision: CI PASS does not close rendered/runtime/device acceptance. Keep PR #104 OPEN / DRAFT / UNMERGED; no ADB/install, no PR #103 changes. Canonical checkpoint: `GTVH-CHECKPOINT-LATEST.md`.
+
+
+Checkpoint linkage: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-QA-001**. Canonical current status and restart authority: `GTVH-CHECKPOINT-LATEST.md`.
