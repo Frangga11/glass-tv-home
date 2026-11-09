@@ -5,7 +5,7 @@
 **Baseline:** PR #103 HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`  
 **Work branch:** `feature/global-frosted-silver-glass-001`  
 **Base:** exact PR #103 HEAD above  
-**Status:** G1 inventory established; detailed implementation audit and prototype validation continue. No production source changes are included in this audit record.
+**Status:** G1 inventory established; initial shared design system and prototype implementation are in place. Full stale-resource sweep, rendered visual validation and device acceptance continue.
 
 ## 1. Change-control boundary
 
@@ -57,7 +57,7 @@ These are file counts, not counts of distinct glass components. Icon artwork and
 5. `TvDialogStyle` centralizes modal dimming, bounds and fallback material. Preserve its sizing, gravity and dimming behavior unless a separate measured visual defect is proven.
 6. Dynamic dialogs already use `TvUiTokens` in many places, but some hard-coded colors and standalone drawable selectors remain inconsistent and need controlled reconciliation.
 
-## 5. DPAD geometry finding
+## 5. DPAD geometry finding and applied controls
 
 - `AppAdapter.FOCUS_SCALE = 1.07f` is used both by focus zoom and by tile-width reservation. Do not simply change this shared constant: doing so would also change tile geometry. Separate the visual focus scale from the existing layout reservation.
 - `TvUiTokens.CARD_FOCUS_SCALE` and `NAV_FOCUS_SCALE` are 1.015f and feed multiple dialog/header focus animations.
@@ -65,9 +65,17 @@ These are file counts, not counts of distinct glass components. Icon artwork and
 - `WeatherActivity` uses a scale callback, while card focus currently remains at 1.0.
 - Selected-state and focus-state treatments overlap in some selectors and need to become visually distinct without changing selection ownership or focus listeners.
 
-**Design constraint:** visual focus must not scale, translate, resize or reposition its component. Use a cyan outline and restrained inner/edge reflection. Preserve the current layout reservation so the pre-existing tile geometry does not move.
+**Applied controls on the work branch:**
+- AppAdapter visual FOCUS_SCALE is 1.0; separate LAYOUT_FOCUS_RESERVATION_SCALE remains 1.07 and continues to size the tile grid.
+- Focused app labels no longer translate vertically.
+- TvUiTokens CARD_FOCUS_SCALE and NAV_FOCUS_SCALE are 1.0, so dialog, navigation and card focus animations preserve measured bounds.
+- Glider DARK and GLASS states and GlassView use an inset Electric Cyan outline with a restrained translucent cyan fill.
+- Location, settings, media, prayer, dialog and weather selectors distinguish cyan focus from silver selected state.
+- MainActivity dynamic Azan settings and information-action rows now use shared silver/cyan focus surfaces; existing click and focus listeners remain intact.
 
-## 6. Proposed design tokens — subject to prototype contrast tests
+**Design constraint:** visual focus must not scale, translate, resize or reposition its component. Preserve the current layout reservation so the pre-existing tile geometry does not move.
+
+## 6. Implemented shared design tokens — initial palette
 
 | Token | Proposed value | Purpose |
 |---|---|---|
@@ -87,11 +95,28 @@ These are file counts, not counts of distinct glass components. Icon artwork and
 | Glass veil | `#88343E48` | Neutral wallpaper veil |
 | Focus halo | `#4000E5FF` | Restrained cyan reflection |
 
-The Java and XML token sources must remain exactly synchronized. Keep opaque fallbacks for accessibility and when decorative glass is disabled. Blur and transparency remain surface-specific; do not force one alpha across every component.
+The Java and XML token sources are synchronized and covered by regression tests. Keep opaque fallbacks for accessibility and when decorative glass is disabled. Blur and transparency remain surface-specific; do not force one alpha across every component.
 
-## 7. Prototype and quality gates
+## 7. Initial implementation and exact-head validation
 
-Prototype order:
+**PR:** #104 OPEN / DRAFT / UNMERGED.  
+**Branch:** `feature/global-frosted-silver-glass-001`.  
+**Base:** PR #103 exact HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`.  
+**Last CI-validated HEAD:** `7535a311639c07ab77abd004664510fca216b00b`.
+
+- Python regression: **223 tests passed, 1 skipped**.
+- Android unit tests and release build: **BUILD SUCCESSFUL**.
+- Exact CI run: [#1702](https://github.com/Frangga11/glass-tv-home/actions/runs/42599811383) — SUCCESS.
+- Release APK: **1,627,069 bytes** (1,588 KB).
+- Artifact ID: `13665501684`; artifact ZIP SHA256 `a570dc0585502c75cbf0862e3c8546263eccb6f5e3f6886cee7c8761ac6a5684`.
+- Extracted APK SHA256: `e5e5dfbcff4a2944c4bc8d3be38deb27743b1b358b542bf82a6a0effab530054`.
+- The APK is a CI build for owner testing only; no physical device test has been performed.
+
+**Interpretation:** source build and automated suites pass for the exact validated HEAD. Visual QA, full functional regression, runtime DPAD QA, performance profiling and physical Mi TV Stick acceptance remain pending.
+
+## 8. Remaining prototype and quality gates
+
+Remaining prototype order:
 1. Home shared header/navigation and dock material.
 2. Wi-Fi modal.
 3. Information panel / Weather card.
