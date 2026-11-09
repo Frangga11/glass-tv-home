@@ -87,7 +87,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         }
     }
 
-    static final float FOCUS_SCALE = 1.07f;
+    /** Visual focus never scales a tile; keep the historical reservation for unchanged layout geometry. */
+    static final float FOCUS_SCALE = 1.0f;
+    static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f;
     /** Shared by every tile's zoom, so a focus move makes no new objects. */
     private static final DecelerateInterpolator ZOOM_REDUCED = new DecelerateInterpolator();
     private static final OvershootInterpolator ZOOM_IN = new OvershootInterpolator(1.6f);
@@ -103,7 +105,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         int design = Math.round(DESIGN_W_DP * density);
         if (innerWidthPx <= 0 || columns <= 0) return design;
         int cell = innerWidthPx / columns;
-        int fit = (int) ((cell - 18 * density) / FOCUS_SCALE);
+        int fit = (int) ((cell - 18 * density) / LAYOUT_FOCUS_RESERVATION_SCALE);
         return Math.max(Math.round(80 * density), Math.min(design, fit));
     }
 
@@ -640,7 +642,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                             .withLayer()
                             .start();
                     name.animate().alpha(focused ? 1f : 0f)
-                            .translationY(focused ? density * 4f : -density * 6f)
+                            .translationY(0f)
                             .setDuration(220).start();
                 }
                 int pos = getBindingAdapterPosition();
