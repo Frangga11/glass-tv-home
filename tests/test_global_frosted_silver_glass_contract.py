@@ -131,6 +131,17 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertEqual(int(java_int("DOCK_SURFACE")[1:3], 16), 255)
         self.assertIn("0x88343E48", tokens)
 
+    def test_remaining_location_and_recent_surfaces_keep_silver_fallbacks(self):
+        ns = "{http://schemas.android.com/apk/res/android}"
+        zone = ET.parse(RES / "drawable/bg_location_zone_card.xml").getroot()
+        zone_focused = next(item for item in zone.findall("item")
+                            if item.attrib.get(ns + "state_focused") == "true")
+        self.assertEqual(zone_focused.find("shape/solid").attrib[ns + "color"], "@color/tv_ui_focus_halo")
+        self.assertEqual(zone_focused.find("shape/stroke").attrib[ns + "color"], "@color/tv_ui_focus_cyan")
+        recent = ET.parse(RES / "drawable/bg_recent_card.xml").getroot()
+        self.assertEqual(recent.find("solid").attrib[ns + "color"], "#C83B4651")
+        self.assertEqual(recent.find("stroke").attrib[ns + "color"], "#99DCE5ED")
+
     def test_dynamic_dialog_focus_surfaces_use_shared_cyan_tokens(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertIn("on.setColor(TvUiTokens.SURFACE_FOCUSED)", main)
