@@ -32,6 +32,12 @@ public class WifiSettingsDialogTest {
         assertEquals(Gravity.TOP, params.gravity & Gravity.VERTICAL_GRAVITY_MASK);
         assertEquals(Gravity.RIGHT, params.gravity & Gravity.HORIZONTAL_GRAVITY_MASK);
         assertTrue(params.dimAmount <= 0.10f);
+        View networkList = window.getDecorView().findViewWithTag("wifi_network_list");
+        assertNotNull(networkList);
+        assertTrue(networkList instanceof android.widget.ScrollView);
+        assertTrue(((android.widget.ScrollView) networkList).isVerticalScrollBarEnabled());
+        assertEquals(Math.round(activity.getResources().getDisplayMetrics().density * 88f),
+                networkList.getLayoutParams().height);
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
