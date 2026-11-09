@@ -147,3 +147,15 @@ Deliver the six approved Global UI surfaces as one coherent, usable Android TV e
 - **Known risk:** startScan is deprecated since API 28 and scan requests are throttled; active scan is best-effort with cached-result/broadcast/Android Settings fallback. Future Android API migration remains open.
 - **Evidence:** `UI_REFRESH_G3E_AUDIT_2026-11-07.md` and `UI_REFRESH_G3E_CHECKPOINT_2026-11-07.md`.
 - **Next:** G3F — Global Settings. No merge/rebase/cherry-pick/force-push, APK publication/install, ADB, device mutation or integration/main change. Physical Android TV/remote/OEM acceptance remains separate and not waived.
+
+## New approved visual workstream — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — 9 November 2026
+
+This is a newly approved visual refinement workstream, distinct from and not a retroactive rewrite of the historical G1–G4 UI Refresh milestones.
+
+**Approved direction:** Frosted Silver Glass material + Electric Cyan DPAD focus, across all audited glass surfaces: Home Screen, dock, Beranda–Profil–Pengaturan navigation, Wi-Fi/microphone, location/altitude, weather/AQI, settings/profile popups, dialogs, prayer schedule, selected Ayah, Arabic/translation, and additional glass components found by source inventory.
+
+**Relationship to earlier design decisions:** the new silver material direction supersedes the former blue-tinted glass material palette only for this newly approved reskin. Previously approved composition, layout, component geometry, typography, content, interactions, focus/selection semantics, and functional contracts remain in force unless explicitly re-approved. Electric Cyan remains the focus accent. Existing approved screen references remain authoritative for composition and interaction, not as a reason to preserve the old material tint.
+
+**Execution:** audit current source and all 96 project-management records; create complete component/resource inventory and visual baseline; define tokens; prototype Home + representative popup; obtain owner visual review; then staged global reskin, integration, functional/visual/DPAD/performance QA, and checkpoint. No production implementation has started. This workstream must not be confused with the pending PR #103 visual/device acceptance gates. The canonical checkpoint controls scheduling and exact current status.
+
+**Protection:** RE-SKIN, NOT REWIRE. Preserve all existing function, geometry, state, data logic, DPAD lifecycle, wallpaper behavior, and component-specific approved decisions. Prioritize readability, performance, and stability over decorative effects.
