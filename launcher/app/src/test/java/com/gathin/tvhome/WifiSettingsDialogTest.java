@@ -56,7 +56,7 @@ public class WifiSettingsDialogTest {
     }
 
     @Test public void popupUsesConstrainedWidthAndVerticalFirstLayout() {
-        assertEquals(0.1976f, WifiSettingsDialog.popupWidthFraction(), 0.0001f);
+        assertEquals(0.2035f, WifiSettingsDialog.popupWidthFraction(), 0.0001f);
         assertEquals(0.43f, WifiSettingsDialog.popupHeightFraction(), 0.0001f);
         assertEquals(14f, WifiSettingsDialog.popupTextSizeSp(), 0.001f);
     }
