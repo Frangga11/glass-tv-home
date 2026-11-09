@@ -903,7 +903,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
-            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, null));
+            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider, 1f, true));
             glider.addCompanion(navCapsule);
             Backdrop.watch(navCapsule);
         }
