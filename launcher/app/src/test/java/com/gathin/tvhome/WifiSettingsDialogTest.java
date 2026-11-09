@@ -64,7 +64,8 @@ public class WifiSettingsDialogTest {
         assertEquals(11f, WifiSettingsDialog.popupMetaSizeSp(), 0.001f);
         assertEquals(13f, WifiSettingsDialog.popupFooterSizeSp(), 0.001f);
         assertEquals(4, WifiSettingsDialog.visibleNetworkRowCount());
-        assertEquals(40, WifiSettingsDialog.networkRowHeightDp());
+        assertEquals(35, WifiSettingsDialog.networkRowHeightDp());
+        assertEquals(35, WifiSettingsDialog.popupHeightReductionDp());
         assertEquals(4, WifiSettingsDialog.networkRowGapDp());
     }
 
