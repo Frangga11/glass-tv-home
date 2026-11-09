@@ -1889,3 +1889,15 @@ Wi-Fi popup workstream is complete through latest APK generation and evidence re
 
 ### Handover / next gate
 Wait for exact-head Android unit tests and release build. If successful, verify the uploaded APK artifact and SHA-256, then deliver it for owner-authorized Mi TV Stick testing. Check especially: weather/AQI divider midpoint, clock/date divider vertical centering, three equal navigation segments and full labels, focus glass visibility during left/right DPAD movement. Keep PR #109 draft/unmerged until owner accepts the physical-device result.
+
+
+### CI COMPLETION UPDATE — 10 NOVEMBER 2026
+
+- Exact PR #109 HEAD `5e0232c33dc949818856052aae46016f3b969cd3` completed CI run #1870 / run ID `42715799845`: **SUCCESS**.
+- Launcher Gradle `testReleaseUnitTest assembleRelease`: **BUILD SUCCESSFUL**.
+- Lists/tools/docs regression suite: **246 tests PASS**.
+- Release APK generated at `launcher/app/build/outputs/apk/release/app-release.apk`.
+- Exact APK size: **1,629,977 bytes (1,591 KB)**. This is above the historical 1.5 MiB reference and generated a non-blocking warning; it is not a build failure.
+- Artifact uploaded successfully: `glass-tv-home-dock-visual-parity-39e09b6a9b9b498432f97360b866a609efbaa318`, artifact ID `13718306259`, archive size 1,431,157 bytes, SHA-256 `d6ae9a4aac4029d16d4fc7764b7ba4489bdf520662f910ac32f2dad809cdc434`. Artifact expires 16 Nov 2026.
+- Physical Mi TV Stick visual and DPAD acceptance remains pending. CI/build PASS does not establish runtime visual PASS.
+- PR #109 remains OPEN / DRAFT / UNMERGED. Wi-Fi protected base unchanged.
