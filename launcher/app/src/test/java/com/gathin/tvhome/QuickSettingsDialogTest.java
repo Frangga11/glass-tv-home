@@ -51,7 +51,7 @@ public class QuickSettingsDialogTest {
         final int[] dismissed = {0};
         actions.lastAction = null;
         AlertDialog dialog = QuickSettingsDialog.show(activity, actions,
-                QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
+                QuickSettingsFocusGraph.WIFI, new View(activity), () -> dismissed[0]++);
         assertNotNull(dialog);
         View control = find(dialog, tag);
         assertNotNull("missing control " + tag, control);
@@ -84,7 +84,7 @@ public class QuickSettingsDialogTest {
     public void dpadFocusLinksAreAppliedToActualDialogViews() {
         Activity activity = newActivity();
         AlertDialog dialog = QuickSettingsDialog.show(activity, new RecordingActions(),
-                QuickSettingsFocusGraph.WIFI, null);
+                QuickSettingsFocusGraph.WIFI, new View(activity), null);
         View wifi = find(dialog, "quick_settings_wifi");
         View restart = find(dialog, "quick_settings_restart");
         View language = find(dialog, "quick_settings_language");
@@ -102,7 +102,16 @@ public class QuickSettingsDialogTest {
         assertEquals(language.getId(), wifi.getNextFocusDownId());
         assertEquals(power.getId(), language.getNextFocusRightId());
         assertEquals(manageWallpaper.getId(), power.getNextFocusDownId());
-        assertEquals(manageWallpaper.getId(), cache.getNextFocusRightId());
+        assertEquals(manageWallpaper.getId(), cache.getNextFocusDownId());
+        View glass = find(dialog, "quick_settings_glass_settings");
+        View android = find(dialog, "quick_settings_android_settings");
+        View close = find(dialog, "quick_settings_close");
+        assertNotNull(glass);
+        assertNotNull(android);
+        assertNotNull(close);
+        assertEquals(android.getId(), glass.getNextFocusDownId());
+        assertEquals(glass.getId(), android.getNextFocusUpId());
+        assertFalse(close.isFocusable());
         dialog.cancel();
     }
 
