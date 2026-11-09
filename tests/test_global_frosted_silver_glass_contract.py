@@ -97,6 +97,9 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         indicator = (JAVA / "TvFocusIndicator.java").read_text(encoding="utf-8")
         self.assertNotIn(".scaleX(hasFocus", indicator)
         self.assertNotIn(".scaleY(hasFocus", indicator)
+        self.assertIn("new int[]{android.R.attr.state_pressed}, pressed", indicator)
+        self.assertIn("new int[]{-android.R.attr.state_enabled}, disabled", indicator)
+        self.assertIn("TvUiTokens.DISABLED_TEXT", indicator)
 
     def test_interactive_glass_selectors_distinguish_disabled_pressed_and_focus(self):
         ns = "{http://schemas.android.com/apk/res/android}"
