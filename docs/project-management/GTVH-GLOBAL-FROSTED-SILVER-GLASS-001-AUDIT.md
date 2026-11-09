@@ -20,7 +20,7 @@ At the exact PR #103 source tree, the repository contains:
 | Inventory | Count |
 |---|---:|
 | App layout XML files | 17 |
-| App drawable resource files (all drawable density/variant folders) | 121 |
+| App drawable resource files (all drawable density/variant folders) | 112 |
 | App values resource XML files | 19 |
 | App Java source files | 100 |
 | App Java unit-test files | 59 |
