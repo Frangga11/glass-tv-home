@@ -57,3 +57,14 @@ Ini diverifikasi melalui metadata PR, perbandingan commit terhadap base #89, daf
 6. PR tetap Draft/unmerged dan tidak ada merge tanpa persetujuan eksplisit pemilik.
 
 **Kesimpulan:** pekerjaan sebelumnya tidak boleh dibuang. Pada audit ini ditemukan PR #91–#93 belum terintegrasi ke PR #100. Status implementasi keseluruhan tetap BELUM FINAL sampai kandidat integrasi baru dibangun dan diverifikasi.
+## Superseding resolution — PR #101 / PR #103 — 9 November 2026
+
+The historical findings above correctly describe the incomplete PR #100 candidate at the time of that audit. They are superseded by the subsequent cumulative integration and corrective work:
+
+- PR #101 became the cumulative Home candidate and reconciled the PR #84–#89 and PR #91–#93 Islamic Shelf / prayer / Arabic work with the geometry/capsule work.
+- PR #103 is the current corrective child candidate based on PR #101 exact base HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`.
+- PR #103 exact source HEAD: `a3d697c793e23a59f9f9953e2074d83daa210cf9`; 7 commits ahead / 0 behind; 5 changed files.
+- Exact-head CI #1689 / run `42566072365` PASS. The earlier PR #100 integration gap is not the current unresolved integration blocker.
+- PR #103 remains OPEN / DRAFT / UNMERGED. Rendered 1920×1080 visual review and physical Mi TV Stick acceptance remain pending. No ADB, installation, launcher-setting change, or merge.
+
+Do not repeat the old instruction to create a new candidate solely to integrate PR #91–#93; that reconciliation was subsequently completed in PR #101. Use the canonical checkpoint for current state.
