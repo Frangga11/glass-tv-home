@@ -354,3 +354,10 @@ Implemented Wi-Fi-only changes: compact anchored top-right dialog, pointer align
 **Remaining acceptance gates:** rendered visual inspection at 1920×1080; real Mi TV Stick Android 11 popup position/size/triangle/scrollbar verification; DPAD traversal, scroll-to-focused and focus restoration; actual Wi-Fi on/off state, scan/permission behavior and Android Settings handoff on device. No ADB, APK installation or physical device test was performed in this session.
 
 **Overall status: BUILD / UNIT-TEST CI PASS — VISUAL AND PHYSICAL RUNTIME ACCEPTANCE PENDING — BELUM FINAL.** PR #105 remains OPEN / DRAFT / UNMERGED. Do not merge or install before remaining acceptance evidence and explicit owner approval.
+
+
+## 10 November 2026 — Luxury Realistic Glass Focus
+- Active source candidate: PR #110, OPEN / DRAFT / UNMERGED, branch `feature/home-luxury-realistic-glass-focus-001`, exact HEAD `6c44212e20841230638abf7c7ff8bdda032241be`.
+- Shared header and Islamic Shelf glass refinement implemented; state-aware silver-cyan icon tint added; prayer/Ayat gold `#FFFFC45A` and black shadow `#CC000000` retained.
+- Exact-head CI #1875 / run `42720524182` was still IN PROGRESS at sync; rendered visual and physical-device acceptance remain pending. No merge or device install.
+- Canonical restart/status details: `GTVH-CHECKPOINT-LATEST.md`.
