@@ -37,10 +37,10 @@ public class TvFocusIndicatorRobolectricTest {
         assertNotNull(outline);
         assertTrue(outline instanceof StateListDrawable);
 
-        outline.setState(new int[]{android.R.attr.state_focused});
+        outline.setState(new int[]{android.R.attr.state_enabled, android.R.attr.state_focused});
         assertTrue(((StateListDrawable) outline).getCurrent() instanceof GradientDrawable);
         Drawable focused = ((StateListDrawable) outline).getCurrent();
-        outline.setState(new int[0]);
+        outline.setState(new int[]{android.R.attr.state_enabled});
         assertNotSame(focused, ((StateListDrawable) outline).getCurrent());
         view.setForeground(outline);
         assertTrue(view.getBackground() == background);
