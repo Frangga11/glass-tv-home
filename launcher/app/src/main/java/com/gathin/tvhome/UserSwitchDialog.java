@@ -163,23 +163,21 @@ public final class UserSwitchDialog {
                 TextView activeLabel = new TextView(activity);
                 activeLabel.setText(R.string.active_label);
                 activeLabel.setTextSize(TvUiTokens.METADATA_SP);
-                activeLabel.setTextColor(TvUiTokens.ACCENT_CYAN);
+                activeLabel.setTextColor(TvUiTokens.ACCENT_SECTION);
                 activeLabel.setTypeface(outfit, Typeface.BOLD);
                 activeLabel.setPadding(0, (int) (3 * density), 0, 0);
                 itemCol.addView(activeLabel);
             }
 
+            itemCol.setSelected(isActive);
+            itemCol.setBackground(TvFocusIndicator.createSelectableRoundedStateBackground(
+                    density, 14f, Color.TRANSPARENT, TvUiTokens.NAV_PROFILE_SELECTED,
+                    TvUiTokens.SURFACE_FOCUSED, 0x00000000,
+                    TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
             itemCol.setOnFocusChangeListener((v, hasFocus) -> {
-                GradientDrawable g = new GradientDrawable();
-                g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : (isActive ? TvUiTokens.NAV_PROFILE_SELECTED : Color.TRANSPARENT));
-                g.setCornerRadius(14 * density);
-                if (hasFocus) {
-                    g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
-                } else if (isActive) {
-                    g.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
-                }
-                v.setBackground(g);
-                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+                v.animate().cancel();
+                v.setScaleX(1.0f);
+                v.setScaleY(1.0f);
             });
 
             itemCol.setOnClickListener(v -> {
