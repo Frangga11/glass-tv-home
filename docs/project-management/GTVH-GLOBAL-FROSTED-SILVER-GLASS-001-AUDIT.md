@@ -229,3 +229,19 @@ This CI run validates the current PR HEAD, including the source correction alrea
 **Other geometry scan:** the source diff removes focus scale/translation effects from multiple controls and insets outlines so focus is drawn inside existing bounds. These changes support the geometry-stable focus contract. No Home grid/dock parent geometry, view IDs, click listeners or data wiring was altered in this resource review. The potential `bg_ram_pill` padding delta is kept as an explicit open item, not silently accepted.
 
 **Disposition:** exact-head automated CI PASS; changed-resource review PARTIAL with the above four visual/geometry decisions requiring resolution/evidence. The 141-resource full inventory still has 105 unchanged entries that require semantic classification; unchanged is not automatically a defect. Rendered 1920×1080 review, full runtime function/DPAD test, GPU/performance profiling and owner-authorized Mi TV Stick acceptance remain NOT RUN / PENDING. PR #104 remains OPEN / DRAFT / UNMERGED. Overall **BELUM FINAL**.
+
+
+## 13. G1/G4 continuation — restore Recent Apps RAM pill content geometry — 9 November 2026
+
+**Finding verified:** `bg_ram_pill.xml` is actively used by `launcher/app/src/main/res/layout/activity_recent_apps.xml` as the background of the Recent Apps RAM information pill. Its intrinsic padding affects the content insets, so reducing it from 20dp/9dp to 12dp/5dp was an unintended geometry change and violated the reskin-only constraint.
+
+**Correction applied:**
+- Restored drawable padding to left/right 20dp and top/bottom 9dp; all new silver fill, border and 24dp corner radius values remain unchanged.
+- Added regression test `test_recent_apps_ram_pill_preserves_original_content_insets` to guard all four original padding values.
+- No layout dimensions, IDs, listeners, navigation, data, adapter logic or focus behavior changed.
+
+**Validation:** the code and test commits are `77e8622aa93ceb2039ff46b48f4f88874c9b79c5` and `75481d456556655076c51735f33f19a131e17190`. CI #1763 / run [42610968348](https://github.com/Frangga11/glass-tv-home/actions/runs/42610968348) completed SUCCESS on the prior audit-only HEAD `6660b9721f0d03575370ba8570a07b40c1425f4c`. CI #1764 / run [42611753895](https://github.com/Frangga11/glass-tv-home/actions/runs/42611753895) is queued/running for the current source/test HEAD `75481d456556655076c51735f33f19a131e17190`; do not call this correction CI-validated until that run succeeds.
+
+**Remaining review items:** Recent Apps card radius 24dp→26dp is paired with the new focus overlay's 26dp radius; visually confirm on rendered output. Static Ayah text changed gold→white and shadow warm-brown→black; confirm readability on bright/dark wallpaper. Installer theme window background remains dark while content root is silver; confirm startup transition before changing system/window colors. No speculative change made to these items.
+
+**Current status:** PR #104 OPEN / DRAFT / UNMERGED; current source/test HEAD `75481d456556655076c51735f33f19a131e17190`; CI #1764 pending. Full resource classification, rendered 1920×1080, runtime functional/DPAD, performance and owner-authorized physical-device gates remain pending. Overall **BELUM FINAL**.
