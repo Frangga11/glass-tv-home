@@ -38,9 +38,8 @@ final class TvFocusIndicator {
         frame.setOnFocusChangeListener((view, hasFocus) -> {
             focusRing.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
             view.animate().cancel();
-            view.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
-                    .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
-                    .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+            view.setScaleX(1.0f);
+            view.setScaleY(1.0f);
         });
         return focusRing;
     }
@@ -60,10 +59,10 @@ final class TvFocusIndicator {
                     hasFocus ? focusedStroke : normalStroke);
             view.setBackground(background);
             view.setTextColor(hasFocus ? focusedText : normalText);
+            // Keep focusedScale in the signature for existing callers; focus must not alter geometry.
             target.animate().cancel();
-            target.animate().scaleX(hasFocus ? focusedScale : 1.0f)
-                    .scaleY(hasFocus ? focusedScale : 1.0f)
-                    .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+            target.setScaleX(1.0f);
+            target.setScaleY(1.0f);
         });
     }
 }
