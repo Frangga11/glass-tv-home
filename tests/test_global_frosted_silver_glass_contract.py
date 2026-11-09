@@ -78,6 +78,13 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
                        if item.attrib.get(ns + "state_focused") == "true")
         self.assertEqual(focused.find("shape/stroke").attrib[ns + "color"], "@color/tv_ui_focus_cyan")
 
+    def test_media_popup_dpad_focus_does_not_zoom_controls(self):
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        listener = main.split("View.OnFocusChangeListener btnFocus", 1)[1].split("dialog.show();", 1)[0]
+        self.assertNotIn("scaleX(", listener)
+        self.assertNotIn("scaleY(", listener)
+        self.assertIn("SoundEffects.playNav()", listener)
+
     def test_weather_and_shared_focus_helpers_never_scale_controls(self):
         weather = (JAVA / "WeatherActivity.java").read_text(encoding="utf-8")
         helper = weather.split("private void setupFocusAnimation", 1)[1].split("private void setupCardFocus", 1)[0]
