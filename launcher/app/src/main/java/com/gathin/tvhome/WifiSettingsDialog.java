@@ -585,8 +585,10 @@ final class WifiSettingsDialog {
                     dp(activity.getResources().getDisplayMetrics().density, 10), 0);
             connectedRow.setLayoutParams(networkRowLayoutParams(activity.getResources().getDisplayMetrics().density));
             connectedRow.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            connectedRow.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_wifi, 0,
-                    new ConnectedCheckDrawable(activity, networkStatusIconColor(), networkStatusIconSizeDp()), 0);
+            connectedRow.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    activity.getDrawable(R.drawable.ic_wifi), null,
+                    new ConnectedCheckDrawable(activity, networkStatusIconColor(), networkStatusIconSizeDp()),
+                    null);
             connectedRow.setCompoundDrawablePadding(dp(
                     activity.getResources().getDisplayMetrics().density, 6));
             configureNetworkMarquee(connectedRow);
