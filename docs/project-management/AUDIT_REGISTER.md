@@ -2648,3 +2648,6 @@ All six core management documents were re-read and aligned to the same checkpoin
 - No ADB, installation or device interaction performed.
 - Rendered 1920×1080 comparison, wallpaper contrast, Recent Apps clipping/focus outline, Ayah contrast, installer startup, five-state rendering, DPAD runtime and GPU/performance remain PENDING / NOT RUN.
 - No code changes made because no new defect is evidenced. Overall BELUM FINAL.
+
+
+Checkpoint ID linkage: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-EVIDENCE-002**. Canonical current status: `GTVH-CHECKPOINT-LATEST.md`.
