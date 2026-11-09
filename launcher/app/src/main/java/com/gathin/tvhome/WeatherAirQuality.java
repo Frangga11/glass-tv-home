@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.graphics.Typeface;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.os.Looper;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.text.style.ReplacementSpan;
 import android.util.Log;
 
@@ -439,7 +437,6 @@ final class WeatherAirQuality {
         int weatherStart = sb.length();
         sb.append(weatherText);
         sb.setSpan(new ForegroundColorSpan(0xFFFFFFFF), weatherStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new StyleSpan(Typeface.BOLD), weatherStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         int separatorStart = sb.length();
         sb.append("\uFFFC");
         sb.setSpan(new WeatherDividerSpan(context.getResources().getDisplayMetrics().density),
@@ -447,7 +444,6 @@ final class WeatherAirQuality {
         int aqiStart = sb.length();
         sb.append(aqiText);
         sb.setSpan(new ForegroundColorSpan(aqi < 0 ? 0xFF9E9E9E : getAqiColor(aqi)), aqiStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new StyleSpan(Typeface.BOLD), aqiStart, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sb;
     }
 
