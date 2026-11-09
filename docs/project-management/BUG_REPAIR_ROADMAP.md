@@ -496,3 +496,9 @@ Project F is formally closed at HOST/SOURCE EXIT PASS for F01–F07. The remaini
 - APK diagnostic 1,572,293 bytes / 1,572,864-byte cap / 571-byte headroom; no workflow artifacts and no publication.
 - G01 PASS. G02 READY TO START from the merge commit. G03–G05 remain pending.
 - See `G01_COVERAGE_REAUDIT_2026-11-03.md` for the coverage matrix and resolved findings.
+
+## Current status authority — 9 November 2026
+
+This roadmap preserves historical bug-fix sequencing and evidence. Its older branch/PR status snapshots must not be used as the current restart point. Current source candidate, dependency chain, outstanding visual/device gates, and next action are governed exclusively by `GTVH-CHECKPOINT-LATEST.md`.
+
+The current PR #103 exact-head CI is PASS; rendered visual review and physical Mi TV Stick acceptance remain pending. The approved Frosted Silver Glass reskin is a separate future visual workstream, not a bug-fix closure and not authorization to alter unrelated functionality.
