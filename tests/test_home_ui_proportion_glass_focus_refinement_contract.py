@@ -112,7 +112,7 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         self.assertNotIn("0x44000000", MAIN)
 
     def test_all_header_pills_share_one_glider_focus_and_glass_material(self):
-        self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, glider, 1f, true)", MAIN)
+        self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, null)", MAIN)
         self.assertIn("new GlassDrawable(pill, 20f * density, density, glider)", MAIN)
         self.assertIn("glider.addCompanion(navCapsule)", MAIN)
         self.assertIn("glider.addCompanion(pill)", MAIN)
