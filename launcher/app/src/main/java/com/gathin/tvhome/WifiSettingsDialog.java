@@ -258,6 +258,10 @@ final class WifiSettingsDialog {
         }
         pointer.setTag(pointerCenter);
         pointer.invalidate();
+        window.setBackgroundDrawable(TvDialogStyle.createDialogSurface(activity));
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setDimAmount(0.08f);
+        window.setLayout(popupWidth, popupHeight);
         WindowManager.LayoutParams params = window.getAttributes();
         params.width = popupWidth;
         params.height = popupHeight;
@@ -266,11 +270,6 @@ final class WifiSettingsDialog {
         params.y = Math.max(0, popupTop);
         params.dimAmount = 0.08f;
         window.setAttributes(params);
-        window.setLayout(popupWidth, popupHeight);
-        window.setGravity(Gravity.TOP | Gravity.RIGHT);
-        window.setBackgroundDrawable(TvDialogStyle.createDialogSurface(activity));
-        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        window.setDimAmount(0.08f);
     }
 
     static AlertDialog show(Activity activity, Runnable openSystemWifiSettings, Runnable returnToParent) {
