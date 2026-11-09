@@ -1,3 +1,37 @@
+<!-- CURRENT AUTHORITATIVE INVENTORY UPDATE — 9 NOVEMBER 2026, 17:01 WIB. Supersedes earlier current inventory status below. -->
+## Active Global Visual Workstream — Inventory Update
+
+| Item | Current value |
+|---|---|
+| Workstream | GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 |
+| PR | #104 — OPEN / DRAFT / UNMERGED |
+| Branch | feature/global-frosted-silver-glass-001 |
+| Exact HEAD | b34d785dced9b5e47e65adf9865b1f4deada532d |
+| Base PR | #103 |
+| Base branch | fix/home-wallpaper-prayer-spacing-arabic-rtl-102 |
+| Exact base SHA | a3d697c793e23a59f9f9953e2074d83daa210cf9 |
+| Commits / changed files | 51 / 40 |
+| Exact-head CI | #1691 / 42599100302 — IN PROGRESS |
+| Merge / device install | Not performed |
+
+### Baseline file inventory at PR #103
+17 app layouts; 121 app drawable resources; 19 app values XML; 100 app Java source files; 59 app Java unit-test files; 35 Python regression-test files.
+
+### Audited visual surface families
+- Home shell/header/navigation, location/elevation, weather/AQI, wallpaper/hero, Islamic shelf, prayer and selected Ayah.
+- Application dock, app tiles, recent apps and media controls.
+- Wi-Fi, Quick Settings, Global Settings, profile/avatar/Child Mode, wallpaper, location and other modal/popup surfaces.
+- Weather dashboard/cards/rows, prayer focus treatment and floating Azan card.
+- Shared renderers/tokens: TvUiTokens, GlassDrawable, GlassRim, Backdrop, Glider, GlassView, TvFocusIndicator, TvDialogStyle.
+- Companion installer glass cards, buttons and input surface.
+
+### Initial changed source/resource inventory
+Shared palette and colors; AppAdapter focus behavior; Glider and GlassView focus rendering; GlassRim; LocationActivity; AzanActivity; Home/dock, dialog, location, prayer, media, recent-app, tile and weather shared drawables; installer glass resources/theme accents; regression test; CI APK artifact allowlist; audit/design report.
+
+Full component and changed-file evidence is on PR #104 and `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md`. Remaining full source/resource stale-style sweep is not yet complete. Do not infer that every resource has passed visual review.
+
+---
+
 <!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026. This block supersedes older status snapshots below where they conflict. Historical entries are retained as history, not current instructions. -->
 ## CURRENT AUTHORITATIVE PROJECT SYNC — 9 NOVEMBER 2026
 
