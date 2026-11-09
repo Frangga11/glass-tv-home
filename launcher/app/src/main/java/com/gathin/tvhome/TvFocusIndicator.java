@@ -32,6 +32,33 @@ final class TvFocusIndicator {
                 normalFill, focusedFill, normalStroke, focusedStroke);
     }
 
+    static StateListDrawable createSelectableRoundedStateBackground(float density, float radiusDp,
+            int normalFill, int selectedFill, int focusedFill,
+            int normalStroke, int selectedStroke, int focusedStroke) {
+        StateListDrawable states = new StateListDrawable();
+        GradientDrawable disabled = rounded(density, radiusDp, TvUiTokens.DISABLED_SURFACE,
+                TvUiTokens.DISABLED_BORDER, 1f);
+        GradientDrawable pressed = rounded(density, radiusDp, TvUiTokens.SURFACE_SELECTED,
+                TvUiTokens.FOCUS_BORDER, 1f);
+        GradientDrawable focused = rounded(density, radiusDp, focusedFill, focusedStroke, 2f);
+        GradientDrawable selected = rounded(density, radiusDp, selectedFill, selectedStroke, 1f);
+        GradientDrawable normal = rounded(density, radiusDp, normalFill, normalStroke, 1f);
+        states.addState(new int[]{-android.R.attr.state_enabled}, disabled);
+        states.addState(new int[]{android.R.attr.state_pressed}, pressed);
+        states.addState(new int[]{android.R.attr.state_focused}, focused);
+        states.addState(new int[]{android.R.attr.state_selected}, selected);
+        states.addState(new int[]{}, normal);
+        return states;
+    }
+
+    private static GradientDrawable rounded(float density, float radiusDp, int fill, int stroke, float strokeDp) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(fill);
+        drawable.setCornerRadius(radiusDp * density);
+        drawable.setStroke(Math.max(1, Math.round(strokeDp * density)), stroke);
+        return drawable;
+    }
+
     private static StateListDrawable createStateBackground(float density, float radiusDp, int shape,
             int normalFill, int focusedFill, int normalStroke, int focusedStroke) {
         StateListDrawable states = new StateListDrawable();
