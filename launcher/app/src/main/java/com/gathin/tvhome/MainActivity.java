@@ -5679,14 +5679,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         View.OnFocusChangeListener btnFocus = (v, hasFocus) -> {
             if (hasFocus) SoundEffects.playNav();
-            float scale = hasFocus ? 1.08f : 1.0f;
-            v.animate()
-                    .scaleX(scale)
-                    .scaleY(scale)
-                    .setDuration(120)
-                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                    .withLayer()
-                    .start();
+            // The existing button drawables provide the cyan focus outline; keep geometry unchanged.
         };
 
         if (btnPopupPrev != null) btnPopupPrev.setOnFocusChangeListener(btnFocus);
