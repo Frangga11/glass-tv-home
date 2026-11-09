@@ -37,7 +37,7 @@ class HomeHeaderNavigationSymmetryContractTest(unittest.TestCase):
     def test_header_information_typography_is_14sp_inter_semibold(self):
         ids = ("@+id/ampm", "@+id/date", "@+id/locationName",
                "@+id/locationAltitude", "@+id/weatherAirQuality",
-               "@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings")
+               "@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings", "@+id/btnWifi")
         for resource_id in ids:
             node = self.find_id(resource_id)
             with self.subTest(view=resource_id):
