@@ -77,6 +77,14 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         card = next(node for node in layout.iter()
                     if node.attrib.get("{http://schemas.android.com/apk/res/android}id") == "@+id/cardContainer")
         self.assertEqual(card.attrib.get(ns + "foreground"), "@drawable/bg_recent_card_focus")
+        # AppAdapter replaces bg_recent_card.xml with a dynamic GradientDrawable.
+        # Keep its 1dp normal silver stroke and 26dp radius in the runtime drawable.
+        bind = source.split("GradientDrawable cardBg = new GradientDrawable();", 1)[1].split(
+            "// Squircle style adaptation", 1
+        )[0]
+        self.assertIn("cardBg.setStroke(Math.round(1f * density), 0x99DCE5ED)", bind)
+        self.assertIn("cardBg.setCornerRadius(26 * density)", bind)
+        self.assertLess(bind.index("cardBg.setStroke("), bind.index("cardContainer.setBackground(cardBg)"))
         ring = ET.parse(RES / "drawable/bg_recent_card_focus.xml").getroot()
         focused = next(item for item in ring.findall("item")
                        if item.attrib.get(ns + "state_focused") == "true")
