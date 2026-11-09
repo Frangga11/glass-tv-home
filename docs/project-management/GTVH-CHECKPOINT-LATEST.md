@@ -1,3 +1,28 @@
+<!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS. Supersedes every older current-status block below; history retained. -->
+## CURRENT AUTHORITATIVE PROJECT SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
+
+**Single source of truth:** this checkpoint on `docs/project-master-inventory`. All five supporting project records are synchronized in the same documentation pass.
+
+**Active PR:** [#104](https://github.com/Frangga11/glass-tv-home/pull/104) — OPEN / DRAFT / UNMERGED. Branch `feature/global-frosted-silver-glass-001`; current exact HEAD `03408e7585e1cacd3fe32727502bca61752c5438`; base PR #103 branch `fix/home-wallpaper-prayer-spacing-arabic-rtl-102`, exact base SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`; 68 commits, 50 changed files. The latest source-code validation head is `7535a311639c07ab77abd004664510fca216b00b`; commit `03408e7` adds only the audit/design evidence document, not application source.
+
+**CI:** [run #1702](https://github.com/Frangga11/glass-tv-home/actions/runs/42599811383) SUCCESS on source HEAD `7535a311`. Python regression: 223 passed, 1 skipped. Android unit tests and release build: BUILD SUCCESSFUL. CI #1703 / [42600150812](https://github.com/Frangga11/glass-tv-home/actions/runs/42600150812) is IN PROGRESS on docs-only HEAD `03408e7`; do not claim exact-current-head CI until it completes.
+
+**APK from successful run #1702:** 1,627,069 bytes (1,588 KB), SHA256 `e5e5dfbcff4a2944c4bc8d3be38deb27743b1b358b542bf82a6a0effab530054`. Artifact ID `13665501684`; artifact ZIP SHA256 `a570dc0585502c75cbf0862e3c8546263eccb6f5e3f6886cee7c8761ac6a5684`. Size delta vs parent PR #103's 1,626,637 bytes: +432 bytes (~0.03%). APK is available for owner testing; no device acceptance has occurred.
+
+**Protected parent:** PR #103 remains OPEN / DRAFT / UNMERGED at HEAD `a3d697c793e23a59f9f9953e2074d83daa210cf9`, base PR #101 HEAD `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`. Preserve its RTL, Ayah spacing, prayer and cumulative Home corrections.
+
+**Progress:** G1 inventory counts and major surface map established; full stale-resource/source sweep remains in progress. G2 shared silver/cyan tokens implemented. G3 initial Home/dock, popup and focus prototype implementation is in source; rendered visual validation pending. G4 global implementation is partial. G5 integration, G6 full QA and G7 final acceptance remain open.
+
+**Baseline inventory at PR #103:** 17 app layout XML, 121 app drawable resources, 19 app values XML, 100 app Java source files, 59 app Java unit-test files, 35 Python regression-test files. Counts are files, not unique glass components.
+
+**Implemented initial pass:** synchronized Java/XML palette; neutral silver/cyan GlassRim; Electric Cyan outline in Glider and GlassView; focus scale neutralized while preserving the 1.07 AppAdapter layout reservation; selected state separated from focus; shared Home, dock, popup, location, weather, prayer, media, recent-app, installer and dynamic settings surfaces; regression contracts; CI artifact allowlist. Detailed evidence: `GTVH-GLOBAL-FROSTED-SILVER-GLASS-001-AUDIT.md` on PR #104.
+
+**Quality gates:** Source Audit PARTIAL / IN PROGRESS; Design System IN PROGRESS; Build & CI PASS on source HEAD #1702, docs-only HEAD #1703 IN PROGRESS; Functional QA NOT RUN; Visual QA NOT RUN; DPAD runtime QA NOT RUN; Performance runtime QA NOT RUN; Device Acceptance PENDING. No unverified PASS claims.
+
+**Next:** finish CI #1703; inspect the complete remaining source/resource inventory; perform matched 1920×1080 visual review on bright, dark and mixed wallpapers; run functional, DPAD, typography and performance regression; obtain physical Mi TV Stick acceptance. Keep PR #104 Draft and unmerged until all gates and explicit owner approval.
+
+---
+
 <!-- CURRENT AUTHORITATIVE SYNC — 9 NOVEMBER 2026, 17:01 WIB — GLOBAL FROSTED SILVER GLASS UPDATE. This block supersedes every earlier current-status block below. Historical records remain intact. -->
 ## CURRENT AUTHORITATIVE PROJECT SYNC — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001
 
