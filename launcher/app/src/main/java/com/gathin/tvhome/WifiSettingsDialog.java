@@ -180,12 +180,10 @@ final class WifiSettingsDialog {
         actions.setOrientation(LinearLayout.VERTICAL);
         actions.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams actionWidth = new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        actionWidth.rightMargin = 0;
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         rescan.setLayoutParams(actionWidth);
         LinearLayout.LayoutParams settingsWidth = new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        settingsWidth.leftMargin = 0;
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         androidSettings.setLayoutParams(settingsWidth);
         actions.addView(rescan);
         actions.addView(androidSettings);
