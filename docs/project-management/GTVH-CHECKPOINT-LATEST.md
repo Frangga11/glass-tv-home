@@ -1,4 +1,15 @@
 # GTVH-CHECKPOINT-LATEST
+
+
+## Latest corrective update — location/weather capsule spacing 4dp — 9 November 2026
+
+- Owner requested reducing the vertical gap between the Home location/altitude capsule and weather/AQI capsule from 8dp to **4dp**.
+- Implemented on the existing cumulative Home candidate PR #101, branch `integration/home-islamic-prayer-spacing-cumulative-101`; latest source HEAD: `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`.
+- `launcher/app/src/main/res/layout/activity_main.xml`: `weatherAirQuality` remains positioned below `locationPill`; only `android:layout_marginTop` changed from `8dp` to `4dp`. Both capsules remain 30dp high; widths, horizontal alignment, content, data providers, click/focus/DPAD behavior and other layout geometry are untouched.
+- `tests/test_home_spacing_capsule_height_refinement_contract.py`: added regression contract verifying both capsules remain 30dp, weather remains below location, and exact vertical margin is 4dp.
+- Two sequential commits pushed to PR #101 branch: layout correction `1dde90ae1059571bf174fcab757504dfe417ece0`; regression test `08b521cadb8c913b49fce42acb4e536e3eb7e9ea`.
+- Exact source verification after push confirms `layout_marginTop="4dp"` and the new regression assertion. Workflow-run lookup for the final commit has not yet returned a PR-triggered run; CI result is therefore **PENDING**, not PASS. Rendered 1920×1080 visual review and physical Mi TV Stick acceptance remain pending. No APK installation, ADB, merge or PR state transition performed.
+- Next gate: wait for exact-head PR #101 CI; inspect any failure; then perform rendered visual review. Keep PR #101 OPEN / DRAFT / UNMERGED.
 **Status:** CANONICAL / SINGLE ENTRY POINT  
 **Checkpoint date:** 9 November 2026  
 **Repository:** Frangga11/glass-tv-home  
