@@ -1790,3 +1790,11 @@ Current PR #104 tree contains 113 app drawable XML resources, grouped by primary
 - Artwork: 15 weather/AQI illustrations and 56 content/navigation icons are artwork assets, not global surface tokens. Brand/icon artwork remains unchanged absent a visual defect.
 - Source-reviewed representative surface and selector files confirm neutral fallback surfaces, cyan focus rings, silver selected borders, disabled alpha, and white specular gradients. The full resource-role inventory is classified; pixel-level contrast on all wallpapers still requires rendered QA.
 - CI #1764, #1766, #1767 and #1768 all PASS; latest PR #104 HEAD `93977dd887e042a0c30113140bbd9fc838886281`.
+
+
+## Visual QA continuation inventory update — 9 November 2026
+Checkpoint: **GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-QA-001**; canonical status in `GTVH-CHECKPOINT-LATEST.md`. PR #104 exact HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`, OPEN / DRAFT / UNMERGED.
+- Recent Apps: dynamic card background now explicitly retains 1dp `#99DCE5ED` normal border and 26dp radius; focus foreground selector remains separate. Added source regression assertions.
+- Islamic Ayah: regression contract now checks Amiri Quran font, RTL Arabic, black shadow, near-white LTR translation and two-line cap.
+- Existing drawable/value role classification (113 app drawables, 6 installer drawables, 19 app values files) is retained. No mechanical recoloring; no further source token drift correction was supported by current evidence.
+- CI #1772 / run `42614429069` exact current PR HEAD was IN PROGRESS at checkpoint creation. Rendered visual/runtime/performance/device gates remain pending.

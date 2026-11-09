@@ -2617,3 +2617,12 @@ Confirmed `bg_ram_pill.xml` is referenced by `activity_recent_apps.xml`. Restore
 - Ayah white/black-shadow/Amiri/RTL source contract verified; wallpaper contrast pending.
 - Full resource-role classification recorded in INVENTORY.md; no mechanical recoloring.
 - 1920×1080 rendered QA, wallpaper contrast, end-to-end runtime, DPAD, GPU/performance and physical device remain NOT RUN / PENDING. No merge, ADB or install.
+
+
+## Audit record — VISUAL-QA-001 Recent Apps border correction — 9 November 2026
+- Source defect confirmed: dynamic Recent Apps GradientDrawable replaced XML background and omitted normal stroke.
+- Corrected with 1dp `#99DCE5ED` stroke while retaining 26dp radius and independent cyan focus outline.
+- Regression contract added for stroke/radius; Ayah contract extended for Amiri font, RTL, black shadow and translation treatment.
+- Current PR #104 HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`, OPEN / DRAFT / UNMERGED. CI #1772 / run `42614429069` was IN PROGRESS at checkpoint creation.
+- Rendered screenshot comparison, wallpaper contrast, clipping/outline, installer startup, five-state, runtime/DPAD, GPU/performance and physical-device acceptance remain NOT RUN / PENDING. No ADB/install/merge; PR #103 untouched.
+- Canonical single-door checkpoint: `GTVH-CHECKPOINT-LATEST.md`.

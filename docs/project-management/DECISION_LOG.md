@@ -911,3 +911,7 @@ Static source inspection confirmed installer theme `android:windowBackground` #0
 
 ## Decision closeout — Installer and color-role preservation — 9 November 2026
 Installer windowBackground is now #2C333B to match activity root; status/navigation bars remain #0C0E14 because no measured reason supports changing them. CI #1767 validates the source/test correction and CI #1768 validates the latest PR audit HEAD; both jobs PASS in both runs. Keep semantic status colors, app-brand colors, devotional/content accents, black shadows, white specular highlights and per-surface alpha variants distinct from global tokens. No mechanical recoloring. PR #104 remains OPEN / DRAFT / UNMERGED; visual/runtime acceptance pending.
+
+
+## Decision — preserve Recent Apps normal border under dynamic fill — 9 November 2026
+The adapter replaces the XML Recent Apps card background with a package-specific dynamic GradientDrawable. Since that runtime drawable originally omitted the XML normal stroke, restore the equivalent 1dp `#99DCE5ED` border directly on the dynamic drawable. Preserve 26dp radius, dynamic fill, separate Electric Cyan focus foreground, dimensions and all interaction/data behavior. Add a regression guard. Also extend Islamic Ayah tests to protect Amiri/RTL/black shadow and near-white translated text without changing its source behavior. PR #104 exact HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`; CI #1772 pending. Canonical checkpoint: `GTVH-CHECKPOINT-LATEST.md`. No merge, ADB or install.

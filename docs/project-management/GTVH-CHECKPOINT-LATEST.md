@@ -1394,3 +1394,54 @@ PR #104 current HEAD: `6660b9721f0d03575370ba8570a07b40c1425f4c` (audit-only com
 - Six canonical management documents synchronized on `docs/project-master-inventory` at commit to be recorded by this update. Detailed source evidence is in PR branch audit Section 14.
 - Remaining gates: rendered 1920×1080 bright/dark/mixed wallpaper visual QA; five-state Normal/Focused/Selected/Pressed/Disabled screenshots; full functional and live DPAD runtime; Recent Apps clipping/outline; installer startup transition; GPU/performance profiling; physical Mi TV Stick acceptance only with explicit owner authorization.
 - No PR merge, no ADB, no APK install, no default launcher change, and no PR #103 modification. Overall workstream remains BELUM FINAL despite source/static audit and automated CI PASS.
+
+
+# AUTHORITATIVE VISUAL QA CONTINUATION — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 — 9 NOVEMBER 2026
+
+This is the current single-door checkpoint. Supporting management documents are synchronized to this same checkpoint ID and remain subordinate to this file.
+
+## Trigger / identity
+- Repository: Frangga11/glass-tv-home.
+- Workstream: GTVH-GLOBAL-FROSTED-SILVER-GLASS-001.
+- PR #104: OPEN / DRAFT / UNMERGED.
+- Branch: feature/global-frosted-silver-glass-001.
+- Exact PR HEAD at checkpoint: b14ba7a35659ea404b88a56175e706e458c8459f.
+- Protected base: a3d697c793e23a59f9f9953e2074d83daa210cf9.
+- PR #103 remains protected and unchanged.
+- Latest source correction: 811bccae770d225218583138968f85f083fed516.
+- Regression tests: 9a1ad0e3911afe63d3076240f7b9bac02e6e1cea (Recent Apps dynamic border), 3f1d21b7be61e80c894c3f09346f10f6b5dcf8cc (Islamic Ayah font/contrast contract).
+- Audit evidence update: b14ba7a35659ea404b88a56175e706e458c8459f.
+
+## Verified and corrected
+1. Recent Apps source: XML normal border was being lost because AppViewHolder.bind() replaced bg_recent_card.xml with a dynamic GradientDrawable that set only fill and radius. Restored 1dp #99DCE5ED stroke on the dynamic drawable. Radius remains 26dp; package-specific fill, dimensions, foreground focus selector and Electric Cyan focus ring remain unchanged.
+2. Added regression assertions for dynamic Recent Apps stroke and 26dp radius.
+3. Added Islamic Ayah regression assertions for Amiri Quran font, Arabic RTL/right alignment and black shadow, plus near-white translation, LTR direction, black shadow and two-line cap. No Ayah source/data behavior changed.
+4. Installer theme windowBackground and first content root are both #2C333B; status/navigation bars remain #0C0E14. Startup flash is not yet runtime-verified.
+5. Drawable/values semantic role classification remains unchanged. No mechanical recoloring or additional token drift correction was justified by source evidence.
+
+## CI status
+- Prior exact-head CI #1768 / run 42612984819: SUCCESS on prior PR HEAD 93977dd887e042a0c30113140bbd9fc838886281.
+- CI #1772 / run 42614429069 targets the current exact PR HEAD b14ba7a35659ea404b88a56175e706e458c8459f and was IN PROGRESS at checkpoint creation. Do not claim PASS until both jobs complete successfully.
+- Older overlapping runs #1769–#1771 are not substitutes for exact current HEAD.
+
+## Acceptance gates — PENDING / NOT RUN
+- Rendered 1920×1080 visual screenshot comparison, bright/dark/mixed wallpapers.
+- Recent Apps normal/focused 26dp radius, visible normal border, clipping and focus outline on rendered output.
+- Islamic Ayah contrast on bright/dark/mixed wallpapers.
+- Installer window-to-root startup transition / flash observation.
+- Five visual states: Normal, Focused, Selected, Pressed, Disabled.
+- End-to-end runtime regression and live DPAD navigation.
+- GPU/performance profiling on Mi TV Stick Android TV 11.
+- Physical Mi TV Stick acceptance only after explicit owner authorization. No APK install or ADB performed.
+
+## Hard constraints
+- RE-SKIN, NOT REWIRE.
+- No changes to IDs, listeners, handlers, navigation, persistence, lifecycle, data, or approved geometry.
+- Do not merge PR #104. Do not modify PR #103.
+- No ADB or APK install without explicit owner authorization.
+- Never claim PASS without verifiable evidence.
+
+## Next action
+Wait for exact-head CI #1772 to complete. Then continue rendered visual QA using actual screenshots/evidence; do not substitute source inspection for rendered QA. Complete runtime/DPAD/performance only within the authorized test boundary. After each checkpoint, update all six management documents in one synchronized commit.
+
+**Overall status: BELUM FINAL.** Source correction and regression contracts are committed; exact-head CI pending; visual, runtime, performance and physical-device acceptance remain open.
