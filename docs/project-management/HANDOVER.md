@@ -2651,3 +2651,24 @@ Resume from `GTVH-CHECKPOINT-LATEST.md`. PR #104 remains OPEN / DRAFT / UNMERGED
 
 ### Common checkpoint seal — GTVH-GLOBAL-FROSTED-SILVER-GLASS-001 / VISUAL-EVIDENCE-002 — 9 November 2026
 All six core management documents are synchronized to this same checkpoint ID and exact application PR HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`. CI #1772 / run `42614429069` is PASS. CI artifact `13672026508` contains only `app-release.apk`, not visual evidence. Rendered visual, runtime/DPAD and GPU/performance gates remain PENDING / NOT RUN. Canonical single-door authority: `GTVH-CHECKPOINT-LATEST.md`. PR #104 remains OPEN / DRAFT / UNMERGED; no ADB or APK installation; PR #103 unchanged.
+
+
+## Focus lock checkpoint — GTVH-WIFI-GLASS-AUDIT-001 — 9 November 2026
+
+**Single active workstream:** Wi-Fi dialog only. All work on Quick Settings, Profile/Modern Settings, cross-panel DPAD and other global surfaces is PAUSED until the Wi-Fi workstream is completed, audited and explicitly cleared by the owner.
+
+**Application baseline:** repository `Frangga11/glass-tv-home`; PR #104 OPEN / DRAFT / UNMERGED; source branch `feature/global-frosted-silver-glass-001`; exact source HEAD `b14ba7a35659ea404b88a56175e706e458c8459f`; protected base `a3d697c793e23a59f9f9953e2074d83daa210cf9`. PR #103 remains untouched. No application source change is authorized by this focus-lock checkpoint.
+
+**Scope:** `WifiSettingsDialog.java`, its directly used visual resources/tokens and narrowly scoped Wi-Fi regression tests only. Audit visual material/opacity and fallback, modal bounds and safe area, content readability, connected status, network rows, scan/permission/action states, focus indicators, DPAD order and scroll-to-focused behavior, dismissal/return-to-parent visual continuity.
+
+**Preserve:** Wi-Fi scan/broadcast/timeout behavior, permissions and location prerequisites, network status and ordering, Android system Wi-Fi handoff, connection ownership, callbacks, view/action semantics, focus restoration and parent-return lifecycle. RE-SKIN NOT REWIRE. No unrelated global token changes, no broad dialog refactor, no edits to Quick Settings or Profile in this phase.
+
+**Source observations recorded before implementation:** Wi-Fi dialog is built programmatically in `WifiSettingsDialog.java`; it uses a ScrollView, content padding 24dp horizontal / 18dp vertical, `TvDialogStyle.apply(dialog, activity, 760, 620)`, a shared glass-dialog window surface and dim amount 0.68 via `TvDialogStyle`. It constructs status, permission/location actions, network rows, rescan, Android Settings and Close controls. Its focus order is rebuilt after network rows refresh. These are source observations, not visual/runtime acceptance results.
+
+**Current findings status:** initial code inspection only. No rendered Wi-Fi screenshot tied to the exact source HEAD has been supplied; no Wi-Fi runtime/DPAD test has been performed. Therefore opacity, clipping, text contrast, row focus, scrolling and geometry are **NOT VERIFIED**. Do not label them bugs or PASS without evidence. No code edits, ADB, APK installation, device interaction, PR merge, retarget or reset.
+
+**Execution sequence:** (1) gather/inspect Wi-Fi screenshots at 1920×1080 and record exact build/HEAD/state; (2) complete focused source audit and trace relevant selectors/focus graph/lifecycle; (3) classify evidence-backed defects vs expected behavior; (4) submit a minimal correction plan for approval; (5) implement only approved Wi-Fi visual corrections; (6) run targeted regression, full CI and changed-file/diff audit; (7) visual/runtime DPAD QA with evidence; (8) issue Wi-Fi completion checkpoint. Only then may the owner authorize the next workstream.
+
+**Quality gate:** each finding must state trigger, input/evidence, verification, root cause, exact file/line, proposed action, preservation impact, test and outcome. If evidence is missing, status remains PENDING / NOT RUN. Overall Wi-Fi status: **AUDIT IN PROGRESS — BELUM FINAL**.
+
+**Canonical single-door authority:** `GTVH-CHECKPOINT-LATEST.md`. This focus lock is mirrored into all six core management documents in one synchronized documentation commit. Application PR #104 remains separate and unchanged.
