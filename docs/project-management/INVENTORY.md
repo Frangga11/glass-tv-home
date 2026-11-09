@@ -1773,3 +1773,7 @@ Active workstream audit file now includes Section 12 (changed XML resource diff 
 
 ### Recovery inventory — 9 November 2026
 Latest active branch PR #104 HEAD `1d480afe88072094cd8169ab8ed8d2d8d9ae0bbe`; source/test HEAD `75481d456556655076c51735f33f19a131e17190`. Recent Apps RAM pill padding restored to 20dp/9dp and regression guarded. CI #1763 PASS on prior HEAD; CI #1764 pending Android validation at checkpoint. Remaining rendered visual and device acceptance gates listed in GTVH-CHECKPOINT-LATEST.md and audit Section 13.
+
+
+### Resource inventory completion — 9 November 2026
+Current PR #104 tree contains 113 app drawable XML resources, grouped by primary role: 28 glass surfaces/backgrounds, 14 state/status/text selectors, 15 weather/AQI artwork resources, and 56 content/navigation icons. Six installer drawable resources are separate (buttons, card/input surfaces and two icons). App values inventory contains 19 files: 4 base values XMLs (`colors.xml`, `config.xml`, `strings.xml`, `styles.xml`), 14 locale-specific strings overlays, and 1 API-28 styles overlay. These are file-role counts, not proof every literal color is a global token. Color usage is classified as global semantic tokens, semantic state/status, brand/content accents, specular highlights, shadows/depth, alpha/transparency variants and icon/weather artwork. No mechanical recoloring.

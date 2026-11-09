@@ -903,3 +903,7 @@ Implementation is isolated in PR #97, base PR #83 exact HEAD `947f33cf7181bb06c7
 
 ## Recovery decision — restore RAM pill geometry — 9 November 2026
 Verified `activity_recent_apps.xml` uses `@drawable/bg_ram_pill`; drawable padding therefore affects real content insets. Restored original 20dp left/right and 9dp top/bottom while retaining new silver colors and border. Added automated regression guard for all four values. No dimensions, IDs, listeners, navigation or data logic changed. CI #1764 still in progress on source/test HEAD `75481d456556655076c51735f33f19a131e17190`; current audit-only PR HEAD `1d480afe88072094cd8169ab8ed8d2d8d9ae0bbe` awaits its own run.
+
+
+## Decision — installer launch surface alignment — 9 November 2026
+Static source inspection confirmed installer theme `android:windowBackground` #0C0E14 differs from the first activity root #2C333B. Align only the window background to #2C333B to reduce potential first-frame color mismatch. Keep status and navigation bars #0C0E14: no measured evidence justifies changing system-bar treatment. Added Python regression test asserting window/root parity and unchanged system bars. Commit `e5a4f47aabda630af984a315969637e67d0627c9`; CI #1767 Android validation pending at decision time. Actual startup flash remains a runtime observation, not claimed verified absent.

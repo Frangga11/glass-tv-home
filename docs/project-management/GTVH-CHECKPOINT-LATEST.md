@@ -1369,3 +1369,15 @@ PR #104 current HEAD: `6660b9721f0d03575370ba8570a07b40c1425f4c` (audit-only com
 - Source/test HEAD `75481d456556655076c51735f33f19a131e17190`; CI #1764 / run `42611753895`: Lists/tools/docs PASS; Android unit-test/release-build still in progress at checkpoint time. The subsequent audit-only HEAD `1d480afe...` needs its own CI.
 - Remaining: rendered review of Recent Apps card 26dp radius; Ayah white text/black shadow contrast; installer startup window background; full unchanged-resource classification; rendered 1920×1080 bright/dark/mixed wallpaper; runtime/DPAD/performance; owner-authorized Mi TV Stick acceptance.
 - No merge, ADB, install or launcher setting changes. Detailed audit Section 13. Overall BELUM FINAL.
+
+
+## Continuation checkpoint — CI verification and installer surface correction — 9 November 2026
+- Required CI #1764 / run `42611753895`: both jobs completed SUCCESS (Launcher build and unit tests; Lists, tools and docs).
+- Required CI #1766 / run `42611799280`: both jobs completed SUCCESS (same two jobs). All reported steps completed successfully.
+- PR #104 remains OPEN / DRAFT / UNMERGED on protected base SHA `a3d697c793e23a59f9f9953e2074d83daa210cf9`. Previous audit HEAD was `1d480afe88072094cd8169ab8ed8d2d8d9ae0bbe`.
+- Recent Apps source: normal background radius 26dp; focus/pressed/disabled selector radii 26dp. Runtime adapter constructs a 26dp GradientDrawable and replaces XML background, so runtime clipping/outline and normal stroke need screenshot confirmation.
+- Islamic Ayah: white Arabic text, black shadow, Amiri Quran, RTL and right gravity confirmed; WeeklyAyah data/cache/translation logic unchanged. Wallpaper contrast remains unverified without rendered captures.
+- Installer mismatch confirmed: theme windowBackground #0C0E14 vs activity root #2C333B. Corrected only windowBackground to #2C333B; status/navigation bars remain #0C0E14. Added Python regression test for window/root parity and system-bar preservation.
+- Corrective source commit: `e5a4f47aabda630af984a315969637e67d0627c9`. PR #104 current HEAD is this commit. CI #1767 / run `42612524215`: Lists/tools/docs SUCCESS; Android launcher build/unit-test job IN PROGRESS at checkpoint update. Do not mark exact-head CI PASS until complete.
+- Resource inventory: 113 app drawable XML files classified by role (28 glass surfaces/backgrounds; 14 state/status/text selectors; 15 weather/AQI artwork; 56 content/navigation icons). Six installer drawables tracked separately. App values: 19 files = 4 base values XMLs, 14 locale-specific strings overlays, 1 API-28 styles overlay. Color taxonomy distinguishes global tokens, semantic state/status, brand/content accents, specular highlights, shadows/depth and alpha/transparency variants. No mechanical recoloring.
+- Pending: rendered 1920×1080 bright/dark/mixed wallpaper review; functional and live DPAD; Recent Apps runtime clipping/focus; installer startup transition observation; GPU/performance; physical Mi TV Stick acceptance only with explicit authorization. No ADB, install or merge. Overall BELUM FINAL.

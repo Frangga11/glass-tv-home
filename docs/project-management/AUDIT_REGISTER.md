@@ -2597,3 +2597,13 @@ CI #1762 / run `42610588965` PASS on exact PR HEAD `05d50e73e7da41fa900c5ba8e3c8
 
 ## Recovery audit — RAM pill geometry correction — 9 November 2026
 Confirmed `bg_ram_pill.xml` is referenced by `activity_recent_apps.xml`. Restored original intrinsic padding 20dp horizontal / 9dp vertical and added `test_recent_apps_ram_pill_preserves_original_content_insets`. CI #1763 PASS on prior audit head. CI #1764 / run `42611753895` Lists/tools/docs PASS; Android validation in progress on source/test HEAD `75481d456556655076c51735f33f19a131e17190`. Current audit-only PR HEAD `1d480afe88072094cd8169ab8ed8d2d8d9ae0bbe` awaits its own CI. See audit Section 13.
+
+
+## Audit record — source verification and installer correction — 9 November 2026
+- CI #1764 / run `42611753895`: both jobs completed SUCCESS. CI #1766 / run `42611799280`: both jobs completed SUCCESS.
+- Recent Apps: normal background radius 26dp; focus selector 26dp for disabled/pressed/focused. Runtime adapter creates a 26dp GradientDrawable and replaces XML background. No layout-size mutation from foreground outline identified; clipping and visible ring require rendered runtime evidence.
+- Islamic Ayah: white Arabic token, black shadow, Amiri Quran, RTL and right gravity. Translation near-white with black shadow. Data and translation logic unchanged. Wallpaper contrast pending.
+- Installer: theme window background #0C0E14 vs root #2C333B. Corrected window background only to #2C333B; retained status/navigation #0C0E14 and added regression test. Startup flash cannot be claimed absent without runtime observation.
+- Resource inventory: 113 app drawables categorized into 28 surfaces/backgrounds, 14 selectors/status/text, 15 weather/AQI artwork and 56 content/navigation icons; 6 installer drawables separate; 19 app values files (4 base, 14 locale strings, 1 API-28 style overlay).
+- Corrective commit `e5a4f47aabda630af984a315969637e67d0627c9`. CI #1767: docs/tools job SUCCESS, Android job IN PROGRESS at record time.
+- Visual 1920×1080, wallpaper contrast, live DPAD/runtime, GPU/performance and owner-authorized device gates remain PENDING. No install/ADB/merge.
