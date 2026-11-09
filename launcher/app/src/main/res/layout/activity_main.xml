@@ -834,6 +834,8 @@
                     android:paddingStart="4dp"
                     android:paddingEnd="4dp"
                     android:textSize="14sp"
+                    android:fontFamily="@font/inter"
+                    android:letterSpacing="0.01"
                     android:fontVariationSettings="'wght' 600"
                     android:includeFontPadding="false"
                     android:textColor="#FFFFFFFF"
@@ -862,6 +864,8 @@
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
                         android:textSize="14sp"
+                    android:fontFamily="@font/inter"
+                    android:letterSpacing="0.01"
                         android:fontVariationSettings="'wght' 600"
                         android:includeFontPadding="false"
                         android:textColor="#FFFFFFFF"
@@ -908,6 +912,8 @@
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:text="@string/wifi"
+                    android:textSize="14sp"
+                    android:fontVariationSettings="\'wght\' 600"
                     android:drawableStart="@drawable/ic_wifi" />
 
                 <TextView
