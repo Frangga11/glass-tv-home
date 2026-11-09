@@ -50,7 +50,7 @@ RE-SKIN, NOT REWIRE. Preserve IDs, listeners, handlers, navigation order, DPAD g
 | Merge/release | NOT AUTHORIZED | PR #110 remains Draft/unmerged |
 
 ## Next action
-Wait for corrected exact-head CI run `42721922767`. If it passes, retrieve the QA artifact and verify APK integrity/size/hash. If it fails, inspect the exact failing test/log and correct before any visual acceptance. Then perform a 1920×1080 visual review and request owner-authorized Mi TV Stick testing. Do not claim PASS from source inspection or partial CI. Keep PR #110 Draft/unmerged.
+Wait for corrected exact-head CI run `42721922767` to finish; Lists/tools/docs already PASS, Android build/unit tests remain in progress. If it passes, retrieve the QA artifact and verify APK integrity/size/hash. If it fails, inspect the exact failing test/log and correct before any visual acceptance. Then perform a 1920×1080 visual review and request owner-authorized Mi TV Stick testing. Do not claim PASS from source inspection or partial CI. Keep PR #110 Draft/unmerged.
 
 **Single restart instruction:** “Lanjutkan dari GTVH-CHECKPOINT-LATEST.md — GTVH-HOME-LUXURY-GLASS-DPAD-CURSOR-001.”
 
