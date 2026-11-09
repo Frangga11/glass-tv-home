@@ -12,6 +12,9 @@
     <color name="tv_ui_accent_blue">#FF4CA9C4</color>
     <color name="tv_ui_focus_cyan">#FF00E5FF</color>
     <color name="tv_ui_border">#FF9EABB8</color>
+    <color name="tv_ui_disabled_surface">#223F4A55</color>
+    <color name="tv_ui_disabled_border">#559EABB8</color>
+    <color name="tv_ui_disabled_text">#668B98A5</color>
     <color name="tv_ui_selected_fill">#334C5C68</color>
     <color name="tv_ui_selected_border">#99DCE5ED</color>
     <color name="tv_ui_focus_halo">#4000E5FF</color>
