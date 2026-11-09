@@ -162,7 +162,10 @@ public class DockBreathingBorderView extends View {
         // 1. Soft Outer Atmospheric Breathing Glow (Cyan-Sky bloom)
         int glowAlpha = (int) (65 * alphaFactor);
         glowPaint.setStrokeWidth((4.0f + (3.0f * breathProgress)) * density);
-        glowPaint.setColor(Color.argb(glowAlpha, 56, 189, 248)); // Cyan #38BDF8
+        glowPaint.setColor(Color.argb(glowAlpha,
+                Color.red(TvUiTokens.ACCENT_CYAN),
+                Color.green(TvUiTokens.ACCENT_CYAN),
+                Color.blue(TvUiTokens.ACCENT_CYAN)));
         canvas.drawRoundRect(glowBounds, cornerRadius + (2f * density), cornerRadius + (2f * density), glowPaint);
 
         // 2. Main Glass Rim Border with Vertical Specular Gradient
@@ -170,7 +173,10 @@ public class DockBreathingBorderView extends View {
         int topAlpha = (int) (245 * alphaFactor);
         int bottomAlpha = (int) (180 * alphaFactor);
         int topColor = Color.argb(topAlpha, 255, 255, 255);
-        int bottomColor = Color.argb(bottomAlpha, 56, 189, 248);
+        int bottomColor = Color.argb(bottomAlpha,
+                Color.red(TvUiTokens.ACCENT_CYAN),
+                Color.green(TvUiTokens.ACCENT_CYAN),
+                Color.blue(TvUiTokens.ACCENT_CYAN));
 
         LinearGradient rimShader = new LinearGradient(
                 0, bounds.top, 0, bounds.bottom,

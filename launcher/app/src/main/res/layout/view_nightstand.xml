@@ -97,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:textColor="#D9E6E0D2"
+            android:textColor="@color/tv_ui_text_secondary"
             android:textSize="16sp"
             android:fontFamily="@font/inter"
             android:fontVariationSettings="'wght' 400"

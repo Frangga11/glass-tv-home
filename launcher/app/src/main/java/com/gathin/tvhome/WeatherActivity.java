@@ -721,16 +721,14 @@ public class WeatherActivity extends Activity {
     }
 
     private void setupFocusAnimation(View v, float scale) {
+        // Keep the legacy parameter for existing call sites; DPAD focus is outline/elevation-only.
         v.setOnFocusChangeListener((view, hasFocus) -> {
-            float s = hasFocus ? scale : 1.0f;
             float elev = hasFocus ? 6f : 0f;
             if (reducedMotion) {
                 view.animate().cancel();
-                view.setScaleX(s);
-                view.setScaleY(s);
                 view.setTranslationZ(elev);
             } else {
-                view.animate().scaleX(s).scaleY(s).translationZ(elev).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+                view.animate().translationZ(elev).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
             }
         });
     }
@@ -747,7 +745,7 @@ public class WeatherActivity extends Activity {
                 view.setScaleY(1f);
                 view.setTranslationZ(elev);
             } else {
-                view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+                view.animate().translationZ(elev).setDuration(120).start();
             }
         });
     }

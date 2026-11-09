@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- XML mirror of TvUiTokens: keep resource-backed surfaces on the same semantic palette. -->
-    <color name="tv_ui_shell">#FF0B2A5B</color>
-    <color name="tv_ui_surface">#FF0C2E61</color>
-    <color name="tv_ui_surface_focused">#FF0E3567</color>
-    <color name="tv_ui_surface_selected">#FF1A4D8B</color>
-    <color name="tv_ui_popup_surface">#FF0B2A5B</color>
-    <color name="tv_ui_dock_surface">#FF071E46</color>
+    <!-- XML mirror of TvUiTokens.java. Keep semantic values exactly synchronized. -->
+    <color name="tv_ui_shell">#FF2C333B</color>
+    <color name="tv_ui_surface">#FF35404A</color>
+    <color name="tv_ui_surface_focused">#FF3F4B56</color>
+    <color name="tv_ui_surface_selected">#FF4C5C68</color>
+    <color name="tv_ui_popup_surface">#FF303A44</color>
+    <color name="tv_ui_dock_surface">#FF242E38</color>
     <color name="tv_ui_text_primary">#FFFFFFFF</color>
-    <color name="tv_ui_text_secondary">#FFB6C6FF</color>
-    <color name="tv_ui_accent_blue">#FF1E6BFF</color>
+    <color name="tv_ui_text_secondary">#FFE2E8EE</color>
+    <color name="tv_ui_accent_blue">#FF4CA9C4</color>
     <color name="tv_ui_focus_cyan">#FF00E5FF</color>
-    <color name="tv_ui_border">#80426BAA</color>
-    <color name="tv_ui_selected_fill">#331E6BFF</color>
-    <color name="tv_ui_selected_border">#9900E5FF</color>
+    <color name="tv_ui_border">#FF9EABB8</color>
+    <color name="tv_ui_disabled_surface">#223F4A55</color>
+    <color name="tv_ui_disabled_border">#559EABB8</color>
+    <color name="tv_ui_disabled_text">#668B98A5</color>
+    <color name="tv_ui_selected_fill">#334C5C68</color>
+    <color name="tv_ui_selected_border">#99DCE5ED</color>
+    <color name="tv_ui_focus_halo">#4000E5FF</color>
+    <color name="tv_ui_glass_veil">#88343E48</color>
 </resources>

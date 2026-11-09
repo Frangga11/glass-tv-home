@@ -171,6 +171,9 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             float density = itemView.getResources().getDisplayMetrics().density;
             GradientDrawable cardBg = new GradientDrawable();
             cardBg.setColor(cardColor);
+            // Preserve the normal 1dp silver border from bg_recent_card.xml; this dynamic
+            // drawable replaces that XML background for app-specific preview fills.
+            cardBg.setStroke(Math.round(1f * density), 0x99DCE5ED);
             cardBg.setCornerRadius(26 * density);
             cardContainer.setBackground(cardBg);
 
@@ -195,14 +198,13 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             cardContainer.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) {
                     itemView.setTranslationZ(60f);
-                    v.animate().scaleX(1.06f).scaleY(1.06f).setDuration(160).start();
+                    // DPAD focus is communicated by the cyan pill outline, never by resizing the card.
                     topPill.setBackgroundResource(R.drawable.bg_app_pill_focused);
-                    tvAppLabel.setTextColor(0xFF14161D);
+                    tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY);
                 } else {
                     itemView.setTranslationZ(0f);
-                    v.animate().scaleX(0.94f).scaleY(0.94f).setDuration(160).start();
                     topPill.setBackgroundResource(R.drawable.bg_app_pill_unfocused);
-                    tvAppLabel.setTextColor(0xFFFFFFFF);
+                    tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY);
                 }
             });
 
@@ -242,13 +244,8 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
 
             btnCircle.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    itemView.setTranslationZ(60f);
-                    btnCircle.animate().scaleX(1.16f).scaleY(1.16f).setDuration(160).start();
-                } else {
-                    itemView.setTranslationZ(0f);
-                    btnCircle.animate().scaleX(1.0f).scaleY(1.0f).setDuration(160).start();
-                }
+                // bg_circle_close_all supplies the cyan focus ring; retain stack ordering without zoom.
+                itemView.setTranslationZ(hasFocus ? 60f : 0f);
             });
 
             btnCircle.setOnClickListener(v -> {

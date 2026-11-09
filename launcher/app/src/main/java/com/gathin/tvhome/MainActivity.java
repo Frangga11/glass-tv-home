@@ -748,23 +748,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     }
                     return false;
                 });
+                ayahBlock.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                        density, 10f, 0x00000000, TvUiTokens.FOCUS_HALO,
+                        0x00000000, TvUiTokens.FOCUS_BORDER));
                 ayahBlock.setOnFocusChangeListener((v, hasFocus) -> {
-                    GradientDrawable focusSurface = new GradientDrawable();
-                    focusSurface.setColor(hasFocus ? 0x443B5872 : 0x00000000);
-                    focusSurface.setCornerRadius(10 * density);
-                    // No idle frame: retain a restrained outline only while the remote focuses the verse.
-                    focusSurface.setStroke(hasFocus ? Math.max(1, Math.round(density)) : 0,
-                            hasFocus ? 0x997DD3FC : 0x00000000);
-                    v.setBackground(focusSurface);
                     if (hasFocus) SoundEffects.playNav();
                 });
             }
             if (ayahOpenHint != null) {
                 ayahOpenHint.setText(R.string.daily_ayah_open);
                 GradientDrawable hintBg = new GradientDrawable();
-                hintBg.setColor(0x224B6680);
+                hintBg.setColor(0x223F4A55);
                 hintBg.setCornerRadius(8 * density);
-                hintBg.setStroke(0, 0x00000000);
+                hintBg.setStroke(Math.max(1, Math.round(density)), 0x55DCE5ED);
                 ayahOpenHint.setBackground(hintBg);
             }
 
@@ -866,13 +862,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 return false;
             });
+            prayerTableView.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                    density, 8f, 0x00000000, TvUiTokens.FOCUS_HALO,
+                    0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
             prayerTableView.setOnFocusChangeListener((v, hasFocus) -> {
-                GradientDrawable focusSurface = new GradientDrawable();
-                focusSurface.setColor(hasFocus ? 0x553B5872 : 0x00000000);
-                focusSurface.setCornerRadius(8 * density);
-                focusSurface.setStroke(Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
-                        hasFocus ? 0xFF7DD3FC : 0x22FFFFFF);
-                v.setBackground(focusSurface);
                 if (hasFocus) SoundEffects.playNav();
             });
         }
@@ -931,13 +924,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             glider.addCompanion(pill);
             Backdrop.watch(pill);
             pill.setOnFocusChangeListener((v, has) -> {
-                if (id == R.id.weatherAirQuality) {
-                    // Compose the weather pill's focus-scale feedback with Header highlight
-                    // handling in one listener; Android keeps only the most recently assigned one.
-                    float scale = has ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f;
-                    v.animate().scaleX(scale).scaleY(scale)
-                            .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-                }
                 if (has) {
                     // Any header focus supersedes a deferred Grid target.
                     gridFocusRequestGeneration++;
@@ -4217,11 +4203,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (labels[i] != null) {
                     labels[i].setText(items[i].name);
                     if (items[i].isNext) {
-                        labels[i].setTextColor(0xFFFFD27A);
-                        if (times[i] != null) times[i].setTextColor(0xFFFFD27A);
+                        labels[i].setTextColor(TvUiTokens.ACCENT_SECTION);
+                        if (times[i] != null) times[i].setTextColor(TvUiTokens.ACCENT_SECTION);
                     } else {
-                        labels[i].setTextColor(0xFFF0F4FA);
-                        if (times[i] != null) times[i].setTextColor(0xFFFFFFFF);
+                        labels[i].setTextColor(TvUiTokens.TEXT_SECONDARY);
+                        if (times[i] != null) times[i].setTextColor(TvUiTokens.TEXT_PRIMARY);
                     }
                 }
             }
@@ -4369,22 +4355,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         close.setFocusable(true);
         close.setClickable(true);
         close.setContentDescription(getString(R.string.daily_ayah_close));
-        GradientDrawable closeBg = new GradientDrawable();
-        closeBg.setColor(0x33FFFFFF);
-        closeBg.setShape(GradientDrawable.OVAL);
-        closeBg.setStroke(Math.max(1, Math.round(density)), 0x66FFFFFF);
-        close.setBackground(closeBg);
+        close.setBackground(TvFocusIndicator.createOvalStateBackground(
+                density, 0x33FFFFFF, TvUiTokens.FOCUS_HALO,
+                0x66DCE5ED, TvUiTokens.FOCUS_BORDER));
         close.setOnClickListener(v -> {
             SoundEffects.playSelect();
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
         });
         close.setOnFocusChangeListener((v, focused) -> {
-            GradientDrawable state = new GradientDrawable();
-            state.setShape(GradientDrawable.OVAL);
-            state.setColor(focused ? 0x667DD3FC : 0x33FFFFFF);
-            state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
-                    focused ? 0xFF7DD3FC : 0x66FFFFFF);
-            v.setBackground(state);
             if (focused) SoundEffects.playNav();
         });
         header.addView(close, new LinearLayout.LayoutParams(
@@ -4412,7 +4390,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         TextView arabic = new TextView(this);
         arabic.setText(ayah.arabic.trim());
-        arabic.setTextColor(0xFFFFD38A);
+        arabic.setTextColor(TvUiTokens.TEXT_PRIMARY);
         arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP,
                 getResources().getDisplayMetrics().widthPixels >= 3840 ? 34f : 28f);
         arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
@@ -4429,7 +4407,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         TextView meaningLabel = new TextView(this);
         meaningLabel.setText(R.string.daily_ayah_meaning_label);
-        meaningLabel.setTextColor(0xFFFFD38A);
+        meaningLabel.setTextColor(TvUiTokens.TEXT_SECONDARY);
         meaningLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
         meaningLabel.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         LinearLayout.LayoutParams meaningLabelLp = new LinearLayout.LayoutParams(
@@ -4481,19 +4459,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         closeAction.setGravity(Gravity.CENTER);
         closeAction.setFocusable(true);
         closeAction.setClickable(true);
-        GradientDrawable actionBg = new GradientDrawable();
-        actionBg.setColor(0x334B6680);
-        actionBg.setCornerRadius(10 * density);
-        actionBg.setStroke(Math.max(1, Math.round(density)), 0x557DD3FC);
-        closeAction.setBackground(actionBg);
+        closeAction.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                density, 10f, 0x223F4A55, TvUiTokens.FOCUS_HALO,
+                0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
         closeAction.setOnClickListener(v -> dialogHolder[0].dismiss());
         closeAction.setOnFocusChangeListener((v, focused) -> {
-            GradientDrawable state = new GradientDrawable();
-            state.setColor(focused ? 0x667DD3FC : 0x334B6680);
-            state.setCornerRadius(10 * density);
-            state.setStroke(Math.max(1, Math.round((focused ? 2f : 1f) * density)),
-                    focused ? 0xFF7DD3FC : 0x557DD3FC);
-            v.setBackground(state);
             if (focused) SoundEffects.playNav();
         });
         panel.addView(closeAction, closeLp);
@@ -5087,7 +5057,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         soundTag.setTextSize(12.5f);
         soundTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         soundTag.setFontVariationSettings("'wght' 700");
-        soundTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
+        soundTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.ACCENT_CYAN}));
         rightCol.addView(soundRow);
 
         // Bahagian D: Ujian Azan
@@ -5111,7 +5081,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         testTag.setTextSize(13);
         testTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         testTag.setFontVariationSettings("'wght' 700");
-        testTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFF38BDF8}));
+        testTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.ACCENT_CYAN}));
         rightCol.addView(testRow);
 
         // Info Card
@@ -5155,7 +5125,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         closeTag.setTextSize(12.5f);
         closeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         closeTag.setFontVariationSettings("'wght' 700");
-        closeTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0x88FFFFFF}));
+        closeTag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_SECONDARY}));
         rightCol.addView(closeRow);
 
         twoCols.addView(rightCol);
@@ -5237,8 +5207,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         tag.setTextSize(13);
         tag.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         tag.setFontVariationSettings(on ? "'wght' 700" : "'wght' 600");
-        int color = on ? 0xFF38BDF8 : 0x99FFFFFF;
-        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, color}));
+        int color = on ? TvUiTokens.ACCENT_CYAN : TvUiTokens.TEXT_SECONDARY;
+        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, color}));
     }
 
     private void updatePrayerTag(TextView tag, boolean on) {
@@ -5246,15 +5216,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         tag.setTextSize(13);
         tag.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         tag.setFontVariationSettings(on ? "'wght' 700" : "'wght' 600");
-        int color = on ? 0xFF38BDF8 : 0x99FFFFFF;
-        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, color}));
+        int color = on ? TvUiTokens.ACCENT_CYAN : TvUiTokens.TEXT_SECONDARY;
+        tag.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, color}));
     }
 
     private TextView createDialogSectionHeader(String title) {
         TextView tv = new TextView(this);
         tv.setText(title);
         tv.setTextSize(11.5f);
-        tv.setTextColor(0xFF38BDF8);
+        tv.setTextColor(TvUiTokens.ACCENT_SECTION);
         tv.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         tv.setFontVariationSettings("'wght' 700");
         tv.setLetterSpacing(0.08f);
@@ -5273,11 +5243,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         StateListDrawable bg = new StateListDrawable();
         GradientDrawable on = new GradientDrawable();
-        on.setColor(0xFFFFFFFF);
+        on.setColor(TvUiTokens.SURFACE_FOCUSED);
         on.setCornerRadius(9 * density);
+        on.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
         GradientDrawable off = new GradientDrawable();
-        off.setColor(0x1AFFFFFF);
+        off.setColor(0x223F4B56);
         off.setCornerRadius(9 * density);
+        off.setStroke(Math.max(1, (int) density), 0x55DCE5ED);
         bg.addState(new int[]{android.R.attr.state_focused}, on);
         bg.addState(new int[]{}, off);
         row.setBackground(bg);
@@ -5290,7 +5262,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView rowTitle = new TextView(this);
         rowTitle.setText(title);
         rowTitle.setTextSize(15);
-        rowTitle.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
+        rowTitle.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY}));
         rowTitle.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         rowTitle.setFontVariationSettings("'wght' 700");
         rowTitle.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
@@ -5308,7 +5280,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             TextView rowSub = new TextView(this);
             rowSub.setText(subtitle);
             rowSub.setTextSize(12.5f);
-            rowSub.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF1E293B, 0xD9FFFFFF}));
+            rowSub.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_SECONDARY}));
             rowSub.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
             rowSub.setFontVariationSettings("'wght' 600");
             rowSub.setShadowLayer(2 * density, 0, 1 * density, 0xAA000000);
@@ -5466,13 +5438,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         AlertDialog dialog = builder.create();
 
         View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
-            if (v instanceof TextView) {
-                ((TextView) v).setTextColor(hasFocus ? 0xFF000000 : 0xFFFFFFFF);
-            }
             if (hasFocus) SoundEffects.playNav();
         };
         if (btnCheckNow != null) {
-            btnCheckNow.setTextColor(0xFF000000);
+            btnCheckNow.setTextColor(TvUiTokens.TEXT_PRIMARY);
             btnCheckNow.setOnFocusChangeListener(focusListener);
             btnCheckNow.setOnClickListener(v -> {
                 SoundEffects.playSelect();
@@ -5481,7 +5450,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             });
         }
         if (btnClose != null) {
-            btnClose.setTextColor(0xFFFFFFFF);
+            btnClose.setTextColor(TvUiTokens.TEXT_PRIMARY);
             btnClose.setOnFocusChangeListener(focusListener);
             btnClose.setOnClickListener(v -> {
                 SoundEffects.playSelect();
@@ -5677,14 +5646,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         View.OnFocusChangeListener btnFocus = (v, hasFocus) -> {
             if (hasFocus) SoundEffects.playNav();
-            float scale = hasFocus ? 1.08f : 1.0f;
-            v.animate()
-                    .scaleX(scale)
-                    .scaleY(scale)
-                    .setDuration(120)
-                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
-                    .withLayer()
-                    .start();
+            // The existing button drawables provide the cyan focus outline; keep geometry unchanged.
         };
 
         if (btnPopupPrev != null) btnPopupPrev.setOnFocusChangeListener(btnFocus);
@@ -6006,23 +5968,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     (int) (8 * density));
             row.setSelected(isActive);
 
-            StateListDrawable bg = new StateListDrawable();
-            GradientDrawable focused = new GradientDrawable();
-            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
-            focused.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            focused.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
-            GradientDrawable selected = new GradientDrawable();
-            selected.setColor(TvUiTokens.NAV_ITEM_SELECTED);
-            selected.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            selected.setStroke(Math.max(1, (int) density), TvUiTokens.NAV_SELECTION_BORDER);
-            GradientDrawable normal = new GradientDrawable();
-            normal.setColor(TvUiTokens.SURFACE);
-            normal.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            normal.setStroke(Math.max(1, (int) density), TvUiTokens.BORDER);
-            bg.addState(new int[]{android.R.attr.state_focused}, focused);
-            bg.addState(new int[]{android.R.attr.state_selected}, selected);
-            bg.addState(new int[]{}, normal);
-            row.setBackground(bg);
+            row.setBackground(TvFocusIndicator.createSelectableRoundedStateBackground(
+                    density, TvUiTokens.CARD_RADIUS_DP, TvUiTokens.SURFACE,
+                    TvUiTokens.NAV_ITEM_SELECTED, TvUiTokens.SURFACE_FOCUSED,
+                    TvUiTokens.BORDER, TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
 
             // Row horizontal container for Title + Active tag
             LinearLayout topRow = new LinearLayout(this);
@@ -6045,17 +5994,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 activeTag = new TextView(this);
                 activeTag.setText("✓ " + AppLanguage.strNowBadge(this));
                 activeTag.setTextSize(13);
-                activeTag.setTextColor(0xFF38BDF8);
+                activeTag.setTextColor(TvUiTokens.ACCENT_SECTION);
                 activeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
                 activeTag.setFontVariationSettings("'wght' 700");
                 topRow.addView(activeTag);
             }
             row.addView(topRow);
-
-            row.setOnFocusChangeListener((v, hasFocus) -> {
-                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
-                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-            });
 
             final String chosenKey = opt.key;
             row.setOnClickListener(v -> {
@@ -6200,23 +6144,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     (int) (8 * density));
             row.setSelected(isActive);
 
-            StateListDrawable bg = new StateListDrawable();
-            GradientDrawable focused = new GradientDrawable();
-            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
-            focused.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            focused.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
-            GradientDrawable selected = new GradientDrawable();
-            selected.setColor(TvUiTokens.NAV_ITEM_SELECTED);
-            selected.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            selected.setStroke(Math.max(1, (int) density), TvUiTokens.NAV_SELECTION_BORDER);
-            GradientDrawable normal = new GradientDrawable();
-            normal.setColor(TvUiTokens.SURFACE);
-            normal.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            normal.setStroke(Math.max(1, (int) density), TvUiTokens.BORDER);
-            bg.addState(new int[]{android.R.attr.state_focused}, focused);
-            bg.addState(new int[]{android.R.attr.state_selected}, selected);
-            bg.addState(new int[]{}, normal);
-            row.setBackground(bg);
+            row.setBackground(TvFocusIndicator.createSelectableRoundedStateBackground(
+                    density, TvUiTokens.CARD_RADIUS_DP, TvUiTokens.SURFACE,
+                    TvUiTokens.NAV_ITEM_SELECTED, TvUiTokens.SURFACE_FOCUSED,
+                    TvUiTokens.BORDER, TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
 
             LinearLayout topRow = new LinearLayout(this);
             topRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -6238,17 +6169,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 activeTag = new TextView(this);
                 activeTag.setText("✓ " + AppLanguage.strNowBadge(this));
                 activeTag.setTextSize(13);
-                activeTag.setTextColor(0xFF38BDF8);
+                activeTag.setTextColor(TvUiTokens.ACCENT_SECTION);
                 activeTag.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
                 activeTag.setFontVariationSettings("'wght' 700");
                 topRow.addView(activeTag);
             }
             row.addView(topRow);
-
-            row.setOnFocusChangeListener((v, hasFocus) -> {
-                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f)
-                        .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-            });
 
             final int chosenMin = opt.minutes;
             row.setOnClickListener(v -> {
@@ -6630,7 +6556,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         GradientDrawable cardBg = new GradientDrawable();
         cardBg.setColor(0x24FFFFFF);
         cardBg.setCornerRadius(14 * density);
-        cardBg.setStroke((int) (1.8f * density), 0x8064D2FF);
+        cardBg.setStroke((int) (1.8f * density), 0x80DCE5ED);
         statusCard.setBackground(cardBg);
 
         Location.Zone zone = Location.chosen(this);
@@ -6728,15 +6654,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         StateListDrawable bg = new StateListDrawable();
         GradientDrawable on = new GradientDrawable();
-        on.setColor(0xFFFFFFFF);
+        on.setColor(TvUiTokens.SURFACE_FOCUSED);
         on.setCornerRadius(12 * density);
+        on.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER);
         GradientDrawable off = new GradientDrawable();
-        off.setColor(0x1AFFFFFF);
+        off.setColor(0x223F4B56);
         off.setCornerRadius(12 * density);
+        off.setStroke(Math.max(1, (int) density), 0x55DCE5ED);
         bg.addState(new int[]{android.R.attr.state_focused}, on);
         bg.addState(new int[]{}, off);
         btn.setBackground(bg);
-        btn.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{0xFF000000, 0xFFFFFFFF}));
+        btn.setTextColor(new ColorStateList(new int[][]{{android.R.attr.state_focused}, {}}, new int[]{TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY}));
 
         btn.setOnClickListener(v -> onClick.run());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -6798,7 +6726,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (ayah != null && ayah.arabic != null && !ayah.arabic.trim().isEmpty()) {
             TextView arabic = new TextView(this);
             arabic.setText(ayah.arabic.trim());
-            arabic.setTextColor(0xFFFFC56B);
+            arabic.setTextColor(TvUiTokens.TEXT_PRIMARY);
             arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25f);
             arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
             arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
@@ -7032,7 +6960,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         qrUrlText = new TextView(this);
         qrUrlText.setText("🌐 " + uploadUrl);
-        qrUrlText.setTextColor(0xFF38BDF8);
+        qrUrlText.setTextColor(TvUiTokens.ACCENT_BLUE);
         qrUrlText.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         qrUrlText.setFontVariationSettings("'wght' 700");
         qrUrlText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -7707,7 +7635,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (clock != null) clock.setTextColor(0xFFFFFFFF);
             if (ampm != null) ampm.setTextColor(0xB3FFFFFF);
             if (date != null) date.setTextColor(0xE6FFFFFF);
-            if (hijri != null) hijri.setTextColor(0xD9E6E0D2);
+            if (hijri != null) hijri.setTextColor(TvUiTokens.TEXT_SECONDARY);
             if (prayer != null) {
                 prayer.setTextColor(0xFFFFFFFF);
                 prayer.setBackgroundResource(R.drawable.pill_bg);

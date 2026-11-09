@@ -273,15 +273,12 @@ public final class ModernSettingsDialog {
         searchPrompt.setTypeface(outfit, Typeface.NORMAL);
         searchBox.addView(searchPrompt);
 
+        searchBox.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                density, 10f, TvUiTokens.INPUT_SURFACE, TvUiTokens.SURFACE_FOCUSED,
+                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER));
         searchBox.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.INPUT_SURFACE);
-            g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
-            v.setBackground(g);
             searchPrompt.setTextColor(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
             searchIcon.setColorFilter(hasFocus ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
         });
 
         // The real search action is attached after the settings tabs are registered.
@@ -451,7 +448,7 @@ public final class ModernSettingsDialog {
                 updateSidebarSelection.run();
                 if (renderRightPane[0] != null) renderRightPane[0].run();
             }
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+
         });
 
         profileCard.setOnKeyListener((v, keyCode, event) -> {
@@ -522,7 +519,7 @@ public final class ModernSettingsDialog {
                     updateSidebarSelection.run();
                     if (renderRightPane[0] != null) renderRightPane[0].run();
                 }
-                v.animate().scaleX(hasFocus ? TvUiTokens.NAV_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.NAV_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+    
             });
 
             row.setOnKeyListener((v, keyCode, event) -> {
@@ -742,12 +739,13 @@ public final class ModernSettingsDialog {
                 uploadAvatarButton.setAllCaps(false);
                 uploadAvatarButton.setFocusable(true);
                 GradientDrawable uploadAvatarBg = new GradientDrawable();
-                uploadAvatarBg.setColor(0xFF176B87);
+                uploadAvatarBg.setColor(TvUiTokens.SURFACE_SELECTED);
                 uploadAvatarBg.setCornerRadius(10 * density);
                 uploadAvatarButton.setBackground(uploadAvatarBg);
                 TvFocusIndicator.applyRoundedTextFocus(uploadAvatarButton, density, 10f,
-                        0xFF176B87, 0xFF1B7189, 0xFF2C7F98, TvUiTokens.TEXT_PRIMARY,
-                        TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
+                        TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                        TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_PRIMARY,
+                        TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
                 uploadAvatarButton.setOnClickListener(v -> activity.showAvatarUploadQrDialog(activeP.id, () -> {
                     ProfileManager.UserProfile updated = ProfileManager.getActiveProfile(activity);
                     boolean updatedChildMode = ChildModeManager.isChildModeEnabled(activity, updated.id);
@@ -777,12 +775,13 @@ public final class ModernSettingsDialog {
                 defaultAvatarButton.setAllCaps(false);
                 defaultAvatarButton.setFocusable(true);
                 GradientDrawable defaultAvatarBg = new GradientDrawable();
-                defaultAvatarBg.setColor(0xFF292D37);
+                defaultAvatarBg.setColor(TvUiTokens.SURFACE);
                 defaultAvatarBg.setCornerRadius(10 * density);
                 defaultAvatarButton.setBackground(defaultAvatarBg);
                 TvFocusIndicator.applyRoundedTextFocus(defaultAvatarButton, density, 10f,
-                        0xFF292D37, 0xFF3B4354, 0xFF454B5A, TvUiTokens.TEXT_PRIMARY,
-                        TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
+                        TvUiTokens.SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                        TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_SECONDARY,
+                        TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
                 LinearLayout.LayoutParams defaultAvatarLp = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density));
                 defaultAvatarLp.topMargin = (int) (6 * density);
@@ -857,14 +856,9 @@ public final class ModernSettingsDialog {
                 tvCurName.setTypeface(outfit, Typeface.NORMAL);
                 editNameCard.addView(tvCurName);
 
-                editNameCard.setOnFocusChangeListener((v, hasFocus) -> {
-                    GradientDrawable g = new GradientDrawable();
-                    g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
-                    g.setCornerRadius(12 * density);
-                    if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
-                    v.setBackground(g);
-                    v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-                });
+                editNameCard.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                        density, 12f, TvUiTokens.SURFACE, TvUiTokens.SURFACE_FOCUSED,
+                        TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER));
 
                 editNameCard.setOnKeyListener((v, keyCode, event) -> {
                     if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
@@ -943,7 +937,7 @@ public final class ModernSettingsDialog {
                         TextView tvTag = new TextView(activity);
                         tvTag.setText(R.string.active_label);
                         tvTag.setTextSize(11f);
-                        tvTag.setTextColor(TvUiTokens.ACCENT_CYAN);
+                        tvTag.setTextColor(TvUiTokens.ACCENT_SECTION);
                         tvTag.setTypeface(outfit, Typeface.BOLD);
                         pRow.addView(tvTag);
                     } else if (allProfiles.size() > 1) {
@@ -955,16 +949,11 @@ public final class ModernSettingsDialog {
                         pRow.addView(tvDel);
                     }
 
-                    pRow.setOnFocusChangeListener((v, hasFocus) -> {
-                        GradientDrawable g = new GradientDrawable();
-                        g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : (isCur ? TvUiTokens.SURFACE_SELECTED : TvUiTokens.SURFACE_IDLE));
-                        g.setCornerRadius(12 * density);
-                        if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
-                        else if (isCur) g.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
-                        v.setBackground(g);
-                        v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-                    });
-
+                    pRow.setSelected(isCur);
+                    pRow.setBackground(TvFocusIndicator.createSelectableRoundedStateBackground(
+                            density, 12f, TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_SELECTED,
+                            TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                            TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
                     pRow.setOnKeyListener((v, keyCode, event) -> {
                         if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                             if (sDpadLeftTarget != null) {
@@ -1899,14 +1888,9 @@ public final class ModernSettingsDialog {
             card.addView(tvSub);
         }
 
-        card.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
-            g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
-            v.setBackground(g);
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-        });
+        card.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                density, TvUiTokens.CARD_RADIUS_DP, TvUiTokens.SURFACE,
+                TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER));
 
         card.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
@@ -1970,16 +1954,9 @@ public final class ModernSettingsDialog {
         sw.setClickable(false);
         card.addView(sw);
 
-        card.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE);
-            g.setCornerRadius(TvUiTokens.CARD_RADIUS_DP * density);
-            if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
-            v.setBackground(g);
-            v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
-                    .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
-                    .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-        });
+        card.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                density, TvUiTokens.CARD_RADIUS_DP, TvUiTokens.SURFACE,
+                TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER));
 
         card.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
@@ -2011,7 +1988,7 @@ public final class ModernSettingsDialog {
         card.setPadding((int) (16 * density), (int) (10 * density), (int) (16 * density), (int) (10 * density));
 
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF22252E);
+        bg.setColor(TvUiTokens.SURFACE);
         bg.setCornerRadius(12 * density);
         card.setBackground(bg);
 
@@ -2047,10 +2024,10 @@ public final class ModernSettingsDialog {
         GradientDrawable etBg = new GradientDrawable();
         etBg.setColor(TvUiTokens.INPUT_SURFACE);
         etBg.setCornerRadius(10 * density);
-        etBg.setStroke((int) (1 * density), 0xFF4A4E5C);
+        etBg.setStroke((int) (1 * density), TvUiTokens.BORDER);
         et.setBackground(etBg);
         TvFocusIndicator.applyRoundedTextFocus(et, density, 10f,
-                TvUiTokens.INPUT_SURFACE, 0xFF333B4B, 0xFF4A4E5C, TvUiTokens.ACCENT_SECTION,
+                TvUiTokens.INPUT_SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
 
         FrameLayout container = new FrameLayout(activity);
@@ -2290,14 +2267,9 @@ public final class ModernSettingsDialog {
             cb.setClickable(false);
             row.addView(cb);
 
-            row.setOnFocusChangeListener((v, hasFocus) -> {
-                GradientDrawable g = new GradientDrawable();
-                g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE_IDLE);
-                g.setCornerRadius(10 * density);
-                if (hasFocus) g.setStroke((int) (2f * density), TvUiTokens.FOCUS_BORDER);
-                v.setBackground(g);
-                v.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
-            });
+            row.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                    density, 10f, TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
+                    TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER));
 
             row.setOnClickListener(v -> {
                 SoundEffects.playSelect();
@@ -2327,18 +2299,10 @@ public final class ModernSettingsDialog {
         btnDone.setFocusable(true);
         btnDone.setClickable(true);
 
-        GradientDrawable btnBg = new GradientDrawable();
-        btnBg.setColor(TvUiTokens.SUCCESS);
-        btnBg.setCornerRadius(10 * density);
-        btnDone.setBackground(btnBg);
-
-        btnDone.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(TvUiTokens.SUCCESS);
-            g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
-            v.setBackground(g);
-        });
+        TvFocusIndicator.applyRoundedTextFocus(btnDone, density, 10f,
+                TvUiTokens.SUCCESS, TvUiTokens.SUCCESS, TvUiTokens.SUCCESS,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_PRIMARY,
+                TvUiTokens.TEXT_PRIMARY, 1.0f);
 
         final boolean[] savedSelection = new boolean[]{false};
         btnDone.setOnClickListener(v -> {
@@ -2519,13 +2483,10 @@ public final class ModernSettingsDialog {
         btnClose.setBackground(closeBg);
         btnClose.setFocusable(true);
         btnClose.setPadding((int) (16 * density), (int) (8 * density), (int) (16 * density), (int) (8 * density));
-        btnClose.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? TvUiTokens.SURFACE_FOCUSED : TvUiTokens.SURFACE_IDLE);
-            g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), TvUiTokens.FOCUS_BORDER);
-            v.setBackground(g);
-        });
+        TvFocusIndicator.applyRoundedTextFocus(btnClose, density, 10f,
+                TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_PRIMARY,
+                TvUiTokens.TEXT_PRIMARY, 1.0f);
         btnClose.setOnClickListener(v -> {
             SoundEffects.playSelect();
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();

@@ -327,7 +327,7 @@ final class QuickSettingsDialog {
 
     private static void addDivider(Activity activity, LinearLayout parent, float density, int topMarginDp) {
         View divider = new View(activity);
-        divider.setBackgroundColor(0x66426BAA);
+        divider.setBackgroundColor(0x66DCE5ED);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 1));
         lp.topMargin = dp(density, topMarginDp);

@@ -28,6 +28,29 @@ public class TvFocusIndicatorRobolectricTest {
     }
 
     @Test
+    public void sharedRoundedBackgroundSeparatesDisabledPressedFocusedAndNormalStates() {
+        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        StateListDrawable states = TvFocusIndicator.createRoundedStateBackground(
+                1f, 10f, android.graphics.Color.TRANSPARENT, TvUiTokens.FOCUS_HALO,
+                android.graphics.Color.TRANSPARENT, TvUiTokens.FOCUS_BORDER);
+        states.setState(new int[]{-android.R.attr.state_enabled});
+        Drawable disabled = states.getCurrent();
+        assertNotNull(disabled);
+        states.setState(new int[]{android.R.attr.state_enabled, android.R.attr.state_pressed});
+        Drawable pressed = states.getCurrent();
+        assertNotNull(pressed);
+        assertNotSame(disabled, pressed);
+        states.setState(new int[]{android.R.attr.state_enabled, android.R.attr.state_focused});
+        Drawable focused = states.getCurrent();
+        assertNotNull(focused);
+        assertNotSame(pressed, focused);
+        states.setState(new int[]{android.R.attr.state_enabled});
+        Drawable normal = states.getCurrent();
+        assertNotNull(normal);
+        assertNotSame(focused, normal);
+    }
+
+    @Test
     public void sharedFocusOutlineUsesStatefulForegroundWithoutReplacingBackground() {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         android.view.View view = new android.view.View(activity);
@@ -37,10 +60,10 @@ public class TvFocusIndicatorRobolectricTest {
         assertNotNull(outline);
         assertTrue(outline instanceof StateListDrawable);
 
-        outline.setState(new int[]{android.R.attr.state_focused});
+        outline.setState(new int[]{android.R.attr.state_enabled, android.R.attr.state_focused});
         assertTrue(((StateListDrawable) outline).getCurrent() instanceof GradientDrawable);
         Drawable focused = ((StateListDrawable) outline).getCurrent();
-        outline.setState(new int[0]);
+        outline.setState(new int[]{android.R.attr.state_enabled});
         assertNotSame(focused, ((StateListDrawable) outline).getCurrent());
         view.setForeground(outline);
         assertTrue(view.getBackground() == background);

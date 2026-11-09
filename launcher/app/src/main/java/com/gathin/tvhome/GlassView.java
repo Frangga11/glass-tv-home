@@ -15,6 +15,7 @@ import android.view.View;
 public class GlassView extends View {
 
     private final GlassRim rim;
+    private final Paint focusStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF rect = new RectF();
     private final float density;
     private float radius;
@@ -25,6 +26,9 @@ public class GlassView extends View {
         radius = 20f * density;
         // The same shining edge as the top-bar pills (GlassDrawable), at the same width.
         rim = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF);
+        focusStroke.setStyle(Paint.Style.STROKE);
+        focusStroke.setStrokeWidth(2f * density);
+        focusStroke.setColor(TvUiTokens.FOCUS_BORDER);
         // Cache the slab as a texture. The spring only changes translation, so the GPU can
         // move it without replaying clipPath and the glow on every frame. That path is
         // software-rendered on the MT5895 and is what makes the highlight crawl.
@@ -46,5 +50,9 @@ public class GlassView extends View {
         rim.fit(rect);
         canvas.drawRoundRect(rect, radius, radius, rim.paint);
         rim.drawWindowLight(canvas, rect, radius, 1f);
+        float half = focusStroke.getStrokeWidth() / 2f;
+        rect.inset(half, half);
+        canvas.drawRoundRect(rect, Math.max(0f, radius - half),
+                Math.max(0f, radius - half), focusStroke);
     }
 }

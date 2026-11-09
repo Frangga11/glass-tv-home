@@ -1,8 +1,10 @@
 package com.gathin.tvhome;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -17,6 +19,79 @@ import android.widget.TextView;
  */
 final class TvFocusIndicator {
     private TvFocusIndicator() { }
+
+    static StateListDrawable createRoundedStateBackground(float density, float radiusDp,
+            int normalFill, int focusedFill, int normalStroke, int focusedStroke) {
+        return createStateBackground(density, radiusDp, GradientDrawable.RECTANGLE,
+                normalFill, focusedFill, normalStroke, focusedStroke);
+    }
+
+    static StateListDrawable createOvalStateBackground(float density, int normalFill,
+            int focusedFill, int normalStroke, int focusedStroke) {
+        return createStateBackground(density, 0f, GradientDrawable.OVAL,
+                normalFill, focusedFill, normalStroke, focusedStroke);
+    }
+
+    static StateListDrawable createSelectableRoundedStateBackground(float density, float radiusDp,
+            int normalFill, int selectedFill, int focusedFill,
+            int normalStroke, int selectedStroke, int focusedStroke) {
+        StateListDrawable states = new StateListDrawable();
+        GradientDrawable disabled = rounded(density, radiusDp, TvUiTokens.DISABLED_SURFACE,
+                TvUiTokens.DISABLED_BORDER, 1f);
+        GradientDrawable pressed = rounded(density, radiusDp, TvUiTokens.SURFACE_SELECTED,
+                TvUiTokens.FOCUS_BORDER, 1f);
+        GradientDrawable focused = rounded(density, radiusDp, focusedFill, focusedStroke, 2f);
+        GradientDrawable selected = rounded(density, radiusDp, selectedFill, selectedStroke, 1f);
+        GradientDrawable normal = rounded(density, radiusDp, normalFill, normalStroke, 1f);
+        states.addState(new int[]{-android.R.attr.state_enabled}, disabled);
+        states.addState(new int[]{android.R.attr.state_pressed}, pressed);
+        states.addState(new int[]{android.R.attr.state_focused}, focused);
+        states.addState(new int[]{android.R.attr.state_selected}, selected);
+        states.addState(new int[]{}, normal);
+        return states;
+    }
+
+    private static GradientDrawable rounded(float density, float radiusDp, int fill, int stroke, float strokeDp) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(fill);
+        drawable.setCornerRadius(radiusDp * density);
+        drawable.setStroke(Math.max(1, Math.round(strokeDp * density)), stroke);
+        return drawable;
+    }
+
+    private static StateListDrawable createStateBackground(float density, float radiusDp, int shape,
+            int normalFill, int focusedFill, int normalStroke, int focusedStroke) {
+        StateListDrawable states = new StateListDrawable();
+        GradientDrawable disabled = new GradientDrawable();
+        disabled.setShape(shape);
+        if (shape == GradientDrawable.RECTANGLE) disabled.setCornerRadius(radiusDp * density);
+        disabled.setColor(TvUiTokens.DISABLED_SURFACE);
+        disabled.setStroke(Math.max(1, Math.round(density)), TvUiTokens.DISABLED_BORDER);
+
+        GradientDrawable pressed = new GradientDrawable();
+        pressed.setShape(shape);
+        if (shape == GradientDrawable.RECTANGLE) pressed.setCornerRadius(radiusDp * density);
+        pressed.setColor(TvUiTokens.SURFACE_SELECTED);
+        pressed.setStroke(Math.max(1, Math.round(density)), TvUiTokens.FOCUS_BORDER);
+
+        GradientDrawable focused = new GradientDrawable();
+        focused.setShape(shape);
+        if (shape == GradientDrawable.RECTANGLE) focused.setCornerRadius(radiusDp * density);
+        focused.setColor(focusedFill);
+        focused.setStroke(Math.max(1, Math.round(2f * density)), focusedStroke);
+
+        GradientDrawable normal = new GradientDrawable();
+        normal.setShape(shape);
+        if (shape == GradientDrawable.RECTANGLE) normal.setCornerRadius(radiusDp * density);
+        normal.setColor(normalFill);
+        normal.setStroke(Math.max(1, Math.round(density)), normalStroke);
+
+        states.addState(new int[]{-android.R.attr.state_enabled}, disabled);
+        states.addState(new int[]{android.R.attr.state_pressed}, pressed);
+        states.addState(new int[]{android.R.attr.state_focused}, focused);
+        states.addState(new int[]{}, normal);
+        return states;
+    }
 
     static View attachAvatarFocusRing(FrameLayout frame, int frameSizePx, float density) {
         if (frame == null) return null;
@@ -38,9 +113,8 @@ final class TvFocusIndicator {
         frame.setOnFocusChangeListener((view, hasFocus) -> {
             focusRing.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
             view.animate().cancel();
-            view.animate().scaleX(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
-                    .scaleY(hasFocus ? TvUiTokens.CARD_FOCUS_SCALE : 1.0f)
-                    .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+            view.setScaleX(1.0f);
+            view.setScaleY(1.0f);
         });
         return focusRing;
     }
@@ -51,19 +125,42 @@ final class TvFocusIndicator {
                                       int normalText, int focusedText,
                                       float focusedScale) {
         if (view == null) return;
+        StateListDrawable background = new StateListDrawable();
+        GradientDrawable disabled = new GradientDrawable();
+        disabled.setColor(TvUiTokens.DISABLED_SURFACE);
+        disabled.setCornerRadius(radiusDp * density);
+        disabled.setStroke(Math.max(1, Math.round(density)), TvUiTokens.DISABLED_BORDER);
+        GradientDrawable pressed = new GradientDrawable();
+        pressed.setColor(TvUiTokens.SURFACE_SELECTED);
+        pressed.setCornerRadius(radiusDp * density);
+        pressed.setStroke(Math.max(1, Math.round(density)), focusedStroke);
+        GradientDrawable focused = new GradientDrawable();
+        focused.setColor(focusedFill);
+        focused.setCornerRadius(radiusDp * density);
+        focused.setStroke(Math.max(1, Math.round(2f * density)), focusedStroke);
+        GradientDrawable normal = new GradientDrawable();
+        normal.setColor(normalFill);
+        normal.setCornerRadius(radiusDp * density);
+        normal.setStroke(Math.max(1, Math.round(density)), normalStroke);
+        background.addState(new int[]{-android.R.attr.state_enabled}, disabled);
+        background.addState(new int[]{android.R.attr.state_pressed}, pressed);
+        background.addState(new int[]{android.R.attr.state_focused}, focused);
+        background.addState(new int[]{}, normal);
+        view.setBackground(background);
+        view.setTextColor(new ColorStateList(
+                new int[][]{
+                        new int[]{-android.R.attr.state_enabled},
+                        new int[]{android.R.attr.state_pressed},
+                        new int[]{android.R.attr.state_focused},
+                        new int[]{}
+                },
+                new int[]{TvUiTokens.DISABLED_TEXT, focusedText, focusedText, normalText}
+        ));
+        // Keep focusedScale in the signature for existing callers; focus must not alter geometry.
         view.setOnFocusChangeListener((target, hasFocus) -> {
-            GradientDrawable background = new GradientDrawable();
-            background.setColor(hasFocus ? focusedFill : normalFill);
-            background.setCornerRadius(radiusDp * density);
-            background.setStroke(
-                    Math.max(1, Math.round((hasFocus ? 2f : 1f) * density)),
-                    hasFocus ? focusedStroke : normalStroke);
-            view.setBackground(background);
-            view.setTextColor(hasFocus ? focusedText : normalText);
             target.animate().cancel();
-            target.animate().scaleX(hasFocus ? focusedScale : 1.0f)
-                    .scaleY(hasFocus ? focusedScale : 1.0f)
-                    .setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+            target.setScaleX(1.0f);
+            target.setScaleY(1.0f);
         });
     }
 }

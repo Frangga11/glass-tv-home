@@ -41,8 +41,11 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
 
     def test_prayer_text_uses_solid_high_contrast_colors_and_keeps_native_font(self):
         self.assertIn("prayerHeader.setTextColor(0xFFF4F7FC)", MAIN)
-        self.assertIn("labels[i].setTextColor(0xFFFFD27A)", MAIN)
-        self.assertIn("labels[i].setTextColor(0xFFF0F4FA)", MAIN)
+        self.assertIn("labels[i].setTextColor(TvUiTokens.ACCENT_SECTION)", MAIN)
+        self.assertIn("times[i].setTextColor(TvUiTokens.ACCENT_SECTION)", MAIN)
+        self.assertIn("labels[i].setTextColor(TvUiTokens.TEXT_SECONDARY)", MAIN)
+        self.assertIn("times[i].setTextColor(TvUiTokens.TEXT_PRIMARY)", MAIN)
+        self.assertNotIn("0xFFFFD27A", MAIN)
         self.assertNotIn("applyPrayerTextGradient", MAIN)
         self.assertNotIn("labels[i].setTypeface(Typeface.DEFAULT", MAIN)
         self.assertNotIn("times[i].setTypeface(Typeface.DEFAULT", MAIN)
@@ -71,8 +74,10 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
 
     def test_daily_ayah_scrim_is_subtle_and_has_no_idle_outline(self):
         self.assertIn("new int[]{0x00000000, 0x12000000, 0x26000000}", MAIN)
-        self.assertIn("focusSurface.setStroke(hasFocus ? Math.max(1, Math.round(density)) : 0,", MAIN)
-        self.assertIn("hintBg.setStroke(0, 0x00000000)", MAIN)
+        self.assertIn("TvFocusIndicator.createRoundedStateBackground(", MAIN)
+        self.assertIn("TvUiTokens.FOCUS_HALO", MAIN)
+        self.assertIn("TvUiTokens.FOCUS_BORDER", MAIN)
+        self.assertIn("hintBg.setStroke(Math.max(1, Math.round(density)), 0x55DCE5ED)", MAIN)
         self.assertIn("ayahBlock.setOnKeyListener", MAIN)
         self.assertIn("showDailyAyahDialog();", MAIN)
 
