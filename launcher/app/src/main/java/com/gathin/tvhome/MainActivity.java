@@ -903,7 +903,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
-            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider, 1f, true));
+            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, null));
             glider.addCompanion(navCapsule);
             Backdrop.watch(navCapsule);
         }
@@ -915,7 +915,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     || id == R.id.btnSettings;
             if (navigationTab) {
                 // The three tabs are transparent focus targets inside one shared capsule.
-                // Their selector paints only the active/focused segment; it is not a second glass pill.
+                // Their selector handles press feedback only; DPAD focus is the shared Glider overlay.
                 pill.setBackgroundColor(android.graphics.Color.TRANSPARENT);
                 pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
             } else {
