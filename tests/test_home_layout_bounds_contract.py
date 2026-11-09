@@ -333,10 +333,12 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("btnHome.requestFocus()", weather_keys)
 
     def test_home_profile_and_settings_tabs_keep_their_real_actions(self):
-        self.assertIn(
-            "if (btnHome != null) btnHome.setOnClickListener(v -> updateHomeTabIndicator());",
-            MAIN,
-        )
+        self.assertNotIn("updateHomeTabIndicator", MAIN)
+        home = ET.parse(LAYOUT).getroot()
+        home_button = next(node for node in home.iter()
+                           if node.get(ANDROID + "id") == "@+id/btnHome")
+        self.assertEqual(home_button.get(ANDROID + "focusable"), "true")
+        self.assertEqual(home_button.get(ANDROID + "clickable"), "true")
         self.assertIn(
             "btnCandyBox.setOnClickListener(v -> showCandyBoxPopup());",
             MAIN,
