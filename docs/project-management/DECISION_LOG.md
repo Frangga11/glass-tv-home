@@ -1,3 +1,20 @@
+## CURRENT APPROVED SCOPE / DECISION UPDATE — 10 NOVEMBER 2026
+
+**D-016 — Home Header Typography & Navigation Focus (PR #108):**
+- Standardize specified Home header labels to 14sp Inter SemiBold (wght 600).
+- Preserve 30dp header capsules.
+- Make Beranda/Profil/Pengaturan focus state visibly render on the tab surface above the shared capsule and below icon/text.
+- Tighten Home and Profile icon-label gap to 1dp; preserve Settings gap at 4dp.
+- Keep `btnInputs` excluded and microphone icon-only.
+- **Protect the approved Wi-Fi popup:** no popup/dialog layout, geometry, DPAD, scanning, permission, or connection behavior changes.
+- PR #108 remains OPEN / DRAFT / UNMERGED pending physical visual/DPAD acceptance and explicit approval.
+
+Verification: exact-head CI #1858 / run 42712168556 PASS; Release APK artifact 13715838479 retrieved, 1,630,085 bytes, SHA-256 `a095485fb9eef71e88b665c4a97b46e46917ac064e1a7158de4b4ca15c167f38`. CI does not constitute device acceptance.
+
+The sole current restart point is [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md). This decision records the accepted scope; it does not authorize merge.
+
+---
+
 ## AUTHORITATIVE CHECKPOINT UPDATE — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS
 
 - PR #104 remains OPEN / DRAFT / UNMERGED: https://github.com/Frangga11/glass-tv-home/pull/104

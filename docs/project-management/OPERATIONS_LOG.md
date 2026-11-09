@@ -1,3 +1,13 @@
+## 10 NOVEMBER 2026 — PR #108 HEADER TYPOGRAPHY / FOCUS BUILD
+
+| Date | Work item | Branch / PR / evidence | Event and result | Next action |
+|---|---|---|---|---|
+| 2026-11-10 | GTVH-HOME-HEADER-TYPOGRAPHY-FOCUS-001 | PR #108; branch `fix/home-header-typography-focus-001`; HEAD `9b49f26180430dc63ef2ab8cf20bcba845e067ea`; CI #1858 / run 42712168556 | Exact-head CI SUCCESS; Android unit tests and Release build PASS; APK artifact 13715838479 retrieved and verified at 1,630,085 bytes, SHA-256 `a095485fb9eef71e88b665c4a97b46e46917ac064e1a7158de4b4ca15c167f38`. Header labels 14sp Inter SemiBold, tab focus visible, Home/Profile spacing 1dp, Settings 4dp retained, capsule 30dp. Wi-Fi popup unchanged. PR remains OPEN/DRAFT/UNMERGED. | Owner tests APK on Mi TV Stick 1920×1080; visual and DPAD acceptance pending. Do not merge without explicit approval. |
+
+**Single restart authority:** [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md).
+
+---
+
 # Glass TV Home — Operational Log
 
 **Version:** 1.0  

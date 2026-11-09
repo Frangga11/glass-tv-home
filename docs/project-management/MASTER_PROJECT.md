@@ -1,3 +1,15 @@
+## CURRENT PROJECT STATUS — 10 NOVEMBER 2026
+
+The current active implementation workstream is `GTVH-HOME-HEADER-TYPOGRAPHY-FOCUS-001`, tracked in [PR #108](https://github.com/Frangga11/glass-tv-home/pull/108), OPEN / DRAFT / UNMERGED. Exact source HEAD: `9b49f26180430dc63ef2ab8cf20bcba845e067ea`; base branch `fix/islamic-gold-orange-prayer-ayah-001` at `1ea32bb2a49be6fb9aaee586f2eab2dae417d052`.
+
+Exact-head CI #1858 / run 42712168556 is SUCCESS. Android unit tests and Release build passed; APK artifact 13715838479 was retrieved and verified: 1,630,085 bytes, SHA-256 `a095485fb9eef71e88b665c4a97b46e46917ac064e1a7158de4b4ca15c167f38`.
+
+Scope: header typography 14sp Inter SemiBold; navigation focus made visible above shared capsule; Home/Profile icon-label gap 1dp; Settings gap unchanged at 4dp; capsules remain 30dp. Wi-Fi popup/dialog is explicitly unchanged. Visual QA, live DPAD QA and physical Mi TV Stick acceptance remain PENDING. No merge authorized.
+
+**Only restart point:** [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md).
+
+---
+
 ## AUTHORITATIVE CHECKPOINT UPDATE — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS
 
 - PR #104 remains OPEN / DRAFT / UNMERGED: https://github.com/Frangga11/glass-tv-home/pull/104

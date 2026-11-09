@@ -1,3 +1,18 @@
+## CURRENT IMPLEMENTATION INVENTORY UPDATE — 10 NOVEMBER 2026
+
+- Active candidate: PR #108, OPEN / DRAFT / UNMERGED; branch `fix/home-header-typography-focus-001`; exact HEAD `9b49f26180430dc63ef2ab8cf20bcba845e067ea`.
+- Exact-head CI #1858 / run 42712168556: SUCCESS; Android unit tests and Release build PASS.
+- Retrieved Release APK: 1,630,085 bytes; SHA-256 `a095485fb9eef71e88b665c4a97b46e46917ac064e1a7158de4b4ca15c167f38`; artifact ID 13715838479.
+- Header: AM/PM, date/Shamsi date, location/altitude, weather/AQI, Beranda, Profil, Pengaturan, Wi-Fi label at 14sp Inter SemiBold.
+- Navigation: focus state rendered on each tab background above shared capsule; Home/Profile icon-label gap 1dp; Settings gap preserved at 4dp; capsule height remains 30dp.
+- `btnInputs` excluded; microphone remains icon-only.
+- Wi-Fi popup/dialog implementation and behavior: **UNCHANGED / PROTECTED**.
+- Runtime, visual, DPAD and physical Mi TV Stick acceptance: **PENDING**; not inferable from source/CI.
+
+See [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) for the sole authoritative status and next action.
+
+---
+
 ## AUTHORITATIVE CHECKPOINT UPDATE — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS
 
 - PR #104 remains OPEN / DRAFT / UNMERGED: https://github.com/Frangga11/glass-tv-home/pull/104

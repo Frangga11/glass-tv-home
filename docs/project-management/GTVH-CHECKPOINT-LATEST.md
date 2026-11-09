@@ -1,3 +1,51 @@
+# GTVH-HOME-HEADER-TYPOGRAPHY-FOCUS-001 — SINGLE AUTHORITATIVE CHECKPOINT
+**Checkpoint date:** 10 November 2026 (WIB)  
+**Repository:** [Frangga11/glass-tv-home](https://github.com/Frangga11/glass-tv-home)  
+**Canonical restart file:** `docs/project-management/GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`  
+**Restart instruction:** “Lanjutkan Glass TV Home dari GTVH-CHECKPOINT-LATEST.md”.
+
+## Verified current state
+- **Workstream:** `GTVH-HOME-HEADER-TYPOGRAPHY-FOCUS-001`.
+- **Source PR:** [#108](https://github.com/Frangga11/glass-tv-home/pull/108) — **OPEN / DRAFT / UNMERGED**.
+- **Source branch / exact PR HEAD:** `fix/home-header-typography-focus-001` / `9b49f26180430dc63ef2ab8cf20bcba845e067ea`.
+- **Protected PR base:** `fix/islamic-gold-orange-prayer-ayah-001`, exact base SHA `1ea32bb2a49be6fb9aaee586f2eab2dae417d052`.
+- **Exact-head CI:** [CI #1858 / run 42712168556](https://github.com/Frangga11/glass-tv-home/actions/runs/42712168556) — **SUCCESS** on the exact PR HEAD above. Both jobs passed: “Lists, tools and docs” and “Launcher build and unit tests”.
+- **Build evidence:** “Unit tests and release build (validation only)” PASS; “APK size diagnostics (read-only)” PASS; “Report release APK size” PASS; “Publish Home layout test APK” PASS.
+- **APK artifact:** artifact ID `13715838479`, artifact name `glass-tv-home-dock-visual-parity-28939680bb7931f7ee66262fa4fafef9ac37213a`, uploaded by run #1858. Archive contains `app-release.apk`.
+- **APK verified locally:** 1,630,085 bytes; SHA-256 `a095485fb9eef71e88b665c4a97b46e46917ac064e1a7158de4b4ca15c167f38`. ZIP listing and extracted APK size were checked. This is the exact PR #108 artifact, not an older build.
+- Artifact expiry reported by GitHub: 16 November 2026 22:30 UTC (16 Nov 2026 05:30 WIB).
+
+## Implemented scope
+1. Header text targets standardized to **14sp, Inter SemiBold (wght 600)**: AM/PM, date (including Shamsi runtime override), location/altitude, weather/AQI, Beranda, Profil, Pengaturan, and Wi-Fi label.
+2. Header capsules remain **30dp** high.
+3. Navigation focus selector now renders on the tab background, above the shared capsule and below icon/text, so focus is visible.
+4. Home and Profile icon-label spacing tightened to **1dp**; Settings remains **4dp** unchanged.
+5. `btnInputs` excluded; microphone remains icon-only.
+6. Regression contract and legacy contract expectations updated to enforce the intended typography, focus, and spacing behavior.
+
+## Explicitly preserved / not changed
+- **Wi-Fi popup/dialog implementation, layout, dimensions, DPAD, scan, permission, and connection behavior were not modified.**
+- No weather/AQI provider or data logic, location source, prayer data, wallpaper, Home dock/grid, navigation order, or unrelated feature logic changed.
+- No PR merge, retarget, reset, force-push, or device-side installation was performed.
+
+## Quality gate ledger
+| Gate | Status | Evidence / boundary |
+|---|---|---|
+| Exact PR-head CI | **PASS** | CI #1858 / run 42712168556 on `9b49f261` |
+| Unit tests + Release build | **PASS** | Android validation step succeeded |
+| APK artifact upload and retrieval | **PASS** | Artifact 13715838479; APK extracted and size/hash verified |
+| Visual review at 1920×1080 | **PENDING** | Requires owner review on Mi TV Stick |
+| Live DPAD/focus acceptance | **PENDING** | Requires physical remote/device test |
+| Full device acceptance | **PENDING** | Not inferred from CI; user feedback required |
+| Merge/release | **NOT AUTHORIZED** | PR #108 remains Draft and unmerged |
+
+## Next action / continuation boundary
+Install and inspect this APK on the Mi TV Stick at 1920×1080. Review 14sp typography, capsule proportions, Home/Profile/Settings spacing, and visible DPAD focus. Check that the Wi-Fi popup remains exactly as previously approved. Capture photos/video and report findings. Only then conduct the next evidence-based audit/fix cycle. Do not mark visual/device acceptance PASS before evidence arrives; do not merge PR #108 without explicit approval.
+
+**This file is the only restart authority.** Supporting project records below are synchronized to this same checkpoint; historical entries remain historical and must not override this status.
+
+---
+
 ## AUTHORITATIVE CHECKPOINT UPDATE — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS
 
 - PR #104 remains OPEN / DRAFT / UNMERGED: https://github.com/Frangga11/glass-tv-home/pull/104

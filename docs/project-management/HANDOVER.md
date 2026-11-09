@@ -1,3 +1,19 @@
+## CURRENT HANDOVER — 10 NOVEMBER 2026 — GTVH-HOME-HEADER-TYPOGRAPHY-FOCUS-001
+
+**Single restart authority:** [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md). Do not resume from historical handover blocks or separate checkpoint files.
+
+- PR #108: OPEN / DRAFT / UNMERGED — https://github.com/Frangga11/glass-tv-home/pull/108
+- Branch: `fix/home-header-typography-focus-001`; exact HEAD: `9b49f26180430dc63ef2ab8cf20bcba845e067ea`.
+- Base branch: `fix/islamic-gold-orange-prayer-ayah-001`; base SHA: `1ea32bb2a49be6fb9aaee586f2eab2dae417d052`.
+- Exact-head CI #1858 / run 42712168556: SUCCESS. Both jobs passed; Android unit tests and Release build passed.
+- APK artifact 13715838479 retrieved. `app-release.apk`: 1,630,085 bytes; SHA-256 `a095485fb9eef71e88b665c4a97b46e46917ac064e1a7158de4b4ca15c167f38`.
+- Header typography/focus/spacing scope is implemented as recorded in the canonical checkpoint.
+- Wi-Fi popup/dialog remains untouched.
+- Pending: owner-led visual review, live DPAD/focus test, and physical Mi TV Stick acceptance at 1920×1080. CI PASS is not device acceptance.
+- Next: user tests this exact APK and supplies captures/findings; then audit and fix only evidenced issues. Keep PR Draft/unmerged until explicit approval.
+
+---
+
 ## AUTHORITATIVE CHECKPOINT UPDATE — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS
 
 - PR #104 remains OPEN / DRAFT / UNMERGED: https://github.com/Frangga11/glass-tv-home/pull/104

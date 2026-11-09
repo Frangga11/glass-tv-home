@@ -1,3 +1,26 @@
+## CURRENT AUDIT GATE UPDATE — 10 NOVEMBER 2026 — PR #108
+
+**Candidate:** PR #108 OPEN / DRAFT / UNMERGED; exact HEAD `9b49f26180430dc63ef2ab8cf20bcba845e067ea`.  
+**Exact-head CI:** #1858 / run 42712168556 — SUCCESS. Both required jobs passed; Android unit tests, Release build, APK diagnostics and artifact publication succeeded.  
+**APK:** artifact 13715838479; 1,630,085 bytes; SHA-256 `a095485fb9eef71e88b665c4a97b46e46917ac064e1a7158de4b4ca15c167f38`.
+
+| Gate | Status | Evidence |
+|---|---|---|
+| Header typography/focus/spacing source contracts | PASS | PR #108 exact-head CI |
+| Android unit tests | PASS | CI #1858 |
+| Release build | PASS | CI #1858 |
+| APK artifact publication/retrieval | PASS | Artifact 13715838479; APK size/hash verified |
+| 1920×1080 rendered visual QA | PENDING | Physical Mi TV Stick review not yet supplied |
+| Live DPAD focus QA | PENDING | No physical remote acceptance evidence yet |
+| Wi-Fi popup non-regression | SOURCE-SCOPE PRESERVED; DEVICE CHECK PENDING | No Wi-Fi popup source/layout/behavior changes in this PR; still verify on device |
+| Overall/device acceptance | **BELUM FINAL** | User device feedback pending |
+
+No automated PASS is to be promoted to visual, functional runtime, or device acceptance. Preserve PR #108 Draft/unmerged. Wi-Fi popup is protected and must not be edited as part of this checkpoint.
+
+See [GTVH-CHECKPOINT-LATEST.md](GTVH-CHECKPOINT-LATEST.md) as the sole restart authority.
+
+---
+
 ## AUTHORITATIVE CHECKPOINT UPDATE — 9 NOVEMBER 2026 — GTVH GLOBAL FROSTED SILVER GLASS
 
 - PR #104 remains OPEN / DRAFT / UNMERGED: https://github.com/Frangga11/glass-tv-home/pull/104
