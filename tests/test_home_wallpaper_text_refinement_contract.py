@@ -41,8 +41,8 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
 
     def test_prayer_text_uses_solid_high_contrast_colors_and_keeps_native_font(self):
         self.assertIn("prayerHeader.setTextColor(0xFFF4F7FC)", MAIN)
-        self.assertIn("labels[i].setTextColor(TvUiTokens.ACCENT_SECTION)", MAIN)
-        self.assertIn("times[i].setTextColor(TvUiTokens.ACCENT_SECTION)", MAIN)
+        self.assertIn("labels[i].setTextColor(TvUiTokens.ISLAMIC_GOLD)", MAIN)
+        self.assertIn("times[i].setTextColor(TvUiTokens.ISLAMIC_GOLD)", MAIN)
         self.assertIn("labels[i].setTextColor(TvUiTokens.TEXT_SECONDARY)", MAIN)
         self.assertIn("times[i].setTextColor(TvUiTokens.TEXT_PRIMARY)", MAIN)
         self.assertNotIn("0xFFFFD27A", MAIN)
