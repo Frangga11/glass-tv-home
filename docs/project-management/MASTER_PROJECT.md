@@ -2042,3 +2042,55 @@ Implemented Wi-Fi-only changes: compact anchored top-right dialog, pointer align
 **Disposition:** source refinement implemented; exact-current-HEAD CI pending; visual/runtime/device acceptance pending; overall **BELUM FINAL**. Keep PR #105 OPEN / DRAFT / UNMERGED.
 
 **Next action:** obtain CI evidence for exact HEAD `4a4c472eb3d31008d9f0144471abe097db4beae5`; if green, download and verify its APK artifact. Then install/test only when authorized, capture 1920×1080 screenshots/video, and review pointer integration, text proportions, SSID row alignment, footer size, vertical scroll and DPAD. Do not merge until owner acceptance.
+
+---
+
+## Checkpoint update — GTVH-WIFI-POPUP-REFERENCE-001 — 9 Nov 2026, 23:15 WIB
+
+**Owner decision:** Wi-Fi popup workstream is considered complete and closed for the current scope. The user confirmed the popup is clear and clean with no remaining Wi-Fi issues and authorized moving on to other repairs. Do not reopen this workstream unless new evidence or an explicit request identifies a defect.
+
+**Repository / implementation source of truth**
+- Repository: `Frangga11/glass-tv-home`
+- PR #105: https://github.com/Frangga11/glass-tv-home/pull/105
+- Source branch: `feature/wifi-popup-reference-001`
+- Base branch: `feature/global-frosted-silver-glass-001`
+- Latest branch HEAD at checkpoint: `774eb99faa48e109b3532533425bbb4cdee07a4a`
+- PR status: OPEN / DRAFT / UNMERGED. Keep it this way; no merge or ready-for-review action was authorized.
+- Latest changes remain confined to Wi-Fi popup source and its tests. No unrelated Home Screen, dock, wallpaper, weather/AQI, shelf, profile, global settings, or data modules were intentionally changed in the final icon-readability pass.
+
+**Final accepted Wi-Fi popup decisions**
+- Preserve Frosted Silver-Cyan Glass baseline and Android ownership of Wi-Fi radio state, scanning, permissions, connected status and system settings handoff.
+- Keep the popup anchored and preserve existing geometry, footer, DPAD focus/navigation and scroll behavior.
+- Keep SSID one line; 25 physical px text size. Long SSID marquee activates only while its row has focus.
+- Connected SSID stays at the top. No separate “Terhubung” label; indicate connection with a green checkmark at the right side.
+- Connected checkmark enlarged from 16dp to **22dp**, stroke increased from 2dp to **2.8dp**, color updated to RGB **(80, 255, 145)** for better TV-distance visibility.
+- Secured non-connected networks retain the lock icon; open networks do not show a lock.
+- User runtime screenshot prompted the checkmark visibility refinement. User subsequently declared the Wi-Fi popup clear/clean and closed this workstream.
+
+**Implementation commits relevant to this checkpoint**
+- Drawable type mismatch fix: `8f9f1539ba74dedf3f1ed3bcae2b9a8e5b1511aa`
+- Checkmark visibility refinement: `fbe902541354d95cc55b8a19db603983916a6ce3`
+- Unit test update: `463759ee9f6d58dfe718e837e7ee5ec7d2606bc4`
+- Source contract test update / latest HEAD: `774eb99faa48e109b3532533425bbb4cdee07a4a`
+
+**Validation evidence — distinguish exact commits**
+- CI run #1822 failed on the earlier commit because the connected row mixed an integer resource ID and a Drawable object in `setCompoundDrawablesRelativeWithIntrinsicBounds`.
+- Fixed by using Drawable overload consistently.
+- CI run **#1823** (run ID `42652479012`) completed **SUCCESS** on commit `8f9f1539ba74dedf3f1ed3bcae2b9a8e5b1511aa`. Both jobs passed: Launcher build/unit tests/release build and Lists/tools/docs. The CI workflow generated artifact ID `13689688049` (artifact `glass-tv-home-dock-visual-parity-30f5271465fdfdd9f274146032dafe595319acb8`, 1,430,961 bytes).
+- That CI artifact belongs to commit `8f9f1539...`, **not** the later 22dp checkmark refinement.
+- At the time of this checkpoint, latest HEAD `774eb99...` has not yet produced a reported CI run. Therefore do not claim CI PASS for the 22dp refinement, and do not represent the earlier artifact as built from latest HEAD.
+- Earlier APK artifact integrity was inspected (ZIP structure, manifest and DEX present), but independent package/version metadata validation and Mi TV Stick acceptance of the final 22dp icon remain unverified.
+- User nevertheless closes the Wi-Fi workstream by acceptance. Treat this as **OWNER ACCEPTED / SCOPE CLOSED**, with the exact-HEAD CI and latest-icon device verification caveat retained for traceability. Do not silently upgrade technical evidence to PASS.
+
+**Scope audit / non-actions**
+- No merge, no PR promotion from Draft, no device install, and no ADB action.
+- No changes to unrelated UI modules.
+- Wi-Fi popup scope is closed; do not make further Wi-Fi changes while proceeding to the next workstream unless requested.
+
+**Handover / next session**
+1. Start a new, separate workstream for the next repair; do not bundle it into PR #105.
+2. First identify the next target from the user's instruction and inspect its current branch/PR/checkpoint before editing.
+3. Preserve the project method: Audit → root-cause analysis → plan → scoped implementation → tests/CI → evidence-based QC → documentation.
+4. Keep PR #105 OPEN / DRAFT / UNMERGED. Record the 22dp latest-head CI caveat if a later audit asks for strict release readiness.
+
+**Disposition:** Wi-Fi popup scope = **CLOSED BY OWNER ACCEPTANCE**. PR #105 remains unmerged and draft. Latest 22dp source change is recorded; its exact-head CI/runtime evidence is not claimed.
