@@ -16,8 +16,8 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 class QuickSettingsContractTest(unittest.TestCase):
     def test_dialog_uses_shared_modal_and_focus_contracts(self):
         self.assertIn("TvDialogStyle.apply(dialog, activity, 360, 360)", DIALOG)
-        self.assertIn("metrics.widthPixels * 0.26f", DIALOG)
-        self.assertIn("metrics.heightPixels * 0.64f", DIALOG)
+        self.assertIn("metrics.widthPixels * 0.32f", DIALOG)
+        self.assertIn("metrics.heightPixels * 0.66f", DIALOG)
         self.assertIn("window.setGravity(Gravity.TOP | Gravity.LEFT)", DIALOG)
         self.assertIn("close.setFocusable(false)", DIALOG)
         self.assertIn("GridLayout primary", DIALOG)
