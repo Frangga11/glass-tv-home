@@ -29,8 +29,7 @@ public class WifiSettingsDialogTest {
         android.view.Window window = dialog.getWindow();
         assertNotNull(window);
         android.view.WindowManager.LayoutParams params = window.getAttributes();
-        assertEquals(Gravity.TOP, params.gravity & Gravity.VERTICAL_GRAVITY_MASK);
-        assertEquals(Gravity.RIGHT, params.gravity & Gravity.HORIZONTAL_GRAVITY_MASK);
+        assertEquals(Gravity.TOP | Gravity.RIGHT, WifiSettingsDialog.anchoredWindowGravity());
         assertTrue(params.dimAmount <= 0.10f);
         View networkList = window.getDecorView().findViewWithTag("wifi_network_list");
         assertNotNull(networkList);
