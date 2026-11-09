@@ -107,3 +107,20 @@ HANDOVER should contain only:
 5. any required user/device action.
 
 This is the resume point. The Master is the map; audits are the evidence; the log is the history.
+
+## Single-door authority and synchronization amendment — 9 November 2026
+
+**The canonical restart/status authority is now explicitly one file:** `GTVH-CHECKPOINT-LATEST.md` on `docs/project-master-inventory`. It supersedes any older wording in this document that could imply MASTER_PROJECT, HANDOVER, README, or another file is the primary restart point.
+
+Document responsibilities:
+1. CHECKPOINT: sole current status, exact branch/PR/HEAD/base, dependency order, gates, next action, and restart route.
+2. MASTER_PROJECT: product scope, architecture, constraints, and roadmap context.
+3. INVENTORY: source/component/PR/dependency and documentation catalog.
+4. DECISION_LOG: approved decisions and preserved constraints.
+5. AUDIT_REGISTER and focused audits: findings and evidence.
+6. HANDOVER: concise resume instructions copied from the current checkpoint.
+7. OPERATIONS_LOG: chronological event record.
+
+Synchronization rule: whenever a project-wide status, dependency, approved decision, or handover changes, update CHECKPOINT first and synchronize all directly affected supporting documents in the same documentation pass. Historical audit files remain immutable evidence unless their own scope is re-audited; index them rather than rewriting old evidence. All current-state statements in supporting documents must point back to the canonical checkpoint.
+
+Current verified status is PR #103 OPEN/DRAFT/UNMERGED; exact-head CI #1689 PASS; visual and physical device acceptance pending. Frosted Silver Glass is approved as a future workstream but not implemented. See canonical checkpoint for exact details.
