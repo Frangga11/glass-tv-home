@@ -27,10 +27,11 @@ Owner explicitly authorized starting feature work from the latest cumulative che
 - Compare exact baseline SHA -> cumulative integration branch: identical (0 ahead / 0 behind).
 
 The cumulative integration checkpoint identifies itself as a temporary integration candidate, not a canonical release baseline. It contains PR #129 ancestry and selected follow-on reconciliation:
-- PR #131: selected burst-serialization behavior ported.
-- PR #132: redundant stable Dock anchor behavior already represented.
-- PR #133: remaining PR #123 work audited and closed as superseded.
-- PR #124 remains open/unmerged and divergent from PR #123.
+- PR #130: closed/unmerged; its only changed file is the Dock focus integration contract test. The current cumulative tree contains the same test-file blob (`be34c2a8e1e969d98b43175aee9c0c8d79fabc5d`), so the test assertions are present without merging PR #130 itself.
+- PR #131: closed/unmerged; selected burst-serialization and row-scroll-coalescing behavior was ported directly onto the cumulative candidate.
+- PR #132: closed/unmerged; stable Dock anchor lineage was audited as already represented by the permanent bottom-margin anchor and translation-only motion.
+- PR #133: closed/unmerged; remaining PR #123 changes were audited and superseded by the later semantic DPAD intent and shared focus model.
+- PR #124 remains open/unmerged and divergent against PR #123.
 - Exact latest integration CI and integrated physical Mi TV Stick acceptance were still pending at checkpoint time.
 
 The branch is therefore an owner-authorized working baseline for this isolated popup rebuild, not a declaration that the cumulative integration candidate is fully accepted.
