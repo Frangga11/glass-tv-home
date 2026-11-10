@@ -55,9 +55,9 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
 
     def test_popup_controls_explain_purpose_and_action(self):
         for phrase in (
-            "Aktifkan / nonaktifkan semua notifikasi Azan",
+            "Pengaturan notifikasi dan suara azan",
             "Pilih suara muazin yang akan diputar",
-            "Putar contoh suara sesuai pilihan di atas",
+            "Dengarkan contoh suara azan",
             "OK PILIH",
             "BACK KEMBALI",
             "TvUiTokens.ACCENT_SECTION",
