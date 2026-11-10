@@ -37,9 +37,8 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         layout = MAIN[start:end]
         self.assertIn("gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;", layout)
         self.assertIn("dockParams.gravity = Gravity.BOTTOM | Gravity.START;", layout)
-        self.assertIn("dockParams.bottomMargin = horizontalGridExpanded", layout)
-        self.assertIn("? dockBottomMargin + gridViewportHeight + rowGap", layout)
-        self.assertIn(": dockBottomMargin;", layout)
+        self.assertIn("dockParams.bottomMargin = dockBottomMargin;", layout)
+        self.assertNotIn("dockParams.bottomMargin = horizontalGridExpanded", layout)
         self.assertIn("gridParams.bottomMargin = horizontalGridExpanded ? dockBottomMargin : 0", layout)
 
     def test_dpad_transition_moves_both_rows_and_commits_focus_after_motion(self):
@@ -48,23 +47,26 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         animate_start = MAIN.index("private void animateHorizontalDockTransition")
         expand = MAIN[expand_start:collapse_start]
         collapse = MAIN[collapse_start:animate_start]
-        self.assertIn("dockRecycler.setTranslationY(pitch)", expand)
+        self.assertIn("dockRecycler.setTranslationY(0f)", expand)
         self.assertIn("grid.setTranslationY(pitch)", expand)
-        self.assertIn("focusTile(targetPosition)", expand)
-        self.assertIn("dockRecycler.setTranslationY(pitch * progress)", collapse)
+        self.assertIn("dockRecycler.setTranslationY(-pitch * progress)", MAIN)
         self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
+        self.assertIn("dockRecycler.setTranslationY(0f);", collapse)
+        self.assertIn("focusTile(targetPosition)", expand)
         self.assertIn("focusDockTile(dockPosition)", collapse)
 
-    def test_up_collapse_clears_compensating_translation_only_after_idle_layout_pre_draw(self):
-        start = MAIN.index("private void collapseHorizontalOverflowToDock")
-        end = MAIN.index("private void animateHorizontalDockTransition", start)
-        collapse = MAIN[start:end]
-        self.assertIn("applyDockLayout();", collapse)
-        self.assertIn("ViewTreeObserver.OnPreDrawListener", collapse)
-        self.assertIn("addOnPreDrawListener(settleListener)", collapse)
-        self.assertIn("grid.setTranslationY(0f);", collapse)
+    def test_dock_layout_anchor_is_constant_and_up_resets_transform_without_predraw_handoff(self):
+        layout_start = MAIN.index("private void applyDockLayout()")
+        layout_end = MAIN.index("private boolean sameLayoutParams", layout_start)
+        layout = MAIN[layout_start:layout_end]
+        self.assertIn("dockParams.bottomMargin = dockBottomMargin;", layout)
+        collapse_start = MAIN.index("private void collapseHorizontalOverflowToDock")
+        collapse_end = MAIN.index("private void animateHorizontalDockTransition", collapse_start)
+        collapse = MAIN[collapse_start:collapse_end]
         self.assertIn("dockRecycler.setTranslationY(0f);", collapse)
-        self.assertNotIn("dockRecycler.post(() ->", collapse)
+        self.assertIn("grid.setTranslationY(0f);", collapse)
+        self.assertIn("grid.setVisibility(View.GONE);", collapse)
+        self.assertNotIn("ViewTreeObserver.OnPreDrawListener", collapse)
 
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
