@@ -53,6 +53,24 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
         self.assertIn("Azan.setSoundChoice(MainActivity.this, next)", self.popup)
         self.assertIn("Azan.fetch(MainActivity.this, next)", self.popup)
 
+    def test_popup_controls_explain_purpose_and_action(self):
+        for phrase in (
+            "Aktifkan / nonaktifkan semua notifikasi Azan",
+            "Pilih suara muazin yang akan diputar",
+            "Putar contoh suara sesuai pilihan di atas",
+            "OK PILIH / UBAH",
+            "BACK KEMBALI",
+            "TvUiTokens.ACCENT_SECTION",
+            "TvUiTokens.TEXT_SECONDARY",
+        ):
+            self.assertIn(phrase, self.popup)
+
+    def test_schedule_uses_compact_two_column_layout_and_preserves_gold_next_marker(self):
+        self.assertIn("for (int pair = 0; pair < schedule.size(); pair += 2)", self.popup)
+        self.assertIn("SHOLAT BERIKUTNYA", self.popup)
+        self.assertIn("TvUiTokens.ISLAMIC_GOLD", self.popup)
+        self.assertNotIn("TvUiTokens.ACCENT_CYAN", self.popup)
+
     def test_existing_azan_test_activity_is_reused(self):
         self.assertIn("new Intent(MainActivity.this, AzanActivity.class)", self.popup)
         self.assertIn('azanIntent.putExtra("prayer", 4)', self.popup)
