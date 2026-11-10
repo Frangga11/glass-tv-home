@@ -6,7 +6,7 @@ PR: #134 — OPEN / DRAFT / UNMERGED
 Branch: `feature/home-prayer-popup-compact-azans-001`
 Base: PR #123 source checkpoint `6ac43ae4b56908233a64b55c23fdadee5ce7ab76`
 Previous implementation HEAD validated by CI: `46430419d21fd0250c7443f75c3cabf9b3fe5754`\nLatest Silver Glass refinement commits: source `2b48fe49d932ba8340526cc12befa1b9799a9239`; contract tests `24c5d1c4b708ef2356d22eb28909d450a205cef4`
-Status: Silver Glass refinement committed; CI validation, rendered visual QA, and physical-device acceptance PENDING.
+Status: Silver Glass refinement and source-host CI validation PASS on implementation HEAD `e0271a997548ebf0c8535a93d48edf9b5c90b77f`; rendered visual QA and physical-device acceptance PENDING.
 
 ## Owner constraints
 
@@ -67,3 +67,20 @@ Validated commit: `46430419d21fd0250c7443f75c3cabf9b3fe5754`
 5. Physical Mi TV Stick acceptance remains mandatory and has not been run.
 
 No merge, public release, APK installation, ADB action, or device/default-launcher mutation has been performed. The latest Silver Glass refinement is not yet accepted; visual and physical-device QA remain pending.
+
+
+## Validation update — Silver Glass refinement and exact tested HEAD
+
+- Silver Glass refinement introduced the existing neutral/silver semantic palette used by the Jadwal Sholat popup; cyan accent is not used for Prayer popup content. Existing GlassDrawable material and constructor treatment remain unchanged.
+- A stale contract assertion initially failed on CI run #2022 because it expected the previous schedule-index expression. The implementation was correct; the assertion was updated to check `scheduleIndex` and the informational Terbit mapping.
+- Exact tested implementation HEAD: `e0271a997548ebf0c8535a93d48edf9b5c90b77f`.
+- GitHub Actions CI run #2023 (`42912126612`): SUCCESS; both `Launcher build and unit tests` and `Lists, tools and docs` jobs SUCCESS.
+- Repository Python regression suite: 287 tests run, 1 intentional skip, all remaining tests OK. All nine focused Prayer popup contract tests passed.
+- Android release build: `BUILD SUCCESSFUL`.
+- Release APK diagnostic: 1,633,977 bytes (1,595 KB), informational warning above historical 1.5 MiB reference; not a CI failure and no size optimization authorized in this scoped task.
+- Cumulative integration QA artifact uploaded by CI (1,435,476 bytes); validation artifact only, not a public release and not installed.
+- Public APK release workflow #441 was skipped.
+
+## Remaining acceptance boundary
+
+Source-host CI is PASS only. Rendered visual QA at 1920×1080, complete DPAD/focus behavior, audio playback, and physical Mi TV Stick acceptance remain PENDING / NOT RUN. No merge, public release, APK installation, ADB, or device/default-launcher changes have been performed.
