@@ -99,6 +99,15 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("glider.addCompanion(panel)", self.popup)
         self.assertIn("glider.removeCompanion(panel)", MAIN)
 
+    def test_azan_overlay_closes_popup_and_restores_its_original_home_anchor(self):
+        self.assertIn("private View prayerPopupReturnAnchor;", MAIN)
+        self.assertIn("private boolean prayerPopupRestoreFocusPending;", MAIN)
+        self.assertIn("if (openMenu != null && prayerPopupReturnAnchor != null)", MAIN)
+        self.assertIn("prayerPopupRestoreFocusPending = true;", MAIN)
+        self.assertIn("returnAnchor.requestFocus();", MAIN)
+        self.assertIn("prayerPopupReturnAnchor = anchor;", self.popup)
+        self.assertIn("prayerPopupRestoreFocusPending = false;", self.popup)
+
 
 if __name__ == "__main__":
     unittest.main()
