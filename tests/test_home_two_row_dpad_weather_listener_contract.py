@@ -5,6 +5,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
 GEOMETRY = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java").read_text(encoding="utf-8")
+ADAPTER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
 
 
 class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
@@ -74,6 +75,16 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         transitions = MAIN[collapse_start:focus_start]
         self.assertEqual(2, transitions.count("animator.setDuration(reducedMotion ? 120 : 190);"))
         self.assertNotIn("animator.setDuration(reducedMotion ? 140 : 260);", transitions)
+
+    def test_two_row_geometry_uses_fixed_150dp_pitch_and_182_by_100_design_tile(self):
+        expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
+        collapse_start = MAIN.index("private void collapseHorizontalOverflowToDock")
+        expand = MAIN[expand_start:collapse_start]
+        self.assertIn("int pitch = Math.round(150f * density);", expand)
+        self.assertIn("DESIGN_W_DP = 182f, DESIGN_H_DP = 100f", ADAPTER)
+        self.assertIn("Math.round(42 * density)", ADAPTER)
+        self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
+        self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
 
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
