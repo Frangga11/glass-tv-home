@@ -759,8 +759,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ayahOpenHint.setText(R.string.daily_ayah_open);
                 GradientDrawable hintBg = new GradientDrawable();
                 hintBg.setColor(0x223F4A55);
-                hintBg.setCornerRadius(8 * density);
-                hintBg.setStroke(Math.max(1, Math.round(density)), 0x55DCE5ED);
+                hintBg.setCornerRadius(6 * density);
+                hintBg.setStroke(Math.max(1, Math.round(density)), 0x44DCE5ED);
                 ayahOpenHint.setBackground(hintBg);
             }
 
@@ -864,7 +864,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             });
             prayerTableView.setBackground(TvFocusIndicator.createRoundedStateBackground(
                     density, 8f, 0x00000000, TvUiTokens.FOCUS_HALO,
-                    0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
+                    0x00000000, TvUiTokens.FOCUS_BORDER));
             prayerTableView.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) SoundEffects.playNav();
             });

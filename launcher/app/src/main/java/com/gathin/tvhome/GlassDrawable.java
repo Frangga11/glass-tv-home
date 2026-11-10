@@ -5,7 +5,8 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
-import android.graphics.LinearGradient;
+import android.graphics.Matrix;
+import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -29,7 +30,7 @@ final class GlassDrawable extends Drawable {
     /** Wallpaper-preserving readability veil used only by the Home Islamic floating content. */
     private final Paint floatingGradient = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF floatingGradientBounds = new RectF();
-    private LinearGradient floatingGradientShader;
+    private RadialGradient floatingGradientShader;
     private final GlassRim rim;
     private final Glider highlight;
     /** Paints the focus shape over the glass (a menu), rather than fading the glass for it (a pill). */
@@ -77,10 +78,16 @@ final class GlassDrawable extends Drawable {
                 // Cache the shader; rebuild only when the shelf's local bounds actually change.
                 if (floatingGradientShader == null || !floatingGradientBounds.equals(rect)) {
                     floatingGradientBounds.set(rect);
-                    floatingGradientShader = new LinearGradient(
-                            rect.left, rect.top, rect.right, rect.top,
-                            new int[]{0x00000000, 0x06000000, 0x10000000, 0x1A000000},
-                            new float[]{0f, 0.48f, 0.78f, 1f}, Shader.TileMode.CLAMP);
+                    float gradientCenterX = rect.right;
+                    float gradientCenterY = rect.top + rect.height() * 0.18f;
+                    floatingGradientShader = new RadialGradient(
+                            gradientCenterX, gradientCenterY,
+                            Math.max(rect.width() * 0.72f, rect.height() * 0.9f),
+                            new int[]{0x1A000000, 0x10000000, 0x06000000, 0x00000000},
+                            new float[]{0f, 0.32f, 0.68f, 1f}, Shader.TileMode.CLAMP);
+                    Matrix ovalMatrix = new Matrix();
+                    ovalMatrix.setScale(1f, 0.58f, gradientCenterX, gradientCenterY);
+                    floatingGradientShader.setLocalMatrix(ovalMatrix);
                     floatingGradient.setShader(floatingGradientShader);
                 }
                 floatingGradient.setAlpha(Math.round(255 * fade));
