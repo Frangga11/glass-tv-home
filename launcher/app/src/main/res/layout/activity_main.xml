@@ -196,7 +196,7 @@
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="2dp"
                 android:background="#55FFFFFF"
-                android:alpha="0.55" />
+                android:alpha="0" />
         </LinearLayout>
 
         <!-- Waktu Solat Header (e.g. WAKTU SOLAT • 11 JAMADILAWAL 1448H) -->
