@@ -5083,7 +5083,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         LinearLayout rootContainer = new LinearLayout(this);
         rootContainer.setOrientation(LinearLayout.VERTICAL);
-        rootContainer.setPadding((int) (22 * density), (int) (16 * density), (int) (22 * density), (int) (16 * density));
+        rootContainer.setPadding((int) (22 * density), (int) (16 * density), (int) (22 * density), (int) (14 * density));
 
         // Header Title Row
         LinearLayout headerRow = new LinearLayout(this);
@@ -5481,7 +5481,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.bottomMargin = hasSub ? (int) (5 * density) : (int) (3 * density);
+        lp.bottomMargin = hasSub ? (int) (5 * density) : (int) (2 * density);
         row.setLayoutParams(lp);
 
         return row;
@@ -7703,7 +7703,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             startActivity(new Intent(MainActivity.this, LocationActivity.class));
         });
         rows.addView(header, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (38 * density)));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density)));
         focusOrder.add(header);
         addPrayerPopupDivider(rows);
 
@@ -7730,7 +7730,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         nextCard.addView(nextName);
         nextCard.addView(nextTime);
         rows.addView(nextCard, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (82 * density)));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (78 * density)));
 
         LinearLayout scheduleHeading = new LinearLayout(this);
         scheduleHeading.setGravity(Gravity.CENTER_VERTICAL);
@@ -7739,7 +7739,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 TvUiTokens.ACCENT_SECTION, true);
         scheduleHeading.addView(scheduleTitle);
         LinearLayout.LayoutParams headingLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (27 * density));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (24 * density));
         headingLp.topMargin = (int) (2 * density);
         rows.addView(scheduleHeading, headingLp);
 
@@ -7787,13 +7787,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     card.setFocusable(false);
                 }
                 LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(0,
-                        (int) (51 * density), 1f);
+                        (int) (48 * density), 1f);
                 if (column == 0) cardLp.rightMargin = (int) (3 * density);
                 else cardLp.leftMargin = (int) (3 * density);
                 gridRow.addView(card, cardLp);
             }
             LinearLayout.LayoutParams rowLp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (53 * density));
+                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (50 * density));
             if (pair > 0) rowLp.topMargin = (int) (2 * density);
             rows.addView(gridRow, rowLp);
         }
@@ -7819,7 +7819,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             masterValue.setTextColor(enabled ? TvUiTokens.ACCENT_SECTION : TvUiTokens.TEXT_SECONDARY);
         });
         LinearLayout.LayoutParams actionLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (49 * density));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (46 * density));
         rows.addView(masterRow, actionLp);
         focusOrder.add(masterRow);
 
