@@ -3587,8 +3587,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int gridTileWidth = DockGeometry.horizontalTileWidthPx(
                 DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
                 DockPreferences.load(this).capacity, density);
-        int pitch = DockGeometry.horizontalGridViewportHeightPx(
-                gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
+        // The approved two-row start-to-start distance is fixed at 150dp.
+        // Keep viewport measurement separate: it still clips to one complete item row.
+        int pitch = Math.round(150f * density);
         // The Dock remains at its idle LayoutParams anchor. Only visual transforms move:
         // Dock travels UP by one pitch; the overflow row starts below its viewport and enters.
         dockRecycler.setTranslationY(0f);
