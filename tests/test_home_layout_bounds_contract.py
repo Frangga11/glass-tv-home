@@ -268,7 +268,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         start = MAIN.index("View.OnKeyListener pillKeys")
         end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
         header_keys = MAIN[start:end]
-        self.assertIn("v.getId() == R.id.btnAssistant", header_keys)
+        self.assertIn("id == R.id.btnAssistant", header_keys)
         self.assertIn("findViewById(R.id.prayerTable)", header_keys)
 
     def test_supported_paused_media_session_remains_available_on_home(self):
@@ -325,7 +325,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
             self.assertIn(key, keys)
         self.assertIn("v.performClick();", keys)
         self.assertIn("id == R.id.locationPill", keys)
-        self.assertIn("weatherAirQualityView.requestFocus();", keys)
+        self.assertIn("weatherAirQualityView.requestFocus()", keys)
 
         start = MAIN.index("if (weatherAirQualityView != null) {")
         end = MAIN.index("// Measure the actual clock/date content edge", start)
