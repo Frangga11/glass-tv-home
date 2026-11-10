@@ -908,6 +908,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Backdrop.watch(dockRecycler);
         setUpGlider();
+        // Grid rows use the same Glider companion-rendering path as the Dock. The root Glider
+        // remains behind app content; this ItemDecoration paints its focus pane in the Grid's
+        // background pass so row-two focus cannot be hidden by tile artwork.
+        grid.addItemDecoration(new GridFocusDecoration(glider));
+        glider.addCompanion(grid);
         // Preserve one shared glass capsule for Home/Profile/Settings.
         // Each focusable header control paints the same moving Glider after its glass surface
         // and before its own text/icon content, so no capsule can cover the focus indicator.
@@ -3591,7 +3596,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // in which the Dock appears already raised and the overflow row flashes in place.
         dockRecycler.setTranslationY(pitch);
         grid.setTranslationY(pitch);
-        grid.setAlpha(0.72f);
+        // Keep the Grid fully opaque during the row transition; do not cross-fade the
+        // content plane or make the Dock glass appear to change material.
         horizontalGridExpanded = true;
         applyDockLayout();
         grid.setVisibility(View.VISIBLE);
@@ -3634,7 +3640,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             float progress = (Float) value.getAnimatedValue();
             dockRecycler.setTranslationY(pitch * progress);
             grid.setTranslationY(pitch * progress);
-            grid.setAlpha(1f - 0.28f * progress);
+            // No Grid alpha tween: Dock/tiles retain stable material opacity.
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -3682,7 +3688,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (dockRecycler != null) dockRecycler.setTranslationY(offset);
             if (grid != null) {
                 grid.setTranslationY(offset);
-                if (expanding) grid.setAlpha(0.72f + 0.28f * (1f - Math.abs(offset) / Math.max(1f, pitch)));
+                // Geometry-only transition. Keep Grid alpha fixed at 1f.
             }
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
