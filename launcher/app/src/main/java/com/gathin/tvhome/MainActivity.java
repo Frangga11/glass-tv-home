@@ -7991,13 +7991,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int index = focusOrder.indexOf(v);
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_DPAD_DOWN:
-                    case KeyEvent.KEYCODE_DPAD_RIGHT:
-                        if (index >= 0 && index + 1 < focusOrder.size()) focusOrder.get(index + 1).requestFocus();
-                        return true;
                     case KeyEvent.KEYCODE_DPAD_UP:
                     case KeyEvent.KEYCODE_DPAD_LEFT:
-                        if (index > 0) focusOrder.get(index - 1).requestFocus();
+                    case KeyEvent.KEYCODE_DPAD_RIGHT: {
+                        View next = findPrayerPopupDirectionalFocus(v, focusOrder, keyCode);
+                        if (next != null && next != v) next.requestFocus();
                         return true;
+                    }
                     case KeyEvent.KEYCODE_DPAD_CENTER:
                     case KeyEvent.KEYCODE_ENTER:
                     case KeyEvent.KEYCODE_NUMPAD_ENTER:
@@ -8034,6 +8034,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (openMenu == panel && initialFocus.isAttachedToWindow()) initialFocus.requestFocus();
             });
         }
+    }
+
+    private View findPrayerPopupDirectionalFocus(View current, List<View> focusables, int direction) {
+        int[] from = new int[2];
+        current.getLocationOnScreen(from);
+        float cx = from[0] + current.getWidth() / 2f;
+        float cy = from[1] + current.getHeight() / 2f;
+        View best = null;
+        double bestScore = Double.MAX_VALUE;
+        for (View candidate : focusables) {
+            if (candidate == current || !candidate.isShown() || !candidate.isEnabled()) continue;
+            int[] to = new int[2];
+            candidate.getLocationOnScreen(to);
+            float dx = to[0] + candidate.getWidth() / 2f - cx;
+            float dy = to[1] + candidate.getHeight() / 2f - cy;
+            boolean inDirection =
+                    (direction == KeyEvent.KEYCODE_DPAD_LEFT && dx < -1 && Math.abs(dx) >= Math.abs(dy) * 0.35f)
+                    || (direction == KeyEvent.KEYCODE_DPAD_RIGHT && dx > 1 && Math.abs(dx) >= Math.abs(dy) * 0.35f)
+                    || (direction == KeyEvent.KEYCODE_DPAD_UP && dy < -1 && Math.abs(dy) >= Math.abs(dx) * 0.35f)
+                    || (direction == KeyEvent.KEYCODE_DPAD_DOWN && dy > 1 && Math.abs(dy) >= Math.abs(dx) * 0.35f);
+            if (!inDirection) continue;
+            double primary = (direction == KeyEvent.KEYCODE_DPAD_LEFT || direction == KeyEvent.KEYCODE_DPAD_RIGHT)
+                    ? Math.abs(dx) : Math.abs(dy);
+            double cross = (direction == KeyEvent.KEYCODE_DPAD_LEFT || direction == KeyEvent.KEYCODE_DPAD_RIGHT)
+                    ? Math.abs(dy) : Math.abs(dx);
+            double score = primary + cross * 2.2;
+            if (score < bestScore) {
+                bestScore = score;
+                best = candidate;
+            }
+        }
+        return best;
     }
 
     private android.graphics.drawable.Drawable prayerPopupFocusedBackground() {
