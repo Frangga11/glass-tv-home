@@ -34,14 +34,25 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
     def test_existing_prayer_schedule_source_and_six_cells_are_preserved(self):
         self.assertIn("PrayerTimes.getFullSchedule(this)", self.popup)
+        self.assertIn("private String prayerPopup24Hour(String value)", MAIN)
+        self.assertIn('"HH:mm"', MAIN)
+        self.assertIn("R.drawable.ic_header_location", self.popup)
+        self.assertIn("R.drawable.ic_header_mountain", self.popup)
+        self.assertIn('"800 mdpl"', self.popup)
+        self.assertNotIn("±800", self.popup)
         self.assertIn("item.isNext", self.popup)
         self.assertIn("for (int pair = 0; pair < schedule.size(); pair += 2)", self.popup)
         self.assertIn("scheduleFocus.add(card)", self.popup)
         self.assertIn("focusOrder.addAll(scheduleFocus)", self.popup)
+        self.assertNotIn("focusOrder.add(header)", self.popup)
+        self.assertIn("focusOrder.get(0)", self.popup)
+        self.assertIn("prayerPopup24Hour(item.timeFormatted)", self.popup)
 
     def test_azan_preferences_schedule_and_existing_test_activity_are_reused(self):
         for token in (
             "Azan.isMasterEnabled(this)",
+            "android.widget.Switch masterSwitch",
+            "masterSwitch.setOnCheckedChangeListener",
             "Azan.setMasterEnabled(MainActivity.this, enabled)",
             "Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))",
             "Azan.setSoundChoice(MainActivity.this, next)",
@@ -82,6 +93,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
     def test_popup_is_right_centered_and_does_not_scroll_or_glide_content(self):
         self.assertIn("Gravity.RIGHT | Gravity.CENTER_VERTICAL", self.popup)
+        self.assertIn("int) (301 * density)", self.popup)
         self.assertIn("lp.rightMargin = safeX + (int) (26 * density)", self.popup)
         self.assertNotIn("glideToMenuRow(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
