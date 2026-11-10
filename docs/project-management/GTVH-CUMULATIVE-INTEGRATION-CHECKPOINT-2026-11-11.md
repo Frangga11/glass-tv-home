@@ -28,7 +28,7 @@ Temporary integration candidate for reconciling the two-row Dock/Grid DPAD focus
 - PR #129 exact head CI: success (runs 42898216570 and 42899464289).
 - CI run 42901903450 completed SUCCESS on HEAD `d8b34dadc044fd16481ed20fde10b6bffc2f24d7`; both Launcher build/unit tests and Lists/tools/docs jobs passed. This validates the pre-coalescing integration state, not the current latest commits.
 - Burst serialization ported: reveal guard MainActivity commit `5c4ebc3e14bf1e01514f4f7b839f585c9e2fb5b8`; reveal regression test commit `1fc6a5085af7aff065419ad1a975e8fac9cc25c4`.
-- Grid row-scroll coalescing ported: MainActivity commit `92e006caf2f861789fbbfb662f928ea68a3ae62f`; regression-test commit `15e9e18189743217bcd6bcf978dd43f972fab9ce`. Exact latest-HEAD CI is pending.
+- Grid row-scroll coalescing ported: MainActivity commit `92e006caf2f861789fbbfb662f928ea68a3ae62f`; regression-test commit `15e9e18189743217bcd6bcf978dd43f972fab9ce`. Initial coalescing contract CI exposed one test-only assertion that incorrectly rejected the legitimate cancellation setup for the FIRST request; it did not indicate a runtime/source failure. The contract was corrected to assert that the in-flight guard returns BEFORE that cancellation path. Corrected test commit: `af45ebfd599a6e16f99f8faeab552d9703d743d7`. Fresh CI on the corrected exact HEAD is required.
 - No claim of full integration or full physical-device acceptance.
 
 ## Safety / decision
