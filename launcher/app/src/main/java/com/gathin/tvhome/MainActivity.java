@@ -7762,7 +7762,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 row.setOnClickListener(v -> {
                     boolean enabled = !Azan.on(MainActivity.this, selectedPrayer);
                     Azan.set(MainActivity.this, selectedPrayer, enabled);
-                    Azan.schedule(MainActivity.this, zoneCode);
+                    Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this));
                     SoundEffects.playSelect();
                     azanState.setText(enabled ? "ON" : "OFF");
                     azanState.setTextColor(enabled ? TvUiTokens.ACCENT_CYAN : 0xB3FFFFFF);
@@ -7781,7 +7781,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         masterRow.setOnClickListener(v -> {
             boolean enabled = !Azan.isMasterEnabled(MainActivity.this);
             Azan.setMasterEnabled(MainActivity.this, enabled);
-            Azan.schedule(MainActivity.this, zoneCode);
+            Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this));
             SoundEffects.playSelect();
             masterValue.setText(enabled ? "ON" : "OFF");
             masterValue.setTextColor(enabled ? TvUiTokens.ACCENT_CYAN : 0xB3FFFFFF);
