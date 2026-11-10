@@ -72,7 +72,20 @@ Observed sequence:
 - Around 23–25 seconds, the popup disappears and an ADZAN Maghrib overlay is shown.
 - The Home surface is visible again afterwards.
 
-The recording does not prove why the popup closes or whether the Maghrib overlay was triggered by a scheduled alarm, manual action, lifecycle transition, or another state. Root cause for that transition remains unproven pending code-path correlation and device logs.
+### Proven popup/overlay lifecycle path
+
+The source audit establishes why the popup disappears when another Activity, including AzanActivity, comes to the foreground:
+
+- MainActivity.onPause() calls closeMenu(false) after Home yields its window.
+- closeMenu(false) removes the in-Home popup and intentionally does not keep it displayed above another Activity.
+- AzanReceiver launches AzanActivity directly and also posts a FullScreenIntent notification. AzanActivity is declared singleTask, so a second instance is not established by source alone; the actual delivery sequence still requires device logs.
+- AzanActivity finishes on Back/Enter or when its audio flow completes; Home then resumes.
+
+This means popup dismissal during the Azan overlay is consistent with the app's existing "nothing of ours stays on screen over another app" lifecycle contract. The defect to address is safe focus restoration to the popup's original Home anchor after Home resumes, not keeping the popup layered above AzanActivity.
+
+The rebuild now remembers the Prayer popup caller when Home pauses, closes the popup through the existing lifecycle path, and requests focus back on that same visible/focusable caller after Home resumes. This is popup-specific state; shared closeMenu(), AzanReceiver, Azan, and AzanActivity remain unchanged.
+
+The recording alone does not establish whether the Maghrib overlay came from a scheduled alarm or another trigger, nor whether the FullScreenIntent delivered a second intent to the singleTask Activity. Those details remain pending device logs.
 
 ## 5. Rebuild design
 
@@ -111,7 +124,7 @@ Changed:
    - Replaced legacy shared Inputs-layout Prayer popup with a dedicated view tree.
    - Reused existing prayer/azan data and actions.
    - Added measured safe-area placement.
-   - Added popup-local DPAD focus graph, visible focus outline, bounded initial-focus retry, and Back focus restoration.
+   - Added popup-local DPAD focus graph, visible focus outline, bounded initial-focus retry, Back focus restoration, and popup-caller restoration after Azan/external Activity lifecycle return.
    - Preserved the existing Test Sound Activity route.
    - Kept changes out of shared `showMenu()`, `popup_inputs.xml`, `item_input.xml`, `GlassDrawable.java`, `PrayerTimes.java`, and `Azan.java`.
 
@@ -132,7 +145,9 @@ Not yet claimed:
 - APK size/checksum: pending.
 - Rendered UI inspection at 1920x1080: pending.
 - Mi TV Stick Android TV 11 physical acceptance: pending.
-- Azan receiver/overlay lifecycle root cause: pending.
+- Popup dismissal cause: source-proven as MainActivity.onPause() -> closeMenu(false); this is intentional overlay lifecycle behavior.
+- AzanReceiver direct-launch plus FullScreenIntent delivery ordering: runtime confirmation pending.
+- Azan receiver/overlay trigger timing and singleTask onNewIntent delivery: pending device logs.
 
 ## 8. Regression boundaries
 
@@ -146,7 +161,8 @@ The shared `closeMenu()` is called only through its existing API for popup dismi
 2. Run exact-HEAD CI and Android release build.
 3. Inspect the complete source diff for unrelated changes.
 4. Verify actual measured popup dimensions and clipping using rendered emulator/screenshot evidence.
-5. Audit AzanReceiver -> AzanActivity -> Home lifecycle to establish the Maghrib transition root cause.
-6. Prepare APK and checksum if build succeeds.
-7. Provide device test instructions; do not claim physical acceptance until the owner tests on Mi TV Stick.
-8. Keep PR Draft / Unmerged until all acceptance gates are met.
+5. Verify popup caller focus restoration after scheduled Azan overlay and after Test Sound returns.
+6. Correlate AzanReceiver direct launch and FullScreenIntent delivery using device logs; do not infer duplicate Activity creation from source alone.
+7. Prepare APK and checksum if build succeeds.
+8. Provide device test instructions; do not claim physical acceptance until the owner tests on Mi TV Stick.
+9. Keep PR Draft / Unmerged until all acceptance gates are met.
