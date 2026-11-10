@@ -36,3 +36,12 @@ No intentional changes to wallpaper/data providers, Weather/AQI cadence, app ide
 - Extend coordinated Dock/Grid transition from 190ms to 300ms (reduced motion 180ms), use a slower ease-out curve, and reduce temporary Grid alpha dip from 28% to 12%.
 - Geometry, row pitch, Dock anchor, focus ownership, app order, wallpaper, Weather/AQI and protected data remain unchanged.
 - Validation: full Python and Android CI; physical Mi TV Stick confirmation required.
+
+
+## Burst-input corrective pass — GTVH-HOME-DPAD-BURST-FOCUS-SERIALIZATION-001
+- Cross-audit root cause: repeated DPAD DOWN on the Dock called focusTile() while the initial Dock reveal was already in progress. focusTile() incremented gridFocusRequestGeneration each time; expandHorizontalDockForOverflow() rejected duplicate expansion because horizontalGridExpanded was already true, while the original reveal completion callback became stale. Result: the overflow Grid could be visible/partially moving while no valid focus handoff occurred, leaving the Dock row visually dominant and the focus overlay apparently superimposed on the first row.
+- Guard vertical Dock input during the single reveal handoff. The first reveal owns the generation and commits focus only after the coordinated Dock/Grid motion settles.
+- During an active overflow-row scroll, keep one animator alive and coalesce subsequent DPAD requests into the latest stable app-key target. Do not cancel/restart RecyclerView scrolling on every repeat; after the current motion settles, resolve the newest target against the actual decorated row geometry.
+- Added source-contract regression tests for the Dock reveal handoff and burst coalescing.
+- Protected: 150dp row pitch, 182x100dp tile geometry, 42dp extra, Dock anchor, icon inventory/order, wallpaper, Weather/AQI, Wi-Fi, profile/Islamic content and data providers.
+- Physical Mi TV Stick stress validation remains mandatory; do not mark complete or merge before acceptance.
