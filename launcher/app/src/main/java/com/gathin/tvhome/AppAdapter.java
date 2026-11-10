@@ -590,6 +590,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             this.reducedMotion = reducedMotion;
             this.iconAnimationsEnabled = iconAnimationsEnabled;
             this.dockTile = dockTile;
+            // One shared white Glider is the sole DPAD focus indicator in both rows.
+            // The legacy breathing border duplicates it on Dock cards and adds a cyan cursor.
+            if (breathingBorder != null) breathingBorder.setVisibility(View.GONE);
 
             final float density = v.getResources().getDisplayMetrics().density;
             card.setOutlineProvider(new ViewOutlineProvider() {
@@ -611,13 +614,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
             card.setOnFocusChangeListener((view, focused) -> {
                 if (breathingBorder != null) {
-                    if (focused && dockTile) {
-                        float r = cornerRadius(view.getWidth(), density);
-                        breathingBorder.setCornerRadiusDp(r / density);
-                        breathingBorder.setVisibility(View.VISIBLE);
-                    } else {
-                        breathingBorder.setVisibility(View.GONE);
-                    }
+                    // Focus is drawn by the shared Glider only; never paint a second Dock cursor.
+                    breathingBorder.setVisibility(View.GONE);
                 }
                 float s = focused && iconAnimationsEnabled ? FOCUS_SCALE : 1.0f;
                 view.animate().cancel();
