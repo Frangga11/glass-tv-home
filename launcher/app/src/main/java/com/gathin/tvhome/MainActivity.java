@@ -4306,6 +4306,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
      */
     private void showDailyAyahDialog() {
         if (isFinishing() || isDestroyed()) return;
+        View originFocus = getCurrentFocus();
         WeeklyAyah.Ayah ayah = WeeklyAyah.last(this);
         if (ayah == null || ayah.arabic == null || ayah.arabic.trim().isEmpty()) {
             TvFeedback.show(this, R.string.no_daily_ayah, Toast.LENGTH_SHORT);
@@ -4479,6 +4480,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 .create();
         dialogHolder[0] = dialog;
         dialog.setCanceledOnTouchOutside(true);
+        dialog.setOnDismissListener(d -> restoreFocusTo(originFocus));
         dialog.setOnKeyListener((d, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
@@ -7503,7 +7505,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void showPrayerPopup() {
         if (openMenu != null) return;
         SoundEffects.playSelect();
-        View anchor = prayerTimesView != null ? prayerTimesView : findViewById(R.id.leftBlock);
+        View anchor = findViewById(R.id.prayerTable);
+        if (anchor == null || !anchor.isShown()) {
+            anchor = prayerTimesView != null ? prayerTimesView : findViewById(R.id.leftBlock);
+        }
         FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         Runnable close = () -> closeMenu(false);
