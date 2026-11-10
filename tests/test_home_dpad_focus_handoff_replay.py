@@ -9,7 +9,7 @@ MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java")
 class HomeDpadFocusHandoffTest(unittest.TestCase):
     def test_vertical_input_is_captured_once_before_android_focus_search(self):
         start = MAIN.index("public boolean dispatchKeyEvent(KeyEvent event)")
-        end = MAIN.index("@Override\\n    public boolean onTileVerticalKey", start)
+        end = MAIN.index("@Override\n    public boolean onTileVerticalKey", start)
         dispatch = MAIN[start:end]
         capture = dispatch.index("if (horizontalDockCollapseInProgress")
         fallback = dispatch.index("return super.dispatchKeyEvent(event);")
