@@ -3523,6 +3523,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     };
 
     private boolean focusTopBarFallback() {
+        // A Dock focus retry can fail after a layout/inventory change; never replay stale DPAD later.
+        pendingCollapseDpadKeyCode = KeyEvent.KEYCODE_UNKNOWN;
         if (btnHome != null && btnHome.isShown() && btnHome.isFocusable() && btnHome.requestFocus()) {
             return true;
         }
