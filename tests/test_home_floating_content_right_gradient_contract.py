@@ -16,6 +16,9 @@ class HomeFloatingContentRightGradientContractTest(unittest.TestCase):
         glass_preferences = source.index('getSharedPreferences("wallpaper_prefs"')
         self.assertLess(branch, glass_preferences)
         self.assertIn("new LinearGradient(", source)
+        self.assertIn("private LinearGradient floatingGradientShader;", source)
+        self.assertIn("floatingGradientBounds.equals(rect)", source)
+        self.assertIn("floatingGradient.setShader(floatingGradientShader)", source)
         self.assertIn("new int[]{0x00000000, 0x06000000, 0x10000000, 0x1A000000}", source)
         self.assertIn("new float[]{0f, 0.48f, 0.78f, 1f}", source)
         floating_branch = source[branch:glass_preferences]
