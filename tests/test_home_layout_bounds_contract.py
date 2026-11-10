@@ -269,7 +269,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
         header_keys = MAIN[start:end]
         self.assertIn("id == R.id.btnAssistant", header_keys)
-        self.assertIn("findViewById(R.id.prayerTable)", header_keys)
+        self.assertIn("ayahBlock.requestFocus()", header_keys)
 
     def test_supported_paused_media_session_remains_available_on_home(self):
         start = NOW_PLAYING.index("public boolean hasMusic()")
@@ -330,7 +330,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         start = MAIN.index("if (weatherAirQualityView != null) {")
         end = MAIN.index("// Measure the actual clock/date content edge", start)
         weather_keys = MAIN[start:end]
-        self.assertIn("locationPill.requestFocus();", weather_keys)
+        self.assertIn("locationPill.requestFocus()", weather_keys)
         self.assertIn("btnHome.requestFocus()", weather_keys)
 
     def test_home_profile_and_settings_tabs_keep_their_real_actions(self):
