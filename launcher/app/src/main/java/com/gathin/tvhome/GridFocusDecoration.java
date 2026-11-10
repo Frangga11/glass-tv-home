@@ -34,7 +34,9 @@ final class GridFocusDecoration extends RecyclerView.ItemDecoration {
         bleed.set(0f, 0f, parent.getWidth(), parent.getHeight());
         bleed.inset(-bleedPx, -bleedPx);
         canvas.clipRect(bleed);
-        glider.drawShape(canvas, gliderAt[0] - gridAt[0], gliderAt[1] - gridAt[1], parent);
+        // The shared root Glider paints the glass pane behind the tiles. This foreground pass
+        // is deliberately outline-only so it cannot obscure banners, icons, or labels.
+        glider.drawFocusOutline(canvas, gliderAt[0] - gridAt[0], gliderAt[1] - gridAt[1]);
         canvas.restore();
     }
 }
