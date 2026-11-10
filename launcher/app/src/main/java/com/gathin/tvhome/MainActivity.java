@@ -8145,7 +8145,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             });
             if (target.getTag() == null) target.setTag(target.getBackground());
             target.setOnKeyListener((v, keyCode, event) -> {
-                if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
+                if (event.getAction() != KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_UP:
+                        case KeyEvent.KEYCODE_DPAD_DOWN:
+                        case KeyEvent.KEYCODE_DPAD_LEFT:
+                        case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                        case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                        case KeyEvent.KEYCODE_BACK:
+                        case KeyEvent.KEYCODE_ESCAPE:
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_DPAD_UP:
                     case KeyEvent.KEYCODE_DPAD_DOWN:
