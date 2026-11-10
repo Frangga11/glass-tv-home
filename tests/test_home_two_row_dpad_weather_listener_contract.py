@@ -55,6 +55,17 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
         self.assertIn("focusDockTile(dockPosition)", collapse)
 
+    def test_up_collapse_clears_compensating_translation_only_after_idle_layout_pre_draw(self):
+        start = MAIN.index("private void collapseHorizontalOverflowToDock")
+        end = MAIN.index("private void animateHorizontalDockTransition", start)
+        collapse = MAIN[start:end]
+        self.assertIn("applyDockLayout();", collapse)
+        self.assertIn("ViewTreeObserver.OnPreDrawListener", collapse)
+        self.assertIn("addOnPreDrawListener(settleListener)", collapse)
+        self.assertIn("grid.setTranslationY(0f);", collapse)
+        self.assertIn("dockRecycler.setTranslationY(0f);", collapse)
+        self.assertNotIn("dockRecycler.post(() ->", collapse)
+
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
