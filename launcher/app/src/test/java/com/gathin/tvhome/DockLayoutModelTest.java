@@ -622,4 +622,30 @@ public class DockLayoutModelTest {
             assertEquals(gridPosition - 5, gridPosition % 5);
         }
     }
+
+    @Test
+    public void primaryDockRowIsAnchoredAboveOverflowGridRow() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int tileWidth = DockGeometry.horizontalTileWidthPx(1920, 5, density);
+            int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(1920, 5, density);
+            int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
+            int dockHeight = DockGeometry.horizontalDockHeightPx(dockTileHeight, density);
+            int dockBottom = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
+            int gridBottom = DockGeometry.horizontalGridBottomMarginPx(dockTileHeight, density);
+            int gridViewport = DockGeometry.horizontalGridViewportHeightPx(
+                    tileWidth, density, Math.round(10f * density));
+            int containerHeight = Math.round(1000f * density);
+
+            int primaryTop = DockGeometry.horizontalPrimaryDockTopMarginPx(
+                    containerHeight, gridBottom, gridViewport);
+            int overflowTop = DockGeometry.horizontalOverflowGridTopMarginPx(
+                    containerHeight, dockBottom, dockHeight);
+
+            assertTrue("primary app row must be above overflow row", primaryTop < overflowTop);
+            assertTrue("rows must remain separated by a visible breathing gap",
+                    overflowTop - primaryTop > gridViewport);
+            assertTrue("row gap must remain compact",
+                    overflowTop - primaryTop < gridViewport + Math.round(40f * density));
+        }
+    }
 }
