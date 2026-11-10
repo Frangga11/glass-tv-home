@@ -153,8 +153,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
     /** Vertical DPAD input received during Dock collapse; replay only after a Dock tile owns focus. */
-    private final ArrayList<Integer> pendingDockCollapseDirections = new ArrayList<>();
-    private static final int MAX_PENDING_DOCK_COLLAPSE_DIRECTIONS = 8;
+    /** One semantic DPAD intent captured during collapse; never replay synthetic Android key events. */
+    private int pendingDockCollapseDirection = -1;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
     private int gridFocusRequestGeneration;
     private boolean lastFocusedDock;
@@ -2844,9 +2844,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
                 dockParams.topMargin = 0;
-                dockParams.bottomMargin = horizontalGridExpanded
-                        ? dockBottomMargin + gridViewportHeight + rowGap
-                        : dockBottomMargin;
+                // Permanent idle anchor: the Dock's LayoutParams never change between states.
+                // The two-row transition is represented only by translationY.
+                dockParams.bottomMargin = dockBottomMargin;
 
                 gridParams.height = horizontalGridExpanded
                         ? gridViewportHeight : ViewGroup.LayoutParams.MATCH_PARENT;
@@ -3326,13 +3326,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         int code = event.getKeyCode();
-        // Do not let Android's geometric focus search run while the overflow row is being removed.
-        // Preserve a bounded sequence and replay it only after a Dock tile has actually regained focus.
+        // Capture one semantic intent during collapse. Never replay synthetic KeyEvents through
+        // Android focus search: one physical press must produce at most one navigation action.
         if (horizontalDockCollapseInProgress
                 && (code == KeyEvent.KEYCODE_DPAD_UP || code == KeyEvent.KEYCODE_DPAD_DOWN)) {
-            if (event.getAction() == KeyEvent.ACTION_DOWN
-                    && pendingDockCollapseDirections.size() < MAX_PENDING_DOCK_COLLAPSE_DIRECTIONS) {
-                pendingDockCollapseDirections.add(code);
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                pendingDockCollapseDirection = code;
             }
             return true;
         }
@@ -3434,16 +3433,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     public boolean onTileVerticalKey(int position, int keyCode) {
-        // dispatchKeyEvent queues vertical directions while collapse owns focus. Keep this
-        // defensive path for direct adapter callbacks so no request can invalidate the hand-off.
-        if (horizontalDockCollapseInProgress) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                if (pendingDockCollapseDirections.size() < MAX_PENDING_DOCK_COLLAPSE_DIRECTIONS) {
-                    pendingDockCollapseDirections.add(keyCode);
-                }
-            }
-            return true;
-        }
+        // Activity dispatch owns input capture while collapse is active. Adapter callbacks
+        // are consumed defensively and must not enqueue a duplicate intent.
+        if (horizontalDockCollapseInProgress) return true;
         int count = adapter.getItemCount();
         if (count <= 0) return true;
         int target;
@@ -3617,7 +3609,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
         // Seed the offsets before applying expanded anchors, preventing a one-frame jump
         // in which the Dock appears already raised and the overflow row flashes in place.
-        dockRecycler.setTranslationY(pitch);
+        dockRecycler.setTranslationY(0f);
         grid.setTranslationY(pitch);
         // Keep the Grid fully opaque during the row transition; do not cross-fade the
         // content plane or make the Dock glass appear to change material.
@@ -3630,7 +3622,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             animateHorizontalDockTransition(pitch, true, () -> {
                 if (requestGeneration != gridFocusRequestGeneration) return;
                 grid.setTranslationY(0f);
-                dockRecycler.setTranslationY(0f);
+                dockRecycler.setTranslationY(-pitch);
                 grid.setAlpha(1f);
                 focusTile(targetPosition);
             });
@@ -3661,7 +3653,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         animator.addUpdateListener(value -> {
             if (transition != horizontalDockTransitionGeneration) return;
             float progress = (Float) value.getAnimatedValue();
-            dockRecycler.setTranslationY(pitch * progress);
+            dockRecycler.setTranslationY(-pitch * (1f - progress));
             grid.setTranslationY(pitch * progress);
             // No Grid alpha tween: Dock/tiles retain stable material opacity.
         });
@@ -3678,11 +3670,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 horizontalGridExpanded = false;
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
-                // The final +pitch translation already places the Dock at its idle screen
-                // coordinate. The expanded-to-idle layout change also moves its base by +pitch,
-                // so retaining that translation would apply the displacement twice and push the
-                // Dock below the viewport for a frame (or longer on slower TV hardware).
-                // Commit the idle layout and clear both translations in this same UI callback.
+                // LayoutParams are already at the permanent idle anchor; reset transforms once.
                 dockRecycler.setTranslationY(0f);
                 grid.setTranslationY(0f);
                 applyDockLayout();
@@ -3701,12 +3689,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void restoreDockFocusAfterCollapse(int dockPosition, int generation, int attemptsRemaining) {
         if (generation != gridFocusRequestGeneration) {
             horizontalDockCollapseInProgress = false;
-            pendingDockCollapseDirections.clear();
+            pendingDockCollapseDirection = -1;
             return;
         }
         if (dockAdapter == null || dockRecycler == null || dockAdapter.getItemCount() == 0) {
             horizontalDockCollapseInProgress = false;
-            pendingDockCollapseDirections.clear();
+            pendingDockCollapseDirection = -1;
             focusTopBarFallback();
             return;
         }
@@ -3722,7 +3710,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (acquired && card.isFocused()) {
                 // requestFocus() already fired onDockTileFocused synchronously when focus changed.
                 if (alreadyFocused) onDockTileFocused(dockAdapter.keyAt(target), card);
-                replayPendingDockCollapseDirections();
+                dispatchPendingDockCollapseDirection(dockPosition);
                 return;
             }
             horizontalDockCollapseInProgress = true;
@@ -3734,20 +3722,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         // Last-resort recovery is explicit and observable; do not silently leave focus nowhere.
         horizontalDockCollapseInProgress = false;
-        pendingDockCollapseDirections.clear();
+        pendingDockCollapseDirection = -1;
         android.util.Log.e("TvHome", "Dock focus restore failed after collapse; target=" + target
                 + " childCount=" + dockRecycler.getChildCount());
         focusTopBarFallback();
     }
 
-    /** Replay each captured vertical direction through normal Android dispatch, in original order. */
-    private void replayPendingDockCollapseDirections() {
-        if (pendingDockCollapseDirections.isEmpty()) return;
-        ArrayList<Integer> replay = new ArrayList<>(pendingDockCollapseDirections);
-        pendingDockCollapseDirections.clear();
-        for (int keyCode : replay) {
-            super.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keyCode));
-            super.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keyCode));
+    /** Apply a captured direction once through the launcher's semantic navigation contract. */
+    private void dispatchPendingDockCollapseDirection(int dockPosition) {
+        int direction = pendingDockCollapseDirection;
+        pendingDockCollapseDirection = -1;
+        if (direction == KeyEvent.KEYCODE_DPAD_DOWN && adapter != null && adapter.getItemCount() > 0) {
+            int target = DockLayoutModel.gridPositionForDock(
+                    dockPosition, false, COLUMNS, adapter.getItemCount());
+            if (target >= 0) focusTile(target);
+        } else if (direction == KeyEvent.KEYCODE_DPAD_UP) {
+            focusTopBarFallback();
         }
     }
 
@@ -3763,11 +3753,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         animator.addUpdateListener(value -> {
             if (generation != horizontalDockTransitionGeneration) return;
             float offset = (Float) value.getAnimatedValue();
-            if (dockRecycler != null) dockRecycler.setTranslationY(offset);
-            if (grid != null) {
-                grid.setTranslationY(offset);
-                // Geometry-only transition. Keep Grid alpha fixed at 1f.
-            }
+            float progress = 1f - Math.abs(offset) / Math.max(1f, pitch);
+            if (dockRecycler != null) dockRecycler.setTranslationY(-pitch * progress);
+            if (grid != null) grid.setTranslationY(offset);
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
