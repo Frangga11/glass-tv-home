@@ -117,7 +117,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("private boolean prayerPopupRestoreFocusPending;", MAIN)
         self.assertIn("if (openMenu != null && prayerPopupReturnAnchor != null)", MAIN)
         self.assertIn("prayerPopupRestoreFocusPending = true;", MAIN)
-        self.assertIn("returnAnchor.requestFocus();", MAIN)
+        self.assertIn("returnAnchor.requestFocus()", MAIN)
+        self.assertIn("activityResumed && openMenu == null", MAIN)
         self.assertIn("prayerPopupReturnAnchor = anchor;", self.popup)
         self.assertIn("prayerPopupRestoreFocusPending = false;", self.popup)
 
