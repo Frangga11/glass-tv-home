@@ -317,6 +317,17 @@ final class Glider extends View {
                 Math.max(0f, r - half - focusHalf), focusStroke);
     }
 
+    /** Draws only the focus rim in front of Grid children; never paints glass over app artwork. */
+    void drawFocusOutline(Canvas canvas, float dx, float dy) {
+        if (!isShowing()) return;
+        float t = edges[TOP] + yShift, b = edges[BOTTOM] + yShift;
+        float r = Math.min(edges[RADIUS], Math.min(b - t, edges[RIGHT] - edges[LEFT]) / 2f);
+        shape.set(edges[LEFT] + dx, t + dy, edges[RIGHT] + dx, b + dy);
+        float half = focusStroke.getStrokeWidth() / 2f;
+        focusStroke.setAlpha(Math.round(255 * opacity));
+        canvas.drawRoundRect(shape, Math.max(0f, r - half), Math.max(0f, r - half), focusStroke);
+    }
+
     private void drawShadow(Canvas canvas, float radius) {
         if (shadowMix <= 0f) return;
         int w = Math.round(shape.width()), h = Math.round(shape.height());
