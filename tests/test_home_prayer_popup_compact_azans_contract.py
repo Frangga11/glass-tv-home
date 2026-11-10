@@ -35,7 +35,7 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
         self.assertIn("PrayerTimes.getFullSchedule(this)", self.popup)
         self.assertIn("item.isNext", self.popup)
         self.assertIn("TvUiTokens.ISLAMIC_GOLD", self.popup)
-        self.assertIn("final int prayerIndex = (i == 1) ? -1 : i;", self.popup)
+        self.assertIn("final int prayerIndex = scheduleIndex == 1 ? -1 : scheduleIndex;", self.popup)
 
     def test_per_prayer_and_master_switches_reuse_existing_azan_preferences(self):
         self.assertIn("Azan.on(this, prayerIndex)", self.popup)
