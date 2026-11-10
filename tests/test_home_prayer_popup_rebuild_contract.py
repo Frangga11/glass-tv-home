@@ -97,6 +97,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         ):
             self.assertIn(token, self.popup)
         self.assertNotIn("focusTopBarFallback()", self.popup)
+        self.assertIn("case KeyEvent.KEYCODE_ESCAPE:", self.popup)
+        self.assertIn("default:\n                            return false;", self.popup)
 
     def test_backdrop_and_glider_companion_are_popup_local(self):
         self.assertIn("Backdrop.watch(panel)", self.popup)
