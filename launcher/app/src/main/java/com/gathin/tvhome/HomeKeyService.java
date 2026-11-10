@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityWindowInfo;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -98,7 +99,7 @@ public class HomeKeyService extends AccessibilityService {
             pendingPowerAction = POWER_ACTION_NONE;
             return false;
         }
-        homeHandler.postDelayed(powerActionTimeout, 6000);
+        homeHandler.postDelayed(powerActionTimeout, 12000);
         return true;
     }
 
@@ -116,10 +117,12 @@ public class HomeKeyService extends AccessibilityService {
                     || label.equals("mulai ulang tv") || label.equals("mulakan semula");
         }
         if (pendingPowerAction == POWER_ACTION_OFF) {
-            return label.equals("power off") || label.equals("turn off") || label.equals("shut down")
-                    || label.equals("shutdown") || label.equals("power down") || label.equals("matikan")
-                    || label.equals("matikan tv") || label.equals("sleep") || label.equals("sleep tv")
-                    || label.equals("standby") || label.equals("tidur");
+            return label.equals("power off") || label.equals("turn off") || label.equals("turn tv off")
+                    || label.equals("shut down") || label.equals("shutdown") || label.equals("power down")
+                    || label.equals("matikan") || label.equals("matikan tv") || label.equals("nonaktifkan")
+                    || label.equals("nonaktifkan tv") || label.equals("sleep") || label.equals("sleep tv")
+                    || label.equals("standby") || label.equals("tidur") || label.equals("mode tidur")
+                    || label.equals("power");
         }
         return false;
     }
@@ -248,11 +251,28 @@ public class HomeKeyService extends AccessibilityService {
         return node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
     }
 
+    private boolean scanPowerWindow(AccessibilityNodeInfo root, int windowId) {
+        if (root == null) return false;
+        Log.d(TAG, "Scanning power-menu accessibility window id=" + windowId);
+        return selectPowerAction(root, 0);
+    }
+
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (pendingPowerAction != POWER_ACTION_NONE) {
-            AccessibilityNodeInfo powerRoot = getRootInActiveWindow();
-            if (powerRoot != null && selectPowerAction(powerRoot, 0)) return;
+            if (scanPowerWindow(getRootInActiveWindow(), -1)) return;
+            // Android TV vendors may expose the power sheet in a non-active system window.
+            try {
+                List<AccessibilityWindowInfo> windows = getWindows();
+                if (windows != null) {
+                    for (AccessibilityWindowInfo window : windows) {
+                        if (window == null) continue;
+                        if (scanPowerWindow(window.getRoot(), window.getId())) return;
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Unable to inspect interactive power-menu windows", e);
+            }
         }
         if (!isProcessingForceStop || targetForceStopPackage == null) return;
 

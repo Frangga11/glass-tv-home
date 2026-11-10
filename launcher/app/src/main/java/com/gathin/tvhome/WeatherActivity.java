@@ -46,6 +46,10 @@ public class WeatherActivity extends Activity {
     private TextView aqiStation;
 
     private TextView humidityValText;
+    private TextView precipitationValue;
+    private TextView precipitationSub;
+    private TextView visibilityValue;
+    private TextView visibilitySub;
     private TextView weatherFooter;
 
     @Override
@@ -80,6 +84,10 @@ public class WeatherActivity extends Activity {
         aqiStation = findViewById(R.id.aqiStation);
 
         humidityValText = findViewById(R.id.humidityValText);
+        precipitationValue = findViewById(R.id.precipValue);
+        precipitationSub = findViewById(R.id.precipSub);
+        visibilityValue = findViewById(R.id.visibilityValue);
+        visibilitySub = findViewById(R.id.visibilitySub);
         weatherFooter = findViewById(R.id.weatherFooter);
 
         if (btnChangeLocation != null) {
@@ -125,7 +133,7 @@ public class WeatherActivity extends Activity {
         String activeRegion = AppLocationManager.getActiveRegion(this);
         CharSequence[] topOptions = new CharSequence[]{
                 "📍 Pilih Bandar / Stesen (" + activeRegion + ")",
-                "🌏 Tukar Negara / Region Asia (Default: Malaysia)",
+                "🌏 Tukar Negara / Region Asia (Default: Indonesia)",
                 "✨ Tetapkan Suasana Latar Cuaca (Cerah, Hujan, Ribut, Malam)"
         };
 
@@ -256,7 +264,7 @@ public class WeatherActivity extends Activity {
         // 2. Header
         Location.Zone chosen = Location.chosen(this);
         String neatLoc = (chosen != null) ? chosen.town : w.location;
-        if (neatLoc == null || neatLoc.isEmpty()) neatLoc = "Kuala Lumpur";
+        if (neatLoc == null || neatLoc.isEmpty()) neatLoc = "Pagar Alam";
         neatLoc = neatLoc.substring(0, 1).toUpperCase(Locale.ROOT) + neatLoc.substring(1);
         weatherLocation.setText(neatLoc);
 
@@ -359,7 +367,7 @@ public class WeatherActivity extends Activity {
 
         // 5. Populate Modular Metric Tiles
         if (windCompassView != null) {
-            windCompassView.setWind(w.windSpeed, w.windSpeed + 10, 180f);
+            windCompassView.setWind(w.windSpeed, w.windGust, w.windDirection);
         }
 
         if (sunArcView != null) {
@@ -373,10 +381,11 @@ public class WeatherActivity extends Activity {
             uvValText.setText(String.valueOf(w.uvIndex));
         }
         if (uvDescText != null) {
-            if (w.uvIndex <= 2) uvDescText.setText("Low");
-            else if (w.uvIndex <= 5) uvDescText.setText("Moderate");
-            else if (w.uvIndex <= 7) uvDescText.setText("High");
-            else uvDescText.setText("Very High");
+            boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
+            if (w.uvIndex <= 2) uvDescText.setText(english ? "Low" : "Rendah");
+            else if (w.uvIndex <= 5) uvDescText.setText(english ? "Moderate" : "Sedang");
+            else if (w.uvIndex <= 7) uvDescText.setText(english ? "High" : "Tinggi");
+            else uvDescText.setText(english ? "Very High" : "Sangat Tinggi");
         }
 
         if (feelsLikeVal != null) {
@@ -391,7 +400,7 @@ public class WeatherActivity extends Activity {
             if (w.stationPlace != null && !w.stationPlace.isEmpty()) {
                 aqiStation.setText(w.stationPlace);
             } else {
-                aqiStation.setText("SK Putrajaya Presint 18");
+                aqiStation.setText(AppLocationManager.getStationPlace(this));
             }
         }
 
@@ -400,19 +409,38 @@ public class WeatherActivity extends Activity {
             radarMapView.setDetails(w.temp, neatLoc);
         }
 
-        // Humidity & Pressure
+        // Humidity, precipitation, visibility & pressure
         if (humidityValText != null) {
             humidityValText.setText(w.humidity + "%");
         }
+        boolean englishMetrics = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
+        if (precipitationValue != null) {
+            precipitationValue.setText(String.format(Locale.ROOT, "%.1f mm", w.precipitationMm));
+        }
+        if (precipitationSub != null) {
+            precipitationSub.setText((englishMetrics ? "Now" : "Saat ini") + " • "
+                    + (englishMetrics ? "rain chance " : "peluang hujan ") + w.rainChanceToday + "%");
+        }
+        if (visibilityValue != null) {
+            visibilityValue.setText(String.format(Locale.ROOT, "%.1f km", w.visibilityKm));
+        }
+        if (visibilitySub != null) {
+            visibilitySub.setText(w.visibilityKm < 1.0
+                    ? (englishMetrics ? "Limited visibility" : "Jarak pandang terbatas")
+                    : (englishMetrics ? "Good visibility" : "Jarak pandang baik"));
+        }
         if (pressureGaugeView != null) {
-            pressureGaugeView.setPressure(1014);
+            pressureGaugeView.setPressure(w.pressure);
         }
 
         // 6. Footer
         if (weatherFooter != null) {
-            weatherFooter.setText(String.format(Locale.ROOT,
-                    "Updated %s  •  %s",
-                    w.updatedTime, w.isJasSource ? "Jabatan Alam Sekitar (APIMS)" : "Open-Meteo air-quality model"));
+            boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
+            String updated = english ? "Updated" : "Diperbarui";
+            String source = w.isJasSource
+                    ? (english ? "Jabatan Alam Sekitar (APIMS)" : "JAS Malaysia (APIMS)")
+                    : (english ? "Open-Meteo model • US AQI estimate" : "Model Open-Meteo • estimasi US AQI");
+            weatherFooter.setText(String.format(Locale.ROOT, "%s %s  •  %s", updated, w.updatedTime, source));
         }
     }
 

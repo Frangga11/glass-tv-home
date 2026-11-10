@@ -453,7 +453,7 @@ public final class UserSwitchDialog {
         profRow.getChildAt(0).requestFocus();
     }
 
-    private static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, boolean activateChild, AlertDialog dialog) {
+    static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, boolean activateChild, AlertDialog dialog) {
         ProfileManager.setActiveProfile(activity, prof.id);
         if (activateChild) {
             ChildModeManager.setChildModeEnabled(activity, true);

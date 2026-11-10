@@ -56,6 +56,14 @@ public class WindCompassView extends View {
         invalidate();
     }
 
+    private static String directionLabel(float degrees, boolean english) {
+        if (!Float.isFinite(degrees)) return "—";
+        int sector = ((int) Math.floor(((degrees % 360f + 360f) % 360f + 22.5f) / 45f)) % 8;
+        String[] en = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
+        String[] id = {"U", "TL", "T", "TG", "S", "BD", "B", "BL"};
+        return (english ? en : id)[sector];
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -103,6 +111,9 @@ public class WindCompassView extends View {
         // Bottom Gusts text
         labelPaint.setTextSize(8f * density);
         labelPaint.setColor(0xCCFFFFFF);
-        canvas.drawText("Gusts: " + gusts + " km/h S", cx, h - (2f * density), labelPaint);
+        boolean english = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(getContext()));
+        String direction = directionLabel(windAngle, english);
+        String gustLabel = english ? "Gusts: " : "Hembusan: ";
+        canvas.drawText(gustLabel + gusts + " km/h " + direction, cx, h - (2f * density), labelPaint);
     }
 }

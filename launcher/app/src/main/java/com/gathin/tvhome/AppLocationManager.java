@@ -22,13 +22,13 @@ public class AppLocationManager {
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_LONGITUDE = "longitude";
 
-    // Defaults to Malaysia (Putrajaya DOE CA17W)
-    public static final String DEFAULT_REGION = "Malaysia";
-    public static final String DEFAULT_STATION_ID = "CA17W";
-    public static final String DEFAULT_LOCATION_NAME = "Putrajaya";
-    public static final String DEFAULT_STATION_PLACE = "SK Putrajaya Presint 18 (2)";
-    public static final double DEFAULT_LATITUDE = 2.9158;
-    public static final double DEFAULT_LONGITUDE = 101.6909;
+    // Indonesia-first default: Pagar Alam, South Sumatra.
+    public static final String DEFAULT_REGION = "Indonesia";
+    public static final String DEFAULT_STATION_ID = "ID_PGA";
+    public static final String DEFAULT_LOCATION_NAME = "Pagar Alam";
+    public static final String DEFAULT_STATION_PLACE = "Kota Pagar Alam, Sumatera Selatan";
+    public static final double DEFAULT_LATITUDE = -4.0212;
+    public static final double DEFAULT_LONGITUDE = 103.2517;
 
     public static class Station {
         public final String id;
@@ -198,7 +198,7 @@ public class AppLocationManager {
 
     public static List<Station> getStationsForRegion(String region) {
         if (region == null || !REGION_STATIONS.containsKey(region)) {
-            return REGION_STATIONS.get("Malaysia");
+            return REGION_STATIONS.get(DEFAULT_REGION);
         }
         return Collections.unmodifiableList(REGION_STATIONS.get(region));
     }
