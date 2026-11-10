@@ -98,6 +98,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             "KEYCODE_DPAD_UP", "KEYCODE_DPAD_DOWN", "KEYCODE_DPAD_LEFT", "KEYCODE_DPAD_RIGHT",
             "KEYCODE_DPAD_CENTER", "KEYCODE_ENTER", "KEYCODE_BACK", "KEYCODE_ESCAPE",
             "findPrayerPopupDirectionalFocus(v, focusOrder, keyCode)",
+            "double crossLimit = horizontal",
+            "if (cross > crossLimit) continue;",
             "closeMenu(true)",
             "requestPrayerPopupInitialFocus(panel, focusOrder, 8)",
             "Initial focus could not be committed; refusing Home-header fallback",
