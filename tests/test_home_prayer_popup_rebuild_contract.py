@@ -65,6 +65,10 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("TvResponsiveLayout.safeInsetPx(root.getWidth())", self.popup)
         self.assertIn("TvResponsiveLayout.safeInsetPx(root.getHeight())", self.popup)
         self.assertIn("panel.measure(", self.popup)
+        self.assertLess(
+            self.popup.index("panel.setBackground(new GlassDrawable"),
+            self.popup.index("panel.measure("),
+        )
         self.assertIn("View.MeasureSpec.AT_MOST", self.popup)
         self.assertIn("panel.getMeasuredHeight()", self.popup)
         self.assertIn("showPrayerPopupOverlay(panel, rows, anchor, width, height, focusOrder, safeX, safeY)", self.popup)
