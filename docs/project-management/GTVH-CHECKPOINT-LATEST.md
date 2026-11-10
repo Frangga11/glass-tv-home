@@ -2040,3 +2040,47 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 - No merge, ADB/device installation, default launcher change or release publication has occurred. Keep PR #111 OPEN / DRAFT / UNMERGED until visual and physical acceptance are recorded.
 
 **Next restart prompt:** `Lanjutkan dari GTVH-CHECKPOINT-LATEST.md — GTVH-HOME-CUMULATIVE-INTEGRATION-111.`
+
+
+## FLOATING ISLAMIC CONTENT / RIGHT GRADIENT — 10 NOVEMBER 2026
+
+**Workstream:** `GTVH-HOME-FLOATING-CONTENT-RIGHT-GRADIENT-001`  
+**Repository:** `Frangga11/glass-tv-home`  
+**PR:** https://github.com/Frangga11/glass-tv-home/pull/112  
+**State:** OPEN / DRAFT / UNMERGED  
+**Source branch:** `fix/home-floating-content-right-gradient-001`  
+**Base:** `integration/home-all-approved-changes-001` @ `b461e35561ba1bc44d366fdab351e46221150873`  
+**Current exact HEAD:** `56f5af83b79eaa704d7616d111501f41f5c52e28`  
+**Ancestry:** direct descendant of PR #111 exact HEAD; compare confirms 3 commits ahead / 0 behind.
+
+### Root cause
+- MainActivity initially assigned a rounded LEFT_RIGHT scrim to `islamicShelf`, then the global glass setup replaced it with `GlassDrawable` at 18dp radius and 0.55 glass strength.
+- This produced the unified rounded glass panel visible in the newer user photo.
+- `prayerSectionDivider` also supplied a visible 180dp horizontal rule between Ayat and prayer timetable.
+
+### Scoped implementation
+- `launcher/app/src/main/java/com/gathin/tvhome/GlassDrawable.java`: added an `R.id.islamicShelf`-only draw path before the generic glass preference/fallback paths. It paints a non-rounded local horizontal gradient, transparent to 0x1A000000 (about 10% alpha), with stops at 0%, 48%, 78%, 100%; no blur fill, veil panel, rim, or rounded rectangle is painted for this owner. Fade alpha remains respected.
+- `launcher/app/src/main/res/layout/activity_main.xml`: set `prayerSectionDivider` alpha to 0 while retaining its original 180dp × 1dp dimensions and margins.
+- Added `tests/test_home_floating_content_right_gradient_contract.py` with five contracts for gradient-only rendering, divider invisibility/layout retention, key typography/shadows, six prayer label/time IDs, and interaction view IDs.
+- Exactly three files changed; MainActivity, all data providers, wallpaper, Hero Shelf, Dock/Grid, WeatherActivity, IDs/listeners/DPAD and prayer/Ayah data logic were not changed.
+
+### Typography and readability lock
+- Existing XML typography and soft text shadows are retained; the patch does not modify font family, weight, size, color, letter/line spacing, positions, margins or alignment.
+- The gradient is a constant low-opacity right fade; no wallpaper-luminance sampler or runtime adaptive contrast adjustment has been introduced in this first scoped pass. This remains an explicit visual-review gate if bright-wallpaper legibility needs further local adjustment. Do not describe adaptive luminance behavior as implemented until evidenced.
+- The visual reference comparison at 1920×1080 (including bright and dark wallpaper) remains pending. CI is not visual acceptance.
+
+### Exact-head CI state at checkpoint
+- PR #112 exact HEAD `56f5af83b79eaa704d7616d111501f41f5c52e28`.
+- CI run #1901 / ID `42818986917`: IN PROGRESS at checkpoint.
+- Lists/tools/docs job: SUCCESS.
+- Launcher unit tests + Release Build step: IN PROGRESS; APK artifact and size not yet available.
+- No ADB, physical device install, default launcher change, merge, or release was performed.
+
+### Next steps
+1. Poll CI run #1901 for exact HEAD; record regression count, unit-test result, Release Build, APK size and artifact ID/link.
+2. If any failure, fix only within scope and wait for a new exact-head run.
+3. Complete visual review at 1920×1080 on bright and dark wallpaper. Verify no panel/corners/rules, typography parity, gradient direction and readability.
+4. If true adaptive luminance contrast is required by the visual review, design a minimal, cached local brightness response without touching text geometry or data logic.
+5. Keep PR #112 OPEN / DRAFT / UNMERGED; no ADB/device install or merge/release without authorization.
+
+**Next restart prompt:** `Lanjutkan GTVH-HOME-FLOATING-CONTENT-RIGHT-GRADIENT-001 dari PR #112 dan exact HEAD 56f5af83b79eaa704d7616d111501f41f5c52e28; periksa CI run #1901 lalu lanjutkan visual acceptance.`
