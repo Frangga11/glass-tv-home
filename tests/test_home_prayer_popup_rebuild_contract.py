@@ -93,7 +93,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
     def test_popup_is_right_centered_and_does_not_scroll_or_glide_content(self):
         self.assertIn("Gravity.RIGHT | Gravity.CENTER_VERTICAL", self.popup)
         self.assertIn("int) (301 * density)", self.popup)
-        self.assertIn("lp.rightMargin = safeX + (int) (26 * density)", self.popup)
+        self.assertIn("lp.rightMargin = safeX + (int) (14 * density)", self.popup)
         self.assertNotIn("glideToMenuRow(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
 
