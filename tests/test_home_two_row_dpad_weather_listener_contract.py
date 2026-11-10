@@ -41,7 +41,7 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertNotIn("dockParams.bottomMargin = horizontalGridExpanded", layout)
         self.assertIn("gridParams.bottomMargin = horizontalGridExpanded ? dockBottomMargin : 0", layout)
 
-    def test_dpad_transition_moves_both_rows_and_commits_focus_after_motion(self):
+    def test_dpad_transition_precommits_focus_then_moves_both_rows(self):
         expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
         collapse_start = MAIN.index("private void collapseHorizontalOverflowToDock")
         animate_start = MAIN.index("private void animateHorizontalDockTransition")
@@ -50,10 +50,12 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("dockRecycler.setTranslationY(0f)", expand)
         self.assertIn("grid.setTranslationY(pitch)", expand)
         self.assertIn("focusTile(targetPosition)", expand)
+        self.assertIn("prepareDockFocusBeforeCollapse", collapse)
+        self.assertIn("card.requestFocus()", collapse)
         self.assertIn("dockRecycler.setTranslationY(-pitch * (1f - progress))", collapse)
         self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
-        self.assertIn("restoreDockFocusAfterCollapse(", collapse)
-        self.assertIn("dockPosition, generation, 32", collapse)
+        self.assertIn("grid.setVisibility(View.GONE)", collapse)
+        self.assertNotIn("restoreDockFocusAfterCollapse", MAIN)
 
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
