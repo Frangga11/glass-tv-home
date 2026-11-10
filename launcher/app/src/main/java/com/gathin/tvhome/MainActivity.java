@@ -3589,10 +3589,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid.requestLayout();
         grid.post(() -> {
             if (requestGeneration != gridFocusRequestGeneration || !horizontalGridExpanded) return;
-            int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(
-                    DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
-                    DockPreferences.load(this).capacity, density);
-            int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
             int gridTileWidth = DockGeometry.horizontalTileWidthPx(
                     DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
                     DockPreferences.load(this).capacity, density);
@@ -3641,7 +3637,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
-            @Override public void onAnimationCancel(android.animation.Animator animation) { cancelled = true; }
+            @Override public void onAnimationCancel(android.animation.Animator animation) {
+                cancelled = true;
+                horizontalDockCollapseInProgress = false;
+            }
             @Override public void onAnimationEnd(android.animation.Animator animation) {
                 if (horizontalDockTransitionAnimator == animator) horizontalDockTransitionAnimator = null;
                 if (cancelled || transition != horizontalDockTransitionGeneration
