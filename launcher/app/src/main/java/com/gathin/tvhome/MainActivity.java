@@ -3653,7 +3653,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // the expanded anchor. Clear translation only after the idle layout pass.
                 applyDockLayout();
                 dockRecycler.post(() -> {
-                    if (generation != gridFocusRequestGeneration) return;
+                    if (generation != gridFocusRequestGeneration) {
+                        horizontalDockCollapseInProgress = false;
+                        return;
+                    }
                     grid.setTranslationY(0f);
                     dockRecycler.setTranslationY(0f);
                     horizontalDockCollapseInProgress = false;
