@@ -2803,8 +2803,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int dockViewportWidth = gridWrap.getWidth();
                 int inner = DockGeometry.horizontalContentWidthPx(dockViewportWidth, density);
                 gridParams.width = DockGeometry.horizontalGridWidthPx(inner, preferences.capacity);
-                gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-                dockParams.gravity = Gravity.BOTTOM | Gravity.START;
+                // Primary Dock row is visually above the overflow Grid row.
+                // Their anchors are swapped from the legacy bottom-Dock/upper-Grid arrangement.
+                gridParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                dockParams.gravity = Gravity.TOP | Gravity.START;
                 dockParams.width = dockViewportWidth;
                 dockAdapter.setHorizontalViewportWidth(dockViewportWidth);
                 dockParams.rightMargin = 0;
@@ -2826,21 +2828,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         dockCenterOffset, dockRecycler.getPaddingBottom());
                 dockRecycler.setTranslationX(0f);
 
-                // Keep the Grid viewport independent of Dock capacity. The 4-slot geometry is
-                // the largest supported tile and therefore the stable reservation baseline.
-                gridParams.bottomMargin = DockGeometry.horizontalGridBottomMarginPx(dockTileHeight, density);
-                // Show exactly one app row above the fixed Dock. DPAD Down scrolls the next
-                // row into this same viewport instead of exposing a second floating row.
-                gridParams.height = horizontalGridExpanded
-                        ? DockGeometry.horizontalGridViewportHeightPx(gridTileWidth, density, gridBasePaddingTop)
-                        : ViewGroup.LayoutParams.MATCH_PARENT;
+                // Keep the Grid viewport independent of Dock capacity. The same one-row viewport
+                // is used below the primary Dock row; subsequent DPAD DOWN presses scroll later
+                // overflow rows through this fixed lower slot.
+                int gridBottomMargin = DockGeometry.horizontalGridBottomMarginPx(dockTileHeight, density);
+                int gridViewportHeight = DockGeometry.horizontalGridViewportHeightPx(
+                        gridTileWidth, density, gridBasePaddingTop);
+                int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
 
+                // Swap the legacy anchors: primary Dock occupies the upper row; overflow Grid
+                // occupies the lower row. This changes vertical order, not tile size or identity.
                 dockParams.height = dockHeight;
                 dockParams.leftMargin = 0;
-                dockParams.topMargin = 0;
-                // Place the glass tray on the 30dp bottom safe margin; the top edge remains 29dp.
-                // The RecyclerView host extends around its tray to contain labels and focus effects.
-                dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
+                dockParams.topMargin = DockGeometry.horizontalPrimaryDockTopMarginPx(
+                        gridWrap.getHeight(), gridBottomMargin, gridViewportHeight);
+                dockParams.bottomMargin = 0;
+
+                gridParams.height = horizontalGridExpanded
+                        ? gridViewportHeight : ViewGroup.LayoutParams.MATCH_PARENT;
+                gridParams.topMargin = DockGeometry.horizontalOverflowGridTopMarginPx(
+                        gridWrap.getHeight(), dockBottomMargin, dockHeight);
+                gridParams.bottomMargin = 0;
                 if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
                     grid.setPadding(grid.getPaddingLeft(), gridBasePaddingTop,
                             grid.getPaddingRight(), 0);
