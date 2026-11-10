@@ -7691,7 +7691,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         header.addView(headerTitle, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         TextView headerDate = new TextView(this);
-        headerDate.setText(PrayerTimes.getHijriDate());
+        headerDate.setText(PrayerTimes.getHijriDate() + "  •  Terhubung");
         headerDate.setTextSize(10.5f);
         headerDate.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         headerDate.setTextColor(0xD9FFFFFF);
@@ -7954,10 +7954,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             rows.setTranslationY(slide * (1f - f));
         });
         in.start();
-        if (first != null) {
-            first.requestFocus();
+        final View initialFocus = first;
+        if (initialFocus != null) {
+            initialFocus.requestFocus();
             panel.post(() -> {
-                if (openMenu == panel && first.isAttachedToWindow()) first.requestFocus();
+                if (openMenu == panel && initialFocus.isAttachedToWindow()) initialFocus.requestFocus();
             });
         }
     }
