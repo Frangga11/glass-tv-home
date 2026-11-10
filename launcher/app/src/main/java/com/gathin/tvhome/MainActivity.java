@@ -3421,6 +3421,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     public boolean onTileVerticalKey(int position, int keyCode) {
+        // While Dock/Grid are collapsing, ignore further Grid directions. The in-flight
+        // transition retains sole ownership of translations and focus restoration; accepting
+        // another row request here would advance gridFocusRequestGeneration and strand the Dock.
+        if (horizontalDockCollapseInProgress) return true;
         int count = adapter.getItemCount();
         if (count <= 0) return true;
         int target;
@@ -3539,6 +3543,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void focusDockTile(int position) {
+        // The collapse animator owns the focus hand-off until its end callback commits idle geometry.
+        // Do not let a repeated UP (or a stale focus request) steal focus and invalidate that callback.
+        if (horizontalDockCollapseInProgress) return;
         if (dockAdapter == null || dockRecycler == null || dockAdapter.getItemCount() == 0) {
             focusTile(0);
             return;
