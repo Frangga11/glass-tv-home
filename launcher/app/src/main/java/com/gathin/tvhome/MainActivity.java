@@ -3627,7 +3627,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final android.animation.ValueAnimator animator =
                 android.animation.ValueAnimator.ofFloat(0f, 1f);
         horizontalDockTransitionAnimator = animator;
-        animator.setDuration(reducedMotion ? 140 : 260);
+        animator.setDuration(reducedMotion ? 120 : 190);
         animator.setInterpolator(new android.view.animation.DecelerateInterpolator());
         animator.addUpdateListener(value -> {
             if (transition != horizontalDockTransitionGeneration) return;
@@ -3670,7 +3670,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final float from = expanding ? pitch : -pitch;
         final android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofFloat(from, 0f);
         horizontalDockTransitionAnimator = animator;
-        animator.setDuration(reducedMotion ? 140 : 260);
+        animator.setDuration(reducedMotion ? 120 : 190);
         animator.setInterpolator(new android.view.animation.DecelerateInterpolator());
         animator.addUpdateListener(value -> {
             if (generation != horizontalDockTransitionGeneration) return;
