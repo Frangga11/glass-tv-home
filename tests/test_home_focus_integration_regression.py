@@ -26,7 +26,8 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         key_start = MAIN.index("public boolean onTileVerticalKey(int position, int keyCode)")
         key_end = MAIN.index("private int pendingFocus;", key_start)
         key_method = MAIN[key_start:key_end]
-        self.assertIn("if (horizontalDockCollapseInProgress) return true;", key_method)
+        self.assertIn("if (horizontalDockCollapseInProgress)", key_method)
+        self.assertIn("pendingDockCollapseDirections.add(keyCode)", key_method)
         self.assertLess(key_method.index("if (horizontalDockCollapseInProgress) return true;"),
                         key_method.index("int count = adapter.getItemCount();"))
 
@@ -37,7 +38,8 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         self.assertIn("dockRecycler.setTranslationY(0f);", collapse)
         self.assertIn("grid.setTranslationY(0f);", collapse)
         self.assertIn("applyDockLayout();", collapse)
-        self.assertIn("focusDockTile(dockPosition);", collapse)
+        self.assertIn("restoreDockFocusAfterCollapse(", collapse)
+        self.assertIn("dockPosition, generation, 32", collapse)
         self.assertLess(collapse.index("dockRecycler.setTranslationY(0f);"),
                         collapse.index("applyDockLayout();"))
 
