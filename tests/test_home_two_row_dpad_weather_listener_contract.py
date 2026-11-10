@@ -128,7 +128,11 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("if (horizontalGridTransitionRunning) return;", request)
         self.assertLess(request.index("pendingHorizontalGridKey = adapter.keyAt(targetPosition);"),
                         request.index("if (horizontalGridTransitionRunning) return;"))
-        self.assertNotIn("previous.cancel()", request)
+        # The first request may cancel a stale animator while initializing a transition.
+        # Repeated requests must return above this setup block and therefore never reach cancel().
+        self.assertEqual(1, request.count("previous.cancel()"))
+        self.assertLess(request.index("if (horizontalGridTransitionRunning) return;"),
+                        request.index("previous.cancel()"))
 
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
