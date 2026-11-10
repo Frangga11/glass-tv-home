@@ -3614,11 +3614,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 || horizontalDockCollapseInProgress) return;
         horizontalDockCollapseInProgress = true;
         final int generation = ++gridFocusRequestGeneration;
-        int gridTileWidth = DockGeometry.horizontalTileWidthPx(
-                DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
-                DockPreferences.load(this).capacity, density);
-        final int pitch = DockGeometry.horizontalGridViewportHeightPx(
-                gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
+        // Keep expansion and collapse on the same approved 150dp row pitch.
+        // The viewport remains measured independently for clipping; it must not redefine motion distance.
+        final int pitch = Math.round(150f * density);
         android.animation.ValueAnimator previous = horizontalDockTransitionAnimator;
         if (previous != null) previous.cancel();
         final int transition = ++horizontalDockTransitionGeneration;
@@ -3626,7 +3624,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 android.animation.ValueAnimator.ofFloat(0f, 1f);
         horizontalDockTransitionAnimator = animator;
         animator.setDuration(reducedMotion ? 120 : 190);
-        animator.setInterpolator(new android.view.animation.DecelerateInterpolator());
+        animator.setInterpolator(new android.view.animation.PathInterpolator(0.22f, 1f, 0.36f, 1f));
         animator.addUpdateListener(value -> {
             if (transition != horizontalDockTransitionGeneration) return;
             float progress = (Float) value.getAnimatedValue();
@@ -3669,7 +3667,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofFloat(from, 0f);
         horizontalDockTransitionAnimator = animator;
         animator.setDuration(reducedMotion ? 120 : 190);
-        animator.setInterpolator(new android.view.animation.DecelerateInterpolator());
+        animator.setInterpolator(new android.view.animation.PathInterpolator(0.22f, 1f, 0.36f, 1f));
         animator.addUpdateListener(value -> {
             if (generation != horizontalDockTransitionGeneration) return;
             float offset = (Float) value.getAnimatedValue();

@@ -25,7 +25,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("horizontalDockSlotWidthPx(horizontalWidth, capacity, density)", DOCK)
         self.assertIn("verticalDockTileWidthPx(inner, density)", DOCK)
         self.assertIn("static int tileWidthPx(int innerWidthPx, int columns, float density)", APP)
-        self.assertIn("DESIGN_W_DP = 180f, DESIGN_H_DP = 101f", APP)
+        self.assertIn("DESIGN_W_DP = 182f, DESIGN_H_DP = 100f", APP)
 
     def test_dock_icon_is_44dp_but_grid_icon_stays_48dp(self):
         self.assertIn("Math.round(44 * density)", DOCK)

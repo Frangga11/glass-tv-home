@@ -86,6 +86,20 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
 
+    def test_expand_and_collapse_share_fixed_pitch_and_natural_interpolator(self):
+        expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
+        collapse_start = MAIN.index("private void collapseHorizontalOverflowToDock")
+        transition_start = MAIN.index("private void animateHorizontalDockTransition")
+        focus_start = MAIN.index("private void focusTile(", transition_start)
+        expand = MAIN[expand_start:collapse_start]
+        collapse = MAIN[collapse_start:transition_start]
+        motion = MAIN[transition_start:focus_start]
+        self.assertIn("int pitch = Math.round(150f * density);", expand)
+        self.assertIn("final int pitch = Math.round(150f * density);", collapse)
+        self.assertIn("PathInterpolator(0.22f, 1f, 0.36f, 1f)", collapse)
+        self.assertIn("PathInterpolator(0.22f, 1f, 0.36f, 1f)", motion)
+        self.assertNotIn("horizontalGridViewportHeightPx(", collapse)
+
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
