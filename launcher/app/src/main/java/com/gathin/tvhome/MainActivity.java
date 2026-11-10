@@ -140,6 +140,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean dockVertical;
     /** Horizontal Grid stays parked out of sight until the user presses Down from the Dock. */
     private boolean horizontalGridExpanded;
+    /** True while the Dock-to-overflow reveal is running; repeated DPAD keys must not invalidate its focus handoff. */
+    private boolean horizontalDockExpansionInProgress;
     /** Pending target for serialized horizontal Grid row transitions (supports rapid DPAD repeats). */
     private int pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
     /** Stable component identity for a pending row target while the app inventory changes. */
@@ -2285,6 +2287,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (position < count - 1) focusDockTile(position + 1);
                 return true;
             }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                // The Dock-to-overflow handoff owns the vertical axis until its one reveal animation settles.
+                // Swallow remote key repeats here: calling focusTile() again would advance the focus generation
+                // while the first reveal is running, invalidating its completion callback and leaving the
+                // overflow row visible without a focused card.
+                if (horizontalDockExpansionInProgress) return true;
+            }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                 // The Dock is the first Home row in the Patch 4.1 navigation model:
                 // Up returns to the top shelf, never to an app row in the middle.
@@ -3582,7 +3591,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Expand as one physical vertical transition: Dock rises, overflow row enters from below. */
     private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration) {
-        if (grid == null || dockRecycler == null || horizontalGridExpanded) return;
+        if (grid == null || dockRecycler == null || horizontalGridExpanded
+                || horizontalDockExpansionInProgress) return;
+        horizontalDockExpansionInProgress = true;
         cancelHorizontalGridRowTransition();
         // The approved two-row start-to-start distance is fixed at 150dp.
         // Keep viewport measurement separate: it still clips to one complete item row.
@@ -3603,6 +3614,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setTranslationY(0f);
                 dockRecycler.setTranslationY(-pitch);
                 grid.setAlpha(1f);
+                horizontalDockExpansionInProgress = false;
                 focusTile(targetPosition);
             });
         });
@@ -3680,7 +3692,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
-            @Override public void onAnimationCancel(android.animation.Animator animation) { cancelled = true; }
+            @Override public void onAnimationCancel(android.animation.Animator animation) {
+                cancelled = true;
+                if (expanding) horizontalDockExpansionInProgress = false;
+            }
             @Override public void onAnimationEnd(android.animation.Animator animation) {
                 if (horizontalDockTransitionAnimator == animator) horizontalDockTransitionAnimator = null;
                 if (!cancelled && generation == horizontalDockTransitionGeneration && onSettled != null) {
@@ -3753,6 +3768,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 || targetPosition >= adapter.getItemCount()) return;
         pendingHorizontalGridPosition = targetPosition;
         pendingHorizontalGridKey = adapter.keyAt(targetPosition);
+        // Coalesce bursts into the latest logical destination. Let the in-flight scroll finish
+        // from its real on-screen offset; cancelling/restarting it on every key repeat can leave
+        // RecyclerView between rows while the focus handoff is repeatedly invalidated.
+        if (horizontalGridTransitionRunning) return;
         horizontalGridTransitionRunning = true;
         horizontalGridTransitionRetries = 0;
         final int transitionGeneration = ++horizontalGridTransitionGeneration;

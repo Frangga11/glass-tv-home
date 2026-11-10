@@ -108,6 +108,32 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("0x2A * opacity", glider)
         self.assertIn("rim.drawWindowLight(canvas, shape, r - half, opacity)", glider)
 
+    def test_dock_reveal_serializes_repeated_vertical_keys(self):
+        start = MAIN.index("public boolean onDockTileKey(")
+        end = MAIN.index("public boolean onDockTileHeld(", start)
+        dock_keys = MAIN[start:end]
+        self.assertIn("if (horizontalDockExpansionInProgress) return true;", dock_keys)
+        expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
+        expand_end = MAIN.index("private void collapseHorizontalOverflowToDock", expand_start)
+        expand = MAIN[expand_start:expand_end]
+        self.assertIn("horizontalDockExpansionInProgress = true;", expand)
+        self.assertIn("horizontalDockExpansionInProgress = false;", expand)
+        self.assertLess(expand.index("horizontalDockExpansionInProgress = false;"),
+                        expand.index("focusTile(targetPosition)"))
+
+    def test_row_scroll_coalesces_burst_without_restarting_active_animator(self):
+        start = MAIN.index("private void requestHorizontalGridRow(")
+        end = MAIN.index("private int resolvePendingHorizontalGridPosition()", start)
+        request = MAIN[start:end]
+        self.assertIn("if (horizontalGridTransitionRunning) return;", request)
+        self.assertLess(request.index("pendingHorizontalGridKey = adapter.keyAt(targetPosition);"),
+                        request.index("if (horizontalGridTransitionRunning) return;"))
+        # The first request may cancel a stale animator while initializing a transition.
+        # Repeated requests must return above this setup block and therefore never reach cancel().
+        self.assertEqual(1, request.count("previous.cancel()"))
+        self.assertLess(request.index("if (horizontalGridTransitionRunning) return;"),
+                        request.index("previous.cancel()"))
+
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
