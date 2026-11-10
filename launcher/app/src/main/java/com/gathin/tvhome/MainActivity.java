@@ -907,6 +907,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             glider.addCompanion(navCapsule);
             Backdrop.watch(navCapsule);
         }
+        // One restrained glass surface unifies the prayer timetable and Ayat Pilihan.
+        // Background-only treatment: keep shelf bounds, child layout, text, RTL and spacing unchanged.
+        View islamicGlassPanel = findViewById(R.id.islamicShelf);
+        if (islamicGlassPanel != null) {
+            islamicGlassPanel.setBackground(new GlassDrawable(
+                    islamicGlassPanel, 18f * density, density, null, 0.55f));
+            Backdrop.watch(islamicGlassPanel);
+        }
         for (int id : new int[]{R.id.locationPill, R.id.weatherAirQuality, R.id.btnInputs,
                 R.id.btnWifi, R.id.btnAssistant, R.id.btnHome, R.id.btnCandyBox, R.id.btnSettings}) {
             View pill = findViewById(id);

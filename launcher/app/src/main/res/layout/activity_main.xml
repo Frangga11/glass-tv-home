@@ -558,6 +558,7 @@
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:src="@drawable/ic_header_location"
+                    android:tint="@color/header_icon_tint"
                     android:contentDescription="@null" />
                 <TextView
                     android:id="@+id/locationName"
@@ -583,6 +584,7 @@
                     android:layout_width="22dp"
                     android:layout_height="18dp"
                     android:src="@drawable/ic_header_mountain"
+                    android:tint="@color/header_icon_tint"
                     android:contentDescription="@null" />
                 <TextView
                     android:id="@+id/locationAltitude"
@@ -807,7 +809,8 @@
                     android:background="@android:color/transparent"
                     android:focusable="true"
                     android:clickable="true"
-                    android:contentDescription="Beranda" />
+                    android:contentDescription="Beranda" 
+                    android:drawableTint="@color/header_icon_tint"/>
                 <TextView
                     android:id="@+id/btnCandyBox"
                     android:fontVariationSettings="'wght' 600"
@@ -826,7 +829,8 @@
                     android:ellipsize="end"
                     android:drawableStart="@drawable/ic_shield_child"
                     android:contentDescription="@string/user_profile_content_description"
-                    android:background="@android:color/transparent" />
+                    android:background="@android:color/transparent" 
+                    android:drawableTint="@color/header_icon_tint"/>
                 <FrameLayout
                     android:id="@+id/btnSettingsContainer"
                     android:layout_width="0dp"
@@ -851,7 +855,8 @@
                         android:ellipsize="end"
                         android:contentDescription="@string/settings"
                         android:drawableStart="@drawable/ic_settings"
-                        android:background="@android:color/transparent" />
+                        android:background="@android:color/transparent" 
+                    android:drawableTint="@color/header_icon_tint"/>
 
                 </FrameLayout>
             </LinearLayout>
@@ -890,7 +895,8 @@
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:text="@string/wifi"
-                    android:drawableStart="@drawable/ic_wifi" />
+                    android:drawableStart="@drawable/ic_wifi" 
+                    android:drawableTint="@color/header_icon_tint"/>
 
                 <TextView
                     android:id="@+id/btnAssistant"
@@ -902,7 +908,8 @@
                     android:paddingEnd="5dp"
                     android:drawablePadding="0dp"
                     android:contentDescription="@string/assistant_content_description"
-                    android:drawableStart="@drawable/ic_mic" />
+                    android:drawableStart="@drawable/ic_mic" 
+                    android:drawableTint="@color/header_icon_tint"/>
 
 
             </LinearLayout>

@@ -49,7 +49,8 @@ class HomeHeaderTypographyFocusContractTest(unittest.TestCase):
 
     def test_navigation_focus_is_painted_on_tab_surface_above_shared_capsule(self):
         self.assertIn('android:state_focused="true"', FOCUS)
-        self.assertIn('<solid android:color="#4000E5FF" />', FOCUS)
+        self.assertIn('<solid android:color="#35DCE5ED" />', FOCUS)
+        self.assertIn('<stroke android:width="1dp" android:color="@color/tv_ui_focus_border" />', FOCUS)
         self.assertIn('<stroke android:width="1dp"', FOCUS)
         self.assertIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg));", MAIN)
         self.assertNotIn("pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));", MAIN)

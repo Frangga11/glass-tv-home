@@ -12,12 +12,11 @@ import androidx.annotation.NonNull;
 
 /**
  * A top-bar pill or popup panel in the glass style: the blurred wallpaper behind it, an even veil, and an edge
- * that shines at the top-left and bottom-right (GlassRim), with no brighter top. A pill's glass fades
- * out as the top bar's gliding focus fill covers it, and back in as the fill moves away.
+ * that shines at the top-left and bottom-right (GlassRim), with no brighter top. The glass remains present beneath the shared gliding focus layer, so focus never exposes the wallpaper.
  */
 final class GlassDrawable extends Drawable {
 
-    private static final int VEIL_ALPHA = 0x99;
+    private static final int VEIL_ALPHA = 0x70;
     private final View owner;
     private final float radius;
     private final Backdrop.Fill fill = new Backdrop.Fill();
@@ -86,13 +85,9 @@ final class GlassDrawable extends Drawable {
         // The glass gives way to the focus fill as it arrives: the more of this pill the gliding
         // shape covers, the fainter the glass, until a focused pill is the fill alone. As the shape
         // leaves, the glass comes back the same way.
-        float covered = 0f;
-        if (highlight != null && highlight.isShowing() && !paintsShape) {
-            owner.getLocationInWindow(at);
-            highlight.getLocationInWindow(highlightAt);
-            covered = highlight.coverage(highlightAt[0] - at[0], highlightAt[1] - at[1], rect.width(), rect.height());
-        }
-        float glass = (1f - covered) * fade;
+        // Keep the glass capsule fully rendered while DPAD focus glides above it.
+        // Focus is a separate layer; it must never fade the shared glass surface away.
+        float glass = fade;
         if (glass > 0f) {
             fill.draw(canvas, owner, rect, radius, glass);
             veil.setAlpha(Math.round(VEIL_ALPHA * glass));
