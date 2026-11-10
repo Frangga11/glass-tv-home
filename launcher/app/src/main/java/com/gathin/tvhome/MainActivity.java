@@ -3692,7 +3692,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
-            @Override public void onAnimationCancel(android.animation.Animator animation) { cancelled = true; }
+            @Override public void onAnimationCancel(android.animation.Animator animation) {
+                cancelled = true;
+                if (expanding) horizontalDockExpansionInProgress = false;
+            }
             @Override public void onAnimationEnd(android.animation.Animator animation) {
                 if (horizontalDockTransitionAnimator == animator) horizontalDockTransitionAnimator = null;
                 if (!cancelled && generation == horizontalDockTransitionGeneration && onSettled != null) {
