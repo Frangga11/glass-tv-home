@@ -41,3 +41,8 @@ This deliberately serializes the collapse boundary rather than replaying queued 
 - Source-contract test and full CI/build must pass on the exact final HEAD.
 - Physical Mi TV Stick test is still required for visual parity, banner/icon/label visibility, DPAD navigation, rapid repeated UP/DOWN, Dock return visibility, app activation and unrelated Home controls.
 - Do not merge, release or claim device PASS before physical acceptance.
+
+
+## CI artifact routing
+
+The dedicated Home layout test APK and cumulative integration QA APK are both enabled for PR #126. The workflow file is part of this PR so the artifact-routing change is versioned and reviewable with the source correction.
