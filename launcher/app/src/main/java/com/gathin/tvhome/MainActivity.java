@@ -5083,7 +5083,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         LinearLayout rootContainer = new LinearLayout(this);
         rootContainer.setOrientation(LinearLayout.VERTICAL);
-        rootContainer.setPadding((int) (22 * density), (int) (16 * density), (int) (22 * density), (int) (14 * density));
+        rootContainer.setPadding((int) (22 * density), (int) (16 * density), (int) (22 * density), (int) (16 * density));
 
         // Header Title Row
         LinearLayout headerRow = new LinearLayout(this);
@@ -5481,7 +5481,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.bottomMargin = hasSub ? (int) (5 * density) : (int) (2 * density);
+        lp.bottomMargin = hasSub ? (int) (5 * density) : (int) (3 * density);
         row.setLayoutParams(lp);
 
         return row;
