@@ -107,3 +107,31 @@ The owner supplied a Mi TV Stick / 1920×1080 photo of the first installed build
 
 ### Acceptance status
 These are source-level corrections only. CI, release build, and the next installable APK must be verified before device retest. DPAD and visual acceptance remain PENDING until the owner tests the new APK on Mi TV Stick and supplies feedback. No merge or public release.
+
+
+## Vertical reference redesign — 11 November 2026
+
+The owner supplied a portrait reference and explicitly requested a slim vertical panel with dense, proportional spacing. The installed prior build was rejected; prior visual and DPAD assumptions are superseded.
+
+### Source changes now staged on the PR branch (CI not yet accepted)
+
+- Rebuilt only `showPrayerPopup()` as a vertical hierarchy: title/location header, next-prayer card, compact schedule heading, three two-column schedule rows, and three Azan action rows.
+- Narrowed the panel to a maximum 430dp width and 500dp height, right-center aligned with a 30dp safe margin.
+- Tightened row heights and inter-row margins to remove unnecessary blank bands while retaining readable TV typography.
+- Preserved the current Silver Glass popup material and existing system semantic colors. The reference image controls shape and hierarchy, not its cyan palette.
+- Schedule cells have clear focusable targets. Focus outline uses existing `TvUiTokens.FOCUS_BORDER`; selected next-prayer treatment retains existing Islamic gold.
+- Replaced linear index-only navigation with nearest visual-direction candidate selection for DPAD up/down/left/right. OK/Enter invokes the focused action; Back/Escape closes.
+- Fixed the invalid initial-focus reference by selecting the first actual focusable control from the explicit focus order.
+- Existing Azan settings, sound selection, test activity, prayer schedule source, and shared popup/menu implementations remain the functional owners.
+
+### Commits
+- Vertical popup structure and card treatment: `b53b8627316c5fb50dfeb709911eb365df02576b`
+- Direction-aware DPAD candidate mapping: `6a4843b483b74101784729330a3c02ca3a8d1f55`
+- Focus/vertical layout regression contract: `c7a7b32854c8394ff9c8bdf139389db0ef55f35c`
+- Compact spacing refinement: `254ddab5482f9866d706e5f5fb77daa0ee8c7d3c`
+- Reverted two unrelated dialog spacing edits: `d79981f0a15432505dbe50da0ed491783e90b0f1`
+
+### Current acceptance state
+- Source changes are not yet CI-validated.
+- Visual identity, exact density fit, focus outline rendering, DPAD traversal, Azan control operation, and physical Mi TV Stick behavior are NOT PASS until a fresh APK is tested on device.
+- No merge, public release, installation, ADB, or changes to other Home surfaces.
