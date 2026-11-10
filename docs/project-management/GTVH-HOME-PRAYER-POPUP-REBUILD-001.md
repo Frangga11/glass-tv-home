@@ -184,3 +184,31 @@ The shared `closeMenu()` is called only through its existing API for popup dismi
 7. Prepare APK and checksum if build succeeds.
 8. Provide device test instructions; do not claim physical acceptance until the owner tests on Mi TV Stick.
 9. Keep PR Draft / Unmerged until all acceptance gates are met.
+
+
+## 10. Owner revision — compact header, 30% narrower panel, 24-hour clock, and DPAD matrix
+
+Date: 11 November 2026 (WIB)
+
+Based on the owner's Mi TV Stick photo and explicit revision instructions:
+
+- Header remains at the top-right of the popup, but is now informational only and excluded from the DPAD focus graph.
+- Removed the header's pill/capsule treatment. The title stays left; location and altitude sit at the right with the same location and mountain icon assets used by the Home location capsule, a thin divider, left-aligned text, and a fixed `800 mdpl` value (no ± sign).
+- Initial DPAD focus now starts at Subuh, the first schedule cell.
+- Reduced panel target width from 430dp to 301dp (30% reduction); all child rows/cells are measured within the narrower width. Height remains content-measured against the TV safe area and vertically centered.
+- Retained the right-side safe margin so the panel sits closer to the right screen edge while remaining centered vertically.
+- Schedule and next-prayer time strings are normalized to Indonesian-style 24-hour `HH:mm` display.
+- Azan master control now has a visible Android TV switch; row focus/OK toggles the switch and reuses the existing Azan preference + scheduling path.
+- Suara Azan remains a click-to-cycle control; Test Sound retains its existing AzanActivity route.
+- Timetable layout remains a 2-column × 3-row focus grid. Directional selection remains geometric/lane-constrained so Subuh ↔ Terbit, Subuh ↓ Dzuhur, Terbit ↓ Ashar, Dzuhur ↓ Maghrib, Ashar ↓ Isya, and the lower schedule row ↓ Azan controls can be traversed without diagonal jumps.
+
+Changed files remain limited to:
+1. `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+2. `tests/test_home_prayer_popup_rebuild_contract.py`
+3. This checkpoint document.
+
+Validation status for this owner revision:
+- Source and contract assertions updated.
+- Exact-HEAD CI, Android release build, rendered 1920×1080 inspection, and physical DPAD verification are pending.
+- Do not claim runtime PASS until the new exact branch HEAD has completed CI and the owner has tested the APK on the TV.
+- PR #135 remains OPEN / DRAFT / UNMERGED.
