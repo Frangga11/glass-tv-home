@@ -2832,8 +2832,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // is used below the primary Dock row; subsequent DPAD DOWN presses scroll later
                 // overflow rows through this fixed lower slot.
                 int gridBottomMargin = DockGeometry.horizontalGridBottomMarginPx(dockTileHeight, density);
-                int gridViewportHeight = DockGeometry.horizontalGridViewportHeightPx(
-                        gridTileWidth, density, gridBasePaddingTop);
+                int gridViewportHeight = DockGeometry.horizontalGridViewportHeightPx(gridTileWidth,
+                        density, gridBasePaddingTop);
                 int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
 
                 // Swap the legacy anchors: primary Dock occupies the upper row; overflow Grid
