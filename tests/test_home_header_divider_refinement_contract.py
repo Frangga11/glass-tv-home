@@ -28,7 +28,7 @@ class HomeHeaderDividerRefinementContractTest(unittest.TestCase):
         for view_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
             node = nodes[view_id]
             with self.subTest(view=view_id):
-                self.assertEqual(node.get(ANDROID + "drawablePadding"), "2dp")
+                self.assertEqual(node.get(ANDROID + "drawablePadding"), "1dp")
                 self.assertEqual(node.get(ANDROID + "paddingStart"), "4dp")
                 self.assertEqual(node.get(ANDROID + "paddingEnd"), "4dp")
                 self.assertEqual(node.get(ANDROID + "textSize"), "14sp")
