@@ -28,8 +28,8 @@ final class TvUiTokens {
     // Warm Islamic accent is intentionally independent from the global silver/cyan theme.
     static final int ISLAMIC_GOLD = 0xFFFFC45A;
     static final int ISLAMIC_TEXT_SHADOW = 0xCC000000;
-    static final int FOCUS_BORDER = 0xFFDCE5ED; // polished silver edge; cyan remains a restrained reflection
-    static final int FOCUS_HALO = 0x35DCE5ED; // soft frosted-silver cursor veil
+    static final int FOCUS_BORDER = 0xFFFFFFFF; // single neutral-white DPAD outline across Dock and Grid
+    static final int FOCUS_HALO = 0x26FFFFFF; // restrained neutral-white halo; no cyan second cursor
     static final int GLASS_VEIL_COLOR = 0x88343E48;
 
     // Persistent selected/active state is silver, never the same treatment as DPAD focus.

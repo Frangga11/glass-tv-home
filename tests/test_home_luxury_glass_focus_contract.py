@@ -57,12 +57,12 @@ class HomeLuxuryGlassFocusContractTest(unittest.TestCase):
         glider = (JAVA / "Glider.java").read_text(encoding="utf-8")
         colors = ET.parse(RES / "values/colors.xml").getroot()
         color_map = {node.get("name"): (node.text or "").strip() for node in colors.findall("color")}
-        self.assertIn("FOCUS_BORDER = 0xFFDCE5ED", tokens)
-        self.assertIn("FOCUS_HALO = 0x35DCE5ED", tokens)
+        self.assertIn("FOCUS_BORDER = 0xFFFFFFFF", tokens)
+        self.assertIn("FOCUS_HALO = 0x26FFFFFF", tokens)
         self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", glider)
         self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", glider)
-        self.assertEqual(color_map["tv_ui_focus_border"], "#FFDCE5ED")
-        self.assertEqual(color_map["tv_ui_focus_halo"], "#35DCE5ED")
+        self.assertEqual(color_map["tv_ui_focus_border"], "#FFFFFFFF")
+        self.assertEqual(color_map["tv_ui_focus_halo"], "#26FFFFFF")
         prayer = (RES / "drawable/prayer_pill_bg.xml").read_text(encoding="utf-8")
         self.assertIn("@color/tv_ui_focus_halo", prayer)
 

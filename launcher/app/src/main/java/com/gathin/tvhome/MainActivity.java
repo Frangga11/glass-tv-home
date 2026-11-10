@@ -152,6 +152,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalDockTransitionAnimator;
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
+    /** One DPAD direction pressed during collapse; replay only after Dock focus is restored. */
+    private int pendingCollapseDpadKeyCode = KeyEvent.KEYCODE_UNKNOWN;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
     private int gridFocusRequestGeneration;
     private boolean lastFocusedDock;
@@ -908,6 +910,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Backdrop.watch(dockRecycler);
         setUpGlider();
+        // Grid rows share Glider invalidation with the Dock. The root pane remains behind app
+        // content; GridFocusDecoration adds only its outline above children so tile artwork stays visible.
+        grid.addItemDecoration(new GridFocusDecoration(glider));
+        glider.addCompanion(grid);
         // Preserve one shared glass capsule for Home/Profile/Settings.
         // Each focusable header control paints the same moving Glider after its glass surface
         // and before its own text/icon content, so no capsule can cover the focus indicator.
@@ -2178,6 +2184,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
         // Collapse the overflow Grid only after focus has actually reached a Dock tile.
         handleTileFocused(key, position, card, true);
+        // Replaying only after the Dock owns focus makes UP/DOWN deterministic even when the
+        // remote repeats a key during the 260 ms reverse transition.
+        if (!dockVertical && !horizontalDockCollapseInProgress
+                && pendingCollapseDpadKeyCode != KeyEvent.KEYCODE_UNKNOWN) {
+            final int queuedKey = pendingCollapseDpadKeyCode;
+            pendingCollapseDpadKeyCode = KeyEvent.KEYCODE_UNKNOWN;
+            dockRecycler.post(() -> {
+                if (dockVertical || horizontalGridExpanded || dockAdapter == null) return;
+                onDockTileKey(key, queuedKey);
+            });
+        }
     }
 
     private void handleTileFocused(String key, int position, View card, boolean inDock) {
@@ -3321,6 +3338,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         int code = event.getKeyCode();
+        // The old Grid card remains the event target until the reverse slide settles. Without
+        // this gate, a second UP/DOWN can start a competing transition and invalidate collapse,
+        // leaving the Grid visible but the focus owner detached. Queue one intent and replay it
+        // against the restored Dock after focus has actually transferred.
+        if (!dockVertical && horizontalDockCollapseInProgress
+                && (code == KeyEvent.KEYCODE_DPAD_UP || code == KeyEvent.KEYCODE_DPAD_DOWN
+                || code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) pendingCollapseDpadKeyCode = code;
+            return true;
+        }
         if (wallpaperFullscreen) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 setWallpaperFullscreen(false);
@@ -3496,6 +3523,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     };
 
     private boolean focusTopBarFallback() {
+        // A Dock focus retry can fail after a layout/inventory change; never replay stale DPAD later.
+        pendingCollapseDpadKeyCode = KeyEvent.KEYCODE_UNKNOWN;
         if (btnHome != null && btnHome.isShown() && btnHome.isFocusable() && btnHome.requestFocus()) {
             return true;
         }
@@ -3591,7 +3620,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // in which the Dock appears already raised and the overflow row flashes in place.
         dockRecycler.setTranslationY(pitch);
         grid.setTranslationY(pitch);
-        grid.setAlpha(0.72f);
+        // Keep the Grid fully opaque during the row transition; do not cross-fade the
+        // content plane or make the Dock glass appear to change material.
         horizontalGridExpanded = true;
         applyDockLayout();
         grid.setVisibility(View.VISIBLE);
@@ -3634,7 +3664,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             float progress = (Float) value.getAnimatedValue();
             dockRecycler.setTranslationY(pitch * progress);
             grid.setTranslationY(pitch * progress);
-            grid.setAlpha(1f - 0.28f * progress);
+            // No Grid alpha tween: Dock/tiles retain stable material opacity.
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -3682,7 +3712,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (dockRecycler != null) dockRecycler.setTranslationY(offset);
             if (grid != null) {
                 grid.setTranslationY(offset);
-                if (expanding) grid.setAlpha(0.72f + 0.28f * (1f - Math.abs(offset) / Math.max(1f, pitch)));
+                // Geometry-only transition. Keep Grid alpha fixed at 1f.
             }
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
