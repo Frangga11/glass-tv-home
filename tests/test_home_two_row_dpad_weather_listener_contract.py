@@ -100,6 +100,14 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("PathInterpolator(0.16f, 1f, 0.30f, 1f)", motion)
         self.assertNotIn("horizontalGridViewportHeightPx(", collapse)
 
+
+    def test_glass_focus_keeps_material_and_reduces_blur_dominance(self):
+        glider = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").read_text(encoding="utf-8")
+        self.assertIn("setStiffness(420f)", glider)
+        self.assertIn("opacity * 0.58f", glider)
+        self.assertIn("0x2A * opacity", glider)
+        self.assertIn("rim.drawWindowLight(canvas, shape, r - half, opacity)", glider)
+
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
