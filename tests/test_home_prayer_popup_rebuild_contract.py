@@ -38,12 +38,9 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("for (int pair = 0; pair < schedule.size(); pair += 2)", self.popup)
         self.assertIn("scheduleFocus.add(card)", self.popup)
         self.assertIn("focusOrder.addAll(scheduleFocus)", self.popup)
-        self.assertIn('prayerIndex = scheduleIndex == 1 ? -1 : scheduleIndex', self.popup)
 
     def test_azan_preferences_schedule_and_existing_test_activity_are_reused(self):
         for token in (
-            "Azan.on(this, prayerIndex)",
-            "Azan.set(MainActivity.this, selectedPrayer, enabled)",
             "Azan.isMasterEnabled(this)",
             "Azan.setMasterEnabled(MainActivity.this, enabled)",
             "Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))",
@@ -53,6 +50,16 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             'azanIntent.putExtra("prayer", 4)',
         ):
             self.assertIn(token, self.popup)
+
+    def test_schedule_cells_are_read_only_and_azan_has_only_the_three_requested_controls(self):
+        self.assertIn("Timetable cells are read-only", self.popup)
+        self.assertIn("card.addView(name)", self.popup)
+        self.assertIn("card.addView(time)", self.popup)
+        self.assertNotIn("Azan.on(this, prayerIndex)", self.popup)
+        self.assertNotIn("Azan.set(MainActivity.this, selectedPrayer, enabled)", self.popup)
+        self.assertIn("Azan.isMasterEnabled(this)", self.popup)
+        self.assertIn("Suara Azan", self.popup)
+        self.assertIn("Test Sound", self.popup)
 
     def test_all_five_existing_sound_choices_remain_available(self):
         for token in (
