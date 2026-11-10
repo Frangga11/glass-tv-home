@@ -4,7 +4,7 @@ Date: 11 November 2026 (WIB)
 Repository: `Frangga11/glass-tv-home`
 Branch: `feature/home-prayer-popup-compact-azans-001`
 Base: PR #123 exact source checkpoint `6ac43ae4b56908233a64b55c23fdadee5ce7ab76`
-Current implementation commit: `d720ca58f1bdde2c219de5c1f2f84504dae0f522`
+Current implementation commit: `98a4080c0628d7547dae8ec8a911cf7d1b339620`
 Status: implementation submitted for CI/source QA; visual/device acceptance pending.
 
 ## Owner constraints
