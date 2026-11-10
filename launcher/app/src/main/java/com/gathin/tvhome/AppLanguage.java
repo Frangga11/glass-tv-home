@@ -7,9 +7,8 @@ import java.util.Locale;
 
 /**
  * Multi-language support for Glass TV Home:
- * - Bahasa Melayu (ms) [Default]
+ * - Bahasa Indonesia (id) [Default]
  * - English (en)
- * - Bahasa Indonesia (id)
  */
 final class AppLanguage {
     public static final String LANG_MS = "ms"; // Bahasa Melayu
@@ -39,9 +38,10 @@ final class AppLanguage {
 
     public static void setLanguage(Context ctx, String lang) {
         if (ctx == null || lang == null) return;
+        String normalized = LANG_EN.equalsIgnoreCase(lang) ? LANG_EN : LANG_ID;
         ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()
-                .putString(KEY_LANG, lang)
+                .putString(KEY_LANG, normalized)
                 .apply();
     }
 

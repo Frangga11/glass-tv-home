@@ -398,7 +398,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (heroDesc != null) heroDesc.setMaxWidth(heroMaxWidth);
 
         String activeCat = getActiveWallpaperCategory();
-        if ("Custom".equalsIgnoreCase(activeCat)) {
+        if ("Default".equalsIgnoreCase(activeCat)) {
+            placesMode = false;
+            File defaultWallpaper = getBundledDefaultWallpaper();
+            wallpapers = defaultWallpaper != null
+                    ? Collections.singletonList(defaultWallpaper) : Collections.emptyList();
+        } else if ("Custom".equalsIgnoreCase(activeCat)) {
             placesMode = false;
             File customDir = new File(getFilesDir(), "custom_wallpapers");
             File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
@@ -2065,7 +2070,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * with no dip to plain in between, whether the move is along the dock, down into the grid or
      * back up again.
      */
+    private boolean isIconGlowEnabled() {
+        return getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
+    }
+
+    private void applyIconGlowPreference() {
+        if (ambient == null) return;
+        if (!isIconGlowEnabled()) {
+            if (glowBlend != null) glowBlend.cancel();
+            ambient.animate().cancel();
+            ambientShown = false;
+            ambient.setAlpha(0f);
+            syncGlassGlow();
+        } else if (grid != null && adapter != null) {
+            View focused = grid.getFocusedChild();
+            int position = focused == null ? RecyclerView.NO_POSITION : grid.getChildAdapterPosition(focused);
+            if (position != RecyclerView.NO_POSITION) showAmbient(adapter.ambientColorAt(position));
+        }
+    }
+
     private void showAmbient(int color) {
+        if (!isIconGlowEnabled()) {
+            ambientShown = false;
+            ambient.animate().cancel();
+            ambient.setAlpha(0f);
+            syncGlassGlow();
+            return;
+        }
         if (!ambientShown) {
             setAmbient(color);
             ambient.animate().alpha(1f).setDuration(reducedMotion ? 160 : 600)
@@ -3876,10 +3907,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Migrates the former Malaysia wallpaper selection to the Nature collection. */
     private String getActiveWallpaperCategory() {
         android.content.SharedPreferences prefs = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE);
-        String category = prefs.getString("active_category", "Minimalist");
+        String category = prefs.getString("active_category", "Default");
         if (category == null || category.startsWith("Malaysia")) {
-            // New installs and former Malaysia selections start with the dark OLED collection.
-            category = "Minimalist";
+            // Fresh installs and legacy Malaysia selections use the bundled Pagar Alam wallpaper.
+            category = "Default";
             prefs.edit().putString("active_category", category).apply();
         }
         return category;
@@ -3905,6 +3936,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         String curLang = AppLanguage.getLanguage(this);
         List<WallpaperOption> options = new ArrayList<>();
+
+        // Bundled default wallpaper: available offline and separate from downloadable collections.
+        String tDef = AppLanguage.LANG_EN.equals(curLang) ? "🌄 Default Wallpaper" : "🌄 Wallpaper Default";
+        String sDef = AppLanguage.LANG_EN.equals(curLang) ? "Kabut Pagi Dempo • Built-in launcher wallpaper" : "Kabut Pagi Dempo • Wallpaper bawaan launcher";
+        options.add(new WallpaperOption("Default", tDef, sDef));
 
         // Category 2: Natural
         String tNat = AppLanguage.LANG_EN.equals(curLang) ? "🌿 Nature & Landscapes" : (AppLanguage.LANG_ID.equals(curLang) ? "🌿 Alam Semesta & Lanskap" : "🌿 Alam Semula Jadi & Landskap");
@@ -3966,6 +4002,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 ? (AppLanguage.LANG_EN.equals(curLang) ? "Rain & lightning animations on wallpaper when raining" : (AppLanguage.LANG_ID.equals(curLang) ? "Animasi rintik hujan & kilat di atas wallpaper saat hujan" : "Animasi rintik hujan & kilat di atas wallpaper bila cuaca hujan"))
                 : (AppLanguage.LANG_EN.equals(curLang) ? "Static wallpaper without weather animations" : (AppLanguage.LANG_ID.equals(curLang) ? "Hanya wallpaper statis tanpa animasi cuaca" : "Hanya wallpaper pegun tanpa animasi cuaca"));
         options.add(new WallpaperOption("TOGGLE_WEATHER_OVERLAY", tWtr, sWtr));
+
+        boolean isIconGlowOn = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
+        String glowState = isIconGlowOn
+                ? (AppLanguage.LANG_EN.equals(curLang) ? "ON" : "Aktif")
+                : (AppLanguage.LANG_EN.equals(curLang) ? "OFF" : "Nonaktif");
+        String tGlow = (AppLanguage.LANG_EN.equals(curLang) ? "✨ App Icon Glow: " : "✨ Efek Cahaya Ikon: ") + glowState;
+        String sGlow = isIconGlowOn
+                ? (AppLanguage.LANG_EN.equals(curLang) ? "Colour glow follows the focused app icon" : "Cahaya dan warna mengikuti ikon aplikasi yang dipilih")
+                : (AppLanguage.LANG_EN.equals(curLang) ? "Disable colour transitions and glow when moving between app icons" : "Matikan perubahan warna dan cahaya saat berpindah antarikon aplikasi");
+        options.add(new WallpaperOption("TOGGLE_ICON_GLOW", tGlow, sGlow));
 
         String tNxt = AppLanguage.LANG_EN.equals(curLang) ? "⏭️ Change Wallpaper Now" : (AppLanguage.LANG_ID.equals(curLang) ? "⏭️ Ganti Gambar Sekarang" : "⏭️ Tukar Gambar Sekarang");
         String sNxt = AppLanguage.LANG_EN.equals(curLang) ? "Cycle and display next wallpaper immediately" : (AppLanguage.LANG_ID.equals(curLang) ? "Putar dan tampilkan gambar berikutnya sekarang juga" : "Putar dan paparkan gambar seterusnya serta-merta");
@@ -4143,8 +4189,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("dynamic_weather_overlay", true);
                     boolean newMode = !current;
                     getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("dynamic_weather_overlay", newMode).apply();
-                    Toast.makeText(MainActivity.this, newMode ? "🌧️ Dynamic Weather Overlay Dihidupkan (ON)" : "⛅ Dynamic Weather Overlay Dimatikan (OFF)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, newMode ? "🌧️ Animasi cuaca diaktifkan" : "⛅ Animasi cuaca dinonaktifkan", Toast.LENGTH_SHORT).show();
                     updateWeatherOverlay(HomeWeather.last(MainActivity.this));
+                    showWallpaperDialog();
+                } else if ("TOGGLE_ICON_GLOW".equals(chosenKey)) {
+                    boolean current = getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).getBoolean("icon_glow_effects", true);
+                    boolean newMode = !current;
+                    getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putBoolean("icon_glow_effects", newMode).apply();
+                    applyIconGlowPreference();
+                    Toast.makeText(MainActivity.this, newMode ? "✨ Efek cahaya ikon diaktifkan" : "✨ Efek cahaya ikon dinonaktifkan", Toast.LENGTH_SHORT).show();
                     showWallpaperDialog();
                 } else if ("MANAGE_CUSTOM".equals(chosenKey)) {
                     showCustomWallpaperManagerDialog();
@@ -4534,6 +4587,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (Exception ignored) {}
     }
 
+    private File getBundledDefaultWallpaper() {
+        File target = new File(getFilesDir(), "kabut-pagi-dempo-default.jpg");
+        if (target.isFile() && target.length() > 0) return target;
+        try (java.io.InputStream in = getAssets().open("kabut-pagi-dempo.jpg");
+             java.io.FileOutputStream out = new java.io.FileOutputStream(target)) {
+            byte[] buffer = new byte[8192];
+            int count;
+            while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
+            out.flush();
+            return target.length() > 0 ? target : null;
+        } catch (Exception e) {
+            android.util.Log.e("TvHome", "Bundled default wallpaper unavailable", e);
+            return null;
+        }
+    }
+
     private void switchWallpaperCategory(String category) {
         getSharedPreferences("wallpaper_prefs", MODE_PRIVATE).edit().putString("active_category", category).apply();
         String displayLabel;
@@ -4543,6 +4612,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             displayLabel = category;
         }
         Toast.makeText(this, "Kategori: " + displayLabel, Toast.LENGTH_SHORT).show();
+        if ("Default".equalsIgnoreCase(category)) {
+            placesMode = false;
+            if (heroShelf != null) {
+                heroShelf.animate().cancel();
+                heroShelf.setAlpha(0f);
+                heroShelf.setVisibility(View.GONE);
+            }
+            File bundled = getBundledDefaultWallpaper();
+            if (bundled != null) {
+                wallpapers = Collections.singletonList(bundled);
+                getSharedPreferences("wallpaper", MODE_PRIVATE).edit().putInt("index", -1).apply();
+                showNextWallpaper(true);
+            } else {
+                Toast.makeText(this, "Wallpaper bawaan tidak dapat dimuat", Toast.LENGTH_LONG).show();
+            }
+            handler.removeCallbacks(wallTick);
+            return;
+        }
         if ("Minimalist".equalsIgnoreCase(category)) {
             root.setBackgroundColor(android.graphics.Color.BLACK);
             if (wallView != null) {
