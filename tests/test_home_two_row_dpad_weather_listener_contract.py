@@ -80,7 +80,8 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
                         request.index("if (horizontalGridTransitionRunning) return;"))
         self.assertLess(request.index("if (horizontalGridTransitionRunning) return;"),
                         request.index("horizontalGridTransitionRunning = true;"))
-        self.assertNotIn("previous.cancel()", request)
+        self.assertLess(request.index("if (horizontalGridTransitionRunning) return;"),
+                        request.index("previous.cancel()"))
         settle_start = MAIN.index("private void settleHorizontalGridRowTransition(")
         settle_end = MAIN.index("private void focusHorizontalGridRowTargetWhenLaidOut(", settle_start)
         settle = MAIN[settle_start:settle_end]
