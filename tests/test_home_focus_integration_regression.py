@@ -32,20 +32,21 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         self.assertLess(key_method.index("if (horizontalDockCollapseInProgress)"),
                         key_method.index("int count = adapter.getItemCount();"))
 
-    def test_collapse_commits_one_translation_and_restores_same_dock_position(self):
+    def test_focus_is_precommitted_before_grid_is_hidden(self):
         start = MAIN.index("private void collapseHorizontalOverflowToDock")
         end = MAIN.index("private void animateHorizontalDockTransition", start)
         collapse = MAIN[start:end]
-        self.assertIn("dockRecycler.setTranslationY(-pitch * (1f - progress));", collapse)
-        self.assertIn("grid.setTranslationY(pitch * progress);", collapse)
-        self.assertIn("dockRecycler.setTranslationY(0f);", collapse)
-        self.assertIn("grid.setTranslationY(0f);", collapse)
-        self.assertIn("applyDockLayout();", collapse)
-        self.assertIn("restoreDockFocusAfterCollapse(", collapse)
-        self.assertIn("dispatchPendingDockCollapseDirection(dockPosition);", MAIN)
-        self.assertIn("dockPosition, generation, 32", collapse)
-        self.assertLess(collapse.index("dockRecycler.setTranslationY(0f);"),
-                        collapse.index("applyDockLayout();"))
+        self.assertIn("prepareDockFocusBeforeCollapse", collapse)
+        prepare = collapse[collapse.index("private void prepareDockFocusBeforeCollapse"):
+                           collapse.index("private void startHorizontalDockCollapse")]
+        self.assertIn("card.requestFocus()", prepare)
+        self.assertIn("card.isFocused()", prepare)
+        animation = collapse[collapse.index("private void startHorizontalDockCollapse"):
+                             collapse.index("private void abortHorizontalDockCollapse")]
+        self.assertIn("grid.setVisibility(View.GONE)", animation)
+        self.assertIn("dispatchPendingDockCollapseDirection(dockPosition)", animation)
+        self.assertNotIn("restoreDockFocusAfterCollapse", MAIN)
+        self.assertNotIn("focusTopBarFallback()", collapse)
 
     def test_grid_has_no_competing_static_focus_overlay(self):
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
