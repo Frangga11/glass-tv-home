@@ -1850,10 +1850,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             prayerPopupReturnAnchor = null;
             if (returnAnchor != null) {
                 root.post(() -> {
-                    if (activityResumed && !isFinishing() && !isDestroyed()
+                    if (activityResumed && openMenu == null && !isFinishing() && !isDestroyed()
                             && returnAnchor.isShown() && returnAnchor.isFocusable()) {
-                        returnAnchor.requestFocus();
-                    } else if (activityResumed) {
+                        if (!returnAnchor.requestFocus()) {
+                            android.util.Log.w("TvHome.PrayerPopup",
+                                    "Prayer popup return anchor rejected focus restoration");
+                        }
+                    } else if (activityResumed && openMenu == null) {
                         android.util.Log.w("TvHome.PrayerPopup",
                                 "Prayer popup return anchor is no longer focusable");
                     }
