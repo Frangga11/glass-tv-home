@@ -91,6 +91,8 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         self.assertIn("dialog.setOnDismissListener", profile)
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
         self.assertIn("if (onDismiss != null) onDismiss.run();", quick)
+        self.assertIn("dialog.setOnDismissListener(d -> restoreFocusTo(originFocus));", MAIN)
+        self.assertIn("View anchor = findViewById(R.id.prayerTable);", MAIN)
 
 
 if __name__ == "__main__":
