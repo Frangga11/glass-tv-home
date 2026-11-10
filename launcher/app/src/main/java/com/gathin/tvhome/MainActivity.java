@@ -2294,7 +2294,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 // Reveal the overflow inventory only on demand. It remains part of the
                 // same source inventory and is reachable without cluttering the idle Home.
-                // The first overflow row sits directly above the Dock. Later rows replace it
+                // The first overflow row sits directly below the Dock. Later rows replace it
                 // through the one-row RecyclerView viewport as the user presses DPAD Down.
                 int target = DockLayoutModel.gridPositionForDock(
                         position, false, COLUMNS, adapter == null ? 0 : adapter.getItemCount());
@@ -3608,7 +3608,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         final int pos = NavigationState.resolveHomePosition(-1, position, adapter.getItemCount());
         if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
-            // Keep the active overflow row bottom-aligned immediately above the Dock glass.
+            // Keep the active overflow row top-aligned immediately below the primary Dock row.
             // Default scrollToPosition aligns to the top and breaks the intended row progression.
             alignHorizontalGridRowToGlass(pos);
             grid.postOnAnimation(() -> focusTileWhenLaidOut(pos, requestGeneration, 8));
@@ -3884,7 +3884,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    /** Aligns a horizontal overflow row to the fixed baseline immediately above the glass. */
+    /** Aligns a horizontal overflow row to the fixed baseline immediately below the primary Dock row. */
     private void alignHorizontalGridRowToGlass(int position) {
         RecyclerView.LayoutManager manager = grid.getLayoutManager();
         if (manager instanceof GridLayoutManager) {
