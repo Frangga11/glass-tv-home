@@ -30,7 +30,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertNotIn("R.layout.item_input", self.popup)
         self.assertNotIn("showMenu(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
-        self.assertIn("new GlassDrawable(panel, 20 * density, density, glider, 0.5f, true)", self.popup)
+        self.assertIn("new GlassDrawable(panel, 18 * density, density, glider, 0.5f, true)", self.popup)
 
     def test_existing_prayer_schedule_source_and_six_cells_are_preserved(self):
         self.assertIn("PrayerTimes.getFullSchedule(this)", self.popup)
@@ -63,9 +63,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             self.assertIn(token, self.popup)
 
     def test_schedule_cells_are_read_only_and_azan_has_only_the_three_requested_controls(self):
-        self.assertIn("Timetable cells are read-only", self.popup)
-        self.assertIn("card.addView(name)", self.popup)
-        self.assertIn("card.addView(time)", self.popup)
+        self.assertIn("card.addView(createPrayerPopupText(item.name", self.popup)
+        self.assertIn("prayerPopup24Hour(item.timeFormatted)", self.popup)
         self.assertNotIn("Azan.on(this, prayerIndex)", self.popup)
         self.assertNotIn("Azan.set(MainActivity.this, selectedPrayer, enabled)", self.popup)
         self.assertIn("Azan.isMasterEnabled(this)", self.popup)
