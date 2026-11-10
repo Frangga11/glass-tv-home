@@ -53,7 +53,8 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("focusTile(targetPosition)", expand)
         self.assertIn("dockRecycler.setTranslationY(pitch * progress)", collapse)
         self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
-        self.assertIn("focusDockTile(dockPosition)", collapse)
+        self.assertIn("restoreDockFocusAfterCollapse(", collapse)
+        self.assertIn("dockPosition, generation, 32", collapse)
 
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
