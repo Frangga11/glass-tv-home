@@ -56,7 +56,7 @@ Rebuilt or changed:
 - Compact stacked next-prayer summary matching the video reference: caption, prayer name, and time aligned vertically at the left.
 - Reduced schedule cell and control row heights.
 - Safe-area measurement before placement.
-- Right-center placement with explicit safe-edge margin.
+- Right-center placement with explicit 14dp safe-edge margin.
 - Focus graph, initial-focus retry, and directional navigation.
 - Removed focus-time `glideToMenuRow()` calls from this fixed, no-scroll panel to prevent content translation/clipping.
 
@@ -105,7 +105,7 @@ The recording alone does not establish whether the Maghrib overlay came from a s
 - Small footer hint.
 - No ScrollView and no internal scrolling.
 - Neutral/Silver Glass card treatment, existing GlassDrawable, Islamic-gold next marker; no Cyan accent token added to content.
-- Panel right margin includes system safe inset plus 26dp visual breathing space.
+- Panel right margin includes system safe inset plus 14dp visual breathing space.
 
 Current target content-height budget (dp, before runtime measurement):
 - Header 34
@@ -212,3 +212,10 @@ Validation status for this owner revision:
 - Exact-HEAD CI, Android release build, rendered 1920×1080 inspection, and physical DPAD verification are pending.
 - Do not claim runtime PASS until the new exact branch HEAD has completed CI and the owner has tested the APK on the TV.
 - PR #135 remains OPEN / DRAFT / UNMERGED.
+
+
+### Revision refinement — right-edge placement
+- The owner requested the popup to sit slightly closer to the right edge. The right margin was reduced from 26dp to 14dp, in addition to the calculated system safe inset.
+- Exact code commit: `26b1388b9535be50d8325f056626929132a71785`.
+- Contract assertion for the 14dp margin: `92a50617647dbf382086034d2c99fa5134750ba1`.
+- Exact current branch HEAD is the documentation commit that follows this entry; exact-HEAD CI is pending.
