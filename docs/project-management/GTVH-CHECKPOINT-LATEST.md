@@ -3,7 +3,7 @@
 **Repository:** [Frangga11/glass-tv-home](https://github.com/Frangga11/glass-tv-home)  
 **Source PR:** [#110 — Luxury Glass DPAD Cursor + Islamic Gold](https://github.com/Frangga11/glass-tv-home/pull/110)  
 **Source branch:** `feature/home-luxury-realistic-glass-focus-001`  
-**Exact source HEAD:** `87cf50166e69cf8a2690cc859d821222a34c4e68`  
+**Exact source HEAD:** `537a8d12f0a72e4b29ffaa8e5b82b7aeb031c5cb`  
 **Base branch / parent:** `fix/home-header-typography-focus-001` / PR #108 exact base HEAD `9b49f26180430dc63ef2ab8cf20bcba845e067ea`  
 **Disposition:** OPEN / DRAFT / UNMERGED — BELUM FINAL.
 
@@ -50,7 +50,7 @@ RE-SKIN, NOT REWIRE. Preserve IDs, listeners, handlers, navigation order, DPAD g
 | Merge/release | NOT AUTHORIZED | PR #110 remains Draft/unmerged |
 
 ## Next action
-Wait for corrected exact-head CI run `42721922767` to finish; Lists/tools/docs already PASS, Android build/unit tests remain in progress. If it passes, retrieve the QA artifact and verify APK integrity/size/hash. If it fails, inspect the exact failing test/log and correct before any visual acceptance. Then perform a 1920×1080 visual review and request owner-authorized Mi TV Stick testing. Do not claim PASS from source inspection or partial CI. Keep PR #110 Draft/unmerged.
+CI run `42721922767` passed both jobs, including Android unit tests and release build. APK diagnostic is 1,630,477 bytes (1,592 KB), above the 1.5 MiB historical reference; this is a warning, not a CI failure. Artifact upload was skipped because PR #110 was missing from the CI workflow allowlist. That condition is now fixed in `.github/workflows/ci.yml`; wait for run `42739183589` on exact HEAD `537a8d12f0a72e4b29ffaa8e5b82b7aeb031c5cb`, then retrieve and verify the QA APK. Visual 1920×1080 review and physical Mi TV Stick acceptance remain separate gates. If it fails, inspect the exact failing test/log and correct before any visual acceptance. Then perform a 1920×1080 visual review and request owner-authorized Mi TV Stick testing. Do not claim PASS from source inspection or partial CI. Keep PR #110 Draft/unmerged.
 
 **Single restart instruction:** “Lanjutkan dari GTVH-CHECKPOINT-LATEST.md — GTVH-HOME-LUXURY-GLASS-DPAD-CURSOR-001.”
 
