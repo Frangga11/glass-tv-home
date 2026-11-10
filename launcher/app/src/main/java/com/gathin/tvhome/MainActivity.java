@@ -741,8 +741,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ayahBlock.setClickable(true);
                 ayahBlock.setOnClickListener(v -> showDailyAyahDialog());
                 ayahBlock.setOnKeyListener((v, keyCode, event) -> {
-                    if (event.getAction() == KeyEvent.ACTION_DOWN
-                            && (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                        if (btnAssistant != null && btnAssistant.isShown() && btnAssistant.requestFocus()) return true;
+                        return true;
+                    }
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                        View prayerTable = findViewById(R.id.prayerTable);
+                        if (prayerTable != null && prayerTable.isShown() && prayerTable.requestFocus()) return true;
+                        return true;
+                    }
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
                         showDailyAyahDialog();
                         return true;
                     }
@@ -842,18 +851,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    focusLastTile();
+                    focusTile(0);
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                    View assistant = findViewById(R.id.btnAssistant);
-                    View wifi = findViewById(R.id.btnWifi);
-                    View inputs = findViewById(R.id.btnInputs);
-                    View settings = findViewById(R.id.btnSettings);
-                    if (assistant != null && assistant.getVisibility() == View.VISIBLE) assistant.requestFocus();
-                    else if (wifi != null && wifi.getVisibility() == View.VISIBLE) wifi.requestFocus();
-                    else if (inputs != null && inputs.getVisibility() == View.VISIBLE) inputs.requestFocus();
-                    else if (settings != null) settings.requestFocus();
+                    if (ayahBlock != null && ayahBlock.isShown() && ayahBlock.requestFocus()) return true;
+                    if (btnAssistant != null && btnAssistant.isShown()) btnAssistant.requestFocus();
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -922,12 +925,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             boolean navigationTab = id == R.id.btnHome || id == R.id.btnCandyBox
                     || id == R.id.btnSettings;
             if (navigationTab) {
-                // The three tabs are transparent focus targets inside one shared capsule.
-                // Their selector paints only the active/focused segment; it is not a second glass pill.
-                pill.setBackgroundColor(android.graphics.Color.TRANSPARENT);
-                pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg));
+                // Paint the same moving Glider inside each tab's own drawing pass:
+                // above the shared capsule surface, but below the tab's icon and label.
+                pill.setBackground(new GliderFocusDrawable(pill, glider));
             } else {
-                pill.setBackground(new GlassDrawable(pill, 20f * density, density, glider));
+                // Compose the focus layer after the capsule glass and before the view's content.
+                Drawable glassBackground = new GlassDrawable(pill, 20f * density, density, glider);
+                pill.setBackground(new android.graphics.drawable.LayerDrawable(
+                        new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}));
             }
             glider.addCompanion(pill);
             Backdrop.watch(pill);
@@ -1057,68 +1062,65 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             });
         }
 
-        // Spatial remote navigation: Home → Profile → Settings → Inputs → Wi-Fi → Assistant.
-        // The two left-side information pills form their own vertical pair.
+        // Owner-defined Home DPAD graph:
+        // Home LEFT -> Location DOWN -> Weather/AQI DOWN -> first app row.
+        // Home -> Profile -> Settings -> Wi-Fi -> Mic; each header capsule goes DOWN to row one.
+        // Mic DOWN -> Ayah -> Prayer timetable -> first app row. Inputs remains reachable as
+        // an optional branch (Wi-Fi UP / Inputs DOWN) without interrupting the primary path.
         View locationPill = findViewById(R.id.locationPill);
         if (locationPill != null) locationPill.setOnClickListener(v -> showPrayerZoneDialog());
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
                     || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
                 v.performClick();
                 return true;
             }
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                if (id == R.id.btnWifi && btnInputs != null && btnInputs.isShown()
+                        && btnInputs.requestFocus()) return true;
+                if (id == R.id.btnAssistant && btnWifi != null && btnWifi.isShown()
+                        && btnWifi.requestFocus()) return true;
+                if (id == R.id.btnInputs && btnSettings != null && btnSettings.requestFocus()) return true;
+                return true;
+            }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                if (v.getId() == R.id.locationPill && weatherAirQualityView != null
-                        && weatherAirQualityView.getVisibility() == View.VISIBLE) {
-                    weatherAirQualityView.requestFocus();
-                    return true;
+                if (id == R.id.locationPill && weatherAirQualityView != null
+                        && weatherAirQualityView.isShown() && weatherAirQualityView.requestFocus()) return true;
+                if (id == R.id.btnAssistant) {
+                    if (ayahBlock != null && ayahBlock.isShown() && ayahBlock.requestFocus()) return true;
                 }
-                if (v.getId() == R.id.btnAssistant) {
-                    View prayerTable = findViewById(R.id.prayerTable);
-                    if (prayerTable != null && prayerTable.isShown() && prayerTable.requestFocus()) {
-                        return true;
-                    }
-                }
-                focusLastTile();
+                if (id == R.id.btnInputs && btnWifi != null && btnWifi.isShown()
+                        && btnWifi.requestFocus()) return true;
+                focusTile(0);
                 return true;
             }
             View target = null;
-            int id = v.getId();
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (id == R.id.locationPill) return true;
-                if (id == R.id.btnHome) {
-                    target = weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
-                            ? weatherAirQualityView : locationPill;
-                } else if (id == R.id.btnCandyBox) target = btnHome;
+                if (id == R.id.btnHome) target = locationPill;
+                else if (id == R.id.btnCandyBox) target = btnHome;
                 else if (id == R.id.btnSettings) target = btnCandyBox;
+                else if (id == R.id.btnWifi) target = btnSettings;
+                else if (id == R.id.btnAssistant) target = btnWifi;
                 else if (id == R.id.btnInputs) target = btnSettings;
-                else if (id == R.id.btnWifi)
-                    target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings;
-                else if (id == R.id.btnAssistant)
-                    target = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi
-                            : (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : btnSettings);
                 else return false;
-                if (target != null && target.getVisibility() == View.VISIBLE && target.requestFocus()) return true;
-                return id == R.id.btnHome || id == R.id.btnInputs;
-            }
-            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 if (id == R.id.locationPill || id == R.id.weatherAirQuality) target = btnHome;
                 else if (id == R.id.btnHome) target = btnCandyBox;
                 else if (id == R.id.btnCandyBox) target = btnSettings;
                 else if (id == R.id.btnSettings)
-                    target = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs
-                            : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant);
-                else if (id == R.id.btnInputs)
-                    target = btnWifi != null && btnWifi.getVisibility() == View.VISIBLE ? btnWifi : btnAssistant;
+                    target = btnWifi != null && btnWifi.isShown() ? btnWifi : btnAssistant;
                 else if (id == R.id.btnWifi) target = btnAssistant;
+                else if (id == R.id.btnInputs)
+                    target = btnWifi != null && btnWifi.isShown() ? btnWifi : btnAssistant;
                 else if (id == R.id.btnAssistant) return true;
                 else return false;
-                if (target != null && target.getVisibility() == View.VISIBLE && target.requestFocus()) return true;
-                return id == R.id.btnAssistant;
+            } else {
+                return false;
             }
-            return false;
+            return target != null && target.isShown() && target.requestFocus();
         };
         if (locationPill != null) locationPill.setOnKeyListener(pillKeys);
         if (btnHome != null) btnHome.setOnKeyListener(pillKeys);
@@ -1131,21 +1133,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             weatherAirQualityView.setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                    if (locationPill != null && locationPill.getVisibility() == View.VISIBLE) {
-                        locationPill.requestFocus();
-                        return true;
-                    }
+                    if (locationPill != null && locationPill.isShown() && locationPill.requestFocus()) return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    if (btnHome != null) { btnHome.requestFocus(); return true; }
+                    if (btnHome != null && btnHome.requestFocus()) return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    if (nowPlayingCard != null && nowPlayingCard.getVisibility() == View.VISIBLE) {
-                        if (cardTrackInfo != null) cardTrackInfo.requestFocus();
-                        else nowPlayingCard.requestFocus();
-                    } else {
-                        focusTile(0);
-                    }
+                    focusTile(0);
                     return true;
                 }
                 return false;
@@ -3448,8 +3442,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                 if (basePosition < COLUMNS) {
                     cancelHorizontalGridRowTransition();
-                    focusDockTile(DockLayoutModel.dockPositionForGrid(
-                            basePosition, false, COLUMNS, dockAdapter.getItemCount()));
+                    if (btnHome != null && btnHome.isShown() && btnHome.requestFocus()) return true;
+                    return focusTopBarFallback();
                 } else {
                     requestHorizontalGridRow(basePosition - COLUMNS);
                 }
@@ -3465,12 +3459,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
-                if (!dockVertical) {
-                    if (weatherAirQualityView != null && weatherAirQualityView.getVisibility() == View.VISIBLE
-                            && weatherAirQualityView.requestFocus()) return true;
-                    return focusTopBarFallback();
-                }
-                return false;
+                if (btnHome != null && btnHome.isShown() && btnHome.requestFocus()) return true;
+                return focusTopBarFallback();
             }
             target = position - COLUMNS;
         } else {
@@ -3503,6 +3493,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     };
 
     private boolean focusTopBarFallback() {
+        if (btnHome != null && btnHome.isShown() && btnHome.isFocusable() && btnHome.requestFocus()) {
+            return true;
+        }
         if (btnWifi != null && btnWifi.isShown() && btnWifi.isFocusable() && btnWifi.requestFocus()) {
             return true;
         }
@@ -3973,10 +3966,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void updateHomeTabIndicator() {
         if (btnHome == null) return;
-        boolean active = activityResumed && !hiddenSinceResume && !screensaverActive
-                && !wallpaperFullscreen && !isFinishing() && !isDestroyed();
-        btnHome.setSelected(active);
-        btnHome.setElevation(active ? 8f * density : 0f);
+        // Beranda is a peer navigation tab, not a permanently selected/raised Home badge.
+        btnHome.setSelected(false);
+        btnHome.setElevation(0f);
         btnHome.invalidate();
     }
 
@@ -4667,11 +4659,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void showWifiPopup(Runnable returnToParent) {
         if (openMenu != null || isFinishing() || isDestroyed()) return;
         SoundEffects.playSelect();
+        View originFocus = getCurrentFocus();
+        Runnable onReturn = returnToParent != null ? returnToParent : () -> restoreFocusTo(originFocus);
         WifiSettingsDialog.show(this, () -> {
             if (!tryOpen(systemIntent(Settings.ACTION_WIFI_SETTINGS))) {
                 WifiSettingsDialog.onExternalSettingsUnavailable();
             }
-        }, returnToParent);
+        }, onReturn);
+    }
+
+    /** Restores the exact Home control that launched a modal or popup. */
+    private void restoreFocusTo(View origin) {
+        if (origin == null) return;
+        origin.post(() -> {
+            if (!isFinishing() && !isDestroyed() && origin.isAttachedToWindow()
+                    && origin.isShown() && origin.isFocusable()) {
+                origin.requestFocus();
+            }
+        });
     }
 
     /** Shows the User Profile & Child Mode quick dialog (formerly Candy Box). */
@@ -4680,7 +4685,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             closeMenu(false);
         }
         SoundEffects.playSelect();
-        UserSwitchDialog.show(this);
+        View originFocus = getCurrentFocus();
+        UserSwitchDialog.show(this, () -> restoreFocusTo(originFocus));
     }
 
     void updateTopBarUserIcon() {
