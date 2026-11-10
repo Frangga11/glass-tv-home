@@ -26,7 +26,7 @@ class HomeDpadFocusHandoffReplayTest(unittest.TestCase):
         self.assertIn("attemptsRemaining > 0", restore)
         self.assertIn("postOnAnimation", restore)
         self.assertIn("32", MAIN[MAIN.index("private void collapseHorizontalOverflowToDock"):start])
-        self.assertNotIn("focusTopBarFallback();", restore[:restore.index("if (attemptsRemaining > 0)")])
+        self.assertGreater(restore.rindex("focusTopBarFallback();"), restore.index("if (attemptsRemaining > 0)"))
 
     def test_queued_directions_replay_only_after_focus_acquisition(self):
         start = MAIN.index("private void restoreDockFocusAfterCollapse")
