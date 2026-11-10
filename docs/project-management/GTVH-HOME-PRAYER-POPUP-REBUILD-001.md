@@ -5,7 +5,8 @@ Repository: `Frangga11/glass-tv-home`
 Working branch: `rebuild/home-prayer-popup-integrated-001`
 Status: REBUILD COMMITTED — CI IN PROGRESS / RENDERED QA / DEVICE ACCEPTANCE PENDING
 PR: #135 — OPEN / DRAFT / UNMERGED
-Latest implementation code/test HEAD: `09649a93dcb1e816f5ad3d1c1abeee87d4d7eb12`
+Latest implementation code HEAD: `fb5087cd8955ee89b9aab2731425689b3152f526`
+Latest contract-test HEAD: `3db140575df85b6a98dc9ad528c3561694541d83`
 Exact branch head will advance with this checkpoint documentation commit.
 
 ## 1. Trigger and owner direction
@@ -43,14 +44,14 @@ Historical PR #134:
 Reusable decisions:
 - Dedicated in-memory Prayer popup view tree.
 - Existing `PrayerTimes.getFullSchedule()` as read-only schedule source.
-- Existing `Azan` preferences, master switch, per-prayer switch, scheduling, and five sound choices.
+- Existing `Azan` preferences, master switch, scheduling, and five sound choices; the existing per-prayer preference model is not altered or surfaced as extra timetable controls.
 - Existing `AzanActivity` test-audio route.
 - Existing `GlassDrawable`, `Backdrop`, and Glider companion treatment.
 - Silver/neutral glass surface with Islamic-gold next-prayer emphasis.
 
 Rebuilt or changed:
 - Panel dimensions and content hierarchy.
-- Compact horizontal next-prayer summary.
+- Compact stacked next-prayer summary matching the video reference: caption, prayer name, and time aligned vertically at the left.
 - Reduced schedule cell and control row heights.
 - Safe-area measurement before placement.
 - Right-center placement with explicit safe-edge margin.
@@ -97,7 +98,7 @@ The recording alone does not establish whether the Maghrib overlay came from a s
 - Existing GlassDrawable background is applied before measurement, then panel padding is set, so material insets cannot silently change the measured frame.
 - Header: WAKTU SHOLAT and dynamic prayer-zone name with Pagar Alam elevation context (±800 mdpl).
 - Compact next-prayer horizontal card.
-- Six timetable cells in 2 columns x 3 rows.
+- Six read-only timetable cells in 2 columns x 3 rows; the reference shows prayer names and times only, so per-prayer Azan toggles/status text were removed from the cells.
 - Azan controls: master toggle, sound selector, Test Sound.
 - Small footer hint.
 - No ScrollView and no internal scrolling.
@@ -140,13 +141,14 @@ Changed:
 ## 7. Validation
 
 Not yet claimed:
-- Python contract tests and Android unit tests: PASS on CI run #2041 / code HEAD `104681ecb4c6441c8a7923d2bf57b57dd18221de`; the final additional assertion that GlassDrawable is applied before measurement was added in the subsequent test-only commit `09649a93dcb1e816f5ad3d1c1abeee87d4d7eb12` and is covered by later CI runs still in progress.
-- Release build: PASS on CI run #2041 / code HEAD `104681ecb4c6441c8a7923d2bf57b57dd18221de`.
-- Exact latest branch-head CI: run #2043 for docs HEAD `ee33b299d51091bd096d1e55ee530384e62a1549` is in progress; Lists/tools/docs and Launcher build/unit-test results are not yet complete for this final docs commit.
-- APK artifact: `glass-tv-home-cumulative-integration-127-279eb7a3703e0cce6ad2003dacae52875291c1a2` (CI run #2041, artifact ID `13811781387`), extracted as `app-release.apk`.
-- APK size: 1,635,173 bytes.
-- APK SHA-256: `1b19246079183222ae13713735d86e6bbaebdb198420ca5cbdb39767e698bc77`.
-- APK corresponds to code HEAD `104681ecb4c6441c8a7923d2bf57b57dd18221de`; subsequent changes through current branch HEAD are test/documentation-only, with no further MainActivity code changes.
+- Earlier code validation: CI run #2041 passed Launcher build/unit tests and Lists/tools/docs on code HEAD `104681ecb4c6441c8a7923d2bf57b57dd18221de`; that run predates the final reference-alignment refinements below.
+- Release APK from run #2041 was built successfully; artifact evidence is retained below as an intermediate build only, not the final reference-aligned APK.
+- The final reference-alignment refinements (stacked next-prayer card, read-only schedule cells, dedicated Azan controls, and key-release filtering) are on code HEAD `fb5087cd8955ee89b9aab2731425689b3152f526` and contract-test HEAD `3db140575df85b6a98dc9ad528c3561694541d83`.
+- Exact latest branch-head CI for this code/test revision: pending/in progress; previous run #2044 predates these final refinements.
+- Intermediate APK artifact: `glass-tv-home-cumulative-integration-127-279eb7a3703e0cce6ad2003dacae52875291c1a2` (CI run #2041, artifact ID `13811781387`), extracted as `app-release.apk`.
+- Intermediate APK size: 1,635,173 bytes.
+- Intermediate APK SHA-256: `1b19246079183222ae13713735d86e6bbaebdb198420ca5cbdb39767e698bc77`.
+- This intermediate APK predates the final visual simplification and must not be treated as the final test APK for this workstream.
 - Rendered UI inspection at 1920x1080: pending.
 - Mi TV Stick Android TV 11 physical acceptance: pending.
 - Popup dismissal cause: source-proven as MainActivity.onPause() -> closeMenu(false); this is intentional overlay lifecycle behavior.
@@ -161,8 +163,8 @@ The shared `closeMenu()` is called only through its existing API for popup dismi
 
 ## 9. Open issues / next steps
 
-1. Run the new contract test and full Python regression suite.
-2. Run exact-HEAD CI and Android release build.
+1. Run the final contract test and full Python regression suite on the reference-aligned revision.
+2. Run exact-HEAD CI and Android release build for the reference-aligned revision.
 3. Inspect the complete source diff for unrelated changes.
 4. Verify actual measured popup dimensions and clipping using rendered emulator/screenshot evidence.
 5. Verify popup caller focus restoration after scheduled Azan overlay and after Test Sound returns.
