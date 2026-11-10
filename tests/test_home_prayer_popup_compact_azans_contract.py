@@ -58,7 +58,7 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
             "Aktifkan / nonaktifkan semua notifikasi Azan",
             "Pilih suara muazin yang akan diputar",
             "Putar contoh suara sesuai pilihan di atas",
-            "OK PILIH / UBAH",
+            "OK PILIH",
             "BACK KEMBALI",
             "TvUiTokens.ACCENT_SECTION",
             "TvUiTokens.TEXT_SECONDARY",
