@@ -3649,19 +3649,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 horizontalGridExpanded = false;
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
-                // Re-anchor the Dock while its +pitch translation still compensates for
-                // the expanded anchor. Clear translation only after the idle layout pass.
+                // Commit the idle anchor while the reverse translation still compensates
+                // for the expanded margin. A plain post() may run before the new layout is
+                // traversed, leaving the Dock one full row pitch below its visible slot.
+                // Clear both translations at the first pre-draw after the idle LayoutParams
+                // have been applied, so no intermediate off-screen frame is rendered.
                 applyDockLayout();
-                dockRecycler.post(() -> {
-                    if (generation != gridFocusRequestGeneration) {
+                final android.view.ViewTreeObserver observer = dockRecycler.getViewTreeObserver();
+                final android.view.ViewTreeObserver.OnPreDrawListener settleListener =
+                        new android.view.ViewTreeObserver.OnPreDrawListener() {
+                    @Override public boolean onPreDraw() {
+                        if (dockRecycler.getViewTreeObserver().isAlive()) {
+                            dockRecycler.getViewTreeObserver().removeOnPreDrawListener(this);
+                        }
+                        if (generation != gridFocusRequestGeneration) {
+                            horizontalDockCollapseInProgress = false;
+                            return true;
+                        }
+                        grid.setTranslationY(0f);
+                        dockRecycler.setTranslationY(0f);
                         horizontalDockCollapseInProgress = false;
-                        return;
+                        focusDockTile(dockPosition);
+                        return true;
                     }
+                };
+                if (observer.isAlive()) observer.addOnPreDrawListener(settleListener);
+                else {
+                    // Detached-view fallback: restore neutral transforms before next attachment.
                     grid.setTranslationY(0f);
                     dockRecycler.setTranslationY(0f);
                     horizontalDockCollapseInProgress = false;
-                    focusDockTile(dockPosition);
-                });
+                }
             }
         });
         animator.start();
