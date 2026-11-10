@@ -37,23 +37,25 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         layout = MAIN[start:end]
         self.assertIn("gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;", layout)
         self.assertIn("dockParams.gravity = Gravity.BOTTOM | Gravity.START;", layout)
-        self.assertIn("dockParams.bottomMargin = horizontalGridExpanded", layout)
-        self.assertIn("? dockBottomMargin + gridViewportHeight + rowGap", layout)
-        self.assertIn(": dockBottomMargin;", layout)
+        self.assertIn("dockParams.bottomMargin = dockBottomMargin;", layout)
+        self.assertNotIn("dockParams.bottomMargin = horizontalGridExpanded", layout)
         self.assertIn("gridParams.bottomMargin = horizontalGridExpanded ? dockBottomMargin : 0", layout)
 
-    def test_dpad_transition_moves_both_rows_and_commits_focus_after_motion(self):
+    def test_dpad_transition_precommits_focus_then_moves_both_rows(self):
         expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
         collapse_start = MAIN.index("private void collapseHorizontalOverflowToDock")
         animate_start = MAIN.index("private void animateHorizontalDockTransition")
         expand = MAIN[expand_start:collapse_start]
         collapse = MAIN[collapse_start:animate_start]
-        self.assertIn("dockRecycler.setTranslationY(pitch)", expand)
+        self.assertIn("dockRecycler.setTranslationY(0f)", expand)
         self.assertIn("grid.setTranslationY(pitch)", expand)
         self.assertIn("focusTile(targetPosition)", expand)
-        self.assertIn("dockRecycler.setTranslationY(pitch * progress)", collapse)
+        self.assertIn("prepareDockFocusBeforeCollapse", collapse)
+        self.assertIn("card.requestFocus()", collapse)
+        self.assertIn("dockRecycler.setTranslationY(-pitch * (1f - progress))", collapse)
         self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
-        self.assertIn("focusDockTile(dockPosition)", collapse)
+        self.assertIn("grid.setVisibility(View.GONE)", collapse)
+        self.assertNotIn("restoreDockFocusAfterCollapse", MAIN)
 
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)

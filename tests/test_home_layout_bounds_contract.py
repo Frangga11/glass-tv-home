@@ -44,9 +44,8 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
             "int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density)",
             dock_layout,
         )
-        self.assertIn("dockParams.bottomMargin = horizontalGridExpanded", dock_layout)
-        self.assertIn("? dockBottomMargin + gridViewportHeight + rowGap", dock_layout)
-        self.assertIn(": dockBottomMargin;", dock_layout)
+        self.assertIn("dockParams.bottomMargin = dockBottomMargin;", dock_layout)
+        self.assertNotIn("dockParams.bottomMargin = horizontalGridExpanded", dock_layout)
         self.assertIn("return safeBottomInsetPx(density) - trayBottomInset", GEOMETRY)
         self.assertIn("dockParams.bottomMargin = DockGeometry.safeBottomInsetPx(density)", dock_layout)
 
