@@ -26,8 +26,10 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         for view_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
             with self.subTest(view_id=view_id):
                 self.assertEqual(views[view_id].get(ANDROID + "drawablePadding"), "1dp")
-                self.assertEqual(views[view_id].get(ANDROID + "layout_weight"), "1")
                 self.assertEqual(views[view_id].get(ANDROID + "gravity"), "center")
+        self.assertEqual(views["@+id/btnHome"].get(ANDROID + "layout_weight"), "1")
+        self.assertEqual(views["@+id/btnCandyBox"].get(ANDROID + "layout_weight"), "1")
+        self.assertEqual(views["@+id/btnSettingsContainer"].get(ANDROID + "layout_weight"), "1")
 
     def test_home_has_no_permanent_selected_or_elevated_state(self):
         start = MAIN.index("private void updateHomeTabIndicator()")
