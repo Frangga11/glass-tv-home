@@ -2,10 +2,11 @@
 
 Date: 11 November 2026 (WIB)
 Repository: `Frangga11/glass-tv-home`
+PR: #134 — OPEN / DRAFT / UNMERGED
 Branch: `feature/home-prayer-popup-compact-azans-001`
-Base: PR #123 exact source checkpoint `6ac43ae4b56908233a64b55c23fdadee5ce7ab76`
-Current implementation commit: `98a4080c0628d7547dae8ec8a911cf7d1b339620`
-Status: implementation submitted for CI/source QA; visual/device acceptance pending.
+Base: PR #123 source checkpoint `6ac43ae4b56908233a64b55c23fdadee5ce7ab76`
+Implementation HEAD validated by CI: `46430419d21fd0250c7443f75c3cabf9b3fe5754`
+Status: source-host validation PASS; rendered visual QA and physical-device acceptance PENDING.
 
 ## Owner constraints
 
@@ -15,44 +16,54 @@ Status: implementation submitted for CI/source QA; visual/device acceptance pend
 - Do not change shared `popup_inputs.xml`, `item_input.xml`, `GlassDrawable.java`, or the shared `showMenu()` implementation.
 - Preserve prayer calculations, schedule source, Azan preferences, alarm scheduling, sound assets, and existing test activity.
 - One compact centered frame; no ScrollView and no internal scrolling.
+- No merge, release, APK installation, ADB, or device/default-launcher changes without explicit authorization.
 
 ## Source audit
 
 The previous Prayer popup inflated `popup_inputs.xml` and `item_input.xml`, which are also used by Inputs and application context menus. The existing `showMenu()` and `GlassDrawable` are shared. The Azan settings dialog already provides master enable, per-prayer toggles, five sound choices, sound fetch, and test activity.
 
-## Implementation
+The current implementation keeps the change local to the Prayer popup path and its dedicated overlay/helper methods in `MainActivity.java`. The shared Inputs and context-menu implementations remain present and are not replaced.
 
-Only the Prayer popup code path in `MainActivity.java` was changed.
+## Implementation
 
 - Replaced the Prayer popup's use of shared input layouts with a dedicated in-memory view tree.
 - Reused the existing `GlassDrawable` constructor parameters and `Backdrop`/Glider companion treatment.
-- Centered a fixed-size panel to avoid anchor-relative clipping and ScrollView.
+- Centered a fixed-size panel (maximum 520dp × 370dp, constrained by safe insets); no ScrollView.
 - Displayed the six existing `PrayerTimes.getFullSchedule()` entries; Terbit remains informational and is not an Azan toggle.
 - Highlighted the existing `item.isNext` entry with `TvUiTokens.ISLAMIC_GOLD`.
 - Reused existing `Azan` preferences and `Azan.schedule()` for master and per-prayer switches.
 - Made all five existing sound choices available inline by cycling on OK; reuses `Azan.setSoundChoice()` and `Azan.fetch()`.
-- Reused the existing `AzanActivity` test path.
-- Kept the existing location activity entry point.
+- Reused the existing `AzanActivity` test path and `LocationActivity` zone-selection entry point.
 - Added a Prayer-popup-specific centered overlay/focus path; the shared `showMenu()` method remains unchanged.
+- Added a source-contract regression test.
 
-## Files intentionally untouched
+## Changed-file audit
 
-- `launcher/app/src/main/res/layout/popup_inputs.xml`
-- `launcher/app/src/main/res/layout/item_input.xml`
-- `launcher/app/src/main/java/com/gathin/tvhome/GlassDrawable.java`
-- `launcher/app/src/main/java/com/gathin/tvhome/PrayerTimes.java`
-- `launcher/app/src/main/java/com/gathin/tvhome/Azan.java`
-- Home layout XML, wallpaper, shelves, Dock/Grid, header, Settings, Weather/AQI, Wi-Fi, and app inventory.
+Exactly three files are changed in PR #134:
 
-## Validation gates
+1. `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+2. `tests/test_home_prayer_popup_compact_azans_contract.py`
+3. `docs/project-management/GTVH-HOME-PRAYER-POPUP-COMPACT-GLASS-001.md`
 
-1. New source-contract test passes.
-2. Existing Python regression suite passes.
-3. Android unit tests and release build pass on exact PR HEAD.
-4. Confirm changed-file list contains only the scoped MainActivity change, this test, and this checkpoint document.
-5. Inspect rendered 1920x1080 popup: one frame, no scroll, no clipping, no wasted blank area, no full-screen takeover.
-6. DPAD acceptance: focus moves through every actionable row, sound selection cycles, back/close restores focus to the original Home prayer anchor.
-7. Regression acceptance: Inputs menu, app context menu, Settings, and all Home surfaces are unchanged.
-8. Physical Mi TV Stick acceptance remains mandatory.
+## Validation — exact implementation HEAD
 
-No merge, release, APK installation, ADB action, or whole-Home redesign is authorized by this task.
+Validated commit: `46430419d21fd0250c7443f75c3cabf9b3fe5754`
+
+- GitHub Actions CI run #2017 (`42908744475`): SUCCESS.
+- GitHub Actions CI run #2018 (`42908750162`): SUCCESS.
+- Latest run completed both `Launcher build and unit tests` and `Lists, tools and docs` jobs successfully.
+- Repository Python regression suite: 285 tests run, 1 intentional skip, remaining tests OK.
+- Android release build: `BUILD SUCCESSFUL`.
+- Cumulative integration QA artifact uploaded by CI; it is a validation artifact, not a public release and has not been installed on a device.
+- Release APK diagnostic reported 1,633,589 bytes (1,595 KB), above the historical 1.5 MiB reference; this is an informational warning, not a build failure. No size optimization is authorized within this popup-only task.
+- Separate public APK release workflow was skipped.
+
+## Acceptance still pending — no PASS claimed
+
+1. Rendered visual review at 1920×1080: confirm centered compact frame, no clipping, no wasted blank area, no scroll, and no full-screen takeover.
+2. DPAD acceptance: focus traverses all actionable rows; UP/DOWN boundary behavior; Back/close; focus returns to the original Home prayer anchor.
+3. Function acceptance: master Azan, per-prayer switches, all five sound choices, test audio, and location/zone entry.
+4. Regression acceptance: Inputs menu, app context menu, Settings, and all other Home surfaces remain unchanged.
+5. Physical Mi TV Stick acceptance remains mandatory and has not been run.
+
+No merge, public release, APK installation, ADB action, or device/default-launcher mutation has been performed.
