@@ -34,6 +34,10 @@ import java.util.List;
 public final class UserSwitchDialog {
 
     public static void show(MainActivity activity) {
+        show(activity, null);
+    }
+
+    public static void show(MainActivity activity, Runnable onDismiss) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
         SoundEffects.playSelect();
 
@@ -266,6 +270,11 @@ public final class UserSwitchDialog {
         builder.setView(root);
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
+        dialog.setOnDismissListener(d -> {
+            if (onDismiss != null && !activity.isFinishing() && !activity.isDestroyed()) {
+                onDismiss.run();
+            }
+        });
         dialog.show();
 
         TvDialogStyle.applyCustom(dialog, activity, 580, 0, 0.68f);
