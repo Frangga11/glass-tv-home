@@ -3873,6 +3873,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 || targetPosition >= adapter.getItemCount()) return;
         pendingHorizontalGridPosition = targetPosition;
         pendingHorizontalGridKey = adapter.keyAt(targetPosition);
+        // Keep the in-flight scroll alive. The animator's settle callback resolves this
+        // newest stable key against actual RecyclerView geometry and continues if needed.
+        if (horizontalGridTransitionRunning) return;
         horizontalGridTransitionRunning = true;
         horizontalGridTransitionRetries = 0;
         final int transitionGeneration = ++horizontalGridTransitionGeneration;
