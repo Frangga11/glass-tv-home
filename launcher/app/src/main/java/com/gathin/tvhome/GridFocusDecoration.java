@@ -2,7 +2,6 @@ package com.gathin.tvhome;
 
 import android.graphics.Canvas;
 import android.graphics.RectF;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
