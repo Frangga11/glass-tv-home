@@ -2958,3 +2958,15 @@ Wi-Fi popup workstream is complete through latest APK generation and evidence re
 - Added `tests/test_home_luxury_glass_focus_contract.py` for glass persistence, rim reflection, icon tint, Islamic shelf glass and Islamic gold/shadow.
 - Exact-head CI #1875 / run `42720524182` was IN PROGRESS at checkpoint sync; release publication workflow run `42720524808` was SKIPPED. Do not claim CI PASS until exact-head run concludes.
 - No merge, ADB, device install, default-launcher change or release publication. 1920x1080 rendered review and physical Mi TV Stick acceptance remain pending. Preserve RE-SKIN NOT REWIRE and all existing functional/geometry constraints.
+
+
+## 10 NOVEMBER 2026 — GTVH-HOME-FOCUS-OVERLAY-DPAD-001
+- Audit target: Home header focus rendering, capsule focus consistency, DPAD navigation and popup focus return.
+- Root cause confirmed in `MainActivity.setUpGlider()`: shared Glider is added at `root.indexOfChild(heroShelf)`, behind Home header capsules. Navigation tabs appeared to work through a separate focused selector; other capsules depended on a Glider behind their glass surface. This split path caused the cursor to disappear beneath the capsule surface.
+- Corrective design: `GliderFocusDrawable` redraws the same shared Glider clipped to each capsule in its own background pass. Non-navigation capsules layer GlassDrawable then focus drawable; navigation tabs draw focus-only background on top of the shared nav capsule. Text/icon content remains above the focus indicator.
+- Beranda permanent selection/elevation removed; all three navigation tabs share the same focus animation. Icon-label spacing 1dp; equal segment widths preserved.
+- DPAD paths source-verified and regression-guarded: Home LEFT → Location DOWN → Weather/AQI DOWN → app row one; Home/Profile/Settings/Wi-Fi DOWN → app row one; Home RIGHT → Profile → Settings → Wi-Fi → Mic DOWN → Ayah DOWN → Prayer timetable DOWN → app row one; row one UP → Home; row two UP → row one. Inputs remains reachable through optional branch.
+- Popup focus return source-verified for Profile, Quick Settings, Wi-Fi, Daily Ayah and Prayer timetable.
+- Regression tests: 267 tests, OK (1 skipped). Exact-head CI #1918 / run ID `42839301456` passed both jobs. Android `testReleaseUnitTest assembleRelease`: BUILD SUCCESSFUL. APK 1,630,801 bytes; exact-head artifact ID `13775795455`.
+- Source status: PASS. Rendered/physical acceptance: PENDING. Required runtime checks: cursor always above capsule glass and below text/icons; same transition and settling across capsules; four DPAD simulations; popup return focus; navigation spacing/widths; bright/dark wallpaper contrast.
+- No ADB/device install, merge, release or default-launcher change. PR #114 remains OPEN / DRAFT / UNMERGED pending owner acceptance.
