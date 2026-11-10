@@ -83,3 +83,11 @@ jobs:
           path: launcher/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 7
+      - name: Publish cumulative integration QA APK (PR #111)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: glass-tv-home-cumulative-integration-111-${{ github.sha }}
+          path: launcher/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 7
