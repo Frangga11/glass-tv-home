@@ -3617,31 +3617,46 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 || horizontalDockCollapseInProgress) return;
         horizontalDockCollapseInProgress = true;
         final int generation = ++gridFocusRequestGeneration;
-        final int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(
-                DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
-                DockPreferences.load(this).capacity, density);
         int gridTileWidth = DockGeometry.horizontalTileWidthPx(
                 DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
                 DockPreferences.load(this).capacity, density);
         final int pitch = DockGeometry.horizontalGridViewportHeightPx(
                 gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
-        // Change the layout to its idle anchors, then offset the views to their expanded
-        // screen coordinates. The reverse animation therefore has no first-frame jump.
-        horizontalGridExpanded = false;
-        applyDockLayout();
-        grid.setVisibility(View.VISIBLE);
-        dockRecycler.setTranslationY(-pitch);
-        grid.setTranslationY(-pitch);
-        grid.setAlpha(1f);
-        animateHorizontalDockTransition(pitch, false, () -> {
-            if (generation != gridFocusRequestGeneration) return;
-            grid.setTranslationY(0f);
-            grid.setAlpha(1f);
-            grid.setVisibility(View.GONE);
-            dockRecycler.setTranslationY(0f);
-            horizontalDockCollapseInProgress = false;
-            focusDockTile(dockPosition);
+        // Keep the expanded layout in place during the reverse motion: the Dock travels
+        // down by one row pitch while the overflow row travels down and out of the viewport.
+        android.animation.ValueAnimator previous = horizontalDockTransitionAnimator;
+        if (previous != null) previous.cancel();
+        final int transition = ++horizontalDockTransitionGeneration;
+        final android.animation.ValueAnimator animator =
+                android.animation.ValueAnimator.ofFloat(0f, 1f);
+        horizontalDockTransitionAnimator = animator;
+        animator.setDuration(reducedMotion ? 140 : 260);
+        animator.setInterpolator(new android.view.animation.DecelerateInterpolator());
+        animator.addUpdateListener(value -> {
+            if (transition != horizontalDockTransitionGeneration) return;
+            float progress = (Float) value.getAnimatedValue();
+            dockRecycler.setTranslationY(-pitch * (1f - progress));
+            grid.setTranslationY(pitch * progress);
+            grid.setAlpha(1f - 0.28f * progress);
         });
+        animator.addListener(new android.animation.AnimatorListenerAdapter() {
+            private boolean cancelled;
+            @Override public void onAnimationCancel(android.animation.Animator animation) { cancelled = true; }
+            @Override public void onAnimationEnd(android.animation.Animator animation) {
+                if (horizontalDockTransitionAnimator == animator) horizontalDockTransitionAnimator = null;
+                if (cancelled || transition != horizontalDockTransitionGeneration
+                        || generation != gridFocusRequestGeneration) return;
+                horizontalGridExpanded = false;
+                grid.setTranslationY(0f);
+                grid.setAlpha(1f);
+                grid.setVisibility(View.GONE);
+                dockRecycler.setTranslationY(0f);
+                applyDockLayout();
+                horizontalDockCollapseInProgress = false;
+                focusDockTile(dockPosition);
+            }
+        });
+        animator.start();
     }
 
     private void animateHorizontalDockTransition(int pitch, boolean expanding, Runnable onSettled) {
