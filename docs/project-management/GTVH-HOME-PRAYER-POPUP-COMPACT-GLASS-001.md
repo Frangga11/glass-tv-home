@@ -84,3 +84,26 @@ No merge, public release, APK installation, ADB action, or device/default-launch
 ## Remaining acceptance boundary
 
 Source-host CI is PASS only. Rendered visual QA at 1920×1080, complete DPAD/focus behavior, audio playback, and physical Mi TV Stick acceptance remain PENDING / NOT RUN. No merge, public release, APK installation, ADB, or device/default-launcher changes have been performed.
+
+
+## User device feedback and corrective pass — 11 November 2026
+
+The owner supplied a Mi TV Stick / 1920×1080 photo of the first installed build and reported that the popup did not meet the visual reference and DPAD navigation did not work. This feedback supersedes the earlier assumption that the centered layout was visually acceptable.
+
+### Required target
+- Match the supplied reference hierarchy: framed capsule title/location header; prominent next-prayer strip; readable two-column timetable; three clearly separated Azan controls with descriptions and right-side current values/actions; compact footer.
+- Position the popup at the screen's right-center safe area (not screen center).
+- Increase text sizing for TV viewing while preserving the existing Silver Glass palette and GlassDrawable material.
+- Make DPAD focus movement explicit and deterministic across nested rows; OK/Enter invokes the focused action; Back closes and restores the invoking Home anchor.
+- Keep the task popup-only. No Home layout, wallpaper, shelf, Dock/Grid, header, weather, Wi-Fi, or shared menu/material changes.
+
+### Corrective source changes
+- Popup frame changed from centered to right-center with a 42dp right safe margin.
+- Content typography and panel dimensions increased for TV readability.
+- Overlay now collects focusable popup controls into a deterministic focus order and explicitly handles DPAD up/down/left/right, OK/Enter, and Back.
+- Added a regression contract for right-center placement and explicit DPAD handling.
+- Source commit: `15665557965ff70fff783b22ea996fba40ebf37b`.
+- Contract test commit: `dd8e6a063a80f6b3d620296131b64e47e746b926`.
+
+### Acceptance status
+These are source-level corrections only. CI, release build, and the next installable APK must be verified before device retest. DPAD and visual acceptance remain PENDING until the owner tests the new APK on Mi TV Stick and supplies feedback. No merge or public release.
