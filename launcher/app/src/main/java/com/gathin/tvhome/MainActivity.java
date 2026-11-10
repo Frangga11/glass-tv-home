@@ -7910,7 +7910,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout masterRow = createPrayerPopupControlRow(
                 "Azan", "Notifikasi azan", "");
         masterRow.setBackground(prayerPopupCardBackground(false));
-        TextView masterLabel = (TextView) ((LinearLayout) masterRow.getChildAt(0)).getChildAt(0);
+        masterRow.getChildAt(1).setVisibility(View.GONE);
         android.widget.Switch masterSwitch = new android.widget.Switch(this);
         masterSwitch.setFocusable(false);
         masterSwitch.setClickable(false);
