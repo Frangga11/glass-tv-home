@@ -7771,14 +7771,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (anchor == null || !anchor.isShown()) anchor = root;
 
-        // Dedicated Prayer popup view tree. Shared Inputs/context-menu layouts are not reused.
+        // Compact right-side panel. The title/location header is informational, not a DPAD stop.
         FrameLayout panel = new FrameLayout(this);
         panel.setClipChildren(true);
         panel.setClipToPadding(true);
         panel.setElevation(12 * density);
-        panel.setBackground(new GlassDrawable(panel, 20 * density, density, glider, 0.5f, true));
-        panel.setPadding((int) (12 * density), (int) (8 * density),
-                (int) (12 * density), (int) (8 * density));
+        panel.setBackground(new GlassDrawable(panel, 18 * density, density, glider, 0.5f, true));
+        panel.setPadding((int) (9 * density), (int) (7 * density),
+                (int) (9 * density), (int) (7 * density));
 
         LinearLayout rows = new LinearLayout(this);
         rows.setOrientation(LinearLayout.VERTICAL);
@@ -7788,34 +7788,51 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         ArrayList<View> focusOrder = new ArrayList<>();
 
-        // Header: title left; current prayer zone and elevation right.
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setPadding((int) (6 * density), 0, (int) (6 * density), 0);
-        TextView title = createPrayerPopupText("WAKTU SHOLAT", 16f,
+        header.setPadding((int) (4 * density), 0, (int) (2 * density), 0);
+        TextView title = createPrayerPopupText("WAKTU SHOLAT", 14f,
                 TvUiTokens.TEXT_PRIMARY, true);
         header.addView(title, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f));
-        TextView zone = createPrayerPopupText(
-                PrayerTimes.getShortZoneName(this) + "\n±800 mdpl", 10f,
+
+        LinearLayout locationInfo = new LinearLayout(this);
+        locationInfo.setOrientation(LinearLayout.HORIZONTAL);
+        locationInfo.setGravity(Gravity.CENTER_VERTICAL);
+        ImageView locationIcon = new ImageView(this);
+        locationIcon.setImageResource(R.drawable.ic_header_location);
+        locationIcon.setColorFilter(TvUiTokens.TEXT_SECONDARY);
+        locationInfo.addView(locationIcon, new LinearLayout.LayoutParams(
+                (int) (13 * density), (int) (13 * density)));
+        TextView zone = createPrayerPopupText(PrayerTimes.getShortZoneName(this), 9f,
                 TvUiTokens.TEXT_SECONDARY, true);
-        zone.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-        zone.setMaxLines(2);
-        header.addView(zone, new LinearLayout.LayoutParams(
-                (int) (122 * density), ViewGroup.LayoutParams.MATCH_PARENT));
-        header.setBackground(prayerPopupCardBackground(false));
-        header.setFocusable(true);
-        header.setClickable(true);
-        header.setOnClickListener(v -> {
-            SoundEffects.playSelect();
-            prayerPopupRestoreFocusPending = prayerPopupReturnAnchor != null;
-            closeMenu(false);
-            startActivity(new Intent(MainActivity.this, LocationActivity.class));
-        });
+        LinearLayout.LayoutParams zoneLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        zoneLp.leftMargin = (int) (4 * density);
+        locationInfo.addView(zone, zoneLp);
+
+        View locationDivider = new View(this);
+        locationDivider.setBackgroundColor(0x66FFFFFF);
+        LinearLayout.LayoutParams locationDividerLp = new LinearLayout.LayoutParams(
+                Math.max(1, (int) density), (int) (17 * density));
+        locationDividerLp.setMargins((int) (7 * density), 0, (int) (7 * density), 0);
+        header.addView(locationInfo);
+        header.addView(locationDivider, locationDividerLp);
+
+        ImageView mountainIcon = new ImageView(this);
+        mountainIcon.setImageResource(R.drawable.ic_header_mountain);
+        mountainIcon.setColorFilter(TvUiTokens.TEXT_SECONDARY);
+        header.addView(mountainIcon, new LinearLayout.LayoutParams(
+                (int) (15 * density), (int) (13 * density)));
+        TextView altitude = createPrayerPopupText("800 mdpl", 9f,
+                TvUiTokens.TEXT_SECONDARY, true);
+        LinearLayout.LayoutParams altitudeLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        altitudeLp.leftMargin = (int) (4 * density);
+        header.addView(altitude, altitudeLp);
         rows.addView(header, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (34 * density)));
-        focusOrder.add(header);
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (30 * density)));
         addPrayerPopupDivider(rows);
 
         java.util.List<PrayerTimes.ScheduleItem> schedule = PrayerTimes.getFullSchedule(this);
@@ -7824,39 +7841,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (item.isNext) { nextPrayer = item; break; }
         }
 
-        // Compact next-prayer card: clear hierarchy without consuming a large vertical band.
         LinearLayout nextCard = new LinearLayout(this);
         nextCard.setOrientation(LinearLayout.VERTICAL);
         nextCard.setGravity(Gravity.CENTER_VERTICAL);
-        nextCard.setPadding((int) (12 * density), (int) (3 * density),
-                (int) (12 * density), (int) (3 * density));
+        nextCard.setPadding((int) (9 * density), (int) (2 * density),
+                (int) (9 * density), (int) (2 * density));
         nextCard.setBackground(prayerPopupCardBackground(nextPrayer != null));
-        TextView nextCaption = createPrayerPopupText("WAKTU SHOLAT BERIKUTNYA", 9.5f,
-                TvUiTokens.TEXT_SECONDARY, true);
-        TextView nextName = createPrayerPopupText(
-                nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui", 18f,
-                TvUiTokens.TEXT_PRIMARY, true);
-        TextView nextTime = createPrayerPopupText(
-                nextPrayer != null ? nextPrayer.timeFormatted : "--:--", 16.5f,
-                TvUiTokens.ISLAMIC_GOLD, true);
-        nextCard.addView(nextCaption);
-        nextCard.addView(nextName);
-        nextCard.addView(nextTime);
+        nextCard.addView(createPrayerPopupText("WAKTU SHOLAT BERIKUTNYA", 8f,
+                TvUiTokens.TEXT_SECONDARY, true));
+        nextCard.addView(createPrayerPopupText(
+                nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui", 15f,
+                TvUiTokens.TEXT_PRIMARY, true));
+        nextCard.addView(createPrayerPopupText(
+                nextPrayer != null ? prayerPopup24Hour(nextPrayer.timeFormatted) : "--:--", 14f,
+                TvUiTokens.ISLAMIC_GOLD, true));
         rows.addView(nextCard, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (66 * density)));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (55 * density)));
 
         LinearLayout scheduleHeading = new LinearLayout(this);
         scheduleHeading.setGravity(Gravity.CENTER_VERTICAL);
-        scheduleHeading.setPadding((int) (5 * density), 0, 0, 0);
+        scheduleHeading.setPadding((int) (4 * density), 0, 0, 0);
         scheduleHeading.addView(createPrayerPopupText(
-                "JADWAL HARI INI", 11.5f, TvUiTokens.TEXT_PRIMARY, true));
+                "JADWAL HARI INI", 10f, TvUiTokens.TEXT_PRIMARY, true));
         LinearLayout.LayoutParams headingLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (22 * density));
-        headingLp.topMargin = (int) (2 * density);
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (19 * density));
+        headingLp.topMargin = (int) (1 * density);
         rows.addView(scheduleHeading, headingLp);
 
-        // Six timetable cells, two columns by three rows. Terbit remains informational,
-        // but stays focusable so every visible schedule cell participates in DPAD navigation.
         ArrayList<View> scheduleFocus = new ArrayList<>();
         for (int pair = 0; pair < schedule.size(); pair += 2) {
             LinearLayout gridRow = new LinearLayout(this);
@@ -7864,35 +7875,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridRow.setGravity(Gravity.CENTER_VERTICAL);
             for (int column = 0; column < 2 && pair + column < schedule.size(); column++) {
                 final PrayerTimes.ScheduleItem item = schedule.get(pair + column);
-
                 LinearLayout card = new LinearLayout(this);
                 card.setOrientation(LinearLayout.VERTICAL);
                 card.setGravity(Gravity.CENTER_VERTICAL);
-                card.setPadding((int) (9 * density), (int) (2 * density),
-                        (int) (7 * density), (int) (2 * density));
+                card.setPadding((int) (7 * density), (int) (1 * density),
+                        (int) (5 * density), (int) (1 * density));
                 card.setBackground(prayerPopupCardBackground(item.isNext));
-
-                TextView name = createPrayerPopupText(item.name, 11.5f,
-                        item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true);
-                TextView time = createPrayerPopupText(item.timeFormatted, 15f,
-                        item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true);
-                card.addView(name);
-                card.addView(time);
+                card.addView(createPrayerPopupText(item.name, 10f,
+                        item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true));
+                card.addView(createPrayerPopupText(prayerPopup24Hour(item.timeFormatted), 13f,
+                        item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true));
                 card.setFocusable(true);
                 card.setClickable(true);
-                // Timetable cells are read-only; Azan configuration remains in the three dedicated controls.
                 card.setOnClickListener(v -> SoundEffects.playSelect());
                 scheduleFocus.add(card);
-
                 LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
-                        0, (int) (43 * density), 1f);
-                if (column == 0) cardLp.rightMargin = (int) (3 * density);
-                else cardLp.leftMargin = (int) (3 * density);
+                        0, (int) (36 * density), 1f);
+                if (column == 0) cardLp.rightMargin = (int) (2 * density);
+                else cardLp.leftMargin = (int) (2 * density);
                 gridRow.addView(card, cardLp);
             }
             LinearLayout.LayoutParams rowLp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (45 * density));
-            if (pair > 0) rowLp.topMargin = (int) (1 * density);
+                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (38 * density));
+            if (pair > 0) rowLp.topMargin = (int) density;
             rows.addView(gridRow, rowLp);
         }
         focusOrder.addAll(scheduleFocus);
@@ -7903,22 +7908,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         String[] soundLabels = {"Makkah", "Madinah", "KLCC", "Chime", "Senyap"};
 
         LinearLayout masterRow = createPrayerPopupControlRow(
-                "Azan", "Notifikasi azan", Azan.isMasterEnabled(this) ? "AKTIF" : "NONAKTIF");
-        TextView masterValue = (TextView) masterRow.getChildAt(1);
+                "Azan", "Notifikasi azan", "");
         masterRow.setBackground(prayerPopupCardBackground(false));
-        masterRow.setOnClickListener(v -> {
-            boolean enabled = !Azan.isMasterEnabled(MainActivity.this);
+        TextView masterLabel = (TextView) ((LinearLayout) masterRow.getChildAt(0)).getChildAt(0);
+        android.widget.Switch masterSwitch = new android.widget.Switch(this);
+        masterSwitch.setFocusable(false);
+        masterSwitch.setClickable(false);
+        masterSwitch.setChecked(Azan.isMasterEnabled(this));
+        masterRow.addView(masterSwitch, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        masterSwitch.setOnCheckedChangeListener((button, enabled) -> {
             Azan.setMasterEnabled(MainActivity.this, enabled);
             Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this));
             SoundEffects.playSelect();
-            masterValue.setText(enabled ? "AKTIF" : "NONAKTIF");
         });
+        masterRow.setOnClickListener(v -> masterSwitch.setChecked(!masterSwitch.isChecked()));
         rows.addView(masterRow, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (40 * density)));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density)));
         focusOrder.add(masterRow);
 
         LinearLayout soundRow = createPrayerPopupControlRow(
-                "Suara Azan", "Pilih suara muazin", 
+                "Suara Azan", "Pilih suara muazin",
                 prayerPopupSoundLabel(Azan.getSoundChoice(this), soundKeys, soundLabels) + "  ›");
         TextView soundValue = (TextView) soundRow.getChildAt(1);
         soundRow.setBackground(prayerPopupCardBackground(false));
@@ -7935,8 +7945,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             soundValue.setText(prayerPopupSoundLabel(next, soundKeys, soundLabels) + "  ›");
         });
         LinearLayout.LayoutParams soundLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
-        soundLp.topMargin = (int) (2 * density);
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density));
+        soundLp.topMargin = (int) density;
         rows.addView(soundRow, soundLp);
         focusOrder.add(soundRow);
 
@@ -7953,33 +7963,43 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             startActivity(azanIntent);
         });
         LinearLayout.LayoutParams testLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
-        testLp.topMargin = (int) (2 * density);
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density));
+        testLp.topMargin = (int) density;
         rows.addView(testRow, testLp);
         focusOrder.add(testRow);
 
         LinearLayout footer = new LinearLayout(this);
         footer.setGravity(Gravity.CENTER);
         footer.addView(createPrayerPopupText(
-                "OK PILIH   •   BACK KEMBALI", 8.5f, TvUiTokens.TEXT_SECONDARY, true));
+                "OK PILIH   •   BACK KEMBALI", 7.5f, TvUiTokens.TEXT_SECONDARY, true));
         LinearLayout.LayoutParams footerLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (15 * density));
-        footerLp.topMargin = (int) (2 * density);
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (13 * density));
+        footerLp.topMargin = (int) density;
         rows.addView(footer, footerLp);
 
-        // Measure the complete content against the real TV safe area before placing it.
         int safeX = TvResponsiveLayout.safeInsetPx(root.getWidth());
         int safeY = TvResponsiveLayout.safeInsetPx(root.getHeight());
         int safeWidth = Math.max(1, root.getWidth() - 2 * safeX);
         int safeHeight = Math.max(1, root.getHeight() - 2 * safeY);
-        int width = Math.min((int) (430 * density), safeWidth);
+        int width = Math.min((int) (301 * density), safeWidth);
         int maxContentHeight = Math.max(1, safeHeight - (int) (12 * density));
         panel.measure(
                 View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(maxContentHeight, View.MeasureSpec.AT_MOST));
         int height = Math.max(1, Math.min(panel.getMeasuredHeight(), maxContentHeight));
-
         showPrayerPopupOverlay(panel, rows, anchor, width, height, focusOrder, safeX, safeY);
+    }
+
+    private String prayerPopup24Hour(String value) {
+        if (value == null || value.trim().isEmpty()) return "--:--";
+        try {
+            java.text.SimpleDateFormat input = new java.text.SimpleDateFormat("h:mm a", Locale.US);
+            input.setLenient(false);
+            Date parsed = input.parse(value.trim());
+            return parsed == null ? value : new java.text.SimpleDateFormat("HH:mm", Locale.US).format(parsed);
+        } catch (Exception ignored) {
+            return value;
+        }
     }
 
     private TextView createPrayerPopupText(String text, float sizeSp, int color, boolean bold) {
