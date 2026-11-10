@@ -140,6 +140,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean dockVertical;
     /** Horizontal Grid stays parked out of sight until the user presses Down from the Dock. */
     private boolean horizontalGridExpanded;
+    /** Serializes the first Dock-to-overflow reveal against repeated vertical DPAD input. */
+    private boolean horizontalDockExpansionInProgress;
     /** Pending target for serialized horizontal Grid row transitions (supports rapid DPAD repeats). */
     private int pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
     /** Stable component identity for a pending row target while the app inventory changes. */
@@ -2289,6 +2291,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (position < count - 1) focusDockTile(position + 1);
                 return true;
             }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                // The first Dock-to-overflow reveal owns the vertical axis until its handoff settles.
+                if (horizontalDockExpansionInProgress) return true;
+            }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                 // The Dock is the first Home row in the Patch 4.1 navigation model:
                 // Up returns to the top shelf, never to an app row in the middle.
@@ -3599,7 +3605,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Expand as one physical vertical transition: Dock rises, overflow row enters from below. */
     private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration) {
-        if (grid == null || dockRecycler == null || horizontalGridExpanded) return;
+        if (grid == null || dockRecycler == null || horizontalGridExpanded
+                || horizontalDockExpansionInProgress) return;
+        horizontalDockExpansionInProgress = true;
         cancelHorizontalGridRowTransition();
         int gridTileWidth = DockGeometry.horizontalTileWidthPx(
                 DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
@@ -3623,6 +3631,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setTranslationY(0f);
                 dockRecycler.setTranslationY(-pitch);
                 grid.setAlpha(1f);
+                horizontalDockExpansionInProgress = false;
                 focusTile(targetPosition);
             });
         });
@@ -3788,7 +3797,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
-            @Override public void onAnimationCancel(android.animation.Animator animation) { cancelled = true; }
+            @Override public void onAnimationCancel(android.animation.Animator animation) {
+                cancelled = true;
+                if (expanding) horizontalDockExpansionInProgress = false;
+            }
             @Override public void onAnimationEnd(android.animation.Animator animation) {
                 if (horizontalDockTransitionAnimator == animator) horizontalDockTransitionAnimator = null;
                 if (!cancelled && generation == horizontalDockTransitionGeneration && onSettled != null) {
