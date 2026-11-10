@@ -478,12 +478,21 @@
                     android:shadowRadius="4"
                     android:includeFontPadding="false" />
 
+                <!-- Clock/date divider mirrors the location/elevation separator. -->
+                <View
+                    android:id="@+id/clockDateDivider"
+                    android:layout_width="1dp"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="#66FFFFFF" />
+
                 <!-- 1:2 layout: 1 jam on left, 2 stacked rows on right (atas: am/pm, bawah: tarikh) -->
                 <LinearLayout
                     android:id="@+id/dateBlock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="0dp"
                     android:orientation="vertical">
 
                     <!-- Atas: AM/PM (e.g. PG / PTG / MLM) -->
@@ -797,9 +806,9 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:drawableStart="@drawable/ic_header_home"
-                    android:drawablePadding="1dp"
-                    android:paddingStart="6dp"
-                    android:paddingEnd="6dp"
+                    android:drawablePadding="2dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:textColor="#FFFFFFFF"
                     android:textSize="14sp"
                     android:fontFamily="@font/inter"
@@ -820,9 +829,9 @@
                     android:layout_weight="1"
                     android:layout_marginStart="0dp"
                     android:gravity="center"
-                    android:drawablePadding="1dp"
-                    android:paddingStart="6dp"
-                    android:paddingEnd="6dp"
+                    android:drawablePadding="2dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
                     android:textSize="14sp"
                     android:text="Profil"
                     android:singleLine="true"
@@ -846,9 +855,9 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="0dp"
                         android:gravity="center"
-                        android:drawablePadding="4dp"
-                        android:paddingStart="6dp"
-                        android:paddingEnd="6dp"
+                        android:drawablePadding="2dp"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
                         android:textSize="14sp"
                         android:text="@string/settings"
                         android:singleLine="true"
