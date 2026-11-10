@@ -3,8 +3,9 @@
 Date: 11 November 2026 (WIB)
 Repository: `Frangga11/glass-tv-home`
 Working branch: `rebuild/home-prayer-popup-integrated-001`
-Status: IMPLEMENTATION COMMITTED — AUTOMATED VALIDATION / RENDERED QA / DEVICE ACCEPTANCE PENDING
-PR: To be opened as Draft / Unmerged after source-contract review.
+Status: IMPLEMENTATION COMMITTED — CI IN PROGRESS / RENDERED QA / DEVICE ACCEPTANCE PENDING
+PR: #135 — OPEN / DRAFT / UNMERGED
+Latest recorded HEAD: `28a77abf3a31f0e1afd6c201e3b2c8be19124b78`
 
 ## 1. Trigger and owner direction
 
@@ -137,11 +138,10 @@ Changed:
 ## 7. Validation
 
 Not yet claimed:
-- Python contract tests: pending execution on exact branch.
-- Full repository Python suite: pending.
-- Android unit tests: pending.
-- Release build: pending.
-- Exact-head CI: pending.
+- Python contract test and repository Lists/tools/docs workflow: job succeeded on latest HEAD; individual test counts are not yet available from the job summary.
+- Android unit tests: running in the Launcher build/unit-test job.
+- Release build: running in the Launcher build/unit-test job.
+- Exact-head CI: run #2040 for HEAD `28a77abf3a31f0e1afd6c201e3b2c8be19124b78` is in progress; Lists/tools/docs job succeeded, Launcher build/unit tests still running.
 - APK size/checksum: pending.
 - Rendered UI inspection at 1920x1080: pending.
 - Mi TV Stick Android TV 11 physical acceptance: pending.
