@@ -39,3 +39,14 @@ This commit contains source changes and regression contracts only. Fresh CI/buil
 3. UP/DOWN mapping and focus restoration remain stable, including rapid key presses during transitions.
 4. Focus rim tracks the focused card and does not cover its banner/icon/label.
 5. No change to app geometry, order, launch behavior, or unrelated Home surfaces.
+
+
+## Implementation checkpoint
+
+- PR: #125 (OPEN / DRAFT / UNMERGED), based on PR #124 head `f56a5df8fd09031bd4b530c7ec6fd94b45cecc23`.
+- Branch: `fix/home-shared-cyan-breathing-focus-rows-001`.
+- Current source HEAD at checkpoint: `49f28935737c7f307166bdb5e4b8f001b0660c2d`.
+- AppAdapter now reveals the existing breathing border whenever a Dock or Grid app card receives focus; no new animation implementation was introduced.
+- MainActivity no longer registers the Grid-only static white outline, preventing a second cursor.
+- Regression source-contract tests and this audit document are included in the PR.
+- Fresh CI status is not yet available. Mi TV Stick physical acceptance remains pending; do not claim PASS or merge.
