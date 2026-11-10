@@ -611,7 +611,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
             card.setOnFocusChangeListener((view, focused) -> {
                 if (breathingBorder != null) {
-                    if (focused && dockTile) {
+                    // The Dock breathing rim is the canonical Home app-focus treatment.
+                    // Use the exact same view/animation for Dock row and expanded Grid rows;
+                    // row identity must not change focus appearance.
+                    if (focused) {
                         float r = cornerRadius(view.getWidth(), density);
                         breathingBorder.setCornerRadiusDp(r / density);
                         breathingBorder.setVisibility(View.VISIBLE);
