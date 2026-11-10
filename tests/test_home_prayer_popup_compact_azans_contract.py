@@ -86,10 +86,28 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
     def test_popup_is_right_center_and_uses_explicit_dpad_focus_order(self):
         self.assertIn("Gravity.RIGHT | Gravity.CENTER_VERTICAL", self.overlay)
         self.assertIn("lp.rightMargin", self.overlay)
-        self.assertIn("collectPrayerPopupFocusables(rows, focusOrder)", self.overlay)
-        self.assertIn("focusOrder.get(index + 1).requestFocus()", self.overlay)
-        self.assertIn("focusOrder.get(index - 1).requestFocus()", self.overlay)
+        self.assertIn("Gravity.RIGHT | Gravity.CENTER_VERTICAL", self.overlay)
+        self.assertIn("findPrayerPopupDirectionalFocus(v, focusOrder, keyCode)", self.overlay)
         self.assertIn("v.performClick()", self.overlay)
+        self.assertIn("View initialFocus = focusOrder.isEmpty() ? null : focusOrder.get(0)", self.overlay)
+        self.assertNotIn("final View initialFocus = first", self.overlay)
+
+    def test_popup_uses_slim_vertical_compact_reference_hierarchy(self):
+        self.assertIn("430 * density", self.popup)
+        self.assertIn("500 * density", self.popup)
+        self.assertIn("WAKTU SHOLAT BERIKUTNYA", self.popup)
+        self.assertIn("JADWAL HARI INI", self.popup)
+        self.assertIn("createPrayerPopupControlRow(", self.popup)
+        self.assertIn("prayerPopupCardBackground(item.isNext)", self.popup)
+        self.assertIn("rowLp.topMargin = (int) (2 * density)", self.popup)
+
+    def test_directional_dpad_uses_nearest_visual_candidate(self):
+        helper = MAIN[MAIN.index("private View findPrayerPopupDirectionalFocus("):MAIN.index("private android.graphics.drawable.Drawable prayerPopupFocusedBackground(")]
+        self.assertIn("getLocationOnScreen", helper)
+        self.assertIn("KEYCODE_DPAD_LEFT", helper)
+        self.assertIn("KEYCODE_DPAD_RIGHT", helper)
+        self.assertIn("KEYCODE_DPAD_UP", helper)
+        self.assertIn("KEYCODE_DPAD_DOWN", helper)
 
     def test_existing_shared_menu_and_glass_implementations_are_not_replaced(self):
         show_menu = MAIN[MAIN.index("private void showMenu("):MAIN.index("private void glideToMenuRow(")]
