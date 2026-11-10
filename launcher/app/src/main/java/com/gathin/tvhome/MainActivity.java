@@ -3654,16 +3654,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 horizontalGridExpanded = false;
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
-                // Re-anchor the Dock while its +pitch translation still compensates for
-                // the expanded anchor. Clear translation only after the idle layout pass.
+                // The final +pitch translation already places the Dock at its idle screen
+                // coordinate. The expanded-to-idle layout change also moves its base by +pitch,
+                // so retaining that translation would apply the displacement twice and push the
+                // Dock below the viewport for a frame (or longer on slower TV hardware).
+                // Commit the idle layout and clear both translations in this same UI callback.
+                dockRecycler.setTranslationY(0f);
+                grid.setTranslationY(0f);
                 applyDockLayout();
                 dockRecycler.post(() -> {
                     if (generation != gridFocusRequestGeneration) {
                         horizontalDockCollapseInProgress = false;
                         return;
                     }
-                    grid.setTranslationY(0f);
-                    dockRecycler.setTranslationY(0f);
                     horizontalDockCollapseInProgress = false;
                     focusDockTile(dockPosition);
                 });
