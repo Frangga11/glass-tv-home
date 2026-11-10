@@ -11,11 +11,11 @@ class HomeDockGlassFocusOverlayContractTest(unittest.TestCase):
         self.assertIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
         self.assertIn("glider.addCompanion(grid);", MAIN)
 
-    def test_grid_focus_is_drawn_in_background_pass_only_when_grid_owns_focus(self):
-        self.assertIn("void onDraw(", GRID_DECORATION)
+    def test_grid_focus_is_drawn_over_children_only_when_grid_owns_focus(self):
+        self.assertIn("void onDrawOver(", GRID_DECORATION)
         self.assertIn("if (!parent.hasFocus() || !glider.isShowing()) return;", GRID_DECORATION)
         self.assertIn("glider.drawShape(canvas", GRID_DECORATION)
-        self.assertNotIn("onDrawOver(", GRID_DECORATION)
+        self.assertNotIn("void onDraw(", GRID_DECORATION)
 
     def test_row_transition_does_not_animate_grid_alpha(self):
         start = MAIN.index("private void expandHorizontalDockForOverflow")
