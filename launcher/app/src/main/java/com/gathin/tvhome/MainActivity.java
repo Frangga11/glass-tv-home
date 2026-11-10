@@ -611,8 +611,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             weatherAirQualityView.setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                    View location = findViewById(R.id.locationPill);
-                    if (location != null && location.isShown() && location.requestFocus()) return true;
+                    View locationPill = findViewById(R.id.locationPill);
+                    if (locationPill != null && locationPill.isShown() && locationPill.requestFocus()) return true;
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
