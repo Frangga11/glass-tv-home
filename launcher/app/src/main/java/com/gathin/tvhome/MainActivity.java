@@ -8082,6 +8082,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (!inDirection) continue;
             double primary = horizontal ? Math.abs(dx) : Math.abs(dy);
             double cross = horizontal ? Math.abs(dy) : Math.abs(dx);
+            // Reject diagonal shortcuts across rows/sections; preserve the visual row/column lane.
+            double crossLimit = horizontal
+                    ? Math.max(current.getHeight(), candidate.getHeight()) * 0.75d
+                    : Math.max(current.getWidth(), candidate.getWidth()) * 0.65d;
+            if (cross > crossLimit) continue;
             double score = primary + cross * 1.8;
             if (score < bestScore) {
                 bestScore = score;
