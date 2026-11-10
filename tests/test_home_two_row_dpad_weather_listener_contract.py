@@ -70,6 +70,23 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertLess(expand.index("horizontalDockExpansionInProgress = false;"),
                         expand.index("focusTile(targetPosition)"))
 
+    def test_row_scroll_coalesces_latest_target_without_restarting_active_motion(self):
+        start = MAIN.index("private void requestHorizontalGridRow(")
+        end = MAIN.index("private int resolvePendingHorizontalGridPosition()", start)
+        request = MAIN[start:end]
+        self.assertIn("pendingHorizontalGridKey = adapter.keyAt(targetPosition);", request)
+        self.assertIn("if (horizontalGridTransitionRunning) return;", request)
+        self.assertLess(request.index("pendingHorizontalGridKey = adapter.keyAt(targetPosition);"),
+                        request.index("if (horizontalGridTransitionRunning) return;"))
+        self.assertLess(request.index("if (horizontalGridTransitionRunning) return;"),
+                        request.index("horizontalGridTransitionRunning = true;"))
+        self.assertNotIn("previous.cancel()", request)
+        settle_start = MAIN.index("private void settleHorizontalGridRowTransition(")
+        settle_end = MAIN.index("private void focusHorizontalGridRowTargetWhenLaidOut(", settle_start)
+        settle = MAIN[settle_start:settle_end]
+        self.assertIn("int target = resolvePendingHorizontalGridPosition();", settle)
+        self.assertIn("startHorizontalGridRowTransition(", settle)
+
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
