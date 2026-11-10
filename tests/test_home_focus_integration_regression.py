@@ -1,4 +1,4 @@
-"""Cross-regression contracts for shared app focus and horizontal Dock collapse ownership."""
+""""Cross-regression contracts for shared app focus and horizontal Dock collapse ownership."""
 from pathlib import Path
 import unittest
 
@@ -27,21 +27,44 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         key_end = MAIN.index("private int pendingFocus;", key_start)
         key_method = MAIN[key_start:key_end]
         self.assertIn("if (horizontalDockCollapseInProgress)", key_method)
-        self.assertIn("pendingDockCollapseDirections.add(keyCode)", key_method)
+        self.assertIn("if (horizontalDockCollapseInProgress) return true;", key_method)
+        self.assertNotIn("pendingDockCollapseDirection =", key_method)
         self.assertLess(key_method.index("if (horizontalDockCollapseInProgress)"),
                         key_method.index("int count = adapter.getItemCount();"))
 
-    def test_collapse_commits_one_translation_and_restores_same_dock_position(self):
+    def test_focus_is_precommitted_before_grid_is_hidden(self):
         start = MAIN.index("private void collapseHorizontalOverflowToDock")
         end = MAIN.index("private void animateHorizontalDockTransition", start)
         collapse = MAIN[start:end]
-        self.assertIn("dockRecycler.setTranslationY(0f);", collapse)
-        self.assertIn("grid.setTranslationY(0f);", collapse)
-        self.assertIn("applyDockLayout();", collapse)
-        self.assertIn("restoreDockFocusAfterCollapse(", collapse)
-        self.assertIn("dockPosition, generation, 32", collapse)
-        self.assertLess(collapse.index("dockRecycler.setTranslationY(0f);"),
-                        collapse.index("applyDockLayout();"))
+        self.assertIn("prepareDockFocusBeforeCollapse", collapse)
+        prepare = collapse[collapse.index("private void prepareDockFocusBeforeCollapse"):
+                           collapse.index("private void startHorizontalDockCollapse")]
+        self.assertIn("card.requestFocus()", prepare)
+        self.assertIn("card.isFocused()", prepare)
+        animation = collapse[collapse.index("private void startHorizontalDockCollapse"):
+                             collapse.index("private void abortHorizontalDockCollapse")]
+        self.assertIn("grid.setVisibility(View.GONE)", animation)
+        self.assertIn("dispatchPendingDockCollapseDirection(dockPosition)", animation)
+        self.assertNotIn("restoreDockFocusAfterCollapse", MAIN)
+        # Header fallback is forbidden while the Grid-to-Dock focus transaction is being
+        # prepared or animated. A separately captured second UP may legitimately navigate
+        # from the now-focused Dock to the top shelf after the transaction commits.
+        self.assertNotIn("focusTopBarFallback()", prepare + animation)
+
+    def test_captured_second_up_is_dispatched_only_after_dock_focus_commit(self):
+        start = MAIN.index("private void startHorizontalDockCollapse")
+        end = MAIN.index("private void abortHorizontalDockCollapse", start)
+        animation = MAIN[start:end]
+        commit = animation.index("grid.setVisibility(View.GONE)")
+        settled = animation.index("horizontalDockCollapseInProgress = false;", commit)
+        dispatch = animation.index("dispatchPendingDockCollapseDirection(dockPosition)", settled)
+        self.assertLess(commit, settled)
+        self.assertLess(settled, dispatch)
+        pending_start = MAIN.index("private void dispatchPendingDockCollapseDirection")
+        pending_end = MAIN.index("private void animateHorizontalDockTransition", pending_start)
+        pending = MAIN[pending_start:pending_end]
+        self.assertIn("direction == KeyEvent.KEYCODE_DPAD_UP", pending)
+        self.assertIn("focusTopBarFallback()", pending)
 
     def test_grid_has_no_competing_static_focus_overlay(self):
         self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
