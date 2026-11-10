@@ -77,3 +77,29 @@ GridFocusDecoration.onDrawOver() called Glider.drawShape() for the entire shared
 ### Validation gate
 
 The source correction is committed to this PR branch. A fresh CI run against the resulting exact HEAD is required before issuing a new QA APK. Physical Mi TV Stick acceptance remains mandatory; do not claim device PASS based on source inspection or CI alone.
+
+## DPAD transition audit — corrective pass, 11 November 2026
+
+### Root cause confirmed in the horizontal collapse path
+
+The Grid card remains the focused Android view while `collapseHorizontalOverflowToDock()` animates the Dock and Grid back to their idle positions. Before this pass, `dispatchKeyEvent()` continued forwarding repeated DPAD events to that old Grid card during the 260 ms collapse window.
+
+That allowed a second UP to call `focusDockTile()` before the first collapse had settled, or a DOWN to call `requestHorizontalGridRow()`. Both paths increment `gridFocusRequestGeneration`. The collapse animator's end callback checks that generation and returns early when it has changed. Its cleanup (hide Grid, reset translations, clear collapse state, and hand focus to the Dock) was therefore skipped. This is a deterministic race between a still-focused Grid child and the asynchronous Dock collapse—not a color or tile-geometry defect.
+
+The resulting stale/partially collapsed state can leave no reliable Home tile focus owner; subsequent directional movement may fall through to Android's normal focus traversal. This matches the reported disappearing focus and unexpected header/microphone destination.
+
+### Corrective changes in this pass
+
+- Intercept DPAD direction events while horizontal Dock collapse is active; do not let the old Grid child start a competing transition.
+- Retain the latest direction as one pending intent and replay it against the Dock only after the collapse has completed and Dock focus has actually been restored.
+- This makes one DOWN immediately after UP deterministic: it is replayed as the Dock's DOWN action and opens the matching Grid column without requiring a second press.
+- Remove the Dock-only `DockBreathingBorderView` from the focus path. It was a second animated cyan/white rim layered over the shared Glider.
+- Lock the shared `FOCUS_BORDER` and halo to neutral white. Cyan remains an ambient theme accent, not a second DPAD cursor.
+- Add regression source-contract checks for collapse-event serialization and one white focus indicator.
+
+### Validation status after corrective pass
+
+- Source-level race identified and guarded.
+- Source-contract tests added; execution and fresh CI result are pending.
+- Physical Mi TV Stick validation is still required for UP/DOWN in every Dock column, repeated key presses during animation, and single-outline visual parity.
+- No device PASS is claimed. PR remains OPEN / DRAFT / UNMERGED.
