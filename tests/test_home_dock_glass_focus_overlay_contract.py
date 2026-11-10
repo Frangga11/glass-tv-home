@@ -5,6 +5,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
 GRID_DECORATION = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/GridFocusDecoration.java").read_text(encoding="utf-8")
 GLIDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").read_text(encoding="utf-8")
+APP_ADAPTER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
+TOKENS = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/TvUiTokens.java").read_text(encoding="utf-8")
 
 
 class HomeDockGlassFocusOverlayContractTest(unittest.TestCase):
@@ -28,6 +30,16 @@ class HomeDockGlassFocusOverlayContractTest(unittest.TestCase):
         self.assertNotIn("grid.setAlpha(0.72f)", transition)
         self.assertNotIn("grid.setAlpha(1f - 0.28f", transition)
         self.assertNotIn("grid.setAlpha(0.72f + 0.28f", transition)
+
+    def test_dock_and_grid_share_one_white_focus_indicator(self):
+        self.assertIn("FOCUS_BORDER = 0xFFFFFFFF", TOKENS)
+        self.assertIn("breathingBorder.setVisibility(View.GONE);", APP_ADAPTER)
+        self.assertNotIn("breathingBorder.setVisibility(View.VISIBLE)", APP_ADAPTER)
+
+    def test_dpad_during_dock_collapse_is_queued_not_allowed_to_invalidate_transition(self):
+        self.assertIn("pendingCollapseDpadKeyCode", MAIN)
+        self.assertIn("horizontalDockCollapseInProgress", MAIN)
+        self.assertIn("onDockTileKey(key, queuedKey)", MAIN)
 
 
 if __name__ == "__main__":
