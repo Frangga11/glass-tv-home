@@ -38,19 +38,19 @@ RE-SKIN, NOT REWIRE. Preserve IDs, listeners, handlers, navigation order, DPAD g
 ## Validation ledger
 | Gate | Status | Evidence |
 |---|---|---|
-| Source commits | COMPLETE | Exact HEAD `87cf50166e69cf8a2690cc859d821222a34c4e68` |
+| Source commits | COMPLETE | Exact HEAD `537a8d12f0a72e4b29ffaa8e5b82b7aeb031c5cb` |
 | Scope / diff review | PENDING | Re-fetch final PR diff and changed-file list at exact HEAD |
-| First exact-head CI | FAILED — CORRECTED | Run `42721648302` failed one Lists/tools/docs test: XML focus cyan token was incorrectly repurposed, conflicting with the existing `ACCENT_CYAN` semantic mapping |
-| Corrective palette separation | COMPLETE | Electric cyan restored to `tv_ui_focus_cyan`; new silver `tv_ui_focus_border` mirrors `FOCUS_BORDER`; focus selector references migrated |
-| Corrected exact-head CI | QUEUED | Run `42721922767` for exact HEAD `87cf50166e69cf8a2690cc859d821222a34c4e68` |
-| Release APK publication | NOT YET VERIFIED | Latest release workflow must remain skipped; no release requested |
+| Exact-head CI | **PASS** | Run `42739183589` on exact HEAD `537a8d12f0a72e4b29ffaa8e5b82b7aeb031c5cb`; both required jobs SUCCESS |
+| Android unit tests + release build | **PASS** | `testReleaseUnitTest assembleRelease` completed successfully |
+| APK size diagnostic | PASS WITH WARNING | APK `1,630,477 bytes` (1,592 KB), about 55 KB above historical 1.5 MiB reference; non-blocking |
+| QA APK artifact upload | **PASS** | Artifact ID `13727693796`, name `glass-tv-home-dock-visual-parity-dc542b546a8c5fd8cbe5a7c9d529d46b65e39f99`, archive `1,431,188 bytes`, SHA-256 `d639b7dbcef1d852026c5be749f25c96bff8d96fd83b1d0f7e0e31ab9cb359f5`; [download from Actions run](https://github.com/Frangga11/glass-tv-home/actions/runs/42739183589) |
 | 1920×1080 rendered visual review | PENDING | Must inspect rendered output |
 | Live DPAD/focus acceptance | PENDING | Must inspect on Mi TV Stick |
 | Physical device acceptance | PENDING | No ADB/install authorized |
 | Merge/release | NOT AUTHORIZED | PR #110 remains Draft/unmerged |
 
 ## Next action
-CI run `42721922767` passed both jobs, including Android unit tests and release build. APK diagnostic is 1,630,477 bytes (1,592 KB), above the 1.5 MiB historical reference; this is a warning, not a CI failure. Artifact upload was skipped because PR #110 was missing from the CI workflow allowlist. That condition is now fixed in `.github/workflows/ci.yml`; wait for run `42739183589` on exact HEAD `537a8d12f0a72e4b29ffaa8e5b82b7aeb031c5cb`, then retrieve and verify the QA APK. Visual 1920×1080 review and physical Mi TV Stick acceptance remain separate gates. If it fails, inspect the exact failing test/log and correct before any visual acceptance. Then perform a 1920×1080 visual review and request owner-authorized Mi TV Stick testing. Do not claim PASS from source inspection or partial CI. Keep PR #110 Draft/unmerged.
+The artifact allowlist correction is verified: run `42739183589` completed SUCCESS on the exact current source HEAD, and the Home layout QA APK was uploaded successfully (artifact ID `13727693796`). The release APK size remains 1,630,477 bytes (1,592 KB), above the historical 1.5 MiB reference; treat this as a non-blocking size warning, not an optimization pass. Next, retrieve the exact artifact, verify ZIP integrity and extracted APK size/hash, then perform the authorized 1920×1080 visual review. Mi TV Stick installation/DPAD acceptance remains a separate owner-authorized gate. If it fails, inspect evidence and correct before acceptance. Keep PR #110 OPEN / DRAFT / UNMERGED; no merge, ADB, device install, default-launcher change, or release publication.
 
 **Single restart instruction:** “Lanjutkan dari GTVH-CHECKPOINT-LATEST.md — GTVH-HOME-LUXURY-GLASS-DPAD-CURSOR-001.”
 
