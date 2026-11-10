@@ -53,9 +53,9 @@ class HomeSpacingCapsuleHeightRefinementContractTest(unittest.TestCase):
         root = ET.parse(HOME_XML).getroot()
         by_id = {node.get(ANDROID + "id"): node for node in root.iter()
                  if node.get(ANDROID + "id")}
-        self.assertEqual(by_id["@+id/btnHome"].get(ANDROID + "drawablePadding"), "2dp")
-        self.assertEqual(by_id["@+id/btnCandyBox"].get(ANDROID + "drawablePadding"), "2dp")
-        self.assertEqual(by_id["@+id/btnSettings"].get(ANDROID + "drawablePadding"), "2dp")
+        self.assertEqual(by_id["@+id/btnHome"].get(ANDROID + "drawablePadding"), "1dp")
+        self.assertEqual(by_id["@+id/btnCandyBox"].get(ANDROID + "drawablePadding"), "1dp")
+        self.assertEqual(by_id["@+id/btnSettings"].get(ANDROID + "drawablePadding"), "1dp")
 
     def test_bottom_safe_margin_and_shelf_gap_use_density_aware_30dp(self):
         self.assertIn("return Math.round(SAFE_VERTICAL_MARGIN_DP * density);", GEOMETRY)

@@ -21,10 +21,11 @@ import java.util.List;
  * menu, and travelling between the dock and the top menu, it is dark. It switches look at once,
  * never blending, and the Inputs list has a dark one of its own.
  *
- * <p>It sits behind what it marks, so it never draws over an app, a pill's label or a row's text:
- * around a tile it shows as a dark frame, and under a pill or a row as its fill. Glass that covers
- * it gets out of the way (see {@link #coverage}) or paints the shape itself (see {@link #drawShape}).
- * Moving it only redraws a round rect; it never asks for a new layout.
+ * <p>The root Glider remains behind app content and owns the one shared animated shape. Home header
+ * capsules use {@link GliderFocusDrawable} to repaint that same shape above their glass surface but
+ * below their own icon and label. The Dock keeps its companion drawing path. Glass that covers the
+ * root shape gets out of the way (see {@link #coverage}) where appropriate. Moving it only redraws
+ * a round rect; it never asks for a new layout.
  */
 final class Glider extends View {
 

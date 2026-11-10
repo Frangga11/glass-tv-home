@@ -41,19 +41,19 @@ class HomeHeaderTypographyFocusContractTest(unittest.TestCase):
                 self.assertEqual(self.views[view_id].get(ANDROID + "layout_height"), "30dp")
 
     def test_navigation_icon_label_spacing_is_uniform_across_all_three_tabs(self):
-        self.assertEqual(self.views["@+id/btnHome"].get(ANDROID + "drawablePadding"), "2dp")
-        self.assertEqual(self.views["@+id/btnCandyBox"].get(ANDROID + "drawablePadding"), "2dp")
-        self.assertEqual(self.views["@+id/btnSettings"].get(ANDROID + "drawablePadding"), "2dp")
+        self.assertEqual(self.views["@+id/btnHome"].get(ANDROID + "drawablePadding"), "1dp")
+        self.assertEqual(self.views["@+id/btnCandyBox"].get(ANDROID + "drawablePadding"), "1dp")
+        self.assertEqual(self.views["@+id/btnSettings"].get(ANDROID + "drawablePadding"), "1dp")
         for view_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
             self.assertEqual(self.views[view_id].get(ANDROID + "gravity"), "center")
 
-    def test_navigation_focus_is_painted_on_tab_surface_above_shared_capsule(self):
-        self.assertIn('android:state_focused="true"', FOCUS)
-        self.assertIn('<solid android:color="#35DCE5ED" />', FOCUS)
-        self.assertIn('<stroke android:width="1dp" android:color="@color/tv_ui_focus_border" />', FOCUS)
-        self.assertIn('<stroke android:width="1dp"', FOCUS)
-        self.assertIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg));", MAIN)
-        self.assertNotIn("pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));", MAIN)
+    def test_shared_glider_is_drawn_over_capsules_but_below_icon_and_label(self):
+        self.assertIn("new GliderFocusDrawable(pill, glider)", MAIN)
+        self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
+        drawable = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/GliderFocusDrawable.java").read_text(encoding="utf-8")
+        self.assertIn("canvas.clipRect(getBounds())", drawable)
+        self.assertIn("glider.drawShape(canvas", drawable)
+        self.assertNotIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg));", MAIN)
 
     def test_wifi_keeps_its_existing_glass_focus_path(self):
         self.assertIn("new GlassDrawable(pill, 20f * density, density, glider)", MAIN)

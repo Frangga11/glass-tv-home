@@ -94,14 +94,15 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("right.getLeft()", MAIN)
 
     def test_header_controls_keep_the_established_liquid_glass_surface(self):
-        start = MAIN.index("// Preserve the established GlassDrawable/Backdrop treatment")
+        start = MAIN.index("// Preserve one shared glass capsule for Home/Profile/Settings.")
         end = MAIN.index("// Hide the glass when focus leaves the tiles.", start)
         header = MAIN[start:end]
         for view_id in ("locationPill", "weatherAirQuality", "btnInputs", "btnWifi",
                         "btnAssistant", "btnHome", "btnCandyBox", "btnSettings"):
             self.assertIn(f"R.id.{view_id}", header)
         self.assertIn("new GlassDrawable(pill", header)
-        self.assertIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg))", header)
+        self.assertIn("new GliderFocusDrawable(pill, glider)", header)
+        self.assertIn("new android.graphics.drawable.LayerDrawable(", header)
 
     def test_deferred_grid_focus_is_cancelled_by_newer_focus_destinations(self):
         dock_start = MAIN.index("public void onDockTileFocused(String key, View card)")
@@ -202,8 +203,8 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIsNotNone(nav)
         self.assertEqual(nav.get(ANDROID + "background"), "@drawable/header_glass_pill_bg")
         self.assertIn("navCapsule.setBackground(new GlassDrawable(navCapsule", MAIN)
-        self.assertIn("pill.setBackgroundColor(android.graphics.Color.TRANSPARENT)", MAIN)
-        self.assertIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg))", MAIN)
+        self.assertIn("new GliderFocusDrawable(pill, glider)", MAIN)
+        self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
 
@@ -260,15 +261,15 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("KEYCODE_ENTER", binding)
         self.assertIn("KEYCODE_DPAD_DOWN", binding)
         self.assertIn("KEYCODE_DPAD_UP", binding)
-        self.assertIn("R.id.btnAssistant", binding)
+        self.assertIn("btnAssistant != null", binding)
         self.assertIn("setOnFocusChangeListener", binding)
         self.assertIn("showPrayerPopup();", binding)
 
         start = MAIN.index("View.OnKeyListener pillKeys")
         end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
         header_keys = MAIN[start:end]
-        self.assertIn("v.getId() == R.id.btnAssistant", header_keys)
-        self.assertIn("findViewById(R.id.prayerTable)", header_keys)
+        self.assertIn("id == R.id.btnAssistant", header_keys)
+        self.assertIn("ayahBlock.requestFocus()", header_keys)
 
     def test_supported_paused_media_session_remains_available_on_home(self):
         start = NOW_PLAYING.index("public boolean hasMusic()")
@@ -323,13 +324,13 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
                     "KEYCODE_DPAD_RIGHT"):
             self.assertIn(key, keys)
         self.assertIn("v.performClick();", keys)
-        self.assertIn("v.getId() == R.id.locationPill", keys)
-        self.assertIn("weatherAirQualityView.requestFocus();", keys)
+        self.assertIn("id == R.id.locationPill", keys)
+        self.assertIn("weatherAirQualityView.requestFocus()", keys)
 
         start = MAIN.index("if (weatherAirQualityView != null) {")
         end = MAIN.index("// Measure the actual clock/date content edge", start)
         weather_keys = MAIN[start:end]
-        self.assertIn("locationPill.requestFocus();", weather_keys)
+        self.assertIn("locationPill.requestFocus()", weather_keys)
         self.assertIn("btnHome.requestFocus()", weather_keys)
 
     def test_home_profile_and_settings_tabs_keep_their_real_actions(self):
