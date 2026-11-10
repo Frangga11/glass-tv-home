@@ -140,11 +140,13 @@ Changed:
 ## 7. Validation
 
 Not yet claimed:
-- Python contract test and repository Lists/tools/docs workflow: job succeeded on latest HEAD; individual test counts are not yet available from the job summary.
-- Android unit tests: running in the Launcher build/unit-test job.
-- Release build: running in the Launcher build/unit-test job.
-- Exact-head CI: run #2042 for implementation/test HEAD `09649a93dcb1e816f5ad3d1c1abeee87d4d7eb12` is in progress; Lists/tools/docs job succeeded, Launcher build/unit tests still running.
-- APK size/checksum: pending.
+- Python contract tests and Android unit tests: PASS on CI run #2041 / code HEAD `104681ecb4c6441c8a7923d2bf57b57dd18221de`; the final additional assertion that GlassDrawable is applied before measurement was added in the subsequent test-only commit `09649a93dcb1e816f5ad3d1c1abeee87d4d7eb12` and is covered by later CI runs still in progress.
+- Release build: PASS on CI run #2041 / code HEAD `104681ecb4c6441c8a7923d2bf57b57dd18221de`.
+- Exact latest branch-head CI: run #2043 for docs HEAD `ee33b299d51091bd096d1e55ee530384e62a1549` is in progress; Lists/tools/docs and Launcher build/unit-test results are not yet complete for this final docs commit.
+- APK artifact: `glass-tv-home-cumulative-integration-127-279eb7a3703e0cce6ad2003dacae52875291c1a2` (CI run #2041, artifact ID `13811781387`), extracted as `app-release.apk`.
+- APK size: 1,635,173 bytes.
+- APK SHA-256: `1b19246079183222ae13713735d86e6bbaebdb198420ca5cbdb39767e698bc77`.
+- APK corresponds to code HEAD `104681ecb4c6441c8a7923d2bf57b57dd18221de`; subsequent changes through current branch HEAD are test/documentation-only, with no further MainActivity code changes.
 - Rendered UI inspection at 1920x1080: pending.
 - Mi TV Stick Android TV 11 physical acceptance: pending.
 - Popup dismissal cause: source-proven as MainActivity.onPause() -> closeMenu(false); this is intentional overlay lifecycle behavior.
