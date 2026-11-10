@@ -3584,9 +3584,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration) {
         if (grid == null || dockRecycler == null || horizontalGridExpanded) return;
         cancelHorizontalGridRowTransition();
-        int gridTileWidth = DockGeometry.horizontalTileWidthPx(
-                DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
-                DockPreferences.load(this).capacity, density);
         // The approved two-row start-to-start distance is fixed at 150dp.
         // Keep viewport measurement separate: it still clips to one complete item row.
         int pitch = Math.round(150f * density);
