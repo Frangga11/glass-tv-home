@@ -13,20 +13,23 @@ User reviewed a Mi TV recording of repeated DPAD UP/DOWN movement and reported:
 1. Dock glass appearance changes while the primary row moves upward to reveal the second row.
 2. The focus cursor disappears or becomes obscured on the second application row, making the active app position unclear.
 
-## Audit findings
+## Cross-audit findings
 
 - The shared `Glider` is inserted behind the Home content tree.
 - Dock has an explicit companion drawing path through `DockDecoration.onDraw()`, which repaints the focus pane in the Dock RecyclerView's background pass.
-- App Grid had no equivalent companion drawing path. Its focus target could therefore be occluded by app tile content / drawing order, especially in the overflow row.
-- Horizontal Dock/Grid expansion and collapse explicitly changed Grid alpha (0.72 to 1.0 and back) during a geometry-only transition. This unnecessary opacity tween altered the moving content plane and could be perceived as a glass/material change.
-- DockDecoration's glass veil, blur fill, rim, border, and radius are fixed style parameters. They are retained; wallpaper sampling remains spatially correct as the tray moves over the wallpaper.
+- Initial Grid companion implementation used `ItemDecoration.onDraw()`. Android RecyclerView draws this before child views, so opaque tile cards/art can still cover the focus shape. This did not fully close the reported visibility failure.
+- Corrective implementation changes Grid focus repaint to `ItemDecoration.onDrawOver()`, so the focus frame is rendered after Grid children, while remaining scoped to Grid focus ownership.
+- Horizontal Dock/Grid expansion and collapse previously changed Grid alpha (0.72 to 1.0 and back) during a geometry-only transition. This unnecessary opacity tween altered the moving content plane and could be perceived as a glass/material change.
+- DockDecoration's glass veil, blur fill, rim, border, and radius remain unchanged.
+- CI workflow's special Home layout APK artifact allow-list omitted PR #123. The PR was added so this exact PR now emits a dedicated layout APK artifact on successful CI.
 
-## Changes in PR #123
+## Corrective changes
 
-- Added `GridFocusDecoration` to draw the same shared Glider in the Grid's background pass, only while the Grid owns focus.
-- Registered GridFocusDecoration after Glider initialization and added the Grid as a Glider companion so animation invalidates the Grid renderer.
-- Removed Grid alpha modulation from expand/collapse transitions. Dock/Grid movement is geometry-only; Grid opacity remains unchanged.
-- Added `tests/test_home_dock_glass_focus_overlay_contract.py` for rendering ownership, companion registration, and no-alpha-tween contracts.
+- Replaced GridFocusDecoration background-pass rendering with foreground overlay rendering via `onDrawOver`.
+- Retained shared Glider coordinates, focus-owner guard, companion invalidation, and clipping.
+- Added/updated source-contract regression to require `onDrawOver` and forbid the old `onDraw` path.
+- Added PR #123 to the dedicated Home layout APK artifact allow-list; CI still runs unit tests and `assembleRelease` before upload.
+- Kept Grid alpha fixed through Dock/Grid transitions.
 
 ## Protected scope
 
@@ -34,8 +37,8 @@ No changes to tile dimensions, application ordering/identity, DPAD routing, laun
 
 ## Validation status
 
-- Source changes and regression contracts committed.
-- CI/build/unit-test status: pending verification against final PR HEAD.
+- Cross-audit identified and corrected the Grid draw-order gap.
+- Regression test and fresh CI/build: pending on the new exact PR HEAD.
 - Physical Mi TV Stick DPAD and visual acceptance: pending.
 - Do not claim PASS or merge before CI and device acceptance.
 
