@@ -7823,29 +7823,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // Compact next-prayer card: clear hierarchy without consuming a large vertical band.
         LinearLayout nextCard = new LinearLayout(this);
-        nextCard.setOrientation(LinearLayout.HORIZONTAL);
+        nextCard.setOrientation(LinearLayout.VERTICAL);
         nextCard.setGravity(Gravity.CENTER_VERTICAL);
         nextCard.setPadding((int) (12 * density), (int) (3 * density),
                 (int) (12 * density), (int) (3 * density));
         nextCard.setBackground(prayerPopupCardBackground(nextPrayer != null));
-        LinearLayout nextCopy = new LinearLayout(this);
-        nextCopy.setOrientation(LinearLayout.VERTICAL);
-        nextCopy.setGravity(Gravity.CENTER_VERTICAL);
-        TextView nextCaption = createPrayerPopupText("SHOLAT BERIKUTNYA", 9.5f,
+        TextView nextCaption = createPrayerPopupText("WAKTU SHOLAT BERIKUTNYA", 9.5f,
                 TvUiTokens.TEXT_SECONDARY, true);
         TextView nextName = createPrayerPopupText(
-                nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui", 19f,
+                nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui", 18f,
                 TvUiTokens.TEXT_PRIMARY, true);
-        nextCopy.addView(nextCaption);
-        nextCopy.addView(nextName);
-        nextCard.addView(nextCopy, new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         TextView nextTime = createPrayerPopupText(
-                nextPrayer != null ? nextPrayer.timeFormatted : "--:--", 21f,
+                nextPrayer != null ? nextPrayer.timeFormatted : "--:--", 16.5f,
                 TvUiTokens.ISLAMIC_GOLD, true);
-        nextTime.setGravity(Gravity.CENTER);
-        nextCard.addView(nextTime, new LinearLayout.LayoutParams(
-                (int) (92 * density), ViewGroup.LayoutParams.MATCH_PARENT));
+        nextCard.addView(nextCaption);
+        nextCard.addView(nextName);
+        nextCard.addView(nextTime);
         rows.addView(nextCard, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (66 * density)));
 
@@ -7868,8 +7861,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             gridRow.setGravity(Gravity.CENTER_VERTICAL);
             for (int column = 0; column < 2 && pair + column < schedule.size(); column++) {
                 final PrayerTimes.ScheduleItem item = schedule.get(pair + column);
-                final int scheduleIndex = pair + column;
-                final int prayerIndex = scheduleIndex == 1 ? -1 : scheduleIndex;
 
                 LinearLayout card = new LinearLayout(this);
                 card.setOrientation(LinearLayout.VERTICAL);
@@ -7882,26 +7873,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true);
                 TextView time = createPrayerPopupText(item.timeFormatted, 15f,
                         item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true);
-                TextView state = createPrayerPopupText(
-                        prayerIndex < 0 ? "INFO" : (Azan.on(this, prayerIndex) ? "AZAN AKTIF" : "AZAN NONAKTIF"),
-                        8f, TvUiTokens.TEXT_SECONDARY, true);
                 card.addView(name);
                 card.addView(time);
-                card.addView(state);
                 card.setFocusable(true);
                 card.setClickable(true);
-                if (prayerIndex >= 0) {
-                    final int selectedPrayer = prayerIndex;
-                    card.setOnClickListener(v -> {
-                        boolean enabled = !Azan.on(MainActivity.this, selectedPrayer);
-                        Azan.set(MainActivity.this, selectedPrayer, enabled);
-                        Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this));
-                        SoundEffects.playSelect();
-                        state.setText(enabled ? "AZAN AKTIF" : "AZAN NONAKTIF");
-                    });
-                } else {
-                    card.setOnClickListener(v -> SoundEffects.playSelect());
-                }
+                // Timetable cells are read-only; Azan configuration remains in the three dedicated controls.
+                card.setOnClickListener(v -> SoundEffects.playSelect());
                 scheduleFocus.add(card);
 
                 LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
