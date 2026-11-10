@@ -39,10 +39,14 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         start = MAIN.index("private void applyDockLayout()")
         end = MAIN.index("private void updateHomeTabIndicator()", start)
         dock_layout = MAIN[start:end]
+        # The measured idle anchor is calculated once and reused for both states.
         self.assertIn(
-            "dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density)",
+            "int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density)",
             dock_layout,
         )
+        self.assertIn("dockParams.bottomMargin = horizontalGridExpanded", dock_layout)
+        self.assertIn("? dockBottomMargin + gridViewportHeight + rowGap", dock_layout)
+        self.assertIn(": dockBottomMargin;", dock_layout)
         self.assertIn("return safeBottomInsetPx(density) - trayBottomInset", GEOMETRY)
         self.assertIn("dockParams.bottomMargin = DockGeometry.safeBottomInsetPx(density)", dock_layout)
 
@@ -123,8 +127,14 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         focus_start = MAIN.index("private void focusTile(int position)")
         focus_end = MAIN.index("private void alignHorizontalGridRowToGlass", focus_start)
         focus = MAIN[focus_start:focus_end]
-        self.assertIn("if (requestGeneration != gridFocusRequestGeneration) return;", focus)
-        self.assertIn("grid.post(() -> {", focus)
+        # focusTile() issues a generation token; the deferred layout callback owns
+        # the stale-request guard so newer focus destinations cannot be stolen.
+        self.assertIn("final int requestGeneration = ++gridFocusRequestGeneration;", focus)
+        deferred_start = MAIN.index("private void focusTileWhenLaidOut")
+        deferred_end = MAIN.index("// ---- top bar", deferred_start)
+        deferred = MAIN[deferred_start:deferred_end]
+        self.assertIn("if (requestGeneration != gridFocusRequestGeneration) return;", deferred)
+        self.assertIn("grid.postOnAnimation(() -> focusTileWhenLaidOut", focus)
 
     def test_resume_focus_restore_does_not_steal_a_newer_user_focus_target(self):
         start = MAIN.index("private void restoreFocus()")

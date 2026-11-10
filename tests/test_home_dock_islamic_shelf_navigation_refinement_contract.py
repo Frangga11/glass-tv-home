@@ -53,7 +53,12 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("horizontalDockTileWidthPx", sizing)
         self.assertIn("horizontalDockSlotWidthPx", sizing)
         self.assertIn("horizontalGridViewportHeightPx(gridTileWidth", sizing)
-        self.assertIn("horizontalGridBottomMarginPx(dockTileHeight", sizing)
+        # Expanded overflow now uses the Dock's measured idle anchor plus one Grid viewport
+        # and an explicit inter-row gap; the legacy standalone Grid-bottom helper is not
+        # the active owner of this two-row transition.
+        self.assertIn("horizontalDockBottomMarginPx(dockTileHeight, density)", sizing)
+        self.assertIn("horizontalGridViewportHeightPx(gridTileWidth", sizing)
+        self.assertIn("int rowGap = Math.round(8f * density);", sizing)
 
     def test_home_information_edges_use_measured_tray_edge_and_exact_30dp_gap(self):
         start = MAIN.index("private void updateHomeShelfAnchor()")

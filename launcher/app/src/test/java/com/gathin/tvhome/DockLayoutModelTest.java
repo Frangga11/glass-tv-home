@@ -589,4 +589,61 @@ public class DockLayoutModelTest {
         }
     }
 
+
+    @Test
+    public void homePrimaryAndOverflowRowsKeepTheirFiveColumnIdentityOrder() {
+        List<String> inventory = Arrays.asList(
+                "browserhere", "disney-plus", "miracast", "netflix", "google-play",
+                "prime-video", "vidio", "vision-plus", "wetv", "youtube");
+        List<String> primaryKeys = Arrays.asList(
+                "browserhere", "disney-plus", "miracast", "netflix", "google-play");
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                inventory, primaryKeys, 5, value -> value);
+
+        assertEquals(primaryKeys, snapshot.dockItems);
+        assertEquals(Arrays.asList("prime-video", "vidio", "vision-plus", "wetv", "youtube"),
+                snapshot.gridItems);
+        for (int column = 0; column < 5; column++) {
+            assertEquals(column, DockLayoutModel.gridPositionForDock(
+                    column, false, 5, snapshot.gridCount()));
+            assertEquals(column, DockLayoutModel.dockPositionForGrid(
+                    column, false, 5, snapshot.dockCount()));
+        }
+    }
+
+    @Test
+    public void overflowFirstRowUpReturnsToSamePrimaryDockColumn() {
+        for (int gridPosition = 0; gridPosition < 5; gridPosition++) {
+            assertEquals(gridPosition, DockLayoutModel.dockPositionForGrid(
+                    gridPosition, false, 5, 5));
+        }
+        // A second overflow row remains a Grid-to-Grid transition, not a jump to the Dock.
+        for (int gridPosition = 5; gridPosition < 10; gridPosition++) {
+            assertEquals(gridPosition - 5, gridPosition % 5);
+        }
+    }
+
+    @Test
+    public void idleDockBottomAnchorAndExpandedSlidePitchRemainStable() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int capacity : new int[]{4, 5, 6}) {
+                int tileWidth = DockGeometry.horizontalTileWidthPx(1920, capacity, density);
+                int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(1920, capacity, density);
+                int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
+                int dockHeight = DockGeometry.horizontalDockHeightPx(dockTileHeight, density);
+                int dockBottom = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
+                int gridViewport = DockGeometry.horizontalGridViewportHeightPx(
+                        tileWidth, density, Math.round(10f * density));
+                int expandedDockBottom = dockBottom + gridViewport + Math.round(8f * density);
+
+                assertEquals(DockGeometry.safeBottomInsetPx(density),
+                        dockBottom + dockHeight - dockTileHeight
+                                - DockGeometry.dockItemTopOffsetPx(density)
+                                - Math.round(DockGeometry.trayPaddingPx(density)));
+                assertEquals(gridViewport + Math.round(8f * density),
+                        expandedDockBottom - dockBottom);
+                assertTrue(gridViewport > 0);
+            }
+        }
+    }
 }
