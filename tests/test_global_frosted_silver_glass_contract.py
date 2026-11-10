@@ -41,6 +41,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
             "TEXT_SECONDARY": "tv_ui_text_secondary",
             "ACCENT_BLUE": "tv_ui_accent_blue",
             "ACCENT_CYAN": "tv_ui_focus_cyan",
+            "FOCUS_BORDER": "tv_ui_focus_border",
             "BORDER": "tv_ui_border",
             "DISABLED_SURFACE": "tv_ui_disabled_surface",
             "DISABLED_BORDER": "tv_ui_disabled_border",
@@ -63,7 +64,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         activated = next(item for item in selector.findall("item")
                          if item.attrib.get(ns + "state_activated") == "true")
         selected = activated.find("shape/stroke")
-        self.assertEqual(focused.attrib[ns + "color"], "@color/tv_ui_focus_cyan")
+        self.assertEqual(focused.attrib[ns + "color"], "@color/tv_ui_focus_border")
         self.assertEqual(selected.attrib[ns + "color"], "@color/tv_ui_selected_border")
 
     def test_recent_apps_focus_does_not_scale_cards_and_keeps_readable_label(self):
@@ -88,7 +89,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         ring = ET.parse(RES / "drawable/bg_recent_card_focus.xml").getroot()
         focused = next(item for item in ring.findall("item")
                        if item.attrib.get(ns + "state_focused") == "true")
-        self.assertEqual(focused.find("shape/stroke").attrib[ns + "color"], "@color/tv_ui_focus_cyan")
+        self.assertEqual(focused.find("shape/stroke").attrib[ns + "color"], "@color/tv_ui_focus_border")
 
     def test_wallpaper_interval_rows_keep_selected_state_without_focus_zoom(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
@@ -186,7 +187,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertNotIn(".translationY(focused ? density * 4f : -density * 6f)", adapter)
         self.assertIn(".translationY(0f)", adapter)
 
-    def test_top_navigation_glider_uses_cyan_outline_not_dark_focus_fill(self):
+    def test_top_navigation_glider_uses_shared_silver_focus_overlay(self):
         source = (JAVA / "Glider.java").read_text(encoding="utf-8")
         self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", source)
         self.assertIn("focusStroke.setColor(TvUiTokens.FOCUS_BORDER)", source)
@@ -198,7 +199,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
     def test_glass_rim_uses_neutral_silver_and_restrained_cyan(self):
         source = (JAVA / "GlassRim.java").read_text(encoding="utf-8")
         self.assertIn("0xD9E2E8EE", source)
-        self.assertIn("0x8050DDF2", source)
+        self.assertIn("0xA650DDF2", source)
         self.assertNotIn("0xC084FC", source)
         self.assertNotIn("0xFDE047", source)
 
@@ -255,7 +256,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         zone_focused = next(item for item in zone.findall("item")
                             if item.attrib.get(ns + "state_focused") == "true")
         self.assertEqual(zone_focused.find("shape/solid").attrib[ns + "color"], "@color/tv_ui_focus_halo")
-        self.assertEqual(zone_focused.find("shape/stroke").attrib[ns + "color"], "@color/tv_ui_focus_cyan")
+        self.assertEqual(zone_focused.find("shape/stroke").attrib[ns + "color"], "@color/tv_ui_focus_border")
         recent = ET.parse(RES / "drawable/bg_recent_card.xml").getroot()
         self.assertEqual(recent.find("solid").attrib[ns + "color"], "#C83B4651")
         self.assertEqual(recent.find("stroke").attrib[ns + "color"], "#99DCE5ED")
@@ -281,7 +282,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertIn("TvUiTokens.DISABLED_SURFACE", source)
         self.assertIn("TvUiTokens.DISABLED_BORDER", source)
 
-    def test_home_islamic_and_manual_update_focus_use_cyan_not_legacy_blue(self):
+    def test_home_islamic_and_manual_update_focus_use_shared_silver_tokens(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertNotIn("0xFF7DD3FC", main)
         self.assertNotIn("0x997DD3FC", main)
@@ -294,7 +295,7 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertIn("TvUiTokens.FOCUS_BORDER", main)
         self.assertIn("btnCheckNow.setTextColor(TvUiTokens.TEXT_PRIMARY)", main)
 
-    def test_dynamic_dialog_focus_surfaces_use_shared_cyan_tokens(self):
+    def test_dynamic_dialog_focus_surfaces_use_shared_silver_tokens(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
         self.assertIn("on.setColor(TvUiTokens.SURFACE_FOCUSED)", main)
         self.assertIn("on.setStroke(Math.max(1, (int) (2 * density)), TvUiTokens.FOCUS_BORDER)", main)
