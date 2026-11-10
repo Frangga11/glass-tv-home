@@ -40,10 +40,10 @@ class HomeHeaderTypographyFocusContractTest(unittest.TestCase):
             with self.subTest(view_id=view_id):
                 self.assertEqual(self.views[view_id].get(ANDROID + "layout_height"), "30dp")
 
-    def test_navigation_icon_spacing_is_tight_and_settings_spacing_is_preserved(self):
-        self.assertEqual(self.views["@+id/btnHome"].get(ANDROID + "drawablePadding"), "1dp")
-        self.assertEqual(self.views["@+id/btnCandyBox"].get(ANDROID + "drawablePadding"), "1dp")
-        self.assertEqual(self.views["@+id/btnSettings"].get(ANDROID + "drawablePadding"), "4dp")
+    def test_navigation_icon_label_spacing_is_uniform_across_all_three_tabs(self):
+        self.assertEqual(self.views["@+id/btnHome"].get(ANDROID + "drawablePadding"), "2dp")
+        self.assertEqual(self.views["@+id/btnCandyBox"].get(ANDROID + "drawablePadding"), "2dp")
+        self.assertEqual(self.views["@+id/btnSettings"].get(ANDROID + "drawablePadding"), "2dp")
         for view_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
             self.assertEqual(self.views[view_id].get(ANDROID + "gravity"), "center")
 
