@@ -42,7 +42,7 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
         self.assertIn("Azan.set(MainActivity.this, selectedPrayer, enabled)", self.popup)
         self.assertIn("Azan.isMasterEnabled(this)", self.popup)
         self.assertIn("Azan.setMasterEnabled(MainActivity.this, enabled)", self.popup)
-        self.assertIn("Azan.schedule(MainActivity.this, zoneCode)", self.popup)
+        self.assertIn("Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))", self.popup)
 
     def test_all_existing_sound_choices_are_available_inline(self):
         for key in (
