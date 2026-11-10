@@ -81,8 +81,9 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         self.assertEqual(set(segments), {"@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"})
         for node_id, node in segments.items():
             self.assertEqual(node.get(ANDROID + "gravity"), "center")
-            self.assertEqual(node.get(ANDROID + "drawablePadding"),
-                             "2dp" if node_id in ("@+id/btnHome", "@+id/btnCandyBox") else "4dp")
+            self.assertEqual(node.get(ANDROID + "drawablePadding"), "2dp")
+            self.assertEqual(node.get(ANDROID + "textSize"), "14sp")
+            self.assertEqual(node.get(ANDROID + "fontVariationSettings"), "'wght' 600")
             self.assertEqual(node.get(ANDROID + "layout_height"), "match_parent")
         settings_container = next(node for node in nav.iter()
                                   if node.get(ANDROID + "id") == "@+id/btnSettingsContainer")
@@ -111,12 +112,15 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         self.assertNotIn("0x44000000", MAIN)
 
     def test_all_header_pills_share_one_glider_focus_and_glass_material(self):
-        self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, glider)", MAIN)
+        self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, glider, 1f, true)", MAIN)
         self.assertIn("new GlassDrawable(pill, 20f * density, density, glider)", MAIN)
         self.assertIn("glider.addCompanion(navCapsule)", MAIN)
         self.assertIn("glider.addCompanion(pill)", MAIN)
         self.assertIn("glider.setStyle(Glider.DARK)", MAIN)
         self.assertIn("Math.min(20f * density, pill.getHeight() / 2f)", MAIN)
+        self.assertNotIn("updateHomeTabIndicator", MAIN)
+        self.assertNotIn("btnHome.setSelected", MAIN)
+        self.assertNotIn("btnHome.setElevation", MAIN)
         nav_bg = ET.parse(NAV_BG).getroot()
         self.assertFalse(any("state_focused" in key for node in nav_bg.iter()
                              for key in node.attrib))

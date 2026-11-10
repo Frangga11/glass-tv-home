@@ -903,7 +903,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
-            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider));
+            navCapsule.setBackground(new GlassDrawable(navCapsule, 20f * density, density, glider, 1f, true));
             glider.addCompanion(navCapsule);
             Backdrop.watch(navCapsule);
         }
@@ -915,9 +915,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     || id == R.id.btnSettings;
             if (navigationTab) {
                 // The three tabs are transparent focus targets inside one shared capsule.
-                // Their selector paints only the active/focused segment; it is not a second glass pill.
+                // Their selector handles press feedback only; DPAD focus is the shared Glider overlay.
                 pill.setBackgroundColor(android.graphics.Color.TRANSPARENT);
                 pill.setForeground(getDrawable(R.drawable.header_nav_tab_bg));
+                if (pill instanceof TextView) {
+                    TextView tab = (TextView) pill;
+                    Drawable[] icons = tab.getCompoundDrawablesRelative();
+                    if (icons[0] != null) {
+                        Drawable icon = icons[0].mutate();
+                        int iconSize = Math.round(20f * density);
+                        icon.setBounds(0, 0, iconSize, iconSize);
+                        icon.setTint(Color.WHITE);
+                        tab.setCompoundDrawablesRelative(icon, icons[1], icons[2], icons[3]);
+                    }
+                }
             } else {
                 pill.setBackground(new GlassDrawable(pill, 20f * density, density, glider));
             }
@@ -1021,7 +1032,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View btnSettings = findViewById(R.id.btnSettings);
         updateHeaderTabLabels();
         updateLocationPill();
-        if (btnHome != null) btnHome.setOnClickListener(v -> updateHomeTabIndicator());
         if (btnInputs != null) btnInputs.setOnClickListener(v -> showInputs());
         if (btnWifi != null) {
             btnWifi.setOnClickListener(v -> showWifiPopup());
@@ -1779,7 +1789,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onStop() {
         hiddenSinceResume = true;
-        updateHomeTabIndicator();
         handler.removeCallbacks(cacheClean);
         handler.removeCallbacks(nowPlayingPoll);
         super.onStop();
@@ -1821,7 +1830,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         updateTopBarUserIcon();
         updateHeaderTabLabels();
         updateLocationPill();
-        updateHomeTabIndicator();
         Location.Zone chosenPlace = Location.chosen(this);
         String zoneCode = (chosenPlace != null) ? chosenPlace.code : "WLY01";
         Azan.schedule(this, zoneCode);
@@ -1837,7 +1845,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             weatherOverlayView.startAnimation();
         }
         hiddenSinceResume = false;
-        updateHomeTabIndicator();
         WifiSettingsDialog.onHostResumed();
     }
 
@@ -2012,7 +2019,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         gridFocusRequestGeneration++;
         cancelHorizontalGridRowTransition();
         activityResumed = false;
-        updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
         handler.removeCallbacks(minuteTick);
         handler.removeCallbacks(wallTick);
@@ -2030,7 +2036,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        updateHomeTabIndicator();
         if (hasFocus) showCardPrompt();
     }
 
@@ -2154,7 +2159,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 wallView.setColorFilter(0xFF7A7A7A, android.graphics.PorterDuff.Mode.MULTIPLY);
             }
         }
-        updateHomeTabIndicator();
     }
 
     // ---- glass highlight -------------------------------------------------------------------------
@@ -2560,9 +2564,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         float l = pillAt[0] - rootAt[0], t = pillAt[1] - rootAt[1];
         // The pills do not scroll with the grid, so the shape stops following the grid's scroll.
         glassShown = false;
-        // Up to the top menu it is dark at once, and travels that way.
+        // Navigation tabs use the agreed frosted-silver focus; other top controls retain their existing style.
         gliderOnPill = true;
-        glider.setStyle(Glider.DARK);
+        boolean navigationTab = pill.getId() == R.id.btnHome
+                || pill.getId() == R.id.btnCandyBox || pill.getId() == R.id.btnSettings;
+        glider.setStyle(navigationTab ? Glider.NAV_SILVER : Glider.DARK);
         glider.moveTo(l, t, l + pill.getWidth(), t + pill.getHeight(), Math.min(20f * density, pill.getHeight() / 2f));
     }
 
@@ -3961,15 +3967,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (mountain != null) mountain.setVisibility(View.GONE);
         }
         if (root != null) root.post(this::applyHeaderWidths);
-    }
-
-    private void updateHomeTabIndicator() {
-        if (btnHome == null) return;
-        boolean active = activityResumed && !hiddenSinceResume && !screensaverActive
-                && !wallpaperFullscreen && !isFinishing() && !isDestroyed();
-        btnHome.setSelected(active);
-        btnHome.setElevation(active ? 8f * density : 0f);
-        btnHome.invalidate();
     }
 
     /**
@@ -7570,7 +7567,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             setWallpaperFullscreen(false);
         }
         screensaverActive = true;
-        updateHomeTabIndicator();
         if (screensaverView == null) {
             screensaverView = getLayoutInflater().inflate(R.layout.view_nightstand, root, false);
             screensaverView.setOnClickListener(v -> dismissScreensaver());
@@ -7690,7 +7686,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void dismissScreensaver() {
         if (!screensaverActive || screensaverView == null) return;
         screensaverActive = false;
-        updateHomeTabIndicator();
         handler.removeCallbacks(standbyPhotoTick);
         screensaverView.animate().alpha(0f).setDuration(350).withEndAction(() -> {
             if (!screensaverActive && screensaverView != null) {

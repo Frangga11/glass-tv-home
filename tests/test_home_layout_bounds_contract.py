@@ -37,7 +37,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
 
     def test_bottom_dock_tray_uses_the_same_safe_frame_as_top_and_sides(self):
         start = MAIN.index("private void applyDockLayout()")
-        end = MAIN.index("private void updateHomeTabIndicator()", start)
+        end = MAIN.index("private void updatePrayerTimes()", start)
         dock_layout = MAIN[start:end]
         self.assertIn(
             "dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density)",
@@ -187,8 +187,8 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
 
     def test_clock_and_date_hierarchy_uses_compact_readable_sizes(self):
         root = ET.parse(LAYOUT).getroot()
-        expected = {"clock": "44sp", "ampm": "11sp", "date": "11sp",
-                    "shamsiDate": "11sp"}
+        expected = {"clock": "44sp", "ampm": "14sp", "date": "14sp",
+                    "shamsiDate": "14sp"}
         for view_id, size in expected.items():
             node = next((item for item in root.iter()
                          if item.get(ANDROID + "id") == f"@+id/{view_id}"), None)
@@ -333,10 +333,12 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("btnHome.requestFocus()", weather_keys)
 
     def test_home_profile_and_settings_tabs_keep_their_real_actions(self):
-        self.assertIn(
-            "if (btnHome != null) btnHome.setOnClickListener(v -> updateHomeTabIndicator());",
-            MAIN,
-        )
+        self.assertNotIn("updateHomeTabIndicator", MAIN)
+        home = ET.parse(LAYOUT).getroot()
+        home_button = next(node for node in home.iter()
+                           if node.get(ANDROID + "id") == "@+id/btnHome")
+        self.assertEqual(home_button.get(ANDROID + "focusable"), "true")
+        self.assertEqual(home_button.get(ANDROID + "clickable"), "true")
         self.assertIn(
             "btnCandyBox.setOnClickListener(v -> showCandyBoxPopup());",
             MAIN,

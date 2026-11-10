@@ -49,13 +49,14 @@ class HomeSpacingCapsuleHeightRefinementContractTest(unittest.TestCase):
         self.assertEqual(weather.get(ANDROID + "layout_below"), "@id/locationPill")
         self.assertEqual(weather.get(ANDROID + "layout_marginTop"), "4dp")
 
-    def test_home_and_profile_icon_label_spacing_is_compact_but_settings_is_untouched(self):
+    def test_navigation_icon_label_spacing_is_uniform_across_all_three_tabs(self):
         root = ET.parse(HOME_XML).getroot()
         by_id = {node.get(ANDROID + "id"): node for node in root.iter()
                  if node.get(ANDROID + "id")}
-        self.assertEqual(by_id["@+id/btnHome"].get(ANDROID + "drawablePadding"), "2dp")
-        self.assertEqual(by_id["@+id/btnCandyBox"].get(ANDROID + "drawablePadding"), "2dp")
-        self.assertEqual(by_id["@+id/btnSettings"].get(ANDROID + "drawablePadding"), "4dp")
+        for view_id in ("@+id/btnHome", "@+id/btnCandyBox", "@+id/btnSettings"):
+            self.assertEqual(by_id[view_id].get(ANDROID + "drawablePadding"), "2dp")
+            self.assertEqual(by_id[view_id].get(ANDROID + "paddingStart"), "4dp")
+            self.assertEqual(by_id[view_id].get(ANDROID + "paddingEnd"), "4dp")
 
     def test_bottom_safe_margin_and_shelf_gap_use_density_aware_30dp(self):
         self.assertIn("return Math.round(SAFE_VERTICAL_MARGIN_DP * density);", GEOMETRY)
