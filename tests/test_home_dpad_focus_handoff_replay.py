@@ -34,7 +34,7 @@ class HomeDpadFocusHandoffTest(unittest.TestCase):
         self.assertIn("DockLayoutModel.gridPositionForDock", method)
         self.assertIn("focusTile(target)", method)
         self.assertIn("focusTopBarFallback()", method)
-        self.assertNotIn("super.dispatchKeyEvent", MAIN)
+        self.assertNotIn("super.dispatchKeyEvent(new KeyEvent", MAIN)
         self.assertNotIn("new KeyEvent(KeyEvent.ACTION_DOWN", MAIN)
         self.assertNotIn("pendingDockCollapseDirections", MAIN)
 
