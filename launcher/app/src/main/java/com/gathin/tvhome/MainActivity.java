@@ -152,6 +152,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalDockTransitionAnimator;
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
+    /** One DPAD direction pressed during collapse; replay only after Dock focus is restored. */
+    private int pendingCollapseDpadKeyCode = KeyEvent.KEYCODE_UNKNOWN;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
     private int gridFocusRequestGeneration;
     private boolean lastFocusedDock;
@@ -2182,6 +2184,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
         // Collapse the overflow Grid only after focus has actually reached a Dock tile.
         handleTileFocused(key, position, card, true);
+        // Replaying only after the Dock owns focus makes UP/DOWN deterministic even when the
+        // remote repeats a key during the 260 ms reverse transition.
+        if (!dockVertical && !horizontalDockCollapseInProgress
+                && pendingCollapseDpadKeyCode != KeyEvent.KEYCODE_UNKNOWN) {
+            final int queuedKey = pendingCollapseDpadKeyCode;
+            pendingCollapseDpadKeyCode = KeyEvent.KEYCODE_UNKNOWN;
+            dockRecycler.post(() -> {
+                if (dockVertical || horizontalGridExpanded || dockAdapter == null) return;
+                onDockTileKey(key, queuedKey);
+            });
+        }
     }
 
     private void handleTileFocused(String key, int position, View card, boolean inDock) {
@@ -3325,6 +3338,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         int code = event.getKeyCode();
+        // The old Grid card remains the event target until the reverse slide settles. Without
+        // this gate, a second UP/DOWN can start a competing transition and invalidate collapse,
+        // leaving the Grid visible but the focus owner detached. Queue one intent and replay it
+        // against the restored Dock after focus has actually transferred.
+        if (!dockVertical && horizontalDockCollapseInProgress
+                && (code == KeyEvent.KEYCODE_DPAD_UP || code == KeyEvent.KEYCODE_DPAD_DOWN
+                || code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) pendingCollapseDpadKeyCode = code;
+            return true;
+        }
         if (wallpaperFullscreen) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 setWallpaperFullscreen(false);
