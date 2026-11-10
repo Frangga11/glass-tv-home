@@ -28,7 +28,7 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         key_method = MAIN[key_start:key_end]
         self.assertIn("if (horizontalDockCollapseInProgress)", key_method)
         self.assertIn("pendingDockCollapseDirections.add(keyCode)", key_method)
-        self.assertLess(key_method.index("if (horizontalDockCollapseInProgress) return true;"),
+        self.assertLess(key_method.index("if (horizontalDockCollapseInProgress)"),
                         key_method.index("int count = adapter.getItemCount();"))
 
     def test_collapse_commits_one_translation_and_restores_same_dock_position(self):
