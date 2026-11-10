@@ -8,11 +8,12 @@ GLIDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").rea
 
 
 class HomeDockGlassFocusOverlayContractTest(unittest.TestCase):
-    def test_grid_uses_shared_glider_companion_rendering(self):
-        self.assertIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
-        self.assertIn("glider.addCompanion(grid);", MAIN)
+    def test_grid_does_not_register_a_competing_static_glider_outline(self):
+        self.assertNotIn("grid.addItemDecoration(new GridFocusDecoration(glider));", MAIN)
+        self.assertNotIn("glider.addCompanion(grid);", MAIN)
 
-    def test_grid_focus_is_drawn_over_children_only_when_grid_owns_focus(self):
+    def test_legacy_grid_decoration_source_remains_non_authoritative(self):
+        # The legacy class may remain in the source tree, but it is not attached to the Grid.
         self.assertIn("void onDrawOver(", GRID_DECORATION)
         self.assertIn("View focused = parent.findFocus();", GRID_DECORATION)
         self.assertIn("focused.findViewById(R.id.card)", GRID_DECORATION)
