@@ -5,8 +5,8 @@ Repository: `Frangga11/glass-tv-home`
 PR: #134 — OPEN / DRAFT / UNMERGED
 Branch: `feature/home-prayer-popup-compact-azans-001`
 Base: PR #123 source checkpoint `6ac43ae4b56908233a64b55c23fdadee5ce7ab76`
-Implementation HEAD validated by CI: `46430419d21fd0250c7443f75c3cabf9b3fe5754`
-Status: source-host validation PASS; rendered visual QA and physical-device acceptance PENDING.
+Previous implementation HEAD validated by CI: `46430419d21fd0250c7443f75c3cabf9b3fe5754`\nLatest Silver Glass refinement commits: source `2b48fe49d932ba8340526cc12befa1b9799a9239`; contract tests `24c5d1c4b708ef2356d22eb28909d450a205cef4`
+Status: Silver Glass refinement committed; CI validation, rendered visual QA, and physical-device acceptance PENDING.
 
 ## Owner constraints
 
@@ -28,7 +28,7 @@ The current implementation keeps the change local to the Prayer popup path and i
 
 - Replaced the Prayer popup's use of shared input layouts with a dedicated in-memory view tree.
 - Reused the existing `GlassDrawable` constructor parameters and `Backdrop`/Glider companion treatment.
-- Centered a fixed-size panel (maximum 520dp × 370dp, constrained by safe insets); no ScrollView.
+- Centered a fixed-size panel (maximum 520dp × 370dp, constrained by safe insets); no ScrollView.\n- Refined the content hierarchy into a next-prayer strip, compact two-column timetable, and three clearly described Azan controls.\n- Used existing Silver Glass semantic text/section tokens and existing GlassDrawable material; no cyan accent token was introduced into the Prayer popup content.\n- Added explicit descriptions for master Azan, sound selection, and test audio; right-side labels indicate the OK action.\n- Added a compact DPAD instruction footer. The next-prayer highlight remains `TvUiTokens.ISLAMIC_GOLD`.
 - Displayed the six existing `PrayerTimes.getFullSchedule()` entries; Terbit remains informational and is not an Azan toggle.
 - Highlighted the existing `item.isNext` entry with `TvUiTokens.ISLAMIC_GOLD`.
 - Reused existing `Azan` preferences and `Azan.schedule()` for master and per-prayer switches.
@@ -45,7 +45,7 @@ Exactly three files are changed in PR #134:
 2. `tests/test_home_prayer_popup_compact_azans_contract.py`
 3. `docs/project-management/GTVH-HOME-PRAYER-POPUP-COMPACT-GLASS-001.md`
 
-## Validation — exact implementation HEAD
+## Validation — previous implementation HEAD\n\nThe prior implementation HEAD `46430419d21fd0250c7443f75c3cabf9b3fe5754` passed CI as recorded below. The latest Silver Glass refinement has not yet completed CI validation.\n\n## Validation — exact implementation HEAD
 
 Validated commit: `46430419d21fd0250c7443f75c3cabf9b3fe5754`
 
@@ -66,4 +66,4 @@ Validated commit: `46430419d21fd0250c7443f75c3cabf9b3fe5754`
 4. Regression acceptance: Inputs menu, app context menu, Settings, and all other Home surfaces remain unchanged.
 5. Physical Mi TV Stick acceptance remains mandatory and has not been run.
 
-No merge, public release, APK installation, ADB action, or device/default-launcher mutation has been performed.
+No merge, public release, APK installation, ADB action, or device/default-launcher mutation has been performed. The latest Silver Glass refinement is not yet accepted; visual and physical-device QA remain pending.
