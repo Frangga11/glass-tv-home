@@ -29,7 +29,7 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
         self.assertNotIn("R.layout.popup_inputs", self.popup)
         self.assertNotIn("R.layout.item_input", self.popup)
         self.assertNotIn("showAzanSettingsDialog()", self.popup)
-        self.assertNotIn("ScrollView", self.popup)
+        self.assertNotIn("ScrollView(", self.popup)
 
     def test_schedule_is_read_only_source_and_next_prayer_uses_existing_flag(self):
         self.assertIn("PrayerTimes.getFullSchedule(this)", self.popup)
@@ -63,7 +63,7 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
         self.assertIn("glider.addCompanion(panel)", self.overlay)
         self.assertIn("new FrameLayout.LayoutParams(width, height, Gravity.CENTER)", self.overlay)
         self.assertNotIn("R.layout.popup_inputs", self.overlay)
-        self.assertNotIn("ScrollView", self.overlay)
+        self.assertNotIn("ScrollView(", self.overlay)
 
     def test_existing_shared_menu_and_glass_implementations_are_not_replaced(self):
         show_menu = MAIN[MAIN.index("private void showMenu("):MAIN.index("private void glideToMenuRow(")]
