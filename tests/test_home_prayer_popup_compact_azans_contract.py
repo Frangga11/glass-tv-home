@@ -79,9 +79,17 @@ class HomePrayerPopupCompactAzansContractTest(unittest.TestCase):
         self.assertIn("new GlassDrawable(panel, 20 * density, density, glider, 0.5f, true)", self.overlay)
         self.assertIn("Backdrop.watch(panel)", self.overlay)
         self.assertIn("glider.addCompanion(panel)", self.overlay)
-        self.assertIn("new FrameLayout.LayoutParams(width, height, Gravity.CENTER)", self.overlay)
+        self.assertIn("Gravity.RIGHT | Gravity.CENTER_VERTICAL", self.overlay)
         self.assertNotIn("R.layout.popup_inputs", self.overlay)
         self.assertNotIn("ScrollView(", self.overlay)
+
+    def test_popup_is_right_center_and_uses_explicit_dpad_focus_order(self):
+        self.assertIn("Gravity.RIGHT | Gravity.CENTER_VERTICAL", self.overlay)
+        self.assertIn("lp.rightMargin", self.overlay)
+        self.assertIn("collectPrayerPopupFocusables(rows, focusOrder)", self.overlay)
+        self.assertIn("focusOrder.get(index + 1).requestFocus()", self.overlay)
+        self.assertIn("focusOrder.get(index - 1).requestFocus()", self.overlay)
+        self.assertIn("v.performClick()", self.overlay)
 
     def test_existing_shared_menu_and_glass_implementations_are_not_replaced(self):
         show_menu = MAIN[MAIN.index("private void showMenu("):MAIN.index("private void glideToMenuRow(")]
