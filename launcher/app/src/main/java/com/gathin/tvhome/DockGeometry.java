@@ -19,7 +19,7 @@ final class DockGeometry {
     private static final float DOCK_TILE_SCALE = 0.95f;
     private static final float DOCK_SLOT_GAP_DP = 32f;
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
-    private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
+    private static final float ITEM_EXTRA_HEIGHT_DP = 42f;
     private static final float SAFE_HORIZONTAL_MARGIN_DP = 30f;
     private static final float SAFE_VERTICAL_MARGIN_DP = 30f;
     private static final float SAFE_TOP_MARGIN_DP = 29f;
