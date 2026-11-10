@@ -1234,3 +1234,15 @@ Wi-Fi popup workstream is complete through latest APK generation and evidence re
 - Added `tests/test_home_luxury_glass_focus_contract.py` for glass persistence, rim reflection, icon tint, Islamic shelf glass and Islamic gold/shadow.
 - Exact-head CI #1875 / run `42720524182` was IN PROGRESS at checkpoint sync; release publication workflow run `42720524808` was SKIPPED. Do not claim CI PASS until exact-head run concludes.
 - No merge, ADB, device install, default-launcher change or release publication. 1920x1080 rendered review and physical Mi TV Stick acceptance remain pending. Preserve RE-SKIN NOT REWIRE and all existing functional/geometry constraints.
+
+
+## 10 NOVEMBER 2026 — GTVH-HOME-FOCUS-OVERLAY-DPAD-001
+- Decision: keep one shared Glider as the source of focus geometry/animation. Do not raise the full-screen Glider above all Home content. Instead, each focusable capsule paints that same Glider in its own background pass, after its glass surface and before its text/icon content. This preserves readable labels while preventing the capsule surface from hiding focus.
+- Decision: navigation tabs must use the same Glider path as Location/Altitude, Weather/AQI, Wi-Fi and Mic. Remove Beranda's permanent selected/elevated appearance; no navigation tab receives exclusive treatment.
+- Decision: set Beranda/Profil/Pengaturan icon-label spacing to 1dp and preserve equal one-third navigation segment widths; icons remain compound drawables preceding their labels.
+- Approved DPAD graph: Home LEFT → Location DOWN → Weather/AQI DOWN → first app row; Home/Profile/Settings/Wi-Fi DOWN → first app row; Home RIGHT → Profile → Settings → Wi-Fi → Mic DOWN → Ayah → Prayer timetable DOWN → first app row; first app row UP → Home and row two UP → row one.
+- Inputs is retained as an optional reachable branch (Wi-Fi UP / Inputs DOWN) without interrupting the main Settings → Wi-Fi → Mic route.
+- Popup focus must return to the exact control that triggered it. Applied to Profile, Quick Settings, Wi-Fi, Daily Ayah and Prayer timetable; nested Quick Settings/Modern Settings return behavior remains hierarchical.
+- Source implementation isolated in PR #114, stacked on PR #113 exact HEAD `964a802c72e9f4c8468d528a95f60e5f47cd24ab`. PR #114 exact HEAD `2151d19b83a92ac0cee76223554776d9d3d05968`, OPEN / DRAFT / UNMERGED.
+- Exact-head CI #1918 / run ID `42839301456`: SUCCESS; 267 Python regression tests (1 skipped); Android `testReleaseUnitTest assembleRelease` BUILD SUCCESSFUL. APK 1,630,801 bytes. Artifact ID `13775795455`; artifact/sha details in GTVH-CHECKPOINT-LATEST.md.
+- Physical Mi TV Stick 1920×1080 visual and DPAD acceptance remains pending. No ADB/device install, merge, release or default-launcher change. Do not merge without explicit owner authorization.
