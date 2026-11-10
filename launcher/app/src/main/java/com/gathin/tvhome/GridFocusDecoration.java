@@ -7,9 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Draws the shared Glider in the Grid's background pass, matching DockDecoration's
- * companion path. The root Glider intentionally sits behind app content; this companion
- * restores the focus pane above the RecyclerView background but below translucent tile cards.
+ * Repaints the shared Glider above Grid children while the Grid owns focus. The root Glider
+ * remains behind the Home content tree; drawing in onDrawOver prevents opaque app cards or
+ * artwork from covering the second-row focus indicator.
  */
 final class GridFocusDecoration extends RecyclerView.ItemDecoration {
     private final Glider glider;
@@ -24,8 +24,8 @@ final class GridFocusDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent,
-                       @NonNull RecyclerView.State state) {
+    public void onDrawOver(@NonNull Canvas canvas, @NonNull RecyclerView parent,
+                           @NonNull RecyclerView.State state) {
         // Dock focus is painted by DockDecoration. Only the active Grid region owns this path.
         if (!parent.hasFocus() || !glider.isShowing()) return;
         parent.getLocationInWindow(gridAt);
