@@ -2147,3 +2147,13 @@ No changes to Arabic or translation text, Ayah main typography, prayer labels/ti
 Confirm a fresh exact-head CI run on `964a802c72e9f4c8468d528a95f60e5f47cd24ab`. If successful, retrieve the QA artifact and provide it for owner-controlled TV visual review. Keep PR #113 and parent PR #112 OPEN / DRAFT / UNMERGED until acceptance and explicit merge authorization.
 
 **Restart instruction:** `Lanjutkan GTVH-HOME-FLOATING-CONTENT-OVAL-DIVIDER-002 dari PR #113 dan exact HEAD 964a802c72e9f4c8468d528a95f60e5f47cd24ab.`
+
+
+### EXACT-HEAD CI #1904 COMPLETION — 10 NOVEMBER 2026
+- Exact source HEAD `964a802c72e9f4c8468d528a95f60e5f47cd24ab`, CI #1904 / run ID `42822231351`: **SUCCESS**. Both required jobs succeeded.
+- Lists/tools/docs suite: **260 tests, OK (1 skipped)**.
+- Android `testReleaseUnitTest assembleRelease`: **BUILD SUCCESSFUL**.
+- Release APK exact size: **1,631,069 bytes** (~1,593 KB), above historical 1.5 MiB reference; non-blocking diagnostic only.
+- Cumulative QA artifact ID `13767102719`, archive size `1,432,077 bytes`, SHA-256 `97e83e4b5a5a32f6abaf9021c6d114e70f1e587d764f564c8d5c4ca1ca6f8e3d`; download: https://github.com/Frangga11/glass-tv-home/actions/runs/42822231351/artifacts/13767102719; expires 17 Nov 2026.
+- PR #113 remains OPEN / DRAFT / UNMERGED; PR #112 unchanged. CI is source/build validation only, not visual acceptance.
+- Next: owner manually installs the exact-head QA APK and supplies 1920×1080 Home screenshots. Review oval upper-right gradient, “BACA AYAT LENGKAP” capsule proportion/readability, idle prayer outline removal, divider balance, and ensure no unrelated visual regressions. No ADB/device install, merge, or release performed by assistant.
