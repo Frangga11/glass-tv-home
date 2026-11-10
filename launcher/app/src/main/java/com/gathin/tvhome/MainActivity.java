@@ -3757,6 +3757,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
     }
 
+    /** Apply one captured direction through the launcher's semantic navigation contract. */
+    private void dispatchPendingDockCollapseDirection(int dockPosition) {
+        int direction = pendingDockCollapseDirection;
+        pendingDockCollapseDirection = -1;
+        if (direction == KeyEvent.KEYCODE_DPAD_DOWN && adapter != null && adapter.getItemCount() > 0) {
+            int target = DockLayoutModel.gridPositionForDock(
+                    dockPosition, false, COLUMNS, adapter.getItemCount());
+            if (target >= 0) focusTile(target);
+        } else if (direction == KeyEvent.KEYCODE_DPAD_UP) {
+            focusTopBarFallback();
+        }
+    }
+
     private void animateHorizontalDockTransition(int pitch, boolean expanding, Runnable onSettled) {
         android.animation.ValueAnimator previous = horizontalDockTransitionAnimator;
         if (previous != null) previous.cancel();
