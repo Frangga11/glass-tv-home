@@ -3629,21 +3629,66 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     /** Return to the exact idle Dock anchor; focus moves only after both rows finish sliding. */
+    /**
+     * Collapse the overflow row only after the destination Dock card owns Android focus.
+     * The old order hid the focused Grid first and tried to recover Dock focus afterwards;
+     * on TV RecyclerView timing this could leave the Activity with no focused tile.
+     */
     private void collapseHorizontalOverflowToDock(int dockPosition) {
         if (grid == null || dockRecycler == null || !horizontalGridExpanded
                 || horizontalDockCollapseInProgress) return;
         horizontalDockCollapseInProgress = true;
-        final int generation = ++gridFocusRequestGeneration;
+        pendingDockCollapseDirection = -1;
+        final int transition = ++horizontalDockTransitionGeneration;
+        prepareDockFocusBeforeCollapse(dockPosition, transition, 12);
+    }
+
+    /**
+     * Acquire focus while both rows are still attached and visible. A failed acquisition aborts
+     * the collapse and leaves the expanded Grid intact; it must never fall through to the header.
+     */
+    private void prepareDockFocusBeforeCollapse(int dockPosition, int transition, int attemptsRemaining) {
+        if (transition != horizontalDockTransitionGeneration || !horizontalDockCollapseInProgress
+                || !horizontalGridExpanded || dockRecycler == null || dockAdapter == null) return;
+        if (dockAdapter.getItemCount() <= 0) {
+            abortHorizontalDockCollapse("Dock adapter is empty");
+            return;
+        }
+        int target = NavigationState.resolveHomePosition(-1, dockPosition, dockAdapter.getItemCount());
+        RecyclerView.ViewHolder holder = dockRecycler.findViewHolderForAdapterPosition(target);
+        View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
+        if (card != null && card.isShown() && card.isFocusable()) {
+            boolean acquired = card.isFocused() || card.requestFocus();
+            if (acquired && card.isFocused()) {
+                // onDockTileFocused() is synchronous and increments gridFocusRequestGeneration.
+                // Capture the generation only after that authoritative callback has completed.
+                startHorizontalDockCollapse(target, transition, gridFocusRequestGeneration);
+                return;
+            }
+        } else {
+            dockRecycler.scrollToPosition(target);
+        }
+        if (attemptsRemaining > 0) {
+            dockRecycler.postOnAnimation(() -> prepareDockFocusBeforeCollapse(
+                    target, transition, attemptsRemaining - 1));
+            return;
+        }
+        abortHorizontalDockCollapse("Dock destination did not acquire focus; target=" + target);
+    }
+
+    private void startHorizontalDockCollapse(int dockPosition, int transition, int focusGeneration) {
+        if (transition != horizontalDockTransitionGeneration || !horizontalDockCollapseInProgress
+                || focusGeneration != gridFocusRequestGeneration || grid == null || dockRecycler == null) {
+            abortHorizontalDockCollapse("Focus/transition generation changed before collapse");
+            return;
+        }
         int gridTileWidth = DockGeometry.horizontalTileWidthPx(
                 DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
                 DockPreferences.load(this).capacity, density);
         final int pitch = DockGeometry.horizontalGridViewportHeightPx(
                 gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
-        // Keep the expanded layout in place during the reverse motion: the Dock travels
-        // down by one row pitch while the overflow row travels down and out of the viewport.
         android.animation.ValueAnimator previous = horizontalDockTransitionAnimator;
         if (previous != null) previous.cancel();
-        final int transition = ++horizontalDockTransitionGeneration;
         final android.animation.ValueAnimator animator =
                 android.animation.ValueAnimator.ofFloat(0f, 1f);
         horizontalDockTransitionAnimator = animator;
@@ -3654,91 +3699,62 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             float progress = (Float) value.getAnimatedValue();
             dockRecycler.setTranslationY(-pitch * (1f - progress));
             grid.setTranslationY(pitch * progress);
-            // No Grid alpha tween: Dock/tiles retain stable material opacity.
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
+
             @Override public void onAnimationCancel(android.animation.Animator animation) {
                 cancelled = true;
-                horizontalDockCollapseInProgress = false;
-                pendingDockCollapseDirection = -1;
+                if (transition == horizontalDockTransitionGeneration) {
+                    // Keep the expanded scene coherent. Dock already owns focus, so no focus
+                    // restoration or header fallback is necessary.
+                    dockRecycler.setTranslationY(-pitch);
+                    grid.setTranslationY(0f);
+                    horizontalDockCollapseInProgress = false;
+                    pendingDockCollapseDirection = -1;
+                }
             }
+
             @Override public void onAnimationEnd(android.animation.Animator animation) {
                 if (horizontalDockTransitionAnimator == animator) horizontalDockTransitionAnimator = null;
-                if (cancelled || transition != horizontalDockTransitionGeneration
-                        || generation != gridFocusRequestGeneration) return;
+                if (cancelled || transition != horizontalDockTransitionGeneration) return;
+                if (focusGeneration != gridFocusRequestGeneration) {
+                    abortHorizontalDockCollapse("Focus generation changed during collapse");
+                    return;
+                }
+                // Dock already owns focus. Only now remove the overflow row from the view tree.
                 horizontalGridExpanded = false;
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
-                // LayoutParams are already at the permanent idle anchor; reset transforms once.
                 dockRecycler.setTranslationY(0f);
                 grid.setTranslationY(0f);
                 applyDockLayout();
-                dockRecycler.post(() -> restoreDockFocusAfterCollapse(
-                        dockPosition, generation, 32));
+                horizontalDockCollapseInProgress = false;
+                dispatchPendingDockCollapseDirection(dockPosition);
             }
         });
         animator.start();
     }
 
-    /**
-     * Wait for the Dock RecyclerView's idle layout to attach the requested tile, then commit focus.
-     * A fixed three-frame retry was too short on slower TV devices and could send focus to the header.
-     * Collapse remains the focus owner until requestFocus() succeeds; then one captured intent is applied semantically.
-     */
-    private void restoreDockFocusAfterCollapse(int dockPosition, int generation, int attemptsRemaining) {
-        if (generation != gridFocusRequestGeneration) {
-            horizontalDockCollapseInProgress = false;
-            pendingDockCollapseDirection = -1;
-            return;
-        }
-        if (dockAdapter == null || dockRecycler == null || dockAdapter.getItemCount() == 0) {
-            horizontalDockCollapseInProgress = false;
-            pendingDockCollapseDirection = -1;
-            focusTopBarFallback();
-            return;
-        }
-        int target = NavigationState.resolveHomePosition(-1, dockPosition, dockAdapter.getItemCount());
-        RecyclerView.ViewHolder holder = dockRecycler.findViewHolderForAdapterPosition(target);
-        View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
-        if (card != null && card.isShown() && card.isFocusable()) {
-            // Release the transition lock immediately before requestFocus: its synchronous focus
-            // callback is allowed to publish the committed Dock destination and advance generation.
-            boolean alreadyFocused = card.isFocused();
-            horizontalDockCollapseInProgress = false;
-            boolean acquired = alreadyFocused || card.requestFocus();
-            if (acquired && card.isFocused()) {
-                // requestFocus() already fired onDockTileFocused synchronously when focus changed.
-                if (alreadyFocused) onDockTileFocused(dockAdapter.keyAt(target), card);
-                dispatchPendingDockCollapseDirection(dockPosition);
-                return;
-            }
-            horizontalDockCollapseInProgress = true;
-        }
-        if (attemptsRemaining > 0) {
-            dockRecycler.postOnAnimation(() -> restoreDockFocusAfterCollapse(
-                    target, generation, attemptsRemaining - 1));
-            return;
-        }
-        // Last-resort recovery is explicit and observable; do not silently leave focus nowhere.
+    private void abortHorizontalDockCollapse(String reason) {
+        android.util.Log.e("TvHome", "Horizontal Dock collapse aborted safely: " + reason);
         horizontalDockCollapseInProgress = false;
         pendingDockCollapseDirection = -1;
-        android.util.Log.e("TvHome", "Dock focus restore failed after collapse; target=" + target
-                + " childCount=" + dockRecycler.getChildCount());
-        focusTopBarFallback();
+        if (horizontalGridExpanded) {
+            if (dockRecycler != null) dockRecycler.setTranslationY(-getHorizontalDockPitch());
+            if (grid != null) {
+                grid.setTranslationY(0f);
+                grid.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
-    /** Apply a captured direction once through the launcher's semantic navigation contract. */
-    private void dispatchPendingDockCollapseDirection(int dockPosition) {
-        int direction = pendingDockCollapseDirection;
-        pendingDockCollapseDirection = -1;
-        if (direction == KeyEvent.KEYCODE_DPAD_DOWN && adapter != null && adapter.getItemCount() > 0) {
-            int target = DockLayoutModel.gridPositionForDock(
-                    dockPosition, false, COLUMNS, adapter.getItemCount());
-            if (target >= 0) focusTile(target);
-        } else if (direction == KeyEvent.KEYCODE_DPAD_UP) {
-            focusTopBarFallback();
-        }
+    private int getHorizontalDockPitch() {
+        int gridTileWidth = DockGeometry.horizontalTileWidthPx(
+                DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
+                DockPreferences.load(this).capacity, density);
+        return DockGeometry.horizontalGridViewportHeightPx(
+                gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
     }
 
     private void animateHorizontalDockTransition(int pitch, boolean expanding, Runnable onSettled) {
