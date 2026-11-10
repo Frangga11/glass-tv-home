@@ -103,3 +103,13 @@ The resulting stale/partially collapsed state can leave no reliable Home tile fo
 - Source-contract tests added; execution and fresh CI result are pending.
 - Physical Mi TV Stick validation is still required for UP/DOWN in every Dock column, repeated key presses during animation, and single-outline visual parity.
 - No device PASS is claimed. PR remains OPEN / DRAFT / UNMERGED.
+
+
+## Latest validation record — 11 November 2026
+
+- Latest source branch HEAD: `b6979b6e0714bce306449772cc650bf514a0d4ca`.
+- PR #123: OPEN / DRAFT / UNMERGED; base PR #115 branch; no merge performed.
+- CI run `42884621423` was executed against an earlier intermediate merge ref containing the navigation serialization and single-outline changes, but before the final XML/test synchronization.
+- In that run, the Launcher build + unit tests + release APK build job completed SUCCESS. The separate Lists/tools/docs job reported three failures, all caused by the then-unsynchronized white focus token versus legacy XML/test expectations.
+- Follow-up commits synchronized `TvUiTokens.java`, `values/colors.xml`, and the affected focus contract assertions. The exact latest HEAD has no fresh CI result available yet; therefore overall CI is NOT VERIFIED.
+- No physical Mi TV Stick validation has been performed for this corrective pass. Device acceptance remains OPEN.
