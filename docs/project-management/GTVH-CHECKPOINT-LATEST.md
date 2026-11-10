@@ -2111,3 +2111,39 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 - Exact-head cumulative QA artifact ID `13764799974`; ZIP size `1,432,027 bytes`; SHA-256 `970f274d000107229ef1202fe4c6016e2b83b795abf391474233286d32e1ceaf`. Artifact URL: https://github.com/Frangga11/glass-tv-home/actions/runs/42819883026/artifacts/13764799974
 - Current PR #112 remains OPEN / DRAFT / UNMERGED; base PR #111 unchanged. CI/source validation PASS is not visual acceptance.
 - Next decision gate: owner downloads/installs the exact-head QA APK manually and supplies 1920×1080 Home screenshots on bright and dark wallpapers for visual comparison. No ADB, installation, merge, or release performed by assistant.
+
+
+---
+
+## FLOATING CONTENT OVAL GRADIENT / AYAH HINT / PRAYER DIVIDER — 10 NOVEMBER 2026
+
+**Workstream:** `GTVH-HOME-FLOATING-CONTENT-OVAL-DIVIDER-002`  
+**Repository:** `Frangga11/glass-tv-home`  
+**PR:** https://github.com/Frangga11/glass-tv-home/pull/113  
+**State:** OPEN / DRAFT / UNMERGED  
+**Source branch:** `fix/home-floating-content-oval-divider-002`  
+**Stacked base:** PR #112 branch `fix/home-floating-content-right-gradient-001`  
+**Exact current source HEAD:** `964a802c72e9f4c8468d528a95f60e5f47cd24ab`  
+**Parent PR #112 exact HEAD:** `377aace505536ae94fee11727a0d5691e342e720`
+
+### Owner-requested changes implemented
+1. `GlassDrawable.java`: replace the horizontal rectangular fade with a cached `RadialGradient` anchored at the upper-right corner and flattened vertically using a local matrix. The subtle opacity levels remain at 0x1A / 0x10 / 0x06 / transparent; only the gradient shape and falloff change.
+2. `activity_main.xml`: reduce only the “BACA AYAT LENGKAP” hint from 10sp to 9sp; horizontal padding 10dp → 8dp; vertical padding 5dp → 4dp.
+3. `MainActivity.java`: slightly reduce the hint capsule radius 8dp → 6dp and soften its stroke from 0x55DCE5ED to 0x44DCE5ED.
+4. `MainActivity.java`: prayer schedule normal-state outline is transparent (0x00000000). Existing focus/pressed states, focus border, click listener and DPAD behavior remain intact.
+5. `activity_main.xml`: reveal the existing 180dp × 1dp `prayerSectionDivider` with restrained #66FFFFFF at 0.65 alpha, preserving its original layout slot and margins.
+
+### Explicit non-scope
+No changes to Arabic or translation text, Ayah main typography, prayer labels/times/data/calculation, shelf geometry/position, wallpaper, navigation, weather/AQI, Hero Shelf, Dock/Grid, IDs, action listeners, or state logic. PR #112 and its source branch remain unchanged. No merge, ADB/device install, or release.
+
+### Regression / CI status
+- Updated `test_home_floating_content_right_gradient_contract.py` for the radial oval shader/cache, visible separator, 9sp/8dp/4dp hint capsule, and transparent normal prayer outline while retaining focus feedback.
+- Updated the legacy `test_home_wallpaper_text_refinement_contract.py` assertion to the intentionally softened 0x44DCE5ED hint border.
+- Initial PR CI #1903 / run ID `42822115893` was triggered on the pre-correction HEAD `9a72213192b32ab583298426605dde3f6ad4e631`. The Lists/tools/docs job found one stale assertion still expecting the previous 0x55DCE5ED capsule border. This was a regression-test expectation only; the source change was intentional.
+- Corrected exact current source HEAD: `964a802c72e9f4c8468d528a95f60e5f47cd24ab`. A fresh exact-head CI run has not yet been confirmed; do not claim CI PASS.
+- Physical Mi TV Stick visual acceptance remains pending. The visual review must confirm the oval gradient remains subtle, the smaller capsule remains readable at 1920×1080, the prayer outline is absent when idle but focus remains visible, and the new separator is balanced.
+
+### Next gate
+Confirm a fresh exact-head CI run on `964a802c72e9f4c8468d528a95f60e5f47cd24ab`. If successful, retrieve the QA artifact and provide it for owner-controlled TV visual review. Keep PR #113 and parent PR #112 OPEN / DRAFT / UNMERGED until acceptance and explicit merge authorization.
+
+**Restart instruction:** `Lanjutkan GTVH-HOME-FLOATING-CONTENT-OVAL-DIVIDER-002 dari PR #113 dan exact HEAD 964a802c72e9f4c8468d528a95f60e5f47cd24ab.`
