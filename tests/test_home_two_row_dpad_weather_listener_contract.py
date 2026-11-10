@@ -37,8 +37,10 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         layout = MAIN[start:end]
         self.assertIn("gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;", layout)
         self.assertIn("dockParams.gravity = Gravity.BOTTOM | Gravity.START;", layout)
-        self.assertIn("horizontalGridExpanded ? dockBottomMargin + gridViewportHeight + rowGap", layout)
-        self.assertIn("horizontalGridExpanded ? dockBottomMargin : 0", layout)
+        self.assertIn("dockParams.bottomMargin = horizontalGridExpanded", layout)
+        self.assertIn("? dockBottomMargin + gridViewportHeight + rowGap", layout)
+        self.assertIn(": dockBottomMargin;", layout)
+        self.assertIn("gridParams.bottomMargin = horizontalGridExpanded ? dockBottomMargin : 0", layout)
 
     def test_dpad_transition_moves_both_rows_and_commits_focus_after_motion(self):
         expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
