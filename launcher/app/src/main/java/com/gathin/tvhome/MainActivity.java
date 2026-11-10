@@ -7773,6 +7773,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.setClipChildren(true);
         panel.setClipToPadding(true);
         panel.setElevation(12 * density);
+        panel.setBackground(new GlassDrawable(panel, 20 * density, density, glider, 0.5f, true));
         panel.setPadding((int) (12 * density), (int) (8 * density),
                 (int) (12 * density), (int) (8 * density));
 
@@ -8114,7 +8115,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                                         int width, int height, ArrayList<View> focusOrder,
                                         int safeX, int safeY) {
         menuReturnAction = null;
-        panel.setBackground(new GlassDrawable(panel, 20 * density, density, glider, 0.5f, true));
+        // Glass background is applied before measurement so its insets cannot change the measured frame.
         Backdrop.watch(panel);
         glider.addCompanion(panel);
 
