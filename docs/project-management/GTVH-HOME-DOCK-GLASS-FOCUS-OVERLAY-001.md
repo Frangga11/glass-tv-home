@@ -77,3 +77,21 @@ GridFocusDecoration.onDrawOver() called Glider.drawShape() for the entire shared
 ### Validation gate
 
 The source correction is committed to this PR branch. A fresh CI run against the resulting exact HEAD is required before issuing a new QA APK. Physical Mi TV Stick acceptance remains mandatory; do not claim device PASS based on source inspection or CI alone.
+
+
+## Follow-up corrective audit — 11 November 2026
+
+User acceptance feedback identified two repeat defects:
+1. The Grid focus cursor must be a marker around the active app tile only; it must never paint a filled glass pane over app artwork.
+2. Pressing UP from the overflow row must not make the Dock disappear during the return-to-idle transition.
+
+### Root cause and correction
+
+- Replaced the Grid's shared-Glider foreground rendering with a dedicated RecyclerView.ItemDecoration stroke. It resolves the currently focused descendant at draw time, finds its R.id.card ancestor, converts the card's actual bounds into RecyclerView coordinates, and draws a transparent stroke only. There is no fill, blur, veil, or stale cached focus rectangle.
+- The UP collapse previously ended its animation at translationY = +pitch, then changed the Dock's bottom margin from expanded to idle (which itself moves the Dock down by one pitch), while retaining the translation. This double-applied the vertical displacement and could push the Dock below the visible viewport until a later callback cleared the translation.
+- The corrected collapse commits the idle geometry and clears Dock/Grid translations in the same UI callback before the next frame, then restores focus to the same Dock column.
+- Regression contracts now assert focused-card-only outline rendering and the single-displacement UP collapse ordering.
+
+### Scope and validation
+
+No app inventory, card content, card geometry, launch listeners, weather/AQI, wallpaper, header, or unrelated modules changed. CI and physical Mi TV Stick acceptance are required against the exact follow-up HEAD. PR remains draft/unmerged until acceptance.

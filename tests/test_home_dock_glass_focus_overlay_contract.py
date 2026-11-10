@@ -14,12 +14,25 @@ class HomeDockGlassFocusOverlayContractTest(unittest.TestCase):
 
     def test_grid_focus_is_drawn_over_children_only_when_grid_owns_focus(self):
         self.assertIn("void onDrawOver(", GRID_DECORATION)
-        self.assertIn("if (!parent.hasFocus() || !glider.isShowing()) return;", GRID_DECORATION)
-        self.assertIn("glider.drawFocusOutline(canvas", GRID_DECORATION)
-        self.assertNotIn("glider.drawShape(canvas", GRID_DECORATION)
-        self.assertIn("void drawFocusOutline(Canvas canvas", GLIDER)
-        self.assertIn("canvas.drawRoundRect(shape", GLIDER)
+        self.assertIn("View focused = parent.findFocus();", GRID_DECORATION)
+        self.assertIn("focused.findViewById(R.id.card)", GRID_DECORATION)
+        self.assertIn("focusRim.setStyle(Paint.Style.STROKE);", GRID_DECORATION)
+        self.assertIn("canvas.drawRoundRect(outline", GRID_DECORATION)
+        self.assertNotIn("drawShape(", GRID_DECORATION)
+        self.assertNotIn("drawFocusOutline(", GRID_DECORATION)
         self.assertNotIn("void onDraw(", GRID_DECORATION)
+
+    def test_up_collapse_commits_idle_geometry_without_double_translation(self):
+        start = MAIN.index("private void collapseHorizontalOverflowToDock")
+        end = MAIN.index("private void animateHorizontalDockTransition", start)
+        collapse = MAIN[start:end]
+        self.assertIn("horizontalGridExpanded = false;", collapse)
+        self.assertIn("dockRecycler.setTranslationY(0f);", collapse)
+        self.assertIn("grid.setTranslationY(0f);", collapse)
+        self.assertIn("applyDockLayout();", collapse)
+        self.assertLess(collapse.index("dockRecycler.setTranslationY(0f);"),
+                        collapse.index("applyDockLayout();"))
+        self.assertNotIn("setTranslationY(pitch)", collapse)
 
     def test_row_transition_does_not_animate_grid_alpha(self):
         start = MAIN.index("private void expandHorizontalDockForOverflow")
