@@ -2087,3 +2087,16 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 5. Keep PR #112 OPEN / DRAFT / UNMERGED; no ADB/device install or merge/release without authorization.
 
 **Next restart prompt:** `Lanjutkan GTVH-HOME-FLOATING-CONTENT-RIGHT-GRADIENT-001 dari PR #112 dan exact HEAD 56f5af83b79eaa704d7616d111501f41f5c52e28; periksa CI run #1901 lalu lanjutkan visual acceptance.`
+
+
+### FOLLOW-UP AUDIT / REDRAW EFFICIENCY — 10 NOVEMBER 2026
+
+- Re-opened PR #112 against exact current source. PR remains OPEN / DRAFT / UNMERGED; base is still PR #111 exact HEAD `b461e35561ba1bc44d366fdab351e46221150873`.
+- Visual source audit confirms `islamicShelf` is a `wrap_content` right-aligned shelf, not a full-screen overlay. Its background now paints only a horizontal gradient from transparent to max alpha 0x1A (about 10%); no rounded panel, blur fill, veil, rim, or fallback surface is drawn for this view. The old rounded initial scrim is overwritten by the GlassDrawable during setup, and the prayer divider alpha is zero.
+- Found one performance improvement: the initial implementation allocated a new LinearGradient shader on every Drawable redraw. Updated it to cache the shader and rebuild only when the shelf bounds change. Added a source regression assertion for this cache contract. Appearance values and geometry remain unchanged.
+- Current exact PR HEAD: `377aace505536ae94fee11727a0d5691e342e720`; direct compare with PR #111 HEAD is 5 commits ahead / 0 behind; exactly 3 files remain changed.
+- Previous HEAD `56f5af83b79eaa704d7616d111501f41f5c52e28` CI #1901 was SUCCESS (260 tests, 1 skipped; Release Build PASS; APK 1,630,941 bytes). This result does not validate the latest shader-cache commit.
+- New exact-head CI #1902 / run ID `42819883026` is QUEUED/PENDING. Await exact-head test/build and new artifact/size.
+- Adaptive contrast is not yet dynamic: no wallpaper luminance sampling has been implemented. Existing text shadows + constant subtle gradient remain. Do not call adaptive contrast complete.
+- 1920×1080 bright/dark wallpaper visual acceptance remains pending. No ADB, device install, merge or release.
+- Next: wait for CI #1902, then provide current-head QA artifact for owner visual check; ask for direct TV screenshot(s) of bright and dark wallpaper after owner installs manually. Do not claim visual PASS based on CI.
