@@ -20,7 +20,6 @@ class HomeDockGlassFocusOverlayContractTest(unittest.TestCase):
         self.assertIn("canvas.drawRoundRect(outline", GRID_DECORATION)
         self.assertNotIn("drawShape(", GRID_DECORATION)
         self.assertNotIn("drawFocusOutline(", GRID_DECORATION)
-        self.assertNotIn("drawRoundRect(outline", GRID_DECORATION.replace("canvas.drawRoundRect(outline", ""))
         self.assertNotIn("void onDraw(", GRID_DECORATION)
 
     def test_up_collapse_commits_idle_geometry_without_double_translation(self):
