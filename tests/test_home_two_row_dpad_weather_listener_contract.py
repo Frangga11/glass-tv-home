@@ -37,9 +37,8 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         layout = MAIN[start:end]
         self.assertIn("gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;", layout)
         self.assertIn("dockParams.gravity = Gravity.BOTTOM | Gravity.START;", layout)
-        self.assertIn("dockParams.bottomMargin = horizontalGridExpanded", layout)
-        self.assertIn("? dockBottomMargin + gridViewportHeight + rowGap", layout)
-        self.assertIn(": dockBottomMargin;", layout)
+        self.assertIn("dockParams.bottomMargin = dockBottomMargin;", layout)
+        self.assertNotIn("dockParams.bottomMargin = horizontalGridExpanded", layout)
         self.assertIn("gridParams.bottomMargin = horizontalGridExpanded ? dockBottomMargin : 0", layout)
 
     def test_dpad_transition_moves_both_rows_and_commits_focus_after_motion(self):
@@ -48,10 +47,10 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         animate_start = MAIN.index("private void animateHorizontalDockTransition")
         expand = MAIN[expand_start:collapse_start]
         collapse = MAIN[collapse_start:animate_start]
-        self.assertIn("dockRecycler.setTranslationY(pitch)", expand)
+        self.assertIn("dockRecycler.setTranslationY(0f)", expand)
         self.assertIn("grid.setTranslationY(pitch)", expand)
         self.assertIn("focusTile(targetPosition)", expand)
-        self.assertIn("dockRecycler.setTranslationY(pitch * progress)", collapse)
+        self.assertIn("dockRecycler.setTranslationY(-pitch * (1f - progress))", collapse)
         self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
         self.assertIn("restoreDockFocusAfterCollapse(", collapse)
         self.assertIn("dockPosition, generation, 32", collapse)
