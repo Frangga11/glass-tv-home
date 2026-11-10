@@ -2157,3 +2157,56 @@ Confirm a fresh exact-head CI run on `964a802c72e9f4c8468d528a95f60e5f47cd24ab`.
 - Cumulative QA artifact ID `13767102719`, archive size `1,432,077 bytes`, SHA-256 `97e83e4b5a5a32f6abaf9021c6d114e70f1e587d764f564c8d5c4ca1ca6f8e3d`; download: https://github.com/Frangga11/glass-tv-home/actions/runs/42822231351/artifacts/13767102719; expires 17 Nov 2026.
 - PR #113 remains OPEN / DRAFT / UNMERGED; PR #112 unchanged. CI is source/build validation only, not visual acceptance.
 - Next: owner manually installs the exact-head QA APK and supplies 1920×1080 Home screenshots. Review oval upper-right gradient, “BACA AYAT LENGKAP” capsule proportion/readability, idle prayer outline removal, divider balance, and ensure no unrelated visual regressions. No ADB/device install, merge, or release performed by assistant.
+
+
+---
+
+## HOME CAPSULE FOCUS OVERLAY / DPAD NAVIGATION — 10 NOVEMBER 2026
+
+**Workstream:** `GTVH-HOME-FOCUS-OVERLAY-DPAD-001`  
+**Source PR:** https://github.com/Frangga11/glass-tv-home/pull/114  
+**State:** OPEN / DRAFT / UNMERGED  
+**Source branch:** `fix/home-focus-overlay-dpad-001`  
+**Exact source HEAD:** `2151d19b83a92ac0cee76223554776d9d3d05968`  
+**Stacked base:** PR #113, `fix/home-floating-content-oval-divider-002`  
+**Exact base HEAD:** `964a802c72e9f4c8468d528a95f60e5f47cd24ab`
+
+### Root cause
+- `MainActivity.setUpGlider()` inserts the shared Glider view at `root.indexOfChild(heroShelf)`, placing the root Glider behind the Home header capsules.
+- Navigation tabs appeared to work because they used a separate focused selector, while Location/Altitude, Weather/AQI, Wi-Fi and Mic relied on the Glider behind their glass surface. The two mechanisms were not consistent, and the surface obscured the cursor.
+- The fix deliberately does not move the shared Glider above all content. That would risk painting over labels/icons. Instead, the same Glider geometry is repainted in each capsule's own background pass.
+
+### Source changes
+1. Added `GliderFocusDrawable.java`. It clips to the capsule bounds and draws the shared Glider after the capsule glass and before the capsule's icon/text.
+2. Header capsules now use the same shared Glider motion and spring behavior. Navigation tabs no longer use the separate focus selector as their movement system.
+3. Removed Beranda's permanent selected/elevated state; Beranda, Profil and Pengaturan are peers.
+4. Navigation icon-to-label spacing is 1dp. The three navigation segments retain equal one-third widths and compound-drawable icon-before-label behavior.
+5. D-pad graph implemented:
+   - Home LEFT → Location/Altitude; Location DOWN → Weather/AQI; Weather/AQI DOWN → first app row.
+   - Home/Profile/Settings/Wi-Fi DOWN → first app row.
+   - Home RIGHT → Profile → Settings → Wi-Fi → Mic.
+   - Mic DOWN → Ayah Pilihan → Prayer timetable → first app row.
+   - First app row UP → Home; row two UP → row one.
+   - Inputs remains accessible as an optional branch (Wi-Fi UP / Inputs DOWN) without interrupting the primary horizontal path.
+6. Popup return focus restored to the exact trigger for Profile, Quick Settings, Wi-Fi, Daily Ayah and Prayer timetable. Existing nested Modern Settings return behavior is retained.
+
+### Protected scope
+No weather/AQI data providers or refresh logic, prayer calculations, Ayah content/RTL, wallpaper, Hero Shelf, Dock/Grid rendering, app identity or Wi-Fi scan/permission/connection behavior was intentionally changed. Existing IDs and click handlers remain. Only the requested DPAD graph and popup focus-return paths were adjusted.
+
+### Exact-head CI / APK
+- Exact HEAD `2151d19b83a92ac0cee76223554776d9d3d05968`, CI #1918 / run ID `42839301456`: **SUCCESS**, both jobs passed.
+- Lists/tools/docs regression suite: **267 tests, OK (1 skipped)**.
+- Android `testReleaseUnitTest assembleRelease`: **BUILD SUCCESSFUL** in 1m 23s.
+- Release APK exact size: **1,630,801 bytes** (1,592 KB); historical 1.5 MiB threshold warning is non-blocking.
+- Exact-head QA artifact ID `13775795455`; ZIP size `1,431,848 bytes`; ZIP SHA-256 `87078c226b4ed6fd62988f798d0ac463a003039ec8bec83d99273d9178843263`.
+- Extracted APK SHA-256: `d58e5a75771666ddd4c2f9a124ad306677d19cfa020eec623c934b8ad7b52d60`.
+- Artifact: https://github.com/Frangga11/glass-tv-home/actions/runs/42839301456/artifacts/13775795455 (expires 17 Nov 2026).
+
+### Acceptance still pending
+- CI/source/build PASS is not visual or physical-device acceptance.
+- Owner-controlled install and live DPAD review on Mi TV Stick, Android TV 11, 1920×1080 remain pending.
+- Verify the focus layer is above every capsule but below text/icons; identical movement and settling on all header capsules; all four requested DPAD simulations; popup focus restoration; equal navigation widths and 1dp icon-label gap; bright/dark wallpaper readability.
+- No ADB/device install, merge, release, default-launcher change or protected-branch modification was performed.
+- Keep PR #114 OPEN / DRAFT / UNMERGED until physical acceptance and explicit merge authorization.
+
+**Restart prompt:** `Lanjutkan GTVH-HOME-FOCUS-OVERLAY-DPAD-001 dari PR #114, exact HEAD 2151d19b83a92ac0cee76223554776d9d3d05968. CI #1918 PASS. Lanjutkan dengan review visual/DPAD Mi TV Stick 1920×1080; jangan merge sebelum persetujuan.`
