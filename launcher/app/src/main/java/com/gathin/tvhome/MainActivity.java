@@ -152,6 +152,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalDockTransitionAnimator;
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
+    /** Vertical DPAD input received during Dock collapse; replay only after a Dock tile owns focus. */
+    private final ArrayList<Integer> pendingDockCollapseDirections = new ArrayList<>();
+    private static final int MAX_PENDING_DOCK_COLLAPSE_DIRECTIONS = 8;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
     private int gridFocusRequestGeneration;
     private boolean lastFocusedDock;
@@ -3323,6 +3326,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         int code = event.getKeyCode();
+        // Do not let Android's geometric focus search run while the overflow row is being removed.
+        // Preserve a bounded sequence and replay it only after a Dock tile has actually regained focus.
+        if (horizontalDockCollapseInProgress
+                && (code == KeyEvent.KEYCODE_DPAD_UP || code == KeyEvent.KEYCODE_DPAD_DOWN)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN
+                    && pendingDockCollapseDirections.size() < MAX_PENDING_DOCK_COLLAPSE_DIRECTIONS) {
+                pendingDockCollapseDirections.add(code);
+            }
+            return true;
+        }
         if (wallpaperFullscreen) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 setWallpaperFullscreen(false);
@@ -3421,10 +3434,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     @Override
     public boolean onTileVerticalKey(int position, int keyCode) {
-        // While Dock/Grid are collapsing, ignore further Grid directions. The in-flight
-        // transition retains sole ownership of translations and focus restoration; accepting
-        // another row request here would advance gridFocusRequestGeneration and strand the Dock.
-        if (horizontalDockCollapseInProgress) return true;
+        // dispatchKeyEvent queues vertical directions while collapse owns focus. Keep this
+        // defensive path for direct adapter callbacks so no request can invalidate the hand-off.
+        if (horizontalDockCollapseInProgress) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                if (pendingDockCollapseDirections.size() < MAX_PENDING_DOCK_COLLAPSE_DIRECTIONS) {
+                    pendingDockCollapseDirections.add(keyCode);
+                }
+            }
+            return true;
+        }
         int count = adapter.getItemCount();
         if (count <= 0) return true;
         int target;
@@ -3667,17 +3686,67 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockRecycler.setTranslationY(0f);
                 grid.setTranslationY(0f);
                 applyDockLayout();
-                dockRecycler.post(() -> {
-                    if (generation != gridFocusRequestGeneration) {
-                        horizontalDockCollapseInProgress = false;
-                        return;
-                    }
-                    horizontalDockCollapseInProgress = false;
-                    focusDockTile(dockPosition);
-                });
+                dockRecycler.post(() -> restoreDockFocusAfterCollapse(
+                        dockPosition, generation, 32));
             }
         });
         animator.start();
+    }
+
+    /**
+     * Wait for the Dock RecyclerView's idle layout to attach the requested tile, then commit focus.
+     * A fixed three-frame retry was too short on slower TV devices and could send focus to the header.
+     * Collapse remains the focus owner until requestFocus() succeeds; only then are queued keys replayed.
+     */
+    private void restoreDockFocusAfterCollapse(int dockPosition, int generation, int attemptsRemaining) {
+        if (generation != gridFocusRequestGeneration) {
+            horizontalDockCollapseInProgress = false;
+            pendingDockCollapseDirections.clear();
+            return;
+        }
+        if (dockAdapter == null || dockRecycler == null || dockAdapter.getItemCount() == 0) {
+            horizontalDockCollapseInProgress = false;
+            pendingDockCollapseDirections.clear();
+            focusTopBarFallback();
+            return;
+        }
+        int target = NavigationState.resolveHomePosition(-1, dockPosition, dockAdapter.getItemCount());
+        RecyclerView.ViewHolder holder = dockRecycler.findViewHolderForAdapterPosition(target);
+        View card = holder != null ? holder.itemView.findViewById(R.id.card) : null;
+        if (card != null && card.isShown() && card.isFocusable()) {
+            // Release the transition lock immediately before requestFocus: its synchronous focus
+            // callback is allowed to publish the committed Dock destination and advance generation.
+            horizontalDockCollapseInProgress = false;
+            boolean acquired = card.isFocused() || card.requestFocus();
+            if (acquired && card.isFocused()) {
+                if (card.isFocused()) onDockTileFocused(dockAdapter.keyAt(target), card);
+                replayPendingDockCollapseDirections();
+                return;
+            }
+            horizontalDockCollapseInProgress = true;
+        }
+        if (attemptsRemaining > 0) {
+            dockRecycler.postOnAnimation(() -> restoreDockFocusAfterCollapse(
+                    target, generation, attemptsRemaining - 1));
+            return;
+        }
+        // Last-resort recovery is explicit and observable; do not silently leave focus nowhere.
+        horizontalDockCollapseInProgress = false;
+        pendingDockCollapseDirections.clear();
+        android.util.Log.e("TvHome", "Dock focus restore failed after collapse; target=" + target
+                + " childCount=" + dockRecycler.getChildCount());
+        focusTopBarFallback();
+    }
+
+    /** Replay each captured vertical direction through normal Android dispatch, in original order. */
+    private void replayPendingDockCollapseDirections() {
+        if (pendingDockCollapseDirections.isEmpty()) return;
+        ArrayList<Integer> replay = new ArrayList<>(pendingDockCollapseDirections);
+        pendingDockCollapseDirections.clear();
+        for (int keyCode : replay) {
+            super.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keyCode));
+            super.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keyCode));
+        }
     }
 
     private void animateHorizontalDockTransition(int pitch, boolean expanding, Runnable onSettled) {
