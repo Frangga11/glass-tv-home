@@ -3631,7 +3631,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         animator.addUpdateListener(value -> {
             if (transition != horizontalDockTransitionGeneration) return;
             float progress = (Float) value.getAnimatedValue();
-            dockRecycler.setTranslationY(-pitch * (1f - progress));
+            dockRecycler.setTranslationY(pitch * progress);
             grid.setTranslationY(pitch * progress);
             grid.setAlpha(1f - 0.28f * progress);
         });
