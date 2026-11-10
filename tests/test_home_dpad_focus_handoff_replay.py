@@ -9,7 +9,7 @@ MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java")
 class HomeDpadFocusHandoffTest(unittest.TestCase):
     def test_vertical_input_is_captured_once_before_android_focus_search(self):
         start = MAIN.index("public boolean dispatchKeyEvent(KeyEvent event)")
-        end = MAIN.index("@Override\\n    public boolean onTileVerticalKey", start)
+        end = MAIN.index("@Override" + chr(10) + "    public boolean onTileVerticalKey", start)
         dispatch = MAIN[start:end]
         capture = dispatch.index("if (horizontalDockCollapseInProgress")
         fallback = dispatch.index("return super.dispatchKeyEvent(event);")
@@ -28,13 +28,13 @@ class HomeDpadFocusHandoffTest(unittest.TestCase):
         self.assertIn("card.requestFocus()", prepare)
         self.assertIn("card.isFocused()", prepare)
         self.assertIn("startHorizontalDockCollapse(target, transition, gridFocusRequestGeneration)", prepare)
-        self.assertNotIn("focusTopBarFallback()", collapse)
+        self.assertNotIn("focusTopBarFallback()", prepare)
 
     def test_grid_is_hidden_only_after_dock_owns_focus(self):
         start = MAIN.index("private void startHorizontalDockCollapse")
         end = MAIN.index("private void abortHorizontalDockCollapse", start)
         collapse = MAIN[start:end]
-        self.assertLess(collapse.index("card"), len(collapse)) if "card" in collapse else None
+
         self.assertIn("focusGeneration != gridFocusRequestGeneration", collapse)
         self.assertIn("grid.setVisibility(View.GONE)", collapse)
         self.assertIn("horizontalDockCollapseInProgress = false", collapse)
