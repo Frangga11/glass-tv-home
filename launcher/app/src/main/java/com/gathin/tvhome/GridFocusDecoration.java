@@ -1,42 +1,54 @@
 package com.gathin.tvhome;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Repaints the shared Glider above Grid children while the Grid owns focus. The root Glider
- * remains behind the Home content tree; drawing in onDrawOver prevents opaque app cards or
- * artwork from covering the second-row focus indicator.
+ * Draws a non-opaque focus rim around the actual focused app tile. It deliberately does not
+ * reuse Glider's full glass pane or paint a filled rectangle over the app artwork.
  */
 final class GridFocusDecoration extends RecyclerView.ItemDecoration {
-    private final Glider glider;
-    private final int[] gridAt = new int[2];
-    private final int[] gliderAt = new int[2];
-    private final RectF bleed = new RectF();
-    private final float bleedPx;
+    private final Rect focusedBounds = new Rect();
+    private final RectF outline = new RectF();
+    private final Paint focusRim = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final float density;
 
     GridFocusDecoration(@NonNull Glider glider) {
-        this.glider = glider;
-        this.bleedPx = 36f * glider.getResources().getDisplayMetrics().density;
+        density = glider.getResources().getDisplayMetrics().density;
+        focusRim.setStyle(Paint.Style.STROKE);
+        focusRim.setStrokeWidth(2.25f * density);
+        focusRim.setColor(TvUiTokens.FOCUS_BORDER);
     }
 
     @Override
     public void onDrawOver(@NonNull Canvas canvas, @NonNull RecyclerView parent,
                            @NonNull RecyclerView.State state) {
-        // Dock focus is painted by DockDecoration. Only the active Grid region owns this path.
-        if (!parent.hasFocus() || !glider.isShowing()) return;
-        parent.getLocationInWindow(gridAt);
-        glider.getLocationInWindow(gliderAt);
+        // Resolve the focused descendant on every draw. Never reuse stale Glider coordinates:
+        // after UP/DOWN or a cancelled animation, an old rectangle must not remain on wallpaper.
+        View focused = parent.findFocus();
+        if (focused == null) return;
+        View card = focused.getId() == R.id.card ? focused : focused.findViewById(R.id.card);
+        if (card == null || !card.isShown() || !card.hasFocus()) return;
+
+        focusedBounds.set(0, 0, card.getWidth(), card.getHeight());
+        parent.offsetDescendantRectToMyCoords(card, focusedBounds);
+        float inset = focusRim.getStrokeWidth() / 2f + density;
+        outline.set(focusedBounds);
+        outline.inset(inset, inset);
+        if (outline.width() <= 0f || outline.height() <= 0f) return;
+
+        float radius = AppAdapter.cornerRadius(card.getWidth(), density);
         canvas.save();
-        bleed.set(0f, 0f, parent.getWidth(), parent.getHeight());
-        bleed.inset(-bleedPx, -bleedPx);
-        canvas.clipRect(bleed);
-        // The shared root Glider paints the glass pane behind the tiles. This foreground pass
-        // is deliberately outline-only so it cannot obscure banners, icons, or labels.
-        glider.drawFocusOutline(canvas, gliderAt[0] - gridAt[0], gliderAt[1] - gridAt[1]);
+        canvas.clipRect(0, 0, parent.getWidth(), parent.getHeight());
+        // Stroke only: no fill, veil, blur, or opaque pane can cover the app's banner/icon/label.
+        canvas.drawRoundRect(outline, Math.max(0f, radius - inset),
+                Math.max(0f, radius - inset), focusRim);
         canvas.restore();
     }
 }
