@@ -1844,6 +1844,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         hiddenSinceResume = false;
         updateHomeTabIndicator();
         WifiSettingsDialog.onHostResumed();
+        if (prayerPopupRestoreFocusPending) {
+            final View returnAnchor = prayerPopupReturnAnchor;
+            prayerPopupRestoreFocusPending = false;
+            prayerPopupReturnAnchor = null;
+            if (returnAnchor != null) {
+                root.post(() -> {
+                    if (activityResumed && !isFinishing() && !isDestroyed()
+                            && returnAnchor.isShown() && returnAnchor.isFocusable()) {
+                        returnAnchor.requestFocus();
+                    } else if (activityResumed) {
+                        android.util.Log.w("TvHome.PrayerPopup",
+                                "Prayer popup return anchor is no longer focusable");
+                    }
+                });
+            }
+        }
     }
 
     /** Rebuilds the tiles (and the module cards), then puts focus back where it was. */
@@ -2028,6 +2044,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Nothing of ours stays on screen over another app; an undecided prompt simply returns next time.
         if (cardPrompt != null) cardPrompt.dismiss();
         if (openPopup != null) openPopup.dismiss();
+        // The Prayer popup must not remain above another Activity. Remember only its caller,
+        // then restore that caller after the external Activity/azan overlay returns to Home.
+        if (openMenu != null && prayerPopupReturnAnchor != null) {
+            prayerPopupRestoreFocusPending = true;
+        }
         closeMenu(false);
         finishMove();
     }
@@ -7784,6 +7805,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         header.setClickable(true);
         header.setOnClickListener(v -> {
             SoundEffects.playSelect();
+            prayerPopupRestoreFocusPending = prayerPopupReturnAnchor != null;
             closeMenu(false);
             startActivity(new Intent(MainActivity.this, LocationActivity.class));
         });
@@ -7942,6 +7964,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         testRow.setBackground(prayerPopupCardBackground(false));
         testRow.setOnClickListener(v -> {
             SoundEffects.playSelect();
+            prayerPopupRestoreFocusPending = prayerPopupReturnAnchor != null;
             closeMenu(false);
             Intent azanIntent = new Intent(MainActivity.this, AzanActivity.class);
             azanIntent.putExtra("prayer", 4);
@@ -8103,6 +8126,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
+        prayerPopupReturnAnchor = anchor;
+        prayerPopupRestoreFocusPending = false;
 
         // Popup owns focus while open. Only explicitly registered, visible controls are candidates;
         // the Home header and Dock are never included in the directional graph.
@@ -8136,6 +8161,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         return true;
                     case KeyEvent.KEYCODE_BACK:
                     case KeyEvent.KEYCODE_ESCAPE:
+                        prayerPopupReturnAnchor = null;
+                        prayerPopupRestoreFocusPending = false;
                         closeMenu(true);
                         return true;
                     default:
@@ -8405,6 +8432,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** The glass menu while one is open (Inputs, or an app's), and what it opened from. */
     private View openMenu;
     private View menuAnchor;
+    // Prayer popup caller is restored after an external Activity/azan overlay returns to Home.
+    private View prayerPopupReturnAnchor;
+    private boolean prayerPopupRestoreFocusPending;
     private Runnable menuReturnAction;
     private final int[] menuAt = new int[2], menuGliderAt = new int[2];
 
