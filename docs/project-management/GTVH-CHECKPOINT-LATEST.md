@@ -2025,7 +2025,7 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 
 ### Exact-head CI and APK verification
 - CI run #1898 / ID `42750375871` on exact HEAD `b461e35561ba1bc44d366fdab351e46221150873`: **SUCCESS**.
-- Lists/tools/docs job: PASS.
+- Lists/tools/docs job: PASS; **255 tests PASS**.
 - Launcher `testReleaseUnitTest assembleRelease`: PASS; `BUILD SUCCESSFUL`.
 - APK artifact upload: PASS.
 - APK size: **1,630,769 bytes (1,592 KB)**; non-blocking warning above historical 1.5 MiB reference.
