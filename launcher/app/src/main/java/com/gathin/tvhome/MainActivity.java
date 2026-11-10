@@ -7682,12 +7682,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         header.setFocusable(true);
         header.setClickable(true);
         header.setPadding((int) (9 * density), 0, (int) (9 * density), 0);
-        TextView headerTitle = createPrayerPopupText("WAKTU SHOLAT", 13, TvUiTokens.TEXT_PRIMARY, true);
+        TextView headerTitle = createPrayerPopupText("WAKTU SHOLAT", 15, TvUiTokens.TEXT_PRIMARY, true);
         header.addView(headerTitle, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         TextView headerZone = createPrayerPopupText(
                 PrayerTimes.getShortZoneName(this) + "  •  " + PrayerTimes.getHijriDate(),
-                9.5f, TvUiTokens.TEXT_SECONDARY, true);
+                11f, TvUiTokens.TEXT_SECONDARY, true);
         headerZone.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
         headerZone.setSingleLine(true);
         headerZone.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -7711,13 +7711,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         nextRow.setOrientation(LinearLayout.HORIZONTAL);
         nextRow.setGravity(Gravity.CENTER_VERTICAL);
         nextRow.setPadding((int) (10 * density), 0, (int) (10 * density), 0);
-        TextView nextLabel = createPrayerPopupText("SHOLAT BERIKUTNYA", 9.5f,
+        TextView nextLabel = createPrayerPopupText("SHOLAT BERIKUTNYA", 11f,
                 TvUiTokens.TEXT_SECONDARY, true);
         nextRow.addView(nextLabel, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         String nextName = nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui";
         String nextTime = nextPrayer != null ? nextPrayer.timeFormatted : "--:--";
-        TextView nextValue = createPrayerPopupText(nextName + "   " + nextTime, 15,
+        TextView nextValue = createPrayerPopupText(nextName + "   " + nextTime, 18,
                 TvUiTokens.ISLAMIC_GOLD, true);
         nextValue.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
         nextRow.addView(nextValue, new LinearLayout.LayoutParams(
@@ -7728,7 +7728,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout scheduleHeading = new LinearLayout(this);
         scheduleHeading.setGravity(Gravity.CENTER_VERTICAL);
         scheduleHeading.setPadding((int) (10 * density), 0, (int) (10 * density), 0);
-        TextView scheduleTitle = createPrayerPopupText("JADWAL HARI INI", 9.5f,
+        TextView scheduleTitle = createPrayerPopupText("JADWAL HARI INI", 11f,
                 TvUiTokens.ACCENT_SECTION, true);
         scheduleHeading.addView(scheduleTitle);
         rows.addView(scheduleHeading, new LinearLayout.LayoutParams(
@@ -7747,19 +7747,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 cell.setOrientation(LinearLayout.HORIZONTAL);
                 cell.setGravity(Gravity.CENTER_VERTICAL);
                 cell.setPadding((int) (8 * density), 0, (int) (7 * density), 0);
-                TextView name = createPrayerPopupText(item.name, 10.5f,
+                TextView name = createPrayerPopupText(item.name, 12f,
                         item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true);
                 name.setSingleLine(true);
                 name.setEllipsize(android.text.TextUtils.TruncateAt.END);
                 cell.addView(name, new LinearLayout.LayoutParams(0,
                         ViewGroup.LayoutParams.MATCH_PARENT, 1f));
-                TextView time = createPrayerPopupText(item.timeFormatted, 10.5f,
+                TextView time = createPrayerPopupText(item.timeFormatted, 12f,
                         item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_SECONDARY, true);
                 time.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
                 cell.addView(time);
                 TextView state = createPrayerPopupText(
                         prayerIndex < 0 ? "INFO" : (Azan.on(this, prayerIndex) ? "AZAN ON" : "AZAN OFF"),
-                        8.5f, prayerIndex < 0 ? TvUiTokens.TEXT_SECONDARY
+                        9.5f, prayerIndex < 0 ? TvUiTokens.TEXT_SECONDARY
                                 : (Azan.on(this, prayerIndex) ? TvUiTokens.ACCENT_SECTION : TvUiTokens.DISABLED_TEXT), true);
                 state.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
                 LinearLayout.LayoutParams stateLp = new LinearLayout.LayoutParams(
@@ -7852,9 +7852,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (18 * density)));
 
         // Existing GlassDrawable material is untouched; the popup remains one centered, non-scrolling frame.
-        int width = Math.min((int) (520 * density),
+        int width = Math.min((int) (560 * density),
                 Math.max(1, root.getWidth() - 2 * TvResponsiveLayout.safeInsetPx(root.getWidth())));
-        int height = Math.min((int) (370 * density),
+        int height = Math.min((int) (410 * density),
                 Math.max(1, root.getHeight() - 2 * TvResponsiveLayout.safeInsetPx(root.getHeight())));
         showPrayerPopupOverlay(panel, rows, anchor, width, height);
     }
@@ -7882,8 +7882,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout copy = new LinearLayout(this);
         copy.setOrientation(LinearLayout.VERTICAL);
         copy.setGravity(Gravity.CENTER_VERTICAL);
-        TextView label = createPrayerPopupText(title, 10.5f, TvUiTokens.TEXT_PRIMARY, true);
-        TextView detail = createPrayerPopupText(description, 8.5f, TvUiTokens.TEXT_SECONDARY, false);
+        TextView label = createPrayerPopupText(title, 12.5f, TvUiTokens.TEXT_PRIMARY, true);
+        TextView detail = createPrayerPopupText(description, 10f, TvUiTokens.TEXT_SECONDARY, false);
         detail.setSingleLine(true);
         detail.setEllipsize(android.text.TextUtils.TruncateAt.END);
         copy.addView(label, new LinearLayout.LayoutParams(
@@ -7893,7 +7893,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         row.addView(copy, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f));
 
-        TextView state = createPrayerPopupText(value, 9.5f, TvUiTokens.ACCENT_SECTION, true);
+        TextView state = createPrayerPopupText(value, 11f, TvUiTokens.ACCENT_SECTION, true);
         state.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
         row.addView(state, new LinearLayout.LayoutParams(
                 (int) (112 * density), ViewGroup.LayoutParams.MATCH_PARENT));
@@ -7927,41 +7927,53 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.setBackground(glass);
         Backdrop.watch(panel);
         glider.addCompanion(panel);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height, Gravity.CENTER);
+        // Right-center placement inside the safe area; the Home surface behind it is unchanged.
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                width, height, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        lp.rightMargin = (int) (42 * density);
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
 
-        View first = null, last = null;
-        for (int i = 0; i < rows.getChildCount(); i++) {
-            View row = rows.getChildAt(i);
-            if (!row.isFocusable()) continue;
-            if (first == null) first = row;
-            last = row;
-            row.setOnFocusChangeListener((v, has) -> {
-                if (has) glideToMenuRow(panel, rows, v);
+        // Deterministic focus order avoids unreliable geometric focus search in nested TV layouts.
+        final ArrayList<View> focusOrder = new ArrayList<>();
+        collectPrayerPopupFocusables(rows, focusOrder);
+        for (View target : focusOrder) {
+            target.setOnFocusChangeListener((v, has) -> {
+                if (has) {
+                    SoundEffects.playNav();
+                    glideToMenuRow(panel, rows, v);
+                }
             });
-        }
-        final View top = first, bottom = last;
-        for (int i = 0; i < rows.getChildCount(); i++) {
-            View row = rows.getChildAt(i);
-            if (!row.isFocusable()) continue;
-            row.setOnKeyListener((v, keyCode, event) -> {
-                boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
+            target.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) {
+                    return keyCode == KeyEvent.KEYCODE_DPAD_UP
+                            || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                            || keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                            || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+                            || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+                            || keyCode == KeyEvent.KEYCODE_ENTER
+                            || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER
+                            || keyCode == KeyEvent.KEYCODE_BACK;
+                }
+                int index = focusOrder.indexOf(v);
                 switch (keyCode) {
-                    case KeyEvent.KEYCODE_DPAD_UP:
-                        if (v != top) return false;
-                        if (down) closeMenu(true);
-                        return true;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
-                        if (v != bottom) return false;
-                        if (down) closeMenu(true);
-                        return true;
-                    case KeyEvent.KEYCODE_DPAD_LEFT:
                     case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        if (index >= 0 && index + 1 < focusOrder.size()) focusOrder.get(index + 1).requestFocus();
+                        return true;
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                        if (index > 0) focusOrder.get(index - 1).requestFocus();
+                        return true;
+                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                    case KeyEvent.KEYCODE_ENTER:
+                    case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                        v.performClick();
                         return true;
                     case KeyEvent.KEYCODE_BACK:
-                        if (down) closeMenu(true);
+                    case KeyEvent.KEYCODE_ESCAPE:
+                        closeMenu(true);
                         return true;
                     default:
                         return false;
@@ -7989,6 +8001,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             panel.post(() -> {
                 if (openMenu == panel && initialFocus.isAttachedToWindow()) initialFocus.requestFocus();
             });
+        }
+    }
+
+    private void collectPrayerPopupFocusables(ViewGroup parent, List<View> output) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            if (child.getVisibility() != View.VISIBLE) continue;
+            if (child.isFocusable() && child.isEnabled()) output.add(child);
+            if (child instanceof ViewGroup) collectPrayerPopupFocusables((ViewGroup) child, output);
         }
     }
 
