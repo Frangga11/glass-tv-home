@@ -2940,3 +2940,15 @@ Wi-Fi popup workstream is complete through latest APK generation and evidence re
 - Added `tests/test_home_luxury_glass_focus_contract.py` for glass persistence, rim reflection, icon tint, Islamic shelf glass and Islamic gold/shadow.
 - Exact-head CI #1875 / run `42720524182` was IN PROGRESS at checkpoint sync; release publication workflow run `42720524808` was SKIPPED. Do not claim CI PASS until exact-head run concludes.
 - No merge, ADB, device install, default-launcher change or release publication. 1920x1080 rendered review and physical Mi TV Stick acceptance remain pending. Preserve RE-SKIN NOT REWIRE and all existing functional/geometry constraints.
+
+
+## 10 NOVEMBER 2026 — HANDOVER: GTVH-HOME-FOCUS-OVERLAY-DPAD-001
+- Continue from PR #114: https://github.com/Frangga11/glass-tv-home/pull/114
+- Source branch: `fix/home-focus-overlay-dpad-001`; exact HEAD `2151d19b83a92ac0cee76223554776d9d3d05968`; stacked on PR #113 exact base HEAD `964a802c72e9f4c8468d528a95f60e5f47cd24ab`.
+- Current status: OPEN / DRAFT / UNMERGED. Do not merge, rebase, retarget or install without explicit owner approval.
+- Exact-head CI #1918 / run ID `42839301456`: SUCCESS; Lists/tools/docs 267 tests OK (1 skipped); Android `testReleaseUnitTest assembleRelease` BUILD SUCCESSFUL.
+- Exact QA artifact: ID `13775795455`; link https://github.com/Frangga11/glass-tv-home/actions/runs/42839301456/artifacts/13775795455; expires 17 Nov 2026. APK size 1,630,801 bytes; APK SHA-256 `d58e5a75771666ddd4c2f9a124ad306677d19cfa020eec623c934b8ad7b52d60`.
+- Next owner task: manually install this exact-head APK on Mi TV Stick (Android TV 11, 1920×1080). Validate (1) focus visible above Location/Altitude, Weather/AQI, Wi-Fi, Mic and all three navigation tabs; (2) same focus size/animation/settling; (3) Beranda has no permanent highlight; (4) icon-label gap 1dp and equal navigation widths; (5) all four requested D-pad simulations; (6) popup closes back to its original trigger for Profile, Quick Settings, Wi-Fi, Daily Ayah and Prayer timetable; (7) readable over bright and dark wallpaper.
+- Capture 1920×1080 screenshots or a short video for visual and DPAD acceptance. CI PASS is not visual/device PASS.
+- No ADB/device install, default-launcher change, merge or release was performed by assistant. PR #113 and its parent chain remain unchanged.
+- Restart prompt: `Lanjutkan PR #114 dari exact HEAD 2151d19b83a92ac0cee76223554776d9d3d05968. CI #1918 PASS. Lanjutkan acceptance visual dan DPAD di Mi TV Stick 1920×1080; jangan merge sebelum persetujuan.`
