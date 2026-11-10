@@ -2071,9 +2071,12 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 
 ### Exact-head CI state at checkpoint
 - PR #112 exact HEAD `56f5af83b79eaa704d7616d111501f41f5c52e28`.
-- CI run #1901 / ID `42818986917`: IN PROGRESS at checkpoint.
-- Lists/tools/docs job: SUCCESS.
-- Launcher unit tests + Release Build step: IN PROGRESS; APK artifact and size not yet available.
+- CI run #1901 / ID `42818986917` on exact HEAD `56f5af83b79eaa704d7616d111501f41f5c52e28`: **SUCCESS**.
+- Lists/tools/docs regression suite: **260 tests, OK (1 skipped)**. All five new floating-content contracts passed.
+- Launcher unit tests and `assembleRelease`: **SUCCESS**; Gradle reported `BUILD SUCCESSFUL`.
+- Release APK exact size: **1,630,941 bytes (1,592 KB)**. This is above the historical 1.5 MiB reference; the warning is non-blocking.
+- Artifact ID `13765339250`; archive size `1,431,913 bytes`; archive SHA-256 `e44a3eb0b7fd144ff3cdebd344a53553cc3e7895dbda4834fc06166e51ff8bec`.
+- Artifact: https://github.com/Frangga11/glass-tv-home/actions/runs/42818986917/artifacts/13765339250
 - No ADB, physical device install, default launcher change, merge, or release was performed.
 
 ### Next steps
