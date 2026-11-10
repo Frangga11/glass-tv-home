@@ -51,3 +51,29 @@ No changes to tile dimensions, application ordering/identity, DPAD routing, laun
 5. Dock glass material keeps stable veil/blur/rim/opacity while the Dock changes vertical position.
 6. No focus cursor is hidden by tile art, clipped by RecyclerView, or left behind after transitions.
 7. App activation and all unrelated Home controls remain unchanged.
+
+
+## Video evidence audit — 11 November 2026
+
+Uploaded Mi TV Stick recording: 18.43 seconds, 1920×1080, approximately 30 fps.
+
+Observed sequence:
+- During navigation into the top/header region, the application rows are absent from the visible Home composition while the header remains available. This is consistent with the Home focus-region presentation and is not, by itself, evidence of inventory loss.
+- When the second row returns, the focused Prime Video tile displays a focus outline but its banner/artwork is visually absent. Other second-row tiles remain visible.
+- The focus frame is therefore visible, but the focused tile's visual content is not reliably preserved. This is a distinct regression from a hidden focus cursor.
+
+### Root cause confirmed by source inspection
+
+GridFocusDecoration.onDrawOver() called Glider.drawShape() for the entire shared shape. In GLASS style, drawShape() paints the blurred backdrop, veil, rim, and focus stroke. Because onDrawOver() runs after RecyclerView children, this foreground pass can paint the glass pane over the focused app tile's banner/icon/label. The earlier change fixed cursor occlusion but used an over-broad drawing primitive and could obscure the tile itself.
+
+### Corrective implementation
+
+- Added Glider.drawFocusOutline() to render only the focus stroke in a foreground canvas.
+- Changed GridFocusDecoration.onDrawOver() to call the outline-only method.
+- Kept the full shared Glider pane on its existing root/background rendering path, behind tile content.
+- Updated the source-contract regression to require outline-only foreground drawing and reject drawShape() in the Grid foreground decoration.
+- Updated this checkpoint based on actual video evidence; no app inventory, tile geometry, launch behavior, DPAD routing, or unrelated Home modules changed.
+
+### Validation gate
+
+The source correction is committed to this PR branch. A fresh CI run against the resulting exact HEAD is required before issuing a new QA APK. Physical Mi TV Stick acceptance remains mandatory; do not claim device PASS based on source inspection or CI alone.
