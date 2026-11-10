@@ -152,7 +152,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalDockTransitionAnimator;
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
-    /** Vertical DPAD input received during Dock collapse; replay only after a Dock tile owns focus. */
     /** One semantic DPAD intent captured during collapse; never replay synthetic Android key events. */
     private int pendingDockCollapseDirection = -1;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
@@ -3662,6 +3661,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             @Override public void onAnimationCancel(android.animation.Animator animation) {
                 cancelled = true;
                 horizontalDockCollapseInProgress = false;
+                pendingDockCollapseDirection = -1;
             }
             @Override public void onAnimationEnd(android.animation.Animator animation) {
                 if (horizontalDockTransitionAnimator == animator) horizontalDockTransitionAnimator = null;
@@ -3684,7 +3684,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /**
      * Wait for the Dock RecyclerView's idle layout to attach the requested tile, then commit focus.
      * A fixed three-frame retry was too short on slower TV devices and could send focus to the header.
-     * Collapse remains the focus owner until requestFocus() succeeds; only then are queued keys replayed.
+     * Collapse remains the focus owner until requestFocus() succeeds; then one captured intent is applied semantically.
      */
     private void restoreDockFocusAfterCollapse(int dockPosition, int generation, int attemptsRemaining) {
         if (generation != gridFocusRequestGeneration) {
