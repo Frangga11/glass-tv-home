@@ -7779,6 +7779,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         zone.setMaxLines(2);
         header.addView(zone, new LinearLayout.LayoutParams(
                 (int) (122 * density), ViewGroup.LayoutParams.MATCH_PARENT));
+        header.setBackground(prayerPopupCardBackground(false));
         header.setFocusable(true);
         header.setClickable(true);
         header.setOnClickListener(v -> {
@@ -8150,12 +8151,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 .setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f))
                 .start();
 
-        View initialFocus = focusOrder.isEmpty() ? null : focusOrder.get(0);
-        if (initialFocus != null) {
-            panel.requestFocus();
-            panel.post(() -> {
-                if (openMenu == panel && initialFocus.isShown()) initialFocus.requestFocus();
-            });
+        if (!focusOrder.isEmpty()) {
+            panel.post(() -> requestPrayerPopupInitialFocus(panel, focusOrder, 8));
+        }
+    }
+
+    private void requestPrayerPopupInitialFocus(
+            FrameLayout panel, ArrayList<View> focusOrder, int attemptsRemaining) {
+        if (openMenu != panel || panel.getParent() != root || focusOrder.isEmpty()) return;
+        View target = focusOrder.get(0);
+        if (target.isShown() && target.requestFocus() && target.isFocused()) return;
+        if (attemptsRemaining > 0) {
+            panel.postOnAnimation(() ->
+                    requestPrayerPopupInitialFocus(panel, focusOrder, attemptsRemaining - 1));
+        } else {
+            android.util.Log.e("TvHome.PrayerPopup",
+                    "Initial focus could not be committed; refusing Home-header fallback");
         }
     }
 
