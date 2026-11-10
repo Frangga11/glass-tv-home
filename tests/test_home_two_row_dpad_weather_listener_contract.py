@@ -57,6 +57,19 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("grid.setVisibility(View.GONE)", collapse)
         self.assertNotIn("restoreDockFocusAfterCollapse", MAIN)
 
+    def test_dock_reveal_serializes_repeated_vertical_keys(self):
+        start = MAIN.index("public boolean onDockTileKey(")
+        end = MAIN.index("public boolean onDockTileHeld(", start)
+        dock_keys = MAIN[start:end]
+        self.assertIn("if (horizontalDockExpansionInProgress) return true;", dock_keys)
+        expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
+        expand_end = MAIN.index("private void collapseHorizontalOverflowToDock", expand_start)
+        expand = MAIN[expand_start:expand_end]
+        self.assertIn("horizontalDockExpansionInProgress = true;", expand)
+        self.assertIn("horizontalDockExpansionInProgress = false;", expand)
+        self.assertLess(expand.index("horizontalDockExpansionInProgress = false;"),
+                        expand.index("focusTile(targetPosition)"))
+
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
