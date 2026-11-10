@@ -49,7 +49,7 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("dockRecycler.setTranslationY(pitch)", expand)
         self.assertIn("grid.setTranslationY(pitch)", expand)
         self.assertIn("focusTile(targetPosition)", expand)
-        self.assertIn("dockRecycler.setTranslationY(-pitch", collapse)
+        self.assertIn("dockRecycler.setTranslationY(pitch * progress)", collapse)
         self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
         self.assertIn("focusDockTile(dockPosition)", collapse)
 
