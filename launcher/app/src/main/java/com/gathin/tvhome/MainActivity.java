@@ -694,7 +694,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             View.OnKeyListener inlineKey = (v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    focusTile(0);
+                    if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+                    else focusTile(0);
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
@@ -853,7 +854,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    focusTile(0);
+                    // The prayer timetable is the final upper-shelf stop; enter the primary Dock row.
+                    if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+                    else focusTile(0);
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
