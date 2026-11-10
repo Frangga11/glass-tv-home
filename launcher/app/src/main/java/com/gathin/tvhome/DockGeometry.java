@@ -157,20 +157,6 @@ final class DockGeometry {
         return Math.max(0, dockHeight + dockBottomMargin - trayTopOffset + gridToTrayGap);
     }
 
-    /** Place the primary Dock row in the upper slot previously occupied by the overflow Grid. */
-    static int horizontalPrimaryDockTopMarginPx(int containerHeightPx,
-                                                 int gridBottomMarginPx,
-                                                 int gridViewportHeightPx) {
-        return Math.max(0, containerHeightPx - gridBottomMarginPx - gridViewportHeightPx);
-    }
-
-    /** Place the overflow Grid in the lower slot previously occupied by the primary Dock row. */
-    static int horizontalOverflowGridTopMarginPx(int containerHeightPx,
-                                                   int dockBottomMarginPx,
-                                                   int dockHeightPx) {
-        return Math.max(0, containerHeightPx - dockBottomMarginPx - dockHeightPx);
-    }
-
     /** Shelf baseline sits 36dp above the tray; tray starts 14dp above the tile card. */
     static int shelfBottomOffsetFromTileTopPx(float density) {
         return Math.round((TRAY_PADDING_DP + SHELF_TO_TRAY_GAP_DP) * density);
