@@ -118,7 +118,7 @@ final class Glider extends View {
                 springs[i].setSpring(new SpringForce().setStiffness(1400f).setDampingRatio(0.95f));
                 springs[i].setMinimumVisibleChange(1.5f);
             } else {
-                springs[i].setSpring(new SpringForce().setStiffness(900f).setDampingRatio(1.0f));
+                springs[i].setSpring(new SpringForce().setStiffness(420f).setDampingRatio(1.0f));
             }
             springs[i].addEndListener((anim, canceled, value, velocity) -> {
                 if (!canceled) arriveIfResting();
@@ -301,8 +301,9 @@ final class Glider extends View {
         // shining edge.
         drawShadow(canvas, r);
         if (paneHidden) return;
-        glass.draw(canvas, canvasOwner, shape, r, opacity);
-        veil.setAlpha(Math.round(0x14 * opacity));
+        // Keep wallpaper refraction subtle so the focus reads as Silver-Cyan glass, not a blur patch.
+        glass.draw(canvas, canvasOwner, shape, r, opacity * 0.58f);
+        veil.setAlpha(Math.round(0x2A * opacity));
         canvas.drawRoundRect(shape, r, r, veil);
         float half = rim.paint.getStrokeWidth() / 2f;
         shape.inset(half, half);

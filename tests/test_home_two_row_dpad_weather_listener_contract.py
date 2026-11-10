@@ -73,8 +73,8 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         collapse_start = MAIN.index("private void collapseHorizontalOverflowToDock")
         focus_start = MAIN.index("private void focusTile(", collapse_start)
         transitions = MAIN[collapse_start:focus_start]
-        self.assertEqual(2, transitions.count("animator.setDuration(reducedMotion ? 120 : 190);"))
-        self.assertNotIn("animator.setDuration(reducedMotion ? 140 : 260);", transitions)
+        self.assertEqual(2, transitions.count("animator.setDuration(reducedMotion ? 180 : 300);"))
+        self.assertNotIn("animator.setDuration(reducedMotion ? 120 : 190);", transitions)
 
     def test_two_row_geometry_uses_fixed_150dp_pitch_and_182_by_100_design_tile(self):
         expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
@@ -96,9 +96,17 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         motion = MAIN[transition_start:focus_start]
         self.assertIn("int pitch = Math.round(150f * density);", expand)
         self.assertIn("final int pitch = Math.round(150f * density);", collapse)
-        self.assertIn("PathInterpolator(0.22f, 1f, 0.36f, 1f)", collapse)
-        self.assertIn("PathInterpolator(0.22f, 1f, 0.36f, 1f)", motion)
+        self.assertIn("PathInterpolator(0.16f, 1f, 0.30f, 1f)", collapse)
+        self.assertIn("PathInterpolator(0.16f, 1f, 0.30f, 1f)", motion)
         self.assertNotIn("horizontalGridViewportHeightPx(", collapse)
+
+
+    def test_glass_focus_keeps_material_and_reduces_blur_dominance(self):
+        glider = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").read_text(encoding="utf-8")
+        self.assertIn("setStiffness(420f)", glider)
+        self.assertIn("opacity * 0.58f", glider)
+        self.assertIn("0x2A * opacity", glider)
+        self.assertIn("rim.drawWindowLight(canvas, shape, r - half, opacity)", glider)
 
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)

@@ -3591,7 +3591,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Dock travels UP by one pitch; the overflow row starts below its viewport and enters.
         dockRecycler.setTranslationY(0f);
         grid.setTranslationY(pitch);
-        grid.setAlpha(0.72f);
+        grid.setAlpha(0.88f);
         horizontalGridExpanded = true;
         applyDockLayout();
         grid.setVisibility(View.VISIBLE);
@@ -3623,8 +3623,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final android.animation.ValueAnimator animator =
                 android.animation.ValueAnimator.ofFloat(0f, 1f);
         horizontalDockTransitionAnimator = animator;
-        animator.setDuration(reducedMotion ? 120 : 190);
-        animator.setInterpolator(new android.view.animation.PathInterpolator(0.22f, 1f, 0.36f, 1f));
+        animator.setDuration(reducedMotion ? 180 : 300);
+        animator.setInterpolator(new android.view.animation.PathInterpolator(0.16f, 1f, 0.30f, 1f));
         animator.addUpdateListener(value -> {
             if (transition != horizontalDockTransitionGeneration) return;
             float progress = (Float) value.getAnimatedValue();
@@ -3632,7 +3632,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // overflow row exits below the viewport. No LayoutParams re-anchoring occurs.
             dockRecycler.setTranslationY(-pitch * (1f - progress));
             grid.setTranslationY(pitch * progress);
-            grid.setAlpha(1f - 0.28f * progress);
+            grid.setAlpha(1f - 0.12f * progress);
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -3666,8 +3666,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final float from = expanding ? pitch : -pitch;
         final android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofFloat(from, 0f);
         horizontalDockTransitionAnimator = animator;
-        animator.setDuration(reducedMotion ? 120 : 190);
-        animator.setInterpolator(new android.view.animation.PathInterpolator(0.22f, 1f, 0.36f, 1f));
+        animator.setDuration(reducedMotion ? 180 : 300);
+        animator.setInterpolator(new android.view.animation.PathInterpolator(0.16f, 1f, 0.30f, 1f));
         animator.addUpdateListener(value -> {
             if (generation != horizontalDockTransitionGeneration) return;
             float offset = (Float) value.getAnimatedValue();
@@ -3675,7 +3675,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (dockRecycler != null) dockRecycler.setTranslationY(-pitch * progress);
             if (grid != null) {
                 grid.setTranslationY(offset);
-                if (expanding) grid.setAlpha(0.72f + 0.28f * progress);
+                if (expanding) grid.setAlpha(0.88f + 0.12f * progress);
             }
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
