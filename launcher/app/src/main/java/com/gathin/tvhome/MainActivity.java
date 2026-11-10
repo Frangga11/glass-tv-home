@@ -606,25 +606,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             weatherAirQualityView.setOnClickListener(v -> {
                 startActivity(new Intent(this, WeatherActivity.class));
             });
+            // Single authoritative Weather/AQI DPAD listener. Keep its vertical destination
+            // aligned with the Home graph: Weather/AQI DOWN enters the primary Dock row first.
             weatherAirQualityView.setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    if (nowPlayingCard != null && nowPlayingCard.getVisibility() == View.VISIBLE) {
-                        if (cardTrackInfo != null) cardTrackInfo.requestFocus();
-                        else nowPlayingCard.requestFocus();
-                        return true;
-                    }
-                    focusTile(0);
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                    View location = findViewById(R.id.locationPill);
+                    if (location != null && location.isShown() && location.requestFocus()) return true;
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    View target = (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) ? btnInputs
-                            : (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) ? btnWifi
-                            : findViewById(R.id.btnSettings);
-                    if (target != null) {
-                        target.requestFocus();
-                        return true;
+                    if (btnHome != null && btnHome.isShown() && btnHome.requestFocus()) return true;
+                    return false;
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    if (nowPlayingCard != null && nowPlayingCard.getVisibility() == View.VISIBLE) {
+                        if (cardTrackInfo != null && cardTrackInfo.isShown() && cardTrackInfo.requestFocus()) return true;
+                        if (nowPlayingCard.isShown() && nowPlayingCard.requestFocus()) return true;
                     }
+                    if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+                    else focusTile(0);
+                    return true;
                 }
                 return false;
             });
@@ -1062,10 +1064,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
 
         // Owner-defined Home DPAD graph:
-        // Home LEFT -> Location DOWN -> Weather/AQI DOWN -> first app row.
-        // Home -> Profile -> Settings -> Wi-Fi -> Mic; each header capsule goes DOWN to row one.
-        // Mic DOWN -> Ayah -> Prayer timetable -> first app row. Inputs remains reachable as
-        // an optional branch (Wi-Fi UP / Inputs DOWN) without interrupting the primary path.
+        // Header DOWN -> primary Dock row; Dock DOWN -> matching overflow Grid column.
+        // Grid UP -> matching Dock column; Dock UP -> top shelf.
+        // Home LEFT -> Location DOWN -> Weather/AQI DOWN -> primary Dock row.
+        // Mic DOWN -> Ayah -> Prayer timetable -> primary Dock row. Inputs remains an optional branch.
         View locationPill = findViewById(R.id.locationPill);
         if (locationPill != null) locationPill.setOnClickListener(v -> showPrayerZoneDialog());
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
@@ -1092,7 +1094,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 if (id == R.id.btnInputs && btnWifi != null && btnWifi.isShown()
                         && btnWifi.requestFocus()) return true;
-                focusTile(0);
+                // The Dock is the primary visible app row; do not reveal the overflow Grid
+                // directly from a header capsule.
+                if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
+                else focusTile(0);
                 return true;
             }
             View target = null;
@@ -1128,22 +1133,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (btnInputs != null) btnInputs.setOnKeyListener(pillKeys);
         if (btnWifi != null) btnWifi.setOnKeyListener(pillKeys);
         if (btnAssistant != null) btnAssistant.setOnKeyListener(pillKeys);
-        if (weatherAirQualityView != null) {
-            weatherAirQualityView.setOnKeyListener((v, keyCode, event) -> {
-                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                    if (locationPill != null && locationPill.isShown() && locationPill.requestFocus()) return true;
-                }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    if (btnHome != null && btnHome.requestFocus()) return true;
-                }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    focusTile(0);
-                    return true;
-                }
-                return false;
-            });
-        }
+        // Weather/AQI key handling is installed once during widget initialization above.
+        // Do not register another listener here: View.setOnKeyListener replaces the previous one.
 
         // Measure the actual clock/date content edge, not leftBlock's constrained RelativeLayout
         // bounds. Using leftBlock.getRight() here can make the center navigation collapse to 0px.
@@ -3441,9 +3432,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     ? pendingHorizontalGridPosition : position;
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                 if (basePosition < COLUMNS) {
+                    // This Grid is the overflow row directly below the primary Dock row.
+                    // UP must return to the Dock item in the same column, not jump to the header.
                     cancelHorizontalGridRowTransition();
-                    if (btnHome != null && btnHome.isShown() && btnHome.requestFocus()) return true;
-                    return focusTopBarFallback();
+                    int dockTarget = Math.min(basePosition % COLUMNS, dockAdapter.getItemCount() - 1);
+                    focusDockTile(dockTarget);
+                    return true;
                 } else {
                     requestHorizontalGridRow(basePosition - COLUMNS);
                 }
