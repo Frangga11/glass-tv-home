@@ -68,6 +68,13 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("grid.setVisibility(View.GONE);", collapse)
         self.assertNotIn("ViewTreeObserver.OnPreDrawListener", collapse)
 
+    def test_two_row_transition_uses_responsive_motion_duration(self):
+        collapse_start = MAIN.index("private void collapseHorizontalOverflowToDock")
+        focus_start = MAIN.index("private void focusTile(", collapse_start)
+        transitions = MAIN[collapse_start:focus_start]
+        self.assertEqual(2, transitions.count("animator.setDuration(reducedMotion ? 120 : 190);"))
+        self.assertNotIn("animator.setDuration(reducedMotion ? 140 : 260);", transitions)
+
     def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
         self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
