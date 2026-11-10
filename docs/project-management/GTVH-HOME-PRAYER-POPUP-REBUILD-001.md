@@ -3,9 +3,10 @@
 Date: 11 November 2026 (WIB)
 Repository: `Frangga11/glass-tv-home`
 Working branch: `rebuild/home-prayer-popup-integrated-001`
-Status: IMPLEMENTATION COMMITTED — CI IN PROGRESS / RENDERED QA / DEVICE ACCEPTANCE PENDING
+Status: REBUILD COMMITTED — CI IN PROGRESS / RENDERED QA / DEVICE ACCEPTANCE PENDING
 PR: #135 — OPEN / DRAFT / UNMERGED
-Latest recorded HEAD: `28a77abf3a31f0e1afd6c201e3b2c8be19124b78`
+Latest implementation code/test HEAD: `09649a93dcb1e816f5ad3d1c1abeee87d4d7eb12`
+Exact branch head will advance with this checkpoint documentation commit.
 
 ## 1. Trigger and owner direction
 
@@ -93,6 +94,7 @@ The recording alone does not establish whether the Maghrib overlay came from a s
 - Vertical, right-center panel.
 - Width target: 430dp, constrained by actual safe width.
 - Height: measured from the complete view tree, constrained by safe height; no fixed 500dp height cap.
+- Existing GlassDrawable background is applied before measurement, then panel padding is set, so material insets cannot silently change the measured frame.
 - Header: WAKTU SHOLAT and dynamic prayer-zone name with Pagar Alam elevation context (±800 mdpl).
 - Compact next-prayer horizontal card.
 - Six timetable cells in 2 columns x 3 rows.
@@ -141,7 +143,7 @@ Not yet claimed:
 - Python contract test and repository Lists/tools/docs workflow: job succeeded on latest HEAD; individual test counts are not yet available from the job summary.
 - Android unit tests: running in the Launcher build/unit-test job.
 - Release build: running in the Launcher build/unit-test job.
-- Exact-head CI: run #2040 for HEAD `28a77abf3a31f0e1afd6c201e3b2c8be19124b78` is in progress; Lists/tools/docs job succeeded, Launcher build/unit tests still running.
+- Exact-head CI: run #2042 for implementation/test HEAD `09649a93dcb1e816f5ad3d1c1abeee87d4d7eb12` is in progress; Lists/tools/docs job succeeded, Launcher build/unit tests still running.
 - APK size/checksum: pending.
 - Rendered UI inspection at 1920x1080: pending.
 - Mi TV Stick Android TV 11 physical acceptance: pending.
