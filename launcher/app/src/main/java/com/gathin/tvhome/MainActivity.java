@@ -899,10 +899,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Backdrop.watch(dockRecycler);
         setUpGlider();
-        // Preserve the established GlassDrawable/Backdrop treatment on every header control.
-        // The three navigation tabs use a foreground selector so the active Beranda state remains
-        // visible without replacing the liquid-glass background.
-        // One shared glass surface owns the Home/Profile/Settings navigation capsule.
+        // Preserve one shared glass capsule for Home/Profile/Settings.
+        // Each focusable header control paints the same moving Glider after its glass surface
+        // and before its own text/icon content, so no capsule can cover the focus indicator.
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
@@ -2502,8 +2501,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
 
     /**
-     * The one focus shape (Glider) goes behind everything it marks; the pills' glass makes way for it
-     * as it arrives, and the dock tray paints it over its own glass.
+     * The shared Glider remains a single geometry/animation owner. Header capsule backgrounds
+     * composite that same shape above their glass and below their text; the Dock keeps its own
+     * established companion drawing path.
      */
     private void setUpGlider() {
         glider = new Glider(this, reducedMotion);
