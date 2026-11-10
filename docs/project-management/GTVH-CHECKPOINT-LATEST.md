@@ -1990,3 +1990,53 @@ Wait for exact-head Android unit tests and release build. If successful, verify 
 - Navigation-specific Frosted Silver focus and 2dp icon-label spacing are included in this exact-head artifact.
 - PR #109 remains OPEN / DRAFT / UNMERGED. Protected Wi-Fi base remains 774eb99faa48e109b3532533425bbb4cdee07a4a.
 - Physical Mi TV Stick visual/DPAD acceptance is still pending; CI success is not a substitute for rendered-device acceptance. Verify silver focus contrast/visibility, stable glass during focus movement, equal navigation segments, and 2dp icon-label gap.
+
+---
+
+## CUMULATIVE HOME INTEGRATION CHECKPOINT — 10 NOVEMBER 2026
+
+**Workstream:** `GTVH-HOME-CUMULATIVE-INTEGRATION-111`  
+**Repository:** `Frangga11/glass-tv-home`  
+**Integration PR:** https://github.com/Frangga11/glass-tv-home/pull/111  
+**State:** OPEN / DRAFT / UNMERGED  
+**Branch:** `integration/home-all-approved-changes-001`  
+**Exact HEAD:** `b461e35561ba1bc44d366fdab351e46221150873`  
+**Base:** `fix/home-header-typography-focus-001` @ `9b49f26180430dc63ef2ab8cf20bcba845e067ea`
+
+### Cross-audit decisions
+- The cumulative source ancestry retains the approved Home/Dock/Islamic Shelf and G3/G4 chain through PR #77–#89, #100 → #101 → #103 → #104 → #105 → #107 → #108 → #110.
+- PR #91–#93 were parallel implementations. Their RTL/LTR alignment, prayer-label cleanup, compact spacing and shared Ayah line-box behavior were cross-checked against the later #101/#110 implementation and are already represented there; no duplicate replay.
+- PR #99 spacing/safe-frame work is superseded by cumulative #100/#101 already in the source.
+- PR #90 artifact workflow allowance is represented in the cumulative workflow.
+- PR #109 overlaps MainActivity/Glider/navigation selector. Retain #110 global silver focus, current DPAD graph and active Home state. Selectively integrate #109 clock/date divider, centered weather/AQI divider and uniform navigation spacing.
+- PR #51 location receiver DUMP permission + non-exported LocationActivity and its regression test are present in current source; the test file matches exactly.
+- PR #41 WallpaperSettingsDialog is an exact source-file match; current MainActivity/ModernSettingsDialog/WallpaperUploadServer/WeatherActivity and localized strings contain the unified wallpaper flow, startup recovery and upload-timeout behavior.
+- PR #35 atomic built-in avatar/app-policy package filtering and PR #17 SettingsFocusPath are represented in the current source. No duplicate cherry-picks.
+- PR #63/#64 Dock partition/inventory foundation remains a separate unfinished workstream. PR #64 is the stronger duplicate, but its audit explicitly leaves dedicated Dock/Grid renderers, settings UI and DPAD acceptance incomplete; it refactors AppAdapter and is excluded from this visual integration to protect Dock/Grid behavior.
+- PR #62 GIPHY avatar catalog is a separate unfinished optional feature with cancellation/lifecycle/provider-policy acceptance gaps; excluded from this integration candidate.
+
+### Added integration changes
+- Added 1dp × 22dp clock/date divider and removed redundant dateBlock margin.
+- Standardized Beranda/Profil/Pengaturan drawable gap to 2dp and horizontal padding to 4dp.
+- Added centered vertical Weather/AQI divider span; data/provider/cache/refresh logic unchanged.
+- Added regression contract for the new separators and spacing.
+- Updated three existing tests whose old 1dp/4dp expectations contradicted the selected uniform 2dp design.
+- Added dedicated PR #111 QA artifact upload step.
+
+### Exact-head CI and APK verification
+- CI run #1898 / ID `42750375871` on exact HEAD `b461e35561ba1bc44d366fdab351e46221150873`: **SUCCESS**.
+- Lists/tools/docs job: PASS.
+- Launcher `testReleaseUnitTest assembleRelease`: PASS; `BUILD SUCCESSFUL`.
+- APK artifact upload: PASS.
+- APK size: **1,630,769 bytes (1,592 KB)**; non-blocking warning above historical 1.5 MiB reference.
+- Artifact ID `13733830327`; name `glass-tv-home-cumulative-integration-111-b461e35561ba1bc44d366fdab351e46221150873`; archive size 1,431,843 bytes; archive SHA-256 `2d367f674a5d95acb16ffb92ddfa1ebe108ccd8bd6ac79dcdadd12b7aa39da97`.
+- Extracted APK: `app-release.apk`, 1,630,769 bytes; SHA-256 `369d80d6c5f3f8a369f1b083a0d1eeabc944a001334eeb5294905d65d3179b3c`. ZIP integrity and APK identification PASS.
+- Actions artifact: https://github.com/Frangga11/glass-tv-home/actions/runs/42750375871/artifacts/13733830327
+
+### Acceptance still pending
+- Visual review at 1920×1080.
+- Physical Mi TV Stick visual/DPAD acceptance, especially silver focus contrast on bright/dark wallpapers, glass continuity during focus movement, header separator legibility and navigation spacing.
+- APK size optimization is a non-blocking follow-up; do not remove approved assets solely to meet the historical 1.5 MiB reference.
+- No merge, ADB/device installation, default launcher change or release publication has occurred. Keep PR #111 OPEN / DRAFT / UNMERGED until visual and physical acceptance are recorded.
+
+**Next restart prompt:** `Lanjutkan dari GTVH-CHECKPOINT-LATEST.md — GTVH-HOME-CUMULATIVE-INTEGRATION-111.`
