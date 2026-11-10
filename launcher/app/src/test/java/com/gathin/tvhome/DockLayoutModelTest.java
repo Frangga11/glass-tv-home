@@ -320,14 +320,14 @@ public class DockLayoutModelTest {
                         oldHostHeight - DockGeometry.horizontalDockHeightPx(dockTileHeight, density));
                 float trayHeight = tileHeight + 28f * density;
 
-                assertEquals(tileHeight + Math.round(45f * density), itemHeight);
+                assertEquals(tileHeight + Math.round(42f * density), itemHeight);
                 assertEquals(itemHeight + Math.round(12f * density), dockHeight);
                 assertEquals(Math.round(8f * density), DockGeometry.horizontalDockItemBottomOffsetPx(density));
                 assertEquals(Math.round(12f * density), DockGeometry.dockItemBottomOffsetPx(density));
                 assertEquals(14f * density, DockGeometry.trayPaddingPx(density), 0.001f);
                 assertEquals(29f * density, dockHeight - trayHeight, 1.1f);
                 // The refined horizontal host sits 16dp above the gridWrap edge.
-                assertEquals(45f * density,
+                assertEquals(42f * density,
                         dockHeight - trayHeight + Math.round(16f * density), 1.1f);
             }
         }
@@ -374,13 +374,13 @@ public class DockLayoutModelTest {
     }
 
     @Test
-    public void miTvStickFiveSlotDockCardTargetsApproximately144By81Dp() {
+    public void miTvStickFiveSlotDockCardTargetsApproximately144By79Dp() {
         // 1920px at 320dpi with the approved 29dp left/right safe margins.
         int safeContentWidth = 1920 - Math.round(29f * 2f) * 2;
         int widthPx = DockGeometry.horizontalDockTileWidthPx(safeContentWidth, 5, 2f);
         int heightPx = DockGeometry.tileHeightPx(widthPx);
         assertEquals(287, widthPx);
-        assertEquals(161, heightPx);
+        assertEquals(158, heightPx);
     }
 
     @Test
@@ -393,7 +393,7 @@ public class DockLayoutModelTest {
         assertTrue(four > 0);
         assertEquals(five, four);
         assertTrue(six < five);
-        assertEquals(Math.round(five * 101f / 180f), DockGeometry.tileHeightPx(five));
+        assertEquals(Math.round(five * 100f / 182f), DockGeometry.tileHeightPx(five));
     }
 
 
@@ -469,7 +469,7 @@ public class DockLayoutModelTest {
     @Test
     public void p2DockTrayBottomAndShelfBaselineUseSafeMarginsAndSharedGeometry() {
         for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
-            int tileHeight = DockGeometry.tileHeightPx(Math.round(180f * density));
+            int tileHeight = DockGeometry.tileHeightPx(Math.round(182f * density));
             int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
             int bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
             int trayBottomInset = dockHeight - tileHeight
