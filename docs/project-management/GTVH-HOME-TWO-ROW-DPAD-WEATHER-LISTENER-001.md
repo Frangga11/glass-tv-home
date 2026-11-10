@@ -5,6 +5,7 @@ Repository: `Frangga11/glass-tv-home`
 PR: [#115](https://github.com/Frangga11/glass-tv-home/pull/115)  
 Branch: `fix/home-two-row-dpad-weather-listener-001`  
 Base: `fix/home-focus-overlay-dpad-001` (PR #114 cumulative candidate)  
+Current source HEAD before this documentation update: `e81cc3ce25eaba3ddebad0fa99a2b348e99441c1`  
 Status: OPEN / DRAFT / UNMERGED
 
 ## Trigger
@@ -23,7 +24,8 @@ User confirmed that the intended first app row is BrowserHere, Disney+, Miracast
 - Horizontal Dock/Grid geometry anchors were swapped so the primary Dock row is above the overflow Grid row. Tile dimensions, item identities, five-column Grid span and one-row overflow viewport are preserved.
 - Weather/AQI has one authoritative key listener. UP/LEFT returns to Location, RIGHT returns to Beranda, DOWN preserves the Now Playing stop and then enters the primary Dock.
 - Inline Now Playing and prayer timetable DOWN paths enter the primary Dock.
-- Added three regression tests covering the five-item primary/overflow partition, aligned column mapping and primary-above-overflow geometry.
+- Added three Java regression tests covering the five-item primary/overflow partition, aligned column mapping and primary-above-overflow geometry.
+- Added five Python source-contract tests covering header-to-Dock routing, exactly one Weather/AQI listener, same-column UP mapping, swapped visual row anchors and one-row overflow viewport.
 
 ## Files changed
 - `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
@@ -35,7 +37,8 @@ User confirmed that the intended first app row is BrowserHere, Disney+, Miracast
 - Initial CI run exposed two source-contract test expectations; both were corrected while preserving the intended behavior:
   - Weather location focus contract retains `locationPill.requestFocus()`.
   - Grid viewport sizing expression retains the expected source-contract form.
-- Latest CI for the current final HEAD must be checked before marking software validation PASS.
+- GitHub Actions run #1927 (`42845972311`) on the code HEAD: Lists/tools/docs job PASS; Android `testReleaseUnitTest assembleRelease` was still in progress at the last checkpoint.
+- Earlier Android validation of the same functional code passed `testReleaseUnitTest assembleRelease` with `BUILD SUCCESSFUL`; it ran before the final source-contract-only formatting and Python source-test addition, so it is not a substitute for run #1927.
 - Physical TV visual and DPAD acceptance is still PENDING. Do not claim device acceptance from CI alone.
 
 ## Protected scope
