@@ -31,19 +31,31 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("basePosition % COLUMNS", navigation)
         self.assertIn("focusDockTile(dockTarget)", navigation)
 
-    def test_primary_dock_is_above_overflow_grid_in_horizontal_layout(self):
+    def test_idle_dock_restores_legacy_bottom_anchor_and_expanded_rows_share_bottom_frame(self):
         start = MAIN.index("private void applyDockLayout()")
         end = MAIN.index("private boolean sameLayoutParams", start)
         layout = MAIN[start:end]
-        self.assertIn("gridParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;", layout)
-        self.assertIn("dockParams.gravity = Gravity.TOP | Gravity.START;", layout)
-        self.assertIn("horizontalPrimaryDockTopMarginPx", layout)
-        self.assertIn("horizontalOverflowGridTopMarginPx", layout)
+        self.assertIn("gridParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;", layout)
+        self.assertIn("dockParams.gravity = Gravity.BOTTOM | Gravity.START;", layout)
+        self.assertIn("horizontalGridExpanded ? dockBottomMargin + gridViewportHeight + rowGap", layout)
+        self.assertIn("horizontalGridExpanded ? dockBottomMargin : 0", layout)
 
-    def test_geometry_anchors_preserve_a_single_lower_overflow_viewport(self):
+    def test_dpad_transition_moves_both_rows_and_commits_focus_after_motion(self):
+        expand_start = MAIN.index("private void expandHorizontalDockForOverflow")
+        collapse_start = MAIN.index("private void collapseHorizontalOverflowToDock")
+        animate_start = MAIN.index("private void animateHorizontalDockTransition")
+        expand = MAIN[expand_start:collapse_start]
+        collapse = MAIN[collapse_start:animate_start]
+        self.assertIn("dockRecycler.setTranslationY(pitch)", expand)
+        self.assertIn("grid.setTranslationY(pitch)", expand)
+        self.assertIn("focusTile(targetPosition)", expand)
+        self.assertIn("dockRecycler.setTranslationY(-pitch", collapse)
+        self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
+        self.assertIn("focusDockTile(dockPosition)", collapse)
+
+    def test_geometry_uses_one_measured_overflow_viewport(self):
         self.assertIn("horizontalGridViewportHeightPx", GEOMETRY)
-        self.assertIn("horizontalPrimaryDockTopMarginPx", GEOMETRY)
-        self.assertIn("horizontalOverflowGridTopMarginPx", GEOMETRY)
+        self.assertIn("horizontalDockBottomMarginPx", GEOMETRY)
 
 
 if __name__ == "__main__":
