@@ -2834,7 +2834,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int gridBottomMargin = DockGeometry.horizontalGridBottomMarginPx(dockTileHeight, density);
                 int gridViewportHeight = DockGeometry.horizontalGridViewportHeightPx(gridTileWidth,
                         density, gridBasePaddingTop);
-                int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
+                // Measure the legacy bottom anchor once; the overflow row inherits this slot
+                // after the primary Dock row is moved above it.
+                dockParams.bottomMargin = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
+                int dockBottomMargin = dockParams.bottomMargin;
 
                 // Swap the legacy anchors: primary Dock occupies the upper row; overflow Grid
                 // occupies the lower row. This changes vertical order, not tile size or identity.
