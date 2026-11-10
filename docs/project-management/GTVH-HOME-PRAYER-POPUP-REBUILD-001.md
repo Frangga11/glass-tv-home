@@ -5,8 +5,9 @@ Repository: `Frangga11/glass-tv-home`
 Working branch: `rebuild/home-prayer-popup-integrated-001`
 Status: REBUILD COMMITTED — CI IN PROGRESS / RENDERED QA / DEVICE ACCEPTANCE PENDING
 PR: #135 — OPEN / DRAFT / UNMERGED
-Latest implementation code HEAD: `fb5087cd8955ee89b9aab2731425689b3152f526`
-Latest contract-test HEAD: `3db140575df85b6a98dc9ad528c3561694541d83`
+Latest implementation code HEAD: `728ffdb1a769fc2effa286f30f49b17609527338`
+Latest contract-test HEAD: `acbd0bedcaa9e08410a3f6d17ff9e0820afcf1b2`
+CI-validated source/test head: `acbd0bedcaa9e08410a3f6d17ff9e0820afcf1b2`
 Exact branch head will advance with this checkpoint documentation commit.
 
 ## 1. Trigger and owner direction
@@ -140,21 +141,31 @@ Changed:
 
 ## 7. Validation
 
-Not yet claimed:
-- Earlier code validation: CI run #2041 passed Launcher build/unit tests and Lists/tools/docs on code HEAD `104681ecb4c6441c8a7923d2bf57b57dd18221de`; that run predates the final reference-alignment refinements below.
-- Release APK from run #2041 was built successfully; artifact evidence is retained below as an intermediate build only, not the final reference-aligned APK.
-- The final reference-alignment refinements (stacked next-prayer card, read-only schedule cells, dedicated Azan controls, and key-release filtering) are on code HEAD `fb5087cd8955ee89b9aab2731425689b3152f526` and contract-test HEAD `3db140575df85b6a98dc9ad528c3561694541d83`.
-- Exact latest branch-head CI for this code/test revision: pending/in progress; previous run #2044 predates these final refinements.
-- Intermediate APK artifact: `glass-tv-home-cumulative-integration-127-279eb7a3703e0cce6ad2003dacae52875291c1a2` (CI run #2041, artifact ID `13811781387`), extracted as `app-release.apk`.
-- Intermediate APK size: 1,635,173 bytes.
-- Intermediate APK SHA-256: `1b19246079183222ae13713735d86e6bbaebdb198420ca5cbdb39767e698bc77`.
-- This intermediate APK predates the final visual simplification and must not be treated as the final test APK for this workstream.
+- Python source-contract and repository suite: PASS, CI run #2053.
+  - 305 tests run in 0.290s.
+  - 11 Prayer popup rebuild contract tests all passed.
+  - Overall result: `OK (skipped=1)`.
+- Android unit tests: PASS, CI run #2053.
+  - `app:testReleaseUnitTest`: completed successfully.
+  - `installer:testReleaseUnitTest`: completed successfully.
+- Release build: PASS, CI run #2053.
+  - `app:assembleRelease`: completed successfully.
+  - `installer:assembleRelease`: completed successfully.
+  - Gradle result: `BUILD SUCCESSFUL`.
+- Exact validated source/test HEAD: `acbd0bedcaa9e08410a3f6d17ff9e0820afcf1b2`.
+- Exact APK artifact: `glass-tv-home-cumulative-integration-127-178442ff3d9ea54e7a8a8ea5b415ae815fcf8e98` (CI run #2053, artifact ID `13811722753`).
+- APK size: 1,635,017 bytes.
+- APK SHA-256: `336d40849510f2e1b0256081829662304a2603002677c7d2bfaa453ca15e88b5`.
+- Baseline integration APK from CI run #2010: 1,632,369 bytes; rebuild delta: +2,648 bytes (+0.16%).
+- The workflow emitted its non-blocking historical-size warning because 1,635,017 bytes is above the 1.5 MiB reference (1,572,864 bytes) by 62,153 bytes. The size diagnostic is informational, not a CI failure.
 - Rendered UI inspection at 1920x1080: pending.
 - Mi TV Stick Android TV 11 physical acceptance: pending.
 - Popup dismissal cause: source-proven as MainActivity.onPause() -> closeMenu(false); this is intentional overlay lifecycle behavior.
 - AzanReceiver direct-launch plus FullScreenIntent delivery ordering: runtime confirmation pending.
 - Azan receiver/overlay trigger timing and singleTask onNewIntent delivery: pending device logs.
 
+The final APK is built and its checksum is recorded. It has not been installed or tested on a physical device.
+ 
 ## 8. Regression boundaries
 
 No intended edits to Home Screen layout outside the Prayer popup, wallpaper, Hero Shelf, Islamic Shelf, Dock/Grid, Home Header, Weather/AQI, Wi-Fi, microphone, app inventory, Settings, PrayerTimes calculations/data source, Azan persistence/preferences/scheduling, audio assets, or AzanActivity behavior.
