@@ -7667,6 +7667,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         FrameLayout panel = new FrameLayout(this);
         panel.setClipToPadding(true);
+        panel.setElevation(12 * density);
         panel.setPadding((int) (8 * density), (int) (8 * density),
                 (int) (8 * density), (int) (8 * density));
         LinearLayout rows = new LinearLayout(this);
