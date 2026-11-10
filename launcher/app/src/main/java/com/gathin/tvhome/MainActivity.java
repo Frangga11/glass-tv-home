@@ -3716,10 +3716,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (card != null && card.isShown() && card.isFocusable()) {
             // Release the transition lock immediately before requestFocus: its synchronous focus
             // callback is allowed to publish the committed Dock destination and advance generation.
+            boolean alreadyFocused = card.isFocused();
             horizontalDockCollapseInProgress = false;
-            boolean acquired = card.isFocused() || card.requestFocus();
+            boolean acquired = alreadyFocused || card.requestFocus();
             if (acquired && card.isFocused()) {
-                if (card.isFocused()) onDockTileFocused(dockAdapter.keyAt(target), card);
+                // requestFocus() already fired onDockTileFocused synchronously when focus changed.
+                if (alreadyFocused) onDockTileFocused(dockAdapter.keyAt(target), card);
                 replayPendingDockCollapseDirections();
                 return;
             }
