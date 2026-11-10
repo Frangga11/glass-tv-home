@@ -94,7 +94,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("right.getLeft()", MAIN)
 
     def test_header_controls_keep_the_established_liquid_glass_surface(self):
-        start = MAIN.index("// Preserve the established GlassDrawable/Backdrop treatment")
+        start = MAIN.index("// Preserve one shared glass capsule for Home/Profile/Settings.")
         end = MAIN.index("// Hide the glass when focus leaves the tiles.", start)
         header = MAIN[start:end]
         for view_id in ("locationPill", "weatherAirQuality", "btnInputs", "btnWifi",
@@ -261,7 +261,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("KEYCODE_ENTER", binding)
         self.assertIn("KEYCODE_DPAD_DOWN", binding)
         self.assertIn("KEYCODE_DPAD_UP", binding)
-        self.assertIn("R.id.btnAssistant", binding)
+        self.assertIn("btnAssistant != null", binding)
         self.assertIn("setOnFocusChangeListener", binding)
         self.assertIn("showPrayerPopup();", binding)
 
@@ -324,7 +324,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
                     "KEYCODE_DPAD_RIGHT"):
             self.assertIn(key, keys)
         self.assertIn("v.performClick();", keys)
-        self.assertIn("v.getId() == R.id.locationPill", keys)
+        self.assertIn("id == R.id.locationPill", keys)
         self.assertIn("weatherAirQualityView.requestFocus();", keys)
 
         start = MAIN.index("if (weatherAirQualityView != null) {")
