@@ -101,7 +101,8 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
                         "btnAssistant", "btnHome", "btnCandyBox", "btnSettings"):
             self.assertIn(f"R.id.{view_id}", header)
         self.assertIn("new GlassDrawable(pill", header)
-        self.assertIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg))", header)
+        self.assertIn("new GliderFocusDrawable(pill, glider)", header)
+        self.assertIn("new android.graphics.drawable.LayerDrawable(", header)
 
     def test_deferred_grid_focus_is_cancelled_by_newer_focus_destinations(self):
         dock_start = MAIN.index("public void onDockTileFocused(String key, View card)")
@@ -202,8 +203,8 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIsNotNone(nav)
         self.assertEqual(nav.get(ANDROID + "background"), "@drawable/header_glass_pill_bg")
         self.assertIn("navCapsule.setBackground(new GlassDrawable(navCapsule", MAIN)
-        self.assertIn("pill.setBackgroundColor(android.graphics.Color.TRANSPARENT)", MAIN)
-        self.assertIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg))", MAIN)
+        self.assertIn("new GliderFocusDrawable(pill, glider)", MAIN)
+        self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
 
 
