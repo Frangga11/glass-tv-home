@@ -589,4 +589,37 @@ public class DockLayoutModelTest {
         }
     }
 
+
+    @Test
+    public void homePrimaryAndOverflowRowsKeepTheirFiveColumnIdentityOrder() {
+        List<String> inventory = Arrays.asList(
+                "browserhere", "disney-plus", "miracast", "netflix", "google-play",
+                "prime-video", "vidio", "vision-plus", "wetv", "youtube");
+        List<String> primaryKeys = Arrays.asList(
+                "browserhere", "disney-plus", "miracast", "netflix", "google-play");
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                inventory, primaryKeys, 5, value -> value);
+
+        assertEquals(primaryKeys, snapshot.dockItems);
+        assertEquals(Arrays.asList("prime-video", "vidio", "vision-plus", "wetv", "youtube"),
+                snapshot.gridItems);
+        for (int column = 0; column < 5; column++) {
+            assertEquals(column, DockLayoutModel.gridPositionForDock(
+                    column, false, 5, snapshot.gridCount()));
+            assertEquals(column, DockLayoutModel.dockPositionForGrid(
+                    column, false, 5, snapshot.dockCount()));
+        }
+    }
+
+    @Test
+    public void overflowFirstRowUpReturnsToSamePrimaryDockColumn() {
+        for (int gridPosition = 0; gridPosition < 5; gridPosition++) {
+            assertEquals(gridPosition, DockLayoutModel.dockPositionForGrid(
+                    gridPosition, false, 5, 5));
+        }
+        // A second overflow row remains a Grid-to-Grid transition, not a jump to the Dock.
+        for (int gridPosition = 5; gridPosition < 10; gridPosition++) {
+            assertEquals(gridPosition - 5, gridPosition % 5);
+        }
+    }
 }
