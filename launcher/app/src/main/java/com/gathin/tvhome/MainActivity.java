@@ -8126,7 +8126,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 width, height, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
-        lp.rightMargin = safeX + (int) (26 * density);
+        lp.rightMargin = safeX + (int) (14 * density);
         lp.topMargin = safeY;
         lp.bottomMargin = safeY;
         root.addView(panel, lp);
