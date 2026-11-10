@@ -3582,21 +3582,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration) {
         if (grid == null || dockRecycler == null || horizontalGridExpanded) return;
         cancelHorizontalGridRowTransition();
+        int gridTileWidth = DockGeometry.horizontalTileWidthPx(
+                DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
+                DockPreferences.load(this).capacity, density);
+        int pitch = DockGeometry.horizontalGridViewportHeightPx(
+                gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
+        // Seed the offsets before applying expanded anchors, preventing a one-frame jump
+        // in which the Dock appears already raised and the overflow row flashes in place.
+        dockRecycler.setTranslationY(pitch);
+        grid.setTranslationY(pitch);
+        grid.setAlpha(0.72f);
         horizontalGridExpanded = true;
         applyDockLayout();
         grid.setVisibility(View.VISIBLE);
-        grid.setAlpha(1f);
         grid.requestLayout();
         grid.post(() -> {
             if (requestGeneration != gridFocusRequestGeneration || !horizontalGridExpanded) return;
-            int gridTileWidth = DockGeometry.horizontalTileWidthPx(
-                    DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
-                    DockPreferences.load(this).capacity, density);
-            int pitch = DockGeometry.horizontalGridViewportHeightPx(
-                    gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
-            dockRecycler.setTranslationY(pitch);
-            grid.setTranslationY(pitch);
-            grid.setAlpha(0.72f);
             animateHorizontalDockTransition(pitch, true, () -> {
                 if (requestGeneration != gridFocusRequestGeneration) return;
                 grid.setTranslationY(0f);
@@ -3646,13 +3647,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (cancelled || transition != horizontalDockTransitionGeneration
                         || generation != gridFocusRequestGeneration) return;
                 horizontalGridExpanded = false;
-                grid.setTranslationY(0f);
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
-                dockRecycler.setTranslationY(0f);
+                // Re-anchor the Dock while its +pitch translation still compensates for
+                // the expanded anchor. Clear translation only after the idle layout pass.
                 applyDockLayout();
-                horizontalDockCollapseInProgress = false;
-                focusDockTile(dockPosition);
+                dockRecycler.post(() -> {
+                    if (generation != gridFocusRequestGeneration) return;
+                    grid.setTranslationY(0f);
+                    dockRecycler.setTranslationY(0f);
+                    horizontalDockCollapseInProgress = false;
+                    focusDockTile(dockPosition);
+                });
             }
         });
         animator.start();
