@@ -7884,7 +7884,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         for (int pair = 0; pair < schedule.size(); pair += 2) {
             LinearLayout gridRow = new LinearLayout(this);
             gridRow.setOrientation(LinearLayout.HORIZONTAL);
-            gridRow.setGravity(Gravity.CENTER_VERTICAL);
+            gridRow.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
             for (int column = 0; column < 2 && pair + column < schedule.size(); column++) {
                 final PrayerTimes.ScheduleItem item = schedule.get(pair + column);
                 LinearLayout card = new LinearLayout(this);
