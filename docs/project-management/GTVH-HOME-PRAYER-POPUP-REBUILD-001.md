@@ -357,3 +357,12 @@ This is an implementation checkpoint, not visual acceptance. Exact-HEAD CI/build
 Implementation detail clarification for Section 15:
 - Timetable prayer-time values are **13sp** (not only the next-prayer time).
 - The UJI value/action is explicitly set to **9sp**; the shared sound-choice value remains 10sp.
+
+
+## 16. Validation correction — compact revision CI follow-up
+
+- The first exact-head CI attempt for the 105 × 31dp revision completed the Android launcher build/unit-test job successfully but failed one source-contract assertion in the docs/tools job. The failure was a malformed expected string in the new UJI text-size assertion, not an Android compilation or runtime-code failure.
+- The contract assertion was corrected to match the actual source syntax. Font-padding and line-spacing assertions were also normalized to match source tokens exactly.
+- Corrected contract test commit: `8b6a826d25f5f00cd70e29d5b6a4a7cf8b8ec968`. Exact-HEAD CI must rerun and pass before build validation is complete.
+- The revised vertical content budget is approximately **334dp** before runtime measurement: header 30 + dividers 8 + next card 52 + schedule heading 18 + schedule rows 101 + three control rows/gaps 98 + footer/gap 17 + panel vertical padding 10. Actual measured Android view height remains authoritative.
+- PR #135 remains OPEN / DRAFT / UNMERGED. No install, merge, or final visual PASS is claimed.
