@@ -7876,8 +7876,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         scheduleHeading.addView(createPrayerPopupText(
                 "JADWAL HARI INI", 12f, TvUiTokens.TEXT_PRIMARY, true));
         LinearLayout.LayoutParams headingLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (17 * density));
-        headingLp.topMargin = (int) (1 * density);
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (20 * density));
+        headingLp.topMargin = (int) (5 * density);
+        headingLp.bottomMargin = (int) (5 * density);
         rows.addView(scheduleHeading, headingLp);
 
         ArrayList<View> scheduleFocus = new ArrayList<>();
@@ -7901,8 +7902,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 card.setClickable(true);
                 card.setOnClickListener(v -> SoundEffects.playSelect());
                 scheduleFocus.add(card);
+                // Each timetable capsule shares the available inner width equally.
+                // The only horizontal gap is 4dp; the outer edges align exactly with panel padding.
                 LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
-                        (int) (105 * density), (int) (31 * density));
+                        0, (int) (31 * density), 1f);
                 if (column == 0) cardLp.rightMargin = (int) (2 * density);
                 else cardLp.leftMargin = (int) (2 * density);
                 gridRow.addView(card, cardLp);
@@ -7926,7 +7929,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView masterStatus = createPrayerPopupText(
                 Azan.isMasterEnabled(this) ? "● AKTIF" : "● NONAKTIF", 10f,
                 Azan.isMasterEnabled(this) ? 0xFF58C77A : 0xFFB7BEC7, true);
-        masterStatus.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+        masterStatus.setGravity(Gravity.CENTER);
+        masterStatus.setPadding((int) (8 * density), (int) (3 * density),
+                (int) (8 * density), (int) (3 * density));
+        masterStatus.setBackground(prayerPopupStatusCapsuleBackground(
+                Azan.isMasterEnabled(this)));
         masterStatus.setMinWidth((int) (76 * density));
         masterRow.addView(masterStatus, new LinearLayout.LayoutParams(
                 (int) (82 * density), ViewGroup.LayoutParams.MATCH_PARENT));
@@ -7936,6 +7943,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this));
             masterStatus.setText(enabled ? "● AKTIF" : "● NONAKTIF");
             masterStatus.setTextColor(enabled ? 0xFF58C77A : 0xFFB7BEC7);
+            masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled));
             SoundEffects.playSelect();
         });
         rows.addView(masterRow, new LinearLayout.LayoutParams(
@@ -7968,7 +7976,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout testRow = createPrayerPopupControlRow(
                 "Test Sound", "Dengarkan contoh suara azan", "▶  UJI");
         testRow.setBackground(prayerPopupCardBackground(false));
-        ((TextView) testRow.getChildAt(1)).setTextSize(9f);
+        ((TextView) testRow.getChildAt(1)).setTextSize(10f);
         testRow.setOnClickListener(v -> {
             SoundEffects.playSelect();
             prayerPopupRestoreFocusPending = prayerPopupReturnAnchor != null;
@@ -8016,6 +8024,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         } catch (Exception ignored) {
             return value;
         }
+    }
+
+    private Drawable prayerPopupStatusCapsuleBackground(boolean enabled) {
+        GradientDrawable capsule = new GradientDrawable();
+        capsule.setShape(GradientDrawable.RECTANGLE);
+        capsule.setCornerRadius(999 * density);
+        capsule.setColor(enabled ? 0x263FCB78 : 0x20B7BEC7);
+        capsule.setStroke(Math.max(1, (int) density),
+                enabled ? 0x9958C77A : 0x66B7BEC7);
+        return capsule;
     }
 
     private TextView createPrayerPopupText(String text, float sizeSp, int color, boolean bold) {
