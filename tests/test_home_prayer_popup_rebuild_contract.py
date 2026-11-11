@@ -53,6 +53,13 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             "Azan.isMasterEnabled(this)",
             "masterStatus.setText(enabled ? \"● AKTIF\" : \"● NONAKTIF\")",
             "masterStatus.setTextColor(enabled ? 0xFF58C77A : 0xFFB7BEC7)",
+            "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled))",
+            "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(\n                Azan.isMasterEnabled(this)))",
+            "private Drawable prayerPopupStatusCapsuleBackground(boolean enabled)",
+            "capsule.setCornerRadius(999 * density)",
+            "headingLp.topMargin = (int) (5 * density)",
+            "headingLp.bottomMargin = (int) (5 * density)",
+            "new LinearLayout.LayoutParams(\n                        0, (int) (31 * density), 1f)",
             "Azan.setMasterEnabled(MainActivity.this, enabled)",
             "Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))",
             "Azan.setSoundChoice(MainActivity.this, next)",
@@ -116,7 +123,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
         self.assertIn("(int) (52 * density)", self.popup)
-        self.assertIn("(int) (105 * density), (int) (31 * density)", self.popup)
+        self.assertIn("(int) (31 * density)", self.popup)
         self.assertIn("\"● AKTIF\" : \"● NONAKTIF\"", self.popup)
         self.assertIn("0xFF58C77A", self.popup)
         self.assertIn("0xFFB7BEC7", self.popup)
@@ -138,7 +145,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             '(int) (105 * density), (int) (31 * density)',
             'int width = Math.min((int) (254 * density), safeWidth);',
             '"OK PILIH   •   BACK KEMBALI", 9f',
-            '((TextView) testRow.getChildAt(1)).setTextSize(9f)',
+            '((TextView) testRow.getChildAt(1)).setTextSize(10f)',
             'view.setIncludeFontPadding(false)',
             'view.setLineSpacing(0f, 1f)',
             '(int) (16 * density));',
