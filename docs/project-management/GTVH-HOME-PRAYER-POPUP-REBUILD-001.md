@@ -3,12 +3,12 @@
 Date: 11 November 2026 (WIB)
 Repository: `Frangga11/glass-tv-home`
 Working branch: `rebuild/home-prayer-popup-integrated-001`
-Status: REBUILD COMMITTED — CI IN PROGRESS / RENDERED QA / DEVICE ACCEPTANCE PENDING
+Status: OWNER TYPOGRAPHY REVISION COMMITTED — EXACT-HEAD CI / RENDERED QA / DEVICE ACCEPTANCE PENDING
 PR: #135 — OPEN / DRAFT / UNMERGED
-Latest implementation code HEAD: `728ffdb1a769fc2effa286f30f49b17609527338`
-Latest contract-test HEAD: `acbd0bedcaa9e08410a3f6d17ff9e0820afcf1b2`
-CI-validated source/test head: `acbd0bedcaa9e08410a3f6d17ff9e0820afcf1b2`
-Exact branch head will advance with this checkpoint documentation commit.
+Latest implementation commit: `df0d9c06f387e41fe485c89656fe2589f0c22839`
+Latest contract-test commit: `1eff187bcb3a261febb78fe9447894a92ea68c53`
+Latest branch checkpoint before this metadata update: `54b7696aa4303ce4cf6e0a2198812eb7ad17b035`; exact-HEAD CI pending.
+Branch: `rebuild/home-prayer-popup-integrated-001`. PR #135 remains Draft / Unmerged.
 
 ## 1. Trigger and owner direction
 
