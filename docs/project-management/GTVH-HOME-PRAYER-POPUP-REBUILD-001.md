@@ -352,3 +352,8 @@ Owner-directed revision applied on PR #135:
 Only the Prayer popup source, its contract test, and this checkpoint are changed. Prayer calculations, Azan preferences/scheduling, sound assets, Test Sound routing, DPAD focus order, Home/Dock/Grid, wallpaper, shelves, and Weather/AQI remain outside scope.
 
 This is an implementation checkpoint, not visual acceptance. Exact-HEAD CI/build, rendered 1920×1080 inspection, clipping check, and Mi TV Stick Android TV 11 acceptance remain pending. PR #135 remains OPEN / DRAFT / UNMERGED.
+
+
+Implementation detail clarification for Section 15:
+- Timetable prayer-time values are **13sp** (not only the next-prayer time).
+- The UJI value/action is explicitly set to **9sp**; the shared sound-choice value remains 10sp.
