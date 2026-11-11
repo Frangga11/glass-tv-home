@@ -387,3 +387,13 @@ Changed files remain limited to:
 3. This checkpoint document.
 
 Source and contract-test changes are committed; exact-HEAD CI/build and rendered 1920×1080 inspection are pending. Mi TV Stick physical acceptance is also pending. PR #135 remains OPEN / DRAFT / UNMERGED; no installation or merge is authorized by this refinement.
+
+
+
+### CI correction — owner refinement contract assertion
+
+- CI run #2088 identified one stale source-contract expectation: the test still required the previous fixed 105dp timetable-cell width after the implementation correctly moved to equal-weight columns.
+- Android build/unit-test job was still running when this docs note was prepared; the docs/tools job failed only on that stale assertion.
+- Updated the test to assert the new equal-weight cell layout, 31dp cell height, 5dp heading breathing margins, 10sp UJI action, and rounded status-capsule helper/state update.
+- Contract-test correction commit: `b28a3b6e66dd11e63aa0d1cb18330dde0281f7c8`.
+- Exact corrected branch CI is pending. Do not call the latest refinement PASS until both CI jobs complete successfully.
