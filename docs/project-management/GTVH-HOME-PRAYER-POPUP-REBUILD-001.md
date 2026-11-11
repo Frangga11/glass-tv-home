@@ -266,3 +266,59 @@ This section supersedes the horizontal Wi-Fi alignment described in Section 12.
 Implementation commit: 8d80bad318e6b9dfebdb01f3993e739473b3d3f1.
 Contract-test commit: e2af6312c5dd928aaceec55765c2c4fa5f3426f4.
 Exact-HEAD CI and rendered/physical placement verification are pending. PR #135 remains OPEN / DRAFT / UNMERGED.
+
+
+## 14. Owner revision — typography scale and 115dp timetable capsules
+
+Date: 11 November 2026 (WIB)
+
+Owner supplied the complete typography scale and requested 115dp-wide Subuh–Isya timetable capsules. Applied to the existing PR #135 branch.
+
+### Exact typography (sp)
+
+| Element | Size |
+|---|---:|
+| WAKTU SHOLAT title | 14 |
+| Location | 11 |
+| Elevation | 9 |
+| Next-prayer caption | 10 |
+| Next-prayer name | 17 |
+| Next-prayer time | 16 |
+| JADWAL HARI INI | 12 |
+| Timetable prayer name | 11 |
+| Timetable prayer time | 14 |
+| Azan title | 12 |
+| Azan description | 10 |
+| Azan active/inactive status | 10 |
+| Suara Azan title | 12 |
+| Suara Azan description | 10 |
+| Sound choice value | 10 |
+| Test Sound title | 12 |
+| Test Sound description | 10 |
+| UJI action | 10 |
+| Footer OK PILIH • BACK KEMBALI | 10 |
+
+Control title/description sizes are centralized in `createPrayerPopupControlRow()`, so Azan, Suara Azan, and Test Sound receive the same consistent 12sp/10sp hierarchy. The status, sound value, and UJI action remain 10sp.
+
+### Proportional geometry
+
+- Timetable capsule width: **115dp** (was 125dp).
+- Timetable capsule height: **36dp** (unchanged).
+- Two-column pair: 115 + 4dp inter-cell margins + 115 = **234dp**.
+- Popup width: **264dp** (was 276dp).
+- Inner width after 9dp left/right panel padding: **246dp**.
+- Remaining horizontal breathing room around the centered pair: **12dp total / 6dp per side**.
+- This keeps the two schedule capsules visually centered with even side clearance instead of leaving the larger empty band produced by the previous 276dp panel.
+- Footer height increased from 13dp to 18dp to safely accommodate the requested 10sp hint.
+- Next-prayer card remains 60dp high; schedule cells remain 36dp high. All other existing content order, DPAD lanes, panel anchor, and interaction behavior are preserved.
+
+### Scope and verification
+
+Changed files remain limited to:
+1. `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+2. `tests/test_home_prayer_popup_rebuild_contract.py`
+3. This checkpoint document.
+
+The popup panel width and cell width were changed together as a deliberate proportional pair. No changes to Home layout, Dock/Grid, wallpaper, shelves, Wi-Fi, microphone, Weather/AQI, prayer calculations, Azan persistence/scheduling, audio assets, or AzanActivity are intended.
+
+Exact-HEAD CI, rendered 1920×1080 inspection, clipping verification, and Mi TV Stick physical acceptance are pending for this owner typography revision. PR #135 remains OPEN / DRAFT / UNMERGED. Do not claim runtime PASS until those checks complete.
