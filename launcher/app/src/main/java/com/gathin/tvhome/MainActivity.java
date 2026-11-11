@@ -8139,28 +8139,34 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Backdrop.watch(panel);
         glider.addCompanion(panel);
 
-        // Anchor the popup to the Home Wi-Fi capsule: align right edges and open directly below it.
-        View wifiAnchor = findViewById(R.id.btnWifi);
-        if (wifiAnchor == null || !wifiAnchor.isShown() || wifiAnchor.getWidth() <= 0) {
-            wifiAnchor = anchor;
-        }
+        // Horizontal placement follows the right edge of the Home Glass Dock viewport.
+        // The Wi-Fi capsule is used only as a vertical position reference (same gap as its popup).
+        View dockGlassAnchor = dockRecycler;
+        View topReference = findViewById(R.id.btnWifi);
         int rootOnScreen[] = new int[2];
-        int wifiOnScreen[] = new int[2];
+        int dockOnScreen[] = new int[2];
+        int topReferenceOnScreen[] = new int[2];
         root.getLocationOnScreen(rootOnScreen);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 width, height, Gravity.TOP | Gravity.RIGHT);
-        if (wifiAnchor != null && wifiAnchor.isShown() && wifiAnchor.getWidth() > 0) {
-            wifiAnchor.getLocationOnScreen(wifiOnScreen);
-            int wifiRightInRoot = wifiOnScreen[0] + wifiAnchor.getWidth() - rootOnScreen[0];
-            int wifiBottomInRoot = wifiOnScreen[1] + wifiAnchor.getHeight() - rootOnScreen[1];
-            lp.rightMargin = Math.max(safeX, root.getWidth() - wifiRightInRoot);
-            int belowWifiTop = wifiBottomInRoot + (int) (14 * density);
-            int maxTop = Math.max(safeY, root.getHeight() - safeY - height);
-            lp.topMargin = Math.min(Math.max(safeY, belowWifiTop), maxTop);
+
+        if (dockGlassAnchor != null && dockGlassAnchor.isShown()
+                && dockGlassAnchor.getWidth() > 0) {
+            dockGlassAnchor.getLocationOnScreen(dockOnScreen);
+            int dockRightInRoot = dockOnScreen[0] + dockGlassAnchor.getWidth() - rootOnScreen[0];
+            lp.rightMargin = Math.max(safeX, root.getWidth() - dockRightInRoot);
         } else {
             lp.rightMargin = safeX + (int) (14 * density);
-            lp.topMargin = safeY;
         }
+
+        int referenceTop = safeY;
+        if (topReference != null && topReference.isShown() && topReference.getHeight() > 0) {
+            topReference.getLocationOnScreen(topReferenceOnScreen);
+            referenceTop = topReferenceOnScreen[1] + topReference.getHeight()
+                    - rootOnScreen[1] + (int) (14 * density);
+        }
+        int maxTop = Math.max(safeY, root.getHeight() - safeY - height);
+        lp.topMargin = Math.min(Math.max(safeY, referenceTop), maxTop);
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
