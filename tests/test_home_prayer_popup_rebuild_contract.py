@@ -138,7 +138,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             '(int) (105 * density), (int) (31 * density)',
             'int width = Math.min((int) (254 * density), safeWidth);',
             '"OK PILIH   •   BACK KEMBALI", 9f',
-            '"((TextView) testRow.getChildAt(1)).setTextSize(9f)',
+            '((TextView) testRow.getChildAt(1)).setTextSize(9f)',
             '"view.setIncludeFontPadding(false)',
             '"view.setLineSpacing(0f, 1f)',
             '(int) (16 * density));',
