@@ -7777,8 +7777,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.setClipToPadding(true);
         panel.setElevation(12 * density);
         panel.setBackground(new GlassDrawable(panel, 18 * density, density, glider, 0.5f, true));
-        panel.setPadding((int) (9 * density), (int) (7 * density),
-                (int) (9 * density), (int) (7 * density));
+        panel.setPadding((int) (9 * density), (int) (5 * density),
+                (int) (9 * density), (int) (5 * density));
 
         LinearLayout rows = new LinearLayout(this);
         rows.setOrientation(LinearLayout.VERTICAL);
@@ -7792,7 +7792,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setPadding((int) (4 * density), 0, (int) (2 * density), 0);
-        TextView title = createPrayerPopupText("WAKTU SHOLAT", 14f,
+        TextView title = createPrayerPopupText("WAKTU SHOLAT", 13f,
                 TvUiTokens.TEXT_PRIMARY, true);
         header.addView(title, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f));
@@ -7800,8 +7800,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View titleDivider = new View(this);
         titleDivider.setBackgroundColor(0x66FFFFFF);
         LinearLayout.LayoutParams titleDividerLp = new LinearLayout.LayoutParams(
-                Math.max(1, (int) density), (int) (22 * density));
-        titleDividerLp.setMargins((int) (5 * density), 0, (int) (7 * density), 0);
+                Math.max(1, (int) density), (int) (18 * density));
+        titleDividerLp.setMargins((int) (4 * density), 0, (int) (5 * density), 0);
         header.addView(titleDivider, titleDividerLp);
 
         LinearLayout locationStack = new LinearLayout(this);
@@ -7819,11 +7819,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView zone = createPrayerPopupText(PrayerTimes.getShortZoneName(this), 11f,
                 TvUiTokens.TEXT_SECONDARY, true);
         LinearLayout.LayoutParams zoneLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (14 * density));
+                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (13 * density));
         zoneLp.leftMargin = (int) (4 * density);
         locationLine.addView(zone, zoneLp);
         locationStack.addView(locationLine, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (15 * density)));
+                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (13 * density)));
 
         LinearLayout altitudeLine = new LinearLayout(this);
         altitudeLine.setOrientation(LinearLayout.HORIZONTAL);
@@ -7836,15 +7836,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView altitude = createPrayerPopupText("800 mdpl", 9f,
                 TvUiTokens.TEXT_SECONDARY, false);
         LinearLayout.LayoutParams altitudeLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (13 * density));
+                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (12 * density));
         altitudeLp.leftMargin = (int) (4 * density);
         altitudeLine.addView(altitude, altitudeLp);
         locationStack.addView(altitudeLine, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (14 * density)));
+                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (12 * density)));
         header.addView(locationStack, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         rows.addView(header, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (33 * density)));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (30 * density)));
         addPrayerPopupDivider(rows);
 
         java.util.List<PrayerTimes.ScheduleItem> schedule = PrayerTimes.getFullSchedule(this);
@@ -7862,13 +7862,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         nextCard.addView(createPrayerPopupText("WAKTU SHOLAT BERIKUTNYA", 10f,
                 TvUiTokens.TEXT_SECONDARY, true));
         nextCard.addView(createPrayerPopupText(
-                nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui", 17f,
+                nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui", 15f,
                 TvUiTokens.TEXT_PRIMARY, true));
         nextCard.addView(createPrayerPopupText(
-                nextPrayer != null ? prayerPopup24Hour(nextPrayer.timeFormatted) : "--:--", 16f,
+                nextPrayer != null ? prayerPopup24Hour(nextPrayer.timeFormatted) : "--:--", 14f,
                 TvUiTokens.ISLAMIC_GOLD, true));
         rows.addView(nextCard, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (60 * density)));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (52 * density)));
 
         LinearLayout scheduleHeading = new LinearLayout(this);
         scheduleHeading.setGravity(Gravity.CENTER_VERTICAL);
@@ -7876,7 +7876,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         scheduleHeading.addView(createPrayerPopupText(
                 "JADWAL HARI INI", 12f, TvUiTokens.TEXT_PRIMARY, true));
         LinearLayout.LayoutParams headingLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (19 * density));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (17 * density));
         headingLp.topMargin = (int) (1 * density);
         rows.addView(scheduleHeading, headingLp);
 
@@ -7902,13 +7902,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 card.setOnClickListener(v -> SoundEffects.playSelect());
                 scheduleFocus.add(card);
                 LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
-                        (int) (115 * density), (int) (36 * density));
+                        (int) (105 * density), (int) (31 * density));
                 if (column == 0) cardLp.rightMargin = (int) (2 * density);
                 else cardLp.leftMargin = (int) (2 * density);
                 gridRow.addView(card, cardLp);
             }
             LinearLayout.LayoutParams rowLp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (38 * density));
+                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (33 * density));
             if (pair > 0) rowLp.topMargin = (int) density;
             rows.addView(gridRow, rowLp);
         }
@@ -7939,7 +7939,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             SoundEffects.playSelect();
         });
         rows.addView(masterRow, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density)));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density)));
         focusOrder.add(masterRow);
 
         LinearLayout soundRow = createPrayerPopupControlRow(
@@ -7960,7 +7960,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             soundValue.setText(prayerPopupSoundLabel(next, soundKeys, soundLabels) + "  ›");
         });
         LinearLayout.LayoutParams soundLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density));
         soundLp.topMargin = (int) density;
         rows.addView(soundRow, soundLp);
         focusOrder.add(soundRow);
@@ -7978,7 +7978,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             startActivity(azanIntent);
         });
         LinearLayout.LayoutParams testLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (36 * density));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density));
         testLp.topMargin = (int) density;
         rows.addView(testRow, testLp);
         focusOrder.add(testRow);
@@ -7986,9 +7986,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout footer = new LinearLayout(this);
         footer.setGravity(Gravity.CENTER);
         footer.addView(createPrayerPopupText(
-                "OK PILIH   •   BACK KEMBALI", 7.5f, TvUiTokens.TEXT_SECONDARY, true));
+                "OK PILIH   •   BACK KEMBALI", 9f, TvUiTokens.TEXT_SECONDARY, true));
         LinearLayout.LayoutParams footerLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (18 * density));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (16 * density));
         footerLp.topMargin = (int) density;
         rows.addView(footer, footerLp);
 
@@ -7996,7 +7996,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int safeY = TvResponsiveLayout.safeInsetPx(root.getHeight());
         int safeWidth = Math.max(1, root.getWidth() - 2 * safeX);
         int safeHeight = Math.max(1, root.getHeight() - 2 * safeY);
-        int width = Math.min((int) (264 * density), safeWidth);
+        int width = Math.min((int) (254 * density), safeWidth);
         int maxContentHeight = Math.max(1, safeHeight - (int) (12 * density));
         panel.measure(
                 View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
@@ -8020,6 +8020,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private TextView createPrayerPopupText(String text, float sizeSp, int color, boolean bold) {
         TextView view = new TextView(this);
         view.setText(text);
+        view.setIncludeFontPadding(false);
+        view.setLineSpacing(0f, 1f);
         view.setTextSize(sizeSp);
         view.setTextColor(color);
         view.setTypeface(getResources().getFont(R.font.inter), bold ? Typeface.BOLD : Typeface.NORMAL);
@@ -8041,7 +8043,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         copy.setOrientation(LinearLayout.VERTICAL);
         copy.setGravity(Gravity.CENTER_VERTICAL);
         TextView label = createPrayerPopupText(title, 12f, TvUiTokens.TEXT_PRIMARY, true);
-        TextView detail = createPrayerPopupText(description, 10f, TvUiTokens.TEXT_SECONDARY, false);
+        TextView detail = createPrayerPopupText(description, 9f, TvUiTokens.TEXT_SECONDARY, false);
         detail.setSingleLine(true);
         detail.setEllipsize(TextUtils.TruncateAt.END);
         copy.addView(label, new LinearLayout.LayoutParams(
@@ -8056,7 +8058,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         state.setMaxLines(1);
         state.setEllipsize(TextUtils.TruncateAt.END);
         row.addView(state, new LinearLayout.LayoutParams(
-                (int) (108 * density), ViewGroup.LayoutParams.MATCH_PARENT));
+                (int) (96 * density), ViewGroup.LayoutParams.MATCH_PARENT));
         return row;
     }
 
