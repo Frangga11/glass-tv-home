@@ -7895,7 +7895,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 card.setBackground(prayerPopupCardBackground(item.isNext));
                 card.addView(createPrayerPopupText(item.name, 11f,
                         item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true));
-                card.addView(createPrayerPopupText(prayerPopup24Hour(item.timeFormatted), 14f,
+                card.addView(createPrayerPopupText(prayerPopup24Hour(item.timeFormatted), 13f,
                         item.isNext ? TvUiTokens.ISLAMIC_GOLD : TvUiTokens.TEXT_PRIMARY, true));
                 card.setFocusable(true);
                 card.setClickable(true);
@@ -7968,6 +7968,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout testRow = createPrayerPopupControlRow(
                 "Test Sound", "Dengarkan contoh suara azan", "▶  UJI");
         testRow.setBackground(prayerPopupCardBackground(false));
+        ((TextView) testRow.getChildAt(1)).setTextSize(9f);
         testRow.setOnClickListener(v -> {
             SoundEffects.playSelect();
             prayerPopupRestoreFocusPending = prayerPopupReturnAnchor != null;
