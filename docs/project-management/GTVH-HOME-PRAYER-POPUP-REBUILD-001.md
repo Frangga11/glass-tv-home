@@ -219,3 +219,19 @@ Validation status for this owner revision:
 - Exact code commit: `26b1388b9535be50d8325f056626929132a71785`.
 - Contract assertion for the 14dp margin: `92a50617647dbf382086034d2c99fa5134750ba1`.
 - Exact current branch HEAD is the documentation commit that follows this entry; exact-HEAD CI is pending.
+
+
+## 11. Owner refinement — header hierarchy and proportional compact sizing
+
+Date: 11 November 2026 (WIB)
+
+Owner-directed refinement applied on the existing PR #135 branch:
+- Header row height increased to 33dp. “WAKTU SHOLAT” remains left aligned; a thin vertical separator now divides the title from the right-side information group.
+- Location and elevation are stacked vertically at the upper-right. Both icon/text pairs are left-aligned; elevation uses a slightly smaller 8sp type size.
+- Next-prayer capsule height increased to 60dp; its existing stacked caption/name/time hierarchy is retained for proportional vertical alignment.
+- Six prayer timetable capsules use fixed 125dp widths and are horizontally centered as a two-column grid.
+- Popup target width reduced to 276dp so the 2 × 125dp timetable capsules plus their 4dp inter-cell spacing fit within the 258dp inner content width with a small balanced breathing margin.
+- Azan master control now displays a textual state with a status dot: green “● AKTIF” when enabled and silver “● NONAKTIF” when disabled. The row remains the single toggle action and continues to call the existing Azan preference/scheduling path.
+- Sound selector and Test Sound behavior remain unchanged.
+
+Scope remains limited to the Prayer popup layout and its contract tests. No Home layout, prayer calculation, Azan scheduling implementation, or sound assets are intentionally changed. This is source-level implementation only; exact-HEAD CI, rendered inspection, and physical Mi TV Stick acceptance remain required. PR #135 stays OPEN / DRAFT / UNMERGED.
