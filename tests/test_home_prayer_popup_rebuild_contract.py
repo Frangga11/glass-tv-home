@@ -51,8 +51,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
     def test_azan_preferences_schedule_and_existing_test_activity_are_reused(self):
         for token in (
             "Azan.isMasterEnabled(this)",
-            "android.widget.Switch masterSwitch",
-            "masterSwitch.setOnCheckedChangeListener",
+            "masterStatus.setText(enabled ? \"● AKTIF\" : \"● NONAKTIF\")",
+            "masterStatus.setTextColor(enabled ? 0xFF58C77A : 0xFFB7BEC7)",
             "Azan.setMasterEnabled(MainActivity.this, enabled)",
             "Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))",
             "Azan.setSoundChoice(MainActivity.this, next)",
@@ -92,10 +92,22 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
     def test_popup_is_right_centered_and_does_not_scroll_or_glide_content(self):
         self.assertIn("Gravity.RIGHT | Gravity.CENTER_VERTICAL", self.popup)
-        self.assertIn("int) (301 * density)", self.popup)
+        self.assertIn("int) (276 * density)", self.popup)
         self.assertIn("lp.rightMargin = safeX + (int) (14 * density)", self.popup)
         self.assertNotIn("glideToMenuRow(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
+
+
+    def test_owner_refinement_header_next_prayer_schedule_cells_and_azan_status(self):
+        self.assertIn("(int) (33 * density)", self.popup)
+        self.assertIn("titleDivider", self.popup)
+        self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
+        self.assertIn("createPrayerPopupText(\"800 mdpl\", 8f", self.popup)
+        self.assertIn("(int) (60 * density)", self.popup)
+        self.assertIn("(int) (125 * density), (int) (36 * density)", self.popup)
+        self.assertIn("\"● AKTIF\" : \"● NONAKTIF\"", self.popup)
+        self.assertIn("0xFF58C77A", self.popup)
+        self.assertIn("0xFFB7BEC7", self.popup)
 
     def test_silver_glass_is_preserved_without_cyan_content_tokens(self):
         self.assertIn("TvUiTokens.TEXT_PRIMARY", self.popup)
