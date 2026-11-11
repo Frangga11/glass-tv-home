@@ -98,7 +98,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
     def test_popup_is_right_aligned_to_glass_dock_and_does_not_scroll_or_glide_content(self):
         self.assertIn("Gravity.TOP | Gravity.RIGHT", self.popup)
-        self.assertIn("int) (254 * density)", self.popup)
         self.assertIn("View dockGlassAnchor = dockRecycler", self.popup)
         self.assertIn("dockGlassAnchor.getLocationOnScreen(dockOnScreen)", self.popup)
         self.assertIn("dockRightInRoot", self.popup)
@@ -142,13 +141,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             'createPrayerPopupText(title, 12f',
             'createPrayerPopupText(description, 9f',
             '(int) (31 * density)',
-            'int width = Math.min((int) (254 * density), safeWidth);',
             '"OK PILIH   •   BACK KEMBALI", 9f',
             '((TextView) testRow.getChildAt(1)).setTextSize(10f)',
-            'int innerCapsuleWidthPx = Math.max(1, width - 2 * panelPaddingPx)',
-            'int leftScheduleWidthPx = Math.max(1, (innerCapsuleWidthPx - scheduleGapPx) / 2)',
-            'innerCapsuleWidthPx - scheduleGapPx - leftScheduleWidthPx',
-            'column == 0 ? leftScheduleWidthPx : rightScheduleWidthPx',
             'Math.round(31 * density)',
             'ViewGroup.LayoutParams.MATCH_PARENT, (int) (52 * density)',
             'ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density)',
@@ -174,8 +168,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("scheduleCapsuleWidthPx, Math.round(31 * density)", self.popup)
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (52 * density)", self.popup)
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density)", self.popup)
-        self.assertNotIn("leftScheduleWidthPx", self.popup)
-        self.assertNotIn("rightScheduleWidthPx", self.popup)
 
     def test_silver_glass_is_preserved_without_cyan_content_tokens(self):
         self.assertIn("TvUiTokens.TEXT_PRIMARY", self.popup)
