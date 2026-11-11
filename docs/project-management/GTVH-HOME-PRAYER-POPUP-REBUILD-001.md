@@ -421,3 +421,26 @@ Changed files remain limited to:
 3. This checkpoint document.
 
 Exact branch CI, Android build, and rendered 1920×1080 inspection are pending. Physical Mi TV Stick acceptance remains pending. PR #135 stays OPEN / DRAFT / UNMERGED.
+
+
+## 19. Owner correction — fixed 105dp timetable capsules define all horizontal widths
+
+Date: 11 November 2026 (WIB)
+
+This section supersedes the equal-weight/pixel-fill geometry in Section 18.
+
+- Each Subuh–Isya timetable capsule is **exactly 105dp wide × 31dp high**.
+- The two timetable capsules are separated by an exact **4dp center gap** (2dp inner margin on each capsule).
+- Combined timetable content width is therefore **214dp** (105 + 4 + 105).
+- Popup horizontal inset remains **9dp on each side**.
+- Popup target width is therefore **232dp** (9 + 214 + 9).
+- Next-prayer, Azan, Suara Azan, and Test Sound capsules remain MATCH_PARENT within the same panel content area, so each is **214dp wide** on the target layout.
+- The geometry is calculated from the fixed 105dp capsule width, not by dividing the popup width. The popup is derived from the capsule pair plus the 9dp side insets.
+- On a constrained safe area, the outer popup frame is clamped to the available safe width; the intended Mi TV Stick 1920×1080 layout has ample width for the exact 232dp contract.
+
+### Validation boundary
+
+- Source contract now explicitly asserts the 105dp capsule width, 4dp center gap, 214dp shared inner width, 232dp popup width formula, and full-width outer capsules.
+- This is not yet a visual/device PASS. Exact-HEAD CI, rendered 1920×1080 inspection, clipping check, and Mi TV Stick acceptance remain pending.
+- No prayer data, 24-hour formatting, Azan preferences/scheduling, sound choice, Test Sound route, DPAD graph, popup anchoring, Home/Dock/Grid, or unrelated modules are changed.
+- PR #135 remains OPEN / DRAFT / UNMERGED. No install or merge is authorized.

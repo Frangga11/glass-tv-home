@@ -59,7 +59,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             "capsule.setCornerRadius(999 * density)",
             "headingLp.topMargin = (int) (5 * density)",
             "headingLp.bottomMargin = (int) (5 * density)",
-            "new LinearLayout.LayoutParams(\n                        0, (int) (31 * density), 1f)",
             "Azan.setMasterEnabled(MainActivity.this, enabled)",
             "Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))",
             "Azan.setSoundChoice(MainActivity.this, next)",
@@ -163,6 +162,20 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             '(int) (16 * density));',
         ):
             self.assertIn(token, self.popup)
+
+
+    def test_owner_width_contract_uses_105dp_cells_as_the_single_source_of_truth(self):
+        self.assertIn("final int scheduleCapsuleWidthPx = Math.round(105 * density);", self.popup)
+        self.assertIn("final int scheduleGapPx = Math.round(4 * density);", self.popup)
+        self.assertIn("final int panelPaddingPx = Math.round(9 * density);", self.popup)
+        self.assertIn("final int innerCapsuleWidthPx = 2 * scheduleCapsuleWidthPx + scheduleGapPx;", self.popup)
+        self.assertIn("final int targetPopupWidthPx = innerCapsuleWidthPx + 2 * panelPaddingPx;", self.popup)
+        self.assertIn("int width = Math.min(targetPopupWidthPx, safeWidth);", self.popup)
+        self.assertIn("scheduleCapsuleWidthPx, Math.round(31 * density)", self.popup)
+        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (52 * density)", self.popup)
+        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density)", self.popup)
+        self.assertNotIn("leftScheduleWidthPx", self.popup)
+        self.assertNotIn("rightScheduleWidthPx", self.popup)
 
     def test_silver_glass_is_preserved_without_cyan_content_tokens(self):
         self.assertIn("TvUiTokens.TEXT_PRIMARY", self.popup)

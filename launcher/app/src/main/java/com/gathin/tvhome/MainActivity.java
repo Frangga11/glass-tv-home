@@ -797,8 +797,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             lblIsyak = findViewById(R.id.lblIsyak);
 
             timeSubuh = findViewById(R.id.timeSubuh);
-            timeSyuruk = findViewById(R.id.timeSyuruk);
-            timeZohor = findViewById(R.id.timeZohor);
+            timeSyuruk = findViewById(R.id.timeSyuruk);            timeZohor = findViewById(R.id.timeZohor);
             timeAsar = findViewById(R.id.timeAsar);
             timeMaghrib = findViewById(R.id.timeMaghrib);
             timeIsyak = findViewById(R.id.timeIsyak);
@@ -1597,8 +1596,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (!StandbyPhotoStore.setPhotoMode(this, enabled)) {
             TvFeedback.show(this, R.string.standby_mode_save_failed, Toast.LENGTH_LONG);
-            return false;
-        }
+            return false;        }
         standbyPhotoUriShown = "";
         updateNightstandScreensaver();
         TvFeedback.show(this, enabled ? R.string.standby_photo_mode_enabled : R.string.standby_clock_mode_enabled, Toast.LENGTH_SHORT);
@@ -2397,8 +2395,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             // Anchor both visible information bottoms to the measured Glass tray edge.
             // prayerTable is translated upward in XML; compensate that runtime translation
-            // so its visible bottom, not the container bottom, receives the exact 30dp gap.
-            int shelfGapPx = DockGeometry.islamicShelfDockGapPx(density);
+            // so its visible bottom, not the container bottom, receives the exact 30dp gap.            int shelfGapPx = DockGeometry.islamicShelfDockGapPx(density);
             heroBottom = trayTop - shelfGapPx;
             islamicShelfBottomAnchor = heroBottom + islamicShelfVisualBottomOffsetPx();
         }
@@ -3197,8 +3194,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             moveSlide.setMoveDuration(reducedMotion ? 140 : 220);
         }
         recycler.setItemAnimator(moveSlide);
-        startMoveWiggle(movingCard);
-    }
+        startMoveWiggle(movingCard);    }
 
     private void startMoveWhenLaidOut(String key, boolean inDock, int position, int attemptsRemaining) {
         if (movingPos >= 0) return;
@@ -3997,8 +3993,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofInt(0, dy);
         horizontalGridScrollAnimator = animator;
         animator.setDuration(duration);
-        animator.setInterpolator(new android.view.animation.DecelerateInterpolator());
-        final int[] lastValue = {0};
+        animator.setInterpolator(new android.view.animation.DecelerateInterpolator());        final int[] lastValue = {0};
         animator.addUpdateListener(animation -> {
             if (!horizontalGridTransitionRunning
                     || transitionGeneration != horizontalGridTransitionGeneration
@@ -4797,7 +4792,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         String period = AppLanguage.getPeriodString(this, hour);
-
         int day = cal.get(Calendar.DAY_OF_MONTH);
         int month = cal.get(Calendar.MONTH);
         int year = cal.get(Calendar.YEAR);
@@ -5597,8 +5591,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         return row;
     }
 
-    void showRestartDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+    void showRestartDialog() {        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
         builder.setTitle(AppLanguage.strRestartTitle(this));
         builder.setMessage(AppLanguage.strRestartMsg(this));
         builder.setPositiveButton(AppLanguage.strRestartConfirm(this), (dialog, which) -> {
@@ -6397,8 +6390,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Header Title
         TextView titleView = new TextView(this);
         titleView.setText(AppLanguage.strWallpaperIntervalTitle(this));
-        titleView.setTextSize(19);
-        titleView.setTextColor(0xFFFFFFFF);
+        titleView.setTextSize(19);        titleView.setTextColor(0xFFFFFFFF);
         titleView.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         titleView.setFontVariationSettings("'wght' 700");
         titleView.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
@@ -7197,8 +7189,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int padH = Math.round(36 * density);
         int padV = Math.round(28 * density);
         rootLayout.setPadding(padH, padV, padH, padV);
-        // The shared B01 modal window owns the opaque glass surface.
-        rootLayout.setBackgroundColor(Color.TRANSPARENT);
+        // The shared B01 modal window owns the opaque glass surface.        rootLayout.setBackgroundColor(Color.TRANSPARENT);
 
         TextView title = new TextView(this);
         title.setText(titleText);
@@ -7771,20 +7762,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (anchor == null || !anchor.isShown()) anchor = root;
 
-        // One geometry contract for the entire popup: the outer capsules (next prayer,
-        // Azan, sound, and test) fill the same inner width; the timetable divides that
-        // exact width into two equal capsules with a single 4dp center gap.
+        // Width contract: two 105dp timetable capsules + one 4dp center gap
+        // define the 214dp inner content width. The 9dp panel insets on both sides
+        // make the popup exactly 232dp wide. Every outer capsule fills that same 214dp.
         int safeX = TvResponsiveLayout.safeInsetPx(root.getWidth());
         int safeY = TvResponsiveLayout.safeInsetPx(root.getHeight());
         int safeWidth = Math.max(1, root.getWidth() - 2 * safeX);
         int safeHeight = Math.max(1, root.getHeight() - 2 * safeY);
         final int panelPaddingPx = Math.round(9 * density);
         final int scheduleGapPx = Math.round(4 * density);
-        int width = Math.min(Math.round(254 * density), safeWidth);
-        int innerCapsuleWidthPx = Math.max(1, width - 2 * panelPaddingPx);
-        int leftScheduleWidthPx = Math.max(1, (innerCapsuleWidthPx - scheduleGapPx) / 2);
-        int rightScheduleWidthPx = Math.max(1,
-                innerCapsuleWidthPx - scheduleGapPx - leftScheduleWidthPx);
+        final int scheduleCapsuleWidthPx = Math.round(105 * density);
+        final int innerCapsuleWidthPx = 2 * scheduleCapsuleWidthPx + scheduleGapPx;
+        final int targetPopupWidthPx = innerCapsuleWidthPx + 2 * panelPaddingPx;
+        int width = Math.min(targetPopupWidthPx, safeWidth);
 
         // Compact right-side panel. The title/location header is informational, not a DPAD stop.
         FrameLayout panel = new FrameLayout(this);
@@ -7917,11 +7907,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 card.setClickable(true);
                 card.setOnClickListener(v -> SoundEffects.playSelect());
                 scheduleFocus.add(card);
-                // Explicit pixel widths avoid weight-rounding drift: the pair plus its
-                // 4dp center gap exactly equals the popup's inner capsule width.
+                // Each timetable capsule is fixed at 105dp. Two 2dp inner-side
+                // margins create the exact 4dp center gap without changing capsule width.
                 LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
-                        column == 0 ? leftScheduleWidthPx : rightScheduleWidthPx,
-                        Math.round(31 * density));
+                        scheduleCapsuleWidthPx, Math.round(31 * density));
                 if (column == 0) cardLp.rightMargin = Math.round(2 * density);
                 else cardLp.leftMargin = Math.round(2 * density);
                 gridRow.addView(card, cardLp);
@@ -7997,8 +7986,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             SoundEffects.playSelect();
             prayerPopupRestoreFocusPending = prayerPopupReturnAnchor != null;
             closeMenu(false);
-            Intent azanIntent = new Intent(MainActivity.this, AzanActivity.class);
-            azanIntent.putExtra("prayer", 4);
+            Intent azanIntent = new Intent(MainActivity.this, AzanActivity.class);            azanIntent.putExtra("prayer", 4);
             azanIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(azanIntent);
         });
@@ -8797,8 +8785,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.setScaleY(0.92f);
         panel.setTranslationY(-8 * density);
         popup.showAsDropDown(anchor, 0, (int) (10 * density), gravity);
-        panel.animate().alpha(1f).scaleY(1f).translationY(0f).setDuration(220)
-                .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f)).start();
+        panel.animate().alpha(1f).scaleY(1f).translationY(0f).setDuration(220)                .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f)).start();
     }
 
     private void addSeparator(LinearLayout rows) {
