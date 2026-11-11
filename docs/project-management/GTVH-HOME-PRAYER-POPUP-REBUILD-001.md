@@ -235,3 +235,18 @@ Owner-directed refinement applied on the existing PR #135 branch:
 - Sound selector and Test Sound behavior remain unchanged.
 
 Scope remains limited to the Prayer popup layout and its contract tests. No Home layout, prayer calculation, Azan scheduling implementation, or sound assets are intentionally changed. This is source-level implementation only; exact-HEAD CI, rendered inspection, and physical Mi TV Stick acceptance remain required. PR #135 stays OPEN / DRAFT / UNMERGED.
+
+
+## 12. Owner refinement — Wi-Fi-aligned popup anchoring
+
+Date: 11 November 2026 (WIB)
+
+- The Prayer popup is now top-right anchored rather than vertically centered.
+- Its right edge aligns with the right edge of the Home Wi-Fi capsule (btnWifi), matching that capsule's actual distance from the screen's right edge instead of using a separately guessed margin.
+- Its top edge starts 14dp below the bottom edge of the Wi-Fi capsule, matching the Wi-Fi popup's anchored spacing convention.
+- Placement is calculated in the Home root's coordinate space from on-screen anchor/root positions, with safe-inset and bottom-boundary clamping. If the Wi-Fi anchor is unavailable, the existing popup caller anchor is used as a fallback.
+- This is a placement-only refinement; content, DPAD focus order, prayer data, Azan preferences/scheduling, sound selection, and Test Sound routing remain unchanged.
+
+Exact source commit: 12a4d2a035a7b1b764fc79f27ab787b162c47eef.
+Contract test commit: c82fe849bfc9d961e179bbae747b909f7ee4edfe.
+Exact-HEAD CI and rendered/physical placement checks remain pending. PR #135 remains OPEN / DRAFT / UNMERGED.
