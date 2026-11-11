@@ -7771,6 +7771,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (anchor == null || !anchor.isShown()) anchor = root;
 
+        // One geometry contract for the entire popup: the outer capsules (next prayer,
+        // Azan, sound, and test) fill the same inner width; the timetable divides that
+        // exact width into two equal capsules with a single 4dp center gap.
+        int safeX = TvResponsiveLayout.safeInsetPx(root.getWidth());
+        int safeY = TvResponsiveLayout.safeInsetPx(root.getHeight());
+        int safeWidth = Math.max(1, root.getWidth() - 2 * safeX);
+        int safeHeight = Math.max(1, root.getHeight() - 2 * safeY);
+        final int panelPaddingPx = Math.round(9 * density);
+        final int scheduleGapPx = Math.round(4 * density);
+        int width = Math.min(Math.round(254 * density), safeWidth);
+        int innerCapsuleWidthPx = Math.max(1, width - 2 * panelPaddingPx);
+        int leftScheduleWidthPx = Math.max(1, (innerCapsuleWidthPx - scheduleGapPx) / 2);
+        int rightScheduleWidthPx = Math.max(1,
+                innerCapsuleWidthPx - scheduleGapPx - leftScheduleWidthPx);
+
         // Compact right-side panel. The title/location header is informational, not a DPAD stop.
         FrameLayout panel = new FrameLayout(this);
         panel.setClipChildren(true);
@@ -7902,12 +7917,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 card.setClickable(true);
                 card.setOnClickListener(v -> SoundEffects.playSelect());
                 scheduleFocus.add(card);
-                // Each timetable capsule shares the available inner width equally.
-                // The only horizontal gap is 4dp; the outer edges align exactly with panel padding.
+                // Explicit pixel widths avoid weight-rounding drift: the pair plus its
+                // 4dp center gap exactly equals the popup's inner capsule width.
                 LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
-                        0, (int) (31 * density), 1f);
-                if (column == 0) cardLp.rightMargin = (int) (2 * density);
-                else cardLp.leftMargin = (int) (2 * density);
+                        column == 0 ? leftScheduleWidthPx : rightScheduleWidthPx,
+                        Math.round(31 * density));
+                if (column == 0) cardLp.rightMargin = Math.round(2 * density);
+                else cardLp.leftMargin = Math.round(2 * density);
                 gridRow.addView(card, cardLp);
             }
             LinearLayout.LayoutParams rowLp = new LinearLayout.LayoutParams(
@@ -8001,12 +8017,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         footerLp.topMargin = (int) density;
         rows.addView(footer, footerLp);
 
-        int safeX = TvResponsiveLayout.safeInsetPx(root.getWidth());
-        int safeY = TvResponsiveLayout.safeInsetPx(root.getHeight());
-        int safeWidth = Math.max(1, root.getWidth() - 2 * safeX);
-        int safeHeight = Math.max(1, root.getHeight() - 2 * safeY);
-        int width = Math.min((int) (254 * density), safeWidth);
-        int maxContentHeight = Math.max(1, safeHeight - (int) (12 * density));
+        int maxContentHeight = Math.max(1, safeHeight - Math.round(12 * density));
         panel.measure(
                 View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(maxContentHeight, View.MeasureSpec.AT_MOST));
