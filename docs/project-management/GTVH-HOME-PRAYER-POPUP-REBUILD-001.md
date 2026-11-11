@@ -322,3 +322,33 @@ Changed files remain limited to:
 The popup panel width and cell width were changed together as a deliberate proportional pair. No changes to Home layout, Dock/Grid, wallpaper, shelves, Wi-Fi, microphone, Weather/AQI, prayer calculations, Azan persistence/scheduling, audio assets, or AzanActivity are intended.
 
 Exact-HEAD CI, rendered 1920×1080 inspection, clipping verification, and Mi TV Stick physical acceptance are pending for this owner typography revision. PR #135 remains OPEN / DRAFT / UNMERGED. Do not claim runtime PASS until those checks complete.
+
+
+## 15. Owner refinement — tighter typography and denser timetable geometry
+
+Date: 11 November 2026 (WIB)
+
+Owner-directed revision applied on PR #135:
+
+### Typography (sp)
+- WAKTU SHOLAT title: **13sp**.
+- Next-prayer name: **15sp**.
+- Next-prayer time: **14sp**.
+- Each timetable prayer time: **13sp**.
+- Azan, Suara Azan, and Test Sound descriptions: **9sp**.
+- UJI action and OK PILIH • BACK KEMBALI footer: **9sp**.
+- Existing location/elevation, caption, timetable prayer-name, section-heading, control-title, and status sizes remain unchanged unless explicitly listed above.
+
+### Compact geometry (dp)
+- Subuh–Isya capsules: **105dp wide × 31dp high** (reduced from 115 × 36dp).
+- Two-column pair including 4dp inter-cell gap: **214dp**.
+- Popup width: **254dp**, retaining 9dp side padding and balanced horizontal clearance.
+- Header height: **30dp**; next-prayer card: **52dp**; schedule heading: **17dp**; each timetable row: **33dp**; Azan/Suara Azan/Test Sound rows: **32dp**; footer: **16dp**.
+- Panel vertical padding reduced to 5dp. Location/elevation line boxes and title divider were tightened proportionally.
+- All popup text now disables Android's extra font padding and uses zero extra line spacing, reducing vertical gaps between stacked labels while preserving their font sizes and hierarchy.
+- Control value column reduced from 108dp to 96dp to give the text/description column more usable width inside the narrower panel.
+
+### Scope and validation
+Only the Prayer popup source, its contract test, and this checkpoint are changed. Prayer calculations, Azan preferences/scheduling, sound assets, Test Sound routing, DPAD focus order, Home/Dock/Grid, wallpaper, shelves, and Weather/AQI remain outside scope.
+
+This is an implementation checkpoint, not visual acceptance. Exact-HEAD CI/build, rendered 1920×1080 inspection, clipping check, and Mi TV Stick Android TV 11 acceptance remain pending. PR #135 remains OPEN / DRAFT / UNMERGED.
