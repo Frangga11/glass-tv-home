@@ -121,7 +121,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
         self.assertIn("(int) (52 * density)", self.popup)
-        self.assertIn("(int) (31 * density)", self.popup)
+        self.assertIn("Math.round(31 * density)", self.popup)
         self.assertIn("\"● AKTIF\" : \"● NONAKTIF\"", self.popup)
         self.assertIn("0xFF58C77A", self.popup)
         self.assertIn("0xFFB7BEC7", self.popup)
@@ -140,7 +140,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             'Azan.isMasterEnabled(this) ? "● AKTIF" : "● NONAKTIF", 10f',
             'createPrayerPopupText(title, 12f',
             'createPrayerPopupText(description, 9f',
-            '(int) (31 * density)',
+            'Math.round(31 * density)',
             '"OK PILIH   •   BACK KEMBALI", 9f',
             '((TextView) testRow.getChildAt(1)).setTextSize(10f)',
             'Math.round(31 * density)',
