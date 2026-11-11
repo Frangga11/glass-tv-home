@@ -366,3 +366,24 @@ Implementation detail clarification for Section 15:
 - Corrected contract test commit: `8b6a826d25f5f00cd70e29d5b6a4a7cf8b8ec968`. Exact-HEAD CI must rerun and pass before build validation is complete.
 - The revised vertical content budget is approximately **334dp** before runtime measurement: header 30 + dividers 8 + next card 52 + schedule heading 18 + schedule rows 101 + three control rows/gaps 98 + footer/gap 17 + panel vertical padding 10. Actual measured Android view height remains authoritative.
 - PR #135 remains OPEN / DRAFT / UNMERGED. No install, merge, or final visual PASS is claimed.
+
+
+
+## 17. Owner refinement — balanced timetable, schedule breathing room, and status capsules
+
+Date: 11 November 2026 (WIB)
+
+Applied to the existing PR #135 branch in response to the owner's latest visual direction:
+
+- **Popup/timetable horizontal balance:** the six Subuh–Isya capsules now use equal-weight columns. The two columns consume the full inner panel width, with one precise 4dp inter-column gap and no extra outer cell margins. Their left and right edges therefore align exactly with the panel's 9dp inner padding, producing equal, deliberate left/right geometry instead of fixed-width cells floating inside the panel.
+- **JADWAL HARI INI spacing:** heading height is 20dp with 5dp spacing above and 5dp below, separating it cleanly from the next-prayer card and the first timetable row.
+- **UJI action:** raised from 9sp to **10sp**.
+- **Azan status:** AKTIF and NONAKTIF now sit inside a rounded status capsule. Active uses a restrained green-tinted fill and green outline; inactive uses a neutral silver fill and outline. The capsule background and text color update together when the existing Azan master toggle changes.
+- Existing popup width (254dp), 9dp panel insets, prayer data, 24-hour times, sound choices, Azan preference/scheduling path, Test Sound route, and DPAD focus graph remain unchanged.
+
+Changed files remain limited to:
+1. `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+2. `tests/test_home_prayer_popup_rebuild_contract.py`
+3. This checkpoint document.
+
+Source and contract-test changes are committed; exact-HEAD CI/build and rendered 1920×1080 inspection are pending. Mi TV Stick physical acceptance is also pending. PR #135 remains OPEN / DRAFT / UNMERGED; no installation or merge is authorized by this refinement.
