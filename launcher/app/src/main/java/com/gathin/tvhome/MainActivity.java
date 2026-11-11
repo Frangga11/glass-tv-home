@@ -8142,7 +8142,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Anchor the popup to the Home Wi-Fi capsule: align right edges and open directly below it.
         View wifiAnchor = findViewById(R.id.btnWifi);
         if (wifiAnchor == null || !wifiAnchor.isShown() || wifiAnchor.getWidth() <= 0) {
-            wifiAnchor = findViewById(R.id.btnWifi);
+            wifiAnchor = anchor;
         }
         int rootOnScreen[] = new int[2];
         int wifiOnScreen[] = new int[2];
