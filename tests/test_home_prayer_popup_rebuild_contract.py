@@ -92,7 +92,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
     def test_popup_is_right_aligned_to_glass_dock_and_does_not_scroll_or_glide_content(self):
         self.assertIn("Gravity.TOP | Gravity.RIGHT", self.popup)
-        self.assertIn("int) (276 * density)", self.popup)
+        self.assertIn("int) (264 * density)", self.popup)
         self.assertIn("View dockGlassAnchor = dockRecycler", self.popup)
         self.assertIn("dockGlassAnchor.getLocationOnScreen(dockOnScreen)", self.popup)
         self.assertIn("dockRightInRoot", self.popup)
@@ -114,12 +114,32 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("(int) (33 * density)", self.popup)
         self.assertIn("titleDivider", self.popup)
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
-        self.assertIn("createPrayerPopupText(\"800 mdpl\", 8f", self.popup)
+        self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
         self.assertIn("(int) (60 * density)", self.popup)
-        self.assertIn("(int) (125 * density), (int) (36 * density)", self.popup)
+        self.assertIn("(int) (115 * density), (int) (36 * density)", self.popup)
         self.assertIn("\"● AKTIF\" : \"● NONAKTIF\"", self.popup)
         self.assertIn("0xFF58C77A", self.popup)
         self.assertIn("0xFFB7BEC7", self.popup)
+
+    def test_owner_typography_and_proportional_capsule_dimensions_are_exact(self):
+        for token in (
+            'createPrayerPopupText("WAKTU SHOLAT", 14f',
+            'PrayerTimes.getShortZoneName(this), 11f',
+            'createPrayerPopupText("800 mdpl", 9f',
+            '"WAKTU SHOLAT BERIKUTNYA", 10f',
+            'nextPrayer.name : "Jadwal diperbarui", 17f',
+            'prayerPopup24Hour(nextPrayer.timeFormatted) : "--:--", 16f',
+            '"JADWAL HARI INI", 12f',
+            'createPrayerPopupText(item.name, 11f',
+            'prayerPopup24Hour(item.timeFormatted), 14f',
+            'Azan.isMasterEnabled(this) ? "● AKTIF" : "● NONAKTIF", 10f',
+            'createPrayerPopupText(title, 12f',
+            'createPrayerPopupText(description, 10f',
+            '(int) (115 * density), (int) (36 * density)',
+            'int width = Math.min((int) (264 * density), safeWidth);',
+            '(int) (18 * density));',
+        ):
+            self.assertIn(token, self.popup)
 
     def test_silver_glass_is_preserved_without_cyan_content_tokens(self):
         self.assertIn("TvUiTokens.TEXT_PRIMARY", self.popup)
