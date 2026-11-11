@@ -250,3 +250,19 @@ Date: 11 November 2026 (WIB)
 Exact source commit: 12a4d2a035a7b1b764fc79f27ab787b162c47eef.
 Contract test commit: c82fe849bfc9d961e179bbae747b909f7ee4edfe.
 Exact-HEAD CI and rendered/physical placement checks remain pending. PR #135 remains OPEN / DRAFT / UNMERGED.
+
+
+## 13. Owner correction — Glass Dock right edge; Wi-Fi vertical reference only
+
+Date: 11 November 2026 (WIB)
+
+This section supersedes the horizontal Wi-Fi alignment described in Section 12.
+
+- The Prayer popup's **right edge is aligned to the right edge of the Home Glass Dock viewport** (dockRecycler), not to the Wi-Fi capsule and not to a guessed screen margin.
+- The Wi-Fi capsule (btnWifi) is consulted only for the **vertical top position**: the popup begins 14dp below the capsule, matching the requested top-edge location reference.
+- There is no horizontal coordinate calculation from Wi-Fi, and no dependency on the Wi-Fi popup implementation.
+- The change is limited to Prayer popup placement and its source-contract tests. No Dock geometry, Wi-Fi popup, Home layout, prayer schedule, Azan behavior, or other UI is changed.
+
+Implementation commit: 8d80bad318e6b9dfebdb01f3993e739473b3d3f1.
+Contract-test commit: e2af6312c5dd928aaceec55765c2c4fa5f3426f4.
+Exact-HEAD CI and rendered/physical placement verification are pending. PR #135 remains OPEN / DRAFT / UNMERGED.
