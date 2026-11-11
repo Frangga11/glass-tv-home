@@ -8139,11 +8139,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Backdrop.watch(panel);
         glider.addCompanion(panel);
 
+        // Anchor the popup to the Home Wi-Fi capsule: align right edges and open directly below it.
+        View wifiAnchor = findViewById(R.id.btnWifi);
+        if (wifiAnchor == null || !wifiAnchor.isShown() || wifiAnchor.getWidth() <= 0) {
+            wifiAnchor = findViewById(R.id.btnWifi);
+        }
+        int rootOnScreen[] = new int[2];
+        int wifiOnScreen[] = new int[2];
+        root.getLocationOnScreen(rootOnScreen);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                width, height, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
-        lp.rightMargin = safeX + (int) (14 * density);
-        lp.topMargin = safeY;
-        lp.bottomMargin = safeY;
+                width, height, Gravity.TOP | Gravity.RIGHT);
+        if (wifiAnchor != null && wifiAnchor.isShown() && wifiAnchor.getWidth() > 0) {
+            wifiAnchor.getLocationOnScreen(wifiOnScreen);
+            int wifiRightInRoot = wifiOnScreen[0] + wifiAnchor.getWidth() - rootOnScreen[0];
+            int wifiBottomInRoot = wifiOnScreen[1] + wifiAnchor.getHeight() - rootOnScreen[1];
+            lp.rightMargin = Math.max(safeX, root.getWidth() - wifiRightInRoot);
+            int belowWifiTop = wifiBottomInRoot + (int) (14 * density);
+            int maxTop = Math.max(safeY, root.getHeight() - safeY - height);
+            lp.topMargin = Math.min(Math.max(safeY, belowWifiTop), maxTop);
+        } else {
+            lp.rightMargin = safeX + (int) (14 * density);
+            lp.topMargin = safeY;
+        }
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;
