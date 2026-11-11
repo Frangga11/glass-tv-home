@@ -90,24 +90,25 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("panel.getMeasuredHeight()", self.popup)
         self.assertIn("showPrayerPopupOverlay(panel, rows, anchor, width, height, focusOrder, safeX, safeY)", self.popup)
 
-    def test_popup_is_right_centered_and_does_not_scroll_or_glide_content(self):
+    def test_popup_is_right_aligned_to_glass_dock_and_does_not_scroll_or_glide_content(self):
         self.assertIn("Gravity.TOP | Gravity.RIGHT", self.popup)
         self.assertIn("int) (276 * density)", self.popup)
-        self.assertIn("lp.rightMargin = Math.max(safeX, root.getWidth() - wifiRightInRoot)", self.popup)
+        self.assertIn("View dockGlassAnchor = dockRecycler", self.popup)
+        self.assertIn("dockGlassAnchor.getLocationOnScreen(dockOnScreen)", self.popup)
+        self.assertIn("dockRightInRoot", self.popup)
+        self.assertIn("root.getWidth() - dockRightInRoot", self.popup)
+        self.assertNotIn("wifiRightInRoot", self.popup)
         self.assertNotIn("glideToMenuRow(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
 
-
-
-    def test_popup_is_anchored_below_wifi_and_shares_its_right_edge(self):
-        self.assertIn("View wifiAnchor = findViewById(R.id.btnWifi)", self.popup)
-        self.assertIn("wifiAnchor.getLocationOnScreen(wifiOnScreen)", self.popup)
-        self.assertIn("root.getLocationOnScreen(rootOnScreen)", self.popup)
-        self.assertIn("wifiRightInRoot", self.popup)
-        self.assertIn("wifiBottomInRoot", self.popup)
-        self.assertIn("Gravity.TOP | Gravity.RIGHT", self.popup)
+    def test_popup_top_uses_wifi_capsule_only_as_vertical_reference(self):
+        self.assertIn("View topReference = findViewById(R.id.btnWifi)", self.popup)
+        self.assertIn("topReference.getLocationOnScreen(topReferenceOnScreen)", self.popup)
+        self.assertIn("topReference.getHeight()", self.popup)
+        self.assertIn("referenceTop = topReferenceOnScreen[1]", self.popup)
         self.assertIn("int) (14 * density)", self.popup)
-        self.assertIn("lp.topMargin = Math.min(Math.max(safeY, belowWifiTop), maxTop)", self.popup)
+        self.assertIn("lp.topMargin = Math.min(Math.max(safeY, referenceTop), maxTop)", self.popup)
+        self.assertNotIn("topReference.getWidth()", self.popup)
 
     def test_owner_refinement_header_next_prayer_schedule_cells_and_azan_status(self):
         self.assertIn("(int) (33 * density)", self.popup)
