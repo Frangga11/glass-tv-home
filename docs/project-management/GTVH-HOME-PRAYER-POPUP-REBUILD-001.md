@@ -397,3 +397,27 @@ Source and contract-test changes are committed; exact-HEAD CI/build and rendered
 - Updated the test to assert the new equal-weight cell layout, 31dp cell height, 5dp heading breathing margins, 10sp UJI action, and rounded status-capsule helper/state update.
 - Contract-test correction commit: `b28a3b6e66dd11e63aa0d1cb18330dde0281f7c8`.
 - Exact corrected branch CI is pending. Do not call the latest refinement PASS until both CI jobs complete successfully.
+
+
+
+## 18. Owner rework — pixel-exact popup and capsule width contract
+
+Date: 11 November 2026 (WIB)
+
+The owner asked to repeat the width refinement across the complete popup, not only the Subuh–Isya timetable cells. The implementation now uses one shared geometry calculation:
+
+- Popup target width remains 254dp, constrained by the TV safe width.
+- Panel horizontal inset remains 9dp per side.
+- All full-width outer capsules (next-prayer card, Azan row, Suara Azan row, and Test Sound row) use MATCH_PARENT inside the same panel content width.
+- The six Subuh–Isya timetable capsules divide that exact inner width into two explicit pixel widths, with a single centered 4dp gap. The right cell receives the remaining pixel after integer division, so the pair plus gap exactly equals the inner content width and cannot drift due to LinearLayout weight rounding.
+- Timetable capsule height remains 31dp; the next-prayer and control-row heights, 5dp schedule-heading breathing margins, UJI 10sp, and rounded AKTIF/NONAKTIF status chip are unchanged.
+- Safe-area width/height are calculated once before view construction and reused for measurement; duplicate geometry calculation at the end of the method was removed.
+
+This is a width precision change only. No prayer data, 24-hour formatting, Azan preference/scheduling, sound choice, Test Sound route, DPAD graph, popup anchoring, Home layout, Dock/Grid, or other modules are intentionally changed.
+
+Changed files remain limited to:
+1. `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+2. `tests/test_home_prayer_popup_rebuild_contract.py`
+3. This checkpoint document.
+
+Exact branch CI, Android build, and rendered 1920×1080 inspection are pending. Physical Mi TV Stick acceptance remains pending. PR #135 stays OPEN / DRAFT / UNMERGED.
