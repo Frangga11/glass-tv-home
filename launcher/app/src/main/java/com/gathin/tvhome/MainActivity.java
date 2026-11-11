@@ -797,8 +797,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             lblIsyak = findViewById(R.id.lblIsyak);
 
             timeSubuh = findViewById(R.id.timeSubuh);
-            timeSyuruk = findViewById(R.id.timeSyuruk);            timeZohor = findViewById(R.id.timeZohor);
-            timeAsar = findViewById(R.id.timeAsar);
+            timeSyuruk = findViewById(R.id.timeSyuruk);            timeZohor = findViewById(R.id.timeZohor);            timeAsar = findViewById(R.id.timeAsar);
             timeMaghrib = findViewById(R.id.timeMaghrib);
             timeIsyak = findViewById(R.id.timeIsyak);
 
@@ -1597,8 +1596,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (!StandbyPhotoStore.setPhotoMode(this, enabled)) {
             TvFeedback.show(this, R.string.standby_mode_save_failed, Toast.LENGTH_LONG);
             return false;        }
-        standbyPhotoUriShown = "";
-        updateNightstandScreensaver();
+        standbyPhotoUriShown = "";        updateNightstandScreensaver();
         TvFeedback.show(this, enabled ? R.string.standby_photo_mode_enabled : R.string.standby_clock_mode_enabled, Toast.LENGTH_SHORT);
         return true;
     }
@@ -2395,10 +2393,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             // Anchor both visible information bottoms to the measured Glass tray edge.
             // prayerTable is translated upward in XML; compensate that runtime translation
-            // so its visible bottom, not the container bottom, receives the exact 30dp gap.            int shelfGapPx = DockGeometry.islamicShelfDockGapPx(density);
+            // so its visible bottom, not the container bottom, receives the exact 30dp gap.
+            int shelfGapPx = DockGeometry.islamicShelfDockGapPx(density);
             heroBottom = trayTop - shelfGapPx;
-            islamicShelfBottomAnchor = heroBottom + islamicShelfVisualBottomOffsetPx();
-        }
+            islamicShelfBottomAnchor = heroBottom + islamicShelfVisualBottomOffsetPx();        }
 
         homeShelfAnchorReady = true;
         applyIslamicShelfPosition();
@@ -3197,8 +3195,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         startMoveWiggle(movingCard);    }
 
     private void startMoveWhenLaidOut(String key, boolean inDock, int position, int attemptsRemaining) {
-        if (movingPos >= 0) return;
-        RecyclerView recycler = inDock ? dockRecycler : grid;
+        if (movingPos >= 0) return;        RecyclerView recycler = inDock ? dockRecycler : grid;
         int currentPosition = inDock ? dockAdapter.positionOf(key) : adapter.positionOf(key);
         if (recycler == null || currentPosition < 0) return;
         if (recycler.findViewHolderForAdapterPosition(currentPosition) != null) {
@@ -3997,8 +3994,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         animator.addUpdateListener(animation -> {
             if (!horizontalGridTransitionRunning
                     || transitionGeneration != horizontalGridTransitionGeneration
-                    || focusGeneration != gridFocusRequestGeneration
-                    || grid == null) return;
+                    || focusGeneration != gridFocusRequestGeneration                    || grid == null) return;
             int value = (Integer) animation.getAnimatedValue();
             int step = value - lastValue[0];
             lastValue[0] = value;
@@ -4797,8 +4793,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int year = cal.get(Calendar.YEAR);
 
         String lang = AppLanguage.getLanguage(this);
-        String[] months;
-        switch (lang) {
+        String[] months;        switch (lang) {
             case AppLanguage.LANG_EN:
                 months = new String[]{"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
                 break;
@@ -5597,8 +5592,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         builder.setPositiveButton(AppLanguage.strRestartConfirm(this), (dialog, which) -> {
             dialog.dismiss();
             handler.postDelayed(() -> {
-                boolean requested = HomeKeyService.restartTv(MainActivity.this);
-                String message = requested
+                boolean requested = HomeKeyService.restartTv(MainActivity.this);                String message = requested
                         ? getString(R.string.restart_tv_requested)
                         : getString(R.string.restart_tv_failed);
                 TvFeedback.show(MainActivity.this, message, Toast.LENGTH_LONG);
@@ -6397,8 +6391,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         layout.addView(titleView);
 
         ScrollView scroll = new ScrollView(this);
-        scroll.setVerticalScrollBarEnabled(false);
-        LinearLayout list = new LinearLayout(this);
+        scroll.setVerticalScrollBarEnabled(false);        LinearLayout list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
 
         AlertDialog[] dialogHolder = new AlertDialog[1];
@@ -7197,8 +7190,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         title.setFontVariationSettings("'wght' 700");
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-        title.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);
-        title.setGravity(Gravity.CENTER);
+        title.setShadowLayer(4 * density, 0, 1 * density, 0xDD000000);        title.setGravity(Gravity.CENTER);
         rootLayout.addView(title);
 
         TextView sub = new TextView(this);
@@ -7997,8 +7989,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         focusOrder.add(testRow);
 
         LinearLayout footer = new LinearLayout(this);
-        footer.setGravity(Gravity.CENTER);
-        footer.addView(createPrayerPopupText(
+        footer.setGravity(Gravity.CENTER);        footer.addView(createPrayerPopupText(
                 "OK PILIH   •   BACK KEMBALI", 9f, TvUiTokens.TEXT_SECONDARY, true));
         LinearLayout.LayoutParams footerLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (16 * density));
@@ -8797,8 +8788,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         rows.addView(line, lp);
     }
 
-    private void addInputRow(LinearLayout rows, Runnable close, int iconRes, String title, int state, Runnable action) {
-        View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
+    private void addInputRow(LinearLayout rows, Runnable close, int iconRes, String title, int state, Runnable action) {        View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
         ((ImageView) row.findViewById(R.id.icon)).setImageResource(iconRes);
         ((TextView) row.findViewById(R.id.title)).setText(title);
         TextView status = row.findViewById(R.id.status);
