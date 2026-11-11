@@ -131,12 +131,16 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             'prayerPopup24Hour(nextPrayer.timeFormatted) : "--:--", 14f',
             '"JADWAL HARI INI", 12f',
             'createPrayerPopupText(item.name, 11f',
-            'prayerPopup24Hour(item.timeFormatted), 14f',
+            'prayerPopup24Hour(item.timeFormatted), 13f',
             'Azan.isMasterEnabled(this) ? "● AKTIF" : "● NONAKTIF", 10f',
             'createPrayerPopupText(title, 12f',
             'createPrayerPopupText(description, 9f',
-            '(int) (115 * density), (int) (36 * density)',
+            '(int) (105 * density), (int) (31 * density)',
             'int width = Math.min((int) (254 * density), safeWidth);',
+            '"OK PILIH   •   BACK KEMBALI", 9f',
+            '"((TextView) testRow.getChildAt(1)).setTextSize(9f)',
+            '"view.setIncludeFontPadding(false)',
+            '"view.setLineSpacing(0f, 1f)',
             '(int) (16 * density));',
         ):
             self.assertIn(token, self.popup)
