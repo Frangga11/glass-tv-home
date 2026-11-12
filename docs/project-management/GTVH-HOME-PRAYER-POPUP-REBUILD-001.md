@@ -471,3 +471,14 @@ Date: 12 November 2026 (WIB)
 
 ### Contract-test follow-up
 - The placement contract now explicitly checks the 10dp Dock clearance, available-height calculation, and top-margin placement bounded by the Wi-Fi reference.
+
+
+## Owner placement refinement — 12 November 2026
+
+- Owner confirmed the popup must remain on the right side, with its right edge exactly aligned to the right edge of the Home `prayerTable` timetable (the schedule edge after the Hijri year `1448H`).
+- Horizontal margin now uses the direct coordinate equation `rootWidth - scheduleRightInRoot`, clamped only at zero. The safe-inset minimum no longer shifts the popup away from the timetable's exact right edge.
+- Vertical contract retained: popup top is 10dp below the bottom of the Wi-Fi capsule; popup bottom remains at least 10dp above the visible Dock top edge.
+- Popup remains confined to the empty lane between the Home navigation/header area and the app Dock. No other Home, Dock, header, Wi-Fi, microphone, wallpaper, shelf, Weather/AQI, Settings, prayer-data, or Azan behavior is intentionally changed.
+- Implementation commit: `07b927c4b8fe9c2e1102ff5dd96a60860ca78c65`.
+- Contract-test commit: `b66eb7bbb0038338ea67df6efdda06e94a517d6a`.
+- Exact-HEAD CI and rendered/device QA are not yet confirmed for this revision. PR #135 remains OPEN / DRAFT / UNMERGED.
