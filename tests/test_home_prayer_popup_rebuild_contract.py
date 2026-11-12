@@ -181,7 +181,15 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (54 * density)", self.popup)
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density)", self.popup)
 
-    def test_silver_glass_is_preserved_without_cyan_content_tokens(self):
+    def test_owner_liquid_glass_is_popup_local_and_preserves_global_silver_tokens(self):
+        self.assertIn("panel.setBackground(prayerPopupGlassBackground(panel, 18 * density))", self.popup)
+        self.assertIn("private Drawable prayerPopupGlassBackground(View owner, float radius)", MAIN)
+        self.assertIn("veil.setColor(0x36131926)", MAIN)
+        for color in ("0xD9FFFFFF", "0xCC67E8F9", "0xB3C084FC", "0x80FDE047", "0x59818CF8", "0x8038BDF8"):
+            self.assertIn(color, MAIN)
+        self.assertIn("new Backdrop.Fill()", MAIN)
+        self.assertIn("backdrop.draw(canvas, owner, bounds, radius, fade)", MAIN)
+        self.assertIn("windowLight.getShader().setLocalMatrix(lightMatrix)", MAIN)
         self.assertIn("TvUiTokens.TEXT_PRIMARY", self.popup)
         self.assertIn("TvUiTokens.TEXT_SECONDARY", self.popup)
         self.assertIn("TvUiTokens.ISLAMIC_GOLD", self.popup)
