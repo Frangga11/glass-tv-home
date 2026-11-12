@@ -102,6 +102,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("prayerScheduleAnchor.getLocationOnScreen(scheduleOnScreen)", self.popup)
         self.assertIn("scheduleRightInRoot", self.popup)
         self.assertIn("root.getWidth() - scheduleRightInRoot", self.popup)
+        self.assertIn("lp.rightMargin = Math.max(0, root.getWidth() - scheduleRightInRoot);", self.popup)
+        self.assertNotIn("Math.max(safeX, root.getWidth() - scheduleRightInRoot)", self.popup)
         self.assertNotIn("wifiRightInRoot", self.popup)
         self.assertNotIn("glideToMenuRow(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
