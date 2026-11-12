@@ -7856,7 +7856,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         nextCard.setPadding((int) (9 * density), (int) (3 * density),
                 (int) (9 * density), (int) (3 * density));
         nextCard.setBackground(null);
-        nextCard.addView(createPrayerPopupText("waktu sholat berikutnya", 9f,
+        nextCard.addView(createPrayerPopupText("Waktu Solat Berikutnya", 9f,
                 TvUiTokens.TEXT_SECONDARY, false));
         nextCard.addView(createPrayerPopupText(
                 nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui", 15f,
@@ -7866,12 +7866,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 TvUiTokens.ISLAMIC_GOLD, true));
         rows.addView(nextCard, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (54 * density)));
+        addPrayerPopupDivider(rows);
 
         LinearLayout scheduleHeading = new LinearLayout(this);
         scheduleHeading.setGravity(Gravity.CENTER_VERTICAL);
         scheduleHeading.setPadding((int) (4 * density), 0, 0, 0);
         scheduleHeading.addView(createPrayerPopupText(
-                "jadwal hari ini", 10.5f, TvUiTokens.TEXT_PRIMARY, true));
+                "JADWAL HARI INI", 10.5f, TvUiTokens.TEXT_PRIMARY, true));
         LinearLayout.LayoutParams headingLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (16 * density));
         headingLp.topMargin = (int) (2 * density);
@@ -7937,7 +7938,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             boolean enabled = !Azan.isMasterEnabled(MainActivity.this);
             Azan.setMasterEnabled(MainActivity.this, enabled);
             Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this));
-            masterStatus.setText(enabled ? "● AKTIF" : "● NONAKTIF");
+            masterStatus.setText(enabled ? "● Aktif" : "● Nonaktif");
             masterStatus.setTextColor(enabled ? 0xFF58C77A : 0xFFB7BEC7);
             masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled));
             SoundEffects.playSelect();
@@ -7992,7 +7993,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         LinearLayout footer = new LinearLayout(this);
         footer.setGravity(Gravity.CENTER);        footer.addView(createPrayerPopupText(
-                "ok pilih   •   back kembali", 8f, TvUiTokens.TEXT_SECONDARY, false));
+                "OK Pilih . BACK Kembali.", 8f, TvUiTokens.TEXT_SECONDARY, false));
         LinearLayout.LayoutParams footerLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (12 * density));
         footerLp.topMargin = 0;
