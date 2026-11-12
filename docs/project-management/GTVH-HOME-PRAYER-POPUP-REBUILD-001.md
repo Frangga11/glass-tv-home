@@ -625,3 +625,19 @@ Owner supplied a fresh physical-screen photo and reported that the DPAD focus in
 
 ### Scope and validation
 Only the existing three PR files are updated: popup Java source, its contract test, and this checkpoint document. Contract tests now assert the four restored capsule backgrounds, focus-background restoration, and exact Indonesian labels. Exact-HEAD CI/build and fresh 1920×1080 visual inspection are pending. Mi TV Stick acceptance remains pending; PR #135 remains OPEN / DRAFT / UNMERGED. Do not claim visual PASS or merge before evidence.
+
+
+## 28. Owner liquid-glass adoption for prayer popup — 13 November 2026
+
+Owner-approved visual refinement implemented in the dedicated prayer popup only.
+
+### Glass treatment
+- Replaced the popup's global Frosted Silver GlassDrawable instance with a popup-local drawable factory, `prayerPopupGlassBackground(...)`; global GlassDrawable, GlassRim, TvUiTokens and other shared surfaces remain untouched.
+- Surface layers: live cached wallpaper blur via `Backdrop.Fill`, restrained deep-obsidian tint `#36131926`, then a fine iridescent edge using white `#D9FFFFFF`, cyan `#67E8F9`, soap-violet `#C084FC`, pearl-gold `#FDE047`, twilight lilac `#818CF8`, and sky-cyan `#38BDF8`.
+- Added a subtle white-to-cyan overhead reflection along the upper bevel.
+- Existing radius, panel geometry, Wi-Fi top clearance, Dock bottom clearance, popup content, Azan actions, focus graph, and focus capsules remain unchanged. The focus layer remains independent of the glass fill.
+
+### Scope and validation
+- Updated the popup contract test to assert the new local glass factory and palette, while retaining checks that shared silver tokens are not replaced by popup-local accent changes.
+- Only the existing popup Java source, its contract test, and this checkpoint document are changed.
+- Await exact-HEAD CI and fresh 1920×1080 visual inspection. The new glass is source-implemented but not yet visually accepted; do not rebuild for Mi TV Stick testing until render inspection passes. PR #135 remains OPEN / DRAFT / UNMERGED.
