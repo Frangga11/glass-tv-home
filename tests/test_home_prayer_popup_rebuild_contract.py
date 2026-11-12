@@ -75,7 +75,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertNotIn("Azan.set(MainActivity.this, selectedPrayer, enabled)", self.popup)
         self.assertIn("Azan.isMasterEnabled(this)", self.popup)
         self.assertIn("Suara Azan", self.popup)
-        self.assertIn("Test Sound", self.popup)
+        self.assertIn("Tes Suara", self.popup)
 
     def test_all_five_existing_sound_choices_remain_available(self):
         for token in (
@@ -129,7 +129,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
         self.assertIn("(int) (54 * density)", self.popup)
-        self.assertIn('createPrayerPopupText("Waktu Solat Berikutnya", 9f', self.popup)
+        self.assertIn('createPrayerPopupText("Waktu Sholat Berikutnya", 9f', self.popup)
         self.assertIn('"JADWAL HARI INI", 10.5f', self.popup)
         self.assertIn("addPrayerPopupDivider(rows)", self.popup)
         self.assertIn('"OK Pilih . BACK Kembali.", 8f', self.popup)
@@ -143,7 +143,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             'createPrayerPopupText("WAKTU SHOLAT", 13f',
             'PrayerTimes.getShortZoneName(this), 11f',
             'createPrayerPopupText("800 mdpl", 9f',
-            '"Waktu Solat Berikutnya", 9f',
+            '"Waktu Sholat Berikutnya", 9f',
             'nextPrayer.name : "Jadwal diperbarui", 15f',
             'prayerPopup24Hour(nextPrayer.timeFormatted) : "--:--", 14f',
             '"JADWAL HARI INI", 10.5f',
@@ -242,6 +242,23 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         ):
             self.assertIn(token, self.popup)
         self.assertNotIn("View.MeasureSpec.AT_MOST", self.popup)
+
+
+    def test_owner_focus_capsules_and_indonesian_copy_are_restored(self):
+        for token in (
+            'createPrayerPopupText("Waktu Sholat Berikutnya", 9f',
+            '"Tes Suara", "Dengarkan contoh suara azan", "▶  UJI"',
+            "nextCard.setBackground(prayerPopupCardBackground(false))",
+            "masterRow.setBackground(prayerPopupCardBackground(false))",
+            "soundRow.setBackground(prayerPopupCardBackground(false))",
+            "testRow.setBackground(prayerPopupCardBackground(false))",
+            "v.setBackground(prayerPopupFocusedBackground())",
+            "v.setBackground((Drawable) v.getTag())",
+        ):
+            self.assertIn(token, self.popup)
+        self.assertNotIn('createPrayerPopupText("Waktu Solat Berikutnya"', self.popup)
+        self.assertNotIn('"Test Sound"', self.popup)
+
 
 
 if __name__ == "__main__":
