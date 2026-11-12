@@ -57,8 +57,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(\n                Azan.isMasterEnabled(this)))",
             "private Drawable prayerPopupStatusCapsuleBackground(boolean enabled)",
             "capsule.setCornerRadius(999 * density)",
-            "headingLp.topMargin = (int) (5 * density)",
-            "headingLp.bottomMargin = (int) (5 * density)",
+            "headingLp.topMargin = (int) (2 * density)",
+            "headingLp.bottomMargin = (int) (2 * density)",
             "Azan.setMasterEnabled(MainActivity.this, enabled)",
             "Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))",
             "Azan.setSoundChoice(MainActivity.this, next)",
@@ -92,7 +92,10 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             self.popup.index("panel.setBackground(new GlassDrawable"),
             self.popup.index("panel.measure("),
         )
-        self.assertIn("View.MeasureSpec.AT_MOST", self.popup)
+        self.assertIn("View.MeasureSpec.UNSPECIFIED", self.popup)
+        self.assertIn("naturalContentHeight = panel.getMeasuredHeight()", self.popup)
+        self.assertIn("Content exceeds Wi-Fi-to-Dock lane", self.popup)
+        self.assertIn("Content fits Wi-Fi-to-Dock lane", self.popup)
         self.assertIn("panel.getMeasuredHeight()", self.popup)
         self.assertIn("showPrayerPopupOverlay(panel, rows, anchor, width, height, focusOrder, safeX, safeY)", self.popup)
 
@@ -121,12 +124,12 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertNotIn("topReference.getWidth()", self.popup)
 
     def test_owner_refinement_header_next_prayer_schedule_cells_and_azan_status(self):
-        self.assertIn("(int) (30 * density)", self.popup)
+        self.assertIn("(int) (26 * density)", self.popup)
         self.assertIn("titleDivider", self.popup)
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
-        self.assertIn("(int) (52 * density)", self.popup)
-        self.assertIn("Math.round(35 * density)", self.popup)
+        self.assertIn("(int) (46 * density)", self.popup)
+        self.assertIn("Math.round(29 * density)", self.popup)
         self.assertIn("\"● AKTIF\" : \"● NONAKTIF\"", self.popup)
         self.assertIn("0xFF58C77A", self.popup)
         self.assertIn("0xFFB7BEC7", self.popup)
@@ -140,25 +143,25 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             'nextPrayer.name : "Jadwal diperbarui", 15f',
             'prayerPopup24Hour(nextPrayer.timeFormatted) : "--:--", 14f',
             '"JADWAL HARI INI", 12f',
-            'createPrayerPopupText(item.name, 11f',
-            'prayerPopup24Hour(item.timeFormatted), 13f',
-            'Azan.isMasterEnabled(this) ? "● AKTIF" : "● NONAKTIF", 10f',
-            'createPrayerPopupText(title, 12f',
-            'createPrayerPopupText(description, 9f',
-            '(int) (32 * density)',
+            'createPrayerPopupText(item.name, 10f',
+            'prayerPopup24Hour(item.timeFormatted), 12f',
+            'Azan.isMasterEnabled(this) ? "● AKTIF" : "● NONAKTIF", 9f',
+            'createPrayerPopupText(title, 11f',
+            'createPrayerPopupText(description, 8f',
+            '(int) (28 * density)',
             '"OK PILIH   •   BACK KEMBALI", 9f',
             '((TextView) testRow.getChildAt(1)).setTextSize(10f)',
-            '(int) (32 * density)',
-            'ViewGroup.LayoutParams.MATCH_PARENT, (int) (52 * density)',
-            'ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density)',
-            'headingLp.topMargin = (int) (5 * density)',
-            'headingLp.bottomMargin = (int) (5 * density)',
+            '(int) (28 * density)',
+            'ViewGroup.LayoutParams.MATCH_PARENT, (int) (46 * density)',
+            'ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density)',
+            'headingLp.topMargin = (int) (2 * density)',
+            'headingLp.bottomMargin = (int) (2 * density)',
             'private Drawable prayerPopupStatusCapsuleBackground(boolean enabled)',
             'capsule.setCornerRadius(999 * density)',
             'masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled))',
             'view.setIncludeFontPadding(false)',
             'view.setLineSpacing(0f, 1f)',
-            '(int) (16 * density));',
+            '(int) (12 * density));',
         ):
             self.assertIn(token, self.popup)
 
@@ -170,9 +173,9 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("final int innerCapsuleWidthPx = 2 * scheduleCapsuleWidthPx + scheduleGapPx;", self.popup)
         self.assertIn("final int targetPopupWidthPx = innerCapsuleWidthPx + 2 * panelPaddingPx;", self.popup)
         self.assertIn("int width = Math.min(targetPopupWidthPx, safeWidth);", self.popup)
-        self.assertIn("scheduleCapsuleWidthPx, Math.round(35 * density)", self.popup)
-        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (52 * density)", self.popup)
-        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density)", self.popup)
+        self.assertIn("scheduleCapsuleWidthPx, Math.round(29 * density)", self.popup)
+        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (46 * density)", self.popup)
+        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density)", self.popup)
 
     def test_silver_glass_is_preserved_without_cyan_content_tokens(self):
         self.assertIn("TvUiTokens.TEXT_PRIMARY", self.popup)
@@ -211,6 +214,30 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("activityResumed && openMenu == null", MAIN)
         self.assertIn("prayerPopupReturnAnchor = anchor;", self.popup)
         self.assertIn("prayerPopupRestoreFocusPending = false;", self.popup)
+
+
+    def test_owner_visual_refinement_compacts_full_content_and_status_capsule(self):
+        for token in (
+            "(int) (4 * density)",
+            "(int) (26 * density)",
+            "(int) (46 * density)",
+            "(int) (16 * density)",
+            "headingLp.topMargin = (int) (2 * density)",
+            "headingLp.bottomMargin = (int) (2 * density)",
+            "Math.round(29 * density)",
+            "(int) (31 * density)",
+            "(int) (28 * density)",
+            "(int) (22 * density)",
+            "ViewGroup.LayoutParams.WRAP_CONTENT, (int) (22 * density)",
+            "masterStatus.setMinWidth((int) (64 * density))",
+            "createPrayerPopupText(title, 11f",
+            "createPrayerPopupText(description, 8f",
+            "lp.setMargins((int) (7 * density), 0",
+            "naturalContentHeight > maxContentHeight",
+            "View.MeasureSpec.UNSPECIFIED",
+        ):
+            self.assertIn(token, self.popup)
+        self.assertNotIn("View.MeasureSpec.AT_MOST", self.popup)
 
 
 if __name__ == "__main__":
