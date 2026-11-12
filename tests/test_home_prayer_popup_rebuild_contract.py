@@ -128,7 +128,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("titleDivider", self.popup)
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
-        self.assertIn("(int) (46 * density)", self.popup)
+        self.assertIn("(int) (54 * density)", self.popup)
         self.assertIn("Math.round(29 * density)", self.popup)
         self.assertIn("\"● AKTIF\" : \"● NONAKTIF\"", self.popup)
         self.assertIn("0xFF58C77A", self.popup)
@@ -139,17 +139,17 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             'createPrayerPopupText("WAKTU SHOLAT", 13f',
             'PrayerTimes.getShortZoneName(this), 11f',
             'createPrayerPopupText("800 mdpl", 9f',
-            '"WAKTU SHOLAT BERIKUTNYA", 10f',
+            '"waktu sholat berikutnya", 9f',
             'nextPrayer.name : "Jadwal diperbarui", 15f',
             'prayerPopup24Hour(nextPrayer.timeFormatted) : "--:--", 14f',
-            '"JADWAL HARI INI", 12f',
+            '"jadwal hari ini", 10.5f',
             'createPrayerPopupText(item.name, 10f',
             'prayerPopup24Hour(item.timeFormatted), 12f',
-            'Azan.isMasterEnabled(this) ? "● AKTIF" : "● NONAKTIF", 9f',
+            'Azan.isMasterEnabled(this) ? "● Aktif" : "● Nonaktif", 8f',
             'createPrayerPopupText(title, 11f',
             'createPrayerPopupText(description, 8f',
             '(int) (28 * density)',
-            '"OK PILIH   •   BACK KEMBALI", 9f',
+            '"ok pilih   •   back kembali", 9f',
             '((TextView) testRow.getChildAt(1)).setTextSize(10f)',
             '(int) (28 * density)',
             'ViewGroup.LayoutParams.MATCH_PARENT, (int) (46 * density)',
@@ -220,16 +220,16 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         for token in (
             "(int) (4 * density)",
             "(int) (26 * density)",
-            "(int) (46 * density)",
+            "(int) (54 * density)",
             "(int) (16 * density)",
             "headingLp.topMargin = (int) (2 * density)",
             "headingLp.bottomMargin = (int) (2 * density)",
             "Math.round(29 * density)",
             "(int) (31 * density)",
-            "(int) (28 * density)",
-            "(int) (22 * density)",
-            "ViewGroup.LayoutParams.WRAP_CONTENT, (int) (22 * density)",
-            "masterStatus.setMinWidth((int) (64 * density))",
+            "(int) (30 * density)",
+            "(int) (18 * density)",
+            "ViewGroup.LayoutParams.WRAP_CONTENT, (int) (18 * density)",
+            "masterStatus.setPadding((int) (4 * density), 0,",
             "createPrayerPopupText(title, 11f",
             "createPrayerPopupText(description, 8f",
             "lp.setMargins((int) (7 * density), 0",
