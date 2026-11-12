@@ -7773,7 +7773,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.setClipChildren(true);
         panel.setClipToPadding(true);
         panel.setElevation(12 * density);
-        panel.setBackground(new GlassDrawable(panel, 18 * density, density, glider, 0.5f, true));
+        panel.setBackground(prayerPopupGlassBackground(panel, 18 * density));
         panel.setPadding((int) (12 * density), (int) (4 * density),
                 (int) (12 * density), (int) (4 * density));
 
@@ -8035,6 +8035,73 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                             + Math.round(maxContentHeight / density) + "dp");
         }
         showPrayerPopupOverlay(panel, rows, anchor, width, height, focusOrder, safeX, safeY);
+    }
+
+    /** Popup-local owner-style dark frosted liquid glass; does not alter the global silver glass system. */
+    private Drawable prayerPopupGlassBackground(View owner, float radius) {
+        return new Drawable() {
+            private final Backdrop.Fill backdrop = new Backdrop.Fill();
+            private final android.graphics.Paint veil = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+            private final android.graphics.Paint rim = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+            private final android.graphics.Paint windowLight = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+            private final android.graphics.RectF bounds = new android.graphics.RectF();
+            private final android.graphics.Matrix rimMatrix = new android.graphics.Matrix();
+            private final android.graphics.Matrix lightMatrix = new android.graphics.Matrix();
+            private float fade = 1f;
+
+            {
+                // Deep obsidian tint over the real blurred wallpaper; the restrained white veil
+                // keeps the panel translucent instead of turning it into an opaque card.
+                veil.setColor(0x36131926);
+                rim.setStyle(android.graphics.Paint.Style.STROKE);
+                rim.setStrokeWidth(1.5f * density);
+                int[] rimColors = {
+                        0xD9FFFFFF, 0xCC67E8F9, 0xB3C084FC, 0x80FDE047,
+                        0x22FFFFFF, 0x22FFFFFF, 0x59818CF8, 0x8038BDF8, 0xD9FFFFFF
+                };
+                float[] stops = {0f, 0.04f, 0.09f, 0.15f, 0.46f, 0.54f, 0.85f, 0.93f, 1f};
+                rim.setShader(new android.graphics.LinearGradient(0f, 0f, 1f, 1f,
+                        rimColors, stops, android.graphics.Shader.TileMode.CLAMP));
+                windowLight.setStyle(android.graphics.Paint.Style.STROKE);
+                windowLight.setStrokeWidth(Math.max(1f, 1.35f * density));
+                windowLight.setShader(new android.graphics.LinearGradient(0f, 0f, 1f, 0f,
+                        new int[]{0x00FFFFFF, 0x00FFFFFF, 0xBFFFFFFF, 0x7067E8F9, 0x00FFFFFF},
+                        new float[]{0f, 0.15f, 0.32f, 0.46f, 1f},
+                        android.graphics.Shader.TileMode.CLAMP));
+            }
+
+            @Override public void draw(android.graphics.Canvas canvas) {
+                bounds.set(getBounds());
+                if (fade <= 0f) return;
+                backdrop.draw(canvas, owner, bounds, radius, fade);
+                veil.setAlpha(Math.round(255 * fade));
+                canvas.drawRoundRect(bounds, radius, radius, veil);
+
+                float half = rim.getStrokeWidth() / 2f;
+                android.graphics.RectF edge = new android.graphics.RectF(bounds);
+                edge.inset(half, half);
+                rimMatrix.setScale(edge.width(), edge.height());
+                rimMatrix.postTranslate(edge.left, edge.top);
+                rim.getShader().setLocalMatrix(rimMatrix);
+                rim.setAlpha(Math.round(220 * fade));
+                canvas.drawRoundRect(edge, Math.max(0f, radius - half),
+                        Math.max(0f, radius - half), rim);
+
+                lightMatrix.setScale(edge.width(), edge.height());
+                lightMatrix.postTranslate(edge.left, edge.top);
+                windowLight.getShader().setLocalMatrix(lightMatrix);
+                windowLight.setAlpha(Math.round(150 * fade));
+                canvas.drawRoundRect(edge, Math.max(0f, radius - half),
+                        Math.max(0f, radius - half), windowLight);
+            }
+
+            @Override public void setAlpha(int alpha) {
+                fade = Math.max(0f, Math.min(1f, alpha / 255f));
+                invalidateSelf();
+            }
+            @Override public void setColorFilter(android.graphics.ColorFilter filter) { }
+            @Override public int getOpacity() { return android.graphics.PixelFormat.TRANSLUCENT; }
+        };
     }
 
     private String prayerPopup24Hour(String value) {
