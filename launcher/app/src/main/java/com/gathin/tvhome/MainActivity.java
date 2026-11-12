@@ -7855,8 +7855,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         nextCard.setGravity(Gravity.CENTER_VERTICAL);
         nextCard.setPadding((int) (9 * density), (int) (3 * density),
                 (int) (9 * density), (int) (3 * density));
-        nextCard.setBackground(null);
-        nextCard.addView(createPrayerPopupText("Waktu Solat Berikutnya", 9f,
+        nextCard.setBackground(prayerPopupCardBackground(false));
+        nextCard.addView(createPrayerPopupText("Waktu Sholat Berikutnya", 9f,
                 TvUiTokens.TEXT_SECONDARY, false));
         nextCard.addView(createPrayerPopupText(
                 nextPrayer != null ? nextPrayer.name : "Jadwal diperbarui", 15f,
@@ -7922,7 +7922,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         LinearLayout masterRow = createPrayerPopupControlRow(
                 "Azan", "Notifikasi azan", "");
-        masterRow.setBackground(null);
+        masterRow.setBackground(prayerPopupCardBackground(false));
         masterRow.getChildAt(1).setVisibility(View.GONE);
         TextView masterStatus = createPrayerPopupText(
                 Azan.isMasterEnabled(this) ? "● Aktif" : "● Nonaktif", 8f,
@@ -7952,7 +7952,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 "Suara Azan", "Pilih suara muazin",
                 prayerPopupSoundLabel(Azan.getSoundChoice(this), soundKeys, soundLabels) + "  ›");
         TextView soundValue = (TextView) soundRow.getChildAt(1);
-        soundRow.setBackground(null);
+        soundRow.setBackground(prayerPopupCardBackground(false));
         soundRow.setOnClickListener(v -> {
             String current = Azan.getSoundChoice(MainActivity.this);
             int currentIndex = 0;
@@ -7973,8 +7973,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         focusOrder.add(soundRow);
 
         LinearLayout testRow = createPrayerPopupControlRow(
-                "Test Sound", "Dengarkan contoh suara azan", "▶  UJI");
-        testRow.setBackground(null);
+                "Tes Suara", "Dengarkan contoh suara azan", "▶  UJI");
+        testRow.setBackground(prayerPopupCardBackground(false));
         ((TextView) testRow.getChildAt(1)).setTextSize(10f);
         testRow.setOnClickListener(v -> {
             SoundEffects.playSelect();
