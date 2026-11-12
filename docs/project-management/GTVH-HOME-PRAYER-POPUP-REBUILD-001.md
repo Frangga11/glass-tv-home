@@ -542,3 +542,12 @@ Only these files are changed:
 Home navigation/header, Dock, Wi-Fi, microphone, wallpaper, shelves, Weather/AQI, Settings, prayer data, Azan scheduling, sound choices/assets, and Test Sound routing remain outside the change scope.
 
 The 266dp figure is a source-derived layout budget, not a measured device result. Exact-HEAD CI, rendered 1920×1080 inspection, log confirmation that required height is within available height, and Mi TV Stick physical acceptance are still required. PR #135 remains OPEN / DRAFT / UNMERGED; do not install or merge until owner review.
+
+
+### Exact implementation checkpoint — 12 November 2026
+
+- Compact layout implementation: `96c70b1544d438716b76c3884d8f38358d39d51c`.
+- Contract test update: `e7da6c0be3acb4741172f4c70b17067717c63de6`.
+- Documentation and measured-budget note: `e0f6e8ccb8fccd68413fefc7fd64d9d1925dbb34`.
+- Final source check confirms the Test Sound row is also 28dp (same as Azan and sound rows); the complete explicit vertical budget is 266dp.
+- The exact-head CI run must include the latest source correction. Earlier CI runs against preceding commits are not acceptance evidence for this exact source SHA.
