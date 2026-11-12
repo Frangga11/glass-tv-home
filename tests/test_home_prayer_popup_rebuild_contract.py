@@ -161,7 +161,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             self.assertIn(token, self.popup)
 
 
-    def test_owner_width_contract_uses_105dp_cells_as_the_single_source_of_truth(self):
+    def test_owner_width_contract_uses_115dp_cells_as_the_single_source_of_truth(self):
         self.assertIn("final int scheduleCapsuleWidthPx = Math.round(115 * density);", self.popup)
         self.assertIn("final int scheduleGapPx = Math.round(6 * density);", self.popup)
         self.assertIn("final int panelPaddingPx = Math.round(12 * density);", self.popup)
