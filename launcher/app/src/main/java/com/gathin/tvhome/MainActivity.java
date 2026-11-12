@@ -7983,7 +7983,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             startActivity(azanIntent);
         });
         LinearLayout.LayoutParams testLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density));
         testLp.topMargin = (int) density;
         rows.addView(testRow, testLp);
         focusOrder.add(testRow);
