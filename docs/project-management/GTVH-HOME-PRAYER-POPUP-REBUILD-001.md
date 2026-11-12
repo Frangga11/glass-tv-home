@@ -611,3 +611,17 @@ Visual acceptance remains pending: no fresh 1920×1080 render or screenshot arti
 ## 26. Follow-up contract assertion fix — 13 November 2026
 
 The prior contract assertion still required the `createPrayerPopupText(` prefix on the same line as the uppercase schedule title. The Java implementation intentionally wraps this call across lines. The assertion now checks the exact literal `"JADWAL HARI INI", 10.5f` independently, preserving validation of exact casing and font size without depending on source formatting. Commit: d4cb048000ccec3541c75474aef3373d0669d5b3. Await CI for this exact HEAD. Visual render acceptance remains pending; no APK rebuild or device installation is authorized before render PASS.
+
+
+## 27. Owner focus-visibility and Indonesian copy correction — 13 November 2026
+
+Owner supplied a fresh physical-screen photo and reported that the DPAD focus indicator disappears while moving through Azan, Suara Azan, and Test Sound.
+
+### Source cross-check and correction
+- The three control rows were explicitly assigned `setBackground(null)`. The focus listener could draw the focused background, but the rows had no normal capsule drawable to restore when focus left. This made the focus state visually inconsistent.
+- Restored the shared rounded glass capsule background on the next-prayer card and all three Azan controls. The existing focus listener now has a real baseline drawable to restore after focus moves away.
+- Copy corrections: `Waktu Solat Berikutnya` → **`Waktu Sholat Berikutnya`** and `Test Sound` → **`Tes Suara`**. Supporting description remains `Dengarkan contoh suara azan`; action remains `UJI`.
+- Prayer timing, Azan master preference/scheduling, sound-choice cycling, Test Sound activity route, directional focus candidate graph, Wi-Fi/Dock clearances, and popup alignment are intentionally unchanged.
+
+### Scope and validation
+Only the existing three PR files are updated: popup Java source, its contract test, and this checkpoint document. Contract tests now assert the four restored capsule backgrounds, focus-background restoration, and exact Indonesian labels. Exact-HEAD CI/build and fresh 1920×1080 visual inspection are pending. Mi TV Stick acceptance remains pending; PR #135 remains OPEN / DRAFT / UNMERGED. Do not claim visual PASS or merge before evidence.
