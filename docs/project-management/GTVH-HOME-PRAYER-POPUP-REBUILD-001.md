@@ -486,7 +486,8 @@ Date: 12 November 2026 (WIB)
 
 ### CI contract alignment follow-up — 12 November 2026
 - CI run #2099 exposed a stale popup contract assertion: two checks expected 31dp control-row height while the popup implementation uses 32dp.
-- Updated only the Prayer popup contract test expectations from 31dp to the existing 32dp source value; no runtime UI code changed in this follow-up.
-- Follow-up test commit: `ffae8ab52561dbe330a8a1543fbbec4b26e3d5dd`.
+- The first assertion adjustment still failed because the source expresses the 32dp row height as `(int) (32 * density)`, not `Math.round(32 * density)`. The contract now checks the exact source expression.
+- Follow-up test commits: `ffae8ab52561dbe330a8a1543fbbec4b26e3d5dd` (initial correction), then `a171a4d56b2be173d5c9f33a1e33a39faad41a0b` (exact expression).
+- No runtime UI code changed in this test-only follow-up.
 - The exact-alignment implementation remains `lp.rightMargin = Math.max(0, root.getWidth() - scheduleRightInRoot)`.
 - New exact-HEAD CI result is pending. No visual/device acceptance or merge is claimed.
