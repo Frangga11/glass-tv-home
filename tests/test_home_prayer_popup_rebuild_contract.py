@@ -51,7 +51,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
     def test_azan_preferences_schedule_and_existing_test_activity_are_reused(self):
         for token in (
             "Azan.isMasterEnabled(this)",
-            "masterStatus.setText(enabled ? \"● AKTIF\" : \"● NONAKTIF\")",
+            "masterStatus.setText(enabled ? \"● Aktif\" : \"● NONAktif\")",
             "masterStatus.setTextColor(enabled ? 0xFF58C77A : 0xFFB7BEC7)",
             "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled))",
             "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(\n                Azan.isMasterEnabled(this)))",
@@ -130,7 +130,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
         self.assertIn("(int) (54 * density)", self.popup)
         self.assertIn("Math.round(29 * density)", self.popup)
-        self.assertIn("\"● AKTIF\" : \"● NONAKTIF\"", self.popup)
+        self.assertIn("\"● Aktif\" : \"● NONAktif\"", self.popup)
         self.assertIn("0xFF58C77A", self.popup)
         self.assertIn("0xFFB7BEC7", self.popup)
 
