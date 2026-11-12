@@ -468,3 +468,6 @@ Date: 12 November 2026 (WIB)
 - Exact-HEAD CI, rendered 1920×1080 inspection, clipping/height verification, and Mi TV Stick physical acceptance remain pending.
 - No prayer data, Azan preferences/scheduling, sound choices, Test Sound route, Home/Dock geometry, wallpaper, shelves, Weather/AQI, Wi-Fi behavior, or DPAD focus graph are intentionally changed.
 - PR #135 remains OPEN / DRAFT / UNMERGED. No APK installation or merge is authorized.
+
+### Contract-test follow-up
+- The placement contract now explicitly checks the 10dp Dock clearance, available-height calculation, and top-margin placement bounded by the Wi-Fi reference.

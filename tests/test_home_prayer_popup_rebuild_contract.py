@@ -112,7 +112,10 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("topReference.getHeight()", self.popup)
         self.assertIn("referenceTop = topReferenceOnScreen[1]", self.popup)
         self.assertIn("Math.round(10 * density)", self.popup)
-        self.assertIn("lp.topMargin = Math.min(Math.max(safeY, referenceTop), maxTop)", self.popup)
+        self.assertIn("lp.topMargin = Math.max(safeY, referenceTop)", self.popup)
+        self.assertIn("dockTopInRoot - Math.round(10 * density)", self.popup)
+        self.assertIn("lp.height = Math.min(height, maxHeightBeforeDock)", self.popup)
+        self.assertIn("bottomLimit - desiredTop", self.popup)
         self.assertNotIn("topReference.getWidth()", self.popup)
 
     def test_owner_refinement_header_next_prayer_schedule_cells_and_azan_status(self):
