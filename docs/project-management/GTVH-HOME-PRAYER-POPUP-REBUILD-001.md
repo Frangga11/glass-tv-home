@@ -583,3 +583,17 @@ Owner clarified the exact typography and punctuation after reviewing the physica
 - Fixed 10dp Wi-Fi-to-popup and minimum 10dp popup-to-Dock clearances remain unchanged.
 
 This is a source-and-contract correction only. Re-run exact-HEAD CI, inspect a fresh 1920×1080 render, verify the next-prayer time is fully visible and the entire popup fits within the reserved lane before rebuilding the APK for physical-device testing.
+
+
+## 24. Owner typography clarification and contract-test repair — 12 November 2026
+
+The owner clarified the exact casing and punctuation after the prior refinement:
+- Next-prayer label: **“Waktu Solat Berikutnya”** (title case), 9sp.
+- Schedule section label: **“JADWAL HARI INI”** (uppercase retained), 10.5sp.
+- Footer exact copy: **“OK Pilih . BACK Kembali.”**, 8sp.
+- Next-prayer card remains unfilled, with horizontal divider rules above and below the content area.
+- The status toggle label uses consistent “Aktif” / “Nonaktif” casing in both initial and toggled states.
+
+CI on the earlier a2ca247 checkpoint exposed four contract-test failures: stale expectations for the previous status casing and old 46dp next-prayer height. The launcher build/unit-test job passed on that run; the lists/tools/docs job failed on those stale assertions. The test contract was corrected to match the approved source specification. Latest branch HEAD after test repair: 8c08ac816807196a38c43268d35a19160d93216a.
+
+This does not constitute visual acceptance. Await CI for the exact latest HEAD, then obtain a fresh 1920×1080 render. Verify the full prayer time is visible, both horizontal rules are present, the entire panel fits between the fixed 10dp clearances, and the lower controls remain accessible. Only after render PASS should a fresh APK be built for Mi TV Stick acceptance.
