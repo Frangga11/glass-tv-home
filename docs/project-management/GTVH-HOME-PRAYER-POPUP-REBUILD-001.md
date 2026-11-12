@@ -597,3 +597,12 @@ The owner clarified the exact casing and punctuation after the prior refinement:
 CI on the earlier a2ca247 checkpoint exposed four contract-test failures: stale expectations for the previous status casing and old 46dp next-prayer height. The launcher build/unit-test job passed on that run; the lists/tools/docs job failed on those stale assertions. The test contract was corrected to match the approved source specification. Latest branch HEAD after test repair: 8c08ac816807196a38c43268d35a19160d93216a.
 
 This does not constitute visual acceptance. Await CI for the exact latest HEAD, then obtain a fresh 1920×1080 render. Verify the full prayer time is visible, both horizontal rules are present, the entire panel fits between the fixed 10dp clearances, and the lower controls remain accessible. Only after render PASS should a fresh APK be built for Mi TV Stick acceptance.
+
+
+## 25. CI contract assertion correction — 13 November 2026
+
+The exact source implementation places the uppercase schedule heading in a multiline call: `scheduleHeading.addView(createPrayerPopupText(\n                "JADWAL HARI INI", 10.5f, ...))`. A test had incorrectly required the call and string to appear on one line. Updated the assertion to match the actual multiline source while still asserting the exact uppercase label and 10.5sp size.
+
+On commit 8a6206d, Launcher build and unit tests passed; Lists/tools/docs failed only this one stale assertion. The assertion correction is committed as 123e2ca598372ae59df7e6e1d5c8d512b8b5c4c9. Exact-HEAD CI for 123e2ca is not yet visible. No source runtime behavior changed in this correction.
+
+Visual acceptance remains pending: no fresh 1920×1080 render or screenshot artifact has been verified. Do not rebuild APK for physical testing until visual inspection passes.
