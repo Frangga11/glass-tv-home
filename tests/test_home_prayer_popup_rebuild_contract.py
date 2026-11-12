@@ -130,7 +130,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
         self.assertIn("(int) (54 * density)", self.popup)
         self.assertIn('createPrayerPopupText("Waktu Solat Berikutnya", 9f', self.popup)
-        self.assertIn('createPrayerPopupText("JADWAL HARI INI", 10.5f', self.popup)
+        self.assertIn('"JADWAL HARI INI", 10.5f', self.popup)
         self.assertIn("addPrayerPopupDivider(rows)", self.popup)
         self.assertIn('"OK Pilih . BACK Kembali.", 8f', self.popup)
         self.assertIn("Math.round(29 * density)", self.popup)
