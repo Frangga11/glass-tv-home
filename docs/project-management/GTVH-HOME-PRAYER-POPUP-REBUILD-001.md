@@ -551,3 +551,20 @@ The 266dp figure is a source-derived layout budget, not a measured device result
 - Documentation and measured-budget note: `e0f6e8ccb8fccd68413fefc7fd64d9d1925dbb34`.
 - Final source check confirms the Test Sound row is also 28dp (same as Azan and sound rows); the complete explicit vertical budget is 266dp.
 - The exact-head CI run must include the latest source correction. Earlier CI runs against preceding commits are not acceptance evidence for this exact source SHA.
+
+
+## 22. Owner visual refinement from physical-screen photo — 12 November 2026
+
+Owner supplied a 768×1024 photograph of the popup on the TV. The visible defect is that the next-prayer time is clipped at the lower edge of its highlighted card. The four stacked card-like surfaces (next prayer, Azan, sound, Test Sound) also make the panel visually dense.
+
+### Approved visual direction
+- Preserve the top clearance at exactly 10dp below the Wi-Fi capsule and the bottom clearance at least 10dp above the Dock as hard placement invariants.
+- Next-prayer heading becomes sentence case: “waktu sholat berikutnya”, reduced to 9sp and normal weight.
+- Increase next-prayer content slot from 46dp to 54dp to give prayer name and time breathing room; remove its filled capsule background.
+- “jadwal hari ini” becomes sentence case and 10.5sp.
+- Remove filled capsule backgrounds from Azan, Suara Azan, and Test Sound rows. Use subtle horizontal dividers to separate those controls.
+- Reduce Aktif/Nonaktif chip to 18dp high, 8sp, content-width padding; remove the previous 64dp minimum width.
+- Footer becomes lowercase “ok pilih • back kembali”, 8sp, normal weight.
+
+### Scope and validation
+Only popup-specific Java source and its contract test are changed in this refinement. The Home header/navigation, Wi-Fi, microphone, Dock, wallpaper, shelves, prayer data, Azan behavior/preferences/sound assets remain unchanged. The 10dp placement rule is retained in source. The source-level change is not visual acceptance: inspect a fresh 1920×1080 render, verify that the next-prayer time is fully visible and all lower controls fit between the two fixed clearances, then build the APK again. Physical Mi TV Stick testing follows only after render inspection.
