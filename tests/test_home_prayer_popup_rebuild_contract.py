@@ -51,7 +51,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
     def test_azan_preferences_schedule_and_existing_test_activity_are_reused(self):
         for token in (
             "Azan.isMasterEnabled(this)",
-            "masterStatus.setText(enabled ? \"● Aktif\" : \"● NONAktif\")",
+            "masterStatus.setText(enabled ? \"● Aktif\" : \"● Nonaktif\")",
             "masterStatus.setTextColor(enabled ? 0xFF58C77A : 0xFFB7BEC7)",
             "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled))",
             "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(\n                Azan.isMasterEnabled(this)))",
@@ -129,8 +129,12 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
         self.assertIn("(int) (54 * density)", self.popup)
+        self.assertIn('createPrayerPopupText("Waktu Solat Berikutnya", 9f', self.popup)
+        self.assertIn('createPrayerPopupText("JADWAL HARI INI", 10.5f', self.popup)
+        self.assertIn("addPrayerPopupDivider(rows)", self.popup)
+        self.assertIn('"OK Pilih . BACK Kembali.", 8f', self.popup)
         self.assertIn("Math.round(29 * density)", self.popup)
-        self.assertIn("\"● Aktif\" : \"● NONAktif\"", self.popup)
+        self.assertIn("\"● Aktif\" : \"● Nonaktif\"", self.popup)
         self.assertIn("0xFF58C77A", self.popup)
         self.assertIn("0xFFB7BEC7", self.popup)
 
@@ -152,7 +156,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             '"OK Pilih . BACK Kembali.", 8f',
             '((TextView) testRow.getChildAt(1)).setTextSize(10f)',
             '(int) (28 * density)',
-            'ViewGroup.LayoutParams.MATCH_PARENT, (int) (46 * density)',
+            'ViewGroup.LayoutParams.MATCH_PARENT, (int) (54 * density)',
             'ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density)',
             'headingLp.topMargin = (int) (2 * density)',
             'headingLp.bottomMargin = (int) (2 * density)',
@@ -174,7 +178,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("final int targetPopupWidthPx = innerCapsuleWidthPx + 2 * panelPaddingPx;", self.popup)
         self.assertIn("int width = Math.min(targetPopupWidthPx, safeWidth);", self.popup)
         self.assertIn("scheduleCapsuleWidthPx, Math.round(29 * density)", self.popup)
-        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (46 * density)", self.popup)
+        self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (54 * density)", self.popup)
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density)", self.popup)
 
     def test_silver_glass_is_preserved_without_cyan_content_tokens(self):
