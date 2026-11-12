@@ -606,3 +606,8 @@ The exact source implementation places the uppercase schedule heading in a multi
 On commit 8a6206d, Launcher build and unit tests passed; Lists/tools/docs failed only this one stale assertion. The assertion correction is committed as 123e2ca598372ae59df7e6e1d5c8d512b8b5c4c9. Exact-HEAD CI for 123e2ca is not yet visible. No source runtime behavior changed in this correction.
 
 Visual acceptance remains pending: no fresh 1920×1080 render or screenshot artifact has been verified. Do not rebuild APK for physical testing until visual inspection passes.
+
+
+## 26. Follow-up contract assertion fix — 13 November 2026
+
+The prior contract assertion still required the `createPrayerPopupText(` prefix on the same line as the uppercase schedule title. The Java implementation intentionally wraps this call across lines. The assertion now checks the exact literal `"JADWAL HARI INI", 10.5f` independently, preserving validation of exact casing and font size without depending on source formatting. Commit: d4cb048000ccec3541c75474aef3373d0669d5b3. Await CI for this exact HEAD. Visual render acceptance remains pending; no APK rebuild or device installation is authorized before render PASS.
