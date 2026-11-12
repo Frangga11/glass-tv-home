@@ -7754,16 +7754,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         if (anchor == null || !anchor.isShown()) anchor = root;
 
-        // Width contract: two 105dp timetable capsules + one 4dp center gap
-        // define the 214dp inner content width. The 9dp panel insets on both sides
-        // make the popup exactly 232dp wide. Every outer capsule fills that same 214dp.
+        // Width contract: two 115dp timetable capsules + one 6dp center gap
+        // define the 236dp inner content width. The 12dp panel insets on both sides
+        // make the popup exactly 260dp wide. Every outer capsule fills that same 236dp.
         int safeX = TvResponsiveLayout.safeInsetPx(root.getWidth());
         int safeY = TvResponsiveLayout.safeInsetPx(root.getHeight());
         int safeWidth = Math.max(1, root.getWidth() - 2 * safeX);
         int safeHeight = Math.max(1, root.getHeight() - 2 * safeY);
-        final int panelPaddingPx = Math.round(9 * density);
-        final int scheduleGapPx = Math.round(4 * density);
-        final int scheduleCapsuleWidthPx = Math.round(105 * density);
+        final int panelPaddingPx = Math.round(12 * density);
+        final int scheduleGapPx = Math.round(6 * density);
+        final int scheduleCapsuleWidthPx = Math.round(115 * density);
         final int innerCapsuleWidthPx = 2 * scheduleCapsuleWidthPx + scheduleGapPx;
         final int targetPopupWidthPx = innerCapsuleWidthPx + 2 * panelPaddingPx;
         int width = Math.min(targetPopupWidthPx, safeWidth);
@@ -7774,8 +7774,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.setClipToPadding(true);
         panel.setElevation(12 * density);
         panel.setBackground(new GlassDrawable(panel, 18 * density, density, glider, 0.5f, true));
-        panel.setPadding((int) (9 * density), (int) (5 * density),
-                (int) (9 * density), (int) (5 * density));
+        panel.setPadding((int) (12 * density), (int) (5 * density),
+                (int) (12 * density), (int) (5 * density));
 
         LinearLayout rows = new LinearLayout(this);
         rows.setOrientation(LinearLayout.VERTICAL);
@@ -7899,17 +7899,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 card.setClickable(true);
                 card.setOnClickListener(v -> SoundEffects.playSelect());
                 scheduleFocus.add(card);
-                // Each timetable capsule is fixed at 105dp. Two 2dp inner-side
-                // margins create the exact 4dp center gap without changing capsule width.
+                // Each timetable capsule is fixed at 115dp. Two 3dp inner-side
+                // margins create the exact 6dp center gap without changing capsule width.
                 LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
-                        scheduleCapsuleWidthPx, Math.round(31 * density));
-                if (column == 0) cardLp.rightMargin = Math.round(2 * density);
-                else cardLp.leftMargin = Math.round(2 * density);
+                        scheduleCapsuleWidthPx, Math.round(35 * density));
+                if (column == 0) cardLp.rightMargin = Math.round(3 * density);
+                else cardLp.leftMargin = Math.round(3 * density);
                 gridRow.addView(card, cardLp);
             }
             LinearLayout.LayoutParams rowLp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (33 * density));
-            if (pair > 0) rowLp.topMargin = (int) density;
+                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (38 * density));
+            if (pair > 0) rowLp.topMargin = Math.round(3 * density);
             rows.addView(gridRow, rowLp);
         }
         focusOrder.addAll(scheduleFocus);
@@ -7996,7 +7996,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         footerLp.topMargin = (int) density;
         rows.addView(footer, footerLp);
 
-        int maxContentHeight = Math.max(1, safeHeight - Math.round(12 * density));
+        // Reserve the lane between Wi-Fi and the Dock before measuring the popup.
+        int[] rootScreen = new int[2];
+        int[] wifiScreen = new int[2];
+        int[] dockScreen = new int[2];
+        root.getLocationOnScreen(rootScreen);
+        View wifiAnchor = findViewById(R.id.btnWifi);
+        int desiredTop = safeY;
+        if (wifiAnchor != null && wifiAnchor.isShown() && wifiAnchor.getHeight() > 0) {
+            wifiAnchor.getLocationOnScreen(wifiScreen);
+            desiredTop = wifiScreen[1] + wifiAnchor.getHeight() - rootScreen[1] + Math.round(10 * density);
+        }
+        int dockTop = root.getHeight() - safeY;
+        if (dockRecycler != null && dockRecycler.isShown() && dockRecycler.getHeight() > 0) {
+            dockRecycler.getLocationOnScreen(dockScreen);
+            dockTop = dockScreen[1] - rootScreen[1];
+        }
+        int bottomLimit = Math.max(desiredTop + 1, dockTop - Math.round(10 * density));
+        int maxContentHeight = Math.max(1, Math.min(safeHeight - Math.round(12 * density), bottomLimit - desiredTop));
         panel.measure(
                 View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(maxContentHeight, View.MeasureSpec.AT_MOST));
@@ -8150,22 +8167,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Backdrop.watch(panel);
         glider.addCompanion(panel);
 
-        // Horizontal placement follows the right edge of the Home Glass Dock viewport.
-        // The Wi-Fi capsule is used only as a vertical position reference (same gap as its popup).
-        View dockGlassAnchor = dockRecycler;
+        // Horizontal placement follows the exact right edge of the Home prayer timetable.
+        // Wi-Fi is only the vertical anchor; the Dock supplies a hard lower boundary.
+        View prayerScheduleAnchor = findViewById(R.id.prayerTable);
         View topReference = findViewById(R.id.btnWifi);
         int rootOnScreen[] = new int[2];
-        int dockOnScreen[] = new int[2];
+        int scheduleOnScreen[] = new int[2];
         int topReferenceOnScreen[] = new int[2];
         root.getLocationOnScreen(rootOnScreen);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 width, height, Gravity.TOP | Gravity.RIGHT);
 
-        if (dockGlassAnchor != null && dockGlassAnchor.isShown()
-                && dockGlassAnchor.getWidth() > 0) {
-            dockGlassAnchor.getLocationOnScreen(dockOnScreen);
-            int dockRightInRoot = dockOnScreen[0] + dockGlassAnchor.getWidth() - rootOnScreen[0];
-            lp.rightMargin = Math.max(safeX, root.getWidth() - dockRightInRoot);
+        if (prayerScheduleAnchor != null && prayerScheduleAnchor.isShown()
+                && prayerScheduleAnchor.getWidth() > 0) {
+            prayerScheduleAnchor.getLocationOnScreen(scheduleOnScreen);
+            int scheduleRightInRoot = scheduleOnScreen[0] + prayerScheduleAnchor.getWidth() - rootOnScreen[0];
+            lp.rightMargin = Math.max(safeX, root.getWidth() - scheduleRightInRoot);
         } else {
             lp.rightMargin = safeX + (int) (14 * density);
         }
@@ -8174,10 +8191,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (topReference != null && topReference.isShown() && topReference.getHeight() > 0) {
             topReference.getLocationOnScreen(topReferenceOnScreen);
             referenceTop = topReferenceOnScreen[1] + topReference.getHeight()
-                    - rootOnScreen[1] + (int) (14 * density);
+                    - rootOnScreen[1] + Math.round(10 * density);
         }
-        int maxTop = Math.max(safeY, root.getHeight() - safeY - height);
-        lp.topMargin = Math.min(Math.max(safeY, referenceTop), maxTop);
+        int dockTopInRoot = root.getHeight() - safeY;
+        if (dockRecycler != null && dockRecycler.isShown() && dockRecycler.getHeight() > 0) {
+            int[] dockPosition = new int[2];
+            dockRecycler.getLocationOnScreen(dockPosition);
+            dockTopInRoot = dockPosition[1] - rootOnScreen[1];
+        }
+        int bottomLimit = Math.max(referenceTop + 1, dockTopInRoot - Math.round(10 * density));
+        int maxHeightBeforeDock = Math.max(1, bottomLimit - referenceTop);
+        lp.height = Math.min(height, maxHeightBeforeDock);
+        lp.topMargin = Math.max(safeY, referenceTop);
         root.addView(panel, lp);
         openMenu = panel;
         menuAnchor = anchor;

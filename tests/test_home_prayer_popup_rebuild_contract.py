@@ -98,10 +98,10 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
     def test_popup_is_right_aligned_to_glass_dock_and_does_not_scroll_or_glide_content(self):
         self.assertIn("Gravity.TOP | Gravity.RIGHT", self.popup)
-        self.assertIn("View dockGlassAnchor = dockRecycler", self.popup)
-        self.assertIn("dockGlassAnchor.getLocationOnScreen(dockOnScreen)", self.popup)
-        self.assertIn("dockRightInRoot", self.popup)
-        self.assertIn("root.getWidth() - dockRightInRoot", self.popup)
+        self.assertIn("View prayerScheduleAnchor = findViewById(R.id.prayerTable)", self.popup)
+        self.assertIn("prayerScheduleAnchor.getLocationOnScreen(scheduleOnScreen)", self.popup)
+        self.assertIn("scheduleRightInRoot", self.popup)
+        self.assertIn("root.getWidth() - scheduleRightInRoot", self.popup)
         self.assertNotIn("wifiRightInRoot", self.popup)
         self.assertNotIn("glideToMenuRow(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
@@ -111,7 +111,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("topReference.getLocationOnScreen(topReferenceOnScreen)", self.popup)
         self.assertIn("topReference.getHeight()", self.popup)
         self.assertIn("referenceTop = topReferenceOnScreen[1]", self.popup)
-        self.assertIn("int) (14 * density)", self.popup)
+        self.assertIn("Math.round(10 * density)", self.popup)
         self.assertIn("lp.topMargin = Math.min(Math.max(safeY, referenceTop), maxTop)", self.popup)
         self.assertNotIn("topReference.getWidth()", self.popup)
 
@@ -121,7 +121,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
         self.assertIn("(int) (52 * density)", self.popup)
-        self.assertIn("Math.round(31 * density)", self.popup)
+        self.assertIn("Math.round(35 * density)", self.popup)
         self.assertIn("\"● AKTIF\" : \"● NONAKTIF\"", self.popup)
         self.assertIn("0xFF58C77A", self.popup)
         self.assertIn("0xFFB7BEC7", self.popup)
@@ -159,13 +159,13 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
 
     def test_owner_width_contract_uses_105dp_cells_as_the_single_source_of_truth(self):
-        self.assertIn("final int scheduleCapsuleWidthPx = Math.round(105 * density);", self.popup)
-        self.assertIn("final int scheduleGapPx = Math.round(4 * density);", self.popup)
-        self.assertIn("final int panelPaddingPx = Math.round(9 * density);", self.popup)
+        self.assertIn("final int scheduleCapsuleWidthPx = Math.round(115 * density);", self.popup)
+        self.assertIn("final int scheduleGapPx = Math.round(6 * density);", self.popup)
+        self.assertIn("final int panelPaddingPx = Math.round(12 * density);", self.popup)
         self.assertIn("final int innerCapsuleWidthPx = 2 * scheduleCapsuleWidthPx + scheduleGapPx;", self.popup)
         self.assertIn("final int targetPopupWidthPx = innerCapsuleWidthPx + 2 * panelPaddingPx;", self.popup)
         self.assertIn("int width = Math.min(targetPopupWidthPx, safeWidth);", self.popup)
-        self.assertIn("scheduleCapsuleWidthPx, Math.round(31 * density)", self.popup)
+        self.assertIn("scheduleCapsuleWidthPx, Math.round(35 * density)", self.popup)
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (52 * density)", self.popup)
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (32 * density)", self.popup)
 

@@ -444,3 +444,27 @@ This section supersedes the equal-weight/pixel-fill geometry in Section 18.
 - This is not yet a visual/device PASS. Exact-HEAD CI, rendered 1920×1080 inspection, clipping check, and Mi TV Stick acceptance remain pending.
 - No prayer data, 24-hour formatting, Azan preferences/scheduling, sound choice, Test Sound route, DPAD graph, popup anchoring, Home/Dock/Grid, or unrelated modules are changed.
 - PR #135 remains OPEN / DRAFT / UNMERGED. No install or merge is authorized.
+
+## 20. Owner refinement — 115dp timetable, schedule-edge alignment, Wi-Fi top anchor, and Dock clearance
+
+Date: 12 November 2026 (WIB)
+
+### Locked geometry
+- Each Subuh–Isya timetable capsule: **115dp wide × 35dp high**.
+- Two-column center gap: **6dp** (3dp inner margin on each cell).
+- Shared inner content width: **236dp** (115 + 6 + 115).
+- Panel horizontal inset: **12dp** per side.
+- Popup target width: **260dp** (236 + 24).
+- Full-width next-prayer and three Azan control rows remain MATCH_PARENT within the 236dp content width.
+
+### Placement contract
+- Popup right edge aligns to the actual right edge of Home's `prayerTable` view, i.e. the visible timetable ending after the Hijri-date heading; horizontal Dock-edge alignment is superseded.
+- Popup top edge is placed **10dp below the bottom edge of the Wi-Fi capsule**.
+- The visible Dock top edge is a hard lower boundary. A **10dp clearance** is reserved above the Dock; available popup height is measured from the Wi-Fi anchor to that boundary before the popup is shown.
+- Safe-area fallbacks remain if anchors are unavailable. The available-height clamp is defensive; rendered QA must verify that no content is clipped.
+
+### Validation boundary
+- Source-contract assertions updated for 115dp × 35dp cells, 6dp center gap, 12dp insets, 260dp derived panel width, prayer-table right-edge alignment, 10dp Wi-Fi gap, and Dock clearance.
+- Exact-HEAD CI, rendered 1920×1080 inspection, clipping/height verification, and Mi TV Stick physical acceptance remain pending.
+- No prayer data, Azan preferences/scheduling, sound choices, Test Sound route, Home/Dock geometry, wallpaper, shelves, Weather/AQI, Wi-Fi behavior, or DPAD focus graph are intentionally changed.
+- PR #135 remains OPEN / DRAFT / UNMERGED. No APK installation or merge is authorized.
