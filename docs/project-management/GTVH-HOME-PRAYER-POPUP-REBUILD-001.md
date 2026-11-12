@@ -491,3 +491,54 @@ Date: 12 November 2026 (WIB)
 - No runtime UI code changed in this test-only follow-up.
 - The exact-alignment implementation remains `lp.rightMargin = Math.max(0, root.getWidth() - scheduleRightInRoot)`.
 - New exact-HEAD CI result is pending. No visual/device acceptance or merge is claimed.
+
+
+## 21. Owner visual correction — full-content fit and restrained Azan status capsule
+
+Date: 12 November 2026 (WIB)
+
+Owner supplied a physical-screen photo showing the lower part of the popup missing and the AKTIF/NONAKTIF capsule visually oversized. Source audit identified the root cause: the previous vertical content budget was approximately 324dp, while the panel was measured with an AT_MOST height bounded by the Wi-Fi-to-Dock lane. The panel's clipChildren/clipToPadding settings then concealed any children extending beyond the capped measured frame. A successful build did not prove that all popup content fit.
+
+### Revised vertical content budget
+
+The popup was tightened as a complete hierarchy, preserving the existing information and three controls:
+
+| Component | Revised height / spacing |
+|---|---:|
+| Panel vertical padding | 4dp top + 4dp bottom |
+| Header | 26dp |
+| Each divider | 2dp total |
+| Next-prayer card | 46dp |
+| Schedule heading | 16dp + 2dp top/bottom margins |
+| Two schedule rows | 31dp each + 2dp inter-row gap |
+| Azan / sound / test rows | 28dp each + 1dp between adjacent rows |
+| Footer | 12dp |
+
+The derived natural content height is **266dp** (excluding any platform-specific background inset not reflected in the explicit child budget). The schedule capsules are now 29dp high inside 31dp row slots. Timetable data and 24-hour formatting remain unchanged.
+
+### Status capsule refinement
+
+- AKTIF/NONAKTIF text reduced to 9sp.
+- Status chip is now a compact 22dp-high, wrap-content capsule, rather than filling the full 32dp control row.
+- Minimum width is 64dp; horizontal padding 6dp and vertical padding 1dp.
+- The control row is 28dp high.
+- Active green and inactive silver states, master-toggle click action, Azan preference persistence, and scheduling calls are unchanged.
+
+### Measurement and diagnostics
+
+- The popup now measures its natural content height using an UNSPECIFIED vertical measure before placement.
+- It compares natural height with the available Wi-Fi-to-Dock lane and emits an explicit TvHome.PrayerPopup log with required and available dp.
+- This prevents the previous capped AT_MOST measurement from silently making the panel appear to fit when its content is taller than the frame.
+- The existing placement contract is retained: top 10dp below Wi-Fi, bottom at least 10dp above Dock, right edge aligned to the visible prayer timetable edge.
+- No scroll view, hidden content fallback, or altered prayer/Azan behavior was introduced.
+
+### Scope and acceptance
+
+Only these files are changed:
+1. launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java
+2. tests/test_home_prayer_popup_rebuild_contract.py
+3. This checkpoint document.
+
+Home navigation/header, Dock, Wi-Fi, microphone, wallpaper, shelves, Weather/AQI, Settings, prayer data, Azan scheduling, sound choices/assets, and Test Sound routing remain outside the change scope.
+
+The 266dp figure is a source-derived layout budget, not a measured device result. Exact-HEAD CI, rendered 1920×1080 inspection, log confirmation that required height is within available height, and Mi TV Stick physical acceptance are still required. PR #135 remains OPEN / DRAFT / UNMERGED; do not install or merge until owner review.
