@@ -568,3 +568,18 @@ Owner supplied a 768×1024 photograph of the popup on the TV. The visible defect
 
 ### Scope and validation
 Only popup-specific Java source and its contract test are changed in this refinement. The Home header/navigation, Wi-Fi, microphone, Dock, wallpaper, shelves, prayer data, Azan behavior/preferences/sound assets remain unchanged. The 10dp placement rule is retained in source. The source-level change is not visual acceptance: inspect a fresh 1920×1080 render, verify that the next-prayer time is fully visible and all lower controls fit between the two fixed clearances, then build the APK again. Physical Mi TV Stick testing follows only after render inspection.
+
+
+
+
+## 23. Owner copy and divider correction — 12 November 2026
+
+Owner clarified the exact typography and punctuation after reviewing the physical-screen photo:
+- Next-prayer label is title case: **“Waktu Solat Berikutnya”**, retaining the reduced 9sp size and normal weight.
+- The next-prayer filled capsule remains removed. The content is framed by subtle horizontal divider lines above and below; the existing header divider is the upper rule and an additional divider follows the 54dp content slot.
+- Schedule heading remains uppercase: **“JADWAL HARI INI”**, with reduced 10.5sp typography.
+- Footer exact copy: **“OK Pilih . BACK Kembali.”** at 8sp.
+- Azan status chip click-state text now consistently uses “Aktif” / “Nonaktif”, matching its initial state.
+- Fixed 10dp Wi-Fi-to-popup and minimum 10dp popup-to-Dock clearances remain unchanged.
+
+This is a source-and-contract correction only. Re-run exact-HEAD CI, inspect a fresh 1920×1080 render, verify the next-prayer time is fully visible and the entire popup fits within the reserved lane before rebuilding the APK for physical-device testing.
