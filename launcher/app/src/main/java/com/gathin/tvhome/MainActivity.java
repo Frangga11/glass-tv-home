@@ -8182,7 +8182,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 && prayerScheduleAnchor.getWidth() > 0) {
             prayerScheduleAnchor.getLocationOnScreen(scheduleOnScreen);
             int scheduleRightInRoot = scheduleOnScreen[0] + prayerScheduleAnchor.getWidth() - rootOnScreen[0];
-            lp.rightMargin = Math.max(safeX, root.getWidth() - scheduleRightInRoot);
+            lp.rightMargin = Math.max(0, root.getWidth() - scheduleRightInRoot);
         } else {
             lp.rightMargin = safeX + (int) (14 * density);
         }
