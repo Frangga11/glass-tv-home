@@ -5,13 +5,13 @@ Rebuild the existing Ayat Pilihan Harian reader so the complete Arabic verse and
 
 ## Owner-approved visual and layout contract
 - Maximum reader height: 40% of the display height, measured from runtime display metrics.
-- Popup width remains a centered 72% of display width, subject to the existing safe-content window bounds.
-- Arabic verse: warm Islamic gold, right-aligned, Amiri Quran, black shadow, adaptive text sizing, at most two visible lines.
+- Popup width is a centered 55% of display width, subject to the existing safe-content window bounds.
+- Arabic verse: warm Islamic gold, right-aligned, Amiri Quran, black shadow, adaptive text sizing, at most three visible lines.
 - Indonesian translation: centered, Inter, adaptive text sizing, at most two visible lines.
 - Both text regions are weighted inside the same fixed body region; no ScrollView, vertical scrollbar, or scroll gesture/key behavior.
 - Header, content, and footer occupy separate regions with fixed header/footer heights and a weighted content region.
-- Header retains title, Ayah reference, and top-right close affordance.
-- Footer retains a compact, accurate “Press OK to close” hint and bottom close action in one horizontal row; no scroll instruction remains.
+- Header title and Surah/Ayah reference are centered at the top; one top-right X capsule is the sole close control.
+- Footer retains only a compact informational “Press OK to close” hint; no second close button or scroll instruction remains.
 - All text sizing adapts to the constrained layout before content can collide with header/footer.
 - Glass treatment follows the Home Prayer popup standard: GlassDrawable + Backdrop watcher, consistent 20dp radius, neutral silver glass material and existing focus treatment. No bespoke gradient replacement.
 
@@ -38,3 +38,13 @@ Rebuild the existing Ayat Pilihan Harian reader so the complete Arabic verse and
 
 ## Status
 Source implementation, localized no-scroll footer copy, regression contracts, documentation, CI, and QA APK are complete. PR #138 is merged into the Ayah work branch. PR #137 remains draft/unmerged against `fix/azan-test-overlay-compact-glass-001`; do not merge the broader Ayah focus/preview work to the mainline until its wider integration and physical-device QA gates are approved.
+
+
+## Owner-approved proportional refinement — 2026-11-15
+- Centered popup width: 55% of display width.
+- Popup height: 42% of display height (within the approved 40–44% range).
+- Arabic typography enlarged with compact, non-overlapping two-line leading.
+- Indonesian translation reduced in size, compactly spaced, and allowed up to three lines in the same fixed frame.
+- Header title and Surah/Ayah reference centered independently of the close affordance.
+- Retain exactly one close control: the existing top-right X capsule. Footer is informational only.
+- Preserve one-frame/no-scroll behavior, source data, navigation, DPAD entry path, and Prayer-popup glass material.
