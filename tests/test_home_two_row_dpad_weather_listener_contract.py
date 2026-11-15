@@ -29,7 +29,7 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         end = MAIN.index("private void cancelHorizontalGridRowTransition()", start)
         navigation = MAIN[start:end]
         self.assertIn("basePosition % COLUMNS", navigation)
-        self.assertIn("collapseHorizontalOverflowToHomeHeader(dockTarget)", navigation)
+        self.assertIn("collapseHorizontalOverflowToDock(dockTarget)", navigation)
 
     def test_idle_dock_restores_legacy_bottom_anchor_and_expanded_rows_share_bottom_frame(self):
         start = MAIN.index("private void applyDockLayout()")
