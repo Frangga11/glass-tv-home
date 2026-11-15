@@ -290,7 +290,8 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
         self.assertNotIn("0x553B5872", main)
         self.assertNotIn("0x8064D2FF", main)
         self.assertIn("TvFocusIndicator.createRoundedStateBackground(", main)
-        self.assertIn("TvFocusIndicator.createOvalStateBackground(", main)
+        # Daily Ayah now intentionally uses one rounded footer TUTUP capsule; its old oval X control was removed.
+        self.assertIn("closeAction.setBackground(TvFocusIndicator.createRoundedStateBackground", main)
         self.assertIn("TvUiTokens.FOCUS_HALO", main)
         self.assertIn("TvUiTokens.FOCUS_BORDER", main)
         self.assertIn("btnCheckNow.setTextColor(TvUiTokens.TEXT_PRIMARY)", main)
