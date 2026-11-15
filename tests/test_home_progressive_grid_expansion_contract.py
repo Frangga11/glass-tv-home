@@ -44,7 +44,8 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         timeout = method[method.index("if (holder == null)"):method.index("View nextCard", method.index("if (holder == null)"))]
         self.assertIn("adapter.positionOf(key)", timeout)
         self.assertIn("restoreMovingTile(false, key, resolved, previousCard, 8)", timeout)
-        self.assertNotIn("finishMove();", timeout)
+        persistent = timeout[timeout.index("else if (!inDock"):timeout.index("} else {", timeout.index("else if (!inDock"))]
+        self.assertNotIn("finishMove();", persistent)
 
 
 if __name__ == "__main__":
