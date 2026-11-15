@@ -40,7 +40,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("currentRow, windowStartRow, rowPitch, currentTopOffset", MAIN)
         self.assertIn("int expectedWindowStartRow = Math.max(0, (position / COLUMNS) <= 1 ? (position / COLUMNS) : (position / COLUMNS) - 1);", MAIN)
 
-    def test_three_row_mode_hides_home_chrome_but_not_clock_or_date(self):
+    def test_three_row_mode_hides_all_home_chrome_including_clock_and_date(self):
         start = MAIN.index("private void setThreeRowFrameChromeHidden")
         end = MAIN.index("private void hideGlass()", start)
         method = MAIN[start:end]
@@ -50,7 +50,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
             self.assertIn(view_id, method)
         self.assertIn("View.INVISIBLE", method)
         self.assertIn("threeRowOriginalVisibility.get(i)", method)
-        self.assertNotIn("R.id.leftBlock", method)
+        self.assertIn("R.id.leftBlock", method)
         self.assertIn("setThreeRowFrameChromeHidden(false)", MAIN)
 
     def test_two_row_navigation_does_not_trigger_chrome_hide(self):
