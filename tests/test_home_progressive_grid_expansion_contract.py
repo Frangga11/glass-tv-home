@@ -41,7 +41,10 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         method = MAIN[start:end]
         self.assertIn("recycler.scrollToPosition(position)", method)
         self.assertIn("restoreMovingTile(inDock, key, position, previousCard, attemptsRemaining - 1)", method)
-        self.assertNotIn("finishMove();", method)
+        timeout = method[method.index("if (holder == null)"):method.index("View nextCard", method.index("if (holder == null)"))]
+        self.assertIn("adapter.positionOf(key)", timeout)
+        self.assertIn("restoreMovingTile(false, key, resolved, previousCard, 8)", timeout)
+        self.assertNotIn("finishMove();", timeout)
 
 
 if __name__ == "__main__":
