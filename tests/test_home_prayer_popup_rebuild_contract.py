@@ -135,6 +135,10 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn('"JADWAL HARI INI", 10.5f', self.popup)
         self.assertNotIn("addPrayerPopupDivider(rows)", self.popup)
         self.assertNotIn("private void addPrayerPopupDivider", MAIN)
+        self.assertEqual(self.popup.count("addPrayerPopupSpacing(rows)"), 6)
+        self.assertIn("spacer.setBackgroundColor(Color.TRANSPARENT)", MAIN)
+        self.assertIn("Math.max(1, (int) density)", MAIN)
+        self.assertIn("(int) density);", MAIN)
         self.assertIn('"OK Pilih . BACK Kembali.", 8f', self.popup)
         self.assertIn("Math.round(29 * density)", self.popup)
 

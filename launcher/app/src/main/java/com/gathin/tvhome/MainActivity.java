@@ -7842,6 +7842,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         rows.addView(header, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (26 * density)));
+        addPrayerPopupSpacing(rows);
         java.util.List<PrayerTimes.ScheduleItem> schedule = PrayerTimes.getFullSchedule(this);
         PrayerTimes.ScheduleItem nextPrayer = null;
         for (PrayerTimes.ScheduleItem item : schedule) {
@@ -7864,6 +7865,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 TvUiTokens.ISLAMIC_GOLD, true));
         rows.addView(nextCard, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (54 * density)));
+        addPrayerPopupSpacing(rows);
         LinearLayout scheduleHeading = new LinearLayout(this);
         scheduleHeading.setGravity(Gravity.CENTER_VERTICAL);
         scheduleHeading.setPadding((int) (4 * density), 0, 0, 0);
@@ -7910,6 +7912,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             rows.addView(gridRow, rowLp);
         }
         focusOrder.addAll(scheduleFocus);
+        addPrayerPopupSpacing(rows);
         String[] soundKeys = {Azan.SOUND_MAKKAH, Azan.SOUND_MADINAH,
                 Azan.SOUND_KLCC, Azan.SOUND_CHIME, Azan.SOUND_SILENT};
         String[] soundLabels = {"Makkah", "Madinah", "KLCC", "Chime", "Senyap"};
@@ -7947,6 +7950,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
         rows.addView(masterRow, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (30 * density)));
+        addPrayerPopupSpacing(rows);
         focusOrder.add(masterRow);
 
         LinearLayout soundRow = createPrayerPopupControlRow(
@@ -7970,6 +7974,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density));
         soundLp.topMargin = 0;
         rows.addView(soundRow, soundLp);
+        addPrayerPopupSpacing(rows);
         focusOrder.add(soundRow);
 
         LinearLayout testRow = createPrayerPopupControlRow(
@@ -7988,6 +7993,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density));
         testLp.topMargin = 0;
         rows.addView(testRow, testLp);
+        addPrayerPopupSpacing(rows);
         focusOrder.add(testRow);
 
         LinearLayout footer = new LinearLayout(this);
@@ -8165,6 +8171,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 Math.round(view.getPaddingTop() * scale),
                 view.getPaddingRight(),
                 Math.round(view.getPaddingBottom() * scale));
+    }
+
+    private void addPrayerPopupSpacing(LinearLayout rows) {
+        View spacer = new View(this);
+        spacer.setBackgroundColor(Color.TRANSPARENT);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, (int) density));
+        lp.setMargins((int) (7 * density), 0,
+                (int) (7 * density), (int) density);
+        rows.addView(spacer, lp);
     }
 
     private String prayerPopupSoundLabel(String key, String[] keys, String[] labels) {
