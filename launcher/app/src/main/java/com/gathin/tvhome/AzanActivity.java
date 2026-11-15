@@ -125,10 +125,7 @@ public class AzanActivity extends Activity {
             focusOutline.invalidateSelf();
         });
 
-        // CRITICAL FIX FOR ISSUE #5:
-        // Must call setContentView(card) FIRST so the Window creates and attaches its DecorView.
-        // On Android 14 (Chromecast Sabrina, etc.), calling setBackgroundBlurRadius before
-        // setContentView dereferences a null DecorView inside PhoneWindow and throws NullPointerException.
+        // Attach the card first, then register it to redraw with the shared Home backdrop.
         setContentView(card);
         // Backdrop maps the same blurred Home wallpaper into this floating Activity window.
         Backdrop.watch(card);
