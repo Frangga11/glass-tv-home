@@ -48,3 +48,12 @@ Source implementation, localized no-scroll footer copy, regression contracts, do
 - Header title and Surah/Ayah reference centered independently of the close affordance.
 - Retain exactly one close control: the existing top-right X capsule. Footer is informational only.
 - Preserve one-frame/no-scroll behavior, source data, navigation, DPAD entry path, and Prayer-popup glass material.
+
+
+## Owner-directed TV feedback revision — 2026-11-15
+- Keep the approved 55% width and 42% height proportions.
+- Header is a fixed 48dp region with centered title and centered Surah/Ayah reference; both remain single-line with end ellipsis to prevent clipping into the close area. The top-right X control is removed.
+- Footer is a fixed 48dp region containing the localized “Tekan OK untuk menutup popup” instruction and a single TUTUP capsule beneath it.
+- Initial DPAD focus rests on the popup panel without highlighting a control. UP, LEFT, and RIGHT are consumed with no navigation. DOWN moves focus directly to TUTUP; OK activates TUTUP and dismisses the popup. Back/Escape remain supported.
+- ARTINYA is centered between two horizontal divider rules.
+- Arabic/translation body remains the flexible middle region; preserve Arabic maximum two lines and Indonesian translation maximum three lines. No other Home surfaces or data/navigation logic are in scope.
