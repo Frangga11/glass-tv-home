@@ -24,8 +24,8 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         start = MAIN.index("public boolean onTileVerticalKey")
         end = MAIN.index("private int pendingFocus;", start)
         method = MAIN[start:end]
-        self.assertIn("collapseHorizontalOverflowToDock(dockTarget)", method)
-        self.assertIn("pendingDockCollapseDirection = KeyEvent.KEYCODE_DPAD_UP", method)
+        self.assertIn("collapseHorizontalOverflowToHomeHeader(dockTarget)", method)
+        self.assertIn("pendingDockCollapseDirection = KeyEvent.KEYCODE_DPAD_UP", MAIN)
 
     def test_move_mode_keeps_row_one_up_as_a_hard_boundary(self):
         start = MAIN.index("private void stepMove(int keyCode)")
