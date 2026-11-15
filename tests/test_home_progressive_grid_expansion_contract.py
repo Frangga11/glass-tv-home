@@ -36,9 +36,9 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertNotIn("moveTileAcrossRegion", row_one_up)
 
     def test_three_row_window_keeps_target_at_bottom_and_preserves_rows_above(self):
-        self.assertIn("int windowStartRow = Math.max(0, targetRow - 2);", MAIN)
+        self.assertIn("int windowStartRow = Math.max(0, targetRow <= 1 ? targetRow : targetRow - 1);", MAIN)
         self.assertIn("currentRow, windowStartRow, rowPitch, currentTopOffset", MAIN)
-        self.assertIn("int expectedWindowStartRow = Math.max(0, (position / COLUMNS) - 2);", MAIN)
+        self.assertIn("int expectedWindowStartRow = Math.max(0, (position / COLUMNS) <= 1 ? (position / COLUMNS) : (position / COLUMNS) - 1);", MAIN)
 
     def test_three_row_mode_hides_home_chrome_but_not_clock_or_date(self):
         start = MAIN.index("private void setThreeRowFrameChromeHidden")
