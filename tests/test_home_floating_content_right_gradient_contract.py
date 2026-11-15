@@ -37,7 +37,7 @@ class HomeFloatingContentRightGradientContractTest(unittest.TestCase):
         self.assertEqual(divider.get(ANDROID + "background"), "#66FFFFFF")
         self.assertEqual(divider.get(ANDROID + "layout_width"), "180dp")
         self.assertEqual(divider.get(ANDROID + "layout_height"), "1dp")
-        self.assertEqual(divider.get(ANDROID + "layout_marginTop"), "6dp")
+        self.assertEqual(divider.get(ANDROID + "layout_marginTop"), "1dp")
         self.assertEqual(divider.get(ANDROID + "layout_marginBottom"), "2dp")
 
     def test_target_text_typography_and_existing_soft_shadows_remain_locked(self):
