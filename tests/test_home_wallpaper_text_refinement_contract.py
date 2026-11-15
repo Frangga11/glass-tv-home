@@ -79,7 +79,7 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
         self.assertIn("TvUiTokens.FOCUS_BORDER", MAIN)
         self.assertIn("ayahOpenHint.setBackground(TvFocusIndicator.createRoundedStateBackground(", MAIN)
         self.assertIn("ayahOpenHint.setOnKeyListener", MAIN)
-        self.assertIn("showDailyAyahDialog();", MAIN)
+        self.assertIn("ayahOpenHint.setOnClickListener(v -> showDailyAyahDialog());", MAIN)
 
 
 if __name__ == "__main__":
