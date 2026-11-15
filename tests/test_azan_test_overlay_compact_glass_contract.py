@@ -20,8 +20,8 @@ class AzanTestOverlayCompactGlassContractTest(unittest.TestCase):
         self.assertNotIn("glass.setColor(0xD936414B)", AZAN)
         self.assertNotIn("setBackgroundBlurRadius", AZAN)
 
-    def test_overlay_is_reduced_proportionally_to_approximately_eleven_percent(self):
-        self.assertIn("private static final float CARD_SCALE = 0.806f;", AZAN)
+    def test_overlay_is_reduced_proportionally_to_approximately_twelve_percent(self):
+        self.assertIn("private static final float CARD_SCALE = 0.843f;", AZAN)
         self.assertIn("20 * density * CARD_SCALE", AZAN)
         self.assertIn("focusOutline.setCornerRadius(cardDp(20))", AZAN)
         self.assertIn("card.setElevation(cardDp(16))", AZAN)
