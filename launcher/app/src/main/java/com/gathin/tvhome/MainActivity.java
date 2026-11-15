@@ -764,8 +764,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         return true;
                     }
                     if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                        View prayerTable = findViewById(R.id.prayerTable);
-                        if (prayerTable != null && prayerTable.isShown()) prayerTable.requestFocus();
+                        View prayerHeader = findViewById(R.id.prayerHeader);
+                        if (prayerHeader != null && prayerHeader.isShown()) prayerHeader.requestFocus();
                         return true;
                     }
                     if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
@@ -840,14 +840,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             });
         }
 
-        // The visible timetable is the real Home entry point; the legacy fallback
-        // TextView is GONE and must not be the only route to the prayer popup.
-        View prayerTableView = findViewById(R.id.prayerTable);
-        if (prayerTableView != null) {
-            prayerTableView.setFocusable(true);
-            prayerTableView.setClickable(true);
-            prayerTableView.setOnClickListener(v -> showPrayerPopup());
-            prayerTableView.setOnKeyListener((v, keyCode, event) -> {
+        // The Waktu Sholat heading is the single Home DPAD/click target.
+        // The six Subuh–Isya cells remain display-only and never receive focus.
+        View prayerHeaderView = findViewById(R.id.prayerHeader);
+        if (prayerHeaderView != null) {
+            prayerHeaderView.setFocusable(true);
+            prayerHeaderView.setClickable(true);
+            prayerHeaderView.setOnClickListener(v -> showPrayerPopup());
+            prayerHeaderView.setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                     View inputs = findViewById(R.id.btnInputs);
@@ -859,7 +859,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    // The prayer timetable is the final upper-shelf stop; enter the primary Dock row.
+                    // The prayer heading is the final upper-shelf stop; enter the primary Dock row.
                     if (dockAdapter != null && dockAdapter.getItemCount() > 0) focusDockTile(0);
                     else focusTile(0);
                     return true;
@@ -869,18 +869,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     if (btnAssistant != null && btnAssistant.isShown()) btnAssistant.requestFocus();
                     return true;
                 }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
-                    showPrayerPopup();
+                if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
+                        || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER || keyCode == KeyEvent.KEYCODE_BUTTON_A) {
+                    v.performClick();
                     return true;
                 }
                 return false;
             });
-            prayerTableView.setBackground(TvFocusIndicator.createRoundedStateBackground(
+            prayerHeaderView.setBackground(TvFocusIndicator.createRoundedStateBackground(
                     density, 8f, 0x00000000, TvUiTokens.FOCUS_HALO,
                     0x00000000, TvUiTokens.FOCUS_BORDER));
-            prayerTableView.setOnFocusChangeListener((v, hasFocus) -> {
+            prayerHeaderView.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) SoundEffects.playNav();
             });
+        }
+        View prayerTableView = findViewById(R.id.prayerTable);
+        if (prayerTableView != null) {
+            prayerTableView.setFocusable(false);
+            prayerTableView.setClickable(false);
+            prayerTableView.setOnClickListener(null);
+            prayerTableView.setOnKeyListener(null);
+            prayerTableView.setBackground(null);
+            prayerTableView.setOnFocusChangeListener(null);
         }
         updatePrayerTimes();
         PrayerTimes.syncIfDue(this, this::updatePrayerTimes);
