@@ -4565,15 +4565,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout panel = new LinearLayout(this);
         panel.setOrientation(LinearLayout.VERTICAL);
         panel.setGravity(Gravity.CENTER_HORIZONTAL);
-        panel.setPadding(Math.round(24 * density), Math.round(18 * density),
-                Math.round(24 * density), Math.round(18 * density));
+        panel.setPadding(Math.round(30 * density), Math.round(24 * density),
+                Math.round(30 * density), Math.round(22 * density));
         panel.setClipToPadding(false);
         panel.setClipChildren(false);
 
         GradientDrawable glassSurface = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{0xE62B3B50, 0xD91B2638, 0xE6222D40});
+                new int[]{0xF02B3B50, 0xE91B2638, 0xF0222D40});
         glassSurface.setCornerRadius(24 * density);
-        glassSurface.setStroke(Math.max(1, Math.round(1.5f * density)), 0x77FFFFFF);
+        glassSurface.setStroke(Math.max(1, Math.round(1.5f * density)), 0x99FFFFFF);
         panel.setBackground(glassSurface);
 
         LinearLayout header = new LinearLayout(this);
@@ -4648,7 +4648,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         arabic.setText(ayah.arabic.trim());
         arabic.setTextColor(TvUiTokens.TEXT_PRIMARY);
         arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                getResources().getDisplayMetrics().widthPixels >= 3840 ? 34f : 28f);
+                getResources().getDisplayMetrics().widthPixels >= 3840 ? 38f : 33f);
         arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
         arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
         arabic.setGravity(Gravity.END);
@@ -4668,7 +4668,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         meaningLabel.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         LinearLayout.LayoutParams meaningLabelLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        meaningLabelLp.topMargin = Math.round(18 * density);
+        meaningLabelLp.topMargin = Math.round(22 * density);
         body.addView(meaningLabel, meaningLabelLp);
 
         TextView translation = new TextView(this);
@@ -4676,7 +4676,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         translation.setText(translated != null && !translated.trim().isEmpty()
                 ? translated.trim() : getString(R.string.daily_ayah_translation_unavailable));
         translation.setTextColor(0xF2FFFFFF);
-        translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
+        translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
         translation.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         translation.setTextDirection(View.TEXT_DIRECTION_LTR);
         translation.setGravity(Gravity.START);
@@ -4685,28 +4685,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         translation.setEllipsize(null);
         LinearLayout.LayoutParams translationLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        translationLp.topMargin = Math.round(6 * density);
+        translationLp.topMargin = Math.round(8 * density);
         body.addView(translation, translationLp);
-
-        TextView footerHint = new TextView(this);
-        footerHint.setText(R.string.daily_ayah_navigation_hint);
-        footerHint.setTextColor(0xBFFFFFFF);
-        footerHint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
-        footerHint.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams hintLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        hintLp.topMargin = Math.round(10 * density);
-        body.addView(footerHint, hintLp);
 
         scroll.addView(body, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         panel.addView(scroll, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
+        // Keep the navigation hint fixed in the footer; long verses scroll independently above it.
+        TextView footerHint = new TextView(this);
+        footerHint.setText(R.string.daily_ayah_navigation_hint);
+        footerHint.setTextColor(0xD9FFFFFF);
+        footerHint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+        footerHint.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
+        footerHint.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams hintLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        hintLp.topMargin = Math.round(8 * density);
+        panel.addView(footerHint, hintLp);
+
         LinearLayout.LayoutParams closeLp = new LinearLayout.LayoutParams(
                 Math.round(150 * density), Math.round(42 * density));
         closeLp.gravity = Gravity.CENTER_HORIZONTAL;
-        closeLp.topMargin = Math.round(12 * density);
+        closeLp.topMargin = Math.round(10 * density);
         TextView closeAction = new TextView(this);
         closeAction.setText(R.string.daily_ayah_close);
         closeAction.setTextColor(0xFFFFFFFF);
@@ -4743,8 +4745,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int widthDp = Math.max(360, Math.round(
                 getResources().getDisplayMetrics().widthPixels * 0.72f / density));
         int heightDp = Math.max(240, Math.round(
-                getResources().getDisplayMetrics().heightPixels * 0.63f / density));
-        TvDialogStyle.applyCustom(dialog, this, widthDp, heightDp, 0.30f);
+                getResources().getDisplayMetrics().heightPixels * 0.68f / density));
+        TvDialogStyle.applyCustom(dialog, this, widthDp, heightDp, 0.48f);
 
         scroll.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
