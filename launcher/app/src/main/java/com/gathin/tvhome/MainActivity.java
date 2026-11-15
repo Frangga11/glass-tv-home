@@ -156,6 +156,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private boolean horizontalDockCollapseInProgress;
     /** Accumulated physical Grid scroll delta; Dock follows the exact consumed pixels. */
     private int horizontalGridScrollPixels;
+    /** Home chrome is hidden only while the progressive viewport contains three or more app rows. */
+    private boolean horizontalThreeRowFrameActive;
+    private final ArrayList<View> threeRowHiddenViews = new ArrayList<>();
+    private final ArrayList<Integer> threeRowOriginalVisibility = new ArrayList<>();
     /** One semantic DPAD intent captured during collapse; never replay synthetic Android key events. */
     private int pendingDockCollapseDirection = -1;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
@@ -3129,6 +3133,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
+    /** Preserve original visibility; clock/date remain visible in three-row mode. */
+    private void setThreeRowFrameChromeHidden(boolean hidden) {
+        if (hidden == horizontalThreeRowFrameActive) return;
+        horizontalThreeRowFrameActive = hidden;
+        if (hidden) {
+            threeRowHiddenViews.clear();
+            threeRowOriginalVisibility.clear();
+            int[] ids = { R.id.heroShelf, R.id.islamicShelf, R.id.locationPill,
+                    R.id.weatherAirQuality, R.id.navPill, R.id.topButtons,
+                    R.id.nowPlayingCard, R.id.prayerTimes };
+            for (int id : ids) {
+                View view = findViewById(id);
+                if (view == null) continue;
+                threeRowHiddenViews.add(view);
+                threeRowOriginalVisibility.add(view.getVisibility());
+                view.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            for (int i = 0; i < threeRowHiddenViews.size(); i++) {
+                View view = threeRowHiddenViews.get(i);
+                if (view != null) view.setVisibility(threeRowOriginalVisibility.get(i));
+            }
+            threeRowHiddenViews.clear();
+            threeRowOriginalVisibility.clear();
+        }
+    }
+
     private void hideGlass() {
         glassShown = false;
     }
@@ -3192,7 +3223,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (recycler == null || pos < 0 || !canMove) return;
         RecyclerView.ViewHolder vh = recycler.findViewHolderForAdapterPosition(pos);
         if (vh == null) {
-            recycler.scrollToPosition(pos);
+            if (!inDock && !dockVertical && horizontalGridExpanded) alignHorizontalGridRowToGlass(pos);
+            else recycler.scrollToPosition(pos);
             startMoveWhenLaidOut(key, inDock, pos, 3);
             return;
         }
@@ -3273,7 +3305,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (!inDock && !dockVertical && horizontalGridExpanded) {
                 // A moved app may have crossed the visible viewport. Bring its stable identity
                 // into layout; the Grid scroll listener moves the Dock by the exact same pixels.
-                recycler.scrollToPosition(position);
+                alignHorizontalGridRowToGlass(position);
             }
             if (attemptsRemaining > 0) {
                 recycler.postOnAnimation(() -> restoreMovingTile(inDock, key, position, previousCard, attemptsRemaining - 1));
@@ -3282,7 +3314,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // the selected app again by stable identity; never drop the mode on a scroll miss.
                 int resolved = adapter.positionOf(key);
                 movingPos = resolved;
-                recycler.scrollToPosition(resolved);
+                alignHorizontalGridRowToGlass(resolved);
                 recycler.postOnAnimation(() -> restoreMovingTile(false, key, resolved, previousCard, 8));
             } else {
                 finishMove();
@@ -3787,6 +3819,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // Dock already owns focus. Only now remove the overflow row from the view tree.
                 horizontalGridExpanded = false;
                 horizontalGridScrollPixels = 0;
+                setThreeRowFrameChromeHidden(false);
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
                 dockRecycler.setTranslationY(0f);
@@ -4001,9 +4034,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int rowPitch = Math.max(1, rowBounds.height());
         int currentRow = firstVisible / COLUMNS;
         int targetRow = target / COLUMNS;
+        int windowStartRow = Math.max(0, targetRow - 2);
+        if (targetRow >= 2) setThreeRowFrameChromeHidden(true);
         int currentTopOffset = rowBounds.top - grid.getPaddingTop();
         int dy = DockGeometry.gridRowScrollDeltaPx(
-                currentRow, targetRow, rowPitch, currentTopOffset);
+                currentRow, windowStartRow, rowPitch, currentTopOffset);
         if (dy == 0) {
             settleHorizontalGridRowTransition(transitionGeneration, focusGeneration);
             return;
@@ -4088,9 +4123,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
 
-        Rect targetBounds = new Rect();
-        manager.getDecoratedBoundsWithMargins(targetView, targetBounds);
-        int correction = targetBounds.top - grid.getPaddingTop();
+        int targetRow = target / COLUMNS;
+        int windowStartPosition = Math.max(0, targetRow - 2) * COLUMNS;
+        View firstWindowView = manager.findViewByPosition(windowStartPosition);
+        if (firstWindowView == null) {
+            if (horizontalGridTransitionRetries++ < 4) {
+                grid.postOnAnimation(() -> startHorizontalGridRowTransition(transitionGeneration, focusGeneration));
+            } else {
+                horizontalGridTransitionRunning = false;
+                pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
+                pendingHorizontalGridKey = null;
+                focusTopBarFallback();
+            }
+            return;
+        }
+        Rect firstWindowBounds = new Rect();
+        manager.getDecoratedBoundsWithMargins(firstWindowView, firstWindowBounds);
+        int correction = firstWindowBounds.top - grid.getPaddingTop();
         if (Math.abs(correction) > 1) {
             if (horizontalGridTransitionRetries++ < 3) {
                 animateHorizontalGridRowScroll(correction,
@@ -4135,8 +4184,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ? (GridLayoutManager) grid.getLayoutManager() : null;
         int firstComplete = manager == null ? RecyclerView.NO_POSITION
                 : manager.findFirstCompletelyVisibleItemPosition();
+        int expectedWindowStartRow = Math.max(0, (position / COLUMNS) - 2);
         if (firstComplete != RecyclerView.NO_POSITION
-                && firstComplete / COLUMNS != position / COLUMNS) {
+                && firstComplete / COLUMNS != expectedWindowStartRow) {
             requestHorizontalGridRow(position);
             return;
         }
@@ -4144,7 +4194,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (targetView != null) {
             Rect targetBounds = new Rect();
             manager.getDecoratedBoundsWithMargins(targetView, targetBounds);
-            if (Math.abs(targetBounds.top - grid.getPaddingTop()) > 1) {
+            int windowStartPosition = expectedWindowStartRow * COLUMNS;
+            View firstWindowView = manager.findViewByPosition(windowStartPosition);
+            if (firstWindowView == null) {
+                requestHorizontalGridRow(position);
+                return;
+            }
+            Rect firstWindowBounds = new Rect();
+            manager.getDecoratedBoundsWithMargins(firstWindowView, firstWindowBounds);
+            if (Math.abs(firstWindowBounds.top - grid.getPaddingTop()) > 1) {
                 requestHorizontalGridRow(position);
                 return;
             }
@@ -4167,7 +4225,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void alignHorizontalGridRowToGlass(int position) {
         RecyclerView.LayoutManager manager = grid.getLayoutManager();
         if (manager instanceof GridLayoutManager) {
-            ((GridLayoutManager) manager).scrollToPositionWithOffset(position, grid.getPaddingTop());
+            int windowStartRow = Math.max(0, (position / COLUMNS) - 2);
+            ((GridLayoutManager) manager).scrollToPositionWithOffset(
+                    windowStartRow * COLUMNS, grid.getPaddingTop());
+            if (position / COLUMNS >= 2) setThreeRowFrameChromeHidden(true);
         } else {
             grid.scrollToPosition(position);
         }
