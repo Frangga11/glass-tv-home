@@ -278,7 +278,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
         header_keys = MAIN[start:end]
         self.assertIn("id == R.id.btnAssistant", header_keys)
-        self.assertIn("ayahBlock.requestFocus()", header_keys)
+        self.assertIn("ayahOpenHint != null && ayahOpenHint.isShown() && ayahOpenHint.requestFocus()", header_keys)
 
     def test_supported_paused_media_session_remains_available_on_home(self):
         start = NOW_PLAYING.index("public boolean hasMusic()")
