@@ -11,7 +11,7 @@ Rebuild the existing Ayat Pilihan Harian reader so the complete Arabic verse and
 - Both text regions are weighted inside the same fixed body region; no ScrollView, vertical scrollbar, or scroll gesture/key behavior.
 - Header, content, and footer occupy separate regions with fixed header/footer heights and a weighted content region.
 - Header retains title, Ayah reference, and top-right close affordance.
-- Footer retains a compact navigation hint and bottom close action in one horizontal row.
+- Footer retains a compact, accurate “Press OK to close” hint and bottom close action in one horizontal row; no scroll instruction remains.
 - All text sizing adapts to the constrained layout before content can collide with header/footer.
 - Glass treatment follows the Home Prayer popup standard: GlassDrawable + Backdrop watcher, consistent 20dp radius, neutral silver glass material and existing focus treatment. No bespoke gradient replacement.
 
