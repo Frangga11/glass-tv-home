@@ -33,7 +33,8 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         method = MAIN[start:end]
         self.assertIn("if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS)", method)
         self.assertIn("// unpin/promote the selected app into the Dock or end the active move.", method)
-        self.assertNotIn("moveTileAcrossRegion(movingKey, true, targetDockPosition)", method)
+        row_one_up = method[method.index("if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP"):method.index("if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT")]
+        self.assertNotIn("moveTileAcrossRegion", row_one_up)
 
     def test_moved_grid_identity_is_revealed_without_ending_move_mode(self):
         start = MAIN.index("private void restoreMovingTile")
