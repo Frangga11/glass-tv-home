@@ -4590,6 +4590,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         title.setTextColor(TvUiTokens.TEXT_PRIMARY);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
         title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        title.setLetterSpacing(0.055f);
         title.setGravity(Gravity.CENTER);
         title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         title.setSingleLine(true);
@@ -4604,7 +4605,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         reference.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         reference.setSingleLine(true);
         reference.setEllipsize(TextUtils.TruncateAt.END);
-        heading.addView(reference, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        reference.setLetterSpacing(0.035f);
+        GradientDrawable referenceChip = new GradientDrawable();
+        referenceChip.setColor(0x223C7893);
+        referenceChip.setCornerRadius(18 * density);
+        referenceChip.setStroke(Math.max(1, Math.round(density)), 0x447FC5D8);
+        reference.setBackground(referenceChip);
+        reference.setPadding(Math.round(12 * density), Math.round(2 * density),
+                Math.round(12 * density), Math.round(2 * density));
+        LinearLayout.LayoutParams referenceLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+        referenceLp.weight = 1f;
+        referenceLp.gravity = Gravity.CENTER;
+        heading.addView(reference, referenceLp);
         FrameLayout.LayoutParams headingLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         heading.setPadding(Math.round(8 * density), 0, Math.round(8 * density), 0);
         header.addView(heading, headingLp);
@@ -4626,6 +4639,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         body.setClipChildren(true);
         body.setClipToPadding(true);
 
+        FrameLayout arabicStage = new FrameLayout(this);
+        GradientDrawable arabicGlow = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                new int[]{0x223A9BB8, 0x102C7897, 0x002C7897});
+        arabicGlow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+        arabicGlow.setGradientRadius(190 * density);
+        arabicGlow.setGradientCenter(0.5f, 0.5f);
+        arabicStage.setBackground(arabicGlow);
+        arabicStage.setClipToPadding(true);
         TextView arabic = new TextView(this);
         arabic.setText(ayah.arabic.trim());
         arabic.setTextColor(TvUiTokens.ISLAMIC_GOLD);
@@ -4642,14 +4664,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         arabic.setMaxLines(2);
         arabic.setEllipsize(null);
         arabic.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
-        body.addView(arabic, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        FrameLayout.LayoutParams arabicLp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        arabicLp.setMargins(Math.round(10 * density), Math.round(3 * density),
+                Math.round(10 * density), Math.round(3 * density));
+        arabicStage.addView(arabic, arabicLp);
+        body.addView(arabicStage, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.08f));
 
         TextView meaningLabel = new TextView(this);
         meaningLabel.setText(R.string.daily_ayah_meaning_label);
         meaningLabel.setTextColor(TvUiTokens.TEXT_SECONDARY);
         meaningLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
         meaningLabel.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        meaningLabel.setLetterSpacing(0.12f);
+        meaningLabel.setTextColor(0xFFE3C98B);
         meaningLabel.setGravity(Gravity.CENTER);
         meaningLabel.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         meaningLabel.setSingleLine(true);
@@ -4660,12 +4689,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         meaningRuleLeft.setBackgroundColor(0x88FFFFFF);
         View meaningRuleRight = new View(this);
         meaningRuleRight.setBackgroundColor(0x88FFFFFF);
-        meaningDivider.addView(meaningRuleLeft, new LinearLayout.LayoutParams(0, Math.max(1, Math.round(density)), 1f));
+        meaningRuleLeft.setBackgroundColor(0x66C8A85E);
+        meaningRuleRight.setBackgroundColor(0x66C8A85E);
+        LinearLayout.LayoutParams ruleLeftLp = new LinearLayout.LayoutParams(0,
+                Math.max(1, Math.round(density)), 1f);
+        ruleLeftLp.leftMargin = Math.round(34 * density);
+        meaningDivider.addView(meaningRuleLeft, ruleLeftLp);
         LinearLayout.LayoutParams meaningTextLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
         meaningTextLp.leftMargin = Math.round(10 * density);
         meaningTextLp.rightMargin = Math.round(10 * density);
         meaningDivider.addView(meaningLabel, meaningTextLp);
-        meaningDivider.addView(meaningRuleRight, new LinearLayout.LayoutParams(0, Math.max(1, Math.round(density)), 1f));
+        LinearLayout.LayoutParams ruleRightLp = new LinearLayout.LayoutParams(0,
+                Math.max(1, Math.round(density)), 1f);
+        ruleRightLp.rightMargin = Math.round(34 * density);
+        meaningDivider.addView(meaningRuleRight, ruleRightLp);
         body.addView(meaningDivider, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(18 * density)));
 
         TextView translation = new TextView(this);
@@ -4707,11 +4744,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         closeAction.setText(R.string.daily_ayah_close);
         closeAction.setTextColor(TvUiTokens.TEXT_PRIMARY);
         closeAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+        closeAction.setLetterSpacing(0.08f);
         closeAction.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         closeAction.setGravity(Gravity.CENTER);
         closeAction.setFocusable(true);
         closeAction.setClickable(true);
-        closeAction.setBackground(TvFocusIndicator.createRoundedStateBackground(density, 9f, 0x223F4A55, TvUiTokens.FOCUS_HALO, 0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
+        GradientDrawable closeResting = new GradientDrawable();
+        closeResting.setColor(0x334C7185);
+        closeResting.setCornerRadius(18 * density);
+        closeResting.setStroke(Math.max(1, Math.round(density)), 0x88B8D7E5);
+        android.graphics.drawable.Drawable closeFocus = TvFocusIndicator.createRoundedStateBackground(
+                density, 18f, 0x334C7185, TvUiTokens.FOCUS_HALO, 0x55DCE5ED, TvUiTokens.FOCUS_BORDER);
+        closeAction.setBackground(closeFocus);
         closeAction.setOnClickListener(v -> { SoundEffects.playSelect(); dialogHolder[0].dismiss(); });
         closeAction.setOnFocusChangeListener((v, focused) -> { if (focused) SoundEffects.playNav(); });
         LinearLayout.LayoutParams closeActionLp = new LinearLayout.LayoutParams(Math.round(104 * density), Math.round(30 * density));
@@ -4746,6 +4790,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
         dialog.show();
         TvDialogStyle.applyCustom(dialog, this, panelWidthDp, panelHeightDp, 0.48f);
+        // Restrained premium entrance: animate the complete panel as one surface, never individual text.
+        panel.setAlpha(0f);
+        panel.setScaleX(0.985f);
+        panel.setScaleY(0.985f);
+        panel.setPivotX(panel.getWidth() / 2f);
+        panel.setPivotY(panel.getHeight() / 2f);
+        panel.animate().alpha(1f).scaleX(1f).scaleY(1f)
+                .setDuration(reducedMotion ? 100 : 200)
+                .setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f))
+                .start();
         panel.requestFocus();
     }
 
