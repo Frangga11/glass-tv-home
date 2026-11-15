@@ -20,12 +20,11 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("horizontalGridScrollPixels = 0;", MAIN)
         self.assertIn("horizontalGridExpanded = false;", MAIN)
 
-    def test_normal_up_from_first_grid_row_collapses_to_home_header(self):
+    def test_normal_up_from_first_grid_row_collapses_and_keeps_dock_focus(self):
         start = MAIN.index("public boolean onTileVerticalKey")
         end = MAIN.index("private int pendingFocus;", start)
         method = MAIN[start:end]
-        self.assertIn("collapseHorizontalOverflowToHomeHeader(dockTarget)", method)
-        self.assertIn("pendingDockCollapseDirection = KeyEvent.KEYCODE_DPAD_UP", MAIN)
+        self.assertIn("collapseHorizontalOverflowToDock(dockTarget)", method)
 
     def test_move_mode_keeps_row_one_up_as_a_hard_boundary(self):
         start = MAIN.index("private void stepMove(int keyCode)")
