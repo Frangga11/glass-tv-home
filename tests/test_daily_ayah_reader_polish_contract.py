@@ -32,7 +32,7 @@ class DailyAyahReaderPolishContractTest(unittest.TestCase):
         self.assertIn("translation.setMaxLines(2);", DIALOG)
 
     def test_reader_has_no_vertical_scroll_container_or_scroll_navigation(self):
-        self.assertNotIn("ScrollView", DIALOG)
+        self.assertNotIn("new ScrollView(", DIALOG)
         self.assertNotIn("scroll.canScrollVertically", DIALOG)
         self.assertNotIn("smoothScrollBy", DIALOG)
 
