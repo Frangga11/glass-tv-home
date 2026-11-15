@@ -81,8 +81,10 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         end = MAIN.index("private int pendingFocus;", start)
         method = MAIN[start:end]
         self.assertIn("btnHome.requestFocus()", method)
-        self.assertIn("requestHorizontalGridRow(basePosition - COLUMNS)", method)
-        self.assertIn("target = position - COLUMNS;", method)
+        self.assertIn("DockLayoutModel.gridNeighborPosition(basePosition, direction, COLUMNS, count)", method)
+        self.assertIn("requestHorizontalGridRow(target)", method)
+        self.assertIn("focusDockTile(dockTarget)", method)
+        self.assertNotIn("target = position - COLUMNS;", method)
 
     def test_profile_and_wifi_popups_restore_their_trigger_focus(self):
         self.assertIn("UserSwitchDialog.show(this, () -> restoreFocusTo(originFocus));", MAIN)
