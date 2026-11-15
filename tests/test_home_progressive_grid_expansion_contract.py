@@ -36,11 +36,35 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         row_one_up = method[method.index("if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP"):method.index("if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT")]
         self.assertNotIn("moveTileAcrossRegion", row_one_up)
 
+    def test_three_row_window_keeps_target_at_bottom_and_preserves_rows_above(self):
+        self.assertIn("int windowStartRow = Math.max(0, targetRow - 2);", MAIN)
+        self.assertIn("currentRow, windowStartRow, rowPitch, currentTopOffset", MAIN)
+        self.assertIn("int expectedWindowStartRow = Math.max(0, (position / COLUMNS) - 2);", MAIN)
+
+    def test_three_row_mode_hides_home_chrome_but_not_clock_or_date(self):
+        start = MAIN.index("private void setThreeRowFrameChromeHidden")
+        end = MAIN.index("private void hideGlass()", start)
+        method = MAIN[start:end]
+        for view_id in ("R.id.heroShelf", "R.id.islamicShelf", "R.id.locationPill",
+                        "R.id.weatherAirQuality", "R.id.navPill", "R.id.topButtons",
+                        "R.id.nowPlayingCard", "R.id.prayerTimes"):
+            self.assertIn(view_id, method)
+        self.assertIn("View.INVISIBLE", method)
+        self.assertIn("threeRowOriginalVisibility.get(i)", method)
+        self.assertNotIn("R.id.leftBlock", method)
+        self.assertIn("setThreeRowFrameChromeHidden(false)", MAIN)
+
+    def test_two_row_navigation_does_not_trigger_chrome_hide(self):
+        start = MAIN.index("private void startHorizontalGridRowTransition")
+        end = MAIN.index("private void animateHorizontalGridRowScroll", start)
+        method = MAIN[start:end]
+        self.assertIn("if (targetRow >= 2) setThreeRowFrameChromeHidden(true);", method)
+
     def test_moved_grid_identity_is_revealed_without_ending_move_mode(self):
         start = MAIN.index("private void restoreMovingTile")
         end = MAIN.index("private void stepMove(int keyCode)", start)
         method = MAIN[start:end]
-        self.assertIn("recycler.scrollToPosition(position)", method)
+        self.assertIn("alignHorizontalGridRowToGlass(position)", method)
         self.assertIn("restoreMovingTile(inDock, key, position, previousCard, attemptsRemaining - 1)", method)
         timeout = method[method.index("if (holder == null)"):method.index("View nextCard", method.index("if (holder == null)"))]
         self.assertIn("adapter.positionOf(key)", timeout)
