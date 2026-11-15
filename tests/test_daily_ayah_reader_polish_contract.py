@@ -40,13 +40,17 @@ class DailyAyahReaderPolishContractTest(unittest.TestCase):
         self.assertIn("panel.addView(header", DIALOG)
         self.assertIn("panel.addView(body", DIALOG)
         self.assertIn("panel.addView(footer", DIALOG)
-        self.assertIn("Math.round(36 * density)", DIALOG)
+        self.assertIn("Math.round(48 * density)", DIALOG)
         self.assertIn("Gravity.CENTER);", DIALOG)
-        self.assertIn("close.requestFocus()", DIALOG)
+        self.assertIn("panel.requestFocus()", DIALOG)
+        self.assertIn("closeAction.requestFocus()", DIALOG)
+        self.assertIn("KEYCODE_DPAD_DOWN", DIALOG)
+        self.assertIn("meaningDivider", DIALOG)
 
     def test_close_controls_and_origin_focus_restore_are_preserved(self):
-        self.assertIn("close.setOnClickListener", DIALOG)
-        self.assertNotIn("closeAction", DIALOG)
+        self.assertIn("closeAction.setOnClickListener", DIALOG)
+        self.assertNotIn("close.setOnClickListener", DIALOG)
+        self.assertIn("closeAction.setText(R.string.daily_ayah_close)", DIALOG)
         self.assertIn("restoreFocusTo(originFocus)", DIALOG)
         self.assertIn("KEYCODE_BACK", DIALOG)
 
