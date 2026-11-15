@@ -260,17 +260,19 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         )
 
     def test_visible_prayer_timetable_opens_popup_and_supports_dpad_activation(self):
-        start = MAIN.index("View prayerTableView = findViewById(R.id.prayerTable);")
+        start = MAIN.index("View prayerHeaderView = findViewById(R.id.prayerHeader);")
         end = MAIN.index("updatePrayerTimes();", start)
         binding = MAIN[start:end]
-        self.assertIn("prayerTableView.setFocusable(true);", binding)
-        self.assertIn("prayerTableView.setClickable(true);", binding)
-        self.assertIn("prayerTableView.setOnClickListener(v -> showPrayerPopup());", binding)
+        self.assertIn("prayerHeaderView.setFocusable(true);", binding)
+        self.assertIn("prayerHeaderView.setClickable(true);", binding)
+        self.assertIn("prayerHeaderView.setOnClickListener(v -> showPrayerPopup());", binding)
         self.assertIn("KEYCODE_DPAD_CENTER", binding)
         self.assertIn("KEYCODE_ENTER", binding)
         self.assertIn("KEYCODE_DPAD_DOWN", binding)
         self.assertIn("KEYCODE_DPAD_UP", binding)
         self.assertIn("btnAssistant != null", binding)
+        self.assertIn("prayerTableView.setFocusable(false);", binding)
+        self.assertIn("prayerTableView.setClickable(false);", binding)
         self.assertIn("setOnFocusChangeListener", binding)
         self.assertIn("showPrayerPopup();", binding)
 
