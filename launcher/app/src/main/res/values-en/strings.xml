@@ -53,7 +53,7 @@
     <string name="daily_ayah_open">READ FULL VERSE  ›</string>
     <string name="daily_ayah_meaning_label">MEANING</string>
     <string name="daily_ayah_close">Close</string>
-    <string name="daily_ayah_navigation_hint">Use the directional buttons to scroll the reading.</string>
+    <string name="daily_ayah_navigation_hint">Press OK to close the popup.</string>
     <string name="daily_ayah_translation_unavailable">Translation is not available.</string>
     <string name="prayer_subuh">Fajr</string>
     <string name="prayer_sunrise">Sunrise</string>

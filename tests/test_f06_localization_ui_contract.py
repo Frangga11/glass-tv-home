@@ -50,11 +50,11 @@ class F06LocalizationUiContractTest(unittest.TestCase):
             self.fail(f"Missing {key} in {locale}")
 
         self.assertEqual(
-            "Gunakan tombol arah untuk menggulir bacaan.",
+            "Tekan OK untuk menutup popup.",
             read_value("values-id", "daily_ayah_navigation_hint"),
         )
         self.assertEqual(
-            "Use the directional buttons to scroll the reading.",
+            "Press OK to close the popup.",
             read_value("values-en", "daily_ayah_navigation_hint"),
         )
         self.assertEqual("Ayat Pilihan Harian", read_value("values-id", "daily_ayah_popup_title"))

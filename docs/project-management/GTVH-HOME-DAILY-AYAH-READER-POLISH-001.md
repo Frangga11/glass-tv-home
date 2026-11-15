@@ -1,27 +1,33 @@
-# GTVH-HOME-DAILY-AYAH-READER-POLISH-001
+# GTVH-HOME-DAILY-AYAH-SINGLE-FRAME-001
 
 ## Objective
-Polish the existing centered complete-verse glass reader using the approved visual review while preserving the existing Ayah data flow, launch entry points, and close/focus restoration behavior.
+Rebuild the existing Ayat Pilihan Harian reader so the complete Arabic verse and Indonesian translation are displayed in one fixed frame, with no vertical scrolling, and a maximum panel height of 40% of the screen.
 
-## Implemented
-- Increased panel inner spacing and strengthened the navy glass gradient and edge stroke for readable content over a busy Home wallpaper.
-- Increased the Arabic reading size from 28sp to 33sp on 1080p-class displays (38sp on 4K-class displays).
-- Increased Indonesian translation to 20sp and expanded separation from the Arabic verse.
-- Moved the scroll hint out of the scrolling verse body into a fixed footer position, so long verses do not push the hint away.
-- Increased dialog height from 63% to 68% of display height while preserving the centered horizontal form and 72% width.
-- Increased background dim amount from 0.30 to 0.48 to reduce competing Home text behind the reader.
-- Preserved the existing DPAD scroll model, close controls, back handling, and restoration of focus to the originating Home control.
+## Owner-approved visual and layout contract
+- Maximum reader height: 40% of the display height, measured from runtime display metrics.
+- Popup width remains a centered 72% of display width, subject to the existing safe-content window bounds.
+- Arabic verse: warm Islamic gold, right-aligned, Amiri Quran, black shadow, adaptive text sizing, at most two visible lines.
+- Indonesian translation: centered, Inter, adaptive text sizing, at most two visible lines.
+- Both text regions are weighted inside the same fixed body region; no ScrollView, vertical scrollbar, or scroll gesture/key behavior.
+- Header, content, and footer occupy separate regions with fixed header/footer heights and a weighted content region.
+- Header retains title, Ayah reference, and top-right close affordance.
+- Footer retains a compact, accurate “Press OK to close” hint and bottom close action in one horizontal row; no scroll instruction remains.
+- All text sizing adapts to the constrained layout before content can collide with header/footer.
+- Glass treatment follows the Home Prayer popup standard: GlassDrawable + Backdrop watcher, consistent 20dp radius, neutral silver glass material and existing focus treatment. No bespoke gradient replacement.
 
-## Explicitly preserved
-- Ayah content source, translation language selection, and reference text.
-- Home preview and its capsule activation behavior.
-- Prayer timetable, prayer popup, Azan playback, wallpaper, top navigation, Dock, app grid, and global glass implementation.
-- Existing reader's two close affordances (top-right X and bottom Close).
+## Implementation
+- Replaced the previous 68%-height scrolling reader with a fixed 40%-height dialog.
+- Removed ScrollView and all vertical-scroll DPAD handling.
+- Applied Android uniform text auto-sizing to the Arabic and translation TextViews within two-line bounds.
+- Set Arabic to TvUiTokens.ISLAMIC_GOLD and absolute RIGHT gravity; translation uses centered gravity.
+- Preserved existing Ayah source, language selection, reference, close/back behavior, and origin-focus restoration.
+- Kept the Home preview, capsule focus, Prayer timetable, Azan behavior, Dock, wallpaper, navigation, Wi-Fi and unrelated Home surfaces outside scope.
 
-## Validation
-- Added source-contract tests for glass contrast, reading typography, fixed footer placement, and DPAD scroll/focus routing.
-- Android unit tests and release build validation are required on this commit.
-- Physical Mi TV Stick visual and remote-control verification remains a separate device QA gate; no emulator/CI result is represented as physical-device verification.
+## Validation plan
+- Focused Python source-contract tests cover the 40% cap, Prayer-popup glass material, gold/right Arabic, centered translation, no-scroll policy, separated header/body/footer, and close/focus restoration.
+- Exact-head Android unit tests and release build must pass.
+- Rendered 1920x1080 QA must inspect both one-line and two-line Arabic and translation cases for clipping, line count, overlap, and legibility.
+- Physical Mi TV Stick remote/visual acceptance remains a separate gate; automated source checks are not device acceptance.
 
 ## Status
-Implementation committed on `fix/home-ayah-pill-focus-align-001`; PR remains draft/unmerged pending CI and device QA.
+Implementation candidate is prepared on a dedicated stacked branch. CI/build and visual/device acceptance are pending; do not merge, publish, or install before those gates and explicit owner approval.
