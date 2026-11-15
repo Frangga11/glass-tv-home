@@ -156,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
                 android:maxWidth="400dp"
-                android:gravity="start"
+                android:gravity="end"
                 android:textDirection="ltr"
                 android:textColor="#F2FFFFFF"
                 android:textSize="14sp"
