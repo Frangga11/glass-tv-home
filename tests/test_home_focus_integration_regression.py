@@ -30,7 +30,7 @@ class HomeFocusIntegrationRegressionTest(unittest.TestCase):
         self.assertIn("if (horizontalDockCollapseInProgress) return true;", key_method)
         self.assertNotIn("pendingDockCollapseDirection =", key_method)
         self.assertLess(key_method.index("if (horizontalDockCollapseInProgress)"),
-                        key_method.index("int count = adapter.getItemCount();"))
+                        key_method.index("int count = adapter == null ? 0 : adapter.getItemCount();"))
 
     def test_focus_is_precommitted_before_grid_is_hidden(self):
         start = MAIN.index("private void collapseHorizontalOverflowToDock")
