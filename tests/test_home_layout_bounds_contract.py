@@ -274,7 +274,9 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         self.assertIn("prayerTableView.setFocusable(false);", binding)
         self.assertIn("prayerTableView.setClickable(false);", binding)
         self.assertIn("setOnFocusChangeListener", binding)
-        self.assertIn("showPrayerPopup();", binding)
+        self.assertIn("prayerHeaderView.setOnClickListener(v -> showPrayerPopup());", binding)
+        self.assertIn("v.performClick();", binding)
+        self.assertIn("KEYCODE_BUTTON_A", binding)
 
         start = MAIN.index("View.OnKeyListener pillKeys")
         end = MAIN.index("if (locationPill != null) locationPill.setOnKeyListener", start)
