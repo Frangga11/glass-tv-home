@@ -53,7 +53,7 @@
     <string name="daily_ayah_open">BACA AYAT LENGKAP  ›</string>
     <string name="daily_ayah_meaning_label">MAKSUDNYA</string>
     <string name="daily_ayah_close">Tutup</string>
-    <string name="daily_ayah_navigation_hint">Gunakan tombol arah untuk menggulir bacaan.</string>
+    <string name="daily_ayah_navigation_hint">Tekan OK untuk menutup popup.</string>
     <string name="daily_ayah_translation_unavailable">Terjemahan belum tersedia.</string>
     <string name="prayer_subuh">Subuh</string>
     <string name="prayer_sunrise">Terbit</string>
