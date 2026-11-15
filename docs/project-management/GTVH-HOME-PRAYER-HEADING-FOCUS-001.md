@@ -30,3 +30,16 @@ Only the Home prayer focus target and its DPAD/click routing are changed. No pra
 
 ## Status
 OPEN / DRAFT / UNMERGED. No merge or release authorization is implied.
+
+
+## Follow-up: GTVH-HOME-DPAD-THREE-ROW-NAVIGATION-001
+
+- Branch: `fix/home-dpad-three-row-navigation-001`
+- Parent: PR #140 HEAD `9c6fe7dbde503cff18b47da1915c34f2b5e8d7c5`
+- Added deterministic four-way Grid neighbour calculation. UP/DOWN preserve the source column where possible and clamp to the nearest available column in a partial row; LEFT/RIGHT stop at row boundaries.
+- In horizontal Dock mode, all four directions now pass through the same pending-target/transition coordinator. During an active row animation, the pending logical target is used instead of Android geometric focus search, and the latest requested destination wins.
+- Existing first-row UP-to-Dock behavior and vertical-Dock UP-to-header fallback are retained.
+- Added unit coverage for 9, 10, 11, and 12 app layouts, partial-row column mapping, and hard edges.
+- No layout, tile dimensions, spacing, visual styling, app ordering, prayer/Ayat, or popup behavior is changed.
+- Dock capacities 5/6 were reviewed but their visual slot-to-grid mapping was not changed without a confirmed layout contract; this remains a device/configuration verification item.
+- CI and physical Mi TV Stick remote verification must pass before acceptance.
