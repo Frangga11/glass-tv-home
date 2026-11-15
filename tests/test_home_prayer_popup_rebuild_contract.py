@@ -283,18 +283,3 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-        for token in (
-            "private void updatePrayerPopupSwitch(View track, View knob, boolean enabled)",
-            "track.setBackground(trackShape)",
-            "knob.setBackground(knobShape)",
-            "knob.setTranslationX(enabled ? 16 * density : 0f)",
-        ):
-            self.assertIn(token, MAIN)
-        self.assertIn("updatePrayerPopupSwitch(switchTrack, switchKnob, enabled)", self.popup)
-        self.assertIn("Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))", self.popup)
-
-    def test_popup_reflows_full_content_before_height_is_clamped(self):
-        self.assertLess(self.popup.index("scalePrayerPopupVerticalLayout(rows, contentScale)"),
-                        self.popup.index("showPrayerPopupOverlay(panel, rows, anchor"))
-        self.assertIn("naturalContentHeight = panel.getMeasuredHeight()", self.popup)
-        self.assertIn("Content fits Wi-Fi-to-Dock lane", self.popup)
