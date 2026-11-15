@@ -4346,7 +4346,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void updateHomeWeather() {
         if (weatherAirQualityView == null || !isDynamicWeatherEffectsEnabled()
-                || homeWeatherRunning || !HomeWeather.due(this)) return;
+                || homeWeatherRunning) return;
+
+        // Re-apply the last location/language-scoped weather immediately on every Home entry.
+        // HomeWeather.due() only decides whether to fetch; it must not prevent a cached overlay
+        // from being restored after Android recreates MainActivity or its wallpaper layer.
+        HomeWeather.Line cached = HomeWeather.last(this);
+        if (cached != null) updateWeatherOverlay(cached);
+
+        if (!HomeWeather.due(this)) return;
         homeWeatherRunning = true;
         Location.Zone zone = Location.chosen(this);
         final double lat = (zone != null) ? zone.lat : -4.0212;
