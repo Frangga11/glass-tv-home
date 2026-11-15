@@ -4774,8 +4774,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) { d.dismiss(); return true; }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) { closeAction.requestFocus(); return true; }
             if (closeAction.hasFocus() && (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-                    || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
-                d.dismiss(); return true;
+                    || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER
+                    || keyCode == KeyEvent.KEYCODE_BUTTON_A)) {
+                closeAction.performClick(); return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT
                     || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
@@ -4793,9 +4794,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         closeAction.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
-                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
-                SoundEffects.playSelect();
-                if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER || keyCode == KeyEvent.KEYCODE_BUTTON_A) {
+                closeAction.performClick();
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
