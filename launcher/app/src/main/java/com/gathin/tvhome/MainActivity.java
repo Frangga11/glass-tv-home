@@ -4689,6 +4689,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.addView(body, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
+        final AlertDialog[] dialogHolder = new AlertDialog[1];
+
         // Fixed footer: instruction first, then the sole TUTUP capsule.
         LinearLayout footer = new LinearLayout(this);
         footer.setOrientation(LinearLayout.VERTICAL);
