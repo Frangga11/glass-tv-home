@@ -12,7 +12,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         end = MAIN.index("// Liquid feel:", start)
         listener = MAIN[start:end]
         self.assertIn("horizontalGridScrollPixels += dy;", listener)
-        self.assertIn("dockRecycler.setTranslationY(-getHorizontalDockPitch() - delta)", listener)
+        self.assertIn("dockRecycler.setTranslationY(-getHorizontalDockPitch() - horizontalGridScrollPixels)", listener)
         self.assertIn("!horizontalDockCollapseInProgress", listener)
 
     def test_expansion_captures_scroll_baseline_and_collapse_resets_it(self):
