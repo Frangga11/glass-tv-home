@@ -13,6 +13,40 @@ import org.junit.Test;
 public class DockLayoutModelTest {
 
     @Test
+    public void gridDpadUsesNearestAvailableColumnAcrossIncompleteRows() {
+        // Ten apps: 4 + 4 + 2. Both rightmost source columns resolve to the nearest
+        // available item in row three without losing the column relationship.
+        assertEquals(8, DockLayoutModel.gridNeighborPosition(6, 2, 4, 10));
+        assertEquals(9, DockLayoutModel.gridNeighborPosition(7, 2, 4, 10));
+        assertEquals(6, DockLayoutModel.gridNeighborPosition(8, -2, 4, 10));
+        assertEquals(7, DockLayoutModel.gridNeighborPosition(9, -2, 4, 10));
+    }
+
+    @Test
+    public void gridDpadRespectsHorizontalAndVerticalBoundaries() {
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(0, -1, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(3, 1, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(9, 1, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(0, -2, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(8, 2, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(-1, 2, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(10, 2, 4, 10));
+    }
+
+    @Test
+    public void gridDpadHandlesEveryPossibleThirdRowLength() {
+        // 9 apps: one item in the last row.
+        assertEquals(8, DockLayoutModel.gridNeighborPosition(4, 2, 4, 9));
+        assertEquals(8, DockLayoutModel.gridNeighborPosition(7, 2, 4, 9));
+        // 11 apps: three items in the last row.
+        assertEquals(10, DockLayoutModel.gridNeighborPosition(6, 2, 4, 11));
+        assertEquals(10, DockLayoutModel.gridNeighborPosition(7, 2, 4, 11));
+        // 12 apps: full final row preserves exact columns.
+        assertEquals(8, DockLayoutModel.gridNeighborPosition(4, 2, 4, 12));
+        assertEquals(11, DockLayoutModel.gridNeighborPosition(7, 2, 4, 12));
+    }
+
+    @Test
     public void arrangedOrderIsPreservedForPinnedComponents() {
         List<String> inventory = Arrays.asList("pkg.a/.Main", "pkg.b/.Main", "pkg.c/.Main");
         List<String> pinned = DockLayoutModel.orderedPinnedKeys(
