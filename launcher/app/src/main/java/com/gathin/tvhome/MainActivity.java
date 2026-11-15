@@ -4580,9 +4580,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.setBackground(new GlassDrawable(panel, 20 * density, density, null, 0.5f));
         Backdrop.watch(panel);
 
-        LinearLayout header = new LinearLayout(this);
-        header.setOrientation(LinearLayout.HORIZONTAL);
-        header.setGravity(Gravity.CENTER_VERTICAL);
+        FrameLayout header = new FrameLayout(this);
 
         LinearLayout heading = new LinearLayout(this);
         heading.setOrientation(LinearLayout.VERTICAL);
@@ -4612,8 +4610,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         refLp.topMargin = Math.round(1 * density);
         heading.addView(reference, refLp);
-        header.addView(heading, new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        FrameLayout.LayoutParams headingLp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER);
+        heading.setPadding(Math.round(40 * density), 0, Math.round(40 * density), 0);
+        header.addView(heading, headingLp);
 
         AlertDialog[] dialogHolder = new AlertDialog[1];
         TextView close = new TextView(this);
@@ -4634,8 +4635,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         close.setOnFocusChangeListener((v, focused) -> {
             if (focused) SoundEffects.playNav();
         });
-        header.addView(close, new LinearLayout.LayoutParams(
-                Math.round(34 * density), Math.round(34 * density)));
+        FrameLayout.LayoutParams closeLp = new FrameLayout.LayoutParams(
+                Math.round(34 * density), Math.round(34 * density), Gravity.END | Gravity.CENTER_VERTICAL);
+        header.addView(close, closeLp);
         panel.addView(header, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, Math.round(36 * density)));
 
