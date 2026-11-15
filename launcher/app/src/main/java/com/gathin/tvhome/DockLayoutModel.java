@@ -35,6 +35,32 @@ final class DockLayoutModel {
 
     private DockLayoutModel() { }
 
+    /**
+     * Returns the deterministic neighbour for a four-way Grid DPAD move.
+     * direction: -1 LEFT, 1 RIGHT, -2 UP, 2 DOWN.
+     * Vertical moves preserve the column where possible and clamp to the nearest
+     * available column in an incomplete destination row. A negative result is a hard edge.
+     */
+    static int gridNeighborPosition(int position, int direction, int columns, int count) {
+        if (position < 0 || position >= count || columns <= 0 || count <= 0) return -1;
+        int column = position % columns;
+        if (direction == -1) return column == 0 ? -1 : position - 1;
+        if (direction == 1) return column == columns - 1 || position == count - 1 ? -1 : position + 1;
+        if (direction == -2) {
+            if (position < columns) return -1;
+            int previousStart = ((position / columns) - 1) * columns;
+            int previousEnd = Math.min(previousStart + columns, count) - 1;
+            return previousStart + Math.min(column, previousEnd - previousStart);
+        }
+        if (direction == 2) {
+            int nextStart = ((position / columns) + 1) * columns;
+            if (nextStart >= count) return -1;
+            int nextEnd = Math.min(nextStart + columns, count) - 1;
+            return nextStart + Math.min(column, nextEnd - nextStart);
+        }
+        return -1;
+    }
+
     /** Unique holder type per orientation/capacity so changed geometry cannot reuse stale tile views. */
     static int gridPositionForDock(int dockPosition, boolean vertical, int gridColumns, int gridCount) {
         if (dockPosition < 0 || gridColumns <= 0 || gridCount <= 0) return -1;
