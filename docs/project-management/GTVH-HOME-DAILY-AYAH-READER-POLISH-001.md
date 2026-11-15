@@ -57,3 +57,14 @@ Source implementation, localized no-scroll footer copy, regression contracts, do
 - Initial DPAD focus rests on the popup panel without highlighting a control. UP, LEFT, and RIGHT are consumed with no navigation. DOWN moves focus directly to TUTUP; OK activates TUTUP and dismisses the popup. Back/Escape remain supported.
 - ARTINYA is centered between two horizontal divider rules.
 - Arabic/translation body remains the flexible middle region; preserve Arabic maximum two lines and Indonesian translation maximum three lines. No other Home surfaces or data/navigation logic are in scope.
+
+
+## Owner-approved premium visual refinement — 2026-11-15
+- Preserve the existing 55% width, 42% height, fixed header/footer, single TUTUP control, no-scroll body, and DPAD contract.
+- Add restrained cool-cyan radial ambience behind the Arabic verse while retaining the existing gold Amiri Quran typography and subtle text shadow.
+- Give the Surah/Ayah reference a compact translucent silver-cyan chip; keep title and reference centered in the fixed header.
+- Refine ARTINYA with warm-gold lettering, subtle gold horizontal rules, and shorter visual span.
+- Refine TUTUP lettering and retain the shared Electric Cyan DPAD focus treatment; do not change the focus/activation behavior.
+- Animate the complete popup surface as one unit with a restrained 200ms fade/scale entrance (100ms when reduced motion is enabled); never animate individual text independently.
+- Do not add decorative clutter, alter source data, or modify other Home surfaces.
+- Automated CI/build and physical TV visual/remote acceptance are required before considering this refinement complete.
