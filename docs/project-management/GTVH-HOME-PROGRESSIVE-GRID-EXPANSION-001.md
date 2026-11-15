@@ -41,7 +41,7 @@ Make every app row reachable in horizontal Dock mode through a progressive, roll
 - During Grid Move Mode, request layout/scroll for the moved stable app identity when its holder is outside the viewport; retry using the current adapter position resolved from that identity. Repositioning aligns the three-row window rather than jumping the moved tile to the top.
 - Changed normal row transitions and focus restoration to align the first row of a rolling three-row window, not the focused row itself.
 - Added a reversible Home-chrome visibility gate for three-row mode. It preserves each affected view's original visibility and deliberately excludes the clock/date block.
-- Changed normal UP from Grid row one to complete the existing synchronized collapse, then dispatch the UP intent to the Home header.
+- Changed normal UP from the first Grid row to complete the existing synchronized collapse while retaining focus on the Dock row-one destination.
 - Kept Move Mode UP at row one within the Grid region as a hard boundary.
 
 ## Scope lock
@@ -51,7 +51,7 @@ Only horizontal Grid viewport progression, Dock synchronization, and the related
 ## Validation
 
 - Added/extended `tests/test_home_progressive_grid_expansion_contract.py` for pixel-synchronized Dock tracking, three-row window alignment, Home-chrome visibility rules (clock/date excluded), collapse restoration, and Move Mode persistence/boundary.
-- Updated the existing Home DPAD contract to expect collapse-to-header behavior.
+- Updated the existing Home DPAD contracts to expect collapse-to-Dock-row-one behavior.
 - Automated CI/build and unit tests must pass before this work is considered code-validated.
 - Physical Mi TV Stick remote testing is still required for acceptance. No physical-device PASS is claimed by this document.
 
