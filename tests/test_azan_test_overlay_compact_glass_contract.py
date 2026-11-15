@@ -9,7 +9,7 @@ MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java")
 class AzanTestOverlayCompactGlassContractTest(unittest.TestCase):
     def test_overlay_uses_the_approved_prayer_popup_glass_material(self):
         self.assertIn(
-            "card.setBackground(new GlassDrawable(card, 20 * density, density, null, 0.5f));",
+            "card.setBackground(new GlassDrawable(card, 20 * density * CARD_SCALE, density, null, 0.5f));",
             AZAN,
         )
         self.assertIn("Backdrop.watch(card)", AZAN)
@@ -20,8 +20,11 @@ class AzanTestOverlayCompactGlassContractTest(unittest.TestCase):
         self.assertNotIn("glass.setColor(0xD936414B)", AZAN)
         self.assertNotIn("setBackgroundBlurRadius", AZAN)
 
-    def test_overlay_is_reduced_proportionally_to_approximately_fifteen_percent(self):
+    def test_overlay_is_reduced_proportionally_to_approximately_eleven_percent(self):
         self.assertIn("private static final float CARD_SCALE = 0.806f;", AZAN)
+        self.assertIn("20 * density * CARD_SCALE", AZAN)
+        self.assertIn("focusOutline.setCornerRadius(cardDp(20))", AZAN)
+        self.assertIn("card.setElevation(cardDp(16))", AZAN)
         self.assertIn("t.setTextSize(sp * CARD_SCALE)", AZAN)
         self.assertIn("Math.round(v * density * CARD_SCALE)", AZAN)
         for token in (

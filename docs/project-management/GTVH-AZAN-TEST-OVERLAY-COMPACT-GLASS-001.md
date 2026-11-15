@@ -46,3 +46,10 @@ Owner requested a further reduction from the previous approximately 14.6% estima
 - The glass corner radius, focus outline radius/stroke, and elevation are now scaled with the card so those details remain proportional. GlassDrawable remains the same project material and Backdrop lifecycle remains unchanged.
 - No changes to playback, audio focus, dismissal, prayer popup, Home UI, or global glass system.
 - 11% is a geometry estimate derived from the supplied photo and previous area estimate, not a framebuffer measurement. Final confirmation still requires a 1920×1080 capture on the target TV.
+
+
+## CI correction and 11% acceptance contract — 15 November 2026
+
+The first CI run after the 11% change reported one failing contract assertion: the test still expected the earlier fixed 20dp glass corner radius. The implementation had intentionally scaled that radius with the card to preserve the same relative shape. The contract is corrected to require the scaled 20dp base radius, scaled focus outline, and scaled elevation. No production behavior was changed by this test-only correction.
+
+The 11% revision supersedes the earlier 15% target in this checkpoint. Current target: approximately 11% of the visible main-screen area, estimated by the area ratio calculation 14.6% × (0.806 / 0.93)² ≈ 10.97%. The window remains top-centered at the same 40dp y-offset. CI and visual/device acceptance are still required; the estimate is not a direct screen-area measurement.
