@@ -3277,6 +3277,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             if (attemptsRemaining > 0) {
                 recycler.postOnAnimation(() -> restoreMovingTile(inDock, key, position, previousCard, attemptsRemaining - 1));
+            } else if (!inDock && !dockVertical && adapter != null && adapter.positionOf(key) >= 0) {
+                // Keep Move Mode alive while RecyclerView completes a delayed layout. Resolve
+                // the selected app again by stable identity; never drop the mode on a scroll miss.
+                int resolved = adapter.positionOf(key);
+                movingPos = resolved;
+                recycler.scrollToPosition(resolved);
+                recycler.postOnAnimation(() -> restoreMovingTile(false, key, resolved, previousCard, 8));
             } else {
                 finishMove();
             }
