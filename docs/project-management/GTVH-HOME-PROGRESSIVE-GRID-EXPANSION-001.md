@@ -32,9 +32,9 @@ Make every app row reachable in horizontal Dock mode through a progressive, roll
 
 ## Implementation
 
-- Added an expanded Grid scroll baseline in `MainActivity`.
-- Extended the existing Grid scroll listener so the Dock translation is derived from the Grid's measured vertical scroll offset relative to that baseline.
-- Captured the baseline after the initial Dock/Grid expansion settles and reset it after collapse.
+- Added an expanded Grid scroll accumulator in `MainActivity`.
+- Extended the existing Grid scroll listener so the Dock translation is derived from the actual consumed vertical `dy` reported by the Grid scroll callback, accumulated in pixels.
+- Reset the accumulated scroll delta after the initial Dock/Grid expansion settles and after collapse.
 - During Grid Move Mode, request layout/scroll for the moved stable app identity when its holder is outside the viewport; retry using the current adapter position resolved from that identity.
 - Changed normal UP from Grid row one to complete the existing synchronized collapse, then dispatch the UP intent to the Home header.
 - Kept Move Mode UP at row one within the Grid region as a hard boundary.
