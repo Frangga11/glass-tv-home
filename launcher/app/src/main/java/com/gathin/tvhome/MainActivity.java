@@ -1100,7 +1100,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (id == R.id.locationPill && weatherAirQualityView != null
                         && weatherAirQualityView.isShown() && weatherAirQualityView.requestFocus()) return true;
                 if (id == R.id.btnAssistant) {
-                    if (ayahBlock != null && ayahBlock.isShown() && ayahBlock.requestFocus()) return true;
+                    if (ayahOpenHint != null && ayahOpenHint.isShown() && ayahOpenHint.requestFocus()) return true;
                 }
                 if (id == R.id.btnInputs && btnWifi != null && btnWifi.isShown()
                         && btnWifi.requestFocus()) return true;
