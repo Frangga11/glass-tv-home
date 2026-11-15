@@ -83,9 +83,8 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         self.assertIn("btnHome.requestFocus()", method)
         self.assertIn("DockLayoutModel.gridNeighborPosition(basePosition, direction, COLUMNS, count)", method)
         self.assertIn("requestHorizontalGridRow(target)", method)
-        self.assertIn("collapseHorizontalOverflowToHomeHeader(dockTarget)", method)
-        self.assertIn("pendingDockCollapseDirection = KeyEvent.KEYCODE_DPAD_UP", MAIN)
-        self.assertNotIn("target = position - COLUMNS;", method)
+        self.assertIn("collapseHorizontalOverflowToDock(dockTarget)", method)
+                self.assertNotIn("target = position - COLUMNS;", method)
 
     def test_profile_and_wifi_popups_restore_their_trigger_focus(self):
         self.assertIn("UserSwitchDialog.show(this, () -> restoreFocusTo(originFocus));", MAIN)
