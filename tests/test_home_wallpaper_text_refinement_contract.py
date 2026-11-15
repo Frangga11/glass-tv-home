@@ -77,8 +77,8 @@ class HomeWallpaperTextRefinementContractTest(unittest.TestCase):
         self.assertIn("TvFocusIndicator.createRoundedStateBackground(", MAIN)
         self.assertIn("TvUiTokens.FOCUS_HALO", MAIN)
         self.assertIn("TvUiTokens.FOCUS_BORDER", MAIN)
-        self.assertIn("hintBg.setStroke(Math.max(1, Math.round(density)), 0x44DCE5ED)", MAIN)
-        self.assertIn("ayahBlock.setOnKeyListener", MAIN)
+        self.assertIn("ayahOpenHint.setBackground(TvFocusIndicator.createRoundedStateBackground(", MAIN)
+        self.assertIn("ayahOpenHint.setOnKeyListener", MAIN)
         self.assertIn("showDailyAyahDialog();", MAIN)
 
 
