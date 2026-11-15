@@ -3506,8 +3506,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             int dockTarget = Math.min(basePosition % COLUMNS, dockAdapter.getItemCount() - 1);
             // Normal navigation returns to the Home header and restores the initial viewport.
             // Replay UP semantically only after Dock and Grid finish their synchronized collapse.
-            collapseHorizontalOverflowToDock(dockTarget);
-            pendingDockCollapseDirection = KeyEvent.KEYCODE_DPAD_UP;
+            collapseHorizontalOverflowToHomeHeader(dockTarget);
             return true;
         }
 
@@ -3689,6 +3688,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
      * The old order hid the focused Grid first and tried to recover Dock focus afterwards;
      * on TV RecyclerView timing this could leave the Activity with no focused tile.
      */
+    /** Collapse the expanded horizontal Grid and return normal navigation to the Home header. */
+    private void collapseHorizontalOverflowToHomeHeader(int dockPosition) {
+        collapseHorizontalOverflowToDock(dockPosition);
+        // Set after the collapse request because collapseHorizontalOverflowToDock initializes
+        // the pending direction before acquiring Dock focus and starting its animation.
+        pendingDockCollapseDirection = KeyEvent.KEYCODE_DPAD_UP;
+    }
+
     private void collapseHorizontalOverflowToDock(int dockPosition) {
         if (grid == null || dockRecycler == null || !horizontalGridExpanded
                 || horizontalDockCollapseInProgress) return;
