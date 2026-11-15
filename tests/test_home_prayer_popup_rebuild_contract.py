@@ -30,8 +30,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertNotIn("R.layout.item_input", self.popup)
         self.assertNotIn("showMenu(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
-        self.assertIn("panel.setBackground(prayerPopupGlassBackground(panel, 18 * density))", self.popup)
-        self.assertNotIn("new GlassDrawable(panel", self.popup)
+        self.assertIn("panel.setBackground(new GlassDrawable(panel, 20 * density, density, null, 0.5f));", self.popup)
+        self.assertNotIn("prayerPopupGlassBackground", self.popup)
 
     def test_existing_prayer_schedule_source_and_six_cells_are_preserved(self):
         self.assertIn("PrayerTimes.getFullSchedule(this)", self.popup)
