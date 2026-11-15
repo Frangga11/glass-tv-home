@@ -29,9 +29,9 @@ import java.util.Date;
  * underneath is where it was.
  */
 public class AzanActivity extends Activity {
-    // 0.806 total linear scale targets approximately 11% of screen area from the measured photo estimate.
+    // 0.843 total linear scale targets approximately 12% of screen area from the prior photo-based area estimate.
     // Keep the window anchor and top offset independent so the popup does not move.
-    private static final float CARD_SCALE = 0.806f;
+    private static final float CARD_SCALE = 0.843f;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private MediaPlayer player;
     private AudioManager audio;
