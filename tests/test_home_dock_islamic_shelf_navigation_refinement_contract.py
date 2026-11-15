@@ -148,12 +148,12 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("pendingHorizontalGridPosition", keys)
         self.assertIn("DockLayoutModel.gridNeighborPosition(basePosition, direction, COLUMNS, count)", keys)
         self.assertIn("requestHorizontalGridRow(target)", keys)
-        self.assertIn("collapseHorizontalOverflowToHomeHeader(dockTarget)", keys)
+        self.assertIn("collapseHorizontalOverflowToDock(dockTarget)", keys)
         self.assertIn("cancelHorizontalGridRowTransition()", keys)
 
     def test_grid_programmatic_restore_keeps_existing_alignment_fallback(self):
         self.assertIn("private void alignHorizontalGridRowToGlass(int position)", MAIN)
-        self.assertIn("scrollToPositionWithOffset(position, grid.getPaddingTop())", MAIN)
+        self.assertIn("windowStartRow * COLUMNS, grid.getPaddingTop()", MAIN)
 
 
 if __name__ == "__main__":
