@@ -669,3 +669,37 @@ No Home Screen, wallpaper, Dock/Grid, navigation, Wi-Fi, microphone, Weather/AQI
 
 ### Validation status
 The source and contract changes are committed as one isolated PR update. Exact-HEAD CI, release APK artifact, rendered 1920×1080 visual inspection, and physical Mi TV Stick acceptance remain pending until the new commit is checked. Do not install or merge before those gates pass.
+
+
+## 30. Owner-locked visual baseline and final micro-corrections — 15 November 2026
+
+Owner supplied a physical-screen reference photo and explicitly locked all currently accepted geometry and typography. This revision treats the photo as the visual baseline: no popup width/height, panel position, capsule dimensions, timetable cell dimensions, text sizes, row heights, vertical spacing, or inter-capsule spacing may be changed unless the owner explicitly requests that exact property.
+
+### Root-cause cross-check: glass treatment
+
+- The popup had drifted from the project-standard `GlassDrawable` to a custom popup-local drawable built around `Backdrop.Fill`, a deep opaque-tinted veil, and custom iridescent rim/highlight paints.
+- This diverged from the owner's explicit earlier correction to restore the standard project glass material. The photo's nearly flat dark surface is consistent with that implementation drift; source inspection, not the photo alone, identifies the mismatch.
+- Restored the same project `GlassDrawable` constructor used by the existing glass popup surface: `new GlassDrawable(panel, 20 * density, density, null, 0.5f)`.
+- Retained the existing `Backdrop.watch(panel)` and `glider.addCompanion(panel)` lifecycle setup. This is limited to the prayer popup background; no global glass class or other surface is modified.
+
+### Exact visual changes authorized
+
+1. Removed the thin horizontal separator views between the header/next-prayer area and the timetable/control capsules. The vertical separator between the title and location block remains because it is not one of the unwanted horizontal rules.
+2. Removed horizontal separator views between Azan, Suara Azan, and Tes Suara Azan. All four rounded capsules (next-prayer, Azan, sound selector, test action) remain intact with their existing backgrounds and focus behavior.
+3. Reduced only the Azan switch artwork to a 34×18dp track with a 12×12dp knob and a 36×20dp wrapper. The Azan row height and click/persistence/scheduling behavior remain unchanged.
+4. Kept the right-side `▶ UJI` text/icon at 10sp, matching the Makkah value's 10sp. Updated the left title from **Tes Suara** to **Tes Suara Azan**; supporting copy and Test Sound activity route are unchanged.
+
+### Locked geometry / non-regression boundary
+
+- Timetable capsules remain 115dp × 29dp; center gap remains 6dp.
+- Popup remains 260dp derived width with 12dp inner horizontal padding.
+- Next-prayer card remains 54dp; Azan/sound/test rows retain their existing heights.
+- Existing title, location, altitude, next-prayer, schedule, control, and footer typography remains unchanged.
+- Popup alignment to the prayer timetable's right edge, 10dp Wi-Fi top gap, and minimum 10dp Dock clearance remain unchanged.
+- No changes to Home layout, wallpaper, Dock/Grid, navigation, Wi-Fi, microphone, Weather/AQI, prayer data, Azan scheduling, sound assets, or global glass tokens.
+
+### Validation boundary
+
+- Source contract now requires the standard project GlassDrawable, verifies the compact switch dimensions and unchanged Azan row height, asserts the horizontal divider helper/calls are absent, and checks the exact Indonesian control title.
+- This source update is not itself visual acceptance. Exact-HEAD CI/build must pass; a fresh 1920×1080 render must confirm the restored blur/translucency, unchanged locked proportions, and all capsules/focus outlines. Physical Mi TV Stick acceptance remains pending and must be separately authorized.
+- PR #135 remains OPEN / DRAFT / UNMERGED. No merge or device installation is implied.

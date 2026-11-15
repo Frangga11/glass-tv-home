@@ -7773,7 +7773,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.setClipChildren(true);
         panel.setClipToPadding(true);
         panel.setElevation(12 * density);
-        panel.setBackground(prayerPopupGlassBackground(panel, 18 * density));
+        panel.setBackground(new GlassDrawable(panel, 20 * density, density, null, 0.5f));
         panel.setPadding((int) (12 * density), (int) (4 * density),
                 (int) (12 * density), (int) (4 * density));
 
@@ -7842,8 +7842,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         rows.addView(header, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (26 * density)));
-        addPrayerPopupDivider(rows);
-
         java.util.List<PrayerTimes.ScheduleItem> schedule = PrayerTimes.getFullSchedule(this);
         PrayerTimes.ScheduleItem nextPrayer = null;
         for (PrayerTimes.ScheduleItem item : schedule) {
@@ -7866,8 +7864,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 TvUiTokens.ISLAMIC_GOLD, true));
         rows.addView(nextCard, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (54 * density)));
-        addPrayerPopupDivider(rows);
-
         LinearLayout scheduleHeading = new LinearLayout(this);
         scheduleHeading.setGravity(Gravity.CENTER_VERTICAL);
         scheduleHeading.setPadding((int) (4 * density), 0, 0, 0);
@@ -7914,8 +7910,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             rows.addView(gridRow, rowLp);
         }
         focusOrder.addAll(scheduleFocus);
-        addPrayerPopupDivider(rows);
-
         String[] soundKeys = {Azan.SOUND_MAKKAH, Azan.SOUND_MADINAH,
                 Azan.SOUND_KLCC, Azan.SOUND_CHIME, Azan.SOUND_SILENT};
         String[] soundLabels = {"Makkah", "Madinah", "KLCC", "Chime", "Senyap"};
@@ -7930,17 +7924,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View switchTrack = new View(this);
         View switchKnob = new View(this);
         FrameLayout.LayoutParams switchTrackLp = new FrameLayout.LayoutParams(
-                (int) (38 * density), (int) (22 * density), Gravity.CENTER);
+                (int) (34 * density), (int) (18 * density), Gravity.CENTER);
         masterSwitch.addView(switchTrack, switchTrackLp);
         FrameLayout.LayoutParams switchKnobLp = new FrameLayout.LayoutParams(
-                (int) (16 * density), (int) (16 * density),
+                (int) (12 * density), (int) (12 * density),
                 Gravity.CENTER_VERTICAL | Gravity.LEFT);
         switchKnobLp.leftMargin = (int) (3 * density);
         masterSwitch.addView(switchKnob, switchKnobLp);
         boolean initialAzanEnabled = Azan.isMasterEnabled(this);
         updatePrayerPopupSwitch(switchTrack, switchKnob, initialAzanEnabled);
         masterRow.addView(masterSwitch, new LinearLayout.LayoutParams(
-                (int) (40 * density), (int) (24 * density)));
+                (int) (36 * density), (int) (20 * density)));
         masterRow.setContentDescription(initialAzanEnabled
                 ? "Azan, aktif" : "Azan, nonaktif");
         masterRow.setOnClickListener(v -> {
@@ -7951,7 +7945,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             masterRow.setContentDescription(enabled ? "Azan, aktif" : "Azan, nonaktif");
             SoundEffects.playSelect();
         });
-        addPrayerPopupDivider(rows);
         rows.addView(masterRow, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (30 * density)));
         focusOrder.add(masterRow);
@@ -7976,12 +7969,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout.LayoutParams soundLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density));
         soundLp.topMargin = 0;
-        addPrayerPopupDivider(rows);
         rows.addView(soundRow, soundLp);
         focusOrder.add(soundRow);
 
         LinearLayout testRow = createPrayerPopupControlRow(
-                "Tes Suara", "Dengarkan contoh suara azan", "▶  UJI");
+                "Tes Suara Azan", "Dengarkan contoh suara azan", "▶  UJI");
         testRow.setBackground(prayerPopupCardBackground(false));
         ((TextView) testRow.getChildAt(1)).setTextSize(10f);
         testRow.setOnClickListener(v -> {
@@ -7995,7 +7987,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout.LayoutParams testLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density));
         testLp.topMargin = 0;
-        addPrayerPopupDivider(rows);
         rows.addView(testRow, testLp);
         focusOrder.add(testRow);
 
@@ -8070,73 +8061,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                             + Math.round(unscaledContentHeight / density) + "dp");
         }
         showPrayerPopupOverlay(panel, rows, anchor, width, height, focusOrder, safeX, safeY);
-    }
-
-    /** Popup-local owner-style dark frosted liquid glass; does not alter the global silver glass system. */
-    private Drawable prayerPopupGlassBackground(View owner, float radius) {
-        return new Drawable() {
-            private final Backdrop.Fill backdrop = new Backdrop.Fill();
-            private final android.graphics.Paint veil = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
-            private final android.graphics.Paint rim = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
-            private final android.graphics.Paint windowLight = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
-            private final android.graphics.RectF bounds = new android.graphics.RectF();
-            private final android.graphics.Matrix rimMatrix = new android.graphics.Matrix();
-            private final android.graphics.Matrix lightMatrix = new android.graphics.Matrix();
-            private float fade = 1f;
-
-            {
-                // Deep obsidian tint over the real blurred wallpaper; the restrained white veil
-                // keeps the panel translucent instead of turning it into an opaque card.
-                veil.setColor(0x36131926);
-                rim.setStyle(android.graphics.Paint.Style.STROKE);
-                rim.setStrokeWidth(1.5f * density);
-                int[] rimColors = {
-                        0xD9FFFFFF, 0xCC67E8F9, 0xB3C084FC, 0x80FDE047,
-                        0x22FFFFFF, 0x22FFFFFF, 0x59818CF8, 0x8038BDF8, 0xD9FFFFFF
-                };
-                float[] stops = {0f, 0.04f, 0.09f, 0.15f, 0.46f, 0.54f, 0.85f, 0.93f, 1f};
-                rim.setShader(new android.graphics.LinearGradient(0f, 0f, 1f, 1f,
-                        rimColors, stops, android.graphics.Shader.TileMode.CLAMP));
-                windowLight.setStyle(android.graphics.Paint.Style.STROKE);
-                windowLight.setStrokeWidth(Math.max(1f, 1.35f * density));
-                windowLight.setShader(new android.graphics.LinearGradient(0f, 0f, 1f, 0f,
-                        new int[]{0x00FFFFFF, 0x00FFFFFF, 0xBFFFFFFF, 0x7067E8F9, 0x00FFFFFF},
-                        new float[]{0f, 0.15f, 0.32f, 0.46f, 1f},
-                        android.graphics.Shader.TileMode.CLAMP));
-            }
-
-            @Override public void draw(android.graphics.Canvas canvas) {
-                bounds.set(getBounds());
-                if (fade <= 0f) return;
-                backdrop.draw(canvas, owner, bounds, radius, fade);
-                veil.setAlpha(Math.round(255 * fade));
-                canvas.drawRoundRect(bounds, radius, radius, veil);
-
-                float half = rim.getStrokeWidth() / 2f;
-                android.graphics.RectF edge = new android.graphics.RectF(bounds);
-                edge.inset(half, half);
-                rimMatrix.setScale(edge.width(), edge.height());
-                rimMatrix.postTranslate(edge.left, edge.top);
-                rim.getShader().setLocalMatrix(rimMatrix);
-                rim.setAlpha(Math.round(220 * fade));
-                canvas.drawRoundRect(edge, Math.max(0f, radius - half),
-                        Math.max(0f, radius - half), rim);
-
-                lightMatrix.setScale(edge.width(), edge.height());
-                lightMatrix.postTranslate(edge.left, edge.top);
-                windowLight.getShader().setLocalMatrix(lightMatrix);
-                windowLight.setAlpha(Math.round(150 * fade));
-                canvas.drawRoundRect(edge, Math.max(0f, radius - half),
-                        Math.max(0f, radius - half), windowLight);
-            }
-
-            @Override public void setAlpha(int alpha) {
-                fade = Math.max(0f, Math.min(1f, alpha / 255f));
-                invalidateSelf();
-            }
-            @Override public void setColorFilter(android.graphics.ColorFilter filter) { }
-            @Override public int getOpacity() { return android.graphics.PixelFormat.TRANSLUCENT; }
-        };
     }
 
     private String prayerPopup24Hour(String value) {
@@ -8241,16 +8165,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 Math.round(view.getPaddingTop() * scale),
                 view.getPaddingRight(),
                 Math.round(view.getPaddingBottom() * scale));
-    }
-
-    private void addPrayerPopupDivider(LinearLayout rows) {
-        View line = new View(this);
-        line.setBackgroundColor(0x28FFFFFF);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, (int) density));
-        lp.setMargins((int) (7 * density), 0,
-                (int) (7 * density), (int) density);
-        rows.addView(line, lp);
     }
 
     private String prayerPopupSoundLabel(String key, String[] keys, String[] labels) {

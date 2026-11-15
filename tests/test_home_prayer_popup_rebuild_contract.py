@@ -133,7 +133,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("(int) (54 * density)", self.popup)
         self.assertIn('createPrayerPopupText("Waktu Sholat Berikutnya", 9f', self.popup)
         self.assertIn('"JADWAL HARI INI", 10.5f', self.popup)
-        self.assertIn("addPrayerPopupDivider(rows)", self.popup)
+        self.assertNotIn("addPrayerPopupDivider(rows)", self.popup)
+        self.assertNotIn("private void addPrayerPopupDivider", MAIN)
         self.assertIn('"OK Pilih . BACK Kembali.", 8f', self.popup)
         self.assertIn("Math.round(29 * density)", self.popup)
 
@@ -176,19 +177,16 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (54 * density)", self.popup)
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density)", self.popup)
 
-    def test_owner_liquid_glass_is_popup_local_and_preserves_global_silver_tokens(self):
-        self.assertIn("panel.setBackground(prayerPopupGlassBackground(panel, 18 * density))", self.popup)
-        self.assertIn("private Drawable prayerPopupGlassBackground(View owner, float radius)", MAIN)
-        self.assertIn("veil.setColor(0x36131926)", MAIN)
-        for color in ("0xD9FFFFFF", "0xCC67E8F9", "0xB3C084FC", "0x80FDE047", "0x59818CF8", "0x8038BDF8"):
-            self.assertIn(color, MAIN)
-        self.assertIn("new Backdrop.Fill()", MAIN)
-        self.assertIn("backdrop.draw(canvas, owner, bounds, radius, fade)", MAIN)
-        self.assertIn("windowLight.getShader().setLocalMatrix(lightMatrix)", MAIN)
-        self.assertIn("TvUiTokens.TEXT_PRIMARY", self.popup)
-        self.assertIn("TvUiTokens.TEXT_SECONDARY", self.popup)
-        self.assertIn("TvUiTokens.ISLAMIC_GOLD", self.popup)
-        self.assertNotIn("TvUiTokens.ACCENT_CYAN", self.popup)
+    def test_prayer_popup_uses_the_same_project_glassdrawable_as_other_glass_surfaces(self):
+        self.assertIn(
+            "panel.setBackground(new GlassDrawable(panel, 20 * density, density, null, 0.5f));",
+            self.popup,
+        )
+        self.assertIn("Backdrop.watch(panel)", self.popup)
+        self.assertIn("glider.addCompanion(panel)", self.popup)
+        self.assertNotIn("prayerPopupGlassBackground", MAIN)
+        self.assertNotIn("new Backdrop.Fill()", MAIN)
+        self.assertIn("new GlassDrawable(panel, 20 * density, density, null, 0.5f)", MAIN)
         self.assertIn("shape.setColor(selected ? 0x25FFFFFF : 0x13FFFFFF)", self.popup)
 
     def test_focus_is_owned_by_popup_and_initial_focus_is_bounded(self):
@@ -247,7 +245,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
     def test_owner_focus_capsules_and_indonesian_copy_are_restored(self):
         for token in (
             'createPrayerPopupText("Waktu Sholat Berikutnya", 9f',
-            '"Tes Suara", "Dengarkan contoh suara azan", "▶  UJI"',
+            '"Tes Suara Azan", "Dengarkan contoh suara azan", "▶  UJI"',
             "nextCard.setBackground(prayerPopupCardBackground(false))",
             "masterRow.setBackground(prayerPopupCardBackground(false))",
             "soundRow.setBackground(prayerPopupCardBackground(false))",
@@ -271,6 +269,10 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         ):
             self.assertIn(token, MAIN)
         self.assertIn("updatePrayerPopupSwitch(switchTrack, switchKnob, enabled)", self.popup)
+        self.assertIn("(int) (34 * density), (int) (18 * density), Gravity.CENTER", self.popup)
+        self.assertIn("(int) (12 * density), (int) (12 * density)", self.popup)
+        self.assertIn("(int) (36 * density), (int) (20 * density)", self.popup)
+        self.assertIn("(int) (30 * density)", self.popup)
         self.assertIn("Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))", self.popup)
 
     def test_popup_reflows_full_content_before_height_is_clamped(self):
