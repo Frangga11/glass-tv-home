@@ -145,10 +145,11 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         start = MAIN.index("public boolean onTileVerticalKey")
         end = MAIN.index("private int pendingFocus", start)
         keys = MAIN[start:end]
-        self.assertIn("basePosition + COLUMNS", keys)
-        self.assertIn("basePosition - COLUMNS", keys)
-        self.assertIn("Math.min(basePosition + COLUMNS, count - 1)", keys)
-        self.assertIn("focusDockTile(DockLayoutModel.dockPositionForGrid(", keys)
+        self.assertIn("pendingHorizontalGridPosition", keys)
+        self.assertIn("DockLayoutModel.gridNeighborPosition(basePosition, direction, COLUMNS, count)", keys)
+        self.assertIn("requestHorizontalGridRow(target)", keys)
+        self.assertIn("focusDockTile(dockTarget)", keys)
+        self.assertIn("cancelHorizontalGridRowTransition()", keys)
 
     def test_grid_programmatic_restore_keeps_existing_alignment_fallback(self):
         self.assertIn("private void alignHorizontalGridRowToGlass(int position)", MAIN)
