@@ -57,11 +57,11 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         # Header controls go straight to app row one, while Mic opens the Ayah path.
         self.assertIn("focusTile(0);", keys)
         self.assertIn("if (id == R.id.btnAssistant)", keys)
-        self.assertIn("ayahBlock.requestFocus()", keys)
+        self.assertIn("ayahOpenHint != null && ayahOpenHint.isShown() && ayahOpenHint.requestFocus()", keys)
 
     def test_ayah_prayer_and_grid_form_one_vertical_path(self):
-        ayah_start = MAIN.index("ayahBlock.setOnKeyListener")
-        ayah_end = MAIN.index("ayahBlock.setBackground", ayah_start)
+        ayah_start = MAIN.index("ayahOpenHint.setOnKeyListener")
+        ayah_end = MAIN.index("ayahOpenHint.setBackground", ayah_start)
         ayah = MAIN[ayah_start:ayah_end]
         self.assertIn("KEYCODE_DPAD_UP", ayah)
         self.assertIn("btnAssistant.requestFocus()", ayah)
@@ -71,7 +71,7 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         prayer_start = MAIN.index("View prayerTableView = findViewById(R.id.prayerTable);")
         prayer_end = MAIN.index("updatePrayerTimes();", prayer_start)
         prayer = MAIN[prayer_start:prayer_end]
-        self.assertIn("ayahBlock.requestFocus()", prayer)
+        self.assertIn("ayahOpenHint != null && ayahOpenHint.isShown() && ayahOpenHint.requestFocus()", prayer)
         self.assertIn("focusTile(0);", prayer)
 
     def test_first_app_row_up_returns_to_home_and_row_two_up_keeps_row_transition(self):
