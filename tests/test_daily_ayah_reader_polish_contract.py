@@ -50,6 +50,14 @@ class DailyAyahReaderPolishContractTest(unittest.TestCase):
         self.assertIn("restoreFocusTo(originFocus)", DIALOG)
         self.assertIn("KEYCODE_BACK", DIALOG)
 
+    def test_footer_hint_matches_no_scroll_behavior_in_supported_languages(self):
+        id_strings = (ROOT / "launcher/app/src/main/res/values/strings.xml").read_text(encoding="utf-8")
+        en_strings = (ROOT / "launcher/app/src/main/res/values-en/strings.xml").read_text(encoding="utf-8")
+        self.assertIn("Tekan OK untuk menutup popup.", id_strings)
+        self.assertIn("Press OK to close the popup.", en_strings)
+        self.assertNotIn("menggulir bacaan", id_strings)
+        self.assertNotIn("scroll the reading", en_strings)
+
 
 if __name__ == "__main__":
     unittest.main()
