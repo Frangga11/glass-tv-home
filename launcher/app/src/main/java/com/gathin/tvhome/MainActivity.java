@@ -4585,61 +4585,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         LinearLayout heading = new LinearLayout(this);
         heading.setOrientation(LinearLayout.VERTICAL);
         heading.setGravity(Gravity.CENTER);
-
         TextView title = new TextView(this);
         title.setText(R.string.daily_ayah_popup_title);
         title.setTextColor(TvUiTokens.TEXT_PRIMARY);
-        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
         title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-        title.setShadowLayer(2 * density, 0, 1 * density, 0xCC000000);
-        title.setSingleLine(true);
         title.setGravity(Gravity.CENTER);
         title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        heading.addView(title, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
+        title.setSingleLine(true);
+        title.setEllipsize(TextUtils.TruncateAt.END);
+        heading.addView(title, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         TextView reference = new TextView(this);
         reference.setText(ayah.reference != null ? ayah.reference : "");
         reference.setTextColor(TvUiTokens.TEXT_SECONDARY);
-        reference.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+        reference.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
         reference.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
-        reference.setSingleLine(true);
         reference.setGravity(Gravity.CENTER);
         reference.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        LinearLayout.LayoutParams refLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        refLp.topMargin = Math.round(1 * density);
-        heading.addView(reference, refLp);
-        FrameLayout.LayoutParams headingLp = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER);
-        heading.setPadding(Math.round(40 * density), 0, Math.round(40 * density), 0);
+        reference.setSingleLine(true);
+        reference.setEllipsize(TextUtils.TruncateAt.END);
+        heading.addView(reference, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        FrameLayout.LayoutParams headingLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+        heading.setPadding(Math.round(8 * density), 0, Math.round(8 * density), 0);
         header.addView(heading, headingLp);
-
-        AlertDialog[] dialogHolder = new AlertDialog[1];
-        TextView close = new TextView(this);
-        close.setText("×");
-        close.setTextColor(TvUiTokens.TEXT_PRIMARY);
-        close.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f);
-        close.setGravity(Gravity.CENTER);
-        close.setFocusable(true);
-        close.setClickable(true);
-        close.setContentDescription(getString(R.string.daily_ayah_close));
-        close.setBackground(TvFocusIndicator.createOvalStateBackground(
-                density, 0x223F4A55, TvUiTokens.FOCUS_HALO,
-                0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
-        close.setOnClickListener(v -> {
-            SoundEffects.playSelect();
-            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-        });
-        close.setOnFocusChangeListener((v, focused) -> {
-            if (focused) SoundEffects.playNav();
-        });
-        FrameLayout.LayoutParams closeLp = new FrameLayout.LayoutParams(
-                Math.round(34 * density), Math.round(34 * density), Gravity.END | Gravity.CENTER_VERTICAL);
-        header.addView(close, closeLp);
-        panel.addView(header, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Math.round(36 * density)));
+        panel.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(48 * density)));
 
         View divider = new View(this);
         divider.setBackgroundColor(0x66FFFFFF);
@@ -4681,10 +4650,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         meaningLabel.setTextColor(TvUiTokens.TEXT_SECONDARY);
         meaningLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
         meaningLabel.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-        meaningLabel.setGravity(Gravity.CENTER_VERTICAL);
+        meaningLabel.setGravity(Gravity.CENTER);
+        meaningLabel.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         meaningLabel.setSingleLine(true);
-        body.addView(meaningLabel, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Math.round(14 * density)));
+        LinearLayout meaningDivider = new LinearLayout(this);
+        meaningDivider.setOrientation(LinearLayout.HORIZONTAL);
+        meaningDivider.setGravity(Gravity.CENTER_VERTICAL);
+        View meaningRuleLeft = new View(this);
+        meaningRuleLeft.setBackgroundColor(0x88FFFFFF);
+        View meaningRuleRight = new View(this);
+        meaningRuleRight.setBackgroundColor(0x88FFFFFF);
+        meaningDivider.addView(meaningRuleLeft, new LinearLayout.LayoutParams(0, Math.max(1, Math.round(density)), 1f));
+        LinearLayout.LayoutParams meaningTextLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        meaningTextLp.leftMargin = Math.round(10 * density);
+        meaningTextLp.rightMargin = Math.round(10 * density);
+        meaningDivider.addView(meaningLabel, meaningTextLp);
+        meaningDivider.addView(meaningRuleRight, new LinearLayout.LayoutParams(0, Math.max(1, Math.round(density)), 1f));
+        body.addView(meaningDivider, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(18 * density)));
 
         TextView translation = new TextView(this);
         String translated = ayah.translation(AppLanguage.getLanguage(this));
@@ -4707,7 +4689,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.addView(body, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
-        // Informational footer only: the top-right X is the sole close control.
+        // Fixed footer: instruction first, then the sole TUTUP capsule.
+        LinearLayout footer = new LinearLayout(this);
+        footer.setOrientation(LinearLayout.VERTICAL);
+        footer.setGravity(Gravity.CENTER);
         TextView footerHint = new TextView(this);
         footerHint.setText(R.string.daily_ayah_navigation_hint);
         footerHint.setTextColor(TvUiTokens.TEXT_SECONDARY);
@@ -4715,8 +4700,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         footerHint.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         footerHint.setGravity(Gravity.CENTER);
         footerHint.setSingleLine(true);
-        panel.addView(footerHint, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Math.round(18 * density)));
+        footer.addView(footerHint, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        TextView closeAction = new TextView(this);
+        closeAction.setText(R.string.daily_ayah_close);
+        closeAction.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        closeAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+        closeAction.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
+        closeAction.setGravity(Gravity.CENTER);
+        closeAction.setFocusable(true);
+        closeAction.setClickable(true);
+        closeAction.setBackground(TvFocusIndicator.createRoundedStateBackground(density, 9f, 0x223F4A55, TvUiTokens.FOCUS_HALO, 0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
+        closeAction.setOnClickListener(v -> { SoundEffects.playSelect(); dialogHolder[0].dismiss(); });
+        closeAction.setOnFocusChangeListener((v, focused) -> { if (focused) SoundEffects.playNav(); });
+        LinearLayout.LayoutParams closeActionLp = new LinearLayout.LayoutParams(Math.round(104 * density), Math.round(30 * density));
+        closeActionLp.topMargin = Math.round(2 * density);
+        footer.addView(closeAction, closeActionLp);
+        panel.addView(footer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(48 * density)));
 
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setView(panel)
@@ -4726,16 +4725,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dialog.setOnDismissListener(d -> restoreFocusTo(originFocus));
         dialog.setOnKeyListener((d, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-            if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
-                d.dismiss();
-                return true;
-            }
+            if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) { d.dismiss(); return true; }
+            return false;
+        });
+        // Initial focus stays on the panel; only DOWN transfers it to TUTUP.
+        panel.setFocusable(true);
+        panel.setFocusableInTouchMode(true);
+        panel.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) { closeAction.requestFocus(); return true; }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
+            return false;
+        });
+        closeAction.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
             return false;
         });
         dialog.show();
         TvDialogStyle.applyCustom(dialog, this, panelWidthDp, panelHeightDp, 0.48f);
-
-        close.requestFocus();
+        panel.requestFocus();
     }
 
     private void updateDateAndPeriod() {
