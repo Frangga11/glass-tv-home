@@ -19,7 +19,7 @@ Make every app row reachable in horizontal Dock mode through a progressive, roll
 - The initial Home state remains unchanged: Dock and app Grid overflow are at rest/hidden.
 - DOWN from the Dock reveals the first Grid row using the existing coordinated Dock/Grid expansion.
 - As the Grid scrolls to reveal later rows, the Dock follows the Grid's actual vertical scroll offset pixel-for-pixel. The Dock and row one therefore rise together instead of the Dock remaining parked while the Grid moves independently.
-- UP from Grid row three to row two to row one keeps focus inside the Grid. UP from row one collapses the complete frame, returns rows two/three below the viewport, and restores Dock + row one to the initial anchor; focus remains on row one.
+- UP from Grid row three to row two to row one keeps focus inside the Grid. UP from row one collapses the complete frame, returns rows two/three below the viewport, and restores Dock + row one to the initial anchor; focus remains on Dock row one, not Beranda.
 - The viewport is a rolling window of up to three rows: when row three first appears, rows one, two, and three remain visible together. As later rows are reached, the window advances without pinning the focused row to its top edge.
 - The two-row state is unchanged. Home chrome is hidden only when the viewport reaches three rows; clock and date remain visible. Location/altitude, weather/AQI, navigation, Wi-Fi/microphone, wallpaper title/description, prayer schedule, Daily Ayah, and other Home capsules/text are temporarily hidden and restored to their prior visibility when the frame collapses.
 - The existing deterministic four-way neighbor mapping and hard row boundaries remain in force.
