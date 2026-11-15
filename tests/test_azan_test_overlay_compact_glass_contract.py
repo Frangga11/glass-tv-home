@@ -21,7 +21,7 @@ class AzanTestOverlayCompactGlassContractTest(unittest.TestCase):
         self.assertNotIn("setBackgroundBlurRadius", AZAN)
 
     def test_overlay_is_reduced_proportionally_to_approximately_fifteen_percent(self):
-        self.assertIn("private static final float CARD_SCALE = 0.93f;", AZAN)
+        self.assertIn("private static final float CARD_SCALE = 0.806f;", AZAN)
         self.assertIn("t.setTextSize(sp * CARD_SCALE)", AZAN)
         self.assertIn("Math.round(v * density * CARD_SCALE)", AZAN)
         for token in (

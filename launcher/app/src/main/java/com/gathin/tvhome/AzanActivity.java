@@ -29,8 +29,9 @@ import java.util.Date;
  * underneath is where it was.
  */
 public class AzanActivity extends Activity {
-    // A 7% linear reduction brings the reference card from roughly 17% to about 15% of screen area.
-    private static final float CARD_SCALE = 0.93f;
+    // 0.806 total linear scale targets approximately 11% of screen area from the measured photo estimate.
+    // Keep the window anchor and top offset independent so the popup does not move.
+    private static final float CARD_SCALE = 0.806f;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private MediaPlayer player;
     private AudioManager audio;
@@ -70,14 +71,14 @@ public class AzanActivity extends Activity {
         card.setPadding(cardDp(30), cardDp(20), cardDp(34), cardDp(20));
         // Match the approved Waktu Sholat popup material exactly: shared blurred Backdrop fill,
         // the same veil, and the same 20dp glass rim. No popup-specific opaque tint.
-        card.setBackground(new GlassDrawable(card, 20 * density, density, null, 0.5f));
+        card.setBackground(new GlassDrawable(card, 20 * density * CARD_SCALE, density, null, 0.5f));
         GradientDrawable focusOutline = new GradientDrawable();
         focusOutline.setColor(0x00000000);
-        focusOutline.setCornerRadius(dp(20));
-        focusOutline.setStroke(Math.max(1, dp(1.5f)), 0x80DCE5ED);
+        focusOutline.setCornerRadius(cardDp(20));
+        focusOutline.setStroke(Math.max(1, cardDp(1.5f)), 0x80DCE5ED);
         card.setForeground(focusOutline);
         card.setClipToOutline(true);
-        card.setElevation(dp(16));
+        card.setElevation(cardDp(16));
 
         TextView takbir = text("ٱللَّهُ أَكْبَرُ", amiri, 40, 0xFFF5D489, 400);
         card.addView(takbir);
@@ -120,7 +121,7 @@ public class AzanActivity extends Activity {
         card.setClickable(true);
         card.setOnClickListener(v -> finish());
         card.setOnFocusChangeListener((view, hasFocus) -> {
-            focusOutline.setStroke(Math.max(1, dp(hasFocus ? 2f : 1.5f)),
+            focusOutline.setStroke(Math.max(1, cardDp(hasFocus ? 2f : 1.5f)),
                     hasFocus ? TvUiTokens.FOCUS_BORDER : 0x80DCE5ED);
             focusOutline.invalidateSelf();
         });

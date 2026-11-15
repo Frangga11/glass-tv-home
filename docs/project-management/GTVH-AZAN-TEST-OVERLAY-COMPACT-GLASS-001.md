@@ -33,3 +33,16 @@ The screenshot's card corresponds to `AzanActivity`. The previous surface used a
 - Exact-HEAD CI/build must pass before producing a fresh QA APK.
 - Visual acceptance still requires a new 1920×1080 capture to confirm the popup occupies approximately 15% of the screen, the Arabic/title/time/hint remain legible in one frame, and glass blur/veil/rim match Waktu Sholat.
 - Physical Mi TV Stick testing is not claimed until performed. No merge or installation is implied.
+
+
+## 11% screen-area refinement — 15 November 2026
+
+Owner requested a further reduction from the previous approximately 14.6% estimated footprint to approximately 11% of the main screen area.
+
+- Updated uniform card scale from 0.93 to 0.806 of the original pre-reduction dimensions.
+- Calculation against the prior estimate: 14.6% × (0.806 / 0.93)² ≈ 10.97%.
+- The popup's top-centered gravity and 40dp top offset are deliberately unchanged.
+- Internal content order, one-frame composition, and proportional typography/spacing are preserved.
+- The glass corner radius, focus outline radius/stroke, and elevation are now scaled with the card so those details remain proportional. GlassDrawable remains the same project material and Backdrop lifecycle remains unchanged.
+- No changes to playback, audio focus, dismissal, prayer popup, Home UI, or global glass system.
+- 11% is a geometry estimate derived from the supplied photo and previous area estimate, not a framebuffer measurement. Final confirmation still requires a 1920×1080 capture on the target TV.
