@@ -4621,14 +4621,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         FrameLayout.LayoutParams headingLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         heading.setPadding(Math.round(8 * density), 0, Math.round(8 * density), 0);
         header.addView(heading, headingLp);
-        panel.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(48 * density)));
+        panel.addView(header, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(39 * density)));
 
         View divider = new View(this);
         divider.setBackgroundColor(0x66FFFFFF);
         LinearLayout.LayoutParams dividerLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, Math.round(density)));
-        dividerLp.topMargin = Math.round(5 * density);
-        dividerLp.bottomMargin = Math.round(5 * density);
+        dividerLp.topMargin = Math.round(3 * density);
+        dividerLp.bottomMargin = Math.round(3 * density);
         panel.addView(divider, dividerLp);
 
         // Two independent, weighted text regions keep Arabic and translation inside this frame.
@@ -4651,31 +4651,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView arabic = new TextView(this);
         arabic.setText(ayah.arabic.trim());
         arabic.setTextColor(TvUiTokens.ISLAMIC_GOLD);
-        arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
+        arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 33f);
         arabic.setAutoSizeTextTypeUniformWithConfiguration(
-                18, 32, 1, TypedValue.COMPLEX_UNIT_SP);
+                20, 35, 1, TypedValue.COMPLEX_UNIT_SP);
         arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
         arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
         arabic.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         arabic.setIncludeFontPadding(false);
         arabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
         arabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
-        arabic.setLineSpacing(0, 0.94f);
+        arabic.setLineSpacing(0, 1.0f);
         arabic.setMaxLines(2);
         arabic.setEllipsize(null);
         arabic.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
         FrameLayout.LayoutParams arabicLp = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        arabicLp.setMargins(Math.round(10 * density), Math.round(3 * density),
-                Math.round(10 * density), Math.round(3 * density));
+        arabicLp.setMargins(Math.round(10 * density), Math.round(9 * density),
+                Math.round(10 * density), Math.round(9 * density));
         arabicStage.addView(arabic, arabicLp);
         body.addView(arabicStage, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.08f));
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.28f));
 
         TextView meaningLabel = new TextView(this);
         meaningLabel.setText(R.string.daily_ayah_meaning_label);
         meaningLabel.setTextColor(TvUiTokens.TEXT_SECONDARY);
-        meaningLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
+        meaningLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f);
         meaningLabel.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         meaningLabel.setLetterSpacing(0.12f);
         meaningLabel.setTextColor(0xFFE3C98B);
@@ -4703,16 +4703,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 Math.max(1, Math.round(density)), 1f);
         ruleRightLp.rightMargin = Math.round(34 * density);
         meaningDivider.addView(meaningRuleRight, ruleRightLp);
-        body.addView(meaningDivider, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(18 * density)));
+        body.addView(meaningDivider, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(16 * density)));
 
         TextView translation = new TextView(this);
         String translated = ayah.translation(AppLanguage.getLanguage(this));
         translation.setText(translated != null && !translated.trim().isEmpty()
                 ? translated.trim() : getString(R.string.daily_ayah_translation_unavailable));
         translation.setTextColor(TvUiTokens.TEXT_PRIMARY);
-        translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+        translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
         translation.setAutoSizeTextTypeUniformWithConfiguration(
-                10, 13, 1, TypedValue.COMPLEX_UNIT_SP);
+                9, 12, 1, TypedValue.COMPLEX_UNIT_SP);
         translation.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         translation.setTextDirection(View.TEXT_DIRECTION_LTR);
         translation.setGravity(Gravity.CENTER);
@@ -4739,11 +4739,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         footerHint.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         footerHint.setGravity(Gravity.CENTER);
         footerHint.setSingleLine(true);
-        footer.addView(footerHint, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        footer.addView(footerHint, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 0.85f));
         TextView closeAction = new TextView(this);
         closeAction.setText(R.string.daily_ayah_close);
         closeAction.setTextColor(TvUiTokens.TEXT_PRIMARY);
-        closeAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+        closeAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
         closeAction.setLetterSpacing(0.08f);
         closeAction.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         closeAction.setGravity(Gravity.CENTER);
@@ -4758,10 +4758,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         closeAction.setBackground(closeFocus);
         closeAction.setOnClickListener(v -> { SoundEffects.playSelect(); dialogHolder[0].dismiss(); });
         closeAction.setOnFocusChangeListener((v, focused) -> { if (focused) SoundEffects.playNav(); });
-        LinearLayout.LayoutParams closeActionLp = new LinearLayout.LayoutParams(Math.round(104 * density), Math.round(30 * density));
+        LinearLayout.LayoutParams closeActionLp = new LinearLayout.LayoutParams(Math.round(88 * density), Math.round(26 * density));
         closeActionLp.topMargin = Math.round(2 * density);
         footer.addView(closeAction, closeActionLp);
-        panel.addView(footer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(48 * density)));
+        panel.addView(footer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(40 * density)));
 
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setView(panel)
@@ -4770,8 +4770,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dialog.setCanceledOnTouchOutside(true);
         dialog.setOnDismissListener(d -> restoreFocusTo(originFocus));
         dialog.setOnKeyListener((d, keyCode, event) -> {
-            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
             if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) { d.dismiss(); return true; }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) { closeAction.requestFocus(); return true; }
+            if (closeAction.hasFocus() && (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+                    || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
+                d.dismiss(); return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                    || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
             return false;
         });
         // Initial focus stays on the panel; only DOWN transfers it to TUTUP.
@@ -4785,7 +4792,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         });
         closeAction.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
+                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+                SoundEffects.playSelect();
+                if (dialogHolder[0] != null) dialogHolder[0].dismiss();
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                    || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) return true;
             return false;
         });
         dialog.show();
@@ -4801,6 +4815,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 .setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f))
                 .start();
         panel.requestFocus();
+        panel.post(() -> {
+            if (dialog.isShowing() && !closeAction.hasFocus()) panel.requestFocus();
+        });
     }
 
     private void updateDateAndPeriod() {
