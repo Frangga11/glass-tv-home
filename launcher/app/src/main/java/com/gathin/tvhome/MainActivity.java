@@ -4617,6 +4617,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ViewGroup.LayoutParams.WRAP_CONTENT, 0);
         referenceLp.weight = 1f;
         referenceLp.gravity = Gravity.CENTER;
+        referenceLp.topMargin = Math.round(3 * density); // Exact 3dp breathing gap below the title.
         heading.addView(reference, referenceLp);
         FrameLayout.LayoutParams headingLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         heading.setPadding(Math.round(8 * density), 0, Math.round(8 * density), 0);
