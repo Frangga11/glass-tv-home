@@ -748,40 +748,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             prayerHeader = findViewById(R.id.prayerHeader);
 
             if (ayahBlock != null) {
-                ayahBlock.setFocusable(true);
-                ayahBlock.setClickable(true);
-                ayahBlock.setOnClickListener(v -> showDailyAyahDialog());
-                ayahBlock.setOnKeyListener((v, keyCode, event) -> {
-                    if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                // The preview is display-only: never place the DPAD focus halo around the full Ayat card.
+                ayahBlock.setFocusable(false);
+                ayahBlock.setClickable(false);
+            }
+            if (ayahOpenHint != null) {
+                ayahOpenHint.setText(R.string.daily_ayah_open);
+                ayahOpenHint.setFocusable(true);
+                ayahOpenHint.setClickable(true);
+                ayahOpenHint.setOnClickListener(v -> showDailyAyahDialog());
+                ayahOpenHint.setOnKeyListener((v, keyCode, event) -> {
+                    if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
                     if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                        if (btnAssistant != null && btnAssistant.isShown() && btnAssistant.requestFocus()) return true;
+                        if (btnAssistant != null && btnAssistant.isShown()) btnAssistant.requestFocus();
                         return true;
                     }
                     if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                         View prayerTable = findViewById(R.id.prayerTable);
-                        if (prayerTable != null && prayerTable.isShown() && prayerTable.requestFocus()) return true;
+                        if (prayerTable != null && prayerTable.isShown()) prayerTable.requestFocus();
                         return true;
                     }
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
-                        showDailyAyahDialog();
+                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER
+                            || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+                        v.performClick();
                         return true;
                     }
-                    return false;
+                    return keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
                 });
-                ayahBlock.setBackground(TvFocusIndicator.createRoundedStateBackground(
-                        density, 10f, 0x00000000, TvUiTokens.FOCUS_HALO,
-                        0x00000000, TvUiTokens.FOCUS_BORDER));
-                ayahBlock.setOnFocusChangeListener((v, hasFocus) -> {
+                ayahOpenHint.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                        density, 6f, 0x223F4A55, TvUiTokens.FOCUS_HALO,
+                        0x223F4A55, TvUiTokens.FOCUS_BORDER));
+                ayahOpenHint.setOnFocusChangeListener((v, hasFocus) -> {
                     if (hasFocus) SoundEffects.playNav();
                 });
-            }
-            if (ayahOpenHint != null) {
-                ayahOpenHint.setText(R.string.daily_ayah_open);
-                GradientDrawable hintBg = new GradientDrawable();
-                hintBg.setColor(0x223F4A55);
-                hintBg.setCornerRadius(6 * density);
-                hintBg.setStroke(Math.max(1, Math.round(density)), 0x44DCE5ED);
-                ayahOpenHint.setBackground(hintBg);
             }
 
             int uWidth = getResources().getDisplayMetrics().widthPixels - Math.round(68 * density);
@@ -866,7 +865,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                    if (ayahBlock != null && ayahBlock.isShown() && ayahBlock.requestFocus()) return true;
+                    if (ayahOpenHint != null && ayahOpenHint.isShown() && ayahOpenHint.requestFocus()) return true;
                     if (btnAssistant != null && btnAssistant.isShown()) btnAssistant.requestFocus();
                     return true;
                 }
@@ -4534,7 +4533,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ayahText.setLayoutParams(translationParams);
             }
             ayahText.setTextDirection(View.TEXT_DIRECTION_LTR);
-            ayahText.setGravity(Gravity.START);
+            ayahText.setGravity(Gravity.END);
             ayahText.setMaxWidth(islamicMaxWidth);
             ayahText.setSingleLine(false);
             ayahText.setMaxLines(2);
