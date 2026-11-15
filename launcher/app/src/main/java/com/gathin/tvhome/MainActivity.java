@@ -154,8 +154,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalDockTransitionAnimator;
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
-    /** Grid scroll offset at the expanded baseline; Dock follows every subsequent Grid pixel. */
-    private int horizontalGridScrollBaseOffset;
+    /** Accumulated physical Grid scroll delta; Dock follows the exact consumed pixels. */
+    private int horizontalGridScrollPixels;
     /** One semantic DPAD intent captured during collapse; never replay synthetic Android key events. */
     private int pendingDockCollapseDirection = -1;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
@@ -1020,8 +1020,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 updateTopFade();
                 if (!dockVertical && horizontalGridExpanded && !horizontalDockCollapseInProgress
                         && dockRecycler != null) {
-                    int delta = rv.computeVerticalScrollOffset() - horizontalGridScrollBaseOffset;
-                    dockRecycler.setTranslationY(-getHorizontalDockPitch() - delta);
+                    horizontalGridScrollPixels += dy;
+                    dockRecycler.setTranslationY(-getHorizontalDockPitch() - horizontalGridScrollPixels);
                 }
                 if (!glassShown) return;
                 glassTargetY -= dy;
@@ -3677,7 +3677,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockRecycler.setTranslationY(-pitch);
                 grid.setAlpha(1f);
                 horizontalDockExpansionInProgress = false;
-                horizontalGridScrollBaseOffset = grid.computeVerticalScrollOffset();
+                horizontalGridScrollPixels = 0;
                 focusTile(targetPosition);
             });
         });
@@ -3779,7 +3779,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 // Dock already owns focus. Only now remove the overflow row from the view tree.
                 horizontalGridExpanded = false;
-                horizontalGridScrollBaseOffset = 0;
+                horizontalGridScrollPixels = 0;
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
                 dockRecycler.setTranslationY(0f);
