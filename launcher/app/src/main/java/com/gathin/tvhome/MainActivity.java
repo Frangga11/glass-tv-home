@@ -4034,7 +4034,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int rowPitch = Math.max(1, rowBounds.height());
         int currentRow = firstVisible / COLUMNS;
         int targetRow = target / COLUMNS;
-        int windowStartRow = Math.max(0, targetRow - 2);
+        int windowStartRow = Math.max(0, targetRow <= 1 ? targetRow : targetRow - 1);
         if (targetRow >= 2) setThreeRowFrameChromeHidden(true);
         int currentTopOffset = rowBounds.top - grid.getPaddingTop();
         int dy = DockGeometry.gridRowScrollDeltaPx(
@@ -4124,7 +4124,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
 
         int targetRow = target / COLUMNS;
-        int windowStartPosition = Math.max(0, targetRow - 2) * COLUMNS;
+        int windowStartPosition = Math.max(0, targetRow <= 1 ? targetRow : targetRow - 1) * COLUMNS;
         View firstWindowView = manager.findViewByPosition(windowStartPosition);
         if (firstWindowView == null) {
             if (horizontalGridTransitionRetries++ < 4) {
@@ -4184,7 +4184,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ? (GridLayoutManager) grid.getLayoutManager() : null;
         int firstComplete = manager == null ? RecyclerView.NO_POSITION
                 : manager.findFirstCompletelyVisibleItemPosition();
-        int expectedWindowStartRow = Math.max(0, (position / COLUMNS) - 2);
+        int expectedWindowStartRow = Math.max(0, (position / COLUMNS) <= 1 ? (position / COLUMNS) : (position / COLUMNS) - 1);
         if (firstComplete != RecyclerView.NO_POSITION
                 && firstComplete / COLUMNS != expectedWindowStartRow) {
             requestHorizontalGridRow(position);
@@ -4225,7 +4225,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void alignHorizontalGridRowToGlass(int position) {
         RecyclerView.LayoutManager manager = grid.getLayoutManager();
         if (manager instanceof GridLayoutManager) {
-            int windowStartRow = Math.max(0, (position / COLUMNS) - 2);
+            int windowStartRow = Math.max(0, (position / COLUMNS) <= 1 ? (position / COLUMNS) : (position / COLUMNS) - 1);
             ((GridLayoutManager) manager).scrollToPositionWithOffset(
                     windowStartRow * COLUMNS, grid.getPaddingTop());
             if (position / COLUMNS >= 2) setThreeRowFrameChromeHidden(true);
