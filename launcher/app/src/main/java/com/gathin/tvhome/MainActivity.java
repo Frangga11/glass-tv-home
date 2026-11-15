@@ -3467,59 +3467,53 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Activity dispatch owns input capture while collapse is active. Adapter callbacks
         // are consumed defensively and must not enqueue a duplicate intent.
         if (horizontalDockCollapseInProgress) return true;
-        int count = adapter.getItemCount();
+        int count = adapter == null ? 0 : adapter.getItemCount();
         if (count <= 0) return true;
-        int target;
-        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            if (dockVertical && position % COLUMNS == 0 && dockAdapter.getItemCount() > 0) {
-                focusDockTile(DockLayoutModel.dockPositionForGrid(
-                        position, true, COLUMNS, dockAdapter.getItemCount()));
-                return true;
-            }
-            return position % COLUMNS == 0;
+
+        // During a measured row transition, the pending destination is the logical cursor.
+        // Every direction is resolved from it so a quick LEFT/RIGHT cannot be answered by
+        // Android's geometric focus search against a RecyclerView that is still scrolling.
+        int basePosition = !dockVertical && horizontalGridTransitionRunning
+                && pendingHorizontalGridPosition >= 0
+                ? pendingHorizontalGridPosition : position;
+
+        if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0
+                && keyCode == KeyEvent.KEYCODE_DPAD_UP && basePosition < COLUMNS) {
+            // The overflow Grid sits directly below the horizontal Dock.
+            cancelHorizontalGridRowTransition();
+            int dockTarget = Math.min(basePosition % COLUMNS, dockAdapter.getItemCount() - 1);
+            focusDockTile(dockTarget);
+            return true;
         }
-        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            return position % COLUMNS == COLUMNS - 1 || position == count - 1;
+
+        int direction;
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT: direction = -1; break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT: direction = 1; break;
+            case KeyEvent.KEYCODE_DPAD_UP: direction = -2; break;
+            case KeyEvent.KEYCODE_DPAD_DOWN: direction = 2; break;
+            default: return false;
         }
-        if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
-            // While a row is moving, advance from the pending target rather than the still-focused
-            // card. Rapid DOWN/UP presses therefore replace the destination without stacking motion.
-            int basePosition = horizontalGridTransitionRunning
-                    && pendingHorizontalGridPosition >= 0
-                    ? pendingHorizontalGridPosition : position;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                if (basePosition < COLUMNS) {
-                    // This Grid is the overflow row directly below the primary Dock row.
-                    // UP must return to the Dock item in the same column, not jump to the header.
-                    cancelHorizontalGridRowTransition();
-                    int dockTarget = Math.min(basePosition % COLUMNS, dockAdapter.getItemCount() - 1);
-                    focusDockTile(dockTarget);
-                    return true;
-                } else {
-                    requestHorizontalGridRow(basePosition - COLUMNS);
-                }
-                return true;
-            }
-            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
-                if (basePosition < lastRowStart) {
-                    requestHorizontalGridRow(Math.min(basePosition + COLUMNS, count - 1));
-                }
-                return true;
-            }
-        }
-        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) {
+
+        int target = DockLayoutModel.gridNeighborPosition(basePosition, direction, COLUMNS, count);
+        if (target < 0) {
+            if (dockVertical && direction == -2 && position < COLUMNS) {
                 if (btnHome != null && btnHome.isShown() && btnHome.requestFocus()) return true;
                 return focusTopBarFallback();
             }
-            target = position - COLUMNS;
-        } else {
-            int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
-            if (position >= lastRowStart) return true;
-            target = Math.min(position + COLUMNS, count - 1);
+            // Grid edges are hard boundaries: never let Android's focus search wrap into
+            // another row or an unrelated header control.
+            return true;
         }
-        focusTile(target);
+
+        if (!dockVertical && dockAdapter != null && dockAdapter.getItemCount() > 0) {
+            // Queue every direction through the same transition coordinator. If an animation
+            // is active, this replaces its logical destination; the settle pass commits only
+            // the latest target and resolves it again by stable app identity.
+            requestHorizontalGridRow(target);
+        } else {
+            focusTile(target);
+        }
         return true;
     }
 
