@@ -4225,10 +4225,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void alignHorizontalGridRowToGlass(int position) {
         RecyclerView.LayoutManager manager = grid.getLayoutManager();
         if (manager instanceof GridLayoutManager) {
-            int windowStartRow = Math.max(0, (position / COLUMNS) <= 1 ? (position / COLUMNS) : (position / COLUMNS) - 1);
-            ((GridLayoutManager) manager).scrollToPositionWithOffset(
-                    windowStartRow * COLUMNS, grid.getPaddingTop());
-            if (position / COLUMNS >= 2) setThreeRowFrameChromeHidden(true);
+            int targetRow = position / COLUMNS;
+            int windowStartRow = Math.max(0, targetRow <= 1 ? targetRow : targetRow - 1);
+            int firstVisible = ((GridLayoutManager) manager).findFirstVisibleItemPosition();
+            View firstView = firstVisible == RecyclerView.NO_POSITION
+                    ? null : manager.findViewByPosition(firstVisible);
+            if (firstView != null) {
+                Rect bounds = new Rect();
+                manager.getDecoratedBoundsWithMargins(firstView, bounds);
+                int rowPitch = Math.max(1, bounds.height());
+                int currentTopOffset = bounds.top - grid.getPaddingTop();
+                int dy = DockGeometry.gridRowScrollDeltaPx(
+                        firstVisible / COLUMNS, windowStartRow, rowPitch, currentTopOffset);
+                if (dy != 0) grid.scrollBy(0, dy);
+            } else {
+                ((GridLayoutManager) manager).scrollToPositionWithOffset(
+                        windowStartRow * COLUMNS, grid.getPaddingTop());
+            }
+            if (targetRow >= 2) setThreeRowFrameChromeHidden(true);
         } else {
             grid.scrollToPosition(position);
         }
