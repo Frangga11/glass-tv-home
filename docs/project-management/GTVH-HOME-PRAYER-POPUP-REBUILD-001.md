@@ -641,3 +641,31 @@ Owner-approved visual refinement implemented in the dedicated prayer popup only.
 - Updated the popup contract test to assert the new local glass factory and palette, while retaining checks that shared silver tokens are not replaced by popup-local accent changes.
 - Only the existing popup Java source, its contract test, and this checkpoint document are changed.
 - Await exact-HEAD CI and fresh 1920×1080 visual inspection. The new glass is source-implemented but not yet visually accepted; do not rebuild for Mi TV Stick testing until render inspection passes. PR #135 remains OPEN / DRAFT / UNMERGED.
+
+
+## 29. Owner execution pass — proportional popup, real Azan switch, and bounded reflow
+
+Date: 15 November 2026 (WIB)
+
+### Exact-head audit findings
+- The current PR head compiled successfully, but its Lists/Tools/Docs CI job failed because two contract assertions still required the retired shared `GlassDrawable` constructor. The runtime popup had already moved to the popup-local `prayerPopupGlassBackground(...)` implementation.
+- The master Azan row still rendered a text status capsule (`● Aktif` / `● Nonaktif`) rather than a true switch.
+- The popup measured its natural height but clamped the outer frame without reflowing child dimensions, creating a risk that lower content could be clipped.
+
+### Corrective implementation
+- Replaced the text status chip with a popup-local switch track and circular knob. The master row retains the existing click action, preference persistence, and scheduling call; its accessibility description reflects the current state.
+- Added bounded vertical reflow for popup content when its natural height exceeds the available lane. Fixed vertical dimensions, margins, padding, and typography are reduced together, with an 8sp minimum text size. The panel is remeasured before its final height is assigned.
+- Preserved the 115dp timetable cells, 6dp center gap, 260dp derived panel width, exact prayer-table right-edge alignment, 10dp Wi-Fi top clearance, and at least 10dp Dock clearance.
+- Preserved the popup-local liquid-glass treatment, gold next-prayer emphasis, six timetable cells, five sound choices, existing Azan schedule and Test Sound route, and popup-only DPAD focus graph.
+- Updated contract tests to validate the local glass factory, real switch, and content reflow rather than obsolete shared-glass/status-chip assertions.
+
+### Scope
+Only the existing three PR files are changed:
+1. `launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`
+2. `tests/test_home_prayer_popup_rebuild_contract.py`
+3. This checkpoint document.
+
+No Home Screen, wallpaper, Dock/Grid, navigation, Wi-Fi, microphone, Weather/AQI, global glass system, prayer data source, Azan scheduling engine, sound assets, or AzanActivity implementation is changed.
+
+### Validation status
+The source and contract changes are committed as one isolated PR update. Exact-HEAD CI, release APK artifact, rendered 1920×1080 visual inspection, and physical Mi TV Stick acceptance remain pending until the new commit is checked. Do not install or merge before those gates pass.

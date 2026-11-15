@@ -30,7 +30,8 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertNotIn("R.layout.item_input", self.popup)
         self.assertNotIn("showMenu(", self.popup)
         self.assertNotIn("ScrollView(", self.popup)
-        self.assertIn("new GlassDrawable(panel, 18 * density, density, glider, 0.5f, true)", self.popup)
+        self.assertIn("panel.setBackground(prayerPopupGlassBackground(panel, 18 * density))", self.popup)
+        self.assertNotIn("new GlassDrawable(panel", self.popup)
 
     def test_existing_prayer_schedule_source_and_six_cells_are_preserved(self):
         self.assertIn("PrayerTimes.getFullSchedule(this)", self.popup)
@@ -51,12 +52,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
     def test_azan_preferences_schedule_and_existing_test_activity_are_reused(self):
         for token in (
             "Azan.isMasterEnabled(this)",
-            "masterStatus.setText(enabled ? \"● Aktif\" : \"● Nonaktif\")",
-            "masterStatus.setTextColor(enabled ? 0xFF58C77A : 0xFFB7BEC7)",
-            "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled))",
-            "masterStatus.setBackground(prayerPopupStatusCapsuleBackground(\n                Azan.isMasterEnabled(this)))",
-            "private Drawable prayerPopupStatusCapsuleBackground(boolean enabled)",
-            "capsule.setCornerRadius(999 * density)",
             "headingLp.topMargin = (int) (2 * density)",
             "headingLp.bottomMargin = (int) (2 * density)",
             "Azan.setMasterEnabled(MainActivity.this, enabled)",
@@ -89,13 +84,16 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("TvResponsiveLayout.safeInsetPx(root.getHeight())", self.popup)
         self.assertIn("panel.measure(", self.popup)
         self.assertLess(
-            self.popup.index("panel.setBackground(new GlassDrawable"),
+            self.popup.index("panel.setBackground(prayerPopupGlassBackground"),
             self.popup.index("panel.measure("),
         )
         self.assertIn("View.MeasureSpec.UNSPECIFIED", self.popup)
         self.assertIn("naturalContentHeight = panel.getMeasuredHeight()", self.popup)
         self.assertIn("Content exceeds Wi-Fi-to-Dock lane", self.popup)
         self.assertIn("Content fits Wi-Fi-to-Dock lane", self.popup)
+        self.assertIn("scalePrayerPopupVerticalLayout(rows, contentScale)", self.popup)
+        self.assertIn("scalePrayerPopupVerticalLayout(View view, float scale)", MAIN)
+        self.assertIn("after compact reflow", self.popup)
         self.assertIn("panel.getMeasuredHeight()", self.popup)
         self.assertIn("showPrayerPopupOverlay(panel, rows, anchor, width, height, focusOrder, safeX, safeY)", self.popup)
 
@@ -125,6 +123,10 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
     def test_owner_refinement_header_next_prayer_schedule_cells_and_azan_status(self):
         self.assertIn("(int) (26 * density)", self.popup)
+        self.assertIn("FrameLayout masterSwitch = new FrameLayout(this)", self.popup)
+        self.assertIn("masterSwitch.addView(switchTrack", self.popup)
+        self.assertIn("masterSwitch.addView(switchKnob", self.popup)
+        self.assertIn("masterRow.setContentDescription(initialAzanEnabled", self.popup)
         self.assertIn("titleDivider", self.popup)
         self.assertIn("locationStack.setOrientation(LinearLayout.VERTICAL)", self.popup)
         self.assertIn("createPrayerPopupText(\"800 mdpl\", 9f", self.popup)
@@ -134,9 +136,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("addPrayerPopupDivider(rows)", self.popup)
         self.assertIn('"OK Pilih . BACK Kembali.", 8f', self.popup)
         self.assertIn("Math.round(29 * density)", self.popup)
-        self.assertIn("\"● Aktif\" : \"● Nonaktif\"", self.popup)
-        self.assertIn("0xFF58C77A", self.popup)
-        self.assertIn("0xFFB7BEC7", self.popup)
 
     def test_owner_typography_and_proportional_capsule_dimensions_are_exact(self):
         for token in (
@@ -149,7 +148,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             '"JADWAL HARI INI", 10.5f',
             'createPrayerPopupText(item.name, 10f',
             'prayerPopup24Hour(item.timeFormatted), 12f',
-            'Azan.isMasterEnabled(this) ? "● Aktif" : "● Nonaktif", 8f',
             'createPrayerPopupText(title, 11f',
             'createPrayerPopupText(description, 8f',
             '(int) (28 * density)',
@@ -160,9 +158,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             'ViewGroup.LayoutParams.MATCH_PARENT, (int) (28 * density)',
             'headingLp.topMargin = (int) (2 * density)',
             'headingLp.bottomMargin = (int) (2 * density)',
-            'private Drawable prayerPopupStatusCapsuleBackground(boolean enabled)',
-            'capsule.setCornerRadius(999 * density)',
-            'masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled))',
             'view.setIncludeFontPadding(false)',
             'view.setLineSpacing(0f, 1f)',
             '(int) (12 * density));',
@@ -239,9 +234,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             "Math.round(29 * density)",
             "(int) (31 * density)",
             "(int) (30 * density)",
-            "(int) (18 * density)",
-            "ViewGroup.LayoutParams.WRAP_CONTENT, (int) (18 * density)",
-            "masterStatus.setPadding((int) (4 * density), 0,",
             "createPrayerPopupText(title, 11f",
             "createPrayerPopupText(description, 8f",
             "lp.setMargins((int) (7 * density), 0",
@@ -271,3 +263,21 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+    def test_azan_master_control_is_a_real_accessible_switch(self):
+        for token in (
+            "private void updatePrayerPopupSwitch(View track, View knob, boolean enabled)",
+            "track.setBackground(trackShape)",
+            "knob.setBackground(knobShape)",
+            "knob.setTranslationX(enabled ? 16 * density : 0f)",
+        ):
+            self.assertIn(token, MAIN)
+        self.assertIn("updatePrayerPopupSwitch(switchTrack, switchKnob, enabled)", self.popup)
+        self.assertIn("Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this))", self.popup)
+
+    def test_popup_reflows_full_content_before_height_is_clamped(self):
+        self.assertLess(self.popup.index("scalePrayerPopupVerticalLayout(rows, contentScale)"),
+                        self.popup.index("showPrayerPopupOverlay(panel, rows, anchor"))
+        self.assertIn("naturalContentHeight = panel.getMeasuredHeight()", self.popup)
+        self.assertIn("Content fits Wi-Fi-to-Dock lane", self.popup)

@@ -7924,23 +7924,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 "Azan", "Notifikasi azan", "");
         masterRow.setBackground(prayerPopupCardBackground(false));
         masterRow.getChildAt(1).setVisibility(View.GONE);
-        TextView masterStatus = createPrayerPopupText(
-                Azan.isMasterEnabled(this) ? "● Aktif" : "● Nonaktif", 8f,
-                Azan.isMasterEnabled(this) ? 0xFF58C77A : 0xFFB7BEC7, true);
-        masterStatus.setGravity(Gravity.CENTER);
-        masterStatus.setPadding((int) (4 * density), 0,
-                (int) (4 * density), 0);
-        masterStatus.setBackground(prayerPopupStatusCapsuleBackground(
-                Azan.isMasterEnabled(this)));
-        masterRow.addView(masterStatus, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, (int) (18 * density)));
+        FrameLayout masterSwitch = new FrameLayout(this);
+        masterSwitch.setFocusable(false);
+        masterSwitch.setClickable(false);
+        View switchTrack = new View(this);
+        View switchKnob = new View(this);
+        FrameLayout.LayoutParams switchTrackLp = new FrameLayout.LayoutParams(
+                (int) (38 * density), (int) (22 * density), Gravity.CENTER);
+        masterSwitch.addView(switchTrack, switchTrackLp);
+        FrameLayout.LayoutParams switchKnobLp = new FrameLayout.LayoutParams(
+                (int) (16 * density), (int) (16 * density),
+                Gravity.CENTER_VERTICAL | Gravity.LEFT);
+        switchKnobLp.leftMargin = (int) (3 * density);
+        masterSwitch.addView(switchKnob, switchKnobLp);
+        boolean initialAzanEnabled = Azan.isMasterEnabled(this);
+        updatePrayerPopupSwitch(switchTrack, switchKnob, initialAzanEnabled);
+        masterRow.addView(masterSwitch, new LinearLayout.LayoutParams(
+                (int) (40 * density), (int) (24 * density)));
+        masterRow.setContentDescription(initialAzanEnabled
+                ? "Azan, aktif" : "Azan, nonaktif");
         masterRow.setOnClickListener(v -> {
             boolean enabled = !Azan.isMasterEnabled(MainActivity.this);
             Azan.setMasterEnabled(MainActivity.this, enabled);
             Azan.schedule(MainActivity.this, PrayerTimes.getActiveZone(MainActivity.this));
-            masterStatus.setText(enabled ? "● Aktif" : "● Nonaktif");
-            masterStatus.setTextColor(enabled ? 0xFF58C77A : 0xFFB7BEC7);
-            masterStatus.setBackground(prayerPopupStatusCapsuleBackground(enabled));
+            updatePrayerPopupSwitch(switchTrack, switchKnob, enabled);
+            masterRow.setContentDescription(enabled ? "Azan, aktif" : "Azan, nonaktif");
             SoundEffects.playSelect();
         });
         addPrayerPopupDivider(rows);
@@ -8022,17 +8030,44 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         int naturalContentHeight = panel.getMeasuredHeight();
+        int unscaledContentHeight = naturalContentHeight;
+        if (naturalContentHeight > maxContentHeight) {
+            // Scale the popup's vertical rhythm and typography together; keep every control visible.
+            float contentScale = Math.min(1f,
+                    Math.max(0.68f, (maxContentHeight - Math.round(2 * density))
+                            / (float) naturalContentHeight));
+            scalePrayerPopupVerticalLayout(rows, contentScale);
+            panel.setPadding((int) (12 * density),
+                    Math.round(4 * density * contentScale),
+                    (int) (12 * density),
+                    Math.round(4 * density * contentScale));
+            panel.measure(
+                    View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            naturalContentHeight = panel.getMeasuredHeight();
+            if (naturalContentHeight > maxContentHeight) {
+                float correction = Math.max(0.68f,
+                        (maxContentHeight - Math.round(2 * density))
+                                / (float) naturalContentHeight);
+                scalePrayerPopupVerticalLayout(rows, correction);
+                panel.measure(
+                        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                naturalContentHeight = panel.getMeasuredHeight();
+            }
+        }
         int height = Math.max(1, Math.min(naturalContentHeight, maxContentHeight));
         if (naturalContentHeight > maxContentHeight) {
             android.util.Log.e("TvHome.PrayerPopup",
-                    "Content exceeds Wi-Fi-to-Dock lane: required="
+                    "Content exceeds Wi-Fi-to-Dock lane after compact reflow: required="
                             + Math.round(naturalContentHeight / density) + "dp, available="
                             + Math.round(maxContentHeight / density) + "dp");
         } else {
             android.util.Log.i("TvHome.PrayerPopup",
                     "Content fits Wi-Fi-to-Dock lane: required="
                             + Math.round(naturalContentHeight / density) + "dp, available="
-                            + Math.round(maxContentHeight / density) + "dp");
+                            + Math.round(maxContentHeight / density) + "dp, original="
+                            + Math.round(unscaledContentHeight / density) + "dp");
         }
         showPrayerPopupOverlay(panel, rows, anchor, width, height, focusOrder, safeX, safeY);
     }
@@ -8116,7 +8151,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    private Drawable prayerPopupStatusCapsuleBackground(boolean enabled) {
+    private TextView createPrayerPopupText(String text, float sizeSp, int color, boolean bold) {
         GradientDrawable capsule = new GradientDrawable();
         capsule.setShape(GradientDrawable.RECTANGLE);
         capsule.setCornerRadius(999 * density);
@@ -8169,6 +8204,53 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         row.addView(state, new LinearLayout.LayoutParams(
                 (int) (96 * density), ViewGroup.LayoutParams.MATCH_PARENT));
         return row;
+    }
+
+    private void updatePrayerPopupSwitch(View track, View knob, boolean enabled) {
+        GradientDrawable trackShape = new GradientDrawable();
+        trackShape.setShape(GradientDrawable.RECTANGLE);
+        trackShape.setCornerRadius(999 * density);
+        trackShape.setColor(enabled ? 0xFF269B68 : 0xFF69727D);
+        trackShape.setStroke(Math.max(1, (int) density),
+                enabled ? 0xCC70D99A : 0x889AA3AD);
+        track.setBackground(trackShape);
+
+        GradientDrawable knobShape = new GradientDrawable();
+        knobShape.setShape(GradientDrawable.OVAL);
+        knobShape.setColor(Color.WHITE);
+        knobShape.setStroke(Math.max(1, (int) density), 0x66FFFFFF);
+        knob.setBackground(knobShape);
+        knob.setTranslationX(enabled ? 16 * density : 0f);
+    }
+
+    private void scalePrayerPopupVerticalLayout(View view, float scale) {
+        if (view instanceof TextView) {
+            TextView text = (TextView) view;
+            float minimum = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 8f,
+                    getResources().getDisplayMetrics());
+            text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    Math.max(minimum, text.getTextSize() * scale));
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                scalePrayerPopupVerticalLayout(group.getChildAt(i), scale);
+            }
+        }
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        if (params != null) {
+            if (params.height > 0) params.height = Math.max(1, Math.round(params.height * scale));
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams margins = (ViewGroup.MarginLayoutParams) params;
+                margins.topMargin = Math.round(margins.topMargin * scale);
+                margins.bottomMargin = Math.round(margins.bottomMargin * scale);
+            }
+            view.setLayoutParams(params);
+        }
+        view.setPadding(view.getPaddingLeft(),
+                Math.round(view.getPaddingTop() * scale),
+                view.getPaddingRight(),
+                Math.round(view.getPaddingBottom() * scale));
     }
 
     private void addPrayerPopupDivider(LinearLayout rows) {
