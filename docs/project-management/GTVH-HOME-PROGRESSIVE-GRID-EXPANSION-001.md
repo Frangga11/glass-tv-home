@@ -19,7 +19,9 @@ Make every app row reachable in horizontal Dock mode through a progressive, roll
 - The initial Home state remains unchanged: Dock and app Grid overflow are at rest/hidden.
 - DOWN from the Dock reveals the first Grid row using the existing coordinated Dock/Grid expansion.
 - As the Grid scrolls to reveal later rows, the Dock follows the Grid's actual vertical scroll offset pixel-for-pixel. The Dock and row one therefore rise together instead of the Dock remaining parked while the Grid moves independently.
-- UP from the first Grid row collapses the expanded surface and returns focus to the Home header after the collapse settles.
+- UP from Grid row three to row two to row one keeps focus inside the Grid. UP from row one collapses the complete frame, returns rows two/three below the viewport, and restores Dock + row one to the initial anchor; focus remains on row one.
+- The viewport is a rolling window of up to three rows: when row three first appears, rows one, two, and three remain visible together. As later rows are reached, the window advances without pinning the focused row to its top edge.
+- The two-row state is unchanged. Home chrome is hidden only when the viewport reaches three rows; clock and date remain visible. Location/altitude, weather/AQI, navigation, Wi-Fi/microphone, wallpaper title/description, prayer schedule, Daily Ayah, and other Home capsules/text are temporarily hidden and restored to their prior visibility when the frame collapses.
 - The existing deterministic four-way neighbor mapping and hard row boundaries remain in force.
 
 ### App Move Mode
@@ -28,6 +30,7 @@ Make every app row reachable in horizontal Dock mode through a progressive, roll
 - When a moved Grid app crosses the visible viewport, the Grid scrolls to reveal it; the Dock follows the same measured scroll delta.
 - A delayed holder/layout pass must not end Move Mode merely because the moved tile is temporarily not attached.
 - UP at Grid row one is a hard boundary in horizontal Grid Move Mode. It does not move the app into the Dock and does not end Move Mode.
+- Move Mode keeps the selected app visible inside the same rolling three-row window while it is repositioned. Long-OK on an app in any visible row must open the context menu without focus escaping to Home controls.
 - The existing explicit OK/BACK handling remains the mode exit/confirmation path.
 
 ## Implementation
@@ -35,7 +38,9 @@ Make every app row reachable in horizontal Dock mode through a progressive, roll
 - Added an expanded Grid scroll accumulator in `MainActivity`.
 - Extended the existing Grid scroll listener so the Dock translation is derived from the actual consumed vertical `dy` reported by the Grid scroll callback, accumulated in pixels.
 - Reset the accumulated scroll delta after the initial Dock/Grid expansion settles and after collapse.
-- During Grid Move Mode, request layout/scroll for the moved stable app identity when its holder is outside the viewport; retry using the current adapter position resolved from that identity.
+- During Grid Move Mode, request layout/scroll for the moved stable app identity when its holder is outside the viewport; retry using the current adapter position resolved from that identity. Repositioning aligns the three-row window rather than jumping the moved tile to the top.
+- Changed normal row transitions and focus restoration to align the first row of a rolling three-row window, not the focused row itself.
+- Added a reversible Home-chrome visibility gate for three-row mode. It preserves each affected view's original visibility and deliberately excludes the clock/date block.
 - Changed normal UP from Grid row one to complete the existing synchronized collapse, then dispatch the UP intent to the Home header.
 - Kept Move Mode UP at row one within the Grid region as a hard boundary.
 
@@ -45,7 +50,7 @@ Only horizontal Grid viewport progression, Dock synchronization, and the related
 
 ## Validation
 
-- Added `tests/test_home_progressive_grid_expansion_contract.py` for pixel-synchronized Dock tracking, expansion/collapse baseline, normal row-one UP behavior, and Move Mode persistence/boundary.
+- Added/extended `tests/test_home_progressive_grid_expansion_contract.py` for pixel-synchronized Dock tracking, three-row window alignment, Home-chrome visibility rules (clock/date excluded), collapse restoration, and Move Mode persistence/boundary.
 - Updated the existing Home DPAD contract to expect collapse-to-header behavior.
 - Automated CI/build and unit tests must pass before this work is considered code-validated.
 - Physical Mi TV Stick remote testing is still required for acceptance. No physical-device PASS is claimed by this document.
