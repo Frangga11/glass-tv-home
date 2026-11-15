@@ -4564,11 +4564,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         final int screenHeightPx = getResources().getDisplayMetrics().heightPixels;
         final int screenWidthPx = getResources().getDisplayMetrics().widthPixels;
-        final int panelHeightDp = Math.max(1, Math.round(screenHeightPx * 0.40f / density));
-        final int panelWidthDp = Math.max(360, Math.round(screenWidthPx * 0.72f / density));
+        final int panelHeightDp = Math.max(1, Math.round(screenHeightPx * 0.42f / density));
+        final int panelWidthDp = Math.max(360, Math.round(screenWidthPx * 0.55f / density));
 
         // The reader follows the same GlassDrawable + Backdrop material as the Prayer popup.
-        // Its complete layout is bounded to 40% of screen height; no ScrollView is permitted.
+        // Owner-approved proportion: 55% display width x 42% display height; no ScrollView is permitted.
         LinearLayout panel = new LinearLayout(this);
         panel.setOrientation(LinearLayout.VERTICAL);
         panel.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -4586,24 +4586,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         LinearLayout heading = new LinearLayout(this);
         heading.setOrientation(LinearLayout.VERTICAL);
-        heading.setGravity(Gravity.CENTER_VERTICAL);
+        heading.setGravity(Gravity.CENTER);
 
         TextView title = new TextView(this);
         title.setText(R.string.daily_ayah_popup_title);
         title.setTextColor(TvUiTokens.TEXT_PRIMARY);
-        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f);
         title.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
         title.setShadowLayer(2 * density, 0, 1 * density, 0xCC000000);
         title.setSingleLine(true);
+        title.setGravity(Gravity.CENTER);
+        title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         heading.addView(title, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView reference = new TextView(this);
         reference.setText(ayah.reference != null ? ayah.reference : "");
         reference.setTextColor(TvUiTokens.TEXT_SECONDARY);
-        reference.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
+        reference.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
         reference.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         reference.setSingleLine(true);
+        reference.setGravity(Gravity.CENTER);
+        reference.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         LinearLayout.LayoutParams refLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         refLp.topMargin = Math.round(1 * density);
@@ -4654,16 +4658,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         TextView arabic = new TextView(this);
         arabic.setText(ayah.arabic.trim());
         arabic.setTextColor(TvUiTokens.ISLAMIC_GOLD);
-        arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f);
+        arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
         arabic.setAutoSizeTextTypeUniformWithConfiguration(
-                14, 26, 1, TypedValue.COMPLEX_UNIT_SP);
+                18, 32, 1, TypedValue.COMPLEX_UNIT_SP);
         arabic.setTypeface(getResources().getFont(R.font.amiri_quran));
         arabic.setTextDirection(View.TEXT_DIRECTION_RTL);
         arabic.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         arabic.setIncludeFontPadding(false);
         arabic.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY);
         arabic.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
-        arabic.setLineSpacing(0, 1.02f);
+        arabic.setLineSpacing(0, 0.94f);
         arabic.setMaxLines(2);
         arabic.setEllipsize(null);
         arabic.setShadowLayer(3 * density, 0, 1 * density, 0xCC000000);
@@ -4685,15 +4689,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         translation.setText(translated != null && !translated.trim().isEmpty()
                 ? translated.trim() : getString(R.string.daily_ayah_translation_unavailable));
         translation.setTextColor(TvUiTokens.TEXT_PRIMARY);
-        translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+        translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
         translation.setAutoSizeTextTypeUniformWithConfiguration(
-                11, 16, 1, TypedValue.COMPLEX_UNIT_SP);
+                10, 13, 1, TypedValue.COMPLEX_UNIT_SP);
         translation.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
         translation.setTextDirection(View.TEXT_DIRECTION_LTR);
         translation.setGravity(Gravity.CENTER);
         translation.setIncludeFontPadding(false);
-        translation.setLineSpacing(0, 1.04f);
-        translation.setMaxLines(2);
+        translation.setLineSpacing(0, 0.96f);
+        translation.setMaxLines(3);
         translation.setEllipsize(null);
         body.addView(translation, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
@@ -4701,44 +4705,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         panel.addView(body, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
-        // Compact fixed footer: navigation hint and close action share one horizontal row.
-        LinearLayout footer = new LinearLayout(this);
-        footer.setOrientation(LinearLayout.HORIZONTAL);
-        footer.setGravity(Gravity.CENTER_VERTICAL);
+        // Informational footer only: the top-right X is the sole close control.
         TextView footerHint = new TextView(this);
         footerHint.setText(R.string.daily_ayah_navigation_hint);
         footerHint.setTextColor(TvUiTokens.TEXT_SECONDARY);
-        footerHint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
+        footerHint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f);
         footerHint.setTypeface(getResources().getFont(R.font.inter), Typeface.NORMAL);
+        footerHint.setGravity(Gravity.CENTER);
         footerHint.setSingleLine(true);
-        footerHint.setEllipsize(TextUtils.TruncateAt.END);
-        footer.addView(footerHint, new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
-
-        TextView closeAction = new TextView(this);
-        closeAction.setText(R.string.daily_ayah_close);
-        closeAction.setTextColor(TvUiTokens.TEXT_PRIMARY);
-        closeAction.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
-        closeAction.setTypeface(getResources().getFont(R.font.inter), Typeface.BOLD);
-        closeAction.setGravity(Gravity.CENTER);
-        closeAction.setFocusable(true);
-        closeAction.setClickable(true);
-        closeAction.setBackground(TvFocusIndicator.createRoundedStateBackground(
-                density, 9f, 0x223F4A55, TvUiTokens.FOCUS_HALO,
-                0x55DCE5ED, TvUiTokens.FOCUS_BORDER));
-        closeAction.setOnClickListener(v -> {
-            SoundEffects.playSelect();
-            dialogHolder[0].dismiss();
-        });
-        closeAction.setOnFocusChangeListener((v, focused) -> {
-            if (focused) SoundEffects.playNav();
-        });
-        LinearLayout.LayoutParams closeActionLp = new LinearLayout.LayoutParams(
-                Math.round(112 * density), Math.round(32 * density));
-        closeActionLp.leftMargin = Math.round(8 * density);
-        footer.addView(closeAction, closeActionLp);
-        panel.addView(footer, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Math.round(34 * density)));
+        panel.addView(footerHint, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, Math.round(18 * density)));
 
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setView(panel)
@@ -4757,23 +4733,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dialog.show();
         TvDialogStyle.applyCustom(dialog, this, panelWidthDp, panelHeightDp, 0.48f);
 
-        close.setOnKeyListener((v, keyCode, event) -> {
-            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                closeAction.requestFocus();
-                return true;
-            }
-            return false;
-        });
-        closeAction.setOnKeyListener((v, keyCode, event) -> {
-            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                close.requestFocus();
-                return true;
-            }
-            return false;
-        });
-        closeAction.requestFocus();
+        close.requestFocus();
     }
 
     private void updateDateAndPeriod() {
