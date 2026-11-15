@@ -154,6 +154,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
     def test_grid_programmatic_restore_keeps_existing_alignment_fallback(self):
         self.assertIn("private void alignHorizontalGridRowToGlass(int position)", MAIN)
         self.assertIn("windowStartRow * COLUMNS, grid.getPaddingTop()", MAIN)
+        self.assertIn("if (dy != 0) grid.scrollBy(0, dy);", MAIN)
 
 
 if __name__ == "__main__":
