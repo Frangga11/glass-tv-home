@@ -68,3 +68,15 @@ Source implementation, localized no-scroll footer copy, regression contracts, do
 - Animate the complete popup surface as one unit with a restrained 200ms fade/scale entrance (100ms when reduced motion is enabled); never animate individual text independently.
 - Do not add decorative clutter, alter source data, or modify other Home surfaces.
 - Automated CI/build and physical TV visual/remote acceptance are required before considering this refinement complete.
+
+
+## Owner-directed Arabic-first balance and DPAD correction — 2026-11-15
+- Keep popup proportions at 55% width x 42% height; preserve the fixed header/footer and flexible no-scroll body.
+- Header fixed height reduced from 48dp to 39dp; footer fixed height reduced from 48dp to 40dp.
+- Arabic hero text increased from 30sp to 33sp (adaptive 20–35sp), with 9dp vertical breathing room above/below and a larger share of the body region.
+- Meaning divider label localized as title case ("Artinya" / "Meaning"), reduced from 10sp to 9sp; preserve gold text and gold horizontal rules.
+- Translation reduced from 12sp to 11sp, adaptive 9–12sp, maximum three lines.
+- TUTUP capsule reduced from 104x30dp to 88x26dp; label reduced from 12sp to 11sp.
+- DPAD activation explicitly handles DPAD_CENTER, ENTER, NUMPAD_ENTER, and BUTTON_A by invoking the same closeAction.performClick path as a normal click. Dialog-level fallback also routes OK to that action when TUTUP owns focus. DOWN continues to focus TUTUP; directional keys remain trapped as specified; Back/Escape remain supported.
+- No changes to Ayah source, translation source, Home dock, wallpaper, prayer timetable, Wi-Fi, or other Home behavior.
+- CI/build and physical Mi TV Stick acceptance are required; source changes do not establish device acceptance.
