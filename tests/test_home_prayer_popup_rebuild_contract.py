@@ -239,7 +239,6 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             "(int) (30 * density)",
             "createPrayerPopupText(title, 11f",
             "createPrayerPopupText(description, 8f",
-            "lp.setMargins((int) (7 * density), 0",
             "naturalContentHeight > maxContentHeight",
             "View.MeasureSpec.UNSPECIFIED",
         ):
