@@ -8152,16 +8152,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private TextView createPrayerPopupText(String text, float sizeSp, int color, boolean bold) {
-        GradientDrawable capsule = new GradientDrawable();
-        capsule.setShape(GradientDrawable.RECTANGLE);
-        capsule.setCornerRadius(999 * density);
-        capsule.setColor(enabled ? 0x263FCB78 : 0x20B7BEC7);
-        capsule.setStroke(Math.max(1, (int) density),
-                enabled ? 0x9958C77A : 0x66B7BEC7);
-        return capsule;
-    }
-
-    private TextView createPrayerPopupText(String text, float sizeSp, int color, boolean bold) {
         TextView view = new TextView(this);
         view.setText(text);
         view.setIncludeFontPadding(false);
