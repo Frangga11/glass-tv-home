@@ -3536,9 +3536,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // The overflow Grid sits directly below the horizontal Dock.
             cancelHorizontalGridRowTransition();
             int dockTarget = Math.min(basePosition % COLUMNS, dockAdapter.getItemCount() - 1);
-            // Normal navigation returns to the Home header and restores the initial viewport.
-            // Replay UP semantically only after Dock and Grid finish their synchronized collapse.
-            collapseHorizontalOverflowToHomeHeader(dockTarget);
+            // Collapse the expanded frame to its initial anchor and retain focus on Dock row one.
+            // Do not send focus to Beranda or another Home header control.
+            collapseHorizontalOverflowToDock(dockTarget);
             return true;
         }
 
