@@ -66,13 +66,15 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         self.assertIn("KEYCODE_DPAD_UP", ayah)
         self.assertIn("btnAssistant.requestFocus()", ayah)
         self.assertIn("KEYCODE_DPAD_DOWN", ayah)
-        self.assertIn("prayerTable.requestFocus()", ayah)
+        self.assertIn("R.id.prayerHeader", ayah)
+        self.assertIn("prayerHeader.requestFocus()", ayah)
 
-        prayer_start = MAIN.index("View prayerTableView = findViewById(R.id.prayerTable);")
+        prayer_start = MAIN.index("View prayerHeaderView = findViewById(R.id.prayerHeader);")
         prayer_end = MAIN.index("updatePrayerTimes();", prayer_start)
         prayer = MAIN[prayer_start:prayer_end]
         self.assertIn("ayahOpenHint != null && ayahOpenHint.isShown() && ayahOpenHint.requestFocus()", prayer)
         self.assertIn("focusTile(0);", prayer)
+        self.assertIn("prayerTableView.setFocusable(false);", prayer)
 
     def test_first_app_row_up_returns_to_home_and_row_two_up_keeps_row_transition(self):
         start = MAIN.index("public boolean onTileVerticalKey")
