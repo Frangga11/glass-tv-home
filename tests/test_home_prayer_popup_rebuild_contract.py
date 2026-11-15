@@ -84,7 +84,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertIn("TvResponsiveLayout.safeInsetPx(root.getHeight())", self.popup)
         self.assertIn("panel.measure(", self.popup)
         self.assertLess(
-            self.popup.index("panel.setBackground(prayerPopupGlassBackground"),
+            self.popup.index("panel.setBackground(new GlassDrawable"),
             self.popup.index("panel.measure("),
         )
         self.assertIn("View.MeasureSpec.UNSPECIFIED", self.popup)
@@ -136,6 +136,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
         self.assertNotIn("addPrayerPopupDivider(rows)", self.popup)
         self.assertNotIn("private void addPrayerPopupDivider", MAIN)
         self.assertEqual(self.popup.count("addPrayerPopupSpacing(rows)"), 6)
+        self.assertIn("private void addPrayerPopupSpacing(LinearLayout rows)", MAIN)
         self.assertIn("spacer.setBackgroundColor(Color.TRANSPARENT)", MAIN)
         self.assertIn("Math.max(1, (int) density)", MAIN)
         self.assertIn("(int) density);", MAIN)
@@ -238,7 +239,7 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             "(int) (30 * density)",
             "createPrayerPopupText(title, 11f",
             "createPrayerPopupText(description, 8f",
-            "lp.setMargins((int) (7 * density), 0",
+            "private void addPrayerPopupSpacing(LinearLayout rows)",
             "naturalContentHeight > maxContentHeight",
             "View.MeasureSpec.UNSPECIFIED",
         ):
