@@ -8,7 +8,7 @@ Baseline: `de3caacebef78fa51753c14c93ef4d1bc7251a4e` (PR #135 accepted visual ba
 
 ## Owner-locked constraints
 
-- Reduce the overall card to approximately 15% of the visible screen area.
+- Reduce the overall card to the currently owner-approved target percentage recorded in the latest refinement section.
 - Keep the existing top-centered placement and the 40dp top offset exactly unchanged.
 - Keep the internal content order and relative placement in one frame: Arabic takbir, vertical divider, then title/location, prayer name/time, and hint.
 - Match the approved Waktu Sholat popup's shared GlassDrawable, veil, blur source, and 20dp rim.
@@ -37,7 +37,7 @@ The screenshot's card corresponds to `AzanActivity`. The previous surface used a
 
 ## 11% screen-area refinement — 15 November 2026
 
-Owner requested a further reduction from the previous approximately 14.6% estimated footprint to approximately 11% of the main screen area.
+Owner requested a further reduction from the previous approximately 14.6% estimated footprint to approximately 11% of the main screen area. This target was subsequently superseded by the 12% refinement below.
 
 - Updated uniform card scale from 0.93 to 0.806 of the original pre-reduction dimensions.
 - Calculation against the prior estimate: 14.6% × (0.806 / 0.93)² ≈ 10.97%.
@@ -52,4 +52,16 @@ Owner requested a further reduction from the previous approximately 14.6% estima
 
 The first CI run after the 11% change reported one failing contract assertion: the test still expected the earlier fixed 20dp glass corner radius. The implementation had intentionally scaled that radius with the card to preserve the same relative shape. The contract is corrected to require the scaled 20dp base radius, scaled focus outline, and scaled elevation. No production behavior was changed by this test-only correction.
 
-The 11% revision supersedes the earlier 15% target in this checkpoint. Current target: approximately 11% of the visible main-screen area, estimated by the area ratio calculation 14.6% × (0.806 / 0.93)² ≈ 10.97%. The window remains top-centered at the same 40dp y-offset. CI and visual/device acceptance are still required; the estimate is not a direct screen-area measurement.
+The 11% revision superseded the earlier 15% target at that checkpoint. It is now superseded by the 12% refinement below. The window remains top-centered at the same 40dp y-offset. CI and visual/device acceptance are still required; estimates are not direct screen-area measurements.
+
+
+## 12% screen-area refinement — 15 November 2026
+
+Owner requested a slight increase from the 11% target to approximately 12%, with changes restricted to scale only.
+
+- Updated the uniform linear `CARD_SCALE` from `0.806f` to `0.843f`.
+- Area estimate from the same prior photo-based baseline: 14.6% × (0.843 / 0.93)² ≈ 12.0%.
+- The scale remains uniform across typography, internal dp spacing/padding, glass corner radius, focus outline, and elevation so proportions remain consistent.
+- Popup anchor, top offset (`lp.y = dp(40)`), content order, glass material/backdrop, focus behavior, playback, audio focus, dismissal, and lifecycle are unchanged.
+- Scope remains limited to `AzanActivity.java`, the focused contract test, and this checkpoint document. No other UI or audio components are modified.
+- 12% remains a photo-based geometry estimate; exact screen-area and legibility confirmation require a fresh 1920×1080 capture and Mi TV Stick test.
