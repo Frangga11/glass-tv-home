@@ -76,15 +76,14 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         self.assertIn("focusTile(0);", prayer)
         self.assertIn("prayerTableView.setFocusable(false);", prayer)
 
-    def test_first_app_row_up_returns_to_home_and_row_two_up_keeps_row_transition(self):
+    def test_first_app_row_up_collapses_to_dock_and_row_two_up_keeps_row_transition(self):
         start = MAIN.index("public boolean onTileVerticalKey")
         end = MAIN.index("private int pendingFocus;", start)
         method = MAIN[start:end]
-        self.assertIn("btnHome.requestFocus()", method)
         self.assertIn("DockLayoutModel.gridNeighborPosition(basePosition, direction, COLUMNS, count)", method)
         self.assertIn("requestHorizontalGridRow(target)", method)
         self.assertIn("collapseHorizontalOverflowToDock(dockTarget)", method)
-                self.assertNotIn("target = position - COLUMNS;", method)
+        self.assertNotIn("target = position - COLUMNS;", method)
 
     def test_profile_and_wifi_popups_restore_their_trigger_focus(self):
         self.assertIn("UserSwitchDialog.show(this, () -> restoreFocusTo(originFocus));", MAIN)
