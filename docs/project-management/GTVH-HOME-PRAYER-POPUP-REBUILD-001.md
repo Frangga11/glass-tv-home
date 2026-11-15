@@ -703,3 +703,8 @@ Owner supplied a physical-screen reference photo and explicitly locked all curre
 - Source contract now requires the standard project GlassDrawable, verifies the compact switch dimensions and unchanged Azan row height, asserts the horizontal divider helper/calls are absent, and checks the exact Indonesian control title.
 - This source update is not itself visual acceptance. Exact-HEAD CI/build must pass; a fresh 1920×1080 render must confirm the restored blur/translucency, unchanged locked proportions, and all capsules/focus outlines. Physical Mi TV Stick acceptance remains pending and must be separately authorized.
 - PR #135 remains OPEN / DRAFT / UNMERGED. No merge or device installation is implied.
+
+
+### Spacing-preservation verification addendum — 15 November 2026
+
+A final geometry cross-check caught an important distinction: removing a separator must not also collapse the spacing it occupied. The six former horizontal-rule positions now use transparent 1dp spacer views with the exact former 7dp side margins and 1dp bottom margin. Thus the visible lines are gone while the vertical rhythm and capsule-to-capsule spacing remain unchanged. No row or capsule dimensions were altered.
