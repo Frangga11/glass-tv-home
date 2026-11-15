@@ -16,10 +16,10 @@ public class DockLayoutModelTest {
     public void gridDpadUsesNearestAvailableColumnAcrossIncompleteRows() {
         // Ten apps: 4 + 4 + 2. Both rightmost source columns resolve to the nearest
         // available item in row three without losing the column relationship.
-        assertEquals(8, DockLayoutModel.gridNeighborPosition(6, 2, 4, 10));
+        assertEquals(9, DockLayoutModel.gridNeighborPosition(6, 2, 4, 10));
         assertEquals(9, DockLayoutModel.gridNeighborPosition(7, 2, 4, 10));
-        assertEquals(6, DockLayoutModel.gridNeighborPosition(8, -2, 4, 10));
-        assertEquals(7, DockLayoutModel.gridNeighborPosition(9, -2, 4, 10));
+        assertEquals(4, DockLayoutModel.gridNeighborPosition(8, -2, 4, 10));
+        assertEquals(5, DockLayoutModel.gridNeighborPosition(9, -2, 4, 10));
     }
 
     @Test
