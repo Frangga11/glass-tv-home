@@ -3133,14 +3133,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
     }
 
-    /** Preserve original visibility; clock/date remain visible in three-row mode. */
+    /** Preserve original visibility; every Home overlay is hidden while the three-row app frame is active. */
     private void setThreeRowFrameChromeHidden(boolean hidden) {
         if (hidden == horizontalThreeRowFrameActive) return;
         horizontalThreeRowFrameActive = hidden;
         if (hidden) {
             threeRowHiddenViews.clear();
             threeRowOriginalVisibility.clear();
-            int[] ids = { R.id.heroShelf, R.id.islamicShelf, R.id.locationPill,
+            int[] ids = { R.id.leftBlock, R.id.heroShelf, R.id.islamicShelf, R.id.locationPill,
                     R.id.weatherAirQuality, R.id.navPill, R.id.topButtons,
                     R.id.nowPlayingCard, R.id.prayerTimes };
             for (int id : ids) {
