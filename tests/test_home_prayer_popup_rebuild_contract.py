@@ -239,12 +239,15 @@ class HomePrayerPopupRebuildContractTest(unittest.TestCase):
             "(int) (30 * density)",
             "createPrayerPopupText(title, 11f",
             "createPrayerPopupText(description, 8f",
-            "private void addPrayerPopupSpacing(LinearLayout rows)",
+            "lp.setMargins((int) (7 * density), 0",
             "naturalContentHeight > maxContentHeight",
             "View.MeasureSpec.UNSPECIFIED",
         ):
             self.assertIn(token, self.popup)
         self.assertNotIn("View.MeasureSpec.AT_MOST", self.popup)
+        self.assertIn("private void addPrayerPopupSpacing(LinearLayout rows)", MAIN)
+        self.assertIn("spacer.setBackgroundColor(Color.TRANSPARENT)", MAIN)
+        self.assertIn("lp.setMargins((int) (7 * density), 0", MAIN)
 
 
     def test_owner_focus_capsules_and_indonesian_copy_are_restored(self):
