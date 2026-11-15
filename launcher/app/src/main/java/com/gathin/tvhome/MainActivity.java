@@ -154,6 +154,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalDockTransitionAnimator;
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
+    /** Grid scroll offset at the expanded baseline; Dock follows every subsequent Grid pixel. */
+    private int horizontalGridScrollBaseOffset;
     /** One semantic DPAD intent captured during collapse; never replay synthetic Android key events. */
     private int pendingDockCollapseDirection = -1;
     /** Monotonic token prevents delayed layout callbacks from stealing focus from a newer DPAD target. */
@@ -1016,6 +1018,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             @Override
             public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
                 updateTopFade();
+                if (!dockVertical && horizontalGridExpanded && !horizontalDockCollapseInProgress
+                        && dockRecycler != null) {
+                    int delta = rv.computeVerticalScrollOffset() - horizontalGridScrollBaseOffset;
+                    dockRecycler.setTranslationY(-getHorizontalDockPitch() - delta);
+                }
                 if (!glassShown) return;
                 glassTargetY -= dy;
                 glassScrollShift -= dy;
@@ -3263,6 +3270,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (recycler == null || movingPos != position || movingDock != inDock || movingRecycler != recycler) return;
         RecyclerView.ViewHolder holder = recycler.findViewHolderForAdapterPosition(position);
         if (holder == null) {
+            if (!inDock && !dockVertical && horizontalGridExpanded) {
+                // A moved app may have crossed the visible viewport. Bring its stable identity
+                // into layout; the Grid scroll listener moves the Dock by the exact same pixels.
+                recycler.scrollToPosition(position);
+            }
             if (attemptsRemaining > 0) {
                 recycler.postOnAnimation(() -> restoreMovingTile(inDock, key, position, previousCard, attemptsRemaining - 1));
             } else {
@@ -3310,10 +3322,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             restoreMovingTile(true, key, targetPosition, previousCard, 3);
         } else {
             String movingKey = adapter.keyAt(movingPos);
-            if ((!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS)
-                    || (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT && movingPos % COLUMNS == 0)) {
-                int targetDockPosition = dockVertical ? Math.min(dockAdapter.getItemCount(), movingPos / COLUMNS)
-                        : movingPos % COLUMNS;
+            if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS) {
+                // In Grid Move Mode, UP at row one is a hard boundary. It must not
+                // unpin/promote the selected app into the Dock or end the active move.
+                return;
+            }
+            if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT && movingPos % COLUMNS == 0) {
+                int targetDockPosition = Math.min(dockAdapter.getItemCount(), movingPos / COLUMNS);
                 moveTileAcrossRegion(movingKey, true, targetDockPosition);
                 return;
             }
@@ -3339,7 +3354,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             final int targetPosition = to;
             final String key = adapter.keyAt(targetPosition);
             final View previousCard = movingCard;
-            restoreMovingTile(false, key, targetPosition, previousCard, 3);
+            restoreMovingTile(false, key, targetPosition, previousCard, 8);
         }
     }
 
@@ -3482,7 +3497,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // The overflow Grid sits directly below the horizontal Dock.
             cancelHorizontalGridRowTransition();
             int dockTarget = Math.min(basePosition % COLUMNS, dockAdapter.getItemCount() - 1);
-            focusDockTile(dockTarget);
+            // Normal navigation returns to the Home header and restores the initial viewport.
+            // Replay UP semantically only after Dock and Grid finish their synchronized collapse.
+            collapseHorizontalOverflowToDock(dockTarget);
+            pendingDockCollapseDirection = KeyEvent.KEYCODE_DPAD_UP;
             return true;
         }
 
@@ -3652,6 +3670,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockRecycler.setTranslationY(-pitch);
                 grid.setAlpha(1f);
                 horizontalDockExpansionInProgress = false;
+                horizontalGridScrollBaseOffset = grid.computeVerticalScrollOffset();
                 focusTile(targetPosition);
             });
         });
@@ -3753,6 +3772,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 }
                 // Dock already owns focus. Only now remove the overflow row from the view tree.
                 horizontalGridExpanded = false;
+                horizontalGridScrollBaseOffset = 0;
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
                 dockRecycler.setTranslationY(0f);
