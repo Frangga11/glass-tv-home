@@ -7,7 +7,6 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,6 +29,8 @@ import java.util.Date;
  * underneath is where it was.
  */
 public class AzanActivity extends Activity {
+    // A 7% linear reduction brings the reference card from roughly 17% to about 15% of screen area.
+    private static final float CARD_SCALE = 0.93f;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private MediaPlayer player;
     private AudioManager audio;
@@ -66,13 +67,15 @@ public class AzanActivity extends Activity {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
-        card.setPadding(dp(30), dp(20), dp(34), dp(20));
-        GradientDrawable glass = new GradientDrawable();
-        // Safe default dark glass background tint: readable over bright content even without window blur
-        glass.setColor(0xD936414B);
-        glass.setCornerRadius(dp(28));
-        glass.setStroke(Math.max(1, dp(1.5f)), 0x80DCE5ED);
-        card.setBackground(glass);
+        card.setPadding(cardDp(30), cardDp(20), cardDp(34), cardDp(20));
+        // Match the approved Waktu Sholat popup material exactly: shared blurred Backdrop fill,
+        // the same veil, and the same 20dp glass rim. No popup-specific opaque tint.
+        card.setBackground(new GlassDrawable(card, 20 * density, density, null, 0.5f));
+        GradientDrawable focusOutline = new GradientDrawable();
+        focusOutline.setColor(0x00000000);
+        focusOutline.setCornerRadius(dp(20));
+        focusOutline.setStroke(Math.max(1, dp(1.5f)), 0x80DCE5ED);
+        card.setForeground(focusOutline);
         card.setClipToOutline(true);
         card.setElevation(dp(16));
 
@@ -80,9 +83,9 @@ public class AzanActivity extends Activity {
         card.addView(takbir);
         View line = new View(this);
         line.setBackgroundColor(0x33FFFFFF);
-        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(Math.max(1, dp(1)), dp(70));
-        llp.leftMargin = dp(26);
-        llp.rightMargin = dp(26);
+        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(Math.max(1, cardDp(1)), cardDp(70));
+        llp.leftMargin = cardDp(26);
+        llp.rightMargin = cardDp(26);
         card.addView(line, llp);
 
         LinearLayout words = new LinearLayout(this);
@@ -97,7 +100,7 @@ public class AzanActivity extends Activity {
         LinearLayout nameRow = new LinearLayout(this);
         nameRow.setOrientation(LinearLayout.HORIZONTAL);
         nameRow.setGravity(Gravity.BOTTOM);
-        nameRow.setPadding(0, dp(2), 0, dp(2));
+        nameRow.setPadding(0, cardDp(2), 0, cardDp(2));
 
         String[] pNames = AppLanguage.getPrayerNames(this);
         int validPrayerIdx = Math.max(0, Math.min(prayer, pNames.length - 1));
@@ -106,7 +109,7 @@ public class AzanActivity extends Activity {
         nameRow.addView(name);
         TextView time = text(when, outfit, 20, 0xCCFFFFFF, 300);
         time.setSingleLine(true);
-        time.setPadding(dp(14), 0, 0, dp(3));
+        time.setPadding(cardDp(14), 0, 0, cardDp(3));
         nameRow.addView(time);
         words.addView(nameRow);
         hint = text(AppLanguage.strAzanPopupHint(this), outfit, 12, 0x99FFFFFF, 400);
@@ -117,9 +120,9 @@ public class AzanActivity extends Activity {
         card.setClickable(true);
         card.setOnClickListener(v -> finish());
         card.setOnFocusChangeListener((view, hasFocus) -> {
-            glass.setStroke(Math.max(1, dp(hasFocus ? 2f : 1.5f)),
+            focusOutline.setStroke(Math.max(1, dp(hasFocus ? 2f : 1.5f)),
                     hasFocus ? TvUiTokens.FOCUS_BORDER : 0x80DCE5ED);
-            glass.invalidateSelf();
+            focusOutline.invalidateSelf();
         });
 
         // CRITICAL FIX FOR ISSUE #5:
@@ -127,20 +130,9 @@ public class AzanActivity extends Activity {
         // On Android 14 (Chromecast Sabrina, etc.), calling setBackgroundBlurRadius before
         // setContentView dereferences a null DecorView inside PhoneWindow and throws NullPointerException.
         setContentView(card);
+        // Backdrop maps the same blurred Home wallpaper into this floating Activity window.
+        Backdrop.watch(card);
         card.requestFocus();
-
-        if (Build.VERSION.SDK_INT >= 31) {
-            try {
-                WindowManager wm = getSystemService(WindowManager.class);
-                if (wm != null && wm.isCrossWindowBlurEnabled() && w.getDecorView() != null) {
-                    w.setBackgroundBlurRadius(dp(30));
-                    glass.setColor(0xB32C3741);
-                }
-            } catch (Throwable t) {
-                // Graceful fallback: keep solid frosted glass tint without crashing
-                android.util.Log.w("TvHome.Azan", "Window blur unavailable or failed: " + t.getMessage());
-            }
-        }
 
         String soundChoice = Azan.getSoundChoice(this);
         if (Azan.SOUND_SILENT.equals(soundChoice)) {
@@ -258,11 +250,15 @@ public class AzanActivity extends Activity {
         TextView t = new TextView(this);
         t.setText(s);
         t.setTypeface(font);
-        t.setTextSize(sp);
+        t.setTextSize(sp * CARD_SCALE);
         t.setTextColor(color);
         t.setGravity(Gravity.CENTER);
         if (font != null) t.setFontVariationSettings("'wght' " + weight);
         return t;
+    }
+
+    private int cardDp(float v) {
+        return Math.max(1, Math.round(v * density * CARD_SCALE));
     }
 
     private int dp(float v) {
