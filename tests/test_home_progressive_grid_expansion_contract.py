@@ -43,13 +43,13 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("startMove(key, !toDock)", survive)
 
     def test_three_row_window_keeps_target_at_bottom_and_preserves_rows_above(self):
-        self.assertIn("return Math.max(0, targetRow - 1);", MAIN)
+        self.assertIn("return Math.max(0, targetRow - 2);", MAIN)
         self.assertIn("int windowStartRow = gridWindowStartRow(targetRow);", MAIN)
-        self.assertIn("return targetRow >= 1 ? 2 : 1;", MAIN)
+        self.assertIn("return targetRow >= 2 ? 3 : 1;", MAIN)
         self.assertIn("currentRow, windowStartRow, rowPitch, currentTopOffset", MAIN)
         self.assertIn("int expectedWindowStartRow = gridWindowStartRow(position / COLUMNS);", MAIN)
 
-    def test_three_row_mode_hides_all_home_chrome_including_clock_and_date(self):
+    def test_three_row_mode_hides_home_chrome_but_keeps_clock_and_date(self):
         start = MAIN.index("private void setThreeRowFrameChromeHidden")
         end = MAIN.index("private void hideGlass()", start)
         method = MAIN[start:end]
@@ -59,10 +59,10 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
             self.assertIn(view_id, method)
         self.assertIn("View.INVISIBLE", method)
         self.assertIn("threeRowOriginalVisibility.get(i)", method)
-        self.assertIn("R.id.leftBlock", method)
+        self.assertNotIn("R.id.leftBlock", method)
         self.assertIn("setThreeRowFrameChromeHidden(false)", MAIN)
 
-    def test_two_row_navigation_does_not_trigger_chrome_hide(self):
+    def test_three_row_navigation_triggers_chrome_hide_only_at_row_three(self):
         start = MAIN.index("private void startHorizontalGridRowTransition")
         end = MAIN.index("private void animateHorizontalGridRowScroll", start)
         method = MAIN[start:end]
@@ -72,7 +72,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertNotIn("targetRow >= 2", method)
         grow = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
         self.assertIn("setThreeRowFrameChromeHidden(grow)", grow)
-        self.assertIn("horizontalGridViewportRows = 2;", grow)
+        self.assertIn("horizontalGridViewportRows = 3;", grow)
 
     def test_moved_grid_identity_is_revealed_without_ending_move_mode(self):
         start = MAIN.index("private void restoreMovingTile")
