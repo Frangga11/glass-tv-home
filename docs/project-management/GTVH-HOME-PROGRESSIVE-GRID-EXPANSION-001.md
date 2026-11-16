@@ -58,3 +58,20 @@ Only horizontal Grid viewport progression, Dock synchronization, and the related
 ## Status
 
 OPEN / DRAFT / UNMERGED. No merge or release authorization is implied.
+
+## Follow-up audit 002 (three-row frame, focus and Move Mode)
+
+Root cause: the expanded Grid viewport was always ONE row tall. When row three (Grid row index 1) was reached, the window start was computed as the focused row itself, so row two scrolled out of the viewport and was clipped. UP from row three then targeted a row that was not attached, the transition fell back to `focusTopBarFallback()` and focus escaped to the header. Long-OK on row three and Move Mode into row three hit the same missing holder.
+
+Changes:
+
+- `horizontalGridViewportRows` (1 or 2). Rows >= index 1 use a two-row viewport; row two stays visible above row three; the Dock stays above row two.
+- Rolling window start is `max(0, targetRow - 1)`; Home chrome is hidden as soon as row three joins the frame and restored when the frame shrinks or collapses.
+- `animateGridViewportRows` grows/shrinks the frame as one motion (Dock + row two rise together, row three enters from below). Final geometry is always committed even if a newer key cancels it.
+- `dockRaisedTranslationY()` is the single Dock offset formula (dock pitch + extra viewport rows + scroll). The Dock fades out once the rolling window scrolls past it.
+- Collapse lowers the whole frame from its current state (any rows/scroll) and resets rows, scroll and Grid scroll position.
+- UP on the raised Dock collapses the frame and keeps focus on Dock row one.
+- `focusTopBarFallback()` never leaves Move Mode or an open frame for the Home header.
+- Move Mode: UP from Grid row one hands the app to Dock row one (mirror of Dock DOWN). If the Dock is full the app is picked up again, so Move Mode never ends.
+
+Open item: pressing UP during Dock-row Move Mode escaping to the Daily Ayah button could not be reproduced by static reading; UP is now consumed explicitly in `stepMove`. Needs physical-remote confirmation.
