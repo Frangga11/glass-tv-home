@@ -75,3 +75,12 @@ Changes:
 - Move Mode: UP from Grid row one hands the app to Dock row one (mirror of Dock DOWN). If the Dock is full the app is picked up again, so Move Mode never ends.
 
 Open item: pressing UP during Dock-row Move Mode escaping to the Daily Ayah button could not be reproduced by static reading; UP is now consumed explicitly in `stepMove`. Needs physical-remote confirmation.
+
+
+## Follow-up audit 003 — latched three-row frame and Move Mode hand-off
+
+The supplied patch defines the three visible rows as Dock row one plus two Grid rows. The frame remains latched after Grid row three appears: UP from row three moves to row two, UP from row two focuses the raised Dock without collapsing, and UP from the raised Dock lowers the full frame while retaining Dock focus. The original two-row state remains unchanged.
+
+The Dock scroll offset is now derived from laid-out Grid geometry rather than only accumulated scroll callbacks. The clock/date block remains visible while other Home chrome is hidden and is re-hidden after focus-driven UI refreshes. Moving an app DOWN from the Dock opens the hidden Grid through the normal expansion transition and re-enters Move Mode once the target holder is laid out; DPAD/OK input is captured during that hand-off.
+
+Scope remains limited to Grid frame geometry, focus ownership, Dock scroll synchronization, and Move Mode hand-off. No weather, wallpaper, prayer/Ayah, popup, glass styling, or app inventory changes. Physical Mi TV Stick testing is still required for acceptance.
