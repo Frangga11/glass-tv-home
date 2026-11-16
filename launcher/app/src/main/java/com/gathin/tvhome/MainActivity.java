@@ -3337,8 +3337,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 int gridPosition = adapter.positionOf(key);
                 if (gridPosition >= 0 && horizontalGridExpanded) focusTile(gridPosition);
                 else {
-                    int dockPosition = dockAdapter.positionOf(key);
-                    if (dockPosition >= 0) focusDockTile(dockPosition);
+                    int fallbackDockPosition = dockAdapter.positionOf(key);
+                    if (fallbackDockPosition >= 0) focusDockTile(fallbackDockPosition);
                 }
             }, 2500);
             expandHorizontalDockForOverflow(Math.max(0, adapter.positionOf(key)), generation, key);
