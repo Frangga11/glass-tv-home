@@ -148,7 +148,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         global_focus_start = MAIN.index("addOnGlobalFocusChangeListener((oldF, newF) -> {")
         global_focus_end = MAIN.index("packageFilter.addAction", global_focus_start)
         global_focus = MAIN[global_focus_start:global_focus_end]
-        self.assertIn("if (newF != null && !onTile) gridFocusRequestGeneration++;", global_focus)
+        self.assertIn("if (newF != null && !onTile && !moveHandoffPending) gridFocusRequestGeneration++;", global_focus)
 
     def test_horizontal_grid_focus_restore_reapplies_glass_for_already_focused_card(self):
         start = MAIN.index("private void focusTileWhenLaidOut")
