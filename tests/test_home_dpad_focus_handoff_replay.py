@@ -46,7 +46,7 @@ class HomeDpadFocusHandoffTest(unittest.TestCase):
         abort = MAIN[start:end]
         self.assertIn("horizontalDockCollapseInProgress = false", abort)
         self.assertIn("grid.setVisibility(View.VISIBLE)", abort)
-        self.assertIn("dockRecycler.setTranslationY(-getHorizontalDockPitch())", abort)
+        self.assertIn("dockRecycler.setTranslationY(dockRaisedTranslationY())", abort)
         self.assertNotIn("focusTopBarFallback()", abort)
 
     def test_pending_direction_uses_semantic_navigation_not_synthetic_key_replay(self):
