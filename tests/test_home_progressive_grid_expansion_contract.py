@@ -125,7 +125,7 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
         self.assertIn("moveHandoffPending = true;", method)
         self.assertIn("expandHorizontalDockForOverflow(Math.max(0, adapter.positionOf(key)), generation, key)", method)
         expand = MAIN[MAIN.index("private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration, String moveKey)"):MAIN.index("private void collapseHorizontalOverflowToHomeHeader")]
-        self.assertIn("startMove(moveKey, false)", expand)
+        self.assertIn("startMoveWhenLaidOut(moveKey, false, resolvedMovePosition, 8)", expand)
         dispatch = MAIN[MAIN.index("public boolean dispatchKeyEvent"):MAIN.index("public boolean onTileVerticalKey")]
         self.assertIn("moveHandoffPending && movingPos < 0", dispatch)
 
