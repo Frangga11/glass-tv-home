@@ -52,8 +52,8 @@ class HomeTwoRowDpadWeatherListenerContractTest(unittest.TestCase):
         self.assertIn("focusTile(targetPosition)", expand)
         self.assertIn("prepareDockFocusBeforeCollapse", collapse)
         self.assertIn("card.requestFocus()", collapse)
-        self.assertIn("dockRecycler.setTranslationY(-pitch * (1f - progress))", collapse)
-        self.assertIn("grid.setTranslationY(pitch * progress)", collapse)
+        self.assertIn("dockRecycler.setTranslationY(dockStart * (1f - progress))", collapse)
+        self.assertIn("grid.setTranslationY(gridDrop * progress)", collapse)
         self.assertIn("grid.setVisibility(View.GONE)", collapse)
         self.assertNotIn("restoreDockFocusAfterCollapse", MAIN)
 
