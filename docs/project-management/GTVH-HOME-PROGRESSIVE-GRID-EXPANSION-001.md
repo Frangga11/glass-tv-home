@@ -29,18 +29,18 @@ Make every app row reachable in horizontal Dock mode through a progressive, roll
 - The selected app remains identified by its stable component key while its adapter position changes.
 - When a moved Grid app crosses the visible viewport, the Grid scrolls to reveal it; the Dock follows the same measured scroll delta.
 - A delayed holder/layout pass must not end Move Mode merely because the moved tile is temporarily not attached.
-- UP at Grid row one is a hard boundary in horizontal Grid Move Mode. It does not move the app into the Dock and does not end Move Mode.
-- Move Mode keeps the selected app visible inside the same rolling three-row window while it is repositioned. Long-OK on an app in any visible row must open the context menu without focus escaping to Home controls.
-- The existing explicit OK/BACK handling remains the mode exit/confirmation path.
+- UP at Grid row one transfers the selected app to Dock row one when capacity allows. If the Dock is full, the app remains picked up in the Grid; Move Mode never exits or sends focus to Home chrome.
+- Move Mode keeps the selected app visible inside the same rolling two-row Grid window beneath the Dock while it is repositioned. Long-OK on an app in any visible row must open the context menu without focus escaping to Home controls.
+- The existing explicit OK/BACK handling remains the mode exit/confirmation path. When moving DOWN from the Dock, the hidden Grid is expanded first and Move Mode resumes on the same app identity after layout.
 
 ## Implementation
 
 - Added an expanded Grid scroll accumulator in `MainActivity`.
 - Extended the existing Grid scroll listener so the Dock translation is derived from the actual consumed vertical `dy` reported by the Grid scroll callback, accumulated in pixels.
 - Reset the accumulated scroll delta after the initial Dock/Grid expansion settles and after collapse.
-- During Grid Move Mode, request layout/scroll for the moved stable app identity when its holder is outside the viewport; retry using the current adapter position resolved from that identity. Repositioning aligns the three-row window rather than jumping the moved tile to the top.
+- During Grid Move Mode, request layout/scroll for the moved stable app identity when its holder is outside the viewport; retry using the current adapter position resolved from that identity. Repositioning aligns the two-row Grid window beneath the Dock rather than jumping the moved tile to the top.
 - Changed normal row transitions and focus restoration to align the first row of a rolling three-row window, not the focused row itself.
-- Added a reversible Home-chrome visibility gate for three-row mode. It preserves each affected view's original visibility and includes the complete clock/date container (`leftBlock`).
+- Added a reversible Home-chrome visibility gate for three-row mode. It preserves each affected view's original visibility and leaves the clock/date container (`leftBlock`) visible.
 - Changed normal UP from the first Grid row to complete the existing synchronized collapse while retaining focus on the Dock row-one destination.
 - Kept Move Mode UP at row one within the Grid region as a hard boundary.
 
@@ -50,7 +50,7 @@ Only horizontal Grid viewport progression, Dock synchronization, and the related
 
 ## Validation
 
-- Added/extended `tests/test_home_progressive_grid_expansion_contract.py` for pixel-synchronized Dock tracking, three-row window alignment, Home-chrome visibility rules (including clock/date), collapse restoration, and Move Mode persistence/boundary.
+- Added/extended `tests/test_home_progressive_grid_expansion_contract.py` for pixel-synchronized Dock tracking, two-row Grid window alignment, Home-chrome visibility rules (including clock/date), collapse restoration, and Move Mode persistence/boundary.
 - Updated the existing Home DPAD contracts to expect collapse-to-Dock-row-one behavior.
 - Automated CI/build and unit tests must pass before this work is considered code-validated.
 - Physical Mi TV Stick remote testing is still required for acceptance. No physical-device PASS is claimed by this document.
