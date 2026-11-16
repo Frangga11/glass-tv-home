@@ -162,6 +162,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalGridViewportAnimator;
     /** Accumulated physical Grid scroll delta; Dock follows the exact consumed pixels. */
     private int horizontalGridScrollPixels;
+    /** Absolute RecyclerView offset at the current rolling-window origin. */
+    private int horizontalGridScrollBaselinePixels;
     /** Home chrome is hidden only while the progressive viewport contains three or more app rows. */
     private boolean horizontalThreeRowFrameActive;
     private final ArrayList<View> threeRowHiddenViews = new ArrayList<>();
@@ -3817,6 +3819,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setAlpha(1f);
                 horizontalDockExpansionInProgress = false;
                 horizontalGridScrollPixels = 0;
+                horizontalGridScrollBaselinePixels = 0;
                 dockRecycler.setAlpha(1f);
                 if (moveKey != null) {
                     int resolvedMovePosition = adapter == null ? RecyclerView.NO_POSITION : adapter.positionOf(moveKey);
@@ -3942,6 +3945,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // Dock already owns focus. Only now remove the overflow row from the view tree.
                 horizontalGridExpanded = false;
                 horizontalGridScrollPixels = 0;
+                horizontalGridScrollBaselinePixels = 0;
                 horizontalGridViewportRows = 1;
                 setThreeRowFrameChromeHidden(false);
                 grid.stopScroll();
@@ -4022,6 +4026,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Real Grid scroll offset in pixels, measured from the laid-out first visible row. */
     private int measuredGridScrollPixels(int fallback) {
+        return Math.max(0, measuredGridAbsoluteScrollPixels(fallback) - horizontalGridScrollBaselinePixels);
+    }
+
+    /** Absolute offset from Grid row one, independent of the current rolling-window baseline. */
+    private int measuredGridAbsoluteScrollPixels(int fallback) {
         if (grid == null || !(grid.getLayoutManager() instanceof GridLayoutManager)
                 || grid.getChildCount() == 0) return Math.max(0, fallback);
         GridLayoutManager manager = (GridLayoutManager) grid.getLayoutManager();
@@ -4083,6 +4092,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final int scroll = horizontalGridScrollPixels;
         setThreeRowFrameChromeHidden(grow);
         if (grow) {
+            // Rebase the measured scroll at the first row of the new rolling two-row window.
+            horizontalGridScrollBaselinePixels = measuredGridAbsoluteScrollPixels(horizontalGridScrollPixels);
             horizontalGridScrollPixels = 0;
             dockRecycler.setAlpha(1f);
             horizontalGridViewportRows = 2;
