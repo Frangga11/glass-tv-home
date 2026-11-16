@@ -11,7 +11,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         start = MAIN.index("grid.addOnScrollListener")
         end = MAIN.index("// Liquid feel:", start)
         listener = MAIN[start:end]
-        self.assertIn("horizontalGridScrollPixels += dy;", listener)
+        self.assertIn("measuredGridScrollPixels(horizontalGridScrollPixels + dy)", listener)
         self.assertIn("dockRecycler.setTranslationY(dockRaisedTranslationY())", listener)
         self.assertIn("horizontalGridViewportAnimator == null", listener)
         helper = MAIN[MAIN.index("private float dockRaisedTranslationY"):MAIN.index("private void setGridViewportRowsImmediate")]
@@ -43,9 +43,9 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("startMove(key, !toDock)", survive)
 
     def test_three_row_window_keeps_target_at_bottom_and_preserves_rows_above(self):
-        self.assertIn("return Math.max(0, targetRow - 2);", MAIN)
+        self.assertIn("return Math.max(0, targetRow - 1);", MAIN)
         self.assertIn("int windowStartRow = gridWindowStartRow(targetRow);", MAIN)
-        self.assertIn("return targetRow >= 2 ? 3 : 1;", MAIN)
+        self.assertIn("return targetRow >= 2 ? 2 : 1;", MAIN)
         self.assertIn("currentRow, windowStartRow, rowPitch, currentTopOffset", MAIN)
         self.assertIn("int expectedWindowStartRow = gridWindowStartRow(position / COLUMNS);", MAIN)
 
@@ -61,6 +61,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("threeRowOriginalVisibility.get(i)", method)
         self.assertNotIn("R.id.leftBlock", method)
         self.assertIn("setThreeRowFrameChromeHidden(false)", MAIN)
+        self.assertIn("private void reassertThreeRowChrome()", MAIN)
 
     def test_three_row_navigation_triggers_chrome_hide_only_at_row_three(self):
         start = MAIN.index("private void startHorizontalGridRowTransition")
@@ -72,7 +73,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertNotIn("targetRow >= 2", method)
         grow = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
         self.assertIn("setThreeRowFrameChromeHidden(grow)", grow)
-        self.assertIn("horizontalGridViewportRows = 3;", grow)
+        self.assertIn("horizontalGridViewportRows = 2;", grow)
 
     def test_moved_grid_identity_is_revealed_without_ending_move_mode(self):
         start = MAIN.index("private void restoreMovingTile")
@@ -108,6 +109,33 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
     def test_raised_dock_up_collapses_frame_instead_of_leaving_for_header(self):
         keys = MAIN[MAIN.index("public boolean onDockTileKey("):MAIN.index("public boolean onDockTileHeld(")]
         self.assertIn("if (horizontalGridExpanded) {\n                    collapseHorizontalOverflowToDock(position);", keys)
+
+
+class ThreeRowFramePopupContractTest(unittest.TestCase):
+    def test_up_from_grid_row_two_focuses_raised_dock_without_collapsing(self):
+        method = MAIN[MAIN.index("public boolean onTileVerticalKey"):MAIN.index("private int pendingFocus;")]
+        self.assertIn("horizontalGridViewportRows >= 2", method)
+        self.assertIn("focusRaisedDockTile(dockTarget)", method)
+        self.assertLess(method.index("focusRaisedDockTile(dockTarget)"), method.index("collapseHorizontalOverflowToDock(dockTarget)"))
+        raised = MAIN[MAIN.index("private void focusRaisedDockTile"):MAIN.index("private void focusDockTile(int position)")]
+        self.assertNotIn("collapseHorizontalOverflowToDock", raised)
+
+    def test_dock_move_down_opens_grid_and_restarts_move_mode(self):
+        method = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
+        self.assertIn("moveHandoffPending = true;", method)
+        self.assertIn("expandHorizontalDockForOverflow(Math.max(0, adapter.positionOf(key)), generation, key)", method)
+        expand = MAIN[MAIN.index("private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration, String moveKey)"):MAIN.index("private void collapseHorizontalOverflowToHomeHeader")]
+        self.assertIn("startMove(moveKey, false)", expand)
+        dispatch = MAIN[MAIN.index("public boolean dispatchKeyEvent"):MAIN.index("public boolean onTileVerticalKey")]
+        self.assertIn("moveHandoffPending && movingPos < 0", dispatch)
+
+    def test_scroll_offset_uses_measured_grid_geometry(self):
+        self.assertIn("private int measuredGridScrollPixels", MAIN)
+        grow = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
+        self.assertIn("dockRecycler.setAlpha(1f);", grow)
+
+    def test_hidden_chrome_is_reasserted_after_focus_changes(self):
+        self.assertIn("if (horizontalThreeRowFrameActive) root.post(this::reassertThreeRowChrome);", MAIN)
 
 
 if __name__ == "__main__":
