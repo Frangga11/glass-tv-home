@@ -86,11 +86,13 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         persistent = timeout[timeout.index("else if (!inDock"):timeout.index("} else {", timeout.index("else if (!inDock"))]
         self.assertNotIn("finishMove();", persistent)
 
-    def test_third_row_keeps_second_row_visible_by_growing_the_viewport(self):
+    def test_third_row_grows_stable_three_row_viewport_without_shrinking_on_up(self):
         layout = MAIN[MAIN.index("private void applyDockLayout"):MAIN.index("private boolean sameLayoutParams")]
         self.assertIn("(horizontalGridViewportRows - 1) * gridRowPitchPx()", layout)
         settle = MAIN[MAIN.index("private void settleHorizontalGridRowTransition"):MAIN.index("private void focusHorizontalGridRowTargetWhenLaidOut")]
-        self.assertIn("animateGridViewportRows(false", settle)
+        self.assertNotIn("animateGridViewportRows(false", settle)
+        self.assertIn("gridWindowStartRow(targetRow)", settle)
+        self.assertIn("gridViewportRowsFor(target / COLUMNS) > horizontalGridViewportRows", MAIN)
 
     def test_collapse_lowers_the_whole_frame_and_resets_rows(self):
         collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):MAIN.index("private void abortHorizontalDockCollapse")]
