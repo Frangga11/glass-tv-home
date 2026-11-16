@@ -154,6 +154,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ValueAnimator horizontalDockTransitionAnimator;
     private int horizontalDockTransitionGeneration;
     private boolean horizontalDockCollapseInProgress;
+    /** Grid rows inside the expanded viewport: 1 while Dock + row two, 2 once row three joins the frame. */
+    private int horizontalGridViewportRows = 1;
+    private int cachedGridRowPitchPx;
+    private android.animation.ValueAnimator horizontalGridViewportAnimator;
     /** Accumulated physical Grid scroll delta; Dock follows the exact consumed pixels. */
     private int horizontalGridScrollPixels;
     /** Home chrome is hidden only while the progressive viewport contains three or more app rows. */
@@ -1025,7 +1029,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (!dockVertical && horizontalGridExpanded && !horizontalDockCollapseInProgress
                         && dockRecycler != null) {
                     horizontalGridScrollPixels += dy;
-                    dockRecycler.setTranslationY(-getHorizontalDockPitch() - horizontalGridScrollPixels);
+                    // Layout passes report onScrolled(0, 0); never let them override a running frame animation.
+                    if (horizontalGridViewportAnimator == null) {
+                        dockRecycler.setTranslationY(dockRaisedTranslationY());
+                        syncDockFrameAlpha();
+                    }
                 }
                 if (!glassShown) return;
                 glassTargetY -= dy;
@@ -2336,8 +2344,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (horizontalDockExpansionInProgress) return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                // The Dock is the first Home row in the Patch 4.1 navigation model:
-                // Up returns to the top shelf, never to an app row in the middle.
+                // Raised Dock inside an open frame: UP lowers the whole frame and keeps focus on Dock row one.
+                if (horizontalGridExpanded) {
+                    collapseHorizontalOverflowToDock(position);
+                    return true;
+                }
+                // Idle Dock is the first Home row: Up returns to the top shelf.
                 focusTopBarFallback();
                 return true;
             }
@@ -2893,7 +2905,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.bottomMargin = dockBottomMargin;
 
                 gridParams.height = horizontalGridExpanded
-                        ? gridViewportHeight : ViewGroup.LayoutParams.MATCH_PARENT;
+                        ? gridViewportHeight + (horizontalGridViewportRows - 1) * gridRowPitchPx()
+                        : ViewGroup.LayoutParams.MATCH_PARENT;
                 gridParams.topMargin = 0;
                 gridParams.bottomMargin = horizontalGridExpanded ? dockBottomMargin : 0;
                 if (grid.getPaddingTop() != gridBasePaddingTop || grid.getPaddingBottom() != 0) {
@@ -3290,7 +3303,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (key == null) return;
         finishMove();
         boolean changed = toDock ? adapter.pinToDock(key, dockPosition) : adapter.unpinFromDock(key);
-        if (!changed) return;
+        if (!changed) {
+            // Dock full or nothing to change: Move Mode must survive, so pick the app up again where it was.
+            RecyclerView origin = toDock ? grid : dockRecycler;
+            if (origin != null) origin.post(() -> startMove(key, !toDock));
+            return;
+        }
         dockAdapter.refresh();
         applyDockLayout();
         RecyclerView target = toDock ? dockRecycler : grid;
@@ -3345,6 +3363,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 moveTileAcrossRegion(movingKey, false, 0);
                 return;
             }
+            if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP) return; // row one is the top edge
             last = dockAdapter.lastMovable();
             if (dockVertical) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos > 0) to = movingPos - 1;
@@ -3362,8 +3381,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         } else {
             String movingKey = adapter.keyAt(movingPos);
             if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS) {
-                // In Grid Move Mode, UP at row one is a hard boundary. It must not
-                // unpin/promote the selected app into the Dock or end the active move.
+                // UP from the first Grid row hands the app to Dock row one (mirror of Dock DOWN);
+                // when the Dock is full or nothing would remain in the Grid, it stays a hard boundary.
+                // It never ends Move Mode and never moves focus to the Home header.
+                if (adapter.getItemCount() > 1 && dockAdapter != null) {
+                    moveTileAcrossRegion(movingKey, true,
+                            Math.min(dockAdapter.getItemCount(), movingPos % COLUMNS));
+                }
                 return;
             }
             if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT && movingPos % COLUMNS == 0) {
@@ -3594,6 +3618,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     };
 
     private boolean focusTopBarFallback() {
+        // A started Move Mode or an open app frame must never lose focus to the Home header.
+        if (movingPos >= 0 && movingCard != null && movingCard.isShown()) {
+            movingCard.requestFocus();
+            return true;
+        }
+        if (horizontalDockCollapseInProgress) return true;
+        if (!dockVertical && horizontalGridExpanded) {
+            collapseHorizontalOverflowToDock(Math.max(0, dockAdapter == null ? 0
+                    : dockAdapter.positionOf(lastDockFocusedKey)));
+            return true;
+        }
         if (btnHome != null && btnHome.isShown() && btnHome.isFocusable() && btnHome.requestFocus()) {
             return true;
         }
@@ -3696,6 +3731,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid.setTranslationY(pitch);
         // Keep the Grid fully opaque during the row transition; do not cross-fade the
         // content plane or make the Dock glass appear to change material.
+        horizontalGridViewportRows = 1;
         horizontalGridExpanded = true;
         applyDockLayout();
         grid.setVisibility(View.VISIBLE);
@@ -3709,6 +3745,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setAlpha(1f);
                 horizontalDockExpansionInProgress = false;
                 horizontalGridScrollPixels = 0;
+                dockRecycler.setAlpha(1f);
                 focusTile(targetPosition);
             });
         });
@@ -3781,8 +3818,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 DockPreferences.load(this).capacity, density);
         final int pitch = DockGeometry.horizontalGridViewportHeightPx(
                 gridTileWidth, density, gridBasePaddingTop) + Math.round(8f * density);
+        android.animation.ValueAnimator viewportRunning = horizontalGridViewportAnimator;
+        if (viewportRunning != null) viewportRunning.cancel();
         android.animation.ValueAnimator previous = horizontalDockTransitionAnimator;
         if (previous != null) previous.cancel();
+        // Collapse the WHOLE frame (Dock + every visible Grid row) from wherever it currently is.
+        final float dockStart = dockRaisedTranslationY();
+        final float dockStartAlpha = dockRecycler.getAlpha();
+        final float gridDrop = pitch + (horizontalGridViewportRows - 1) * gridRowPitchPx();
         final android.animation.ValueAnimator animator =
                 android.animation.ValueAnimator.ofFloat(0f, 1f);
         horizontalDockTransitionAnimator = animator;
@@ -3791,8 +3834,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         animator.addUpdateListener(value -> {
             if (transition != horizontalDockTransitionGeneration) return;
             float progress = (Float) value.getAnimatedValue();
-            dockRecycler.setTranslationY(-pitch * (1f - progress));
-            grid.setTranslationY(pitch * progress);
+            dockRecycler.setTranslationY(dockStart * (1f - progress));
+            dockRecycler.setAlpha(dockStartAlpha + (1f - dockStartAlpha) * progress);
+            grid.setTranslationY(gridDrop * progress);
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -3802,7 +3846,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (transition == horizontalDockTransitionGeneration) {
                     // Keep the expanded scene coherent. Dock already owns focus, so no focus
                     // restoration or header fallback is necessary.
-                    dockRecycler.setTranslationY(-pitch);
+                    dockRecycler.setTranslationY(dockRaisedTranslationY());
+                    syncDockFrameAlpha();
                     grid.setTranslationY(0f);
                     horizontalDockCollapseInProgress = false;
                     pendingDockCollapseDirection = -1;
@@ -3819,10 +3864,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // Dock already owns focus. Only now remove the overflow row from the view tree.
                 horizontalGridExpanded = false;
                 horizontalGridScrollPixels = 0;
+                horizontalGridViewportRows = 1;
                 setThreeRowFrameChromeHidden(false);
+                grid.stopScroll();
+                grid.scrollToPosition(0);
                 grid.setAlpha(1f);
                 grid.setVisibility(View.GONE);
                 dockRecycler.setTranslationY(0f);
+                dockRecycler.setAlpha(1f);
                 grid.setTranslationY(0f);
                 applyDockLayout();
                 horizontalDockCollapseInProgress = false;
@@ -3837,7 +3886,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         horizontalDockCollapseInProgress = false;
         pendingDockCollapseDirection = -1;
         if (horizontalGridExpanded) {
-            if (dockRecycler != null) dockRecycler.setTranslationY(-getHorizontalDockPitch());
+            if (dockRecycler != null) {
+                dockRecycler.setTranslationY(dockRaisedTranslationY());
+                syncDockFrameAlpha();
+            }
             if (grid != null) {
                 grid.setTranslationY(0f);
                 grid.setVisibility(View.VISIBLE);
@@ -3864,6 +3916,116 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         } else if (direction == KeyEvent.KEYCODE_DPAD_UP) {
             focusTopBarFallback();
         }
+    }
+
+    /** Rolling window: the focused row is the bottom row of the frame once row three is reached. */
+    private static int gridWindowStartRow(int targetRow) {
+        return Math.max(0, targetRow - 1);
+    }
+
+    /** Row two alone needs a one-row viewport; row three and deeper need two Grid rows (plus the Dock above). */
+    private static int gridViewportRowsFor(int targetRow) {
+        return targetRow >= 1 ? 2 : 1;
+    }
+
+    /** Measured decorated pitch between two Grid rows; falls back to the computed item height. */
+    private int gridRowPitchPx() {
+        if (grid != null && grid.getLayoutManager() != null && grid.getChildCount() > 0) {
+            Rect bounds = new Rect();
+            grid.getLayoutManager().getDecoratedBoundsWithMargins(grid.getChildAt(0), bounds);
+            if (bounds.height() > 0) cachedGridRowPitchPx = bounds.height();
+        }
+        if (cachedGridRowPitchPx > 0) return cachedGridRowPitchPx;
+        int tileWidth = DockGeometry.horizontalTileWidthPx(
+                DockGeometry.horizontalContentWidthPx(gridWrap.getWidth(), density),
+                DockPreferences.load(this).capacity, density);
+        return DockGeometry.itemHeightPx(DockGeometry.tileHeightPx(tileWidth), density);
+    }
+
+    /** Dock offset that keeps it directly above the first row of the current frame. */
+    private float dockRaisedTranslationY() {
+        return -(getHorizontalDockPitch()
+                + (horizontalGridViewportRows - 1) * gridRowPitchPx()
+                + horizontalGridScrollPixels);
+    }
+
+    /** The Dock leaves the frame once the rolling window moves past it: fade it with the scroll. */
+    private void syncDockFrameAlpha() {
+        if (dockRecycler == null) return;
+        int rp = Math.max(1, gridRowPitchPx());
+        float alpha = horizontalGridExpanded && horizontalGridScrollPixels > 0
+                ? Math.max(0f, 1f - horizontalGridScrollPixels / (float) rp) : 1f;
+        dockRecycler.setAlpha(alpha);
+    }
+
+    /** Instant frame resize used by focus restoration and Move Mode (no animation, no jump of the Dock). */
+    private void setGridViewportRowsImmediate(int rows) {
+        if (dockVertical || !horizontalGridExpanded || horizontalDockCollapseInProgress
+                || rows == horizontalGridViewportRows) return;
+        android.animation.ValueAnimator running = horizontalGridViewportAnimator;
+        if (running != null) running.cancel();
+        horizontalGridViewportRows = rows;
+        applyDockLayout();
+        grid.setTranslationY(0f);
+        dockRecycler.setTranslationY(dockRaisedTranslationY());
+        syncDockFrameAlpha();
+        setThreeRowFrameChromeHidden(rows >= 2);
+    }
+
+    /**
+     * Grow (row three joins) or shrink (back to row two) the frame as one motion: the Dock and row two
+     * rise/fall together while the new row enters from / leaves below. Final geometry is always committed,
+     * even if a newer key press cancels the animation; the continuation runs only when not cancelled.
+     */
+    private void animateGridViewportRows(boolean grow, Runnable onDone) {
+        if (grid == null || dockRecycler == null || !horizontalGridExpanded || dockVertical
+                || (grow && horizontalGridViewportRows >= 2) || (!grow && horizontalGridViewportRows < 2)) {
+            if (onDone != null) onDone.run();
+            return;
+        }
+        android.animation.ValueAnimator previous = horizontalGridViewportAnimator;
+        if (previous != null) previous.cancel();
+        final int rp = gridRowPitchPx();
+        final int pitch = getHorizontalDockPitch();
+        final int scroll = horizontalGridScrollPixels;
+        setThreeRowFrameChromeHidden(grow);
+        if (grow) {
+            horizontalGridViewportRows = 2;
+            applyDockLayout();
+            // The taller viewport grows upward; keep row two in its old slot until the motion starts.
+            grid.setTranslationY(rp);
+            dockRecycler.setTranslationY(-(pitch + scroll));
+        }
+        final android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofFloat(0f, 1f);
+        horizontalGridViewportAnimator = animator;
+        animator.setDuration(reducedMotion ? 140 : 240);
+        animator.setInterpolator(new android.view.animation.DecelerateInterpolator());
+        animator.addUpdateListener(value -> {
+            float p = (Float) value.getAnimatedValue();
+            if (grow) {
+                grid.setTranslationY(rp * (1f - p));
+                dockRecycler.setTranslationY(-(pitch + scroll) - rp * p);
+            } else {
+                grid.setTranslationY(rp * p);
+                dockRecycler.setTranslationY(-(pitch + rp + scroll) + rp * p);
+            }
+        });
+        animator.addListener(new android.animation.AnimatorListenerAdapter() {
+            private boolean cancelled;
+            @Override public void onAnimationCancel(android.animation.Animator animation) { cancelled = true; }
+            @Override public void onAnimationEnd(android.animation.Animator animation) {
+                if (horizontalGridViewportAnimator == animator) horizontalGridViewportAnimator = null;
+                if (!grow) {
+                    horizontalGridViewportRows = 1;
+                    applyDockLayout();
+                }
+                grid.setTranslationY(0f);
+                dockRecycler.setTranslationY(dockRaisedTranslationY());
+                syncDockFrameAlpha();
+                if (!cancelled && onDone != null) onDone.run();
+            }
+        });
+        animator.start();
     }
 
     private void animateHorizontalDockTransition(int pitch, boolean expanding, Runnable onSettled) {
@@ -4027,6 +4189,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
 
+        // Row three joins the frame: grow the viewport first so row two stays visible above it.
+        if (gridViewportRowsFor(target / COLUMNS) > horizontalGridViewportRows) {
+            animateGridViewportRows(true, () -> startHorizontalGridRowTransition(
+                    transitionGeneration, focusGeneration));
+            return;
+        }
         // Measure the decorated row pitch and its actual top offset. Raw child height/top
         // omit RecyclerView margins/decorations and can leave a row partially visible.
         Rect rowBounds = new Rect();
@@ -4034,8 +4202,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int rowPitch = Math.max(1, rowBounds.height());
         int currentRow = firstVisible / COLUMNS;
         int targetRow = target / COLUMNS;
-        int windowStartRow = Math.max(0, targetRow <= 1 ? targetRow : targetRow - 1);
-        if (targetRow >= 2) setThreeRowFrameChromeHidden(true);
+        int windowStartRow = gridWindowStartRow(targetRow);
         int currentTopOffset = rowBounds.top - grid.getPaddingTop();
         int dy = DockGeometry.gridRowScrollDeltaPx(
                 currentRow, windowStartRow, rowPitch, currentTopOffset);
@@ -4124,7 +4291,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
 
         int targetRow = target / COLUMNS;
-        int windowStartPosition = Math.max(0, targetRow <= 1 ? targetRow : targetRow - 1) * COLUMNS;
+        int windowStartPosition = gridWindowStartRow(targetRow) * COLUMNS;
         View firstWindowView = manager.findViewByPosition(windowStartPosition);
         if (firstWindowView == null) {
             if (horizontalGridTransitionRetries++ < 4) {
@@ -4155,6 +4322,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
 
+        if (targetRow == 0 && horizontalGridViewportRows > 1) {
+            // Back to row two: fold row three away first, then commit focus.
+            animateGridViewportRows(false, () -> settleHorizontalGridRowTransition(
+                    transitionGeneration, focusGeneration));
+            return;
+        }
         String targetKey = pendingHorizontalGridKey;
         pendingHorizontalGridPosition = RecyclerView.NO_POSITION;
         pendingHorizontalGridKey = null;
@@ -4184,7 +4357,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ? (GridLayoutManager) grid.getLayoutManager() : null;
         int firstComplete = manager == null ? RecyclerView.NO_POSITION
                 : manager.findFirstCompletelyVisibleItemPosition();
-        int expectedWindowStartRow = Math.max(0, (position / COLUMNS) <= 1 ? (position / COLUMNS) : (position / COLUMNS) - 1);
+        int expectedWindowStartRow = gridWindowStartRow(position / COLUMNS);
         if (firstComplete != RecyclerView.NO_POSITION
                 && firstComplete / COLUMNS != expectedWindowStartRow) {
             requestHorizontalGridRow(position);
@@ -4226,7 +4399,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         RecyclerView.LayoutManager manager = grid.getLayoutManager();
         if (manager instanceof GridLayoutManager) {
             int targetRow = position / COLUMNS;
-            int windowStartRow = Math.max(0, targetRow <= 1 ? targetRow : targetRow - 1);
+            int windowStartRow = gridWindowStartRow(targetRow);
+            if (!dockVertical && horizontalGridExpanded) {
+                setGridViewportRowsImmediate(gridViewportRowsFor(targetRow));
+            }
             int firstVisible = ((GridLayoutManager) manager).findFirstVisibleItemPosition();
             View firstView = firstVisible == RecyclerView.NO_POSITION
                     ? null : manager.findViewByPosition(firstVisible);
@@ -4242,7 +4418,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 ((GridLayoutManager) manager).scrollToPositionWithOffset(
                         windowStartRow * COLUMNS, grid.getPaddingTop());
             }
-            if (targetRow >= 2) setThreeRowFrameChromeHidden(true);
         } else {
             grid.scrollToPosition(position);
         }
