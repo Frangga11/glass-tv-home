@@ -20,8 +20,8 @@ Make every app row reachable in horizontal Dock mode through a progressive, roll
 - DOWN from the Dock reveals the first Grid row using the existing coordinated Dock/Grid expansion.
 - As the Grid scrolls to reveal later rows, the Dock follows the Grid's actual vertical scroll offset pixel-for-pixel. The Dock and row one therefore rise together instead of the Dock remaining parked while the Grid moves independently.
 - UP from Grid row three to row two to row one keeps focus inside the Grid. UP from row one collapses the complete frame, returns rows two/three below the viewport, and restores Dock + row one to the initial anchor; focus remains on Dock row one, not Beranda.
-- The viewport is a rolling window of up to three visible Grid rows, with the Dock remaining a separate row above: the established two-row step remains unchanged; when Grid row three first appears, Grid rows one and two remain visible above it and the Dock remains above the Grid. As later rows are reached, the two-row Grid window advances without pinning the focused row to its top edge.
-- The two-row state is unchanged. When the three-row app frame is active, every Home overlay/capsule/text element is temporarily hidden except the clock and date (`leftBlock` remains visible), including location/altitude, weather/AQI, navigation, Wi-Fi/microphone, wallpaper title/description, prayer schedule, Daily Ayah, and other Home elements. Their original visibility is restored when the frame collapses.
+- The viewport is a rolling window of up to three visible Grid rows, with the Dock remaining a separate row above: the established two-row step remains unchanged; when Grid row three first appears, Grid rows one and two remain visible above it and the Dock remains above the Grid. As later rows are reached, the three-row Grid window advances without pinning the focused row to its top edge.
+- The initial one-row Grid state and the existing Dock-to-Grid reveal remain unchanged. When the three-row app frame is active, every Home overlay/capsule/text element is temporarily hidden except the clock and date (`leftBlock` remains visible), including location/altitude, weather/AQI, navigation, Wi-Fi/microphone, wallpaper title/description, prayer schedule, Daily Ayah, and other Home elements. Their original visibility is restored when the frame collapses.
 - The existing deterministic four-way neighbor mapping and hard row boundaries remain in force.
 
 ### App Move Mode
@@ -66,7 +66,7 @@ Root cause: the expanded Grid viewport was always ONE row tall. When row three (
 Changes:
 
 - `horizontalGridViewportRows` (1 or 3). Reaching Grid row three expands to a stable three-row viewport; rows one and two remain visible while focus moves UP through rows three, two, and one. The frame collapses only on the additional UP from row one.
-- Rolling window start is `max(0, targetRow - 1)`; Home chrome is hidden as soon as row three joins the frame and restored when the full frame collapses; the clock/date block remains visible.
+- Rolling window start is `max(0, targetRow - 2)`; Home chrome is hidden as soon as row three joins the frame and restored when the full frame collapses; the clock/date block remains visible.
 - `animateGridViewportRows` grows/shrinks the frame as one motion (Dock + row two rise together, row three enters from below). Final geometry is always committed even if a newer key cancels it.
 - `dockRaisedTranslationY()` is the single Dock offset formula (dock pitch + extra viewport rows + scroll). The Dock fades out once the rolling window scrolls past it.
 - Collapse lowers the whole frame from its current state (any rows/scroll) and resets rows, scroll and Grid scroll position.
