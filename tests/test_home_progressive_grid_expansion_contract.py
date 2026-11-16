@@ -131,6 +131,8 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
 
     def test_scroll_offset_uses_measured_grid_geometry(self):
         self.assertIn("private int measuredGridScrollPixels", MAIN)
+        self.assertIn("horizontalGridScrollBaselinePixels", MAIN)
+        self.assertIn("measuredGridAbsoluteScrollPixels(horizontalGridScrollPixels)", MAIN)
         grow = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
         self.assertIn("dockRecycler.setAlpha(1f);", grow)
 
