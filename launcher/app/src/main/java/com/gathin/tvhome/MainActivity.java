@@ -1201,7 +1201,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             boolean onTile = newF != null && newF.getId() == R.id.card;
             if (horizontalThreeRowFrameActive) root.post(this::reassertThreeRowChrome);
             // Any non-Grid focus destination supersedes queued Grid/resume restoration work.
-            if (newF != null && !onTile) gridFocusRequestGeneration++;
+            if (newF != null && !onTile && !moveHandoffPending) gridFocusRequestGeneration++;
             if (newF != null && isTopPill(newF)) {
                 String pillKey = topPillKeyForView(newF);
                 if (pillKey != null) {
@@ -3255,6 +3255,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         movingPos = pos;
+        moveHandoffPending = false;
         movingDock = inDock;
         movingRecycler = recycler;
         movingCard = vh.itemView.findViewById(R.id.card);
@@ -3328,6 +3329,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // The Grid is hidden at rest: open it through the normal transition, then pick the app up again.
             moveHandoffPending = true;
             final int generation = ++gridFocusRequestGeneration;
+            handler.postDelayed(() -> {
+                if (!moveHandoffPending || movingPos >= 0) return;
+                moveHandoffPending = false;
+                int gridPosition = adapter.positionOf(key);
+                if (gridPosition >= 0 && horizontalGridExpanded) focusTile(gridPosition);
+                else {
+                    int dockPosition = dockAdapter.positionOf(key);
+                    if (dockPosition >= 0) focusDockTile(dockPosition);
+                }
+            }, 2500);
             expandHorizontalDockForOverflow(Math.max(0, adapter.positionOf(key)), generation, key);
             return;
         }
@@ -3808,8 +3819,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 horizontalGridScrollPixels = 0;
                 dockRecycler.setAlpha(1f);
                 if (moveKey != null) {
-                    moveHandoffPending = false;
-                    startMove(moveKey, false);
+                    int resolvedMovePosition = adapter == null ? RecyclerView.NO_POSITION : adapter.positionOf(moveKey);
+                    if (resolvedMovePosition >= 0) startMoveWhenLaidOut(moveKey, false, resolvedMovePosition, 8);
+                    else moveHandoffPending = false;
                 } else {
                     focusTile(targetPosition);
                 }
@@ -4087,7 +4099,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             float p = (Float) value.getAnimatedValue();
             if (grow) {
                 grid.setTranslationY(rp * (1f - p));
-                dockRecycler.setTranslationY(-(pitch + scroll) - rp * p);
+                // Interpolate from the old measured scroll to the new one-row viewport anchor.
+                dockRecycler.setTranslationY(-(pitch + scroll) + (scroll - rp) * p);
             } else {
                 grid.setTranslationY(rp * p);
                 dockRecycler.setTranslationY(-(pitch + rp + scroll) + rp * p);
