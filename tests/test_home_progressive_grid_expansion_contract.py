@@ -12,7 +12,11 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         end = MAIN.index("// Liquid feel:", start)
         listener = MAIN[start:end]
         self.assertIn("horizontalGridScrollPixels += dy;", listener)
-        self.assertIn("dockRecycler.setTranslationY(-getHorizontalDockPitch() - horizontalGridScrollPixels)", listener)
+        self.assertIn("dockRecycler.setTranslationY(dockRaisedTranslationY())", listener)
+        self.assertIn("horizontalGridViewportAnimator == null", listener)
+        helper = MAIN[MAIN.index("private float dockRaisedTranslationY"):MAIN.index("private void setGridViewportRowsImmediate")]
+        self.assertIn("horizontalGridScrollPixels", helper)
+        self.assertIn("(horizontalGridViewportRows - 1) * gridRowPitchPx()", helper)
         self.assertIn("!horizontalDockCollapseInProgress", listener)
 
     def test_expansion_captures_scroll_baseline_and_collapse_resets_it(self):
@@ -31,14 +35,19 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         end = MAIN.index("public void onUserInteraction()", start)
         method = MAIN[start:end]
         self.assertIn("if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS)", method)
-        self.assertIn("// unpin/promote the selected app into the Dock or end the active move.", method)
+        self.assertIn("It never ends Move Mode and never moves focus to the Home header.", method)
         row_one_up = method[method.index("if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP"):method.index("if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT")]
-        self.assertNotIn("moveTileAcrossRegion", row_one_up)
+        # UP from Grid row one hands the app to Dock row one; a full Dock keeps Move Mode alive.
+        self.assertIn("moveTileAcrossRegion(movingKey, true", row_one_up)
+        survive = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
+        self.assertIn("startMove(key, !toDock)", survive)
 
     def test_three_row_window_keeps_target_at_bottom_and_preserves_rows_above(self):
-        self.assertIn("int windowStartRow = Math.max(0, targetRow <= 1 ? targetRow : targetRow - 1);", MAIN)
+        self.assertIn("return Math.max(0, targetRow - 1);", MAIN)
+        self.assertIn("int windowStartRow = gridWindowStartRow(targetRow);", MAIN)
+        self.assertIn("return targetRow >= 1 ? 2 : 1;", MAIN)
         self.assertIn("currentRow, windowStartRow, rowPitch, currentTopOffset", MAIN)
-        self.assertIn("int expectedWindowStartRow = Math.max(0, (position / COLUMNS) <= 1 ? (position / COLUMNS) : (position / COLUMNS) - 1);", MAIN)
+        self.assertIn("int expectedWindowStartRow = gridWindowStartRow(position / COLUMNS);", MAIN)
 
     def test_three_row_mode_hides_all_home_chrome_including_clock_and_date(self):
         start = MAIN.index("private void setThreeRowFrameChromeHidden")
@@ -57,7 +66,13 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         start = MAIN.index("private void startHorizontalGridRowTransition")
         end = MAIN.index("private void animateHorizontalGridRowScroll", start)
         method = MAIN[start:end]
-        self.assertIn("if (targetRow >= 2) setThreeRowFrameChromeHidden(true);", method)
+        # Row three joins the frame through animateGridViewportRows(true, ...), which hides the chrome.
+        self.assertIn("gridViewportRowsFor(target / COLUMNS) > horizontalGridViewportRows", method)
+        self.assertIn("animateGridViewportRows(true", method)
+        self.assertNotIn("targetRow >= 2", method)
+        grow = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
+        self.assertIn("setThreeRowFrameChromeHidden(grow)", grow)
+        self.assertIn("horizontalGridViewportRows = 2;", grow)
 
     def test_moved_grid_identity_is_revealed_without_ending_move_mode(self):
         start = MAIN.index("private void restoreMovingTile")
@@ -70,6 +85,27 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("restoreMovingTile(false, key, resolved, previousCard, 8)", timeout)
         persistent = timeout[timeout.index("else if (!inDock"):timeout.index("} else {", timeout.index("else if (!inDock"))]
         self.assertNotIn("finishMove();", persistent)
+
+    def test_third_row_keeps_second_row_visible_by_growing_the_viewport(self):
+        layout = MAIN[MAIN.index("private void applyDockLayout"):MAIN.index("private boolean sameLayoutParams")]
+        self.assertIn("(horizontalGridViewportRows - 1) * gridRowPitchPx()", layout)
+        settle = MAIN[MAIN.index("private void settleHorizontalGridRowTransition"):MAIN.index("private void focusHorizontalGridRowTargetWhenLaidOut")]
+        self.assertIn("animateGridViewportRows(false", settle)
+
+    def test_collapse_lowers_the_whole_frame_and_resets_rows(self):
+        collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):MAIN.index("private void abortHorizontalDockCollapse")]
+        self.assertIn("final float gridDrop = pitch + (horizontalGridViewportRows - 1) * gridRowPitchPx();", collapse)
+        self.assertIn("horizontalGridViewportRows = 1;", collapse)
+        self.assertIn("setThreeRowFrameChromeHidden(false)", collapse)
+
+    def test_header_never_receives_focus_while_frame_or_move_mode_is_open(self):
+        method = MAIN[MAIN.index("private boolean focusTopBarFallback"):MAIN.index("private void focusLastTile")]
+        self.assertIn("movingPos >= 0", method)
+        self.assertIn("horizontalGridExpanded", method)
+
+    def test_raised_dock_up_collapses_frame_instead_of_leaving_for_header(self):
+        keys = MAIN[MAIN.index("public boolean onDockTileKey("):MAIN.index("public boolean onDockTileHeld(")]
+        self.assertIn("if (horizontalGridExpanded) {\n                    collapseHorizontalOverflowToDock(position);", keys)
 
 
 if __name__ == "__main__":
