@@ -65,8 +65,8 @@ Root cause: the expanded Grid viewport was always ONE row tall. When row three (
 
 Changes:
 
-- `horizontalGridViewportRows` (1 or 3). Reaching Grid row three expands to a stable three-row viewport; rows one and two remain visible while focus moves UP through rows three, two, and one. The frame collapses only on the additional UP from row one.
-- Rolling window start is `max(0, targetRow - 2)`; Home chrome is hidden as soon as row three joins the frame and restored when the full frame collapses; the clock/date block remains visible.
+- `horizontalGridViewportRows` (1 or 2 Grid rows). Reaching Grid row three expands the total frame to three visible rows: Dock row one plus two Grid rows. The frame stays latched while focus moves UP from Grid row three to row two, then to the raised Dock; the next UP from the Dock collapses the whole frame.
+- Rolling window start is `max(0, targetRow - 1)`; Home chrome is hidden as soon as row three joins the frame and restored when the full frame collapses; the clock/date block remains visible. Home chrome is re-hidden after focus callbacks so it cannot flash back on.
 - `animateGridViewportRows` grows/shrinks the frame as one motion (Dock + row two rise together, row three enters from below). Final geometry is always committed even if a newer key cancels it.
 - `dockRaisedTranslationY()` is the single Dock offset formula (dock pitch + extra viewport rows + scroll). The Dock fades out once the rolling window scrolls past it.
 - Collapse lowers the whole frame from its current state (any rows/scroll) and resets rows, scroll and Grid scroll position.
@@ -79,8 +79,8 @@ Open item: pressing UP during Dock-row Move Mode escaping to the Daily Ayah butt
 
 ## Follow-up audit 003 — latched three-row frame and Move Mode hand-off
 
-The supplied patch defines the three visible rows as Dock row one plus two Grid rows. The frame remains latched after Grid row three appears: UP from row three moves to row two, UP from row two focuses the raised Dock without collapsing, and UP from the raised Dock lowers the full frame while retaining Dock focus. The original two-row state remains unchanged.
+The supplied patch defines the three visible rows as Dock row one plus two Grid rows. The frame remains latched after Grid row three appears: UP from row three moves to row two, UP from row two focuses the raised Dock without collapsing, and UP from the raised Dock lowers the full frame while retaining Dock focus. The original two-row state remains unchanged. Dock movement is interpolated from its measured pre-grow scroll offset to the new frame anchor to avoid a final-position jump.
 
-The Dock scroll offset is now derived from laid-out Grid geometry rather than only accumulated scroll callbacks. The clock/date block remains visible while other Home chrome is hidden and is re-hidden after focus-driven UI refreshes. Moving an app DOWN from the Dock opens the hidden Grid through the normal expansion transition and re-enters Move Mode once the target holder is laid out; DPAD/OK input is captured during that hand-off.
+The Dock scroll offset is now derived from laid-out Grid geometry rather than only accumulated scroll callbacks. The clock/date block remains visible while other Home chrome is hidden and is re-hidden after focus-driven UI refreshes. Moving an app DOWN from the Dock opens the hidden Grid through the normal expansion transition and re-enters Move Mode once the target holder is laid out; DPAD/OK input is captured during that hand-off. A guarded recovery path releases the hand-off lock if the transition cannot complete.
 
 Scope remains limited to Grid frame geometry, focus ownership, Dock scroll synchronization, and Move Mode hand-off. No weather, wallpaper, prayer/Ayah, popup, glass styling, or app inventory changes. Physical Mi TV Stick testing is still required for acceptance.
