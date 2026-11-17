@@ -2,20 +2,26 @@ package com.gathin.tvhome;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 /** V04 compact, centered Quick Settings surface. Actions remain owned by their existing modules. */
@@ -208,6 +214,9 @@ final class QuickSettingsDialog {
         settingsActions.addView(androidSettings, androidLp);
         content.addView(settingsActions, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 48)));
+        View breathingSpace = new View(activity);
+        content.addView(breathingSpace, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
         QuickSettingsFocusGraph.connect(controls);
         for (View control : controls) {
@@ -233,7 +242,10 @@ final class QuickSettingsDialog {
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
             naturalHeight = content.getMeasuredHeight();
         }
-        int frameHeight = Math.min(availableHeight, Math.max(1, naturalHeight));
+        int frameHeight = availableHeight;
+        content.setLayoutParams(new ViewGroup.LayoutParams(width, frameHeight));
+        content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(frameHeight, View.MeasureSpec.EXACTLY));
 
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setView(content).create();
