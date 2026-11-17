@@ -55,7 +55,7 @@ public class QuickSettingsFocusGraphTest {
             }
         }
         assertEquals(QuickSettingsFocusGraph.COUNT, visited.size());
-        assertEquals(QuickSettingsFocusGraph.RESTART,
+        assertEquals(QuickSettingsFocusGraph.GLASS_SETTINGS,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CLOSE, QuickSettingsFocusGraph.DOWN));
     }
 }
