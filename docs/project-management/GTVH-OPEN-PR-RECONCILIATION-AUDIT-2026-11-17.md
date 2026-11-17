@@ -111,3 +111,37 @@ Continue with #90–#109 (Islamic Shelf, typography, header, spacing, and CI), t
 - **Updated totals: 81 PRs closed, 27 PRs remain open; 0 branches deleted.**
 
 The remaining open queue is #109, #99, #93, #92, #91, #64, #63, #62, #51, #41, #38, #34, #30, #29, #28, #27, #26, #24, #23, #20, #18, #17, #16, #11, #10, #6, and #5. Continue source-level review in the order defined above. Security-sensitive changes must not be bulk-closed or bulk-merged.
+
+
+## Additional P3 source reconciliation — 17 November 2026
+
+A further source-level comparison was completed against the then-current main head 147568d4532e8abe6f2d736b3fcdc98007ed26d6.
+
+### Closed as superseded by main
+
+- #91, #92, #93, #99: Home Islamic Shelf/Ayah alignment, spacing, header, and Dock geometry changes are represented by newer implementations in current main. Arabic/translation width and direction logic, 30dp safe frame and shelf-to-tray spacing were checked in current source.
+- #51: main already requires android.permission.DUMP on the exported LocationBroadcastReceiver and marks LocationActivity non-exported.
+- #30: main already contains RECEIVE_BOOT_COMPLETED, AzanBootReceiver and the boot recovery policy.
+- #28: main already contains ProfileManager.isBuiltInAvatarSelected() and the custom-photo override/restore ring refresh in ModernSettingsDialog.
+- #63: DockPreferences and its capacity/orientation model are present in main.
+- #23: UploadFilePolicy is present and used by current AvatarUploadServer and WallpaperUploadServer validation paths.
+- #29: StandbyPhotoStore commits the uploaded URI collection and photo-mode flag together through commitUploadedState(); the upload result maps persistence failure to a non-success response.
+- #64: DockPreferences, DockLayoutModel, AppInventory and TileBinder are all present in main, including stable component identity and partitioned Dock/Grid projections. Its proposed relaxation of the APK gate to 1.6 MiB was not adopted; main retains the stricter 1.5 MiB gate.
+- #24: main contains UploadDeadlineInputStream and tests, monotonic elapsedRealtime session expiry, bounded client handling, synchronized upload shutdown/commit behavior, storage reservation, and orphan upload cleanup.
+
+Each closed PR received an explanatory GitHub comment. Branches were retained. No source code was merged from these PRs in this reconciliation pass.
+
+### Kept open after comparison
+
+- #109: kept open because its NAV_SILVER navigation focus treatment is not present in current main's Glider implementation; requires separate design/behavior review.
+- #26: kept open because its broader shared modal styling and UI propagation deltas are not fully established as superseded by current main source. No closure based on partial overlap.
+- #18: kept open pending complete comparison of its local QR server route/security foundation and shared dialog changes against the later upload stack.
+
+### Updated counts
+
+- Previous verified total: 81 closed / 27 open.
+- Additional closures in this pass: 12 (#91, #92, #93, #99, #51, #30, #28, #63, #23, #29, #64, #24).
+- **Current total: 93 PRs closed; 15 PRs remain open.**
+- 0 branches deleted; 0 code merges in this cleanup pass.
+
+The remaining open inventory must be refreshed from GitHub before the next pass. Continue with unresolved UI/header item #109, shared modal/settings work #26, and foundational QR/server work #18, then review all other remaining PRs individually. Do not treat this focused subset as a full audit of all remaining open PRs.
