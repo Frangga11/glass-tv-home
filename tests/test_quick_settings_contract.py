@@ -27,8 +27,18 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("dialog.setOnKeyListener", DIALOG)
         self.assertIn("KeyEvent.KEYCODE_BACK", DIALOG)
         self.assertIn("settingsActions.setOrientation(LinearLayout.VERTICAL)", DIALOG)
-        self.assertIn("hostWidth * 0.38f", DIALOG)
-        self.assertIn("int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 83) / 6));", DIALOG)
+        self.assertIn("hostWidth * 0.30f", DIALOG)
+        self.assertIn("int tileHeightDp = Math.max(32, Math.min(38, (availableDp - 83) / 6));", DIALOG)
+        self.assertIn("params.x = finalPanelLeft;", DIALOG)
+        self.assertIn("settingsIconCenterX(settingsAnchor, anchorAt[0], density)", DIALOG)
+        self.assertIn("Gravity.TOP | Gravity.LEFT", DIALOG)
+        self.assertIn("addDivider(activity, content, density, 7, 5);", DIALOG)
+        self.assertIn("background.setColor(0x26343E48);", DIALOG)
+        self.assertIn("background.setStroke(Math.max(1, dp(density, 1)), 0x559EABB8);", DIALOG)
+        self.assertIn("R.drawable.ic_appearance", DIALOG)
+        self.assertIn("R.drawable.ic_tv_display", DIALOG)
+        self.assertIn("Character.OTHER_SYMBOL", DIALOG)
+        self.assertIn("null, tileHeightDp, density);", DIALOG)
         self.assertIn("tile.setTextSize(12f);", DIALOG)
         self.assertIn("int size = dp(density, 18);", DIALOG)
         self.assertNotIn("scaleVertical(", DIALOG)
@@ -116,6 +126,12 @@ class QuickSettingsContractTest(unittest.TestCase):
             self.assertIn(setter, GRAPH)
         self.assertIn("QuickSettingsFocusGraph.connect(controls)", DIALOG)
         self.assertIn("QuickSettingsDialog.show(this, root, anchor, dockRecycler", MAIN)
+        cache_graph = GRAPH[GRAPH.index("case CACHE:"):GRAPH.index("case WALLPAPER_MANAGE:")]
+        photo_graph = GRAPH[GRAPH.index("case NEXT_PHOTO:"):GRAPH.index("case INTERVAL:")]
+        interval_graph = GRAPH[GRAPH.index("case INTERVAL:"):GRAPH.index("case GLASS_SETTINGS:")]
+        self.assertNotIn("WALLPAPER_MANAGE", cache_graph)
+        self.assertNotIn("WALLPAPER_MANAGE", photo_graph)
+        self.assertIn("if (direction == UP) return WALLPAPER_MANAGE;", interval_graph)
 
     def test_cache_result_callback_does_not_retain_or_use_destroyed_activity(self):
         self.assertIn("new java.lang.ref.WeakReference<>(MainActivity.this)", MAIN)
@@ -171,6 +187,10 @@ class QuickSettingsContractTest(unittest.TestCase):
             self.assertTrue(keys.issubset(found), f"missing keys: {sorted(keys - found)}")
         for key in keys:
             self.assertEqual([content.count(f'name="{key}"') for content in contents], [1, 1, 1], key)
+        self.assertIn('<string name="quick_settings_title">Pengaturan</string>', contents[1])
+        self.assertIn('<string name="quick_settings_title">Quick Settings</string>', contents[2])
+        self.assertIn('<string name="quick_settings_android_settings">Pengaturan Android TV</string>', contents[1])
+        self.assertIn('<string name="quick_settings_android_settings">Android TV Settings</string>', contents[2])
 
 
 if __name__ == "__main__":
