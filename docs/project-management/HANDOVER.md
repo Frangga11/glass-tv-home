@@ -1247,3 +1247,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - User-reported physical Mi TV Stick test of the cumulative candidate was clear and clean. This is recorded as owner-reported device acceptance, not an independently executed assistant test.
 - **Current status: MAIN INTEGRATION COMPLETE; LATEST-MAIN CI PASS; QA APK STRUCTURALLY VERIFIED; PHYSICAL ACCEPTANCE USER-REPORTED.** Any newly observed TV issue should be opened as a narrowly scoped corrective task. Maintain RE-SKIN, NOT REWIRE.
 - Canonical continuation documents: `GTVH-CUMULATIVE-HOME-INTEGRATION-FINAL-CHECKPOINT-2026-11-17.md`, DPAD/focus feature records, and weather cache restore record. Historical OPEN/DRAFT labels inside older feature documents refer to their original PR state; use the synchronization addendum in each updated record and this latest handoff for current status.
+
+
+## Open PR reconciliation audit — 17 November 2026
+
+- A fresh compare audit was performed for all 40 PRs still open after the prior cleanup.
+- All 40 branch heads are ahead of and diverged from current `main`; commit-ahead counts do not prove that their product behavior is still needed, but they do prove that blanket closure or merge would be unsafe without source-level review.
+- No further PRs were closed, no PRs were merged, and no branches were deleted in this pass.
+- The detailed inventory, commit-ahead counts, changed workstreams, and priority order are recorded in `GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md`.
+- The latest main checkpoint CI run `44059379657` completed SUCCESS on the then-current checkpoint head `c1e4a5d02233ed60935ab11c11bba1017147580b`. The new audit documentation commit triggers its own CI validation; do not call that new head validated until its run completes.
+- Next action: reconcile P0 Home DPAD/Dock and P1 Prayer popup against the accepted cumulative main implementation before any additional PR closure, retarget, or merge.
