@@ -1301,7 +1301,7 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 ## Focused PR reconciliation — pass 5 — 18 November 2026
 
 - Continued source-level review of the remaining open PRs against the current cumulative main implementation.
-- Closed 11 PRs as superseded after checking their corresponding source/tests: #18, #20, #17, #16, #11, #10, #38, #27, #5, #6, #26, and #34. (12 PRs total; see exact per-PR rationale in the audit document.)
+- Closed 12 PRs as superseded after checking their corresponding source/tests: #18, #20, #17, #16, #11, #10, #38, #27, #5, #6, #26, and #34. ( see exact per-PR rationale in the audit document.)
 - Verified that the current baseline contains the local QR server foundation, shared LAN IPv4 resolver, persisted Settings focus path, shared feedback/focus policies, Home-key/Recent Apps handling and manifest boundary, Ayah hint/weather divider, custom avatar picker/QR upload and profile rendering, failure-aware StandBy setter, and the device-settings security/restart corrections.
 - Retained #109 because its NAV_SILVER Glider focus treatment and related header symmetry refinements are not in current main; retained #62 because the GIPHY animated-avatar catalog is a distinct feature not present in main; retained #41 because its wallpaper settings surface/startup reconciliation work is a separate UI integration not yet adopted by main.
 - Updated total: **105 PRs closed; 3 remain open (#109, #62, #41)**. No branches deleted, no force updates, and no code merges in this cleanup pass.
