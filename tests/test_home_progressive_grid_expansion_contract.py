@@ -157,10 +157,12 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
         self.assertNotIn("recycler.setItemAnimator(moveSlide)", MAIN)
         start = MAIN[MAIN.index("private void startMove(String key"):MAIN.index("private void startMoveWhenLaidOut")]
         self.assertIn("recycler.setItemAnimator(null)", start)
-        finish = MAIN[MAIN.index("private void finishMove()"):MAIN.index("private void moveTileAcrossRegion")]
+        finish = MAIN[MAIN.index("private void finishMoveState"):MAIN.index("private void moveTileAcrossRegion")]
         self.assertIn("movingCard.animate().cancel()", finish)
         self.assertIn("movingCard.setRotation(0f)", finish)
-        self.assertIn("glider.hideNow()", MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")])
+        self.assertIn("finishMoveForHandoff();", MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")])
+        self.assertNotIn("glider.hideNow()", MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")])
+        self.assertIn("moveHandoffPending = true;", MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")])
 
     def test_scroll_offset_uses_measured_grid_geometry(self):
         self.assertIn("private int measuredGridScrollPixels", MAIN)
@@ -209,8 +211,8 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         viewport = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
         dock = MAIN[MAIN.index("private void animateHorizontalDockTransition"):MAIN.index("private void focusTile(int position)")]
         collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):MAIN.index("private void abortHorizontalDockCollapse")]
-        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", viewport)
-        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", dock)
+        self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", viewport)
+        self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", dock)
         self.assertIn("syncFocusedDockGlider();", collapse)
 
     def test_home_chrome_restores_only_after_three_row_shrink_finishes(self):
@@ -245,19 +247,21 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         listener = MAIN[MAIN.index("grid.addOnScrollListener"):MAIN.index("// Liquid feel:")]
         self.assertIn("else if (!horizontalGridTransitionRunning)", listener)
         self.assertIn("glider.scrolled(dy);", listener)
-        self.assertIn("private void syncFocusedAppGlider(boolean animateGridFocus)", MAIN)
+        self.assertIn("private void syncFocusedAppGlider()", MAIN)
         transition = MAIN[MAIN.index("private void animateHorizontalDockTransition"):
                           MAIN.index("private void focusTile(int position)")]
-        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", transition)
+        self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", transition)
         viewport = MAIN[MAIN.index("private void animateGridViewportRows"):
                          MAIN.index("private void animateHorizontalDockTransition")]
-        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", viewport)
+        self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", viewport)
 
-    def test_dock_grid_focus_is_acquired_before_reveal_motion(self):
+    def test_grid_focus_is_acquired_after_reveal_so_glider_starts_at_dock_icon(self):
         expand = MAIN[MAIN.index("private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration, String moveKey)"):
                       MAIN.index("private void collapseHorizontalOverflowToHomeHeader")]
-        self.assertLess(expand.index("focusGridCardImmediately(targetPosition, requestGeneration)"),
-                        expand.index("animateHorizontalDockTransition(pitch, true"))
+        self.assertNotIn("focusGridCardImmediately", expand)
+        self.assertNotIn("focusedBeforeMotion", expand)
+        self.assertLess(expand.index("animateHorizontalDockTransition(pitch, true"),
+                        expand.index("focusTile(targetPosition)"))
 
     def test_three_row_and_move_mode_focus_suppress_home_shelf_copy(self):
         focused = MAIN[MAIN.index("private void handleTileFocused"):MAIN.index("public boolean onDockTileKey")]
@@ -280,12 +284,30 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("paneHidden = true;", mode)
 
     def test_grid_focus_glide_is_spring_retargeted_without_snapping_each_frame(self):
-        sync = MAIN[MAIN.index("private void syncFocusedAppGlider(boolean animateGridFocus)"):
+        sync = MAIN[MAIN.index("private void syncFocusedAppGlider()"):
                     MAIN.index("@Override\n    public void onTileFocused")]
         self.assertIn("glider.moveTo(left + pad, top + pad,", sync)
-        self.assertIn("glider.moveToVisualImmediately(", sync)
-        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", MAIN)
+        self.assertNotIn("glider.moveToVisualImmediately(", sync)
+        self.assertIn("glider.moveToScreenImmediately(", sync)
+        self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", MAIN)
         self.assertIn("Math.max(240, 240 * Math.abs(targetRow - currentRow))", MAIN)
+
+    def test_cross_region_move_keeps_one_shadow_and_springs_from_source_to_target(self):
+        across = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
+        self.assertIn("finishMoveForHandoff();", across)
+        self.assertIn("moveHandoffPending = true;", across)
+        self.assertNotIn("glider.hideNow()", across)
+        finish = MAIN[MAIN.index("private void finishMoveForHandoff"):MAIN.index("private void moveTileAcrossRegion")]
+        self.assertIn("finishMoveState(true);", finish)
+        self.assertIn("if (!preserveMoveGlider) glider.setMoveModeActive(false", finish)
+        self.assertIn("if (!moveHandoffPending) syncFocusedAppGlider();", MAIN)
+
+    def test_normal_dock_to_grid_glide_starts_from_dock_after_reveal(self):
+        expand = MAIN[MAIN.index("private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration, String moveKey)"):
+                      MAIN.index("private void collapseHorizontalOverflowToHomeHeader")]
+        self.assertIn("focusTile(targetPosition);", expand)
+        self.assertIn("Keep focus on the source Dock tile during the reveal.", expand)
+        self.assertNotIn("focusGridCardImmediately", MAIN)
 
     def test_up_collapse_restores_home_shelves_without_a_followup_focus_key(self):
         collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):
