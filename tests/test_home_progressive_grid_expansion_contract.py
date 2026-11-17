@@ -142,9 +142,11 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
 
     def test_move_mode_dock_down_inserts_into_latest_dock_column(self):
         across = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
-        self.assertIn("unpinFromDockAtGridPosition(key, dockPosition)", across)
+        self.assertIn("dockAdapter.positionOf(key)", across)
+        self.assertIn("gridPositionForDock(liveDockPosition, false, COLUMNS", across)
+        self.assertIn("unpinFromDockAtGridPosition(key, Math.max(0, liveGridPosition))", across)
         step = MAIN[MAIN.index("private void stepMove(int keyCode)"):MAIN.index("public void onUserInteraction()")]
-        self.assertIn("gridPositionForDock(\n                        currentPosition, false", step)
+        self.assertIn("moveTileAcrossRegion(movingKey, false, currentPosition)", step)
         adapter = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
         self.assertIn("DockLayoutModel.insertAtPosition(snapshot.gridItems, selected, gridPosition)", adapter)
 
