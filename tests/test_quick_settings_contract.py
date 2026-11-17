@@ -92,6 +92,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("QuickSettingsFocusGraph.INPUT", DIALOG)
         self.assertIn("getString(R.string.input_external_tv_title)", MAIN)
         self.assertIn("R.string.input_external_tv_hint", MAIN)
+        self.assertIn("KeyEvent.KEYCODE_TV_INPUT", MAIN)
+        self.assertIn("KeyEvent.KEYCODE_TV_INPUT", DIALOG)
+        self.assertIn("actions.openInputs();", DIALOG)
 
     def test_wifi_child_surface_still_restores_its_parent_focus(self):
         self.assertIn("WifiSettingsDialog.show(this", MAIN)
