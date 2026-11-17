@@ -153,3 +153,36 @@ The remaining open inventory must be refreshed from GitHub before the next pass.
 - PR #26 remains open. Although main contains TvDialogStyle, the StandBy failure-aware setter, and TvUiTokens additions, the full set of its MainActivity dialog-size/custom-dimming call-site changes is not established as fully superseded. Keep it for a dedicated UI audit rather than closing on partial overlap.
 - Updated totals: **94 PRs closed; 14 PRs remain open; 0 branches deleted; 0 code merges in this cleanup pass**.
 - Refreshed open PR inventory: #109, #62, #41, #38, #34, #27, #26, #20, #17, #16, #11, #10, #6, and #5.
+
+
+## Focused reconciliation — pass 5 — 18 November 2026
+
+### Additional closures
+
+The following PRs were closed after source-level comparison with current main; each received an explanatory GitHub comment, and no branch was deleted:
+
+- #18 — local QR server foundation and shared dialog styling are represented in the cumulative upload/dialog stack.
+- #20 — shared active-LAN IPv4 resolver and tests are present and used by QR upload services.
+- #17 — SettingsFocusPath and persisted nested-focus restoration are present.
+- #16 — NetworkFeedbackPolicy and upload timeout/feedback integrations are present.
+- #11 — TvFocusIndicator and shared focus styling are present.
+- #10 — HomeKeyPressTracker, NavigationState, HomeKeyService, RecentAppsActivity and the internal-only manifest boundary are present.
+- #38 — Ayah open hint and centered weather divider are present in current Home/weather sources.
+- #27 — older hidden-app refresh/modal snapshot is superseded by current cumulative inventory refresh and Settings shell.
+- #5 and #6 — local-picker and QR custom-avatar flows are present in ProfileManager/MainActivity/AvatarUploadServer, including private storage and cleanup.
+- #26 — StandBy mode persistence failure is handled by the boolean setter and localized failure feedback; shared dialog style is present.
+- #34 — privileged WRITE_SECURE_SETTINGS declaration and startup system-settings mutation are absent; restart uses the supported visible power menu; DeviceSettingsStatus is present.
+
+### Retained for deliberate review
+
+- **#109** — NAV_SILVER focus style and header symmetry refinements are not present in current Glider/main layout. Keep separate for visual/behavior review; do not fold into the accepted DPAD handoff without a scoped plan.
+- **#62** — GIPHY animated avatar catalog is a distinct new feature, including API key configuration and GIF playback. It is not present in main; retain for product/security/dependency review rather than closing as obsolete.
+- **#41** — wallpaper settings redesign and startup category reconciliation are a distinct UI integration. Although the dialog class exists in main, the settings entry point and full behavior are not established as adopted; retain pending call-path and device review.
+
+### Updated counts and boundary
+
+- Previous checkpoint: 94 closed / 14 open.
+- Additional closures: 11 PRs (#18, #20, #17, #16, #11, #10, #38, #27, #5, #6, #26, #34). Correction: 12 PRs closed in this pass.
+- **Current total: 105 PRs closed; 3 PRs remain open: #109, #62, #41.**
+- 0 branches deleted; 0 force updates; 0 code merges during this reconciliation pass. Main source code was not changed by PR cleanup.
+- Exact current-main validation is pending for the documentation update; verify the resulting workflow run against the exact main head.
