@@ -1,28 +1,47 @@
 package com.gathin.tvhome;
 
 import android.accessibilityservice.AccessibilityService;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 
+import java.util.List;
+
 /**
- * Maps the remote's Input button to the system input switcher, from any app. Remotes such as the Chromecast voice
- * remote send KEYCODE_TV for it; on Google TV the stock launcher handles that key, so with the stock launcher
- * disabled the button does nothing. Only KEYCODE_TV is consumed; every other key passes through untouched.
- * Opt-in: INPUT_KEY_SERVICE=1 build-and-install.sh (or -InputKeyService on Windows) enables it.
+ * Routes recognized TV remote Input keys to Glass TV Home's own source popup from any foreground app.
+ * Standard Android TV remotes use KEYCODE_TV_INPUT; some Chromecast remotes use KEYCODE_TV, and one
+ * Xiaomi TV remote family reports KEYCODE_MEDIA_RECORD. The accepted list is configurable in config.xml
+ * or a theme's config.json so an unrelated key is never swallowed just because a vendor uses another map.
+ *
+ * Opt-in: INPUT_KEY_SERVICE=1 build-and-install.sh (or -InputKeyService on Windows) enables global capture.
  */
 public class InputKeyService extends AccessibilityService {
 
-    private static final String ACTION_VIEW_INPUTS = "com.android.tv.action.VIEW_INPUTS";
+    private List<Integer> inputKeycodes = java.util.Collections.emptyList();
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        inputKeycodes = Config.load(this).inputKeyKeycodes;
+    }
+
+    static boolean isInputKeyCode(int keyCode, List<Integer> configuredKeycodes) {
+        return configuredKeycodes != null && configuredKeycodes.contains(keyCode);
+    }
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() != KeyEvent.KEYCODE_TV) return false;
-        if (event.getAction() == KeyEvent.ACTION_UP) {
+        if (!isInputKeyCode(event.getKeyCode(), inputKeycodes)) return false;
+        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
             try {
-                startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } catch (ActivityNotFoundException ignored) {
+                Intent openInputs = new Intent(this, MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_OPEN_INPUTS, true)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(openInputs);
+            } catch (RuntimeException ignored) {
+                // A remote shortcut must never crash the accessibility service.
             }
         }
         return true;
