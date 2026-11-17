@@ -2,7 +2,7 @@ package com.gathin.tvhome;
 
 import android.view.View;
 
-/** Explicit two-dimensional D-pad focus graph for the V04 Quick Settings dialog. */
+/** Explicit three-column, single-frame D-pad graph for Quick Settings. */
 final class QuickSettingsFocusGraph {
     static final int WIFI = 0;
     static final int RESTART = 1;
@@ -29,40 +29,42 @@ final class QuickSettingsFocusGraph {
         switch (node) {
             case WIFI:
                 if (direction == RIGHT) return RESTART;
-                if (direction == DOWN) return LANGUAGE;
+                if (direction == DOWN) return POWER;
                 break;
             case RESTART:
                 if (direction == LEFT) return WIFI;
+                if (direction == RIGHT) return LANGUAGE;
+                if (direction == DOWN) return CACHE;
                 if (direction == UP) return CLOSE;
-                if (direction == DOWN) return POWER;
                 break;
             case LANGUAGE:
-                if (direction == RIGHT) return POWER;
-                if (direction == UP) return WIFI;
+                if (direction == LEFT) return RESTART;
                 if (direction == DOWN) return CACHE;
                 break;
             case POWER:
-                if (direction == LEFT) return LANGUAGE;
-                if (direction == UP) return RESTART;
-                if (direction == DOWN) return CACHE;
+                if (direction == RIGHT) return CACHE;
+                if (direction == UP) return WIFI;
+                if (direction == DOWN) return NEXT_PHOTO;
                 break;
             case CACHE:
-                if (direction == UP) return LANGUAGE;
-                if (direction == DOWN) return WALLPAPER_MANAGE;
+                if (direction == LEFT) return POWER;
+                if (direction == RIGHT) return WALLPAPER_MANAGE;
+                if (direction == UP) return RESTART;
+                if (direction == DOWN) return NEXT_PHOTO;
                 break;
             case NEXT_PHOTO:
                 if (direction == RIGHT) return INTERVAL;
-                if (direction == UP) return WALLPAPER_MANAGE;
+                if (direction == UP) return CACHE;
                 if (direction == DOWN) return GLASS_SETTINGS;
                 break;
             case INTERVAL:
                 if (direction == LEFT) return NEXT_PHOTO;
-                if (direction == UP) return WALLPAPER_MANAGE;
+                if (direction == UP) return CACHE;
                 if (direction == DOWN) return ANDROID_SETTINGS;
                 break;
             case WALLPAPER_MANAGE:
-                if (direction == UP) return CACHE;
-                if (direction == DOWN) return NEXT_PHOTO;
+                if (direction == LEFT) return CACHE;
+                if (direction == DOWN) return INTERVAL;
                 break;
             case GLASS_SETTINGS:
                 if (direction == RIGHT) return ANDROID_SETTINGS;
@@ -75,7 +77,7 @@ final class QuickSettingsFocusGraph {
                 if (direction == DOWN) return CLOSE;
                 break;
             case CLOSE:
-                if (direction == DOWN) return RESTART;
+                if (direction == DOWN) return GLASS_SETTINGS;
                 break;
             default:
                 break;
@@ -96,9 +98,7 @@ final class QuickSettingsFocusGraph {
     }
 
     private static int resolveId(View[] controls, int target, View fallback) {
-        if (target >= 0 && target < controls.length && controls[target] != null) {
-            return controls[target].getId();
-        }
-        return fallback.getId();
+        return target >= 0 && target < controls.length && controls[target] != null
+                ? controls[target].getId() : fallback.getId();
     }
 }
