@@ -72,7 +72,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
         self.assertIn("animateGridViewportRows(true", method)
         self.assertNotIn("targetRow >= 2", method)
         grow = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
-        self.assertIn("setThreeRowFrameChromeHidden(grow)", grow)
+        self.assertIn("if (grow) setThreeRowFrameChromeHidden(true);", grow)
         self.assertIn("horizontalGridViewportRows = 2;", grow)
 
     def test_moved_grid_identity_is_revealed_without_ending_move_mode(self):
