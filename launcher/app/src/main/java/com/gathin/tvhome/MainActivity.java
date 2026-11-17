@@ -1038,12 +1038,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     if (horizontalGridViewportAnimator == null) {
                         dockRecycler.setTranslationY(dockRaisedTranslationY());
                         syncDockFrameAlpha();
+                        syncFocusedDockGlider();
                     }
                 }
                 if (!glassShown) return;
-                glassTargetY -= dy;
-                glassScrollShift -= dy;
-                glider.scrolled(dy);
+                if (isCurrentFocusInside(dockRecycler)) {
+                    // The raised Dock is translated independently of Grid content. Keep its
+                    // focus shape attached to the Dock's visual bounds; never apply Grid scroll
+                    // to a Dock-owned focus shape.
+                    syncFocusedDockGlider();
+                } else {
+                    glassTargetY -= dy;
+                    glassScrollShift -= dy;
+                    glider.scrolled(dy);
+                }
             }
         });
 
@@ -2221,6 +2229,59 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Reused by every focus move. */
     private final Rect tileRect = new Rect(), showRect = new Rect();
 
+    private boolean isDescendantOf(View child, ViewGroup ancestor) {
+        if (child == null || ancestor == null) return false;
+        View current = child;
+        while (current != null) {
+            if (current == ancestor) return true;
+            android.view.ViewParent parent = current.getParent();
+            current = parent instanceof View ? (View) parent : null;
+        }
+        return false;
+    }
+
+    private View focusedCardFromCurrentFocus() {
+        View current = getCurrentFocus();
+        while (current != null && current != root) {
+            if (current.getId() == R.id.card) return current;
+            android.view.ViewParent parent = current.getParent();
+            current = parent instanceof View ? (View) parent : null;
+        }
+        return null;
+    }
+
+    /** offsetDescendantRectToMyCoords omits View translation properties; add every visual translation. */
+    private void offsetByAncestorTranslation(View card, Rect bounds) {
+        float tx = 0f, ty = 0f;
+        View current = card;
+        while (current != null && current != root) {
+            tx += current.getTranslationX();
+            ty += current.getTranslationY();
+            android.view.ViewParent parent = current.getParent();
+            current = parent instanceof View ? (View) parent : null;
+        }
+        bounds.offset(Math.round(tx), Math.round(ty));
+    }
+
+    /** Reposition the single Glider from the actual focused Dock card after Dock geometry changes. */
+    private void syncFocusedDockGlider() {
+        if (!glassShown || glider == null || root == null || dockRecycler == null) return;
+        View card = focusedCardFromCurrentFocus();
+        if (card == null || !isDescendantOf(card, dockRecycler)) return;
+        Rect bounds = new Rect(0, 0, card.getWidth(), card.getHeight());
+        root.offsetDescendantRectToMyCoords(card, bounds);
+        offsetByAncestorTranslation(card, bounds);
+        float pad = 6f * density;
+        float scale = isIconAnimationsEnabled() ? AppAdapter.FOCUS_SCALE : 1f;
+        float width = card.getWidth() * scale + 2f * pad;
+        float height = card.getHeight() * scale + 2f * pad;
+        float left = bounds.exactCenterX() - width / 2f;
+        float top = bounds.exactCenterY() - height / 2f;
+        float radius = AppAdapter.cornerRadius(card.getWidth(), density) * scale;
+        glider.moveToScreenImmediately(left + pad, top + pad,
+                left + width - pad, top + height - pad, radius);
+    }
+
     @Override
     public void onTileFocused(int position, View card) {
         if (adapter == null || card == null || position < 0 || position >= adapter.getItemCount()) return;
@@ -2265,6 +2326,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
         root.offsetDescendantRectToMyCoords(card, r);
+        offsetByAncestorTranslation(card, r);
         float pad = 6f * density;
         float focusScale = isIconAnimationsEnabled() ? AppAdapter.FOCUS_SCALE : 1f;
         float w = card.getWidth() * focusScale + 2 * pad;
@@ -2283,13 +2345,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         glassTargetY = y;
         float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * focusScale;
         if (gliderOnPill) {
-            glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
+            if (inDock) glider.moveToScreen(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
+            else glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
             glider.onArrive(() -> {
                 if (!gliderOnPill) glider.setStyle(isGlassEffectsEnabled() ? Glider.GLASS : Glider.DARK);
             });
         } else {
             glider.setStyle(isGlassEffectsEnabled() ? Glider.GLASS : Glider.DARK);
-            glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
+            if (inDock) glider.moveToScreen(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
+            else glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
         }
         gliderOnPill = false;
         glassShown = true;
@@ -4005,6 +4069,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dockRecycler.setTranslationY(dockStart * (1f - progress));
             dockRecycler.setAlpha(dockStartAlpha + (1f - dockStartAlpha) * progress);
             grid.setTranslationY(gridDrop * progress);
+            syncFocusedDockGlider();
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -4204,6 +4269,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setTranslationY(rp * p);
                 dockRecycler.setTranslationY(-(pitch + rp + scroll) + rp * p);
             }
+            syncFocusedDockGlider();
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -4238,6 +4304,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             float progress = 1f - Math.abs(offset) / Math.max(1f, pitch);
             if (dockRecycler != null) dockRecycler.setTranslationY(-pitch * progress);
             if (grid != null) grid.setTranslationY(offset);
+            syncFocusedDockGlider();
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
