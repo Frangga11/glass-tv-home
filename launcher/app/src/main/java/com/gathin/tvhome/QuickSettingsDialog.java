@@ -179,7 +179,7 @@ final class QuickSettingsDialog {
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 22)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 20));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
         wallpaperHeaderLp.topMargin = dp(density, 6);
         content.addView(wallpaperHeader, wallpaperHeaderLp);
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
