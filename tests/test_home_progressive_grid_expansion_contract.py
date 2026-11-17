@@ -245,7 +245,7 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         listener = MAIN[MAIN.index("grid.addOnScrollListener"):MAIN.index("// Liquid feel:")]
         self.assertIn("else if (!horizontalGridTransitionRunning)", listener)
         self.assertIn("glider.scrolled(dy);", listener)
-        self.assertIn("private void syncFocusedAppGlider()", MAIN)
+        self.assertIn("private void syncFocusedAppGlider(boolean animateGridFocus)", MAIN)
         transition = MAIN[MAIN.index("private void animateHorizontalDockTransition"):
                           MAIN.index("private void focusTile(int position)")]
         self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", transition)
