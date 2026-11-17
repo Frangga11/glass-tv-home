@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -14,28 +13,27 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /**
- * The small weather line under the clock (weather_lat / weather_lon): the temperature and sky from
- * Open-Meteo, and the official Air Pollutant Index of the nearest Jabatan Alam Sekitar station from
- * APIMS. The last line is kept, so Home shows it at once and only refreshes it behind.
+ * Weather and modelled US AQI for the selected Indonesian location.
+ * Weather and air quality are both supplied by Open-Meteo; AQI is a model estimate, not an
+ * official Indonesian ISPU station observation. The last line is cached for an instant Home render.
  */
 final class HomeWeather {
     private static final String TAG = "TvHome.Weather";
     static final long REFRESH_MS = 15 * 60_000L;
-    private static final String DOE = "https://eqms.doe.gov.my/api3/publicportalapims/mapcaqm";
-    /** Malaysian API bands, with DOE's colours: blue, green, yellow, orange, red. */
-    private static final int[] API_TOP = {50, 100, 200, 300, 9999};
-    static final int[] API_COLOR = {0xFF3D8BFF, 0xFF34C759, 0xFFFFD60A, 0xFFFF9F0A, 0xFFFF453A};
-    private static final String[] API_NAME = {"Good", "Moderate", "Unhealthy", "Very unhealthy", "Hazardous"};
+    /** US EPA AQI breakpoints, shown as a model estimate rather than an official ISPU reading. */
+    private static final int[] AQI_TOP = {50, 100, 150, 200, 300, 500};
+    static final int[] AQI_COLOR = {0xFF34C759, 0xFFFFD60A, 0xFFFF9F0A, 0xFFFF453A, 0xFFAF52DE, 0xFF7A0019};
+    private static final String[] AQI_NAME = {"Baik", "Sedang", "Tidak sehat bagi kelompok sensitif", "Tidak sehat", "Sangat tidak sehat", "Berbahaya"};
 
-    /** What the line says: the weather part, the API part and its colour; either part may be empty. */
+    /** What the line says: the weather part, the AQI part and its colour; either part may be empty. */
     static final class Line {
-        final String weather, api;
-        final int apiColor, icon;
+        final String weather, aqi;
+        final int aqiColor, icon;
 
-        Line(String weather, String api, int apiColor, int icon) {
+        Line(String weather, String aqi, int aqiColor, int icon) {
             this.weather = weather;
-            this.api = api;
-            this.apiColor = apiColor;
+            this.aqi = aqi;
+            this.aqiColor = aqiColor;
             this.icon = icon;
         }
     }
@@ -44,7 +42,23 @@ final class HomeWeather {
 
     /** Forgets the line, so a new location is fetched at once instead of the old place's weather showing. */
     static void forget(Context ctx) {
-        prefs(ctx).edit().clear().apply();
+        synchronized (HomeWeather.class) {
+            SharedPreferences preferences = prefs(ctx);
+            long nextGeneration = preferences.getLong("request_generation", 0L) + 1L;
+            preferences.edit().clear().putLong("request_generation", nextGeneration).apply();
+        }
+    }
+
+    static boolean isCurrentRequest(long requestGeneration, long currentGeneration,
+                                    boolean sameLocation, boolean sameLanguage) {
+        return requestGeneration == currentGeneration && sameLocation && sameLanguage;
+    }
+
+    private static boolean isCurrentLocation(Context ctx, double lat, double lon) {
+        Location.Zone zone = Location.chosen(ctx);
+        double currentLat = zone != null ? zone.lat : -4.0212;
+        double currentLon = zone != null ? zone.lon : 103.2517;
+        return Double.compare(lat, currentLat) == 0 && Double.compare(lon, currentLon) == 0;
     }
 
     static boolean due(Context ctx) {
@@ -54,76 +68,100 @@ final class HomeWeather {
     /** The last line fetched, or null before the first. Reads storage only. */
     static Line last(Context ctx) {
         SharedPreferences p = prefs(ctx);
-        String w = p.getString("weather", null), a = p.getString("api", "");
-        if (w != null && !w.isEmpty() && !Character.isDigit(w.charAt(0))) {
-            // An older line, with an emoji: dropped, and fetched again at once.
-            w = "";
-            p.edit().putLong("at", 0).putString("weather", "").apply();
+        String w = p.getString("weather", null), aqi = p.getString("api", "");
+        String selectedLanguage = AppLanguage.getLanguage(ctx);
+        String cachedLanguage = p.getString("language", "");
+        if (!selectedLanguage.equals(cachedLanguage)) {
+            // Cached weather/AQI labels are localized. Never show stale Indonesian text in English mode (or vice versa).
+            p.edit().putLong("at", 0).putString("weather", "").putString("api", "")
+                    .putString("language", selectedLanguage).apply();
+            return null;
         }
-        return w == null && a.isEmpty() ? null : new Line(w == null ? "" : w, a, p.getInt("api_color", 0),
+        // Drop cached Malaysian APIMS labels from older builds; this launcher uses Open-Meteo US AQI.
+        if (!aqi.isEmpty() && !aqi.startsWith("AQI ")) {
+            p.edit().putString("api", "").putInt("api_color", 0).putLong("at", 0).apply();
+            aqi = "";
+        }
+        return w == null && aqi.isEmpty() ? null : new Line(w == null ? "" : w, aqi, p.getInt("api_color", 0),
                 p.getInt("icon_code", -1) < 0 ? 0 : icon(p.getInt("icon_code", 3), p.getBoolean("icon_day", true)));
     }
 
     /** Fetches both parts. Network; never on the UI thread. Returns null when neither could be read. */
     static Line refresh(Context ctx, double lat, double lon) {
-        String weather = "", api = "";
+        final long requestGeneration;
+        final String requestLanguage = AppLanguage.getLanguage(ctx);
+        synchronized (HomeWeather.class) {
+            SharedPreferences preferences = prefs(ctx);
+            requestGeneration = preferences.getLong("request_generation", 0L) + 1L;
+            preferences.edit().putLong("request_generation", requestGeneration).apply();
+        }
+        String weather = "", aqi = "";
         int color = 0, code = -1;
         boolean day = true;
         try {
             JSONObject now = new JSONObject(get("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon
-                    + "&current=temperature_2m,weather_code,is_day&timezone=Asia%2FKuala_Lumpur")).getJSONObject("current");
+                    + "&current=temperature_2m,weather_code,is_day&timezone=Asia%2FJakarta")).getJSONObject("current");
             code = now.optInt("weather_code");
             day = now.optInt("is_day", 1) == 1;
-            weather = Math.round(now.optDouble("temperature_2m")) + "°  " + describe(code);
+            boolean isEnglish = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(ctx));
+            weather = Math.round(now.optDouble("temperature_2m")) + "°  " + describe(code, isEnglish);
         } catch (Exception e) {
             Log.w(TAG, "weather failed: " + e.getMessage());
         }
         try {
-            JSONArray all = new JSONObject(get(DOE)).getJSONArray("data");
-            JSONObject near = null;
-            double best = Double.MAX_VALUE;
-            for (int i = 0; i < all.length(); i++) {
-                JSONObject st = all.getJSONObject(i);
-                if (st.optInt("API", -1) < 0) continue;
-                double dx = st.optDouble("LONGITUDE") - lon, dy = st.optDouble("LATITUDE") - lat, d = dx * dx + dy * dy;
-                if (d < best) {
-                    best = d;
-                    near = st;
-                }
-            }
-            // Only a station near home (about 80 km): the network covers Malaysia, and outside it the
-            // nearest one would be far away and say nothing about the air here.
-            if (near != null && best < 0.5) {
-                int value = near.getInt("API"), band = 0;
-                while (band < API_TOP.length - 1 && value > API_TOP[band]) band++;
-                api = "API " + value + " " + API_NAME[band];
-                color = API_COLOR[band];
+            String airUrl = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + lat
+                    + "&longitude=" + lon + "&current=us_aqi&timezone=Asia%2FJakarta";
+            JSONObject current = new JSONObject(get(airUrl)).getJSONObject("current");
+            int value = current.optInt("us_aqi", -1);
+            if (value >= 0) {
+                int band = 0;
+                while (band < AQI_TOP.length - 1 && value > AQI_TOP[band]) band++;
+                aqi = "AQI " + value + " · " + aqiName(band, AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(ctx)));
+                color = AQI_COLOR[band];
             }
         } catch (Exception e) {
-            Log.w(TAG, "APIMS failed: " + e.getMessage());
+            Log.w(TAG, "Open-Meteo air quality failed: " + e.getMessage());
         }
-        // A failed try waits for the next round too, rather than asking again every minute.
-        SharedPreferences.Editor ed = prefs(ctx).edit().putLong("at", System.currentTimeMillis());
-        if (weather.isEmpty() && api.isEmpty()) {
-            ed.apply();
-            return null;
+        // Discard a response if a newer refresh or a location/language change superseded it.
+        synchronized (HomeWeather.class) {
+            SharedPreferences preferences = prefs(ctx);
+            long currentGeneration = preferences.getLong("request_generation", 0L);
+            if (!isCurrentRequest(requestGeneration, currentGeneration,
+                    isCurrentLocation(ctx, lat, lon), requestLanguage.equals(AppLanguage.getLanguage(ctx)))) {
+                return null;
+            }
+            // A failed try waits for the next round too, rather than asking again every minute.
+            SharedPreferences.Editor ed = preferences.edit().putLong("at", System.currentTimeMillis())
+                    .putString("language", requestLanguage);
+            if (weather.isEmpty() && aqi.isEmpty()) {
+                ed.apply();
+                return null;
+            }
+            ed.putString("weather", weather).putString("api", aqi).putInt("api_color", color)
+                    .putInt("icon_code", code).putBoolean("icon_day", day).apply();
         }
-        ed.putString("weather", weather).putString("api", api).putInt("api_color", color)
-                .putInt("icon_code", code).putBoolean("icon_day", day).apply();
-        return new Line(weather, api, color, code < 0 ? 0 : icon(code, day));
+        return new Line(weather, aqi, color, code < 0 ? 0 : icon(code, day));
     }
 
-    private static String describe(int code) {
-        if (code == 0) return "Clear";
-        if (code == 1) return "Mainly clear";
-        if (code == 2) return "Partly cloudy";
-        if (code == 3) return "Cloudy";
-        if (code == 45 || code == 48) return "Haze";
-        if (code >= 51 && code <= 57) return "Drizzle";
-        if (code >= 61 && code <= 67) return code >= 65 ? "Heavy rain" : "Rain";
-        if (code >= 80 && code <= 82) return "Showers";
-        if (code >= 95) return "Thunderstorm";
+    static String describe(int code, boolean isEnglish) {
+        if (code == 0) return isEnglish ? "Clear sky" : "Cerah";
+        if (code == 1) return isEnglish ? "Mainly clear" : "Umumnya cerah";
+        if (code == 2) return isEnglish ? "Partly cloudy" : "Cerah berawan";
+        if (code == 3) return isEnglish ? "Overcast" : "Berawan";
+        if (code == 45 || code == 48) return isEnglish ? "Fog" : "Berkabut";
+        if (code >= 51 && code <= 57) return isEnglish ? "Drizzle" : "Gerimis";
+        if (code >= 61 && code <= 67) return isEnglish ? (code >= 65 ? "Heavy rain" : "Rain") : (code >= 65 ? "Hujan lebat" : "Hujan");
+        if (code >= 80 && code <= 82) return isEnglish ? "Rain showers" : "Hujan lokal";
+        if (code >= 95) return isEnglish ? "Thunderstorm" : "Badai petir";
         return "";
+    }
+
+    static String aqiName(int band, boolean isEnglish) {
+        if (isEnglish) {
+            String[] names = {"Good", "Moderate", "Unhealthy for sensitive groups", "Unhealthy", "Very unhealthy", "Hazardous"};
+            return names[Math.max(0, Math.min(names.length - 1, band))];
+        }
+        return AQI_NAME[Math.max(0, Math.min(AQI_NAME.length - 1, band))];
     }
 
     /** The sky as a small vector symbol (not an emoji: the colour emoji font alone costs Home megabytes). */

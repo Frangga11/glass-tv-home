@@ -111,6 +111,13 @@ final class Config {
         return ctx.getExternalFilesDir(null);
     }
 
+    static boolean isReducedMotion(Context ctx) {
+        boolean reducedMotion = ctx.getResources().getBoolean(R.bool.reduced_motion);
+        File dir = dir(ctx);
+        JSONObject json = read(dir != null ? new File(dir, FILE_NAME) : null);
+        return json != null ? bool(json, "reduced_motion", reducedMotion) : reducedMotion;
+    }
+
     static Config load(Context ctx) {
         Resources res = ctx.getResources();
         List<String> dock = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.dock_apps)));

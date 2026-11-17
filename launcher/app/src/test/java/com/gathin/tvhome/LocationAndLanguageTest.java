@@ -49,6 +49,17 @@ public class LocationAndLanguageTest {
     }
 
     @Test
+    public void testSupportedLanguageNormalization() {
+        assertEquals("id", AppLanguage.normalizeLanguage("id"));
+        assertEquals("id", AppLanguage.normalizeLanguage("ID"));
+        assertEquals("en", AppLanguage.normalizeLanguage("en"));
+        assertEquals("en", AppLanguage.normalizeLanguage("EN"));
+        assertEquals("id", AppLanguage.normalizeLanguage("ms"));
+        assertEquals("id", AppLanguage.normalizeLanguage("de"));
+        assertEquals("id", AppLanguage.normalizeLanguage(null));
+    }
+
+    @Test
     public void testWeeklyAyahTranslations() {
         WeeklyAyah.Ayah a = new WeeklyAyah.Ayah(
                 "فَاذْكُرُونِي أَذْكُرْكُمْ",

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,6 +21,7 @@ import java.util.Locale;
 public class WeatherActivity extends Activity {
 
     private WeatherBackgroundView weatherBgView;
+    private boolean reducedMotion;
     private TextView weatherLocation;
     private View btnChangeLocation;
     private TextView weatherMainTemp;
@@ -38,22 +41,56 @@ public class WeatherActivity extends Activity {
     private TextView sunsetText;
     private TextView uvValText;
     private TextView uvDescText;
+    private TextView uvAdviceText;
     private TextView feelsLikeVal;
 
     private TextView aqiValue;
     private TextView aqiStatus;
     private AqiSpectrumBarView aqiBar;
     private TextView aqiStation;
+    private TextView pm25ValueText;
+    private TextView pm10ValueText;
+    private TextView coValueText;
+    private TextView no2ValueText;
+    private TextView so2ValueText;
+    private TextView pollutantMissingNote;
+    private TextView dewPointValText;
+    private TextView moonPhaseName;
+    private TextView moonriseMoonsetText;
+    private boolean destroyed;
 
     private TextView humidityValText;
+    private TextView precipitationValue;
+    private TextView precipitationSub;
+    private TextView visibilityValue;
+    private TextView visibilitySub;
     private TextView weatherFooter;
+
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        reducedMotion = Config.isReducedMotion(this);
         setContentView(R.layout.activity_weather);
 
         weatherBgView = findViewById(R.id.weatherBgView);
+        if (weatherBgView != null) {
+            weatherBgView.setReducedMotion(reducedMotion);
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                if (am != null) {
+                    am.getMemoryInfo(mi);
+                    if (mi.totalMem <= 1610612736L) weatherBgView.setLowSpecMode(true);
+                }
+            } catch (Exception ignored) {
+                // Keep the normal visual mode when device memory information is unavailable.
+            }
+        }
         weatherLocation = findViewById(R.id.weatherLocation);
         btnChangeLocation = findViewById(R.id.btnChangeLocation);
         weatherMainTemp = findViewById(R.id.weatherMainTemp);
@@ -65,6 +102,8 @@ public class WeatherActivity extends Activity {
 
         windCompassView = findViewById(R.id.windCompassView);
         moonPhaseView = findViewById(R.id.moonPhaseView);
+        moonPhaseName = findViewById(R.id.moonPhaseName);
+        moonriseMoonsetText = findViewById(R.id.moonriseMoonsetText);
         sunArcView = findViewById(R.id.sunArcView);
         radarMapView = findViewById(R.id.radarMapView);
         pressureGaugeView = findViewById(R.id.pressureGaugeView);
@@ -72,14 +111,26 @@ public class WeatherActivity extends Activity {
         sunsetText = findViewById(R.id.sunsetText);
         uvValText = findViewById(R.id.uvValText);
         uvDescText = findViewById(R.id.uvDescText);
+        uvAdviceText = findViewById(R.id.uvAdviceText);
         feelsLikeVal = findViewById(R.id.feelsLikeVal);
 
         aqiValue = findViewById(R.id.aqiValue);
         aqiStatus = findViewById(R.id.aqiStatus);
         aqiBar = findViewById(R.id.aqiBar);
         aqiStation = findViewById(R.id.aqiStation);
+        pm25ValueText = findViewById(R.id.pm25ValueText);
+        pm10ValueText = findViewById(R.id.pm10ValueText);
+        coValueText = findViewById(R.id.coValueText);
+        no2ValueText = findViewById(R.id.no2ValueText);
+        so2ValueText = findViewById(R.id.so2ValueText);
+        pollutantMissingNote = findViewById(R.id.pollutantMissingNote);
+        dewPointValText = findViewById(R.id.dewPointValText);
 
         humidityValText = findViewById(R.id.humidityValText);
+        precipitationValue = findViewById(R.id.precipValue);
+        precipitationSub = findViewById(R.id.precipSub);
+        visibilityValue = findViewById(R.id.visibilityValue);
+        visibilitySub = findViewById(R.id.visibilitySub);
         weatherFooter = findViewById(R.id.weatherFooter);
 
         if (btnChangeLocation != null) {
@@ -95,14 +146,12 @@ public class WeatherActivity extends Activity {
         setupCardFocus(findViewById(R.id.tileAqi));
         setupCardFocus(findViewById(R.id.tilePrecip));
         setupCardFocus(findViewById(R.id.tileVisibility));
+        setupCardFocus(findViewById(R.id.tileDewPoint));
         setupCardFocus(findViewById(R.id.cardRadar));
         setupCardFocus(findViewById(R.id.tileHumidity));
         setupCardFocus(findViewById(R.id.tilePressure));
 
         populateUi();
-
-        // Background sync to ensure freshest data
-        WeatherAirQuality.syncIfDue(this, this::populateUi);
     }
 
     @Override
@@ -111,6 +160,8 @@ public class WeatherActivity extends Activity {
         if (weatherBgView != null) {
             weatherBgView.startAnimation();
         }
+        refreshUiIfActive();
+        WeatherAirQuality.syncIfDue(this, this::refreshUiIfActive);
     }
 
     @Override
@@ -121,16 +172,27 @@ public class WeatherActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        destroyed = true;
+        super.onDestroy();
+    }
+
+    private void refreshUiIfActive() {
+        if (destroyed || isFinishing() || isDestroyed()) return;
+        populateUi();
+    }
+
     private void showLocationPickerDialog() {
         String activeRegion = AppLocationManager.getActiveRegion(this);
         CharSequence[] topOptions = new CharSequence[]{
-                "📍 Pilih Bandar / Stesen (" + activeRegion + ")",
-                "🌏 Tukar Negara / Region Asia (Default: Malaysia)",
-                "✨ Tetapkan Suasana Latar Cuaca (Cerah, Hujan, Ribut, Malam)"
+                getString(R.string.weather_pick_city_station, activeRegion),
+                getString(R.string.weather_change_asia_region),
+                getString(R.string.weather_set_background_mood)
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("🌏 Lokasi & Suasana Cuaca");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+        builder.setTitle(R.string.weather_location_dialog_title);
         builder.setItems(topOptions, (dialog, which) -> {
             dialog.dismiss();
             if (which == 0) {
@@ -141,50 +203,54 @@ public class WeatherActivity extends Activity {
                 showWeatherAnimationPicker();
             }
         });
-        builder.setNegativeButton("Tutup / Cancel", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        builder.setNegativeButton(R.string.close_label, (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showWeatherAnimationPicker() {
         SharedPreferences p = getSharedPreferences("app_weather_prefs", MODE_PRIVATE);
 
         CharSequence[] conditions = new CharSequence[]{
-                "☀️ Tetapkan Cerah / Sunny (Pantulan suria, lens flare & cahaya)",
-                "🌧️ Tetapkan Hujan / Rain (Titisan hujan & percikan air)",
-                "⛈️ Tetapkan Ribut Petir / Thunderstorm (Kilat menyambar & hujan)",
-                "⛅ Tetapkan Mendung / Cloudy (Awan berarak di langit)",
-                "🌙 Tetapkan Malam / Night (Bintang berkelip & sinaran bulan)",
-                "🔄 Pulihkan kepada Cuaca Semasa Sebenar (Auto)"
+                getString(R.string.weather_set_sunny),
+                getString(R.string.weather_set_rain),
+                getString(R.string.weather_set_storm),
+                getString(R.string.weather_set_cloudy),
+                getString(R.string.weather_set_night),
+                getString(R.string.weather_restore_live)
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("✨ Pilihan Suasana Latar Belakang");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+        builder.setTitle(R.string.weather_mood_dialog_title);
         builder.setItems(conditions, (dialog, which) -> {
             dialog.dismiss();
             SharedPreferences.Editor ed = p.edit();
             if (which == 0) {
                 ed.putString("atmosphere_mode", "SUNNY").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Cerah (Sunny)", Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_clear)), Toast.LENGTH_SHORT);
             } else if (which == 1) {
                 ed.putString("atmosphere_mode", "RAIN").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Hujan (Rain)", Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_rain)), Toast.LENGTH_SHORT);
             } else if (which == 2) {
                 ed.putString("atmosphere_mode", "THUNDERSTORM").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Ribut Petir", Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_storm)), Toast.LENGTH_SHORT);
             } else if (which == 3) {
                 ed.putString("atmosphere_mode", "CLOUDY").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Mendung (Cloudy)", Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_cloudy)), Toast.LENGTH_SHORT);
             } else if (which == 4) {
                 ed.putString("atmosphere_mode", "NIGHT").apply();
-                Toast.makeText(this, "Suasana ditetapkan kepada: Malam (Night)", Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, getString(R.string.weather_mood_selected, getString(R.string.weather_condition_night)), Toast.LENGTH_SHORT);
             } else {
                 ed.putString("atmosphere_mode", "AUTO").apply();
-                Toast.makeText(this, "Pulih kepada data cuaca sebenar (Auto)", Toast.LENGTH_SHORT).show();
+                TvFeedback.show(this, R.string.weather_mood_auto, Toast.LENGTH_SHORT);
             }
             populateUi();
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showAsiaCountryDialog() {
@@ -200,23 +266,25 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("🌏 Pilih Negara / Region Asia");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+        builder.setTitle(R.string.weather_region_picker_title);
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             String chosenRegion = regions.get(which);
             AppLocationManager.setActiveRegion(WeatherActivity.this, chosenRegion);
-            Toast.makeText(WeatherActivity.this, "Region dipilih: " + chosenRegion, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(WeatherActivity.this, getString(R.string.weather_region_selected, chosenRegion), Toast.LENGTH_SHORT);
             showStationListDialog(chosenRegion);
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void showStationListDialog(String region) {
         final List<AppLocationManager.Station> stations = AppLocationManager.getStationsForRegion(region);
         if (stations.isEmpty()) {
-            Toast.makeText(this, "Tiada stesen dijumpai bagi " + region, Toast.LENGTH_SHORT).show();
+            TvFeedback.show(this, getString(R.string.weather_no_stations, region), Toast.LENGTH_SHORT);
             return;
         }
 
@@ -231,20 +299,36 @@ public class WeatherActivity extends Activity {
             }
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        builder.setTitle("📍 Pilih Bandar / Stesen (" + region + ")");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog);
+        builder.setTitle(getString(R.string.weather_station_picker_title, region));
         builder.setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
             dialog.dismiss();
             AppLocationManager.Station picked = stations.get(which);
             AppLocationManager.setStation(WeatherActivity.this, picked);
-            Toast.makeText(WeatherActivity.this, "Menyelaras cuaca " + picked.name + "...", Toast.LENGTH_SHORT).show();
-            WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::populateUi);
+            TvFeedback.show(WeatherActivity.this, getString(R.string.weather_syncing, picked.name), Toast.LENGTH_SHORT);
+            WeatherAirQuality.sync(WeatherActivity.this, WeatherActivity.this::refreshUiIfActive);
         });
-        builder.setNegativeButton("Kembali", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+        builder.setNegativeButton(R.string.back_action, (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        TvDialogStyle.apply(dialog, this, 520, 0);
     }
 
     private void populateUi() {
+        View previousFocus = getCurrentFocus();
+        boolean hadFocus = previousFocus != null && previousFocus.hasFocus();
+        String focusType = null;
+        String focusKey = null;
+        if (isInside(previousFocus, hourlyContainer)) {
+            TextView label = previousFocus.findViewById(R.id.hourlyTime);
+            focusType = "hourly";
+            focusKey = label == null ? null : label.getText().toString();
+        } else if (isInside(previousFocus, dailyContainer)) {
+            TextView label = previousFocus.findViewById(R.id.dailyDay);
+            focusType = "daily";
+            focusKey = label == null ? null : label.getText().toString();
+        }
+
         WeatherAirQuality.FullWeather w = WeatherAirQuality.getFullWeather(this);
 
         // 1. Determine Condition and update animated background
@@ -255,27 +339,23 @@ public class WeatherActivity extends Activity {
 
         // 2. Header
         Location.Zone chosen = Location.chosen(this);
-        String neatLoc = (chosen != null) ? chosen.town : w.location;
-        if (neatLoc == null || neatLoc.isEmpty()) neatLoc = "Kuala Lumpur";
+        String neatLoc = AppLocationManager.getLocationName(this);
+        if (neatLoc == null || neatLoc.trim().isEmpty()) neatLoc = (chosen != null) ? chosen.town : w.location;
+        if (neatLoc == null || neatLoc.trim().isEmpty()) neatLoc = "Pagar Alam";
         neatLoc = neatLoc.substring(0, 1).toUpperCase(Locale.ROOT) + neatLoc.substring(1);
         weatherLocation.setText(neatLoc);
 
-        weatherMainTemp.setText(w.temp + "°");
+        weatherMainTemp.setText(w.temp >= -100 && w.temp <= 100 ? w.temp + "°" : "—");
         
-        // Display Condition text matching active atmosphere
-        if (conditionType == WeatherBackgroundView.ConditionType.SUNNY) {
-            weatherMainCondition.setText("Cerah");
-        } else if (conditionType == WeatherBackgroundView.ConditionType.NIGHT) {
-            weatherMainCondition.setText("Malam Tenang");
-        } else if (conditionType == WeatherBackgroundView.ConditionType.THUNDERSTORM) {
-            weatherMainCondition.setText("Ribut Petir");
-        } else if (conditionType == WeatherBackgroundView.ConditionType.RAIN) {
-            weatherMainCondition.setText("Hujan");
-        } else {
-            weatherMainCondition.setText("Mendung");
-        }
+        // The selected visual mood may be manual; weather text always reflects API data.
+        weatherMainCondition.setText(w.condition == null || w.condition.isEmpty()
+                ? getString(R.string.weather_data_unavailable) : w.condition);
 
-        weatherMainSub.setText(String.format(Locale.ROOT, "H:%d°  L:%d°", w.highTemp, w.lowTemp));
+        if (w.highTemp >= -100 && w.lowTemp >= -100) {
+            weatherMainSub.setText(getString(R.string.weather_high_low_summary, w.highTemp, w.lowTemp));
+        } else {
+            weatherMainSub.setText(getString(R.string.weather_data_unavailable));
+        }
 
         // 3. Hourly Strip (Apple Weather Conditions Card)
         hourlyContainer.removeAllViews();
@@ -289,8 +369,9 @@ public class WeatherActivity extends Activity {
             TextView tempView = v.findViewById(R.id.hourlyTemp);
 
             timeView.setText(item.time);
-            iconView.setImageResource(getIconDrawable(item.icon, item.time));
-            tempView.setText(item.temp + "°");
+            if (item.icon == null || item.icon.isEmpty()) iconView.setVisibility(View.INVISIBLE);
+            else iconView.setImageResource(getIconDrawable(item.icon, item.time));
+            tempView.setText(item.temp >= -100 && item.temp <= 100 ? item.temp + "°" : "—");
 
             if (item.rainChance > 0) {
                 rainView.setVisibility(View.VISIBLE);
@@ -302,24 +383,18 @@ public class WeatherActivity extends Activity {
             setupFocusAnimation(v, 1.0f);
             hourlyContainer.addView(v);
 
-            // Default focus on first hourly tile
-            if (i == 0) {
-                v.requestFocus();
-            }
         }
 
         // 4. 10-Day Forecast (Apple Weather Vertical List with Temp Spectrum Bar)
         dailyContainer.removeAllViews();
-        int weekMin = 999;
-        int weekMax = -999;
+        int weekMin = Integer.MAX_VALUE;
+        int weekMax = Integer.MIN_VALUE;
         for (WeatherAirQuality.DailyItem d : w.daily) {
-            if (d.minTemp < weekMin) weekMin = d.minTemp;
-            if (d.maxTemp > weekMax) weekMax = d.maxTemp;
+            if (d.minTemp >= -100 && d.minTemp <= 100) weekMin = Math.min(weekMin, d.minTemp);
+            if (d.maxTemp >= -100 && d.maxTemp <= 100) weekMax = Math.max(weekMax, d.maxTemp);
         }
-        if (weekMin == 999) {
-            weekMin = 20;
-            weekMax = 35;
-        }
+        boolean hasWeekRange = weekMin != Integer.MAX_VALUE && weekMax != Integer.MIN_VALUE;
+        if (hasWeekRange && weekMax <= weekMin) weekMax = weekMin + 1;
 
         for (int i = 0; i < w.daily.size(); i++) {
             WeatherAirQuality.DailyItem item = w.daily.get(i);
@@ -333,7 +408,8 @@ public class WeatherActivity extends Activity {
             View divider = v.findViewById(R.id.dailyDivider);
 
             dayView.setText(item.day);
-            iconView.setImageResource(getIconDrawable(item.icon, "12:00"));
+            if (item.icon == null || item.icon.isEmpty()) iconView.setVisibility(View.INVISIBLE);
+            else iconView.setImageResource(getIconDrawable(item.icon, "12:00"));
             if (rainView != null) {
                 if (item.rainChance > 0) {
                     rainView.setVisibility(View.VISIBLE);
@@ -343,11 +419,19 @@ public class WeatherActivity extends Activity {
                 }
             }
 
-            minTempView.setText(item.minTemp + "°");
-            maxTempView.setText(item.maxTemp + "°");
+            boolean validDayRange = item.minTemp >= -100 && item.maxTemp <= 100
+                    && item.maxTemp >= item.minTemp;
+            minTempView.setText(validDayRange ? item.minTemp + "°" : "—");
+            maxTempView.setText(validDayRange ? item.maxTemp + "°" : "—");
 
             boolean isToday = (i == 0 || "Today".equalsIgnoreCase(item.day) || "Hari ini".equalsIgnoreCase(item.day));
-            barView.setRange(weekMin, weekMax, item.minTemp, item.maxTemp, isToday ? w.temp : -999);
+            if (hasWeekRange && validDayRange) {
+                barView.setVisibility(View.VISIBLE);
+                barView.setRange(weekMin, weekMax, item.minTemp, item.maxTemp,
+                        isToday && w.temp >= -100 && w.temp <= 100 ? w.temp : -999);
+            } else {
+                barView.setVisibility(View.INVISIBLE);
+            }
 
             if (i == w.daily.size() - 1 && divider != null) {
                 divider.setVisibility(View.GONE);
@@ -358,41 +442,74 @@ public class WeatherActivity extends Activity {
         }
 
         // 5. Populate Modular Metric Tiles
+        View focusTarget = null;
+        if ("hourly".equals(focusType)) focusTarget = findRowByText(hourlyContainer, R.id.hourlyTime, focusKey);
+        else if ("daily".equals(focusType)) focusTarget = findRowByText(dailyContainer, R.id.dailyDay, focusKey);
+        if (focusTarget == null && "hourly".equals(focusType) && hourlyContainer.getChildCount() > 0) {
+            focusTarget = hourlyContainer.getChildAt(0);
+        } else if (focusTarget == null && "daily".equals(focusType) && dailyContainer.getChildCount() > 0) {
+            focusTarget = dailyContainer.getChildAt(0);
+        }
+        if (focusTarget != null) focusTarget.requestFocus();
+        else if (!hadFocus && hourlyContainer.getChildCount() > 0) hourlyContainer.getChildAt(0).requestFocus();
+
         if (windCompassView != null) {
-            windCompassView.setWind(w.windSpeed, w.windSpeed + 10, 180f);
+            windCompassView.setVisibility(w.windSpeed >= 0 ? View.VISIBLE : View.INVISIBLE);
+            if (w.windSpeed >= 0) windCompassView.setWind(w.windSpeed, w.windGust, w.windDirection);
         }
 
         if (sunArcView != null) {
-            sunArcView.setTimes(w.sunrise, w.sunset);
+            sunArcView.setTimes(w.sunrise, w.sunset, w.currentTimeLocal, getString(R.string.weather_sunrise_label));
+        }
+        if (moonPhaseView != null) {
+            moonPhaseView.setMoonData(w.moonPhase, AppLocationManager.getLatitude(this) < 0.0);
+        }
+        if (moonPhaseName != null) moonPhaseName.setText(moonPhaseName(w.moonPhase));
+        if (moonriseMoonsetText != null) {
+            moonriseMoonsetText.setText(("—".equals(w.moonrise) && "—".equals(w.moonset)) ? "—"
+                    : getString(R.string.weather_moonrise_set_format, w.moonrise, w.moonset));
         }
         if (sunsetText != null) {
-            sunsetText.setText(w.sunset != null ? w.sunset : "6:57 PM");
+            sunsetText.setText(w.sunset != null ? w.sunset : "—");
         }
 
         if (uvValText != null) {
-            uvValText.setText(String.valueOf(w.uvIndex));
+            uvValText.setText(w.uvIndex >= 0 ? String.valueOf(w.uvIndex) : "—");
         }
-        if (uvDescText != null) {
-            if (w.uvIndex <= 2) uvDescText.setText("Low");
-            else if (w.uvIndex <= 5) uvDescText.setText("Moderate");
-            else if (w.uvIndex <= 7) uvDescText.setText("High");
-            else uvDescText.setText("Very High");
-        }
+        if (uvDescText != null) uvDescText.setText(uvCategoryLabel(w.uvIndex));
+        if (uvAdviceText != null) uvAdviceText.setText(uvRecommendation(w.uvIndex));
 
         if (feelsLikeVal != null) {
-            feelsLikeVal.setText(w.apparentTemp + "°");
+            feelsLikeVal.setText(w.apparentTemp >= -100 && w.apparentTemp <= 100 ? w.apparentTemp + "°" : "—");
         }
 
         // Air Quality
-        if (aqiValue != null) aqiValue.setText(String.valueOf(w.aqi));
+        if (aqiValue != null) aqiValue.setText(w.aqi >= 0 ? String.valueOf(w.aqi) : "—");
         if (aqiStatus != null) aqiStatus.setText(w.aqiStatus);
-        if (aqiBar != null) aqiBar.setAqi(w.aqi);
-        if (aqiStation != null) {
-            if (w.stationPlace != null && !w.stationPlace.isEmpty()) {
-                aqiStation.setText(w.stationPlace);
+        if (aqiBar != null) {
+            if (w.aqi >= 0) {
+                aqiBar.setVisibility(View.VISIBLE);
+                aqiBar.setAqi(w.aqi);
             } else {
-                aqiStation.setText("SK Putrajaya Presint 18");
+                aqiBar.setVisibility(View.INVISIBLE);
             }
+        }
+        if (aqiStation != null) {
+            String place = (w.stationPlace != null && !w.stationPlace.isEmpty())
+                    ? w.stationPlace : AppLocationManager.getStationPlace(this);
+            aqiStation.setText(getString(R.string.weather_model_reference_detail, place));
+        }
+        setPollutantValue(pm25ValueText, w.pm25, "µg/m³");
+        setPollutantValue(pm10ValueText, w.pm10, "µg/m³");
+        setPollutantValue(coValueText, w.carbonMonoxide / 1000.0, "mg/m³");
+        setPollutantValue(no2ValueText, w.nitrogenDioxide, "µg/m³");
+        setPollutantValue(so2ValueText, w.sulphurDioxide, "µg/m³");
+        boolean missingPollutant = !isAvailable(w.pm25) || !isAvailable(w.pm10)
+                || !isAvailable(w.carbonMonoxide) || !isAvailable(w.nitrogenDioxide)
+                || !isAvailable(w.sulphurDioxide);
+        if (pollutantMissingNote != null) {
+            pollutantMissingNote.setText(R.string.weather_pollutant_missing_note);
+            pollutantMissingNote.setVisibility(missingPollutant ? View.VISIBLE : View.GONE);
         }
 
         // Radar Map
@@ -400,20 +517,126 @@ public class WeatherActivity extends Activity {
             radarMapView.setDetails(w.temp, neatLoc);
         }
 
-        // Humidity & Pressure
+        // Humidity, precipitation, visibility & pressure
         if (humidityValText != null) {
-            humidityValText.setText(w.humidity + "%");
+            humidityValText.setText(w.humidity >= 0 ? w.humidity + "%" : "—");
+        }
+        boolean englishMetrics = AppLanguage.LANG_EN.equals(AppLanguage.getLanguage(this));
+        if (precipitationValue != null) {
+            precipitationValue.setText(Double.isNaN(w.precipitationMm) ? "—" : String.format(Locale.ROOT, "%.1f mm", w.precipitationMm));
+        }
+        if (dewPointValText != null) {
+            dewPointValText.setText(Double.isNaN(w.dewPoint) ? "—" : String.format(Locale.ROOT, "%.1f°", w.dewPoint));
+        }
+        if (precipitationSub != null) {
+            precipitationSub.setText(w.rainChanceToday >= 0 ? getString(R.string.weather_precipitation_summary, w.rainChanceToday) : "—");
+        }
+        if (visibilityValue != null) {
+            visibilityValue.setText(Double.isNaN(w.visibilityKm) ? "—" : String.format(Locale.ROOT, "%.1f km", w.visibilityKm));
+        }
+        if (visibilitySub != null) {
+            visibilitySub.setText(Double.isNaN(w.visibilityKm) ? "—" : (w.visibilityKm < 1.0
+                    ? getString(R.string.limited_visibility)
+                    : getString(R.string.good_visibility)));
         }
         if (pressureGaugeView != null) {
-            pressureGaugeView.setPressure(1014);
+            pressureGaugeView.setVisibility(w.pressure >= 0 ? View.VISIBLE : View.INVISIBLE);
+            if (w.pressure >= 0) pressureGaugeView.setPressure(w.pressure);
         }
 
         // 6. Footer
         if (weatherFooter != null) {
-            weatherFooter.setText(String.format(Locale.ROOT,
-                    "Updated %s  •  %s",
-                    w.updatedTime, w.isJasSource ? "Jabatan Alam Sekitar (APIMS)" : "Open-Meteo air-quality model"));
+            String weatherState = sourceState(w.weatherAvailable, w.weatherStale,
+                    w.weatherRefreshFailed, w.networkAvailable, w.updatedTime);
+            String aqiState = sourceState(w.aqiAvailable, w.aqiStale,
+                    w.aqiRefreshFailed, w.networkAvailable, w.aqiUpdatedTime);
+            weatherFooter.setText(getString(R.string.weather_footer_format,
+                    weatherState, aqiState, getString(R.string.weather_data_source)));
         }
+    }
+
+    private boolean isInside(View candidate, ViewGroup parent) {
+        if (candidate == null || parent == null) return false;
+        View current = candidate;
+        while (current != null) {
+            if (current == parent) return true;
+            ViewParent next = current.getParent();
+            current = next instanceof View ? (View) next : null;
+        }
+        return false;
+    }
+
+    static View findRowByText(LinearLayout container, int textViewId, String value) {
+        if (container == null || value == null) return null;
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View row = container.getChildAt(i);
+            TextView label = row.findViewById(textViewId);
+            if (label != null && value.contentEquals(label.getText())) return row;
+        }
+        return null;
+    }
+
+    private boolean isAvailable(double value) {
+        return !Double.isNaN(value) && !Double.isInfinite(value);
+    }
+
+    private void setPollutantValue(TextView view, double value, String unit) {
+        if (view == null) return;
+        view.setText(isAvailable(value) ? String.format(Locale.ROOT, "%.1f %s", value, unit) : "—");
+    }
+
+    private String moonPhaseName(double phase) {
+        if (Double.isNaN(phase) || Double.isInfinite(phase)) return getString(R.string.weather_data_unavailable);
+        double p = phase - Math.floor(phase);
+        if (p < 0.0625 || p >= 0.9375) return getString(R.string.weather_moon_new);
+        if (p < 0.1875) return getString(R.string.weather_moon_waxing_crescent);
+        if (p < 0.3125) return getString(R.string.weather_moon_first_quarter);
+        if (p < 0.4375) return getString(R.string.weather_moon_waxing_gibbous);
+        if (p < 0.5625) return getString(R.string.weather_moon_full);
+        if (p < 0.6875) return getString(R.string.weather_moon_waning_gibbous);
+        if (p < 0.8125) return getString(R.string.weather_moon_last_quarter);
+        return getString(R.string.weather_moon_waning_crescent);
+    }
+
+    private String uvCategoryLabel(int uv) {
+        if (uv < 0) return getString(R.string.weather_data_unavailable);
+        if (uv <= 2) return getString(R.string.uv_low);
+        if (uv <= 5) return getString(R.string.uv_moderate);
+        if (uv <= 7) return getString(R.string.uv_high);
+        if (uv <= 10) return getString(R.string.uv_very_high);
+        return getString(R.string.uv_extreme);
+    }
+
+    private String uvRecommendation(int uv) {
+        if (uv < 0) return getString(R.string.weather_data_unavailable);
+        if (uv <= 2) return getString(R.string.uv_advice_low);
+        if (uv <= 5) return getString(R.string.uv_advice_moderate);
+        if (uv <= 7) return getString(R.string.uv_advice_high);
+        if (uv <= 10) return getString(R.string.uv_advice_very_high);
+        return getString(R.string.uv_advice_extreme);
+    }
+
+    private String sourceState(boolean available, boolean stale, boolean failed,
+                               boolean networkAvailable, String updatedTime) {
+        String state;
+        if (!available) {
+            if (!networkAvailable) state = getString(R.string.weather_state_offline_unavailable);
+            else if (failed) state = getString(R.string.weather_state_refresh_failed);
+            else state = getString(R.string.weather_state_unavailable);
+        } else if (!networkAvailable) {
+            state = stale ? getString(R.string.weather_state_offline_stale)
+                    : getString(R.string.weather_state_offline);
+        } else if (stale && failed) {
+            state = getString(R.string.weather_state_stale_failed);
+        } else if (stale) {
+            state = getString(R.string.weather_state_stale);
+        } else if (failed) {
+            state = getString(R.string.weather_state_refresh_failed);
+        } else {
+            state = getString(R.string.weather_state_current);
+        }
+        return updatedTime == null || updatedTime.isEmpty() || "—".equals(updatedTime)
+                ? state : state + " · " + updatedTime;
     }
 
     private WeatherBackgroundView.ConditionType determineCondition(WeatherAirQuality.FullWeather w) {
@@ -427,10 +650,14 @@ public class WeatherActivity extends Activity {
 
         Calendar now = Calendar.getInstance();
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        boolean isNight = (hour < 7 || hour >= 19);
+        boolean isNight = w.isDayAvailable ? !w.isDay : (hour < 7 || hour >= 19);
 
         String cond = (w.condition != null) ? w.condition.toLowerCase(Locale.ROOT) : "";
         String icon = (w.icon != null) ? w.icon : "";
+        if (w.temp < -100 || cond.isEmpty() || cond.contains("unavailable")
+                || cond.contains("tidak tersedia")) {
+            return WeatherBackgroundView.ConditionType.CLOUDY;
+        }
 
         // Thunderstorm codes: 95, 96, 99
         if (cond.contains("thunder") || cond.contains("storm") || cond.contains("ribut") || icon.contains("⛈")) {
@@ -494,10 +721,15 @@ public class WeatherActivity extends Activity {
     }
 
     private void setupFocusAnimation(View v, float scale) {
+        // Keep the legacy parameter for existing call sites; DPAD focus is outline/elevation-only.
         v.setOnFocusChangeListener((view, hasFocus) -> {
-            float s = hasFocus ? scale : 1.0f;
             float elev = hasFocus ? 6f : 0f;
-            view.animate().scaleX(s).scaleY(s).translationZ(elev).setDuration(140).start();
+            if (reducedMotion) {
+                view.animate().cancel();
+                view.setTranslationZ(elev);
+            } else {
+                view.animate().translationZ(elev).setDuration(TvUiTokens.FOCUS_ANIMATION_MS).start();
+            }
         });
     }
 
@@ -507,7 +739,14 @@ public class WeatherActivity extends Activity {
         card.setClickable(true);
         card.setOnFocusChangeListener((view, hasFocus) -> {
             float elev = hasFocus ? 6f : 0f;
-            view.animate().scaleX(1.0f).scaleY(1.0f).translationZ(elev).setDuration(120).start();
+            if (reducedMotion) {
+                view.animate().cancel();
+                view.setScaleX(1f);
+                view.setScaleY(1f);
+                view.setTranslationZ(elev);
+            } else {
+                view.animate().translationZ(elev).setDuration(120).start();
+            }
         });
     }
 

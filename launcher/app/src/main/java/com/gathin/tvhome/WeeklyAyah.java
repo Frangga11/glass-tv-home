@@ -14,15 +14,21 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * The daily ayat above the prayer times (weekly_ayah): one of 52 well-known short verses, a new one each
- * day in Malaysian time, with its Uthmani text and Abdullah Muhammad Basmeih's Malay translation from
- * Quran.com. Fetched once a day and kept, so Home shows it at once.
+ * The daily selected Quran verse above the prayer times: one of 52 short verses, selected by the
+ * Western Indonesian (WIB) calendar day, with Uthmani text and available Malay, English and Indonesian
+ * translations from Quran.com. The last valid verse is retained for offline display.
  */
 final class WeeklyAyah {
     private static final String TAG = "TvHome.Ayah";
     private static final String API = "https://api.quran.com/api/v4/";
+    private static final String KEY_DAY_INDEX = "day_index";
+    private static final String KEY_LAST_ATTEMPT_DAY = "last_attempt_day";
+    private static final String KEY_LAST_ATTEMPT_MS = "last_attempt_ms";
+    static final long RETRY_COOLDOWN_MS = 30L * 60L * 1000L;
+    private static final AtomicBoolean REFRESH_RUNNING = new AtomicBoolean(false);
     /** Short enough for two lines of Arabic and a few of Malay; read in order, one a day. */
     static final String[] VERSES = {
             "2:152", "94:5", "13:28", "2:153", "20:25", "2:45", "3:8", "94:6", "3:134", "7:23",
@@ -51,16 +57,18 @@ final class WeeklyAyah {
         }
 
         String translation(String lang) {
-            if (AppLanguage.LANG_EN.equals(lang)) {
-                return (english != null && !english.isEmpty()) ? english : malay;
-            } else if (AppLanguage.LANG_ID.equals(lang)) {
-                return (indonesian != null && !indonesian.isEmpty()) ? indonesian : malay;
-            }
-            return (malay != null && !malay.isEmpty()) ? malay : english;
+            if (AppLanguage.LANG_EN.equals(lang)) return firstNonEmpty(english, malay, indonesian);
+            if (AppLanguage.LANG_ID.equals(lang)) return firstNonEmpty(indonesian, malay, english);
+            return firstNonEmpty(malay, english, indonesian);
         }
 
         String translation(boolean inEnglish) {
-            return inEnglish && !english.isEmpty() ? english : malay;
+            return inEnglish ? firstNonEmpty(english, malay, indonesian) : firstNonEmpty(malay, english, indonesian);
+        }
+
+        private static String firstNonEmpty(String... values) {
+            for (String value : values) if (value != null && !value.trim().isEmpty()) return value;
+            return "";
         }
     }
 
@@ -87,9 +95,9 @@ final class WeeklyAyah {
 
     private WeeklyAyah() {}
 
-    /** Days since 1970 in Malaysian time: the verse changes at midnight. */
+    /** Days since 1970 in Western Indonesian time (WIB): the verse changes at local midnight. */
     static int day() {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("Asia/Jakarta"));
         return (int) ((c.getTimeInMillis() + c.getTimeZone().getOffset(c.getTimeInMillis())) / 86_400_000L);
     }
 
@@ -97,27 +105,42 @@ final class WeeklyAyah {
         return VERSES[Math.floorMod(day, VERSES.length)];
     }
 
-    /** Today's verse from storage, or null when it has not been fetched yet. */
+    /** Today's valid verse from storage, or null when today's verse is not cached. */
     static Ayah stored(Context ctx) {
         SharedPreferences p = prefs(ctx);
-        // A verse kept before English or Indonesian was added lacks it: fetch again, once.
-        if (!keyFor(day()).equals(p.getString("key", null))
-                || !p.contains("text_english")
-                || !p.contains("text_indonesian")
-                || p.getString("text_indonesian", "").isEmpty()) {
-            return null;
-        }
+        if (p.getInt(KEY_DAY_INDEX, Integer.MIN_VALUE) != day()
+                || !keyFor(day()).equals(p.getString("key", null)) || !hasUsableContent(p)) return null;
         return read(p);
     }
 
+    /** True when any valid verse is retained, even if it belongs to an earlier day. */
+    static boolean hasCached(Context ctx) {
+        return hasUsableContent(prefs(ctx));
+    }
+
+    /** Avoid creating a background thread on every Home minute tick while retry is cooling down. */
+    static boolean shouldAttemptRefresh(Context ctx) {
+        if (stored(ctx) != null) return false;
+        SharedPreferences p = prefs(ctx);
+        return isRetryDue(p.getInt(KEY_LAST_ATTEMPT_DAY, Integer.MIN_VALUE),
+                p.getLong(KEY_LAST_ATTEMPT_MS, 0L), day(), System.currentTimeMillis());
+    }
+    private static boolean hasUsableContent(SharedPreferences p) {
+        String arabic = p.getString("arabic", "");
+        boolean hasTranslation = !p.getString("translation", "").trim().isEmpty()
+                || !p.getString("text_english", "").trim().isEmpty()
+                || !p.getString("text_indonesian", "").trim().isEmpty();
+        return arabic != null && !arabic.trim().isEmpty() && hasTranslation;
+    }
+
     static void clearCache(Context ctx) {
-        prefs(ctx).edit().remove("key").remove("text_indonesian").apply();
+        prefs(ctx).edit().remove("key").remove(KEY_DAY_INDEX).remove("text_indonesian").apply();
     }
 
     /** The last verse kept, whatever day it was for: shown while today's is on its way. */
     static Ayah last(Context ctx) {
         SharedPreferences p = prefs(ctx);
-        if (p.getString("arabic", null) != null) {
+        if (hasUsableContent(p)) {
             return read(p);
         }
         return new Ayah(
@@ -134,34 +157,57 @@ final class WeeklyAyah {
                 p.getString("text_indonesian", ""), p.getString("reference", ""));
     }
 
-    /** Fetches today's verse. Network; never on the UI thread. */
-    static Ayah refresh(Context ctx) {
-        String key = keyFor(day());
-        try {
-            JSONObject v = new JSONObject(get(API + "verses/by_key/" + key + "?fields=text_uthmani&translations="
-                    + MALAY + "," + ENGLISH + "," + INDONESIAN)).getJSONObject("verse");
-            JSONArray trs = v.optJSONArray("translations");
-            String malay = "", english = "", indonesian = "";
-            for (int i = 0; trs != null && i < trs.length(); i++) {
-                JSONObject t = trs.getJSONObject(i);
-                String text = t.optString("text").replaceAll("<sup[^>]*>.*?</sup>", "").replaceAll("<[^>]+>", "").trim();
-                if (t.optInt("resource_id") == MALAY) malay = text;
-                else if (t.optInt("resource_id") == ENGLISH) english = text;
-                else if (t.optInt("resource_id") == INDONESIAN) indonesian = text;
-            }
-            String chapter = key.substring(0, key.indexOf(':'));
-            String name = new JSONObject(get(API + "chapters/" + chapter + "?language=ms")).getJSONObject("chapter").optString("name_simple");
-            Ayah a = new Ayah(v.optString("text_uthmani"), malay, english, indonesian, name + " " + key);
-            prefs(ctx).edit().putString("key", key).putString("arabic", a.arabic).putString("translation", a.malay)
-                    .putString("text_english", a.english).putString("text_indonesian", a.indonesian)
-                    .putString("reference", a.reference).apply();
-            return a;
-        } catch (Exception e) {
-            Log.w(TAG, "verse " + key + ": " + e.getMessage());
-            return null;
-        }
+    /** Whether another refresh may run for the selected day after the persisted retry cooldown. */
+    static boolean isRetryDue(int lastAttemptDay, long lastAttemptMs, int currentDay, long nowMs) {
+        return lastAttemptDay != currentDay || lastAttemptMs <= 0L
+                || nowMs - lastAttemptMs >= RETRY_COOLDOWN_MS;
     }
 
+    /** Fetches today's verse. Network; never on the UI thread. */
+    static Ayah refresh(Context ctx) {
+        if (!REFRESH_RUNNING.compareAndSet(false, true)) return null;
+        try {
+            int dayIndex = day();
+            String key = keyFor(dayIndex);
+            SharedPreferences cache = prefs(ctx);
+            long attemptTime = System.currentTimeMillis();
+            if (!isRetryDue(cache.getInt(KEY_LAST_ATTEMPT_DAY, Integer.MIN_VALUE),
+                    cache.getLong(KEY_LAST_ATTEMPT_MS, 0L), dayIndex, attemptTime)) return null;
+            cache.edit().putInt(KEY_LAST_ATTEMPT_DAY, dayIndex).putLong(KEY_LAST_ATTEMPT_MS, attemptTime).apply();
+            try {
+                JSONObject v = new JSONObject(get(API + "verses/by_key/" + key + "?fields=text_uthmani&translations="
+                        + MALAY + "," + ENGLISH + "," + INDONESIAN)).getJSONObject("verse");
+                JSONArray trs = v.optJSONArray("translations");
+                String malay = "", english = "", indonesian = "";
+                for (int i = 0; trs != null && i < trs.length(); i++) {
+                    JSONObject t = trs.getJSONObject(i);
+                    String text = t.optString("text").replaceAll("<sup[^>]*>.*?</sup>", "").replaceAll("<[^>]+>", "").trim();
+                    if (t.optInt("resource_id") == MALAY) malay = text;
+                    else if (t.optInt("resource_id") == ENGLISH) english = text;
+                    else if (t.optInt("resource_id") == INDONESIAN) indonesian = text;
+                }
+                String chapter = key.substring(0, key.indexOf(':'));
+                String name = new JSONObject(get(API + "chapters/" + chapter + "?language=ms"))
+                        .getJSONObject("chapter").optString("name_simple");
+                String arabic = v.optString("text_uthmani", "").trim();
+                if (arabic.isEmpty() || (malay.isEmpty() && english.isEmpty() && indonesian.isEmpty())) {
+                    throw new IllegalStateException("Incomplete Quran verse payload for " + key);
+                }
+                if (name == null || name.trim().isEmpty()) name = "Surah";
+                Ayah a = new Ayah(arabic, malay, english, indonesian, name + " " + key);
+                cache.edit().putString("key", key).putInt(KEY_DAY_INDEX, dayIndex)
+                        .putString("arabic", a.arabic).putString("translation", a.malay)
+                        .putString("text_english", a.english).putString("text_indonesian", a.indonesian)
+                        .putString("reference", a.reference).apply();
+                return a;
+            } catch (Exception e) {
+                Log.w(TAG, "verse " + key + ": " + e.getMessage());
+                return null;
+            }
+        } finally {
+            REFRESH_RUNNING.set(false);
+        }
+    }
     private static String get(String url) throws Exception {
         HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
         c.setConnectTimeout(15000);

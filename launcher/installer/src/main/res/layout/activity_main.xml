@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0C0E14"
+    android:background="#2C333B"
     android:fillViewport="true">
 
     <LinearLayout
@@ -59,7 +59,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="5dp"
                 android:text="v3.1.4"
-                android:textColor="#FF90B8"
+                android:textColor="#00E5FF"
                 android:textSize="12sp"
                 android:fontFamily="@font/inter"
                 android:textStyle="bold" />
@@ -232,7 +232,7 @@
                 android:layout_height="42dp"
                 android:background="@drawable/bg_btn_glass"
                 android:text="🏠 Ubah Butang Home Remote (Set Default Launcher)"
-                android:textColor="#38BDF8"
+                android:textColor="#00E5FF"
                 android:textSize="12.5sp"
                 android:fontFamily="@font/inter"
                 android:textStyle="bold"

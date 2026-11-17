@@ -80,11 +80,26 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        android.util.DisplayMetrics metrics = parent.getResources().getDisplayMetrics();
+        int cardWidthPx = TvResponsiveLayout.recentCardWidthPx(metrics.widthPixels, metrics.density);
+        int cardHeightPx = TvResponsiveLayout.recentCardHeightPx(cardWidthPx);
         if (viewType == VIEW_TYPE_CLOSE_ALL) {
             View view = inflater.inflate(R.layout.item_recent_close_all, parent, false);
+            View cardSlot = view.findViewById(R.id.closeAllCardSlot);
+            ViewGroup.LayoutParams slotParams = cardSlot.getLayoutParams();
+            slotParams.height = cardHeightPx;
+            cardSlot.setLayoutParams(slotParams);
             return new CloseAllViewHolder(view);
         } else {
             View view = inflater.inflate(R.layout.item_recent_app, parent, false);
+            TextView appLabel = view.findViewById(R.id.tvAppLabel);
+            int labelMaxWidth = Math.max(1, cardWidthPx - Math.round(48f * metrics.density));
+            appLabel.setMaxWidth(Math.min(Math.round(260f * metrics.density), labelMaxWidth));
+            View card = view.findViewById(R.id.cardContainer);
+            ViewGroup.LayoutParams cardParams = card.getLayoutParams();
+            cardParams.width = cardWidthPx;
+            cardParams.height = cardHeightPx;
+            card.setLayoutParams(cardParams);
             return new AppViewHolder(view);
         }
     }
@@ -156,6 +171,9 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             float density = itemView.getResources().getDisplayMetrics().density;
             GradientDrawable cardBg = new GradientDrawable();
             cardBg.setColor(cardColor);
+            // Preserve the normal 1dp silver border from bg_recent_card.xml; this dynamic
+            // drawable replaces that XML background for app-specific preview fills.
+            cardBg.setStroke(Math.round(1f * density), 0x99DCE5ED);
             cardBg.setCornerRadius(26 * density);
             cardContainer.setBackground(cardBg);
 
@@ -180,14 +198,13 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             cardContainer.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) {
                     itemView.setTranslationZ(60f);
-                    v.animate().scaleX(1.06f).scaleY(1.06f).setDuration(160).start();
+                    // DPAD focus is communicated by the cyan pill outline, never by resizing the card.
                     topPill.setBackgroundResource(R.drawable.bg_app_pill_focused);
-                    tvAppLabel.setTextColor(0xFF14161D);
+                    tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY);
                 } else {
                     itemView.setTranslationZ(0f);
-                    v.animate().scaleX(0.94f).scaleY(0.94f).setDuration(160).start();
                     topPill.setBackgroundResource(R.drawable.bg_app_pill_unfocused);
-                    tvAppLabel.setTextColor(0xFFFFFFFF);
+                    tvAppLabel.setTextColor(TvUiTokens.TEXT_PRIMARY);
                 }
             });
 
@@ -227,13 +244,8 @@ public class RecentAppsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
 
             btnCircle.setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
-                    itemView.setTranslationZ(60f);
-                    btnCircle.animate().scaleX(1.16f).scaleY(1.16f).setDuration(160).start();
-                } else {
-                    itemView.setTranslationZ(0f);
-                    btnCircle.animate().scaleX(1.0f).scaleY(1.0f).setDuration(160).start();
-                }
+                // bg_circle_close_all supplies the cyan focus ring; retain stack ordering without zoom.
+                itemView.setTranslationZ(hasFocus ? 60f : 0f);
             });
 
             btnCircle.setOnClickListener(v -> {

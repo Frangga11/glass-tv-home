@@ -1,0 +1,756 @@
+package com.gathin.tvhome;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Test;
+
+public class DockLayoutModelTest {
+
+    @Test
+    public void gridDpadUsesNearestAvailableColumnAcrossIncompleteRows() {
+        // Ten apps: 4 + 4 + 2. Both rightmost source columns resolve to the nearest
+        // available item in row three without losing the column relationship.
+        assertEquals(9, DockLayoutModel.gridNeighborPosition(6, 2, 4, 10));
+        assertEquals(9, DockLayoutModel.gridNeighborPosition(7, 2, 4, 10));
+        assertEquals(4, DockLayoutModel.gridNeighborPosition(8, -2, 4, 10));
+        assertEquals(5, DockLayoutModel.gridNeighborPosition(9, -2, 4, 10));
+    }
+
+    @Test
+    public void moveModeKeepsLatestColumnWhenReturningVertically() {
+        // Start at row three, column two; move up, shift right, then move down.
+        // The final destination must stay in the new column three, not the pickup column.
+        List<String> order = new java.util.ArrayList<>();
+        for (int i = 0; i < 20; i++) order.add("app-" + i);
+        String selected = order.get(11);
+        int position = 11;
+
+        int up = DockLayoutModel.gridNeighborPosition(position, -2, 5, order.size());
+        String moved = order.remove(position);
+        order.add(up, moved);
+        position = up;
+
+        int right = DockLayoutModel.gridNeighborPosition(position, 1, 5, order.size());
+        moved = order.remove(position);
+        order.add(right, moved);
+        position = right;
+
+        int down = DockLayoutModel.gridNeighborPosition(position, 2, 5, order.size());
+        moved = order.remove(position);
+        order.add(down, moved);
+        position = down;
+
+        assertEquals(12, position);
+        assertEquals(2, position % 5);
+        assertEquals(selected, order.get(position));
+    }
+
+    @Test
+    public void movingDockAppDownInsertsItUnderItsCurrentSlot() {
+        List<String> grid = Arrays.asList(
+                "grid-0", "grid-1", "grid-2", "grid-3", "grid-4",
+                "grid-5", "grid-6", "grid-7", "grid-8", "grid-9");
+        List<String> afterDockDown = DockLayoutModel.insertAtPosition(grid, "moving-app", 2);
+
+        assertEquals("moving-app", afterDockDown.get(2));
+        assertEquals(2, afterDockDown.indexOf("moving-app") % 5);
+        // Moving DOWN after the app is inserted must use that same live column.
+        assertEquals(7, DockLayoutModel.gridNeighborPosition(
+                afterDockDown.indexOf("moving-app"), 2, 5, afterDockDown.size()));
+    }
+
+    @Test
+    public void dockSlotRoundTripPreservesColumnWhenOverflowPinnedAppFillsVacancy() {
+        List<String> inventory = Arrays.asList(
+                "dock-a", "dock-b", "dock-c", "dock-d", "dock-e", "overflow-pinned",
+                "grid-a", "grid-b", "moving-app", "grid-c", "grid-d");
+        List<String> pinnedAfterMovingUp = Arrays.asList(
+                "dock-a", "dock-b", "moving-app", "dock-c", "dock-d", "dock-e", "overflow-pinned");
+        DockLayoutModel.Snapshot<String> whileInDock = DockLayoutModel.split(
+                inventory, pinnedAfterMovingUp, 5, value -> value);
+        assertEquals(Arrays.asList("dock-a", "dock-b", "moving-app", "dock-c", "dock-d"),
+                whileInDock.dockItems);
+        assertEquals(Arrays.asList("dock-e", "overflow-pinned"),
+                whileInDock.gridItems.subList(0, 2));
+
+        List<String> pinnedAfterMovingDown = Arrays.asList(
+                "dock-a", "dock-b", "dock-c", "dock-d", "dock-e", "overflow-pinned");
+        DockLayoutModel.Snapshot<String> afterVacancyRefill = DockLayoutModel.split(
+                inventory, pinnedAfterMovingDown, 5, value -> value);
+        List<String> finalGrid = new java.util.ArrayList<>(afterVacancyRefill.gridItems);
+        finalGrid.remove("moving-app");
+        finalGrid = DockLayoutModel.insertAtPosition(finalGrid, "moving-app", 2);
+        List<String> presentation = new java.util.ArrayList<>(afterVacancyRefill.dockItems);
+        presentation.addAll(finalGrid);
+        DockLayoutModel.Snapshot<String> finalLayout = DockLayoutModel.split(
+                presentation, pinnedAfterMovingDown, 5, value -> value);
+
+        assertEquals("moving-app", finalLayout.gridItems.get(2));
+        assertEquals(2, finalLayout.gridItems.indexOf("moving-app") % 5);
+    }
+
+    @Test
+    public void gridDpadRespectsHorizontalAndVerticalBoundaries() {
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(0, -1, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(3, 1, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(9, 1, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(0, -2, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(8, 2, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(-1, 2, 4, 10));
+        assertEquals(-1, DockLayoutModel.gridNeighborPosition(10, 2, 4, 10));
+    }
+
+    @Test
+    public void gridDpadHandlesEveryPossibleThirdRowLength() {
+        // 9 apps: one item in the last row.
+        assertEquals(8, DockLayoutModel.gridNeighborPosition(4, 2, 4, 9));
+        assertEquals(8, DockLayoutModel.gridNeighborPosition(7, 2, 4, 9));
+        // 11 apps: three items in the last row.
+        assertEquals(10, DockLayoutModel.gridNeighborPosition(6, 2, 4, 11));
+        assertEquals(10, DockLayoutModel.gridNeighborPosition(7, 2, 4, 11));
+        // 12 apps: full final row preserves exact columns.
+        assertEquals(8, DockLayoutModel.gridNeighborPosition(4, 2, 4, 12));
+        assertEquals(11, DockLayoutModel.gridNeighborPosition(7, 2, 4, 12));
+    }
+
+    @Test
+    public void arrangedOrderIsPreservedForPinnedComponents() {
+        List<String> inventory = Arrays.asList("pkg.a/.Main", "pkg.b/.Main", "pkg.c/.Main");
+        List<String> pinned = DockLayoutModel.orderedPinnedKeys(
+                inventory, Arrays.asList("pkg.a", "pkg.b"),
+                Arrays.asList("pkg.b/.Main", "pkg.c/.Main", "pkg.a/.Main"),
+                value -> value, value -> value.substring(0, value.indexOf('/')));
+
+        assertEquals(Arrays.asList("pkg.b/.Main", "pkg.a/.Main"), pinned);
+    }
+
+    @Test
+    public void newlyInstalledFavouriteComponentsAppendInConfiguredPackageOrder() {
+        List<String> inventory = Arrays.asList(
+                "pkg.a/.Second", "pkg.b/.Main", "pkg.a/.First", "pkg.c/.Main");
+        List<String> pinned = DockLayoutModel.orderedPinnedKeys(
+                inventory, Arrays.asList("pkg.a", "pkg.b"),
+                Collections.singletonList("pkg.b/.Main"),
+                value -> value, value -> value.substring(0, value.indexOf('/')));
+
+        assertEquals(Arrays.asList("pkg.b/.Main", "pkg.a/.Second", "pkg.a/.First"), pinned);
+    }
+
+    @Test
+    public void explicitPinnedKeysAreResolvedByStableIdentityAndDeduplicated() {
+        List<String> inventory = Arrays.asList("grid-a", "dock-b", "grid-c", "dock-a");
+        List<String> pinned = DockLayoutModel.orderedExplicitPinnedKeys(
+                inventory, Arrays.asList("dock-a", "missing", "dock-b", "dock-a"), value -> value);
+        assertEquals(Arrays.asList("dock-a", "dock-b"), pinned);
+    }
+
+    @Test
+    public void customDockOrderKeepsNewDefaultsButHonorsExplicitUnpins() {
+        assertEquals(Arrays.asList("custom", "favorite-a", "favorite-c"),
+                DockLayoutModel.mergePinnedKeys(
+                        Arrays.asList("custom", "favorite-a"),
+                        Arrays.asList("favorite-a", "favorite-b", "favorite-c"),
+                        Collections.singletonList("favorite-b")));
+    }
+
+    @Test
+    public void movingDockKeyOnlyReordersVisiblePinnedSlots() {
+        List<String> pinned = Arrays.asList("a", "b", "c", "d", "overflow");
+        assertEquals(Arrays.asList("c", "a", "b", "d", "overflow"),
+                DockLayoutModel.movePinnedKey(pinned, 2, 0, 4));
+        assertEquals(pinned, DockLayoutModel.movePinnedKey(pinned, 4, 0, 4));
+    }
+
+    @Test
+    public void pinningInsertsAtRequestedVisibleSlotAndPushesOverflowToGrid() {
+        List<String> pinned = Arrays.asList("a", "b", "c", "d");
+        List<String> updated = DockLayoutModel.pinKey(pinned, "new", 1, 4);
+        assertEquals(Arrays.asList("a", "new", "b", "c", "d"), updated);
+        assertEquals(Arrays.asList("a", "new", "b", "c"),
+                DockLayoutModel.split(updated, updated, 4, value -> value).dockItems);
+        assertEquals(Collections.singletonList("d"),
+                DockLayoutModel.split(updated, updated, 4, value -> value).gridItems);
+    }
+
+    @Test
+    public void overflowPinnedAppCanBePromotedIntoVisibleDockSlot() {
+        List<String> pinned = Arrays.asList("a", "b", "c", "d", "overflow");
+        List<String> updated = DockLayoutModel.pinKey(pinned, "overflow", 1, 4);
+        assertEquals(Arrays.asList("a", "overflow", "b", "c", "d"), updated);
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(updated, updated, 4, value -> value);
+        assertEquals(Arrays.asList("a", "overflow", "b", "c"), snapshot.dockItems);
+        assertEquals(Collections.singletonList("d"), snapshot.gridItems);
+    }
+
+    @Test
+    public void unpinningMovesIdentityOutOfDockWithoutDroppingIt() {
+        List<String> pinned = Arrays.asList("a", "b", "c");
+        List<String> updated = DockLayoutModel.unpinKey(pinned, "b");
+        assertEquals(Arrays.asList("a", "c"), updated);
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                Arrays.asList("a", "b", "c"), updated, 4, value -> value);
+        assertEquals(Arrays.asList("a", "c"), snapshot.dockItems);
+        assertEquals(Collections.singletonList("b"), snapshot.gridItems);
+    }
+
+    @Test
+    public void membershipUsesExplicitStableKeysRatherThanFirstInventoryPositions() {
+        List<String> inventory = Arrays.asList("grid-first", "pinned-b", "grid-second", "pinned-a");
+        DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
+                inventory, Arrays.asList("pinned-a", "pinned-b"), 4, value -> value);
+
+        assertEquals(Arrays.asList("pinned-a", "pinned-b"), result.dockItems);
+        assertEquals(Arrays.asList("grid-first", "grid-second"), result.gridItems);
+    }
+
+    @Test
+    public void distinctLauncherComponentsFromSamePackageRemainDistinctTiles() {
+        // Package-level Dock configuration can match more than one launcher activity.
+        // The partition identity must therefore be the component key, not package name.
+        List<String> inventory = Arrays.asList("pkg/.ActivityA", "other/.Main", "pkg/.ActivityB");
+        DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
+                inventory, Arrays.asList("pkg/.ActivityA", "pkg/.ActivityB"), 4, value -> value);
+
+        assertEquals(Arrays.asList("pkg/.ActivityA", "pkg/.ActivityB"), result.dockItems);
+        assertEquals(Collections.singletonList("other/.Main"), result.gridItems);
+        assertEquals(inventory.size(), result.totalCount());
+    }
+
+    @Test
+    public void dockOrderFollowsPinnedIdentityOrderAndGridKeepsInventoryOrder() {
+        List<String> inventory = Arrays.asList("app-a", "app-b", "app-c", "app-d");
+        DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
+                inventory, Arrays.asList("app-d", "app-b"), 4, value -> value);
+
+        assertEquals(Arrays.asList("app-d", "app-b"), result.dockItems);
+        assertEquals(Arrays.asList("app-a", "app-c"), result.gridItems);
+    }
+
+    @Test
+    public void pinnedAppsBeyondCapacityRemainInGridAndAreNeverDropped() {
+        List<String> inventory = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+        List<String> pinned = Arrays.asList("g", "f", "e", "d", "c", "b", "a");
+        DockLayoutModel.Snapshot<String> result = DockLayoutModel.split(
+                inventory, pinned, 4, value -> value);
+
+        assertEquals(Arrays.asList("g", "f", "e", "d"), result.dockItems);
+        assertEquals(Arrays.asList("a", "b", "c"), result.gridItems);
+        assertEquals(inventory.size(), result.totalCount());
+    }
+
+    @Test
+    public void supportsFourFiveAndSixSlots() {
+        List<String> inventory = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+        assertEquals(4, DockLayoutModel.split(inventory, inventory, 4, value -> value).dockCount());
+        assertEquals(5, DockLayoutModel.split(inventory, inventory, 5, value -> value).dockCount());
+        assertEquals(6, DockLayoutModel.split(inventory, inventory, 6, value -> value).dockCount());
+    }
+
+    @Test
+    public void patch41DockFillsSlotsFromInventoryWhenFavoritesAreMissing() {
+        List<String> inventory = Arrays.asList("browse", "disney", "miracast", "netflix", "store", "prime", "vidio");
+        List<String> pinned = DockLayoutModel.fillDockSlots(
+                Collections.emptyList(), inventory, Collections.emptyList(), 5);
+        assertEquals(Arrays.asList("browse", "disney", "miracast", "netflix", "store"), pinned);
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(inventory, pinned, 5, value -> value);
+        assertEquals(pinned, snapshot.dockItems);
+        assertEquals(Arrays.asList("prime", "vidio"), snapshot.gridItems);
+    }
+
+    @Test
+    public void patch41DockFillHonorsExplicitUnpins() {
+        List<String> pinned = DockLayoutModel.fillDockSlots(
+                Collections.singletonList("favorite"), Arrays.asList("favorite", "excluded", "next", "last"),
+                Collections.singletonList("excluded"), 4);
+        assertEquals(Arrays.asList("favorite", "next", "last"), pinned);
+    }
+
+    @Test
+    public void emptyDockKeepsEveryInstalledAppInTheGrid() {
+        List<String> inventory = Arrays.asList("app-a", "app-b", "app-c");
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                inventory, Collections.emptyList(), 4, value -> value);
+        assertTrue(snapshot.dockItems.isEmpty());
+        assertEquals(inventory, snapshot.gridItems);
+        assertEquals(inventory.size(), snapshot.totalCount());
+    }
+
+    @Test
+    public void allPinnedAppsCanFillTheDockWithoutInventingGridItems() {
+        List<String> inventory = Arrays.asList("app-a", "app-b", "app-c", "app-d");
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                inventory, inventory, 6, value -> value);
+        assertEquals(inventory, snapshot.dockItems);
+        assertTrue(snapshot.gridItems.isEmpty());
+        assertEquals(inventory.size(), snapshot.totalCount());
+    }
+
+    @Test
+    public void pinningAtEverySupportedCapacityPushesThePreviousLastSlotIntoGrid() {
+        List<String> source = Arrays.asList("a", "b", "c", "d", "e", "f");
+        for (int capacity : new int[]{4, 5, 6}) {
+            List<String> updated = DockLayoutModel.pinKey(
+                    source.subList(0, capacity), "new", 1, capacity);
+            DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                    updated, updated, capacity, value -> value);
+            assertEquals(capacity, snapshot.dockCount());
+            assertEquals(1, snapshot.gridCount());
+            assertEquals(source.get(capacity - 1), snapshot.gridItems.get(0));
+        }
+    }
+
+    @Test
+    public void dockAndGridDirectionalNavigationMapsToNearestAlignedSlot() {
+        assertEquals(2, DockLayoutModel.gridPositionForDock(2, false, 4, 12));
+        assertEquals(8, DockLayoutModel.gridPositionForDock(2, true, 4, 12));
+        assertEquals(1, DockLayoutModel.gridPositionForDock(5, false, 4, 12));
+        assertEquals(11, DockLayoutModel.gridPositionForDock(5, true, 4, 12));
+        assertEquals(1, DockLayoutModel.dockPositionForGrid(6, true, 4, 6));
+        assertEquals(2, DockLayoutModel.dockPositionForGrid(6, false, 4, 6));
+        assertEquals(0, DockLayoutModel.dockPositionForGrid(0, false, 4, 6));
+        assertEquals(-1, DockLayoutModel.gridPositionForDock(0, false, 4, 0));
+        assertEquals(-1, DockLayoutModel.dockPositionForGrid(0, false, 4, 0));
+    }
+
+    @Test
+    public void bottomDockFocusTargetsTheFirstGridRowAndRowsAdvanceDownward() {
+        for (int dockPosition = 0; dockPosition < 5; dockPosition++) {
+            assertEquals(dockPosition, DockLayoutModel.gridPositionForDock(dockPosition, false, 5, 20));
+            assertEquals(dockPosition, DockLayoutModel.dockPositionForGrid(dockPosition, false, 5, 5));
+        }
+        assertEquals(5, DockLayoutModel.gridPositionForDock(0, false, 5, 20) + 5);
+        assertEquals(19, Math.min(15 + 5, 19));
+    }
+
+    @Test
+    public void bottomDockFocusTargetsTheAdjacentLastGridRowLegacyHelper() {
+        assertEquals(10, DockLayoutModel.gridPositionAboveDock(2, 4, 12));
+        assertEquals(9, DockLayoutModel.gridPositionAboveDock(3, 4, 10));
+        assertEquals(0, DockLayoutModel.gridPositionAboveDock(5, 4, 1));
+        assertEquals(-1, DockLayoutModel.gridPositionAboveDock(0, 4, 0));
+        assertEquals(-1, DockLayoutModel.gridPositionAboveDock(-1, 4, 5));
+    }
+
+    @Test
+    public void allSixDockConfigurationsHaveDistinctHolderTypes() {
+        assertEquals(4, DockLayoutModel.dockViewType(false, 4));
+        assertEquals(5, DockLayoutModel.dockViewType(false, 5));
+        assertEquals(6, DockLayoutModel.dockViewType(false, 6));
+        assertEquals(104, DockLayoutModel.dockViewType(true, 4));
+        assertEquals(105, DockLayoutModel.dockViewType(true, 5));
+        assertEquals(106, DockLayoutModel.dockViewType(true, 6));
+    }
+
+    @Test
+    public void invalidCapacityFallsBackToDefaultFive() {
+        List<String> inventory = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
+        DockLayoutModel.Snapshot<String> result =
+                DockLayoutModel.split(inventory, inventory, 99, value -> value);
+        assertEquals(5, result.capacity);
+        assertEquals(5, result.dockCount());
+        assertEquals(2, result.gridCount());
+    }
+
+    @Test
+    public void missingAndDuplicatePinnedKeysDoNotReserveSlotsOrDuplicateTiles() {
+        List<String> inventory = Arrays.asList("a", "b", "c", "d", "e");
+        List<String> pinned = Arrays.asList("missing", "b", "b", "", "d");
+        DockLayoutModel.Snapshot<String> result =
+                DockLayoutModel.split(inventory, pinned, 4, value -> value);
+        assertEquals(Arrays.asList("b", "d"), result.dockItems);
+        assertEquals(Arrays.asList("a", "c", "e"), result.gridItems);
+    }
+
+    @Test
+    public void duplicateInventoryKeysKeepOnlyFirstEntry() {
+        List<String> inventory = Arrays.asList("a", "b", "a", "c");
+        DockLayoutModel.Snapshot<String> result =
+                DockLayoutModel.split(inventory, Collections.singletonList("a"), 4, value -> value);
+        assertEquals(Collections.singletonList("a"), result.dockItems);
+        assertEquals(Arrays.asList("b", "c"), result.gridItems);
+    }
+
+    @Test
+    public void snapshotsAreImmutable() {
+        DockLayoutModel.Snapshot<String> result =
+                DockLayoutModel.split(Arrays.asList("a", "b"), Collections.singletonList("a"), 4, value -> value);
+        assertThrows(UnsupportedOperationException.class, () -> result.dockItems.add("c"));
+        assertThrows(UnsupportedOperationException.class, () -> result.gridItems.clear());
+    }
+
+    @Test
+    public void nullInventoryOrPinnedListProducesSafeSnapshot() {
+        DockLayoutModel.Snapshot<String> empty =
+                DockLayoutModel.split(null, null, 4, value -> value);
+        assertTrue(empty.dockItems.isEmpty());
+        assertTrue(empty.gridItems.isEmpty());
+        assertEquals(0, empty.totalCount());
+    }
+
+    @Test
+    public void stableKeyFunctionIsRequired() {
+        assertThrows(IllegalArgumentException.class,
+                () -> DockLayoutModel.split(Collections.singletonList("a"),
+                        Collections.singletonList("a"), 4, null));
+    }
+    @Test
+    public void dockGeometryKeepsFourFiveSixGridReserveAndCompactDockHeight() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int innerWidth = 1920;
+            int largestTileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, 4, density);
+            int largestTileHeight = DockGeometry.tileHeightPx(largestTileWidth);
+            assertEquals(DockGeometry.itemHeightPx(largestTileHeight, density)
+                            + Math.round(18f * density),
+                    DockGeometry.horizontalShelfAnchorHeightPx(largestTileHeight, density));
+            int gridReserve = DockGeometry.horizontalGridBottomReservePx(largestTileWidth, density);
+            int legacyGridReserve = DockGeometry.itemHeightPx(largestTileHeight, density)
+                    + Math.round(30f * density);
+            assertEquals(legacyGridReserve, gridReserve);
+
+            for (int capacity : new int[]{4, 5, 6}) {
+                int tileWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
+                int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+                int itemHeight = DockGeometry.itemHeightPx(tileHeight, density);
+                int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+                int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(innerWidth, capacity, density);
+                int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
+                int oldHostHeight = DockGeometry.itemHeightPx(tileHeight, density)
+                        + Math.round(18f * density);
+                int expectedHostDelta = tileHeight - dockTileHeight + Math.round(6f * density);
+                assertEquals(expectedHostDelta,
+                        oldHostHeight - DockGeometry.horizontalDockHeightPx(dockTileHeight, density));
+                float trayHeight = tileHeight + 28f * density;
+
+                assertEquals(tileHeight + Math.round(45f * density), itemHeight);
+                assertEquals(itemHeight + Math.round(12f * density), dockHeight);
+                assertEquals(Math.round(8f * density), DockGeometry.horizontalDockItemBottomOffsetPx(density));
+                assertEquals(Math.round(12f * density), DockGeometry.dockItemBottomOffsetPx(density));
+                assertEquals(14f * density, DockGeometry.trayPaddingPx(density), 0.001f);
+                assertEquals(29f * density, dockHeight - trayHeight, 1.1f);
+                // The refined horizontal host sits 16dp above the gridWrap edge.
+                assertEquals(45f * density,
+                        dockHeight - trayHeight + Math.round(16f * density), 1.1f);
+            }
+        }
+    }
+
+    @Test
+    public void islamicShelfDockClearanceIsExactlyThirtyDp() {
+        assertEquals(60, DockGeometry.islamicShelfDockGapPx(2f));
+        assertEquals(45, DockGeometry.islamicShelfDockGapPx(1.5f));
+    }
+
+    @Test
+    public void gridRowScrollDeltaUsesDecoratedPitchAndMakesDownUpTrueOpposites() {
+        int decoratedRowPitch = 340;
+        assertEquals(340, DockGeometry.gridRowScrollDeltaPx(0, 1, decoratedRowPitch, 0));
+        assertEquals(-340, DockGeometry.gridRowScrollDeltaPx(1, 0, decoratedRowPitch, 0));
+        assertEquals(300, DockGeometry.gridRowScrollDeltaPx(0, 1, decoratedRowPitch, -40));
+        assertEquals(-40, DockGeometry.gridRowScrollDeltaPx(0, 0, decoratedRowPitch, -40));
+    }
+
+    @Test
+    public void gridRowScrollDeltaHandlesRepeatedRowsAndFastDirectionReversals() {
+        int decoratedRowPitch = 340;
+        assertEquals(680, DockGeometry.gridRowScrollDeltaPx(0, 2, decoratedRowPitch, 0));
+        assertEquals(-340, DockGeometry.gridRowScrollDeltaPx(1, 0, decoratedRowPitch, 0));
+        assertEquals(340, DockGeometry.gridRowScrollDeltaPx(0, 1, decoratedRowPitch, 0));
+        assertEquals(-680, DockGeometry.gridRowScrollDeltaPx(2, 0, decoratedRowPitch, 0));
+        assertEquals(0, DockGeometry.gridRowScrollDeltaPx(1, 1, decoratedRowPitch, 0));
+    }
+
+    @Test
+    public void dockTileScaleAndSpacingRemainConsistentAcrossFourFiveAndSixCapacities() {
+        float density = 2f;
+        int innerWidth = 1920;
+        for (int capacity : new int[]{4, 5, 6}) {
+            int baseWidth = DockGeometry.horizontalTileWidthPx(innerWidth, capacity, density);
+            int dockWidth = DockGeometry.horizontalDockTileWidthPx(innerWidth, capacity, density);
+            int slotWidth = DockGeometry.horizontalDockSlotWidthPx(innerWidth, capacity, density);
+            assertEquals(Math.round(baseWidth * 0.95f), dockWidth);
+            assertTrue(dockWidth < baseWidth);
+            assertTrue(slotWidth >= dockWidth);
+            assertTrue(slotWidth - dockWidth <= Math.round(32f * density));
+        }
+    }
+
+    @Test
+    public void miTvStickFiveSlotDockCardTargetsApproximately144By81Dp() {
+        // 1920px at 320dpi with the approved 29dp left/right safe margins.
+        int safeContentWidth = 1920 - Math.round(29f * 2f) * 2;
+        int widthPx = DockGeometry.horizontalDockTileWidthPx(safeContentWidth, 5, 2f);
+        int heightPx = DockGeometry.tileHeightPx(widthPx);
+        assertEquals(287, widthPx);
+        assertEquals(161, heightPx);
+    }
+
+    @Test
+    public void dockGeometrySharesFiveColumnTileScaleAndFitsSixSlotCapacity() {
+        float density = 2f;
+        int four = DockGeometry.horizontalTileWidthPx(1920, 4, density);
+        int five = DockGeometry.horizontalTileWidthPx(1920, 5, density);
+        int six = DockGeometry.horizontalTileWidthPx(1920, 6, density);
+
+        assertTrue(four > 0);
+        assertEquals(five, four);
+        assertTrue(six < five);
+        assertEquals(Math.round(five * 101f / 180f), DockGeometry.tileHeightPx(five));
+    }
+
+
+    @Test
+    public void horizontalDockDownAndOverflowUpPreserveTheAlignedColumn() {
+        List<String> grid = Arrays.asList("overflow-a", "overflow-b", "overflow-c", "overflow-d",
+                "overflow-e", "overflow-f", "overflow-g");
+        for (int dockPosition = 0; dockPosition < 5; dockPosition++) {
+            int gridPosition = DockLayoutModel.gridPositionForDock(
+                    dockPosition, false, 5, grid.size());
+            assertEquals(dockPosition, gridPosition);
+            assertEquals(dockPosition, DockLayoutModel.dockPositionForGrid(
+                    gridPosition, false, 5, 5));
+        }
+    }
+
+    @Test
+    public void horizontalDockCentersFourFiveAndSixVisibleItems() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int innerWidth = 1920;
+            for (int capacity : new int[]{4, 5, 6}) {
+                int slotWidth = DockGeometry.horizontalDockSlotWidthPx(innerWidth, capacity, density);
+                int count = capacity;
+                int offset = DockGeometry.horizontalCenterOffsetPx(innerWidth, slotWidth, count);
+                int right = offset + slotWidth * count;
+                int rightMargin = innerWidth - right;
+                assertTrue(offset >= 0);
+                assertTrue(rightMargin >= 0);
+                assertTrue(Math.abs(offset - rightMargin) <= 1);
+            }
+        }
+    }
+
+    @Test
+    public void horizontalDockCentersActualItemCountAndHandlesEmptyOrOversizedGroups() {
+        assertEquals(0, DockGeometry.horizontalCenterOffsetPx(1920, 320, 0));
+        assertEquals(0, DockGeometry.horizontalCenterOffsetPx(1920, 320, 8));
+        assertEquals(480, DockGeometry.horizontalCenterOffsetPx(1920, 320, 3));
+    }
+
+
+    @Test
+    public void horizontalGridViewportShowsExactlyOneItemRow() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int capacity : new int[]{4, 5, 6}) {
+                int width = DockGeometry.horizontalTileWidthPx(1920, capacity, density);
+                int height = DockGeometry.horizontalGridViewportHeightPx(width, density,
+                        Math.round(10f * density));
+                assertEquals(DockGeometry.itemHeightPx(DockGeometry.tileHeightPx(width), density)
+                        + Math.round(10f * density), height);
+            }
+        }
+    }
+
+    @Test
+    public void p2SafeDockGeometryIsSymmetricAcrossDensitiesCapacitiesAndViewports() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int viewport : new int[]{1280, 1920}) {
+                int safeWidth = DockGeometry.horizontalContentWidthPx(viewport, density);
+                assertEquals(5, DockGeometry.horizontalGridColumns());
+                assertEquals(viewport, safeWidth);
+                for (int capacity : new int[]{4, 5, 6}) {
+                    int slotWidth = DockGeometry.horizontalSlotWidthPx(safeWidth, capacity);
+                    int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, slotWidth, capacity);
+                    int groupWidth = capacity * slotWidth;
+                    int rightMargin = safeWidth - offset - groupWidth;
+                    assertTrue(Math.abs(offset - rightMargin) <= 1);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void p2DockTrayBottomAndShelfBaselineUseSafeMarginsAndSharedGeometry() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            int tileHeight = DockGeometry.tileHeightPx(Math.round(180f * density));
+            int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+            int bottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+            int trayBottomInset = dockHeight - tileHeight
+                    - DockGeometry.dockItemTopOffsetPx(density)
+                    - Math.round(DockGeometry.trayPaddingPx(density));
+            assertEquals(DockGeometry.safeBottomInsetPx(density), bottomMargin + trayBottomInset);
+            assertEquals(Math.round(50f * density),
+                    DockGeometry.shelfBottomOffsetFromTileTopPx(density));
+            int gridBottomMargin = DockGeometry.horizontalGridBottomMarginPx(tileHeight, density);
+            int trayTopOffset = DockGeometry.dockItemTopOffsetPx(density)
+                    - Math.round(DockGeometry.trayPaddingPx(density));
+            int trayTopFromParentBottom = -dockHeight - bottomMargin + trayTopOffset;
+            int gridBottomFromParentBottom = -gridBottomMargin;
+            assertEquals(Math.round(8f * density), trayTopFromParentBottom - gridBottomFromParentBottom);
+            int expectedGridBottomMargin = DockGeometry.safeBottomInsetPx(density)
+                    + tileHeight + 2 * Math.round(DockGeometry.trayPaddingPx(density))
+                    + Math.round(8f * density);
+            assertEquals(expectedGridBottomMargin, gridBottomMargin);
+        }
+    }
+
+
+    @Test
+    public void dockAndFiveColumnGridShareTileAndCellGeometryAtAllCapacities() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int viewport : new int[]{1280, 1920}) {
+                int safeWidth = DockGeometry.horizontalContentWidthPx(viewport, density);
+                for (int capacity : new int[]{4, 5, 6}) {
+                    int gridWidth = DockGeometry.horizontalGridWidthPx(safeWidth, capacity);
+                    int gridTileWidth = AppAdapter.tileWidthPx(gridWidth, 5, density);
+                    int dockTileWidth = DockGeometry.horizontalTileWidthPx(safeWidth, capacity, density);
+                    int slotWidth = DockGeometry.horizontalSlotWidthPx(safeWidth, capacity);
+                    assertEquals(gridTileWidth, dockTileWidth);
+                    assertTrue(slotWidth >= dockTileWidth);
+                    int offset = DockGeometry.horizontalCenterOffsetPx(safeWidth, slotWidth, capacity);
+                    int rightMargin = safeWidth - offset - slotWidth * capacity;
+                    assertTrue(Math.abs(offset - rightMargin) <= 1);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void allFourHomeSafeFrameEdgesRemainEqualAcrossMeasuredTvWidthsAndDensities() {
+        int[] screenWidths = new int[]{1280, 1696, 1712, 1920};
+        float[] densities = new float[]{1f, 1.5f, 1.75f, 2f};
+
+        for (float density : densities) {
+            int horizontalInset = DockGeometry.safeHorizontalInsetPx(density);
+            int bottomInset = DockGeometry.safeBottomInsetPx(density);
+            assertEquals("top/left/right and bottom use one density-scaled inset", horizontalInset, bottomInset);
+
+            for (int screenWidth : screenWidths) {
+                int safeContentWidth = screenWidth - 2 * horizontalInset;
+                assertTrue(safeContentWidth > 0);
+                int viewport = DockGeometry.horizontalContentWidthPx(safeContentWidth, density);
+                assertEquals(safeContentWidth, viewport);
+
+                for (int capacity : new int[]{4, 5, 6}) {
+                    int tileWidth = DockGeometry.horizontalTileWidthPx(viewport, capacity, density);
+                    int tileHeight = DockGeometry.tileHeightPx(tileWidth);
+                    int dockHeight = DockGeometry.horizontalDockHeightPx(tileHeight, density);
+                    int dockBottomMargin = DockGeometry.horizontalDockBottomMarginPx(tileHeight, density);
+                    int trayBottomInset = dockHeight - tileHeight
+                            - DockGeometry.dockItemTopOffsetPx(density)
+                            - Math.round(DockGeometry.trayPaddingPx(density));
+
+                    assertEquals("bottom tray edge must match the top/side safe frame at "
+                                    + screenWidth + "px, density " + density + ", capacity " + capacity,
+                            horizontalInset, dockBottomMargin + trayBottomInset);
+
+                    int slotWidth = DockGeometry.horizontalSlotWidthPx(viewport, capacity);
+                    int groupOffset = DockGeometry.horizontalCenterOffsetPx(viewport, slotWidth, capacity);
+                    int leftVisualMargin = horizontalInset + groupOffset;
+                    int rightVisualMargin = horizontalInset + viewport - groupOffset - slotWidth * capacity;
+                    assertTrue("Dock group must remain horizontally centered",
+                            Math.abs(leftVisualMargin - rightVisualMargin) <= 1);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void horizontalDockPaddingCentersIconsWithoutMovingTheTrayHost() {
+        for (int viewport : new int[]{1280, 1920}) {
+            for (int capacity : new int[]{4, 5, 6}) {
+                int slot = DockGeometry.horizontalSlotWidthPx(viewport, capacity);
+                for (int count = 1; count <= capacity; count++) {
+                    int inset = DockGeometry.horizontalCenterOffsetPx(viewport, slot, count);
+                    int rightInset = viewport - inset - slot * count;
+                    assertTrue(inset >= 0);
+                    assertTrue(Math.abs(inset - rightInset) <= 1);
+                    assertEquals(viewport, DockGeometry.horizontalContentWidthPx(viewport, 2f));
+                }
+            }
+        }
+    }
+
+
+    @Test
+    public void measuredDockViewportGeometryIsStableAcrossInitialZeroAndResize() {
+        for (int viewport : new int[]{1280, 1696, 1712, 1920}) {
+            for (int capacity : new int[]{4, 5, 6}) {
+                int slot = DockGeometry.horizontalSlotWidthPx(viewport, capacity);
+                assertTrue(slot > 0);
+                int tile = DockGeometry.horizontalTileWidthPx(viewport, capacity, 2f);
+                assertTrue(tile > 0);
+                assertTrue(tile <= slot);
+                for (int count = 1; count <= capacity; count++) {
+                    int left = DockGeometry.horizontalCenterOffsetPx(viewport, slot, count);
+                    int right = viewport - left - slot * count;
+                    assertTrue(left >= 0);
+                    assertTrue(right >= 0);
+                    assertTrue(Math.abs(left - right) <= 1);
+                }
+            }
+        }
+    }
+
+
+    @Test
+    public void homePrimaryAndOverflowRowsKeepTheirFiveColumnIdentityOrder() {
+        List<String> inventory = Arrays.asList(
+                "browserhere", "disney-plus", "miracast", "netflix", "google-play",
+                "prime-video", "vidio", "vision-plus", "wetv", "youtube");
+        List<String> primaryKeys = Arrays.asList(
+                "browserhere", "disney-plus", "miracast", "netflix", "google-play");
+        DockLayoutModel.Snapshot<String> snapshot = DockLayoutModel.split(
+                inventory, primaryKeys, 5, value -> value);
+
+        assertEquals(primaryKeys, snapshot.dockItems);
+        assertEquals(Arrays.asList("prime-video", "vidio", "vision-plus", "wetv", "youtube"),
+                snapshot.gridItems);
+        for (int column = 0; column < 5; column++) {
+            assertEquals(column, DockLayoutModel.gridPositionForDock(
+                    column, false, 5, snapshot.gridCount()));
+            assertEquals(column, DockLayoutModel.dockPositionForGrid(
+                    column, false, 5, snapshot.dockCount()));
+        }
+    }
+
+    @Test
+    public void overflowFirstRowUpReturnsToSamePrimaryDockColumn() {
+        for (int gridPosition = 0; gridPosition < 5; gridPosition++) {
+            assertEquals(gridPosition, DockLayoutModel.dockPositionForGrid(
+                    gridPosition, false, 5, 5));
+        }
+        // A second overflow row remains a Grid-to-Grid transition, not a jump to the Dock.
+        for (int gridPosition = 5; gridPosition < 10; gridPosition++) {
+            assertEquals(gridPosition - 5, gridPosition % 5);
+        }
+    }
+
+    @Test
+    public void idleDockBottomAnchorAndExpandedSlidePitchRemainStable() {
+        for (float density : new float[]{1f, 1.5f, 1.75f, 2f}) {
+            for (int capacity : new int[]{4, 5, 6}) {
+                int tileWidth = DockGeometry.horizontalTileWidthPx(1920, capacity, density);
+                int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(1920, capacity, density);
+                int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
+                int dockHeight = DockGeometry.horizontalDockHeightPx(dockTileHeight, density);
+                int dockBottom = DockGeometry.horizontalDockBottomMarginPx(dockTileHeight, density);
+                int gridViewport = DockGeometry.horizontalGridViewportHeightPx(
+                        tileWidth, density, Math.round(10f * density));
+                int expandedDockBottom = dockBottom + gridViewport + Math.round(8f * density);
+
+                assertEquals(DockGeometry.safeBottomInsetPx(density),
+                        dockBottom + dockHeight - dockTileHeight
+                                - DockGeometry.dockItemTopOffsetPx(density)
+                                - Math.round(DockGeometry.trayPaddingPx(density)));
+                assertEquals(gridViewport + Math.round(8f * density),
+                        expandedDockBottom - dockBottom);
+                assertTrue(gridViewport > 0);
+            }
+        }
+    }
+}

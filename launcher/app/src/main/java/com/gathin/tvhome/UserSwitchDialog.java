@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -35,6 +34,10 @@ import java.util.List;
 public final class UserSwitchDialog {
 
     public static void show(MainActivity activity) {
+        show(activity, null);
+    }
+
+    public static void show(MainActivity activity, Runnable onDismiss) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
         SoundEffects.playSelect();
 
@@ -50,11 +53,7 @@ public final class UserSwitchDialog {
         root.setClipChildren(false);
         root.setClipToPadding(false);
 
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF1E2026);
-        bg.setCornerRadius(24 * density);
-        bg.setStroke((int) (1.5f * density), 0xFF2F323B);
-        root.setBackground(bg);
+        root.setBackground(TvDialogStyle.createDialogSurface(activity));
 
         // Header Title
         LinearLayout header = new LinearLayout(activity);
@@ -63,7 +62,7 @@ public final class UserSwitchDialog {
 
         ImageView ivIcon = new ImageView(activity);
         ivIcon.setImageResource(R.drawable.ic_shield_child);
-        ivIcon.setColorFilter(0xFFF59E0B); // Amber
+        ivIcon.setColorFilter(TvUiTokens.WARNING); // Amber
         header.addView(ivIcon, new LinearLayout.LayoutParams((int) (24 * density), (int) (24 * density)));
 
         LinearLayout headerTextCol = new LinearLayout(activity);
@@ -71,16 +70,16 @@ public final class UserSwitchDialog {
         headerTextCol.setPadding((int) (10 * density), 0, 0, 0);
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("Tukar Pengguna & Mod Kanak-kanak");
-        tvTitle.setTextSize(18);
-        tvTitle.setTextColor(0xFFFFFFFF);
+        tvTitle.setText(R.string.switch_user_title);
+        tvTitle.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+        tvTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvTitle.setTypeface(outfit, Typeface.BOLD);
         headerTextCol.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Pilih profil aktif atau kawal akses aplikasi anak");
-        tvSub.setTextSize(12);
-        tvSub.setTextColor(0xFF8E929E);
+        tvSub.setText(R.string.switch_user_subtitle);
+        tvSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+        tvSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvSub.setTypeface(outfit, Typeface.NORMAL);
         headerTextCol.addView(tvSub);
 
@@ -89,7 +88,7 @@ public final class UserSwitchDialog {
 
         // Divider
         View div1 = new View(activity);
-        div1.setBackgroundColor(0xFF282B35);
+        div1.setBackgroundColor(TvUiTokens.BORDER);
         LinearLayout.LayoutParams divLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (1 * density));
         divLp.topMargin = (int) (14 * density);
         divLp.bottomMargin = (int) (14 * density);
@@ -97,9 +96,9 @@ public final class UserSwitchDialog {
 
         // Section 1: User Profiles
         TextView tvProfSec = new TextView(activity);
-        tvProfSec.setText("PILIH PENGGUNA (PROFILES)");
-        tvProfSec.setTextSize(11.5f);
-        tvProfSec.setTextColor(0xFF8E929E);
+        tvProfSec.setText(R.string.switch_user_section);
+        tvProfSec.setTextSize(TvUiTokens.SECTION_LABEL_SP);
+        tvProfSec.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvProfSec.setTypeface(outfit, Typeface.BOLD);
         root.addView(tvProfSec);
 
@@ -129,9 +128,9 @@ public final class UserSwitchDialog {
             itemCol.setPadding((int) (8 * density), (int) (6 * density), (int) (8 * density), (int) (6 * density));
 
             GradientDrawable iBg = new GradientDrawable();
-            iBg.setColor(isActive ? 0xFF2A2D38 : Color.TRANSPARENT);
+            iBg.setColor(isActive ? TvUiTokens.NAV_PROFILE_SELECTED : Color.TRANSPARENT);
             iBg.setCornerRadius(14 * density);
-            if (isActive) iBg.setStroke((int) (1.5f * density), 0x88FFFFFF);
+            if (isActive) iBg.setStroke((int) (1.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
             itemCol.setBackground(iBg);
 
             // Avatar Frame with Ring
@@ -142,60 +141,51 @@ public final class UserSwitchDialog {
             GradientDrawable ringBg = new GradientDrawable();
             ringBg.setShape(GradientDrawable.OVAL);
             ringBg.setColor(Color.TRANSPARENT);
-            ringBg.setStroke((int) (3 * density), isActive ? 0xFFFFFFFF : Color.TRANSPARENT);
+            ringBg.setStroke((int) (3 * density), isActive ? TvUiTokens.NAV_SELECTION_BORDER : Color.TRANSPARENT);
             ring.setBackground(ringBg);
             aFrame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
 
+            boolean profileChildMode = ChildModeManager.isChildModeEnabled(activity, prof.id);
             ImageView aImg = new ImageView(activity);
-            aImg.setImageResource(ProfileManager.getAvatarResId(prof.avatarIndex));
+            aImg.setImageDrawable(ProfileManager.getAvatarDrawable(activity, prof,
+                    Math.round(48 * density), profileChildMode));
             int imgDim = (int) (48 * density);
             aFrame.addView(aImg, new FrameLayout.LayoutParams(imgDim, imgDim, Gravity.CENTER));
 
             itemCol.addView(aFrame, new LinearLayout.LayoutParams(frameDim, frameDim));
 
             TextView tvName = new TextView(activity);
-            tvName.setText(prof.name + (prof.isChild ? " 👶" : ""));
-            tvName.setTextSize(12.5f);
-            tvName.setTextColor(isActive ? 0xFFFFFFFF : 0xFFCBD5E1);
+            tvName.setText(prof.name + (profileChildMode ? " 👶" : ""));
+            tvName.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+            tvName.setTextColor(isActive ? TvUiTokens.TEXT_PRIMARY : TvUiTokens.TEXT_SECONDARY);
             tvName.setTypeface(outfit, isActive ? Typeface.BOLD : Typeface.NORMAL);
             tvName.setPadding(0, (int) (6 * density), 0, 0);
             tvName.setSingleLine(true);
+            tvName.setEllipsize(android.text.TextUtils.TruncateAt.END);
             itemCol.addView(tvName);
+            if (isActive) {
+                TextView activeLabel = new TextView(activity);
+                activeLabel.setText(R.string.active_label);
+                activeLabel.setTextSize(TvUiTokens.METADATA_SP);
+                activeLabel.setTextColor(TvUiTokens.ACCENT_SECTION);
+                activeLabel.setTypeface(outfit, Typeface.BOLD);
+                activeLabel.setPadding(0, (int) (3 * density), 0, 0);
+                itemCol.addView(activeLabel);
+            }
 
-            itemCol.setOnFocusChangeListener((v, hasFocus) -> {
-                GradientDrawable g = new GradientDrawable();
-                g.setColor(hasFocus ? 0xFF353946 : (isActive ? 0xFF2A2D38 : Color.TRANSPARENT));
-                g.setCornerRadius(14 * density);
-                if (hasFocus) {
-                    g.setStroke((int) (2 * density), 0xFF38BDF8);
-                } else if (isActive) {
-                    g.setStroke((int) (1.5f * density), 0x88FFFFFF);
-                }
-                v.setBackground(g);
-                v.animate().scaleX(hasFocus ? 1.08f : 1.0f).scaleY(hasFocus ? 1.08f : 1.0f).setDuration(120).start();
-            });
-
+            itemCol.setSelected(isActive);
+            itemCol.setBackground(TvFocusIndicator.createSelectableRoundedStateBackground(
+                    density, 14f, Color.TRANSPARENT, TvUiTokens.NAV_PROFILE_SELECTED,
+                    TvUiTokens.SURFACE_FOCUSED, 0x00000000,
+                    TvUiTokens.NAV_SELECTION_BORDER, TvUiTokens.FOCUS_BORDER));
             itemCol.setOnClickListener(v -> {
                 SoundEffects.playSelect();
                 if (isActive) {
-                    Toast.makeText(activity, "Profil " + prof.name + " sudah aktif", Toast.LENGTH_SHORT).show();
+                    TvFeedback.show(activity, activity.getString(R.string.profile_already_active, prof.name), Toast.LENGTH_SHORT);
                     return;
                 }
 
-                // If currently Child Mode is on and switching to adult profile, verify PIN
-                boolean curChildOn = ChildModeManager.isChildModeEnabled(activity);
-                if (curChildOn && !prof.isChild) {
-                    ChildModeManager.promptPin(activity, "Sahkan PIN Keluar Mod Anak", "Masukkan PIN untuk bertukar ke profil " + prof.name, new ChildModeManager.PinCallback() {
-                        @Override
-                        public void onSuccess() {
-                            switchProfile(activity, prof, false, dialogHolder[0]);
-                        }
-                        @Override
-                        public void onCancelled() {}
-                    });
-                } else {
-                    switchProfile(activity, prof, prof.isChild, dialogHolder[0]);
-                }
+                requestProfileSwitch(activity, prof, dialogHolder[0], null);
             });
 
             LinearLayout.LayoutParams iLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -212,7 +202,7 @@ public final class UserSwitchDialog {
         addCol.setPadding((int) (12 * density), (int) (8 * density), (int) (12 * density), (int) (8 * density));
 
         GradientDrawable addBg = new GradientDrawable();
-        addBg.setColor(0xFF242731);
+        addBg.setColor(TvUiTokens.SURFACE_IDLE);
         addBg.setCornerRadius(14 * density);
         addCol.setBackground(addBg);
 
@@ -220,33 +210,28 @@ public final class UserSwitchDialog {
         int pfDim = (int) (52 * density);
         GradientDrawable pfBg = new GradientDrawable();
         pfBg.setShape(GradientDrawable.OVAL);
-        pfBg.setColor(0xFF2E323F);
+        pfBg.setColor(TvUiTokens.SURFACE);
         plusFrame.setBackground(pfBg);
 
         TextView tvPlus = new TextView(activity);
         tvPlus.setText("＋");
-        tvPlus.setTextSize(22);
-        tvPlus.setTextColor(0xFF38BDF8);
+        tvPlus.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+        tvPlus.setTextColor(TvUiTokens.FOCUS_BORDER);
         tvPlus.setGravity(Gravity.CENTER);
         plusFrame.addView(tvPlus, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         addCol.addView(plusFrame, new LinearLayout.LayoutParams(pfDim, pfDim));
 
         TextView tvAddLbl = new TextView(activity);
-        tvAddLbl.setText("Tambah");
-        tvAddLbl.setTextSize(12);
-        tvAddLbl.setTextColor(0xFF8E929E);
+        tvAddLbl.setText(R.string.add_user_label);
+        tvAddLbl.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+        tvAddLbl.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvAddLbl.setTypeface(outfit, Typeface.NORMAL);
         tvAddLbl.setPadding(0, (int) (6 * density), 0, 0);
         addCol.addView(tvAddLbl);
 
-        addCol.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF353946 : 0xFF242731);
-            g.setCornerRadius(14 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
-            v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.08f : 1.0f).scaleY(hasFocus ? 1.08f : 1.0f).setDuration(120).start();
-        });
+        addCol.setBackground(TvFocusIndicator.createRoundedStateBackground(
+                density, 14f, TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
+                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER));
 
         addCol.setOnClickListener(v -> {
             SoundEffects.playSelect();
@@ -260,209 +245,111 @@ public final class UserSwitchDialog {
         profScroll.addView(profRow);
         root.addView(profScroll);
 
-        // Divider
-        View div2 = new View(activity);
-        div2.setBackgroundColor(0xFF282B35);
-        LinearLayout.LayoutParams div2Lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (1 * density));
-        div2Lp.topMargin = (int) (6 * density);
-        div2Lp.bottomMargin = (int) (14 * density);
-        root.addView(div2, div2Lp);
-
-        // Section 2: Child Mode Quick Actions
-        TextView tvChildSec = new TextView(activity);
-        tvChildSec.setText("KAWALAN MOD KANAK-KANAK (CHILD MODE)");
-        tvChildSec.setTextSize(11.5f);
-        tvChildSec.setTextColor(0xFF8E929E);
-        tvChildSec.setTypeface(outfit, Typeface.BOLD);
-        tvChildSec.setPadding(0, 0, 0, (int) (8 * density));
-        root.addView(tvChildSec);
-
-        boolean isChildOn = ChildModeManager.isChildModeEnabled(activity);
-
-        // Switch Card: Status Mode Kanak-kanak
-        LinearLayout swCard = new LinearLayout(activity);
-        swCard.setOrientation(LinearLayout.HORIZONTAL);
-        swCard.setGravity(Gravity.CENTER_VERTICAL);
-        swCard.setPadding((int) (16 * density), (int) (12 * density), (int) (16 * density), (int) (12 * density));
-        swCard.setFocusable(true);
-        swCard.setClickable(true);
-
-        GradientDrawable swBg = new GradientDrawable();
-        swBg.setColor(0xFF242731);
-        swBg.setCornerRadius(12 * density);
-        swCard.setBackground(swBg);
-
-        LinearLayout swTextCol = new LinearLayout(activity);
-        swTextCol.setOrientation(LinearLayout.VERTICAL);
-
-        TextView tvSwTitle = new TextView(activity);
-        tvSwTitle.setText("🛡️ Status Mode Kanak-kanak");
-        tvSwTitle.setTextSize(14.5f);
-        tvSwTitle.setTextColor(0xFFFFFFFF);
-        tvSwTitle.setTypeface(outfit, Typeface.BOLD);
-        swTextCol.addView(tvSwTitle);
-
-        TextView tvSwSub = new TextView(activity);
-        tvSwSub.setText(isChildOn ? "Aktif: Aplikasi terpilih dikunci dengan PIN & disembunyikan" : "Tidak Aktif: Semua aplikasi dibuka tanpa sekatan");
-        tvSwSub.setTextSize(12);
-        tvSwSub.setTextColor(isChildOn ? 0xFFF59E0B : 0xFF8E929E);
-        tvSwSub.setTypeface(outfit, Typeface.NORMAL);
-        swTextCol.addView(tvSwSub);
-
-        swCard.addView(swTextCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-        Switch sw = new Switch(activity);
-        sw.setChecked(isChildOn);
-        sw.setFocusable(false);
-        sw.setClickable(false);
-        swCard.addView(sw);
-
-        swCard.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF333744 : 0xFF242731);
-            g.setCornerRadius(12 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
-            v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.02f : 1.0f).scaleY(hasFocus ? 1.02f : 1.0f).setDuration(120).start();
-        });
-
-        swCard.setOnClickListener(v -> {
-            SoundEffects.playSelect();
-            boolean currentlyOn = ChildModeManager.isChildModeEnabled(activity);
-            if (currentlyOn) {
-                // To turn OFF, prompt PIN
-                ChildModeManager.promptPin(activity, "Sahkan PIN Ibu Bapa", "Masukkan PIN untuk mematikan Mode Kanak-kanak", new ChildModeManager.PinCallback() {
-                    @Override
-                    public void onSuccess() {
-                        ChildModeManager.setChildModeEnabled(activity, false);
-                        sw.setChecked(false);
-                        tvSwSub.setText("Tidak Aktif: Semua aplikasi dibuka tanpa sekatan");
-                        tvSwSub.setTextColor(0xFF8E929E);
-                        activity.reloadTiles();
-                        Toast.makeText(activity, "Mode Kanak-kanak dimatikan", Toast.LENGTH_SHORT).show();
-                    }
-                    @Override
-                    public void onCancelled() {}
-                });
-            } else {
-                // To turn ON, activate immediately
-                ChildModeManager.setChildModeEnabled(activity, true);
-                sw.setChecked(true);
-                tvSwSub.setText("Aktif: Aplikasi terpilih dikunci dengan PIN & disembunyikan");
-                tvSwSub.setTextColor(0xFFF59E0B);
-                activity.reloadTiles();
-                Toast.makeText(activity, "✅ Mode Kanak-kanak diaktifkan!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        LinearLayout.LayoutParams scLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        scLp.bottomMargin = (int) (8 * density);
-        root.addView(swCard, scLp);
-
-        // Action Card: Manage Locked Apps
-        LinearLayout lockCard = new LinearLayout(activity);
-        lockCard.setOrientation(LinearLayout.HORIZONTAL);
-        lockCard.setGravity(Gravity.CENTER_VERTICAL);
-        lockCard.setPadding((int) (16 * density), (int) (11 * density), (int) (16 * density), (int) (11 * density));
-        lockCard.setFocusable(true);
-        lockCard.setClickable(true);
-
-        GradientDrawable lcBg = new GradientDrawable();
-        lcBg.setColor(0xFF242731);
-        lcBg.setCornerRadius(12 * density);
-        lockCard.setBackground(lcBg);
-
-        TextView tvLcTitle = new TextView(activity);
-        tvLcTitle.setText("🔒 Urus Senarai Kunci & Sembunyi Aplikasi");
-        tvLcTitle.setTextSize(14);
-        tvLcTitle.setTextColor(0xFFFFFFFF);
-        tvLcTitle.setTypeface(outfit, Typeface.BOLD);
-        lockCard.addView(tvLcTitle, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-        TextView tvLcArrow = new TextView(activity);
-        tvLcArrow.setText("→");
-        tvLcArrow.setTextSize(16);
-        tvLcArrow.setTextColor(0xFF8E929E);
-        lockCard.addView(tvLcArrow);
-
-        lockCard.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF333744 : 0xFF242731);
-            g.setCornerRadius(12 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
-            v.setBackground(g);
-            v.animate().scaleX(hasFocus ? 1.02f : 1.0f).scaleY(hasFocus ? 1.02f : 1.0f).setDuration(120).start();
-        });
-
-        lockCard.setOnClickListener(v -> {
-            SoundEffects.playSelect();
-            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-            ModernSettingsDialog.show(activity);
-        });
-
-        LinearLayout.LayoutParams lcLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lcLp.bottomMargin = (int) (10 * density);
-        root.addView(lockCard, lcLp);
-
         // Close / Batal Button
         Button btnClose = new Button(activity);
-        btnClose.setText("Tutup");
-        btnClose.setTextSize(14);
-        btnClose.setTextColor(0xFFE2E8F0);
+        btnClose.setText(R.string.close_label);
+        btnClose.setTextSize(TvUiTokens.NAV_ITEM_TEXT_SP);
+        btnClose.setTextColor(TvUiTokens.TEXT_SECONDARY);
         btnClose.setTypeface(outfit, Typeface.BOLD);
         btnClose.setFocusable(true);
         btnClose.setClickable(true);
 
-        GradientDrawable cBg = new GradientDrawable();
-        cBg.setColor(0xFF2C303D);
-        cBg.setCornerRadius(10 * density);
-        btnClose.setBackground(cBg);
-
-        btnClose.setOnFocusChangeListener((v, hasFocus) -> {
-            GradientDrawable g = new GradientDrawable();
-            g.setColor(hasFocus ? 0xFF3D4354 : 0xFF2C303D);
-            g.setCornerRadius(10 * density);
-            if (hasFocus) g.setStroke((int) (2 * density), 0xFFFFFFFF);
-            v.setBackground(g);
-        });
+        TvFocusIndicator.applyRoundedTextFocus(btnClose, density, 10f,
+                TvUiTokens.SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
 
         btnClose.setOnClickListener(v -> {
             SoundEffects.playSelect();
             if (dialogHolder[0] != null) dialogHolder[0].dismiss();
         });
 
-        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (42 * density));
+        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density));
         root.addView(btnClose, btnLp);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
         builder.setView(root);
         AlertDialog dialog = builder.create();
         dialogHolder[0] = dialog;
+        dialog.setOnDismissListener(d -> {
+            if (onDismiss != null && !activity.isFinishing() && !activity.isDestroyed()) {
+                onDismiss.run();
+            }
+        });
         dialog.show();
 
-        Window win = dialog.getWindow();
-        if (win != null) {
-            win.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            win.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            win.setDimAmount(0.65f);
-            int w = Math.min((int) (580 * density), (int) (dm.widthPixels * 0.85f));
-            win.setLayout(w, ViewGroup.LayoutParams.WRAP_CONTENT);
-            win.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(dialog, activity, 580, 0, 0.68f);
 
-        profRow.getChildAt(0).requestFocus();
+        int activeIndex = ProfileManager.indexOfProfile(profiles, activeProfile.id);
+        if (activeIndex < 0) activeIndex = 0;
+        View activeCard = profRow.getChildAt(activeIndex);
+        if (activeCard != null) activeCard.requestFocus();
     }
 
-    private static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, boolean activateChild, AlertDialog dialog) {
-        ProfileManager.setActiveProfile(activity, prof.id);
-        if (activateChild) {
-            ChildModeManager.setChildModeEnabled(activity, true);
+    /** Centralized profile-switch policy shared by every profile entry point. */
+    static void requestProfileSwitch(MainActivity activity, ProfileManager.UserProfile target,
+                                     AlertDialog dialog, Runnable afterSwitch) {
+        if (activity == null || target == null) return;
+        ProfileManager.UserProfile current = ProfileManager.getActiveProfile(activity);
+        if (current == null || target.id.equals(current.id)) return;
+
+        boolean currentChildMode = ChildModeManager.isChildModeEnabled(activity, current.id);
+        Runnable commitSwitch = () -> {
+            switchProfile(activity, target, dialog);
+            if (afterSwitch != null) afterSwitch.run();
+        };
+        if (ChildModeManager.requiresParentPinToSwitch(currentChildMode)) {
+            ChildModeManager.promptPin(activity, activity.getString(R.string.verify_parent_pin_title),
+                    activity.getString(R.string.switch_from_child_pin_prompt, target.name),
+                    new ChildModeManager.PinCallback() {
+                        @Override public void onSuccess() { commitSwitch.run(); }
+                        @Override public void onCancelled() { }
+                    });
         } else {
-            ChildModeManager.setChildModeEnabled(activity, false);
+            commitSwitch.run();
+        }
+    }
+
+    /** Parent PIN is required before any profile can be deleted. */
+    static void requestDeleteProfile(MainActivity activity, String profileId, String profileName,
+                                     Runnable afterDelete) {
+        if (activity == null || profileId == null) return;
+        ChildModeManager.promptPin(activity, activity.getString(R.string.parent_pin_delete_title),
+                activity.getString(R.string.parent_pin_delete_message, profileName),
+                new ChildModeManager.PinCallback() {
+                    @Override public void onSuccess() {
+                        AlertDialog deleteDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
+                                .setTitle(activity.getString(R.string.delete_profile_title, profileName))
+                                .setMessage(R.string.delete_profile_message)
+                                .setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss())
+                                .setPositiveButton(R.string.delete_action, (d, w) -> {
+                                    boolean deleted = ProfileManager.deleteProfile(activity, profileId);
+                                    if (deleted) {
+                                        TvFeedback.show(activity, activity.getString(R.string.profile_deleted, profileName), Toast.LENGTH_SHORT);
+                                        if (afterDelete != null) afterDelete.run();
+                                        activity.reloadTiles();
+                                        activity.updateTopBarUserIcon();
+                                    } else {
+                                        TvFeedback.show(activity, R.string.profile_delete_failed, Toast.LENGTH_LONG);
+                                    }
+                                }).create();
+                        deleteDialog.show();
+                        TvDialogStyle.apply(deleteDialog, activity, 520, 0);
+                    }
+                    @Override public void onCancelled() { }
+                });
+    }
+
+    static void switchProfile(MainActivity activity, ProfileManager.UserProfile prof, AlertDialog dialog) {
+        if (activity == null || prof == null) return;
+        if (!ProfileManager.setActiveProfile(activity, prof.id)) {
+            TvFeedback.show(activity, R.string.profile_save_failed, Toast.LENGTH_LONG);
+            return;
         }
         activity.reloadTiles();
         activity.updateTopBarUserIcon();
-        Toast.makeText(activity, "✨ Profil aktif: " + prof.name + (prof.isChild ? " (Mod Kanak-kanak)" : ""), Toast.LENGTH_SHORT).show();
+        TvFeedback.show(activity, activity.getString(R.string.profile_active_message, prof.name,
+                ChildModeManager.isChildModeEnabled(activity, prof.id) ? activity.getString(R.string.child_mode_suffix) : ""),
+                Toast.LENGTH_SHORT);
         if (dialog != null) dialog.dismiss();
     }
 
@@ -471,48 +358,47 @@ public final class UserSwitchDialog {
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding((int) (22 * density), (int) (18 * density), (int) (22 * density), (int) (16 * density));
 
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFF1E2026);
-        bg.setCornerRadius(20 * density);
-        bg.setStroke((int) (1.5f * density), 0xFF2F323B);
-        content.setBackground(bg);
+        content.setBackground(TvDialogStyle.createDialogSurface(activity));
 
         TextView tvTitle = new TextView(activity);
-        tvTitle.setText("➕ Tambah Pengguna Baru");
-        tvTitle.setTextSize(18);
-        tvTitle.setTextColor(0xFFFFFFFF);
+        tvTitle.setText(R.string.add_user_title);
+        tvTitle.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+        tvTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tvTitle.setTypeface(font, Typeface.BOLD);
         content.addView(tvTitle);
 
         TextView tvSub = new TextView(activity);
-        tvSub.setText("Masukkan nama dan pilih avatar untuk profil ini");
-        tvSub.setTextSize(12.5f);
-        tvSub.setTextColor(0xFF8E929E);
+        tvSub.setText(R.string.add_user_subtitle);
+        tvSub.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
+        tvSub.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvSub.setTypeface(font, Typeface.NORMAL);
         tvSub.setPadding(0, (int) (2 * density), 0, (int) (12 * density));
         content.addView(tvSub);
 
         // Edit text for Name
         EditText et = new EditText(activity);
-        et.setHint("Contoh: Ibu, Ayah, Adik");
-        et.setHintTextColor(0xFF6B7280);
-        et.setTextColor(0xFFFFFFFF);
-        et.setTextSize(15);
+        et.setHint(R.string.add_user_name_hint);
+        et.setHintTextColor(TvUiTokens.TEXT_SECONDARY);
+        et.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        et.setTextSize(TvUiTokens.BODY_SP);
         et.setTypeface(font, Typeface.NORMAL);
         et.setPadding((int) (14 * density), (int) (10 * density), (int) (14 * density), (int) (10 * density));
 
         GradientDrawable etBg = new GradientDrawable();
-        etBg.setColor(0xFF262934);
+        etBg.setColor(TvUiTokens.INPUT_SURFACE);
         etBg.setCornerRadius(10 * density);
-        etBg.setStroke((int) (1 * density), 0xFF3F4454);
+        etBg.setStroke((int) (1 * density), TvUiTokens.BORDER);
         et.setBackground(etBg);
+        TvFocusIndicator.applyRoundedTextFocus(et, density, 10f,
+                TvUiTokens.INPUT_SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
+                TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
         content.addView(et);
 
         // Avatar Picker Header
         TextView tvAvHeader = new TextView(activity);
-        tvAvHeader.setText("PILIH AVATAR");
-        tvAvHeader.setTextSize(11.5f);
-        tvAvHeader.setTextColor(0xFF8E929E);
+        tvAvHeader.setText(R.string.choose_avatar_label);
+        tvAvHeader.setTextSize(TvUiTokens.SECTION_LABEL_SP);
+        tvAvHeader.setTextColor(TvUiTokens.TEXT_SECONDARY);
         tvAvHeader.setTypeface(font, Typeface.BOLD);
         tvAvHeader.setPadding(0, (int) (12 * density), 0, (int) (6 * density));
         content.addView(tvAvHeader);
@@ -542,20 +428,17 @@ public final class UserSwitchDialog {
             GradientDrawable ringBg = new GradientDrawable();
             ringBg.setShape(GradientDrawable.OVAL);
             ringBg.setColor(Color.TRANSPARENT);
-            ringBg.setStroke((int) (2.5f * density), 0xFFFFFFFF);
+            ringBg.setStroke((int) (2.5f * density), TvUiTokens.NAV_SELECTION_BORDER);
             ring.setBackground(ringBg);
             ring.setVisibility(idx == 0 ? View.VISIBLE : View.GONE);
             frame.addView(ring, new FrameLayout.LayoutParams(frameDim, frameDim));
             rings[idx] = ring;
-
             ImageView img = new ImageView(activity);
             img.setImageResource(ProfileManager.getAvatarResId(idx));
             int innerDim = (int) (42 * density);
             frame.addView(img, new FrameLayout.LayoutParams(innerDim, innerDim, Gravity.CENTER));
-
-            frame.setOnFocusChangeListener((v, hasFocus) -> {
-                v.animate().scaleX(hasFocus ? 1.15f : 1.0f).scaleY(hasFocus ? 1.15f : 1.0f).setDuration(120).start();
-            });
+            // Draw above the avatar image so the focus ring remains visible at every edge.
+            TvFocusIndicator.attachAvatarFocusRing(frame, frameDim, density);
 
             frame.setOnClickListener(v -> {
                 SoundEffects.playSelect();
@@ -572,9 +455,9 @@ public final class UserSwitchDialog {
 
         // Checkbox: Child Mode profile
         CheckBox cbChild = new CheckBox(activity);
-        cbChild.setText("Tandakan sebagai Profil Kanak-kanak (Auto Child Mode)");
-        cbChild.setTextColor(0xFFCBD5E1);
-        cbChild.setTextSize(13);
+        cbChild.setText(R.string.child_profile_checkbox);
+        cbChild.setTextColor(TvUiTokens.TEXT_SECONDARY);
+        cbChild.setTextSize(TvUiTokens.CARD_SUBTITLE_SP);
         cbChild.setTypeface(font, Typeface.NORMAL);
         cbChild.setPadding((int) (6 * density), (int) (6 * density), 0, (int) (12 * density));
         content.addView(cbChild);
@@ -587,51 +470,45 @@ public final class UserSwitchDialog {
         btnRow.setGravity(Gravity.END);
 
         Button btnCancel = new Button(activity);
-        btnCancel.setText("Batal");
-        btnCancel.setTextColor(0xFF8E929E);
+        btnCancel.setText(R.string.cancel_action);
+        btnCancel.setTextColor(TvUiTokens.TEXT_SECONDARY);
         btnCancel.setTypeface(font, Typeface.NORMAL);
         btnCancel.setFocusable(true);
         btnCancel.setClickable(true);
-        GradientDrawable cBg = new GradientDrawable();
-        cBg.setColor(0xFF262934);
-        cBg.setCornerRadius(8 * density);
-        btnCancel.setBackground(cBg);
         btnCancel.setPadding((int) (16 * density), 0, (int) (16 * density), 0);
-        btnCancel.setOnFocusChangeListener((v, hasFocus) -> {
-            cBg.setStroke((int) (2 * density), hasFocus ? 0xFFFFFFFF : 0);
-            btnCancel.setTextColor(hasFocus ? 0xFFFFFFFF : 0xFF8E929E);
-            v.animate().scaleX(hasFocus ? 1.05f : 1.0f).scaleY(hasFocus ? 1.05f : 1.0f).setDuration(120).start();
-        });
+        TvFocusIndicator.applyRoundedTextFocus(btnCancel, density, 8f,
+                TvUiTokens.INPUT_SURFACE, TvUiTokens.SURFACE_FOCUSED, TvUiTokens.BORDER,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_SECONDARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
         btnCancel.setOnClickListener(v -> {
             if (dHolder[0] != null) dHolder[0].dismiss();
         });
-        btnRow.addView(btnCancel, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) (40 * density)));
+        btnRow.addView(btnCancel, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) (TvUiTokens.MIN_DPAD_TARGET_DP * density)));
 
         Button btnSave = new Button(activity);
-        btnSave.setText("Simpan Profil");
-        btnSave.setTextColor(0xFFFFFFFF);
+        btnSave.setText(R.string.save_profile_action);
+        btnSave.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        btnSave.setTextSize(TvUiTokens.NAV_ITEM_TEXT_SP);
         btnSave.setTypeface(font, Typeface.BOLD);
         btnSave.setFocusable(true);
         btnSave.setClickable(true);
-        GradientDrawable sBg = new GradientDrawable();
-        sBg.setColor(0xFF10B981); // Emerald
-        sBg.setCornerRadius(8 * density);
-        btnSave.setBackground(sBg);
         btnSave.setPadding((int) (16 * density), 0, (int) (16 * density), 0);
-        btnSave.setOnFocusChangeListener((v, hasFocus) -> {
-            sBg.setStroke((int) (2 * density), hasFocus ? 0xFFFFFFFF : 0);
-            v.animate().scaleX(hasFocus ? 1.05f : 1.0f).scaleY(hasFocus ? 1.05f : 1.0f).setDuration(120).start();
-        });
+        TvFocusIndicator.applyRoundedTextFocus(btnSave, density, 8f,
+                TvUiTokens.SUCCESS, TvUiTokens.SUCCESS, TvUiTokens.SUCCESS,
+                TvUiTokens.FOCUS_BORDER, TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, 1.0f);
 
         btnSave.setOnClickListener(v -> {
             String name = et.getText().toString().trim();
             if (name.isEmpty()) {
-                Toast.makeText(activity, "Sila masukkan nama pengguna", Toast.LENGTH_SHORT).show();
+                TvFeedback.show(activity, R.string.user_name_required, Toast.LENGTH_SHORT);
                 return;
             }
             SoundEffects.playSelect();
-            ProfileManager.addProfile(activity, name, chosenAvatar[0], cbChild.isChecked());
-            Toast.makeText(activity, "✨ Profil " + name + " berjaya dicipta!", Toast.LENGTH_SHORT).show();
+            ProfileManager.UserProfile created = ProfileManager.addProfile(activity, name, chosenAvatar[0], cbChild.isChecked());
+            if (created == null) {
+                TvFeedback.show(activity, R.string.profile_save_failed, Toast.LENGTH_LONG);
+                return;
+            }
+            TvFeedback.show(activity, activity.getString(R.string.profile_created, name), Toast.LENGTH_SHORT);
             if (dHolder[0] != null) dHolder[0].dismiss();
             if (onAdded != null) onAdded.run();
         });
@@ -647,12 +524,6 @@ public final class UserSwitchDialog {
         dHolder[0] = d;
         d.show();
 
-        Window w = d.getWindow();
-        if (w != null) {
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int dw = Math.min((int) (520 * density), (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.85f));
-            w.setLayout(dw, ViewGroup.LayoutParams.WRAP_CONTENT);
-            w.setGravity(Gravity.CENTER);
-        }
+        TvDialogStyle.applyCustom(d, activity, 520, 0, 0.68f);
     }
 }

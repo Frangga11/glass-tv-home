@@ -1,0 +1,186 @@
+package com.gathin.tvhome;
+
+/**
+ * Single source of truth for the horizontal Dock's visual geometry.
+ *
+ * Horizontal Dock/Grid geometry shares a 30dp left/right/bottom safe frame (29dp top), a five-column
+ * slot model, 6/8dp horizontal and 6/12dp vertical decoration offsets, 14dp tray inset, 8dp Grid-to-tray
+ * breathing room, and a 30dp information-shelf-to-tray gap. The Dock and Grid remain independent
+ * RecyclerViews but derive their card and slot sizes from this class.
+ */
+final class DockGeometry {
+    private static final float DOCK_ITEM_TOP_OFFSET_DP = 6f;
+    private static final float DOCK_ITEM_BOTTOM_OFFSET_DP = 12f;
+    private static final float HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP = 8f;
+    private static final float TRAY_PADDING_DP = 14f;
+    private static final float DOCK_EXTRA_HEIGHT_DP = 12f;
+    /** Legacy shelf baseline keeps the information panels stationary while Dock cards shrink. */
+    private static final float SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP = 18f;
+    private static final float DOCK_TILE_SCALE = 0.95f;
+    private static final float DOCK_SLOT_GAP_DP = 32f;
+    private static final float GRID_TO_TRAY_GAP_DP = 8f;
+    private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
+    private static final float SAFE_HORIZONTAL_MARGIN_DP = 30f;
+    private static final float SAFE_VERTICAL_MARGIN_DP = 30f;
+    private static final float SAFE_TOP_MARGIN_DP = 29f;
+    private static final float SHELF_TO_TRAY_GAP_DP = 36f;
+
+    private DockGeometry() { }
+
+    static int horizontalGridColumns() {
+        return 5;
+    }
+
+    static int horizontalSlotWidthPx(int safeContentWidthPx, int capacity) {
+        int columns = Math.max(horizontalGridColumns(), DockPreferences.normalizeCapacity(capacity));
+        return Math.max(0, safeContentWidthPx / columns);
+    }
+
+    /** Five-column Grid viewport width chosen so its cells match the Dock slots at capacities 4/5/6. */
+    static int horizontalGridWidthPx(int safeContentWidthPx, int capacity) {
+        int columns = Math.max(horizontalGridColumns(), DockPreferences.normalizeCapacity(capacity));
+        return Math.max(0, safeContentWidthPx * horizontalGridColumns() / columns);
+    }
+
+    static int horizontalTileWidthPx(int safeContentWidthPx, int capacity, float density) {
+        int gridWidth = horizontalGridWidthPx(safeContentWidthPx, capacity);
+        return AppAdapter.tileWidthPx(gridWidth, horizontalGridColumns(), density);
+    }
+
+    /** Dock-only tile width: shrink the Dock without changing AppAdapter/Grid geometry. */
+    static int horizontalDockTileWidthPx(int safeContentWidthPx, int capacity, float density) {
+        int base = horizontalTileWidthPx(safeContentWidthPx, capacity, density);
+        return Math.max(Math.round(80 * density), Math.round(base * DOCK_TILE_SCALE));
+    }
+
+    /** Dock-only vertical tile width, scaled from the established 112–170dp rail range. */
+    static int verticalDockTileWidthPx(int innerWidthPx, float density) {
+        int base = Math.max(Math.round(112 * density),
+                Math.min(Math.round(170 * density), innerWidthPx - Math.round(20 * density)));
+        return Math.max(Math.round(80 * density), Math.round(base * DOCK_TILE_SCALE));
+    }
+
+    /** Keep a consistent visual gap after shrinking Dock cards; the glass tray remains full width. */
+    static int horizontalDockSlotWidthPx(int safeContentWidthPx, int capacity, float density) {
+        int cell = horizontalSlotWidthPx(safeContentWidthPx, capacity);
+        int tile = horizontalDockTileWidthPx(safeContentWidthPx, capacity, density);
+        return Math.min(cell, tile + Math.round(DOCK_SLOT_GAP_DP * density));
+    }
+
+    static int safeHorizontalMarginDp() {
+        return (int) SAFE_HORIZONTAL_MARGIN_DP;
+    }
+
+    static int safeVerticalMarginDp() {
+        return (int) SAFE_VERTICAL_MARGIN_DP;
+    }
+
+    static int safeTopInsetPx(float density) {
+        return Math.round(SAFE_TOP_MARGIN_DP * density);
+    }
+
+    static int safeHorizontalInsetPx(float density) {
+        return Math.round(SAFE_HORIZONTAL_MARGIN_DP * density);
+    }
+
+    static int safeBottomInsetPx(float density) {
+        return Math.round(SAFE_VERTICAL_MARGIN_DP * density);
+    }
+
+    /**
+     * The Dock host is already inside activity_main's shared 30dp Home content inset.
+     * Applying another inset here would double-inset the Dock and make its tray narrower
+     * than the left information and right prayer/ayah shelves.
+     */
+    static int horizontalContentWidthPx(int viewportWidthPx, float density) {
+        return Math.max(0, viewportWidthPx);
+    }
+
+    /** Exact visual clearance between the Islamic information package and horizontal Glass Dock. */
+    static int islamicShelfDockGapPx(float density) {
+        return Math.round(30f * density);
+    }
+
+    /** Signed scroll delta to align a target Grid row; positive moves content upward, negative downward. */
+    static int gridRowScrollDeltaPx(int currentRow, int targetRow, int rowPitchPx, int currentTopOffsetPx) {
+        return (targetRow - currentRow) * rowPitchPx + currentTopOffsetPx;
+    }
+
+    /** One visible app row plus the RecyclerView's existing top breathing inset. */
+    static int horizontalGridViewportHeightPx(int tileWidthPx, float density, int topPaddingPx) {
+        int itemHeight = itemHeightPx(tileHeightPx(tileWidthPx), density);
+        return Math.max(0, itemHeight + Math.max(0, topPaddingPx));
+    }
+
+    /**
+     * Center Dock slots whose widths match the five-column Grid cells.
+     * The offset is measured inside the safe content viewport, not the full screen.
+     */
+    static int horizontalCenterOffsetPx(int safeContentWidthPx, int slotWidthPx, int itemCount) {
+        if (safeContentWidthPx <= 0 || slotWidthPx <= 0 || itemCount <= 0) return 0;
+        return Math.max(0, (safeContentWidthPx - slotWidthPx * itemCount) / 2);
+    }
+
+    static int tileHeightPx(int tileWidthPx) {
+        return AppAdapter.tileHeightPx(tileWidthPx);
+    }
+
+    static int itemHeightPx(int tileHeightPx, float density) {
+        return AppAdapter.itemHeightPx(tileHeightPx, density);
+    }
+
+    static int horizontalDockHeightPx(int tileHeightPx, float density) {
+        return itemHeightPx(tileHeightPx, density) + Math.round(DOCK_EXTRA_HEIGHT_DP * density);
+    }
+
+    /** Dock host extends below its glass tray so the tray itself lands on the 30dp bottom safe margin. */
+    static int horizontalDockBottomMarginPx(int tileHeightPx, float density) {
+        int dockHeight = horizontalDockHeightPx(tileHeightPx, density);
+        int trayBottomInset = dockHeight - tileHeightPx
+                - dockItemTopOffsetPx(density) - Math.round(TRAY_PADDING_DP * density);
+        return safeBottomInsetPx(density) - trayBottomInset;
+    }
+
+    /** Pre-refinement Dock host height used only as a stable shelf baseline. */
+    static int horizontalShelfAnchorHeightPx(int tileHeightPx, float density) {
+        return itemHeightPx(tileHeightPx, density)
+                + Math.round(SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP * density);
+    }
+
+    /** The Grid viewport ends one 8dp rhythm above the tray's top edge. */
+    static int horizontalGridBottomMarginPx(int tileHeightPx, float density) {
+        int dockHeight = horizontalDockHeightPx(tileHeightPx, density);
+        int dockBottomMargin = horizontalDockBottomMarginPx(tileHeightPx, density);
+        int trayTopOffset = dockItemTopOffsetPx(density)
+                - Math.round(TRAY_PADDING_DP * density);
+        int gridToTrayGap = Math.round(GRID_TO_TRAY_GAP_DP * density);
+        return Math.max(0, dockHeight + dockBottomMargin - trayTopOffset + gridToTrayGap);
+    }
+
+    /** Shelf baseline sits 36dp above the tray; tray starts 14dp above the tile card. */
+    static int shelfBottomOffsetFromTileTopPx(float density) {
+        return Math.round((TRAY_PADDING_DP + SHELF_TO_TRAY_GAP_DP) * density);
+    }
+
+    static int horizontalGridBottomReservePx(int largestTileWidthPx, float density) {
+        int largestTileHeight = tileHeightPx(largestTileWidthPx);
+        return itemHeightPx(largestTileHeight, density) + Math.round(SAFE_VERTICAL_MARGIN_DP * density);
+    }
+
+    static int dockItemTopOffsetPx(float density) {
+        return (int) (DOCK_ITEM_TOP_OFFSET_DP * density);
+    }
+
+    static int dockItemBottomOffsetPx(float density) {
+        return (int) (DOCK_ITEM_BOTTOM_OFFSET_DP * density);
+    }
+
+    /** The Dock host is 6dp shorter than the shelf baseline; its 0.95 tile scale further reduces the card. */
+    static int horizontalDockItemBottomOffsetPx(float density) {
+        return (int) (HORIZONTAL_DOCK_ITEM_BOTTOM_OFFSET_DP * density);
+    }
+
+    static float trayPaddingPx(float density) {
+        return TRAY_PADDING_DP * density;
+    }
+}

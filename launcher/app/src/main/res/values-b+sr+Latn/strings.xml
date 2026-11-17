@@ -25,4 +25,11 @@
     <string name="home_key_description">Dugme Home na daljinskom otvara ovaj početni ekran.</string>
     <string name="tile_move">Premesti</string>
     <string name="tile_app_info">Informacije o aplikaciji</string>
+    <string name="dock_orientation_title">Orijentacija Docka</string>
+    <string name="dock_orientation_summary">Izaberite horizontalni ili vertikalni raspored Docka.</string>
+    <string name="dock_orientation_horizontal">Horizontalno</string>
+    <string name="dock_orientation_vertical">Vertikalno</string>
+    <string name="dock_capacity_title">Kapacitet Docka</string>
+    <string name="dock_capacity_summary">Izaberite broj prikazanih aplikacija: 4, 5 ili 6.</string>
+    <string name="dock_settings_save_failed">Podešavanja Docka nije moguće sačuvati.</string>
 </resources>

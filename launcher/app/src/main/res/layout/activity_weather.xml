@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0A111E"
+    android:background="@color/tv_ui_shell"
     android:clipChildren="false">
 
     <!-- Layer 0: Hardware-Accelerated Dynamic Atmospheric Weather Canvas -->
@@ -49,9 +49,9 @@
                     android:includeFontPadding="false"
                     android:letterSpacing="0.12"
                     android:singleLine="true"
-                    android:text="MY LOCATION"
+                    android:text="@string/weather_my_location"
                     android:textAllCaps="true"
-                    android:textColor="#C8DCF8"
+                    android:textColor="@color/tv_ui_text_secondary"
                     android:textSize="10sp" />
 
                 <TextView
@@ -67,8 +67,8 @@
                     android:shadowDy="2"
                     android:shadowRadius="6"
                     android:singleLine="true"
-                    android:text="Putrajaya"
-                    android:textColor="#FFFFFF"
+                    android:text="Pagar Alam"
+                    android:textColor="@color/tv_ui_text_primary"
                     android:textSize="20sp" />
 
                 <TextView
@@ -85,7 +85,7 @@
                     android:shadowRadius="10"
                     android:singleLine="true"
                     android:text="29°"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/tv_ui_text_primary"
                     android:textSize="38sp" />
 
                 <TextView
@@ -101,8 +101,8 @@
                     android:shadowDy="2"
                     android:shadowRadius="5"
                     android:singleLine="true"
-                    android:text="Drizzle"
-                    android:textColor="#F1F5F9"
+                    android:text="@string/weather_drizzle"
+                    android:textColor="@color/tv_ui_text_primary"
                     android:textSize="13sp" />
 
                 <TextView
@@ -120,7 +120,7 @@
                     android:shadowRadius="4"
                     android:singleLine="true"
                     android:text="H:30°  L:24°"
-                    android:textColor="#CBD5E1"
+                    android:textColor="@color/tv_ui_text_secondary"
                     android:textSize="11sp" />
 
                 <TextView
@@ -130,26 +130,26 @@
                     android:visibility="gone" />
             </LinearLayout>
 
-            <!-- Main Widescreen Body: Bento Grid (Exact Height: 385dp) -->
+            <!-- Main Widescreen Body: Bento Grid (Exact Height: 421dp) -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="385dp"
+                android:layout_height="421dp"
                 android:layout_marginTop="7dp"
                 android:baselineAligned="false"
                 android:clipChildren="false"
                 android:orientation="horizontal">
 
-                <!-- LEFT SECTION: 2x4 Metric Grid Tiles (Total Height: 385dp) -->
+                <!-- LEFT SECTION: Metric Grid Tiles (Total Height: 421dp) -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1.0"
                     android:orientation="vertical">
 
-                    <!-- Row 1: WIND & MOON PHASE (92dp) -->
+                    <!-- Row 1: WIND & MOON PHASE (104dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="92dp"
+                        android:layout_height="104dp"
                         android:layout_marginBottom="6dp"
                         android:orientation="horizontal">
 
@@ -172,8 +172,8 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="💨  WIND"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_wind_label"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="9sp" />
 
                             <com.gathin.tvhome.WindCompassView
@@ -200,14 +200,35 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="🌕  WANING GIBBOUS"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_moon_phase_label"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="9sp" />
 
                             <com.gathin.tvhome.MoonPhaseView
                                 android:id="@+id/moonPhaseView"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
+                                android:layout_height="34dp" />
+
+                            <TextView
+                                android:id="@+id/moonPhaseName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:fontVariationSettings="'wght' 600"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/tv_ui_text_primary"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/moonriseMoonsetText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textSize="9sp" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -237,8 +258,8 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="🌅  SUNSET"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_sunset_label"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="9sp" />
 
                             <TextView
@@ -249,7 +270,7 @@
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
                                 android:text="6:57 PM"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/tv_ui_text_primary"
                                 android:textSize="13sp" />
 
                             <com.gathin.tvhome.SunArcView
@@ -276,8 +297,8 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="☀️  UV INDEX"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_uv_label"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="9sp" />
 
                             <LinearLayout
@@ -294,7 +315,7 @@
                                     android:fontVariationSettings="'wght' 700"
                                     android:includeFontPadding="false"
                                     android:text="6"
-                                    android:textColor="#FFFFFF"
+                                    android:textColor="@color/tv_ui_text_primary"
                                     android:textSize="16sp" />
 
                                 <TextView
@@ -305,35 +326,30 @@
                                     android:fontFamily="@font/inter"
                                     android:fontVariationSettings="'wght' 600"
                                     android:includeFontPadding="false"
-                                    android:text="High"
+                                    android:text="@string/weather_uv_high"
                                     android:textColor="#F59E0B"
                                     android:textSize="10sp" />
                             </LinearLayout>
 
-                            <com.gathin.tvhome.AqiSpectrumBarView
-                                android:layout_width="match_parent"
-                                android:layout_height="6dp"
-                                android:layout_marginTop="2dp" />
-
-                            <TextView
+                                                        <TextView
+                                android:id="@+id/uvAdviceText"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:ellipsize="end"
                                 android:fontFamily="@font/inter"
-                                android:fontVariationSettings="'wght' 400"
+                                android:fontVariationSettings="'wght' 500"
                                 android:includeFontPadding="false"
-                                android:singleLine="true"
-                                android:text="Use sun protection until 5PM."
-                                android:textColor="#CBD5E1"
-                                android:textSize="8sp" />
+                                android:maxLines="2"
+                                android:text="@string/weather_uv_description"
+                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textSize="8.5sp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Row 3: FEELS LIKE & AIR QUALITY (92dp) -->
+                    <!-- Row 3: FEELS LIKE & AIR QUALITY (104dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="92dp"
+                        android:layout_height="104dp"
                         android:layout_marginBottom="6dp"
                         android:orientation="horizontal">
 
@@ -356,8 +372,8 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="🌡️  FEELS LIKE"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_feels_like_label"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="9sp" />
 
                             <TextView
@@ -368,7 +384,7 @@
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
                                 android:text="30°"
-                                android:textColor="#FFFFFF"
+                                android:textColor="@color/tv_ui_text_primary"
                                 android:textSize="16sp" />
 
                             <TextView
@@ -380,8 +396,8 @@
                                 android:fontVariationSettings="'wght' 400"
                                 android:includeFontPadding="false"
                                 android:maxLines="2"
-                                android:text="It feels warmer than actual temperature."
-                                android:textColor="#CBD5E1"
+                                android:text="@string/weather_feels_like_description"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="8sp" />
                         </LinearLayout>
 
@@ -403,8 +419,8 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="🍃  AIR QUALITY"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_air_quality_label"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="9sp" />
 
                             <LinearLayout
@@ -421,7 +437,7 @@
                                     android:fontVariationSettings="'wght' 700"
                                     android:includeFontPadding="false"
                                     android:text="56"
-                                    android:textColor="#38BDF8"
+                                    android:textColor="@color/tv_ui_focus_cyan"
                                     android:textSize="16sp" />
 
                                 <TextView
@@ -432,8 +448,8 @@
                                     android:fontFamily="@font/inter"
                                     android:fontVariationSettings="'wght' 600"
                                     android:includeFontPadding="false"
-                                    android:text="Moderate"
-                                    android:textColor="#FFFFFF"
+                                    android:text="@string/weather_air_quality_moderate"
+                                    android:textColor="@color/tv_ui_text_primary"
                                     android:textSize="10sp" />
                             </LinearLayout>
 
@@ -453,16 +469,16 @@
                                 android:fontVariationSettings="'wght' 400"
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
-                                android:text="SK Putrajaya Presint 18"
-                                android:textColor="#94A3B8"
+                                android:text="Kota Pagar Alam, Sumatera Selatan"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="8sp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Row 4: PRECIPITATION & VISIBILITY (92dp) -->
+                    <!-- Row 4: RAINFALL, VISIBILITY & DEW POINT (104dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="92dp"
+                        android:layout_height="104dp"
                         android:orientation="horizontal">
 
                         <!-- Tile 4A: PRECIPITATION -->
@@ -484,21 +500,23 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="💧  PRECIPITATION"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_rainfall_label"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="9sp" />
 
                             <TextView
+                                android:id="@+id/precipValue"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/inter"
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
-                                android:text="13 mm"
-                                android:textColor="#FFFFFF"
+                                android:text="0.0 mm"
+                                android:textColor="@color/tv_ui_text_primary"
                                 android:textSize="16sp" />
 
                             <TextView
+                                android:id="@+id/precipSub"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="1dp"
@@ -507,8 +525,8 @@
                                 android:fontVariationSettings="'wght' 400"
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
-                                android:text="in last 24h • 21 mm expected"
-                                android:textColor="#CBD5E1"
+                                android:text="@string/weather_precipitation_chance"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="8sp" />
                         </LinearLayout>
 
@@ -530,21 +548,23 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="👁️  VISIBILITY"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_visibility_label"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="9sp" />
 
                             <TextView
+                                android:id="@+id/visibilityValue"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/inter"
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
-                                android:text="12 km"
-                                android:textColor="#FFFFFF"
+                                android:text="10.0 km"
+                                android:textColor="@color/tv_ui_text_primary"
                                 android:textSize="16sp" />
 
                             <TextView
+                                android:id="@+id/visibilitySub"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="1dp"
@@ -553,14 +573,57 @@
                                 android:fontVariationSettings="'wght' 400"
                                 android:includeFontPadding="false"
                                 android:singleLine="true"
-                                android:text="Clear view."
-                                android:textColor="#CBD5E1"
+                                android:text="@string/weather_visibility_good"
+                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+
+                        <!-- Tile 4C: DEW POINT -->
+                        <LinearLayout
+                            android:id="@+id/tileDewPoint"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/weather_card_bg"
+                            android:orientation="vertical"
+                            android:padding="7dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:fontVariationSettings="'wght' 700"
+                                android:includeFontPadding="false"
+                                android:singleLine="true"
+                                android:text="@string/weather_dew_point_label"
+                                android:textColor="@color/tv_ui_text_secondary"
+                                android:textSize="9sp" />
+
+                            <TextView
+                                android:id="@+id/dewPointValText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:fontVariationSettings="'wght' 700"
+                                android:includeFontPadding="false"
+                                android:text="—"
+                                android:textColor="@color/tv_ui_text_primary"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter"
+                                android:includeFontPadding="false"
+                                android:maxLines="2"
+                                android:text="@string/weather_dew_point_description"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="8sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- RIGHT SECTION: Hourly (Top: 127dp) + 10-Day & Radar (Bottom: 252dp) (Total Height: 385dp) -->
+                <!-- RIGHT SECTION: Hourly (Top: 127dp) + pollutant / forecast / atmosphere (Bottom: 288dp) (Total Height: 421dp) -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -594,8 +657,8 @@
                                 android:fontFamily="@font/inter"
                                 android:fontVariationSettings="'wght' 700"
                                 android:includeFontPadding="false"
-                                android:text="Conditions"
-                                android:textColor="#FFFFFF"
+                                android:text="@string/weather_conditions_label"
+                                android:textColor="@color/tv_ui_text_primary"
                                 android:textSize="12.5sp" />
 
                             <TextView
@@ -605,8 +668,8 @@
                                 android:fontFamily="@font/inter"
                                 android:fontVariationSettings="'wght' 500"
                                 android:includeFontPadding="false"
-                                android:text="Temperature (°C)"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_temperature_c"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="10sp" />
 
                             <!-- Apple Weather 3-tab Toolbar Toggles -->
@@ -675,10 +738,10 @@
                         </HorizontalScrollView>
                     </LinearLayout>
 
-                    <!-- Bottom Row: 10-Day Forecast & Radar / Metrics (252dp) -->
+                    <!-- Bottom Row: 7-Day Forecast, pollutant breakdown and atmosphere (288dp) -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="252dp"
+                        android:layout_height="288dp"
                         android:layout_marginTop="6dp"
                         android:baselineAligned="false"
                         android:orientation="horizontal">
@@ -707,8 +770,8 @@
                                 android:includeFontPadding="false"
                                 android:letterSpacing="0.08"
                                 android:singleLine="true"
-                                android:text="📅  10-DAY FORECAST"
-                                android:textColor="#94A3B8"
+                                android:text="@string/weather_forecast_7_days"
+                                android:textColor="@color/tv_ui_text_secondary"
                                 android:textSize="10sp" />
 
                             <View
@@ -725,18 +788,87 @@
                                 android:orientation="vertical" />
                         </LinearLayout>
 
-                        <!-- Right: PRECIPITATION RADAR MAP & HUMIDITY / PRESSURE (252dp) -->
+                        <!-- Right: WEATHER ILLUSTRATION & HUMIDITY / PRESSURE (252dp) -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1.08"
                             android:orientation="vertical">
 
-                            <!-- Radar Card (170dp) -->
+                            <!-- Five provider pollutants, distinct from the US AQI category -->
+                            <LinearLayout
+                                android:id="@+id/cardPollutants"
+                                android:layout_width="match_parent"
+                                android:layout_height="104dp"
+                                android:background="@drawable/weather_card_bg"
+                                android:orientation="vertical"
+                                android:padding="6dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/inter"
+                                    android:fontVariationSettings="'wght' 700"
+                                    android:includeFontPadding="false"
+                                    android:text="@string/weather_pollutants_title"
+                                    android:textColor="@color/tv_ui_text_secondary"
+                                    android:textSize="9sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="30dp"
+                                    android:layout_marginTop="3dp"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="PM2.5" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/pm25ValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="PM10" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/pm10ValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="CO" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/coValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="30dp"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="NO₂" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/no2ValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:orientation="vertical">
+                                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:includeFontPadding="false" android:text="SO₂" android:textColor="@color/tv_ui_text_secondary" android:textSize="8sp" />
+                                        <TextView android:id="@+id/so2ValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/inter" android:fontVariationSettings="'wght' 700" android:includeFontPadding="false" android:text="—" android:textColor="@color/tv_ui_text_primary" android:textSize="10sp" />
+                                    </LinearLayout>
+                                    <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/pollutantMissingNote"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/inter"
+                                    android:includeFontPadding="false"
+                                    android:maxLines="1"
+                                    android:text="@string/weather_pollutant_missing_note"
+                                    android:textColor="@color/tv_ui_text_secondary"
+                                    android:textSize="8sp"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <!-- Local atmosphere illustration (not live radar) -->
                             <LinearLayout
                                 android:id="@+id/cardRadar"
                                 android:layout_width="match_parent"
-                                android:layout_height="170dp"
+                                android:layout_height="96dp"
+                                android:layout_marginTop="6dp"
                                 android:background="@drawable/weather_card_bg"
                                 android:orientation="vertical"
                                 android:padding="6dp">
@@ -749,14 +881,14 @@
                                     android:includeFontPadding="false"
                                     android:letterSpacing="0.08"
                                     android:singleLine="true"
-                                    android:text="☂  PRECIPITATION"
-                                    android:textColor="#94A3B8"
+                                    android:text="@string/weather_illustration_label"
+                                    android:textColor="@color/tv_ui_text_secondary"
                                     android:textSize="10sp" />
 
                                 <com.gathin.tvhome.RadarMapView
                                     android:id="@+id/radarMapView"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
+                                    android:layout_height="68dp"
                                     android:layout_marginTop="3dp" />
                             </LinearLayout>
 
@@ -786,8 +918,8 @@
                                         android:includeFontPadding="false"
                                         android:letterSpacing="0.08"
                                         android:singleLine="true"
-                                        android:text="💧  HUMIDITY"
-                                        android:textColor="#94A3B8"
+                                        android:text="@string/weather_humidity_label"
+                                        android:textColor="@color/tv_ui_text_secondary"
                                         android:textSize="9sp" />
 
                                     <TextView
@@ -798,7 +930,7 @@
                                         android:fontVariationSettings="'wght' 700"
                                         android:includeFontPadding="false"
                                         android:text="79%"
-                                        android:textColor="#FFFFFF"
+                                        android:textColor="@color/tv_ui_text_primary"
                                         android:textSize="16sp" />
 
                                     <TextView
@@ -810,8 +942,8 @@
                                         android:fontVariationSettings="'wght' 400"
                                         android:includeFontPadding="false"
                                         android:singleLine="true"
-                                        android:text="The dew point is 25° right now."
-                                        android:textColor="#CBD5E1"
+                                        android:text="@string/weather_humidity_description"
+                                        android:textColor="@color/tv_ui_text_secondary"
                                         android:textSize="8sp" />
                                 </LinearLayout>
 
@@ -833,8 +965,8 @@
                                         android:includeFontPadding="false"
                                         android:letterSpacing="0.08"
                                         android:singleLine="true"
-                                        android:text="⏱️  PRESSURE"
-                                        android:textColor="#94A3B8"
+                                        android:text="@string/weather_pressure_label"
+                                        android:textColor="@color/tv_ui_text_secondary"
                                         android:textSize="9sp" />
 
                                     <com.gathin.tvhome.PressureGaugeView
@@ -858,9 +990,9 @@
                 android:fontVariationSettings="'wght' 400"
                 android:gravity="center"
                 android:letterSpacing="0.04"
-                android:singleLine="true"
-                android:text="Jabatan Alam Sekitar (APIMS)  •  Open-Meteo Atmospheric Model"
-                android:textColor="#40FFFFFF"
+                android:maxLines="2"
+                android:text="@string/weather_data_source"
+                android:textColor="@color/tv_ui_text_secondary"
                 android:textSize="9sp" />
         </LinearLayout>
     </ScrollView>

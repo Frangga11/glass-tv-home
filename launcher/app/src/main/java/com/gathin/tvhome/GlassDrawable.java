@@ -5,6 +5,9 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
+import android.graphics.Matrix;
+import android.graphics.RadialGradient;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -12,16 +15,22 @@ import androidx.annotation.NonNull;
 
 /**
  * A top-bar pill or popup panel in the glass style: the blurred wallpaper behind it, an even veil, and an edge
- * that shines at the top-left and bottom-right (GlassRim), with no brighter top. A pill's glass fades
- * out as the top bar's gliding focus fill covers it, and back in as the fill moves away.
+ * that shines at the top-left and bottom-right (GlassRim), with no brighter top. The glass remains present beneath the shared gliding focus layer, so focus never exposes the wallpaper.
  */
 final class GlassDrawable extends Drawable {
 
-    private static final int VEIL_ALPHA = 0x14;
+    private static final int VEIL_ALPHA = 0x70;
     private final View owner;
     private final float radius;
     private final Backdrop.Fill fill = new Backdrop.Fill();
     private final Paint veil = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /** Opaque fallback surface: disabling decoration must never remove the component surface. */
+    private final Paint solidSurface = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint solidBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /** Wallpaper-preserving readability veil used only by the Home Islamic floating content. */
+    private final Paint floatingGradient = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF floatingGradientBounds = new RectF();
+    private RadialGradient floatingGradientShader;
     private final GlassRim rim;
     private final Glider highlight;
     /** Paints the focus shape over the glass (a menu), rather than fading the glass for it (a pill). */
@@ -50,23 +59,67 @@ final class GlassDrawable extends Drawable {
         this.owner = owner;
         this.highlight = highlight;
         this.radius = radius;
-        veil.setColor(0xFFFFFF | VEIL_ALPHA << 24);
+        veil.setColor(TvUiTokens.GLASS_VEIL_COLOR);
+        solidSurface.setColor(TvUiTokens.POPUP_SURFACE);
+        solidBorder.setColor(TvUiTokens.BORDER);
+        solidBorder.setStyle(Paint.Style.STROKE);
+        solidBorder.setStrokeWidth(1.25f * density);
         rim = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, reach);
     }
 
     @Override
     public void draw(@NonNull Canvas canvas) {
         rect.set(getBounds());
+        // Ayat Pilihan and Waktu Salat are floating wallpaper content, not a glass panel.
+        // Keep the gradient local to this right-side shelf and fade it in only toward the right edge.
+        // Existing TextView shadows provide the second readability layer without changing typography.
+        if (owner.getId() == R.id.islamicShelf) {
+            if (fade > 0f && rect.width() > 0f && rect.height() > 0f) {
+                // Cache the shader; rebuild only when the shelf's local bounds actually change.
+                if (floatingGradientShader == null || !floatingGradientBounds.equals(rect)) {
+                    floatingGradientBounds.set(rect);
+                    float gradientCenterX = rect.right;
+                    float gradientCenterY = rect.top + rect.height() * 0.18f;
+                    floatingGradientShader = new RadialGradient(
+                            gradientCenterX, gradientCenterY,
+                            Math.max(rect.width() * 0.72f, rect.height() * 0.9f),
+                            new int[]{0x1A000000, 0x10000000, 0x06000000, 0x00000000},
+                            new float[]{0f, 0.32f, 0.68f, 1f}, Shader.TileMode.CLAMP);
+                    Matrix ovalMatrix = new Matrix();
+                    ovalMatrix.setScale(1f, 0.58f, gradientCenterX, gradientCenterY);
+                    floatingGradientShader.setLocalMatrix(ovalMatrix);
+                    floatingGradient.setShader(floatingGradientShader);
+                }
+                floatingGradient.setAlpha(Math.round(255 * fade));
+                canvas.drawRect(rect, floatingGradient);
+            }
+            return;
+        }
+        boolean glassEnabled = owner.getContext().getSharedPreferences("wallpaper_prefs", android.content.Context.MODE_PRIVATE)
+                .getBoolean("glass_effects_enabled", true);
+        if (!glassEnabled) {
+            // Glass is optional decoration, not the panel's structural background.
+            int surfaceAlpha = Math.round(255 * fade);
+            solidSurface.setAlpha(surfaceAlpha);
+            solidBorder.setAlpha(surfaceAlpha);
+            canvas.drawRoundRect(rect, radius, radius, solidSurface);
+            canvas.drawRoundRect(rect, radius, radius, solidBorder);
+            if (paintsShape && highlight != null && highlight.isShowing()) {
+                owner.getLocationInWindow(at);
+                highlight.getLocationInWindow(highlightAt);
+                canvas.save();
+                canvas.clipRect(getBounds());
+                highlight.drawShape(canvas, highlightAt[0] - at[0], highlightAt[1] - at[1], owner);
+                canvas.restore();
+            }
+            return;
+        }
         // The glass gives way to the focus fill as it arrives: the more of this pill the gliding
         // shape covers, the fainter the glass, until a focused pill is the fill alone. As the shape
         // leaves, the glass comes back the same way.
-        float covered = 0f;
-        if (highlight != null && highlight.isShowing() && !paintsShape) {
-            owner.getLocationInWindow(at);
-            highlight.getLocationInWindow(highlightAt);
-            covered = highlight.coverage(highlightAt[0] - at[0], highlightAt[1] - at[1], rect.width(), rect.height());
-        }
-        float glass = (1f - covered) * fade;
+        // Keep the glass capsule fully rendered while DPAD focus glides above it.
+        // Focus is a separate layer; it must never fade the shared glass surface away.
+        float glass = fade;
         if (glass > 0f) {
             fill.draw(canvas, owner, rect, radius, glass);
             veil.setAlpha(Math.round(VEIL_ALPHA * glass));
@@ -84,6 +137,7 @@ final class GlassDrawable extends Drawable {
             rim.fit(rect);
             rim.paint.setAlpha(Math.round(255 * glass));
             canvas.drawRoundRect(rect, radius - half, radius - half, rim.paint);
+            rim.drawWindowLight(canvas, rect, radius - half, glass);
         }
         // The fill itself is the highlight view behind the pills, showing through as the glass clears;
         // painting it here as well would darken a focused pill twice over.

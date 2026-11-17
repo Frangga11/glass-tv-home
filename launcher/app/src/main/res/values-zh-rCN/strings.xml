@@ -18,4 +18,11 @@
     <string name="dream_name">Nightstand Screensaver</string>
     <string name="tile_move">移动</string>
     <string name="tile_app_info">应用信息</string>
+    <string name="dock_orientation_title">Dock 方向</string>
+    <string name="dock_orientation_summary">选择水平或垂直 Dock 布局。</string>
+    <string name="dock_orientation_horizontal">水平</string>
+    <string name="dock_orientation_vertical">垂直</string>
+    <string name="dock_capacity_title">Dock 容量</string>
+    <string name="dock_capacity_summary">选择显示的应用数量：4、5 或 6。</string>
+    <string name="dock_settings_save_failed">无法保存 Dock 设置。</string>
 </resources>

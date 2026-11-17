@@ -44,4 +44,11 @@
     <string name="card_state_new_label">Nowa nazwa</string>
     <string name="tile_move">Przenieś</string>
     <string name="tile_app_info">Informacje o aplikacji</string>
+    <string name="dock_orientation_title">Orientacja Docka</string>
+    <string name="dock_orientation_summary">Wybierz poziomy lub pionowy układ Docka.</string>
+    <string name="dock_orientation_horizontal">Poziomy</string>
+    <string name="dock_orientation_vertical">Pionowy</string>
+    <string name="dock_capacity_title">Pojemność Docka</string>
+    <string name="dock_capacity_summary">Wybierz liczbę wyświetlanych aplikacji: 4, 5 lub 6.</string>
+    <string name="dock_settings_save_failed">Nie można zapisać ustawień Docka.</string>
 </resources>

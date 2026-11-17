@@ -7,9 +7,8 @@ import java.util.Locale;
 
 /**
  * Multi-language support for Glass TV Home:
- * - Bahasa Melayu (ms) [Default]
+ * - Bahasa Indonesia (id) [Default]
  * - English (en)
- * - Bahasa Indonesia (id)
  */
 final class AppLanguage {
     public static final String LANG_MS = "ms"; // Bahasa Melayu
@@ -24,25 +23,55 @@ final class AppLanguage {
     public static String getLanguage(Context ctx) {
         if (ctx == null) return LANG_ID;
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+
+        // On Android 13+, a language selected in Android's per-app settings is authoritative.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            android.app.LocaleManager localeManager =
+                    (android.app.LocaleManager) ctx.getSystemService(Context.LOCALE_SERVICE);
+            android.os.LocaleList appLocales = localeManager == null ? null : localeManager.getApplicationLocales();
+            if (appLocales != null && !appLocales.isEmpty()) {
+                String platformLanguage = normalizeLanguage(appLocales.get(0).getLanguage());
+                String saved = prefs.getString(KEY_LANG, LANG_ID);
+                if (!platformLanguage.equals(saved)) {
+                    prefs.edit().putString(KEY_LANG, platformLanguage).apply();
+                }
+                return platformLanguage;
+            }
+        }
+
         String selected = prefs.getString(KEY_LANG, LANG_ID);
-        // This build is localized for Indonesia; migrate the former Malay default and saved setting.
-        if (selected == null || LANG_MS.equalsIgnoreCase(selected)) {
-            prefs.edit().putString(KEY_LANG, LANG_ID).apply();
-            return LANG_ID;
+        String normalized = normalizeLanguage(selected);
+        if (!normalized.equals(selected)) {
+            // Migrate the former Malay preference and canonicalize/reject unsupported values.
+            prefs.edit().putString(KEY_LANG, normalized).apply();
         }
-        if (!LANG_ID.equalsIgnoreCase(selected) && !LANG_EN.equalsIgnoreCase(selected)) {
-            prefs.edit().putString(KEY_LANG, LANG_ID).apply();
-            return LANG_ID;
-        }
-        return selected;
+        return normalized;
+    }
+
+    static String normalizeLanguage(String language) {
+        return LANG_EN.equalsIgnoreCase(language) ? LANG_EN : LANG_ID;
     }
 
     public static void setLanguage(Context ctx, String lang) {
         if (ctx == null || lang == null) return;
+        String normalized = normalizeLanguage(lang);
         ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .edit()
-                .putString(KEY_LANG, lang)
+                .putString(KEY_LANG, normalized)
                 .apply();
+
+        // Keep Android 13+ system per-app language settings aligned with the launcher's selector.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            android.app.LocaleManager localeManager =
+                    (android.app.LocaleManager) ctx.getSystemService(Context.LOCALE_SERVICE);
+            if (localeManager != null) {
+                android.os.LocaleList current = localeManager.getApplicationLocales();
+                String currentTags = current == null ? "" : current.toLanguageTags();
+                if (!normalized.equalsIgnoreCase(currentTags)) {
+                    localeManager.setApplicationLocales(android.os.LocaleList.forLanguageTags(normalized));
+                }
+            }
+        }
     }
 
     public static String getLanguageDisplayName(Context ctx) {
@@ -98,29 +127,21 @@ final class AppLanguage {
     }
 
     public static String getAyahLabel(Context ctx, String reference) {
+        return getAyahLabel(ctx, reference, true, true);
+    }
+
+    public static String getAyahLabel(Context ctx, String reference, boolean current, boolean cached) {
         String lang = getLanguage(ctx);
-        String prefix;
-        switch (lang) {
-            case LANG_EN:
-                prefix = "DAILY PRAYER";
-                break;
-            case LANG_ID:
-            case LANG_MS:
-            default:
-                prefix = "DOA HARIAN";
-                break;
+        boolean english = LANG_EN.equals(lang);
+        String prefix = english ? "DAILY VERSE" : "AYAT PILIHAN";
+        if (!current) {
+            if (cached) prefix += english ? " • SAVED COPY" : " • TERSIMPAN";
+            else prefix += english ? " • LOCAL FALLBACK" : " • DATA LOKAL";
         }
         if (reference != null && !reference.isEmpty()) {
             return prefix + "  •  " + reference.toUpperCase(Locale.ROOT);
         }
-        switch (lang) {
-            case LANG_EN:
-                return prefix + "  •  VERSE OF THE DAY";
-            case LANG_ID:
-            case LANG_MS:
-            default:
-                return prefix + "  •  AYAT PILIHAN";
-        }
+        return prefix + (english ? " • VERSE OF THE DAY" : " • HARIAN");
     }
 
     public static String getNextPrayerPrefix(Context ctx) {
@@ -212,7 +233,7 @@ final class AppLanguage {
     public static String strSettingsSearch(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Search";
-            case LANG_ID: return "Cari";
+            case LANG_ID: return "Cari menu";
             case LANG_MS: default: return "Cari";
         }
     }
@@ -269,7 +290,71 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "Home Screen";
             case LANG_ID: return "Layar Utama";
-            case LANG_MS: default: return "Skrin Utama";
+            default: return "Layar Utama";
+        }
+    }
+
+    public static String strDailyPrayerPanelTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Daily Prayer & Prayer Times Panel";
+            case LANG_ID: return "Panel Doa Harian & Waktu Salat";
+            default: return "Panel Doa Harian & Waktu Salat";
+        }
+    }
+
+    public static String strDailyPrayerPanelSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Show the selected verse and local prayer timetable";
+            case LANG_ID: return "Tampilkan ayat pilihan dan jadwal salat setempat";
+            default: return "Tampilkan ayat pilihan dan jadwal salat setempat";
+        }
+    }
+
+    public static String strDailyAyahTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Daily Verses & Prayers";
+            case LANG_ID: return "Ayat & Doa Harian";
+            default: return "Ayat & Doa Harian";
+        }
+    }
+
+    public static String strDailyAyahSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Show a selected Quran verse and daily prayer above the prayer timetable";
+            case LANG_ID: return "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat";
+            default: return "Tampilkan ayat Al-Qur'an dan doa harian di atas jadwal salat";
+        }
+    }
+
+    public static String strInterfaceSoundTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Interface Sound Effects";
+            case LANG_ID: return "Efek Suara Antarmuka";
+            default: return "Efek Suara Antarmuka";
+        }
+    }
+
+    public static String strInterfaceSoundSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Choose a sound profile or turn interface sounds off";
+            case LANG_ID: return "Pilih profil suara atau matikan suara antarmuka";
+            default: return "Pilih profil suara atau matikan suara antarmuka";
+        }
+    }
+
+    public static String strAzanSettingsTitle(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Azan Settings";
+            case LANG_ID: return "Pengaturan Azan";
+            default: return "Pengaturan Azan";
+        }
+    }
+
+    public static String strAzanSettingsSummary(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Configure azan audio and prayer-time reminders";
+            case LANG_ID: return "Atur audio azan dan pengingat waktu salat";
+            default: return "Atur audio azan dan pengingat waktu salat";
         }
     }
 
@@ -283,16 +368,16 @@ final class AppLanguage {
 
     public static String strStatusBarWeather(Context ctx) {
         switch (getLanguage(ctx)) {
-            case LANG_EN: return "Status Bar & Weather";
-            case LANG_ID: return "Bilah Status & Cuaca";
-            case LANG_MS: default: return "Bar Status & Cuaca";
+            case LANG_EN: return "Widgets & Information";
+            case LANG_ID: return "Widget & Informasi";
+            case LANG_MS: default: return "Widget & Maklumat";
         }
     }
 
     public static String strStandByMode(Context ctx) {
         switch (getLanguage(ctx)) {
             case LANG_EN: return "StandBy Mode";
-            case LANG_ID: return "Mode StandBy";
+            case LANG_ID: return "Layar Siaga";
             case LANG_MS: default: return "Mod StandBy";
         }
     }
@@ -323,6 +408,20 @@ final class AppLanguage {
 
     public static String strTv(Context ctx) {
         return "TV";
+    }
+
+    public static String strDeviceSettings(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Device Settings";
+            case LANG_ID: default: return "Pengaturan Perangkat";
+        }
+    }
+
+    public static String strVisualEffects(Context ctx) {
+        switch (getLanguage(ctx)) {
+            case LANG_EN: return "Animations & Effects";
+            case LANG_ID: default: return "Animasi & Efek";
+        }
     }
 
     public static String strBack(Context ctx) {
@@ -559,9 +658,9 @@ final class AppLanguage {
 
     public static String strCleanCacheDoneTitle(Context ctx) {
         switch (getLanguage(ctx)) {
-            case LANG_EN: return "✨ Cleaning Complete";
-            case LANG_ID: return "✨ Pembersihan Selesai";
-            case LANG_MS: default: return "✨ Pembersihan Selesai";
+            case LANG_EN: return "Cache Cleaning Result";
+            case LANG_ID: return "Hasil Pembersihan Cache";
+            case LANG_MS: default: return "Hasil Pembersihan Cache";
         }
     }
 
@@ -569,17 +668,17 @@ final class AppLanguage {
         switch (getLanguage(ctx)) {
             case LANG_EN:
                 return hasFreed
-                        ? "✅ Successfully cleaned " + freedStr + " of cache files!\nTV storage is now lighter and smoother."
-                        : "✅ TV cache is already completely clean.\nTV storage and memory are at optimal levels.";
+                        ? "Removed " + freedStr + " of app cache and temporary files."
+                        : "No app cache or temporary files were removed. There may be nothing to clear, or some files could not be removed.";
             case LANG_ID:
                 return hasFreed
-                        ? "✅ Berhasil membersihkan " + freedStr + " file cache!\nPenyimpanan TV kini lebih lega dan lancar."
-                        : "✅ Cache TV sudah bersih sepenuhnya.\nPenyimpanan dan memori TV berada pada tingkat optimal.";
+                        ? "Berhasil menghapus file cache aplikasi dan file sementara sebesar " + freedStr + "."
+                        : "Tidak ada file cache aplikasi atau sementara yang berhasil dihapus. Bisa jadi tidak ada file yang perlu dibersihkan, atau sebagian file tidak dapat dihapus.";
             case LANG_MS:
             default:
                 return hasFreed
-                        ? "✅ Berjaya membersihkan " + freedStr + " fail cache!\nStoran TV kini lebih ringan dan lancar."
-                        : "✅ Cache TV telah dibersihkan sepenuhnya.\nStoran dan memori TV berada pada tahap optimum.";
+                        ? "Berjaya memadam fail cache aplikasi dan fail sementara sebanyak " + freedStr + "."
+                        : "Tiada fail cache aplikasi atau sementara yang berjaya dipadam. Mungkin tiada fail untuk dibersihkan, atau sebahagian fail tidak dapat dipadam.";
         }
     }
 

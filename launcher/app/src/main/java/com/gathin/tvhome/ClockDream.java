@@ -1,12 +1,17 @@
 package com.gathin.tvhome;
 
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.service.dreams.DreamService;
+import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.ViewGroup;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -23,7 +28,6 @@ public class ClockDream extends DreamService {
 
     private static final String TAG = "TvHome.ClockDream";
     private static final long MOVE_MS = 60_000L;
-    private static final long DREAM_SLEEP_TIMEOUT_MS = 2L * 60 * 60 * 1000L; // 2 hours
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
@@ -34,26 +38,33 @@ public class ClockDream extends DreamService {
     private TextView hijri;
     private TextView prayer;
     private TextView hint;
-    private long dreamStartTime = 0;
+    private ImageView photoView;
+    private View photoScrim;
+    private String photoUriShown = "";
+    private boolean dreamActive = false;
+
+    private final Runnable photoTick = new Runnable() {
+        @Override public void run() {
+            if (dreamActive) {
+                updatePhoto();
+                handler.postDelayed(this, StandbyPhotoStore.ROTATION_INTERVAL_MS);
+            }
+        }
+    };
 
     private final Runnable tick = new Runnable() {
         @Override
         public void run() {
-            if (dreamStartTime > 0 && android.os.SystemClock.elapsedRealtime() - dreamStartTime >= DREAM_SLEEP_TIMEOUT_MS) {
-                Log.i(TAG, "Screensaver ran for 2 hours: turning off TV display");
-                HomeKeyService.sleepScreen();
-                try {
-                    Runtime.getRuntime().exec("input keyevent 223");
-                } catch (Exception ignored) {
-                }
-                finish();
-                return;
-            }
             updateNightstand();
             moveClock();
             handler.postDelayed(this, MOVE_MS);
         }
     };
+
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
 
     @Override
     public void onAttachedToWindow() {
@@ -75,14 +86,18 @@ public class ClockDream extends DreamService {
         hijri = findViewById(R.id.nightstandHijri);
         prayer = findViewById(R.id.nightstandPrayer);
         hint = findViewById(R.id.nightstandHint);
+        photoView = findViewById(R.id.nightstandPhoto);
+        photoScrim = findViewById(R.id.nightstandPhotoScrim);
 
+        applyResponsiveBounds();
         updateNightstand();
     }
 
     @Override
     public void onDreamingStarted() {
         super.onDreamingStarted();
-        dreamStartTime = android.os.SystemClock.elapsedRealtime();
+        dreamActive = true;
+        updatePhoto();
         if (content != null) {
             content.setAlpha(0f);
             content.post(() -> {
@@ -92,22 +107,100 @@ public class ClockDream extends DreamService {
             });
         }
         handler.postDelayed(tick, MOVE_MS);
+        handler.removeCallbacks(photoTick);
+        handler.postDelayed(photoTick, StandbyPhotoStore.ROTATION_INTERVAL_MS);
     }
 
     @Override
     public void onDreamingStopped() {
-        dreamStartTime = 0;
+        dreamActive = false;
         handler.removeCallbacks(tick);
+        handler.removeCallbacks(photoTick);
+        if (photoView != null) photoView.setImageDrawable(null);
+        photoUriShown = "";
         super.onDreamingStopped();
     }
 
     @Override
     public void onDetachedFromWindow() {
-        dreamStartTime = 0;
+        dreamActive = false;
         handler.removeCallbacks(tick);
+        handler.removeCallbacks(photoTick);
+        if (photoView != null) photoView.setImageDrawable(null);
+        photoUriShown = "";
         super.onDetachedFromWindow();
     }
 
+    private void updatePhoto() {
+        if (photoView == null || photoScrim == null) return;
+        java.util.List<Uri> uris = StandbyPhotoStore.getUris(this);
+        if (!StandbyPhotoStore.isPhotoMode(this) || uris.isEmpty()) {
+            photoView.setImageDrawable(null);
+            photoView.setVisibility(View.GONE);
+            photoScrim.setVisibility(View.GONE);
+            photoUriShown = "";
+            return;
+        }
+
+        int index = StandbyPhotoStore.getCurrentPhotoIndex(uris.size());
+        if (index < 0 || index >= uris.size()) return;
+        Uri uri = uris.get(index);
+        photoView.setVisibility(View.VISIBLE);
+        photoScrim.setVisibility(View.VISIBLE);
+        if (!uri.toString().equals(photoUriShown)) {
+            photoUriShown = uri.toString();
+            StandbyPhotoStore.loadBitmapAsync(this, uri, bitmap -> {
+                if (bitmap == null) {
+                    if (dreamActive && uri.toString().equals(photoUriShown)) {
+                        photoView.setImageDrawable(null);
+                        photoView.setVisibility(View.GONE);
+                        photoScrim.setVisibility(View.GONE);
+                        Log.w(TAG, "Skipping unreadable StandBy photo: " + uri);
+                    }
+                    return;
+                }
+                if (!dreamActive || photoView == null
+                        || !StandbyPhotoStore.isPhotoMode(this)
+                        || !uri.toString().equals(photoUriShown)) {
+                    bitmap.recycle();
+                    return;
+                }
+                photoView.setImageBitmap(bitmap);
+            });
+        }
+    }
+
+    /** Keeps the clock/ and supporting text inside narrow TV viewports without changing the
+     * 110sp design size on normal widescreen displays. */
+    private void applyResponsiveBounds() {
+        if (content == null) return;
+        android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int contentWidth = TvResponsiveLayout.nightstandContentWidthPx(metrics.widthPixels);
+        ViewGroup.LayoutParams contentParams = content.getLayoutParams();
+        if (contentParams != null) {
+            contentParams.width = contentWidth;
+            content.setLayoutParams(contentParams);
+        }
+
+        if (clock != null) {
+            clock.setMaxWidth(TvResponsiveLayout.nightstandClockMaxWidthPx(metrics.widthPixels, metrics.density));
+            clock.setSingleLine(true);
+            clock.setEllipsize(TextUtils.TruncateAt.END);
+            clock.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                    TvResponsiveLayout.nightstandClockTextSizeSp(metrics.widthPixels, metrics.density));
+        }
+        setSingleLineMaxWidth(date, contentWidth);
+        setSingleLineMaxWidth(hijri, contentWidth);
+        setSingleLineMaxWidth(prayer, contentWidth);
+        setSingleLineMaxWidth(hint, contentWidth);
+    }
+
+    private static void setSingleLineMaxWidth(TextView view, int maxWidthPx) {
+        if (view == null) return;
+        view.setMaxWidth(Math.max(1, maxWidthPx));
+        view.setSingleLine(true);
+        view.setEllipsize(TextUtils.TruncateAt.END);
+    }
     private void updateNightstand() {
         if (content == null) return;
 

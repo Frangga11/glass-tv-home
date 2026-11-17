@@ -1,0 +1,106 @@
+# E07 — Animations & Visual Effects Audit
+
+**Status:** Glass ON/OFF surface fallback repair and exact-head CI verified; B03 global contract synchronized. Physical TV acceptance remains assigned to Project F.
+
+## Scope
+Audit the existing Animations & Visual Effects settings and the visual effects they control. Preserve the four existing controls and their preference keys:
+- Icon animations — `icon_animations_enabled`
+- Glass effects — `glass_effects_enabled`
+- Dynamic weather overlay — `dynamic_weather_overlay`
+- Icon glow effects — `icon_glow_effects`
+
+The work also checks the shared Home/Weather screen motion policy, rendering cost, lifecycle, and D-pad focus behavior. No new visual effect or settings control was introduced.
+
+## Baseline and findings
+1. Home tile focus/entrance animation and the Glider already consume the existing `Config.reducedMotion` setting; that implementation was retained.
+2. The Home dynamic weather overlay and full Weather screen's `WeatherBackgroundView` continued scheduling frame-by-frame animation even when reduced motion was enabled.
+3. Weather screen focus cards animated elevation/transform regardless of the reduced-motion setting.
+4. The Weather screen did not apply the existing low-memory rendering profile, while the Home weather overlay already did.
+5. Weather particle counts for rain, stars, and clouds were not consistently scaled for reduced-motion/low-memory rendering.
+
+## Repairs
+- Added an explicit reduced-motion policy to `WeatherBackgroundView`: retain a static weather scene but stop its continuous animation loop. Re-enable animation only when reduced motion is disabled and the view is attached/visible.
+- Apply the same reduced-motion configuration to both the Home weather overlay and full Weather screen.
+- Added a lightweight `Config.isReducedMotion(Context)` lookup so WeatherActivity does not load the full wallpaper/theme configuration just to read one motion preference.
+- Weather screen focus transitions now snap to their final visual state under reduced motion; normal motion retains the existing animation.
+- Apply the existing 1.5 GiB low-memory threshold to the full Weather screen.
+- Reduce rain, star, and cloud particle density in reduced-motion/low-memory mode. Normal mode retains the existing density.
+- Existing setting preference keys, switch callbacks, weather classification, data refresh, D-pad navigation, and focus ownership are preserved.
+
+## Cross-project boundaries
+- Project B remains owner of global focus, dialog, navigation, and shared UI contracts. E07 consumes those contracts and does not replace them.
+- Project E05 owns weather data and freshness; E07 changes only rendering/motion behavior.
+- Project D persistence contracts and the four existing preference keys are unchanged.
+- Project F owns real-device performance, frame pacing, visual and remote-control acceptance.
+
+## Verification
+- Code checkpoint: `da3135796156c26dd20795931eae15caa83458e9`.
+- Exact-head CI workflow run #671 / `41443003016`: both `Launcher build and unit tests` and `Lists, tools and docs` SUCCESS.
+- Release APK diagnostic: `1,563,885 bytes`; budget `1,572,864 bytes`; headroom `8,979 bytes`. Size guard passed.
+- APK publication was skipped. No APK installation or physical TV test is claimed.
+- Project F must validate normal/reduced motion, toggle changes while Settings is open, Home-to-Weather transitions, pause/resume, low-memory behavior, D-pad focus, and visual quality on Mi TV Stick 1080p and 4K.
+
+## Git checkpoint
+- Branch: `feature/e07-animation-effects`
+- Parent: E06 exact head `570b7c83efaec3ac515b78f1c6c119b777fc3b84`
+- Code checkpoint: `da3135796156c26dd20795931eae15caa83458e9`
+- PR #40: Draft, open, unmerged under D-013.
+
+
+## Cross-project defect — Glass Effect OFF surface fallback
+A follow-up integration audit found that disabling the decorative glass material also removed structural surfaces from app-owned UI:
+- `GlassDrawable` returned without painting a fallback surface, affecting top-bar pills, Home popup menus (including Wi-Fi and Quick Settings), and anchored PopupWindows.
+- `DockDecoration` returned before painting the dock tray.
+- `TvDialogStyle` always applied the glass dialog resource, independent of the setting.
+- The setting callback invalidated the Home root but did not explicitly invalidate an already-open anchored PopupWindow.
+
+### Repair implemented
+- Added shared solid fallback surface tokens to `TvUiTokens`.
+- `GlassDrawable` now paints an opaque rounded surface and border when glass is OFF, then preserves its existing focus-shape behavior.
+- `DockDecoration` now paints a solid tray, shadow and border when glass is OFF, retaining D-pad focus feedback.
+- `TvDialogStyle` now selects the glass resource when enabled and a rounded solid fallback when disabled.
+- Toggling the setting invalidates the active app-owned PopupWindow and Home popup menu as well as the root and dock decorations.
+- No preference keys, callbacks, popup geometry, row layout, navigation, or Android OS Settings surfaces were changed.
+
+### Ownership / acceptance
+- Project B owns the global surface/dialog contract and must reconcile these fallback tokens/policies into the canonical B foundation.
+- E07 owns the Glass Effect toggle integration and visual behavior on the existing app surfaces.
+- Project F owns device acceptance: glass ON/OFF, Wi-Fi and Quick Settings menus, anchored popups, modal dialogs, dock/top pills, focus traversal, 1080p and 4K.
+- No APK installation or physical TV test was performed in this source-repair step.
+
+### Current source checkpoint
+- Branch: `feature/e07-animation-effects`
+- Latest source/test commit: `6dc39d76e3c897e841854f425d549dbfebf1025c`.
+- Added `GlassFallbackSurfaceTest` to guard opaque popup/dock fallback tokens using pure bit checks (no Android framework stubs).
+- Exact-head CI run #688 / `41447965099`: SUCCESS; Launcher build and unit tests, Lists/tools/docs, release APK build and APK size guard all passed.
+- Release APK: `1,564,137 bytes`; budget `1,572,864 bytes`; remaining headroom `8,727 bytes`.
+- APK publication skipped. No APK installation or physical TV test is claimed.
+- PR #40 remains Draft/open/unmerged under D-013.
+
+
+## Project B03 global contract synchronization — 2 Nov 2026
+- Project B03 now owns the canonical shared fallback policy on `feature/b03-dialog-opacity-layering`, PR #12, exact source/test head `8cf0a846f3a7738cc1bb20f663dac9cf961e98da`; exact-head CI #685 / `41447473358` PASS.
+- B03 source covers shared POPUP_SURFACE/DOCK_SURFACE tokens, solid OFF-state GlassDrawable and DockDecoration surfaces, and the shared modal material choice in TvDialogStyle. Regression test `GlassSurfaceFallbackTest` passed.
+- E07 retains toggle-specific integration: invalidate the active app-owned PopupWindow and Home popup when the preference changes, preserving existing keys/callbacks. E07 exact PR head `7ecb45a634e6ed9792fd87f3110ffe0b6eaad1a2`; exact-head CI #682 / `41446777187` PASS.
+- Shared classes are semantically aligned across B03 and E07. G must perform the final exact-content reconciliation during grouped integration; do not merge early or duplicate global styling.
+- PR #40 remains Draft/open/unmerged under D-013. Project F still owns glass ON/OFF visual and D-pad acceptance at 1080p and 4K. No APK installation or physical TV test is claimed.
+
+
+## Glass OFF transition refinement — exact-head CI — 2 Nov 2026
+- Both B03 and E07 fallback surfaces now apply the existing GlassDrawable fade alpha to the solid fallback fill and border. This preserves the current Home menu fade/unfold transition when Glass Effect is OFF; the opaque surface is still fully present at the settled state.
+- E07 source head `6dc39d76e3c897e841854f425d549dbfebf1025c`; exact-head CI #688 / `41447965099`: **SUCCESS**, both jobs passed.
+- Release APK: 1,564,137 bytes; cap 1,572,864 bytes; headroom 8,727 bytes. Publication skipped.
+- B03 counterpart source head `d87ffdf914851b8a1d2c67c2416ac9f5f1309d93`; exact-head CI #687 / `41447950284`: **SUCCESS**, both jobs passed; release APK diagnostic 1503 KB.
+- No preference keys, geometry, D-pad behavior or callbacks changed. F physical acceptance remains pending.
+
+
+## Documentation-only branch head after verified source — 2 Nov 2026
+- Verified source/test head remains `6dc39d76e3c897e841854f425d549dbfebf1025c`, exact-head CI #688 / `41447965099` SUCCESS.
+- Current PR #40 branch head is `fa222bafad93c87fea1120e78aeccad5445fe935`; this is the audit-report-only follow-up. It does not change application source, resources, tests or build configuration. Do not misrepresent the docs-only head as the code head tested by #688.
+- PR #40 remains OPEN/DRAFT/UNMERGED under D-013.
+
+
+## Custom-content dialog boundary — source audit clarification
+- The shared Glass ON/OFF material selector is applied by `TvDialogStyle.apply()` to the shared modal shell, while `TvDialogStyle.applyCustom()` intentionally leaves the content root's background under that component's ownership.
+- Current custom-dialog callers were inspected: the daily-ayah reader supplies its own rounded gradient panel; Settings picker content supplies its own background; profile-switch content supplies its own rounded root surface. These are not empty/transparent panels and are not silently overwritten by the global glass toggle.
+- Therefore the OFF fallback covers shared GlassDrawable-backed pills/menus/anchored popups/dock and shared modal shells. Explicit custom-content surfaces remain their own design material unless a later product decision makes them follow the global toggle. No evidence of the original disappearing-background defect was found in these custom roots.

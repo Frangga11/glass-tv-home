@@ -3,6 +3,7 @@ package com.gathin.tvhome;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.SystemClock;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,15 +11,13 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -26,9 +25,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
 
 public class WallpaperUploadServer {
     private static final String TAG = "TvHome.UploadServer";
+    static final long MAX_UPLOAD_BYTES = 60L * 1024L * 1024L;
+    private static final int MAX_ACTIVE_CLIENTS = 8; // Allows normal parallel gallery thumbnail requests.
+    private static final long MIN_FREE_UPLOAD_BYTES = 64L * 1024L * 1024L;
 
     public interface UploadListener {
         void onUploaded(File imageFile);
@@ -36,6 +40,9 @@ public class WallpaperUploadServer {
         default void onSelected(File file) {}
         default void onSlideshowMode() {}
         default void onCleared() {}
+        /** Called when a bulk clear partially fails so the owner can reconcile stale selections. */
+        default void onClearFailed() {}
+        default void onStandbyUploaded(File imageFile) {}
     }
 
     public interface OnWallpaperUploadedListener extends UploadListener {}
@@ -43,60 +50,191 @@ public class WallpaperUploadServer {
     private final Context context;
     private int port;
     private final UploadListener listener;
+    private final boolean standbyOnly;
+    private volatile String sessionToken = UUID.randomUUID().toString().replace("-", "");
+    private volatile long sessionExpiresAtMs;
     private ServerSocket serverSocket;
+    private String boundIpAddress;
     private volatile boolean running = false;
+    private final Set<Socket> activeClients = Collections.synchronizedSet(new java.util.HashSet<>());
     private Thread serverThread;
+    // Shared across server instances so a newly opened QR session accounts for draining old sessions.
+    private static final Object UPLOAD_STORAGE_LOCK = new Object();
+    private static long reservedUploadBytes;
+    private static final Set<String> ACTIVE_CUSTOM_WALLPAPER_UPLOADS =
+            Collections.synchronizedSet(new java.util.HashSet<>());
 
     public WallpaperUploadServer(Context context, int port, UploadListener listener) {
+        this(context, port, listener, false);
+    }
+
+    public WallpaperUploadServer(Context context, int port, UploadListener listener, boolean standbyOnly) {
         this.context = context.getApplicationContext();
         this.port = port;
         this.listener = listener;
+        this.standbyOnly = standbyOnly;
     }
 
-    public static String getLocalIpAddress() {
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            Collections.sort(interfaces, (a, b) -> {
-                String an = a.getName().toLowerCase(Locale.ROOT);
-                String bn = b.getName().toLowerCase(Locale.ROOT);
-                if (an.startsWith("wlan") || an.startsWith("eth")) return -1;
-                if (bn.startsWith("wlan") || bn.startsWith("eth")) return 1;
-                return an.compareTo(bn);
-            });
-            for (NetworkInterface nif : interfaces) {
-                if (nif.isLoopback() || !nif.isUp()) continue;
-                List<InetAddress> addrs = Collections.list(nif.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress() && addr instanceof Inet4Address) {
-                        String ip = addr.getHostAddress();
-                        if (ip != null && !ip.startsWith("127.")) {
-                            return ip;
+    /**
+     * Removes abandoned custom-wallpaper upload parts after process death. Files still owned by
+     * a live upload worker are protected by the process-local registry; a killed process loses
+     * that registry, making its remaining .upload files recoverable on the next launch.
+     */
+    static void cleanupOrphanedCustomWallpaperUploads(Context context) {
+        if (context == null) return;
+        File directory = new File(context.getFilesDir(), "custom_wallpapers");
+        if (!directory.exists()) return;
+        synchronized (ACTIVE_CUSTOM_WALLPAPER_UPLOADS) {
+            File[] partials = directory.listFiles(
+                    (dir, name) -> name.startsWith("custom_") && name.endsWith(".upload"));
+            if (partials == null) {
+                Log.w(TAG, "Unable to inspect custom wallpaper upload directory during recovery");
+                return;
+            }
+            try {
+                File canonicalDirectory = directory.getCanonicalFile();
+                for (File partial : partials) {
+                    try {
+                        String path = canonicalPath(partial);
+                        if (ACTIVE_CUSTOM_WALLPAPER_UPLOADS.contains(path)) continue;
+                        File canonicalPartial = new File(path);
+                        if (!canonicalDirectory.equals(canonicalPartial.getParentFile())
+                                || !canonicalPartial.isFile()) continue;
+                        if (!canonicalPartial.delete() && canonicalPartial.exists()) {
+                            Log.w(TAG, "Unable to remove abandoned wallpaper upload: " + partial.getName());
                         }
+                    } catch (Exception e) {
+                        Log.w(TAG, "Unable to inspect abandoned wallpaper upload", e);
                     }
                 }
+            } catch (Exception e) {
+                Log.w(TAG, "Unable to resolve custom wallpaper directory during recovery", e);
             }
-        } catch (Exception e) {
-            Log.w(TAG, "Error resolving IP: " + e.getMessage());
         }
-        return "127.0.0.1";
+    }
+
+    private static String canonicalPath(File file) {
+        try { return file.getCanonicalPath(); }
+        catch (Exception ignored) { return file.getAbsolutePath(); }
+    }
+
+    private static void registerActiveCustomWallpaperUpload(File file) {
+        if (file != null) ACTIVE_CUSTOM_WALLPAPER_UPLOADS.add(canonicalPath(file));
+    }
+
+    private static void unregisterActiveCustomWallpaperUpload(File file) {
+        if (file != null) ACTIVE_CUSTOM_WALLPAPER_UPLOADS.remove(canonicalPath(file));
+    }
+
+    private String localized(int resourceId) {
+        return LocaleContext.wrap(context).getString(resourceId);
+    }
+
+    private String htmlText(int resourceId) {
+        return localized(resourceId).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+    private String jsText(int resourceId) {
+        return localized(resourceId).replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ");
+    }
+
+    /** Active default Wi-Fi/Ethernet IPv4 used by the QR upload route. */
+    public static String getLocalIpAddress(Context context) {
+        return LocalNetworkAddress.getActiveLanIpv4(context);
+    }
+
+    /** Session-specific route; the StandBy QR never points at the wallpaper uploader. */
+    public String getStandbyPath() {
+        return "/standby/" + sessionToken;
+    }
+
+    private String getStandbyUploadPath() {
+        return "/standby-upload/" + sessionToken;
+    }
+
+    /** Wallpaper QR routes are scoped to this unpredictable per-server session path. */
+    public String getWallpaperPath() {
+        return "/wallpaper/" + sessionToken;
+    }
+
+    private String getWallpaperUploadPath() {
+        return getWallpaperPath() + "/upload";
+    }
+
+    /**
+     * Accept one unambiguous Content-Length only. Returns -1 for invalid/missing values and
+     * -2 for a valid numeric length above the endpoint limit. Chunked transfer is not supported.
+     */
+    static long parseContentLength(String[] headerLines, long maxBytes) {
+        return UploadBodyReader.parseContentLength(headerLines, maxBytes);
+    }
+
+    /** Matches a fully parsed request against one exact path, ignoring only its query string. */
+    static boolean isRequestToPath(String requestLine, String method, String path) {
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        return request != null && method != null && method.equals(request.method)
+                && request.isPath(path);
+    }
+
+    static String wallpaperAllowedMethods(String requestPath, String sessionPath) {
+        if (requestPath == null || sessionPath == null) return null;
+        if (requestPath.equals(sessionPath)
+                || requestPath.equals(sessionPath + "/thumb")
+                || requestPath.equals(sessionPath + "/api/list")) return "GET, OPTIONS";
+        if (requestPath.equals(sessionPath + "/upload")
+                || requestPath.equals(sessionPath + "/api/select")
+                || requestPath.equals(sessionPath + "/api/delete")
+                || requestPath.equals(sessionPath + "/api/slideshow")
+                || requestPath.equals(sessionPath + "/api/clear")) return "POST, OPTIONS";
+        return null;
+    }
+
+    static boolean isWallpaperSessionRequest(String requestLine, String sessionPath) {
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        if (request == null) return false;
+        String allowed = wallpaperAllowedMethods(request.path, sessionPath);
+        return allowed != null && (request.method.equals("OPTIONS")
+                || (allowed.startsWith(request.method + ",") || allowed.equals(request.method)));
     }
 
     public int getPort() {
-        if (serverSocket != null && serverSocket.isBound()) {
+        if (serverSocket != null && serverSocket.isBound() && !serverSocket.isClosed()) {
             return serverSocket.getLocalPort();
         }
         return port;
     }
 
+    /** The exact interface address this server is listening on; null when it is not started. */
+    public String getBoundIpAddress() {
+        return boundIpAddress;
+    }
+
     public synchronized boolean start() {
         if (running) return true;
+        String selectedIp = getLocalIpAddress(context);
+        if (selectedIp == null || selectedIp.trim().isEmpty() || "127.0.0.1".equals(selectedIp)) {
+            Log.e(TAG, "No usable local IPv4 interface for upload server");
+            return false;
+        }
+        final InetAddress bindAddress;
+        try {
+            bindAddress = InetAddress.getByName(selectedIp);
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot resolve local upload interface", e);
+            return false;
+        }
+
         int[] candidatePorts = new int[]{port, 8080, 8888, 8081, 9090, 0};
         for (int p : candidatePorts) {
             try {
                 serverSocket = new ServerSocket();
                 serverSocket.setReuseAddress(true);
-                serverSocket.bind(new InetSocketAddress(p));
+                serverSocket.bind(new InetSocketAddress(bindAddress, p));
+                serverSocket.setSoTimeout(10000);
+                boundIpAddress = selectedIp;
                 this.port = serverSocket.getLocalPort();
+                sessionToken = UUID.randomUUID().toString().replace("-", "");
+                sessionExpiresAtMs = SystemClock.elapsedRealtime() + NetworkFeedbackPolicy.WALLPAPER_SESSION_LIFETIME_MS;
                 running = true;
                 break;
             } catch (Exception e) {
@@ -113,12 +251,48 @@ public class WallpaperUploadServer {
         }
 
         try {
+            final ServerSocket listeningSocket = serverSocket;
             serverThread = new Thread(() -> {
                 Log.i(TAG, "Server started successfully on port " + this.port);
-                while (running && serverSocket != null && !serverSocket.isClosed()) {
+                while (running && !listeningSocket.isClosed()) {
                     try {
-                        Socket client = serverSocket.accept();
-                        new Thread(() -> handleClient(client), "upload-client").start();
+                        Socket client = listeningSocket.accept();
+                        if (!running) {
+                            client.close();
+                            break;
+                        }
+                        boolean accepted;
+                        synchronized (activeClients) {
+                            accepted = running && activeClients.size() < MAX_ACTIVE_CLIENTS;
+                            if (accepted) activeClients.add(client);
+                        }
+                        if (!accepted) {
+                            try {
+                                byte[] body = localized(R.string.local_upload_error_busy).getBytes("UTF-8");
+                                OutputStream rejectOut = client.getOutputStream();
+                                rejectOut.write(("HTTP/1.1 503 Service Unavailable\r\nContent-Type: text/plain; charset=UTF-8\r\n"
+                                        + "Content-Length: " + body.length + "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n").getBytes("UTF-8"));
+                                rejectOut.write(body);
+                                rejectOut.flush();
+                            } catch (Exception ignored) {}
+                            try { client.close(); } catch (Exception ignored) {}
+                            if (!running) break;
+                            continue;
+                        }
+                        try {
+                            Thread worker = new Thread(() -> handleClient(client), "upload-client");
+                            worker.setDaemon(true);
+                            worker.start();
+                        } catch (Exception e) {
+                            activeClients.remove(client);
+                            try { client.close(); } catch (Exception ignored) {}
+                            Log.w(TAG, "Cannot start upload client worker", e);
+                        }
+                    } catch (SocketTimeoutException e) {
+                        if (!isSessionActive()) {
+                            stop();
+                            break;
+                        }
                     } catch (Exception e) {
                         if (!running) break;
                         Log.w(TAG, "Accept error: " + e.getMessage());
@@ -129,14 +303,39 @@ public class WallpaperUploadServer {
             serverThread.start();
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to launch server thread: " + e.getMessage());
+            Log.e(TAG, "Failed to launch server thread: " + e.getMessage(), e);
             running = false;
+            try { if (serverSocket != null) serverSocket.close(); } catch (Exception ignored) {}
+            boundIpAddress = null;
             return false;
+        }
+    }
+
+    private boolean isSessionActive() {
+        return NetworkFeedbackPolicy.isSessionActive(running, sessionExpiresAtMs, SystemClock.elapsedRealtime());
+    }
+
+    private boolean reserveUploadStorage(long incomingBytes) {
+        synchronized (UPLOAD_STORAGE_LOCK) {
+            if (!isSessionActive()) return false;
+            long usableBytes = context.getFilesDir().getUsableSpace();
+            if (!NetworkFeedbackPolicy.canReserveUploadStorage(
+                    usableBytes, reservedUploadBytes, incomingBytes, MIN_FREE_UPLOAD_BYTES)) return false;
+            reservedUploadBytes += incomingBytes;
+            return true;
+        }
+    }
+
+    private void releaseUploadStorage(long reservedBytes) {
+        if (reservedBytes <= 0L) return;
+        synchronized (UPLOAD_STORAGE_LOCK) {
+            reservedUploadBytes = Math.max(0L, reservedUploadBytes - reservedBytes);
         }
     }
 
     public synchronized void stop() {
         running = false;
+        sessionExpiresAtMs = 0L;
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
@@ -146,20 +345,53 @@ public class WallpaperUploadServer {
             serverThread.interrupt();
             serverThread = null;
         }
+        boundIpAddress = null;
+        synchronized (activeClients) {
+            for (Socket client : activeClients) {
+                try {
+                    client.close();
+                } catch (Exception ignored) {
+                }
+            }
+            activeClients.clear();
+        }
         Log.i(TAG, "Server stopped");
     }
 
+    private void sendTextResponse(OutputStream out, int status, String reason, String message, String extraHeaders) throws Exception {
+        byte[] body = (message == null ? "" : message).getBytes("UTF-8");
+        String response = "HTTP/1.1 " + status + " " + reason + "\r\n"
+                + "Content-Type: text/plain; charset=UTF-8\r\n"
+                + "Content-Length: " + body.length + "\r\n"
+                + "Cache-Control: no-store\r\n"
+                + (extraHeaders == null ? "" : extraHeaders)
+                + "Connection: close\r\n\r\n";
+        out.write(response.getBytes("UTF-8"));
+        out.write(body);
+        out.flush();
+    }
+
     private void handleClient(Socket client) {
+        long reservedStorageBytes = 0L;
+        File wallpaperUploadTempFile = null;
         try {
-            client.setSoTimeout(30000); // 30 seconds timeout
-            InputStream in = client.getInputStream();
+            long requestDeadline = Math.min(sessionExpiresAtMs,
+                    SystemClock.elapsedRealtime() + NetworkFeedbackPolicy.WALLPAPER_UPLOAD_REQUEST_DEADLINE_MS);
+            InputStream in = new UploadDeadlineInputStream(client.getInputStream(), client,
+                    requestDeadline, NetworkFeedbackPolicy.WALLPAPER_UPLOAD_CLIENT_IDLE_TIMEOUT_MS);
             OutputStream out = client.getOutputStream();
 
             ByteArrayOutputStream headerBuf = new ByteArrayOutputStream();
             int prev3 = 0, prev2 = 0, prev1 = 0, b;
+            boolean headerComplete = false;
             while ((b = in.read()) != -1) {
                 headerBuf.write(b);
+                if (headerBuf.size() > 16 * 1024) {
+                    sendTextResponse(out, 431, "Request Header Fields Too Large", localized(R.string.avatar_error_header_too_large), null);
+                    return;
+                }
                 if (prev3 == '\r' && prev2 == '\n' && prev1 == '\r' && b == '\n') {
+                    headerComplete = true;
                     break;
                 }
                 prev3 = prev2;
@@ -167,119 +399,190 @@ public class WallpaperUploadServer {
                 prev1 = b;
             }
 
+            if (!headerComplete) {
+                sendTextResponse(out, 400, "Bad Request", localized(R.string.avatar_error_invalid_request), null);
+                return;
+            }
             String headerText = headerBuf.toString("UTF-8");
             String[] lines = headerText.split("\r\n");
-            if (lines.length == 0 || lines[0].isEmpty()) {
-                client.close();
+            if (lines.length == 0 || lines[0].isEmpty() || !UploadHttpRequest.hasValidHeaders(lines)) {
+                sendTextResponse(out, 400, "Bad Request", localized(R.string.avatar_error_invalid_request), null);
                 return;
             }
 
+            if (!isSessionActive()) {
+                sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
+                return;
+            }
             String requestLine = lines[0];
+            UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+            if (request == null) {
+                sendTextResponse(out, 400, "Bad Request", localized(R.string.avatar_error_invalid_request), null);
+                return;
+            }
             Log.d(TAG, "Request: " + requestLine);
 
-            if (requestLine.startsWith("OPTIONS")) {
+            boolean standbyPagePath = request.isPath(getStandbyPath());
+            boolean standbyUploadPath = request.isPath(getStandbyUploadPath());
+            boolean standbySessionPath = standbyPagePath || standbyUploadPath;
+            boolean standbyRoute = (standbyPagePath && "GET".equals(request.method))
+                    || (standbyUploadPath && "POST".equals(request.method));
+            String wallpaperAllowed = wallpaperAllowedMethods(request.path, getWallpaperPath());
+            boolean wallpaperSessionPath = request.isWithinPath(getWallpaperPath());
+
+            if (standbyOnly && !standbySessionPath) {
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
+            } else if (!standbyOnly && !wallpaperSessionPath) {
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
+            } else if (standbyOnly && !standbyRoute) {
+                String allow = standbyPagePath ? "GET" : "POST";
+                sendTextResponse(out, 405, "Method Not Allowed", localized(R.string.avatar_error_invalid_request), "Allow: " + allow + "\r\n");
+            } else if (!standbyOnly && wallpaperAllowed == null) {
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
+            } else if (!standbyOnly && "OPTIONS".equals(request.method)) {
                 String response = "HTTP/1.1 204 No Content\r\n" +
                         "Access-Control-Allow-Origin: *\r\n" +
-                        "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n" +
+                        "Access-Control-Allow-Methods: " + wallpaperAllowed + "\r\n" +
                         "Access-Control-Allow-Headers: Content-Type\r\n" +
+                        "Cache-Control: no-store\r\n" +
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
                 out.flush();
-            } else if (requestLine.startsWith("GET /thumb")) {
+            } else if (!standbyOnly && !wallpaperAllowed.startsWith(request.method + ",")
+                    && !wallpaperAllowed.equals(request.method)) {
+                sendTextResponse(out, 405, "Method Not Allowed", localized(R.string.avatar_error_invalid_request), "Allow: " + wallpaperAllowed.replace(", OPTIONS", "") + "\r\n");
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/thumb")) {
                 String fileName = getQueryParam(requestLine, "file");
-                serveThumbnail(fileName, out);
-            } else if (requestLine.startsWith("GET /api/list")) {
+                if (fileName == null || fileName.trim().isEmpty()) {
+                    sendTextResponse(out, 400, "Bad Request", localized(R.string.avatar_error_invalid_request), null);
+                } else {
+                    serveThumbnail(fileName, out);
+                }
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath() + "/api/list")) {
                 serveApiList(out);
-            } else if (requestLine.startsWith("POST /api/select")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/select")) {
                 String fileName = getQueryParam(requestLine, "file");
                 handleApiSelect(fileName, out);
-            } else if (requestLine.startsWith("POST /api/delete")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/delete")) {
                 String fileName = getQueryParam(requestLine, "file");
                 handleApiDelete(fileName, out);
-            } else if (requestLine.startsWith("POST /api/slideshow")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/slideshow")) {
                 handleApiSlideshow(out);
-            } else if (requestLine.startsWith("POST /api/clear")) {
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperPath() + "/api/clear")) {
                 handleApiClear(out);
-            } else if (requestLine.startsWith("GET")) {
+            } else if (standbyOnly && isRequestToPath(requestLine, "GET", getStandbyPath())) {
+                byte[] pageBytes = getStandbyHtmlPage().getBytes("UTF-8");
+                String response = "HTTP/1.1 200 OK\r\n"
+                        + "Content-Type: text/html; charset=UTF-8\r\n"
+                        + "Content-Length: " + pageBytes.length + "\r\n"
+                        + "Cache-Control: no-store\r\n"
+                        + "Connection: close\r\n\r\n";
+                out.write(response.getBytes("UTF-8"));
+                out.write(pageBytes);
+                out.flush();
+            } else if (standbyOnly && isRequestToPath(requestLine, "POST", getStandbyUploadPath())) {
+                long incomingBytes = parseContentLength(lines, MAX_UPLOAD_BYTES);
+                if (incomingBytes > 0L && !reserveUploadStorage(incomingBytes)) {
+                    if (!isSessionActive()) sendUploadError(out, 410, localized(R.string.avatar_error_session_expired));
+                    else sendUploadError(out, 507, localized(R.string.wallpaper_error_low_storage));
+                } else if (incomingBytes > 0L) {
+                    try {
+                        handleStandbyUpload(client, in, out, lines);
+                    } finally {
+                        releaseUploadStorage(incomingBytes);
+                    }
+                } else {
+                    handleStandbyUpload(client, in, out, lines);
+                }
+            } else if (isRequestToPath(requestLine, "GET", getWallpaperPath())) {
                 byte[] pageBytes = getHtmlPage().getBytes("UTF-8");
                 String response = "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/html; charset=UTF-8\r\n" +
                         "Content-Length: " + pageBytes.length + "\r\n" +
+                        "Cache-Control: no-store\r\n" +
                         "Access-Control-Allow-Origin: *\r\n" +
                         "Connection: close\r\n\r\n";
                 out.write(response.getBytes("UTF-8"));
                 out.write(pageBytes);
                 out.flush();
-            } else if (requestLine.startsWith("POST /upload")) {
-                long contentLength = 0;
-                for (String line : lines) {
-                    if (line.toLowerCase(Locale.ROOT).startsWith("content-length:")) {
-                        try {
-                            contentLength = Long.parseLong(line.substring(15).trim());
-                        } catch (Exception ignored) {}
-                        break;
-                    }
-                }
+            } else if (isRequestToPath(requestLine, "POST", getWallpaperUploadPath())) {
+                long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
 
-                if (contentLength > 0 && contentLength < 60 * 1024 * 1024) { // Max 60 MB
+                if (contentLength == -2L) {
+                    sendTextResponse(out, 413, "Payload Too Large", localized(R.string.wallpaper_error_size_limit), null);
+                } else if (contentLength > 0) {
+                    if (!reserveUploadStorage(contentLength)) {
+                        if (!isSessionActive()) sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
+                        else sendTextResponse(out, 507, "Insufficient Storage", localized(R.string.wallpaper_error_low_storage), null);
+                        return;
+                    }
+                    reservedStorageBytes = contentLength;
                     File customDir = new File(context.getFilesDir(), "custom_wallpapers");
                     if (!customDir.exists() && !customDir.mkdirs()) {
                         throw new java.io.IOException("Cannot create wallpaper storage");
                     }
 
-                    File targetFile = File.createTempFile("custom_", ".jpg", customDir);
-                    boolean complete = false;
-                    try (FileOutputStream fos = new FileOutputStream(targetFile)) {
-                        byte[] buffer = new byte[8192];
-                        long remaining = contentLength;
-                        while (remaining > 0) {
-                            int toRead = (int) Math.min(buffer.length, remaining);
-                            int r = in.read(buffer, 0, toRead);
-                            if (r == -1) break;
-                            fos.write(buffer, 0, r);
-                            remaining -= r;
-                        }
-                        fos.flush();
-                        complete = remaining == 0 && targetFile.length() == contentLength;
+                    if (!isSessionActive()) {
+                        sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
+                        return;
                     }
+                    File targetFile;
+                    synchronized (ACTIVE_CUSTOM_WALLPAPER_UPLOADS) {
+                        targetFile = File.createTempFile("custom_", ".upload", customDir);
+                        wallpaperUploadTempFile = targetFile;
+                        registerActiveCustomWallpaperUpload(targetFile);
+                    }
+                    boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
+                    UploadFilePolicy.ImageFormat imageFormat = complete && isSessionActive()
+                            ? validateImageFile(targetFile, lines) : null;
 
-                    // Verify the actual bytes before exposing the file to Home.
-                    BitmapFactory.Options bounds = new BitmapFactory.Options();
-                    bounds.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile(targetFile.getAbsolutePath(), bounds);
-                    boolean validImage = bounds.outWidth > 0 && bounds.outHeight > 0
-                            && bounds.outWidth <= 16384 && bounds.outHeight <= 16384
-                            && (long) bounds.outWidth * (long) bounds.outHeight <= 100_000_000L;
-
-                    if (!complete || !validImage) {
+                    if (!complete || imageFormat == null) {
                         targetFile.delete();
-                        String message = !complete ? "Upload tidak lengkap" : "Format gambar tidak didukung atau resolusi terlalu besar";
-                        String response = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain; charset=UTF-8\r\nConnection: close\r\n\r\n" + message;
-                        out.write(response.getBytes("UTF-8"));
-                        out.flush();
+                        if (!isSessionActive()) {
+                            sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
+                        } else {
+                            String message = !complete ? localized(R.string.wallpaper_error_incomplete) : localized(R.string.wallpaper_error_unsupported_image);
+                            sendTextResponse(out, 400, "Bad Request", message, null);
+                        }
                     } else {
-                        String json = "{\"status\":\"ok\",\"file\":\"" + targetFile.getName() + "\"}";
+                        File storedFile = new File(customDir,
+                                targetFile.getName().substring(0, targetFile.getName().length() - ".upload".length())
+                                        + "." + imageFormat.extension);
+                        synchronized (this) {
+                            if (!isSessionActive()) {
+                                targetFile.delete();
+                                sendTextResponse(out, 410, "Gone", localized(R.string.avatar_error_session_expired), null);
+                                return;
+                            }
+                            if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
+                                targetFile.delete();
+                                sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_store_failed), null);
+                                return;
+                            }
+                            if (listener != null) {
+                                try {
+                                    listener.onUploaded(storedFile);
+                                } catch (RuntimeException callbackFailure) {
+                                    Log.w(TAG, "Wallpaper upload callback failed after durable save", callbackFailure);
+                                }
+                            }
+                        }
+                        String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
                         byte[] jsonBytes = json.getBytes("UTF-8");
-                        String response = "HTTP/1.1 200 OK\\r\\n" +
-                                "Content-Type: application/json; charset=UTF-8\\r\\n" +
-                                "Content-Length: " + jsonBytes.length + "\\r\\n" +
-                                "Access-Control-Allow-Origin: *\\r\\n" +
-                                "Connection: close\\r\\n\\r\\n";
+                        String response = "HTTP/1.1 200 OK\r\n" +
+                                "Content-Type: application/json; charset=UTF-8\r\n" +
+                                "Content-Length: " + jsonBytes.length + "\r\n" +
+                                "Access-Control-Allow-Origin: *\r\n" +
+                                "Connection: close\r\n\r\n";
                         out.write(response.getBytes("UTF-8"));
                         out.write(jsonBytes);
                         out.flush();
-
-                        if (listener != null) listener.onUploaded(targetFile);
                     }
                 } else {
-                    String error = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\nInvalid file size";
-                    out.write(error.getBytes("UTF-8"));
-                    out.flush();
+                    sendTextResponse(out, 400, "Bad Request", localized(R.string.wallpaper_error_invalid_size), null);
                 }
             } else {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nNot Found";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
             }
 
             out.close();
@@ -288,35 +591,234 @@ public class WallpaperUploadServer {
         } catch (Exception e) {
             Log.w(TAG, "Client handle exception: " + e.getMessage());
             try { client.close(); } catch (Exception ignored) {}
+        } finally {
+            if (wallpaperUploadTempFile != null) {
+                unregisterActiveCustomWallpaperUpload(wallpaperUploadTempFile);
+                if (wallpaperUploadTempFile.exists() && !wallpaperUploadTempFile.delete()) {
+                    Log.w(TAG, "Unable to remove incomplete wallpaper upload: " + wallpaperUploadTempFile.getName());
+                }
+            }
+            releaseUploadStorage(reservedStorageBytes);
+            activeClients.remove(client);
+            try {
+                if (!client.isClosed()) client.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 
-    private String getQueryParam(String requestLine, String param) {
+    /** Rejects unsupported signatures/MIME, malformed images and excessive dimensions. */
+    private static UploadFilePolicy.ImageFormat validateImageFile(File file, String[] headers) {
         try {
-            int qIdx = requestLine.indexOf('?');
-            if (qIdx == -1) return "";
-            int spIdx = requestLine.indexOf(' ', qIdx);
-            String query = spIdx > qIdx ? requestLine.substring(qIdx + 1, spIdx) : requestLine.substring(qIdx + 1);
-            String[] pairs = query.split("&");
-            for (String pair : pairs) {
-                int eq = pair.indexOf('=');
-                if (eq > 0 && pair.substring(0, eq).equals(param)) {
-                    return URLDecoder.decode(pair.substring(eq + 1), "UTF-8");
+            UploadFilePolicy.ImageFormat format = UploadFilePolicy.detectImageFormat(file);
+            if (format == null || !UploadFilePolicy.hasCompatibleContentType(headers, format)) return null;
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(file.getAbsolutePath(), bounds);
+            if (!UploadFilePolicy.isValidWallpaperImageDimensions(bounds.outWidth, bounds.outHeight)) return null;
+            BitmapFactory.Options verify = new BitmapFactory.Options();
+            int sample = 1;
+            while (bounds.outWidth / sample > 512 || bounds.outHeight / sample > 512) sample *= 2;
+            verify.inSampleSize = sample;
+            verify.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap decoded = BitmapFactory.decodeFile(file.getAbsolutePath(), verify);
+            if (decoded == null) return null;
+            decoded.recycle();
+            return format;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    static File resolveWallpaperFile(File customDir, String fileName) {
+        return UploadFilePolicy.resolveDirectChild(customDir, fileName);
+    }
+
+    private void handleStandbyUpload(Socket client, InputStream in, OutputStream out, String[] lines) throws Exception {
+        long contentLength = parseContentLength(lines, MAX_UPLOAD_BYTES);
+        if (contentLength == -2L) {
+            sendUploadError(out, 413, localized(R.string.standby_error_photo_size));
+            return;
+        }
+        if (contentLength <= 0) {
+            sendUploadError(out, 400, localized(R.string.standby_error_photo_size));
+            return;
+        }
+        if (!isSessionActive()) {
+            sendUploadError(out, 410, localized(R.string.avatar_error_session_expired));
+            return;
+        }
+        if (!StandbyPhotoStore.canAcceptUpload(context, contentLength)) {
+            sendUploadError(out, 400, localized(R.string.standby_error_collection_full));
+            return;
+        }
+
+        File standbyDir = new File(context.getFilesDir(), "standby_photos");
+        if (!standbyDir.exists() && !standbyDir.mkdirs()) {
+            sendUploadError(out, 500, localized(R.string.standby_error_storage));
+            return;
+        }
+
+        File targetFile = File.createTempFile("standby_", ".upload", standbyDir);
+        boolean complete = UploadBodyReader.receiveExactly(in, targetFile, contentLength, true);
+        UploadFilePolicy.ImageFormat imageFormat = complete && isSessionActive()
+                ? validateImageFile(targetFile, lines) : null;
+
+        if (!complete || imageFormat == null) {
+            targetFile.delete();
+            if (!isSessionActive()) {
+                sendUploadError(out, 410, localized(R.string.avatar_error_session_expired));
+            } else {
+                sendUploadError(out, 400, !complete
+                        ? localized(R.string.wallpaper_error_incomplete_retry)
+                        : localized(R.string.wallpaper_error_unsupported_image));
+            }
+            return;
+        }
+        File storedFile = new File(standbyDir,
+                targetFile.getName().substring(0, targetFile.getName().length() - ".upload".length())
+                        + "." + imageFormat.extension);
+        if (storedFile.exists() || !targetFile.renameTo(storedFile)) {
+            targetFile.delete();
+            sendUploadError(out, 500, localized(R.string.standby_error_storage));
+            return;
+        }
+
+        synchronized (this) {
+            if (!isSessionActive() || client.isClosed()) {
+                storedFile.delete();
+                if (!client.isClosed()) sendUploadError(out, 410, localized(R.string.avatar_error_session_expired));
+                return;
+            }
+            StandbyPhotoStore.UploadResult uploadResult =
+                    StandbyPhotoStore.addUploadedFile(context, storedFile);
+            int responseStatus = standbyUploadResponseStatus(uploadResult);
+            if (responseStatus != 200) {
+                // commit() can fail after SharedPreferences updates its in-memory map.
+                // Keep the file on persistence failure so a live URI reference cannot dangle;
+                // cleanupOrphanedUploads() removes it after restart if the write was not durable.
+                if (uploadResult != StandbyPhotoStore.UploadResult.PERSISTENCE_FAILED) {
+                    storedFile.delete();
+                }
+                String message = responseStatus == 500
+                        ? localized(R.string.standby_error_storage)
+                        : localized(R.string.standby_error_collection_storage);
+                sendUploadError(out, responseStatus, message);
+                return;
+            }
+            if (listener != null) {
+                try {
+                    listener.onStandbyUploaded(storedFile);
+                } catch (RuntimeException callbackFailure) {
+                    Log.w(TAG, "StandBy upload callback failed after durable save", callbackFailure);
                 }
             }
-        } catch (Exception ignored) {}
-        return "";
+        }
+
+        String json = "{\"status\":\"ok\",\"file\":\"" + storedFile.getName() + "\"}";
+        byte[] bytes = json.getBytes("UTF-8");
+        String response = "HTTP/1.1 200 OK\r\n"
+                + "Content-Type: application/json; charset=UTF-8\r\n"
+                + "Content-Length: " + bytes.length + "\r\n"
+                + "Cache-Control: no-store\r\n"
+                + "Connection: close\r\n\r\n";
+        out.write(response.getBytes("UTF-8"));
+        out.write(bytes);
+        out.flush();
+    }
+
+    static int standbyUploadResponseStatus(StandbyPhotoStore.UploadResult result) {
+        if (result == StandbyPhotoStore.UploadResult.ADDED
+                || result == StandbyPhotoStore.UploadResult.ALREADY_PRESENT) return 200;
+        return result == StandbyPhotoStore.UploadResult.PERSISTENCE_FAILED ? 500 : 400;
+    }
+
+    private void sendUploadError(OutputStream out, int status, String message) throws Exception {
+        byte[] bytes = message.getBytes("UTF-8");
+        String label = status == 500 ? "Internal Server Error" : status == 413 ? "Payload Too Large"
+                : status == 410 ? "Gone" : status == 507 ? "Insufficient Storage" : "Bad Request";
+        String response = "HTTP/1.1 " + status + " " + label + "\r\n"
+                + "Content-Type: text/plain; charset=UTF-8\r\n"
+                + "Content-Length: " + bytes.length + "\r\n"
+                + "Connection: close\r\n\r\n";
+        out.write(response.getBytes("UTF-8"));
+        out.write(bytes);
+        out.flush();
+    }
+
+    private String getStandbyHtmlPage() {
+        String endpoint = getStandbyUploadPath();
+        return "<!doctype html><html lang='" + AppLanguage.getLanguage(context) + "'><head><meta charset='utf-8'>"
+                + "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+                + "<meta name='theme-color' content='#101827'><title>" + htmlText(R.string.standby_page_title) + "</title>"
+                + "<style>"
+                + "*{box-sizing:border-box}body{margin:0;padding:24px 16px 40px;background:#0b1220;color:#f8fafc;"
+                + "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh}"
+                + ".card{max-width:520px;margin:0 auto;padding:24px;border:1px solid #334155;border-radius:24px;"
+                + "background:#172235;box-shadow:0 18px 50px #0008}h1{font-size:24px;margin:0 0 8px}"
+                + "p{color:#cbd5e1;line-height:1.55;font-size:14px}.drop{display:block;margin:22px 0;padding:22px;"
+                + "border:2px dashed #64748b;border-radius:18px;text-align:center;background:#0f1a2b}"
+                + "input{width:100%;color:#e2e8f0}button{width:100%;border:0;border-radius:14px;padding:15px;"
+                + "font-size:16px;font-weight:700;color:#07111f;background:#7dd3fc;margin-top:14px}"
+                + "button:disabled{opacity:.45}#status{margin-top:16px;padding:12px;border-radius:12px;background:#0f1a2b;"
+                + "font-size:14px}#bar{height:7px;background:#334155;border-radius:9px;overflow:hidden;margin-top:10px}"
+                + "#fill{height:100%;width:0;background:#38bdf8;transition:width .15s}small{display:block;color:#94a3b8;"
+                + "margin-top:18px;line-height:1.5}"
+                + "</style></head><body><main class='card'><h1>" + htmlText(R.string.standby_page_heading) + "</h1>"
+                + "<p>" + htmlText(R.string.standby_page_intro) + "</p>"
+                + "<label class='drop'>" + htmlText(R.string.standby_page_choose_photos) + "<br><br><input id='files' type='file' accept='image/jpeg,image/png,image/webp' multiple></label>"
+                + "<button id='send' disabled>" + htmlText(R.string.standby_page_upload_button) + "</button><button id='cancel' type='button' hidden>" + htmlText(R.string.cancel_action) + "</button><div id='status'>" + htmlText(R.string.standby_page_no_photo) + "</div>"
+                + "<div id='bar'><div id='fill'></div></div>"
+                + "<small>" + htmlText(R.string.standby_page_storage_note) + " "
+                + htmlText(R.string.standby_page_limit_note) + "</small></main><script>"
+                + "const endpoint='" + endpoint + "';const input=document.getElementById('files');"
+                + "const send=document.getElementById('send');const cancel=document.getElementById('cancel');const status=document.getElementById('status');"
+                + "const fill=document.getElementById('fill');let files=[],i=0,uploaded=0,failed=0,activeXhr=null;"
+                + "input.addEventListener('change',()=>{if(activeXhr)activeXhr.abort();files=Array.from(input.files||[]);i=0;uploaded=0;failed=0;"
+                + "send.disabled=!files.length;status.textContent=files.length+'" + jsText(R.string.standby_page_selected_suffix) + "';fill.style.width='0%';});"
+                + "const next=()=>{if(i>=files.length){status.textContent='" + jsText(R.string.standby_page_done_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_done_middle) + "'+failed+'" + jsText(R.string.standby_page_done_suffix) + "';"
+                + "fill.style.width='100%';input.value='';files=[];i=0;uploaded=0;failed=0;send.disabled=true;cancel.hidden=true;return;}const file=files[i];"
+                + "if(file.size>60*1024*1024){failed++;i++;next();return;}"
+                + "status.textContent='" + jsText(R.string.standby_page_uploading_prefix) + "'+(i+1)+'/'+files.length+': '+file.name;const xhr=new XMLHttpRequest();activeXhr=xhr;cancel.hidden=false;"
+                + "xhr.open('POST',endpoint,true);xhr.timeout=" + NetworkFeedbackPolicy.STANDBY_BROWSER_UPLOAD_TIMEOUT_MS + ";xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream');"
+                + "xhr.upload.onprogress=e=>{if(e.lengthComputable){const part=e.loaded/e.total;fill.style.width=Math.round(((i+part)/files.length)*100)+'%';}};"
+                + "xhr.onload=()=>{activeXhr=null;cancel.hidden=true;if(xhr.status>=200&&xhr.status<300){uploaded++;i++;next();return;}"
+                + "if(xhr.status===410){status.textContent=xhr.responseText||'" + jsText(R.string.avatar_error_session_expired) + "';send.disabled=true;return;}"
+                + "if(xhr.status===503||xhr.status>=500){status.textContent=xhr.responseText||'" + jsText(R.string.local_upload_error_busy) + "';send.disabled=false;return;}"
+                + "failed++;i++;next();};"
+                + "xhr.onerror=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_connection_lost_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_connection_lost_suffix) + "';send.disabled=false;};"
+                + "xhr.ontimeout=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_timeout_prefix) + "'+uploaded+'" + jsText(R.string.standby_page_timeout_suffix) + "';send.disabled=false;};"
+                + "xhr.onabort=()=>{activeXhr=null;cancel.hidden=true;status.textContent='" + jsText(R.string.standby_page_cancelled_retry) + "';send.disabled=false;};"
+                + "xhr.send(file);};"
+                + "send.addEventListener('click',()=>{if(!files.length||activeXhr)return;send.disabled=true;next();});"
+                + "cancel.addEventListener('click',()=>{if(activeXhr)activeXhr.abort();});</script></body></html>";
+    }
+
+    private String getQueryParam(String requestLine, String param) {
+        UploadHttpRequest request = UploadHttpRequest.parse(requestLine);
+        if (request == null || param == null || request.query.isEmpty()) return null;
+        try {
+            String found = null;
+            for (String pair : request.query.split("&", -1)) {
+                int eq = pair.indexOf('=');
+                if (eq <= 0) continue;
+                String name = URLDecoder.decode(pair.substring(0, eq), "UTF-8");
+                if (!param.equals(name)) continue;
+                if (found != null) return null; // Ambiguous duplicate parameter.
+                found = URLDecoder.decode(pair.substring(eq + 1), "UTF-8");
+            }
+            return found;
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private void serveThumbnail(String fileName, OutputStream out) {
         try {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (!target.exists() || !target.isFile()) {
-                String notFound = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n";
-                out.write(notFound.getBytes("UTF-8"));
-                out.flush();
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
+                sendTextResponse(out, 404, "Not Found", localized(R.string.avatar_error_not_found), null);
                 return;
             }
 
@@ -332,15 +834,17 @@ public class WallpaperUploadServer {
 
             Bitmap bmp = BitmapFactory.decodeFile(target.getAbsolutePath(), opts);
             if (bmp == null) {
-                String err = "HTTP/1.1 500 Error\r\nConnection: close\r\n\r\n";
-                out.write(err.getBytes("UTF-8"));
-                out.flush();
+                sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_thumbnail_request), null);
                 return;
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
+            boolean compressed = bmp.compress(Bitmap.CompressFormat.JPEG, 75, baos);
             bmp.recycle();
+            if (!compressed) {
+                sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_thumbnail_request), null);
+                return;
+            }
             byte[] bytes = baos.toByteArray();
 
             String response = "HTTP/1.1 200 OK\r\n" +
@@ -354,13 +858,17 @@ public class WallpaperUploadServer {
             out.flush();
         } catch (Exception e) {
             Log.w(TAG, "Thumbnail error: " + e.getMessage());
+            try { sendTextResponse(out, 500, "Internal Server Error", localized(R.string.wallpaper_error_thumbnail_request), null); } catch (Exception ignored) {}
         }
     }
 
     private void serveApiList(OutputStream out) {
         try {
             File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
+            File[] files = customDir.exists()
+                    ? customDir.listFiles((dir, name) -> resolveWallpaperFile(dir, name) != null)
+                    : new File[0];
+            if (files == null) throw new java.io.IOException("Cannot list wallpaper storage");
             JSONArray arr = new JSONArray();
             String activeSingle = context.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE)
                     .getString("custom_single_file", "");
@@ -369,7 +877,7 @@ public class WallpaperUploadServer {
 
             if (files != null && files.length > 0) {
                 Arrays.sort(files, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
-                SimpleDateFormat sdf = new SimpleDateFormat("d MMM, HH:mm", Locale.getDefault());
+                SimpleDateFormat sdf = new SimpleDateFormat("d MMM, HH:mm", Locale.forLanguageTag(AppLanguage.getLanguage(context)));
                 for (File f : files) {
                     JSONObject obj = new JSONObject();
                     obj.put("name", f.getName());
@@ -389,6 +897,7 @@ public class WallpaperUploadServer {
             String response = "HTTP/1.1 200 OK\r\n" +
                     "Content-Type: application/json; charset=UTF-8\r\n" +
                     "Content-Length: " + jsonBytes.length + "\r\n" +
+                    "Cache-Control: no-store\r\n" +
                     "Access-Control-Allow-Origin: *\r\n" +
                     "Connection: close\r\n\r\n";
             out.write(response.getBytes("UTF-8"));
@@ -396,58 +905,140 @@ public class WallpaperUploadServer {
             out.flush();
         } catch (Exception e) {
             Log.w(TAG, "List API error: " + e.getMessage());
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
         }
     }
 
-    private void handleApiSelect(String fileName, OutputStream out) {
-        try {
-            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (target.exists() && listener != null) {
-                listener.onSelected(target);
-            }
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+    /** Must be called while holding this server's monitor to serialize mutations with stop(). */
+    private boolean requireActiveSession(OutputStream out) throws Exception {
+        if (isSessionActive()) return true;
+        sendSimpleJsonResponse(out, 410,
+                "{\"status\":\"error\",\"error\":\"session_expired\"}");
+        return false;
     }
 
-    private void handleApiDelete(String fileName, OutputStream out) {
+    private synchronized void handleApiSelect(String fileName, OutputStream out) {
         try {
-            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            String safeName = fileName.replaceAll("[^a-zA-Z0-9._-]", "");
-            File target = new File(customDir, safeName);
-            if (target.exists()) {
-                target.delete();
-                if (listener != null) listener.onDeleted(target);
+            if (!requireActiveSession(out)) return;
+            if (fileName == null || fileName.trim().isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"missing_file\"}");
+                return;
             }
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
+                return;
+            }
+            if (!target.isFile()) {
+                sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
+                return;
+            }
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
+            }
+            listener.onSelected(target);
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Select API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
-    private void handleApiSlideshow(OutputStream out) {
+    private synchronized void handleApiDelete(String fileName, OutputStream out) {
         try {
-            if (listener != null) listener.onSlideshowMode();
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            if (!requireActiveSession(out)) return;
+            if (fileName == null || fileName.trim().isEmpty()) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"missing_file\"}");
+                return;
+            }
+            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
+            File target = resolveWallpaperFile(customDir, fileName);
+            if (target == null) {
+                sendSimpleJsonResponse(out, 400, "{\"status\":\"error\",\"error\":\"invalid_file\"}");
+                return;
+            }
+            if (!target.isFile()) {
+                sendSimpleJsonResponse(out, 404, "{\"status\":\"error\",\"error\":\"not_found\"}");
+                return;
+            }
+            if (!target.delete()) {
+                sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"delete_failed\"}");
+                return;
+            }
+            if (listener != null) listener.onDeleted(target);
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Delete API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
-    private void handleApiClear(OutputStream out) {
+    private synchronized void handleApiSlideshow(OutputStream out) {
         try {
-            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
-            File[] files = customDir.listFiles();
-            if (files != null) {
-                for (File f : files) f.delete();
+            if (!requireActiveSession(out)) return;
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
             }
-            if (listener != null) listener.onCleared();
-            sendSimpleJsonResponse(out, "{\"status\":\"ok\"}");
-        } catch (Exception ignored) {}
+            listener.onSlideshowMode();
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Slideshow API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
+    }
+
+    private synchronized void handleApiClear(OutputStream out) {
+        try {
+            if (!requireActiveSession(out)) return;
+            if (listener == null) {
+                sendSimpleJsonResponse(out, 503, "{\"status\":\"error\",\"error\":\"unavailable\"}");
+                return;
+            }
+            File customDir = new File(context.getFilesDir(), "custom_wallpapers");
+            File[] files = customDir.exists()
+                    ? customDir.listFiles((dir, name) -> resolveWallpaperFile(dir, name) != null)
+                    : new File[0];
+            if (files == null) {
+                sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"storage_unavailable\"}");
+                return;
+            }
+            boolean deletionFailed = false;
+            for (File file : files) {
+                if (file.isFile() && !file.delete()) deletionFailed = true;
+            }
+            if (deletionFailed) {
+                try {
+                    listener.onClearFailed();
+                } catch (RuntimeException callbackFailure) {
+                    Log.w(TAG, "Clear failure callback failed", callbackFailure);
+                }
+                sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"delete_failed\"}");
+                return;
+            }
+            listener.onCleared();
+            sendSimpleJsonResponse(out, 200, "{\"status\":\"ok\"}");
+        } catch (Exception e) {
+            Log.w(TAG, "Clear API failed", e);
+            try { sendSimpleJsonResponse(out, 500, "{\"status\":\"error\",\"error\":\"internal_error\"}"); } catch (Exception ignored) {}
+        }
     }
 
     private void sendSimpleJsonResponse(OutputStream out, String json) throws Exception {
+        sendSimpleJsonResponse(out, 200, json);
+    }
+
+    private void sendSimpleJsonResponse(OutputStream out, int status, String json) throws Exception {
+        String reason = status == 200 ? "OK" : status == 400 ? "Bad Request"
+                : status == 404 ? "Not Found" : status == 410 ? "Gone"
+                : status == 503 ? "Service Unavailable" : "Internal Server Error";
         byte[] bytes = json.getBytes("UTF-8");
-        String response = "HTTP/1.1 200 OK\r\n" +
+        String response = "HTTP/1.1 " + status + " " + reason + "\r\n" +
                 "Content-Type: application/json; charset=UTF-8\r\n" +
                 "Content-Length: " + bytes.length + "\r\n" +
+                "Cache-Control: no-store\r\n" +
                 "Access-Control-Allow-Origin: *\r\n" +
                 "Connection: close\r\n\r\n";
         out.write(response.getBytes("UTF-8"));
@@ -456,12 +1047,13 @@ public class WallpaperUploadServer {
     }
 
     private String getHtmlPage() {
+        String base = getWallpaperPath();
         return "<!DOCTYPE html>\n" +
-                "<html lang=\"ms\">\n" +
+                "<html lang=\"" + AppLanguage.getLanguage(context) + "\">\n" +
                 "<head>\n" +
                 "  <meta charset=\"UTF-8\">\n" +
                 "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">\n" +
-                "  <title>Glass TV • Upload Wallpaper</title>\n" +
+                "  <title>" + htmlText(R.string.wallpaper_page_title) + "</title>\n" +
                 "  <style>\n" +
                 "    * { box-sizing: border-box; margin: 0; padding: 0; }\n" +
                 "    body {\n" +
@@ -758,24 +1350,24 @@ public class WallpaperUploadServer {
                 "<body>\n" +
                 "  <div class=\"card\">\n" +
                 "    <div class=\"badge\">Glass TV OS • by @imsomangge</div>\n" +
-                "    <h1>Muat Naik Wallpaper</h1>\n" +
-                "    <p class=\"subtitle\">Pilih mana-mana foto dari galeri telefon untuk dipaparkan secara langsung pada skrin TV anda.</p>\n" +
+                "    <h1>" + htmlText(R.string.wallpaper_page_heading) + "</h1>\n" +
+                "    <p class=\"subtitle\">" + htmlText(R.string.wallpaper_page_intro) + "</p>\n" +
                 "\n" +
                 "    <div class=\"dropzone\" id=\"dropzone\" onclick=\"document.getElementById('file-input').click()\">\n" +
                 "      <div class=\"dropzone-icon\">🖼️</div>\n" +
-                "      <div class=\"dropzone-text\">Pilih Foto dari Galeri</div>\n" +
-                "      <div class=\"dropzone-hint\">Menyokong JPG, PNG, WEBP (Resolusi 1080p / 4K)</div>\n" +
+                "      <div class=\"dropzone-text\">" + htmlText(R.string.wallpaper_page_choose_photo) + "</div>\n" +
+                "      <div class=\"dropzone-hint\">" + htmlText(R.string.wallpaper_page_format_hint) + "</div>\n" +
                 "    </div>\n" +
                 "\n" +
                 "    <div id=\"preview-container\">\n" +
                 "      <img id=\"preview\" alt=\"Preview\">\n" +
-                "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">Tukar Foto</button>\n" +
+                "      <button class=\"change-btn\" onclick=\"document.getElementById('file-input').click()\">" + htmlText(R.string.wallpaper_page_change_photo) + "</button>\n" +
                 "    </div>\n" +
                 "\n" +
-                "    <input type=\"file\" id=\"file-input\" accept=\"image/*\">\n" +
+                "    <input type=\"file\" id=\"file-input\" accept=\"image/jpeg,image/png,image/webp\">\n" +
                 "\n" +
                 "    <button class=\"btn-submit\" id=\"btn-submit\" disabled onclick=\"uploadImage()\">\n" +
-                "      <span>Hantar ke Skrin TV</span>\n" +
+                "      <span>" + htmlText(R.string.wallpaper_page_upload_button) + "</span>\n" +
                 "    </button>\n" +
                 "\n" +
                 "    <div class=\"progress-wrap\" id=\"prog-wrap\">\n" +
@@ -788,17 +1380,17 @@ public class WallpaperUploadServer {
                 "\n" +
                 "  <div class=\"gallery-card\">\n" +
                 "    <div class=\"gallery-header\">\n" +
-                "      <div class=\"gallery-title\">📱 Gambar di TV (<span id=\"photo-count\">0</span>)</div>\n" +
-                "      <button class=\"btn-slideshow\" onclick=\"setSlideshow()\">🔄 Putar Semua</button>\n" +
+                "      <div class=\"gallery-title\">" + htmlText(R.string.wallpaper_page_gallery_title) + " (<span id=\"photo-count\">0</span>)</div>\n" +
+                "      <button class=\"btn-slideshow\" onclick=\"setSlideshow()\">" + htmlText(R.string.wallpaper_page_slideshow) + "</button>\n" +
                 "    </div>\n" +
-                "    <div class=\"gallery-desc\">Pilih <strong>Kunci</strong> untuk kekalkan 1 gambar sahaja sebagai wallpaper, atau padam foto lama:</div>\n" +
+                "    <div class=\"gallery-desc\">" + htmlText(R.string.wallpaper_page_gallery_description) + "</div>\n" +
                 "    <div class=\"gallery-list\" id=\"gallery-list\">\n" +
-                "      <div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">Memuat senarai foto...</div>\n" +
+                "      <div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">" + htmlText(R.string.wallpaper_page_loading_gallery) + "</div>\n" +
                 "    </div>\n" +
                 "  </div>\n" +
                 "\n" +
                 "  <footer>\n" +
-                "    <div>Bersambung terus ke TV melalui Wi-Fi Tempatan</div>\n" +
+                "    <div>" + htmlText(R.string.wallpaper_page_connected) + "</div>\n" +
                 "    <div style=\"margin-top: 6px; font-weight: 600; color: #64748b;\">Powered by @imsomangge</div>\n" +
                 "  </footer>\n" +
                 "\n" +
@@ -811,6 +1403,11 @@ public class WallpaperUploadServer {
                 "    const progWrap = document.getElementById('prog-wrap');\n" +
                 "    const progBar = document.getElementById('prog-bar');\n" +
                 "    const statusMsg = document.getElementById('status-msg');\n" +
+                "    const cancelUpload = document.createElement('button');\n" +
+                "    cancelUpload.type = 'button'; cancelUpload.textContent = '" + jsText(R.string.cancel_action) + "'; cancelUpload.hidden = true;\n" +
+                "    btnSubmit.insertAdjacentElement('afterend', cancelUpload);\n" +
+                "    let activeUpload = null;\n" +
+                "    cancelUpload.addEventListener('click', () => { if (activeUpload) activeUpload.abort(); });\n" +
                 "\n" +
                 "    let selectedFile = null;\n" +
                 "\n" +
@@ -825,7 +1422,7 @@ public class WallpaperUploadServer {
                 "        dropzone.style.display = 'none';\n" +
                 "        previewContainer.style.display = 'block';\n" +
                 "        btnSubmit.disabled = false;\n" +
-                "        btnSubmit.innerHTML = '<span>✨ Tetapkan Sebagai Wallpaper TV</span>';\n" +
+                "        btnSubmit.innerHTML = '<span>✨ " + jsText(R.string.wallpaper_page_set_wallpaper) + "</span>';\n" +
                 "        statusMsg.style.display = 'none';\n" +
                 "      };\n" +
                 "      reader.readAsDataURL(file);\n" +
@@ -833,15 +1430,18 @@ public class WallpaperUploadServer {
                 "\n" +
                 "    function uploadImage() {\n" +
                 "      if (!selectedFile) return;\n" +
+                "      if (activeUpload) return;\n" +
                 "\n" +
                 "      btnSubmit.disabled = true;\n" +
-                "      btnSubmit.innerText = 'Menghantar ke TV...';\n" +
+                "      btnSubmit.innerText = '" + jsText(R.string.wallpaper_page_sending) + "';\n" +
                 "      progWrap.style.display = 'block';\n" +
                 "      progBar.style.width = '15%';\n" +
                 "      statusMsg.style.display = 'none';\n" +
                 "\n" +
                 "      const xhr = new XMLHttpRequest();\n" +
-                "      xhr.open('POST', '/upload?name=' + encodeURIComponent(selectedFile.name), true);\n" +
+                "      activeUpload = xhr; cancelUpload.hidden = false;\n" +
+                "      xhr.open('POST', '" + getWallpaperUploadPath() + "?name=' + encodeURIComponent(selectedFile.name), true);\n" +
+                "      xhr.timeout = " + NetworkFeedbackPolicy.WALLPAPER_BROWSER_UPLOAD_TIMEOUT_MS + ";\n" +
                 "      xhr.setRequestHeader('Content-Type', selectedFile.type || 'image/jpeg');\n" +
                 "\n" +
                 "      xhr.upload.onprogress = (e) => {\n" +
@@ -852,28 +1452,34 @@ public class WallpaperUploadServer {
                 "      };\n" +
                 "\n" +
                 "      xhr.onload = () => {\n" +
+                "        activeUpload = null; cancelUpload.hidden = true;\n" +
                 "        if (xhr.status >= 200 && xhr.status < 300) {\n" +
                 "          progBar.style.width = '100%';\n" +
-                "          btnSubmit.innerText = '✅ Berjaya Dihantar!';\n" +
+                "          btnSubmit.innerText = '✅ " + jsText(R.string.wallpaper_page_uploaded) + "';\n" +
                 "          statusMsg.className = 'status-msg success';\n" +
-                "          statusMsg.innerHTML = '🎉 Hebat! Gambar telah dipaparkan pada skrin TV anda.';\n" +
+                "          statusMsg.innerHTML = '🎉 " + jsText(R.string.wallpaper_page_success) + "';\n" +
                 "          statusMsg.style.display = 'block';\n" +
                 "          loadGallery();\n" +
                 "        } else {\n" +
-                "          showError('Gagal memuat naik: ' + xhr.statusText);\n" +
+                "          const detail = (xhr.responseText || '" + jsText(R.string.wallpaper_page_action_failed) + "').trim();\n" +
+                "          showError('" + jsText(R.string.wallpaper_page_upload_failed) + "' + detail);\n" +
+                "          if (xhr.status === 410) btnSubmit.disabled = true;\n" +
                 "        }\n" +
                 "      };\n" +
                 "\n" +
                 "      xhr.onerror = () => {\n" +
-                "        showError('Sambungan terputus. Pastikan telefon dan TV dalam Wi-Fi yang sama.');\n" +
+                "        activeUpload = null; cancelUpload.hidden = true;\n" +
+                "        showError('" + jsText(R.string.wallpaper_page_connection_error) + "');\n" +
                 "      };\n" +
                 "\n" +
+                "      xhr.ontimeout = () => { activeUpload = null; cancelUpload.hidden = true; showError('" + jsText(R.string.wallpaper_page_upload_timeout) + "'); };\n" +
+                "      xhr.onabort = () => { activeUpload = null; cancelUpload.hidden = true; showError('" + jsText(R.string.cancel_action) + "'); };\n" +
                 "      xhr.send(selectedFile);\n" +
                 "    }\n" +
                 "\n" +
                 "    function showError(msg) {\n" +
                 "      btnSubmit.disabled = false;\n" +
-                "      btnSubmit.innerText = 'Cuba Semula';\n" +
+                "      btnSubmit.innerText = '" + jsText(R.string.wallpaper_page_retry) + "';\n" +
                 "      statusMsg.className = 'status-msg error';\n" +
                 "      statusMsg.innerText = '❌ ' + msg;\n" +
                 "      statusMsg.style.display = 'block';\n" +
@@ -881,28 +1487,28 @@ public class WallpaperUploadServer {
                 "    }\n" +
                 "\n" +
                 "    function loadGallery() {\n" +
-                "      fetch('/api/list')\n" +
+                "      fetch('" + base + "/api/list')\n" +
                 "        .then(r => r.json())\n" +
                 "        .then(items => {\n" +
                 "          const listEl = document.getElementById('gallery-list');\n" +
                 "          const countEl = document.getElementById('photo-count');\n" +
                 "          if (countEl) countEl.innerText = items.length;\n" +
                 "          if (!items || items.length === 0) {\n" +
-                "            listEl.innerHTML = '<div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">Tiada gambar tersimpan di TV.</div>';\n" +
+                "            listEl.innerHTML = '<div style=\"color:#64748b; font-size:12.5px; padding:12px 0;\">" + jsText(R.string.wallpaper_page_gallery_empty) + "</div>';\n" +
                 "            return;\n" +
                 "          }\n" +
                 "          let html = '';\n" +
                 "          for (const item of items) {\n" +
                 "            const enc = encodeURIComponent(item.name);\n" +
                 "            html += '<div class=\"photo-row' + (item.active ? ' active' : '') + '\">' +\n" +
-                "              '<img class=\"photo-thumb\" src=\"/thumb?file=' + enc + '\" alt=\"thumb\">' +\n" +
+                "              '<img class=\"photo-thumb\" src=\"" + base + "/thumb?file=' + enc + '\" alt=\"" + htmlText(R.string.wallpaper_page_thumbnail_alt) + "\">' +\n" +
                 "              '<div class=\"photo-meta\">' +\n" +
                 "                '<div class=\"photo-name\">' + (item.active ? '✨ ' : '') + item.name + '</div>' +\n" +
                 "                '<div class=\"photo-sub\">' + item.date + ' • ' + item.size + '</div>' +\n" +
                 "              '</div>' +\n" +
                 "              '<div class=\"photo-btns\">' +\n" +
                 "                '<button class=\"btn-act' + (item.active ? ' active' : '') + '\" onclick=\"selectSingle(\\'' + enc + '\\')\">' +\n" +
-                "                  (item.active ? 'Kekal 📌' : 'Kunci 📌') +\n" +
+                "                  (item.active ? '" + jsText(R.string.wallpaper_page_active) + " 📌' : '" + jsText(R.string.wallpaper_page_set) + " 📌') +\n" +
                 "                '</button>' +\n" +
                 "                '<button class=\"btn-act del\" onclick=\"deletePhoto(\\'' + enc + '\\')\">🗑️</button>' +\n" +
                 "              '</div>' +\n" +
@@ -913,33 +1519,27 @@ public class WallpaperUploadServer {
                 "        .catch(() => {});\n" +
                 "    }\n" +
                 "\n" +
+                "    function postAction(url, onSuccess) {\n" +
+                "      fetch(url, { method: 'POST' })\n" +
+                "        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })\n" +
+                "        .then(() => { loadGallery(); if (onSuccess) onSuccess(); })\n" +
+                "        .catch(() => alert('" + jsText(R.string.wallpaper_page_action_failed) + "'));\n" +
+                "    }\n" +
+                "\n" +
                 "    function selectSingle(fileName) {\n" +
-                "      fetch('/api/select?file=' + fileName, { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "        });\n" +
+                "      postAction('" + base + "/api/select?file=' + fileName);\n" +
                 "    }\n" +
                 "\n" +
                 "    function deletePhoto(fileName) {\n" +
-                "      if (!confirm('Padam gambar ini dari skrin TV?')) return;\n" +
-                "      fetch('/api/delete?file=' + fileName, { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "        });\n" +
+                "      if (!confirm('" + jsText(R.string.wallpaper_page_confirm_delete) + "')) return;\n" +
+                "      postAction('" + base + "/api/delete?file=' + fileName);\n" +
                 "    }\n" +
                 "\n" +
                 "    function setSlideshow() {\n" +
-                "      fetch('/api/slideshow', { method: 'POST' })\n" +
-                "        .then(r => r.json())\n" +
-                "        .then(() => {\n" +
-                "          loadGallery();\n" +
-                "          alert('Mod putaran semua gambar aktif pada TV.');\n" +
-                "        });\n" +
+                "      postAction('" + base + "/api/slideshow', () => alert('" + jsText(R.string.wallpaper_page_slideshow_active) + "'));\n" +
                 "    }\n" +
                 "\n" +
-                "    // Muat galeri gambar sebaik sahaja laman dibuka\n" +
+                "    // Muat galeri foto saat halaman dibuka\n" +
                 "    loadGallery();\n" +
                 "  </script>\n" +
                 "</body>\n" +

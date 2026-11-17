@@ -21,16 +21,15 @@ import java.util.List;
  * menu, and travelling between the dock and the top menu, it is dark. It switches look at once,
  * never blending, and the Inputs list has a dark one of its own.
  *
- * <p>It sits behind what it marks, so it never draws over an app, a pill's label or a row's text:
- * around a tile it shows as a dark frame, and under a pill or a row as its fill. Glass that covers
- * it gets out of the way (see {@link #coverage}) or paints the shape itself (see {@link #drawShape}).
- * Moving it only redraws a round rect; it never asks for a new layout.
+ * <p>The root Glider remains behind app content and owns the one shared animated shape. Home header
+ * capsules use {@link GliderFocusDrawable} to repaint that same shape above their glass surface but
+ * below their own icon and label. The Dock keeps its companion drawing path. Glass that covers the
+ * root shape gets out of the way (see {@link #coverage}) where appropriate. Moving it only redraws
+ * a round rect; it never asks for a new layout.
  */
 final class Glider extends View {
 
-    /** About 63% black: bright text reads on it, and every place that uses it matches. */
-    static final int FOCUS_ALPHA = 0xA0;
-    /** The top menu's look: a dark fill. */
+    /** The shared premium silver-glass DPAD focus treatment. */
     static final int DARK = 0;
     /** Between apps: a pane of glass, the same as the pills and the tray. */
     static final int GLASS = 1;
@@ -61,6 +60,7 @@ final class Glider extends View {
     private final float[] edges = new float[5];
     private final SpringAnimation[] springs = new SpringAnimation[5];
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint focusStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Backdrop.Fill glass = new Backdrop.Fill();
     private final Paint veil = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final GlassRim rim;
@@ -100,6 +100,9 @@ final class Glider extends View {
         this.reducedMotion = reducedMotion;
         float density = context.getResources().getDisplayMetrics().density;
         veil.setColor(0x14FFFFFF);
+        focusStroke.setStyle(Paint.Style.STROKE);
+        focusStroke.setStrokeWidth(2f * density);
+        focusStroke.setColor(TvUiTokens.FOCUS_BORDER);
         rim = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF);
         shadowBlur = 22f * density;
         shadowDrop = 8f * density;
@@ -205,12 +208,73 @@ final class Glider extends View {
     }
 
     /**
+     * Sends the target in visual parent coordinates while preserving the scroll compensation
+     * used by Grid-focused tiles. Dock cards do not participate in Grid scrolling.
+     */
+    void moveToScreen(float l, float t, float r, float b, float radius) {
+        moveTo(l, t + yShift, r, b + yShift, radius);
+    }
+
+    /**
+     * Hard-syncs the focus shape to a translated Dock card during a coordinated frame animation.
+     * Retargeting springs on every animation frame causes lag; the Dock itself supplies the motion.
+     */
+    void moveToScreenImmediately(float l, float t, float r, float b, float radius) {
+        float[] to = aim(l, t + yShift, r, b + yShift, radius);
+        for (int i = 0; i < springs.length; i++) {
+            springs[i].cancel();
+            edges[i] = to[i];
+        }
+        if (!shown) {
+            shown = true;
+            fadeTo(1f, reducedMotion ? 100 : 180);
+        }
+        changed();
+    }
+
+    /** Hard-sync to visual Grid coordinates; aim() applies the Grid's accumulated yShift once. */
+    void moveToVisualImmediately(float l, float t, float r, float b, float radius) {
+        float[] to = aim(l, t, r, b, radius);
+        for (int i = 0; i < springs.length; i++) {
+            springs[i].cancel();
+            edges[i] = to[i];
+        }
+        if (!shown) {
+            shown = true;
+            fadeTo(1f, reducedMotion ? 100 : 180);
+        }
+        changed();
+    }
+
+    /**
      * While an app is being moved it wiggles, and the glass pane behind it would show at its corners:
      * then only the app's shadow is drawn.
      */
     void setPaneHidden(boolean hidden) {
         if (paneHidden == hidden) return;
         paneHidden = hidden;
+        changed();
+    }
+
+    /**
+     * Move Mode always uses the same black drop shadow for Dock and Grid cards. A Dock tile can
+     * arrive from the dark header-focus path while a Grid tile already uses GLASS; normalize both
+     * before hiding the pane so the shadow is identical in every row.
+     */
+    void setMoveModeActive(boolean active, boolean glassEnabled) {
+        if (shadowFade != null) {
+            shadowFade.cancel();
+            shadowFade = null;
+        }
+        if (active) {
+            style = GLASS;
+            shadowMix = 1f;
+            paneHidden = true;
+        } else {
+            paneHidden = false;
+            style = glassEnabled ? GLASS : DARK;
+            shadowMix = glassEnabled ? 1f : 0f;
+        }
         changed();
     }
 
@@ -283,8 +347,15 @@ final class Glider extends View {
         float r = Math.min(edges[RADIUS], Math.min(b - t, edges[RIGHT] - edges[LEFT]) / 2f);
         shape.set(edges[LEFT] + dx, t + dy, edges[RIGHT] + dx, b + dy);
         if (style == DARK) {
-            paint.setColor((int) (FOCUS_ALPHA * opacity) << 24);
+            // Focus is an overlay only: translucent silver-glass fill plus a cool silver rim.
+            // It never scales or changes the focused component's measured bounds.
+            paint.setColor(TvUiTokens.FOCUS_HALO);
+            paint.setAlpha(Math.round(((TvUiTokens.FOCUS_HALO >>> 24) & 0xFF) * opacity));
             canvas.drawRoundRect(shape, r, r, paint);
+            float half = focusStroke.getStrokeWidth() / 2f;
+            shape.inset(half, half);
+            focusStroke.setAlpha(Math.round(255 * opacity));
+            canvas.drawRoundRect(shape, Math.max(0f, r - half), Math.max(0f, r - half), focusStroke);
             return;
         }
         // Glass: the selected app's shadow, what is behind it softened, an even veil, and the
@@ -299,6 +370,23 @@ final class Glider extends View {
         rim.fit(shape);
         rim.paint.setAlpha(Math.round(255 * opacity));
         canvas.drawRoundRect(shape, r - half, r - half, rim.paint);
+        rim.drawWindowLight(canvas, shape, r - half, opacity);
+        float focusHalf = focusStroke.getStrokeWidth() / 2f;
+        shape.inset(focusHalf, focusHalf);
+        focusStroke.setAlpha(Math.round(220 * opacity));
+        canvas.drawRoundRect(shape, Math.max(0f, r - half - focusHalf),
+                Math.max(0f, r - half - focusHalf), focusStroke);
+    }
+
+    /** Draws only the focus rim in front of Grid children; never paints glass over app artwork. */
+    void drawFocusOutline(Canvas canvas, float dx, float dy) {
+        if (!isShowing()) return;
+        float t = edges[TOP] + yShift, b = edges[BOTTOM] + yShift;
+        float r = Math.min(edges[RADIUS], Math.min(b - t, edges[RIGHT] - edges[LEFT]) / 2f);
+        shape.set(edges[LEFT] + dx, t + dy, edges[RIGHT] + dx, b + dy);
+        float half = focusStroke.getStrokeWidth() / 2f;
+        focusStroke.setAlpha(Math.round(255 * opacity));
+        canvas.drawRoundRect(shape, Math.max(0f, r - half), Math.max(0f, r - half), focusStroke);
     }
 
     private void drawShadow(Canvas canvas, float radius) {

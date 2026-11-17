@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -12,12 +13,17 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.media.ExifInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.List;
 
 /**
@@ -29,6 +35,7 @@ public final class ProfileManager {
     private static final String KEY_LEGACY_AVATAR = "avatar_index";
     private static final String KEY_PROFILES_JSON = "profiles_list_json";
     private static final String KEY_ACTIVE_PROFILE_ID = "active_profile_id";
+    private static final String KEY_PROFILES_CORRUPT_BACKUP = "profiles_list_json_corrupt_backup";
 
     public static final String[] AVATAR_NAMES = {
             "Fox", "Panda", "Tiger", "Lion", "Frog", "Koala", "Octopus"
@@ -49,12 +56,18 @@ public final class ProfileManager {
         public String name;
         public int avatarIndex;
         public boolean isChild;
+        public String customAvatarPath;
 
         public UserProfile(String id, String name, int avatarIndex, boolean isChild) {
+            this(id, name, avatarIndex, isChild, null);
+        }
+
+        public UserProfile(String id, String name, int avatarIndex, boolean isChild, String customAvatarPath) {
             this.id = id != null ? id : "user_" + System.currentTimeMillis();
             this.name = name != null && !name.trim().isEmpty() ? name.trim() : "User";
             this.avatarIndex = (avatarIndex >= 0 && avatarIndex < AVATAR_RES_IDS.length) ? avatarIndex : 1;
             this.isChild = isChild;
+            this.customAvatarPath = customAvatarPath;
         }
 
         public JSONObject toJson() {
@@ -64,17 +77,21 @@ public final class ProfileManager {
                 obj.put("name", name);
                 obj.put("avatarIndex", avatarIndex);
                 obj.put("isChild", isChild);
+                if (customAvatarPath != null && !customAvatarPath.trim().isEmpty()) obj.put("customAvatarPath", customAvatarPath);
             } catch (JSONException ignored) {}
             return obj;
         }
 
         public static UserProfile fromJson(JSONObject obj) {
             if (obj == null) return new UserProfile("default", "User", 1, false);
-            String id = obj.optString("id", "user_" + System.currentTimeMillis());
+            String id = obj.optString("id", null);
+            if (id == null || id.trim().isEmpty()) id = "user_" + UUID.randomUUID();
             String name = obj.optString("name", "User");
             int avatarIndex = obj.optInt("avatarIndex", 1);
             boolean isChild = obj.optBoolean("isChild", false);
-            return new UserProfile(id, name, avatarIndex, isChild);
+            String customAvatarPath = obj.optString("customAvatarPath", null);
+            if (customAvatarPath != null && customAvatarPath.trim().isEmpty()) customAvatarPath = null;
+            return new UserProfile(id, name, avatarIndex, isChild, customAvatarPath);
         }
     }
 
@@ -116,6 +133,224 @@ public final class ProfileManager {
         }
     }
 
+    /** Built-in avatar selection is inactive while a custom photo overrides it. */
+    static boolean isBuiltInAvatarSelected(UserProfile profile, int avatarIndex) {
+        return profile != null
+                && (profile.customAvatarPath == null || profile.customAvatarPath.trim().isEmpty())
+                && profile.avatarIndex == avatarIndex;
+    }
+
+    /** Returns the active profile image, preferring its private locally stored photo. */
+    public static Drawable getAvatarDrawable(Context context, UserProfile profile, int sizePx, boolean isChild) {
+        if (context == null || profile == null || sizePx <= 0) return null;
+        try {
+            if (profile.customAvatarPath != null) {
+                File avatarDir = new File(context.getFilesDir(), "profile_avatars");
+                File photo = new File(profile.customAvatarPath);
+                if (isPrivateAvatarFile(avatarDir, photo) && photo.getCanonicalFile().isFile()
+                        && photo.getCanonicalFile().length() > 0) {
+                    BitmapFactory.Options bounds = new BitmapFactory.Options();
+                    bounds.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(photo.getAbsolutePath(), bounds);
+                    if (bounds.outWidth > 0 && bounds.outHeight > 0) {
+                        int sample = 1;
+                        while (bounds.outWidth / (sample * 2) > sizePx * 2
+                                || bounds.outHeight / (sample * 2) > sizePx * 2) sample *= 2;
+                        BitmapFactory.Options opts = new BitmapFactory.Options();
+                        opts.inSampleSize = sample;
+                        opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap src = BitmapFactory.decodeFile(photo.getAbsolutePath(), opts);
+                        if (src != null) {
+                            int orientation = ExifInterface.ORIENTATION_NORMAL;
+                            try {
+                                ExifInterface exif = new ExifInterface(photo.getAbsolutePath());
+                                orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                            } catch (Exception ignored) {}
+                            Matrix matrix = new Matrix();
+                            switch (orientation) {
+                                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL: matrix.setScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_180: matrix.setRotate(180); break;
+                                case ExifInterface.ORIENTATION_FLIP_VERTICAL: matrix.setRotate(180); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_TRANSPOSE: matrix.setRotate(90); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_90: matrix.setRotate(90); break;
+                                case ExifInterface.ORIENTATION_TRANSVERSE: matrix.setRotate(-90); matrix.postScale(-1, 1); break;
+                                case ExifInterface.ORIENTATION_ROTATE_270: matrix.setRotate(-90); break;
+                                default: break;
+                            }
+                            Bitmap oriented = matrix.isIdentity() ? src
+                                    : Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
+                            if (oriented != src) src.recycle();
+                            Bitmap output = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888);
+                            Canvas canvas = new Canvas(output);
+                            float inset = 2f * context.getResources().getDisplayMetrics().density;
+                            float radius = sizePx / 2f;
+                            Path clip = new Path();
+                            clip.addCircle(radius, radius, radius - inset, Path.Direction.CW);
+                            canvas.save();
+                            canvas.clipPath(clip);
+                            float scale = Math.max((sizePx - 2 * inset) / (float) oriented.getWidth(),
+                                    (sizePx - 2 * inset) / (float) oriented.getHeight());
+                            float w = oriented.getWidth() * scale, h = oriented.getHeight() * scale;
+                            RectF dst = new RectF((sizePx - w) / 2f, (sizePx - h) / 2f,
+                                    (sizePx + w) / 2f, (sizePx + h) / 2f);
+                            canvas.drawBitmap(oriented, null, dst, new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
+                            canvas.restore();
+                            oriented.recycle();
+                            Paint ring = new Paint(Paint.ANTI_ALIAS_FLAG);
+                            ring.setStyle(Paint.Style.STROKE);
+                            ring.setStrokeWidth(inset);
+                            ring.setColor(isChild ? 0xFFF59E0B : 0xFF38BDF8);
+                            canvas.drawCircle(radius, radius, radius - inset / 2f, ring);
+                            return new BitmapDrawable(context.getResources(), output);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return getCircularAvatarDrawable(context, profile.avatarIndex, sizePx, isChild);
+    }
+
+    /** Atomically switches the profile reference, then deletes the superseded private photo. */
+    public static synchronized boolean replaceCustomAvatar(Context context, String profileId, File newPhoto) {
+        if (context == null || profileId == null || newPhoto == null || !newPhoto.isFile() || newPhoto.length() <= 0) return false;
+        try {
+            File avatarDir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
+            File candidate = newPhoto.getCanonicalFile();
+            if (!isPrivateAvatarFile(avatarDir, candidate)) return false;
+            List<UserProfile> list = getAllProfiles(context);
+            UserProfile target = null;
+            for (UserProfile profile : list) if (profileId.equals(profile.id)) { target = profile; break; }
+            if (target == null) return false;
+            String oldPath = target.customAvatarPath;
+            target.customAvatarPath = candidate.getAbsolutePath();
+            JSONArray arr = new JSONArray();
+            for (UserProfile profile : list) arr.put(profile.toJson());
+            boolean saved = getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit();
+            if (!saved) {
+                target.customAvatarPath = oldPath;
+                return false;
+            }
+            if (oldPath != null && !oldPath.equals(candidate.getAbsolutePath())) {
+                // Do not remove a photo if another profile still references the same file.
+                deleteAvatarIfUnreferenced(context, list, profileId, oldPath);
+            }
+            cleanupOrphanedAvatarUploads(context);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /** Atomically select a built-in avatar and clear the profile's custom-photo reference. */
+    public static synchronized boolean selectBuiltInAvatar(Context context, String profileId, int avatarIndex) {
+        if (context == null || profileId == null || avatarIndex < 0 || avatarIndex >= AVATAR_RES_IDS.length) {
+            return false;
+        }
+        List<UserProfile> list = getAllProfiles(context);
+        UserProfile target = null;
+        for (UserProfile profile : list) {
+            if (profileId.equals(profile.id)) {
+                target = profile;
+                break;
+            }
+        }
+        if (target == null) return false;
+
+        String oldPath = target.customAvatarPath;
+        int oldIndex = target.avatarIndex;
+        target.customAvatarPath = null;
+        target.avatarIndex = avatarIndex;
+        JSONArray arr = new JSONArray();
+        for (UserProfile profile : list) arr.put(profile.toJson());
+        SharedPreferences.Editor editor = getPrefs(context).edit()
+                .putString(KEY_PROFILES_JSON, arr.toString());
+        String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
+        if (profileId.equals(activeId)) editor.putInt(KEY_LEGACY_AVATAR, avatarIndex);
+        if (!editor.commit()) {
+            target.customAvatarPath = oldPath;
+            target.avatarIndex = oldIndex;
+            return false;
+        }
+
+        if (oldPath != null) deleteAvatarIfUnreferenced(context, list, profileId, oldPath);
+        cleanupOrphanedAvatarUploads(context);
+        return true;
+    }
+
+    public static synchronized boolean clearCustomAvatar(Context context, String profileId) {
+        if (context == null || profileId == null) return false;
+        List<UserProfile> list = getAllProfiles(context);
+        for (UserProfile profile : list) {
+            if (profileId.equals(profile.id)) {
+                String oldPath = profile.customAvatarPath;
+                profile.customAvatarPath = null;
+                JSONArray arr = new JSONArray();
+                for (UserProfile item : list) arr.put(item.toJson());
+                boolean saved = getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit();
+                if (!saved) { profile.customAvatarPath = oldPath; return false; }
+                if (oldPath != null) deleteAvatarIfUnreferenced(context, list, profileId, oldPath);
+                cleanupOrphanedAvatarUploads(context);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean isPrivateAvatarFile(File avatarDirectory, File candidate) {
+        if (avatarDirectory == null || candidate == null) return false;
+        try {
+            File canonicalDirectory = avatarDirectory.getCanonicalFile();
+            File canonicalCandidate = candidate.getCanonicalFile();
+            File parent = canonicalCandidate.getParentFile();
+            return parent != null && parent.equals(canonicalDirectory);
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private static void deleteAvatarIfUnreferenced(Context context, List<UserProfile> profiles,
+                                                    String excludedProfileId, String path) {
+        if (context == null || profiles == null || path == null) return;
+        try {
+            File avatarDir = new File(context.getFilesDir(), "profile_avatars").getCanonicalFile();
+            File candidate = new File(path).getCanonicalFile();
+            if (!isPrivateAvatarFile(avatarDir, candidate)) return;
+            for (UserProfile profile : profiles) {
+                if (profile == null || profile.id == null || profile.id.equals(excludedProfileId)
+                        || profile.customAvatarPath == null) continue;
+                if (candidate.equals(new File(profile.customAvatarPath).getCanonicalFile())) return;
+            }
+            if (candidate.isFile()) candidate.delete();
+        } catch (Exception ignored) {}
+    }
+
+    /** Removes unreferenced avatar files and abandoned uploads left by a force-stop or power loss. */
+    public static synchronized void cleanupOrphanedAvatarUploads(Context context) {
+        if (context == null) return;
+        File dir = new File(context.getFilesDir(), "profile_avatars");
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        Set<String> referenced = new HashSet<>();
+        for (UserProfile profile : getAllProfiles(context)) {
+            if (profile.customAvatarPath == null) continue;
+            try { referenced.add(new File(profile.customAvatarPath).getCanonicalPath()); }
+            catch (Exception ignored) {}
+        }
+        long cutoff = System.currentTimeMillis() - 10L * 60L * 1000L;
+        for (File file : files) {
+            if (!file.isFile()) continue;
+            try {
+                String path = file.getCanonicalPath();
+                if (referenced.contains(path)) continue;
+                String name = file.getName().toLowerCase(java.util.Locale.ROOT);
+                if (name.endsWith(".upload") && file.lastModified() >= cutoff) continue;
+                // This directory is dedicated to profile avatars: unreferenced images and stale
+                // .tmp/.bak/.upload files are safe to remove.
+                file.delete();
+            } catch (Exception ignored) {}
+        }
+    }
+
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
@@ -130,14 +365,28 @@ public final class ProfileManager {
         SharedPreferences sp = getPrefs(context);
         String json = sp.getString(KEY_PROFILES_JSON, null);
 
+        boolean repairedIds = false;
         if (json != null && !json.trim().isEmpty()) {
             try {
                 JSONArray arr = new JSONArray(json);
+                Set<String> seenIds = new HashSet<>();
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
-                    list.add(UserProfile.fromJson(obj));
+                    String persistedId = obj.optString("id", null);
+                    UserProfile profile = UserProfile.fromJson(obj);
+                    if (persistedId == null || persistedId.trim().isEmpty() || !seenIds.add(profile.id)) {
+                        if (persistedId != null && !persistedId.trim().isEmpty()) {
+                            profile.id = "user_" + UUID.randomUUID();
+                        }
+                        seenIds.add(profile.id);
+                        repairedIds = true;
+                    }
+                    list.add(profile);
                 }
             } catch (JSONException e) {
+                if (!sp.contains(KEY_PROFILES_CORRUPT_BACKUP)) {
+                    sp.edit().putString(KEY_PROFILES_CORRUPT_BACKUP, json).commit();
+                }
                 list.clear();
             }
         }
@@ -160,19 +409,19 @@ public final class ProfileManager {
             UserProfile defaultProfile = new UserProfile("profile_default", legacyName, legacyAvatar, false);
             list.add(defaultProfile);
             saveProfiles(context, list);
-            sp.edit().putString(KEY_ACTIVE_PROFILE_ID, defaultProfile.id).apply();
+            sp.edit().putString(KEY_ACTIVE_PROFILE_ID, defaultProfile.id).commit();
+        } else if (repairedIds) {
+            saveProfiles(context, list);
         }
 
         return list;
     }
 
-    private static synchronized void saveProfiles(Context context, List<UserProfile> list) {
-        if (context == null || list == null) return;
+    private static synchronized boolean saveProfiles(Context context, List<UserProfile> list) {
+        if (context == null || list == null) return false;
         JSONArray arr = new JSONArray();
-        for (UserProfile p : list) {
-            arr.put(p.toJson());
-        }
-        getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).apply();
+        for (UserProfile p : list) arr.put(p.toJson());
+        return getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString()).commit();
     }
 
     public static synchronized UserProfile getActiveProfile(Context context) {
@@ -189,80 +438,92 @@ public final class ProfileManager {
         }
 
         UserProfile first = list.get(0);
-        getPrefs(context).edit().putString(KEY_ACTIVE_PROFILE_ID, first.id).apply();
+        getPrefs(context).edit().putString(KEY_ACTIVE_PROFILE_ID, first.id).commit();
         return first;
     }
 
-    public static synchronized void setActiveProfile(Context context, String profileId) {
-        if (context == null || profileId == null) return;
+    public static synchronized boolean setActiveProfile(Context context, String profileId) {
+        if (context == null || profileId == null) return false;
         List<UserProfile> list = getAllProfiles(context);
         for (UserProfile p : list) {
             if (profileId.equals(p.id)) {
-                getPrefs(context).edit()
+                return getPrefs(context).edit()
                         .putString(KEY_ACTIVE_PROFILE_ID, p.id)
                         .putString(KEY_LEGACY_NAME, p.name)
                         .putInt(KEY_LEGACY_AVATAR, p.avatarIndex)
-                        .apply();
-                return;
+                        .commit();
             }
         }
+        return false;
     }
 
     public static synchronized UserProfile addProfile(Context context, String name, int avatarIndex, boolean isChild) {
         if (context == null) return null;
         List<UserProfile> list = getAllProfiles(context);
-        String id = "user_" + System.currentTimeMillis();
+        // Millisecond timestamps can collide when profile-create actions arrive together.
+        String id = "user_" + UUID.randomUUID().toString();
         UserProfile newProf = new UserProfile(id, name, avatarIndex, isChild);
         list.add(newProf);
-        saveProfiles(context, list);
-        return newProf;
+        return saveProfiles(context, list) ? newProf : null;
     }
 
-    public static synchronized boolean deleteProfile(Context context, String profileId) {
+    public static boolean deleteProfile(Context context, String profileId) {
         if (context == null || profileId == null) return false;
-        List<UserProfile> list = getAllProfiles(context);
-        if (list.size() <= 1) return false; // Cannot delete the last remaining profile
-
-        UserProfile toRemove = null;
-        for (UserProfile p : list) {
-            if (profileId.equals(p.id)) {
-                toRemove = p;
-                break;
+        // Migrate legacy restrictions while the profile that owned them is still active.
+        ChildModeManager.ensureProfileSettingsMigrated(context);
+        synchronized (ProfileManager.class) {
+            List<UserProfile> list = getAllProfiles(context);
+            if (list.size() <= 1) return false;
+            UserProfile toRemove = null;
+            for (UserProfile p : list) {
+                if (profileId.equals(p.id)) { toRemove = p; break; }
             }
+            if (toRemove == null) return false;
+            list.remove(toRemove);
+            JSONArray persistedProfiles = new JSONArray();
+            for (UserProfile profile : list) persistedProfiles.put(profile.toJson());
+            SharedPreferences.Editor edit = getPrefs(context).edit().putString(KEY_PROFILES_JSON, persistedProfiles.toString());
+            String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
+            if (profileId.equals(activeId)) {
+                UserProfile fallback = list.get(0);
+                edit.putString(KEY_ACTIVE_PROFILE_ID, fallback.id)
+                        .putString(KEY_LEGACY_NAME, fallback.name)
+                        .putInt(KEY_LEGACY_AVATAR, fallback.avatarIndex);
+            }
+            if (!edit.commit()) return false;
+            cleanupOrphanedAvatarUploads(context);
         }
-
-        if (toRemove == null) return false;
-        list.remove(toRemove);
-        saveProfiles(context, list);
-
-        String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
-        if (profileId.equals(activeId)) {
-            // Fall back to first remaining profile
-            setActiveProfile(context, list.get(0).id);
-        }
+        ChildModeManager.clearProfileSettings(context, profileId);
         return true;
     }
 
-    public static synchronized void updateProfile(Context context, String profileId, String newName, int newAvatarIndex, boolean isChild) {
-        if (context == null || profileId == null) return;
+    public static synchronized boolean updateProfile(Context context, String profileId, String newName, int newAvatarIndex, boolean isChild) {
+        if (context == null || profileId == null) return false;
         List<UserProfile> list = getAllProfiles(context);
         for (UserProfile p : list) {
             if (profileId.equals(p.id)) {
+                String oldName = p.name;
+                int oldAvatar = p.avatarIndex;
+                boolean oldChild = p.isChild;
                 if (newName != null && !newName.trim().isEmpty()) p.name = newName.trim();
                 if (newAvatarIndex >= 0 && newAvatarIndex < AVATAR_RES_IDS.length) p.avatarIndex = newAvatarIndex;
                 p.isChild = isChild;
-                saveProfiles(context, list);
-
-                String activeId = getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, "");
-                if (profileId.equals(activeId)) {
-                    getPrefs(context).edit()
-                            .putString(KEY_LEGACY_NAME, p.name)
-                            .putInt(KEY_LEGACY_AVATAR, p.avatarIndex)
-                            .apply();
+                JSONArray arr = new JSONArray();
+                for (UserProfile profile : list) arr.put(profile.toJson());
+                SharedPreferences.Editor edit = getPrefs(context).edit().putString(KEY_PROFILES_JSON, arr.toString());
+                if (profileId.equals(getPrefs(context).getString(KEY_ACTIVE_PROFILE_ID, ""))) {
+                    edit.putString(KEY_LEGACY_NAME, p.name).putInt(KEY_LEGACY_AVATAR, p.avatarIndex);
                 }
-                return;
+                if (!edit.commit()) {
+                    p.name = oldName;
+                    p.avatarIndex = oldAvatar;
+                    p.isChild = oldChild;
+                    return false;
+                }
+                return true;
             }
         }
+        return false;
     }
 
     // --- Backward-compatible convenience methods ---
@@ -270,20 +531,29 @@ public final class ProfileManager {
         return getActiveProfile(context).name;
     }
 
-    public static void setProfileName(Context context, String name) {
-        if (context == null) return;
+    public static boolean setProfileName(Context context, String name) {
+        if (context == null) return false;
         UserProfile active = getActiveProfile(context);
-        updateProfile(context, active.id, name, active.avatarIndex, active.isChild);
+        return updateProfile(context, active.id, name, active.avatarIndex, active.isChild);
     }
 
     public static int getAvatarIndex(Context context) {
         return getActiveProfile(context).avatarIndex;
     }
 
-    public static void setAvatarIndex(Context context, int index) {
-        if (context == null) return;
+    public static boolean setAvatarIndex(Context context, int index) {
+        if (context == null) return false;
         UserProfile active = getActiveProfile(context);
-        updateProfile(context, active.id, active.name, index, active.isChild);
+        return updateProfile(context, active.id, active.name, index, active.isChild);
+    }
+
+    static int indexOfProfile(List<UserProfile> profiles, String profileId) {
+        if (profiles == null || profileId == null) return -1;
+        for (int i = 0; i < profiles.size(); i++) {
+            UserProfile profile = profiles.get(i);
+            if (profile != null && profileId.equals(profile.id)) return i;
+        }
+        return -1;
     }
 
     public static int getAvatarResId(int index) {

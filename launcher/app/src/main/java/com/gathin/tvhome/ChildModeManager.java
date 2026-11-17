@@ -5,9 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Manages Child Mode, PIN security, App Lock, and Hidden Apps for Glass TV Home.
@@ -26,7 +29,6 @@ import java.util.Set;
 public final class ChildModeManager {
     private static final String PREFS_NAME = "child_mode_prefs";
     private static final String KEY_ENABLED = "child_mode_enabled";
-    private static final String KEY_PIN = "security_pin";
     private static final String KEY_LOCKED_APPS = "locked_apps";
     private static final String KEY_HIDDEN_APPS = "hidden_apps";
 
@@ -35,85 +37,275 @@ public final class ChildModeManager {
         void onCancelled();
     }
 
+    public interface PinVerificationCallback {
+        void onResult(boolean valid);
+    }
+
+    public interface PinSaveCallback {
+        void onResult(boolean saved);
+    }
+
+    private static final ExecutorService PIN_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "glass-tv-pin-crypto");
+        thread.setDaemon(true);
+        return thread;
+    });
+
     private ChildModeManager() {}
+
+    private static final String KEY_PROFILE_MIGRATION_DONE = "profile_settings_migration_v1";
+
+    static String profileKey(String profileId, String key) {
+        return "profile_" + profileId + "_" + key;
+    }
+
+    private static String activeProfileId(Context ctx) {
+        ProfileManager.UserProfile active = ProfileManager.getActiveProfile(ctx);
+        return active != null ? active.id : "profile_default";
+    }
+
+    /**
+     * One-time migration: move the former device-wide Child Mode and app lists
+     * into the profile that was active when this version first runs.
+     * The parent PIN intentionally remains device-wide.
+     */
+    private static synchronized void migrateLegacySettings(Context ctx) {
+        if (ctx == null) return;
+        SharedPreferences sp = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        if (sp.getBoolean(KEY_PROFILE_MIGRATION_DONE, false)) return;
+
+        String profileId = activeProfileId(ctx);
+        SharedPreferences.Editor edit = sp.edit();
+        if (sp.contains(KEY_ENABLED)) {
+            edit.putBoolean(profileKey(profileId, KEY_ENABLED), sp.getBoolean(KEY_ENABLED, false));
+        }
+        if (sp.contains(KEY_LOCKED_APPS)) {
+            Set<String> oldLocked = sp.getStringSet(KEY_LOCKED_APPS, null);
+            if (oldLocked != null) edit.putStringSet(profileKey(profileId, KEY_LOCKED_APPS), new HashSet<>(oldLocked));
+        }
+        if (sp.contains(KEY_HIDDEN_APPS)) {
+            Set<String> oldHidden = sp.getStringSet(KEY_HIDDEN_APPS, null);
+            if (oldHidden != null) edit.putStringSet(profileKey(profileId, KEY_HIDDEN_APPS), new HashSet<>(oldHidden));
+        }
+        edit.putBoolean(KEY_PROFILE_MIGRATION_DONE, true).commit();
+    }
+
+    private static SharedPreferences profilePrefs(Context ctx) {
+        migrateLegacySettings(ctx);
+        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    /** Resolve legacy device-wide values against the currently active profile before any profile change. */
+    static void ensureProfileSettingsMigrated(Context ctx) {
+        if (ctx != null) profilePrefs(ctx);
+    }
 
     public static boolean isChildModeEnabled(Context ctx) {
         if (ctx == null) return false;
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getBoolean(KEY_ENABLED, false);
+        return isChildModeEnabled(ctx, activeProfileId(ctx));
     }
 
-    public static void setChildModeEnabled(Context ctx, boolean enabled) {
-        if (ctx == null) return;
-        ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean(KEY_ENABLED, enabled)
-                .apply();
+    public static boolean isChildModeEnabled(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return false;
+        SharedPreferences sp = profilePrefs(ctx);
+        String key = profileKey(profileId, KEY_ENABLED);
+        if (sp.contains(key)) return sp.getBoolean(key, false);
+        for (ProfileManager.UserProfile profile : ProfileManager.getAllProfiles(ctx)) {
+            if (profileId.equals(profile.id)) return profile.isChild;
+        }
+        return false;
     }
 
-    public static String getPin(Context ctx) {
-        if (ctx == null) return "0000";
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_PIN, "0000");
+    public static boolean setChildModeEnabled(Context ctx, boolean enabled) {
+        if (ctx == null) return false;
+        synchronized (ChildModeManager.class) {
+            return setChildModeEnabled(ctx, activeProfileId(ctx), enabled);
+        }
     }
 
+    public static boolean setChildModeEnabled(Context ctx, String profileId, boolean enabled) {
+        if (ctx == null || profileId == null) return false;
+        synchronized (ChildModeManager.class) {
+            return profilePrefs(ctx).edit().putBoolean(profileKey(profileId, KEY_ENABLED), enabled).commit();
+        }
+    }
+
+    /** Removes only this profile's restrictions; the shared parent PIN is preserved. */
+    public static void clearProfileSettings(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return;
+        synchronized (ChildModeManager.class) {
+            SharedPreferences sp = profilePrefs(ctx);
+            sp.edit()
+                    .remove(profileKey(profileId, KEY_ENABLED))
+                    .remove(profileKey(profileId, KEY_LOCKED_APPS))
+                    .remove(profileKey(profileId, KEY_HIDDEN_APPS))
+                    .commit();
+        }
+    }
+
+    /** Returns true while the active parent PIN is still the unchanged default. */
+    public static boolean isDefaultPin(Context ctx) {
+        return PinCredentialStore.isDefaultPin(ctx);
+    }
+
+    /** Stores a four-character parent PIN using a per-install salt and PBKDF2 hash. */
     public static void setPin(Context ctx, String pin) {
-        if (ctx == null || pin == null || pin.length() != 4) return;
-        ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .edit()
-                .putString(KEY_PIN, pin)
-                .apply();
+        PinCredentialStore.setPin(ctx, pin);
+    }
+
+    private static void postPinResult(Runnable action) {
+        // Resolve the main looper lazily. Robolectric and non-UI callers may load this
+        // manager from a thread without a prepared looper.
+        new Handler(Looper.getMainLooper()).post(action);
+    }
+
+    /** Performs PIN derivation away from the UI thread; no failed-attempt state is kept. */
+    public static void verifyPinAsync(Context ctx, String entered, PinVerificationCallback callback) {
+        if (ctx == null) {
+            if (callback != null) callback.onResult(false);
+            return;
+        }
+        Context appContext = ctx.getApplicationContext();
+        PIN_EXECUTOR.execute(() -> {
+            boolean valid = PinCredentialStore.verifyPin(appContext, entered);
+            postPinResult(() -> {
+                if (callback != null) callback.onResult(valid);
+            });
+        });
+    }
+
+    /** Saves the new credential away from the UI thread and reports durable write success. */
+    public static void setPinAsync(Context ctx, String pin, PinSaveCallback callback) {
+        if (ctx == null) {
+            if (callback != null) callback.onResult(false);
+            return;
+        }
+        Context appContext = ctx.getApplicationContext();
+        PIN_EXECUTOR.execute(() -> {
+            boolean saved = PinCredentialStore.setPin(appContext, pin);
+            postPinResult(() -> {
+                if (callback != null) callback.onResult(saved);
+            });
+        });
+    }
+
+    /** Any switch away from an active Child Mode profile requires parent authorization.
+     * This also prevents moving to a second child profile with weaker restrictions. */
+    static boolean requiresParentPinToSwitch(boolean currentChildMode) {
+        return currentChildMode;
     }
 
     public static boolean verifyPin(Context ctx, String entered) {
-        if (ctx == null || entered == null) return false;
-        return entered.equals(getPin(ctx));
+        return PinCredentialStore.verifyPin(ctx, entered);
     }
 
     public static boolean isAppLocked(Context ctx, String pkg) {
         if (ctx == null || pkg == null) return false;
-        if (!isChildModeEnabled(ctx)) return false;
-        Set<String> set = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getStringSet(KEY_LOCKED_APPS, null);
-        return set != null && set.contains(pkg);
+        String profileId = activeProfileId(ctx);
+        return isChildModeEnabled(ctx, profileId) && getLockedApps(ctx, profileId).contains(pkg);
     }
 
     public static void setAppLocked(Context ctx, String pkg, boolean locked) {
         if (ctx == null || pkg == null) return;
-        SharedPreferences sp = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        Set<String> set = new HashSet<>(sp.getStringSet(KEY_LOCKED_APPS, new HashSet<>()));
-        if (locked) set.add(pkg);
-        else set.remove(pkg);
-        sp.edit().putStringSet(KEY_LOCKED_APPS, set).apply();
+        synchronized (ChildModeManager.class) {
+            String profileId = activeProfileId(ctx);
+            updatePackageMembership(profilePrefs(ctx), profileId, KEY_LOCKED_APPS, pkg, locked);
+        }
     }
 
     public static Set<String> getLockedApps(Context ctx) {
-        if (ctx == null) return new HashSet<>();
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getStringSet(KEY_LOCKED_APPS, new HashSet<>());
+        return ctx == null ? new HashSet<>() : getLockedApps(ctx, activeProfileId(ctx));
+    }
+
+    static Set<String> getLockedApps(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return new HashSet<>();
+        synchronized (ChildModeManager.class) {
+            return new HashSet<>(profilePrefs(ctx).getStringSet(
+                    profileKey(profileId, KEY_LOCKED_APPS), new HashSet<>()));
+        }
     }
 
     public static boolean isAppHidden(Context ctx, String pkg) {
         if (ctx == null || pkg == null) return false;
-        if (!isChildModeEnabled(ctx)) return false;
-        Set<String> set = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getStringSet(KEY_HIDDEN_APPS, null);
-        return set != null && set.contains(pkg);
+        String profileId = activeProfileId(ctx);
+        return isChildModeEnabled(ctx, profileId) && getHiddenApps(ctx, profileId).contains(pkg);
     }
 
     public static void setAppHidden(Context ctx, String pkg, boolean hidden) {
         if (ctx == null || pkg == null) return;
-        SharedPreferences sp = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        Set<String> set = new HashSet<>(sp.getStringSet(KEY_HIDDEN_APPS, new HashSet<>()));
-        if (hidden) set.add(pkg);
-        else set.remove(pkg);
-        sp.edit().putStringSet(KEY_HIDDEN_APPS, set).apply();
+        synchronized (ChildModeManager.class) {
+            String profileId = activeProfileId(ctx);
+            updatePackageMembership(profilePrefs(ctx), profileId, KEY_HIDDEN_APPS, pkg, hidden);
+        }
     }
 
     public static Set<String> getHiddenApps(Context ctx) {
-        if (ctx == null) return new HashSet<>();
-        return ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getStringSet(KEY_HIDDEN_APPS, new HashSet<>());
+        return ctx == null ? new HashSet<>() : getHiddenApps(ctx, activeProfileId(ctx));
+    }
+
+    static Set<String> getHiddenApps(Context ctx, String profileId) {
+        if (ctx == null || profileId == null) return new HashSet<>();
+        synchronized (ChildModeManager.class) {
+            return new HashSet<>(profilePrefs(ctx).getStringSet(
+                    profileKey(profileId, KEY_HIDDEN_APPS), new HashSet<>()));
+        }
+    }
+
+    private static void updatePackageMembership(SharedPreferences preferences, String profileId,
+                                                String keyName, String packageName, boolean enabled) {
+        String key = profileKey(profileId, keyName);
+        Set<String> current = new HashSet<>(preferences.getStringSet(key, new HashSet<>()));
+        Set<String> updated = updatedPackageSet(current, packageName, enabled);
+        preferences.edit().putStringSet(key, updated).commit();
+    }
+
+    /** Saves the complete pending app policy for the profile in one durable write. */
+    static boolean replaceAppPolicyPackages(Context ctx, String profileId, boolean hidden, Set<String> selected) {
+        if (ctx == null || profileId == null || profileId.trim().isEmpty() || selected == null) return false;
+        synchronized (ChildModeManager.class) {
+            Set<String> safe = new HashSet<>();
+            String ownPackage = ctx.getPackageName();
+            for (String packageName : selected) {
+                if (packageName != null && !packageName.trim().isEmpty()
+                        && !packageName.equals(ownPackage)) safe.add(packageName);
+            }
+            String key = profileKey(profileId, hidden ? KEY_HIDDEN_APPS : KEY_LOCKED_APPS);
+            return profilePrefs(ctx).edit().putStringSet(key, safe).commit();
+        }
+    }
+
+    static boolean addAppPolicyPackage(Set<String> seenPackages, String packageName, String ownPackage) {
+        if (seenPackages == null || packageName == null || packageName.trim().isEmpty()
+                || packageName.equals(ownPackage)) return false;
+        return seenPackages.add(packageName);
+    }
+
+    static Set<String> updatedPackageSet(Set<String> current, String packageName, boolean enabled) {
+        Set<String> updated = current == null ? new HashSet<>() : new HashSet<>(current);
+        if (packageName != null) {
+            if (enabled) updated.add(packageName); else updated.remove(packageName);
+        }
+        return updated;
+    }
+
+    private static void verifyPinAttempt(Context ctx, AlertDialog[] dialogHolder,
+            StringBuilder pinBuilder, Runnable updateDots, boolean[] verificationPending,
+            PinCallback callback) {
+        if (verificationPending[0] || pinBuilder.length() != 4) return;
+        verificationPending[0] = true;
+        String candidate = pinBuilder.toString();
+        verifyPinAsync(ctx, candidate, valid -> {
+            verificationPending[0] = false;
+            if (dialogHolder[0] == null || !dialogHolder[0].isShowing()) return;
+            if (valid) {
+                dialogHolder[0].dismiss();
+                if (callback != null) callback.onSuccess();
+            } else {
+                TvFeedback.show(ctx, R.string.incorrect_pin, Toast.LENGTH_SHORT);
+                pinBuilder.setLength(0);
+                updateDots.run();
+            }
+        });
     }
 
     /**
@@ -148,7 +340,7 @@ public final class ChildModeManager {
 
         // Title
         TextView tvTitle = new TextView(ctx);
-        tvTitle.setText(title != null ? title : "Keselamatan PIN");
+        tvTitle.setText(title != null ? title : ctx.getString(R.string.security_pin_title));
         tvTitle.setTextSize(19);
         tvTitle.setTextColor(0xFFFFFFFF);
         tvTitle.setTypeface(outfit, Typeface.BOLD);
@@ -157,7 +349,7 @@ public final class ChildModeManager {
 
         // Subtitle
         TextView tvSub = new TextView(ctx);
-        tvSub.setText(subtitle != null ? subtitle : "Masukkan PIN 4-digit untuk meneruskan");
+        tvSub.setText(subtitle != null ? subtitle : ctx.getString(R.string.pin_continue_prompt));
         tvSub.setTextSize(13);
         tvSub.setTextColor(0xB3FFFFFF);
         tvSub.setTypeface(outfit, Typeface.NORMAL);
@@ -194,6 +386,7 @@ public final class ChildModeManager {
                 }
             }
         };
+        boolean[] verificationPending = {false};
 
         // Keypad Grid (3 columns: 1-9, then Del, 0, OK)
         GridLayout grid = new GridLayout(ctx);
@@ -231,6 +424,9 @@ public final class ChildModeManager {
 
             btn.setOnClickListener(v -> {
                 SoundEffects.playSelect();
+                // Only prevent overlapping crypto work while this PIN is being checked.
+                // This is not a retry limit or cooldown; every completed failure can retry.
+                if (verificationPending[0]) return;
                 if (k.equals("⌫")) {
                     if (pinBuilder.length() > 0) {
                         pinBuilder.deleteCharAt(pinBuilder.length() - 1);
@@ -238,16 +434,10 @@ public final class ChildModeManager {
                     }
                 } else if (k.equals("OK")) {
                     if (pinBuilder.length() == 4) {
-                        if (verifyPin(ctx, pinBuilder.toString())) {
-                            if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-                            if (callback != null) callback.onSuccess();
-                        } else {
-                            Toast.makeText(ctx, "❌ PIN salah. Sila cuba lagi.", Toast.LENGTH_SHORT).show();
-                            pinBuilder.setLength(0);
-                            updateDots.run();
-                        }
+                        verifyPinAttempt(ctx, dialogHolder, pinBuilder, updateDots,
+                                verificationPending, callback);
                     } else {
-                        Toast.makeText(ctx, "Sila masukkan 4 digit PIN", Toast.LENGTH_SHORT).show();
+                        TvFeedback.show(ctx, R.string.pin_four_digits, Toast.LENGTH_SHORT);
                     }
                 } else {
                     if (pinBuilder.length() < 4) {
@@ -255,14 +445,8 @@ public final class ChildModeManager {
                         updateDots.run();
                         if (pinBuilder.length() == 4) {
                             // Auto-verify on 4th digit
-                            if (verifyPin(ctx, pinBuilder.toString())) {
-                                if (dialogHolder[0] != null) dialogHolder[0].dismiss();
-                                if (callback != null) callback.onSuccess();
-                            } else {
-                                Toast.makeText(ctx, "❌ PIN salah. Sila cuba lagi.", Toast.LENGTH_SHORT).show();
-                                pinBuilder.setLength(0);
-                                updateDots.run();
-                            }
+                            verifyPinAttempt(ctx, dialogHolder, pinBuilder, updateDots,
+                                    verificationPending, callback);
                         }
                     }
                 }
@@ -281,7 +465,7 @@ public final class ChildModeManager {
 
         // Cancel Button
         Button btnCancel = new Button(ctx);
-        btnCancel.setText("Batal");
+        btnCancel.setText(R.string.cancel_action);
         btnCancel.setTextSize(13);
         btnCancel.setTypeface(outfit, Typeface.NORMAL);
         btnCancel.setTextColor(0xAAFFFFFF);
@@ -305,12 +489,7 @@ public final class ChildModeManager {
             if (callback != null) callback.onCancelled();
         });
         dialog.show();
-
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            int w = (int) (340 * density);
-            dialog.getWindow().setLayout(w, LinearLayout.LayoutParams.WRAP_CONTENT);
-        }
+        TvDialogStyle.applyCustom(dialog, ctx, 380, 0, 0.68f);
 
         if (firstKey != null) firstKey.requestFocus();
     }

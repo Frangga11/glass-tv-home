@@ -1,0 +1,83 @@
+package com.gathin.tvhome;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.Test;
+
+public class ChildModeManagerStateTest {
+
+    @Test
+    public void concurrentPackageMutationsCanBeAppliedWithoutDroppingEarlierChanges() {
+        Set<String> first = ChildModeManager.updatedPackageSet(
+                Collections.<String>emptySet(), "com.example.one", true);
+        Set<String> second = ChildModeManager.updatedPackageSet(
+                first, "com.example.two", true);
+
+        assertEquals(new HashSet<>(java.util.Arrays.asList(
+                "com.example.one", "com.example.two")), second);
+        assertFalse(first.contains("com.example.two"));
+    }
+
+    @Test
+    public void packageMutationsAreScopedToTheRequestedProfileKey() {
+        String firstProfileKey = ChildModeManager.profileKey("profile_one", "locked_apps");
+        String secondProfileKey = ChildModeManager.profileKey("profile_two", "locked_apps");
+
+        assertFalse(firstProfileKey.equals(secondProfileKey));
+        Set<String> first = ChildModeManager.updatedPackageSet(
+                Collections.<String>emptySet(), "com.example.tv", true);
+        Set<String> second = ChildModeManager.updatedPackageSet(
+                Collections.<String>emptySet(), "com.example.video", true);
+
+        assertTrue(first.contains("com.example.tv"));
+        assertFalse(first.contains("com.example.video"));
+        assertTrue(second.contains("com.example.video"));
+        assertFalse(second.contains("com.example.tv"));
+    }
+
+    @Test
+    public void removingOnePackagePreservesOtherProfileEntries() {
+        Set<String> current = new HashSet<>(java.util.Arrays.asList(
+                "com.example.one", "com.example.two"));
+        Set<String> updated = ChildModeManager.updatedPackageSet(current, "com.example.one", false);
+
+        assertFalse(updated.contains("com.example.one"));
+        assertTrue(updated.contains("com.example.two"));
+        assertEquals(2, current.size());
+    }
+    @Test
+    public void appPolicyPackageFilterMergesCategoriesWithoutDuplicatesOrSelfPackage() {
+        Set<String> seen = new HashSet<>();
+        assertTrue(ChildModeManager.addAppPolicyPackage(seen, "com.example.tv", "com.gathin.tvhome"));
+        assertTrue(ChildModeManager.addAppPolicyPackage(seen, "com.example.mobile", "com.gathin.tvhome"));
+        assertFalse(ChildModeManager.addAppPolicyPackage(seen, "com.example.tv", "com.gathin.tvhome"));
+        assertFalse(ChildModeManager.addAppPolicyPackage(seen, "com.gathin.tvhome", "com.gathin.tvhome"));
+        assertFalse(ChildModeManager.addAppPolicyPackage(seen, null, "com.gathin.tvhome"));
+        assertFalse(ChildModeManager.addAppPolicyPackage(seen, "   ", "com.gathin.tvhome"));
+        assertEquals(2, seen.size());
+    }
+
+    @Test
+    public void appPolicyCountTracksUniquePackageSelections() {
+        Set<String> selected = ChildModeManager.updatedPackageSet(
+                Collections.<String>emptySet(), "com.example.one", true);
+        assertEquals(1, selected.size());
+
+        selected = ChildModeManager.updatedPackageSet(selected, "com.example.one", true);
+        assertEquals(1, selected.size());
+
+        selected = ChildModeManager.updatedPackageSet(selected, "com.example.two", true);
+        assertEquals(2, selected.size());
+
+        selected = ChildModeManager.updatedPackageSet(selected, "com.example.one", false);
+        assertEquals(1, selected.size());
+        assertTrue(selected.contains("com.example.two"));
+    }
+
+}

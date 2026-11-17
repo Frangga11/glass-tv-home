@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -29,6 +30,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Manages OTA in-app update checks, changelog display, and seamless APK downloading
@@ -39,16 +42,17 @@ public final class AppUpdateManager {
     private static final String VERSION_URL = "https://raw.githubusercontent.com/aqmangge/glass-tv-home/main/release/version.json";
     private static final String PREFS_NAME = "update_prefs";
     private static final String KEY_LAST_CHECK = "last_check_timestamp";
-    public static final String KEY_AUTO_UPDATE = "pref_auto_update";
-    public static final String KEY_AUTO_UPDATE_TIME = "pref_auto_update_time";
-    public static final String DEFAULT_AUTO_UPDATE_TIME = "03:30 AM";
-
     public static final String KEY_UPDATE_AVAILABLE = "update_available";
     public static final String KEY_NEW_VERSION_NAME = "new_version_name";
     public static final String KEY_NEW_VERSION_CODE = "new_version_code";
     public static final String KEY_NEW_CHANGELOG = "new_changelog";
     public static final String KEY_NEW_APK_URL = "new_apk_url";
-    public static final String KEY_SKIPPED_VERSION_CODE = "skipped_version_code";
+
+    // Check requests are deliberately shorter than APK downloads; do not alter OTA policy intervals.
+    private static final int CHECK_CONNECT_TIMEOUT_MS = 6000;
+    private static final int CHECK_READ_TIMEOUT_MS = 6000;
+    private static final int DOWNLOAD_CONNECT_TIMEOUT_MS = 10000;
+    private static final int DOWNLOAD_READ_TIMEOUT_MS = 15000;
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -80,13 +84,7 @@ public final class AppUpdateManager {
         return sp.getString(KEY_NEW_APK_URL, "");
     }
 
-    public static void skipUpdate(Context context, int versionCode) {
-        if (context == null) return;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        sp.edit().putInt(KEY_SKIPPED_VERSION_CODE, versionCode).apply();
-    }
-
-    public static void clearUpdateBadge(Context context) {
+    public static void clearUpdateState(Context context) {
         if (context == null) return;
         SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         sp.edit()
@@ -98,40 +96,6 @@ public final class AppUpdateManager {
                 .apply();
     }
 
-    public static boolean isAutoUpdateEnabled(Context context) {
-        if (context == null) return true;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        return sp.getBoolean(KEY_AUTO_UPDATE, true); // default ON
-    }
-
-    public static void setAutoUpdateEnabled(Context context, boolean enabled) {
-        if (context == null) return;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        sp.edit().putBoolean(KEY_AUTO_UPDATE, enabled).apply();
-    }
-
-    public static String getAutoUpdateTime(Context context) {
-        if (context == null) return DEFAULT_AUTO_UPDATE_TIME;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        return sp.getString(KEY_AUTO_UPDATE_TIME, DEFAULT_AUTO_UPDATE_TIME);
-    }
-
-    public static void setAutoUpdateTime(Context context, String time) {
-        if (context == null) return;
-        SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        sp.edit().putString(KEY_AUTO_UPDATE_TIME, time != null ? time : DEFAULT_AUTO_UPDATE_TIME).apply();
-    }
-
-    public static void checkAutoUpdateIfDue(Activity activity) {
-        if (activity == null || !isAutoUpdateEnabled(activity)) return;
-        SharedPreferences sp = activity.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        long lastCheck = sp.getLong(KEY_LAST_CHECK, 0);
-        // Check once every 12 hours at least
-        if (System.currentTimeMillis() - lastCheck >= 12 * 3600 * 1000L) {
-            checkForUpdates(activity, false);
-        }
-    }
-
     public interface CheckCallback {
         void onResult(boolean hasUpdate, String newVersionName, String changelog, String apkUrl);
     }
@@ -139,38 +103,43 @@ public final class AppUpdateManager {
     /**
      * Checks for updates. If manualCheck is true, shows feedback toasts even when up-to-date.
      */
+    private static boolean isActivityUsable(Activity activity) {
+        return activity != null && !activity.isFinishing() && !activity.isDestroyed();
+    }
+
     public static void checkForUpdates(Activity activity, boolean manualCheck) {
-        if (activity == null || activity.isFinishing()) return;
+        if (!isActivityUsable(activity)) return;
 
         if (manualCheck) {
-            Toast.makeText(activity, "🔄 Menyemak kemas kini terkini...", Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, activity.getString(R.string.update_checking), Toast.LENGTH_SHORT);
         }
 
         executor.execute(() -> {
+            HttpURLConnection conn = null;
             try {
                 URL url = new URL(VERSION_URL);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(6000);
-                conn.setReadTimeout(6000);
+                conn.setConnectTimeout(CHECK_CONNECT_TIMEOUT_MS);
+                conn.setReadTimeout(CHECK_READ_TIMEOUT_MS);
                 conn.setUseCaches(false);
 
                 int responseCode = conn.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     if (manualCheck) {
-                        mainHandler.post(() -> Toast.makeText(activity, "❌ Gagal menyemak pelayan kemas kini (HTTP " + responseCode + ")", Toast.LENGTH_SHORT).show());
+                        mainHandler.post(() -> {
+                            if (isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.update_http_failure, responseCode), Toast.LENGTH_SHORT);
+                        });
                     }
+                    conn.disconnect();
                     return;
                 }
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) sb.append(line);
                 }
-                reader.close();
-                conn.disconnect();
 
                 JSONObject json = new JSONObject(sb.toString());
                 int remoteVersionCode = json.optInt("versionCode", 0);
@@ -188,7 +157,7 @@ public final class AppUpdateManager {
                 sp.edit().putLong(KEY_LAST_CHECK, System.currentTimeMillis()).apply();
 
                 mainHandler.post(() -> {
-                    if (activity.isFinishing()) return;
+                    if (!isActivityUsable(activity)) return;
 
                     if (remoteVersionCode > currentVersionCode) {
                         sp.edit()
@@ -199,21 +168,13 @@ public final class AppUpdateManager {
                                 .putString(KEY_NEW_APK_URL, apkUrl)
                                 .apply();
 
-                        if (activity instanceof MainActivity) {
-                            ((MainActivity) activity).updateSettingsBadge();
-                        }
-
-                        int skippedCode = sp.getInt(KEY_SKIPPED_VERSION_CODE, 0);
-                        if (manualCheck || skippedCode < remoteVersionCode) {
-                            showUpdateDialog(activity, remoteVersionName, currentVersionName, changelog, apkUrl, remoteVersionCode);
+                        if (manualCheck) {
+                            showUpdateDialog(activity, remoteVersionName, currentVersionName, changelog, apkUrl);
                         }
                     } else {
-                        clearUpdateBadge(activity);
-                        if (activity instanceof MainActivity) {
-                            ((MainActivity) activity).updateSettingsBadge();
-                        }
+                        clearUpdateState(activity);
                         if (manualCheck) {
-                            Toast.makeText(activity, "✅ Glass TV Home sudah di versi terkini (v" + currentVersionName + ")!", Toast.LENGTH_LONG).show();
+                            TvFeedback.show(activity, activity.getString(R.string.update_latest_version, currentVersionName), Toast.LENGTH_LONG);
                         }
                     }
                 });
@@ -221,40 +182,41 @@ public final class AppUpdateManager {
             } catch (Exception e) {
                 Log.e(TAG, "Error checking updates: " + e.getMessage());
                 if (manualCheck) {
-                    mainHandler.post(() -> Toast.makeText(activity, "❌ Ralat menyemak kemas kini. Sila pastikan Wi-Fi bersambung.", Toast.LENGTH_SHORT).show());
+                    mainHandler.post(() -> {
+                        if (isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.update_check_error), Toast.LENGTH_SHORT);
+                    });
                 }
+            } finally {
+                if (conn != null) conn.disconnect();
             }
         });
     }
 
-    private static void showUpdateDialog(Activity activity, String newVersionName, String currentVersionName, String changelog, String apkUrl, int remoteVersionCode) {
+    private static void showUpdateDialog(Activity activity, String newVersionName, String currentVersionName, String changelog, String apkUrl) {
         if (activity == null || activity.isFinishing()) return;
         SoundEffects.playSelect();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
-        builder.setTitle("🚀 Kemas Kini Baharu Ditemui (v" + newVersionName + ")");
+        builder.setTitle(activity.getString(R.string.update_dialog_title, newVersionName));
 
-        String message = "Versi Semasa: v" + currentVersionName + "\n"
-                + "Versi Terkini: v" + newVersionName + "\n\n"
-                + "📋 Nota Pembaharuan:\n" + changelog + "\n\n"
-                + "Adakah anda ingin mengemas kini sekarang?";
+        String message = activity.getString(R.string.update_dialog_message, currentVersionName, newVersionName, changelog);
         builder.setMessage(message);
 
-        builder.setPositiveButton("⚡ Kemas Kini Sekarang", (dialog, which) -> {
+        builder.setPositiveButton(R.string.update_now_action, (dialog, which) -> {
             SoundEffects.playSelect();
             dialog.dismiss();
             downloadAndInstallApk(activity, apkUrl, newVersionName);
         });
 
-        builder.setNegativeButton("⏭️ Langkau / Nanti Sahaja", (dialog, which) -> {
+        builder.setNegativeButton(R.string.update_later_action, (dialog, which) -> {
             SoundEffects.playSelect();
-            skipUpdate(activity, remoteVersionCode);
             dialog.dismiss();
-            Toast.makeText(activity, "Kemas kini ditangguhkan. Ikon titik merah 🔴 kekal di butang Tetapan.", Toast.LENGTH_SHORT).show();
+            TvFeedback.show(activity, activity.getString(R.string.update_deferred), Toast.LENGTH_SHORT);
         });
 
         AlertDialog dialog = builder.create();
         dialog.show();
+        TvDialogStyle.apply(dialog, activity, 600, 0);
     }
 
     @SuppressWarnings("deprecation")
@@ -263,32 +225,42 @@ public final class AppUpdateManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (!activity.getPackageManager().canRequestPackageInstalls()) {
                 AlertDialog.Builder permDialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog);
-                permDialog.setTitle("⚠️ Kebenaran Pemasangan Diperlukan");
-                permDialog.setMessage("Sila aktifkan 'Allow from this source' untuk membenarkan Glass TV Home memasang kemas kini automatik.");
-                permDialog.setPositiveButton("Buka Tetapan", (d, w) -> {
+                permDialog.setTitle(R.string.install_permission_title);
+                permDialog.setMessage(R.string.install_permission_message);
+                permDialog.setPositiveButton(R.string.open_settings_action, (d, w) -> {
                     try {
                         Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
                                 Uri.parse("package:" + activity.getPackageName()));
                         activity.startActivity(intent);
                     } catch (Exception e) {
-                        Toast.makeText(activity, "Buka Tetapan > Keselamatan > Install Unknown Apps", Toast.LENGTH_LONG).show();
+                        TvFeedback.show(activity, R.string.install_unknown_apps_hint, Toast.LENGTH_LONG);
                     }
                 });
-                permDialog.setNegativeButton("Batal", (d, w) -> d.dismiss());
-                permDialog.show();
+                permDialog.setNegativeButton(R.string.cancel_action, (d, w) -> d.dismiss());
+                AlertDialog permissionDialog = permDialog.create();
+                permissionDialog.show();
+                TvDialogStyle.apply(permissionDialog, activity, 560, 0);
                 return;
             }
         }
 
         ProgressDialog progressDialog = new ProgressDialog(activity, R.style.Theme_TvHome_GlassDialog);
-        progressDialog.setTitle("📥 Memuat Turun Kemas Kini (v" + versionName + ")");
-        progressDialog.setMessage("Sedang memuat turun fail pemasangan...");
+        progressDialog.setTitle(activity.getString(R.string.download_update_title, versionName));
+        progressDialog.setMessage(activity.getString(R.string.download_update_message));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setIndeterminate(false);
+        progressDialog.setIndeterminate(true); // Remains indeterminate until the server supplies a usable content length.
         progressDialog.setMax(100);
         progressDialog.setProgress(0);
         progressDialog.setCancelable(false);
+        AtomicBoolean cancelled = new AtomicBoolean(false);
+        AtomicReference<HttpURLConnection> activeConnection = new AtomicReference<>();
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.cancel_action), (dialog, which) -> {
+            cancelled.set(true);
+            HttpURLConnection active = activeConnection.get();
+            if (active != null) active.disconnect();
+        });
         progressDialog.show();
+        TvDialogStyle.apply(progressDialog, activity, 560, 0);
 
         executor.execute(() -> {
             File cacheDir = activity.getExternalCacheDir() != null ? activity.getExternalCacheDir() : activity.getCacheDir();
@@ -299,14 +271,27 @@ public final class AppUpdateManager {
             HttpURLConnection conn = null;
 
             try {
+                if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
+                if (apkFile.exists() && !apkFile.delete()) throw new java.io.IOException("Tidak dapat menyiapkan file pembaruan");
                 URL url = new URL(apkUrl);
                 conn = (HttpURLConnection) url.openConnection();
+                activeConnection.set(conn);
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(10000);
-                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(DOWNLOAD_CONNECT_TIMEOUT_MS);
+                conn.setReadTimeout(DOWNLOAD_READ_TIMEOUT_MS);
+                if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
                 conn.connect();
 
-                int fileLength = conn.getContentLength();
+                int responseCode = conn.getResponseCode();
+                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    throw new java.io.IOException("HTTP " + responseCode);
+                }
+                long fileLength = conn.getContentLengthLong();
+                if (fileLength > 0) {
+                    mainHandler.post(() -> {
+                        if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.setIndeterminate(false);
+                    });
+                }
                 is = conn.getInputStream();
                 fos = new FileOutputStream(apkFile);
 
@@ -315,35 +300,53 @@ public final class AppUpdateManager {
                 int count;
 
                 while ((count = is.read(buffer)) != -1) {
+                    if (cancelled.get()) throw new java.io.InterruptedIOException("Unduhan dibatalkan");
                     total += count;
                     fos.write(buffer, 0, count);
                     if (fileLength > 0) {
-                        int progress = (int) (total * 100 / fileLength);
-                        mainHandler.post(() -> progressDialog.setProgress(progress));
+                        int progress = (int) Math.min(100L, (total * 100L) / fileLength);
+                        mainHandler.post(() -> {
+                            if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.setProgress(progress);
+                        });
                     }
                 }
                 fos.flush();
+                fos.getFD().sync();
+                if (!NetworkFeedbackPolicy.isCompleteDownload(total, fileLength)) {
+                    throw new java.io.IOException("Unduhan APK tidak lengkap");
+                }
+                // Do not let the installer race the worker's still-open file descriptors.
+                fos.close();
+                fos = null;
+                is.close();
+                is = null;
+                conn.disconnect();
+                conn = null;
+                activeConnection.set(null);
 
                 mainHandler.post(() -> {
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
+                    if (!isActivityUsable(activity)) return;
+                    if (progressDialog.isShowing()) progressDialog.dismiss();
+                    if (cancelled.get()) {
+                        if (apkFile.exists() && !apkFile.delete()) Log.w(TAG, "Could not remove cancelled update APK");
+                        return;
                     }
                     installApk(activity, apkFile);
                 });
 
             } catch (Exception e) {
-                Log.e(TAG, "Download error: " + e.getMessage());
+                if (apkFile.exists() && !apkFile.delete()) Log.w(TAG, "Could not remove incomplete update APK");
+                if (!cancelled.get()) Log.e(TAG, "Download error: " + e.getMessage());
                 mainHandler.post(() -> {
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                    Toast.makeText(activity, "❌ Ralat memuat turun kemas kini: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    if (isActivityUsable(activity) && progressDialog.isShowing()) progressDialog.dismiss();
+                    if (!cancelled.get() && isActivityUsable(activity)) TvFeedback.show(activity, activity.getString(R.string.download_update_error, e.getMessage()), Toast.LENGTH_LONG);
                 });
             } finally {
                 try {
                     if (fos != null) fos.close();
                     if (is != null) is.close();
                     if (conn != null) conn.disconnect();
+                    activeConnection.set(null);
                 } catch (Exception ignored) {
                 }
             }
@@ -351,8 +354,9 @@ public final class AppUpdateManager {
     }
 
     private static void installApk(Activity activity, File apkFile) {
-        if (!apkFile.exists()) {
-            Toast.makeText(activity, "Fail APK kemas kini tidak dijumpai.", Toast.LENGTH_SHORT).show();
+        if (!isActivityUsable(activity)) return;
+        if (!apkFile.exists() || !apkFile.isFile() || apkFile.length() <= 0) {
+            TvFeedback.show(activity, R.string.update_apk_missing, Toast.LENGTH_SHORT);
             return;
         }
 
@@ -365,7 +369,7 @@ public final class AppUpdateManager {
             activity.startActivity(intent);
         } catch (Exception e) {
             Log.e(TAG, "Install error: " + e.getMessage());
-            Toast.makeText(activity, "❌ Gagal memulakan pemasangan: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            TvFeedback.show(activity, activity.getString(R.string.install_update_error, e.getMessage()), Toast.LENGTH_LONG);
         }
     }
 }

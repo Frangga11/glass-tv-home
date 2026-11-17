@@ -4,6 +4,23 @@ Selamat datang ke **Glass TV Home**! Panduan ini khas untuk pengguna baru (*begi
 
 ---
 
+## 👤 Foto Avatar Profil via QR Code
+
+Setiap profil dapat menggunakan avatar hewan bawaan atau satu foto pribadi.
+
+1. Pastikan TV dan HP terhubung ke jaringan Wi-Fi yang sama.
+2. Pada TV, buka **Pengaturan → Profil** lalu pilih **Ganti Foto Avatar via QR Code**.
+3. Pindai QR menggunakan kamera HP dan buka halaman yang muncul.
+4. Pilih satu foto (maksimal 15 MB), lalu kirim ke TV. Sesi QR berlaku selama 5 menit.
+5. Tunggu konfirmasi berhasil di TV sebelum menutup dialog.
+6. Satu sesi QR hanya menerima satu unggahan yang berhasil. Untuk mengganti foto lagi, tutup dialog TV dan buat QR baru.
+7. Pilih **Gunakan Avatar Bawaan** untuk kembali ke avatar hewan.
+8. Foto disimpan di penyimpanan privat aplikasi dan terikat pada profil yang dipilih saat QR dibuat. Menutup dialog atau menghentikan launcher akan menghentikan sesi upload.
+
+Jika unggahan gagal, foto avatar sebelumnya tetap digunakan. Foto milik profil lain tidak ikut berubah.
+
+---
+
 ## 🌟 1. Apa Itu Glass TV Home?
 
 Glass TV Home ialah pengganti skrin utama (*launcher*) untuk Android TV dan Google TV (seperti Xiaomi Mi Box S, Mi TV Stick, Android TV Sharp, Sony, TCL, Philips, Mecool dsb):

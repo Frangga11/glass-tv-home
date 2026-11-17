@@ -3,7 +3,7 @@
     android:layout_width="660dp"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/bg_glass_dialog"
+    android:background="@android:color/transparent"
     android:padding="22dp">
 
     <!-- Header Row -->
@@ -30,7 +30,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Kemas Kini Sistem &amp; Sokongan"
+                android:text="@string/ota_support_title"
                 android:textColor="#FFFFFFFF"
                 android:textSize="18sp"
                 android:fontFamily="@font/inter"
@@ -40,7 +40,7 @@
                 android:id="@+id/tvVersionSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Glass TV Home v3.1.4 • Enjin Auto-Update (OTA)"
+                android:text="@string/ota_version_subtitle"
                 android:textColor="#B3FFFFFF"
                 android:textSize="12sp"
                 android:fontFamily="@font/inter"
@@ -73,10 +73,10 @@
                 android:layout_marginBottom="12dp">
 
                 <TextView
-                    android:id="@+id/tvAutoStatus"
+                    android:id="@+id/tvManualStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="✅ Auto-Update: Aktif (03:30 AM)"
+                    android:text="@string/ota_manual_update_status"
                     android:textColor="#FFFFFFFF"
                     android:textSize="13sp"
                     android:fontFamily="@font/inter"
@@ -85,7 +85,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Kemas kini dimuat turun dan dipasang di latar belakang tanpa mengganggu tontonan."
+                    android:text="@string/ota_update_description"
                     android:textColor="#99FFFFFF"
                     android:textSize="11sp"
                     android:fontFamily="@font/inter"
@@ -98,7 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/bg_dialog_btn"
-                android:text="🔄 Semak Kemas Kini Sekarang"
+                android:text="@string/ota_check_now"
                 android:textColor="#FFFFFFFF"
                 android:textSize="12.5sp"
                 android:fontFamily="@font/inter"
@@ -106,44 +106,10 @@
                 android:gravity="center"
                 android:focusable="true"
                 android:clickable="true"
-                android:nextFocusDown="@+id/btnChangeTime"
-                android:nextFocusRight="@+id/btnClose"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:id="@+id/btnChangeTime"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_dialog_btn"
-                android:text="⏱️ Tukar Waktu Auto-Update"
-                android:textColor="#FFFFFFFF"
-                android:textSize="12.5sp"
-                android:fontFamily="@font/inter"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:focusable="true"
-                android:clickable="true"
-                android:nextFocusUp="@+id/btnCheckNow"
-                android:nextFocusDown="@+id/btnToggleAuto"
-                android:nextFocusRight="@+id/btnClose"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:id="@+id/btnToggleAuto"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_dialog_btn"
-                android:text="⚡ Matikan Auto-Update"
-                android:textColor="#FFFFFFFF"
-                android:textSize="12.5sp"
-                android:fontFamily="@font/inter"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:focusable="true"
-                android:clickable="true"
-                android:nextFocusUp="@+id/btnChangeTime"
                 android:nextFocusDown="@+id/btnClose"
-                android:nextFocusRight="@+id/btnClose" />
+                android:nextFocusRight="@+id/btnClose"
+                android:layout_marginBottom="8dp" />
+
         </LinearLayout>
 
         <!-- Divider Line -->
@@ -179,7 +145,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Belanja Kopi"
+                    android:text="@string/coffee_support"
                     android:textColor="#FFFFFFFF"
                     android:textSize="14sp"
                     android:fontFamily="@font/inter"
@@ -198,7 +164,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DuitNow QR • GXBank"
+                android:text="@string/coffee_payment_method"
                 android:textColor="#80FFFFFF"
                 android:textSize="11sp"
                 android:fontFamily="@font/inter"
@@ -211,12 +177,12 @@
                 android:layout_height="185dp"
                 android:src="@drawable/qr_coffee"
                 android:scaleType="fitCenter"
-                android:contentDescription="DuitNow QR @imsomangge" />
+                android:contentDescription="@string/ota_qr_content_description" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Imbas guna kamera fon / perbankan"
+                android:text="@string/coffee_qr_description"
                 android:textColor="#B3FFFFFF"
                 android:textSize="10.5sp"
                 android:fontFamily="@font/inter"
@@ -225,7 +191,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📧 Cadangan: ahmad.anammat@me.com"
+                android:text="@string/ota_backup_contact"
                 android:textColor="#80FFFFFF"
                 android:textSize="10sp"
                 android:fontFamily="@font/inter"
@@ -245,7 +211,7 @@
             android:layout_width="130dp"
             android:layout_height="38dp"
             android:background="@drawable/bg_dialog_btn"
-            android:text="Tutup"
+            android:text="@string/close_label"
             android:textColor="#FFFFFFFF"
             android:textSize="13sp"
             android:fontFamily="@font/inter"
@@ -253,7 +219,7 @@
             android:gravity="center"
             android:focusable="true"
             android:clickable="true"
-            android:nextFocusUp="@+id/btnToggleAuto"
-            android:nextFocusLeft="@+id/btnToggleAuto" />
+            android:nextFocusUp="@+id/btnCheckNow"
+            android:nextFocusLeft="@+id/btnCheckNow" />
     </LinearLayout>
 </LinearLayout>

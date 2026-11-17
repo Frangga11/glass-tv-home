@@ -1221,3 +1221,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Latest prototype artifact commit: `88d71836f9b0d87c19f276c8e3a87508f37b366c`. P3 specification updated to record artifact and remaining gate.
 - **P3 remains IN PROGRESS.** Required next work: walkthrough P3-01..P3-12, inspect all six layouts/states against P2, correct any focus/navigation/contrast/overflow defects, then close P3 only when every exit criterion is evidenced.
 - No production source, owner branch, PR metadata, integration/main, APK, ADB, HOME/default launcher or physical TV changed.
+
+
+## Cumulative Home integration checkpoint — 17 November 2026
+
+- User confirmed that physical Mi TV Stick testing of the current cumulative QA candidate is **clear and clean**. Treat this as user-reported device acceptance for the tested scope; any newly observed issue will be handled as a follow-up corrective task.
+- Cumulative source candidate: PR #154 head `3b14c44024095a8286dae2c86b0e3ee57b7cce3c`, stacked on PR #153 head `b91f93d0953d43d5157e96fe71d390440895882d`. PRs #137–#154 remain historical/source chain; #138 is merged into its parent branch, #146 is closed as superseded, and #142–#144 are closed superseded.
+- Exact-head CI for PR #154: run #2284 / `44045840765`, both required jobs SUCCESS. Release publisher was skipped because source PR remained Draft.
+- PR #154 includes the DPAD source-first Dock→Grid focus handoff, continuous Move Mode GLASS Glider/black-shadow handoff, and Home weather cache restoration before the 15-minute network-fetch gate. No unrelated UI skin/layout, prayer/Ayah, popup, or wallpaper selection changes were included in #154.
+- Main synchronization audit: candidate and main diverged from merge base `fec70ffa6e03e0f903186cc1491f4358a99768a7`; candidate has 2,345 commits ahead and main has 6 commits ahead. The main-only changes are confined by compare output to `.github/workflows/ci.yml` and `docs/project-management/HANDOVER.md`; main also removes the misplaced standalone `GTVH-HOME-SHARED-CYAN-BREATHING-FOCUS-ROWS-001.md` draft artifact.
+- Integration branch `integration/main-sync-2026-11-17` is created from the exact PR #154 head. This branch is intended to preserve the candidate's newer CI behavior and artifact diagnostics, restore manual `workflow_dispatch` capability from main without reintroducing the historical 1.2 MiB hard APK ceiling, and carry forward the historical HANDOVER record with this checkpoint appended.
+- Physical acceptance is user-reported; no remote ADB session or independent device instrumentation was performed by the assistant. Future defects reported by the user remain eligible for scoped fixes.
+- Next gates: exact-head CI on this integration branch; review PR diff against main; merge only after required checks pass and GitHub reports the PR mergeable. Do not publish a final release APK from an unapproved or unmerged SHA.

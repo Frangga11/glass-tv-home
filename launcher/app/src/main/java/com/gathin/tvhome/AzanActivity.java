@@ -7,7 +7,6 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,6 +29,9 @@ import java.util.Date;
  * underneath is where it was.
  */
 public class AzanActivity extends Activity {
+    // 0.843 total linear scale targets approximately 12% of screen area from the prior photo-based area estimate.
+    // Keep the window anchor and top offset independent so the popup does not move.
+    private static final float CARD_SCALE = 0.843f;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private MediaPlayer player;
     private AudioManager audio;
@@ -38,6 +40,11 @@ public class AzanActivity extends Activity {
     private TextView hint;
     /** True once the card has been on screen: until then a stop is the screensaver going, not the owner. */
     private boolean shown;
+
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        super.attachBaseContext(LocaleContext.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,23 +68,25 @@ public class AzanActivity extends Activity {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
-        card.setPadding(dp(30), dp(20), dp(34), dp(20));
-        GradientDrawable glass = new GradientDrawable();
-        // Safe default dark glass background tint: readable over bright content even without window blur
-        glass.setColor(0xE0141C2C);
-        glass.setCornerRadius(dp(28));
-        glass.setStroke(Math.max(1, dp(1.5f)), 0x59FFFFFF);
-        card.setBackground(glass);
+        card.setPadding(cardDp(30), cardDp(20), cardDp(34), cardDp(20));
+        // Match the approved Waktu Sholat popup material exactly: shared blurred Backdrop fill,
+        // the same veil, and the same 20dp glass rim. No popup-specific opaque tint.
+        card.setBackground(new GlassDrawable(card, 20 * density * CARD_SCALE, density, null, 0.5f));
+        GradientDrawable focusOutline = new GradientDrawable();
+        focusOutline.setColor(0x00000000);
+        focusOutline.setCornerRadius(cardDp(20));
+        focusOutline.setStroke(Math.max(1, cardDp(1.5f)), 0x80DCE5ED);
+        card.setForeground(focusOutline);
         card.setClipToOutline(true);
-        card.setElevation(dp(16));
+        card.setElevation(cardDp(16));
 
         TextView takbir = text("ٱللَّهُ أَكْبَرُ", amiri, 40, 0xFFF5D489, 400);
         card.addView(takbir);
         View line = new View(this);
         line.setBackgroundColor(0x33FFFFFF);
-        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(Math.max(1, dp(1)), dp(70));
-        llp.leftMargin = dp(26);
-        llp.rightMargin = dp(26);
+        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(Math.max(1, cardDp(1)), cardDp(70));
+        llp.leftMargin = cardDp(26);
+        llp.rightMargin = cardDp(26);
         card.addView(line, llp);
 
         LinearLayout words = new LinearLayout(this);
@@ -92,7 +101,7 @@ public class AzanActivity extends Activity {
         LinearLayout nameRow = new LinearLayout(this);
         nameRow.setOrientation(LinearLayout.HORIZONTAL);
         nameRow.setGravity(Gravity.BOTTOM);
-        nameRow.setPadding(0, dp(2), 0, dp(2));
+        nameRow.setPadding(0, cardDp(2), 0, cardDp(2));
 
         String[] pNames = AppLanguage.getPrayerNames(this);
         int validPrayerIdx = Math.max(0, Math.min(prayer, pNames.length - 1));
@@ -101,7 +110,7 @@ public class AzanActivity extends Activity {
         nameRow.addView(name);
         TextView time = text(when, outfit, 20, 0xCCFFFFFF, 300);
         time.setSingleLine(true);
-        time.setPadding(dp(14), 0, 0, dp(3));
+        time.setPadding(cardDp(14), 0, 0, cardDp(3));
         nameRow.addView(time);
         words.addView(nameRow);
         hint = text(AppLanguage.strAzanPopupHint(this), outfit, 12, 0x99FFFFFF, 400);
@@ -111,25 +120,17 @@ public class AzanActivity extends Activity {
         card.setFocusable(true);
         card.setClickable(true);
         card.setOnClickListener(v -> finish());
+        card.setOnFocusChangeListener((view, hasFocus) -> {
+            focusOutline.setStroke(Math.max(1, cardDp(hasFocus ? 2f : 1.5f)),
+                    hasFocus ? TvUiTokens.FOCUS_BORDER : 0x80DCE5ED);
+            focusOutline.invalidateSelf();
+        });
 
-        // CRITICAL FIX FOR ISSUE #5:
-        // Must call setContentView(card) FIRST so the Window creates and attaches its DecorView.
-        // On Android 14 (Chromecast Sabrina, etc.), calling setBackgroundBlurRadius before
-        // setContentView dereferences a null DecorView inside PhoneWindow and throws NullPointerException.
+        // Attach the card first, then register it to redraw with the shared Home backdrop.
         setContentView(card);
-
-        if (Build.VERSION.SDK_INT >= 31) {
-            try {
-                WindowManager wm = getSystemService(WindowManager.class);
-                if (wm != null && wm.isCrossWindowBlurEnabled() && w.getDecorView() != null) {
-                    w.setBackgroundBlurRadius(dp(30));
-                    glass.setColor(0xB3101826);
-                }
-            } catch (Throwable t) {
-                // Graceful fallback: keep solid frosted glass tint without crashing
-                android.util.Log.w("TvHome.Azan", "Window blur unavailable or failed: " + t.getMessage());
-            }
-        }
+        // Backdrop maps the same blurred Home wallpaper into this floating Activity window.
+        Backdrop.watch(card);
+        card.requestFocus();
 
         String soundChoice = Azan.getSoundChoice(this);
         if (Azan.SOUND_SILENT.equals(soundChoice)) {
@@ -247,11 +248,15 @@ public class AzanActivity extends Activity {
         TextView t = new TextView(this);
         t.setText(s);
         t.setTypeface(font);
-        t.setTextSize(sp);
+        t.setTextSize(sp * CARD_SCALE);
         t.setTextColor(color);
         t.setGravity(Gravity.CENTER);
         if (font != null) t.setFontVariationSettings("'wght' " + weight);
         return t;
+    }
+
+    private int cardDp(float v) {
+        return Math.max(1, Math.round(v * density * CARD_SCALE));
     }
 
     private int dp(float v) {

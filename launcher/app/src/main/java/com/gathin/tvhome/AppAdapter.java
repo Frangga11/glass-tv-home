@@ -87,7 +87,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         }
     }
 
-    static final float FOCUS_SCALE = 1.07f;
+    /** Visual focus never scales a tile; keep the historical reservation for unchanged layout geometry. */
+    static final float FOCUS_SCALE = 1.0f;
+    static final float LAYOUT_FOCUS_RESERVATION_SCALE = 1.07f;
     /** Shared by every tile's zoom, so a focus move makes no new objects. */
     private static final DecelerateInterpolator ZOOM_REDUCED = new DecelerateInterpolator();
     private static final OvershootInterpolator ZOOM_IN = new OvershootInterpolator(1.6f);
@@ -103,7 +105,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         int design = Math.round(DESIGN_W_DP * density);
         if (innerWidthPx <= 0 || columns <= 0) return design;
         int cell = innerWidthPx / columns;
-        int fit = (int) ((cell - 18 * density) / FOCUS_SCALE);
+        int fit = (int) ((cell - 18 * density) / LAYOUT_FOCUS_RESERVATION_SCALE);
         return Math.max(Math.round(80 * density), Math.min(design, fit));
     }
 
@@ -118,7 +120,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     private final Context ctx;
     private final TileListener listener;
-    private final int dockSize;
+    private final int gridColumns;
     /** Dock order (config.xml dock_apps, or a theme's config.json). */
     private final List<String> favourites;
     /** Never shown as tiles (res/values/config.xml, hidden_apps). */
@@ -126,21 +128,26 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private final boolean showHomeSettings;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): no overshoot, shorter fades. */
     private final boolean reducedMotion;
-    private final List<Entry> items = new ArrayList<>();
+    private boolean iconAnimationsEnabled;
+    /** Single ordered source of truth; Dock/Grid are projections, never independent app inventories. */
+    private final TileBinder tileBinder;
+    private final AppInventory<Entry> items = new AppInventory<>(
+            entry -> entry.component.flattenToShortString());
     /** The order someone arranged the tiles in, by key (see {@link #keyAt}); empty until they do. */
     private final List<String> arranged = new ArrayList<>();
+    private DockLayoutModel.Snapshot<Entry> presentationSnapshot;
     private static final String ORDER_PREFS = "tiles", ORDER_KEY = "order";
-    /** Rebind payload: only whether the tile's name shows, which depends on being in the dock. */
-    private static final Object DOCK_CHANGED = new Object();
-
-    AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
+    AppAdapter(Context ctx, TileListener listener, int gridColumns, Config cfg) {
         this.ctx = ctx;
         this.listener = listener;
-        this.dockSize = dockSize;
+        this.tileBinder = new TileBinder(ctx);
+        this.gridColumns = Math.max(1, gridColumns);
         this.favourites = cfg.dockApps;
         this.hidden = new HashSet<>(cfg.hiddenApps);
         this.showHomeSettings = cfg.showHomeSettingsShortcut;
         this.reducedMotion = cfg.reducedMotion;
+        this.iconAnimationsEnabled = ctx.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE)
+                .getBoolean("icon_animations_enabled", true);
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -265,8 +272,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     new ComponentName(ctx, HomeSettingsActivity.class), null,
                     ctx.getDrawable(R.drawable.ic_home_settings), null, 0));
         }
-        items.clear();
-        items.addAll(fresh);
+        items.replace(fresh);
+        presentationSnapshot = null;
         notifyDataSetChanged();
         return true;
     }
@@ -293,7 +300,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, dockSize, density), h = tileHeightPx(w);
+        int w = tileWidthPx(inner, gridColumns, density), h = tileHeightPx(w);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;
@@ -304,32 +311,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         nameLp.width = w;
         nameLp.topMargin = h + Math.round(7 * density);
         name.setLayoutParams(nameLp);
-        return new Holder(v, listener, reducedMotion);
+        return new Holder(v, listener, reducedMotion, iconAnimationsEnabled, false);
     }
 
     @Override
     public void onBindViewHolder(@NonNull Holder h, int position) {
-        Entry e = items.get(position);
-        h.name.setText(e.name);
-        h.name.setVisibility(position < dockSize ? View.INVISIBLE : View.VISIBLE);   // the dock has no labels
-        boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
-        h.name.setAlpha(focused ? 1f : 0f);
-        h.card.setScaleX(focused ? FOCUS_SCALE : 1f);
-        h.card.setScaleY(focused ? FOCUS_SCALE : 1f);
-        if (e.banner != null) {
-            h.banner.setImageDrawable(e.banner);
-            h.banner.setVisibility(View.VISIBLE);
-            h.icon.setVisibility(View.GONE);
-            h.label.setVisibility(View.GONE);
-        } else {
-            h.banner.setImageDrawable(null);
-            h.banner.setVisibility(View.GONE);
-            h.icon.setImageDrawable(e.icon);
-            h.icon.setVisibility(View.VISIBLE);
-            h.label.setText(e.label);
-            h.label.setVisibility(View.VISIBLE);
-        }
-        h.card.setOnClickListener(v -> launch(e));
+        Entry e = gridSnapshot().gridItems.get(position);
+        tileBinder.bind(h, e, true, iconAnimationsEnabled);
+        h.card.setOnClickListener(v -> tileBinder.launch(e));
         h.card.setOnLongClickListener(v -> {
             int pos = h.getBindingAdapterPosition();
             if (listener != null && pos != RecyclerView.NO_POSITION && listener.onTileHeld(pos, v)) return true;
@@ -337,19 +326,19 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             return true;
         });
     }
-
-    @Override
-    public void onBindViewHolder(@NonNull Holder h, int position, @NonNull List<Object> payloads) {
-        if (payloads.size() == 1 && payloads.get(0) == DOCK_CHANGED) {
-            h.name.setVisibility(position < dockSize ? View.INVISIBLE : View.VISIBLE);
-            return;
-        }
-        onBindViewHolder(h, position);
-    }
-
     /** Android's page for the app at {@code position}: storage, permissions, uninstall. */
     void openAppInfo(int position) {
-        if (position >= 0 && position < items.size()) openAppInfo(items.get(position));
+        List<Entry> grid = gridSnapshot().gridItems;
+        if (position >= 0 && position < grid.size()) openAppInfo(grid.get(position));
+    }
+
+    void openAppInfoByKey(String key) {
+        int index = inventoryPositionOf(key);
+        if (index >= 0) openAppInfo(items.get(index));
+    }
+
+    private int inventoryPositionOf(String key) {
+        return items.indexOfKey(key);
     }
 
     private void openAppInfo(Entry e) {
@@ -363,13 +352,15 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     /** Whether the tile at {@code position} can be moved: every app can, the Default home tile cannot. */
     boolean canMove(int position) {
-        return position >= 0 && position < items.size() && items.get(position).kind != Entry.HOME_SETTINGS;
+        List<Entry> grid = gridSnapshot().gridItems;
+        return position >= 0 && position < grid.size() && grid.get(position).kind != Entry.HOME_SETTINGS;
     }
 
     /** The last position a moved tile can take: before the Default home tile, which stays last. */
     int lastMovable() {
-        int last = items.size() - 1;
-        while (last >= 0 && items.get(last).kind == Entry.HOME_SETTINGS) last--;
+        List<Entry> grid = gridSnapshot().gridItems;
+        int last = grid.size() - 1;
+        while (last >= 0 && grid.get(last).kind == Entry.HOME_SETTINGS) last--;
         return last;
     }
 
@@ -378,90 +369,199 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      * the new order. Returns false when it cannot go there.
      */
     boolean move(int from, int to) {
+        DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+        List<Entry> grid = new ArrayList<>(snapshot.gridItems);
         if (from == to || !canMove(from) || to < 0 || to > lastMovable()) return false;
-        Entry e = items.remove(from);
-        items.add(to, e);
-        notifyItemMoved(from, to);
-        // A tile crossing into or out of the dock shows or hides its name.
-        int lo = Math.min(from, to), hi = Math.max(from, to);
-        if (lo < dockSize && hi >= dockSize) notifyItemRangeChanged(lo, hi - lo + 1, DOCK_CHANGED);
-        arranged.clear();
-        for (Entry x : items) if (x.kind != Entry.HOME_SETTINGS) arranged.add(x.component.flattenToShortString());
-        ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
-                .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+        Entry moved = grid.remove(from);
+        grid.add(to, moved);
+        replacePresentationOrder(snapshot.dockItems, grid);
         return true;
     }
 
-    /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
-    private void launch(Entry e) {
-        SoundEffects.playSelect();
-        if (e.kind == Entry.HOME_SETTINGS) {
-            ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            return;
-        }
-        if (ChildModeManager.isAppLocked(ctx, e.pkg)) {
-            ChildModeManager.promptPin(ctx, "Aplikasi Dikunci", "Masukkan PIN 4-digit untuk membuka " + e.label, new ChildModeManager.PinCallback() {
-                @Override
-                public void onSuccess() {
-                    performLaunch(e);
-                }
-
-                @Override
-                public void onCancelled() {}
-            });
-            return;
-        }
-        performLaunch(e);
+    boolean moveDock(int from, int to) {
+        DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+        List<String> pinned = currentPinnedKeys();
+        if (from == to || from < 0 || to < 0 || from >= snapshot.dockItems.size()
+                || to >= snapshot.dockItems.size() || from >= pinned.size() || to >= pinned.size()) return false;
+        List<String> reordered = DockLayoutModel.movePinnedKey(pinned, from, to, snapshot.dockItems.size());
+        if (reordered.equals(pinned) || !DockPreferences.savePinnedState(ctx, reordered, DockPreferences.loadUnpinnedKeys(ctx))) return false;
+        presentationSnapshot = null;
+        notifyDataSetChanged();
+        return true;
     }
 
-    private void performLaunch(Entry e) {
-        Intent i = new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
-                .setComponent(e.component)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        try {
-            RecentAppsManager.recordAppLaunch(ctx, e.pkg);
-            ctx.startActivity(i);
-        } catch (Exception ex) {
-            Toast.makeText(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT).show();
+    boolean pinToDock(String key, int requestedPosition) {
+        if (key == null || key.trim().isEmpty()) return false;
+        List<String> pinned = currentPinnedKeys();
+        List<String> updated = DockLayoutModel.pinKey(pinned, key, requestedPosition, DockPreferences.load(ctx).capacity);
+        if (updated.equals(pinned)) return false;
+        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        excluded.remove(key);
+        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+        presentationSnapshot = null;
+        notifyDataSetChanged();
+        return true;
+    }
+
+    boolean unpinFromDock(String key) {
+        if (key == null || key.trim().isEmpty()) return false;
+        List<String> pinned = currentPinnedKeys();
+        List<String> updated = DockLayoutModel.unpinKey(pinned, key);
+        if (updated.equals(pinned)) return false;
+        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        if (!excluded.contains(key)) excluded.add(key);
+        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+        presentationSnapshot = null;
+        notifyDataSetChanged();
+        return true;
+    }
+
+    /**
+     * Removes a visible Dock tile and inserts it into the Grid at the requested position.
+     * Used by horizontal Move Mode so DOWN returns directly below the Dock slot currently occupied,
+     * rather than restoring the app's stale pre-Dock Grid position.
+     */
+    boolean unpinFromDockAtGridPosition(String key, int gridPosition) {
+        if (key == null || key.trim().isEmpty()) return false;
+        DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+        List<Entry> dock = new ArrayList<>(snapshot.dockItems);
+        Entry selected = null;
+        for (int i = 0; i < dock.size(); i++) {
+            Entry candidate = dock.get(i);
+            if (key.equals(candidate.component.flattenToShortString())) {
+                selected = dock.remove(i);
+                break;
+            }
         }
+        if (selected == null) return false;
+
+        List<String> pinned = currentPinnedKeys();
+        List<String> updated = DockLayoutModel.unpinKey(pinned, key);
+        if (updated.equals(pinned)) return false;
+        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        if (!excluded.contains(key)) excluded.add(key);
+        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+
+        // Re-split after the Dock vacancy is created. An overflow-pinned entry may be promoted
+        // into the freed Dock slot; that promotion must happen BEFORE the Grid insertion index
+        // is chosen or the moved app shifts one column to the left after the rebind.
+        presentationSnapshot = null;
+        DockLayoutModel.Snapshot<Entry> updatedSnapshot = dockSnapshot();
+        List<Entry> finalGrid = new ArrayList<>(updatedSnapshot.gridItems);
+        for (int i = finalGrid.size() - 1; i >= 0; i--) {
+            if (key.equals(finalGrid.get(i).component.flattenToShortString())) {
+                finalGrid.remove(i);
+                break;
+            }
+        }
+        List<Entry> finalDock = new ArrayList<>(updatedSnapshot.dockItems);
+        List<Entry> positionedGrid = DockLayoutModel.insertAtPosition(finalGrid, selected, gridPosition);
+        replacePresentationOrder(finalDock, positionedGrid);
+        return true;
+    }
+
+    private void replacePresentationOrder(List<Entry> dock, List<Entry> grid) {
+        List<Entry> ordered = new ArrayList<>(dock.size() + grid.size());
+        ordered.addAll(dock);
+        ordered.addAll(grid);
+        items.replace(ordered);
+        presentationSnapshot = null;
+        arranged.clear();
+        for (Entry x : ordered) if (x.kind != Entry.HOME_SETTINGS) arranged.add(x.component.flattenToShortString());
+        ctx.getSharedPreferences(ORDER_PREFS, Context.MODE_PRIVATE).edit()
+                .putString(ORDER_KEY, android.text.TextUtils.join("\n", arranged)).apply();
+        notifyDataSetChanged();
+    }
+
+    /** Immutable presentation partition shared by the independent Dock and App Grid adapters. */
+    DockLayoutModel.Snapshot<Entry> gridSnapshot() {
+        return dockSnapshot();
+    }
+
+    DockLayoutModel.Snapshot<Entry> dockSnapshot() {
+        if (presentationSnapshot == null) {
+            int capacity = DockPreferences.load(ctx).capacity;
+            List<String> pinnedComponentKeys = currentPinnedKeys();
+            presentationSnapshot = DockLayoutModel.split(items, pinnedComponentKeys, capacity,
+                    entry -> entry.component.flattenToShortString());
+        }
+        return presentationSnapshot;
+    }
+
+    void invalidateDockSnapshot() {
+        presentationSnapshot = null;
+    }
+
+    private List<String> currentPinnedKeys() {
+        List<String> explicit = DockPreferences.loadPinnedKeys(ctx);
+        List<String> defaults = DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
+                entry -> entry.component.flattenToShortString(),
+                entry -> entry.kind == Entry.HOME_SETTINGS ? null : entry.pkg);
+        List<String> merged = DockLayoutModel.mergePinnedKeys(
+                explicit, defaults, DockPreferences.loadUnpinnedKeys(ctx));
+        List<String> resolved = DockLayoutModel.orderedExplicitPinnedKeys(items, merged,
+                entry -> entry.component.flattenToShortString());
+        List<String> inventoryKeys = new ArrayList<>();
+        for (Entry entry : items) inventoryKeys.add(entry.component.flattenToShortString());
+        // Patch 4.1 contract: configured favourites lead, then fill the remaining Dock slots
+        // from the same ordered inventory. A short/empty favourites list must not erase the Dock.
+        return new ArrayList<>(DockLayoutModel.fillDockSlots(
+                resolved, inventoryKeys, DockPreferences.loadUnpinnedKeys(ctx),
+                DockPreferences.load(ctx).capacity));
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return gridSnapshot().gridItems.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return items.get(position).component.flattenToShortString().hashCode();
+        return gridSnapshot().gridItems.get(position).component.flattenToShortString().hashCode();
+    }
+
+    void setIconAnimationsEnabled(boolean enabled, RecyclerView recyclerView) {
+        iconAnimationsEnabled = enabled;
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
+            if (holder instanceof Holder) ((Holder) holder).setIconAnimationsEnabled(enabled);
+        }
     }
 
     /** Stable key for the app at a position (its component), or null. */
     String keyAt(int position) {
-        return position >= 0 && position < items.size() ? items.get(position).component.flattenToShortString() : null;
+        List<Entry> grid = gridSnapshot().gridItems;
+        return position >= 0 && position < grid.size() ? grid.get(position).component.flattenToShortString() : null;
     }
 
-    /** Position of the app with this key, or -1 when it is gone. */
+    /** Position of the app with this key in the App Grid, or -1 when it is not there. */
     int positionOf(String key) {
         if (key == null) return -1;
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).component.flattenToShortString().equals(key)) return i;
+        List<Entry> grid = gridSnapshot().gridItems;
+        for (int i = 0; i < grid.size(); i++) {
+            if (grid.get(i).component.flattenToShortString().equals(key)) return i;
         }
         return -1;
     }
 
     String labelAt(int position) {
-        return position >= 0 && position < items.size() ? items.get(position).label : "";
+        List<Entry> grid = gridSnapshot().gridItems;
+        return position >= 0 && position < grid.size() ? grid.get(position).label : "";
     }
 
     /** A vivid colour sampled from the app's banner (or icon), cached per entry; a card's accent when it set one. */
     int ambientColorAt(int position) {
-        if (position < 0 || position >= items.size()) return 0xFF444444;
-        Entry e = items.get(position);
+        List<Entry> grid = gridSnapshot().gridItems;
+        if (position < 0 || position >= grid.size()) return 0xFF444444;
+        Entry e = grid.get(position);
         if (e.ambient == 0) e.ambient = vividColor(e.banner != null ? e.banner : e.icon);
         return e.ambient;
+    }
+
+    int ambientColorFor(Entry entry) {
+        if (entry == null) return 0xFF444444;
+        if (entry.ambient == 0) entry.ambient = vividColor(entry.banner != null ? entry.banner : entry.icon);
+        return entry.ambient;
     }
 
     private static int vividColor(Drawable live) {
@@ -517,16 +617,23 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         final ImageView icon;
         final TextView label;
         final TextView name;
+        final DockBreathingBorderView breathingBorder;
         final boolean reducedMotion;
+        private final boolean dockTile;
+        private boolean iconAnimationsEnabled;
 
-        Holder(View v, TileListener listener, boolean reducedMotion) {
+        Holder(View v, TileListener listener, boolean reducedMotion,
+               boolean iconAnimationsEnabled, boolean dockTile) {
             super(v);
             card = v.findViewById(R.id.card);
             banner = v.findViewById(R.id.banner);
             icon = v.findViewById(R.id.icon);
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
+            breathingBorder = v.findViewById(R.id.dockBreathingBorder);
             this.reducedMotion = reducedMotion;
+            this.iconAnimationsEnabled = iconAnimationsEnabled;
+            this.dockTile = dockTile;
 
             final float density = v.getResources().getDisplayMetrics().density;
             card.setOutlineProvider(new ViewOutlineProvider() {
@@ -547,10 +654,27 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             });
 
             card.setOnFocusChangeListener((view, focused) -> {
-                float s = focused ? FOCUS_SCALE : 1.0f;
+                if (breathingBorder != null) {
+                    // The Dock breathing rim is the canonical Home app-focus treatment.
+                    // Use the exact same view/animation for Dock row and expanded Grid rows;
+                    // row identity must not change focus appearance.
+                    if (focused) {
+                        float r = cornerRadius(view.getWidth(), density);
+                        breathingBorder.setCornerRadiusDp(r / density);
+                        breathingBorder.setVisibility(View.VISIBLE);
+                    } else {
+                        breathingBorder.setVisibility(View.GONE);
+                    }
+                }
+                float s = focused && iconAnimationsEnabled ? FOCUS_SCALE : 1.0f;
                 view.animate().cancel();
                 name.animate().cancel();
-                if (reducedMotion) {
+                if (!iconAnimationsEnabled) {
+                    view.setScaleX(1f);
+                    view.setScaleY(1f);
+                    name.setAlpha(focused ? 1f : 0f);
+                    name.setTranslationY(0f);
+                } else if (reducedMotion) {
                     // No overshoot: the extra frames redraw the banner and the dock band on a weak GPU.
                     view.animate().scaleX(s).scaleY(s)
                             .setDuration(focused ? 120 : 80)
@@ -565,7 +689,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                             .withLayer()
                             .start();
                     name.animate().alpha(focused ? 1f : 0f)
-                            .translationY(focused ? density * 4f : -density * 6f)
+                            .translationY(0f)
                             .setDuration(220).start();
                 }
                 int pos = getBindingAdapterPosition();
@@ -573,6 +697,23 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     listener.onTileFocused(pos, view);
                 }
             });
+        }
+
+        void setIconAnimationsEnabled(boolean enabled) {
+            iconAnimationsEnabled = enabled;
+            card.animate().cancel();
+            name.animate().cancel();
+            boolean focused = card.isFocused();
+            if (!enabled) {
+                card.setScaleX(1f);
+                card.setScaleY(1f);
+                name.setAlpha(focused ? 1f : 0f);
+                name.setTranslationY(0f);
+            } else if (focused) {
+                card.setScaleX(FOCUS_SCALE);
+                card.setScaleY(FOCUS_SCALE);
+                name.setAlpha(1f);
+            }
         }
     }
 }

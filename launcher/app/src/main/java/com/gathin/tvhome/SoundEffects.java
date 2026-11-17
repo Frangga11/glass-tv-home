@@ -116,6 +116,13 @@ final class SoundEffects {
         return "PlayStation 5";
     }
 
+    static String getThemeDisplayName(String theme, Context context) {
+        if (THEME_OFF.equalsIgnoreCase(theme) && context != null) {
+            return LocaleContext.wrap(context).getString(R.string.sound_theme_off_display);
+        }
+        return getThemeDisplayName(theme);
+    }
+
     static void playNav() {
         if (!THEME_OFF.equalsIgnoreCase(activeTheme) && ready && soundPool != null && soundNav != 0) {
             soundPool.play(soundNav, navVolume, navVolume, 0, 0, 1.0f);

@@ -19,4 +19,11 @@
     <string name="input_key_service_description">Öffnet die Quellenauswahl, wenn die Input-Taste der Fernbedienung gedrückt wird.</string>
     <string name="tile_move">Verschieben</string>
     <string name="tile_app_info">App-Info</string>
+    <string name="dock_orientation_title">Dock-Ausrichtung</string>
+    <string name="dock_orientation_summary">Wählen Sie ein horizontales oder vertikales Dock-Layout.</string>
+    <string name="dock_orientation_horizontal">Horizontal</string>
+    <string name="dock_orientation_vertical">Vertikal</string>
+    <string name="dock_capacity_title">Dock-Kapazität</string>
+    <string name="dock_capacity_summary">Wählen Sie die Anzahl der angezeigten Apps: 4, 5 oder 6.</string>
+    <string name="dock_settings_save_failed">Dock-Einstellungen konnten nicht gespeichert werden.</string>
 </resources>

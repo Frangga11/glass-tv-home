@@ -44,4 +44,11 @@
     <string name="card_state_new_label">Новое название</string>
     <string name="tile_move">Переместить</string>
     <string name="tile_app_info">О приложении</string>
+    <string name="dock_orientation_title">Ориентация док-панели</string>
+    <string name="dock_orientation_summary">Выберите горизонтальное или вертикальное расположение док-панели.</string>
+    <string name="dock_orientation_horizontal">Горизонтальная</string>
+    <string name="dock_orientation_vertical">Вертикальная</string>
+    <string name="dock_capacity_title">Вместимость док-панели</string>
+    <string name="dock_capacity_summary">Выберите количество отображаемых приложений: 4, 5 или 6.</string>
+    <string name="dock_settings_save_failed">Не удалось сохранить настройки док-панели.</string>
 </resources>
