@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -60,23 +61,26 @@ final class QuickSettingsDialog {
         int top = anchorAt[1] + settingsAnchor.getHeight() - hostAt[1] + dp(density, 5);
         int dockTop = dock.isShown() && dock.getHeight() > 0
                 ? dockAt[1] - hostAt[1] : hostHeight - dp(density, 28);
-        int availableHeight = dockTop - dp(density, 5) - top;
-        if (availableHeight <= dp(density, 120)) {
-            android.util.Log.e("TvHome.QuickSettings", "Insufficient settings-capsule-to-Dock lane: "
-                    + Math.round(availableHeight / density) + "dp");
+        int preferredHeight = dockTop - dp(density, 8) - top;
+        int screenHeight = hostHeight - dp(density, 14) - top;
+        if (screenHeight <= dp(density, 220)) {
+            android.util.Log.e("TvHome.QuickSettings", "Insufficient screen space for Quick Settings: "
+                    + Math.round(screenHeight / density) + "dp");
             return null;
         }
-        // Reference composition uses a narrow portrait panel, not a wide dashboard.
-        int width = Math.min(Math.round(hostWidth * 0.38f), dp(density, 400));
+        // Keep the popup above the Dock when it fits. If the preferred lane is too short,
+        // allow the panel to extend below the Dock rather than compressing typography.
+        int layoutBudget = Math.min(screenHeight, Math.max(preferredHeight, dp(density, 280)));
+        int availableDp = Math.round(layoutBudget / density);
+        int tileHeightDp = Math.max(32, Math.min(38, (availableDp - 83) / 6));
+
+        // A 30%-width panel is positioned from the Settings-tab gear, so the popup header gear
+        // sits on the same vertical axis as the navigation gear instead of being screen-centered.
+        int width = Math.max(dp(density, 1), Math.round(hostWidth * 0.30f));
         width = Math.min(width, Math.max(dp(density, 1), hostWidth - dp(density, 24)));
-        int availableDp = Math.round(availableHeight / density);
-        if (availableDp < 307) {
-            android.util.Log.e("TvHome.QuickSettings", "Quick Settings lane is too short for the compact layout: " + availableDp + "dp");
-            return null;
-        }
-        // One shared row-height token keeps all actions visually aligned. The available lane
-        // determines the token; text and icon sizes remain fixed and are never squeezed.
-        int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 83) / 6));
+        int settingsGearCenter = settingsIconCenterX(settingsAnchor, anchorAt[0], density) - hostAt[0];
+        int panelLeft = settingsGearCenter - dp(density, 12) - dp(density, 18) / 2;
+        panelLeft = Math.max(dp(density, 12), Math.min(panelLeft, hostWidth - width - dp(density, 12)));
 
         View[] controls = new View[QuickSettingsFocusGraph.COUNT];
         AlertDialog[] dialogHolder = new AlertDialog[1];
@@ -128,7 +132,7 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.WIFI].setTag("quick_settings_wifi");
         controls[QuickSettingsFocusGraph.RESTART] = addGridTile(activity, grid, 0, 1, 1,
                 R.drawable.ic_restart, R.string.restart_tv_title, null,
-                activity.getString(R.string.quick_settings_restart_summary),
+                null,
                 density, dialogHolder, actions::restart, tileHeightDp);
         controls[QuickSettingsFocusGraph.RESTART].setTag("quick_settings_restart");
         controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 1, 0, 1,
@@ -138,7 +142,7 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.LANGUAGE].setTag("quick_settings_language");
         controls[QuickSettingsFocusGraph.POWER] = addGridTile(activity, grid, 1, 1, 1,
                 R.drawable.ic_power, 0, actions.powerTitle(),
-                activity.getString(R.string.quick_settings_power_summary),
+                null,
                 density, dialogHolder, actions::openPowerMenu, tileHeightDp);
         controls[QuickSettingsFocusGraph.POWER].setTag("quick_settings_power");
         controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 2, 0, 2,
@@ -149,7 +153,7 @@ final class QuickSettingsDialog {
         content.addView(grid, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        addDivider(activity, content, density, 2);
+        addDivider(activity, content, density, 7, 5);
         LinearLayout wallpaperHeader = new LinearLayout(activity);
         wallpaperHeader.setOrientation(LinearLayout.HORIZONTAL);
         wallpaperHeader.setGravity(Gravity.CENTER_VERTICAL);
@@ -175,7 +179,7 @@ final class QuickSettingsDialog {
         wallpaperActions.setGravity(Gravity.CENTER_VERTICAL);
         TextView nextPhoto = createTile(activity, R.drawable.ic_wallpaper,
                 R.string.quick_settings_next_photo,
-                activity.getString(R.string.quick_settings_next_photo_summary), tileHeightDp, density);
+                null, tileHeightDp, density);
         controls[QuickSettingsFocusGraph.NEXT_PHOTO] = nextPhoto;
         nextPhoto.setTag("quick_settings_next_photo");
         bind(nextPhoto, dialogHolder, actions::nextPhoto);
@@ -202,7 +206,7 @@ final class QuickSettingsDialog {
         LinearLayout settingsActions = new LinearLayout(activity);
         settingsActions.setOrientation(LinearLayout.VERTICAL);
         settingsActions.setGravity(Gravity.CENTER_VERTICAL);
-        TextView glassSettings = createTile(activity, R.drawable.ic_settings,
+        TextView glassSettings = createTile(activity, R.drawable.ic_appearance,
                 R.string.quick_settings_glass_settings,
                 activity.getString(R.string.quick_settings_glass_settings_summary), tileHeightDp, density);
         controls[QuickSettingsFocusGraph.GLASS_SETTINGS] = glassSettings;
@@ -213,7 +217,7 @@ final class QuickSettingsDialog {
         glassLp.setMargins(0, dp(density, 1), 0, dp(density, 1));
         settingsActions.addView(glassSettings, glassLp);
 
-        TextView androidSettings = createTile(activity, R.drawable.ic_settings,
+        TextView androidSettings = createTile(activity, R.drawable.ic_tv_display,
                 R.string.quick_settings_android_settings,
                 activity.getString(R.string.quick_settings_android_settings_summary), tileHeightDp, density);
         controls[QuickSettingsFocusGraph.ANDROID_SETTINGS] = androidSettings;
@@ -225,15 +229,16 @@ final class QuickSettingsDialog {
         settingsActions.addView(androidSettings, androidLp);
         content.addView(settingsActions, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp * 2 + 4)));
-        View breathingSpace = new View(activity);
-        content.addView(breathingSpace, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
         QuickSettingsFocusGraph.connect(controls);
 
+        content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        int naturalHeight = content.getMeasuredHeight();
+        int panelHeight = Math.min(screenHeight, naturalHeight);
         final int panelWidth = width;
-        final int panelHeight = availableHeight;
         final int panelTop = top;
+        final int finalPanelLeft = panelLeft;
         content.setLayoutParams(new ViewGroup.LayoutParams(panelWidth, panelHeight));
         content.measure(View.MeasureSpec.makeMeasureSpec(panelWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(panelHeight, View.MeasureSpec.EXACTLY));
@@ -256,9 +261,10 @@ final class QuickSettingsDialog {
             if (window != null) {
                 window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 window.getDecorView().setPadding(0, 0, 0, 0);
-                window.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                window.setGravity(Gravity.TOP | Gravity.LEFT);
                 window.setLayout(panelWidth, panelHeight);
                 WindowManager.LayoutParams params = window.getAttributes();
+                params.x = finalPanelLeft;
                 params.y = panelTop;
                 params.dimAmount = 0f;
                 window.setAttributes(params);
@@ -356,8 +362,21 @@ final class QuickSettingsDialog {
 
     private static String stripDecorativePrefix(String value) {
         if (value == null) return "";
-        // Action glyphs are rendered by the shared 18dp drawable slot, never duplicated in the label.
-        return value.replaceFirst("^[\\\\p{So}\\\\p{Sk}\\\\p{Cf}\\\\s]+", "").trim();
+        int offset = 0;
+        while (offset < value.length()) {
+            int codePoint = value.codePointAt(offset);
+            int type = Character.getType(codePoint);
+            boolean decorative = Character.isWhitespace(codePoint)
+                    || type == Character.OTHER_SYMBOL
+                    || type == Character.MODIFIER_SYMBOL
+                    || type == Character.FORMAT
+                    || type == Character.NON_SPACING_MARK
+                    || type == Character.ENCLOSING_MARK
+                    || codePoint == 0xFE0E || codePoint == 0xFE0F || codePoint == 0x200D;
+            if (!decorative) break;
+            offset += Character.charCount(codePoint);
+        }
+        return value.substring(offset).trim();
     }
 
     private static SpannableStringBuilder buildLabel(String title, String summary) {
@@ -387,26 +406,49 @@ final class QuickSettingsDialog {
     }
 
     private static void addDivider(Activity activity, LinearLayout parent, float density, int topMarginDp) {
+        addDivider(activity, parent, density, topMarginDp, 2);
+    }
+
+    private static void addDivider(Activity activity, LinearLayout parent, float density,
+                                   int topMarginDp, int bottomMarginDp) {
         View divider = new View(activity);
-        divider.setBackgroundColor(0x66DCE5ED);
+        divider.setBackgroundColor(0x55DCE5ED);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 1));
         lp.topMargin = dp(density, topMarginDp);
-        lp.bottomMargin = dp(density, 2);
+        lp.bottomMargin = dp(density, bottomMarginDp);
         parent.addView(divider, lp);
     }
 
         private static void setNormalSurface(TextView view, float density, float radiusDp) {
         GradientDrawable background = new GradientDrawable();
         background.setShape(GradientDrawable.RECTANGLE);
-        background.setColor(TvUiTokens.SURFACE_IDLE);
+        // A lightly tinted translucent layer lets the shared popup glass remain visible through
+        // each capsule; only the thin silver edge separates the actions from the panel.
+        background.setColor(0x26343E48);
         background.setCornerRadius(radiusDp * density);
-        background.setStroke(Math.max(1, dp(density, 1)), 0x779EABB8);
+        background.setStroke(Math.max(1, dp(density, 1)), 0x559EABB8);
         view.setBackground(background);
     }
 
     private static String safe(String value, String fallback) {
         return value == null || value.trim().isEmpty() ? fallback : value;
+    }
+
+    private static int settingsIconCenterX(View anchor, int anchorScreenX, float density) {
+        int fallback = anchorScreenX + anchor.getWidth() / 2;
+        if (!(anchor instanceof TextView)) return fallback;
+        TextView settings = (TextView) anchor;
+        Drawable start = settings.getCompoundDrawablesRelative()[0];
+        if (start == null) return fallback;
+        int iconWidth = start.getBounds().width() > 0 ? start.getBounds().width() : dp(density, 20);
+        Layout textLayout = settings.getLayout();
+        if (textLayout == null || textLayout.getLineCount() == 0) return fallback;
+        int textWidth = (int) Math.ceil(textLayout.getLineWidth(0));
+        int contentWidth = settings.getWidth() - settings.getPaddingLeft() - settings.getPaddingRight();
+        int groupWidth = iconWidth + settings.getCompoundDrawablePadding() + textWidth;
+        int groupStart = settings.getPaddingLeft() + Math.max(0, (contentWidth - groupWidth) / 2);
+        return anchorScreenX + groupStart + iconWidth / 2;
     }
 
     private static int dp(float density, int value) {
