@@ -10,6 +10,8 @@
     <string name="not_connected">Tidak ada perangkat</string>
     <string name="live_tv">Siaran TV</string>
     <string name="no_inputs">Sumber masukan tidak ditemukan</string>
+    <string name="input_external_tv_title">Input TV (HDMI/AV)</string>
+    <string name="input_external_tv_hint">Gunakan tombol INPUT/SOURCE pada remote TV untuk memilih port HDMI atau AV.</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Luring</string>
     <string name="not_available">Tidak tersedia di TV ini</string>
