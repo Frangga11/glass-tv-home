@@ -4,7 +4,7 @@ import android.view.View;
 
 /** Explicit D-pad graph for the two-column Quick Settings composition. */
 final class QuickSettingsFocusGraph {
-    static final int WIFI = 0;
+    static final int INPUT = 0;
     static final int RESTART = 1;
     static final int LANGUAGE = 2;
     static final int POWER = 3;
@@ -26,7 +26,7 @@ final class QuickSettingsFocusGraph {
 
     static int target(int node, int direction) {
         switch (node) {
-            case WIFI:
+            case INPUT:
                 if (direction == RIGHT) return RESTART;
                 if (direction == DOWN) return LANGUAGE;
                 break;
