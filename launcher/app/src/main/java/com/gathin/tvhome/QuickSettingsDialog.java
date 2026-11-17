@@ -261,6 +261,13 @@ final class QuickSettingsDialog {
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setOnKeyListener((ignored, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_TV_INPUT) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    dialog.dismiss();
+                    actions.openInputs();
+                }
+                return true;
+            }
             if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
                 if (event.getAction() == KeyEvent.ACTION_UP) dialog.dismiss();
                 return true;
