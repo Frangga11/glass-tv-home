@@ -1307,3 +1307,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Updated total: **105 PRs closed; 3 remain open (#109, #62, #41)**. No branches deleted, no force updates, and no code merges in this cleanup pass.
 - The retained PRs require deliberate design/product acceptance and isolated integration planning; do not auto-merge them. Main source remains unchanged by this reconciliation.
 - Verify the exact-head CI run triggered by this documentation update before treating the checkpoint as complete.
+
+
+## Final PR reconciliation disposition — 18 November 2026
+
+- Owner direction: do not bind current delivery to PR #41 or #109; defer PR #62 for a later discussion.
+- PR #41 closed as NOT PLANNED; its branch retained. Existing current-main wallpaper implementation remains baseline. No PR #41 code merged.
+- PR #109 closed as NOT PLANNED; its branch retained. Existing current-main navigation/DPAD implementation remains baseline. No PR #109 code merged.
+- PR #62 remains OPEN / DRAFT / UNMERGED and is explicitly DEFERRED. Do not merge, rebase, cherry-pick, publish or install it in this delivery pass.
+- No branch deletions, force updates, or production source changes were made during these administrative dispositions.
+- Current reconciliation status: 107 PRs closed; 1 PR remains open (#62). See GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md for the detailed record.
+- Validation gate: run and verify GitHub Actions against the exact resulting main head before declaring the documentation checkpoint CI-validated. CI success is not a substitute for physical Mi TV Stick testing.
