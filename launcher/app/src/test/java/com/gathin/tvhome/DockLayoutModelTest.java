@@ -66,6 +66,36 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void dockSlotRoundTripPreservesColumnWhenOverflowPinnedAppFillsVacancy() {
+        List<String> inventory = Arrays.asList(
+                "dock-a", "dock-b", "dock-c", "dock-d", "dock-e", "overflow-pinned",
+                "grid-a", "grid-b", "moving-app", "grid-c", "grid-d");
+        List<String> pinnedAfterMovingUp = Arrays.asList(
+                "dock-a", "dock-b", "moving-app", "dock-c", "dock-d", "dock-e", "overflow-pinned");
+        DockLayoutModel.Snapshot<String> whileInDock = DockLayoutModel.split(
+                inventory, pinnedAfterMovingUp, 5, value -> value);
+        assertEquals(Arrays.asList("dock-a", "dock-b", "moving-app", "dock-c", "dock-d"),
+                whileInDock.dockItems);
+        assertEquals(Arrays.asList("dock-e", "overflow-pinned"),
+                whileInDock.gridItems.subList(0, 2));
+
+        List<String> pinnedAfterMovingDown = Arrays.asList(
+                "dock-a", "dock-b", "dock-c", "dock-d", "dock-e", "overflow-pinned");
+        DockLayoutModel.Snapshot<String> afterVacancyRefill = DockLayoutModel.split(
+                inventory, pinnedAfterMovingDown, 5, value -> value);
+        List<String> finalGrid = new java.util.ArrayList<>(afterVacancyRefill.gridItems);
+        finalGrid.remove("moving-app");
+        finalGrid = DockLayoutModel.insertAtPosition(finalGrid, "moving-app", 2);
+        List<String> presentation = new java.util.ArrayList<>(afterVacancyRefill.dockItems);
+        presentation.addAll(finalGrid);
+        DockLayoutModel.Snapshot<String> finalLayout = DockLayoutModel.split(
+                presentation, pinnedAfterMovingDown, 5, value -> value);
+
+        assertEquals("moving-app", finalLayout.gridItems.get(2));
+        assertEquals(2, finalLayout.gridItems.indexOf("moving-app") % 5);
+    }
+
+    @Test
     public void gridDpadRespectsHorizontalAndVerticalBoundaries() {
         assertEquals(-1, DockLayoutModel.gridNeighborPosition(0, -1, 4, 10));
         assertEquals(-1, DockLayoutModel.gridNeighborPosition(3, 1, 4, 10));
