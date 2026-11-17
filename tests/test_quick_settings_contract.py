@@ -16,7 +16,7 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 class QuickSettingsContractTest(unittest.TestCase):
     def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
         self.assertNotIn("ScrollView", DIALOG)
-        self.assertIn("new GlassDrawable(content, 20f * density, density, null, 0.5f)", DIALOG)
+        self.assertIn("new GlassDrawable(content, 18f * density, density, null, 0.5f)", DIALOG)
         self.assertIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("settingsAnchor.getHeight() - hostAt[1] + dp(density, 5)", DIALOG)
         self.assertIn("dockTop - dp(density, 5) - top", DIALOG)
@@ -27,7 +27,11 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("dialog.setOnKeyListener", DIALOG)
         self.assertIn("KeyEvent.KEYCODE_BACK", DIALOG)
         self.assertIn("settingsActions.setOrientation(LinearLayout.VERTICAL)", DIALOG)
-        self.assertIn("hostWidth * 0.265f", DIALOG)
+        self.assertIn("hostWidth * 0.38f", DIALOG)
+        self.assertIn("int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 83) / 7));", DIALOG)
+        self.assertIn("tile.setTextSize(12f);", DIALOG)
+        self.assertIn("int size = dp(density, 18);", DIALOG)
+        self.assertNotIn("scaleVertical(", DIALOG)
         self.assertIn("TvFocusIndicator.applyRoundedTextFocus", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
