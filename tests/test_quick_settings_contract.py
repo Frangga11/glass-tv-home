@@ -16,7 +16,7 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 class QuickSettingsContractTest(unittest.TestCase):
     def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
         self.assertNotIn("ScrollView", DIALOG)
-        self.assertIn("new GlassDrawable(content, 18f * density, density, null, 0.5f, false,", DIALOG)
+        self.assertIn("new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,", DIALOG)
         self.assertIn("PANEL_GLASS_VEIL, 0x48, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER", DIALOG)
         self.assertIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("settingsAnchor.getHeight() - hostAt[1] + dp(density, 5)", DIALOG)
@@ -29,17 +29,23 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("KeyEvent.KEYCODE_BACK", DIALOG)
         self.assertIn("settingsActions.setOrientation(LinearLayout.VERTICAL)", DIALOG)
         self.assertIn("hostWidth * 0.29f", DIALOG)
-        self.assertIn("int tileHeightDp = Math.max(32, Math.min(38, (availableDp - 83) / 6));", DIALOG)
+        self.assertIn("private static final int TILE_HEIGHT_DP = 32;", DIALOG)
+        self.assertIn("int tileHeightDp = TILE_HEIGHT_DP;", DIALOG)
+        self.assertIn("lp.height = dp(density, tileHeightDp);", DIALOG)
         self.assertIn("params.x = finalPanelLeft;", DIALOG)
         self.assertIn("settingsIconCenterX(settingsAnchor, anchorAt[0], density)", DIALOG)
         self.assertIn("Gravity.TOP | Gravity.LEFT", DIALOG)
         self.assertNotIn("addDivider", DIALOG)
-        self.assertIn("PANEL_TEXT_PRIMARY = 0xFF263746", DIALOG)
-        self.assertIn("PANEL_TEXT_SECONDARY = 0xFF526A78", DIALOG)
-        self.assertIn("CAPSULE_IDLE_FILL = 0x44F4FBFE", DIALOG)
-        self.assertIn("CAPSULE_IDLE_BORDER = 0xB3FFFFFF", DIALOG)
-        self.assertIn("CAPSULE_FOCUS_FILL = 0xFFDDF4FA", DIALOG)
-        self.assertIn("CAPSULE_FOCUS_BORDER = 0xFF43AFC8", DIALOG)
+        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
+        self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
+        self.assertIn("PANEL_GLASS_VEIL = TvUiTokens.GLASS_VEIL_COLOR", DIALOG)
+        self.assertIn("PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE", DIALOG)
+        self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
+        self.assertNotIn("0xB3FFFFFF", DIALOG)
+        self.assertNotIn("0xEAF8FC", DIALOG)
+        self.assertIn("gridLp.topMargin = dp(density, 4);", DIALOG)
+        self.assertIn("wallpaperHeaderLp.topMargin = dp(density, 6);", DIALOG)
+        self.assertIn("settingsActionsLp.topMargin = dp(density, 5);", DIALOG)
         
         
         self.assertIn("R.drawable.ic_appearance", DIALOG)
@@ -48,8 +54,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("R.string.quick_settings_language_title", DIALOG)
         self.assertIn("tile.setMaxLines(summary == null || summary.isEmpty() ? 1 : 2);", DIALOG)
         self.assertIn("null, tileHeightDp, density);", DIALOG)
-        self.assertIn("tile.setTextSize(11.5f);", DIALOG)
-        self.assertIn("int size = dp(density, 18);", DIALOG)
+        self.assertIn("tile.setTextSize(12f);", DIALOG)
+        self.assertIn("int size = dp(density, 16);", DIALOG)
         self.assertNotIn("scaleVertical(", DIALOG)
         self.assertIn("TvFocusIndicator.applyRoundedTextFocus", DIALOG)
         self.assertIn("CAPSULE_IDLE_FILL, CAPSULE_FOCUS_FILL", DIALOG)
@@ -84,6 +90,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("private void openInput(String inputId)", MAIN)
         self.assertIn("private void openSourcePanel()", MAIN)
         self.assertIn("QuickSettingsFocusGraph.INPUT", DIALOG)
+        self.assertIn("getString(R.string.input_external_tv_title)", MAIN)
+        self.assertIn("R.string.input_external_tv_hint", MAIN)
 
     def test_wifi_child_surface_still_restores_its_parent_focus(self):
         self.assertIn("WifiSettingsDialog.show(this", MAIN)
@@ -205,6 +213,8 @@ class QuickSettingsContractTest(unittest.TestCase):
             "quick_settings_glass_settings_summary",
             "quick_settings_android_settings",
             "quick_settings_android_settings_summary",
+            "input_external_tv_title",
+            "input_external_tv_hint",
         }
         contents = [p.read_text(encoding="utf-8") for p in files]
         for content in contents:
