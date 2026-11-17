@@ -442,8 +442,21 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (!excluded.contains(key)) excluded.add(key);
         if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
 
-        List<Entry> grid = DockLayoutModel.insertAtPosition(snapshot.gridItems, selected, gridPosition);
-        replacePresentationOrder(dock, grid);
+        // Re-split after the Dock vacancy is created. An overflow-pinned entry may be promoted
+        // into the freed Dock slot; that promotion must happen BEFORE the Grid insertion index
+        // is chosen or the moved app shifts one column to the left after the rebind.
+        presentationSnapshot = null;
+        DockLayoutModel.Snapshot<Entry> updatedSnapshot = dockSnapshot();
+        List<Entry> finalGrid = new ArrayList<>(updatedSnapshot.gridItems);
+        for (int i = finalGrid.size() - 1; i >= 0; i--) {
+            if (key.equals(finalGrid.get(i).component.flattenToShortString())) {
+                finalGrid.remove(i);
+                break;
+            }
+        }
+        List<Entry> finalDock = new ArrayList<>(updatedSnapshot.dockItems);
+        List<Entry> positionedGrid = DockLayoutModel.insertAtPosition(finalGrid, selected, gridPosition);
+        replacePresentationOrder(finalDock, positionedGrid);
         return true;
     }
 
