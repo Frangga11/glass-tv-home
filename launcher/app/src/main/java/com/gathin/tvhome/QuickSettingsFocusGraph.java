@@ -39,6 +39,7 @@ final class QuickSettingsFocusGraph {
                 break;
             case LANGUAGE:
                 if (direction == LEFT) return RESTART;
+                if (direction == UP) return CLOSE;
                 if (direction == DOWN) return CACHE;
                 break;
             case POWER:
@@ -77,7 +78,7 @@ final class QuickSettingsFocusGraph {
                 if (direction == DOWN) return CLOSE;
                 break;
             case CLOSE:
-                if (direction == DOWN) return GLASS_SETTINGS;
+                if (direction == DOWN) return LANGUAGE;
                 break;
             default:
                 break;
