@@ -40,6 +40,8 @@ final class Config {
     final String sourcePanelService;
     final String sourcePanelAction;
     final String inputAction;
+    /** Remote keycodes that open the Inputs selector, overridable by a theme's config.json. */
+    final List<Integer> inputKeyKeycodes;
     final int columns;
     final int rowsBelowDock;
     final boolean shamsiDate;
@@ -72,7 +74,7 @@ final class Config {
 
     private Config(List<String> dockApps, List<String> hiddenApps, String liveTvPackage, String liveTvAction,
                    String sourcePanelService, String sourcePanelAction, String inputAction,
-                   int columns, int rowsBelowDock,
+                   List<Integer> inputKeyKeycodes, int columns, int rowsBelowDock,
                    boolean shamsiDate, boolean moduleCards, boolean reducedMotion, String vpnApp,
                    boolean showHomeSettingsShortcut, boolean showNetworkPill, boolean showLiveTv,
                    int backgroundColor,
@@ -86,6 +88,7 @@ final class Config {
         this.sourcePanelService = sourcePanelService;
         this.sourcePanelAction = sourcePanelAction;
         this.inputAction = inputAction;
+        this.inputKeyKeycodes = Collections.unmodifiableList(new ArrayList<>(inputKeyKeycodes));
         this.columns = columns;
         this.rowsBelowDock = rowsBelowDock;
         this.shamsiDate = shamsiDate;
@@ -127,6 +130,7 @@ final class Config {
         String panelService = res.getString(R.string.source_panel_service).trim();
         String panelAction = res.getString(R.string.source_panel_action).trim();
         String inputAction = res.getString(R.string.input_action).trim();
+        List<Integer> inputKeyKeycodes = integerList(res.getIntArray(R.array.input_key_keycodes));
         int columns = res.getInteger(R.integer.columns);
         int rowsBelow = res.getInteger(R.integer.rows_below_dock);
         boolean shamsi = res.getBoolean(R.bool.shamsi_date);
@@ -151,6 +155,7 @@ final class Config {
             panelService = string(json, "source_panel_service", panelService);
             panelAction = string(json, "source_panel_action", panelAction);
             inputAction = string(json, "input_action", inputAction);
+            inputKeyKeycodes = integerList(json, "input_key_keycodes", inputKeyKeycodes);
             columns = integer(json, "columns", columns, 1, 8);
             rowsBelow = integer(json, "rows_below_dock", rowsBelow, 0, 3);
             shamsi = bool(json, "shamsi_date", shamsi);
@@ -200,7 +205,7 @@ final class Config {
                 : CacheCleaner.DEFAULT_DAYS;
 
         return new Config(dock, hidden, liveTv, liveTvAction, panelService, panelAction, inputAction,
-                Math.max(1, columns), Math.max(0, rowsBelow), shamsi, moduleCards, reducedMotion,
+                inputKeyKeycodes, Math.max(1, columns), Math.max(0, rowsBelow), shamsi, moduleCards, reducedMotion,
                 vpn, homeSettings, networkPill, liveTvRow, background, wallpaper, wallpapers, wallpaperIntervalMs,
                 places, wallpaperOnline, wallpaperFeed, cacheCleanDays, applied);
     }
@@ -251,6 +256,29 @@ final class Config {
         } catch (IllegalArgumentException e) {
             return fallback;
         }
+    }
+
+    private static List<Integer> integerList(int[] values) {
+        List<Integer> out = new ArrayList<>();
+        if (values == null) return out;
+        for (int value : values) {
+            if (value > 0 && value <= 1000 && !out.contains(value)) out.add(value);
+        }
+        return out;
+    }
+
+    private static List<Integer> integerList(JSONObject o, String key, List<Integer> fallback) {
+        Object value = o.opt(key);
+        if (!(value instanceof JSONArray)) return fallback;
+        JSONArray array = (JSONArray) value;
+        List<Integer> out = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            Object item = array.opt(i);
+            if (!(item instanceof Number)) continue;
+            int code = ((Number) item).intValue();
+            if (code > 0 && code <= 1000 && !out.contains(code)) out.add(code);
+        }
+        return out;
     }
 
     private static List<String> stringList(JSONObject o, String key, List<String> fallback) {
