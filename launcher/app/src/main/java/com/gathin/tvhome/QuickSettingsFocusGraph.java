@@ -31,12 +31,12 @@ final class QuickSettingsFocusGraph {
                 if (direction == DOWN) return LANGUAGE;
                 break;
             case RESTART:
-                if (direction == LEFT) return WIFI;
+                if (direction == LEFT) return INPUT;
                 if (direction == DOWN) return POWER;
                 break;
             case LANGUAGE:
                 if (direction == RIGHT) return POWER;
-                if (direction == UP) return WIFI;
+                if (direction == UP) return INPUT;
                 if (direction == DOWN) return CACHE;
                 break;
             case POWER:
