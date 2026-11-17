@@ -40,58 +40,70 @@ final class QuickSettingsDialog {
 
     private QuickSettingsDialog() { }
 
-    static AlertDialog show(Activity activity, Actions actions, int initialFocus,
-                            Runnable onDismiss) {
-        if (activity == null || actions == null || activity.isFinishing() || activity.isDestroyed()) {
-            return null;
-        }
+    static AlertDialog show(Activity activity, android.widget.FrameLayout host, View settingsAnchor,
+                            View dock, Actions actions, int initialFocus, Runnable onDismiss) {
+        if (activity == null || host == null || settingsAnchor == null || dock == null || actions == null
+                || activity.isFinishing() || activity.isDestroyed()) return null;
 
         float density = activity.getResources().getDisplayMetrics().density;
+        int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
+        host.getLocationOnScreen(hostAt);
+        settingsAnchor.getLocationOnScreen(anchorAt);
+        dock.getLocationOnScreen(dockAt);
+        int hostWidth = host.getWidth() > 0 ? host.getWidth() : activity.getResources().getDisplayMetrics().widthPixels;
+        int hostHeight = host.getHeight() > 0 ? host.getHeight() : activity.getResources().getDisplayMetrics().heightPixels;
+        int top = anchorAt[1] + settingsAnchor.getHeight() - hostAt[1] + dp(density, 5);
+        int dockTop = dock.isShown() && dock.getHeight() > 0
+                ? dockAt[1] - hostAt[1] : hostHeight - dp(density, 28);
+        int availableHeight = dockTop - dp(density, 5) - top;
+        if (availableHeight <= dp(density, 120)) {
+            android.util.Log.e("TvHome.QuickSettings", "Insufficient settings-capsule-to-Dock lane: "
+                    + Math.round(availableHeight / density) + "dp");
+            return null;
+        }
+        int width = Math.min(hostWidth - dp(density, 56), dp(density, 900));
+        width = Math.max(dp(density, 360), width);
+
         View[] controls = new View[QuickSettingsFocusGraph.COUNT];
         AlertDialog[] dialogHolder = new AlertDialog[1];
 
-        ScrollView scroll = new ScrollView(activity);
-        scroll.setFillViewport(true);
-        scroll.setVerticalScrollBarEnabled(false);
-        scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        scroll.setClipChildren(false);
-        scroll.setClipToPadding(false);
-
         LinearLayout content = new LinearLayout(activity);
+        content.setTag("quick_settings_root");
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(density, 20), dp(density, 16), dp(density, 20), dp(density, 16));
-        content.setClipChildren(false);
-        content.setClipToPadding(false);
-        scroll.addView(content, new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        content.setGravity(Gravity.CENTER_HORIZONTAL);
+        content.setPadding(dp(density, 14), dp(density, 8), dp(density, 14), dp(density, 8));
+        content.setClipChildren(true);
+        content.setClipToPadding(true);
+        content.setBackground(new GlassDrawable(content, 20f * density, density, null, 0.5f));
+        Backdrop.watch(content);
 
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
         TextView title = new TextView(activity);
         title.setText(R.string.quick_settings_title);
-        title.setTextSize(TvUiTokens.PAGE_HEADER_SP);
+        title.setTextSize(16f);
         title.setTextColor(TvUiTokens.TEXT_PRIMARY);
         title.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
-        title.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        title.setSingleLine(true);
+        title.setEllipsize(TextUtils.TruncateAt.END);
+        title.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         header.addView(title);
-
-        TextView close = createLink(activity, R.string.close_label, TvUiTokens.MIN_DPAD_TARGET_DP, density);
+        TextView close = createLink(activity, R.string.close_label, 40, density);
         controls[QuickSettingsFocusGraph.CLOSE] = close;
         close.setTag("quick_settings_close");
         header.addView(close, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, TvUiTokens.MIN_DPAD_TARGET_DP)));
-        content.addView(header);
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 38)));
+        content.addView(header, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 30)));
         bind(close, dialogHolder, null);
-
-        addDivider(activity, content, density, 10);
+        addDivider(activity, content, density, 5);
 
         GridLayout grid = new GridLayout(activity);
-        grid.setColumnCount(2);
-        grid.setRowCount(3);
+        grid.setColumnCount(3);
+        grid.setRowCount(2);
         grid.setUseDefaultMargins(false);
         grid.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
-
         controls[QuickSettingsFocusGraph.WIFI] = addGridTile(activity, grid, 0, 0, 1,
                 R.drawable.ic_wifi, R.string.wifi, null,
                 safe(actions.wifiSummary(), activity.getString(R.string.quick_settings_wifi_summary)),
@@ -102,17 +114,17 @@ final class QuickSettingsDialog {
                 activity.getString(R.string.quick_settings_restart_summary),
                 density, dialogHolder, actions::restart);
         controls[QuickSettingsFocusGraph.RESTART].setTag("quick_settings_restart");
-        controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 1, 0, 1,
+        controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 0, 2, 1,
                 R.drawable.ic_settings, R.string.app_language_title, null,
                 safe(actions.languageSummary(), ""),
                 density, dialogHolder, actions::chooseLanguage);
         controls[QuickSettingsFocusGraph.LANGUAGE].setTag("quick_settings_language");
-        controls[QuickSettingsFocusGraph.POWER] = addGridTile(activity, grid, 1, 1, 1,
+        controls[QuickSettingsFocusGraph.POWER] = addGridTile(activity, grid, 1, 0, 1,
                 R.drawable.ic_power, 0, actions.powerTitle(),
                 activity.getString(R.string.quick_settings_power_summary),
                 density, dialogHolder, actions::openPowerMenu);
         controls[QuickSettingsFocusGraph.POWER].setTag("quick_settings_power");
-        controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 2, 0, 2,
+        controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 1, 1, 2,
                 R.drawable.ic_settings, 0, actions.cacheTitle(),
                 activity.getString(R.string.quick_settings_cache_summary),
                 density, dialogHolder, actions::cleanCache);
@@ -120,25 +132,25 @@ final class QuickSettingsDialog {
         content.addView(grid, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        addDivider(activity, content, density, 12);
-
+        addDivider(activity, content, density, 5);
         LinearLayout wallpaperHeader = new LinearLayout(activity);
         wallpaperHeader.setOrientation(LinearLayout.HORIZONTAL);
         wallpaperHeader.setGravity(Gravity.CENTER_VERTICAL);
         TextView wallpaperTitle = new TextView(activity);
         wallpaperTitle.setText(R.string.quick_settings_wallpaper_title);
-        wallpaperTitle.setTextSize(TvUiTokens.SECTION_TITLE_SP);
+        wallpaperTitle.setTextSize(13f);
         wallpaperTitle.setTextColor(TvUiTokens.TEXT_PRIMARY);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+                ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         wallpaperHeader.addView(wallpaperTitle);
-        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, TvUiTokens.MIN_DPAD_TARGET_DP, density);
+        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 38, density);
         controls[QuickSettingsFocusGraph.WALLPAPER_MANAGE] = manageWallpaper;
         manageWallpaper.setTag("quick_settings_manage_wallpaper");
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, TvUiTokens.MIN_DPAD_TARGET_DP)));
-        content.addView(wallpaperHeader);
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 36)));
+        content.addView(wallpaperHeader, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 24)));
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
 
         LinearLayout wallpaperActions = new LinearLayout(activity);
@@ -146,74 +158,104 @@ final class QuickSettingsDialog {
         wallpaperActions.setGravity(Gravity.CENTER_VERTICAL);
         TextView nextPhoto = createTile(activity, R.drawable.ic_wallpaper,
                 R.string.quick_settings_next_photo,
-                activity.getString(R.string.quick_settings_next_photo_summary), 72, density);
+                activity.getString(R.string.quick_settings_next_photo_summary), 48, density);
         controls[QuickSettingsFocusGraph.NEXT_PHOTO] = nextPhoto;
         nextPhoto.setTag("quick_settings_next_photo");
         bind(nextPhoto, dialogHolder, actions::nextPhoto);
         LinearLayout.LayoutParams nextLp = new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        nextLp.setMargins(0, dp(density, 5), dp(density, 5), dp(density, 5));
+                ViewGroup.LayoutParams.MATCH_PARENT, 1f);
+        nextLp.setMargins(0, dp(density, 2), dp(density, 3), dp(density, 2));
         wallpaperActions.addView(nextPhoto, nextLp);
 
         TextView interval = createTile(activity, R.drawable.ic_wallpaper,
                 R.string.quick_settings_interval_title,
                 safe(actions.wallpaperIntervalSummary(), activity.getString(R.string.quick_settings_interval_summary)),
-                72, density);
+                48, density);
         controls[QuickSettingsFocusGraph.INTERVAL] = interval;
         interval.setTag("quick_settings_interval");
         bind(interval, dialogHolder, actions::chooseWallpaperInterval);
         LinearLayout.LayoutParams intervalLp = new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        intervalLp.setMargins(dp(density, 5), dp(density, 5), 0, dp(density, 5));
+                ViewGroup.LayoutParams.MATCH_PARENT, 1f);
+        intervalLp.setMargins(dp(density, 3), dp(density, 2), 0, dp(density, 2));
         wallpaperActions.addView(interval, intervalLp);
-        content.addView(wallpaperActions);
+        content.addView(wallpaperActions, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 48)));
 
-        addDivider(activity, content, density, 8);
-
+        addDivider(activity, content, density, 5);
         LinearLayout settingsActions = new LinearLayout(activity);
         settingsActions.setOrientation(LinearLayout.HORIZONTAL);
         settingsActions.setGravity(Gravity.CENTER_VERTICAL);
         TextView glassSettings = createTile(activity, R.drawable.ic_settings,
                 R.string.quick_settings_glass_settings,
-                activity.getString(R.string.quick_settings_glass_settings_summary), 64, density);
+                activity.getString(R.string.quick_settings_glass_settings_summary), 48, density);
         controls[QuickSettingsFocusGraph.GLASS_SETTINGS] = glassSettings;
         glassSettings.setTag("quick_settings_glass_settings");
         bind(glassSettings, dialogHolder, actions::openGlassSettings);
         LinearLayout.LayoutParams glassLp = new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        glassLp.setMargins(0, dp(density, 4), dp(density, 5), dp(density, 4));
+                ViewGroup.LayoutParams.MATCH_PARENT, 1f);
+        glassLp.setMargins(0, dp(density, 2), dp(density, 3), dp(density, 2));
         settingsActions.addView(glassSettings, glassLp);
 
         TextView androidSettings = createTile(activity, R.drawable.ic_settings,
                 R.string.quick_settings_android_settings,
-                activity.getString(R.string.quick_settings_android_settings_summary), 64, density);
+                activity.getString(R.string.quick_settings_android_settings_summary), 48, density);
         controls[QuickSettingsFocusGraph.ANDROID_SETTINGS] = androidSettings;
         androidSettings.setTag("quick_settings_android_settings");
         bind(androidSettings, dialogHolder, actions::openAndroidSettings);
         LinearLayout.LayoutParams androidLp = new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        androidLp.setMargins(dp(density, 5), dp(density, 4), 0, dp(density, 4));
+                ViewGroup.LayoutParams.MATCH_PARENT, 1f);
+        androidLp.setMargins(dp(density, 3), dp(density, 2), 0, dp(density, 2));
         settingsActions.addView(androidSettings, androidLp);
-        content.addView(settingsActions);
+        content.addView(settingsActions, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 48)));
 
         QuickSettingsFocusGraph.connect(controls);
+        for (View control : controls) {
+            if (control == null) continue;
+            control.setOnKeyListener((v, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN && dialogHolder[0] != null) {
+                        dialogHolder[0].dismiss();
+                    }
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        int naturalHeight = content.getMeasuredHeight();
+        if (naturalHeight > availableHeight) {
+            float scale = Math.max(0.55f, availableHeight / (float) naturalHeight);
+            scaleVertical(content, scale, density);
+            content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            naturalHeight = content.getMeasuredHeight();
+        }
+        int frameHeight = Math.min(availableHeight, Math.max(1, naturalHeight));
 
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
-                .setView(scroll)
-                .create();
+                .setView(content).create();
         dialogHolder[0] = dialog;
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.setOnDismissListener(d -> {
-            if (onDismiss != null) onDismiss.run();
-        });
+        dialog.setOnDismissListener(d -> { if (onDismiss != null) onDismiss.run(); });
         dialog.setOnShowListener(d -> {
-            TvDialogStyle.apply(dialog, activity, 560, 420);
-            int requested = initialFocus >= 0 && initialFocus < controls.length
-                    ? initialFocus : QuickSettingsFocusGraph.WIFI;
-            View target = controls[requested] != null ? controls[requested]
-                    : controls[QuickSettingsFocusGraph.WIFI];
-            if (target != null) target.requestFocus();
+            Window window = dialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                window.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+                window.setLayout(width, frameHeight);
+                WindowManager.LayoutParams params = window.getAttributes();
+                params.y = top;
+                params.dimAmount = 0f;
+                window.setAttributes(params);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            }
+            View target = controls[initialFocus >= 0 && initialFocus < controls.length
+                    ? initialFocus : QuickSettingsFocusGraph.WIFI];
+            content.post(() -> { if (target != null && target.isShown()) target.requestFocus(); });
         });
         dialog.show();
         return dialog;
@@ -223,7 +265,7 @@ final class QuickSettingsDialog {
                                     int icon, int titleRes, String titleOverride, String summary, float density,
                                     AlertDialog[] dialogHolder, Runnable action) {
         String title = titleOverride != null ? titleOverride : activity.getString(titleRes);
-        TextView tile = createTile(activity, icon, title, summary, 76, density);
+        TextView tile = createTile(activity, icon, title, summary, 48, density);
         bind(tile, dialogHolder, action);
         GridLayout.Spec rowSpec = GridLayout.spec(row);
         GridLayout.Spec columnSpec = GridLayout.spec(column, span, 1f);
@@ -248,11 +290,11 @@ final class QuickSettingsDialog {
         tile.setFocusableInTouchMode(true);
         tile.setClickable(true);
         tile.setGravity(Gravity.CENTER_VERTICAL);
-        tile.setPadding(dp(density, 14), dp(density, 9), dp(density, 12), dp(density, 9));
+        tile.setPadding(dp(density, 10), dp(density, 4), dp(density, 8), dp(density, 4));
         tile.setMinHeight(dp(density, minHeightDp));
-        tile.setMaxLines(4);
+        tile.setMaxLines(2);
         tile.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        tile.setTextSize(TvUiTokens.CARD_TITLE_SP);
+        tile.setTextSize(14f);
         tile.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.NORMAL);
         tile.setTextColor(TvUiTokens.TEXT_PRIMARY);
         tile.setText(buildLabel(title, summary));
@@ -263,10 +305,10 @@ final class QuickSettingsDialog {
             if (icon != null) {
                 icon = icon.mutate();
                 icon.setTint(TvUiTokens.TEXT_PRIMARY);
-                int size = dp(density, 28);
+                int size = dp(density, 22);
                 icon.setBounds(0, 0, size, size);
                 tile.setCompoundDrawablesRelative(icon, null, null, null);
-                tile.setCompoundDrawablePadding(dp(density, 12));
+                tile.setCompoundDrawablePadding(dp(density, 8));
             }
         }
         setNormalSurface(tile, density, TvUiTokens.ROW_RADIUS_DP);
@@ -284,10 +326,10 @@ final class QuickSettingsDialog {
         link.setFocusableInTouchMode(true);
         link.setClickable(true);
         link.setGravity(Gravity.CENTER);
-        link.setPadding(dp(density, 14), dp(density, 6), dp(density, 14), dp(density, 6));
+        link.setPadding(dp(density, 12), dp(density, 4), dp(density, 12), dp(density, 4));
         link.setMinHeight(dp(density, heightDp));
         link.setText(titleRes);
-        link.setTextSize(14f);
+        link.setTextSize(12f);
         link.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         link.setTextColor(TvUiTokens.TEXT_PRIMARY);
         link.setContentDescription(activity.getString(titleRes));
@@ -304,7 +346,7 @@ final class QuickSettingsDialog {
         if (summary != null && !summary.isEmpty()) {
             int start = text.length();
             text.append("\n").append(summary);
-            text.setSpan(new RelativeSizeSpan(0.78f), start, text.length(),
+            text.setSpan(new RelativeSizeSpan(0.72f), start, text.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             text.setSpan(new ForegroundColorSpan(TvUiTokens.TEXT_SECONDARY), start, text.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -331,8 +373,33 @@ final class QuickSettingsDialog {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 1));
         lp.topMargin = dp(density, topMarginDp);
-        lp.bottomMargin = dp(density, 6);
+        lp.bottomMargin = dp(density, 5);
         parent.addView(divider, lp);
+    }
+
+    private static void scaleVertical(View view, float scale, float density) {
+        if (view instanceof TextView) {
+            TextView text = (TextView) view;
+            float minimum = 8f * density;
+            text.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,
+                    Math.max(minimum, text.getTextSize() * scale));
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) scaleVertical(group.getChildAt(i), scale, density);
+        }
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        if (params != null) {
+            if (params.height > 0) params.height = Math.max(1, Math.round(params.height * scale));
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams margins = (ViewGroup.MarginLayoutParams) params;
+                margins.topMargin = Math.round(margins.topMargin * scale);
+                margins.bottomMargin = Math.round(margins.bottomMargin * scale);
+            }
+            view.setLayoutParams(params);
+        }
+        view.setPadding(view.getPaddingLeft(), Math.round(view.getPaddingTop() * scale),
+                view.getPaddingRight(), Math.round(view.getPaddingBottom() * scale));
     }
 
     private static void setNormalSurface(TextView view, float density, float radiusDp) {
