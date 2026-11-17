@@ -4254,7 +4254,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         final int rp = gridRowPitchPx();
         final int pitch = getHorizontalDockPitch();
         final int scroll = horizontalGridScrollPixels;
-        setThreeRowFrameChromeHidden(grow);
+        // Hide Home chrome before the taller frame starts growing. When shrinking, keep it
+        // hidden for the entire animation; restoring it here exposes the header behind a frame
+        // that is still visibly three rows tall.
+        if (grow) setThreeRowFrameChromeHidden(true);
         if (grow) {
             // Rebase the measured scroll at the first row of the new rolling two-row window.
             horizontalGridScrollBaselinePixels = measuredGridAbsoluteScrollPixels(horizontalGridScrollPixels);
@@ -4294,6 +4297,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setTranslationY(0f);
                 dockRecycler.setTranslationY(dockRaisedTranslationY());
                 syncDockFrameAlpha();
+                // Commit the one-row geometry first, then restore the Home chrome. This keeps
+                // the three-row scene visually coherent through the final animation frame.
+                if (!grow) setThreeRowFrameChromeHidden(false);
                 if (!cancelled && onDone != null) onDone.run();
             }
         });
