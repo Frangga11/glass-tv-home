@@ -24,7 +24,6 @@ final class GlassDrawable extends Drawable {
     private final float radius;
     private final Backdrop.Fill fill = new Backdrop.Fill();
     private final Paint veil = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final int veilColor;
     private final int veilAlpha;
     /** Opaque fallback surface: disabling decoration must never remove the component surface. */
     private final Paint solidSurface = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -70,7 +69,6 @@ final class GlassDrawable extends Drawable {
         this.owner = owner;
         this.highlight = highlight;
         this.radius = radius;
-        this.veilColor = veilColor;
         this.veilAlpha = Math.max(0, Math.min(255, veilAlpha));
         veil.setColor(veilColor);
         solidSurface.setColor(fallbackSurfaceColor);
