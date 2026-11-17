@@ -24,6 +24,8 @@ final class GlassDrawable extends Drawable {
     private final float radius;
     private final Backdrop.Fill fill = new Backdrop.Fill();
     private final Paint veil = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final int veilColor;
+    private final int veilAlpha;
     /** Opaque fallback surface: disabling decoration must never remove the component surface. */
     private final Paint solidSurface = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -55,11 +57,20 @@ final class GlassDrawable extends Drawable {
      * never hides it.
      */
     GlassDrawable(View owner, float radius, float density, Glider highlight, float reach, boolean paintsShape) {
+        this(owner, radius, density, highlight, reach, paintsShape,
+                TvUiTokens.GLASS_VEIL_COLOR, VEIL_ALPHA);
+    }
+
+    /** Popup-specific glass tuning; existing Home and dock glass retain their established material. */
+    GlassDrawable(View owner, float radius, float density, Glider highlight, float reach,
+                  boolean paintsShape, int veilColor, int veilAlpha) {
         this.paintsShape = paintsShape;
         this.owner = owner;
         this.highlight = highlight;
         this.radius = radius;
-        veil.setColor(TvUiTokens.GLASS_VEIL_COLOR);
+        this.veilColor = veilColor;
+        this.veilAlpha = Math.max(0, Math.min(255, veilAlpha));
+        veil.setColor(veilColor);
         solidSurface.setColor(TvUiTokens.POPUP_SURFACE);
         solidBorder.setColor(TvUiTokens.BORDER);
         solidBorder.setStyle(Paint.Style.STROKE);
@@ -122,7 +133,7 @@ final class GlassDrawable extends Drawable {
         float glass = fade;
         if (glass > 0f) {
             fill.draw(canvas, owner, rect, radius, glass);
-            veil.setAlpha(Math.round(VEIL_ALPHA * glass));
+            veil.setAlpha(Math.round(veilAlpha * glass));
             canvas.drawRoundRect(rect, radius, radius, veil);
             if (paintsShape && highlight != null && highlight.isShowing()) {
                 owner.getLocationInWindow(at);
