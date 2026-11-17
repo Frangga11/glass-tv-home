@@ -211,6 +211,16 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("syncFocusedDockGlider();", dock)
         self.assertIn("syncFocusedDockGlider();", collapse)
 
+    def test_home_chrome_restores_only_after_three_row_shrink_finishes(self):
+        method = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
+        # Growing hides chrome before motion; shrinking must not restore it until final geometry
+        # has committed in the animator end callback.
+        self.assertIn("if (grow) setThreeRowFrameChromeHidden(true);", method)
+        self.assertNotIn("setThreeRowFrameChromeHidden(grow);", method)
+        end = method[method.index("@Override public void onAnimationEnd"):method.index("animator.start();")]
+        self.assertLess(end.index("horizontalGridViewportRows = 1;"), end.index("setThreeRowFrameChromeHidden(false);"))
+        self.assertIn("if (!grow) setThreeRowFrameChromeHidden(false);", end)
+
     def test_move_mode_dock_down_uses_live_dock_slot(self):
         step = MAIN[MAIN.index("private void stepMove(int keyCode)"):MAIN.index("public void onUserInteraction()")]
         self.assertIn("int currentPosition = dockAdapter.positionOf(movingKey);", step)
