@@ -12,6 +12,8 @@
     <string name="no_inputs">No inputs found</string>
     <string name="input_external_tv_title">TV inputs (HDMI/AV)</string>
     <string name="input_external_tv_hint">Use the TV remote INPUT/SOURCE button to select an HDMI or AV port.</string>
+    <string name="input_system_picker_title">Open Android TV source picker</string>
+    <string name="input_hdmi_cec_settings_title">TV HDMI-CEC settings</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="not_available">Not available on this TV</string>
