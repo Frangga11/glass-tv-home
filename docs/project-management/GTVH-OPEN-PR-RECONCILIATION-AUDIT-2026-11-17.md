@@ -201,3 +201,14 @@ The owner confirmed that the current work should not be constrained by PR #41 or
 
 ### Final boundary
 The current reconciliation pass is administratively complete for the reviewed queue. This does not claim that PR #62 is feature-ready or that its acceptance gaps are resolved. It remains explicitly outside the current delivery scope.
+
+
+## Live synchronization addendum — 18 November 2026
+
+- Fresh repository/PR inspection confirms PR #155, **GTVH cumulative integration — synchronize PR #154 with main**, is MERGED. It reconciles the cumulative candidate with main, including the CI workflow and handover records. Its conflict-resolution scope did not modify Android application source.
+- PR #153 and #154 are closed unmerged source candidates in the cumulative chain; the accepted cumulative result is carried by the #155 integration. Their historical branches are not separate merge candidates.
+- Fresh live open-PR search returned exactly one open PR: **#62**, OPEN / DRAFT / UNMERGED. It remains DEFERRED by owner direction for a later product/security/dependency review. Do not merge/rebase/cherry-pick/close it in this synchronization closeout.
+- PR #41 and #109 remain CLOSED / NOT PLANNED as directed by the owner. Historical branches are retained.
+- Latest verified pre-documentation main head: `91fd188c17dc2f4c20560506599bfba51bc28466`; exact-head CI run #2300 / `44165609627` passed both required jobs. QA artifact ID `14364708365` is a 1,442,432-byte ZIP (not APK size) and expires 24 November 2026.
+- No branch deletion, force update, or application-source change was performed in this documentation synchronization pass.
+- The new authoritative checkpoint is `GTVH-DOCUMENTATION-INTEGRATION-SYNC-CHECKPOINT-2026-11-18.md`. Exact-head CI for the documentation update is the final closeout gate; do not mark that post-update validation complete until the resulting run passes.
