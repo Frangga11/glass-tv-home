@@ -129,6 +129,35 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
         dispatch = MAIN[MAIN.index("public boolean dispatchKeyEvent"):MAIN.index("public boolean onTileVerticalKey")]
         self.assertIn("moveHandoffPending && movingPos < 0", dispatch)
 
+    def test_raised_dock_left_right_keeps_three_row_frame_open(self):
+        start = MAIN.index("public boolean onDockTileKey")
+        end = MAIN.index("private int pendingFocus;", start)
+        method = MAIN[start:end]
+        self.assertIn("horizontalGridViewportRows >= 2", method)
+        self.assertIn("focusRaisedDockTile(target)", method)
+        self.assertIn("if (horizontalGridExpanded) {\n                    collapseHorizontalOverflowToDock(position);", method)
+        raised = MAIN[MAIN.index("private void focusRaisedDockTile"):MAIN.index("private void focusDockTile(int position)")]
+        self.assertIn("focusRaisedDockTileWhenLaidOut", raised)
+        self.assertIn("card.requestFocus() && card.isFocused()", raised)
+
+    def test_move_mode_dock_down_inserts_into_latest_dock_column(self):
+        across = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
+        self.assertIn("unpinFromDockAtGridPosition(key, dockPosition)", across)
+        step = MAIN[MAIN.index("private void stepMove(int keyCode)"):MAIN.index("public void onUserInteraction()")]
+        self.assertIn("gridPositionForDock(\n                        currentPosition, false", step)
+        adapter = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
+        self.assertIn("DockLayoutModel.insertAtPosition(snapshot.gridItems, selected, gridPosition)", adapter)
+
+    def test_move_mode_does_not_leave_recycler_item_animation_ghosts(self):
+        self.assertNotIn("DefaultItemAnimator moveSlide", MAIN)
+        self.assertNotIn("recycler.setItemAnimator(moveSlide)", MAIN)
+        start = MAIN[MAIN.index("private void startMove(String key"):MAIN.index("private void startMoveWhenLaidOut")]
+        self.assertIn("recycler.setItemAnimator(null)", start)
+        finish = MAIN[MAIN.index("private void finishMove()"):MAIN.index("private void moveTileAcrossRegion")]
+        self.assertIn("movingCard.animate().cancel()", finish)
+        self.assertIn("movingCard.setRotation(0f)", finish)
+        self.assertIn("glider.hideNow()", MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")])
+
     def test_scroll_offset_uses_measured_grid_geometry(self):
         self.assertIn("private int measuredGridScrollPixels", MAIN)
         self.assertIn("horizontalGridScrollBaselinePixels", MAIN)
