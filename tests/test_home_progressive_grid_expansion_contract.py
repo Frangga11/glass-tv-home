@@ -161,7 +161,9 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
         self.assertIn("movingCard.animate().cancel()", finish)
         self.assertIn("movingCard.setRotation(0f)", finish)
         self.assertIn("finishMoveForHandoff();", MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")])
-        self.assertNotIn("glider.hideNow()", MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")])
+        across = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
+        transfer = across[across.index("finishMoveForHandoff();"):across.index("int liveDockPosition")]
+        self.assertNotIn("glider.hideNow()", transfer)
         self.assertIn("moveHandoffPending = true;", MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")])
 
     def test_scroll_offset_uses_measured_grid_geometry(self):
@@ -277,7 +279,8 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         finish = MAIN[MAIN.index("private void finishMove()"):MAIN.index("private void moveTileAcrossRegion")]
         self.assertIn("glider.setMoveModeActive(true, isGlassEffectsEnabled());", start)
         self.assertIn("glider.setMoveModeActive(true, isGlassEffectsEnabled());", restore)
-        self.assertIn("glider.setMoveModeActive(false, isGlassEffectsEnabled());", finish)
+        finish = MAIN[MAIN.index("private void finishMoveState(boolean preserveMoveGlider)"):MAIN.index("private void moveTileAcrossRegion")]
+        self.assertIn("if (!preserveMoveGlider) glider.setMoveModeActive(false, isGlassEffectsEnabled());", finish)
         mode = GLIDER[GLIDER.index("void setMoveModeActive"):GLIDER.index("void setStyle")]
         self.assertIn("style = GLASS;", mode)
         self.assertIn("shadowMix = 1f;", mode)
@@ -296,7 +299,8 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         across = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
         self.assertIn("finishMoveForHandoff();", across)
         self.assertIn("moveHandoffPending = true;", across)
-        self.assertNotIn("glider.hideNow()", across)
+        transfer = across[across.index("finishMoveForHandoff();"):across.index("int liveDockPosition")]
+        self.assertNotIn("glider.hideNow()", transfer)
         finish = MAIN[MAIN.index("private void finishMoveForHandoff"):MAIN.index("private void moveTileAcrossRegion")]
         self.assertIn("finishMoveState(true);", finish)
         self.assertIn("if (!preserveMoveGlider) glider.setMoveModeActive(false", finish)
