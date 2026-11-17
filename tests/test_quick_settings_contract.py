@@ -14,13 +14,18 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
-    def test_dialog_uses_shared_modal_and_focus_contracts(self):
-        self.assertIn("TvDialogStyle.apply(dialog, activity, 560, 420)", DIALOG)
-        self.assertIn("TvUiTokens.", DIALOG)
+    def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
+        self.assertNotIn("ScrollView", DIALOG)
+        self.assertIn("new GlassDrawable(content, 20f * density, density, null, 0.5f)", DIALOG)
+        self.assertIn("Backdrop.watch(content)", DIALOG)
+        self.assertIn("settingsAnchor.getHeight() - hostAt[1] + dp(density, 5)", DIALOG)
+        self.assertIn("dockTop - dp(density, 5) - top", DIALOG)
+        self.assertIn("grid.setColumnCount(3)", DIALOG)
         self.assertIn("TvFocusIndicator.applyRoundedTextFocus", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
         self.assertIn("dialog.setCancelable(true)", DIALOG)
+        self.assertIn("window.setDimAmount(0f)", DIALOG)
 
     def test_all_approved_quick_actions_route_to_existing_owners(self):
         for source in (
@@ -90,7 +95,7 @@ class QuickSettingsContractTest(unittest.TestCase):
             content = (RES / resource).read_text(encoding="utf-8")
             self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi &gt;', content)
 
-    def test_two_column_focus_graph_has_explicit_dpad_edges(self):
+    def test_three_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
             "setNextFocusLeftId",
             "setNextFocusRightId",
@@ -99,6 +104,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         ):
             self.assertIn(setter, GRAPH)
         self.assertIn("QuickSettingsFocusGraph.connect(controls)", DIALOG)
+        self.assertIn("QuickSettingsDialog.show(this, root, anchor, dockRecycler", MAIN)
 
     def test_cache_result_callback_does_not_retain_or_use_destroyed_activity(self):
         self.assertIn("new java.lang.ref.WeakReference<>(MainActivity.this)", MAIN)
