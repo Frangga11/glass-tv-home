@@ -4055,7 +4055,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // Keep focus on the source Dock tile during the reveal. The destination Grid tile
             // takes focus only after it reaches its final row, so the Glider travels DOWN from
             // row one into row two instead of appearing at the entering row's off-screen origin.
-            animateHorizontalDockTransition(pitch, true, () => {
+            animateHorizontalDockTransition(pitch, true, () -> {
                 if (requestGeneration != gridFocusRequestGeneration) return;
                 grid.setTranslationY(0f);
                 dockRecycler.setTranslationY(-pitch);
