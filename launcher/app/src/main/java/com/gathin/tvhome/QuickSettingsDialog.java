@@ -99,7 +99,7 @@ final class QuickSettingsDialog {
         content.setTag("quick_settings_root");
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER_HORIZONTAL);
-        content.setPadding(dp(density, 12), dp(density, 6), dp(density, 12), dp(density, 6));
+        content.setPadding(dp(density, 10), dp(density, 8), dp(density, 10), dp(density, 8));
         content.setClipChildren(true);
         content.setClipToPadding(true);
         content.setBackground(new GlassDrawable(content, 18f * density, density, null, 0.5f, false,
@@ -193,7 +193,7 @@ final class QuickSettingsDialog {
         bind(nextPhoto, dialogHolder, actions::nextPhoto);
         LinearLayout.LayoutParams nextLp = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f);
-        nextLp.setMargins(0, 0, dp(density, 3), 0);
+        nextLp.setMargins(0, dp(density, 2), dp(density, 2), dp(density, 2));
         wallpaperActions.addView(nextPhoto, nextLp);
 
         TextView interval = createTile(activity, R.drawable.ic_wallpaper,
@@ -205,7 +205,7 @@ final class QuickSettingsDialog {
         bind(interval, dialogHolder, actions::chooseWallpaperInterval);
         LinearLayout.LayoutParams intervalLp = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f);
-        intervalLp.setMargins(dp(density, 3), 0, 0, 0);
+        intervalLp.setMargins(dp(density, 2), dp(density, 2), 0, dp(density, 2));
         wallpaperActions.addView(interval, intervalLp);
         content.addView(wallpaperActions, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp)));
@@ -220,7 +220,7 @@ final class QuickSettingsDialog {
         bind(glassSettings, dialogHolder, actions::openGlassSettings);
         LinearLayout.LayoutParams glassLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp));
-        glassLp.setMargins(0, dp(density, 1), 0, dp(density, 1));
+        glassLp.setMargins(0, dp(density, 2), 0, dp(density, 2));
         settingsActions.addView(glassSettings, glassLp);
 
         TextView androidSettings = createTile(activity, R.drawable.ic_tv_display,
@@ -231,7 +231,7 @@ final class QuickSettingsDialog {
         bind(androidSettings, dialogHolder, actions::openAndroidSettings);
         LinearLayout.LayoutParams androidLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp));
-        androidLp.setMargins(0, dp(density, 1), 0, dp(density, 1));
+        androidLp.setMargins(0, dp(density, 2), 0, dp(density, 2));
         settingsActions.addView(androidSettings, androidLp);
         content.addView(settingsActions, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp * 2 + 4)));
@@ -295,7 +295,7 @@ final class QuickSettingsDialog {
         GridLayout.LayoutParams lp = new GridLayout.LayoutParams(rowSpec, columnSpec);
         lp.width = 0;
         lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        lp.setMargins(dp(density, 3), dp(density, 1), dp(density, 3), dp(density, 1));
+        lp.setMargins(dp(density, 2), dp(density, 2), dp(density, 2), dp(density, 2));
         grid.addView(tile, lp);
         return tile;
     }
