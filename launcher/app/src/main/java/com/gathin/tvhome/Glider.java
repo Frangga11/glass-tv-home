@@ -232,6 +232,20 @@ final class Glider extends View {
         changed();
     }
 
+    /** Hard-sync to visual Grid coordinates; aim() applies the Grid's accumulated yShift once. */
+    void moveToVisualImmediately(float l, float t, float r, float b, float radius) {
+        float[] to = aim(l, t, r, b, radius);
+        for (int i = 0; i < springs.length; i++) {
+            springs[i].cancel();
+            edges[i] = to[i];
+        }
+        if (!shown) {
+            shown = true;
+            fadeTo(1f, reducedMotion ? 100 : 180);
+        }
+        changed();
+    }
+
     /**
      * While an app is being moved it wiggles, and the glass pane behind it would show at its corners:
      * then only the app's shadow is drawn.
