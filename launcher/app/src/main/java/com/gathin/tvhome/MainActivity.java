@@ -3816,9 +3816,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (card.requestFocus() && card.isFocused()) return;
         }
         if (attemptsRemaining > 0) {
-            dockRecycler.scrollToPosition(target);
+            final int retryTarget = target;
+            dockRecycler.scrollToPosition(retryTarget);
             dockRecycler.postOnAnimation(() -> focusRaisedDockTileWhenLaidOut(
-                    key, target, requestGeneration, attemptsRemaining - 1));
+                    key, retryTarget, requestGeneration, attemptsRemaining - 1));
         }
         // On exhaustion, deliberately keep the frame open. Do not route focus to the header
         // or invoke focusDockTile(), which would collapse the frame as a side effect.
