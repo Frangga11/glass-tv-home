@@ -1277,3 +1277,13 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Closed PR #77 because it adds an unapproved separate APK release workflow with `contents:write` on `pull_request`; that workflow was not integrated.
 - Updated cleanup totals: **81 PRs closed; 27 remain open; no branches deleted**.
 - The detailed remaining queue and rationale are in `GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md`.
+
+
+## Focused PR reconciliation — pass 3 — 17 November 2026
+
+- Closed 12 additional PRs after checking current main source: #91, #92, #93, #99, #51, #30, #28, #63, #23, #29, #64, and #24. Each received a rationale comment; branches were retained.
+- Superseded areas include Islamic Shelf/Ayah layout, location broadcast permission, reboot alarm restoration, avatar selection state, Dock partition model, upload validation, StandBy atomic persistence, and upload session resilience.
+- Kept #109 open because NAV_SILVER focus is not present in current Glider; kept #26 and #18 open for additional source-level review.
+- Updated total: **93 PRs closed; 15 remain open; 0 branches deleted; 0 code merges in this cleanup pass**.
+- Exact reasons and scope limitations are recorded in GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md.
+- This documentation update requires exact-head CI verification before the checkpoint is called complete.
