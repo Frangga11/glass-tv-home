@@ -76,7 +76,7 @@ final class QuickSettingsDialog {
         }
         // One shared row-height token keeps all actions visually aligned. The available lane
         // determines the token; text and icon sizes remain fixed and are never squeezed.
-        int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 86) / 6));
+        int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 83) / 6));
 
         View[] controls = new View[QuickSettingsFocusGraph.COUNT];
         AlertDialog[] dialogHolder = new AlertDialog[1];
@@ -198,7 +198,7 @@ final class QuickSettingsDialog {
         content.addView(wallpaperActions, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp)));
 
-        addDivider(activity, content, density, 5);
+        addDivider(activity, content, density, 2);
         LinearLayout settingsActions = new LinearLayout(activity);
         settingsActions.setOrientation(LinearLayout.VERTICAL);
         settingsActions.setGravity(Gravity.CENTER_VERTICAL);
