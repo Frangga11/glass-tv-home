@@ -177,6 +177,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         ]
         keys = {
             "quick_settings_title",
+            "quick_settings_language_title",
             "quick_settings_wifi_summary",
             "quick_settings_restart_summary",
             "quick_settings_power_summary",
@@ -202,6 +203,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn('<string name="quick_settings_title">Quick Settings</string>', contents[2])
         self.assertIn('<string name="quick_settings_android_settings">Pengaturan Android TV</string>', contents[1])
         self.assertIn('<string name="quick_settings_android_settings">Android TV Settings</string>', contents[2])
+        self.assertIn('<string name="quick_settings_language_title">Bahasa</string>', contents[1])
+        self.assertIn('<string name="quick_settings_language_title">Language</string>', contents[2])
 
 
 if __name__ == "__main__":
