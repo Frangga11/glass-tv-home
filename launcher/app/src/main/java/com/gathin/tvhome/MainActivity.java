@@ -2289,7 +2289,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     /** Synchronize the one focus shape with the focused Dock OR Grid card during container motion. */
-    private void syncFocusedAppGlider() {
+    private void syncFocusedAppGlider(boolean animateGridFocus) {
         if (!glassShown || glider == null || root == null) return;
         View card = focusedCardFromCurrentFocus();
         if (card == null) return;
@@ -2307,7 +2307,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         float top = bounds.exactCenterY() - height / 2f;
         float radius = AppAdapter.cornerRadius(card.getWidth(), density) * scale;
         if (inDock) {
+            // Dock translation is the frame motion itself; its outline must remain pixel-locked.
             glider.moveToScreenImmediately(left + pad, top + pad,
+                    left + width - pad, top + height - pad, radius);
+        } else if (animateGridFocus) {
+            // Retarget the existing spring while the Grid row/container moves. Do not snap the
+            // outline to each frame: that cancels the visible DPAD focus glide.
+            glider.moveTo(left + pad, top + pad,
                     left + width - pad, top + height - pad, radius);
         } else {
             glider.moveToVisualImmediately(left + pad, top + pad,
@@ -3396,7 +3402,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         hideShelfImmediately();
         movingCard = vh.itemView.findViewById(R.id.card);
         movingCard.requestFocus();
-        glider.setPaneHidden(true);
+        glider.setMoveModeActive(true, isGlassEffectsEnabled());
         startMoveWiggle(movingCard);
     }
 
@@ -3450,7 +3456,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         movingCard = null;
         movingKey = null;
         movingPos = -1;
-        glider.setPaneHidden(false);
+        glider.setMoveModeActive(false, isGlassEffectsEnabled());
         RecyclerView recycler = movingRecycler;
         movingRecycler = null;
         movingDock = false;
@@ -3540,6 +3546,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         movingCard.requestFocus();
         if (inDock) onDockTileFocused(key, movingCard);
         else onTileFocused(position, movingCard);
+        // The focus callback selects the normal UI style; Move Mode then reapplies its one
+        // canonical shadow style after every RecyclerView rebind.
+        glider.setMoveModeActive(true, isGlassEffectsEnabled());
     }
 
     private void stepMove(int keyCode) {
@@ -4199,9 +4208,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 applyDockLayout();
                 horizontalDockCollapseInProgress = false;
                 dispatchPendingDockCollapseDirection(dockPosition);
+                // Dock already owned focus, so no new focus callback is guaranteed here.
+                // Restore the Home shelves as part of this UP completion, not on a later key.
+                if (!horizontalGridExpanded) revealHomeChromeAfterDockCollapse(dockPosition);
             }
         });
         animator.start();
+    }
+
+    /** Rebuilds the Home shelves immediately after the raised Dock frame returns to idle. */
+    private void revealHomeChromeAfterDockCollapse(int dockPosition) {
+        if (dockAdapter == null || dockAdapter.getItemCount() == 0) return;
+        int position = Math.max(0, Math.min(dockPosition, dockAdapter.getItemCount() - 1));
+        showHero(position);
+        if (heroShelf != null && heroShelf.getVisibility() == View.VISIBLE) {
+            heroShelf.animate().cancel();
+            heroShelf.setTranslationX(0f);
+            heroShelf.setAlpha(1f);
+        }
+        if (islamicShelf != null && islamicShelf.getVisibility() == View.VISIBLE) {
+            islamicShelf.animate().cancel();
+            islamicShelf.setAlpha(1f);
+        }
     }
 
     private void abortHorizontalDockCollapse(String reason) {
@@ -4361,7 +4389,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setTranslationY(rp * p);
                 dockRecycler.setTranslationY(-(pitch + rp + scroll) + rp * p);
             }
-            syncFocusedAppGlider();
+            syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -4399,7 +4427,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             float progress = 1f - Math.abs(offset) / Math.max(1f, pitch);
             if (dockRecycler != null) dockRecycler.setTranslationY(-pitch * progress);
             if (grid != null) grid.setTranslationY(offset);
-            syncFocusedAppGlider();
+            syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
