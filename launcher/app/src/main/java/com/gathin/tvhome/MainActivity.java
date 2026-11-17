@@ -5669,7 +5669,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Opens the centered V04 Quick Settings modal using the shared G2 dialog/focus contract. */
     private void showQuickControlPopup() {
-        showQuickControlPopup(QuickSettingsFocusGraph.WIFI);
+        showQuickControlPopup(QuickSettingsFocusGraph.INPUT);
     }
 
     private void showQuickControlPopup(int initialFocus) {
@@ -5679,11 +5679,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View anchor = findViewById(R.id.btnSettings);
         if (anchor == null) return;
 
-        QuickSettingsDialog.show(this, root, anchor, dockRecycler, new QuickSettingsDialog.Actions() {
-            @Override public String wifiSummary() {
-                return getQuickSettingsNetworkSummary();
-            }
-            @Override public String languageSummary() {
+        QuickSettingsDialog.show(this, root, anchor, dockRecycler, new QuickSettingsDialog.Actions() {            @Override public String languageSummary() {
                 return AppLanguage.getLanguageBadge(MainActivity.this);
             }
             @Override public String powerTitle() {
@@ -5695,8 +5691,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             @Override public String wallpaperIntervalSummary() {
                 return getWallpaperIntervalSummary();
             }
-            @Override public void openWifi() {
-                showWifiPopup(() -> showQuickControlPopup(QuickSettingsFocusGraph.WIFI));
+            @Override public void openInputs() {
+                showInputs();
             }
             @Override public void restart() {
                 showRestartDialog();
