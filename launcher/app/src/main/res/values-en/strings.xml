@@ -443,7 +443,7 @@
     <string name="default_launcher_status_summary">%1$s Select to see how to set Glass TV as Home.</string>
     <string name="accessibility_remote_title">♿ Accessibility &amp; Remote Buttons</string>
     <string name="accessibility_remote_summary">Open Android settings to enable the Home button service and Glass TV remote navigation.</string>
-    <string name="restart_tv_title">Restart TV</string>
+    <string name="restart_tv_title">🔄 Restart TV</string>
     <string name="restart_tv_summary">Restart the Android TV system.</string>
     <string name="power_tv_title">⏻ Turn Off / Put TV on Standby</string>
     <string name="power_tv_summary">Open the Android TV power menu. Available options depend on the device.</string>
@@ -456,7 +456,7 @@
     <string name="android_version_value">Android %1$s (SDK %2$d)</string>
     <string name="physical_resolution_title">📐 Physical Screen Resolution</string>
     <string name="ui_resolution_title">🖥️ Interface Resolution</string>
-    <string name="app_language_title">App Language</string>
+    <string name="app_language_title">🌐 App Language</string>
     <string name="app_language_summary">Choose Indonesian or English.</string>
     <string name="update_available_title">Glass TV Home update available</string>
     <string name="check_updates_title">🚀 Check for Glass TV Updates</string>
