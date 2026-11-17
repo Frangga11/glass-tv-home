@@ -45,7 +45,7 @@ class ProgressiveGridExpansionContractTest(unittest.TestCase):
     def test_three_row_window_keeps_target_at_bottom_and_preserves_rows_above(self):
         self.assertIn("return Math.max(0, targetRow - 1);", MAIN)
         self.assertIn("int windowStartRow = gridWindowStartRow(targetRow);", MAIN)
-        self.assertIn("return targetRow >= 2 ? 2 : 1;", MAIN)
+        self.assertIn("return targetRow >= 1 ? 2 : 1;", MAIN)
         self.assertIn("currentRow, windowStartRow, rowPitch, currentTopOffset", MAIN)
         self.assertIn("int expectedWindowStartRow = gridWindowStartRow(position / COLUMNS);", MAIN)
 
@@ -138,6 +138,25 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
 
     def test_hidden_chrome_is_reasserted_after_focus_changes(self):
         self.assertIn("if (horizontalThreeRowFrameActive) root.post(this::reassertThreeRowChrome);", MAIN)
+
+
+    def test_move_mode_uses_latest_selected_identity_and_vertical_column(self):
+        start = MAIN.index("private void stepMove(int keyCode)")
+        end = MAIN.index("public void onUserInteraction()", start)
+        method = MAIN[start:end]
+        self.assertIn("movingKey = movingDock", method)
+        self.assertIn("adapter.positionOf(movingKey)", method)
+        self.assertIn("DockLayoutModel.gridNeighborPosition(", method)
+        self.assertIn("currentPosition, direction, COLUMNS, last + 1", method)
+        self.assertIn("movingPos = resolvedPosition;", method)
+        self.assertIn("restoreMovingTile(false, movingKey, resolvedPosition", method)
+
+    def test_third_overall_row_expands_two_grid_rows_at_second_grid_row(self):
+        helper = MAIN[MAIN.index("private static int gridViewportRowsFor"):MAIN.index("private int gridRowPitchPx")]
+        self.assertIn("return targetRow >= 1 ? 2 : 1;", helper)
+        transition = MAIN[MAIN.index("private void startHorizontalGridRowTransition"):MAIN.index("private void animateHorizontalGridRowScroll")]
+        self.assertIn("gridViewportRowsFor(target / COLUMNS) > horizontalGridViewportRows", transition)
+
 
 
 if __name__ == "__main__":
