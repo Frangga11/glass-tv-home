@@ -182,6 +182,15 @@ final class DockLayoutModel {
         return Collections.unmodifiableList(result);
     }
 
+    /** Returns a copy of {@code items} with {@code value} inserted at a clamped position. */
+    static <T> List<T> insertAtPosition(List<T> items, T value, int requestedPosition) {
+        List<T> result = new ArrayList<>(items == null ? Collections.emptyList() : items);
+        if (value == null) return Collections.unmodifiableList(result);
+        int position = Math.max(0, Math.min(requestedPosition, result.size()));
+        result.add(position, value);
+        return Collections.unmodifiableList(result);
+    }
+
     static List<String> movePinnedKey(List<String> keys, int from, int to, int visibleCount) {
         List<String> result = new ArrayList<>(keys == null ? Collections.emptyList() : keys);
         if (from < 0 || to < 0 || from >= visibleCount || to >= visibleCount
