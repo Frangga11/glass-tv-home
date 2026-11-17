@@ -1257,3 +1257,14 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - The detailed inventory, commit-ahead counts, changed workstreams, and priority order are recorded in `GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md`.
 - The latest main checkpoint CI run `44059379657` completed SUCCESS on the then-current checkpoint head `c1e4a5d02233ed60935ab11c11bba1017147580b`. The new audit documentation commit triggers its own CI validation; do not call that new head validated until its run completes.
 - Next action: reconcile P0 Home DPAD/Dock and P1 Prayer popup against the accepted cumulative main implementation before any additional PR closure, retarget, or merge.
+
+
+## Focused PR reconciliation result — 17 November 2026
+
+- Completed source-level comparison of the Home DPAD/Dock/Glider stack (#116–#124) against the accepted cumulative main implementation from the #153/#154 integration chain. The older stacked branches were closed as historical/superseded.
+- Compared the earlier compact Prayer popup PR #134 with the rebuilt popup already integrated through PR #135; #134 was closed as an earlier alternative and was not transplanted.
+- 10 additional PRs closed with explanatory comments; total cleanup count is now 78 closed PRs and 30 still open.
+- No branch was deleted, no branch was force-updated, and no code was merged in this cleanup pass.
+- Detailed status and remaining work queue: `GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md`.
+- Main CI for the new audit documentation commit(s) is pending; verify the exact latest main head before declaring the documentation checkpoint fully validated.
+- Next work: focused review of #90–#109, then the older feature/security branches. Prioritize manifest security, upload/session resilience, storage atomicity, process-death recovery, and profile state correctness. Do not blanket-close or merge these branches.
