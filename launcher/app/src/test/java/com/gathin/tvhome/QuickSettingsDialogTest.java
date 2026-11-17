@@ -25,12 +25,11 @@ import org.robolectric.annotation.Config;
 public class QuickSettingsDialogTest {
     private static final class RecordingActions implements QuickSettingsDialog.Actions {
         String lastAction;
-        @Override public String wifiSummary() { return "Connected"; }
         @Override public String languageSummary() { return "ID"; }
         @Override public String powerTitle() { return "Power Off"; }
         @Override public String cacheTitle() { return "Clean Cache"; }
         @Override public String wallpaperIntervalSummary() { return "Every 10 minutes"; }
-        @Override public void openWifi() { lastAction = "wifi"; }
+        @Override public void openInputs() { lastAction = "inputs"; }
         @Override public void restart() { lastAction = "restart"; }
         @Override public void chooseLanguage() { lastAction = "language"; }
         @Override public void openPowerMenu() { lastAction = "power"; }
@@ -71,7 +70,7 @@ public class QuickSettingsDialogTest {
         View anchor = views[1].getChildAt(0);
         View dock = views[2].getChildAt(1);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], anchor, dock, actions,
-                QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
+                QuickSettingsFocusGraph.INPUT, () -> dismissed[0]++);
         assertNotNull(dialog);
         View control = find(dialog, tag);
         assertNotNull("missing control " + tag, control);
@@ -88,7 +87,7 @@ public class QuickSettingsDialogTest {
     public void everyQuickActionDispatchesToItsOwnerAndDismissesTheModal() {
         Activity activity = newActivity();
         RecordingActions actions = new RecordingActions();
-        assertAction(activity, actions, "quick_settings_wifi", "wifi");
+        assertAction(activity, actions, "quick_settings_input", "inputs");
         assertAction(activity, actions, "quick_settings_restart", "restart");
         assertAction(activity, actions, "quick_settings_language", "language");
         assertAction(activity, actions, "quick_settings_power", "power");
@@ -105,8 +104,8 @@ public class QuickSettingsDialogTest {
         Activity activity = newActivity();
         FrameLayout[] views = host(activity);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
-                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.WIFI, null);
-        View wifi = find(dialog, "quick_settings_wifi");
+                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+        View input = find(dialog, "quick_settings_input");
         View restart = find(dialog, "quick_settings_restart");
         View language = find(dialog, "quick_settings_language");
         View power = find(dialog, "quick_settings_power");
@@ -115,7 +114,7 @@ public class QuickSettingsDialogTest {
         View interval = find(dialog, "quick_settings_interval");
         View manage = find(dialog, "quick_settings_manage_wallpaper");
         View androidSettings = find(dialog, "quick_settings_android_settings");
-        assertNotNull(wifi);
+        assertNotNull(input);
         assertNotNull(restart);
         assertNotNull(language);
         assertNotNull(power);
@@ -124,10 +123,10 @@ public class QuickSettingsDialogTest {
         assertNotNull(interval);
         assertNotNull(manage);
         assertNotNull(androidSettings);
-        assertEquals(restart.getId(), wifi.getNextFocusRightId());
-        assertEquals(wifi.getId(), wifi.getNextFocusLeftId());
-        assertEquals(language.getId(), wifi.getNextFocusDownId());
-        assertEquals(wifi.getId(), restart.getNextFocusLeftId());
+        assertEquals(restart.getId(), input.getNextFocusRightId());
+        assertEquals(input.getId(), input.getNextFocusLeftId());
+        assertEquals(language.getId(), input.getNextFocusDownId());
+        assertEquals(input.getId(), restart.getNextFocusLeftId());
         assertEquals(power.getId(), language.getNextFocusRightId());
         assertEquals(cache.getId(), power.getNextFocusDownId());
         assertEquals(nextPhoto.getId(), cache.getNextFocusDownId());
@@ -148,7 +147,7 @@ public class QuickSettingsDialogTest {
         final int[] dismissed = {0};
         FrameLayout[] views = host(activity);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
-                views[0].getChildAt(1), actions, QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
+                views[0].getChildAt(1), actions, QuickSettingsFocusGraph.INPUT, () -> dismissed[0]++);
         assertNotNull(dialog);
         dialog.cancel();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
