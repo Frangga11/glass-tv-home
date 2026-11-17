@@ -53,7 +53,6 @@ public class QuickSettingsFocusGraphTest {
             }
         }
         assertEquals(QuickSettingsFocusGraph.COUNT, visited.size());
-        assertEquals(QuickSettingsFocusGraph.COUNT, visited.size());
         assertEquals(QuickSettingsFocusGraph.NO_TARGET,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.ANDROID_SETTINGS, QuickSettingsFocusGraph.DOWN));
     }
