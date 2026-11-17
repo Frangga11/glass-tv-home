@@ -190,3 +190,32 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
+    def test_dock_focus_coordinates_include_visual_ancestor_translation(self):
+        self.assertIn("private void offsetByAncestorTranslation(View card, Rect bounds)", MAIN)
+        self.assertIn("offsetByAncestorTranslation(card, r);", MAIN)
+        self.assertIn("if (inDock) glider.moveToScreen(", MAIN)
+
+    def test_grid_scroll_does_not_apply_to_dock_owned_glider(self):
+        listener = MAIN[MAIN.index("grid.addOnScrollListener"):MAIN.index("// Liquid feel:")]
+        self.assertIn("isCurrentFocusInside(dockRecycler)", listener)
+        self.assertIn("syncFocusedDockGlider();", listener)
+        self.assertIn("glider.scrolled(dy);", listener)
+
+    def test_dock_glider_tracks_each_frame_of_dock_transitions(self):
+        self.assertIn("glider.moveToScreenImmediately(", MAIN)
+        viewport = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
+        dock = MAIN[MAIN.index("private void animateHorizontalDockTransition"):MAIN.index("private void focusTile(int position)")]
+        collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):MAIN.index("private void abortHorizontalDockCollapse")]
+        self.assertIn("syncFocusedDockGlider();", viewport)
+        self.assertIn("syncFocusedDockGlider();", dock)
+        self.assertIn("syncFocusedDockGlider();", collapse)
+
+    def test_move_mode_dock_down_uses_live_dock_slot(self):
+        step = MAIN[MAIN.index("private void stepMove(int keyCode)"):MAIN.index("public void onUserInteraction()")]
+        self.assertIn("int currentPosition = dockAdapter.positionOf(movingKey);", step)
+        self.assertIn("gridPositionForDock(\n                        currentPosition, false", step)
+        across = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
+        self.assertIn("unpinFromDockAtGridPosition(key, dockPosition)", across)
