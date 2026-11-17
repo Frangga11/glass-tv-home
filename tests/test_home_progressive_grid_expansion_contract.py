@@ -216,6 +216,8 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
     def test_move_mode_dock_down_uses_live_dock_slot(self):
         step = MAIN[MAIN.index("private void stepMove(int keyCode)"):MAIN.index("public void onUserInteraction()")]
         self.assertIn("int currentPosition = dockAdapter.positionOf(movingKey);", step)
-        self.assertIn("gridPositionForDock(\n                        currentPosition, false", step)
+        self.assertIn("moveTileAcrossRegion(movingKey, false, currentPosition)", step)
         across = MAIN[MAIN.index("private void moveTileAcrossRegion"):MAIN.index("private void restoreMovingTile")]
-        self.assertIn("unpinFromDockAtGridPosition(key, dockPosition)", across)
+        self.assertIn("dockAdapter.positionOf(key)", across)
+        self.assertIn("gridPositionForDock(liveDockPosition, false, COLUMNS", across)
+        self.assertIn("unpinFromDockAtGridPosition(key, Math.max(0, liveGridPosition))", across)
