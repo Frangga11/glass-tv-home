@@ -134,9 +134,9 @@ public class QuickSettingsDialogTest {
         assertEquals(cache.getId(), nextPhoto.getNextFocusUpId());
         assertEquals(manage.getId(), interval.getNextFocusUpId());
         assertEquals(interval.getId(), manage.getNextFocusDownId());
-        assertFalse(((TextView) restart).getText().toString().contains("\\n"));
-        assertFalse(((TextView) find(dialog, "quick_settings_power")).getText().toString().contains("\\n"));
-        assertFalse(((TextView) nextPhoto).getText().toString().contains("\\n"));
+        assertFalse(((TextView) restart).getText().toString().contains("\n"));
+        assertFalse(((TextView) find(dialog, "quick_settings_power")).getText().toString().contains("\n"));
+        assertFalse(((TextView) nextPhoto).getText().toString().contains("\n"));
         assertTrue(((TextView) androidSettings).getText().toString().contains("Pengaturan Android TV"));
         dialog.cancel();
     }
