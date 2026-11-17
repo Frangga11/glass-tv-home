@@ -1268,3 +1268,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Detailed status and remaining work queue: `GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md`.
 - Main CI for the new audit documentation commit(s) is pending; verify the exact latest main head before declaring the documentation checkpoint fully validated.
 - Next work: focused review of #90–#109, then the older feature/security branches. Prioritize manifest security, upload/session resilience, storage atomicity, process-death recovery, and profile state correctness. Do not blanket-close or merge these branches.
+
+
+## Additional PR cleanup — 17 November 2026
+
+- Closed PR #107 after verifying Islamic gold highlighting and black text-shadow are already present in main; its remaining old test snapshot was not transplanted.
+- Closed PR #90 because its CI artifact allowlist delta is superseded by the current cumulative QA workflow.
+- Closed PR #77 because it adds an unapproved separate APK release workflow with `contents:write` on `pull_request`; that workflow was not integrated.
+- Updated cleanup totals: **81 PRs closed; 27 remain open; no branches deleted**.
+- The detailed remaining queue and rationale are in `GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md`.
