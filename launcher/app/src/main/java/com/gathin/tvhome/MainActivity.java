@@ -3455,7 +3455,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         movingPos = currentPosition;
 
-        if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && currentPosition < COLUMNS) {
+        if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS) {
             // UP from the first Grid row hands the app to Dock row one (mirror of Dock DOWN);
             // when the Dock is full or nothing would remain in the Grid, it stays a hard boundary.
             // It never ends Move Mode and never moves focus to the Home header.
