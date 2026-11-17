@@ -2338,11 +2338,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
         } else {
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (position > 0) focusDockTile(position - 1);
+                if (position > 0) {
+                    int target = position - 1;
+                    if (horizontalGridExpanded && horizontalGridViewportRows >= 2) {
+                        focusRaisedDockTile(target);
+                    } else {
+                        focusDockTile(target);
+                    }
+                }
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                if (position < count - 1) focusDockTile(position + 1);
+                if (position < count - 1) {
+                    int target = position + 1;
+                    if (horizontalGridExpanded && horizontalGridViewportRows >= 2) {
+                        focusRaisedDockTile(target);
+                    } else {
+                        focusDockTile(target);
+                    }
+                }
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
@@ -3204,12 +3218,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private android.animation.ObjectAnimator wiggle;
     /** A key whose release is swallowed: the OK or Back that put a moved tile down must not also open it. */
     private int swallowRelease = -1;
-    /**
-     * Slides the tiles into their new places while an app is moved. The grid has no item animations
-     * otherwise: they would replay on every rebuild and cost frames while scrolling.
-     */
-    private androidx.recyclerview.widget.DefaultItemAnimator moveSlide;
-
     /** Holding OK on an app: a glass menu to move it, or to open Android's page for it. */
     @Override
     public boolean onTileHeld(int position, View card) {
@@ -3258,6 +3266,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             startMoveWhenLaidOut(key, inDock, pos, 3);
             return;
         }
+        // Move Mode reorders use stable identities and immediate rebinding. RecyclerView item
+        // animations retain old-holder snapshots during notifyDataSetChanged(), which can look
+        // like a second focus/shadow travelling on a different row.
+        recycler.setItemAnimator(null);
         movingPos = pos;
         movingKey = key;
         moveHandoffPending = false;
@@ -3266,13 +3278,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         movingCard = vh.itemView.findViewById(R.id.card);
         movingCard.requestFocus();
         glider.setPaneHidden(true);
-        if (moveSlide == null) {
-            moveSlide = new androidx.recyclerview.widget.DefaultItemAnimator();
-            moveSlide.setSupportsChangeAnimations(false);
-            moveSlide.setMoveDuration(reducedMotion ? 140 : 220);
-        }
-        recycler.setItemAnimator(moveSlide);
-        startMoveWiggle(movingCard);    }
+        startMoveWiggle(movingCard);
+    }
 
     private void startMoveWhenLaidOut(String key, boolean inDock, int position, int attemptsRemaining) {
         if (movingPos >= 0) return;        RecyclerView recycler = inDock ? dockRecycler : grid;
@@ -3290,6 +3297,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void startMoveWiggle(View card) {
         if (card == null) return;
         if (wiggle != null) wiggle.cancel();
+        card.animate().cancel();
+        card.setRotation(0f);
         movingCard = card;
         float tilt = reducedMotion ? 0.8f : 1.4f;
         wiggle = android.animation.ObjectAnimator.ofFloat(card, View.ROTATION, -tilt, tilt);
@@ -3303,7 +3312,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (movingPos < 0) return;
         if (wiggle != null) wiggle.cancel();
         wiggle = null;
-        if (movingCard != null) movingCard.animate().rotation(0f).setDuration(120).start();
+        if (movingCard != null) {
+            // The selected ViewHolder may be rebound to a different app immediately after a reorder.
+            // Reset synchronously so a lingering rotation cannot be inherited by that new app.
+            movingCard.animate().cancel();
+            movingCard.setRotation(0f);
+        }
         movingCard = null;
         movingKey = null;
         movingPos = -1;
@@ -3311,18 +3325,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         RecyclerView recycler = movingRecycler;
         movingRecycler = null;
         movingDock = false;
-        if (recycler != null) {
-            RecyclerView.ItemAnimator slide = recycler.getItemAnimator();
-            if (slide != null) slide.isRunning(() -> {
-                if (movingPos < 0 && recycler.getItemAnimator() == slide) recycler.setItemAnimator(null);
-            });
-        }
+        if (recycler != null) recycler.setItemAnimator(null);
     }
 
     private void moveTileAcrossRegion(String key, boolean toDock, int dockPosition) {
         if (key == null) return;
         finishMove();
-        boolean changed = toDock ? adapter.pinToDock(key, dockPosition) : adapter.unpinFromDock(key);
+        // A cross-region transfer must not carry the glider shadow from the old row into the new
+        // RecyclerView. The destination focus callback will place it at the selected card directly.
+        glider.hideNow();
+        boolean changed = toDock ? adapter.pinToDock(key, dockPosition)
+                : (!dockVertical
+                    ? adapter.unpinFromDockAtGridPosition(key, dockPosition)
+                    : adapter.unpinFromDock(key));
         if (!changed) {
             // Dock full or nothing to change: Move Mode must survive, so pick the app up again where it was.
             RecyclerView origin = toDock ? grid : dockRecycler;
@@ -3377,7 +3392,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         View nextCard = holder.itemView.findViewById(R.id.card);
-        if (previousCard != null && previousCard != nextCard) previousCard.setRotation(0f);
+        if (previousCard != null && previousCard != nextCard) {
+            previousCard.animate().cancel();
+            previousCard.setRotation(0f);
+        }
         movingCard = nextCard;
         if (movingCard == null) {
             finishMove();
@@ -3415,9 +3433,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             }
             movingPos = currentPosition;
 
-            if ((dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
-                    || (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_DOWN)) {
+            if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 moveTileAcrossRegion(movingKey, false, 0);
+                return;
+            }
+            if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                int targetGridPosition = DockLayoutModel.gridPositionForDock(
+                        currentPosition, false, COLUMNS, adapter == null ? 0 : adapter.getItemCount() + 1);
+                moveTileAcrossRegion(movingKey, false, Math.max(0, targetGridPosition));
                 return;
             }
             if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP) return; // row one is the top edge
@@ -3766,22 +3789,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Focus a raised Dock card without collapsing the latched frame. */
     private void focusRaisedDockTile(int position) {
         if (dockAdapter == null || dockRecycler == null || dockAdapter.getItemCount() == 0) return;
-        final int target = NavigationState.resolveHomePosition(-1, position, dockAdapter.getItemCount());
+        int target = NavigationState.resolveHomePosition(-1, position, dockAdapter.getItemCount());
+        String key = dockAdapter.keyAt(target);
+        if (key == null) return;
         final int requestGeneration = ++gridFocusRequestGeneration;
-        RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(target);
-        View card = vh == null ? null : vh.itemView.findViewById(R.id.card);
-        if (card != null && card.isShown() && card.isFocusable()) {
-            if (card.isFocused()) onDockTileFocused(dockAdapter.keyAt(target), card);
-            else card.requestFocus();
-            return;
+        focusRaisedDockTileWhenLaidOut(key, target, requestGeneration, 8);
+    }
+
+    /** Resolve the Dock destination by stable identity and retry until it truly owns focus. */
+    private void focusRaisedDockTileWhenLaidOut(String key, int fallbackPosition,
+                                                 int requestGeneration, int attemptsRemaining) {
+        if (requestGeneration != gridFocusRequestGeneration || !horizontalGridExpanded
+                || horizontalGridViewportRows < 2 || dockAdapter == null || dockRecycler == null) return;
+        int target = dockAdapter.positionOf(key);
+        if (target < 0) {
+            target = NavigationState.resolveHomePosition(-1, fallbackPosition, dockAdapter.getItemCount());
         }
-        dockRecycler.scrollToPosition(target);
-        dockRecycler.postOnAnimation(() -> {
-            if (requestGeneration != gridFocusRequestGeneration) return;
-            RecyclerView.ViewHolder next = dockRecycler.findViewHolderForAdapterPosition(target);
-            View nextCard = next == null ? null : next.itemView.findViewById(R.id.card);
-            if (nextCard != null && nextCard.isFocusable()) nextCard.requestFocus();
-        });
+        if (target < 0 || target >= dockAdapter.getItemCount()) return;
+        RecyclerView.ViewHolder holder = dockRecycler.findViewHolderForAdapterPosition(target);
+        View card = holder == null ? null : holder.itemView.findViewById(R.id.card);
+        if (card != null && card.isShown() && card.isFocusable()) {
+            if (card.isFocused()) {
+                onDockTileFocused(dockAdapter.keyAt(target), card);
+                return;
+            }
+            if (card.requestFocus() && card.isFocused()) return;
+        }
+        if (attemptsRemaining > 0) {
+            dockRecycler.scrollToPosition(target);
+            dockRecycler.postOnAnimation(() -> focusRaisedDockTileWhenLaidOut(
+                    key, target, requestGeneration, attemptsRemaining - 1));
+        }
+        // On exhaustion, deliberately keep the frame open. Do not route focus to the header
+        // or invoke focusDockTile(), which would collapse the frame as a side effect.
     }
 
     private void focusDockTile(int position) {
