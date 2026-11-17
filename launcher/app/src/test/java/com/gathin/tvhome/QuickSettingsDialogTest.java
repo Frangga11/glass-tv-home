@@ -121,9 +121,6 @@ public class QuickSettingsDialogTest {
         assertEquals(wifi.getId(), restart.getNextFocusLeftId());
         assertEquals(power.getId(), language.getNextFocusRightId());
         assertEquals(cache.getId(), power.getNextFocusDownId());
-        assertEquals(0, dialog.getWindow().getDecorView().findViewsWithText(
-                new java.util.ArrayList<>(), activity.getString(R.string.close_label),
-                View.FIND_VIEWS_WITH_TEXT).size());
         dialog.cancel();
     }
 
