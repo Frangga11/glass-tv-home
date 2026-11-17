@@ -443,7 +443,7 @@
     <string name="default_launcher_status_summary">%1$s Pilih untuk melihat cara menetapkan Glass TV sebagai Home.</string>
     <string name="accessibility_remote_title">♿ Aksesibilitas &amp; Tombol Remote</string>
     <string name="accessibility_remote_summary">Buka pengaturan Android untuk mengaktifkan layanan tombol Home dan navigasi remote Glass TV.</string>
-    <string name="restart_tv_title">Mulai Ulang TV</string>
+    <string name="restart_tv_title">🔄 Mulai Ulang TV</string>
     <string name="restart_tv_summary">Mulai ulang sistem Android TV.</string>
     <string name="power_tv_title">⏻ Matikan / Siagakan TV</string>
     <string name="power_tv_summary">Buka menu daya Android TV. Pilihan yang tersedia bergantung pada perangkat.</string>
@@ -456,7 +456,7 @@
     <string name="android_version_value">Android %1$s (SDK %2$d)</string>
     <string name="physical_resolution_title">📐 Resolusi Fisik Layar</string>
     <string name="ui_resolution_title">🖥️ Resolusi Antarmuka</string>
-    <string name="app_language_title">Bahasa Aplikasi</string>
+    <string name="app_language_title">🌐 Bahasa Aplikasi</string>
     <string name="app_language_summary">Pilih Bahasa Indonesia atau English.</string>
     <string name="update_available_title">Pembaruan Glass TV tersedia</string>
     <string name="check_updates_title">🚀 Periksa Pembaruan Glass TV</string>
