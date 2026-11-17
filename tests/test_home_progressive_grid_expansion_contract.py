@@ -5,6 +5,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
 APP_ADAPTER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
+GLIDER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/Glider.java").read_text(encoding="utf-8")
 
 
 class ProgressiveGridExpansionContractTest(unittest.TestCase):
@@ -208,8 +209,8 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         viewport = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
         dock = MAIN[MAIN.index("private void animateHorizontalDockTransition"):MAIN.index("private void focusTile(int position)")]
         collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):MAIN.index("private void abortHorizontalDockCollapse")]
-        self.assertIn("syncFocusedAppGlider();", viewport)
-        self.assertIn("syncFocusedAppGlider();", dock)
+        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", viewport)
+        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", dock)
         self.assertIn("syncFocusedDockGlider();", collapse)
 
     def test_home_chrome_restores_only_after_three_row_shrink_finishes(self):
@@ -247,10 +248,10 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("private void syncFocusedAppGlider()", MAIN)
         transition = MAIN[MAIN.index("private void animateHorizontalDockTransition"):
                           MAIN.index("private void focusTile(int position)")]
-        self.assertIn("syncFocusedAppGlider();", transition)
+        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", transition)
         viewport = MAIN[MAIN.index("private void animateGridViewportRows"):
                          MAIN.index("private void animateHorizontalDockTransition")]
-        self.assertIn("syncFocusedAppGlider();", viewport)
+        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", viewport)
 
     def test_dock_grid_focus_is_acquired_before_reveal_motion(self):
         expand = MAIN[MAIN.index("private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration, String moveKey)"):
@@ -264,6 +265,39 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("if (horizontalThreeRowFrameActive) reassertThreeRowChrome();", focused)
         start = MAIN[MAIN.index("private void startMove(String key"):MAIN.index("private void startMoveWhenLaidOut")]
         self.assertIn("hideShelfImmediately();", start)
+
+
+    def test_move_mode_uses_the_same_black_shadow_for_dock_and_grid_rows(self):
+        start = MAIN[MAIN.index("private void startMove(String key"):MAIN.index("private void startMoveWhenLaidOut")]
+        restore = MAIN[MAIN.index("private void restoreMovingTile"):MAIN.index("private void stepMove")]
+        finish = MAIN[MAIN.index("private void finishMove()"):MAIN.index("private void moveTileAcrossRegion")]
+        self.assertIn("glider.setMoveModeActive(true, isGlassEffectsEnabled());", start)
+        self.assertIn("glider.setMoveModeActive(true, isGlassEffectsEnabled());", restore)
+        self.assertIn("glider.setMoveModeActive(false, isGlassEffectsEnabled());", finish)
+        mode = GLIDER[GLIDER.index("void setMoveModeActive"):GLIDER.index("void setStyle")]
+        self.assertIn("style = GLASS;", mode)
+        self.assertIn("shadowMix = 1f;", mode)
+        self.assertIn("paneHidden = true;", mode)
+
+    def test_grid_focus_glide_is_spring_retargeted_without_snapping_each_frame(self):
+        sync = MAIN[MAIN.index("private void syncFocusedAppGlider(boolean animateGridFocus)"):
+                    MAIN.index("@Override\n    public void onTileFocused")]
+        self.assertIn("glider.moveTo(left + pad, top + pad,", sync)
+        self.assertIn("glider.moveToVisualImmediately(", sync)
+        self.assertIn("syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);", MAIN)
+        self.assertIn("Math.max(240, 240 * Math.abs(targetRow - currentRow))", MAIN)
+
+    def test_up_collapse_restores_home_shelves_without_a_followup_focus_key(self):
+        collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):
+                        MAIN.index("private void revealHomeChromeAfterDockCollapse")]
+        self.assertIn("setThreeRowFrameChromeHidden(false);", collapse)
+        self.assertIn("if (!horizontalGridExpanded) revealHomeChromeAfterDockCollapse(dockPosition);", collapse)
+        restore = MAIN[MAIN.index("private void revealHomeChromeAfterDockCollapse"):
+                       MAIN.index("private void abortHorizontalDockCollapse")]
+        self.assertIn("showHero(position);", restore)
+        self.assertIn("heroShelf.setAlpha(1f);", restore)
+        self.assertIn("islamicShelf.setAlpha(1f);", restore)
+
 
 
 if __name__ == "__main__":
