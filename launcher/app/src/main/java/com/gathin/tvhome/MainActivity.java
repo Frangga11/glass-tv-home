@@ -3402,9 +3402,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // A cross-region transfer must not carry the glider shadow from the old row into the new
         // RecyclerView. The destination focus callback will place it at the selected card directly.
         glider.hideNow();
+        int liveDockPosition = !toDock && !dockVertical && dockAdapter != null
+                ? dockAdapter.positionOf(key) : dockPosition;
+        int liveGridPosition = !toDock && !dockVertical && adapter != null
+                ? DockLayoutModel.gridPositionForDock(liveDockPosition, false, COLUMNS,
+                        adapter.getItemCount() + 1)
+                : dockPosition;
         boolean changed = toDock ? adapter.pinToDock(key, dockPosition)
                 : (!dockVertical
-                    ? adapter.unpinFromDockAtGridPosition(key, dockPosition)
+                    ? adapter.unpinFromDockAtGridPosition(key, Math.max(0, liveGridPosition))
                     : adapter.unpinFromDock(key));
         if (!changed) {
             // Dock full or nothing to change: Move Mode must survive, so pick the app up again where it was.
@@ -3506,9 +3512,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 return;
             }
             if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                int targetGridPosition = DockLayoutModel.gridPositionForDock(
-                        currentPosition, false, COLUMNS, adapter == null ? 0 : adapter.getItemCount() + 1);
-                moveTileAcrossRegion(movingKey, false, Math.max(0, targetGridPosition));
+                // Pass the live Dock slot, not a precomputed Grid index. The transfer resolves
+                // the stable key again immediately before insertion so lateral Dock moves
+                // always determine the destination column.
+                moveTileAcrossRegion(movingKey, false, currentPosition);
                 return;
             }
             if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP) return; // row one is the top edge
