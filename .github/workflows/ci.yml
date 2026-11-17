@@ -5,6 +5,7 @@ on:
     branches: [main, 'integration/**', 'fix/home-daily-ayah-single-frame-001']
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 permissions:
   contents: read
