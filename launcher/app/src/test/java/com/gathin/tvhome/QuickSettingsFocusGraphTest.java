@@ -28,10 +28,17 @@ public class QuickSettingsFocusGraphTest {
     public void wallpaperAndSettingsSectionsRemainReachableByDpad() {
         assertEquals(QuickSettingsFocusGraph.INTERVAL,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.RIGHT));
-        assertEquals(QuickSettingsFocusGraph.WALLPAPER_MANAGE,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.NEXT_PHOTO,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.DOWN));
+        assertEquals(QuickSettingsFocusGraph.CACHE,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.UP));
+        assertEquals(QuickSettingsFocusGraph.WALLPAPER_MANAGE,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.INTERVAL, QuickSettingsFocusGraph.UP));
+        assertEquals(QuickSettingsFocusGraph.INTERVAL,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WALLPAPER_MANAGE, QuickSettingsFocusGraph.DOWN));
+        assertEquals(QuickSettingsFocusGraph.NO_TARGET,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.UP) == QuickSettingsFocusGraph.WALLPAPER_MANAGE
+                        ? QuickSettingsFocusGraph.WALLPAPER_MANAGE : QuickSettingsFocusGraph.NO_TARGET);
         assertEquals(QuickSettingsFocusGraph.GLASS_SETTINGS,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.ANDROID_SETTINGS,
