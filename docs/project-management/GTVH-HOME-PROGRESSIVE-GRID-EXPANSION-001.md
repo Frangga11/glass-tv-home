@@ -125,3 +125,21 @@ The transition now hides chrome before a grow begins, but retains the hidden sta
 
 This is a source-level correction; CI and physical Mi TV Stick validation are still required. It does not authorize merging PR #149 or this follow-up.
 
+
+
+## Follow-up audit 008 — latest DPAD and Move Mode findings
+
+The latest 94-second Mi TV Stick recording exposes three linked issues:
+
+- Focus appeared only after Dock-to-Grid reveal completed, and coordinator-driven Grid scroll moved the Glider with the outgoing ViewHolder before the new row acquired focus.
+- A raised-Dock focus callback could call `showHero()` while the three-row frame remained latched. Restoring visibility on a later posted frame allowed wallpaper title/description and navigation capsules to flash. Dock Move Mode could also reveal the wallpaper copy on row one.
+- Dock-to-Grid Move Mode insertion was calculated against the pre-transfer Grid snapshot. When an overflow-pinned app filled the Dock vacancy, that app was filtered back into the Dock after the insertion index was selected, shifting the moved app one column left.
+
+Corrections on the follow-up branch:
+
+- Acquire focus on an attached first-row Grid card before the Dock reveal motion; synchronize the Glider to the actual focused Dock or Grid card through container translations. During coordinator-driven row scroll, keep the cursor in the destination screen slot rather than scrolling the old cursor away.
+- Use a shared 240ms duration for adjacent Grid-row and Dock reveal transitions.
+- Suppress Home shelf presentation during Move Mode and the latched three-row frame, and reassert hidden frame chrome synchronously in the focus callback.
+- Rebuild the Dock/Grid partition after unpinning so overflow-pinned entries refill the Dock vacancy first; insert the moved app into the resulting Grid at its live Dock column.
+
+Regression tests cover the overflow-pinned vacancy round trip, early focus acquisition, cursor behavior during row scroll, and Home chrome suppression. Automated CI is still required, and physical Mi TV Stick acceptance remains outstanding. Keep the change unmerged until the same DPAD and Move Mode sequences pass on device.
