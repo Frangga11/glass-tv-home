@@ -323,7 +323,7 @@ final class QuickSettingsDialog {
             }
         }
         setNormalSurface(tile, density, 12f);
-        TvFocusIndicator.applyRoundedTextFocus(tile, density, TvUiTokens.ROW_RADIUS_DP,
+        TvFocusIndicator.applyRoundedTextFocus(tile, density, 12f,
                 TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
                 TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
