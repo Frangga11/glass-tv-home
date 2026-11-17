@@ -26,12 +26,11 @@ import android.widget.TextView;
 /** Single-frame Quick Settings glass surface. Existing actions remain owned by their modules. */
 final class QuickSettingsDialog {
     interface Actions {
-        String wifiSummary();
         String languageSummary();
         String powerTitle();
         String cacheTitle();
         String wallpaperIntervalSummary();
-        void openWifi();
+        void openInputs();
         void restart();
         void chooseLanguage();
         void openPowerMenu();
@@ -135,11 +134,10 @@ final class QuickSettingsDialog {
         grid.setRowCount(3);
         grid.setUseDefaultMargins(false);
         grid.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
-        controls[QuickSettingsFocusGraph.WIFI] = addGridTile(activity, grid, 0, 0, 1,
-                R.drawable.ic_wifi, R.string.wifi, null,
-                safe(actions.wifiSummary(), activity.getString(R.string.quick_settings_wifi_summary)),
-                density, dialogHolder, actions::openWifi, tileHeightDp);
-        controls[QuickSettingsFocusGraph.WIFI].setTag("quick_settings_wifi");
+        controls[QuickSettingsFocusGraph.INPUT] = addGridTile(activity, grid, 0, 0, 1,
+                R.drawable.ic_input, R.string.quick_settings_input_title, null,
+                null, density, dialogHolder, actions::openInputs, tileHeightDp);
+        controls[QuickSettingsFocusGraph.INPUT].setTag("quick_settings_input");
         controls[QuickSettingsFocusGraph.RESTART] = addGridTile(activity, grid, 0, 1, 1,
                 R.drawable.ic_restart, R.string.restart_tv_title, null,
                 null,
@@ -277,7 +275,7 @@ final class QuickSettingsDialog {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
-                    ? initialFocus : QuickSettingsFocusGraph.WIFI];
+                    ? initialFocus : QuickSettingsFocusGraph.INPUT];
             content.post(() -> { if (target != null && target.isShown()) target.requestFocus(); });
         });
         dialog.show();
