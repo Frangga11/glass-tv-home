@@ -25,7 +25,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
         self.assertIn("dialog.setCancelable(true)", DIALOG)
-        self.assertIn("window.setDimAmount(0f)", DIALOG)
+        self.assertIn("params.dimAmount = 0f", DIALOG)
 
     def test_all_approved_quick_actions_route_to_existing_owners(self):
         for source in (
