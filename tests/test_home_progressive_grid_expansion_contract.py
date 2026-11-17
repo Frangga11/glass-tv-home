@@ -149,7 +149,7 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
         step = MAIN[MAIN.index("private void stepMove(int keyCode)"):MAIN.index("public void onUserInteraction()")]
         self.assertIn("moveTileAcrossRegion(movingKey, false, currentPosition)", step)
         adapter = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
-        self.assertIn("DockLayoutModel.insertAtPosition(snapshot.gridItems, selected, gridPosition)", adapter)
+        self.assertIn("DockLayoutModel.insertAtPosition(finalGrid, selected, gridPosition)", adapter)
 
     def test_move_mode_does_not_leave_recycler_item_animation_ghosts(self):
         self.assertNotIn("DefaultItemAnimator moveSlide", MAIN)
@@ -208,8 +208,8 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         viewport = MAIN[MAIN.index("private void animateGridViewportRows"):MAIN.index("private void animateHorizontalDockTransition")]
         dock = MAIN[MAIN.index("private void animateHorizontalDockTransition"):MAIN.index("private void focusTile(int position)")]
         collapse = MAIN[MAIN.index("private void startHorizontalDockCollapse"):MAIN.index("private void abortHorizontalDockCollapse")]
-        self.assertIn("syncFocusedDockGlider();", viewport)
-        self.assertIn("syncFocusedDockGlider();", dock)
+        self.assertIn("syncFocusedAppGlider();", viewport)
+        self.assertIn("syncFocusedAppGlider();", dock)
         self.assertIn("syncFocusedDockGlider();", collapse)
 
     def test_home_chrome_restores_only_after_three_row_shrink_finishes(self):
