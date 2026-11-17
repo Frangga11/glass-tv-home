@@ -159,3 +159,28 @@ Corrections:
 - At the end of UP collapse, after the three-row frame is removed and the Dock is back at its idle anchor, rebuild the wallpaper Hero text and set visible Hero/Islamic shelves to full alpha immediately. This does not wait for LEFT/RIGHT.
 
 Regression coverage checks identical Move Mode shadow state, spring retargeting in the existing transition duration, and Home shelf restoration within the UP collapse callback. CI and physical Mi TV Stick acceptance are still required; keep the PR unmerged until the three cases pass on device.
+
+## Follow-up audit 010 — restore source-to-destination focus glide and continuous Move Mode shadow
+
+The 17 November Mi TV Stick recording showed two remaining visual defects:
+
+1. On the first DOWN from Dock row one to Grid row two, the focus capsule appeared to enter from the lower edge instead of travelling down from the focused Dock icon.
+2. During Move Mode, the black shadow did not use the same continuous movement as Grid row-two/row-three moves when the selected app crossed between Dock and Grid.
+
+Source review identified the following causes:
+
+- The Dock-to-Grid reveal acquired focus on the Grid target before the reveal animation began. That made the Glider target the Grid card while its container was still translated below the visible row. The source Dock card no longer owned focus for the duration of the reveal.
+- A cross-region Move Mode transfer called the ordinary finish path, which restored normal Glider state, and then called `glider.hideNow()`. The destination therefore received a newly shown shadow rather than the same moving shadow used by in-Grid row changes.
+- The Grid branch of `syncFocusedAppGlider` had a hard-sync alternative during Move Mode. That cancelled spring movement and made its motion inconsistent with ordinary Grid focus changes.
+
+Corrections in `fix/home-dpad-origin-glide-movemode-shadow-003`:
+
+- Remove pre-reveal Grid focus acquisition. Keep the source Dock tile focused and tracked through the Dock/Grid reveal; acquire the Grid target only after its final row position is committed. The focus capsule can then glide from the Dock icon into Grid row two.
+- Add a Move Mode handoff finish path that stops the source card wiggle and clears the old holder state but retains the same GLASS Glider and black shadow.
+- Keep `moveHandoffPending` active while the destination RecyclerView holder is prepared. Suppress frame-by-frame retargeting to a stale/recycled source holder during this interval; the destination focus callback retargets the retained Glider to the new card.
+- Use the same spring-based `glider.moveTo()` path for Grid focus in and out of Move Mode. Dock remains hard-synced only while the Dock itself is physically translated by the coordinated container animation.
+- If the hidden-Grid handoff times out, explicitly restore normal Glider state and hide the stale Move Mode shadow before fallback focus.
+
+Regression contracts now cover source-first Dock-to-Grid focus timing, retained cross-region shadow identity, handoff input gating, and a shared spring path for Grid focus. DPAD direction mapping, row/column calculations, app inventory order, layout geometry, wallpaper, popup, and visual skin are not intentionally changed.
+
+**Validation status:** source and regression-contract changes are committed on the stacked follow-up branch. CI must pass before this change is considered code-validated. Physical Mi TV Stick acceptance is still required for: (a) one-press DOWN from row one with a visible top-to-bottom focus glide, and (b) identical black-shadow travel between row one/two and rows two/three in both directions. Keep the PR Draft and unmerged until those device observations are confirmed.
