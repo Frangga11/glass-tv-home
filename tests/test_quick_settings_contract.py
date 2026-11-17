@@ -19,7 +19,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("new GlassDrawable(content, 18f * density, density, null, 0.5f)", DIALOG)
         self.assertIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("settingsAnchor.getHeight() - hostAt[1] + dp(density, 5)", DIALOG)
-        self.assertIn("dockTop - dp(density, 5) - top", DIALOG)
+        self.assertIn("dockTop - dp(density, 8) - top", DIALOG)
         self.assertIn("grid.setColumnCount(2)", DIALOG)
         self.assertIn("grid.setRowCount(3)", DIALOG)
         self.assertNotIn("quick_settings_close", DIALOG)
