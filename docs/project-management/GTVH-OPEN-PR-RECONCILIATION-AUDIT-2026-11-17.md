@@ -182,7 +182,7 @@ The following PRs were closed after source-level comparison with current main; e
 ### Updated counts and boundary
 
 - Previous checkpoint: 94 closed / 14 open.
-- Additional closures: 11 PRs (#18, #20, #17, #16, #11, #10, #38, #27, #5, #6, #26, #34). Correction: 12 PRs closed in this pass.
+- Additional closures: 12 PRs (#18, #20, #17, #16, #11, #10, #38, #27, #5, #6, #26, #34).
 - **Current total: 105 PRs closed; 3 PRs remain open: #109, #62, #41.**
 - 0 branches deleted; 0 force updates; 0 code merges during this reconciliation pass. Main source code was not changed by PR cleanup.
 - Exact current-main validation is pending for the documentation update; verify the resulting workflow run against the exact main head.
