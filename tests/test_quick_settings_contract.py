@@ -20,7 +20,14 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("settingsAnchor.getHeight() - hostAt[1] + dp(density, 5)", DIALOG)
         self.assertIn("dockTop - dp(density, 5) - top", DIALOG)
-        self.assertIn("grid.setColumnCount(3)", DIALOG)
+        self.assertIn("grid.setColumnCount(2)", DIALOG)
+        self.assertIn("grid.setRowCount(3)", DIALOG)
+        self.assertNotIn("quick_settings_close", DIALOG)
+        self.assertNotIn("QuickSettingsFocusGraph.CLOSE", DIALOG)
+        self.assertIn("dialog.setOnKeyListener", DIALOG)
+        self.assertIn("KeyEvent.KEYCODE_BACK", DIALOG)
+        self.assertIn("settingsActions.setOrientation(LinearLayout.VERTICAL)", DIALOG)
+        self.assertIn("hostWidth * 0.265f", DIALOG)
         self.assertIn("TvFocusIndicator.applyRoundedTextFocus", DIALOG)
         self.assertIn("setCanceledOnTouchOutside(false)", DIALOG)
         self.assertIn("dialog.setOnDismissListener", DIALOG)
@@ -95,7 +102,7 @@ class QuickSettingsContractTest(unittest.TestCase):
             content = (RES / resource).read_text(encoding="utf-8")
             self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi &gt;', content)
 
-    def test_three_column_focus_graph_has_explicit_dpad_edges(self):
+    def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
             "setNextFocusLeftId",
             "setNextFocusRightId",
