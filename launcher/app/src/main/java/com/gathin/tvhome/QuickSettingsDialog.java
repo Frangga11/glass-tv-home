@@ -242,10 +242,12 @@ final class QuickSettingsDialog {
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
             naturalHeight = content.getMeasuredHeight();
         }
-        int frameHeight = availableHeight;
-        content.setLayoutParams(new ViewGroup.LayoutParams(width, frameHeight));
-        content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(frameHeight, View.MeasureSpec.EXACTLY));
+        final int panelWidth = width;
+        final int panelHeight = availableHeight;
+        final int panelTop = top;
+        content.setLayoutParams(new ViewGroup.LayoutParams(panelWidth, panelHeight));
+        content.measure(View.MeasureSpec.makeMeasureSpec(panelWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(panelHeight, View.MeasureSpec.EXACTLY));
 
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setView(content).create();
@@ -259,9 +261,9 @@ final class QuickSettingsDialog {
                 window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 window.getDecorView().setPadding(0, 0, 0, 0);
                 window.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-                window.setLayout(width, frameHeight);
+                window.setLayout(panelWidth, panelHeight);
                 WindowManager.LayoutParams params = window.getAttributes();
-                params.y = top;
+                params.y = panelTop;
                 params.dimAmount = 0f;
                 window.setAttributes(params);
                 window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
