@@ -3198,6 +3198,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** The tile being moved (adapter position), or -1; its card wiggles while it is. */
     private int movingPos = -1;
+    /** Stable component identity; resolve its live adapter position before every Move Mode step. */
+    private String movingKey;
     private View movingCard;
     private android.animation.ObjectAnimator wiggle;
     /** A key whose release is swallowed: the OK or Back that put a moved tile down must not also open it. */
@@ -3257,6 +3259,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         movingPos = pos;
+        movingKey = key;
         moveHandoffPending = false;
         movingDock = inDock;
         movingRecycler = recycler;
@@ -3302,6 +3305,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         wiggle = null;
         if (movingCard != null) movingCard.animate().rotation(0f).setDuration(120).start();
         movingCard = null;
+        movingKey = null;
         movingPos = -1;
         glider.setPaneHidden(false);
         RecyclerView recycler = movingRecycler;
@@ -3387,71 +3391,113 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void stepMove(int keyCode) {
         if (movingPos < 0 || movingRecycler == null) return;
-        int last;
-        int to = movingPos;
+        // Keep the selected app anchored by identity, not by a RecyclerView position that
+        // may have become stale during notifyDataSetChanged()/layout after the previous move.
+        if (movingKey == null) {
+            movingKey = movingDock
+                    ? (dockAdapter == null ? null : dockAdapter.keyAt(movingPos))
+                    : (adapter == null ? null : adapter.keyAt(movingPos));
+        }
+        if (movingKey == null) {
+            finishMove();
+            return;
+        }
+
         if (movingDock) {
-            String movingKey = dockAdapter.keyAt(movingPos);
+            if (dockAdapter == null) {
+                finishMove();
+                return;
+            }
+            int currentPosition = dockAdapter.positionOf(movingKey);
+            if (currentPosition < 0) {
+                finishMove();
+                return;
+            }
+            movingPos = currentPosition;
+
             if ((dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
                     || (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_DOWN)) {
                 moveTileAcrossRegion(movingKey, false, 0);
                 return;
             }
             if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP) return; // row one is the top edge
-            last = dockAdapter.lastMovable();
+
+            int last = dockAdapter.lastMovable();
+            int targetPosition = currentPosition;
             if (dockVertical) {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos > 0) to = movingPos - 1;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && movingPos < last) to = movingPos + 1;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP && currentPosition > 0) targetPosition = currentPosition - 1;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && currentPosition < last) targetPosition = currentPosition + 1;
             } else {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && movingPos > 0) to = movingPos - 1;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && movingPos < last) to = movingPos + 1;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && currentPosition > 0) targetPosition = currentPosition - 1;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && currentPosition < last) targetPosition = currentPosition + 1;
             }
-            if (to == movingPos || !dockAdapter.move(movingPos, to)) return;
-            movingPos = to;
-            final int targetPosition = to;
-            final String key = dockAdapter.keyAt(targetPosition);
-            final View previousCard = movingCard;
-            restoreMovingTile(true, key, targetPosition, previousCard, 3);
-        } else {
-            String movingKey = adapter.keyAt(movingPos);
-            if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && movingPos < COLUMNS) {
-                // UP from the first Grid row hands the app to Dock row one (mirror of Dock DOWN);
-                // when the Dock is full or nothing would remain in the Grid, it stays a hard boundary.
-                // It never ends Move Mode and never moves focus to the Home header.
-                if (adapter.getItemCount() > 1 && dockAdapter != null) {
-                    moveTileAcrossRegion(movingKey, true,
-                            Math.min(dockAdapter.getItemCount(), movingPos % COLUMNS));
-                }
+            if (targetPosition == currentPosition || !dockAdapter.move(currentPosition, targetPosition)) return;
+
+            int resolvedPosition = dockAdapter.positionOf(movingKey);
+            if (resolvedPosition < 0) {
+                finishMove();
                 return;
             }
-            if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT && movingPos % COLUMNS == 0) {
-                int targetDockPosition = Math.min(dockAdapter.getItemCount(), movingPos / COLUMNS);
-                moveTileAcrossRegion(movingKey, true, targetDockPosition);
-                return;
-            }
-            last = adapter.lastMovable();
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_DPAD_LEFT:
-                    if (movingPos % COLUMNS > 0) to = movingPos - 1;
-                    break;
-                case KeyEvent.KEYCODE_DPAD_RIGHT:
-                    if (movingPos % COLUMNS < COLUMNS - 1) to = Math.min(movingPos + 1, last);
-                    break;
-                case KeyEvent.KEYCODE_DPAD_UP:
-                    if (movingPos >= COLUMNS) to = movingPos - COLUMNS;
-                    break;
-                case KeyEvent.KEYCODE_DPAD_DOWN:
-                    if (movingPos / COLUMNS < last / COLUMNS) to = Math.min(movingPos + COLUMNS, last);
-                    break;
-                default:
-                    return;
-            }
-            if (to == movingPos || !adapter.move(movingPos, to)) return;
-            movingPos = to;
-            final int targetPosition = to;
-            final String key = adapter.keyAt(targetPosition);
-            final View previousCard = movingCard;
-            restoreMovingTile(false, key, targetPosition, previousCard, 8);
+            movingPos = resolvedPosition;
+            View previousCard = movingCard;
+            restoreMovingTile(true, movingKey, resolvedPosition, previousCard, 3);
+            return;
         }
+
+        if (adapter == null) {
+            finishMove();
+            return;
+        }
+        int currentPosition = adapter.positionOf(movingKey);
+        if (currentPosition < 0) {
+            finishMove();
+            return;
+        }
+        movingPos = currentPosition;
+
+        if (!dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_UP && currentPosition < COLUMNS) {
+            // UP from the first Grid row hands the app to Dock row one (mirror of Dock DOWN);
+            // when the Dock is full or nothing would remain in the Grid, it stays a hard boundary.
+            // It never ends Move Mode and never moves focus to the Home header.
+            if (adapter.getItemCount() > 1 && dockAdapter != null) {
+                moveTileAcrossRegion(movingKey, true,
+                        Math.min(dockAdapter.getItemCount(), currentPosition % COLUMNS));
+            }
+            return;
+        }
+        if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_LEFT && currentPosition % COLUMNS == 0) {
+            int targetDockPosition = Math.min(dockAdapter.getItemCount(), currentPosition / COLUMNS);
+            moveTileAcrossRegion(movingKey, true, targetDockPosition);
+            return;
+        }
+
+        // Resolve every direction from the selected app's CURRENT position. Vertical neighbors
+        // preserve the column reached by the latest LEFT/RIGHT move instead of returning to
+        // the column where Move Mode originally started.
+        int direction;
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT: direction = -1; break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT: direction = 1; break;
+            case KeyEvent.KEYCODE_DPAD_UP: direction = -2; break;
+            case KeyEvent.KEYCODE_DPAD_DOWN: direction = 2; break;
+            default: return;
+        }
+        int last = adapter.lastMovable();
+        int targetPosition = DockLayoutModel.gridNeighborPosition(
+                currentPosition, direction, COLUMNS, last + 1);
+        if (targetPosition < 0 || targetPosition == currentPosition
+                || !adapter.move(currentPosition, targetPosition)) return;
+
+        // Re-resolve by stable key after the inventory order is committed. Never assume
+        // the old adapter slot still belongs to the picked-up app after the rebind.
+        int resolvedPosition = adapter.positionOf(movingKey);
+        if (resolvedPosition < 0) {
+            finishMove();
+            return;
+        }
+        movingPos = resolvedPosition;
+        View previousCard = movingCard;
+        restoreMovingTile(false, movingKey, resolvedPosition, previousCard, 8);
     }
 
     @Override
@@ -4007,7 +4053,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** The third overall row is the second Grid row plus the Dock above it. */
     private static int gridViewportRowsFor(int targetRow) {
-        return targetRow >= 2 ? 2 : 1;
+        // Grid row index 1 is the third overall app row (Dock + Grid rows 0 and 1).
+        return targetRow >= 1 ? 2 : 1;
     }
 
     /** Measured decorated pitch between two Grid rows; falls back to the computed item height. */
