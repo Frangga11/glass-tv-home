@@ -4,6 +4,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java").read_text(encoding="utf-8")
+APP_ADAPTER = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
 
 
 class ProgressiveGridExpansionContractTest(unittest.TestCase):
@@ -229,6 +230,40 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("dockAdapter.positionOf(key)", across)
         self.assertIn("gridPositionForDock(liveDockPosition, false, COLUMNS", across)
         self.assertIn("unpinFromDockAtGridPosition(key, Math.max(0, liveGridPosition))", across)
+
+    def test_move_mode_dock_down_repartitions_before_preserving_column(self):
+        method = APP_ADAPTER[APP_ADAPTER.index("boolean unpinFromDockAtGridPosition"):
+                             APP_ADAPTER.index("private void replacePresentationOrder")]
+        self.assertIn("presentationSnapshot = null;", method)
+        self.assertIn("DockLayoutModel.Snapshot<Entry> updatedSnapshot = dockSnapshot();", method)
+        self.assertIn("new ArrayList<>(updatedSnapshot.gridItems)", method)
+        self.assertIn("new ArrayList<>(updatedSnapshot.dockItems)", method)
+        self.assertIn("insertAtPosition(finalGrid, selected, gridPosition)", method)
+
+    def test_row_scroll_holds_glider_until_destination_focus_settles(self):
+        listener = MAIN[MAIN.index("grid.addOnScrollListener"):MAIN.index("// Liquid feel:")]
+        self.assertIn("else if (!horizontalGridTransitionRunning)", listener)
+        self.assertIn("glider.scrolled(dy);", listener)
+        self.assertIn("private void syncFocusedAppGlider()", MAIN)
+        transition = MAIN[MAIN.index("private void animateHorizontalDockTransition"):
+                          MAIN.index("private void focusTile(int position)")]
+        self.assertIn("syncFocusedAppGlider();", transition)
+        viewport = MAIN[MAIN.index("private void animateGridViewportRows"):
+                         MAIN.index("private void animateHorizontalDockTransition")]
+        self.assertIn("syncFocusedAppGlider();", viewport)
+
+    def test_dock_grid_focus_is_acquired_before_reveal_motion(self):
+        expand = MAIN[MAIN.index("private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration, String moveKey)"):
+                      MAIN.index("private void collapseHorizontalOverflowToHomeHeader")]
+        self.assertLess(expand.index("focusGridCardImmediately(targetPosition, requestGeneration)"),
+                        expand.index("animateHorizontalDockTransition(pitch, true"))
+
+    def test_three_row_and_move_mode_focus_suppress_home_shelf_copy(self):
+        focused = MAIN[MAIN.index("private void handleTileFocused"):MAIN.index("public boolean onDockTileKey")]
+        self.assertIn("horizontalThreeRowFrameActive || movingPos >= 0 || moveHandoffPending", focused)
+        self.assertIn("if (horizontalThreeRowFrameActive) reassertThreeRowChrome();", focused)
+        start = MAIN[MAIN.index("private void startMove(String key"):MAIN.index("private void startMoveWhenLaidOut")]
+        self.assertIn("hideShelfImmediately();", start)
 
 
 if __name__ == "__main__":
