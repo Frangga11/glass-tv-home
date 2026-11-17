@@ -10,6 +10,8 @@
     <string name="not_connected">No device connected</string>
     <string name="live_tv">Live TV</string>
     <string name="no_inputs">No inputs found</string>
+    <string name="input_external_tv_title">TV inputs (HDMI/AV)</string>
+    <string name="input_external_tv_hint">Use the TV remote INPUT/SOURCE button to select an HDMI or AV port.</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="not_available">Not available on this TV</string>
