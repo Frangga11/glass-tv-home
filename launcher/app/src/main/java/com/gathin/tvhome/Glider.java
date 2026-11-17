@@ -256,6 +256,28 @@ final class Glider extends View {
         changed();
     }
 
+    /**
+     * Move Mode always uses the same black drop shadow for Dock and Grid cards. A Dock tile can
+     * arrive from the dark header-focus path while a Grid tile already uses GLASS; normalize both
+     * before hiding the pane so the shadow is identical in every row.
+     */
+    void setMoveModeActive(boolean active, boolean glassEnabled) {
+        if (shadowFade != null) {
+            shadowFade.cancel();
+            shadowFade = null;
+        }
+        if (active) {
+            style = GLASS;
+            shadowMix = 1f;
+            paneHidden = true;
+        } else {
+            paneHidden = false;
+            style = glassEnabled ? GLASS : DARK;
+            shadowMix = glassEnabled ? 1f : 0f;
+        }
+        changed();
+    }
+
     /** Switches look at once; there is no blend between the two. The shadow eases in with the glass. */
     void setStyle(int style) {
         if (this.style == style) return;
