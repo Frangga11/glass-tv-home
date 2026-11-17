@@ -1318,3 +1318,15 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - No branch deletions, force updates, or production source changes were made during these administrative dispositions.
 - Current reconciliation status: 107 PRs closed; 1 PR remains open (#62). See GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md for the detailed record.
 - Validation gate: run and verify GitHub Actions against the exact resulting main head before declaring the documentation checkpoint CI-validated. CI success is not a substitute for physical Mi TV Stick testing.
+
+
+## Latest documentation and integration synchronization checkpoint — 18 November 2026
+
+- Authoritative baseline at preparation: `main` @ `91fd188c17dc2f4c20560506599bfba51bc28466`.
+- PR #155 (cumulative integration synchronization) is MERGED. It reconciles the cumulative Home candidate with main, including CI workflow and handover documentation. The merge-resolution scope did not alter Android application source.
+- PR #153 and #154 are closed unmerged source candidates whose accepted cumulative implementation is carried through the #155 integration result; do not revive their historical branches as separate merge candidates.
+- Fresh live open-PR search returned only **#62**, OPEN / DRAFT / UNMERGED. #62 remains deferred for separate product/security/dependency review and is outside this closeout. #41 and #109 remain CLOSED / NOT PLANNED per owner direction.
+- Latest pre-documentation exact-main CI: run #2300 / `44165609627`, exact head `91fd188c17dc2f4c20560506599bfba51bc28466`; both required jobs SUCCESS. QA artifact ID `14364708365`, ZIP 1,442,432 bytes (ZIP size, not extracted APK size), expires 24 Nov 2026.
+- Concise authoritative record: `GTVH-DOCUMENTATION-INTEGRATION-SYNC-CHECKPOINT-2026-11-18.md`.
+- The documentation-only closeout is complete pending exact-head CI for the resulting documentation commit. No app source, UI, DPAD, popup, prayer/Ayah, or weather renderer code is changed in this pass. Physical-device acceptance remains attributed to the owner's earlier report, not an independently executed assistant test.
+- Once exact-head CI for this documentation update passes, close this synchronization workstream and continue in a new scoped corrective task from current main. Keep PR #62 deferred.
