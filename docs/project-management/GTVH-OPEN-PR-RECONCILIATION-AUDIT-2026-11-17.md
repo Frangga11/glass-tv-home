@@ -145,3 +145,11 @@ Each closed PR received an explanatory GitHub comment. Branches were retained. N
 - 0 branches deleted; 0 code merges in this cleanup pass.
 
 The remaining open inventory must be refreshed from GitHub before the next pass. Continue with unresolved UI/header item #109, shared modal/settings work #26, and foundational QR/server work #18, then review all other remaining PRs individually. Do not treat this focused subset as a full audit of all remaining open PRs.
+
+
+### P3 follow-up — foundational QR/server PR #18
+
+- PR #18 was closed after checking the current main versions of TvDialogStyle and its AppUpdateManager/UserSwitchDialog/WeatherActivity/MainActivity call sites, plus WallpaperUploadServer's Content-Length/path validators and their regression tests. These source elements are present in the cumulative main implementation.
+- PR #26 remains open. Although main contains TvDialogStyle, the StandBy failure-aware setter, and TvUiTokens additions, the full set of its MainActivity dialog-size/custom-dimming call-site changes is not established as fully superseded. Keep it for a dedicated UI audit rather than closing on partial overlap.
+- Updated totals: **94 PRs closed; 14 PRs remain open; 0 branches deleted; 0 code merges in this cleanup pass**.
+- Refreshed open PR inventory: #109, #62, #41, #38, #34, #27, #26, #20, #17, #16, #11, #10, #6, and #5.
