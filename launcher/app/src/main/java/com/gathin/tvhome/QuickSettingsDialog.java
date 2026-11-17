@@ -76,7 +76,7 @@ final class QuickSettingsDialog {
         }
         // One shared row-height token keeps all actions visually aligned. The available lane
         // determines the token; text and icon sizes remain fixed and are never squeezed.
-        int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 83) / 7));
+        int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 86) / 6));
 
         View[] controls = new View[QuickSettingsFocusGraph.COUNT];
         AlertDialog[] dialogHolder = new AlertDialog[1];
@@ -181,7 +181,7 @@ final class QuickSettingsDialog {
         bind(nextPhoto, dialogHolder, actions::nextPhoto);
         LinearLayout.LayoutParams nextLp = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f);
-        nextLp.setMargins(0, dp(density, 1), dp(density, 3), dp(density, 1));
+        nextLp.setMargins(0, 0, dp(density, 3), 0);
         wallpaperActions.addView(nextPhoto, nextLp);
 
         TextView interval = createTile(activity, R.drawable.ic_wallpaper,
@@ -193,7 +193,7 @@ final class QuickSettingsDialog {
         bind(interval, dialogHolder, actions::chooseWallpaperInterval);
         LinearLayout.LayoutParams intervalLp = new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f);
-        intervalLp.setMargins(dp(density, 3), dp(density, 1), 0, dp(density, 1));
+        intervalLp.setMargins(dp(density, 3), 0, 0, 0);
         wallpaperActions.addView(interval, intervalLp);
         content.addView(wallpaperActions, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp)));
