@@ -92,6 +92,15 @@ final class QuickSettingsDialog {
         title.setTextSize(16f);
         title.setTextColor(TvUiTokens.TEXT_PRIMARY);
         title.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
+        Drawable headerIcon = activity.getDrawable(R.drawable.ic_settings);
+        if (headerIcon != null) {
+            headerIcon = headerIcon.mutate();
+            headerIcon.setTint(TvUiTokens.TEXT_PRIMARY);
+            int iconSize = dp(density, 22);
+            headerIcon.setBounds(0, 0, iconSize, iconSize);
+            title.setCompoundDrawablesRelative(headerIcon, null, null, null);
+            title.setCompoundDrawablePadding(dp(density, 9));
+        }
         title.setSingleLine(true);
         title.setEllipsize(TextUtils.TruncateAt.END);
         title.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
