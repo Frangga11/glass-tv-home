@@ -3690,6 +3690,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         int code = event.getKeyCode();
+        // The standard Android TV remote Input/Source key opens the same source menu as the
+        // on-screen Input control. Handle its initial press once; vendor-specific unmapped keys
+        // still require a device key-event trace and are deliberately not guessed here.
+        if (code == KeyEvent.KEYCODE_TV_INPUT) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                if (movingPos >= 0) finishMoveFromUser();
+                if (cardPrompt != null) cardPrompt.dismiss();
+                if (openMenu != null) {
+                    closeMenu(false);
+                } else {
+                    if (openPopup != null) openPopup.dismiss();
+                    showInputs();
+                }
+            }
+            return true;
+        }
         // Capture one semantic intent during collapse. Never replay synthetic KeyEvents through
         // Android focus search: one physical press must produce at most one navigation action.
         if (horizontalDockCollapseInProgress
