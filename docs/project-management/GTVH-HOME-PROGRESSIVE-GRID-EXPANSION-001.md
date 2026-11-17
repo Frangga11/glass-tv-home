@@ -143,3 +143,19 @@ Corrections on the follow-up branch:
 - Rebuild the Dock/Grid partition after unpinning so overflow-pinned entries refill the Dock vacancy first; insert the moved app into the resulting Grid at its live Dock column.
 
 Regression tests cover the overflow-pinned vacancy round trip, early focus acquisition, cursor behavior during row scroll, and Home chrome suppression. Automated CI is still required, and physical Mi TV Stick acceptance remains outstanding. Keep the change unmerged until the same DPAD and Move Mode sequences pass on device.
+
+
+## Follow-up audit 009 — Move Mode shadow, focus glide, immediate Home restore
+
+Three additional observations from the latest device test:
+
+1. Move Mode shadow differed between Dock row one and Grid rows two/three because the Dock could enter from the DARK focus path while Grid entered from GLASS. The shadow renderer is only active in GLASS; pane hiding alone does not normalize that style.
+2. The Dock/Grid transition correctly acquired focus before moving, but hard-syncing the Grid Glider on every animation frame cancelled its spring motion. The row movement remained fast, but the focus capsule lost its visible glide.
+3. On UP from the raised Dock, the collapse completion restored Home view visibility while the Hero and Islamic shelf alpha could remain zero. Dock already owned focus, so no subsequent focus callback occurred to restore those shelves.
+
+Corrections:
+- Added one explicit Move Mode visual state: force GLASS + fully enabled black drop shadow and hide only the pane, for both Dock and Grid; restore the user's configured normal focus style when Move Mode ends and after each holder rebind.
+- During existing Dock/Grid and viewport animations, keep Dock focus hard-synced to its translated tray, but retarget the Grid Glider's spring toward the moving Grid card. This restores visible focus motion without adding a second animation phase or delaying DPAD focus.
+- At the end of UP collapse, after the three-row frame is removed and the Dock is back at its idle anchor, rebuild the wallpaper Hero text and set visible Hero/Islamic shelves to full alpha immediately. This does not wait for LEFT/RIGHT.
+
+Regression coverage checks identical Move Mode shadow state, spring retargeting in the existing transition duration, and Home shelf restoration within the UP collapse callback. CI and physical Mi TV Stick acceptance are still required; keep the PR unmerged until the three cases pass on device.
