@@ -24,7 +24,7 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/** V04 compact, centered Quick Settings surface. Actions remain owned by their existing modules. */
+/** Single-frame Quick Settings glass surface. Existing actions remain owned by their modules. */
 final class QuickSettingsDialog {
     interface Actions {
         String wifiSummary();
@@ -67,8 +67,9 @@ final class QuickSettingsDialog {
                     + Math.round(availableHeight / density) + "dp");
             return null;
         }
-        int width = Math.min(hostWidth - dp(density, 56), dp(density, 900));
-        width = Math.max(dp(density, 360), width);
+        // Reference composition uses a narrow portrait panel, not a wide dashboard.
+        int width = Math.min(Math.round(hostWidth * 0.265f), dp(density, 520));
+        width = Math.max(dp(density, 220), width);
 
         View[] controls = new View[QuickSettingsFocusGraph.COUNT];
         AlertDialog[] dialogHolder = new AlertDialog[1];
@@ -95,19 +96,13 @@ final class QuickSettingsDialog {
         title.setEllipsize(TextUtils.TruncateAt.END);
         title.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         header.addView(title);
-        TextView close = createLink(activity, R.string.close_label, 30, density);
-        controls[QuickSettingsFocusGraph.CLOSE] = close;
-        close.setTag("quick_settings_close");
-        header.addView(close, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 30)));
         content.addView(header, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 30)));
-        bind(close, dialogHolder, null);
         addDivider(activity, content, density, 5);
 
         GridLayout grid = new GridLayout(activity);
-        grid.setColumnCount(3);
-        grid.setRowCount(2);
+        grid.setColumnCount(2);
+        grid.setRowCount(3);
         grid.setUseDefaultMargins(false);
         grid.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
         controls[QuickSettingsFocusGraph.WIFI] = addGridTile(activity, grid, 0, 0, 1,
@@ -120,17 +115,17 @@ final class QuickSettingsDialog {
                 activity.getString(R.string.quick_settings_restart_summary),
                 density, dialogHolder, actions::restart);
         controls[QuickSettingsFocusGraph.RESTART].setTag("quick_settings_restart");
-        controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 0, 2, 1,
+        controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 1, 0, 1,
                 R.drawable.ic_settings, R.string.app_language_title, null,
                 safe(actions.languageSummary(), ""),
                 density, dialogHolder, actions::chooseLanguage);
         controls[QuickSettingsFocusGraph.LANGUAGE].setTag("quick_settings_language");
-        controls[QuickSettingsFocusGraph.POWER] = addGridTile(activity, grid, 1, 0, 1,
+        controls[QuickSettingsFocusGraph.POWER] = addGridTile(activity, grid, 1, 1, 1,
                 R.drawable.ic_power, 0, actions.powerTitle(),
                 activity.getString(R.string.quick_settings_power_summary),
                 density, dialogHolder, actions::openPowerMenu);
         controls[QuickSettingsFocusGraph.POWER].setTag("quick_settings_power");
-        controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 1, 1, 2,
+        controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 2, 0, 2,
                 R.drawable.ic_settings, 0, actions.cacheTitle(),
                 activity.getString(R.string.quick_settings_cache_summary),
                 density, dialogHolder, actions::cleanCache);
@@ -189,7 +184,7 @@ final class QuickSettingsDialog {
 
         addDivider(activity, content, density, 5);
         LinearLayout settingsActions = new LinearLayout(activity);
-        settingsActions.setOrientation(LinearLayout.HORIZONTAL);
+        settingsActions.setOrientation(LinearLayout.VERTICAL);
         settingsActions.setGravity(Gravity.CENTER_VERTICAL);
         TextView glassSettings = createTile(activity, R.drawable.ic_settings,
                 R.string.quick_settings_glass_settings,
@@ -197,9 +192,9 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.GLASS_SETTINGS] = glassSettings;
         glassSettings.setTag("quick_settings_glass_settings");
         bind(glassSettings, dialogHolder, actions::openGlassSettings);
-        LinearLayout.LayoutParams glassLp = new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.MATCH_PARENT, 1f);
-        glassLp.setMargins(0, dp(density, 2), dp(density, 3), dp(density, 2));
+        LinearLayout.LayoutParams glassLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 48));
+        glassLp.setMargins(0, dp(density, 2), 0, dp(density, 2));
         settingsActions.addView(glassSettings, glassLp);
 
         TextView androidSettings = createTile(activity, R.drawable.ic_settings,
@@ -208,29 +203,17 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.ANDROID_SETTINGS] = androidSettings;
         androidSettings.setTag("quick_settings_android_settings");
         bind(androidSettings, dialogHolder, actions::openAndroidSettings);
-        LinearLayout.LayoutParams androidLp = new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.MATCH_PARENT, 1f);
-        androidLp.setMargins(dp(density, 3), dp(density, 2), 0, dp(density, 2));
+        LinearLayout.LayoutParams androidLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 48));
+        androidLp.setMargins(0, dp(density, 2), 0, dp(density, 2));
         settingsActions.addView(androidSettings, androidLp);
         content.addView(settingsActions, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 48)));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 100)));
         View breathingSpace = new View(activity);
         content.addView(breathingSpace, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
         QuickSettingsFocusGraph.connect(controls);
-        for (View control : controls) {
-            if (control == null) continue;
-            control.setOnKeyListener((v, keyCode, event) -> {
-                if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
-                    if (event.getAction() == KeyEvent.ACTION_DOWN && dialogHolder[0] != null) {
-                        dialogHolder[0].dismiss();
-                    }
-                    return true;
-                }
-                return false;
-            });
-        }
 
         content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -254,6 +237,13 @@ final class QuickSettingsDialog {
         dialogHolder[0] = dialog;
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener((ignored, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                if (event.getAction() == KeyEvent.ACTION_UP) dialog.dismiss();
+                return true;
+            }
+            return false;
+        });
         dialog.setOnDismissListener(d -> { if (onDismiss != null) onDismiss.run(); });
         dialog.setOnShowListener(d -> {
             Window window = dialog.getWindow();
@@ -287,7 +277,7 @@ final class QuickSettingsDialog {
         GridLayout.LayoutParams lp = new GridLayout.LayoutParams(rowSpec, columnSpec);
         lp.width = 0;
         lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        lp.setMargins(dp(density, 5), dp(density, 5), dp(density, 5), dp(density, 5));
+        lp.setMargins(dp(density, 4), dp(density, 3), dp(density, 4), dp(density, 3));
         grid.addView(tile, lp);
         return tile;
     }
