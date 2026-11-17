@@ -37,8 +37,16 @@ public class QuickSettingsFocusGraphTest {
         assertEquals(QuickSettingsFocusGraph.INTERVAL,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WALLPAPER_MANAGE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.NO_TARGET,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.UP) == QuickSettingsFocusGraph.WALLPAPER_MANAGE
-                        ? QuickSettingsFocusGraph.WALLPAPER_MANAGE : QuickSettingsFocusGraph.NO_TARGET);
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WALLPAPER_MANAGE, QuickSettingsFocusGraph.UP));
+        for (int node = 0; node < QuickSettingsFocusGraph.COUNT; node++) {
+            if (node == QuickSettingsFocusGraph.INTERVAL) continue;
+            for (int direction = QuickSettingsFocusGraph.LEFT;
+                 direction <= QuickSettingsFocusGraph.DOWN; direction++) {
+                assertTrue("Manage must only be entered from Interval UP",
+                        QuickSettingsFocusGraph.target(node, direction)
+                                != QuickSettingsFocusGraph.WALLPAPER_MANAGE);
+            }
+        }
         assertEquals(QuickSettingsFocusGraph.GLASS_SETTINGS,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.ANDROID_SETTINGS,
