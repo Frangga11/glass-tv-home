@@ -23,6 +23,35 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void moveModeKeepsLatestColumnWhenReturningVertically() {
+        // Start at row three, column two; move up, shift right, then move down.
+        // The final destination must stay in the new column three, not the pickup column.
+        List<String> order = new java.util.ArrayList<>();
+        for (int i = 0; i < 20; i++) order.add("app-" + i);
+        String selected = order.get(11);
+        int position = 11;
+
+        int up = DockLayoutModel.gridNeighborPosition(position, -2, 5, order.size());
+        String moved = order.remove(position);
+        order.add(up, moved);
+        position = up;
+
+        int right = DockLayoutModel.gridNeighborPosition(position, 1, 5, order.size());
+        moved = order.remove(position);
+        order.add(right, moved);
+        position = right;
+
+        int down = DockLayoutModel.gridNeighborPosition(position, 2, 5, order.size());
+        moved = order.remove(position);
+        order.add(down, moved);
+        position = down;
+
+        assertEquals(12, position);
+        assertEquals(2, position % 5);
+        assertEquals(selected, order.get(position));
+    }
+
+    @Test
     public void gridDpadRespectsHorizontalAndVerticalBoundaries() {
         assertEquals(-1, DockLayoutModel.gridNeighborPosition(0, -1, 4, 10));
         assertEquals(-1, DockLayoutModel.gridNeighborPosition(3, 1, 4, 10));
