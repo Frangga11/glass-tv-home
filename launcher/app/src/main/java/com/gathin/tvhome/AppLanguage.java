@@ -588,9 +588,9 @@ final class AppLanguage {
     // --- Turn Off Dialog ---
     public static String strTurnOffTitle(Context ctx) {
         switch (getLanguage(ctx)) {
-            case LANG_EN: return "🔌 Turn Off TV";
-            case LANG_ID: return "🔌 Matikan TV";
-            case LANG_MS: default: return "🔌 Padamkan TV (Turn Off)";
+            case LANG_EN: return "Turn Off TV";
+            case LANG_ID: return "Matikan TV";
+            case LANG_MS: default: return "Padamkan TV (Turn Off)";
         }
     }
 
@@ -613,9 +613,9 @@ final class AppLanguage {
     // --- Clean Cache Dialog ---
     public static String strCleanCacheTitle(Context ctx) {
         switch (getLanguage(ctx)) {
-            case LANG_EN: return "🧹 Clean TV Cache";
-            case LANG_ID: return "🧹 Bersihkan Cache TV";
-            case LANG_MS: default: return "🧹 Bersihkan Cache TV";
+            case LANG_EN: return "Clean TV Cache";
+            case LANG_ID: return "Bersihkan Cache TV";
+            case LANG_MS: default: return "Bersihkan Cache TV";
         }
     }
 
