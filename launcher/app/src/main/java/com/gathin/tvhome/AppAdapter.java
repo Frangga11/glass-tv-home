@@ -416,6 +416,37 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         return true;
     }
 
+    /**
+     * Removes a visible Dock tile and inserts it into the Grid at the requested position.
+     * Used by horizontal Move Mode so DOWN returns directly below the Dock slot currently occupied,
+     * rather than restoring the app's stale pre-Dock Grid position.
+     */
+    boolean unpinFromDockAtGridPosition(String key, int gridPosition) {
+        if (key == null || key.trim().isEmpty()) return false;
+        DockLayoutModel.Snapshot<Entry> snapshot = dockSnapshot();
+        List<Entry> dock = new ArrayList<>(snapshot.dockItems);
+        Entry selected = null;
+        for (int i = 0; i < dock.size(); i++) {
+            Entry candidate = dock.get(i);
+            if (key.equals(candidate.component.flattenToShortString())) {
+                selected = dock.remove(i);
+                break;
+            }
+        }
+        if (selected == null) return false;
+
+        List<String> pinned = currentPinnedKeys();
+        List<String> updated = DockLayoutModel.unpinKey(pinned, key);
+        if (updated.equals(pinned)) return false;
+        List<String> excluded = new ArrayList<>(DockPreferences.loadUnpinnedKeys(ctx));
+        if (!excluded.contains(key)) excluded.add(key);
+        if (!DockPreferences.savePinnedState(ctx, updated, excluded)) return false;
+
+        List<Entry> grid = DockLayoutModel.insertAtPosition(snapshot.gridItems, selected, gridPosition);
+        replacePresentationOrder(dock, grid);
+        return true;
+    }
+
     private void replacePresentationOrder(List<Entry> dock, List<Entry> grid) {
         List<Entry> ordered = new ArrayList<>(dock.size() + grid.size());
         ordered.addAll(dock);
