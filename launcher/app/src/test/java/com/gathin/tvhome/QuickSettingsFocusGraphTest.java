@@ -32,7 +32,7 @@ public class QuickSettingsFocusGraphTest {
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.WALLPAPER_MANAGE,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.RIGHT));
-        assertEquals(QuickSettingsFocusGraph.NEXT_PHOTO,
+        assertEquals(QuickSettingsFocusGraph.INTERVAL,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WALLPAPER_MANAGE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.GLASS_SETTINGS,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.DOWN));
