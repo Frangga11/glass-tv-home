@@ -102,3 +102,14 @@ Three device findings were traced to separate paths:
 3. Move Mode temporarily attached one shared `DefaultItemAnimator` instance to both RecyclerViews. Full `notifyDataSetChanged()` reorders can retain old-holder snapshots and transient transforms, visually resembling a second moving shadow. Move Mode now keeps RecyclerView item animation disabled and resets the selected/previous card transforms synchronously. Cross-region transfer clears the old glider shadow before the destination card becomes active.
 
 Cross-checks added: raised-Dock LEFT/RIGHT frame latch and focus retry; Dock-to-Grid insertion at the selected slot and vertical column preservation; absence of RecyclerView move-animation snapshots and stale rotation transforms. No Home styling, weather, wallpaper, prayer/Ayah, popup, normal app inventory order, or unrelated DPAD edges were intentionally changed. Physical Mi TV Stick validation remains required, especially the sequence: Grid row two UP to Dock, LEFT/RIGHT across Dock, DOWN back to the Grid; then re-enter Dock and UP to collapse.
+
+
+## Follow-up audit 006 — visual focus geometry and Dock-owned Glider synchronization
+
+The focus shape now accounts for translation on the focused card and every ancestor up to the Home root. This closes the mismatch where Android descendant-rectangle conversion used layout/scroll coordinates while the raised Dock was visually translated.
+
+When the actual focused card belongs to the Dock, Grid scroll deltas are no longer applied to the Dock's Glider as though it were a Grid child. Instead, the Glider is synchronized from the Dock card's measured visual bounds. The same synchronization runs on each update frame of the Dock raise, three-row viewport animation, collapse, and scroll-driven Dock repositioning. During these coordinated animations the Glider is hard-synced to the Dock's own animation progress rather than repeatedly retargeting independent springs.
+
+Move Mode retains the live stable-key resolution and Dock-slot insertion path from PR #148; no fallback to the older stale-position move sequence is introduced. Additional source contracts cover ancestor translation, Dock/Grid scroll ownership, per-frame synchronization, and the current Dock slot used for DOWN transfer.
+
+Scope remains focus geometry, Dock/Glider synchronization, and Move Mode placement validation. The three-row frame and DPAD routing are not rewritten. Automated validation and physical Mi TV Stick acceptance remain required.
