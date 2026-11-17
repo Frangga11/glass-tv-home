@@ -115,6 +115,8 @@ public class QuickSettingsDialogTest {
         View manage = find(dialog, "quick_settings_manage_wallpaper");
         View androidSettings = find(dialog, "quick_settings_android_settings");
         assertNotNull(input);
+        assertFalse(((TextView) input).getText().toString().contains("\n"));
+        assertEquals(activity.getString(R.string.quick_settings_input_title), ((TextView) input).getText().toString());
         assertNotNull(restart);
         assertNotNull(language);
         assertNotNull(power);
