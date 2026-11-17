@@ -127,12 +127,12 @@ final class QuickSettingsDialog {
                 density, dialogHolder, actions::openWifi, tileHeightDp);
         controls[QuickSettingsFocusGraph.WIFI].setTag("quick_settings_wifi");
         controls[QuickSettingsFocusGraph.RESTART] = addGridTile(activity, grid, 0, 1, 1,
-                R.drawable.ic_power, R.string.restart_tv_title, null,
+                R.drawable.ic_restart, R.string.restart_tv_title, null,
                 activity.getString(R.string.quick_settings_restart_summary),
                 density, dialogHolder, actions::restart, tileHeightDp);
         controls[QuickSettingsFocusGraph.RESTART].setTag("quick_settings_restart");
         controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 1, 0, 1,
-                R.drawable.ic_settings, R.string.app_language_title, null,
+                R.drawable.ic_language, R.string.app_language_title, null,
                 safe(actions.languageSummary(), ""),
                 density, dialogHolder, actions::chooseLanguage, tileHeightDp);
         controls[QuickSettingsFocusGraph.LANGUAGE].setTag("quick_settings_language");
@@ -142,7 +142,7 @@ final class QuickSettingsDialog {
                 density, dialogHolder, actions::openPowerMenu, tileHeightDp);
         controls[QuickSettingsFocusGraph.POWER].setTag("quick_settings_power");
         controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 2, 0, 2,
-                R.drawable.ic_settings, 0, actions.cacheTitle(),
+                R.drawable.ic_clean, 0, actions.cacheTitle(),
                 activity.getString(R.string.quick_settings_cache_summary),
                 density, dialogHolder, actions::cleanCache, tileHeightDp);
         controls[QuickSettingsFocusGraph.CACHE].setTag("quick_settings_cache");
