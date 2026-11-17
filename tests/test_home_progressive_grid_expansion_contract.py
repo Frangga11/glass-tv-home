@@ -188,10 +188,6 @@ class ThreeRowFramePopupContractTest(unittest.TestCase):
 
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
     def test_dock_focus_coordinates_include_visual_ancestor_translation(self):
         self.assertIn("private void offsetByAncestorTranslation(View card, Rect bounds)", MAIN)
@@ -221,3 +217,7 @@ class FocusShapeAndMoveModeSyncContractTest(unittest.TestCase):
         self.assertIn("dockAdapter.positionOf(key)", across)
         self.assertIn("gridPositionForDock(liveDockPosition, false, COLUMNS", across)
         self.assertIn("unpinFromDockAtGridPosition(key, Math.max(0, liveGridPosition))", across)
+
+
+if __name__ == "__main__":
+    unittest.main()
