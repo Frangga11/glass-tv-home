@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.Gravity;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -110,17 +111,33 @@ public class QuickSettingsDialogTest {
         View language = find(dialog, "quick_settings_language");
         View power = find(dialog, "quick_settings_power");
         View cache = find(dialog, "quick_settings_cache");
+        View nextPhoto = find(dialog, "quick_settings_next_photo");
+        View interval = find(dialog, "quick_settings_interval");
+        View manage = find(dialog, "quick_settings_manage_wallpaper");
+        View androidSettings = find(dialog, "quick_settings_android_settings");
         assertNotNull(wifi);
         assertNotNull(restart);
         assertNotNull(language);
         assertNotNull(power);
         assertNotNull(cache);
+        assertNotNull(nextPhoto);
+        assertNotNull(interval);
+        assertNotNull(manage);
+        assertNotNull(androidSettings);
         assertEquals(restart.getId(), wifi.getNextFocusRightId());
         assertEquals(wifi.getId(), wifi.getNextFocusLeftId());
         assertEquals(language.getId(), wifi.getNextFocusDownId());
         assertEquals(wifi.getId(), restart.getNextFocusLeftId());
         assertEquals(power.getId(), language.getNextFocusRightId());
         assertEquals(cache.getId(), power.getNextFocusDownId());
+        assertEquals(nextPhoto.getId(), cache.getNextFocusDownId());
+        assertEquals(cache.getId(), nextPhoto.getNextFocusUpId());
+        assertEquals(manage.getId(), interval.getNextFocusUpId());
+        assertEquals(interval.getId(), manage.getNextFocusDownId());
+        assertFalse(((TextView) restart).getText().toString().contains("\\n"));
+        assertFalse(((TextView) find(dialog, "quick_settings_power")).getText().toString().contains("\\n"));
+        assertFalse(((TextView) nextPhoto).getText().toString().contains("\\n"));
+        assertTrue(((TextView) androidSettings).getText().toString().contains("Pengaturan Android TV"));
         dialog.cancel();
     }
 
