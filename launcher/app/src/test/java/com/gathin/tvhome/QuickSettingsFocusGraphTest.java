@@ -16,7 +16,7 @@ public class QuickSettingsFocusGraphTest {
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WIFI, QuickSettingsFocusGraph.RIGHT));
         assertEquals(QuickSettingsFocusGraph.POWER,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WIFI, QuickSettingsFocusGraph.DOWN));
-        assertEquals(QuickSettingsFocusGraph.GLASS_SETTINGS,
+        assertEquals(QuickSettingsFocusGraph.LANGUAGE,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CLOSE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.LANGUAGE,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.RESTART, QuickSettingsFocusGraph.RIGHT));
