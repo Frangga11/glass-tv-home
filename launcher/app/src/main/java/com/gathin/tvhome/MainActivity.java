@@ -91,6 +91,8 @@ import java.util.Set;
  */
 public class MainActivity extends Activity implements AppAdapter.TileListener, DockAdapter.Listener {
 
+    static final String EXTRA_OPEN_INPUTS = "open_inputs";
+
     private static java.lang.ref.WeakReference<MainActivity> sInstance;
 
     public static MainActivity getInstance() {
@@ -1252,6 +1254,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // Silent background update check after 5 seconds on launch
 
+        if (getIntent() != null && getIntent().getBooleanExtra(EXTRA_OPEN_INPUTS, false)) {
+            getIntent().removeExtra(EXTRA_OPEN_INPUTS);
+            handler.postDelayed(() -> {
+                if (!isFinishing() && !isDestroyed()) {
+                    if (screensaverActive) dismissScreensaver();
+                    showInputs();
+                }
+            }, 180);
+        }
         if (getIntent() != null && getIntent().getBooleanExtra("open_settings", false)) {
             getIntent().removeExtra("open_settings");
             handler.postDelayed(() -> {
@@ -1767,6 +1778,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (intent != null && intent.getBooleanExtra(EXTRA_OPEN_INPUTS, false)) {
+            if (screensaverActive) dismissScreensaver();
+            if (cardPrompt != null) cardPrompt.dismiss();
+            if (openPopup != null) openPopup.dismiss();
+            if (movingPos >= 0) finishMove();
+            if (openMenu != null) {
+                closeMenu(false);
+            } else {
+                showInputs();
+            }
+            return;
+        }
         if (intent != null && intent.getBooleanExtra("open_settings", false)) {
             if (screensaverActive) dismissScreensaver();
             showSettingsPopup();
@@ -3690,10 +3713,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         int code = event.getKeyCode();
-        // The standard Android TV remote Input/Source key opens the same source menu as the
-        // on-screen Input control. Handle its initial press once; vendor-specific unmapped keys
-        // still require a device key-event trace and are deliberately not guessed here.
-        if (code == KeyEvent.KEYCODE_TV_INPUT) {
+        // Standard Android TV and configured Xiaomi/vendor Input keys open the same source selector.
+        // Consume the press sequence, but dispatch only the initial down event.
+        if (config != null && InputKeyService.isInputKeyCode(code, config.inputKeyKeycodes)) {
             if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
                 if (movingPos >= 0) finishMoveFromUser();
                 if (cardPrompt != null) cardPrompt.dismiss();
@@ -9351,6 +9373,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (openMenu != null) return;
         SoundEffects.playSelect();
         View anchor = btnInputs;
+        if (anchor == null || !anchor.isShown() || anchor.getWidth() == 0 || anchor.getHeight() == 0) {
+            // Streaming sticks may expose no local TV inputs, so the header Input pill is hidden.
+            // Keep the Quick Settings tile and remote shortcut useful by anchoring to Settings.
+            View settingsAnchor = findViewById(R.id.btnSettings);
+            if (settingsAnchor != null && settingsAnchor.isShown()
+                    && settingsAnchor.getWidth() > 0 && settingsAnchor.getHeight() > 0) {
+                anchor = settingsAnchor;
+            } else {
+                anchor = findViewById(R.id.btnHome);
+            }
+        }
+        if (anchor == null || !anchor.isShown()) {
+            TvFeedback.show(this, R.string.not_available, Toast.LENGTH_SHORT);
+            return;
+        }
         FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         Runnable close = () -> closeMenu(false);
@@ -9402,9 +9439,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         () -> openInput(id));
             }
         }
-        // Nothing to list where there is no TvInputManager: the TV's own source panel switches inputs.
+        // Use the TV platform's source chooser only when this device actually declares a handler.
+        // A Mi TV Stick may not expose TV inputs at all; its HDMI ports belong to the external TV.
         if (rows.getChildCount() == 0 && !sourcePanelService.isEmpty()) {
             addInputRow(rows, close, R.drawable.ic_input, getString(R.string.inputs), -1, this::openSourcePanel);
+        }
+        if (rows.getChildCount() == 0) {
+            Intent systemInputPicker = new Intent("com.android.tv.action.VIEW_INPUTS");
+            if (getPackageManager().resolveActivity(systemInputPicker, 0) != null) {
+                addInputRow(rows, close, R.drawable.ic_input,
+                        getString(R.string.input_system_picker_title), -1,
+                        () -> open(systemInputPicker));
+            }
         }
         Intent liveTv = liveTvIntent();
         if (liveTv != null && tunerId != null) {
@@ -9418,8 +9464,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             addInputRow(rows, close, R.drawable.ic_livetv, getString(R.string.live_tv), -1, () -> open(liveTvIntent));
         }
         if (rows.getChildCount() == 0) {
-            // The Stick is an HDMI output, not a TV HDMI-input host. Keep the Input action visible
-            // and explain where external TV sources are selected instead of showing a dead control.
+            // The Stick is an HDMI playback source; HDMI 1/2 ports are owned by the external TV.
+            // Offer actual TV settings and honest guidance instead of fabricating source entries.
+            addInputRow(rows, close, R.drawable.ic_tv_display,
+                    getString(R.string.input_hdmi_cec_settings_title), -1,
+                    () -> openSystemSettings(systemIntent(Settings.ACTION_SETTINGS)));
             addInputRow(rows, close, R.drawable.ic_input,
                     getString(R.string.input_external_tv_title), -1,
                     () -> TvFeedback.show(this, R.string.input_external_tv_hint, Toast.LENGTH_LONG));
