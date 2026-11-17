@@ -77,3 +77,26 @@ Latest baseline CI: workflow run `44059379657`, exact head `c1e4a5d02233ed60935a
 ## Validation and limitations
 
 This audit verifies GitHub PR state, branch ancestry/compare metadata, changed-file summaries, and the latest main CI result. It does not claim that all 40 PR diffs have been fully reviewed line-by-line or that every behavior has been tested on the Mi TV Stick. Those are the explicit remaining gates.
+
+
+## Reconciliation addendum — 17 November 2026
+
+A focused source comparison was completed for the highest-risk Home workstreams:
+
+- The PR #116–#124 branch family is an older, stacked DPAD/Dock/Glider implementation. The accepted cumulative implementation from the #153/#154 integration chain is already on main; current `AppAdapter.java`, `Glider.java`, and `DockGeometry.java` match the cumulative integration source, while the old PR branch snapshots are older source states. The family is therefore closed as historical/superseded, not merged.
+- PR #134 is an earlier alternative compact Prayer popup implementation based on the old #123 branch. The rebuilt Prayer popup from PR #135 is already contained in main, so #134 is closed as superseded. No part of #134 was transplanted.
+- PRs #116–#124 and #134 were closed with explanatory comments. Their branches were retained; no branch deletion, force update, or code merge occurred.
+- This resolves the P0 Home DPAD/Dock and P1 Prayer popup queue for this cleanup pass. The remaining PR inventory is still open for focused review.
+
+### Updated counts
+
+- 68 PRs closed in the prior cleanup pass.
+- 10 additional PRs closed in this focused source comparison.
+- **78 PRs closed total; 30 PRs remain open.**
+- 0 branches deleted; 0 new code merges during this cleanup pass.
+
+The table above is the original 40-PR inventory snapshot. Treat entries #116–#124 and #134 as CLOSED / HISTORICAL according to this addendum. All remaining 30 PRs still require their own source-level disposition; do not infer they are obsolete solely from age or base divergence.
+
+### Next review queue
+
+Continue with #90–#109 (Islamic Shelf, typography, header, spacing, and CI), then the older feature/security branches (#5–#64). Prioritize security-sensitive manifest, upload-session, storage, process-death recovery, and profile state changes. No further blanket closure is approved.
