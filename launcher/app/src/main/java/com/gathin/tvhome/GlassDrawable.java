@@ -58,12 +58,14 @@ final class GlassDrawable extends Drawable {
      */
     GlassDrawable(View owner, float radius, float density, Glider highlight, float reach, boolean paintsShape) {
         this(owner, radius, density, highlight, reach, paintsShape,
-                TvUiTokens.GLASS_VEIL_COLOR, VEIL_ALPHA);
+                TvUiTokens.GLASS_VEIL_COLOR, VEIL_ALPHA,
+                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
     }
 
     /** Popup-specific glass tuning; existing Home and dock glass retain their established material. */
     GlassDrawable(View owner, float radius, float density, Glider highlight, float reach,
-                  boolean paintsShape, int veilColor, int veilAlpha) {
+                  boolean paintsShape, int veilColor, int veilAlpha,
+                  int fallbackSurfaceColor, int fallbackBorderColor) {
         this.paintsShape = paintsShape;
         this.owner = owner;
         this.highlight = highlight;
@@ -71,8 +73,8 @@ final class GlassDrawable extends Drawable {
         this.veilColor = veilColor;
         this.veilAlpha = Math.max(0, Math.min(255, veilAlpha));
         veil.setColor(veilColor);
-        solidSurface.setColor(TvUiTokens.POPUP_SURFACE);
-        solidBorder.setColor(TvUiTokens.BORDER);
+        solidSurface.setColor(fallbackSurfaceColor);
+        solidBorder.setColor(fallbackBorderColor);
         solidBorder.setStyle(Paint.Style.STROKE);
         solidBorder.setStrokeWidth(1.25f * density);
         rim = new GlassRim(1.5f * density, 0xD9FFFFFF, 0x1AFFFFFF, reach);
