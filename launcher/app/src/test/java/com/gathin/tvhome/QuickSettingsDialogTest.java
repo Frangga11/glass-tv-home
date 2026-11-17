@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Looper;
 import android.view.View;
+import android.view.Gravity;
+import android.widget.FrameLayout;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +45,20 @@ public class QuickSettingsDialogTest {
         return Robolectric.buildActivity(Activity.class).setup().get();
     }
 
+    private FrameLayout[] host(Activity activity) {
+        FrameLayout root = new FrameLayout(activity);
+        activity.setContentView(root);
+        root.layout(0, 0, 1920, 1080);
+        View settings = new View(activity);
+        root.addView(settings, new FrameLayout.LayoutParams(320, 50, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+        settings.layout(800, 50, 1120, 100);
+        View dock = new View(activity);
+        root.addView(dock, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, 100, Gravity.BOTTOM));
+        dock.layout(0, 850, 1920, 950);
+        return new FrameLayout[]{root, (FrameLayout) settings.getParent(), (FrameLayout) dock.getParent()};
+    }
+
     private View find(AlertDialog dialog, String tag) {
         return dialog.getWindow().getDecorView().findViewWithTag(tag);
     }
@@ -50,7 +66,10 @@ public class QuickSettingsDialogTest {
     private void assertAction(Activity activity, RecordingActions actions, String tag, String expected) {
         final int[] dismissed = {0};
         actions.lastAction = null;
-        AlertDialog dialog = QuickSettingsDialog.show(activity, actions,
+        FrameLayout[] views = host(activity);
+        View anchor = views[1].getChildAt(0);
+        View dock = views[2].getChildAt(1);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], anchor, dock, actions,
                 QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
         assertNotNull(dialog);
         View control = find(dialog, tag);
@@ -83,8 +102,9 @@ public class QuickSettingsDialogTest {
     @Test
     public void dpadFocusLinksAreAppliedToActualDialogViews() {
         Activity activity = newActivity();
-        AlertDialog dialog = QuickSettingsDialog.show(activity, new RecordingActions(),
-                QuickSettingsFocusGraph.WIFI, null);
+        FrameLayout[] views = host(activity);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
+                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.WIFI, null);
         View wifi = find(dialog, "quick_settings_wifi");
         View restart = find(dialog, "quick_settings_restart");
         View language = find(dialog, "quick_settings_language");
@@ -97,9 +117,9 @@ public class QuickSettingsDialogTest {
         assertNotNull(cache);
         assertEquals(restart.getId(), wifi.getNextFocusRightId());
         assertEquals(wifi.getId(), wifi.getNextFocusLeftId());
-        assertEquals(language.getId(), wifi.getNextFocusDownId());
-        assertEquals(power.getId(), language.getNextFocusRightId());
-        assertEquals(cache.getId(), power.getNextFocusDownId());
+        assertEquals(power.getId(), wifi.getNextFocusDownId());
+        assertEquals(language.getId(), restart.getNextFocusRightId());
+        assertEquals(cache.getId(), power.getNextFocusRightId());
         dialog.cancel();
     }
 
@@ -108,8 +128,9 @@ public class QuickSettingsDialogTest {
         Activity activity = newActivity();
         RecordingActions actions = new RecordingActions();
         final int[] dismissed = {0};
-        AlertDialog dialog = QuickSettingsDialog.show(activity, actions,
-                QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
+        FrameLayout[] views = host(activity);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
+                views[0].getChildAt(1), actions, QuickSettingsFocusGraph.WIFI, () -> dismissed[0]++);
         assertNotNull(dialog);
         dialog.cancel();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
