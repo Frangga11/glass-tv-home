@@ -5679,7 +5679,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View anchor = findViewById(R.id.btnSettings);
         if (anchor == null) return;
 
-        QuickSettingsDialog.show(this, new QuickSettingsDialog.Actions() {
+        QuickSettingsDialog.show(this, root, anchor, dockRecycler, new QuickSettingsDialog.Actions() {
             @Override public String wifiSummary() {
                 return getQuickSettingsNetworkSummary();
             }
