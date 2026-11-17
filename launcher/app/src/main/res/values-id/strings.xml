@@ -12,6 +12,8 @@
     <string name="no_inputs">Sumber masukan tidak ditemukan</string>
     <string name="input_external_tv_title">Input TV (HDMI/AV)</string>
     <string name="input_external_tv_hint">Gunakan tombol INPUT/SOURCE pada remote TV untuk memilih port HDMI atau AV.</string>
+    <string name="input_system_picker_title">Buka pemilih sumber Android TV</string>
+    <string name="input_hdmi_cec_settings_title">Pengaturan HDMI-CEC TV</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Luring</string>
     <string name="not_available">Tidak tersedia di TV ini</string>
