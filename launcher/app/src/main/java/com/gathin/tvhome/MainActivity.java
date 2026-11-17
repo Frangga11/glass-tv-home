@@ -2229,6 +2229,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Reused by every focus move. */
     private final Rect tileRect = new Rect(), showRect = new Rect();
 
+    private boolean isCurrentFocusInside(ViewGroup ancestor) {
+        return isDescendantOf(getCurrentFocus(), ancestor);
+    }
+
     private boolean isDescendantOf(View child, ViewGroup ancestor) {
         if (child == null || ancestor == null) return false;
         View current = child;
