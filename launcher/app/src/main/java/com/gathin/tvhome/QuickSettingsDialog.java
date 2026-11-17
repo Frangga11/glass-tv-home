@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -43,6 +42,9 @@ final class QuickSettingsDialog {
         void openGlassSettings();
         void openAndroidSettings();
     }
+
+    private static final int CAPSULE_IDLE_FILL = 0x26343E48;
+    private static final int CAPSULE_IDLE_BORDER = 0x559EABB8;
 
     private QuickSettingsDialog() { }
 
@@ -330,10 +332,9 @@ final class QuickSettingsDialog {
                 tile.setCompoundDrawablePadding(dp(density, 6));
             }
         }
-        setNormalSurface(tile, density, 12f);
         TvFocusIndicator.applyRoundedTextFocus(tile, density, 12f,
-                TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
-                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
+                CAPSULE_IDLE_FILL, TvUiTokens.SURFACE_FOCUSED,
+                CAPSULE_IDLE_BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         return tile;
     }
@@ -352,10 +353,9 @@ final class QuickSettingsDialog {
         link.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         link.setTextColor(TvUiTokens.TEXT_PRIMARY);
         link.setContentDescription(activity.getString(titleRes));
-        setNormalSurface(link, density, 12f);
         TvFocusIndicator.applyRoundedTextFocus(link, density, 12f,
-                TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
-                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
+                CAPSULE_IDLE_FILL, TvUiTokens.SURFACE_FOCUSED,
+                CAPSULE_IDLE_BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         return link;
     }
@@ -420,18 +420,7 @@ final class QuickSettingsDialog {
         parent.addView(divider, lp);
     }
 
-        private static void setNormalSurface(TextView view, float density, float radiusDp) {
-        GradientDrawable background = new GradientDrawable();
-        background.setShape(GradientDrawable.RECTANGLE);
-        // A lightly tinted translucent layer lets the shared popup glass remain visible through
-        // each capsule; only the thin silver edge separates the actions from the panel.
-        background.setColor(0x26343E48);
-        background.setCornerRadius(radiusDp * density);
-        background.setStroke(Math.max(1, dp(density, 1)), 0x559EABB8);
-        view.setBackground(background);
-    }
-
-    private static String safe(String value, String fallback) {
+        private static String safe(String value, String fallback) {
         return value == null || value.trim().isEmpty() ? fallback : value;
     }
 
