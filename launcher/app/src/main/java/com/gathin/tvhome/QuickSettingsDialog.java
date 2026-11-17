@@ -95,11 +95,11 @@ final class QuickSettingsDialog {
         title.setEllipsize(TextUtils.TruncateAt.END);
         title.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         header.addView(title);
-        TextView close = createLink(activity, R.string.close_label, 40, density);
+        TextView close = createLink(activity, R.string.close_label, 30, density);
         controls[QuickSettingsFocusGraph.CLOSE] = close;
         close.setTag("quick_settings_close");
         header.addView(close, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 38)));
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 30)));
         content.addView(header, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 30)));
         bind(close, dialogHolder, null);
@@ -150,11 +150,11 @@ final class QuickSettingsDialog {
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         wallpaperHeader.addView(wallpaperTitle);
-        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 38, density);
+        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 28, density);
         controls[QuickSettingsFocusGraph.WALLPAPER_MANAGE] = manageWallpaper;
         manageWallpaper.setTag("quick_settings_manage_wallpaper");
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 36)));
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 28)));
         content.addView(wallpaperHeader, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 24)));
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
@@ -257,6 +257,7 @@ final class QuickSettingsDialog {
             Window window = dialog.getWindow();
             if (window != null) {
                 window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                window.getDecorView().setPadding(0, 0, 0, 0);
                 window.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
                 window.setLayout(width, frameHeight);
                 WindowManager.LayoutParams params = window.getAttributes();
