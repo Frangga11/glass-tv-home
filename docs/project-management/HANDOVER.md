@@ -1233,3 +1233,17 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Integration branch `integration/main-sync-2026-11-17` is created from the exact PR #154 head. This branch is intended to preserve the candidate's newer CI behavior and artifact diagnostics, restore manual `workflow_dispatch` capability from main without reintroducing the historical 1.2 MiB hard APK ceiling, and carry forward the historical HANDOVER record with this checkpoint appended.
 - Physical acceptance is user-reported; no remote ADB session or independent device instrumentation was performed by the assistant. Future defects reported by the user remain eligible for scoped fixes.
 - Next gates: exact-head CI on this integration branch; review PR diff against main; merge only after required checks pass and GitHub reports the PR mergeable. Do not publish a final release APK from an unapproved or unmerged SHA.
+
+
+## Final cumulative main synchronization — latest-main checkpoint (17 November 2026)
+
+- PR #155, `GTVH cumulative integration — synchronize PR #154 with main`, was merged. Integration commit: `81010b0941237600758036827531aff8194fb273`.
+- Final checkpoint documentation commit on `main`: `33776e2c772138325da7dd515ea84c2196f58d2d`.
+- Exact latest-main workflow run `44058685408`: both required jobs completed SUCCESS. Android unit tests and release build, APK diagnostics/artifact publication, and repository lists/tools/docs validation all passed.
+- Latest-main cumulative QA artifact ID `14317436391`; artifact name `glass-tv-home-cumulative-integration-127-33776e2c772138325da7dd515ea84c2196f58d2d`; ZIP 1,442,422 bytes; extracted `app-release.apk` 1,640,745 bytes.
+- Latest-main APK SHA-256: `29b89a90bd6093ed75e9d8876d02b78188bb4bd45696ef0321539aaa92871b5c`. ZIP integrity and APK archive tests passed. This remains a CI QA APK, not a signed store/release publication; package/version metadata was not separately inspected with aapt.
+- Previous QA artifact from integration commit `81010b...` is superseded for this checkpoint; its historical record remains in `GTVH-CUMULATIVE-HOME-INTEGRATION-FINAL-CHECKPOINT-2026-11-17.md`.
+- Cumulative implementation scope: PR #153 DPAD source-first Dock→Grid focus handoff and continuous Move Mode GLASS Glider/black-shadow transition; PR #154 cached Home weather overlay restoration before the 15-minute network-fetch gate. No unrelated UI rewire is part of these changes.
+- User-reported physical Mi TV Stick test of the cumulative candidate was clear and clean. This is recorded as owner-reported device acceptance, not an independently executed assistant test.
+- **Current status: MAIN INTEGRATION COMPLETE; LATEST-MAIN CI PASS; QA APK STRUCTURALLY VERIFIED; PHYSICAL ACCEPTANCE USER-REPORTED.** Any newly observed TV issue should be opened as a narrowly scoped corrective task. Maintain RE-SKIN, NOT REWIRE.
+- Canonical continuation documents: `GTVH-CUMULATIVE-HOME-INTEGRATION-FINAL-CHECKPOINT-2026-11-17.md`, DPAD/focus feature records, and weather cache restore record. Historical OPEN/DRAFT labels inside older feature documents refer to their original PR state; use the synchronization addendum in each updated record and this latest handoff for current status.
