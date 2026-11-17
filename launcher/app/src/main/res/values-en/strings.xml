@@ -685,7 +685,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="quick_settings_manage_wallpaper">Manage</string>
     <string name="quick_settings_glass_settings">Glass TV Settings</string>
     <string name="quick_settings_glass_settings_summary">Profiles, appearance and launcher features</string>
-    <string name="quick_settings_android_settings">Android Settings</string>
+    <string name="quick_settings_android_settings">Android TV Settings</string>
     <string name="quick_settings_android_settings_summary">Device system settings</string>
     <string name="quick_settings_interval_title">Interval</string>
     <string name="wifi_status_loading">Checking Wi-Fi status…</string>
