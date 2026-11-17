@@ -116,3 +116,12 @@ Scope remains focus geometry, Dock/Glider synchronization, and Move Mode placeme
 
 
 Validation note: the Dock-to-Grid transfer contract now verifies that the selected stable key is resolved to its current Dock slot immediately before converting that slot to a Grid insertion position. This guards against stale caller-supplied positions after lateral Move Mode shifts.
+
+## Follow-up audit 007 — defer Home chrome restoration until frame shrink commits
+
+A review of the three-row viewport transition found that `animateGridViewportRows(false, ...)` restored Home chrome at animation start through `setThreeRowFrameChromeHidden(grow)`. The Dock and Grid were still visibly transitioning from the three-row frame to the one-row frame, so the clock-adjacent Home chrome could reappear behind an unfinished transition.
+
+The transition now hides chrome before a grow begins, but retains the hidden state during a shrink. The shrink end callback first commits the one-row viewport geometry and only then restores the original Home chrome visibility. A source-contract test locks this ordering. The normal DPAD route and the three-row frame geometry are unchanged.
+
+This is a source-level correction; CI and physical Mi TV Stick validation are still required. It does not authorize merging PR #149 or this follow-up.
+
