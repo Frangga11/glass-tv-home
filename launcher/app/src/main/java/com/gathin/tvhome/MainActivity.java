@@ -2289,7 +2289,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     /** Synchronize the one focus shape with the focused Dock OR Grid card during container motion. */
-    private void syncFocusedAppGlider(boolean animateGridFocus) {
+    private void syncFocusedAppGlider() {
         if (!glassShown || glider == null || root == null) return;
         View card = focusedCardFromCurrentFocus();
         if (card == null) return;
@@ -2310,13 +2310,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             // Dock translation is the frame motion itself; its outline must remain pixel-locked.
             glider.moveToScreenImmediately(left + pad, top + pad,
                     left + width - pad, top + height - pad, radius);
-        } else if (animateGridFocus) {
-            // Retarget the existing spring while the Grid row/container moves. Do not snap the
-            // outline to each frame: that cancels the visible DPAD focus glide.
-            glider.moveTo(left + pad, top + pad,
-                    left + width - pad, top + height - pad, radius);
         } else {
-            glider.moveToVisualImmediately(left + pad, top + pad,
+            // Grid focus always uses the same spring glide, including Move Mode. Hard-syncing
+            // during Dock/Grid motion cancels the shadow's travel and makes row one feel different.
+            glider.moveTo(left + pad, top + pad,
                     left + width - pad, top + height - pad, radius);
         }
     }
@@ -3444,6 +3441,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     private void finishMove() {
+        finishMoveState(false);
+    }
+
+    /** End the picked-up ViewHolder but retain the same Move Mode Glider through Dock/Grid handoff. */
+    private void finishMoveForHandoff() {
+        finishMoveState(true);
+    }
+
+    private void finishMoveState(boolean preserveMoveGlider) {
         if (movingPos < 0) return;
         if (wiggle != null) wiggle.cancel();
         wiggle = null;
@@ -3456,7 +3462,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         movingCard = null;
         movingKey = null;
         movingPos = -1;
-        glider.setMoveModeActive(false, isGlassEffectsEnabled());
+        if (!preserveMoveGlider) glider.setMoveModeActive(false, isGlassEffectsEnabled());
         RecyclerView recycler = movingRecycler;
         movingRecycler = null;
         movingDock = false;
@@ -3465,10 +3471,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private void moveTileAcrossRegion(String key, boolean toDock, int dockPosition) {
         if (key == null) return;
-        finishMove();
-        // A cross-region transfer must not carry the glider shadow from the old row into the new
-        // RecyclerView. The destination focus callback will place it at the selected card directly.
-        glider.hideNow();
+        // Stop the source wiggle but keep its one GLASS shadow alive. When the destination holder
+        // receives focus, moveTo() springs this same Glider to it just as it does between Grid rows.
+        finishMoveForHandoff();
+        moveHandoffPending = true;
         int liveDockPosition = !toDock && !dockVertical && dockAdapter != null
                 ? dockAdapter.positionOf(key) : dockPosition;
         int liveGridPosition = !toDock && !dockVertical && adapter != null
@@ -3489,11 +3495,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         applyDockLayout();
         if (!toDock && !dockVertical && !horizontalGridExpanded) {
             // The Grid is hidden at rest: open it through the normal transition, then pick the app up again.
-            moveHandoffPending = true;
             final int generation = ++gridFocusRequestGeneration;
             handler.postDelayed(() -> {
                 if (!moveHandoffPending || movingPos >= 0) return;
                 moveHandoffPending = false;
+                // The handoff timed out: this becomes an ordinary focus restore, not Move Mode.
+                glider.setMoveModeActive(false, isGlassEffectsEnabled());
+                glider.hideNow();
                 int gridPosition = adapter.positionOf(key);
                 if (gridPosition >= 0 && horizontalGridExpanded) focusTile(gridPosition);
                 else {
@@ -4020,21 +4028,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         expandHorizontalDockForOverflow(targetPosition, requestGeneration, null);
     }
 
-    /** Acquire focus on the first Grid tile before the reveal motion, if its holder is ready. */
-    private boolean focusGridCardImmediately(int position, int requestGeneration) {
-        if (requestGeneration != gridFocusRequestGeneration || adapter == null || grid == null
-                || position < 0 || position >= adapter.getItemCount()) return false;
-        int target = NavigationState.resolveHomePosition(-1, position, adapter.getItemCount());
-        RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(target);
-        View card = holder == null ? null : holder.itemView.findViewById(R.id.card);
-        if (card == null || !card.isShown() || !card.isFocusable()) return false;
-        if (card.isFocused()) {
-            onTileFocused(target, card);
-            return true;
-        }
-        return card.requestFocus() && card.isFocused();
-    }
-
     /** Re-pick the app in Move Mode after the hidden Grid has been expanded and laid out. */
     private void expandHorizontalDockForOverflow(int targetPosition, int requestGeneration, String moveKey) {
         if (grid == null || dockRecycler == null || horizontalGridExpanded
@@ -4059,9 +4052,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         grid.requestLayout();
         grid.post(() -> {
             if (requestGeneration != gridFocusRequestGeneration || !horizontalGridExpanded) return;
-            final boolean focusedBeforeMotion = moveKey == null
-                    && focusGridCardImmediately(targetPosition, requestGeneration);
-            animateHorizontalDockTransition(pitch, true, () -> {
+            // Keep focus on the source Dock tile during the reveal. The destination Grid tile
+            // takes focus only after it reaches its final row, so the Glider travels DOWN from
+            // row one into row two instead of appearing at the entering row's off-screen origin.
+            animateHorizontalDockTransition(pitch, true, () => {
                 if (requestGeneration != gridFocusRequestGeneration) return;
                 grid.setTranslationY(0f);
                 dockRecycler.setTranslationY(-pitch);
@@ -4074,7 +4068,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     int resolvedMovePosition = adapter == null ? RecyclerView.NO_POSITION : adapter.positionOf(moveKey);
                     if (resolvedMovePosition >= 0) startMoveWhenLaidOut(moveKey, false, resolvedMovePosition, 8);
                     else moveHandoffPending = false;
-                } else if (!focusedBeforeMotion) {
+                } else {
                     focusTile(targetPosition);
                 }
             });
@@ -4389,7 +4383,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 grid.setTranslationY(rp * p);
                 dockRecycler.setTranslationY(-(pitch + rp + scroll) + rp * p);
             }
-            syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);
+            // A cross-region Move Mode handoff keeps the Glider at its source until
+            // the destination card is laid out and can take over with one continuous spring.
+            if (!moveHandoffPending) syncFocusedAppGlider();
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
@@ -4427,7 +4423,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             float progress = 1f - Math.abs(offset) / Math.max(1f, pitch);
             if (dockRecycler != null) dockRecycler.setTranslationY(-pitch * progress);
             if (grid != null) grid.setTranslationY(offset);
-            syncFocusedAppGlider(movingPos < 0 && !moveHandoffPending);
+            // A cross-region Move Mode handoff keeps the Glider at its source until
+            // the destination card is laid out and can take over with one continuous spring.
+            if (!moveHandoffPending) syncFocusedAppGlider();
         });
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             private boolean cancelled;
