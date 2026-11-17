@@ -1287,3 +1287,12 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Updated total: **93 PRs closed; 15 remain open; 0 branches deleted; 0 code merges in this cleanup pass**.
 - Exact reasons and scope limitations are recorded in GTVH-OPEN-PR-RECONCILIATION-AUDIT-2026-11-17.md.
 - This documentation update requires exact-head CI verification before the checkpoint is called complete.
+
+
+## Focused PR reconciliation — pass 4 — 17 November 2026
+
+- Closed PR #18 after confirming the shared modal styling, call sites, and upload route/content-length validation are present in cumulative main.
+- Kept PR #26 open because not all MainActivity dialog sizing/custom dimming changes are proven superseded, despite shared components already existing.
+- Updated total: **94 PRs closed; 14 remain open; no branches deleted; no code merges in this cleanup pass**.
+- Refreshed open queue: #109, #62, #41, #38, #34, #27, #26, #20, #17, #16, #11, #10, #6, #5.
+- Exact-head CI for this documentation checkpoint is pending; verify before calling it validated.
