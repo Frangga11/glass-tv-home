@@ -186,3 +186,18 @@ The following PRs were closed after source-level comparison with current main; e
 - **Current total: 105 PRs closed; 3 PRs remain open: #109, #62, #41.**
 - 0 branches deleted; 0 force updates; 0 code merges during this reconciliation pass. Main source code was not changed by PR cleanup.
 - Exact current-main validation is pending for the documentation update; verify the resulting workflow run against the exact main head.
+
+
+## Final owner-directed disposition — 18 November 2026
+
+The owner confirmed that the current work should not be constrained by PR #41 or PR #109, and that PR #62 should be deferred for a later discussion.
+
+- **PR #41 — CLOSED / NOT PLANNED.** Its proposed wallpaper redesign is not a dependency for the current baseline. Existing wallpaper behavior in current main remains authoritative; any future wallpaper changes must be raised as a fresh, scoped proposal. The historical branch is retained. No commits were merged from this PR.
+- **PR #109 — CLOSED / NOT PLANNED.** Its NAV_SILVER/header symmetry proposal is not a dependency for the current baseline. Existing navigation and DPAD behavior in current main remains authoritative; any future visual refinement must be a fresh, isolated proposal with a new audit. The historical branch is retained. No commits were merged from this PR.
+- **PR #62 — OPEN / DRAFT / DEFERRED.** Preserve it unchanged for a future product/security/dependency review. Do not merge, close, rebase, cherry-pick, publish an APK, or install it as part of this current completion pass.
+- No branch was deleted, no branch was force-updated, and no application source code was changed by these administrative dispositions.
+
+**Disposition count at this checkpoint:** 107 PRs closed; 1 PR remains open (#62). This count is subject to a fresh live GitHub query if additional PR activity occurs.
+
+### Final boundary
+The current reconciliation pass is administratively complete for the reviewed queue. This does not claim that PR #62 is feature-ready or that its acceptance gaps are resolved. It remains explicitly outside the current delivery scope.
