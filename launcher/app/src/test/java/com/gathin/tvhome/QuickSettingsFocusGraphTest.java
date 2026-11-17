@@ -14,34 +14,32 @@ public class QuickSettingsFocusGraphTest {
     public void horizontalAndVerticalPrimaryActionsHaveDeterministicNeighbors() {
         assertEquals(QuickSettingsFocusGraph.RESTART,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WIFI, QuickSettingsFocusGraph.RIGHT));
-        assertEquals(QuickSettingsFocusGraph.POWER,
+        assertEquals(QuickSettingsFocusGraph.LANGUAGE,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WIFI, QuickSettingsFocusGraph.DOWN));
-        assertEquals(QuickSettingsFocusGraph.LANGUAGE,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CLOSE, QuickSettingsFocusGraph.DOWN));
-        assertEquals(QuickSettingsFocusGraph.LANGUAGE,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.RESTART, QuickSettingsFocusGraph.RIGHT));
+        assertEquals(QuickSettingsFocusGraph.POWER,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.RESTART, QuickSettingsFocusGraph.DOWN));
+        assertEquals(QuickSettingsFocusGraph.POWER,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.LANGUAGE, QuickSettingsFocusGraph.RIGHT));
         assertEquals(QuickSettingsFocusGraph.CACHE,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.POWER, QuickSettingsFocusGraph.RIGHT));
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.POWER, QuickSettingsFocusGraph.DOWN));
     }
 
     @Test
     public void wallpaperAndSettingsSectionsRemainReachableByDpad() {
         assertEquals(QuickSettingsFocusGraph.INTERVAL,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.RIGHT));
-        assertEquals(QuickSettingsFocusGraph.NEXT_PHOTO,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.WALLPAPER_MANAGE,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.RIGHT));
-        assertEquals(QuickSettingsFocusGraph.INTERVAL,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CACHE, QuickSettingsFocusGraph.DOWN));
+        assertEquals(QuickSettingsFocusGraph.NEXT_PHOTO,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WALLPAPER_MANAGE, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.GLASS_SETTINGS,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.NEXT_PHOTO, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.ANDROID_SETTINGS,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.GLASS_SETTINGS, QuickSettingsFocusGraph.RIGHT));
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.GLASS_SETTINGS, QuickSettingsFocusGraph.DOWN));
     }
 
     @Test
-    public void everyVisibleControlIsReachableFromWifiAndBackCanReturnToRoot() {
+    public void everyVisibleControlIsReachableFromWifiWithoutAnOnScreenCloseControl() {
         Set<Integer> visited = new HashSet<>();
         ArrayDeque<Integer> queue = new ArrayDeque<>();
         queue.add(QuickSettingsFocusGraph.WIFI);
@@ -55,7 +53,8 @@ public class QuickSettingsFocusGraphTest {
             }
         }
         assertEquals(QuickSettingsFocusGraph.COUNT, visited.size());
-        assertEquals(QuickSettingsFocusGraph.LANGUAGE,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.CLOSE, QuickSettingsFocusGraph.DOWN));
+        assertEquals(QuickSettingsFocusGraph.COUNT, visited.size());
+        assertEquals(QuickSettingsFocusGraph.NO_TARGET,
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.ANDROID_SETTINGS, QuickSettingsFocusGraph.DOWN));
     }
 }
