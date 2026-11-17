@@ -28,7 +28,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("KeyEvent.KEYCODE_BACK", DIALOG)
         self.assertIn("settingsActions.setOrientation(LinearLayout.VERTICAL)", DIALOG)
         self.assertIn("hostWidth * 0.38f", DIALOG)
-        self.assertIn("int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 83) / 7));", DIALOG)
+        self.assertIn("int tileHeightDp = Math.max(32, Math.min(42, (availableDp - 86) / 6));", DIALOG)
         self.assertIn("tile.setTextSize(12f);", DIALOG)
         self.assertIn("int size = dp(density, 18);", DIALOG)
         self.assertNotIn("scaleVertical(", DIALOG)
