@@ -68,8 +68,7 @@ final class QuickSettingsDialog {
         }
         // Reference composition uses a narrow portrait panel, not a wide dashboard.
         int width = Math.min(Math.round(hostWidth * 0.38f), dp(density, 400));
-        width = Math.min(width, hostWidth - dp(density, 24));
-        width = Math.max(dp(density, 300), width);
+        width = Math.min(width, Math.max(dp(density, 1), hostWidth - dp(density, 24)));
         int availableDp = Math.round(availableHeight / density);
         if (availableDp < 307) {
             android.util.Log.e("TvHome.QuickSettings", "Quick Settings lane is too short for the compact layout: " + availableDp + "dp");
@@ -150,7 +149,7 @@ final class QuickSettingsDialog {
         content.addView(grid, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        addDivider(activity, content, density, 5);
+        addDivider(activity, content, density, 2);
         LinearLayout wallpaperHeader = new LinearLayout(activity);
         wallpaperHeader.setOrientation(LinearLayout.HORIZONTAL);
         wallpaperHeader.setGravity(Gravity.CENTER_VERTICAL);
@@ -205,7 +204,7 @@ final class QuickSettingsDialog {
         settingsActions.setGravity(Gravity.CENTER_VERTICAL);
         TextView glassSettings = createTile(activity, R.drawable.ic_settings,
                 R.string.quick_settings_glass_settings,
-                activity.getString(R.string.quick_settings_glass_settings_summary), 48, density);
+                activity.getString(R.string.quick_settings_glass_settings_summary), tileHeightDp, density);
         controls[QuickSettingsFocusGraph.GLASS_SETTINGS] = glassSettings;
         glassSettings.setTag("quick_settings_glass_settings");
         bind(glassSettings, dialogHolder, actions::openGlassSettings);
@@ -216,12 +215,12 @@ final class QuickSettingsDialog {
 
         TextView androidSettings = createTile(activity, R.drawable.ic_settings,
                 R.string.quick_settings_android_settings,
-                activity.getString(R.string.quick_settings_android_settings_summary), 48, density);
+                activity.getString(R.string.quick_settings_android_settings_summary), tileHeightDp, density);
         controls[QuickSettingsFocusGraph.ANDROID_SETTINGS] = androidSettings;
         androidSettings.setTag("quick_settings_android_settings");
         bind(androidSettings, dialogHolder, actions::openAndroidSettings);
         LinearLayout.LayoutParams androidLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 48));
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp));
         androidLp.setMargins(0, dp(density, 1), 0, dp(density, 1));
         settingsActions.addView(androidSettings, androidLp);
         content.addView(settingsActions, new LinearLayout.LayoutParams(
