@@ -9402,8 +9402,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             addInputRow(rows, close, R.drawable.ic_livetv, getString(R.string.live_tv), -1, () -> open(liveTvIntent));
         }
         if (rows.getChildCount() == 0) {
-            TvFeedback.show(this, R.string.no_inputs, Toast.LENGTH_SHORT);
-            return;
+            // The Stick is an HDMI output, not a TV HDMI-input host. Keep the Input action visible
+            // and explain where external TV sources are selected instead of showing a dead control.
+            addInputRow(rows, close, R.drawable.ic_input,
+                    getString(R.string.input_external_tv_title), -1,
+                    () -> TvFeedback.show(this, R.string.input_external_tv_hint, Toast.LENGTH_LONG));
         }
 
         // Fit the widest row: TVs that report a status on every port (Sony) would otherwise squeeze the names out.
