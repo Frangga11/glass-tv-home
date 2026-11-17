@@ -52,6 +52,20 @@ public class DockLayoutModelTest {
     }
 
     @Test
+    public void movingDockAppDownInsertsItUnderItsCurrentSlot() {
+        List<String> grid = Arrays.asList(
+                "grid-0", "grid-1", "grid-2", "grid-3", "grid-4",
+                "grid-5", "grid-6", "grid-7", "grid-8", "grid-9");
+        List<String> afterDockDown = DockLayoutModel.insertAtPosition(grid, "moving-app", 2);
+
+        assertEquals("moving-app", afterDockDown.get(2));
+        assertEquals(2, afterDockDown.indexOf("moving-app") % 5);
+        // Moving DOWN after the app is inserted must use that same live column.
+        assertEquals(7, DockLayoutModel.gridNeighborPosition(
+                afterDockDown.indexOf("moving-app"), 2, 5, afterDockDown.size()));
+    }
+
+    @Test
     public void gridDpadRespectsHorizontalAndVerticalBoundaries() {
         assertEquals(-1, DockLayoutModel.gridNeighborPosition(0, -1, 4, 10));
         assertEquals(-1, DockLayoutModel.gridNeighborPosition(3, 1, 4, 10));
