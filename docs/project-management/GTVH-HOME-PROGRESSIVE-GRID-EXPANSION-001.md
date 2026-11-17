@@ -65,7 +65,7 @@ Root cause: the expanded Grid viewport was always ONE row tall. When row three (
 
 Changes:
 
-- `horizontalGridViewportRows` (1 or 2 Grid rows). Reaching Grid row three expands the total frame to three visible rows: Dock row one plus two Grid rows. The frame stays latched while focus moves UP from Grid row three to row two, then to the raised Dock; the next UP from the Dock collapses the whole frame.
+- `horizontalGridViewportRows` (1 or 2 Grid rows). Reaching Grid row index 1 (the third overall row: Dock + Grid row 1 + Grid row 2) expands the total frame to three visible rows. The frame stays latched while focus moves UP from overall row three to overall row two, then to the raised Dock; the next UP from the Dock collapses the whole frame.
 - Rolling window start is `max(0, targetRow - 1)`; Home chrome is hidden as soon as row three joins the frame and restored when the full frame collapses; the clock/date block remains visible. Home chrome is re-hidden after focus callbacks so it cannot flash back on.
 - `animateGridViewportRows` grows/shrinks the frame as one motion (Dock + row two rise together, row three enters from below). Final geometry is always committed even if a newer key cancels it.
 - `dockRaisedTranslationY()` is the single Dock offset formula (dock pitch + extra viewport rows + scroll). The Dock fades out once the rolling window scrolls past it.
@@ -84,3 +84,11 @@ The supplied patch defines the three visible rows as Dock row one plus two Grid 
 The Dock scroll offset is now derived from laid-out Grid geometry rather than only accumulated scroll callbacks. When the rolling window advances, the absolute measured offset is rebased to the new first row so later scrolling cannot double-count the row that was already passed. The clock/date block remains visible while other Home chrome is hidden and is re-hidden after focus-driven UI refreshes. Moving an app DOWN from the Dock opens the hidden Grid through the normal expansion transition and re-enters Move Mode once the target holder is laid out; DPAD/OK input is captured during that hand-off. A guarded recovery path releases the hand-off lock if the transition cannot complete.
 
 Scope remains limited to Grid frame geometry, focus ownership, Dock scroll synchronization, and Move Mode hand-off. No weather, wallpaper, prayer/Ayah, popup, glass styling, or app inventory changes. Physical Mi TV Stick testing is still required for acceptance.
+
+## Follow-up audit 004 — correct row-three threshold and coordinate-stable Move Mode
+
+The third overall application row is Grid row index 1 because the Dock is overall row one and Grid row index 0 is overall row two. The expansion threshold is therefore `targetRow >= 1`, not `targetRow >= 2`. This ensures the second Grid row enters the viewport as soon as focus reaches it; the viewport then shows Dock + two Grid rows.
+
+Move Mode now retains the selected app's stable component key for the full pickup session. Before each DPAD step it resolves the key to the current adapter position; LEFT/RIGHT/UP/DOWN targets are calculated from that current position through `DockLayoutModel.gridNeighborPosition`, which preserves the latest column on vertical movement and respects incomplete-row boundaries. After each reorder, the selected key is resolved again and the new position is used for restoring the tile. This prevents stale adapter positions from pulling the selected app back to its earlier slot.
+
+Acceptance scenario: start a Move Mode pickup in a Grid row, move UP or DOWN, move RIGHT/LEFT to another column, then reverse vertically. The next row transition must use the new column, not the initial pickup column or the row's first slot. Automated tests cover the threshold and stable-identity/coordinate contract. Physical Mi TV Stick remote testing remains mandatory.
