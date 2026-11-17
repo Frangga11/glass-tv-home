@@ -113,3 +113,6 @@ When the actual focused card belongs to the Dock, Grid scroll deltas are no long
 Move Mode retains the live stable-key resolution and Dock-slot insertion path from PR #148; no fallback to the older stale-position move sequence is introduced. Additional source contracts cover ancestor translation, Dock/Grid scroll ownership, per-frame synchronization, and the current Dock slot used for DOWN transfer.
 
 Scope remains focus geometry, Dock/Glider synchronization, and Move Mode placement validation. The three-row frame and DPAD routing are not rewritten. Automated validation and physical Mi TV Stick acceptance remain required.
+
+
+Validation note: the Dock-to-Grid transfer contract now verifies that the selected stable key is resolved to its current Dock slot immediately before converting that slot to a Grid insertion position. This guards against stale caller-supplied positions after lateral Move Mode shifts.
