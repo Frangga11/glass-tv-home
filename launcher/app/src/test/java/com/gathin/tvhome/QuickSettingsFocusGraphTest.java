@@ -13,9 +13,9 @@ public class QuickSettingsFocusGraphTest {
     @Test
     public void horizontalAndVerticalPrimaryActionsHaveDeterministicNeighbors() {
         assertEquals(QuickSettingsFocusGraph.RESTART,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WIFI, QuickSettingsFocusGraph.RIGHT));
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.INPUT, QuickSettingsFocusGraph.RIGHT));
         assertEquals(QuickSettingsFocusGraph.LANGUAGE,
-                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WIFI, QuickSettingsFocusGraph.DOWN));
+                QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.INPUT, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.POWER,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.RESTART, QuickSettingsFocusGraph.DOWN));
         assertEquals(QuickSettingsFocusGraph.POWER,
@@ -57,7 +57,7 @@ public class QuickSettingsFocusGraphTest {
     public void everyVisibleControlIsReachableFromWifiWithoutAnOnScreenCloseControl() {
         Set<Integer> visited = new HashSet<>();
         ArrayDeque<Integer> queue = new ArrayDeque<>();
-        queue.add(QuickSettingsFocusGraph.WIFI);
+        queue.add(QuickSettingsFocusGraph.INPUT);
         while (!queue.isEmpty()) {
             int current = queue.removeFirst();
             if (!visited.add(current)) continue;
