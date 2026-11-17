@@ -100,3 +100,14 @@ The table above is the original 40-PR inventory snapshot. Treat entries #116–#
 ### Next review queue
 
 Continue with #90–#109 (Islamic Shelf, typography, header, spacing, and CI), then the older feature/security branches (#5–#64). Prioritize security-sensitive manifest, upload-session, storage, process-death recovery, and profile state changes. No further blanket closure is approved.
+
+
+## Additional P2 reconciliation — 17 November 2026
+
+- PR #107 was closed after confirming that Islamic gold highlighting and the black text-shadow behavior are already present in current main. Its remaining contract-test snapshot expects an older Ayah focus implementation and was not transplanted.
+- PR #90 was closed as an obsolete CI-only artifact allowlist change; current main already has the later cumulative QA artifact workflow.
+- PR #77 was closed after review showed its remaining delta is workflow-only and adds a separate APK release-publishing workflow with `contents:write` on `pull_request`. This is outside the approved QA-artifact-only baseline and was not integrated.
+- All three branches were retained. No source code, workflow, or release automation was merged from these PRs.
+- **Updated totals: 81 PRs closed, 27 PRs remain open; 0 branches deleted.**
+
+The remaining open queue is #109, #99, #93, #92, #91, #64, #63, #62, #51, #41, #38, #34, #30, #29, #28, #27, #26, #24, #23, #20, #18, #17, #16, #11, #10, #6, and #5. Continue source-level review in the order defined above. Security-sensitive changes must not be bulk-closed or bulk-merged.
