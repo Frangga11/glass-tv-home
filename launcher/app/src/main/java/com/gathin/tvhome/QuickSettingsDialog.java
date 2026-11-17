@@ -308,8 +308,10 @@ final class QuickSettingsDialog {
         tile.setTextSize(12f);
         tile.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.NORMAL);
         tile.setTextColor(TvUiTokens.TEXT_PRIMARY);
-        tile.setText(buildLabel(title, summary));
-        tile.setContentDescription(summary == null || summary.isEmpty() ? title : title + ", " + summary);
+        String displayTitle = stripDecorativePrefix(title);
+        tile.setText(buildLabel(displayTitle, summary));
+        tile.setContentDescription(summary == null || summary.isEmpty()
+                ? displayTitle : displayTitle + ", " + summary);
 
         if (iconRes != 0) {
             Drawable icon = activity.getDrawable(iconRes);
@@ -350,6 +352,12 @@ final class QuickSettingsDialog {
                 TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         return link;
+    }
+
+    private static String stripDecorativePrefix(String value) {
+        if (value == null) return "";
+        // Action glyphs are rendered by the shared 18dp drawable slot, never duplicated in the label.
+        return value.replaceFirst("^[\\\\p{So}\\\\p{Sk}\\\\p{Cf}\\\\s]+", "").trim();
     }
 
     private static SpannableStringBuilder buildLabel(String title, String summary) {
