@@ -72,8 +72,20 @@ class QuickSettingsContractTest(unittest.TestCase):
         ):
             self.assertIn(source, MAIN)
 
-    def test_wifi_child_route_restores_quick_settings_and_focus(self):
-        self.assertIn("showWifiPopup(() -> showQuickControlPopup(QuickSettingsFocusGraph.WIFI))", MAIN)
+    def test_quick_settings_input_routes_to_existing_tv_source_selector(self):
+        self.assertIn("R.drawable.ic_input, R.string.quick_settings_input_title", DIALOG)
+        self.assertIn('setTag("quick_settings_input")', DIALOG)
+        self.assertIn("actions::openInputs", DIALOG)
+        self.assertIn("@Override public void openInputs() {", MAIN)
+        self.assertIn("showInputs();", MAIN)
+        self.assertIn("private void showInputs()", MAIN)
+        self.assertIn("TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);", MAIN)
+        self.assertIn("TvContract.buildChannelUriForPassthroughInput(inputId)", MAIN)
+        self.assertIn("private void openInput(String inputId)", MAIN)
+        self.assertIn("private void openSourcePanel()", MAIN)
+        self.assertIn("QuickSettingsFocusGraph.INPUT", DIALOG)
+
+    def test_wifi_child_surface_still_restores_its_parent_focus(self):
         self.assertIn("WifiSettingsDialog.show(this", MAIN)
         self.assertIn("returnToParent", MAIN)
         self.assertIn("returnToParent.run()", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
@@ -179,6 +191,7 @@ class QuickSettingsContractTest(unittest.TestCase):
             "quick_settings_title",
             "quick_settings_language_title",
             "quick_settings_wifi_summary",
+            "quick_settings_input_title",
             "quick_settings_restart_summary",
             "quick_settings_power_summary",
             "quick_settings_cache_summary",
@@ -205,6 +218,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn('<string name="quick_settings_android_settings">Android TV Settings</string>', contents[2])
         self.assertIn('<string name="quick_settings_language_title">Bahasa</string>', contents[1])
         self.assertIn('<string name="quick_settings_language_title">Language</string>', contents[2])
+        self.assertIn('<string name="quick_settings_input_title">Input</string>', contents[1])
+        self.assertIn('<string name="quick_settings_input_title">Input</string>', contents[2])
 
 
 if __name__ == "__main__":
