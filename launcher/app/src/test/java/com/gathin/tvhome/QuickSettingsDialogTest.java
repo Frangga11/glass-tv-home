@@ -137,7 +137,7 @@ public class QuickSettingsDialogTest {
         assertFalse(((TextView) restart).getText().toString().contains("\n"));
         assertFalse(((TextView) find(dialog, "quick_settings_power")).getText().toString().contains("\n"));
         assertFalse(((TextView) nextPhoto).getText().toString().contains("\n"));
-        assertTrue(((TextView) androidSettings).getText().toString().contains("Pengaturan Android TV"));
+        assertTrue(((TextView) androidSettings).getText().toString().contains(activity.getString(R.string.quick_settings_android_settings)));
         dialog.cancel();
     }
 
