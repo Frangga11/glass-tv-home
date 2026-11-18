@@ -92,7 +92,11 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("QuickSettingsFocusGraph.INPUT", DIALOG)
         self.assertIn("getString(R.string.input_external_tv_title)", MAIN)
         self.assertIn("R.string.input_external_tv_hint", MAIN)
-        self.assertIn("KeyEvent.KEYCODE_TV_INPUT", MAIN)
+        input_service = (JAVA / "InputKeyService.java").read_text(encoding="utf-8")
+        config = (JAVA / "Config.java").read_text(encoding="utf-8")
+        self.assertIn("isInputKeyCode(event.getKeyCode(), inputKeycodes)", input_service)
+        self.assertIn("MainActivity.EXTRA_OPEN_INPUTS", input_service)
+        self.assertIn("inputKeyKeycodes", config)
         self.assertIn("KeyEvent.KEYCODE_TV_INPUT", DIALOG)
         self.assertIn("actions.openInputs();", DIALOG)
 
