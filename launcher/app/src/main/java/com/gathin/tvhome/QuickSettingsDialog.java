@@ -59,7 +59,6 @@ final class QuickSettingsDialog {
     private static final int MIN_VERTICAL_GAP_DP = 3;
     private static final int PANEL_VERTICAL_INSET_DP = 8;
     private static final int MIN_PANEL_VERTICAL_INSET_DP = 6;
-    private static final int VERTICAL_FLEX_GAP_COUNT = 4;
     private static final int PANEL_SIDE_INSET_DP = 10;
 
     private QuickSettingsDialog() { }
@@ -76,10 +75,12 @@ final class QuickSettingsDialog {
         dock.getLocationOnScreen(dockAt);
         int hostWidth = host.getWidth() > 0 ? host.getWidth() : activity.getResources().getDisplayMetrics().widthPixels;
         int hostHeight = host.getHeight() > 0 ? host.getHeight() : activity.getResources().getDisplayMetrics().heightPixels;
-        int top = anchorAt[1] + settingsAnchor.getHeight() - hostAt[1] + dp(density, 5);
+        int topClearancePx = dp(density, 5);
+        int bottomClearancePx = dp(density, 5);
+        int top = panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx);
         int dockTop = dock.isShown() && dock.getHeight() > 0
                 ? dockAt[1] - hostAt[1] : hostHeight - dp(density, 28);
-        int availableHeight = dockTop - dp(density, 5) - top;
+        int availableHeight = availablePanelHeight(dockTop, top, bottomClearancePx);
         if (availableHeight <= 0) {
             android.util.Log.e("TvHome.QuickSettings", "No vertical space remains between navigation and dock");
             return null;
@@ -339,6 +340,15 @@ final class QuickSettingsDialog {
         });
         dialog.show();
         return dialog;
+    }
+
+    static int panelTopInHost(int anchorScreenTop, int anchorHeight, int hostScreenTop,
+                              int topClearancePx) {
+        return anchorScreenTop + anchorHeight - hostScreenTop + topClearancePx;
+    }
+
+    static int availablePanelHeight(int dockTopInHost, int panelTopInHost, int bottomClearancePx) {
+        return dockTopInHost - panelTopInHost - bottomClearancePx;
     }
 
     private static void addVerticalFlexGap(Activity activity, LinearLayout parent, String tag) {
