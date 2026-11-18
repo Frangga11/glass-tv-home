@@ -147,6 +147,7 @@ final class QuickSettingsDialog {
                 null,
                 density, dialogHolder, actions::restart, tileHeightDp);
         controls[QuickSettingsFocusGraph.RESTART].setTag("quick_settings_restart");
+        addGridColumnGap(activity, grid, 0, density);
         controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 1, 0, 1,
                 R.drawable.ic_language, R.string.quick_settings_language_title, null,
                 safe(actions.languageSummary(), ""),
@@ -157,6 +158,7 @@ final class QuickSettingsDialog {
                 null,
                 density, dialogHolder, actions::openPowerMenu, tileHeightDp);
         controls[QuickSettingsFocusGraph.POWER].setTag("quick_settings_power");
+        addGridColumnGap(activity, grid, 1, density);
         controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 2, 0, 3,
                 R.drawable.ic_clean, 0, actions.cacheTitle(),
                 activity.getString(R.string.quick_settings_cache_summary),
@@ -317,6 +319,13 @@ final class QuickSettingsDialog {
         return tile;
     }
 
+    private static void addGridColumnGap(Activity activity, GridLayout grid, int row, float density) {
+        View gap = new View(activity);
+        GridLayout.LayoutParams lp = new GridLayout.LayoutParams(GridLayout.spec(row), GridLayout.spec(1));
+        lp.width = dp(density, CAPSULE_GAP_DP);
+        lp.height = dp(density, TILE_HEIGHT_DP);
+        grid.addView(gap, lp);
+    }
     private static TextView createTile(Activity activity, int iconRes, int titleRes,
                                        String summary, int minHeightDp, float density) {
         return createTile(activity, iconRes, activity.getString(titleRes), summary, minHeightDp, density);
