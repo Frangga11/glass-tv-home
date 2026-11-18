@@ -165,7 +165,7 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.CACHE].setTag("quick_settings_cache");
         LinearLayout.LayoutParams gridLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        gridLp.topMargin = dp(density, 4);
+        gridLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(grid, gridLp);
         LinearLayout wallpaperHeader = new LinearLayout(activity);
         wallpaperHeader.setOrientation(LinearLayout.HORIZONTAL);
@@ -185,7 +185,7 @@ final class QuickSettingsDialog {
                 ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 22)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
-        wallpaperHeaderLp.topMargin = dp(density, 6);
+        wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(wallpaperHeader, wallpaperHeaderLp);
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
 
@@ -216,7 +216,7 @@ final class QuickSettingsDialog {
         wallpaperActions.addView(interval, intervalLp);
         LinearLayout.LayoutParams wallpaperActionsLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp));
-        wallpaperActionsLp.topMargin = dp(density, 3);
+        wallpaperActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(wallpaperActions, wallpaperActionsLp);
         LinearLayout settingsActions = new LinearLayout(activity);
         settingsActions.setOrientation(LinearLayout.VERTICAL);
@@ -319,7 +319,7 @@ final class QuickSettingsDialog {
         GridLayout.LayoutParams lp = new GridLayout.LayoutParams(rowSpec, columnSpec);
         lp.width = dp(density, span == 3 ? WIDE_TILE_WIDTH_DP : HALF_TILE_WIDTH_DP);
         lp.height = dp(density, tileHeightDp);
-        lp.setMargins(0, 0, 0, dp(density, CAPSULE_GAP_DP));
+        lp.setMargins(0, 0, 0, row < 2 ? dp(density, CAPSULE_GAP_DP) : 0);
         grid.addView(tile, lp);
         return tile;
     }
