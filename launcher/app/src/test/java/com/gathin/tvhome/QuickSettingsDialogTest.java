@@ -96,13 +96,18 @@ public class QuickSettingsDialogTest {
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
 
-        android.view.WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-        assertEquals(95, params.y);
-        assertEquals(300, params.height);
-        assertEquals(5, 400 - (params.y + params.height));
+        int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
+        views[0].getLocationOnScreen(hostAt);
+        views[0].getChildAt(0).getLocationOnScreen(anchorAt);
+        views[0].getChildAt(1).getLocationOnScreen(dockAt);
+        int panelTop = QuickSettingsDialog.panelTopInHost(anchorAt[1],
+                views[0].getChildAt(0).getHeight(), hostAt[1], 5);
+        int dockTop = dockAt[1] - hostAt[1];
+        int expectedHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        assertEquals(params.height, content.getMeasuredHeight());
+        assertEquals(300, expectedHeight);
+        assertEquals(expectedHeight, content.getMeasuredHeight());
 
         int[] spacerHeights = {
                 find(dialog, "quick_settings_flex_header").getMeasuredHeight(),
@@ -127,12 +132,19 @@ public class QuickSettingsDialogTest {
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
 
-        android.view.WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-        assertEquals(275, params.height);
-        assertEquals(5, 375 - (params.y + params.height));
+        int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
+        views[0].getLocationOnScreen(hostAt);
+        views[0].getChildAt(0).getLocationOnScreen(anchorAt);
+        views[0].getChildAt(1).getLocationOnScreen(dockAt);
+        int panelTop = QuickSettingsDialog.panelTopInHost(anchorAt[1],
+                views[0].getChildAt(0).getHeight(), hostAt[1], 5);
+        int dockTop = dockAt[1] - hostAt[1];
+        int expectedHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
+        assertEquals(275, expectedHeight);
+        assertEquals(expectedHeight, find(dialog, "quick_settings_root").getMeasuredHeight());
         assertEquals(32, find(dialog, "quick_settings_input").getMeasuredHeight());
         assertEquals(32, find(dialog, "quick_settings_restart").getMeasuredHeight());
-        assertEquals(275, find(dialog, "quick_settings_root").getMeasuredHeight());
+        assertEquals(5, dockTop - (panelTop + expectedHeight));
         dialog.dismiss();
     }
 
