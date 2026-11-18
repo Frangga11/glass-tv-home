@@ -127,7 +127,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void constrainedPanelTightensOnlyVerticalRhythmAndKeepsCapsuleGeometry() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 375);
+        FrameLayout[] views = host(activity, 390);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
@@ -140,10 +140,10 @@ public class QuickSettingsDialogTest {
                 views[0].getChildAt(0).getHeight(), hostAt[1], 5);
         int dockTop = dockAt[1] - hostAt[1];
         int expectedHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
-        assertEquals(275, expectedHeight);
+        assertEquals(290, expectedHeight);
         assertEquals(expectedHeight, find(dialog, "quick_settings_root").getMeasuredHeight());
-        assertEquals(32, find(dialog, "quick_settings_input").getMeasuredHeight());
-        assertEquals(32, find(dialog, "quick_settings_restart").getMeasuredHeight());
+        assertEquals(34, find(dialog, "quick_settings_input").getMeasuredHeight());
+        assertEquals(34, find(dialog, "quick_settings_restart").getMeasuredHeight());
         assertEquals(5, dockTop - (panelTop + expectedHeight));
         dialog.dismiss();
     }
