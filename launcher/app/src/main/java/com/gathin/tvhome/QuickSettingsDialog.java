@@ -56,7 +56,7 @@ final class QuickSettingsDialog {
     private static final int HALF_TILE_WIDTH_DP = 125;
     private static final int WIDE_TILE_WIDTH_DP = 255;
     private static final int CAPSULE_GAP_DP = 5;
-    private static final int PANEL_SIDE_INSET_DP = 5;
+    private static final int PANEL_SIDE_INSET_DP = 10;
 
     private QuickSettingsDialog() { }
 
@@ -75,21 +75,20 @@ final class QuickSettingsDialog {
         int top = anchorAt[1] + settingsAnchor.getHeight() - hostAt[1] + dp(density, 5);
         int dockTop = dock.isShown() && dock.getHeight() > 0
                 ? dockAt[1] - hostAt[1] : hostHeight - dp(density, 28);
-        int preferredHeight = dockTop - dp(density, 8) - top;
-        int screenHeight = hostHeight - dp(density, 14) - top;
-        if (screenHeight <= dp(density, 220)) {
+        int availableHeight = dockTop - dp(density, 5) - top;
+        if (availableHeight <= dp(density, 220)) {
             android.util.Log.e("TvHome.QuickSettings", "Insufficient screen space for Quick Settings: "
-                    + Math.round(screenHeight / density) + "dp");
+                    + Math.round(availableHeight / density) + "dp");
             return null;
         }
         // Keep every action row the same height. Do not squeeze rows dynamically from screen
         // height: that made the panel's vertical rhythm change with device/window measurements.
-        // If the content needs the dock lane, the panel may extend below the dock rather than clip text.
+        // The panel must end 5dp above the dock; never overlap the dock or silently clip content.
         int tileHeightDp = TILE_HEIGHT_DP;
 
-        // A 29%-width panel is positioned from the Settings-tab gear, so the popup header gear
+        // The 275dp panel is positioned from the Settings-tab gear, so the popup header gear
         // sits on the same vertical axis as the navigation gear instead of being screen-centered.
-        int width = dp(density, WIDE_TILE_WIDTH_DP + PANEL_SIDE_INSET_DP * 2);
+        int width = dp(density, 275);
         width = Math.min(width, Math.max(dp(density, 1), hostWidth - dp(density, 24)));
         int settingsGearCenter = settingsIconCenterX(settingsAnchor, anchorAt[0], density) - hostAt[0];
         int panelLeft = settingsGearCenter - dp(density, 12) - dp(density, 18) / 2;
@@ -253,7 +252,13 @@ final class QuickSettingsDialog {
         content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         int naturalHeight = content.getMeasuredHeight();
-        int panelHeight = Math.min(screenHeight, naturalHeight);
+        if (naturalHeight > availableHeight) {
+            android.util.Log.e("TvHome.QuickSettings", "Quick Settings content exceeds the 5dp dock clearance: "
+                    + Math.round(naturalHeight / density) + "dp content, "
+                    + Math.round(availableHeight / density) + "dp available");
+            return null;
+        }
+        int panelHeight = naturalHeight;
         final int panelWidth = width;
         final int panelTop = top;
         final int finalPanelLeft = panelLeft;
