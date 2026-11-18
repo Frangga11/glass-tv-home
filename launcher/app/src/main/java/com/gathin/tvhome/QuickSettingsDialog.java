@@ -56,6 +56,10 @@ final class QuickSettingsDialog {
     private static final int HALF_TILE_WIDTH_DP = 125;
     private static final int WIDE_TILE_WIDTH_DP = 255;
     private static final int CAPSULE_GAP_DP = 5;
+    private static final int MIN_VERTICAL_GAP_DP = 3;
+    private static final int PANEL_VERTICAL_INSET_DP = 8;
+    private static final int MIN_PANEL_VERTICAL_INSET_DP = 6;
+    private static final int VERTICAL_FLEX_GAP_COUNT = 4;
     private static final int PANEL_SIDE_INSET_DP = 10;
 
     private QuickSettingsDialog() { }
@@ -76,9 +80,8 @@ final class QuickSettingsDialog {
         int dockTop = dock.isShown() && dock.getHeight() > 0
                 ? dockAt[1] - hostAt[1] : hostHeight - dp(density, 28);
         int availableHeight = dockTop - dp(density, 5) - top;
-        if (availableHeight <= dp(density, 220)) {
-            android.util.Log.e("TvHome.QuickSettings", "Insufficient screen space for Quick Settings: "
-                    + Math.round(availableHeight / density) + "dp");
+        if (availableHeight <= 0) {
+            android.util.Log.e("TvHome.QuickSettings", "No vertical space remains between navigation and dock");
             return null;
         }
         // Keep every action row the same height. Do not squeeze rows dynamically from screen
@@ -101,7 +104,8 @@ final class QuickSettingsDialog {
         content.setTag("quick_settings_root");
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER_HORIZONTAL);
-        content.setPadding(dp(density, PANEL_SIDE_INSET_DP), dp(density, 8), dp(density, PANEL_SIDE_INSET_DP), dp(density, 8));
+        content.setPadding(dp(density, PANEL_SIDE_INSET_DP), dp(density, PANEL_VERTICAL_INSET_DP),
+                dp(density, PANEL_SIDE_INSET_DP), dp(density, PANEL_VERTICAL_INSET_DP));
         content.setClipChildren(true);
         content.setClipToPadding(true);
         content.setBackground(new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,
@@ -131,6 +135,7 @@ final class QuickSettingsDialog {
         header.addView(title);
         content.addView(header, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26)));
+        addVerticalFlexGap(activity, content, "quick_settings_flex_header");
 
         GridLayout grid = new GridLayout(activity);
         grid.setColumnCount(3);
@@ -167,6 +172,7 @@ final class QuickSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         gridLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(grid, gridLp);
+        addVerticalFlexGap(activity, content, "quick_settings_flex_grid");
         LinearLayout wallpaperHeader = new LinearLayout(activity);
         wallpaperHeader.setOrientation(LinearLayout.HORIZONTAL);
         wallpaperHeader.setGravity(Gravity.CENTER_VERTICAL);
@@ -187,6 +193,7 @@ final class QuickSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
         wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(wallpaperHeader, wallpaperHeaderLp);
+        addVerticalFlexGap(activity, content, "quick_settings_flex_wallpaper_header");
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
 
         LinearLayout wallpaperActions = new LinearLayout(activity);
@@ -218,6 +225,7 @@ final class QuickSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp));
         wallpaperActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(wallpaperActions, wallpaperActionsLp);
+        addVerticalFlexGap(activity, content, "quick_settings_flex_wallpaper_actions");
         LinearLayout settingsActions = new LinearLayout(activity);
         settingsActions.setOrientation(LinearLayout.VERTICAL);
         settingsActions.setGravity(Gravity.CENTER_VERTICAL);
@@ -249,16 +257,41 @@ final class QuickSettingsDialog {
 
         QuickSettingsFocusGraph.connect(controls);
 
-        content.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        int naturalHeight = content.getMeasuredHeight();
+        int appliedVerticalGapDp = CAPSULE_GAP_DP;
+        int appliedVerticalInsetDp = PANEL_VERTICAL_INSET_DP;
+        int naturalHeight = measureNaturalHeight(content, width);
+
+        // First preserve the capsules and typography while tightening only the vertical rhythm.
+        // All vertical gaps use one shared value, and the top/bottom glass insets stay symmetrical.
+        while (naturalHeight > availableHeight && appliedVerticalGapDp > MIN_VERTICAL_GAP_DP) {
+            appliedVerticalGapDp--;
+            applyVerticalSpacing(density, appliedVerticalGapDp, tileHeightDp, grid, controls,
+                    gridLp, wallpaperHeader, wallpaperHeaderLp, wallpaperActions, wallpaperActionsLp,
+                    settingsActions, settingsActionsLp, glassSettings, glassLp);
+            naturalHeight = measureNaturalHeight(content, width);
+        }
+        while (naturalHeight > availableHeight
+                && appliedVerticalInsetDp > MIN_PANEL_VERTICAL_INSET_DP) {
+            appliedVerticalInsetDp--;
+            int sideInset = dp(density, PANEL_SIDE_INSET_DP);
+            int verticalInset = dp(density, appliedVerticalInsetDp);
+            content.setPadding(sideInset, verticalInset, sideInset, verticalInset);
+            naturalHeight = measureNaturalHeight(content, width);
+        }
         if (naturalHeight > availableHeight) {
-            android.util.Log.e("TvHome.QuickSettings", "Quick Settings content exceeds the 5dp dock clearance: "
-                    + Math.round(naturalHeight / density) + "dp content, "
+            android.util.Log.e("TvHome.QuickSettings", "Quick Settings cannot fit without changing capsule geometry: "
+                    + Math.round(naturalHeight / density) + "dp minimum content, "
                     + Math.round(availableHeight / density) + "dp available");
             return null;
         }
-        int panelHeight = naturalHeight;
+
+        // The glass panel occupies the complete measured gap, so its lower edge lands exactly
+        // 5dp above the dock. Four equal weighted gaps share any remaining height naturally.
+        int panelHeight = availableHeight;
+        android.util.Log.i("TvHome.QuickSettings", "Panel height " + Math.round(panelHeight / density)
+                + "dp; top/bottom clearance 5dp; section gap " + appliedVerticalGapDp
+                + "dp; vertical inset " + appliedVerticalInsetDp + "dp; fixed capsule height "
+                + tileHeightDp + "dp.");
         final int panelWidth = width;
         final int panelTop = top;
         final int finalPanelLeft = panelLeft;
@@ -306,6 +339,54 @@ final class QuickSettingsDialog {
         });
         dialog.show();
         return dialog;
+    }
+
+    private static void addVerticalFlexGap(Activity activity, LinearLayout parent, String tag) {
+        View spacer = new View(activity);
+        spacer.setTag(tag);
+        parent.addView(spacer, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+    }
+
+    private static int measureNaturalHeight(View content, int widthPx) {
+        content.measure(View.MeasureSpec.makeMeasureSpec(widthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        return content.getMeasuredHeight();
+    }
+
+    private static void applyVerticalSpacing(float density, int gapDp, int tileHeightDp,
+                                             GridLayout grid, View[] controls,
+                                             LinearLayout.LayoutParams gridLp,
+                                             LinearLayout wallpaperHeader,
+                                             LinearLayout.LayoutParams wallpaperHeaderLp,
+                                             LinearLayout wallpaperActions,
+                                             LinearLayout.LayoutParams wallpaperActionsLp,
+                                             LinearLayout settingsActions,
+                                             LinearLayout.LayoutParams settingsActionsLp,
+                                             View glassSettings,
+                                             LinearLayout.LayoutParams glassLp) {
+        int gapPx = dp(density, gapDp);
+        gridLp.topMargin = gapPx;
+        grid.setLayoutParams(gridLp);
+        setBottomMargin(controls[QuickSettingsFocusGraph.INPUT], gapPx);
+        setBottomMargin(controls[QuickSettingsFocusGraph.RESTART], gapPx);
+        setBottomMargin(controls[QuickSettingsFocusGraph.LANGUAGE], gapPx);
+        setBottomMargin(controls[QuickSettingsFocusGraph.POWER], gapPx);
+        wallpaperHeaderLp.topMargin = gapPx;
+        wallpaperHeader.setLayoutParams(wallpaperHeaderLp);
+        wallpaperActionsLp.topMargin = gapPx;
+        wallpaperActions.setLayoutParams(wallpaperActionsLp);
+        settingsActionsLp.topMargin = gapPx;
+        settingsActionsLp.height = dp(density, tileHeightDp * 2 + gapDp);
+        settingsActions.setLayoutParams(settingsActionsLp);
+        glassLp.bottomMargin = gapPx;
+        glassSettings.setLayoutParams(glassLp);
+    }
+
+    private static void setBottomMargin(View child, int marginPx) {
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) child.getLayoutParams();
+        params.bottomMargin = marginPx;
+        child.setLayoutParams(params);
     }
 
     private static View addGridTile(Activity activity, GridLayout grid, int row, int column, int span,
