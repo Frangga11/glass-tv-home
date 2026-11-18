@@ -46,16 +46,21 @@ public class QuickSettingsDialogTest {
     }
 
     private FrameLayout[] host(Activity activity) {
+        return host(activity, 400);
+    }
+
+    private FrameLayout[] host(Activity activity, int dockTop) {
         FrameLayout root = new FrameLayout(activity);
         activity.setContentView(root);
-        root.layout(0, 0, 1920, 1080);
+        // A 1920x1080 screen at 2x density is a 960x540dp layout canvas.
+        root.layout(0, 0, 960, 540);
         View settings = new View(activity);
-        root.addView(settings, new FrameLayout.LayoutParams(320, 50, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
-        settings.layout(800, 50, 1120, 100);
+        root.addView(settings, new FrameLayout.LayoutParams(320, 30, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+        settings.layout(320, 60, 640, 90);
         View dock = new View(activity);
         root.addView(dock, new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, 100, Gravity.BOTTOM));
-        dock.layout(0, 850, 1920, 950);
+                FrameLayout.LayoutParams.MATCH_PARENT, 60, Gravity.BOTTOM));
+        dock.layout(0, dockTop, 960, dockTop + 60);
         return new FrameLayout[]{root, (FrameLayout) settings.getParent(), (FrameLayout) dock.getParent()};
     }
 
@@ -81,6 +86,54 @@ public class QuickSettingsDialogTest {
         assertEquals(expected, actions.lastAction);
         assertEquals(1, dismissed[0]);
         assertFalse(dialog.isShowing());
+    }
+
+    @Test
+    public void panelFillsAvailableHeightWithExactFiveDpClearanceAtBothAnchors() {
+        Activity activity = newActivity();
+        FrameLayout[] views = host(activity, 400);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
+                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+        assertNotNull(dialog);
+
+        android.view.WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        assertEquals(95, params.y);
+        assertEquals(300, params.height);
+        assertEquals(5, 400 - (params.y + params.height));
+        View content = find(dialog, "quick_settings_root");
+        assertNotNull(content);
+        assertEquals(params.height, content.getMeasuredHeight());
+
+        int[] spacerHeights = {
+                find(dialog, "quick_settings_flex_header").getMeasuredHeight(),
+                find(dialog, "quick_settings_flex_grid").getMeasuredHeight(),
+                find(dialog, "quick_settings_flex_wallpaper_header").getMeasuredHeight(),
+                find(dialog, "quick_settings_flex_wallpaper_actions").getMeasuredHeight()
+        };
+        int min = spacerHeights[0], max = spacerHeights[0];
+        for (int height : spacerHeights) {
+            min = Math.min(min, height);
+            max = Math.max(max, height);
+        }
+        assertTrue("Flexible vertical gaps must distribute remaining height evenly", max - min <= 1);
+        dialog.dismiss();
+    }
+
+    @Test
+    public void constrainedPanelTightensOnlyVerticalRhythmAndKeepsCapsuleGeometry() {
+        Activity activity = newActivity();
+        FrameLayout[] views = host(activity, 375);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
+                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+        assertNotNull(dialog);
+
+        android.view.WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+        assertEquals(275, params.height);
+        assertEquals(5, 375 - (params.y + params.height));
+        assertEquals(32, find(dialog, "quick_settings_input").getMeasuredHeight());
+        assertEquals(32, find(dialog, "quick_settings_restart").getMeasuredHeight());
+        assertEquals(275, find(dialog, "quick_settings_root").getMeasuredHeight());
+        dialog.dismiss();
     }
 
     @Test
