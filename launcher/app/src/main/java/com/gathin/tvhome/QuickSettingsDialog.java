@@ -244,7 +244,7 @@ final class QuickSettingsDialog {
         settingsActions.addView(androidSettings, androidLp);
         LinearLayout.LayoutParams settingsActionsLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp * 2 + CAPSULE_GAP_DP));
-        settingsActionsLp.topMargin = dp(density, 5);
+        settingsActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(settingsActions, settingsActionsLp);
 
         QuickSettingsFocusGraph.connect(controls);
