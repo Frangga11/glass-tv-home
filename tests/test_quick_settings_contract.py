@@ -52,9 +52,11 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
         self.assertNotIn("0xB3FFFFFF", DIALOG)
         self.assertNotIn("0xEAF8FC", DIALOG)
-        self.assertIn("gridLp.topMargin = dp(density, 4);", DIALOG)
-        self.assertIn("wallpaperHeaderLp.topMargin = dp(density, 6);", DIALOG)
-        self.assertIn("settingsActionsLp.topMargin = dp(density, 5);", DIALOG)
+        self.assertIn("gridLp.topMargin = dp(density, CAPSULE_GAP_DP);", DIALOG)
+        self.assertIn("wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);", DIALOG)
+        self.assertIn("wallpaperActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);", DIALOG)
+        self.assertIn("settingsActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);", DIALOG)
+        self.assertIn("row < 2 ? dp(density, CAPSULE_GAP_DP) : 0", DIALOG)
         
         
         self.assertIn("R.drawable.ic_appearance", DIALOG)
