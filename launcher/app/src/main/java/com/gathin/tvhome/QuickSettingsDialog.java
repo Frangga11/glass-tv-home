@@ -52,7 +52,7 @@ final class QuickSettingsDialog {
     private static final int PANEL_GLASS_VEIL = TvUiTokens.GLASS_VEIL_COLOR;
     private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
     private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
-    private static final int TILE_HEIGHT_DP = 32;
+    private static final int TILE_HEIGHT_DP = 34;
     private static final int HALF_TILE_WIDTH_DP = 125;
     private static final int WIDE_TILE_WIDTH_DP = 255;
     private static final int CAPSULE_GAP_DP = 5;
@@ -118,7 +118,7 @@ final class QuickSettingsDialog {
         header.setGravity(Gravity.CENTER_VERTICAL);
         TextView title = new TextView(activity);
         title.setText(R.string.quick_settings_title);
-        title.setTextSize(14f);
+        title.setTextSize(15f);
         title.setTextColor(PANEL_TEXT_PRIMARY);
         title.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         Drawable headerIcon = activity.getDrawable(R.drawable.ic_settings);
@@ -152,7 +152,7 @@ final class QuickSettingsDialog {
                 null,
                 density, dialogHolder, actions::restart, tileHeightDp);
         controls[QuickSettingsFocusGraph.RESTART].setTag("quick_settings_restart");
-        addGridColumnGap(activity, grid, 0, density);
+        addGridColumnGap(activity, grid, 0, density, tileHeightDp);
         controls[QuickSettingsFocusGraph.LANGUAGE] = addGridTile(activity, grid, 1, 0, 1,
                 R.drawable.ic_language, R.string.quick_settings_language_title, null,
                 safe(actions.languageSummary(), ""),
@@ -163,7 +163,7 @@ final class QuickSettingsDialog {
                 null,
                 density, dialogHolder, actions::openPowerMenu, tileHeightDp);
         controls[QuickSettingsFocusGraph.POWER].setTag("quick_settings_power");
-        addGridColumnGap(activity, grid, 1, density);
+        addGridColumnGap(activity, grid, 1, density, tileHeightDp);
         controls[QuickSettingsFocusGraph.CACHE] = addGridTile(activity, grid, 2, 0, 3,
                 R.drawable.ic_clean, 0, actions.cacheTitle(),
                 activity.getString(R.string.quick_settings_cache_summary),
@@ -179,7 +179,7 @@ final class QuickSettingsDialog {
         wallpaperHeader.setGravity(Gravity.CENTER_VERTICAL);
         TextView wallpaperTitle = new TextView(activity);
         wallpaperTitle.setText(R.string.quick_settings_wallpaper_title);
-        wallpaperTitle.setTextSize(13f);
+        wallpaperTitle.setTextSize(14f);
         wallpaperTitle.setTextColor(PANEL_TEXT_PRIMARY);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(0,
@@ -415,11 +415,11 @@ final class QuickSettingsDialog {
         return tile;
     }
 
-    private static void addGridColumnGap(Activity activity, GridLayout grid, int row, float density) {
+    private static void addGridColumnGap(Activity activity, GridLayout grid, int row, float density, int tileHeightDp) {
         View gap = new View(activity);
         GridLayout.LayoutParams lp = new GridLayout.LayoutParams(GridLayout.spec(row), GridLayout.spec(1));
         lp.width = dp(density, CAPSULE_GAP_DP);
-        lp.height = dp(density, TILE_HEIGHT_DP);
+        lp.height = dp(density, tileHeightDp);
         grid.addView(gap, lp);
     }
     private static TextView createTile(Activity activity, int iconRes, int titleRes,
@@ -439,7 +439,7 @@ final class QuickSettingsDialog {
         tile.setMinHeight(dp(density, minHeightDp));
         tile.setMaxLines(summary == null || summary.isEmpty() ? 1 : 2);
         tile.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        tile.setTextSize(12f);
+        tile.setTextSize(13f);
         tile.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.NORMAL);
         tile.setTextColor(PANEL_TEXT_PRIMARY);
         String displayTitle = stripDecorativePrefix(title);
@@ -475,7 +475,7 @@ final class QuickSettingsDialog {
         link.setPadding(dp(density, 9), dp(density, 2), dp(density, 9), dp(density, 2));
         link.setMinHeight(dp(density, heightDp));
         link.setText(titleRes);
-        link.setTextSize(11f);
+        link.setTextSize(12f);
         link.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         link.setTextColor(PANEL_TEXT_PRIMARY);
         link.setContentDescription(activity.getString(titleRes));
