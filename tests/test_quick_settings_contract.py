@@ -27,9 +27,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("addVerticalFlexGap(activity, content, \"quick_settings_flex_header\")", DIALOG)
         self.assertIn("addVerticalFlexGap(activity, content, \"quick_settings_flex_grid\")", DIALOG)
         self.assertIn("addVerticalFlexGap(activity, content, \"quick_settings_flex_wallpaper_header\")", DIALOG)
-        self.assertIn("addVerticalFlexGap(activity, content, \"quick_settings_flex_wallpaper_actions\")", DIALOG)
+        self.assertIn("addFixedVerticalGap(activity, content, CAPSULE_GAP_DP, \"quick_settings_gap_wallpaper_to_settings\")", DIALOG)
         self.assertIn("private static final int MIN_VERTICAL_GAP_DP = 3;", DIALOG)
-        self.assertIn("private static final int PANEL_VERTICAL_INSET_DP = 8;", DIALOG)
+        self.assertIn("private static final int PANEL_VERTICAL_INSET_DP = 10;", DIALOG)
         self.assertIn("applyVerticalSpacing(density, appliedVerticalGapDp", DIALOG)
         self.assertIn("int panelHeight = availableHeight;", DIALOG)
         self.assertIn("private static int measureNaturalHeight(View content, int widthPx)", DIALOG)
@@ -81,7 +81,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("tile.setTextSize(13f);", DIALOG)
         self.assertIn("int size = dp(density, 16);", DIALOG)
         self.assertIn("title.setTextSize(15f);", DIALOG)
-        self.assertIn("wallpaperTitle.setTextSize(14f);", DIALOG)
+        self.assertIn("wallpaperTitle.setTextSize(13f);", DIALOG)
         self.assertIn("link.setTextSize(12f);", DIALOG)
         self.assertIn("private static void addGridColumnGap(Activity activity, GridLayout grid, int row, float density, int tileHeightDp)", DIALOG)
         self.assertNotIn("scaleVertical(", DIALOG)
@@ -235,6 +235,7 @@ class QuickSettingsContractTest(unittest.TestCase):
             "quick_settings_language_title",
             "quick_settings_wifi_summary",
             "quick_settings_input_title",
+            "quick_settings_restart_title",
             "quick_settings_restart_summary",
             "quick_settings_power_summary",
             "quick_settings_cache_summary",
