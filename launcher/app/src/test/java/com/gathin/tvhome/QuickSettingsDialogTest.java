@@ -212,6 +212,7 @@ public class QuickSettingsDialogTest {
         assertEquals(cache.getId(), power.getNextFocusDownId());
         assertEquals(nextPhoto.getId(), cache.getNextFocusDownId());
         assertEquals(cache.getId(), nextPhoto.getNextFocusUpId());
+        assertEquals(cache.getId(), manage.getNextFocusUpId());
         assertEquals(manage.getId(), interval.getNextFocusUpId());
         assertEquals(interval.getId(), manage.getNextFocusDownId());
         assertFalse(((TextView) restart).getText().toString().contains("\n"));

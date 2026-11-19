@@ -187,7 +187,7 @@ final class QuickSettingsDialog {
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         // Align the heading with the capsule content inset, not beyond the capsule edge.
-        wallpaperTitle.setPaddingRelative(dp(density, 8), 0, 0, 0);
+        wallpaperTitle.setPaddingRelative(0, 0, 0, 0);
         wallpaperTitle.setTranslationY(dp(density, 2));
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 166),
                 ViewGroup.LayoutParams.MATCH_PARENT));
@@ -353,6 +353,8 @@ final class QuickSettingsDialog {
         ViewGroup layer = (ViewGroup) decor;
         Glider glider = new Glider(activity, false);
         glider.setStyle(Glider.GLASS);
+        // Keep the Quick Settings focus rim slightly finer without changing Home app icons.
+        glider.setFocusStrokeWidth(dp(density, 1.5f));
         layer.addView(glider, 0, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         decor.setTag(glider);
@@ -384,8 +386,10 @@ final class QuickSettingsDialog {
                     // The bright silver Glider can wash out white glyphs. Switch to dark ink
                     // only while focused; retain a subtle dark halo on the idle white label.
                     label.setTextColor(focused ? 0xFF17232B : PANEL_TEXT_PRIMARY);
-                    label.setShadowLayer(focused ? 0f : dp(density, 2), 0f, dp(density, 1),
-                            focused ? Color.TRANSPARENT : 0x99000000);
+                    // A restrained opposing halo keeps both dark focused ink and white idle
+                    // labels readable over moving glass and bright wallpaper samples.
+                    label.setShadowLayer(dp(density, 1.25f), 0f, dp(density, 0.5f),
+                            focused ? 0x99FFFFFF : 0xCC000000);
                 }
             });
         }
