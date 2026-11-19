@@ -287,7 +287,7 @@ final class QuickSettingsDialog {
         }
 
         // The glass panel occupies the complete measured gap, so its lower edge lands exactly
-        // 5dp above the dock. Four equal weighted gaps share any remaining height naturally.
+        // 5dp above the dock. Three equal weighted gaps share remaining height; the wallpaper-to-settings gap stays fixed at 5dp.
         int panelHeight = availableHeight;
         android.util.Log.i("TvHome.QuickSettings", "Panel height " + Math.round(panelHeight / density)
                 + "dp; top/bottom clearance 5dp; section gap " + appliedVerticalGapDp
