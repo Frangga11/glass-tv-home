@@ -195,11 +195,11 @@ final class QuickSettingsDialog {
         wallpaperHeader.addView(wallpaperTitle);
         View wallpaperHeaderGap = new View(activity);
         wallpaperHeader.addView(wallpaperHeaderGap, new LinearLayout.LayoutParams(dp(density, 5), 1));
-        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 21, density);
+        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 20, density);
         controls[QuickSettingsFocusGraph.WALLPAPER_MANAGE] = manageWallpaper;
         manageWallpaper.setTag("quick_settings_manage_wallpaper");
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
-                dp(density, 64), dp(density, 21)));
+                dp(density, 64), dp(density, 20)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
         content.addView(wallpaperHeader, wallpaperHeaderLp);
