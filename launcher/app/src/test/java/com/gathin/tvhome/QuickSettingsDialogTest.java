@@ -114,7 +114,8 @@ public class QuickSettingsDialogTest {
                 find(dialog, "quick_settings_flex_grid").getMeasuredHeight(),
                 find(dialog, "quick_settings_flex_wallpaper_header").getMeasuredHeight()
         };
-        assertEquals(Math.round(activity.getResources().getDisplayMetrics().density * 5f),\n                find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
+        assertEquals(Math.round(activity.getResources().getDisplayMetrics().density * 5f),
+                find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
         int min = spacerHeights[0], max = spacerHeights[0];
         for (int height : spacerHeights) {
             min = Math.min(min, height);
