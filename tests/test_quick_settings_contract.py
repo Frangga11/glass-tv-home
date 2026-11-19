@@ -35,6 +35,8 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("private static int measureNaturalHeight(View content, int widthPx)", DIALOG)
         self.assertIn("grid.setColumnCount(3)", DIALOG)
         self.assertIn("grid.setRowCount(3)", DIALOG)
+        self.assertIn("GridLayout.Spec columnSpec = GridLayout.spec(column, span);", DIALOG)
+        self.assertNotIn("GridLayout.spec(column, span, 1f)", DIALOG)
         self.assertNotIn("quick_settings_close", DIALOG)
         self.assertNotIn("QuickSettingsFocusGraph.CLOSE", DIALOG)
         self.assertIn("dialog.setOnKeyListener", DIALOG)
