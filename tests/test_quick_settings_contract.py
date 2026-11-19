@@ -67,7 +67,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertNotIn("0xEAF8FC", DIALOG)
         self.assertIn("gridLp.topMargin = dp(density, CAPSULE_GAP_DP);", DIALOG)
         self.assertIn("wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);", DIALOG)
-        self.assertIn("wallpaperActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);", DIALOG)
+        self.assertIn("wallpaperActionsLp.topMargin = dp(density, Math.max(MIN_VERTICAL_GAP_DP, CAPSULE_GAP_DP - 2));", DIALOG)
         self.assertIn("settingsActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);", DIALOG)
         self.assertIn("row < 2 ? dp(density, CAPSULE_GAP_DP) : 0", DIALOG)
         
