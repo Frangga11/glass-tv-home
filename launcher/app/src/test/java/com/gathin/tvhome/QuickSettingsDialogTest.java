@@ -144,7 +144,7 @@ public class QuickSettingsDialogTest {
         int halfWidth = Math.round(115f * density);
         int wideWidth = Math.round(235f * density);
         int mainHeight = Math.round(36f * density);
-        int manageHeight = Math.round(21f * density);
+        int manageHeight = Math.round(20f * density);
         assertEquals(mainHeight, find(dialog, "quick_settings_input").getMeasuredHeight());
         assertEquals(mainHeight, find(dialog, "quick_settings_restart").getMeasuredHeight());
         assertEquals(mainHeight, find(dialog, "quick_settings_language").getMeasuredHeight());
@@ -155,6 +155,13 @@ public class QuickSettingsDialogTest {
         assertEquals(halfWidth, find(dialog, "quick_settings_input").getMeasuredWidth());
         assertEquals(halfWidth, find(dialog, "quick_settings_restart").getMeasuredWidth());
         assertEquals(halfWidth, find(dialog, "quick_settings_next_photo").getMeasuredWidth());
+        View manageCapsule = find(dialog, "quick_settings_manage_wallpaper");
+        View intervalCapsule = find(dialog, "quick_settings_interval");
+        int[] manageAt = new int[2], intervalAt = new int[2];
+        manageCapsule.getLocationOnScreen(manageAt);
+        intervalCapsule.getLocationOnScreen(intervalAt);
+        assertEquals("Manage capsule right edge must align with the other capsule column",
+                intervalAt[0] + intervalCapsule.getWidth(), manageAt[0] + manageCapsule.getWidth());
         assertEquals(halfWidth, find(dialog, "quick_settings_interval").getMeasuredWidth());
         assertEquals(wideWidth, find(dialog, "quick_settings_cache").getMeasuredWidth());
         assertEquals(wideWidth, find(dialog, "quick_settings_glass_settings").getMeasuredWidth());
