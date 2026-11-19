@@ -183,7 +183,7 @@ final class QuickSettingsDialog {
         wallpaperHeader.setPaddingRelative(0, 0, 0, 0);
         TextView wallpaperTitle = new TextView(activity);
         wallpaperTitle.setText(R.string.quick_settings_wallpaper_title);
-        wallpaperTitle.setTextSize(13f);
+        wallpaperTitle.setTextSize(12f);
         wallpaperTitle.setTextColor(PANEL_TEXT_PRIMARY);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
@@ -337,7 +337,7 @@ final class QuickSettingsDialog {
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
             installDialogGlider(activity, dialog, controls, density);
             content.post(() -> {
-                alignWallpaperHeadingToCapsule(wallpaperTitle, nextPhoto);
+                alignWallpaperHeadingToCapsule(wallpaperTitle, nextPhoto, density);
                 if (target != null && target.isShown()) target.requestFocus();
             });
         });
@@ -412,7 +412,7 @@ final class QuickSettingsDialog {
      * This runs after layout so it includes the final Dialog window position, parent insets,
      * TextView compound padding, and the runtime Inter font's glyph side-bearing.
      */
-    private static void alignWallpaperHeadingToCapsule(TextView heading, View capsule) {
+    private static void alignWallpaperHeadingToCapsule(TextView heading, View capsule, float density) {
         if (heading == null || capsule == null || !heading.isLaidOut() || !capsule.isLaidOut()) return;
         android.graphics.Rect inkBounds = new android.graphics.Rect();
         String label = heading.getText().toString();
@@ -423,11 +423,11 @@ final class QuickSettingsDialog {
         heading.getLocationOnScreen(headingAt);
         capsule.getLocationOnScreen(capsuleAt);
         float paintedLeft = headingAt[0] + heading.getCompoundPaddingLeft() + inkBounds.left;
-        float correction = capsuleAt[0] - paintedLeft;
+        float correction = capsuleAt[0] - paintedLeft + dp(density, 2);
         if (Math.abs(correction) >= 0.25f) {
             heading.setTranslationX(heading.getTranslationX() + correction);
         }
-        android.util.Log.d("TvHome.QuickSettings", "Wallpaper heading ink-edge correction: "
+        android.util.Log.d("TvHome.QuickSettings", "Wallpaper heading ink-edge correction (+2dp design offset): "
                 + correction + "px");
     }
 
