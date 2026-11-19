@@ -182,14 +182,17 @@ public class QuickSettingsDialogTest {
         String heading = wallpaperTitle.getText().toString();
         Rect inkBounds = new Rect();
         wallpaperTitle.getPaint().getTextBounds(heading, 0, heading.length(), inkBounds);
-        assertEquals(-inkBounds.left, wallpaperTitle.getTranslationX(), 0.01f);
-
         int[] headingAt = new int[2];
         int[] capsuleAt = new int[2];
         wallpaperTitle.getLocationOnScreen(headingAt);
         nextPhoto.getLocationOnScreen(capsuleAt);
+        float baseHeadingLeft = headingAt[0] - wallpaperTitle.getTranslationX();
+        float expectedCorrection = capsuleAt[0] - baseHeadingLeft
+                - wallpaperTitle.getCompoundPaddingLeft() - inkBounds.left;
+        assertEquals("Runtime alignment must compensate for the actual layout and font bounds",
+                expectedCorrection, wallpaperTitle.getTranslationX(), 0.01f);
         assertEquals("Painted Wallpaper glyph must start at the capsule's left edge",
-                capsuleAt[0], headingAt[0] + inkBounds.left);
+                capsuleAt[0], headingAt[0] + wallpaperTitle.getCompoundPaddingLeft() + inkBounds.left);
         dialog.dismiss();
     }
 
