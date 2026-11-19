@@ -307,7 +307,7 @@ final class QuickSettingsDialog {
             return false;
         });
         dialog.setOnDismissListener(d -> {
-            Object tag = dialog.getWindow() != null ? dialog.getWindow().getDecorView().getTag(R.id.quick_settings_glider_tag) : null;
+            Object tag = dialog.getWindow() != null ? dialog.getWindow().getDecorView().getTag() : null;
             if (tag instanceof Glider) {
                 Glider glider = (Glider) tag;
                 glider.hideNow();
@@ -353,7 +353,7 @@ final class QuickSettingsDialog {
         glider.setStyle(Glider.GLASS);
         layer.addView(glider, 0, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        decor.setTag(R.id.quick_settings_glider_tag, glider);
+        decor.setTag(glider);
         for (View control : controls) {
             if (control == null) continue;
             GradientDrawable idle = new GradientDrawable();
