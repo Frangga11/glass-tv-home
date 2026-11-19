@@ -114,7 +114,7 @@ public class QuickSettingsDialogTest {
                 find(dialog, "quick_settings_flex_grid").getMeasuredHeight(),
                 find(dialog, "quick_settings_flex_wallpaper_header").getMeasuredHeight()
         };
-        assertEquals(10, find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
+        assertEquals(Math.round(activity.getResources().getDisplayMetrics().density * 5f),\n                find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
         int min = spacerHeights[0], max = spacerHeights[0];
         for (int height : spacerHeights) {
             min = Math.min(min, height);
@@ -127,7 +127,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void constrainedPanelTightensOnlyVerticalRhythmAndKeepsCapsuleGeometry() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 390);
+        FrameLayout[] views = host(activity, 400);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
@@ -140,7 +140,7 @@ public class QuickSettingsDialogTest {
                 views[0].getChildAt(0).getHeight(), hostAt[1], 5);
         int dockTop = dockAt[1] - hostAt[1];
         int expectedHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
-        assertEquals(290, expectedHeight);
+        assertEquals(300, expectedHeight);
         assertEquals(expectedHeight, find(dialog, "quick_settings_root").getMeasuredHeight());
         assertEquals(34, find(dialog, "quick_settings_input").getMeasuredHeight());
         assertEquals(34, find(dialog, "quick_settings_restart").getMeasuredHeight());
