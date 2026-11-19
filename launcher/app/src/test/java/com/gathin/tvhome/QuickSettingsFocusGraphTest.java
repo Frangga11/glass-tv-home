@@ -36,7 +36,7 @@ public class QuickSettingsFocusGraphTest {
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.INTERVAL, QuickSettingsFocusGraph.UP));
         assertEquals(QuickSettingsFocusGraph.INTERVAL,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WALLPAPER_MANAGE, QuickSettingsFocusGraph.DOWN));
-        assertEquals(QuickSettingsFocusGraph.NO_TARGET,
+        assertEquals(QuickSettingsFocusGraph.CACHE,
                 QuickSettingsFocusGraph.target(QuickSettingsFocusGraph.WALLPAPER_MANAGE, QuickSettingsFocusGraph.UP));
         for (int node = 0; node < QuickSettingsFocusGraph.COUNT; node++) {
             if (node == QuickSettingsFocusGraph.INTERVAL) continue;
