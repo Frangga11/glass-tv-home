@@ -53,6 +53,7 @@ final class QuickSettingsDialog {
     private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
     private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
     private static final int TILE_HEIGHT_DP = 36;
+    private static final int PANEL_HEIGHT_DP = 320;
     private static final int HALF_TILE_WIDTH_DP = 120;
     private static final int WIDE_TILE_WIDTH_DP = 245;
     private static final int CAPSULE_GAP_DP = 5;
@@ -172,7 +173,6 @@ final class QuickSettingsDialog {
         controls[QuickSettingsFocusGraph.CACHE].setTag("quick_settings_cache");
         LinearLayout.LayoutParams gridLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp * 3 + CAPSULE_GAP_DP * 2));
-        gridLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(grid, gridLp);
         addFixedVerticalGap(activity, content, CAPSULE_GAP_DP, "quick_settings_gap_grid_wallpaper");
         LinearLayout wallpaperHeader = new LinearLayout(activity);
@@ -193,7 +193,6 @@ final class QuickSettingsDialog {
                 dp(density, 64), dp(density, 24)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
-        wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(wallpaperHeader, wallpaperHeaderLp);
         addFixedVerticalGap(activity, content, CAPSULE_GAP_DP, "quick_settings_gap_wallpaper_header_actions");
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
@@ -225,7 +224,6 @@ final class QuickSettingsDialog {
         wallpaperActions.addView(interval, intervalLp);
         LinearLayout.LayoutParams wallpaperActionsLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp));
-        wallpaperActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(wallpaperActions, wallpaperActionsLp);
         addFixedVerticalGap(activity, content, CAPSULE_GAP_DP, "quick_settings_gap_wallpaper_to_settings");
         LinearLayout settingsActions = new LinearLayout(activity);
@@ -254,22 +252,23 @@ final class QuickSettingsDialog {
         settingsActions.addView(androidSettings, androidLp);
         LinearLayout.LayoutParams settingsActionsLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp * 2 + CAPSULE_GAP_DP));
-        settingsActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(settingsActions, settingsActionsLp);
 
         QuickSettingsFocusGraph.connect(controls);
 
         int naturalHeight = measureNaturalHeight(content, width);
-        if (naturalHeight > availableHeight) {
+        int fixedPanelHeight = dp(density, PANEL_HEIGHT_DP);
+        if (naturalHeight > fixedPanelHeight || fixedPanelHeight > availableHeight) {
             android.util.Log.e("TvHome.QuickSettings", "Quick Settings cannot fit with fixed geometry: "
-                    + Math.round(naturalHeight / density) + "dp required, "
+                    + Math.round(naturalHeight / density) + "dp content, "
+                    + PANEL_HEIGHT_DP + "dp panel, "
                     + Math.round(availableHeight / density) + "dp available");
             return null;
         }
 
-        // Every dimension and gap is fixed. The panel uses its exact natural content height;
-        // no weighted spacers, dynamic compression, or height stretching are permitted.
-        int panelHeight = naturalHeight;
+        // Fixed 320dp panel; content is measured independently and must fit without compression.
+        // The remaining 1dp is intentional fixed bottom breathing room, not a weighted spacer.
+        int panelHeight = fixedPanelHeight;
         android.util.Log.i("TvHome.QuickSettings", "Fixed panel " + Math.round(width / density)
                 + "x" + Math.round(panelHeight / density) + "dp; side inset "
                 + PANEL_SIDE_INSET_DP + "dp; capsule width " + WIDE_TILE_WIDTH_DP
