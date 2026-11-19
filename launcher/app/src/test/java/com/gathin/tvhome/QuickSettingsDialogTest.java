@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.app.AlertDialog;
 import android.os.Looper;
 import android.view.View;
@@ -159,6 +160,36 @@ public class QuickSettingsDialogTest {
         assertEquals(wideWidth, find(dialog, "quick_settings_glass_settings").getMeasuredWidth());
         assertEquals(wideWidth, find(dialog, "quick_settings_android_settings").getMeasuredWidth());
         assertEquals(Math.round(5f * density), find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
+        dialog.dismiss();
+    }
+
+    @Test
+    public void wallpaperHeadingPaintedLeftEdgeMatchesNextPhotoCapsuleLeftEdge() {
+        Activity activity = newActivity();
+        FrameLayout[] views = host(activity, 420);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
+                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+        assertNotNull(dialog);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        TextView wallpaperTitle = (TextView) find(dialog, "quick_settings_wallpaper_title");
+        View nextPhoto = find(dialog, "quick_settings_next_photo");
+        assertNotNull(wallpaperTitle);
+        assertNotNull(nextPhoto);
+        assertEquals(0, wallpaperTitle.getPaddingStart());
+        assertEquals(0, wallpaperTitle.getCompoundPaddingStart());
+
+        String heading = wallpaperTitle.getText().toString();
+        Rect inkBounds = new Rect();
+        wallpaperTitle.getPaint().getTextBounds(heading, 0, heading.length(), inkBounds);
+        assertEquals(-inkBounds.left, wallpaperTitle.getTranslationX(), 0.01f);
+
+        int[] headingAt = new int[2];
+        int[] capsuleAt = new int[2];
+        wallpaperTitle.getLocationOnScreen(headingAt);
+        nextPhoto.getLocationOnScreen(capsuleAt);
+        assertEquals("Painted Wallpaper glyph must start at the capsule's left edge",
+                capsuleAt[0], headingAt[0] + inkBounds.left);
         dialog.dismiss();
     }
 
