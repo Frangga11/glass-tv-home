@@ -354,7 +354,7 @@ final class QuickSettingsDialog {
         Glider glider = new Glider(activity, false);
         glider.setStyle(Glider.GLASS);
         // Keep the Quick Settings focus rim slightly finer without changing Home app icons.
-        glider.setFocusStrokeWidth(dp(density, 1.5f));
+        glider.setFocusStrokeWidth(1.5f * density);
         layer.addView(glider, 0, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         decor.setTag(glider);
