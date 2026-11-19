@@ -143,8 +143,26 @@ public class QuickSettingsDialogTest {
         int expectedHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
         assertEquals(300, expectedHeight);
         assertEquals(expectedHeight, find(dialog, "quick_settings_root").getMeasuredHeight());
-        assertEquals(34, find(dialog, "quick_settings_input").getMeasuredHeight());
-        assertEquals(34, find(dialog, "quick_settings_restart").getMeasuredHeight());
+        float density = activity.getResources().getDisplayMetrics().density;
+        int halfWidth = Math.round(120f * density);
+        int wideWidth = Math.round(245f * density);
+        int mainHeight = Math.round(36f * density);
+        int manageHeight = Math.round(24f * density);
+        assertEquals(mainHeight, find(dialog, "quick_settings_input").getMeasuredHeight());
+        assertEquals(mainHeight, find(dialog, "quick_settings_restart").getMeasuredHeight());
+        assertEquals(mainHeight, find(dialog, "quick_settings_language").getMeasuredHeight());
+        assertEquals(mainHeight, find(dialog, "quick_settings_power").getMeasuredHeight());
+        assertEquals(mainHeight, find(dialog, "quick_settings_cache").getMeasuredHeight());
+        assertEquals(mainHeight, find(dialog, "quick_settings_next_photo").getMeasuredHeight());
+        assertEquals(manageHeight, find(dialog, "quick_settings_manage_wallpaper").getMeasuredHeight());
+        assertEquals(halfWidth, find(dialog, "quick_settings_input").getMeasuredWidth());
+        assertEquals(halfWidth, find(dialog, "quick_settings_restart").getMeasuredWidth());
+        assertEquals(halfWidth, find(dialog, "quick_settings_next_photo").getMeasuredWidth());
+        assertEquals(halfWidth, find(dialog, "quick_settings_interval").getMeasuredWidth());
+        assertEquals(wideWidth, find(dialog, "quick_settings_cache").getMeasuredWidth());
+        assertEquals(wideWidth, find(dialog, "quick_settings_glass_settings").getMeasuredWidth());
+        assertEquals(wideWidth, find(dialog, "quick_settings_android_settings").getMeasuredWidth());
+        assertEquals(Math.round(5f * density), find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
         assertEquals(5, dockTop - (panelTop + expectedHeight));
         dialog.dismiss();
     }
