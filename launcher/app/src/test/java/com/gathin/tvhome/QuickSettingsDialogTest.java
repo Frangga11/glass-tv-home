@@ -189,10 +189,12 @@ public class QuickSettingsDialogTest {
         float baseHeadingLeft = headingAt[0] - wallpaperTitle.getTranslationX();
         float expectedCorrection = capsuleAt[0] - baseHeadingLeft
                 - wallpaperTitle.getCompoundPaddingLeft() - inkBounds.left;
-        assertEquals("Runtime alignment must compensate for the actual layout and font bounds",
-                expectedCorrection, wallpaperTitle.getTranslationX(), 0.01f);
-        assertEquals("Painted Wallpaper glyph must start at the capsule's left edge",
-                capsuleAt[0], headingAt[0] + wallpaperTitle.getCompoundPaddingLeft() + inkBounds.left);
+        assertEquals("Runtime alignment must compensate for the actual layout/font bounds plus the approved 2dp right offset",
+                expectedCorrection + 2f * activity.getResources().getDisplayMetrics().density,
+                wallpaperTitle.getTranslationX(), 0.01f);
+        assertEquals("Painted Wallpaper glyph must start exactly 2dp right of the capsule's left edge",
+                capsuleAt[0] + Math.round(2f * activity.getResources().getDisplayMetrics().density),
+                headingAt[0] + wallpaperTitle.getCompoundPaddingLeft() + inkBounds.left);
         dialog.dismiss();
     }
 
