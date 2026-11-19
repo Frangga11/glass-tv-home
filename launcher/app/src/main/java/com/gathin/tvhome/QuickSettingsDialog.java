@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -54,8 +56,8 @@ final class QuickSettingsDialog {
     private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
     private static final int TILE_HEIGHT_DP = 36;
     private static final int PANEL_HEIGHT_DP = 320;
-    private static final int HALF_TILE_WIDTH_DP = 120;
-    private static final int WIDE_TILE_WIDTH_DP = 245;
+    private static final int HALF_TILE_WIDTH_DP = 115;
+    private static final int WIDE_TILE_WIDTH_DP = 235;
     private static final int CAPSULE_GAP_DP = 5;
     private static final int PANEL_VERTICAL_INSET_DP = 10;
     private static final int PANEL_SIDE_INSET_DP = 10;
@@ -89,11 +91,11 @@ final class QuickSettingsDialog {
         // The panel must end 5dp above the dock; never overlap the dock or silently clip content.
         int tileHeightDp = TILE_HEIGHT_DP;
 
-        // The 265dp panel is positioned from the Settings-tab gear, so the popup header gear
+        // The 255dp panel is positioned from the Settings-tab gear, so the popup header gear
         // sits on the same vertical axis as the navigation gear instead of being screen-centered.
-        int width = dp(density, 265);
+        int width = dp(density, 255);
         if (hostWidth < width + dp(density, 24)) {
-            android.util.Log.e("TvHome.QuickSettings", "Host is too narrow for the fixed 265dp panel");
+            android.util.Log.e("TvHome.QuickSettings", "Host is too narrow for the fixed 255dp panel");
             return null;
         }
         int settingsGearCenter = settingsIconCenterX(settingsAnchor, anchorAt[0], density) - hostAt[0];
@@ -183,14 +185,18 @@ final class QuickSettingsDialog {
         wallpaperTitle.setTextSize(13f);
         wallpaperTitle.setTextColor(PANEL_TEXT_PRIMARY);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
-        wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 181),
+        wallpaperTitle.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        wallpaperTitle.setTranslationY(dp(density, 2));
+        wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 166),
                 ViewGroup.LayoutParams.MATCH_PARENT));
         wallpaperHeader.addView(wallpaperTitle);
-        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 24, density);
+        View wallpaperHeaderGap = new View(activity);
+        wallpaperHeader.addView(wallpaperHeaderGap, new LinearLayout.LayoutParams(dp(density, 5), 1));
+        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 21, density);
         controls[QuickSettingsFocusGraph.WALLPAPER_MANAGE] = manageWallpaper;
         manageWallpaper.setTag("quick_settings_manage_wallpaper");
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
-                dp(density, 64), dp(density, 24)));
+                dp(density, 64), dp(density, 21)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
         content.addView(wallpaperHeader, wallpaperHeaderLp);
@@ -300,7 +306,15 @@ final class QuickSettingsDialog {
             }
             return false;
         });
-        dialog.setOnDismissListener(d -> { if (onDismiss != null) onDismiss.run(); });
+        dialog.setOnDismissListener(d -> {
+            Object tag = dialog.getWindow() != null ? dialog.getWindow().getDecorView().getTag(R.id.quick_settings_glider_tag) : null;
+            if (tag instanceof Glider) {
+                Glider glider = (Glider) tag;
+                glider.hideNow();
+                if (glider.getParent() instanceof ViewGroup) ((ViewGroup) glider.getParent()).removeView(glider);
+            }
+            if (onDismiss != null) onDismiss.run();
+        });
         dialog.setOnShowListener(d -> {
             Window window = dialog.getWindow();
             if (window != null) {
@@ -317,10 +331,52 @@ final class QuickSettingsDialog {
             }
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
+            installDialogGlider(activity, dialog, controls, density);
             content.post(() -> { if (target != null && target.isShown()) target.requestFocus(); });
         });
         dialog.show();
         return dialog;
+    }
+
+    /**
+     * Quick Settings owns a dialog-window Glider, using the exact same spring-driven shape as
+     * Home app icons. Each capsule paints that one moving shape in its own background pass.
+     */
+    private static void installDialogGlider(Activity activity, AlertDialog dialog, View[] controls,
+                                            float density) {
+        Window window = dialog.getWindow();
+        if (window == null) return;
+        View decor = window.getDecorView();
+        if (!(decor instanceof ViewGroup)) return;
+        ViewGroup layer = (ViewGroup) decor;
+        Glider glider = new Glider(activity, false);
+        glider.setStyle(Glider.GLASS);
+        layer.addView(glider, 0, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        decor.setTag(R.id.quick_settings_glider_tag, glider);
+        for (View control : controls) {
+            if (control == null) continue;
+            GradientDrawable idle = new GradientDrawable();
+            idle.setColor(CAPSULE_IDLE_FILL);
+            idle.setCornerRadius(dp(density, 10));
+            idle.setStroke(Math.max(1, dp(density, 1)), CAPSULE_IDLE_BORDER);
+            control.setBackground(new LayerDrawable(new Drawable[]{
+                    idle, new GliderFocusDrawable(control, glider)
+            }));
+            glider.addCompanion(control);
+            control.setOnFocusChangeListener((view, focused) -> {
+                if (!focused || !view.isShown()) return;
+                int[] targetAt = new int[2], gliderAt = new int[2];
+                view.getLocationInWindow(targetAt);
+                glider.getLocationInWindow(gliderAt);
+                float left = targetAt[0] - gliderAt[0];
+                float top = targetAt[1] - gliderAt[1];
+                float pad = dp(density, 2);
+                glider.moveTo(left + pad, top + pad,
+                        left + view.getWidth() - pad, top + view.getHeight() - pad,
+                        dp(density, 10));
+            });
+        }
     }
 
     static int panelTopInHost(int anchorScreenTop, int anchorHeight, int hostScreenTop,
