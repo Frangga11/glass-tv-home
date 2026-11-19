@@ -364,7 +364,7 @@ final class QuickSettingsDialog {
             float cornerRadiusDp = manageCapsule ? 7f : 10f;
             GradientDrawable idle = new GradientDrawable();
             idle.setColor(CAPSULE_IDLE_FILL);
-            idle.setCornerRadius(dp(density, cornerRadiusDp));
+            idle.setCornerRadius(density * cornerRadiusDp);
             idle.setStroke(Math.max(1, dp(density, 1)), CAPSULE_IDLE_BORDER);
             control.setBackground(new LayerDrawable(new Drawable[]{
                     idle, new GliderFocusDrawable(control, glider)
@@ -380,7 +380,7 @@ final class QuickSettingsDialog {
                 float pad = dp(density, 2);
                 glider.moveTo(left + pad, top + pad,
                         left + view.getWidth() - pad, top + view.getHeight() - pad,
-                        dp(density, cornerRadiusDp));
+                        density * cornerRadiusDp);
                 if (view instanceof TextView) {
                     TextView label = (TextView) view;
                     // The bright silver Glider can wash out white glyphs. Switch to dark ink
@@ -388,7 +388,7 @@ final class QuickSettingsDialog {
                     label.setTextColor(focused ? 0xFF17232B : PANEL_TEXT_PRIMARY);
                     // A restrained opposing halo keeps both dark focused ink and white idle
                     // labels readable over moving glass and bright wallpaper samples.
-                    label.setShadowLayer(dp(density, 1.25f), 0f, dp(density, 0.5f),
+                    label.setShadowLayer(1.25f * density, 0f, 0.5f * density,
                             focused ? 0x99FFFFFF : 0xCC000000);
                 }
             });
