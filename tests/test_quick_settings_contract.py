@@ -14,6 +14,19 @@ MANIFEST = (ROOT / "launcher/app/src/main/AndroidManifest.xml").read_text(encodi
 
 
 class QuickSettingsContractTest(unittest.TestCase):
+    def test_focus_keeps_white_text_and_uses_dark_halo_on_glass(self):
+        focus_block = DIALOG[DIALOG.index("if (view instanceof TextView)"):DIALOG.index("\n                }", DIALOG.index("if (view instanceof TextView)")) + 18]
+        self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY);", focus_block)
+        self.assertNotIn("0xFF17232B", focus_block)
+        self.assertIn("focused ? 2.0f : 1.25f", focus_block)
+        self.assertIn("focused ? 0xF0000000 : 0xCC000000", focus_block)
+
+    def test_wallpaper_heading_and_capsule_share_the_same_left_layout_lane(self):
+        self.assertIn("wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
+        self.assertIn("wallpaperHeader.setPaddingRelative(0, 0, 0, 0);", DIALOG)
+        self.assertIn("wallpaperActions.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);", DIALOG)
+        self.assertIn("wallpaperActions.setPaddingRelative(0, 0, 0, 0);", DIALOG)
+
     def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
         self.assertNotIn("ScrollView", DIALOG)
         self.assertIn("new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,", DIALOG)
