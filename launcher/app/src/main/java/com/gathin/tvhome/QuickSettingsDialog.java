@@ -383,13 +383,11 @@ final class QuickSettingsDialog {
                         density * cornerRadiusDp);
                 if (view instanceof TextView) {
                     TextView label = (TextView) view;
-                    // The bright silver Glider can wash out white glyphs. Switch to dark ink
-                    // only while focused; retain a subtle dark halo on the idle white label.
-                    label.setTextColor(focused ? 0xFF17232B : PANEL_TEXT_PRIMARY);
-                    // A restrained opposing halo keeps both dark focused ink and white idle
-                    // labels readable over moving glass and bright wallpaper samples.
-                    label.setShadowLayer(1.25f * density, 0f, 0.5f * density,
-                            focused ? 0x99FFFFFF : 0xCC000000);
+                    // Preserve the approved white typography in every focus state. A dark,
+                    // tight shadow/halo separates white glyphs from the moving silver glass.
+                    label.setTextColor(PANEL_TEXT_PRIMARY);
+                    label.setShadowLayer((focused ? 2.0f : 1.25f) * density, 0f,
+                            0.5f * density, focused ? 0xF0000000 : 0xCC000000);
                 }
             });
         }
