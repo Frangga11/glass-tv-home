@@ -46,7 +46,7 @@ public class QuickSettingsDialogTest {
     }
 
     private FrameLayout[] host(Activity activity) {
-        return host(activity, 400);
+        return host(activity, 420);
     }
 
     private FrameLayout[] host(Activity activity, int dockTop) {
@@ -91,7 +91,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void panelFillsAvailableHeightWithExactFiveDpClearanceAtBothAnchors() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 400);
+        FrameLayout[] views = host(activity, 420);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
@@ -106,7 +106,7 @@ public class QuickSettingsDialogTest {
         int expectedHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        assertEquals(300, expectedHeight);
+        assertEquals(320, expectedHeight);
         assertEquals(expectedHeight, content.getMeasuredHeight());
 
         int[] spacerHeights = {
