@@ -187,9 +187,17 @@ final class QuickSettingsDialog {
         wallpaperTitle.setTextColor(PANEL_TEXT_PRIMARY);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-        // Align the heading with the capsule content inset, not beyond the capsule edge.
         wallpaperTitle.setPaddingRelative(0, 0, 0, 0);
+        // The TextView origin already shares the capsule lane, but a typeface can leave a
+        // positive left side-bearing before the first painted glyph. Align the visible ink
+        // edge to the capsule's outer left edge using the actual runtime font metrics.
+        android.graphics.Rect wallpaperInkBounds = new android.graphics.Rect();
+        String wallpaperHeading = wallpaperTitle.getText().toString();
+        wallpaperTitle.getPaint().getTextBounds(wallpaperHeading, 0, wallpaperHeading.length(),
+                wallpaperInkBounds);
+        wallpaperTitle.setTranslationX(-wallpaperInkBounds.left);
         wallpaperTitle.setTranslationY(dp(density, 2));
+        wallpaperTitle.setTag("quick_settings_wallpaper_title");
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 166),
                 ViewGroup.LayoutParams.MATCH_PARENT));
         wallpaperHeader.addView(wallpaperTitle);
