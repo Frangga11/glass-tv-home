@@ -57,8 +57,8 @@ final class QuickSettingsDialog {
     private static final int HALF_TILE_WIDTH_DP = 120;
     private static final int WIDE_TILE_WIDTH_DP = 245;
     private static final int CAPSULE_GAP_DP = 5;
-        private static final int PANEL_VERTICAL_INSET_DP = 10;
-        private static final int PANEL_SIDE_INSET_DP = 10;
+    private static final int PANEL_VERTICAL_INSET_DP = 10;
+    private static final int PANEL_SIDE_INSET_DP = 10;
 
     private QuickSettingsDialog() { }
 
