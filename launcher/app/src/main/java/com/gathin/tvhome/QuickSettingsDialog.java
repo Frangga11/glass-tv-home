@@ -52,9 +52,9 @@ final class QuickSettingsDialog {
     private static final int PANEL_GLASS_VEIL = TvUiTokens.GLASS_VEIL_COLOR;
     private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
     private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
-    private static final int TILE_HEIGHT_DP = 34;
-    private static final int HALF_TILE_WIDTH_DP = 125;
-    private static final int WIDE_TILE_WIDTH_DP = 255;
+    private static final int TILE_HEIGHT_DP = 36;
+    private static final int HALF_TILE_WIDTH_DP = 120;
+    private static final int WIDE_TILE_WIDTH_DP = 245;
     private static final int CAPSULE_GAP_DP = 5;
     private static final int MIN_VERTICAL_GAP_DP = 3;
     private static final int PANEL_VERTICAL_INSET_DP = 10;
@@ -185,11 +185,11 @@ final class QuickSettingsDialog {
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1f));
         wallpaperHeader.addView(wallpaperTitle);
-        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 22, density);
+        TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 24, density);
         controls[QuickSettingsFocusGraph.WALLPAPER_MANAGE] = manageWallpaper;
         manageWallpaper.setTag("quick_settings_manage_wallpaper");
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 22)));
+                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 24)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
         wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);
@@ -224,7 +224,7 @@ final class QuickSettingsDialog {
         wallpaperActions.addView(interval, intervalLp);
         LinearLayout.LayoutParams wallpaperActionsLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp));
-        wallpaperActionsLp.topMargin = dp(density, Math.max(MIN_VERTICAL_GAP_DP, CAPSULE_GAP_DP - 2));
+        wallpaperActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(wallpaperActions, wallpaperActionsLp);
         addFixedVerticalGap(activity, content, CAPSULE_GAP_DP, "quick_settings_gap_wallpaper_to_settings");
         LinearLayout settingsActions = new LinearLayout(activity);
@@ -391,7 +391,7 @@ final class QuickSettingsDialog {
         setBottomMargin(controls[QuickSettingsFocusGraph.POWER], gapPx);
         wallpaperHeaderLp.topMargin = gapPx;
         wallpaperHeader.setLayoutParams(wallpaperHeaderLp);
-        wallpaperActionsLp.topMargin = dp(density, Math.max(MIN_VERTICAL_GAP_DP, gapDp - 2));
+        wallpaperActionsLp.topMargin = gapPx;
         wallpaperActions.setLayoutParams(wallpaperActionsLp);
         settingsActionsLp.topMargin = gapPx;
         settingsActionsLp.height = dp(density, tileHeightDp * 2 + gapDp);
