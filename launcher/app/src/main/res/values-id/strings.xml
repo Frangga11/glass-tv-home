@@ -681,7 +681,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="quick_settings_power_summary">Buka menu daya perangkat</string>
     <string name="quick_settings_cache_summary">Bersihkan berkas sementara</string>
     <string name="quick_settings_wallpaper_title">Wallpaper</string>
-    <string name="quick_settings_next_photo">Foto Berikutnya</string>
+    <string name="quick_settings_next_photo">Berikutnya</string>
     <string name="quick_settings_next_photo_summary">Tampilkan wallpaper berikutnya</string>
     <string name="quick_settings_interval_summary">Interval pergantian otomatis</string>
     <string name="quick_settings_manage_wallpaper">Kelola</string>
@@ -719,4 +719,5 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="global_settings_header">Pengaturan Launcher</string>
     <string name="quick_settings_language_title">Bahasa</string>
     <string name="quick_settings_input_title">Input</string>
+    <string name="quick_settings_restart_title">Restart TV</string>
 </resources>
