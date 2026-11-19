@@ -413,7 +413,7 @@ final class QuickSettingsDialog {
         TextView tile = createTile(activity, icon, title, summary, tileHeightDp, density);
         bind(tile, dialogHolder, action);
         GridLayout.Spec rowSpec = GridLayout.spec(row, GridLayout.TOP);
-        GridLayout.Spec columnSpec = GridLayout.spec(column, span, 1f);
+        GridLayout.Spec columnSpec = GridLayout.spec(column, span);
         GridLayout.LayoutParams lp = new GridLayout.LayoutParams(rowSpec, columnSpec);
         lp.width = dp(density, span == 3 ? WIDE_TILE_WIDTH_DP : HALF_TILE_WIDTH_DP);
         lp.height = dp(density, tileHeightDp);
