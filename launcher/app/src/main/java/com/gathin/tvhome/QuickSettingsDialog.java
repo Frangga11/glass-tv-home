@@ -192,7 +192,7 @@ final class QuickSettingsDialog {
                 ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 22)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
-        wallpaperHeaderLp.topMargin = dp(density, Math.max(MIN_VERTICAL_GAP_DP, CAPSULE_GAP_DP - 2));
+        wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(wallpaperHeader, wallpaperHeaderLp);
         addVerticalFlexGap(activity, content, "quick_settings_flex_wallpaper_header");
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
@@ -351,7 +351,14 @@ final class QuickSettingsDialog {
         return dockTopInHost - panelTopInHost - bottomClearancePx;
     }
 
-    private static void addFixedVerticalGap(Activity activity, LinearLayout parent, int heightDp, String tag) {\n        View spacer = new View(activity);\n        spacer.setTag(tag);\n        parent.addView(spacer, new LinearLayout.LayoutParams(\n                ViewGroup.LayoutParams.MATCH_PARENT, dp(activity.getResources().getDisplayMetrics().density, heightDp)));\n    }\n\n    private static void addVerticalFlexGap(Activity activity, LinearLayout parent, String tag) {
+    private static void addFixedVerticalGap(Activity activity, LinearLayout parent, int heightDp, String tag) {
+        View spacer = new View(activity);
+        spacer.setTag(tag);
+        parent.addView(spacer, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(activity.getResources().getDisplayMetrics().density, heightDp)));
+    }
+
+    private static void addVerticalFlexGap(Activity activity, LinearLayout parent, String tag) {
         View spacer = new View(activity);
         spacer.setTag(tag);
         parent.addView(spacer, new LinearLayout.LayoutParams(
