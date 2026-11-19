@@ -57,8 +57,8 @@ final class QuickSettingsDialog {
     private static final int WIDE_TILE_WIDTH_DP = 255;
     private static final int CAPSULE_GAP_DP = 5;
     private static final int MIN_VERTICAL_GAP_DP = 3;
-    private static final int PANEL_VERTICAL_INSET_DP = 8;
-    private static final int MIN_PANEL_VERTICAL_INSET_DP = 6;
+    private static final int PANEL_VERTICAL_INSET_DP = 10;
+    private static final int MIN_PANEL_VERTICAL_INSET_DP = 8;
     private static final int PANEL_SIDE_INSET_DP = 10;
 
     private QuickSettingsDialog() { }
@@ -110,7 +110,7 @@ final class QuickSettingsDialog {
         content.setClipChildren(true);
         content.setClipToPadding(true);
         content.setBackground(new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,
-                PANEL_GLASS_VEIL, 0x48, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
+                PANEL_GLASS_VEIL, 0x54, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
         Backdrop.watch(content);
 
         LinearLayout header = new LinearLayout(activity);
@@ -148,7 +148,7 @@ final class QuickSettingsDialog {
                 null, density, dialogHolder, actions::openInputs, tileHeightDp);
         controls[QuickSettingsFocusGraph.INPUT].setTag("quick_settings_input");
         controls[QuickSettingsFocusGraph.RESTART] = addGridTile(activity, grid, 0, 2, 1,
-                R.drawable.ic_restart, R.string.restart_tv_title, null,
+                R.drawable.ic_restart, R.string.quick_settings_restart_title, null,
                 null,
                 density, dialogHolder, actions::restart, tileHeightDp);
         controls[QuickSettingsFocusGraph.RESTART].setTag("quick_settings_restart");
@@ -179,7 +179,7 @@ final class QuickSettingsDialog {
         wallpaperHeader.setGravity(Gravity.CENTER_VERTICAL);
         TextView wallpaperTitle = new TextView(activity);
         wallpaperTitle.setText(R.string.quick_settings_wallpaper_title);
-        wallpaperTitle.setTextSize(14f);
+        wallpaperTitle.setTextSize(13f);
         wallpaperTitle.setTextColor(PANEL_TEXT_PRIMARY);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(0,
@@ -192,7 +192,7 @@ final class QuickSettingsDialog {
                 ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 22)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
-        wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);
+        wallpaperHeaderLp.topMargin = dp(density, Math.max(MIN_VERTICAL_GAP_DP, CAPSULE_GAP_DP - 2));
         content.addView(wallpaperHeader, wallpaperHeaderLp);
         addVerticalFlexGap(activity, content, "quick_settings_flex_wallpaper_header");
         bind(manageWallpaper, dialogHolder, actions::manageWallpaper);
@@ -224,9 +224,9 @@ final class QuickSettingsDialog {
         wallpaperActions.addView(interval, intervalLp);
         LinearLayout.LayoutParams wallpaperActionsLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp));
-        wallpaperActionsLp.topMargin = dp(density, CAPSULE_GAP_DP);
+        wallpaperActionsLp.topMargin = dp(density, Math.max(MIN_VERTICAL_GAP_DP, CAPSULE_GAP_DP - 2));
         content.addView(wallpaperActions, wallpaperActionsLp);
-        addVerticalFlexGap(activity, content, "quick_settings_flex_wallpaper_actions");
+        addFixedVerticalGap(activity, content, CAPSULE_GAP_DP, "quick_settings_gap_wallpaper_to_settings");
         LinearLayout settingsActions = new LinearLayout(activity);
         settingsActions.setOrientation(LinearLayout.VERTICAL);
         settingsActions.setGravity(Gravity.CENTER_VERTICAL);
@@ -351,7 +351,7 @@ final class QuickSettingsDialog {
         return dockTopInHost - panelTopInHost - bottomClearancePx;
     }
 
-    private static void addVerticalFlexGap(Activity activity, LinearLayout parent, String tag) {
+    private static void addFixedVerticalGap(Activity activity, LinearLayout parent, int heightDp, String tag) {\n        View spacer = new View(activity);\n        spacer.setTag(tag);\n        parent.addView(spacer, new LinearLayout.LayoutParams(\n                ViewGroup.LayoutParams.MATCH_PARENT, dp(activity.getResources().getDisplayMetrics().density, heightDp)));\n    }\n\n    private static void addVerticalFlexGap(Activity activity, LinearLayout parent, String tag) {
         View spacer = new View(activity);
         spacer.setTag(tag);
         parent.addView(spacer, new LinearLayout.LayoutParams(
@@ -384,7 +384,7 @@ final class QuickSettingsDialog {
         setBottomMargin(controls[QuickSettingsFocusGraph.POWER], gapPx);
         wallpaperHeaderLp.topMargin = gapPx;
         wallpaperHeader.setLayoutParams(wallpaperHeaderLp);
-        wallpaperActionsLp.topMargin = gapPx;
+        wallpaperActionsLp.topMargin = dp(density, Math.max(MIN_VERTICAL_GAP_DP, gapDp - 2));
         wallpaperActions.setLayoutParams(wallpaperActionsLp);
         settingsActionsLp.topMargin = gapPx;
         settingsActionsLp.height = dp(density, tileHeightDp * 2 + gapDp);
@@ -405,7 +405,7 @@ final class QuickSettingsDialog {
         String title = titleOverride != null ? titleOverride : activity.getString(titleRes);
         TextView tile = createTile(activity, icon, title, summary, tileHeightDp, density);
         bind(tile, dialogHolder, action);
-        GridLayout.Spec rowSpec = GridLayout.spec(row);
+        GridLayout.Spec rowSpec = GridLayout.spec(row, GridLayout.TOP);
         GridLayout.Spec columnSpec = GridLayout.spec(column, span, 1f);
         GridLayout.LayoutParams lp = new GridLayout.LayoutParams(rowSpec, columnSpec);
         lp.width = dp(density, span == 3 ? WIDE_TILE_WIDTH_DP : HALF_TILE_WIDTH_DP);
@@ -417,7 +417,7 @@ final class QuickSettingsDialog {
 
     private static void addGridColumnGap(Activity activity, GridLayout grid, int row, float density, int tileHeightDp) {
         View gap = new View(activity);
-        GridLayout.LayoutParams lp = new GridLayout.LayoutParams(GridLayout.spec(row), GridLayout.spec(1));
+        GridLayout.LayoutParams lp = new GridLayout.LayoutParams(GridLayout.spec(row, GridLayout.TOP), GridLayout.spec(1));
         lp.width = dp(density, CAPSULE_GAP_DP);
         lp.height = dp(density, tileHeightDp);
         grid.addView(gap, lp);
