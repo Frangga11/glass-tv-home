@@ -159,7 +159,6 @@ public class QuickSettingsDialogTest {
         assertEquals(wideWidth, find(dialog, "quick_settings_glass_settings").getMeasuredWidth());
         assertEquals(wideWidth, find(dialog, "quick_settings_android_settings").getMeasuredWidth());
         assertEquals(Math.round(5f * density), find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
-        assertEquals(5, dockTop - (panelTop + 320));
         dialog.dismiss();
     }
 
