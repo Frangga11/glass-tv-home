@@ -133,7 +133,7 @@ final class QuickSettingsDialog {
         }
         title.setSingleLine(true);
         title.setEllipsize(TextUtils.TruncateAt.END);
-        title.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
+        title.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         header.addView(title);
         content.addView(header, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 26)));
@@ -171,7 +171,7 @@ final class QuickSettingsDialog {
                 density, dialogHolder, actions::cleanCache, tileHeightDp);
         controls[QuickSettingsFocusGraph.CACHE].setTag("quick_settings_cache");
         LinearLayout.LayoutParams gridLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(density, tileHeightDp * 3 + CAPSULE_GAP_DP * 2));
         gridLp.topMargin = dp(density, CAPSULE_GAP_DP);
         content.addView(grid, gridLp);
         addFixedVerticalGap(activity, content, CAPSULE_GAP_DP, "quick_settings_gap_grid_wallpaper");
@@ -183,14 +183,14 @@ final class QuickSettingsDialog {
         wallpaperTitle.setTextSize(13f);
         wallpaperTitle.setTextColor(PANEL_TEXT_PRIMARY);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
-        wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.MATCH_PARENT, 1f));
+        wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 181),
+                ViewGroup.LayoutParams.MATCH_PARENT));
         wallpaperHeader.addView(wallpaperTitle);
         TextView manageWallpaper = createLink(activity, R.string.quick_settings_manage_wallpaper, 24, density);
         controls[QuickSettingsFocusGraph.WALLPAPER_MANAGE] = manageWallpaper;
         manageWallpaper.setTag("quick_settings_manage_wallpaper");
         wallpaperHeader.addView(manageWallpaper, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, dp(density, 24)));
+                dp(density, 64), dp(density, 24)));
         LinearLayout.LayoutParams wallpaperHeaderLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 22));
         wallpaperHeaderLp.topMargin = dp(density, CAPSULE_GAP_DP);
