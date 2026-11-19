@@ -186,6 +186,8 @@ final class QuickSettingsDialog {
         wallpaperTitle.setTextColor(PANEL_TEXT_PRIMARY);
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        // Align the heading with the capsule content inset, not beyond the capsule edge.
+        wallpaperTitle.setPaddingRelative(dp(density, 8), 0, 0, 0);
         wallpaperTitle.setTranslationY(dp(density, 2));
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 166),
                 ViewGroup.LayoutParams.MATCH_PARENT));
@@ -356,9 +358,11 @@ final class QuickSettingsDialog {
         decor.setTag(glider);
         for (View control : controls) {
             if (control == null) continue;
+            boolean manageCapsule = "quick_settings_manage_wallpaper".equals(control.getTag());
+            float cornerRadiusDp = manageCapsule ? 7f : 10f;
             GradientDrawable idle = new GradientDrawable();
             idle.setColor(CAPSULE_IDLE_FILL);
-            idle.setCornerRadius(dp(density, 10));
+            idle.setCornerRadius(dp(density, cornerRadiusDp));
             idle.setStroke(Math.max(1, dp(density, 1)), CAPSULE_IDLE_BORDER);
             control.setBackground(new LayerDrawable(new Drawable[]{
                     idle, new GliderFocusDrawable(control, glider)
@@ -374,7 +378,15 @@ final class QuickSettingsDialog {
                 float pad = dp(density, 2);
                 glider.moveTo(left + pad, top + pad,
                         left + view.getWidth() - pad, top + view.getHeight() - pad,
-                        dp(density, 10));
+                        dp(density, cornerRadiusDp));
+                if (view instanceof TextView) {
+                    TextView label = (TextView) view;
+                    // The bright silver Glider can wash out white glyphs. Switch to dark ink
+                    // only while focused; retain a subtle dark halo on the idle white label.
+                    label.setTextColor(focused ? 0xFF17232B : PANEL_TEXT_PRIMARY);
+                    label.setShadowLayer(focused ? 0f : dp(density, 2), 0f, dp(density, 1),
+                            focused ? Color.TRANSPARENT : 0x99000000);
+                }
             });
         }
     }
