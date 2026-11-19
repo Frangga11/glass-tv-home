@@ -89,7 +89,7 @@ public class QuickSettingsDialogTest {
     }
 
     @Test
-    public void panelFillsAvailableHeightWithExactFiveDpClearanceAtBothAnchors() {
+    public void fixedPanelUsesExactGeometryAndKeepsFiveDpAnchorClearance() {
         Activity activity = newActivity();
         FrameLayout[] views = host(activity, 420);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
@@ -103,46 +103,42 @@ public class QuickSettingsDialogTest {
         int panelTop = QuickSettingsDialog.panelTopInHost(anchorAt[1],
                 views[0].getChildAt(0).getHeight(), hostAt[1], 5);
         int dockTop = dockAt[1] - hostAt[1];
-        int expectedHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
+        int availableHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        assertEquals(320, expectedHeight);
-        assertEquals(expectedHeight, content.getMeasuredHeight());
-
-        int[] spacerHeights = {
-                find(dialog, "quick_settings_flex_header").getMeasuredHeight(),
-                find(dialog, "quick_settings_flex_grid").getMeasuredHeight(),
-                find(dialog, "quick_settings_flex_wallpaper_header").getMeasuredHeight()
-        };
-        assertEquals(Math.round(activity.getResources().getDisplayMetrics().density * 5f),
-                find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
-        int min = spacerHeights[0], max = spacerHeights[0];
-        for (int height : spacerHeights) {
-            min = Math.min(min, height);
-            max = Math.max(max, height);
+        assertEquals(320, availableHeight);
+        assertEquals(Math.round(320f * activity.getResources().getDisplayMetrics().density),
+                content.getMeasuredHeight());
+        assertEquals(5, dockTop - (panelTop + content.getMeasuredHeight()));
+        for (String tag : new String[] {
+                "quick_settings_gap_header_grid",
+                "quick_settings_gap_grid_wallpaper",
+                "quick_settings_gap_wallpaper_header_actions",
+                "quick_settings_gap_wallpaper_to_settings"
+        }) {
+            assertEquals(Math.round(5f * activity.getResources().getDisplayMetrics().density),
+                    find(dialog, tag).getMeasuredHeight());
         }
-        assertTrue("Flexible vertical gaps must distribute remaining height evenly", max - min <= 1);
         dialog.dismiss();
     }
 
     @Test
-    public void constrainedPanelTightensOnlyVerticalRhythmAndKeepsCapsuleGeometry() {
+    public void insufficientHeightRejectsPopupWithoutCompressingFixedGeometry() {
+        Activity activity = newActivity();
+        FrameLayout[] views = host(activity, 410);
+        AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
+                views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
+        assertEquals(null, dialog);
+    }
+
+    @Test
+    public void fixedCapsuleGeometryIsPreserved() {
         Activity activity = newActivity();
         FrameLayout[] views = host(activity, 420);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
-
-        int[] hostAt = new int[2], anchorAt = new int[2], dockAt = new int[2];
-        views[0].getLocationOnScreen(hostAt);
-        views[0].getChildAt(0).getLocationOnScreen(anchorAt);
-        views[0].getChildAt(1).getLocationOnScreen(dockAt);
-        int panelTop = QuickSettingsDialog.panelTopInHost(anchorAt[1],
-                views[0].getChildAt(0).getHeight(), hostAt[1], 5);
-        int dockTop = dockAt[1] - hostAt[1];
-        int expectedHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
-        assertEquals(320, expectedHeight);
-        assertEquals(expectedHeight, find(dialog, "quick_settings_root").getMeasuredHeight());
+        assertEquals(320, find(dialog, "quick_settings_root").getMeasuredHeight());
         float density = activity.getResources().getDisplayMetrics().density;
         int halfWidth = Math.round(120f * density);
         int wideWidth = Math.round(245f * density);
@@ -163,7 +159,7 @@ public class QuickSettingsDialogTest {
         assertEquals(wideWidth, find(dialog, "quick_settings_glass_settings").getMeasuredWidth());
         assertEquals(wideWidth, find(dialog, "quick_settings_android_settings").getMeasuredWidth());
         assertEquals(Math.round(5f * density), find(dialog, "quick_settings_gap_wallpaper_to_settings").getMeasuredHeight());
-        assertEquals(5, dockTop - (panelTop + expectedHeight));
+        assertEquals(5, dockTop - (panelTop + 320));
         dialog.dismiss();
     }
 
