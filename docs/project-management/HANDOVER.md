@@ -1330,3 +1330,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Concise authoritative record: `GTVH-DOCUMENTATION-INTEGRATION-SYNC-CHECKPOINT-2026-11-18.md`.
 - The documentation-only closeout is complete pending exact-head CI for the resulting documentation commit. No app source, UI, DPAD, popup, prayer/Ayah, or weather renderer code is changed in this pass. Physical-device acceptance remains attributed to the owner's earlier report, not an independently executed assistant test.
 - Once exact-head CI for this documentation update passes, close this synchronization workstream and continue in a new scoped corrective task from current main. Keep PR #62 deferred.
+
+## Quick Settings continuation handoff — 19 November 2026
+
+- Active workstream: PR #156, **Rebuild Quick Settings as a single-frame Prayer-style glass panel**.
+- Branch: `feature/quick-settings-single-frame-glass-001`; baseline `main` at `0662c80bf80a6df06248262eeb0599a93aaba3e5`.
+- Latest implementation head before documentation sync: `e4b6bd39c2b7e54879dfd33c6b7c7225e73ae437`. Exact-head CI run #2459 / `44516696991` passed both required jobs. QA artifact ID `14524699219` is a 1,447,092-byte ZIP (not extracted APK size), expires 26 November 2026.
+- User-approved corrections now recorded in PR #156: Wallpaper heading 12sp and left-aligned by painted glyph edge to capsule lane; Kelola 64×20dp with 7dp radius; popup focus stroke 1.5dp with shared spring GLASS Glider; DPAD Kelola UP → Cache and Interval UP → Kelola, Kelola DOWN → Interval.
+- Fixed geometry: panel 255×320dp; inner lane 235dp; 10dp insets; wide capsules 235dp; half capsules 115+5+115dp; main action height 36dp; Wallpaper header lane 166+5+64dp; fixed 5dp section gaps. No dynamic compression or Dock overlap.
+- Input selector reuses the existing TV source selector. Global remote Input capture remains opt-in via `INPUT_KEY_SERVICE=1`; re-enable the accessibility service after every reinstall. Do not fabricate HDMI inputs on a streaming stick.
+- New detailed checkpoint: `GTVH-QUICK-SETTINGS-INTEGRATION-CHECKPOINT-2026-11-19.md`.
+- PR #156 remains OPEN / DRAFT / UNMERGED. Physical Mi TV Stick validation is still outstanding; CI is not device acceptance. No merge to `main` or final APK release is authorized until device acceptance and explicit owner approval.
+- PR #62 remains deferred and untouched. PR #153 and #154 remain closed unmerged historical candidates; PR #155 remains merged.
+- The documentation commits trigger fresh CI; record exact-head results only after the latest documentation head's run finishes. Do not reuse run #2459 as evidence for later documentation commits.
