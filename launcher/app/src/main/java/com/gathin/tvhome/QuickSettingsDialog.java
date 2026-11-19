@@ -179,7 +179,8 @@ final class QuickSettingsDialog {
         addFixedVerticalGap(activity, content, CAPSULE_GAP_DP, "quick_settings_gap_grid_wallpaper");
         LinearLayout wallpaperHeader = new LinearLayout(activity);
         wallpaperHeader.setOrientation(LinearLayout.HORIZONTAL);
-        wallpaperHeader.setGravity(Gravity.CENTER_VERTICAL);
+        wallpaperHeader.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        wallpaperHeader.setPaddingRelative(0, 0, 0, 0);
         TextView wallpaperTitle = new TextView(activity);
         wallpaperTitle.setText(R.string.quick_settings_wallpaper_title);
         wallpaperTitle.setTextSize(13f);
@@ -207,7 +208,8 @@ final class QuickSettingsDialog {
 
         LinearLayout wallpaperActions = new LinearLayout(activity);
         wallpaperActions.setOrientation(LinearLayout.HORIZONTAL);
-        wallpaperActions.setGravity(Gravity.CENTER_VERTICAL);
+        wallpaperActions.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        wallpaperActions.setPaddingRelative(0, 0, 0, 0);
         TextView nextPhoto = createTile(activity, R.drawable.ic_wallpaper,
                 R.string.quick_settings_next_photo,
                 null, tileHeightDp, density);
