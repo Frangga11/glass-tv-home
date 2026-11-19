@@ -188,14 +188,6 @@ final class QuickSettingsDialog {
         wallpaperTitle.setTypeface(activity.getResources().getFont(R.font.inter), Typeface.BOLD);
         wallpaperTitle.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         wallpaperTitle.setPaddingRelative(0, 0, 0, 0);
-        // The TextView origin already shares the capsule lane, but a typeface can leave a
-        // positive left side-bearing before the first painted glyph. Align the visible ink
-        // edge to the capsule's outer left edge using the actual runtime font metrics.
-        android.graphics.Rect wallpaperInkBounds = new android.graphics.Rect();
-        String wallpaperHeading = wallpaperTitle.getText().toString();
-        wallpaperTitle.getPaint().getTextBounds(wallpaperHeading, 0, wallpaperHeading.length(),
-                wallpaperInkBounds);
-        wallpaperTitle.setTranslationX(-wallpaperInkBounds.left);
         wallpaperTitle.setTranslationY(dp(density, 2));
         wallpaperTitle.setTag("quick_settings_wallpaper_title");
         wallpaperTitle.setLayoutParams(new LinearLayout.LayoutParams(dp(density, 166),
@@ -344,7 +336,10 @@ final class QuickSettingsDialog {
             View target = controls[initialFocus >= 0 && initialFocus < controls.length
                     ? initialFocus : QuickSettingsFocusGraph.INPUT];
             installDialogGlider(activity, dialog, controls, density);
-            content.post(() -> { if (target != null && target.isShown()) target.requestFocus(); });
+            content.post(() -> {
+                alignWallpaperHeadingToCapsule(wallpaperTitle, nextPhoto);
+                if (target != null && target.isShown()) target.requestFocus();
+            });
         });
         dialog.show();
         return dialog;
@@ -410,6 +405,30 @@ final class QuickSettingsDialog {
 
     static int availablePanelHeight(int dockTopInHost, int panelTopInHost, int bottomClearancePx) {
         return dockTopInHost - panelTopInHost - bottomClearancePx;
+    }
+
+    /**
+     * Aligns the first painted pixel of the Wallpaper heading with the capsule's actual left edge.
+     * This runs after layout so it includes the final Dialog window position, parent insets,
+     * TextView compound padding, and the runtime Inter font's glyph side-bearing.
+     */
+    private static void alignWallpaperHeadingToCapsule(TextView heading, View capsule) {
+        if (heading == null || capsule == null || !heading.isLaidOut() || !capsule.isLaidOut()) return;
+        android.graphics.Rect inkBounds = new android.graphics.Rect();
+        String label = heading.getText().toString();
+        heading.getPaint().getTextBounds(label, 0, label.length(), inkBounds);
+
+        int[] headingAt = new int[2];
+        int[] capsuleAt = new int[2];
+        heading.getLocationOnScreen(headingAt);
+        capsule.getLocationOnScreen(capsuleAt);
+        float paintedLeft = headingAt[0] + heading.getCompoundPaddingLeft() + inkBounds.left;
+        float correction = capsuleAt[0] - paintedLeft;
+        if (Math.abs(correction) >= 0.25f) {
+            heading.setTranslationX(heading.getTranslationX() + correction);
+        }
+        android.util.Log.d("TvHome.QuickSettings", "Wallpaper heading ink-edge correction: "
+                + correction + "px");
     }
 
     private static void addFixedVerticalGap(Activity activity, LinearLayout parent, int heightDp, String tag) {
