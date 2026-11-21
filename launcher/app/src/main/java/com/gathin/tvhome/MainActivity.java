@@ -977,12 +977,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 pill.setBackground(new GliderFocusDrawable(pill, glider));
             } else {
                 // Compose the focus layer after the capsule glass and before the view's content.
-                Drawable glassBackground = new GlassDrawable(pill, 20f * density, density, glider);
+                Drawable glassBackground = UniversalGlassMaterial.surface(this, density, 20f,
+                        TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
                 pill.setBackground(new android.graphics.drawable.LayerDrawable(
                         new Drawable[]{glassBackground, new GliderFocusDrawable(pill, glider)}));
             }
             glider.addCompanion(pill);
-            Backdrop.watch(pill);
             pill.setOnFocusChangeListener((v, has) -> {
                 if (has) {
                     // Any header focus supersedes a deferred Grid target.

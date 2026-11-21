@@ -103,7 +103,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
         for view_id in ("locationPill", "weatherAirQuality", "btnInputs", "btnWifi",
                         "btnAssistant", "btnHome", "btnCandyBox", "btnSettings"):
             self.assertIn(f"R.id.{view_id}", header)
-        self.assertIn("new GlassDrawable(pill", header)
+        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", header)
         self.assertIn("new GliderFocusDrawable(pill, glider)", header)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", header)
 
