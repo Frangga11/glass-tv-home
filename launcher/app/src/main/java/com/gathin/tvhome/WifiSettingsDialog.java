@@ -116,6 +116,11 @@ final class WifiSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(density, 14), 0, dp(density, 14), dp(density, 10));
+        // Match the owner-approved Quick Settings master material while preserving Wi-Fi's
+        // anchored geometry, pointer, network viewport, and independent scan lifecycle.
+        content.setBackground(new GlassDrawable(content,
+                TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false));
+        Backdrop.watch(content);
         pointer = new View(activity) {
             private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             @Override protected void onDraw(Canvas canvas) {
@@ -127,7 +132,9 @@ final class WifiSettingsDialog {
                 triangle.lineTo(center, 0);
                 triangle.lineTo(center + h, h);
                 triangle.close();
-                paint.setColor(TvUiTokens.POPUP_SURFACE);
+                // Keep the Wi-Fi pointer translucent so the live backdrop glass beneath it
+                // remains visible; an opaque popup token would make this the one non-glass patch.
+                paint.setColor(TvUiTokens.GLASS_VEIL_COLOR);
                 paint.setStyle(Paint.Style.FILL);
                 canvas.drawPath(triangle, paint);
                 paint.setColor(TvUiTokens.FOCUS_BORDER);
@@ -280,7 +287,8 @@ final class WifiSettingsDialog {
         }
         pointer.setTag(pointerCenter);
         pointer.invalidate();
-        window.setBackgroundDrawable(TvDialogStyle.createDialogSurface(activity));
+        // The panel surface is painted by the same live GlassDrawable as the master popup.
+        window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         window.setDimAmount(popupDimAmount());
         window.setLayout(popupWidth, popupHeight);

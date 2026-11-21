@@ -10,6 +10,10 @@
     <string name="not_connected">No device connected</string>
     <string name="live_tv">Live TV</string>
     <string name="no_inputs">No inputs found</string>
+    <string name="input_external_tv_title">TV inputs (HDMI/AV)</string>
+    <string name="input_external_tv_hint">Use the TV remote INPUT/SOURCE button to select an HDMI or AV port.</string>
+    <string name="input_system_picker_title">Open Android TV source picker</string>
+    <string name="input_hdmi_cec_settings_title">TV HDMI-CEC settings</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="not_available">Not available on this TV</string>
@@ -679,13 +683,13 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="quick_settings_power_summary">Open the device power menu</string>
     <string name="quick_settings_cache_summary">Clean temporary files</string>
     <string name="quick_settings_wallpaper_title">Wallpaper</string>
-    <string name="quick_settings_next_photo">Next Photo</string>
+    <string name="quick_settings_next_photo">Next</string>
     <string name="quick_settings_next_photo_summary">Show the next wallpaper</string>
     <string name="quick_settings_interval_summary">Automatic change interval</string>
     <string name="quick_settings_manage_wallpaper">Manage</string>
     <string name="quick_settings_glass_settings">Glass TV Settings</string>
     <string name="quick_settings_glass_settings_summary">Profiles, appearance and launcher features</string>
-    <string name="quick_settings_android_settings">Android Settings</string>
+    <string name="quick_settings_android_settings">Android TV Settings</string>
     <string name="quick_settings_android_settings_summary">Device system settings</string>
     <string name="quick_settings_interval_title">Interval</string>
     <string name="wifi_status_loading">Checking Wi-Fi status…</string>
@@ -715,4 +719,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wifi_security_open">Open network</string>
     <string name="wifi_signal_bars">%1$d</string>
     <string name="global_settings_header">Launcher Settings</string>
+    <string name="quick_settings_language_title">Language</string>
+    <string name="quick_settings_input_title">Input</string>
+    <string name="quick_settings_restart_title">Restart TV</string>
 </resources>

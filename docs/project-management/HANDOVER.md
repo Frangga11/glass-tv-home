@@ -1330,3 +1330,47 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - Concise authoritative record: `GTVH-DOCUMENTATION-INTEGRATION-SYNC-CHECKPOINT-2026-11-18.md`.
 - The documentation-only closeout is complete pending exact-head CI for the resulting documentation commit. No app source, UI, DPAD, popup, prayer/Ayah, or weather renderer code is changed in this pass. Physical-device acceptance remains attributed to the owner's earlier report, not an independently executed assistant test.
 - Once exact-head CI for this documentation update passes, close this synchronization workstream and continue in a new scoped corrective task from current main. Keep PR #62 deferred.
+
+## Quick Settings continuation handoff — 19 November 2026
+
+- Active workstream: PR #156, **Rebuild Quick Settings as a single-frame Prayer-style glass panel**.
+- Branch: `feature/quick-settings-single-frame-glass-001`; baseline `main` at `0662c80bf80a6df06248262eeb0599a93aaba3e5`.
+- Latest implementation head before documentation sync: `e4b6bd39c2b7e54879dfd33c6b7c7225e73ae437`. Exact-head CI run #2459 / `44516696991` passed both required jobs. QA artifact ID `14524699219` is a 1,447,092-byte ZIP (not extracted APK size), expires 26 November 2026.
+- User-approved corrections now recorded in PR #156: Wallpaper heading 12sp and left-aligned by painted glyph edge to capsule lane; Kelola 64×20dp with 7dp radius; popup focus stroke 1.5dp with shared spring GLASS Glider; DPAD Kelola UP → Cache and Interval UP → Kelola, Kelola DOWN → Interval.
+- Fixed geometry: panel 255×320dp; inner lane 235dp; 10dp insets; wide capsules 235dp; half capsules 115+5+115dp; main action height 36dp; Wallpaper header lane 166+5+64dp; fixed 5dp section gaps. No dynamic compression or Dock overlap.
+- Input selector reuses the existing TV source selector. Global remote Input capture remains opt-in via `INPUT_KEY_SERVICE=1`; re-enable the accessibility service after every reinstall. Do not fabricate HDMI inputs on a streaming stick.
+- New detailed checkpoint: `GTVH-QUICK-SETTINGS-INTEGRATION-CHECKPOINT-2026-11-19.md`.
+- PR #156 remains OPEN / DRAFT / UNMERGED. Physical Mi TV Stick validation is still outstanding; CI is not device acceptance. No merge to `main` or final APK release is authorized until device acceptance and explicit owner approval.
+- PR #62 remains deferred and untouched. PR #153 and #154 remain closed unmerged historical candidates; PR #155 remains merged.
+- The documentation commits trigger fresh CI; record exact-head results only after the latest documentation head's run finishes. Do not reuse run #2459 as evidence for later documentation commits.
+
+
+## Horizontal Carousel / Glider integration and acceptance closeout — 21 November 2026
+
+- Workstream: PR #159, **Fix horizontal carousel clipping and Universal motion on latest Quick Settings baseline**.
+- Source branch: `fix/home-horizontal-carousel-universal-001`; parent/base branch: `feature/quick-settings-single-frame-glass-001` (PR #156).
+- Owner-accepted implementation head before merge: `b1c12b52a7c4784f9758bd9b487e5549d6e50a59`.
+- Owner tested the cumulative QA APK on the target Mi TV Stick and confirmed horizontal movement / Glider behavior as **“Sempurna”**.
+- Root cause: per-frame `moveToScreenImmediately()` calls cancelled the shared Glider spring animation during carousel panning. The correction keeps Glider anchored to the Universal focus lane during adjacent horizontal DPAD pans and springs it back to the first slot on return.
+- Existing Glider and `DockBreathingBorderView` remain complementary effects. Vertical / Classic navigation and Move Mode are outside this correction. Card/icon geometry, spacing, dock placement, clipping and scroll-tail behavior remain unchanged.
+- Implementation-head CI: run #2489 / `44918592733`, SUCCESS; both required jobs passed. QA artifact ID `14712099341`; extracted APK 1,649,218 bytes; SHA-256 `bd526fb06fac12aca97685c82206579314ee7f4b2f925042f6c5278aca166501`. This was a cumulative CI QA APK, not a signed release.
+- PR #159 was **CLOSED / MERGED** into PR #156's branch on 21 November 2026. Merge commit and resulting PR #156 head: `f8c1f554fff4379bb3bd4d426e3218fcc820b9e1`. PR #159 is no longer an open stacked PR.
+- Exact resulting integration-head CI: run #2493 / `44919477582`, SUCCESS. Both `Launcher build and unit tests` and `Lists, tools and docs` completed SUCCESS on the exact merge commit `f8c1f554fff4379bb3bd4d426e3218fcc820b9e1`.
+- Detailed record: `GTVH-HORIZONTAL-CAROUSEL-UNIVERSAL-MOTION-CHECKPOINT-2026-11-21.md`.
+- **Horizontal Carousel / Glider code integration, owner acceptance record, handover synchronization, checkpoint synchronization, and exact-head CI verification are COMPLETE.**
+- PR #156 remains OPEN / DRAFT / UNMERGED pending separate Quick Settings physical-device acceptance and explicit owner approval. `main` remains unchanged at `0662c80bf80a6df06248262eeb0599a93aaba3e5`. This closeout does not authorize merging PR #156 to `main`.
+- PR #62 remains deferred and untouched.
+- Any subsequent defect must be handled as a new, narrowly scoped corrective task. Do not disturb the accepted Glider motion.
+
+
+## Quick Settings physical-device acceptance and PR #156 closeout — 22 November 2026
+
+- Owner confirmed that physical testing of the latest Quick Settings build on the target Mi TV Stick is complete and all tested behavior is safe/accepted: **“Udah aman semua.”**
+- Acceptance is owner-reported, not independently executed by the assistant. It closes the previously outstanding device gate for panel proportions/placement, Wallpaper heading and Kelola alignment/dimensions, glass/Glider, DPAD, and remote Input/source-selector behavior.
+- Active parent remains PR #156, branch `feature/quick-settings-single-frame-glass-001`, pre-checkpoint implementation head `6d7f2df313c4c15d0ce39efa6e89f01d0e92a1ad`; base `main` remains `0662c80bf80a6df06248262eeb0599a93aaba3e5`.
+- Exact implementation-head CI run #2504 / `44956241255` passed both required jobs: Launcher build and unit tests; Lists, tools and docs. QA archive ID `14726789450`, ZIP size 1,449,312 bytes, SHA-256 `a6f672c059e8dde37b55122fecf10805f302b155db717ffceb24481549a3b9ad`. This is a CI QA archive, not a signed release.
+- New detailed acceptance record: `GTVH-QUICK-SETTINGS-DEVICE-ACCEPTANCE-CHECKPOINT-2026-11-22.md`.
+- PR #157 remains closed unmerged/superseded; its shared-glass delta is already integrated into PR #156 through merged PR #160. PR #159's horizontal-carousel/Glider correction is also integrated and owner-accepted; do not disturb that behavior.
+- PR #156 can be moved from Draft to Ready for Review after exact-head CI for this documentation update succeeds. It must remain OPEN / UNMERGED until the owner explicitly authorizes merging into `main`; this handover entry is not merge authorization.
+- PR #62 remains deferred and untouched. PR #153 and #154 remain closed unmerged; PR #155 remains merged.
+- Do not reuse run #2504 to validate this documentation commit. Verify a fresh CI run on the exact resulting PR #156 head before declaring documentation closeout complete.

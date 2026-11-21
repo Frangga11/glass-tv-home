@@ -114,7 +114,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("Math.abs(firstWindowBounds.top - grid.getPaddingTop()) > 1", MAIN)
         self.assertIn("adapter.positionOf(key)", MAIN)
         self.assertNotIn("horizontalGridScrollAwaitingIdle", MAIN)
-        self.assertIn("grid.setClipToPadding(!dockVertical && horizontalGridExpanded)", MAIN)
+        self.assertIn("grid.setClipToPadding(!horizontalCarouselMode && horizontalGridExpanded)", MAIN)
         start = MAIN.index("private void startHorizontalGridRowTransition")
         end = MAIN.index("private void settleHorizontalGridRowTransition", start)
         transition = MAIN[start:end]
@@ -155,6 +155,94 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("private void alignHorizontalGridRowToGlass(int position)", MAIN)
         self.assertIn("windowStartRow * COLUMNS, grid.getPaddingTop()", MAIN)
         self.assertIn("if (dy != 0) grid.scrollBy(0, dy);", MAIN)
+
+
+class HomeAppModeContractTest(unittest.TestCase):
+    def test_vertical_mode_keeps_the_existing_progressive_grid(self):
+        self.assertIn("dockVertical = false;", MAIN)
+        self.assertIn("horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;", MAIN)
+        self.assertIn("!horizontalCarouselMode && horizontalGridExpanded ? View.VISIBLE : View.GONE", MAIN)
+        keys = MAIN[MAIN.index("public boolean onDockTileKey"):MAIN.index("public boolean onDockTileHeld")]
+        self.assertIn("DockLayoutModel.gridPositionForDock", keys)
+        self.assertIn("if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)", keys)
+        self.assertIn("focusTile(target)", keys)
+
+    def test_horizontal_mode_uses_the_full_inventory_in_one_dock_row(self):
+        dock = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java").read_text(encoding="utf-8")
+        adapter = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
+        self.assertIn("entries = carouselMode ? source.allEntriesSnapshot()", dock)
+        self.assertIn("source.moveAllEntries(from, to)", dock)
+        self.assertIn("List<Entry> allEntriesSnapshot()", adapter)
+        self.assertIn("boolean moveAllEntries(int from, int to)", adapter)
+        dock_focus = MAIN[MAIN.index("public void onDockTileFocused"):MAIN.index("private void handleTileFocused")]
+        self.assertIn("handleTileFocused(key, position, card, true);", dock_focus)
+        self.assertIn("alignHorizontalCarousel(position, true);", dock_focus)
+        self.assertNotIn("dockRecycler.post(() ->", dock_focus)
+        restore = MAIN[MAIN.index("private void restoreMovingTile"):MAIN.index("private void stepMove(int keyCode)")]
+        self.assertIn("if (inDock && horizontalCarouselMode) alignHorizontalCarousel(position, false);", restore)
+
+    def test_carousel_matches_universal_focus_scroll_contract(self):
+        carousel = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/CarouselRecyclerView.java").read_text(encoding="utf-8")
+        self.assertIn("private CarouselRecyclerView dockRecycler;", MAIN)
+        self.assertIn("dockRecycler = new CarouselRecyclerView(this);", MAIN)
+        self.assertIn("new CarouselLinearLayoutManager(this, orientation, false)", MAIN)
+        self.assertIn("setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent)", MAIN)
+        self.assertIn("setManualHorizontalFocus(horizontalCarouselMode)", MAIN)
+        self.assertIn("if (manualHorizontalFocus) return false;", carousel)
+        self.assertIn("calculateExtraLayoutSpace(RecyclerView.State state, int[] extraLayoutSpace)", carousel)
+        self.assertIn("extraLayoutSpace[0] = extent;", carousel)
+        self.assertIn("extraLayoutSpace[1] = extent;", carousel)
+
+    def test_horizontal_carousel_is_one_dimensional_and_keeps_dock_bottom(self):
+        keys = MAIN[MAIN.index("public boolean onDockTileKey"):MAIN.index("public boolean onDockTileHeld")]
+        self.assertIn("if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT)", keys)
+        self.assertIn("if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)", keys)
+        self.assertIn("// The carousel is one-dimensional; DOWN never opens the progressive Grid.", keys)
+        layout = MAIN[MAIN.index("private void applyDockLayout"):MAIN.index("private boolean sameLayoutParams")]
+        self.assertIn("dockParams.gravity = dockVertical ? Gravity.START : Gravity.BOTTOM;", layout)
+        self.assertIn("dockVertical = false;", layout)
+
+
+    def test_horizontal_carousel_matches_universal_clipping_motion_and_capacity(self):
+        dock = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java").read_text(encoding="utf-8")
+        geometry = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java").read_text(encoding="utf-8")
+        carousel = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/CarouselRecyclerView.java").read_text(encoding="utf-8")
+        decoration = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockDecoration.java").read_text(encoding="utf-8")
+        self.assertIn("dockRecycler.setClipChildren(horizontalCarouselMode)", MAIN)
+        self.assertIn("setHorizontalViewportClip(horizontalCarouselMode, dockCenterOffset)", MAIN)
+        self.assertIn("int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(", MAIN)
+        self.assertIn("dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),\n                        dockCenterOffset, dockRecycler.getPaddingBottom());", MAIN)
+        self.assertIn("canvas.clipRect(left, 0, right, getHeight())", carousel)
+        self.assertIn("int left = inset;", carousel)
+        self.assertIn("int right = Math.max(left, getWidth() - inset);", carousel)
+        self.assertIn("settleHorizontalCarouselOffset(targetOffset, slotWidth)", MAIN)
+        self.assertIn("onAnimationCancel", MAIN)
+        self.assertIn("ValueAnimator.ofInt(currentOffset, targetOffset)", MAIN)
+        self.assertIn("setDuration(240)", MAIN)
+        self.assertIn("DecelerateInterpolator(1.5f)", MAIN)
+        self.assertIn("horizontalDockTileWidthPx(horizontalWidth, capacity, density)", dock)
+        self.assertIn("horizontalDockSlotWidthPx(horizontalWidth, capacity, density)", dock)
+        self.assertNotIn("horizontalCarouselCardWidthPx", dock + geometry)
+        self.assertNotIn("horizontalCarouselSlotWidthPx", dock + geometry)
+        self.assertNotIn("CAROUSEL_GAP_DP", geometry)
+        self.assertIn("horizontalCarouselTailInsetPx", MAIN)
+        self.assertIn("outRect.right += horizontalTailInsetPx;", decoration)
+        align_start = MAIN.index("private void alignHorizontalCarousel(int position, boolean animate)")
+        align_end = MAIN.index("private void focusDockTileWhenLaidOut", align_start)
+        align = MAIN[align_start:align_end]
+        self.assertGreaterEqual(align.count("syncFocusedDockGlider();"), 3)
+        self.assertIn("horizontalCarouselTargetOffsetPx == targetOffset) {", align)
+        self.assertIn("if (!horizontalCarouselGliderAnchored) syncFocusedDockGlider();", align)
+        self.assertIn("horizontalCarouselGliderAnchored = false;", align)
+        self.assertIn("moveFocusedDockGlider(false)", align)
+        self.assertIn("shouldAnchorHorizontalCarouselGlider(position)", MAIN)
+        self.assertIn("if (deferHorizontalCarouselGliderMove && inDock)", MAIN)
+        self.assertNotIn("LinearSmoothScroller", MAIN)
+
+    def test_latest_quick_settings_master_is_preserved_on_this_feature_branch(self):
+        self.assertIn("QuickSettingsDialog.show(this, root, anchor, dockRecycler", MAIN)
+        quick_settings = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/QuickSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("QuickSettingsFocusGraph", quick_settings)
 
 
 if __name__ == "__main__":

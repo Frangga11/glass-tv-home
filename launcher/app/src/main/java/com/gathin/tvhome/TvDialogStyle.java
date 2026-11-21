@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -31,7 +32,14 @@ final class TvDialogStyle {
         int availableWidth = context.getResources().getDisplayMetrics().widthPixels;
         int availableHeight = context.getResources().getDisplayMetrics().heightPixels;
 
-        window.setBackgroundDrawable(createDialogSurface(context));
+        // Centered app-owned modals share the same live backdrop-aware glass material as
+        // the approved Quick Settings master. Keep the window transparent so the decor surface
+        // is painted exactly once; glass-disabled mode remains an opaque structural fallback.
+        window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
+        View decor = window.getDecorView();
+        decor.setBackground(new GlassDrawable(decor, TvUiTokens.POPUP_RADIUS_DP * density,
+                density, null, 0.5f, false));
+        Backdrop.watch(decor);
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         window.setDimAmount(DIM_AMOUNT);
         window.setLayout(

@@ -206,8 +206,10 @@ class GlobalFrostedSilverGlassContractTest(unittest.TestCase):
     def test_core_surfaces_keep_opaque_fallback_and_silver_identity(self):
         fallback = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
         tokens = (JAVA / "TvUiTokens.java").read_text(encoding="utf-8")
-        self.assertIn("solidSurface.setColor(TvUiTokens.POPUP_SURFACE)", fallback)
-        self.assertIn("solidBorder.setColor(TvUiTokens.BORDER)", fallback)
+        self.assertIn("TvUiTokens.GLASS_VEIL_COLOR, VEIL_ALPHA,", fallback)
+        self.assertIn("TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);", fallback)
+        self.assertIn("solidSurface.setColor(fallbackSurfaceColor)", fallback)
+        self.assertIn("solidBorder.setColor(fallbackBorderColor)", fallback)
         self.assertEqual(int(java_int("POPUP_SURFACE")[1:3], 16), 255)
         self.assertEqual(int(java_int("DOCK_SURFACE")[1:3], 16), 255)
         self.assertIn("0x88343E48", tokens)

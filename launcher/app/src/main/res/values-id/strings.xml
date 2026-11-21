@@ -10,6 +10,10 @@
     <string name="not_connected">Tidak ada perangkat</string>
     <string name="live_tv">Siaran TV</string>
     <string name="no_inputs">Sumber masukan tidak ditemukan</string>
+    <string name="input_external_tv_title">Input TV (HDMI/AV)</string>
+    <string name="input_external_tv_hint">Gunakan tombol INPUT/SOURCE pada remote TV untuk memilih port HDMI atau AV.</string>
+    <string name="input_system_picker_title">Buka pemilih sumber Android TV</string>
+    <string name="input_hdmi_cec_settings_title">Pengaturan HDMI-CEC TV</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Luring</string>
     <string name="not_available">Tidak tersedia di TV ini</string>
@@ -671,19 +675,19 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="profile_save_failed">Perubahan profil gagal disimpan. Silakan coba lagi.</string>
     <string name="app_policy_save_failed">Perubahan pembatasan aplikasi gagal disimpan. Silakan coba lagi.</string>
 
-    <string name="quick_settings_title">Pengaturan Cepat</string>
+    <string name="quick_settings_title">Pengaturan</string>
     <string name="quick_settings_wifi_summary">Status jaringan dan pengaturan Wi-Fi</string>
     <string name="quick_settings_restart_summary">Mulai ulang perangkat</string>
     <string name="quick_settings_power_summary">Buka menu daya perangkat</string>
     <string name="quick_settings_cache_summary">Bersihkan berkas sementara</string>
     <string name="quick_settings_wallpaper_title">Wallpaper</string>
-    <string name="quick_settings_next_photo">Foto Berikutnya</string>
+    <string name="quick_settings_next_photo">Berikutnya</string>
     <string name="quick_settings_next_photo_summary">Tampilkan wallpaper berikutnya</string>
     <string name="quick_settings_interval_summary">Interval pergantian otomatis</string>
     <string name="quick_settings_manage_wallpaper">Kelola</string>
     <string name="quick_settings_glass_settings">Pengaturan Glass TV</string>
     <string name="quick_settings_glass_settings_summary">Profil, tampilan, dan fitur launcher</string>
-    <string name="quick_settings_android_settings">Pengaturan Android</string>
+    <string name="quick_settings_android_settings">Pengaturan Android TV</string>
     <string name="quick_settings_android_settings_summary">Pengaturan sistem perangkat</string>
     <string name="quick_settings_interval_title">Interval</string>
     <string name="wifi_status_loading">Memeriksa status Wi-Fi…</string>
@@ -713,4 +717,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="wifi_security_open">Jaringan terbuka</string>
     <string name="wifi_signal_bars">%1$d</string>
     <string name="global_settings_header">Pengaturan Launcher</string>
+    <string name="quick_settings_language_title">Bahasa</string>
+    <string name="quick_settings_input_title">Input</string>
+    <string name="quick_settings_restart_title">Restart TV</string>
 </resources>

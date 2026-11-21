@@ -492,6 +492,26 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         presentationSnapshot = null;
     }
 
+    /** Complete ordered app inventory used by the single-row horizontal carousel. */
+    List<Entry> allEntriesSnapshot() {
+        List<Entry> result = new ArrayList<>();
+        for (Entry entry : items) result.add(entry);
+        return Collections.unmodifiableList(result);
+    }
+
+    /** Reorders the full carousel inventory while keeping the non-movable Home Settings tile last. */
+    boolean moveAllEntries(int from, int to) {
+        List<Entry> ordered = new ArrayList<>();
+        for (Entry entry : items) ordered.add(entry);
+        int last = ordered.size() - 1;
+        while (last >= 0 && ordered.get(last).kind == Entry.HOME_SETTINGS) last--;
+        if (from < 0 || from > last || to < 0 || to > last || from == to) return false;
+        Entry moved = ordered.remove(from);
+        ordered.add(to, moved);
+        replacePresentationOrder(Collections.emptyList(), ordered);
+        return true;
+    }
+
     private List<String> currentPinnedKeys() {
         List<String> explicit = DockPreferences.loadPinnedKeys(ctx);
         List<String> defaults = DockLayoutModel.orderedPinnedKeys(items, favourites, arranged,
