@@ -2,8 +2,8 @@
 
 ## Status
 - Workstream: `GTVH-SETTINGS-POPUP-UNIFICATION-001`
-- Phase: **A — Source audit and master-design proposal**
-- Document status: **DRAFT — owner review required before implementation**
+- Phase: **B — Master design approved; popup-family implementation authorized**
+- Document status: **APPROVED MASTER DESIGN — owner confirmation recorded 21 November 2026**
 - Scope: Settings popup, Wi-Fi, Input, Language, Restart TV, Power Off, Cache confirmation/result, Wallpaper controls, Interval, and Wallpaper management.
 - Boundary: **RE-SKIN, NOT REWIRE.** No behavior, persistence, service, navigation contract, or business logic changes are authorized by this audit.
 
@@ -96,9 +96,9 @@ The current Wi-Fi popup is a distinct anchored surface, not a fixed-size copy of
 5. **Navigation mismatch:** the master candidate has a deterministic focus graph; Wi-Fi maintains a separate focus order; Input uses the Home Glider/menu navigation; standard dialogs rely on Android list/button focus; Wallpaper lists use scrollable focusable rows.
 6. **Behavioral risk boundary:** Wi-Fi scanning/permissions, Input discovery, language persistence, restart/power calls, cache cleanup, wallpaper selection/interval/shuffle and management must remain owned by existing modules. Only their presentation layer is in scope.
 
-## Proposed master design rules — for owner approval
+## Approved master design rules — owner approval recorded 21 November 2026
 
-- Use the PR #156 Popup Pengaturan as the visual authority after its physical-device appearance is accepted; do not use Wi-Fi as the reference.
+- **Owner-approved:** use the PR #156 Popup Pengaturan as the visual authority and canonical design reference. Its visual design is considered complete/paripurna by the owner; do not reopen or redesign it. PR #156 remains a draft implementation branch until separately reviewed and accepted for integration.
 - Share one glass material recipe and fallback policy across all popup shells. Preserve distinct placement models: anchored Quick Settings, anchored Wi-Fi, anchored Input menu, and centered modal dialogs.
 - Normalize the visual tokens for surface, border, corner radius, title/body/meta typography, icon sizing, capsule height, internal spacing, and focus treatment.
 - Keep content-specific geometry where needed: Wi-Fi retains its network list/scroll viewport; Input retains source-dependent rows; confirmation dialogs retain clear primary/secondary actions; Cache retains its result state; Wallpaper retains its collection and interval content.
@@ -108,7 +108,7 @@ The current Wi-Fi popup is a distinct anchored surface, not a fixed-size copy of
 
 ## Implementation gates
 
-1. Owner reviews and locks the master candidate (Popup Pengaturan) after visual/device acceptance.
+1. **Completed:** owner approved the Popup Pengaturan master design as final visual reference on 21 November 2026. This approval locks the reference design; it does not automatically approve merging PR #156.
 2. Approve the shared popup tokens and any intentional exceptions.
 3. Implement presentation-only changes on a scoped branch; do not alter PR #156's unrelated Input service/remote-key logic.
 4. Add/adjust unit and static contract tests for geometry, style tokens, and DPAD graph invariants.
@@ -116,8 +116,15 @@ The current Wi-Fi popup is a distinct anchored surface, not a fixed-size copy of
 6. Compare all popup screenshots side by side, correct deviations, document exceptions, and create a final integration checkpoint.
 7. Do not merge PR #156 or any follow-on PR without explicit owner approval and the required device acceptance.
 
-## Explicit non-actions in this phase
-- No source-code changes.
+## Explicit non-actions in the audit phase
+- No source-code changes in the audit phase.
 - No merge, rebase, cherry-pick, close, or retarget of PR #156.
 - No modification of PR #62 (deferred).
 - No APK install, ADB session, device setting changes, or claim of physical-device validation.
+
+## Execution direction after approval
+- Create a separate popup-family implementation branch from current `main`; keep PR #156 unchanged and unmerged.
+- Apply the approved master visual language to sibling popups in bounded presentation-only changes.
+- Preserve each popup's existing layout role (anchored, centered modal, scrollable list) and all existing behavior/state/service contracts.
+- Begin with Wi-Fi material/focus treatment, then Input and the language/restart/power/cache dialogs, then Wallpaper control/collection/interval.
+- Validate source diffs and static tests after each bounded batch. Physical Mi TV Stick validation remains a required gate before merge.
