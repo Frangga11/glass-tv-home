@@ -2104,6 +2104,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Invalidate focus work queued before Home yielded the window to another Activity.
         gridFocusRequestGeneration++;
         cancelHorizontalGridRowTransition();
+        if (horizontalCarouselAnimator != null) {
+            horizontalCarouselAnimator.cancel();
+            horizontalCarouselAnimator = null;
+            horizontalCarouselTargetOffsetPx = RecyclerView.NO_POSITION;
+        }
         activityResumed = false;
         updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
