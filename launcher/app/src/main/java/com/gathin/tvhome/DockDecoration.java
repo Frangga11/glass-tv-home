@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Draws the glass tray behind the independent Dock surface and adds orientation-aware spacing: the blurred wallpaper
- * behind it, an even veil and a light rim, with no brighter top.
+ * Draws the glass tray behind the independent Dock surface and adds orientation-aware spacing.
+ * The material is ported from Universal Home; tray bounds and focus composition remain GTVH-owned.
  */
 public class DockDecoration extends RecyclerView.ItemDecoration {
 

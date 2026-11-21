@@ -16,6 +16,7 @@ import android.graphics.Path;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.TypedValue;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
