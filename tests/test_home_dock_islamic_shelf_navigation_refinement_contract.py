@@ -232,6 +232,11 @@ class HomeAppModeContractTest(unittest.TestCase):
         align = MAIN[align_start:align_end]
         self.assertGreaterEqual(align.count("syncFocusedDockGlider();"), 3)
         self.assertIn("horizontalCarouselTargetOffsetPx == targetOffset) {", align)
+        self.assertIn("if (!horizontalCarouselGliderAnchored) syncFocusedDockGlider();", align)
+        self.assertIn("horizontalCarouselGliderAnchored = false;", align)
+        self.assertIn("moveFocusedDockGlider(false)", align)
+        self.assertIn("shouldAnchorHorizontalCarouselGlider(position)", MAIN)
+        self.assertIn("if (deferHorizontalCarouselGliderMove && inDock)", MAIN)
         self.assertNotIn("LinearSmoothScroller", MAIN)
 
     def test_latest_quick_settings_master_is_preserved_on_this_feature_branch(self):
