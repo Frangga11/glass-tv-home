@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 final class CarouselRecyclerView extends RecyclerView {
     private boolean manualHorizontalFocus;
+    private boolean horizontalViewportClipEnabled;
+    private int horizontalViewportEdgeInsetPx;
 
     CarouselRecyclerView(Context context) {
         super(context);
@@ -22,6 +25,35 @@ final class CarouselRecyclerView extends RecyclerView {
 
     void setManualHorizontalFocus(boolean enabled) {
         manualHorizontalFocus = enabled;
+    }
+
+    /**
+     * Clips carousel children to the visible lane, independently of RecyclerView padding.
+     * In Horizontal mode the right padding is deliberately a large scroll-tail spacer so the
+     * final app can reach the Universal second-slot anchor; it must not become the clip edge.
+     */
+    void setHorizontalViewportClip(boolean enabled, int edgeInsetPx) {
+        int inset = Math.max(0, edgeInsetPx);
+        if (horizontalViewportClipEnabled == enabled
+                && horizontalViewportEdgeInsetPx == inset) return;
+        horizontalViewportClipEnabled = enabled;
+        horizontalViewportEdgeInsetPx = inset;
+        invalidate();
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        if (!horizontalViewportClipEnabled) {
+            super.dispatchDraw(canvas);
+            return;
+        }
+        int left = Math.max(0, Math.min(getPaddingLeft(), getWidth()));
+        int right = Math.max(left, getWidth() - horizontalViewportEdgeInsetPx);
+        if (right <= left) return;
+        int save = canvas.save();
+        canvas.clipRect(left, 0, right, getHeight());
+        super.dispatchDraw(canvas);
+        canvas.restoreToCount(save);
     }
 
     @Override
