@@ -132,7 +132,9 @@ final class WifiSettingsDialog {
                 triangle.lineTo(center, 0);
                 triangle.lineTo(center + h, h);
                 triangle.close();
-                paint.setColor(TvUiTokens.POPUP_SURFACE);
+                // Keep the Wi-Fi pointer translucent so the live backdrop glass beneath it
+                // remains visible; an opaque popup token would make this the one non-glass patch.
+                paint.setColor(TvUiTokens.GLASS_VEIL_COLOR);
                 paint.setStyle(Paint.Style.FILL);
                 canvas.drawPath(triangle, paint);
                 paint.setColor(TvUiTokens.FOCUS_BORDER);
