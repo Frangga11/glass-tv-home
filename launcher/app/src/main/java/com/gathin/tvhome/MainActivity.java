@@ -3552,6 +3552,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void restoreMovingTile(boolean inDock, String key, int position, View previousCard, int attemptsRemaining) {
         RecyclerView recycler = inDock ? dockRecycler : grid;
         if (recycler == null || movingPos != position || movingDock != inDock || movingRecycler != recycler) return;
+        if (inDock && horizontalCarouselMode) alignHorizontalCarousel(position, false);
         RecyclerView.ViewHolder holder = recycler.findViewHolderForAdapterPosition(position);
         if (holder == null) {
             if (!inDock && !dockVertical && horizontalGridExpanded) {
