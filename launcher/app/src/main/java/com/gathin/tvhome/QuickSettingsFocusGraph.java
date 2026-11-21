@@ -2,9 +2,9 @@ package com.gathin.tvhome;
 
 import android.view.View;
 
-/** Explicit two-dimensional D-pad focus graph for the V04 Quick Settings dialog. */
+/** Explicit D-pad graph for the two-column Quick Settings composition. */
 final class QuickSettingsFocusGraph {
-    static final int WIFI = 0;
+    static final int INPUT = 0;
     static final int RESTART = 1;
     static final int LANGUAGE = 2;
     static final int POWER = 3;
@@ -14,8 +14,7 @@ final class QuickSettingsFocusGraph {
     static final int WALLPAPER_MANAGE = 7;
     static final int GLASS_SETTINGS = 8;
     static final int ANDROID_SETTINGS = 9;
-    static final int CLOSE = 10;
-    static final int COUNT = 11;
+    static final int COUNT = 10;
 
     static final int LEFT = 0;
     static final int RIGHT = 1;
@@ -27,18 +26,17 @@ final class QuickSettingsFocusGraph {
 
     static int target(int node, int direction) {
         switch (node) {
-            case WIFI:
+            case INPUT:
                 if (direction == RIGHT) return RESTART;
                 if (direction == DOWN) return LANGUAGE;
                 break;
             case RESTART:
-                if (direction == LEFT) return WIFI;
-                if (direction == UP) return CLOSE;
+                if (direction == LEFT) return INPUT;
                 if (direction == DOWN) return POWER;
                 break;
             case LANGUAGE:
                 if (direction == RIGHT) return POWER;
-                if (direction == UP) return WIFI;
+                if (direction == UP) return INPUT;
                 if (direction == DOWN) return CACHE;
                 break;
             case POWER:
@@ -47,35 +45,29 @@ final class QuickSettingsFocusGraph {
                 if (direction == DOWN) return CACHE;
                 break;
             case CACHE:
-                if (direction == UP) return LANGUAGE;
-                if (direction == DOWN) return WALLPAPER_MANAGE;
+                if (direction == UP) return POWER;
+                if (direction == DOWN) return NEXT_PHOTO;
+                break;
+            case WALLPAPER_MANAGE:
+                if (direction == UP) return CACHE;
+                if (direction == DOWN) return INTERVAL;
                 break;
             case NEXT_PHOTO:
                 if (direction == RIGHT) return INTERVAL;
-                if (direction == UP) return WALLPAPER_MANAGE;
+                if (direction == UP) return CACHE;
                 if (direction == DOWN) return GLASS_SETTINGS;
                 break;
             case INTERVAL:
                 if (direction == LEFT) return NEXT_PHOTO;
                 if (direction == UP) return WALLPAPER_MANAGE;
-                if (direction == DOWN) return ANDROID_SETTINGS;
-                break;
-            case WALLPAPER_MANAGE:
-                if (direction == UP) return CACHE;
-                if (direction == DOWN) return NEXT_PHOTO;
+                if (direction == DOWN) return GLASS_SETTINGS;
                 break;
             case GLASS_SETTINGS:
-                if (direction == RIGHT) return ANDROID_SETTINGS;
                 if (direction == UP) return NEXT_PHOTO;
-                if (direction == DOWN) return CLOSE;
+                if (direction == DOWN) return ANDROID_SETTINGS;
                 break;
             case ANDROID_SETTINGS:
-                if (direction == LEFT) return GLASS_SETTINGS;
-                if (direction == UP) return INTERVAL;
-                if (direction == DOWN) return CLOSE;
-                break;
-            case CLOSE:
-                if (direction == DOWN) return RESTART;
+                if (direction == UP) return GLASS_SETTINGS;
                 break;
             default:
                 break;
@@ -96,9 +88,7 @@ final class QuickSettingsFocusGraph {
     }
 
     private static int resolveId(View[] controls, int target, View fallback) {
-        if (target >= 0 && target < controls.length && controls[target] != null) {
-            return controls[target].getId();
-        }
-        return fallback.getId();
+        return target >= 0 && target < controls.length && controls[target] != null
+                ? controls[target].getId() : fallback.getId();
     }
 }

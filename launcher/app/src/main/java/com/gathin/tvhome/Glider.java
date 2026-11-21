@@ -279,6 +279,11 @@ final class Glider extends View {
     }
 
     /** Switches look at once; there is no blend between the two. The shadow eases in with the glass. */
+    void setFocusStrokeWidth(float widthPx) {
+        focusStroke.setStrokeWidth(Math.max(1f, widthPx));
+        changed();
+    }
+
     void setStyle(int style) {
         if (this.style == style) return;
         this.style = style;

@@ -91,6 +91,8 @@ import java.util.Set;
  */
 public class MainActivity extends Activity implements AppAdapter.TileListener, DockAdapter.Listener {
 
+    static final String EXTRA_OPEN_INPUTS = "open_inputs";
+
     private static java.lang.ref.WeakReference<MainActivity> sInstance;
 
     public static MainActivity getInstance() {
@@ -134,11 +136,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private AppAdapter adapter;
     private RecyclerView grid;
-    private RecyclerView dockRecycler;
+    private CarouselRecyclerView dockRecycler;
     private DockAdapter dockAdapter;
     private DockDecoration tray;
+    /** Physical orientation is locked to horizontal/bottom; legacy checks remain for Classic layout paths. */
     private boolean dockVertical;
-    /** Horizontal Grid stays parked out of sight until the user presses Down from the Dock. */
+    /** True when the Home app inventory is rendered as one horizontal carousel row. */
+    private boolean horizontalCarouselMode;
+    /** Pixel animator matching TV Home Universal's 240ms horizontal carousel pan. */
+    private android.animation.ValueAnimator horizontalCarouselAnimator;
+    private int horizontalCarouselTargetOffsetPx = RecyclerView.NO_POSITION;
+    /** Keep the existing Glider at the Universal focus lane while the carousel row moves beneath it. */
+    private boolean horizontalCarouselGliderAnchored;
+    /** One focus callback may defer retargeting until its coordinated carousel pan has settled. */
+    private boolean deferHorizontalCarouselGliderMove;
+    /** Classic-mode Grid stays parked out of sight until the user presses Down from the Dock. */
     private boolean horizontalGridExpanded;
     /** Serializes the first Dock-to-overflow reveal against repeated vertical DPAD input. */
     private boolean horizontalDockExpansionInProgress;
@@ -922,7 +934,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Backdrop.watch(grid);
 
         // Dock is a sibling surface inside the same clipped/fade-aware host, not a row in the App Grid.
-        dockRecycler = new RecyclerView(this);
+        dockRecycler = new CarouselRecyclerView(this);
         dockRecycler.setHasFixedSize(true);
         dockRecycler.setItemAnimator(null);
         dockRecycler.setClipChildren(false);
@@ -1252,6 +1264,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // Silent background update check after 5 seconds on launch
 
+        if (getIntent() != null && getIntent().getBooleanExtra(EXTRA_OPEN_INPUTS, false)) {
+            getIntent().removeExtra(EXTRA_OPEN_INPUTS);
+            handler.postDelayed(() -> {
+                if (!isFinishing() && !isDestroyed()) {
+                    if (screensaverActive) dismissScreensaver();
+                    showInputs();
+                }
+            }, 180);
+        }
         if (getIntent() != null && getIntent().getBooleanExtra("open_settings", false)) {
             getIntent().removeExtra("open_settings");
             handler.postDelayed(() -> {
@@ -1767,6 +1788,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (intent != null && intent.getBooleanExtra(EXTRA_OPEN_INPUTS, false)) {
+            if (screensaverActive) dismissScreensaver();
+            if (cardPrompt != null) cardPrompt.dismiss();
+            if (openPopup != null) openPopup.dismiss();
+            if (movingPos >= 0) finishMove();
+            if (openMenu != null) {
+                closeMenu(false);
+            } else {
+                showInputs();
+            }
+            return;
+        }
         if (intent != null && intent.getBooleanExtra("open_settings", false)) {
             if (screensaverActive) dismissScreensaver();
             showSettingsPopup();
@@ -2075,6 +2108,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Invalidate focus work queued before Home yielded the window to another Activity.
         gridFocusRequestGeneration++;
         cancelHorizontalGridRowTransition();
+        if (horizontalCarouselAnimator != null) {
+            horizontalCarouselAnimator.cancel();
+            horizontalCarouselAnimator = null;
+            horizontalCarouselTargetOffsetPx = RecyclerView.NO_POSITION;
+        }
+        horizontalCarouselGliderAnchored = false;
+        deferHorizontalCarouselGliderMove = false;
         activityResumed = false;
         updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
@@ -2271,6 +2311,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Reposition the single Glider from the actual focused Dock card after Dock geometry changes. */
     private void syncFocusedDockGlider() {
+        moveFocusedDockGlider(true);
+    }
+
+    /** Move or hard-sync the shared Glider without changing the focused card's own presentation. */
+    private void moveFocusedDockGlider(boolean immediate) {
         if (!glassShown || glider == null || root == null || dockRecycler == null) return;
         View card = focusedCardFromCurrentFocus();
         if (card == null || !isDescendantOf(card, dockRecycler)) return;
@@ -2284,8 +2329,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         float left = bounds.exactCenterX() - width / 2f;
         float top = bounds.exactCenterY() - height / 2f;
         float radius = AppAdapter.cornerRadius(card.getWidth(), density) * scale;
-        glider.moveToScreenImmediately(left + pad, top + pad,
-                left + width - pad, top + height - pad, radius);
+        if (immediate) {
+            glider.moveToScreenImmediately(left + pad, top + pad,
+                    left + width - pad, top + height - pad, radius);
+        } else {
+            glider.moveToScreen(left + pad, top + pad,
+                    left + width - pad, top + height - pad, radius);
+        }
     }
 
     /** Synchronize the one focus shape with the focused Dock OR Grid card during container motion. */
@@ -2332,9 +2382,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Dock is a newer, authoritative focus destination; cancel every queued Grid request.
         gridFocusRequestGeneration++;
         if (!dockVertical) cancelHorizontalGridRowTransition();
-        // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
-        // Collapse the overflow Grid only after focus has actually reached a Dock tile.
+        // When the carousel itself must pan, keep the existing Glider in its focus lane. The
+        // destination card will travel underneath it; hard-syncing to the pre-pan child would
+        // cancel the very box-glide we are preserving.
+        boolean preserveGlider = shouldAnchorHorizontalCarouselGlider(position);
+        deferHorizontalCarouselGliderMove = preserveGlider;
         handleTileFocused(key, position, card, true);
+        deferHorizontalCarouselGliderMove = false;
+        horizontalCarouselGliderAnchored = preserveGlider;
+        if (horizontalCarouselMode) alignHorizontalCarousel(position, true);
+    }
+
+    /** True only for an established Dock selection that is about to move under the focus lane. */
+    private boolean shouldAnchorHorizontalCarouselGlider(int position) {
+        if (!horizontalCarouselMode || reducedMotion || resuming || !hasWindowFocus()
+                || !lastFocusedDock || !glassShown || glider == null || !glider.isShowing()
+                || gliderOnPill || movingPos >= 0 || moveHandoffPending
+                || Math.abs(position - lastFocused) != 1
+                || dockRecycler == null || dockAdapter == null || dockRecycler.getWidth() <= 0) {
+            return false;
+        }
+        int capacity = DockPreferences.load(this).capacity;
+        int slotWidth = DockGeometry.horizontalDockSlotWidthPx(
+                DockGeometry.horizontalContentWidthPx(dockRecycler.getWidth(), density), capacity, density);
+        if (slotWidth <= 0) return false;
+        int tailInset = DockGeometry.horizontalCarouselTailInsetPx(
+                dockRecycler.getWidth(), slotWidth, dockAdapter.getItemCount(),
+                capacity, dockRecycler.getPaddingLeft());
+        int maxOffset = Math.max(0, dockAdapter.getItemCount() * slotWidth
+                + dockRecycler.getPaddingLeft() + dockRecycler.getPaddingRight()
+                + tailInset - dockRecycler.getWidth());
+        int targetOffset = Math.min(maxOffset, Math.max(0, position - 1) * slotWidth);
+        return Math.abs(targetOffset - horizontalCarouselScrollOffsetPx(slotWidth)) > 1;
     }
 
     private void handleTileFocused(String key, int position, View card, boolean inDock) {
@@ -2380,7 +2459,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         glassTargetX = x;
         glassTargetY = y;
         float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * focusScale;
-        if (gliderOnPill) {
+        if (deferHorizontalCarouselGliderMove && inDock) {
+            // The previous focused card occupies the same final second-slot anchor. Leave the
+            // shape alive there while RecyclerView carries the newly focused card underneath it.
+        } else if (gliderOnPill) {
             if (inDock) glider.moveToScreen(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
             else glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
             glider.onArrive(() -> {
@@ -2420,6 +2502,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int position = dockAdapter.positionOf(key);
         if (position < 0) return false;
         int count = dockAdapter.getItemCount();
+        if (horizontalCarouselMode) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (position > 0) focusDockTile(position - 1);
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                if (position < count - 1) focusDockTile(position + 1);
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                focusTopBarFallback();
+                return true;
+            }
+            // The carousel is one-dimensional; DOWN never opens the progressive Grid.
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) return true;
+        }
         if (dockVertical) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                 if (position > 0) focusDockTile(position - 1);
@@ -2913,30 +3011,55 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void applyDockLayout() {
         if (gridWrap == null || grid == null || dockRecycler == null || dockAdapter == null) return;
         DockPreferences preferences = DockPreferences.load(this);
-        dockVertical = preferences.orientation == DockPreferences.Orientation.VERTICAL;
-        dockAdapter.setVertical(dockVertical);
-        if (dockVertical) {
+        // "Vertikal" now means the existing progressive Classic app-navigation mode.
+        // The physical Dock is always horizontal and bottom-anchored in both modes.
+        dockVertical = false;
+        horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;
+        dockAdapter.setVertical(false);
+        dockAdapter.setCarouselMode(horizontalCarouselMode);
+        dockRecycler.setClipChildren(horizontalCarouselMode);
+        // Use RecyclerView's full padded content area and apply a symmetric visual clip below.
+        // The extra scroll extent is a final-item decoration, not host padding.
+        dockRecycler.setClipToPadding(false);
+        if (!horizontalCarouselMode) {
+            if (horizontalCarouselAnimator != null) horizontalCarouselAnimator.cancel();
+            horizontalCarouselAnimator = null;
+            horizontalCarouselTargetOffsetPx = RecyclerView.NO_POSITION;
+            horizontalCarouselGliderAnchored = false;
+            deferHorizontalCarouselGliderMove = false;
+        }
+        if (horizontalCarouselMode) {
             horizontalGridExpanded = false;
+            horizontalGridViewportRows = 1;
             cancelHorizontalGridRowTransition();
+            grid.setTranslationY(0f);
+            dockRecycler.setTranslationY(0f);
         }
         // GridLayoutManager does not support stackFromEnd (it throws during onResume).
         // Keep the Grid's natural adapter order; horizontal overflow is positioned by the
         // surrounding FrameLayout geometry and is expanded only on DPAD Down.
-        // In horizontal mode the Grid is an on-demand overflow surface: hidden at rest,
-        // revealed by DPAD Down from the Dock, and collapsed again when Dock focus returns.
-        int wantedGridVisibility = dockVertical || horizontalGridExpanded ? View.VISIBLE : View.GONE;
+        // In Vertikal/Classic mode the Grid is an on-demand progressive surface.
+        // Horizontal mode instead displays the full inventory in the Dock carousel and keeps Grid hidden.
+        int wantedGridVisibility = !horizontalCarouselMode && horizontalGridExpanded ? View.VISIBLE : View.GONE;
         boolean gridVisibilityChanged = grid.getVisibility() != wantedGridVisibility;
         grid.setVisibility(wantedGridVisibility);
-        grid.setClipToPadding(!dockVertical && horizontalGridExpanded);
+        grid.setClipToPadding(!horizontalCarouselMode && horizontalGridExpanded);
         int orientation = dockVertical
                 ? android.widget.LinearLayout.VERTICAL : android.widget.LinearLayout.HORIZONTAL;
         RecyclerView.LayoutManager current = dockRecycler.getLayoutManager();
-        if (!(current instanceof androidx.recyclerview.widget.LinearLayoutManager)
-                || ((androidx.recyclerview.widget.LinearLayoutManager) current).getOrientation() != orientation) {
-            dockRecycler.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, orientation, false));
+        if (!(current instanceof CarouselLinearLayoutManager)
+                || ((CarouselLinearLayoutManager) current).getOrientation() != orientation) {
+            dockRecycler.setLayoutManager(new CarouselLinearLayoutManager(this, orientation, false));
         }
 
         int dockCount = dockAdapter.getItemCount();
+        CarouselLinearLayoutManager carouselLayout =
+                (CarouselLinearLayoutManager) dockRecycler.getLayoutManager();
+        int carouselPrelayoutExtent = horizontalCarouselMode
+                ? Math.max(1, getResources().getDisplayMetrics().widthPixels) * Math.max(1, dockCount)
+                : 0;
+        carouselLayout.setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent);
+        dockRecycler.setManualHorizontalFocus(horizontalCarouselMode);
         if (tray == null) {
             tray = new DockDecoration(dockCount, density, dockVertical);
             tray.setGlider(glider);
@@ -2956,6 +3079,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         gridParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         dockParams.gravity = dockVertical ? Gravity.START : Gravity.BOTTOM;
         boolean hasDock = dockCount > 0;
+        if (dockVertical || !hasDock) dockRecycler.setHorizontalViewportClip(false, 0);
         int wantedDockVisibility = hasDock ? View.VISIBLE : View.GONE;
         boolean dockVisibilityChanged = dockRecycler.getVisibility() != wantedDockVisibility;
         dockRecycler.setVisibility(wantedDockVisibility);
@@ -3000,22 +3124,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.width = dockViewportWidth;
                 dockAdapter.setHorizontalViewportWidth(dockViewportWidth);
                 dockParams.rightMargin = 0;
-                // Grid card geometry remains unchanged; Dock uses its own proportional card scale.
+                // Preserve the approved baseline dimensions and positions in both app modes.
+                // Only the one-row inventory/navigation behavior differs in Horizontal mode.
                 int gridTileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
                 int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(inner, preferences.capacity, density);
                 int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
                 int dockHeight = DockGeometry.horizontalDockHeightPx(dockTileHeight, density);
-
-                // RecyclerView's horizontal LinearLayoutManager starts children at the left edge.
-                // Keep an even card gap while the glass tray itself remains full width.
                 int dockSlotWidth = DockGeometry.horizontalDockSlotWidthPx(inner, preferences.capacity, density);
                 int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
                         inner, dockSlotWidth, Math.min(dockCount, preferences.capacity));
-                // Center the icon group with symmetric content padding. The RecyclerView host
-                // stays at the Home shelf origin so its full-width glass tray and aligned shelves
-                // do not inherit the icon group's centering offset.
                 dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),
                         dockCenterOffset, dockRecycler.getPaddingBottom());
+                dockRecycler.setHorizontalViewportClip(horizontalCarouselMode, dockCenterOffset);
+
+                // Keep the content viewport and its clipping symmetric. Extra horizontal travel
+                // lives after the final item's decoration, so no card is resized or edge-clipped.
+                int carouselTailInset = horizontalCarouselMode
+                        ? DockGeometry.horizontalCarouselTailInsetPx(dockViewportWidth, dockSlotWidth,
+                                dockCount, preferences.capacity, dockCenterOffset)
+                        : 0;
+                if (tray.setHorizontalTailInsetPx(carouselTailInset)) {
+                    dockRecycler.invalidateItemDecorations();
+                }
                 dockRecycler.setTranslationX(0f);
 
                 // The Dock's idle geometry is the pre-#115 approved bottom anchor. On expansion,
@@ -3519,6 +3649,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void restoreMovingTile(boolean inDock, String key, int position, View previousCard, int attemptsRemaining) {
         RecyclerView recycler = inDock ? dockRecycler : grid;
         if (recycler == null || movingPos != position || movingDock != inDock || movingRecycler != recycler) return;
+        if (inDock && horizontalCarouselMode) alignHorizontalCarousel(position, false);
         RecyclerView.ViewHolder holder = recycler.findViewHolderForAdapterPosition(position);
         if (holder == null) {
             if (!inDock && !dockVertical && horizontalGridExpanded) {
@@ -3584,6 +3715,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 return;
             }
             movingPos = currentPosition;
+
+            if (horizontalCarouselMode) {
+                if (keyCode != KeyEvent.KEYCODE_DPAD_LEFT && keyCode != KeyEvent.KEYCODE_DPAD_RIGHT) return;
+                int target = keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                        ? currentPosition - 1 : currentPosition + 1;
+                if (target < 0 || target > dockAdapter.lastMovable()
+                        || !dockAdapter.move(currentPosition, target)) return;
+                int resolved = dockAdapter.positionOf(movingKey);
+                if (resolved < 0) { finishMove(); return; }
+                movingPos = resolved;
+                restoreMovingTile(true, movingKey, resolved, movingCard, 3);
+                return;
+            }
 
             if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 moveTileAcrossRegion(movingKey, false, 0);
@@ -3690,6 +3834,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return true;
         }
         int code = event.getKeyCode();
+        // Standard Android TV and configured Xiaomi/vendor Input keys open the same source selector.
+        // Consume the press sequence, but dispatch only the initial down event.
+        if (config != null && InputKeyService.isInputKeyCode(code, config.inputKeyKeycodes)) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                if (movingPos >= 0) finishMoveFromUser();
+                if (cardPrompt != null) cardPrompt.dismiss();
+                if (openMenu != null) {
+                    closeMenu(false);
+                } else {
+                    if (openPopup != null) openPopup.dismiss();
+                    showInputs();
+                }
+            }
+            return true;
+        }
         // Capture one semantic intent during collapse. Never replay synthetic KeyEvents through
         // Android focus search: one physical press must produce at most one navigation action.
         if (horizontalDockCollapseInProgress
@@ -4002,8 +4161,141 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             focusTopBarFallback();
             return;
         }
-        dockRecycler.scrollToPosition(targetPosition);
-        focusDockTileWhenLaidOut(targetPosition, 3, requestGeneration);
+        if (horizontalCarouselMode) {
+            alignHorizontalCarousel(targetPosition, true);
+            focusDockTileWhenLaidOut(targetPosition, 20, requestGeneration);
+        } else {
+            dockRecycler.scrollToPosition(targetPosition);
+            focusDockTileWhenLaidOut(targetPosition, 3, requestGeneration);
+        }
+    }
+
+    /** Current pixel offset from the first carousel slot, including a partially visible child. */
+    private int horizontalCarouselScrollOffsetPx(int slotWidth) {
+        if (dockRecycler == null || slotWidth <= 0) return 0;
+        RecyclerView.LayoutManager manager = dockRecycler.getLayoutManager();
+        if (manager instanceof androidx.recyclerview.widget.LinearLayoutManager) {
+            androidx.recyclerview.widget.LinearLayoutManager layout =
+                    (androidx.recyclerview.widget.LinearLayoutManager) manager;
+            int first = layout.findFirstVisibleItemPosition();
+            View child = first == RecyclerView.NO_POSITION ? null : layout.findViewByPosition(first);
+            if (child != null) {
+                return Math.max(0, first * slotWidth + dockRecycler.getPaddingLeft()
+                        - layout.getDecoratedLeft(child));
+            }
+        }
+        return Math.max(0, dockRecycler.computeHorizontalScrollOffset());
+    }
+
+    /** Correct any sub-pixel/rounding residue so the carousel always rests on an exact slot. */
+    private void settleHorizontalCarouselOffset(int targetOffset, int slotWidth) {
+        if (!horizontalCarouselMode || dockRecycler == null || slotWidth <= 0) return;
+        int actualOffset = horizontalCarouselScrollOffsetPx(slotWidth);
+        int correction = targetOffset - actualOffset;
+        if (correction != 0) dockRecycler.scrollBy(correction, 0);
+    }
+
+    /** Match Universal: selected index is anchored at slot two, with a 240ms decelerating pan. */
+    private void alignHorizontalCarousel(int position, boolean animate) {
+        if (!horizontalCarouselMode || dockRecycler == null || dockAdapter == null
+                || position < 0 || position >= dockAdapter.getItemCount()) return;
+        if (dockRecycler.getWidth() <= 0) {
+            dockRecycler.post(() -> alignHorizontalCarousel(position, animate));
+            return;
+        }
+        int capacity = DockPreferences.load(this).capacity;
+        int slotWidth = DockGeometry.horizontalDockSlotWidthPx(
+                DockGeometry.horizontalContentWidthPx(dockRecycler.getWidth(), density), capacity, density);
+        if (slotWidth <= 0) return;
+
+        int tailInset = DockGeometry.horizontalCarouselTailInsetPx(
+                dockRecycler.getWidth(), slotWidth, dockAdapter.getItemCount(),
+                capacity, dockRecycler.getPaddingLeft());
+        int maxOffset = Math.max(0, dockAdapter.getItemCount() * slotWidth
+                + dockRecycler.getPaddingLeft() + dockRecycler.getPaddingRight()
+                + tailInset - dockRecycler.getWidth());
+        int targetOffset = Math.min(maxOffset, Math.max(0, position - 1) * slotWidth);
+
+        // A repeated focus callback for the same in-flight destination must not restart its pan.
+        if (horizontalCarouselAnimator != null
+                && horizontalCarouselTargetOffsetPx == targetOffset) {
+            // Same pan: the established Glider remains in the destination lane. Only a fresh
+            // non-anchored focus (for example, restoration) needs to follow the real child.
+            if (!horizontalCarouselGliderAnchored) syncFocusedDockGlider();
+            return;
+        }
+
+        // Cancel a previous destination before the near-zero-delta return. Otherwise an older
+        // animator can keep scrolling after DPAD has already moved focus back to this slot.
+        if (horizontalCarouselAnimator != null) {
+            android.animation.ValueAnimator previous = horizontalCarouselAnimator;
+            horizontalCarouselAnimator = null;
+            previous.cancel();
+        }
+
+        int currentOffset = horizontalCarouselScrollOffsetPx(slotWidth);
+        int delta = targetOffset - currentOffset;
+        horizontalCarouselTargetOffsetPx = targetOffset;
+        if (Math.abs(delta) <= 1) {
+            if (delta != 0) dockRecycler.scrollBy(delta, 0);
+            settleHorizontalCarouselOffset(targetOffset, slotWidth);
+            if (horizontalCarouselGliderAnchored) {
+                horizontalCarouselGliderAnchored = false;
+                if (position == 0) moveFocusedDockGlider(false);
+                else syncFocusedDockGlider();
+            }
+            return;
+        }
+        if (!animate || reducedMotion) {
+            horizontalCarouselGliderAnchored = false;
+            dockRecycler.scrollBy(delta, 0);
+            settleHorizontalCarouselOffset(targetOffset, slotWidth);
+            // A non-animated pan ends at its final geometry; align the outline once, not per frame.
+            syncFocusedDockGlider();
+            return;
+        }
+
+        // For established carousel focus, leave the Glider at its Universal lane while the
+        // cards pan beneath it. Fresh/restored focus still follows the actual child on each frame.
+        if (!horizontalCarouselGliderAnchored) syncFocusedDockGlider();
+        final int[] applied = { currentOffset };
+        final android.animation.ValueAnimator animator =
+                android.animation.ValueAnimator.ofInt(currentOffset, targetOffset);
+        horizontalCarouselAnimator = animator;
+        animator.setDuration(240);
+        animator.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
+        animator.addUpdateListener(value -> {
+            if (horizontalCarouselAnimator != animator || !horizontalCarouselMode) return;
+            int next = (Integer) value.getAnimatedValue();
+            dockRecycler.scrollBy(next - applied[0], 0);
+            applied[0] = next;
+            if (!horizontalCarouselGliderAnchored) syncFocusedDockGlider();
+        });
+        final boolean[] cancelled = { false };
+        animator.addListener(new android.animation.AnimatorListenerAdapter() {
+            @Override public void onAnimationCancel(android.animation.Animator animation) {
+                cancelled[0] = true;
+            }
+            @Override public void onAnimationEnd(android.animation.Animator animation) {
+                if (horizontalCarouselAnimator == animator) {
+                    horizontalCarouselAnimator = null;
+                    if (!cancelled[0] && horizontalCarouselMode) {
+                        settleHorizontalCarouselOffset(targetOffset, slotWidth);
+                        if (horizontalCarouselGliderAnchored) {
+                            horizontalCarouselGliderAnchored = false;
+                            if (position == 0) {
+                                // Returning to the carousel's first slot changes the focus lane
+                                // from slot two to slot one; glide there after the row has settled.
+                                dockRecycler.postOnAnimation(() -> moveFocusedDockGlider(false));
+                            }
+                        } else {
+                            syncFocusedDockGlider();
+                        }
+                    }
+                }
+            }
+        });
+        animator.start();
     }
 
     private void focusDockTileWhenLaidOut(int position, int attemptsRemaining, int requestGeneration) {
@@ -5669,7 +5961,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Opens the centered V04 Quick Settings modal using the shared G2 dialog/focus contract. */
     private void showQuickControlPopup() {
-        showQuickControlPopup(QuickSettingsFocusGraph.WIFI);
+        showQuickControlPopup(QuickSettingsFocusGraph.INPUT);
     }
 
     private void showQuickControlPopup(int initialFocus) {
@@ -5679,11 +5971,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         View anchor = findViewById(R.id.btnSettings);
         if (anchor == null) return;
 
-        QuickSettingsDialog.show(this, new QuickSettingsDialog.Actions() {
-            @Override public String wifiSummary() {
-                return getQuickSettingsNetworkSummary();
-            }
-            @Override public String languageSummary() {
+        QuickSettingsDialog.show(this, root, anchor, dockRecycler, new QuickSettingsDialog.Actions() {            @Override public String languageSummary() {
                 return AppLanguage.getLanguageBadge(MainActivity.this);
             }
             @Override public String powerTitle() {
@@ -5695,8 +5983,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             @Override public String wallpaperIntervalSummary() {
                 return getWallpaperIntervalSummary();
             }
-            @Override public void openWifi() {
-                showWifiPopup(() -> showQuickControlPopup(QuickSettingsFocusGraph.WIFI));
+            @Override public void openInputs() {
+                showInputs();
             }
             @Override public void restart() {
                 showRestartDialog();
@@ -5742,14 +6030,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     void showDockOrientationDialog() {
         DockPreferences current = DockPreferences.load(this);
         String[] options = {
-                getString(R.string.dock_orientation_horizontal),
-                getString(R.string.dock_orientation_vertical)
+                getString(R.string.dock_orientation_vertical),
+                getString(R.string.dock_orientation_horizontal)
         };
-        int selected = current.orientation == DockPreferences.Orientation.VERTICAL ? 1 : 0;
+        int selected = current.orientation == DockPreferences.Orientation.VERTICAL ? 0 : 1;
         new android.app.AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(R.string.dock_orientation_title)
                 .setSingleChoiceItems(options, selected, (dialog, which) -> {
-                    DockPreferences.Orientation orientation = which == 1
+                    DockPreferences.Orientation orientation = which == 0
                             ? DockPreferences.Orientation.VERTICAL : DockPreferences.Orientation.HORIZONTAL;
                     if (!DockPreferences.save(this, orientation, current.capacity)) {
                         TvFeedback.show(this, R.string.dock_settings_save_failed, Toast.LENGTH_SHORT);
@@ -9339,6 +9627,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (openMenu != null) return;
         SoundEffects.playSelect();
         View anchor = btnInputs;
+        if (anchor == null || !anchor.isShown() || anchor.getWidth() == 0 || anchor.getHeight() == 0) {
+            // Streaming sticks may expose no local TV inputs, so the header Input pill is hidden.
+            // Keep the Quick Settings tile and remote shortcut useful by anchoring to Settings.
+            View settingsAnchor = findViewById(R.id.btnSettings);
+            if (settingsAnchor != null && settingsAnchor.isShown()
+                    && settingsAnchor.getWidth() > 0 && settingsAnchor.getHeight() > 0) {
+                anchor = settingsAnchor;
+            } else {
+                anchor = findViewById(R.id.btnHome);
+            }
+        }
+        if (anchor == null || !anchor.isShown()) {
+            TvFeedback.show(this, R.string.not_available, Toast.LENGTH_SHORT);
+            return;
+        }
         FrameLayout panel = (FrameLayout) getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         Runnable close = () -> closeMenu(false);
@@ -9390,9 +9693,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         () -> openInput(id));
             }
         }
-        // Nothing to list where there is no TvInputManager: the TV's own source panel switches inputs.
+        // Use the TV platform's source chooser only when this device actually declares a handler.
+        // A Mi TV Stick may not expose TV inputs at all; its HDMI ports belong to the external TV.
         if (rows.getChildCount() == 0 && !sourcePanelService.isEmpty()) {
             addInputRow(rows, close, R.drawable.ic_input, getString(R.string.inputs), -1, this::openSourcePanel);
+        }
+        if (rows.getChildCount() == 0) {
+            Intent systemInputPicker = new Intent("com.android.tv.action.VIEW_INPUTS");
+            if (getPackageManager().resolveActivity(systemInputPicker, 0) != null) {
+                addInputRow(rows, close, R.drawable.ic_input,
+                        getString(R.string.input_system_picker_title), -1,
+                        () -> open(systemInputPicker));
+            }
         }
         Intent liveTv = liveTvIntent();
         if (liveTv != null && tunerId != null) {
@@ -9406,8 +9718,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             addInputRow(rows, close, R.drawable.ic_livetv, getString(R.string.live_tv), -1, () -> open(liveTvIntent));
         }
         if (rows.getChildCount() == 0) {
-            TvFeedback.show(this, R.string.no_inputs, Toast.LENGTH_SHORT);
-            return;
+            // The Stick is an HDMI playback source; HDMI 1/2 ports are owned by the external TV.
+            // Offer actual TV settings and honest guidance instead of fabricating source entries.
+            addInputRow(rows, close, R.drawable.ic_tv_display,
+                    getString(R.string.input_hdmi_cec_settings_title), -1,
+                    () -> openSystemSettings(systemIntent(Settings.ACTION_SETTINGS)));
+            addInputRow(rows, close, R.drawable.ic_input,
+                    getString(R.string.input_external_tv_title), -1,
+                    () -> TvFeedback.show(this, R.string.input_external_tv_hint, Toast.LENGTH_LONG));
         }
 
         // Fit the widest row: TVs that report a status on every port (Sony) would otherwise squeeze the names out.

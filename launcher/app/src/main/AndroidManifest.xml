@@ -180,7 +180,7 @@
             </intent-filter>
         </service>
 
-        <!-- The remote's Input button (KEYCODE_TV) opens the input switcher; see InputKeyService. -->
+        <!-- Configured remote Input keycodes route to Glass TV Home's source popup; see InputKeyService. -->
         <service
             android:name=".InputKeyService"
             android:exported="true"

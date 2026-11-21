@@ -40,6 +40,15 @@
          (XGIMI projectors: com.xgimi.action.hdmiPlayer). Leave empty to omit. -->
     <string name="input_action" translatable="false"></string>
 
+    <!-- Remote Input key mappings. KEYCODE_TV_INPUT=178, KEYCODE_TV=170 and
+         KEYCODE_MEDIA_RECORD=130 (used by some Xiaomi remotes). Override with
+         "input_key_keycodes": [130] in config.json after checking the remote's actual key event. -->
+    <integer-array name="input_key_keycodes">
+        <item>178</item>
+        <item>170</item>
+        <item>130</item>
+    </integer-array>
+
     <!-- Remote buttons that open Settings, by Linux scancode (HOME_KEY_SERVICE=1 build-and-install.sh). Remotes
          that send KEYCODE_SETTINGS need no entry. Some send a code Android does not map: the Xiaomi/Fengmi
          projector remote's gear button is scancode 384 (KEY_TAPE). Find yours with
