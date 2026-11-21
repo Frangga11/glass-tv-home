@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.graphics.Rect;
