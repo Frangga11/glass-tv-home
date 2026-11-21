@@ -29,9 +29,9 @@ class QuickSettingsContractTest(unittest.TestCase):
 
     def test_dialog_is_single_frame_glass_and_anchored_to_capsule_and_dock(self):
         self.assertNotIn("ScrollView", DIALOG)
-        self.assertIn("new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,", DIALOG)
-        self.assertIn("PANEL_GLASS_VEIL, 0x54, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER", DIALOG)
-        self.assertIn("Backdrop.watch(content)", DIALOG)
+        self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", DIALOG)
+        self.assertIn("PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER", DIALOG)
+        self.assertNotIn("Backdrop.watch(content)", DIALOG)
         self.assertIn("panelTopInHost(anchorAt[1], settingsAnchor.getHeight(), hostAt[1], topClearancePx)", DIALOG)
         self.assertIn("availablePanelHeight(dockTop, top, bottomClearancePx)", DIALOG)
         self.assertIn("int width = dp(density, 255);", DIALOG)
@@ -84,7 +84,6 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertNotIn("addDivider", DIALOG)
         self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", DIALOG)
         self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
-        self.assertIn("PANEL_GLASS_VEIL = TvUiTokens.GLASS_VEIL_COLOR", DIALOG)
         self.assertIn("PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE", DIALOG)
         self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
         self.assertNotIn("0xB3FFFFFF", DIALOG)

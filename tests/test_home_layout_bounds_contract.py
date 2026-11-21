@@ -211,7 +211,7 @@ class HomeLayoutBoundsContractTest(unittest.TestCase):
                     if node.get(ANDROID + "id") == "@+id/navPill"), None)
         self.assertIsNotNone(nav)
         self.assertEqual(nav.get(ANDROID + "background"), "@drawable/header_glass_pill_bg")
-        self.assertIn("navCapsule.setBackground(new GlassDrawable(navCapsule", MAIN)
+        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", MAIN)
         self.assertIn("new GliderFocusDrawable(pill, glider)", MAIN)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
         self.assertIn("Keep each tab's measured segment geometry stable", MAIN)
