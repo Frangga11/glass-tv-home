@@ -137,10 +137,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private RecyclerView dockRecycler;
     private DockAdapter dockAdapter;
     private DockDecoration tray;
+    /** Physical orientation is locked to horizontal/bottom; legacy checks remain for Classic layout paths. */
     private boolean dockVertical;
     /** True when the Home app inventory is rendered as one horizontal carousel row. */
     private boolean horizontalCarouselMode;
-    /** Horizontal Grid stays parked out of sight until the user presses Down from the Dock. */
+    /** Classic-mode Grid stays parked out of sight until the user presses Down from the Dock. */
     private boolean horizontalGridExpanded;
     /** Serializes the first Dock-to-overflow reveal against repeated vertical DPAD input. */
     private boolean horizontalDockExpansionInProgress;
@@ -2948,8 +2949,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // GridLayoutManager does not support stackFromEnd (it throws during onResume).
         // Keep the Grid's natural adapter order; horizontal overflow is positioned by the
         // surrounding FrameLayout geometry and is expanded only on DPAD Down.
-        // In horizontal mode the Grid is an on-demand overflow surface: hidden at rest,
-        // revealed by DPAD Down from the Dock, and collapsed again when Dock focus returns.
+        // In Vertikal/Classic mode the Grid is an on-demand progressive surface.
+        // Horizontal mode instead displays the full inventory in the Dock carousel and keeps Grid hidden.
         int wantedGridVisibility = !horizontalCarouselMode && horizontalGridExpanded ? View.VISIBLE : View.GONE;
         boolean gridVisibilityChanged = grid.getVisibility() != wantedGridVisibility;
         grid.setVisibility(wantedGridVisibility);
