@@ -205,6 +205,7 @@ class HomeAppModeContractTest(unittest.TestCase):
     def test_horizontal_carousel_matches_universal_clipping_motion_and_capacity(self):
         dock = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java").read_text(encoding="utf-8")
         geometry = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockGeometry.java").read_text(encoding="utf-8")
+        carousel = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/CarouselRecyclerView.java").read_text(encoding="utf-8")
         self.assertIn("dockRecycler.setClipChildren(horizontalCarouselMode)", MAIN)
         self.assertIn("setHorizontalViewportClip(horizontalCarouselMode,", MAIN)
         self.assertIn("horizontalCarouselStartInsetPx(density)", MAIN)
