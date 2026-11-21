@@ -36,6 +36,8 @@ final class GlassDrawable extends Drawable {
     private final Glider highlight;
     /** Paints the focus shape over the glass (a menu), rather than fading the glass for it (a pill). */
     private final boolean paintsShape;
+    /** Whether this specific surface opts into the restrained upper-edge specular reflection. */
+    private final boolean topReflection;
     /** How far the glass is shown, 0 to 1, for a panel fading in or out. */
     private float fade = 1f;
     private final int[] at = new int[2], highlightAt = new int[2];
@@ -58,14 +60,23 @@ final class GlassDrawable extends Drawable {
     GlassDrawable(View owner, float radius, float density, Glider highlight, float reach, boolean paintsShape) {
         this(owner, radius, density, highlight, reach, paintsShape,
                 TvUiTokens.GLASS_VEIL_COLOR, VEIL_ALPHA,
-                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
+                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER, false);
     }
 
     /** Popup-specific glass tuning; existing Home and dock glass retain their established material. */
     GlassDrawable(View owner, float radius, float density, Glider highlight, float reach,
                   boolean paintsShape, int veilColor, int veilAlpha,
                   int fallbackSurfaceColor, int fallbackBorderColor) {
+        this(owner, radius, density, highlight, reach, paintsShape, veilColor, veilAlpha,
+                fallbackSurfaceColor, fallbackBorderColor, false);
+    }
+
+    /** Explicitly opts one approved surface into the upper-edge specular reflection. */
+    GlassDrawable(View owner, float radius, float density, Glider highlight, float reach,
+                  boolean paintsShape, int veilColor, int veilAlpha,
+                  int fallbackSurfaceColor, int fallbackBorderColor, boolean topReflection) {
         this.paintsShape = paintsShape;
+        this.topReflection = topReflection;
         this.owner = owner;
         this.highlight = highlight;
         this.radius = radius;
@@ -149,6 +160,9 @@ final class GlassDrawable extends Drawable {
             rim.paint.setAlpha(Math.round(255 * glass));
             canvas.drawRoundRect(rect, radius - half, radius - half, rim.paint);
             rim.drawWindowLight(canvas, rect, radius - half, glass);
+            if (topReflection) {
+                rim.drawTopReflection(canvas, rect, radius - half, glass);
+            }
         }
         // The fill itself is the highlight view behind the pills, showing through as the glass clears;
         // painting it here as well would darken a focused pill twice over.
