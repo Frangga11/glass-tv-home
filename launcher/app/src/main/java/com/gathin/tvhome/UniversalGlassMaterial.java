@@ -76,8 +76,9 @@ final class UniversalGlassMaterial {
     }
 
     /**
-     * Preserve GTVH's existing disabled/pressed/focused states and use Universal's glass only
-     * for the idle state. This prevents the material adoption from replacing focus behavior.
+     * Keep GTVH's focus listeners and disabled behavior. When glass is enabled, use Universal
+     * GlassControls surfaces for idle/focused/pressed states; when disabled, restore GTVH's
+     * original solid focus fills. Focus routing and animation remain owned by GTVH.
      */
     static Drawable controlStateBackground(Context context, float density, float radiusDp,
                                            int fallbackFill, int fallbackBorder) {

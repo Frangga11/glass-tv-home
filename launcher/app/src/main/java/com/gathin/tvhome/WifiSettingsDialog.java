@@ -751,7 +751,7 @@ final class WifiSettingsDialog {
                 TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
                 TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
-        // Keep the existing disabled/pressed/focused states; only replace the idle surface material.
+        // Keep TvFocusIndicator's focus routing/text states; use Universal GlassControls surfaces.
         view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
                 TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
         view.setOnClickListener(v -> {

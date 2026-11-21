@@ -1389,3 +1389,19 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **New official starting point for all future work:** branch from `main` at `d17db23f2fdac3641dee860033e88aad1b8190de`. Do not continue from the old PR #156 feature branch as the baseline.
 - PR #62 remains OPEN / DRAFT / UNMERGED and deferred; do not alter, merge, or reuse its code without a separate audit and explicit approval. PR #153 and #154 remain closed unmerged; PR #155 remains merged.
 - Post-merge checkpoint: `GTVH-MAIN-INTEGRATION-CHECKPOINT-2026-11-22.md`.
+
+
+## Universal Glass Material Adoption — 22 November 2026
+
+- New focused workstream: PR #162 — [Adopt Universal Home glass material across Dock, home capsules and popups](https://github.com/Frangga11/glass-tv-home/pull/162).
+- Branch: `feat/universal-glass-material-adoption-001`; base `main` @ `71f3a051a25fd66cabfd1740756cc36442dc92cc`.
+- Upstream source: `Frangga11/tv-home-universal` @ `1c57fa905bfa76a0b0e8e8593d5efd7d1d97d33e`.
+- Latest implementation head: `fa42949b721bddad2cec32cab9879753eac53cd0`.
+- Ported Universal Home's `DockGlassDrawable` gradients/sweep/rims, `GlassMenu` dark panel foundation, and `GlassControls` control surfaces. Applied to the Dock tray, Home header capsules, shared navigation capsule, Quick Settings, and Wi-Fi popup/pointer/controls.
+- The existing GTVH Glider, GliderFocusDrawable, DockBreathingBorderView, DPAD, horizontal/vertical dock behavior, popup geometry, typography, spacing, and actions remain protected. The existing `glass_effects_enabled` preference and opaque fallbacks are retained.
+- The non-target Islamic Shelf and other GlassDrawable/Backdrop surfaces remain unchanged. No layout XML or focus/DPAD implementation files were changed.
+- MIT attribution is recorded in `THIRD_PARTY_NOTICES.md`.
+- Exact source-head CI #2528 / run `44961689958`: **both required jobs SUCCESS**. QA artifact ID `14729423171`, archive 1,451,733 bytes, SHA-256 `2aba5ce62acb765f7e5f349894a6c556a5da958b12612d60f7e83607adb22695`; expires 28 November 2026. Release publisher #890 was SKIPPED.
+- Physical Mi TV Stick visual acceptance for the new material remains pending. No device installation, release publication, or merge is claimed.
+- PR #162 remains OPEN / DRAFT / UNMERGED pending owner visual acceptance and explicit merge approval. PR #161 remains separate/unmerged. PR #62 remains deferred and untouched.
+- Detailed continuation record: `GTVH-UNIVERSAL-GLASS-MATERIAL-ADOPTION-CHECKPOINT-2026-11-22.md`.
