@@ -1374,3 +1374,18 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #156 can be moved from Draft to Ready for Review after exact-head CI for this documentation update succeeds. It must remain OPEN / UNMERGED until the owner explicitly authorizes merging into `main`; this handover entry is not merge authorization.
 - PR #62 remains deferred and untouched. PR #153 and #154 remain closed unmerged; PR #155 remains merged.
 - Do not reuse run #2504 to validate this documentation commit. Verify a fresh CI run on the exact resulting PR #156 head before declaring documentation closeout complete.
+
+
+## PR #156 merge and new authoritative main baseline — 22 November 2026
+
+- **PR #156 is CLOSED / MERGED** into `main` on 22 November 2026. The owner explicitly authorized the merge after exact-head CI passed.
+- PR: https://github.com/Frangga11/glass-tv-home/pull/156
+- Merged source head: `5c1bb0ef25768be363a2ee57b895ca5516ffe8d0`.
+- Merge commit and verified `main` HEAD: `d17db23f2fdac3641dee860033e88aad1b8190de`.
+- Pre-merge exact-head CI run #2506 / `44957481014` passed both required jobs on `5c1bb0ef25768be363a2ee57b895ca5516ffe8d0`: Launcher build and unit tests — SUCCESS; Lists, tools and docs — SUCCESS.
+- Owner-reported Mi TV Stick acceptance is recorded in `GTVH-QUICK-SETTINGS-DEVICE-ACCEPTANCE-CHECKPOINT-2026-11-22.md`. The assistant does not claim independent physical-device operation.
+- PR #156 integrates Quick Settings single-frame glass, Universal Glass adoption from PR #160, and the owner-accepted Horizontal Carousel / Glider correction from PR #159. PR #160 and #159 are integrated into the merged result; PR #157 remains closed unmerged/superseded.
+- This entry supersedes earlier statements in this handover and the earlier Quick Settings checkpoint that PR #156 was still Draft/unmerged or that a separate merge authorization was pending. Those statements describe the pre-merge state only.
+- **New official starting point for all future work:** branch from `main` at `d17db23f2fdac3641dee860033e88aad1b8190de`. Do not continue from the old PR #156 feature branch as the baseline.
+- PR #62 remains OPEN / DRAFT / UNMERGED and deferred; do not alter, merge, or reuse its code without a separate audit and explicit approval. PR #153 and #154 remain closed unmerged; PR #155 remains merged.
+- Post-merge checkpoint: `GTVH-MAIN-INTEGRATION-CHECKPOINT-2026-11-22.md`.
