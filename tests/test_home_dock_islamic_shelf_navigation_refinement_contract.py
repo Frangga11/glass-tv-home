@@ -174,9 +174,23 @@ class HomeAppModeContractTest(unittest.TestCase):
         self.assertIn("source.moveAllEntries(from, to)", dock)
         self.assertIn("List<Entry> allEntriesSnapshot()", adapter)
         self.assertIn("boolean moveAllEntries(int from, int to)", adapter)
-        self.assertIn("alignHorizontalCarousel(position, true)", MAIN)
+        dock_focus = MAIN[MAIN.index("public void onDockTileFocused"):MAIN.index("private void handleTileFocused")]
+        self.assertIn("dockRecycler.post(() ->", dock_focus)
+        self.assertIn("if (focusedPosition >= 0) alignHorizontalCarousel(focusedPosition, true);", dock_focus)
         restore = MAIN[MAIN.index("private void restoreMovingTile"):MAIN.index("private void stepMove(int keyCode)")]
         self.assertIn("if (inDock && horizontalCarouselMode) alignHorizontalCarousel(position, false);", restore)
+
+    def test_carousel_matches_universal_focus_scroll_contract(self):
+        carousel = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/CarouselRecyclerView.java").read_text(encoding="utf-8")
+        self.assertIn("private CarouselRecyclerView dockRecycler;", MAIN)
+        self.assertIn("dockRecycler = new CarouselRecyclerView(this);", MAIN)
+        self.assertIn("new CarouselLinearLayoutManager(this, orientation, false)", MAIN)
+        self.assertIn("setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent)", MAIN)
+        self.assertIn("setManualHorizontalFocus(horizontalCarouselMode)", MAIN)
+        self.assertIn("if (manualHorizontalFocus) return false;", carousel)
+        self.assertIn("calculateExtraLayoutSpace(RecyclerView.State state, int[] extraLayoutSpace)", carousel)
+        self.assertIn("extraLayoutSpace[0] = extent;", carousel)
+        self.assertIn("extraLayoutSpace[1] = extent;", carousel)
 
     def test_horizontal_carousel_is_one_dimensional_and_keeps_dock_bottom(self):
         keys = MAIN[MAIN.index("public boolean onDockTileKey"):MAIN.index("public boolean onDockTileHeld")]
