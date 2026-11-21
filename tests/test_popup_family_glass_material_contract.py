@@ -39,7 +39,8 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
         self.assertIn('getBoolean("glass_effects_enabled", true)', glass)
         self.assertIn("if (!glassEnabled)", glass)
-        self.assertIn("solidSurface.setColor(TvUiTokens.POPUP_SURFACE)", glass)
+        self.assertIn("TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER", glass)
+        self.assertIn("solidSurface.setColor(fallbackSurfaceColor)", glass)
         self.assertIn("canvas.drawRoundRect(rect, radius, radius, solidSurface)", glass)
 
 
