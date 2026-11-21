@@ -2398,6 +2398,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (!horizontalCarouselMode || reducedMotion || resuming || !hasWindowFocus()
                 || !lastFocusedDock || !glassShown || glider == null || !glider.isShowing()
                 || gliderOnPill || movingPos >= 0 || moveHandoffPending
+                || Math.abs(position - lastFocused) != 1
                 || dockRecycler == null || dockAdapter == null || dockRecycler.getWidth() <= 0) {
             return false;
         }
