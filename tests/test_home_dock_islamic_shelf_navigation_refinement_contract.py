@@ -211,7 +211,7 @@ class HomeAppModeContractTest(unittest.TestCase):
         self.assertIn("dockRecycler.setClipChildren(horizontalCarouselMode)", MAIN)
         self.assertIn("setHorizontalViewportClip(horizontalCarouselMode, dockCenterOffset)", MAIN)
         self.assertIn("int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(", MAIN)
-        self.assertIn("dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),\\n                        dockCenterOffset, dockRecycler.getPaddingBottom());", MAIN)
+        self.assertIn("dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),\n                        dockCenterOffset, dockRecycler.getPaddingBottom());", MAIN)
         self.assertIn("canvas.clipRect(left, 0, right, getHeight())", carousel)
         self.assertIn("int left = inset;", carousel)
         self.assertIn("int right = Math.max(left, getWidth() - inset);", carousel)
