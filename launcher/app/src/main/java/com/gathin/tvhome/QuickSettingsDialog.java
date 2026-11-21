@@ -113,9 +113,7 @@ final class QuickSettingsDialog {
                 dp(density, PANEL_SIDE_INSET_DP), dp(density, PANEL_VERTICAL_INSET_DP));
         content.setClipChildren(true);
         content.setClipToPadding(true);
-        content.setBackground(new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,
-                PANEL_GLASS_VEIL, 0x54, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
-        Backdrop.watch(content);
+        content.setBackground(UniversalGlassMaterial.panel(density, TvUiTokens.POPUP_RADIUS_DP));
 
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -367,10 +365,7 @@ final class QuickSettingsDialog {
             if (control == null) continue;
             boolean manageCapsule = "quick_settings_manage_wallpaper".equals(control.getTag());
             float cornerRadiusDp = manageCapsule ? 7f : 10f;
-            GradientDrawable idle = new GradientDrawable();
-            idle.setColor(CAPSULE_IDLE_FILL);
-            idle.setCornerRadius(density * cornerRadiusDp);
-            idle.setStroke(Math.max(1, dp(density, 1)), CAPSULE_IDLE_BORDER);
+            Drawable idle = UniversalGlassMaterial.controlIdle(density, cornerRadiusDp);
             control.setBackground(new LayerDrawable(new Drawable[]{
                     idle, new GliderFocusDrawable(control, glider)
             }));
