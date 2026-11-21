@@ -33,6 +33,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private int horizontalViewportWidthPx;
     private List<AppAdapter.Entry> entries = Collections.emptyList();
     private boolean vertical;
+    private boolean carouselMode;
 
     DockAdapter(Context context, AppAdapter source, Listener listener, boolean reducedMotion) {
         this.context = context;
@@ -49,7 +50,8 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     void refresh() {
         capacity = DockPreferences.load(context).capacity;
         DockLayoutModel.Snapshot<AppAdapter.Entry> snapshot = source.dockSnapshot();
-        entries = snapshot == null ? Collections.emptyList() : snapshot.dockItems;
+        entries = carouselMode ? source.allEntriesSnapshot()
+                : snapshot == null ? Collections.emptyList() : snapshot.dockItems;
         notifyDataSetChanged();
     }
 
@@ -66,6 +68,12 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (this.vertical == vertical) return;
         this.vertical = vertical;
         notifyDataSetChanged();
+    }
+
+    void setCarouselMode(boolean enabled) {
+        if (carouselMode == enabled) return;
+        carouselMode = enabled;
+        refresh();
     }
 
     @Override
@@ -135,9 +143,12 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (vertical) {
             width = DockGeometry.verticalDockTileWidthPx(inner, density);
             itemWidth = width;
+        } else if (carouselMode) {
+            // Match Universal's visible-card count and 20dp pitch without changing Classic geometry.
+            width = DockGeometry.horizontalCarouselCardWidthPx(viewportWidthPx, capacity, density);
+            itemWidth = DockGeometry.horizontalCarouselSlotWidthPx(viewportWidthPx, capacity, density);
         } else {
-            // Dock card geometry is independent from the full-size App Grid geometry.
-            // The full-width tray remains owned by DockDecoration; only the card slots tighten.
+            // Classic Dock card geometry remains independent from the full-size App Grid geometry.
             int horizontalWidth = DockGeometry.horizontalContentWidthPx(viewportWidthPx, density);
             width = DockGeometry.horizontalDockTileWidthPx(horizontalWidth, capacity, density);
             itemWidth = DockGeometry.horizontalDockSlotWidthPx(horizontalWidth, capacity, density);
@@ -217,7 +228,7 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     boolean move(int from, int to) {
-        boolean moved = source.moveDock(from, to);
+        boolean moved = carouselMode ? source.moveAllEntries(from, to) : source.moveDock(from, to);
         if (moved) refresh();
         return moved;
     }
