@@ -33,9 +33,9 @@ public class DockPreferencesStateTest {
                 DockPreferences.normalizeOrientation("VERTICAL"));
         assertEquals(DockPreferences.Orientation.HORIZONTAL,
                 DockPreferences.normalizeOrientation("HORIZONTAL"));
-        assertEquals(DockPreferences.Orientation.HORIZONTAL,
+        assertEquals(DockPreferences.Orientation.VERTICAL,
                 DockPreferences.normalizeOrientation("sideways"));
-        assertEquals(DockPreferences.Orientation.HORIZONTAL,
+        assertEquals(DockPreferences.Orientation.VERTICAL,
                 DockPreferences.normalizeOrientation(null));
     }
 
