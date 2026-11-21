@@ -2975,9 +2975,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Keep RecyclerView's padding out of its native clip calculation: the right padding
         // is a scroll-tail spacer. CarouselRecyclerView clips children to the fixed visual lane.
         dockRecycler.setClipToPadding(false);
-        // Reapply the exact viewport clip after measured geometry and centered insets are known.
         // The scroll tail is provided by DockDecoration, never by RecyclerView padding.
-        dockRecycler.setHorizontalViewportClip(false, 0);
         if (!horizontalCarouselMode) {
             if (horizontalCarouselAnimator != null) horizontalCarouselAnimator.cancel();
             horizontalCarouselAnimator = null;
@@ -3034,6 +3032,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         gridParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         dockParams.gravity = dockVertical ? Gravity.START : Gravity.BOTTOM;
         boolean hasDock = dockCount > 0;
+        if (dockVertical || !hasDock) dockRecycler.setHorizontalViewportClip(false, 0);
         int wantedDockVisibility = hasDock ? View.VISIBLE : View.GONE;
         boolean dockVisibilityChanged = dockRecycler.getVisibility() != wantedDockVisibility;
         dockRecycler.setVisibility(wantedDockVisibility);
@@ -4172,7 +4171,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
         // A repeated focus callback for the same in-flight destination must not restart its pan.
         if (horizontalCarouselAnimator != null
-                && horizontalCarouselTargetOffsetPx == targetOffset) return;
+                && horizontalCarouselTargetOffsetPx == targetOffset) {
+            // The target focus may have changed while the same destination pan is in flight.
+            // Rebind the outline to the newly focused child; subsequent frames keep it locked.
+            syncFocusedDockGlider();
+            return;
+        }
 
         // Cancel a previous destination before the near-zero-delta return. Otherwise an older
         // animator can keep scrolling after DPAD has already moved focus back to this slot.
