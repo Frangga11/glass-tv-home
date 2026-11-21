@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Shader;
 
@@ -18,6 +19,10 @@ final class GlassRim {
     final Paint windowLightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Matrix matrix = new Matrix();
     private final Matrix windowLightMatrix = new Matrix();
+    private final Matrix topReflectionMatrix = new Matrix();
+    private final Path topReflectionPath = new Path();
+    private final Paint topReflectionGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint topReflectionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     GlassRim(float strokePx, int shine, int faint) {
         this(strokePx, shine, faint, 1f);
@@ -89,6 +94,28 @@ final class GlassRim {
                 1.00f
         };
         windowLightPaint.setShader(new LinearGradient(0f, 0f, 1f, 0f, wlColors, wlStops, Shader.TileMode.CLAMP));
+
+        // A restrained, straight specular line on the upper glass edge. It is opt-in at the
+        // surface level so unrelated popup and card treatments retain their accepted appearance.
+        int[] reflectionColors = new int[]{
+                0x00FFFFFF, 0x24FFFFFF, 0x78FFFFFF, 0x58FFFFFF, 0x00FFFFFF
+        };
+        float[] reflectionStops = new float[]{0f, 0.14f, 0.42f, 0.78f, 1f};
+        Shader reflectionShader = new LinearGradient(
+                0f, 0f, 1f, 0f, reflectionColors, reflectionStops, Shader.TileMode.CLAMP);
+        topReflectionPaint.setStyle(Paint.Style.STROKE);
+        topReflectionPaint.setStrokeCap(Paint.Cap.ROUND);
+        topReflectionPaint.setStrokeWidth(Math.max(0.65f, strokePx * 0.45f));
+        topReflectionPaint.setShader(reflectionShader);
+
+        int[] glowColors = new int[]{
+                0x00FFFFFF, 0x10FFFFFF, 0x28FFFFFF, 0x18FFFFFF, 0x00FFFFFF
+        };
+        topReflectionGlowPaint.setStyle(Paint.Style.STROKE);
+        topReflectionGlowPaint.setStrokeCap(Paint.Cap.ROUND);
+        topReflectionGlowPaint.setStrokeWidth(Math.max(1.5f, strokePx * 1.8f));
+        topReflectionGlowPaint.setShader(new LinearGradient(
+                0f, 0f, 1f, 0f, glowColors, reflectionStops, Shader.TileMode.CLAMP));
     }
 
     private static int modulateAlpha(int color, float factor) {
@@ -103,7 +130,7 @@ final class GlassRim {
         paint.getShader().setLocalMatrix(matrix);
     }
 
-    /** Draws the overhead window light glint along the top curve of the soap bubble. */
+    /** Draws the overhead window light glint along the glass perimeter. */
     void drawWindowLight(Canvas canvas, RectF rect, float cornerRadius, float alpha) {
         if (alpha <= 0.05f) return;
         windowLightMatrix.setScale(rect.width(), rect.height());
@@ -111,5 +138,26 @@ final class GlassRim {
         windowLightPaint.getShader().setLocalMatrix(windowLightMatrix);
         windowLightPaint.setAlpha(Math.round(200 * alpha));
         canvas.drawRoundRect(rect, cornerRadius, cornerRadius, windowLightPaint);
+    }
+
+    /** Draws a very thin, softly fading specular reflection along the straight upper edge. */
+    void drawTopReflection(Canvas canvas, RectF rect, float cornerRadius, float alpha) {
+        if (alpha <= 0.05f || rect.width() <= 0f || rect.height() <= 0f) return;
+        float inset = Math.min(cornerRadius * 0.72f, rect.width() * 0.18f);
+        float y = rect.top + topReflectionPaint.getStrokeWidth() * 0.5f;
+        if (rect.width() - inset * 2f <= 0f) return;
+
+        topReflectionMatrix.setScale(rect.width(), rect.height());
+        topReflectionMatrix.postTranslate(rect.left, rect.top);
+        topReflectionPaint.getShader().setLocalMatrix(topReflectionMatrix);
+        topReflectionGlowPaint.getShader().setLocalMatrix(topReflectionMatrix);
+        topReflectionPaint.setAlpha(Math.round(210 * alpha));
+        topReflectionGlowPaint.setAlpha(Math.round(150 * alpha));
+
+        topReflectionPath.reset();
+        topReflectionPath.moveTo(rect.left + inset, y);
+        topReflectionPath.lineTo(rect.right - inset, y);
+        canvas.drawPath(topReflectionPath, topReflectionGlowPaint);
+        canvas.drawPath(topReflectionPath, topReflectionPaint);
     }
 }
