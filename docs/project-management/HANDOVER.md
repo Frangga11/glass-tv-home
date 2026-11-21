@@ -1389,3 +1389,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - **New official starting point for all future work:** branch from `main` at `d17db23f2fdac3641dee860033e88aad1b8190de`. Do not continue from the old PR #156 feature branch as the baseline.
 - PR #62 remains OPEN / DRAFT / UNMERGED and deferred; do not alter, merge, or reuse its code without a separate audit and explicit approval. PR #153 and #154 remain closed unmerged; PR #155 remains merged.
 - Post-merge checkpoint: `GTVH-MAIN-INTEGRATION-CHECKPOINT-2026-11-22.md`.
+
+
+## Glass edge reflection adoption — 22 November 2026
+
+- New focused workstream: PR #161 — [Add restrained top-edge glass reflection to Dock and Quick Settings](https://github.com/Frangga11/glass-tv-home/pull/161).
+- Branch: `feat/glass-edge-reflection-001`; baseline `main` @ `71f3a051a25fd66cabfd1740756cc36442dc92cc`.
+- Audit found the shared `Backdrop.Fill` / `GlassRim` material already exists. The missing primitive was a separately controlled, thin upper-edge specular reflection; existing `drawWindowLight()` is a perimeter glint. `DockBreathingBorderView` remains a distinct animated card-rim effect and is untouched.
+- Implemented opt-in top-edge reflection on `DockDecoration` and Quick Settings only. Existing `GlassDrawable` callers default to no new reflection; Wi-Fi and other popup surfaces remain unchanged.
+- Source head before this documentation update: `7339b89c16fe1544a9ad738cd15c75cdc329f9b6`.
+- Exact PR CI #2512 / `44959229044`: Lists, tools and docs SUCCESS; Launcher build and unit tests IN PROGRESS at checkpoint preparation. Do not report overall CI PASS until both jobs complete successfully on the exact final head.
+- Physical Mi TV Stick visual acceptance for this new effect remains pending. No device test, release publication, or merge is claimed.
+- Detailed checkpoint: `GTVH-GLASS-EDGE-REFLECTION-CHECKPOINT-2026-11-22.md`.
+- PR #161 remains OPEN / DRAFT / UNMERGED. PR #62 remains OPEN / DRAFT / DEFERRED and untouched.
