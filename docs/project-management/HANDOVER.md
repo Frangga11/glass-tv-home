@@ -1343,3 +1343,18 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #156 remains OPEN / DRAFT / UNMERGED. Physical Mi TV Stick validation is still outstanding; CI is not device acceptance. No merge to `main` or final APK release is authorized until device acceptance and explicit owner approval.
 - PR #62 remains deferred and untouched. PR #153 and #154 remain closed unmerged historical candidates; PR #155 remains merged.
 - The documentation commits trigger fresh CI; record exact-head results only after the latest documentation head's run finishes. Do not reuse run #2459 as evidence for later documentation commits.
+
+
+## Horizontal Carousel / Glider acceptance handoff — 21 November 2026
+
+- Active workstream: PR #159, **Fix horizontal carousel clipping and Universal motion on latest Quick Settings baseline**.
+- Branch: `fix/home-horizontal-carousel-universal-001`; base: PR #156 branch `feature/quick-settings-single-frame-glass-001`.
+- Implementation head accepted by owner: `b1c12b52a7c4784f9758bd9b487e5549d6e50a59`.
+- Owner tested the cumulative QA APK and confirmed the horizontal movement / Glider behavior as **“Sempurna”**.
+- Root cause fixed: per-frame `moveToScreenImmediately()` calls cancelled the shared Glider spring animation during carousel panning. The corrected path keeps Glider anchored to the Universal focus lane during adjacent horizontal DPAD pans and springs it back to the first slot on return.
+- The existing Glider and `DockBreathingBorderView` are both preserved as complementary effects. Vertical / Classic and Move Mode remain outside the correction. No card/icon geometry, spacing, dock placement, clipping or scroll-tail changes are included in the final Glider correction.
+- Exact implementation-head CI: run #2489 / `44918592733`, SUCCESS; Launcher build and unit tests SUCCESS; Lists/tools/docs SUCCESS.
+- QA artifact ID `14712099341`; extracted APK 1,649,218 bytes; SHA-256 `bd526fb06fac12aca97685c82206579314ee7f4b2f925042f6c5278aca166501`. APK archive integrity passed. This is a cumulative CI QA APK, not a formal signed release.
+- Detailed record: `GTVH-HORIZONTAL-CAROUSEL-UNIVERSAL-MOTION-CHECKPOINT-2026-11-21.md`.
+- PR #159 remains stacked on PR #156. Preserve the parent relationship; do not merge PR #156 to `main` as part of this workstream. PR #62 remains deferred and untouched.
+- The documentation synchronization commit requires its own exact-head CI. Do not reuse the implementation-head CI as validation of later documentation commits.
