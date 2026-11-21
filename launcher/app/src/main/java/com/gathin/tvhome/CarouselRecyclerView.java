@@ -28,9 +28,8 @@ final class CarouselRecyclerView extends RecyclerView {
     }
 
     /**
-     * Clips carousel children to the visible lane, independently of RecyclerView padding.
-     * In Horizontal mode the right padding is deliberately a large scroll-tail spacer so the
-     * final app can reach the Universal second-slot anchor; it must not become the clip edge.
+     * Clips carousel children to a centered visual lane. The same measured inset is used on
+     * both edges; extra horizontal travel is owned by DockDecoration, not RecyclerView padding.
      */
     void setHorizontalViewportClip(boolean enabled, int edgeInsetPx) {
         int inset = Math.max(0, edgeInsetPx);
