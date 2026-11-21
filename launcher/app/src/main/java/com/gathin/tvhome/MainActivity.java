@@ -4075,7 +4075,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 scroller.setTargetPosition(anchor);
                 layout.startSmoothScroll(scroller);
             } else {
-                layout.scrollToPositionWithOffset(anchor, dockRecycler.getPaddingLeft());
+                layout.scrollToPositionWithOffset(anchor, 0);
             }
         } else {
             dockRecycler.scrollToPosition(Math.max(0, position - 1));
