@@ -15,7 +15,7 @@ final class DockPreferences {
 
     static final int DEFAULT_CAPACITY = 5;
     static final String PREFS = "dock_presentation";
-    private static final String KEY_ORIENTATION = "orientation";
+    private static final String KEY_ORIENTATION = "app_mode";
     private static final String KEY_CAPACITY = "capacity";
     private static final String KEY_PINNED_KEYS = "pinned_component_keys";
     private static final String KEY_UNPINNED_KEYS = "unpinned_component_keys";
@@ -31,7 +31,7 @@ final class DockPreferences {
     static DockPreferences load(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         Orientation orientation = normalizeOrientation(
-                preferences.getString(KEY_ORIENTATION, Orientation.HORIZONTAL.name()));
+                preferences.getString(KEY_ORIENTATION, Orientation.VERTICAL.name()));
         int capacity = normalizeCapacity(
                 preferences.getInt(KEY_CAPACITY, DEFAULT_CAPACITY));
         return new DockPreferences(orientation, capacity);
@@ -41,7 +41,7 @@ final class DockPreferences {
         try {
             return Orientation.valueOf(raw);
         } catch (IllegalArgumentException | NullPointerException ignored) {
-            return Orientation.HORIZONTAL;
+            return Orientation.VERTICAL;
         }
     }
 
