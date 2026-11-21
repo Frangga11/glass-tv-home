@@ -2972,10 +2972,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockAdapter.setVertical(false);
         dockAdapter.setCarouselMode(horizontalCarouselMode);
         dockRecycler.setClipChildren(horizontalCarouselMode);
-        // Keep RecyclerView's padding out of its native clip calculation: the right padding
-        // is a scroll-tail spacer. CarouselRecyclerView clips children to the fixed visual lane.
+        // Use RecyclerView's full padded content area and apply a symmetric visual clip below.
+        // The extra scroll extent is a final-item decoration, not host padding.
         dockRecycler.setClipToPadding(false);
-        // The scroll tail is provided by DockDecoration, never by RecyclerView padding.
         if (!horizontalCarouselMode) {
             if (horizontalCarouselAnimator != null) horizontalCarouselAnimator.cancel();
             horizontalCarouselAnimator = null;
