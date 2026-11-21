@@ -136,7 +136,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     private AppAdapter adapter;
     private RecyclerView grid;
-    private RecyclerView dockRecycler;
+    private CarouselRecyclerView dockRecycler;
     private DockAdapter dockAdapter;
     private DockDecoration tray;
     /** Physical orientation is locked to horizontal/bottom; legacy checks remain for Classic layout paths. */
@@ -930,7 +930,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         Backdrop.watch(grid);
 
         // Dock is a sibling surface inside the same clipped/fade-aware host, not a row in the App Grid.
-        dockRecycler = new RecyclerView(this);
+        dockRecycler = new CarouselRecyclerView(this);
         dockRecycler.setHasFixedSize(true);
         dockRecycler.setItemAnimator(null);
         dockRecycler.setClipChildren(false);
@@ -2366,7 +2366,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Dock is a newer, authoritative focus destination; cancel every queued Grid request.
         gridFocusRequestGeneration++;
         if (!dockVertical) cancelHorizontalGridRowTransition();
-        if (horizontalCarouselMode) alignHorizontalCarousel(position, true);
+        if (horizontalCarouselMode) {
+            // Universal posts its pan after Android has committed the new focused child.
+            // Keep exactly one owner for scrolling: the carousel animator, never focus auto-scroll.
+            dockRecycler.post(() -> {
+                if (!horizontalCarouselMode || !card.hasFocus() || dockAdapter == null) return;
+                int focusedPosition = dockAdapter.positionOf(key);
+                if (focusedPosition >= 0) alignHorizontalCarousel(focusedPosition, true);
+            });
+        }
         // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
         // Collapse the overflow Grid only after focus has actually reached a Dock tile.
         handleTileFocused(key, position, card, true);
@@ -2996,12 +3004,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int orientation = dockVertical
                 ? android.widget.LinearLayout.VERTICAL : android.widget.LinearLayout.HORIZONTAL;
         RecyclerView.LayoutManager current = dockRecycler.getLayoutManager();
-        if (!(current instanceof androidx.recyclerview.widget.LinearLayoutManager)
-                || ((androidx.recyclerview.widget.LinearLayoutManager) current).getOrientation() != orientation) {
-            dockRecycler.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, orientation, false));
+        if (!(current instanceof CarouselLinearLayoutManager)
+                || ((CarouselLinearLayoutManager) current).getOrientation() != orientation) {
+            dockRecycler.setLayoutManager(new CarouselLinearLayoutManager(this, orientation, false));
         }
 
         int dockCount = dockAdapter.getItemCount();
+        CarouselLinearLayoutManager carouselLayout =
+                (CarouselLinearLayoutManager) dockRecycler.getLayoutManager();
+        int carouselPrelayoutExtent = horizontalCarouselMode
+                ? Math.max(1, getResources().getDisplayMetrics().widthPixels) * Math.max(1, dockCount)
+                : 0;
+        carouselLayout.setKeepAllCarouselItems(horizontalCarouselMode, carouselPrelayoutExtent);
+        dockRecycler.setManualHorizontalFocus(horizontalCarouselMode);
         if (tray == null) {
             tray = new DockDecoration(dockCount, density, dockVertical);
             tray.setGlider(glider);
