@@ -146,6 +146,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     /** Pixel animator matching TV Home Universal's 240ms horizontal carousel pan. */
     private android.animation.ValueAnimator horizontalCarouselAnimator;
     private int horizontalCarouselTargetOffsetPx = RecyclerView.NO_POSITION;
+    /** Keep the existing Glider at the Universal focus lane while the carousel row moves beneath it. */
+    private boolean horizontalCarouselGliderAnchored;
+    /** One focus callback may defer retargeting until its coordinated carousel pan has settled. */
+    private boolean deferHorizontalCarouselGliderMove;
     /** Classic-mode Grid stays parked out of sight until the user presses Down from the Dock. */
     private boolean horizontalGridExpanded;
     /** Serializes the first Dock-to-overflow reveal against repeated vertical DPAD input. */
@@ -2305,6 +2309,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
 
     /** Reposition the single Glider from the actual focused Dock card after Dock geometry changes. */
     private void syncFocusedDockGlider() {
+        moveFocusedDockGlider(true);
+    }
+
+    /** Move or hard-sync the shared Glider without changing the focused card's own presentation. */
+    private void moveFocusedDockGlider(boolean immediate) {
         if (!glassShown || glider == null || root == null || dockRecycler == null) return;
         View card = focusedCardFromCurrentFocus();
         if (card == null || !isDescendantOf(card, dockRecycler)) return;
@@ -2318,8 +2327,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         float left = bounds.exactCenterX() - width / 2f;
         float top = bounds.exactCenterY() - height / 2f;
         float radius = AppAdapter.cornerRadius(card.getWidth(), density) * scale;
-        glider.moveToScreenImmediately(left + pad, top + pad,
-                left + width - pad, top + height - pad, radius);
+        if (immediate) {
+            glider.moveToScreenImmediately(left + pad, top + pad,
+                    left + width - pad, top + height - pad, radius);
+        } else {
+            glider.moveToScreen(left + pad, top + pad,
+                    left + width - pad, top + height - pad, radius);
+        }
     }
 
     /** Synchronize the one focus shape with the focused Dock OR Grid card during container motion. */
@@ -2366,11 +2380,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Dock is a newer, authoritative focus destination; cancel every queued Grid request.
         gridFocusRequestGeneration++;
         if (!dockVertical) cancelHorizontalGridRowTransition();
-        // Commit focus metadata/cursor target first, then calculate the carousel pan in the
-        // same focus callback. A posted second pass allowed cursor springs and row scrolling
-        // to start on different frames.
+        // When the carousel itself must pan, keep the existing Glider in its focus lane. The
+        // destination card will travel underneath it; hard-syncing to the pre-pan child would
+        // cancel the very box-glide we are preserving.
+        boolean preserveGlider = shouldAnchorHorizontalCarouselGlider(position);
+        deferHorizontalCarouselGliderMove = preserveGlider;
         handleTileFocused(key, position, card, true);
+        deferHorizontalCarouselGliderMove = false;
+        horizontalCarouselGliderAnchored = preserveGlider;
         if (horizontalCarouselMode) alignHorizontalCarousel(position, true);
+    }
+
+    /** True only for an established Dock selection that is about to move under the focus lane. */
+    private boolean shouldAnchorHorizontalCarouselGlider(int position) {
+        if (!horizontalCarouselMode || reducedMotion || resuming || !hasWindowFocus()
+                || !lastFocusedDock || !glassShown || glider == null || !glider.isShowing()
+                || gliderOnPill || movingPos >= 0 || moveHandoffPending
+                || dockRecycler == null || dockAdapter == null || dockRecycler.getWidth() <= 0) {
+            return false;
+        }
+        int capacity = DockPreferences.load(this).capacity;
+        int slotWidth = DockGeometry.horizontalDockSlotWidthPx(
+                DockGeometry.horizontalContentWidthPx(dockRecycler.getWidth(), density), capacity, density);
+        if (slotWidth <= 0) return false;
+        int tailInset = DockGeometry.horizontalCarouselTailInsetPx(
+                dockRecycler.getWidth(), slotWidth, dockAdapter.getItemCount(),
+                capacity, dockRecycler.getPaddingLeft());
+        int maxOffset = Math.max(0, dockAdapter.getItemCount() * slotWidth
+                + dockRecycler.getPaddingLeft() + dockRecycler.getPaddingRight()
+                + tailInset - dockRecycler.getWidth());
+        int targetOffset = Math.min(maxOffset, Math.max(0, position - 1) * slotWidth);
+        return Math.abs(targetOffset - horizontalCarouselScrollOffsetPx(slotWidth)) > 1;
     }
 
     private void handleTileFocused(String key, int position, View card, boolean inDock) {
@@ -2416,7 +2456,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         glassTargetX = x;
         glassTargetY = y;
         float cardRadius = AppAdapter.cornerRadius(card.getWidth(), density) * focusScale;
-        if (gliderOnPill) {
+        if (deferHorizontalCarouselGliderMove && inDock) {
+            // The previous focused card occupies the same final second-slot anchor. Leave the
+            // shape alive there while RecyclerView carries the newly focused card underneath it.
+        } else if (gliderOnPill) {
             if (inDock) glider.moveToScreen(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
             else glider.moveTo(x + pad, y + pad, x + w - pad, y + h - pad, cardRadius);
             glider.onArrive(() -> {
@@ -4171,9 +4214,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // A repeated focus callback for the same in-flight destination must not restart its pan.
         if (horizontalCarouselAnimator != null
                 && horizontalCarouselTargetOffsetPx == targetOffset) {
-            // The target focus may have changed while the same destination pan is in flight.
-            // Rebind the outline to the newly focused child; subsequent frames keep it locked.
-            syncFocusedDockGlider();
+            // Same pan: the established Glider remains in the destination lane. Only a fresh
+            // non-anchored focus (for example, restoration) needs to follow the real child.
+            if (!horizontalCarouselGliderAnchored) syncFocusedDockGlider();
             return;
         }
 
@@ -4191,20 +4234,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         if (Math.abs(delta) <= 1) {
             if (delta != 0) dockRecycler.scrollBy(delta, 0);
             settleHorizontalCarouselOffset(targetOffset, slotWidth);
+            if (horizontalCarouselGliderAnchored) {
+                horizontalCarouselGliderAnchored = false;
+                if (position == 0) moveFocusedDockGlider(false);
+                else syncFocusedDockGlider();
+            }
             return;
         }
         if (!animate || reducedMotion) {
+            horizontalCarouselGliderAnchored = false;
             dockRecycler.scrollBy(delta, 0);
             settleHorizontalCarouselOffset(targetOffset, slotWidth);
-            // The immediate pan has completed; hard-sync the focus outline to the actual card.
+            // A non-animated pan ends at its final geometry; align the outline once, not per frame.
             syncFocusedDockGlider();
             return;
         }
 
-        // The focused card and the row now share one animation clock. The outline is hard-synced
-        // to the real focused view after every scroll step, rather than running an independent
-        // spring toward coordinates captured before the row moved.
-        syncFocusedDockGlider();
+        // For established carousel focus, leave the Glider at its Universal lane while the
+        // cards pan beneath it. Fresh/restored focus still follows the actual child on each frame.
+        if (!horizontalCarouselGliderAnchored) syncFocusedDockGlider();
         final int[] applied = { currentOffset };
         final android.animation.ValueAnimator animator =
                 android.animation.ValueAnimator.ofInt(currentOffset, targetOffset);
@@ -4216,7 +4264,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             int next = (Integer) value.getAnimatedValue();
             dockRecycler.scrollBy(next - applied[0], 0);
             applied[0] = next;
-            syncFocusedDockGlider();
+            if (!horizontalCarouselGliderAnchored) syncFocusedDockGlider();
         });
         final boolean[] cancelled = { false };
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
@@ -4228,7 +4276,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     horizontalCarouselAnimator = null;
                     if (!cancelled[0] && horizontalCarouselMode) {
                         settleHorizontalCarouselOffset(targetOffset, slotWidth);
-                        syncFocusedDockGlider();
+                        if (horizontalCarouselGliderAnchored) {
+                            horizontalCarouselGliderAnchored = false;
+                            if (position == 0) {
+                                // Returning to the carousel's first slot changes the focus lane
+                                // from slot two to slot one; glide there after the row has settled.
+                                dockRecycler.postOnAnimation(() -> moveFocusedDockGlider(false));
+                            }
+                        } else {
+                            syncFocusedDockGlider();
+                        }
                     }
                 }
             }
