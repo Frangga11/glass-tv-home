@@ -2979,7 +2979,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         dockAdapter.setVertical(false);
         dockAdapter.setCarouselMode(horizontalCarouselMode);
         dockRecycler.setClipChildren(horizontalCarouselMode);
+        // Keep RecyclerView's padding out of its native clip calculation: the right padding
+        // is a scroll-tail spacer. CarouselRecyclerView clips children to the fixed visual lane.
         dockRecycler.setClipToPadding(false);
+        dockRecycler.setHorizontalViewportClip(horizontalCarouselMode,
+                DockGeometry.horizontalCarouselStartInsetPx(density));
         if (!horizontalCarouselMode) {
             if (horizontalCarouselAnimator != null) horizontalCarouselAnimator.cancel();
             horizontalCarouselAnimator = null;
@@ -4144,6 +4148,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         return Math.max(0, dockRecycler.computeHorizontalScrollOffset());
     }
 
+    /** Correct any sub-pixel/rounding residue so the carousel always rests on an exact slot. */
+    private void settleHorizontalCarouselOffset(int targetOffset, int slotWidth) {
+        if (!horizontalCarouselMode || dockRecycler == null || slotWidth <= 0) return;
+        int actualOffset = horizontalCarouselScrollOffsetPx(slotWidth);
+        int correction = targetOffset - actualOffset;
+        if (correction != 0) dockRecycler.scrollBy(correction, 0);
+    }
+
     /** Match Universal: selected index is anchored at slot two, with a 240ms decelerating pan. */
     private void alignHorizontalCarousel(int position, boolean animate) {
         if (!horizontalCarouselMode || dockRecycler == null || dockAdapter == null
@@ -4172,6 +4184,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         horizontalCarouselTargetOffsetPx = targetOffset;
         if (!animate || reducedMotion) {
             dockRecycler.scrollBy(targetOffset - currentOffset, 0);
+            settleHorizontalCarouselOffset(targetOffset, slotWidth);
             return;
         }
         final int[] applied = { currentOffset };
@@ -4185,9 +4198,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             dockRecycler.scrollBy(next - applied[0], 0);
             applied[0] = next;
         });
+        final boolean[] cancelled = { false };
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
+            @Override public void onAnimationCancel(android.animation.Animator animation) {
+                cancelled[0] = true;
+            }
             @Override public void onAnimationEnd(android.animation.Animator animation) {
-                if (horizontalCarouselAnimator == animator) horizontalCarouselAnimator = null;
+                if (horizontalCarouselAnimator == animator) {
+                    horizontalCarouselAnimator = null;
+                    if (!cancelled[0] && horizontalCarouselMode) {
+                        settleHorizontalCarouselOffset(targetOffset, slotWidth);
+                    }
+                }
             }
         });
         animator.start();
