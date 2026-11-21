@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Persisted Dock presentation preferences.
- *
- * These values describe only the Dock. They must never be used as the
- * app-grid span count: MainActivity.COLUMNS remains the independent grid
- * geometry until the Dock renderer and focus model are migrated.
+ * Persisted Home app-navigation mode and Dock capacity.
+ * VERTICAL selects the existing progressive Classic mode; HORIZONTAL selects
+ * the one-row carousel. Neither mode changes the Dock physical position.
+ * Capacity controls visible card sizing, never the total carousel inventory
+ * or MainActivity.COLUMNS, which remains the independent Classic Grid span.
  */
 final class DockPreferences {
     enum Orientation { VERTICAL, HORIZONTAL }
