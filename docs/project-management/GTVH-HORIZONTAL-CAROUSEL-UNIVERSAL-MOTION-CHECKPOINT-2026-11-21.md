@@ -38,8 +38,14 @@
 - The artifact is a cumulative CI QA APK, not a signed store/release publication.
 
 ## Integration disposition
-- Owner acceptance is recorded for the tested horizontal Glider / DPAD behavior.
-- PR #159 is stacked on PR #156; integration must preserve this parent relationship and must not bypass the Quick Settings baseline.
-- PR #156 itself remains OPEN / DRAFT / UNMERGED pending its own acceptance gates. This checkpoint does not authorize merging PR #156 to `main`.
+
+- Owner acceptance is recorded for the tested horizontal Glider / DPAD behavior; the owner reported the result as **“Sempurna”** on the target Mi TV Stick.
+- PR #159 was **CLOSED / MERGED** into the PR #156 parent branch on 21 November 2026.
+- Merge commit / resulting PR #156 head: `f8c1f554fff4379bb3bd4d426e3218fcc820b9e1`.
+- The parent PR #156 exact-head CI run #2493 / `44919477582` completed **SUCCESS** on that exact merge commit. Both required jobs passed: Launcher build and unit tests; Lists, tools and docs.
+- PR #159 is no longer stacked/open. Its accepted horizontal-carousel implementation is now part of the PR #156 branch; the parent relationship to `main` remains unchanged.
+- Horizontal Carousel / Glider code integration, owner acceptance record, documentation synchronization, and exact-head CI verification are **COMPLETE**.
+- PR #156 itself remains OPEN / DRAFT / UNMERGED pending its own Quick Settings physical-device acceptance gates and explicit owner approval. This checkpoint does not authorize merging PR #156 to `main`.
+- `main` remains unchanged at `0662c80bf80a6df06248262eeb0599a93aaba3e5`.
 - PR #62 remains deferred and untouched.
 - Any subsequent defect must be handled as a new, narrowly scoped corrective task. Do not disturb the accepted Glider motion.
