@@ -35,6 +35,31 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("Backdrop.watch(decor)", style)
         self.assertIn("window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))", style)
 
+    def test_top_edge_specular_reflection_is_scoped_to_dock_and_quick_settings(self):
+        rim = (JAVA / "GlassRim.java").read_text(encoding="utf-8")
+        self.assertIn("void drawTopReflection(", rim)
+        self.assertIn("topReflectionGlowPaint", rim)
+        self.assertIn("topReflectionPaint", rim)
+        self.assertIn("canvas.drawPath(topReflectionPath, topReflectionGlowPaint)", rim)
+        self.assertIn("canvas.drawPath(topReflectionPath, topReflectionPaint)", rim)
+
+        dock = (JAVA / "DockDecoration.java").read_text(encoding="utf-8")
+        self.assertIn("edge.drawTopReflection(c, rect, radius - half, 1f)", dock)
+
+        glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
+        self.assertIn("private final boolean topReflection", glass)
+        self.assertIn("if (topReflection)", glass)
+        self.assertIn("rim.drawTopReflection(canvas, rect, radius - half, glass)", glass)
+        self.assertIn("fallbackSurfaceColor, fallbackBorderColor, false", glass)
+
+        quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER, true)", quick)
+
+        # Other popup surfaces keep the default material unless explicitly opted in.
+        wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("new GlassDrawable(content,", wifi)
+        self.assertNotIn("PANEL_FALLBACK_BORDER, true)", wifi)
+
     def test_glass_disabled_mode_keeps_an_opaque_structural_surface(self):
         glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
         self.assertIn('getBoolean("glass_effects_enabled", true)', glass)
