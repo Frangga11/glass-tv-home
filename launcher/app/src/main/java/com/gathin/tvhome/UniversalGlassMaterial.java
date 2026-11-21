@@ -88,15 +88,16 @@ final class UniversalGlassMaterial {
         disabled.setCornerRadius(radiusDp * density);
         disabled.setStroke(Math.max(1, Math.round(density)), TvUiTokens.DISABLED_BORDER);
 
-        GradientDrawable pressed = new GradientDrawable();
-        pressed.setColor(TvUiTokens.SURFACE_SELECTED);
+        // Match Universal Home GlassControls for popup focus/pressed surfaces.
+        GradientDrawable pressed = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x48FFFFFF, 0x22FFFFFF});
         pressed.setCornerRadius(radiusDp * density);
-        pressed.setStroke(Math.max(1, Math.round(density)), TvUiTokens.FOCUS_BORDER);
+        pressed.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
 
-        GradientDrawable focused = new GradientDrawable();
-        focused.setColor(TvUiTokens.SURFACE_FOCUSED);
+        GradientDrawable focused = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x48FFFFFF, 0x22FFFFFF});
         focused.setCornerRadius(radiusDp * density);
-        focused.setStroke(Math.max(1, Math.round(2f * density)), TvUiTokens.FOCUS_BORDER);
+        focused.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
 
         states.addState(new int[]{-android.R.attr.state_enabled}, disabled);
         states.addState(new int[]{android.R.attr.state_pressed}, pressed);
