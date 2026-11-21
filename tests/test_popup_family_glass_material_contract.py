@@ -69,6 +69,9 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("0x16FFFFFF", material)
         self.assertIn("0x08FFFFFF", material)
         self.assertIn("0x28FFFFFF", material)
+        self.assertIn("0x48FFFFFF", material)
+        self.assertIn("0x22FFFFFF", material)
+        self.assertIn("0xBBFFFFFF", material)
 
     def test_other_shared_glass_surfaces_keep_their_existing_backdrop_contract(self):
         glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
