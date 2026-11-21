@@ -2366,18 +2366,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Dock is a newer, authoritative focus destination; cancel every queued Grid request.
         gridFocusRequestGeneration++;
         if (!dockVertical) cancelHorizontalGridRowTransition();
-        if (horizontalCarouselMode) {
-            // Universal posts its pan after Android has committed the new focused child.
-            // Keep exactly one owner for scrolling: the carousel animator, never focus auto-scroll.
-            dockRecycler.post(() -> {
-                if (!horizontalCarouselMode || !card.hasFocus() || dockAdapter == null) return;
-                int focusedPosition = dockAdapter.positionOf(key);
-                if (focusedPosition >= 0) alignHorizontalCarousel(focusedPosition, true);
-            });
-        }
-        // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
-        // Collapse the overflow Grid only after focus has actually reached a Dock tile.
+        // Commit focus metadata/cursor target first, then calculate the carousel pan in the
+        // same focus callback. A posted second pass allowed cursor springs and row scrolling
+        // to start on different frames.
         handleTileFocused(key, position, card, true);
+        if (horizontalCarouselMode) alignHorizontalCarousel(position, true);
     }
 
     private void handleTileFocused(String key, int position, View card, boolean inDock) {
@@ -2982,8 +2975,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Keep RecyclerView's padding out of its native clip calculation: the right padding
         // is a scroll-tail spacer. CarouselRecyclerView clips children to the fixed visual lane.
         dockRecycler.setClipToPadding(false);
-        dockRecycler.setHorizontalViewportClip(horizontalCarouselMode,
-                DockGeometry.horizontalCarouselStartInsetPx(density));
+        // Reapply the exact viewport clip after measured geometry and centered insets are known.
+        // The scroll tail is provided by DockDecoration, never by RecyclerView padding.
+        dockRecycler.setHorizontalViewportClip(false, 0);
         if (!horizontalCarouselMode) {
             if (horizontalCarouselAnimator != null) horizontalCarouselAnimator.cancel();
             horizontalCarouselAnimator = null;
@@ -3084,29 +3078,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 dockParams.width = dockViewportWidth;
                 dockAdapter.setHorizontalViewportWidth(dockViewportWidth);
                 dockParams.rightMargin = 0;
-                // Grid card geometry remains unchanged; Dock uses its own proportional card scale.
+                // Preserve the approved baseline dimensions and positions in both app modes.
+                // Only the one-row inventory/navigation behavior differs in Horizontal mode.
                 int gridTileWidth = DockGeometry.horizontalTileWidthPx(inner, preferences.capacity, density);
-                int dockTileWidth = horizontalCarouselMode
-                        ? DockGeometry.horizontalCarouselCardWidthPx(dockViewportWidth, preferences.capacity, density)
-                        : DockGeometry.horizontalDockTileWidthPx(inner, preferences.capacity, density);
+                int dockTileWidth = DockGeometry.horizontalDockTileWidthPx(inner, preferences.capacity, density);
                 int dockTileHeight = DockGeometry.tileHeightPx(dockTileWidth);
                 int dockHeight = DockGeometry.horizontalDockHeightPx(dockTileHeight, density);
-
-                // Horizontal carousel uses Universal's 20dp card pitch and a fixed 20dp leading inset.
-                // Classic keeps its established centered Dock geometry unchanged.
-                int dockSlotWidth = horizontalCarouselMode
-                        ? DockGeometry.horizontalCarouselSlotWidthPx(dockViewportWidth, preferences.capacity, density)
-                        : DockGeometry.horizontalDockSlotWidthPx(inner, preferences.capacity, density);
-                int dockCenterOffset = horizontalCarouselMode
-                        ? DockGeometry.horizontalCarouselStartInsetPx(density)
-                        : DockGeometry.horizontalCenterOffsetPx(
-                                inner, dockSlotWidth, Math.min(dockCount, preferences.capacity));
-                int dockRightPadding = horizontalCarouselMode
-                        ? DockGeometry.horizontalCarouselTailInsetPx(
-                                dockViewportWidth, dockSlotWidth, dockCount, density, dockCenterOffset)
-                        : dockCenterOffset;
+                int dockSlotWidth = DockGeometry.horizontalDockSlotWidthPx(inner, preferences.capacity, density);
+                int dockCenterOffset = DockGeometry.horizontalCenterOffsetPx(
+                        inner, dockSlotWidth, Math.min(dockCount, preferences.capacity));
                 dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),
-                        dockRightPadding, dockRecycler.getPaddingBottom());
+                        dockCenterOffset, dockRecycler.getPaddingBottom());
+                dockRecycler.setHorizontalViewportClip(horizontalCarouselMode, dockCenterOffset);
+
+                // Keep the content viewport and its clipping symmetric. Extra horizontal travel
+                // lives after the final item's decoration, so no card is resized or edge-clipped.
+                int carouselTailInset = horizontalCarouselMode
+                        ? DockGeometry.horizontalCarouselTailInsetPx(dockViewportWidth, dockSlotWidth,
+                                dockCount, preferences.capacity, dockCenterOffset)
+                        : 0;
+                if (tray.setHorizontalTailInsetPx(carouselTailInset)) {
+                    dockRecycler.invalidateItemDecorations();
+                }
                 dockRecycler.setTranslationX(0f);
 
                 // The Dock's idle geometry is the pre-#115 approved bottom anchor. On expansion,
@@ -4165,28 +4158,50 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             return;
         }
         int capacity = DockPreferences.load(this).capacity;
-        int slotWidth = DockGeometry.horizontalCarouselSlotWidthPx(dockRecycler.getWidth(), capacity, density);
+        int slotWidth = DockGeometry.horizontalDockSlotWidthPx(
+                DockGeometry.horizontalContentWidthPx(dockRecycler.getWidth(), density), capacity, density);
         if (slotWidth <= 0) return;
+
+        int tailInset = DockGeometry.horizontalCarouselTailInsetPx(
+                dockRecycler.getWidth(), slotWidth, dockAdapter.getItemCount(),
+                capacity, dockRecycler.getPaddingLeft());
         int maxOffset = Math.max(0, dockAdapter.getItemCount() * slotWidth
-                + dockRecycler.getPaddingLeft() + dockRecycler.getPaddingRight() - dockRecycler.getWidth());
+                + dockRecycler.getPaddingLeft() + dockRecycler.getPaddingRight()
+                + tailInset - dockRecycler.getWidth());
         int targetOffset = Math.min(maxOffset, Math.max(0, position - 1) * slotWidth);
+
+        // A repeated focus callback for the same in-flight destination must not restart its pan.
         if (horizontalCarouselAnimator != null
                 && horizontalCarouselTargetOffsetPx == targetOffset) return;
-        int currentOffset = horizontalCarouselScrollOffsetPx(slotWidth);
-        if (Math.abs(targetOffset - currentOffset) <= 1) {
-            horizontalCarouselTargetOffsetPx = targetOffset;
-            return;
-        }
+
+        // Cancel a previous destination before the near-zero-delta return. Otherwise an older
+        // animator can keep scrolling after DPAD has already moved focus back to this slot.
         if (horizontalCarouselAnimator != null) {
-            horizontalCarouselAnimator.cancel();
+            android.animation.ValueAnimator previous = horizontalCarouselAnimator;
             horizontalCarouselAnimator = null;
+            previous.cancel();
         }
+
+        int currentOffset = horizontalCarouselScrollOffsetPx(slotWidth);
+        int delta = targetOffset - currentOffset;
         horizontalCarouselTargetOffsetPx = targetOffset;
-        if (!animate || reducedMotion) {
-            dockRecycler.scrollBy(targetOffset - currentOffset, 0);
+        if (Math.abs(delta) <= 1) {
+            if (delta != 0) dockRecycler.scrollBy(delta, 0);
             settleHorizontalCarouselOffset(targetOffset, slotWidth);
             return;
         }
+        if (!animate || reducedMotion) {
+            dockRecycler.scrollBy(delta, 0);
+            settleHorizontalCarouselOffset(targetOffset, slotWidth);
+            // The immediate pan has completed; hard-sync the focus outline to the actual card.
+            syncFocusedDockGlider();
+            return;
+        }
+
+        // The focused card and the row now share one animation clock. The outline is hard-synced
+        // to the real focused view after every scroll step, rather than running an independent
+        // spring toward coordinates captured before the row moved.
+        syncFocusedDockGlider();
         final int[] applied = { currentOffset };
         final android.animation.ValueAnimator animator =
                 android.animation.ValueAnimator.ofInt(currentOffset, targetOffset);
@@ -4194,9 +4209,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         animator.setDuration(240);
         animator.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
         animator.addUpdateListener(value -> {
+            if (horizontalCarouselAnimator != animator || !horizontalCarouselMode) return;
             int next = (Integer) value.getAnimatedValue();
             dockRecycler.scrollBy(next - applied[0], 0);
             applied[0] = next;
+            syncFocusedDockGlider();
         });
         final boolean[] cancelled = { false };
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
@@ -4208,6 +4225,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                     horizontalCarouselAnimator = null;
                     if (!cancelled[0] && horizontalCarouselMode) {
                         settleHorizontalCarouselOffset(targetOffset, slotWidth);
+                        syncFocusedDockGlider();
                     }
                 }
             }
