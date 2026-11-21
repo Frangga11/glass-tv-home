@@ -628,7 +628,7 @@ adb shell pm disable-user --user 0 %1$s</string>
     <string name="weather_model_reference">Lokasi acuan model: %1$s</string>
 
     <string name="dock_orientation_title">Orientasi Dock</string>
-    <string name="dock_orientation_summary">Pilih susunan Dock horizontal atau vertikal.</string>
+    <string name="dock_orientation_summary">Vertikal: tampilkan aplikasi bertahap dengan tombol atas dan bawah. Horizontal: jelajahi semua aplikasi dalam satu jalur carousel.</string>
     <string name="dock_orientation_horizontal">Horizontal</string>
     <string name="dock_orientation_vertical">Vertikal</string>
     <string name="dock_capacity_title">Kapasitas Dock</string>

@@ -137,8 +137,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private RecyclerView dockRecycler;
     private DockAdapter dockAdapter;
     private DockDecoration tray;
+    /** Physical orientation is locked to horizontal/bottom; legacy checks remain for Classic layout paths. */
     private boolean dockVertical;
-    /** Horizontal Grid stays parked out of sight until the user presses Down from the Dock. */
+    /** True when the Home app inventory is rendered as one horizontal carousel row. */
+    private boolean horizontalCarouselMode;
+    /** Classic-mode Grid stays parked out of sight until the user presses Down from the Dock. */
     private boolean horizontalGridExpanded;
     /** Serializes the first Dock-to-overflow reveal against repeated vertical DPAD input. */
     private boolean horizontalDockExpansionInProgress;
@@ -2332,6 +2335,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Dock is a newer, authoritative focus destination; cancel every queued Grid request.
         gridFocusRequestGeneration++;
         if (!dockVertical) cancelHorizontalGridRowTransition();
+        if (horizontalCarouselMode) alignHorizontalCarousel(position, true);
         // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
         // Collapse the overflow Grid only after focus has actually reached a Dock tile.
         handleTileFocused(key, position, card, true);
@@ -2420,6 +2424,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         int position = dockAdapter.positionOf(key);
         if (position < 0) return false;
         int count = dockAdapter.getItemCount();
+        if (horizontalCarouselMode) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (position > 0) focusDockTile(position - 1);
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                if (position < count - 1) focusDockTile(position + 1);
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                focusTopBarFallback();
+                return true;
+            }
+            // The carousel is one-dimensional; DOWN never opens the progressive Grid.
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) return true;
+        }
         if (dockVertical) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
                 if (position > 0) focusDockTile(position - 1);
@@ -2913,21 +2933,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void applyDockLayout() {
         if (gridWrap == null || grid == null || dockRecycler == null || dockAdapter == null) return;
         DockPreferences preferences = DockPreferences.load(this);
-        dockVertical = preferences.orientation == DockPreferences.Orientation.VERTICAL;
-        dockAdapter.setVertical(dockVertical);
-        if (dockVertical) {
+        // "Vertikal" now means the existing progressive Classic app-navigation mode.
+        // The physical Dock is always horizontal and bottom-anchored in both modes.
+        dockVertical = false;
+        horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;
+        dockAdapter.setVertical(false);
+        dockAdapter.setCarouselMode(horizontalCarouselMode);
+        if (horizontalCarouselMode) {
             horizontalGridExpanded = false;
+            horizontalGridViewportRows = 1;
             cancelHorizontalGridRowTransition();
+            grid.setTranslationY(0f);
+            dockRecycler.setTranslationY(0f);
         }
         // GridLayoutManager does not support stackFromEnd (it throws during onResume).
         // Keep the Grid's natural adapter order; horizontal overflow is positioned by the
         // surrounding FrameLayout geometry and is expanded only on DPAD Down.
-        // In horizontal mode the Grid is an on-demand overflow surface: hidden at rest,
-        // revealed by DPAD Down from the Dock, and collapsed again when Dock focus returns.
-        int wantedGridVisibility = dockVertical || horizontalGridExpanded ? View.VISIBLE : View.GONE;
+        // In Vertikal/Classic mode the Grid is an on-demand progressive surface.
+        // Horizontal mode instead displays the full inventory in the Dock carousel and keeps Grid hidden.
+        int wantedGridVisibility = !horizontalCarouselMode && horizontalGridExpanded ? View.VISIBLE : View.GONE;
         boolean gridVisibilityChanged = grid.getVisibility() != wantedGridVisibility;
         grid.setVisibility(wantedGridVisibility);
-        grid.setClipToPadding(!dockVertical && horizontalGridExpanded);
+        grid.setClipToPadding(!horizontalCarouselMode && horizontalGridExpanded);
         int orientation = dockVertical
                 ? android.widget.LinearLayout.VERTICAL : android.widget.LinearLayout.HORIZONTAL;
         RecyclerView.LayoutManager current = dockRecycler.getLayoutManager();
@@ -3014,8 +3041,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // Center the icon group with symmetric content padding. The RecyclerView host
                 // stays at the Home shelf origin so its full-width glass tray and aligned shelves
                 // do not inherit the icon group's centering offset.
+                // In carousel mode retain the centered starting group, but reserve a tail
+                // so the final installed app can also settle into the second visible slot.
+                int dockRightPadding = horizontalCarouselMode
+                        ? Math.max(dockCenterOffset,
+                                Math.max(0, dockViewportWidth - dockCenterOffset - 2 * dockSlotWidth))
+                        : dockCenterOffset;
                 dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),
-                        dockCenterOffset, dockRecycler.getPaddingBottom());
+                        dockRightPadding, dockRecycler.getPaddingBottom());
                 dockRecycler.setTranslationX(0f);
 
                 // The Dock's idle geometry is the pre-#115 approved bottom anchor. On expansion,
@@ -3519,6 +3552,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     private void restoreMovingTile(boolean inDock, String key, int position, View previousCard, int attemptsRemaining) {
         RecyclerView recycler = inDock ? dockRecycler : grid;
         if (recycler == null || movingPos != position || movingDock != inDock || movingRecycler != recycler) return;
+        if (inDock && horizontalCarouselMode) alignHorizontalCarousel(position, false);
         RecyclerView.ViewHolder holder = recycler.findViewHolderForAdapterPosition(position);
         if (holder == null) {
             if (!inDock && !dockVertical && horizontalGridExpanded) {
@@ -3584,6 +3618,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 return;
             }
             movingPos = currentPosition;
+
+            if (horizontalCarouselMode) {
+                if (keyCode != KeyEvent.KEYCODE_DPAD_LEFT && keyCode != KeyEvent.KEYCODE_DPAD_RIGHT) return;
+                int target = keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                        ? currentPosition - 1 : currentPosition + 1;
+                if (target < 0 || target > dockAdapter.lastMovable()
+                        || !dockAdapter.move(currentPosition, target)) return;
+                int resolved = dockAdapter.positionOf(movingKey);
+                if (resolved < 0) { finishMove(); return; }
+                movingPos = resolved;
+                restoreMovingTile(true, movingKey, resolved, movingCard, 3);
+                return;
+            }
 
             if (dockVertical && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 moveTileAcrossRegion(movingKey, false, 0);
@@ -3992,6 +4039,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         final int requestGeneration = ++gridFocusRequestGeneration;
         final int targetPosition = NavigationState.resolveHomePosition(-1, position, dockAdapter.getItemCount());
+        if (horizontalCarouselMode) alignHorizontalCarousel(targetPosition, false);
         RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
         if (vh != null) {
             View card = vh.itemView.findViewById(R.id.card);
@@ -4002,8 +4050,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             focusTopBarFallback();
             return;
         }
-        dockRecycler.scrollToPosition(targetPosition);
+        if (!horizontalCarouselMode) dockRecycler.scrollToPosition(targetPosition);
         focusDockTileWhenLaidOut(targetPosition, 3, requestGeneration);
+    }
+
+    /** Anchor the selected app near the second visible slot, matching TV Home Universal. */
+    private void alignHorizontalCarousel(int position, boolean animate) {
+        if (!horizontalCarouselMode || dockRecycler == null || dockAdapter == null
+                || position < 0 || position >= dockAdapter.getItemCount()) return;
+        RecyclerView.LayoutManager manager = dockRecycler.getLayoutManager();
+        if (manager instanceof androidx.recyclerview.widget.LinearLayoutManager) {
+            androidx.recyclerview.widget.LinearLayoutManager layout =
+                    (androidx.recyclerview.widget.LinearLayoutManager) manager;
+            int anchor = Math.max(0, position - 1);
+            if (animate) {
+                androidx.recyclerview.widget.LinearSmoothScroller scroller =
+                        new androidx.recyclerview.widget.LinearSmoothScroller(this) {
+                            @Override protected int getHorizontalSnapPreference() {
+                                return SNAP_TO_START;
+                            }
+                            @Override protected int calculateTimeForScrolling(int dx) {
+                                return Math.min(240, super.calculateTimeForScrolling(dx));
+                            }
+                        };
+                scroller.setTargetPosition(anchor);
+                layout.startSmoothScroll(scroller);
+            } else {
+                layout.scrollToPositionWithOffset(anchor, 0);
+            }
+        } else {
+            dockRecycler.scrollToPosition(Math.max(0, position - 1));
+        }
     }
 
     private void focusDockTileWhenLaidOut(int position, int attemptsRemaining, int requestGeneration) {
@@ -5742,14 +5819,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     void showDockOrientationDialog() {
         DockPreferences current = DockPreferences.load(this);
         String[] options = {
-                getString(R.string.dock_orientation_horizontal),
-                getString(R.string.dock_orientation_vertical)
+                getString(R.string.dock_orientation_vertical),
+                getString(R.string.dock_orientation_horizontal)
         };
-        int selected = current.orientation == DockPreferences.Orientation.VERTICAL ? 1 : 0;
+        int selected = current.orientation == DockPreferences.Orientation.VERTICAL ? 0 : 1;
         new android.app.AlertDialog.Builder(this, R.style.Theme_TvHome_GlassDialog)
                 .setTitle(R.string.dock_orientation_title)
                 .setSingleChoiceItems(options, selected, (dialog, which) -> {
-                    DockPreferences.Orientation orientation = which == 1
+                    DockPreferences.Orientation orientation = which == 0
                             ? DockPreferences.Orientation.VERTICAL : DockPreferences.Orientation.HORIZONTAL;
                     if (!DockPreferences.save(this, orientation, current.capacity)) {
                         TvFeedback.show(this, R.string.dock_settings_save_failed, Toast.LENGTH_SHORT);

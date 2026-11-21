@@ -114,7 +114,7 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("Math.abs(firstWindowBounds.top - grid.getPaddingTop()) > 1", MAIN)
         self.assertIn("adapter.positionOf(key)", MAIN)
         self.assertNotIn("horizontalGridScrollAwaitingIdle", MAIN)
-        self.assertIn("grid.setClipToPadding(!dockVertical && horizontalGridExpanded)", MAIN)
+        self.assertIn("grid.setClipToPadding(!horizontalCarouselMode && horizontalGridExpanded)", MAIN)
         start = MAIN.index("private void startHorizontalGridRowTransition")
         end = MAIN.index("private void settleHorizontalGridRowTransition", start)
         transition = MAIN[start:end]
@@ -155,6 +155,37 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("private void alignHorizontalGridRowToGlass(int position)", MAIN)
         self.assertIn("windowStartRow * COLUMNS, grid.getPaddingTop()", MAIN)
         self.assertIn("if (dy != 0) grid.scrollBy(0, dy);", MAIN)
+
+
+class HomeAppModeContractTest(unittest.TestCase):
+    def test_vertical_mode_keeps_the_existing_progressive_grid(self):
+        self.assertIn("dockVertical = false;", MAIN)
+        self.assertIn("horizontalCarouselMode = preferences.orientation == DockPreferences.Orientation.HORIZONTAL;", MAIN)
+        self.assertIn("!horizontalCarouselMode && horizontalGridExpanded ? View.VISIBLE : View.GONE", MAIN)
+        keys = MAIN[MAIN.index("public boolean onDockTileKey"):MAIN.index("public boolean onDockTileHeld")]
+        self.assertIn("DockLayoutModel.gridPositionForDock", keys)
+        self.assertIn("if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)", keys)
+        self.assertIn("focusTile(target)", keys)
+
+    def test_horizontal_mode_uses_the_full_inventory_in_one_dock_row(self):
+        dock = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/DockAdapter.java").read_text(encoding="utf-8")
+        adapter = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java").read_text(encoding="utf-8")
+        self.assertIn("entries = carouselMode ? source.allEntriesSnapshot()", dock)
+        self.assertIn("source.moveAllEntries(from, to)", dock)
+        self.assertIn("List<Entry> allEntriesSnapshot()", adapter)
+        self.assertIn("boolean moveAllEntries(int from, int to)", adapter)
+        self.assertIn("alignHorizontalCarousel(position, true)", MAIN)
+        restore = MAIN[MAIN.index("private void restoreMovingTile"):MAIN.index("private void stepMove(int keyCode)")]
+        self.assertIn("if (inDock && horizontalCarouselMode) alignHorizontalCarousel(position, false);", restore)
+
+    def test_horizontal_carousel_is_one_dimensional_and_keeps_dock_bottom(self):
+        keys = MAIN[MAIN.index("public boolean onDockTileKey"):MAIN.index("public boolean onDockTileHeld")]
+        self.assertIn("if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT)", keys)
+        self.assertIn("if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)", keys)
+        self.assertIn("// The carousel is one-dimensional; DOWN never opens the progressive Grid.", keys)
+        layout = MAIN[MAIN.index("private void applyDockLayout"):MAIN.index("private boolean sameLayoutParams")]
+        self.assertIn("dockParams.gravity = dockVertical ? Gravity.START : Gravity.BOTTOM;", layout)
+        self.assertIn("dockVertical = false;", layout)
 
 
 if __name__ == "__main__":

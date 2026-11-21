@@ -4,18 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
- * Persisted Dock presentation preferences.
- *
- * These values describe only the Dock. They must never be used as the
- * app-grid span count: MainActivity.COLUMNS remains the independent grid
- * geometry until the Dock renderer and focus model are migrated.
+ * Persisted Home app-navigation mode and Dock capacity.
+ * VERTICAL selects the existing progressive Classic mode; HORIZONTAL selects
+ * the one-row carousel. Neither mode changes the Dock physical position.
+ * Capacity controls visible card sizing, never the total carousel inventory
+ * or MainActivity.COLUMNS, which remains the independent Classic Grid span.
  */
 final class DockPreferences {
     enum Orientation { VERTICAL, HORIZONTAL }
 
     static final int DEFAULT_CAPACITY = 5;
     static final String PREFS = "dock_presentation";
-    private static final String KEY_ORIENTATION = "orientation";
+    private static final String KEY_ORIENTATION = "app_mode";
     private static final String KEY_CAPACITY = "capacity";
     private static final String KEY_PINNED_KEYS = "pinned_component_keys";
     private static final String KEY_UNPINNED_KEYS = "unpinned_component_keys";
@@ -31,7 +31,7 @@ final class DockPreferences {
     static DockPreferences load(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         Orientation orientation = normalizeOrientation(
-                preferences.getString(KEY_ORIENTATION, Orientation.HORIZONTAL.name()));
+                preferences.getString(KEY_ORIENTATION, Orientation.VERTICAL.name()));
         int capacity = normalizeCapacity(
                 preferences.getInt(KEY_CAPACITY, DEFAULT_CAPACITY));
         return new DockPreferences(orientation, capacity);
@@ -41,7 +41,7 @@ final class DockPreferences {
         try {
             return Orientation.valueOf(raw);
         } catch (IllegalArgumentException | NullPointerException ignored) {
-            return Orientation.HORIZONTAL;
+            return Orientation.VERTICAL;
         }
     }
 
