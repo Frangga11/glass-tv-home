@@ -2335,7 +2335,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Dock is a newer, authoritative focus destination; cancel every queued Grid request.
         gridFocusRequestGeneration++;
         if (!dockVertical) cancelHorizontalGridRowTransition();
-        if (horizontalCarouselMode) alignHorizontalCarousel(position);
+        if (horizontalCarouselMode) alignHorizontalCarousel(position, true);
         // Horizontal mode mirrors Patch 4.1: the Dock is the resting Home surface.
         // Collapse the overflow Grid only after focus has actually reached a Dock tile.
         handleTileFocused(key, position, card, true);
@@ -3041,8 +3041,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 // Center the icon group with symmetric content padding. The RecyclerView host
                 // stays at the Home shelf origin so its full-width glass tray and aligned shelves
                 // do not inherit the icon group's centering offset.
+                // In carousel mode retain the centered starting group, but reserve a tail
+                // so the final installed app can also settle into the second visible slot.
+                int dockRightPadding = horizontalCarouselMode
+                        ? Math.max(dockCenterOffset,
+                                Math.max(0, dockViewportWidth - dockCenterOffset - 2 * dockSlotWidth))
+                        : dockCenterOffset;
                 dockRecycler.setPadding(dockCenterOffset, dockRecycler.getPaddingTop(),
-                        dockCenterOffset, dockRecycler.getPaddingBottom());
+                        dockRightPadding, dockRecycler.getPaddingBottom());
                 dockRecycler.setTranslationX(0f);
 
                 // The Dock's idle geometry is the pre-#115 approved bottom anchor. On expansion,
@@ -4032,7 +4038,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         }
         final int requestGeneration = ++gridFocusRequestGeneration;
         final int targetPosition = NavigationState.resolveHomePosition(-1, position, dockAdapter.getItemCount());
-        if (horizontalCarouselMode) alignHorizontalCarousel(targetPosition);
+        if (horizontalCarouselMode) alignHorizontalCarousel(targetPosition, false);
         RecyclerView.ViewHolder vh = dockRecycler.findViewHolderForAdapterPosition(targetPosition);
         if (vh != null) {
             View card = vh.itemView.findViewById(R.id.card);
@@ -4048,13 +4054,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
     }
 
     /** Anchor the selected app near the second visible slot, matching TV Home Universal. */
-    private void alignHorizontalCarousel(int position) {
+    private void alignHorizontalCarousel(int position, boolean animate) {
         if (!horizontalCarouselMode || dockRecycler == null || dockAdapter == null
                 || position < 0 || position >= dockAdapter.getItemCount()) return;
         RecyclerView.LayoutManager manager = dockRecycler.getLayoutManager();
         if (manager instanceof androidx.recyclerview.widget.LinearLayoutManager) {
-            ((androidx.recyclerview.widget.LinearLayoutManager) manager)
-                    .scrollToPositionWithOffset(Math.max(0, position - 1), dockRecycler.getPaddingLeft());
+            androidx.recyclerview.widget.LinearLayoutManager layout =
+                    (androidx.recyclerview.widget.LinearLayoutManager) manager;
+            int anchor = Math.max(0, position - 1);
+            if (animate) {
+                androidx.recyclerview.widget.LinearSmoothScroller scroller =
+                        new androidx.recyclerview.widget.LinearSmoothScroller(this) {
+                            @Override protected int getHorizontalSnapPreference() {
+                                return SNAP_TO_START;
+                            }
+                            @Override protected int calculateTimeForScrolling(int dx) {
+                                return Math.min(240, super.calculateTimeForScrolling(dx));
+                            }
+                        };
+                scroller.setTargetPosition(anchor);
+                layout.startSmoothScroll(scroller);
+            } else {
+                layout.scrollToPositionWithOffset(anchor, dockRecycler.getPaddingLeft());
+            }
         } else {
             dockRecycler.scrollToPosition(Math.max(0, position - 1));
         }
