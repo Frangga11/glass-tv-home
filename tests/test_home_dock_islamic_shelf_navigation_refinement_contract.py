@@ -175,6 +175,8 @@ class HomeAppModeContractTest(unittest.TestCase):
         self.assertIn("List<Entry> allEntriesSnapshot()", adapter)
         self.assertIn("boolean moveAllEntries(int from, int to)", adapter)
         self.assertIn("alignHorizontalCarousel(position, true)", MAIN)
+        restore = MAIN[MAIN.index("private void restoreMovingTile"):MAIN.index("private void stepMove(int keyCode)")]
+        self.assertIn("if (inDock && horizontalCarouselMode) alignHorizontalCarousel(position, false);", restore)
 
     def test_horizontal_carousel_is_one_dimensional_and_keeps_dock_bottom(self):
         keys = MAIN[MAIN.index("public boolean onDockTileKey"):MAIN.index("public boolean onDockTileHeld")]
