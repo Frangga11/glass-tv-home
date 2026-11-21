@@ -47,8 +47,9 @@ final class CarouselRecyclerView extends RecyclerView {
             super.dispatchDraw(canvas);
             return;
         }
-        int left = Math.max(0, Math.min(getPaddingLeft(), getWidth()));
-        int right = Math.max(left, getWidth() - horizontalViewportEdgeInsetPx);
+        int inset = Math.max(0, Math.min(horizontalViewportEdgeInsetPx, getWidth() / 2));
+        int left = inset;
+        int right = Math.max(left, getWidth() - inset);
         if (right <= left) return;
         int save = canvas.save();
         canvas.clipRect(left, 0, right, getHeight());
