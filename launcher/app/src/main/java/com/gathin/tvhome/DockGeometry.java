@@ -18,6 +18,8 @@ final class DockGeometry {
     private static final float SHELF_ANCHOR_DOCK_EXTRA_HEIGHT_DP = 18f;
     private static final float DOCK_TILE_SCALE = 0.95f;
     private static final float DOCK_SLOT_GAP_DP = 32f;
+    private static final float CAROUSEL_EDGE_PADDING_DP = 20f;
+    private static final float CAROUSEL_GAP_DP = 20f;
     private static final float GRID_TO_TRAY_GAP_DP = 8f;
     private static final float ITEM_EXTRA_HEIGHT_DP = 45f;
     private static final float SAFE_HORIZONTAL_MARGIN_DP = 30f;
@@ -65,6 +67,34 @@ final class DockGeometry {
         int cell = horizontalSlotWidthPx(safeContentWidthPx, capacity);
         int tile = horizontalDockTileWidthPx(safeContentWidthPx, capacity, density);
         return Math.min(cell, tile + Math.round(DOCK_SLOT_GAP_DP * density));
+    }
+
+    /** Universal carousel card width: capacity cards plus 20dp gaps fit the visible viewport. */
+    static int horizontalCarouselCardWidthPx(int viewportWidthPx, int capacity, float density) {
+        int visible = DockPreferences.normalizeCapacity(capacity);
+        int edge = Math.round(CAROUSEL_EDGE_PADDING_DP * density);
+        int gap = Math.round(CAROUSEL_GAP_DP * density);
+        int available = Math.max(0, viewportWidthPx - 2 * edge - gap * (visible - 1));
+        return Math.max(Math.round(80 * density), available / visible);
+    }
+
+    /** One horizontal carousel step equals card width plus Universal's 20dp inter-card gap. */
+    static int horizontalCarouselSlotWidthPx(int viewportWidthPx, int capacity, float density) {
+        return horizontalCarouselCardWidthPx(viewportWidthPx, capacity, density)
+                + Math.round(CAROUSEL_GAP_DP * density);
+    }
+
+    /** Universal uses a stable 20dp leading inset instead of centering an over-capacity app row. */
+    static int horizontalCarouselStartInsetPx(float density) {
+        return Math.round(CAROUSEL_EDGE_PADDING_DP * density);
+    }
+
+    /** Reserve enough tail space to place the final app at the second visible focus slot. */
+    static int horizontalCarouselTailInsetPx(int viewportWidthPx, int slotWidthPx,
+                                             int itemCount, float density, int startInsetPx) {
+        int edge = Math.round(CAROUSEL_EDGE_PADDING_DP * density);
+        if (itemCount <= 2) return edge;
+        return Math.max(edge, viewportWidthPx - startInsetPx - 2 * slotWidthPx);
     }
 
     static int safeHorizontalMarginDp() {
