@@ -157,10 +157,6 @@ class HomeDockIslamicShelfNavigationContractTest(unittest.TestCase):
         self.assertIn("if (dy != 0) grid.scrollBy(0, dy);", MAIN)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class HomeAppModeContractTest(unittest.TestCase):
     def test_vertical_mode_keeps_the_existing_progressive_grid(self):
         self.assertIn("dockVertical = false;", MAIN)
@@ -178,7 +174,7 @@ class HomeAppModeContractTest(unittest.TestCase):
         self.assertIn("source.moveAllEntries(from, to)", dock)
         self.assertIn("List<Entry> allEntriesSnapshot()", adapter)
         self.assertIn("boolean moveAllEntries(int from, int to)", adapter)
-        self.assertIn("alignHorizontalCarousel(position)", MAIN)
+        self.assertIn("alignHorizontalCarousel(position, true)", MAIN)
 
     def test_horizontal_carousel_is_one_dimensional_and_keeps_dock_bottom(self):
         keys = MAIN[MAIN.index("public boolean onDockTileKey"):MAIN.index("public boolean onDockTileHeld")]
@@ -188,3 +184,7 @@ class HomeAppModeContractTest(unittest.TestCase):
         layout = MAIN[MAIN.index("private void applyDockLayout"):MAIN.index("private boolean sameLayoutParams")]
         self.assertIn("dockParams.gravity = dockVertical ? Gravity.START : Gravity.BOTTOM;", layout)
         self.assertIn("dockVertical = false;", layout)
+
+
+if __name__ == "__main__":
+    unittest.main()
