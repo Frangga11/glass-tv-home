@@ -30,5 +30,19 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("new GlassRim(", dock)
 
 
+    def test_centered_modal_dialogs_use_the_same_live_glass_material(self):
+        style = (JAVA / "TvDialogStyle.java").read_text(encoding="utf-8")
+        self.assertIn("new GlassDrawable(decor", style)
+        self.assertIn("Backdrop.watch(decor)", style)
+        self.assertIn("window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))", style)
+
+    def test_glass_disabled_mode_keeps_an_opaque_structural_surface(self):
+        glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
+        self.assertIn('getBoolean("glass_effects_enabled", true)', glass)
+        self.assertIn("if (!glassEnabled)", glass)
+        self.assertIn("solidSurface.setColor(TvUiTokens.POPUP_SURFACE)", glass)
+        self.assertIn("canvas.drawRoundRect(rect, radius, radius, solidSurface)", glass)
+
+
 if __name__ == "__main__":
     unittest.main()
