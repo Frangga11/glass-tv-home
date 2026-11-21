@@ -72,6 +72,9 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("0x48FFFFFF", material)
         self.assertIn("0x22FFFFFF", material)
         self.assertIn("0xBBFFFFFF", material)
+        self.assertIn("if (glassEnabled)", material)
+        self.assertIn("pressed.setColor(TvUiTokens.SURFACE_SELECTED)", material)
+        self.assertIn("focused.setColor(TvUiTokens.SURFACE_FOCUSED)", material)
 
     def test_other_shared_glass_surfaces_keep_their_existing_backdrop_contract(self):
         glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")

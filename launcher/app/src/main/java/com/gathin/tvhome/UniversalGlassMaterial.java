@@ -88,16 +88,27 @@ final class UniversalGlassMaterial {
         disabled.setCornerRadius(radiusDp * density);
         disabled.setStroke(Math.max(1, Math.round(density)), TvUiTokens.DISABLED_BORDER);
 
-        // Match Universal Home GlassControls for popup focus/pressed surfaces.
-        GradientDrawable pressed = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0x48FFFFFF, 0x22FFFFFF});
+        // Match Universal Home GlassControls when glass is enabled; retain GTVH focus fills otherwise.
+        boolean glassEnabled = isGlassEnabled(context);
+        GradientDrawable pressed;
+        GradientDrawable focused;
+        if (glassEnabled) {
+            pressed = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0x48FFFFFF, 0x22FFFFFF});
+            pressed.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
+            focused = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0x48FFFFFF, 0x22FFFFFF});
+            focused.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
+        } else {
+            pressed = new GradientDrawable();
+            pressed.setColor(TvUiTokens.SURFACE_SELECTED);
+            pressed.setStroke(Math.max(1, Math.round(density)), TvUiTokens.FOCUS_BORDER);
+            focused = new GradientDrawable();
+            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
+            focused.setStroke(Math.max(1, Math.round(2f * density)), TvUiTokens.FOCUS_BORDER);
+        }
         pressed.setCornerRadius(radiusDp * density);
-        pressed.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
-
-        GradientDrawable focused = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0x48FFFFFF, 0x22FFFFFF});
         focused.setCornerRadius(radiusDp * density);
-        focused.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
 
         states.addState(new int[]{-android.R.attr.state_enabled}, disabled);
         states.addState(new int[]{android.R.attr.state_pressed}, pressed);
