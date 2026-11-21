@@ -143,12 +143,9 @@ final class DockAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         if (vertical) {
             width = DockGeometry.verticalDockTileWidthPx(inner, density);
             itemWidth = width;
-        } else if (carouselMode) {
-            // Match Universal's visible-card count and 20dp pitch without changing Classic geometry.
-            width = DockGeometry.horizontalCarouselCardWidthPx(viewportWidthPx, capacity, density);
-            itemWidth = DockGeometry.horizontalCarouselSlotWidthPx(viewportWidthPx, capacity, density);
         } else {
-            // Classic Dock card geometry remains independent from the full-size App Grid geometry.
+            // Horizontal mode changes inventory and navigation only. Both Horizontal and
+            // Classic retain the exact approved Dock card and slot geometry.
             int horizontalWidth = DockGeometry.horizontalContentWidthPx(viewportWidthPx, density);
             width = DockGeometry.horizontalDockTileWidthPx(horizontalWidth, capacity, density);
             itemWidth = DockGeometry.horizontalDockSlotWidthPx(horizontalWidth, capacity, density);
