@@ -18,6 +18,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private int dockSize;
     private final float density;
     private boolean vertical;
+    /** Non-visual scroll extent after the last horizontal carousel card. */
+    private int horizontalTailInsetPx;
     private final Paint band = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint trayShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint solidTrayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -55,6 +57,14 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         this.vertical = vertical;
     }
 
+    /** Returns true when the final-card scroll extent changed and offsets need recalculation. */
+    boolean setHorizontalTailInsetPx(int insetPx) {
+        int next = Math.max(0, insetPx);
+        if (horizontalTailInsetPx == next) return false;
+        horizontalTailInsetPx = next;
+        return true;
+    }
+
     /** The focus shape: the tray's glass would hide it, so the tray paints it over the glass itself. */
     void setGlider(Glider glider) {
         this.glider = glider;
@@ -72,6 +82,10 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
                 outRect.top = DockGeometry.dockItemTopOffsetPx(density);
                 outRect.bottom = DockGeometry.horizontalDockItemBottomOffsetPx(density);
             }
+        }
+        // Add content extent after the final card without shrinking RecyclerView's viewport.
+        if (!vertical && pos >= 0 && pos == state.getItemCount() - 1) {
+            outRect.right += horizontalTailInsetPx;
         }
     }
 

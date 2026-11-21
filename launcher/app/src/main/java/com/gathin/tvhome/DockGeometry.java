@@ -67,6 +67,19 @@ final class DockGeometry {
         return Math.min(cell, tile + Math.round(DOCK_SLOT_GAP_DP * density));
     }
 
+    /**
+     * Extra decorated extent after the final card lets the last app settle at the Universal
+     * second-slot anchor. It is not RecyclerView padding: the visible layout viewport stays
+     * symmetric and the original card/slot geometry is untouched.
+     */
+    static int horizontalCarouselTailInsetPx(int viewportWidthPx, int slotWidthPx,
+                                             int itemCount, int capacity, int edgeInsetPx) {
+        int visible = DockPreferences.normalizeCapacity(capacity);
+        int edge = Math.max(0, edgeInsetPx);
+        if (slotWidthPx <= 0 || itemCount <= visible) return 0;
+        return Math.max(0, viewportWidthPx - 2 * edge - 2 * slotWidthPx);
+    }
+
     static int safeHorizontalMarginDp() {
         return (int) SAFE_HORIZONTAL_MARGIN_DP;
     }
