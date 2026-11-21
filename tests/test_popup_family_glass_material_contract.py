@@ -18,6 +18,10 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         pointer = wifi[wifi.index("pointer = new View(activity)"):wifi.index("content.addView(pointer")]
         self.assertIn("UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges", pointer)
         self.assertIn("pointerEdges.lineTo(center + h, h)", pointer)
+        self.assertIn("float materialHeight = parent != null && parent.getHeight() > 0", pointer)
+        self.assertIn("new RectF(density, density,", pointer)
+        self.assertIn("materialBounds, density, TvUiTokens.POPUP_SURFACE", pointer)
+        self.assertNotIn("new RectF(0f, 0f, w, h)", pointer)
         self.assertNotIn("TvUiTokens.GLASS_VEIL_COLOR", pointer)
 
     def test_dock_uses_universal_material_while_glider_stays_between_surface_and_reflection(self):

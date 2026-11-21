@@ -134,9 +134,15 @@ final class WifiSettingsDialog {
                 pointerEdges.moveTo(center - h, h);
                 pointerEdges.lineTo(center, 0);
                 pointerEdges.lineTo(center + h, h);
+                // Use the popup's full material coordinate space, not the 12dp pointer height.
+                // This keeps the pointer's gradient and sweep continuous with the shell behind it.
+                View parent = getParent() instanceof View ? (View) getParent() : null;
+                float materialHeight = parent != null && parent.getHeight() > 0
+                        ? parent.getHeight() : h;
+                RectF materialBounds = new RectF(density, density,
+                        Math.max(density, w - density), Math.max(density, materialHeight - density));
                 UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges,
-                        new RectF(0f, 0f, w, h), density,
-                        TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
+                        materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
             }
         };
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
@@ -275,7 +281,7 @@ final class WifiSettingsDialog {
         }
         pointer.setTag(pointerCenter);
         pointer.invalidate();
-        // The panel surface is painted by the same live GlassDrawable as the master popup.
+        // The panel surface uses Universal Home's layered material, with a transparent window.
         window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         window.setDimAmount(popupDimAmount());
