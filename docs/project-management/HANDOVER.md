@@ -1361,3 +1361,16 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - PR #156 remains OPEN / DRAFT / UNMERGED pending separate Quick Settings physical-device acceptance and explicit owner approval. `main` remains unchanged at `0662c80bf80a6df06248262eeb0599a93aaba3e5`. This closeout does not authorize merging PR #156 to `main`.
 - PR #62 remains deferred and untouched.
 - Any subsequent defect must be handled as a new, narrowly scoped corrective task. Do not disturb the accepted Glider motion.
+
+
+## Quick Settings physical-device acceptance and PR #156 closeout — 22 November 2026
+
+- Owner confirmed that physical testing of the latest Quick Settings build on the target Mi TV Stick is complete and all tested behavior is safe/accepted: **“Udah aman semua.”**
+- Acceptance is owner-reported, not independently executed by the assistant. It closes the previously outstanding device gate for panel proportions/placement, Wallpaper heading and Kelola alignment/dimensions, glass/Glider, DPAD, and remote Input/source-selector behavior.
+- Active parent remains PR #156, branch `feature/quick-settings-single-frame-glass-001`, pre-checkpoint implementation head `6d7f2df313c4c15d0ce39efa6e89f01d0e92a1ad`; base `main` remains `0662c80bf80a6df06248262eeb0599a93aaba3e5`.
+- Exact implementation-head CI run #2504 / `44956241255` passed both required jobs: Launcher build and unit tests; Lists, tools and docs. QA archive ID `14726789450`, ZIP size 1,449,312 bytes, SHA-256 `a6f672c059e8dde37b55122fecf10805f302b155db717ffceb24481549a3b9ad`. This is a CI QA archive, not a signed release.
+- New detailed acceptance record: `GTVH-QUICK-SETTINGS-DEVICE-ACCEPTANCE-CHECKPOINT-2026-11-22.md`.
+- PR #157 remains closed unmerged/superseded; its shared-glass delta is already integrated into PR #156 through merged PR #160. PR #159's horizontal-carousel/Glider correction is also integrated and owner-accepted; do not disturb that behavior.
+- PR #156 can be moved from Draft to Ready for Review after exact-head CI for this documentation update succeeds. It must remain OPEN / UNMERGED until the owner explicitly authorizes merging into `main`; this handover entry is not merge authorization.
+- PR #62 remains deferred and untouched. PR #153 and #154 remain closed unmerged; PR #155 remains merged.
+- Do not reuse run #2504 to validate this documentation commit. Verify a fresh CI run on the exact resulting PR #156 head before declaring documentation closeout complete.
