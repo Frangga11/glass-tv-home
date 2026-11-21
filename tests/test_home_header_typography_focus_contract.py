@@ -56,7 +56,7 @@ class HomeHeaderTypographyFocusContractTest(unittest.TestCase):
         self.assertNotIn("pill.setBackground(getDrawable(R.drawable.header_nav_tab_bg));", MAIN)
 
     def test_wifi_keeps_its_existing_glass_focus_path(self):
-        self.assertIn("new GlassDrawable(pill, 20f * density, density, glider)", MAIN)
+        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", MAIN)
         self.assertIn("moveTopHighlight(v)", MAIN)
         self.assertIn("btnWifi.setOnClickListener(v -> showWifiPopup())", MAIN)
         self.assertIn("private void showWifiPopup(Runnable returnToParent)", MAIN)
