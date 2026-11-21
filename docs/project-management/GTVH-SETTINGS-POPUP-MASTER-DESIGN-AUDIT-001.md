@@ -128,3 +128,35 @@ The current Wi-Fi popup is a distinct anchored surface, not a fixed-size copy of
 - Preserve each popup's existing layout role (anchored, centered modal, scrollable list) and all existing behavior/state/service contracts.
 - Begin with Wi-Fi material/focus treatment, then Input and the language/restart/power/cache dialogs, then Wallpaper control/collection/interval.
 - Validate source diffs and static tests after each bounded batch. Physical Mi TV Stick validation remains a required gate before merge.
+
+
+## Execution checkpoint — 21 November 2026
+
+### Owner decision
+- Owner confirmed: **Popup Pengaturan / Quick Settings from PR #156 is final and paripurna as the visual master reference**.
+- This approval authorizes sibling popup visual alignment. It does not authorize merging PR #156 or waiving device acceptance.
+
+### Implementation branch and first batch
+- Implementation branch: `feature/popup-family-glass-unification-001`
+- Base: `main` at `0662c80bf80a6df06248262eeb0599a93aaba3e5`
+- PR #157: [Unify Wi-Fi popup glass material with approved Quick Settings master](https://github.com/Frangga11/glass-tv-home/pull/157)
+- PR #157 status: OPEN / DRAFT / UNMERGED; currently 2 source files changed.
+- Commit 1: `7544fb077d00d9c6ea9ad2b9c578b67a2139626b` — Wi-Fi panel now uses live `GlassDrawable` and `Backdrop.watch()`; window background is transparent.
+- Commit 2: `e08693640eb3a9f08dfe9ab87e7a9bc08a165db1` — `TvDialogStyle.apply()` now paints centered app-owned modal decor with the same live glass material and preserves opaque fallback when glass effects are disabled.
+- Preserved Wi-Fi behavior: anchor/size/pointer, scan and timeout, permissions/location, rows, footer, focus order, parent return.
+- Preserved modal behavior: size constraints, dim amount, typography, buttons, list selectors, and action callbacks.
+
+### Validation status
+- Source diff confirmed limited to `WifiSettingsDialog.java` and `TvDialogStyle.java`.
+- Static source check confirmed the live glass background, backdrop registration, and transparent underlying window.
+- No dedicated `WifiSettingsDialog` test was found in repository search.
+- CI run #2463 and APK workflow #838 were reported **in progress** at the last check; no passing result is claimed yet.
+- No APK installation or physical Mi TV Stick test has been performed.
+
+### Next execution order
+1. Wait for exact-head CI and APK workflow results for PR #157.
+2. Review modal edge clipping, fallback, and focus appearance through available CI/static checks.
+3. Continue with Input presentation, preserving dynamic source discovery and DPAD/remote Input behavior.
+4. Align language, restart, power-off, and cache confirmation/result surfaces.
+5. Align Wallpaper control, collection, and interval surfaces.
+6. Run full source/CI review and then physical Mi TV Stick visual + DPAD acceptance.
