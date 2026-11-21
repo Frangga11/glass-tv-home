@@ -1,5 +1,6 @@
 package com.gathin.tvhome;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
@@ -13,15 +14,33 @@ import android.graphics.drawable.StateListDrawable;
 
 /**
  * Universal Home's GlassMenu / GlassControls material recipes, adapted to existing GTVH bounds.
- * Copyright and MIT license notice are recorded in THIRD_PARTY_NOTICES.md.
+ * The existing glass_effects_enabled preference and opaque fallbacks remain authoritative.
  */
 final class UniversalGlassMaterial {
     private static final int PANEL_SHADE = 0xB31D1D1D;
 
     private UniversalGlassMaterial() { }
 
+    static boolean isGlassEnabled(Context context) {
+        return context.getSharedPreferences("wallpaper_prefs", Context.MODE_PRIVATE)
+                .getBoolean("glass_effects_enabled", true);
+    }
+
+    /** A single Universal Home DockGlassDrawable surface, or GTVH's opaque fallback. */
+    static Drawable surface(Context context, float density, float radiusDp,
+                            int fallbackSurfaceColor, int fallbackBorderColor) {
+        if (!isGlassEnabled(context)) {
+            return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
+        }
+        return new UniversalGlassDrawable(density, radiusDp);
+    }
+
     /** The same dark shade + DockGlassDrawable layer order used by Universal Home GlassMenu. */
-    static Drawable panel(float density, float radiusDp) {
+    static Drawable panel(Context context, float density, float radiusDp,
+                          int fallbackSurfaceColor, int fallbackBorderColor) {
+        if (!isGlassEnabled(context)) {
+            return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
+        }
         GradientDrawable shade = new GradientDrawable();
         shade.setCornerRadius(radiusDp * density);
         shade.setColor(PANEL_SHADE);
@@ -30,8 +49,25 @@ final class UniversalGlassMaterial {
         });
     }
 
+    private static GradientDrawable solidSurface(float density, float radiusDp,
+                                                 int fillColor, int borderColor) {
+        GradientDrawable solid = new GradientDrawable();
+        solid.setCornerRadius(radiusDp * density);
+        solid.setColor(fillColor);
+        solid.setStroke(Math.max(1, Math.round(1.25f * density)), borderColor);
+        return solid;
+    }
+
     /** Idle control surface from Universal Home GlassControls.surface(), with GTVH radius retained. */
-    static GradientDrawable controlIdle(float density, float radiusDp) {
+    static GradientDrawable controlIdle(Context context, float density, float radiusDp,
+                                        int fallbackFill, int fallbackBorder) {
+        if (!isGlassEnabled(context)) {
+            GradientDrawable solid = new GradientDrawable();
+            solid.setColor(fallbackFill);
+            solid.setCornerRadius(radiusDp * density);
+            solid.setStroke(Math.max(1, Math.round(density)), fallbackBorder);
+            return solid;
+        }
         GradientDrawable glass = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[]{0x16FFFFFF, 0x08FFFFFF});
         glass.setCornerRadius(radiusDp * density);
@@ -43,7 +79,8 @@ final class UniversalGlassMaterial {
      * Preserve GTVH's existing disabled/pressed/focused states and use Universal's glass only
      * for the idle state. This prevents the material adoption from replacing focus behavior.
      */
-    static Drawable controlStateBackground(float density, float radiusDp) {
+    static Drawable controlStateBackground(Context context, float density, float radiusDp,
+                                           int fallbackFill, int fallbackBorder) {
         StateListDrawable states = new StateListDrawable();
 
         GradientDrawable disabled = new GradientDrawable();
@@ -64,12 +101,25 @@ final class UniversalGlassMaterial {
         states.addState(new int[]{-android.R.attr.state_enabled}, disabled);
         states.addState(new int[]{android.R.attr.state_pressed}, pressed);
         states.addState(new int[]{android.R.attr.state_focused}, focused);
-        states.addState(new int[]{}, controlIdle(density, radiusDp));
+        states.addState(new int[]{}, controlIdle(context, density, radiusDp, fallbackFill, fallbackBorder));
         return states;
     }
 
-    /** Render the Wi-Fi pointer using the same shade, surface, sweep and rim as the popup shell. */
-    static void drawPointer(Canvas canvas, Path triangle, Path edges, RectF bounds, float density) {
+    /** Render the Wi-Fi pointer with the same material as its shell, retaining a solid fallback. */
+    static void drawPointer(Context context, Canvas canvas, Path triangle, Path edges,
+                            RectF bounds, float density, int fallbackFill, int fallbackBorder) {
+        if (!isGlassEnabled(context)) {
+            Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
+            fill.setColor(fallbackFill);
+            canvas.drawPath(triangle, fill);
+            Paint border = new Paint(Paint.ANTI_ALIAS_FLAG);
+            border.setStyle(Paint.Style.STROKE);
+            border.setStrokeWidth(Math.max(1f, 1.25f * density));
+            border.setColor(fallbackBorder);
+            canvas.drawPath(edges, border);
+            return;
+        }
+
         Paint shade = new Paint(Paint.ANTI_ALIAS_FLAG);
         shade.setColor(PANEL_SHADE);
         canvas.drawPath(triangle, shade);

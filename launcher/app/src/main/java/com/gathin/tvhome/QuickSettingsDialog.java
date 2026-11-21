@@ -51,7 +51,6 @@ final class QuickSettingsDialog {
     private static final int CAPSULE_IDLE_BORDER = 0x559EABB8;
     private static final int CAPSULE_FOCUS_FILL = TvUiTokens.SURFACE_FOCUSED;
     private static final int CAPSULE_FOCUS_BORDER = TvUiTokens.FOCUS_BORDER;
-    private static final int PANEL_GLASS_VEIL = TvUiTokens.GLASS_VEIL_COLOR;
     private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
     private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
     private static final int TILE_HEIGHT_DP = 36;
@@ -113,7 +112,8 @@ final class QuickSettingsDialog {
                 dp(density, PANEL_SIDE_INSET_DP), dp(density, PANEL_VERTICAL_INSET_DP));
         content.setClipChildren(true);
         content.setClipToPadding(true);
-        content.setBackground(UniversalGlassMaterial.panel(density, TvUiTokens.POPUP_RADIUS_DP));
+        content.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
+                PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
 
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -365,7 +365,8 @@ final class QuickSettingsDialog {
             if (control == null) continue;
             boolean manageCapsule = "quick_settings_manage_wallpaper".equals(control.getTag());
             float cornerRadiusDp = manageCapsule ? 7f : 10f;
-            Drawable idle = UniversalGlassMaterial.controlIdle(density, cornerRadiusDp);
+            Drawable idle = UniversalGlassMaterial.controlIdle(activity, density, cornerRadiusDp,
+                    CAPSULE_IDLE_FILL, CAPSULE_IDLE_BORDER);
             control.setBackground(new LayerDrawable(new Drawable[]{
                     idle, new GliderFocusDrawable(control, glider)
             }));

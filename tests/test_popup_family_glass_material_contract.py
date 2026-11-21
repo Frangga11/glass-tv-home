@@ -9,14 +9,14 @@ JAVA = ROOT / "launcher/app/src/main/java/com/gathin/tvhome"
 class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
     def test_wifi_popup_uses_universal_panel_material_without_changing_window_contract(self):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
-        self.assertIn("UniversalGlassMaterial.panel(density, TvUiTokens.POPUP_RADIUS_DP)", wifi)
+        self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
         self.assertNotIn("Backdrop.watch(content)", wifi)
         self.assertIn("window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))", wifi)
 
     def test_wifi_pointer_uses_the_same_material_and_keeps_its_open_base(self):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         pointer = wifi[wifi.index("pointer = new View(activity)"):wifi.index("content.addView(pointer")]
-        self.assertIn("UniversalGlassMaterial.drawPointer(canvas, triangle, pointerEdges", pointer)
+        self.assertIn("UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges", pointer)
         self.assertIn("pointerEdges.lineTo(center + h, h)", pointer)
         self.assertNotIn("TvUiTokens.GLASS_VEIL_COLOR", pointer)
 
@@ -38,14 +38,14 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
 
     def test_quick_settings_uses_universal_panel_and_control_material_beneath_existing_glider(self):
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
-        self.assertIn("UniversalGlassMaterial.panel(density, TvUiTokens.POPUP_RADIUS_DP)", quick)
-        self.assertIn("UniversalGlassMaterial.controlIdle(density, cornerRadiusDp)", quick)
+        self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", quick)
+        self.assertIn("UniversalGlassMaterial.controlIdle(activity, density, cornerRadiusDp,", quick)
         self.assertIn("new GliderFocusDrawable(control, glider)", quick)
         self.assertNotIn("Backdrop.watch(content)", quick)
 
     def test_home_navigation_capsule_uses_universal_surface_but_keeps_shared_glider(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
-        self.assertIn("new UniversalGlassDrawable(density, 20f)", main)
+        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", main)
         self.assertIn("glider.addCompanion(navCapsule)", main)
         self.assertIn("new GliderFocusDrawable(pill, glider)", main)
         self.assertNotIn("Backdrop.watch(navCapsule)", main)
@@ -53,7 +53,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
     def test_wifi_actions_keep_existing_focus_state_contract_and_use_universal_idle_surface(self):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         self.assertIn("TvFocusIndicator.applyRoundedTextFocus(view, density, TvUiTokens.ROW_RADIUS_DP", wifi)
-        self.assertIn("UniversalGlassMaterial.controlStateBackground(density, TvUiTokens.ROW_RADIUS_DP)", wifi)
+        self.assertIn("UniversalGlassMaterial.controlStateBackground(activity, density,", wifi)
 
     def test_ported_universal_material_keeps_source_gradient_layers(self):
         glass = (JAVA / "UniversalGlassDrawable.java").read_text(encoding="utf-8")
@@ -64,6 +64,8 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, glass)
         self.assertIn("0xB31D1D1D", material)
+        self.assertIn('getBoolean("glass_effects_enabled", true)', material)
+        self.assertIn("if (!isGlassEnabled(context))", material)
         self.assertIn("0x16FFFFFF", material)
         self.assertIn("0x08FFFFFF", material)
         self.assertIn("0x28FFFFFF", material)

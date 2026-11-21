@@ -11,9 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -118,7 +116,8 @@ final class WifiSettingsDialog {
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(dp(density, 14), 0, dp(density, 14), dp(density, 10));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
-        content.setBackground(UniversalGlassMaterial.panel(density, TvUiTokens.POPUP_RADIUS_DP));
+        content.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
+                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
         pointer = new View(activity) {
             @Override protected void onDraw(Canvas canvas) {
                 super.onDraw(canvas);
@@ -134,8 +133,9 @@ final class WifiSettingsDialog {
                 pointerEdges.moveTo(center - h, h);
                 pointerEdges.lineTo(center, 0);
                 pointerEdges.lineTo(center + h, h);
-                UniversalGlassMaterial.drawPointer(canvas, triangle, pointerEdges,
-                        new RectF(0f, 0f, w, h), density);
+                UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges,
+                        new RectF(0f, 0f, w, h), density,
+                        TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
             }
         };
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
@@ -154,7 +154,8 @@ final class WifiSettingsDialog {
         content.addView(header);
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
-        status.setBackground(UniversalGlassMaterial.controlIdle(density, TvUiTokens.CARD_RADIUS_DP));
+        status.setBackground(UniversalGlassMaterial.controlIdle(activity, density, TvUiTokens.CARD_RADIUS_DP,
+                TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
         status.setVisibility(View.GONE);
 
         TextView networksHeading = text(R.string.wifi_available_networks, popupSectionSizeSp(), true, density);
@@ -750,7 +751,8 @@ final class WifiSettingsDialog {
                 TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
                 TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         // Keep the existing disabled/pressed/focused states; only replace the idle surface material.
-        view.setBackground(UniversalGlassMaterial.controlStateBackground(density, TvUiTokens.ROW_RADIUS_DP));
+        view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
+                TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
         view.setOnClickListener(v -> {
             if (callback != null) callback.run();
         });

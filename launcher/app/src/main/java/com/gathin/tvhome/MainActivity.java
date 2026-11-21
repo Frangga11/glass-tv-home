@@ -953,7 +953,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         // Individual tabs below remain independent focus/click targets with transparent backgrounds.
         View navCapsule = findViewById(R.id.navPill);
         if (navCapsule != null) {
-            navCapsule.setBackground(new UniversalGlassDrawable(density, 20f));
+            navCapsule.setBackground(UniversalGlassMaterial.surface(this, density, 20f,
+                    TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
             glider.addCompanion(navCapsule);
         }
         // One restrained glass surface unifies the prayer timetable and Ayat Pilihan.
