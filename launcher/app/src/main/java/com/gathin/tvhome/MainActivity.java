@@ -2113,6 +2113,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             horizontalCarouselAnimator = null;
             horizontalCarouselTargetOffsetPx = RecyclerView.NO_POSITION;
         }
+        horizontalCarouselGliderAnchored = false;
+        deferHorizontalCarouselGliderMove = false;
         activityResumed = false;
         updateHomeTabIndicator();
         unregisterReceiver(packageReceiver);
@@ -3022,6 +3024,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
             if (horizontalCarouselAnimator != null) horizontalCarouselAnimator.cancel();
             horizontalCarouselAnimator = null;
             horizontalCarouselTargetOffsetPx = RecyclerView.NO_POSITION;
+            horizontalCarouselGliderAnchored = false;
+            deferHorizontalCarouselGliderMove = false;
         }
         if (horizontalCarouselMode) {
             horizontalGridExpanded = false;
