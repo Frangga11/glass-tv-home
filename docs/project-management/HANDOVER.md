@@ -1345,16 +1345,19 @@ Project F is closed at HOST/SOURCE EXIT PASS. G01 defect-resolution audit is PAS
 - The documentation commits trigger fresh CI; record exact-head results only after the latest documentation head's run finishes. Do not reuse run #2459 as evidence for later documentation commits.
 
 
-## Horizontal Carousel / Glider acceptance handoff — 21 November 2026
+## Horizontal Carousel / Glider integration and acceptance closeout — 21 November 2026
 
-- Active workstream: PR #159, **Fix horizontal carousel clipping and Universal motion on latest Quick Settings baseline**.
-- Branch: `fix/home-horizontal-carousel-universal-001`; base: PR #156 branch `feature/quick-settings-single-frame-glass-001`.
-- Implementation head accepted by owner: `b1c12b52a7c4784f9758bd9b487e5549d6e50a59`.
-- Owner tested the cumulative QA APK and confirmed the horizontal movement / Glider behavior as **“Sempurna”**.
-- Root cause fixed: per-frame `moveToScreenImmediately()` calls cancelled the shared Glider spring animation during carousel panning. The corrected path keeps Glider anchored to the Universal focus lane during adjacent horizontal DPAD pans and springs it back to the first slot on return.
-- The existing Glider and `DockBreathingBorderView` are both preserved as complementary effects. Vertical / Classic and Move Mode remain outside the correction. No card/icon geometry, spacing, dock placement, clipping or scroll-tail changes are included in the final Glider correction.
-- Exact implementation-head CI: run #2489 / `44918592733`, SUCCESS; Launcher build and unit tests SUCCESS; Lists/tools/docs SUCCESS.
-- QA artifact ID `14712099341`; extracted APK 1,649,218 bytes; SHA-256 `bd526fb06fac12aca97685c82206579314ee7f4b2f925042f6c5278aca166501`. APK archive integrity passed. This is a cumulative CI QA APK, not a formal signed release.
+- Workstream: PR #159, **Fix horizontal carousel clipping and Universal motion on latest Quick Settings baseline**.
+- Source branch: `fix/home-horizontal-carousel-universal-001`; parent/base branch: `feature/quick-settings-single-frame-glass-001` (PR #156).
+- Owner-accepted implementation head before merge: `b1c12b52a7c4784f9758bd9b487e5549d6e50a59`.
+- Owner tested the cumulative QA APK on the target Mi TV Stick and confirmed horizontal movement / Glider behavior as **“Sempurna”**.
+- Root cause: per-frame `moveToScreenImmediately()` calls cancelled the shared Glider spring animation during carousel panning. The correction keeps Glider anchored to the Universal focus lane during adjacent horizontal DPAD pans and springs it back to the first slot on return.
+- Existing Glider and `DockBreathingBorderView` remain complementary effects. Vertical / Classic navigation and Move Mode are outside this correction. Card/icon geometry, spacing, dock placement, clipping and scroll-tail behavior remain unchanged.
+- Implementation-head CI: run #2489 / `44918592733`, SUCCESS; both required jobs passed. QA artifact ID `14712099341`; extracted APK 1,649,218 bytes; SHA-256 `bd526fb06fac12aca97685c82206579314ee7f4b2f925042f6c5278aca166501`. This was a cumulative CI QA APK, not a signed release.
+- PR #159 was **CLOSED / MERGED** into PR #156's branch on 21 November 2026. Merge commit and resulting PR #156 head: `f8c1f554fff4379bb3bd4d426e3218fcc820b9e1`. PR #159 is no longer an open stacked PR.
+- Exact resulting integration-head CI: run #2493 / `44919477582`, SUCCESS. Both `Launcher build and unit tests` and `Lists, tools and docs` completed SUCCESS on the exact merge commit `f8c1f554fff4379bb3bd4d426e3218fcc820b9e1`.
 - Detailed record: `GTVH-HORIZONTAL-CAROUSEL-UNIVERSAL-MOTION-CHECKPOINT-2026-11-21.md`.
-- PR #159 remains stacked on PR #156. Preserve the parent relationship; do not merge PR #156 to `main` as part of this workstream. PR #62 remains deferred and untouched.
-- The documentation synchronization commit requires its own exact-head CI. Do not reuse the implementation-head CI as validation of later documentation commits.
+- **Horizontal Carousel / Glider code integration, owner acceptance record, handover synchronization, checkpoint synchronization, and exact-head CI verification are COMPLETE.**
+- PR #156 remains OPEN / DRAFT / UNMERGED pending separate Quick Settings physical-device acceptance and explicit owner approval. `main` remains unchanged at `0662c80bf80a6df06248262eeb0599a93aaba3e5`. This closeout does not authorize merging PR #156 to `main`.
+- PR #62 remains deferred and untouched.
+- Any subsequent defect must be handled as a new, narrowly scoped corrective task. Do not disturb the accepted Glider motion.
