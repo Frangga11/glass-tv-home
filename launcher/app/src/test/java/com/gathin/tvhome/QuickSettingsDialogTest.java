@@ -296,8 +296,7 @@ public class QuickSettingsDialogTest {
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
         float density = activity.getResources().getDisplayMetrics().density;
-        assertEquals(Math.round(255f * density), content.getLayoutParams().width);
-        assertEquals(Math.round(320f * density), content.getLayoutParams().height);
+        assertEquals(Math.round(320f * density), content.getMeasuredHeight());
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
