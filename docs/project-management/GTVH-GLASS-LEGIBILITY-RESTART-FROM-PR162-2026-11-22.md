@@ -59,16 +59,27 @@ Do not modify:
 - Capture Home navigation idle/focused and Quick Settings/Wi-Fi popup states.
 - No merge until owner accepts the actual device appearance.
 
+## Root-cause analysis and correction
+### Navigation legibility
+- PR #162 already had the correct shared silver Glider focus and Universal reflection/rim stack. The weak point was the idle navigation capsule relying only on the transparent Universal glass surface while white tab labels sat directly over variable wallpaper luminance.
+- This is a surface/contrast issue, not a DPAD or focus-animation defect. Replacing the Glider with a dark filled focus state would attack the wrong layer and regress the accepted visual language.
+- Correction: add a low-alpha smoked underlay below the unchanged Universal glass surface and a restrained text shadow on the three navigation labels only.
+
+### Popup text bleed
+- The popup shell is a layered translucent composition: a dark shade underneath a translucent Universal glass drawable. The underlying wallpaper/Home pixels therefore remain visible through the panel by design.
+- Quick Settings also explicitly clears `FLAG_DIM_BEHIND` and sets `dimAmount = 0f`. This is an accepted window-level behavior; changing it dims the whole Home screen behind the popup and does not solve transparency inside the popup panel itself.
+- Correction: modestly strengthen the popup's own smoked shade from `0xB31D1D1D` to `0xC21D1D1D`, while keeping the Universal reflection/rims above it. Preserve Quick Settings' original no-dim window behavior. Wi-Fi's existing dim policy remains untouched.
+
 ## First implementation pass (fresh PR #162 branch)
 - Navigation capsule now uses a restrained 14% graphite underlay beneath the unchanged UniversalGlassDrawable. It does not touch the moving focus layer.
 - Navigation labels receive a very subtle dark text shadow for bright-wallpaper legibility; typography, bounds, icon positions and Glider remain unchanged.
 - Original silver Glider treatment remains authoritative: `FOCUS_HALO = 0x35DCE5ED`, `FOCUS_BORDER = 0xFFDCE5ED`. No dark focus fill or alternate Glider style was introduced.
 - Popup smoke layer increased modestly from `0xB31D1D1D` to `0xC21D1D1D`; Universal glass reflections/rims remain above it.
-- Quick Settings now receives a restrained 0.08 backdrop dim, aligned with Wi-Fi's existing 0.08 policy.
+- Quick Settings retains its accepted `dimAmount = 0f` / cleared `FLAG_DIM_BEHIND` behavior; the popup's own smoke layer handles internal wallpaper bleed.
 - Added/updated source-level regression contracts for the original silver focus, nav underlay, popup veil and dim amount.
 
 ## Current status
 - Fresh branch is based on exact PR #162 HEAD; PR #164 is stacked on PR #162.
 - No PR #163 code is present on this branch.
-- First restrained material-level correction is committed; exact-head CI and Mi TV Stick visual acceptance are pending.
+- Root cause is isolated to translucent surface contrast, not focus routing or animation. The correction is committed; exact-head CI and Mi TV Stick visual acceptance are pending.
 - No merge or final visual acceptance is claimed.
