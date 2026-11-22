@@ -1255,7 +1255,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                         .remove(NavigationState.HOME_FOCUS_TOP_PILL_KEY).apply();
             }
             if (!onTile) hideGlass();
-            if (!onTile && (newF == null || !(isTopPill(newF) || inMenu(newF)))) glider.hide();
+            boolean homeCapsuleFocus = newF == ayahOpenHint
+                    || (newF != null && newF.getId() == R.id.prayerHeader);
+            if (!onTile && (newF == null || !(isTopPill(newF) || inMenu(newF) || homeCapsuleFocus))) glider.hide();
         });
 
         packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
