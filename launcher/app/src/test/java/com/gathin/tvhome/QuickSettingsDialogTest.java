@@ -47,7 +47,7 @@ public class QuickSettingsDialogTest {
     }
 
     private FrameLayout[] host(Activity activity) {
-        return host(activity, 420);
+        return host(activity, 430);
     }
 
     private FrameLayout[] host(Activity activity, int dockTop) {
@@ -92,7 +92,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void fixedPanelUsesExactGeometryAndKeepsFiveDpAnchorClearance() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 420);
+        FrameLayout[] views = host(activity, 430);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
@@ -107,8 +107,8 @@ public class QuickSettingsDialogTest {
         int availableHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, 5);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        assertEquals(320, availableHeight);
-        assertEquals(Math.round(320f * activity.getResources().getDisplayMetrics().density),
+        assertEquals(330, availableHeight);
+        assertEquals(Math.round(330f * activity.getResources().getDisplayMetrics().density),
                 content.getMeasuredHeight());
         assertEquals(5, dockTop - (panelTop + content.getMeasuredHeight()));
         for (String tag : new String[] {
@@ -135,11 +135,11 @@ public class QuickSettingsDialogTest {
     @Test
     public void fixedCapsuleGeometryIsPreserved() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 420);
+        FrameLayout[] views = host(activity, 430);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
-        assertEquals(320, find(dialog, "quick_settings_root").getMeasuredHeight());
+        assertEquals(330, find(dialog, "quick_settings_root").getMeasuredHeight());
         assertEquals(Math.round(245f * activity.getResources().getDisplayMetrics().density),
                 find(dialog, "quick_settings_root").getMeasuredWidth());
         float density = activity.getResources().getDisplayMetrics().density;
