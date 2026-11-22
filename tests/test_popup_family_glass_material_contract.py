@@ -71,7 +71,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
 
     def test_home_navigation_capsule_uses_universal_surface_but_keeps_shared_glider(self):
         main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
-        self.assertIn("UniversalGlassMaterial.surface(this, density, 20f,", main)
+        self.assertIn("UniversalGlassMaterial.navigationSurface(this, density, 20f,", main)
         self.assertIn("glider.addCompanion(navCapsule)", main)
         self.assertIn("new GliderFocusDrawable(pill, glider)", main)
         self.assertNotIn("Backdrop.watch(navCapsule)", main)
