@@ -79,7 +79,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("static int availablePanelHeight(", DIALOG)
         self.assertIn("params.y = panelTop;", DIALOG)
         self.assertIn("final int desiredContentTopOnScreen = hostAt[1] + panelTop;", DIALOG)
-        self.assertIn("Do not read content.getLocationOnScreen() synchronously here", DIALOG)
+        self.assertIn("PRE-relayout", DIALOG)
         self.assertIn("decorView.getViewTreeObserver().addOnPreDrawListener(positionListener[0]);", DIALOG)
         self.assertIn("int windowYCorrection = desiredContentTopOnScreen - contentAt[1];", DIALOG)
         self.assertIn("corrected.y += windowYCorrection;", DIALOG)
