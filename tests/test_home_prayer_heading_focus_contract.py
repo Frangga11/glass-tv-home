@@ -16,7 +16,7 @@ class HomePrayerHeadingFocusContractTest(unittest.TestCase):
         self.assertIn("prayerHeaderView.setFocusable(true)", block)
         self.assertIn("prayerHeaderView.setClickable(true)", block)
         self.assertIn("prayerHeaderView.setOnClickListener(v -> showPrayerPopup())", block)
-        self.assertIn("prayerHeaderView.setBackground(new GliderFocusDrawable(prayerHeaderView, glider, 8f * density))", block)
+        self.assertIn("prayerHeaderView.setBackground(new GliderFocusDrawable(\\n                    prayerHeaderView, homeCapsuleGlider, 8f * density))", block)
         self.assertIn("KEYCODE_DPAD_DOWN", block)
         self.assertIn("KEYCODE_DPAD_UP", block)
         self.assertIn("KEYCODE_DPAD_RIGHT", block)
