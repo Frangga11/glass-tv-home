@@ -91,10 +91,10 @@ final class UniversalGlassDrawable extends Drawable {
         }
         radius = Math.min(radiusDp * density, area.height() / 2f);
         if (cleanQuickSettings) {
-            // A cool, milky veil: keep the wallpaper visible while lifting the panel out of
-            // the dark-grey range so charcoal typography remains crisp on a television.
+            // Restrained silver highlights over a cool slate base. Keep wallpaper detail
+            // visible without washing out the established bright-white text treatment.
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                    new int[]{0x50FFFFFF, 0x3AFFFFFF, 0x2CFFFFFF, 0x20FFFFFF},
+                    new int[]{0x38FFFFFF, 0x24FFFFFF, 0x18FFFFFF, 0x10343E48},
                     new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
         } else if (brightSilverPopup) {
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
