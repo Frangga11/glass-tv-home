@@ -20,7 +20,12 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", quick)
         self.assertIn("label.setTextColor(PANEL_TEXT_PRIMARY)", quick)
         self.assertIn("view.setTextColor(TvUiTokens.TEXT_PRIMARY)", wifi)
-        self.assertIn("TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY", wifi)
+        self.assertNotIn("TvFocusIndicator", wifi)
+        self.assertIn("view.setBackground(UniversalGlassMaterial.controlIdle(activity, density,", wifi)
+        self.assertIn("focusGlider.setGlassRimStrokeWidth(2f * density)", wifi)
+        self.assertIn("focusGlider.setSingleGlassRim(true)", wifi)
+        self.assertIn("new GliderFocusDrawable(view, focusGlider, 10f * density)", wifi)
+        self.assertIn("view.setSelected(hasFocus)", wifi)
 
     def test_popup_material_is_translucent_dark_silver_glass_not_opaque_matte(self):
         material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
@@ -67,6 +72,21 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("b.left + halfStroke", cursor)
         self.assertIn("radiusPx - halfStroke", cursor)
         self.assertIn("innerShape.inset(1.35f * density", cursor)
+
+
+    def test_wifi_and_home_use_one_glider_cursor_without_legacy_overlap(self):
+        wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        self.assertIn("screen.installFocusCursor()", wifi)
+        self.assertIn("private void installFocusCursor()", wifi)
+        self.assertIn("private boolean isWifiFocusTarget(View view)", wifi)
+        self.assertIn("private void moveHomeCapsuleCursor(View capsule)", main)
+        self.assertIn("new GliderFocusDrawable(ayahOpenHint, glider, 6f * density)", main)
+        self.assertIn("new GliderFocusDrawable(prayerHeaderView, glider, 8f * density)", main)
+        self.assertNotIn("TvFocusIndicator.createRoundedStateBackground(\\n                        density, 6f", main)
+        self.assertNotIn("TvFocusIndicator.createRoundedStateBackground(\\n                    density, 8f", main)
+        self.assertNotIn("glider.addCompanion(navCapsule)", main)
+        self.assertIn("homeCapsuleFocus", main)
 
     def test_home_dock_and_capsule_material_remain_separate(self):
         dock = (JAVA / "DockDecoration.java").read_text(encoding="utf-8")
