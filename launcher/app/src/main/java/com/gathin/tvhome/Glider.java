@@ -33,6 +33,8 @@ final class Glider extends View {
     static final int DARK = 0;
     /** Between apps: a pane of glass, the same as the pills and the tray. */
     static final int GLASS = 1;
+    /** Dark, text-first fill for top navigation; preserves the shared Glider motion. */
+    static final int NAVIGATION_DARK = 2;
 
     private static final class Edge extends FloatPropertyCompat<Glider> {
         private final int which;
@@ -351,11 +353,14 @@ final class Glider extends View {
         // Never rounder than the shape allows: a pill's ends stay round as it shrinks to a circle.
         float r = Math.min(edges[RADIUS], Math.min(b - t, edges[RIGHT] - edges[LEFT]) / 2f);
         shape.set(edges[LEFT] + dx, t + dy, edges[RIGHT] + dx, b + dy);
-        if (style == DARK) {
-            // Focus is an overlay only: translucent silver-glass fill plus a cool silver rim.
-            // It never scales or changes the focused component's measured bounds.
-            paint.setColor(TvUiTokens.FOCUS_HALO);
-            paint.setAlpha(Math.round(((TvUiTokens.FOCUS_HALO >>> 24) & 0xFF) * opacity));
+        if (style == DARK || style == NAVIGATION_DARK) {
+            // Focus is an overlay only: preserve the shared bounds, coordinates and spring motion.
+            // The navigation variant uses a dark graphite fill so white labels stay crisp on bright
+            // wallpaper; all other DARK consumers retain the original translucent silver halo.
+            int focusSurface = style == NAVIGATION_DARK
+                    ? TvUiTokens.NAV_FOCUS_SURFACE : TvUiTokens.FOCUS_HALO;
+            paint.setColor(focusSurface);
+            paint.setAlpha(Math.round(((focusSurface >>> 24) & 0xFF) * opacity));
             canvas.drawRoundRect(shape, r, r, paint);
             float half = focusStroke.getStrokeWidth() / 2f;
             shape.inset(half, half);
