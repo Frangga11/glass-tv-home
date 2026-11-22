@@ -54,7 +54,7 @@ final class QuickSettingsDialog {
     private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
     private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
     private static final int TILE_HEIGHT_DP = 36;
-    private static final int PANEL_HEIGHT_DP = 320;
+    private static final int PANEL_HEIGHT_DP = 330;
     private static final int HALF_TILE_WIDTH_DP = 110;
     private static final int WIDE_TILE_WIDTH_DP = 225;
     private static final int CAPSULE_GAP_DP = 5;
@@ -276,8 +276,8 @@ final class QuickSettingsDialog {
             return null;
         }
 
-        // Fixed 320dp panel; content is measured independently and must fit without compression.
-        // The remaining 1dp is intentional fixed bottom breathing room, not a weighted spacer.
+        // Fixed 330dp panel; the approved 10dp increase is added only below the unchanged content.
+        // All existing section positions, dimensions, insets and gaps remain unchanged.
         int panelHeight = fixedPanelHeight;
         android.util.Log.i("TvHome.QuickSettings", "Fixed panel " + Math.round(width / density)
                 + "x" + Math.round(panelHeight / density) + "dp; side inset "
