@@ -215,7 +215,18 @@ public class QuickSettingsDialogTest {
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
         assertEquals(Math.round(340.5f * density), availableHeight);
-        assertEquals(Math.round(330f * density), content.getMeasuredHeight());
+        View decor = dialog.getWindow().getDecorView();
+        ViewGroup contentParent = (ViewGroup) content.getParent();
+        assertEquals("330dp content must survive Dialog decor measurement"
+                + " [content=" + content.getMeasuredHeight()
+                + ", contentLayoutHeight=" + content.getLayoutParams().height
+                + ", parent=" + contentParent.getClass().getName()
+                + ", parentHeight=" + contentParent.getMeasuredHeight()
+                + ", parentPadding=" + contentParent.getPaddingTop() + "/" + contentParent.getPaddingBottom()
+                + ", decorHeight=" + decor.getMeasuredHeight()
+                + ", decorPadding=" + decor.getPaddingTop() + "/" + decor.getPaddingBottom()
+                + ", windowHeight=" + dialog.getWindow().getAttributes().height + "]",
+                Math.round(330f * density), content.getMeasuredHeight());
         int[] contentAt = new int[2];
         content.getLocationOnScreen(contentAt);
         int actualPanelTop = contentAt[1] - hostAt[1];
