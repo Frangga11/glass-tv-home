@@ -315,6 +315,15 @@ final class QuickSettingsDialog {
         AlertDialog dialog = new AlertDialog.Builder(activity, R.style.Theme_TvHome_GlassDialog)
                 .setView(content).create();
         dialogHolder[0] = dialog;
+        // Remove the Material floating-dialog frame before DecorView is installed. Doing
+        // this in onShow is too late: the frame's default vertical insets have already
+        // reduced the measured content height even though the custom panel is transparent.
+        Window dialogWindow = dialog.getWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialogWindow.getDecorView().setPadding(0, 0, 0, 0);
+            dialogWindow.setGravity(Gravity.TOP | Gravity.LEFT);
+        }
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setOnKeyListener((ignored, keyCode, event) -> {
@@ -343,8 +352,6 @@ final class QuickSettingsDialog {
         dialog.setOnShowListener(d -> {
             Window window = dialog.getWindow();
             if (window != null) {
-                window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                window.getDecorView().setPadding(0, 0, 0, 0);
                 window.setGravity(Gravity.TOP | Gravity.LEFT);
                 window.setLayout(panelWidth, panelHeight);
                 WindowManager.LayoutParams params = window.getAttributes();
