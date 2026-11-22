@@ -15,7 +15,7 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         drawable = (JAVA / "GliderFocusDrawable.java").read_text(encoding="utf-8")
         self.assertIn("glider.drawShape(canvas", drawable)
         self.assertIn("canvas.clipRect(getBounds())", drawable)
-        self.assertIn("new GliderFocusDrawable(pill, glider)", MAIN)
+        self.assertIn("new GliderFocusDrawable(pill, glider, 20f * density)", MAIN)
         self.assertIn("new android.graphics.drawable.LayerDrawable(", MAIN)
         self.assertIn("glider.addCompanion(pill)", MAIN)
 
