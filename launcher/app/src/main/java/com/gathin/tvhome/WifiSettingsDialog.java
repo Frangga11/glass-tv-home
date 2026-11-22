@@ -56,6 +56,7 @@ final class WifiSettingsDialog {
     private static WifiSettingsDialog pendingReturn;
 
     private final Activity activity;
+    private final LinearLayout content;
     private final Runnable openSystemWifiSettings;
     private final Runnable returnToParent;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -108,7 +109,7 @@ final class WifiSettingsDialog {
         this.returnToParent = returnToParent;
 
         float density = activity.getResources().getDisplayMetrics().density;
-        LinearLayout content = new LinearLayout(activity);
+        content = new LinearLayout(activity);
         content.setTag("wifi_popup_root");
         content.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
