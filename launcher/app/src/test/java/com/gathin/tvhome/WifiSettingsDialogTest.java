@@ -108,9 +108,8 @@ public class WifiSettingsDialogTest {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         // Exercise the permission-blocked state deterministically; Robolectric may otherwise
         // inherit a granted permission from the test manifest/default package state.
-        Shadows.shadowOf(activity.getPackageManager()).setPermissionGrantResult(
-                activity.getPackageName(), Manifest.permission.ACCESS_FINE_LOCATION,
-                PackageManager.PERMISSION_DENIED);
+        Shadows.shadowOf(activity.getApplication()).denyPermissions(
+                Manifest.permission.ACCESS_FINE_LOCATION);
         final int[] returns = {0};
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> returns[0]++);
         assertNotNull(dialog);
