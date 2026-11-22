@@ -45,15 +45,15 @@ final class QuickSettingsDialog {
     }
 
     // Reuse the approved global Frosted Silver Glass material; this popup is not a second theme.
-    private static final int PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY;
-    private static final int PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY;
-    private static final int CAPSULE_IDLE_FILL = 0x662D3741;
-    private static final int CAPSULE_IDLE_BORDER = 0x559EABB8;
-    private static final int CAPSULE_FOCUS_FILL = TvUiTokens.SURFACE_FOCUSED;
-    private static final int CAPSULE_FOCUS_BORDER = TvUiTokens.FOCUS_BORDER;
-    private static final int PANEL_GLASS_VEIL = TvUiTokens.GLASS_VEIL_COLOR;
-    private static final int PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE;
-    private static final int PANEL_FALLBACK_BORDER = TvUiTokens.BORDER;
+    private static final int PANEL_TEXT_PRIMARY = PopupGlassTokens.TEXT_PRIMARY;
+    private static final int PANEL_TEXT_SECONDARY = PopupGlassTokens.TEXT_SECONDARY;
+    private static final int CAPSULE_IDLE_FILL = PopupGlassTokens.CAPSULE_IDLE;
+    private static final int CAPSULE_IDLE_BORDER = PopupGlassTokens.CAPSULE_IDLE_BORDER;
+    private static final int CAPSULE_FOCUS_FILL = PopupGlassTokens.CAPSULE_FOCUS;
+    private static final int CAPSULE_FOCUS_BORDER = PopupGlassTokens.CAPSULE_FOCUS_BORDER;
+    private static final int PANEL_GLASS_VEIL = PopupGlassTokens.PANEL_VEIL;
+    private static final int PANEL_FALLBACK_SURFACE = PopupGlassTokens.PANEL_FALLBACK;
+    private static final int PANEL_FALLBACK_BORDER = PopupGlassTokens.PANEL_BORDER;
     private static final int TILE_HEIGHT_DP = 36;
     private static final int PANEL_HEIGHT_DP = 320;
     private static final int HALF_TILE_WIDTH_DP = 115;
@@ -114,7 +114,7 @@ final class QuickSettingsDialog {
         content.setClipChildren(true);
         content.setClipToPadding(true);
         content.setBackground(new GlassDrawable(content, TvUiTokens.POPUP_RADIUS_DP * density, density, null, 0.5f, false,
-                PANEL_GLASS_VEIL, 0x54, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
+                PANEL_GLASS_VEIL, PopupGlassTokens.PANEL_VEIL_ALPHA, PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
         Backdrop.watch(content);
 
         LinearLayout header = new LinearLayout(activity);
