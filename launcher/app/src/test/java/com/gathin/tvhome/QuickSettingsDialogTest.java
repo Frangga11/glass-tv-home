@@ -47,7 +47,22 @@ public class QuickSettingsDialogTest {
     }
 
     private FrameLayout[] host(Activity activity) {
-        return host(activity, 409);
+        return host(activity, productionDockTopDp(activity));
+    }
+
+    /** Derive the baseline Dock top from the same geometry functions used by MainActivity. */
+    private int productionDockTopDp(Activity activity) {
+        float density = activity.getResources().getDisplayMetrics().density;
+        int screenHeightPx = Math.round(540f * density);
+        int viewportWidthPx = Math.round(960f * density);
+        int innerWidthPx = DockGeometry.horizontalContentWidthPx(viewportWidthPx, density);
+        int dockTileWidthPx = DockGeometry.horizontalDockTileWidthPx(
+                innerWidthPx, DockPreferences.DEFAULT_CAPACITY, density);
+        int dockTileHeightPx = DockGeometry.tileHeightPx(dockTileWidthPx);
+        int dockHeightPx = DockGeometry.horizontalDockHeightPx(dockTileHeightPx, density);
+        int dockBottomMarginPx = DockGeometry.horizontalDockBottomMarginPx(dockTileHeightPx, density);
+        int dockTopPx = screenHeightPx - dockHeightPx - dockBottomMarginPx;
+        return Math.round(dockTopPx / density);
     }
 
     private FrameLayout[] host(Activity activity, int dockTopDp) {
@@ -100,7 +115,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void fixedPanelUsesExactGeometryAndKeepsFiveDpAnchorClearance() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 409);
+        FrameLayout[] views = host(activity, productionDockTopDp(activity));
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
@@ -117,11 +132,11 @@ public class QuickSettingsDialogTest {
         int availableHeight = QuickSettingsDialog.availablePanelHeight(dockTop, panelTop, fiveDp);
         View content = find(dialog, "quick_settings_root");
         assertNotNull(content);
-        assertEquals(Math.round(340f * density), availableHeight);
+        assertEquals(Math.round(330f * density), availableHeight);
         assertEquals(Math.round(330f * density), content.getMeasuredHeight());
-        // 330dp panel in 340dp available space leaves 15dp to the Dock:
-        // the required 5dp clearance plus 10dp of intentional spare room.
-        assertEquals(Math.round(15f * density), dockTop - (panelTop + content.getMeasuredHeight()));
+        // The default-capacity production Dock leaves exactly 330dp: a 330dp panel
+        // fits without reducing the approved 5dp clearances at either edge.
+        assertEquals(fiveDp, dockTop - (panelTop + content.getMeasuredHeight()));
         for (String tag : new String[] {
                 "quick_settings_gap_header_grid",
                 "quick_settings_gap_grid_wallpaper",
@@ -137,7 +152,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void insufficientHeightRejectsPopupWithoutCompressingFixedGeometry() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 398);
+        FrameLayout[] views = host(activity, productionDockTopDp(activity) - 1);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertEquals(null, dialog);
