@@ -227,6 +227,11 @@ class QuickSettingsContractTest(unittest.TestCase):
         abort = MAIN[MAIN.index("private void abortHorizontalDockCollapse("):
                      MAIN.index("private int getHorizontalDockPitch(")]
         self.assertIn("pendingQuickSettingsOpen = null;", abort)
+        cancel = collapse[collapse.index("public void onAnimationCancel(android.animation.Animator animation)"): 
+                          collapse.index("public void onAnimationEnd(android.animation.Animator animation)",
+                                         collapse.index("public void onAnimationCancel(android.animation.Animator animation)"))]
+        self.assertIn("Deferred popup cancelled because its Dock collapse animation was cancelled", cancel)
+        self.assertIn("pendingQuickSettingsOpen = null;", cancel)
 
     def test_two_column_focus_graph_has_explicit_dpad_edges(self):
         for setter in (
