@@ -232,9 +232,11 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("static float rescanTextSizeSp() { return 11f; }", wifi_dialog)
         self.assertIn("static float androidSettingsTextSizeSp() { return 11f; }", wifi_dialog)
         self.assertIn("compactActionLayout(density, true)", wifi_dialog)
+        self.assertIn("actions.addView(locationAction, compactActionLayout(density, true));", wifi_dialog)
+        self.assertIn("locationAction.setMaxLines(2);", wifi_dialog)
+        self.assertIn("wifiToggle.setPadding(0, 0, 0, 0);", wifi_dialog)
         self.assertIn("ViewGroup.LayoutParams.WRAP_CONTENT", wifi_dialog)
         self.assertIn("networkViewport.topMargin = dp(density, 8);", wifi_dialog)
-        self.assertIn("networkViewport.bottomMargin = dp(density, 4);", wifi_dialog)
         self.assertIn("networkViewport.bottomMargin = dp(density, 4);", wifi_dialog)
         self.assertIn("ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 24)", wifi_dialog)
         self.assertIn("rescan.setMinHeight(dp(density, 24));", wifi_dialog)
@@ -242,6 +244,9 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("scanState = text(R.string.wifi_scan_idle, popupMetaSizeSp()", wifi_dialog)
         self.assertIn("view.setMaxLines(1);", wifi_dialog)
         self.assertNotIn('label = "⌁  " + label', wifi_dialog)
+        for resource in ("values/strings.xml", "values-id/strings.xml", "values-en/strings.xml"):
+            content = (RES / resource).read_text(encoding="utf-8")
+            self.assertNotIn('name="wifi_scan_updated"', content)
         for resource in ("values/strings.xml", "values-id/strings.xml"):
             content = (RES / resource).read_text(encoding="utf-8")
             self.assertIn('name="wifi_open_android_settings">Pengaturan Wi-Fi &gt;', content)
