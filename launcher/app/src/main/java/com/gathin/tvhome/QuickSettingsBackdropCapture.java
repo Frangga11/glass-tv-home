@@ -9,6 +9,7 @@ import android.view.PixelCopy;
 import android.view.View;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
@@ -27,10 +28,17 @@ final class QuickSettingsBackdropCapture {
 
     private QuickSettingsBackdropCapture() { }
 
+    static Rect panelCropInWindow(int hostWindowX, int hostWindowY, int panelLeftInHost,
+                                  int panelTopInHost, int panelWidth, int panelHeight) {
+        return new Rect(hostWindowX + panelLeftInHost, hostWindowY + panelTopInHost,
+                hostWindowX + panelLeftInHost + panelWidth,
+                hostWindowY + panelTopInHost + panelHeight);
+    }
+
     static void capture(Activity activity, Rect sourceRect, Executor worker,
-                        Handler callbackHandler, Listener listener) {
+                        Handler callbackHandler, AtomicBoolean active, Listener listener) {
         if (activity == null || sourceRect == null || worker == null
-                || callbackHandler == null || listener == null) {
+                || callbackHandler == null || active == null || listener == null) {
             notifyFailure(callbackHandler, listener, "Missing capture dependency");
             return;
         }
@@ -38,7 +46,7 @@ final class QuickSettingsBackdropCapture {
             notifyFailure(callbackHandler, listener, "PixelCopy requires API 26");
             return;
         }
-        if (activity.isFinishing() || activity.isDestroyed()) {
+        if (!active.get() || activity.isFinishing() || activity.isDestroyed()) {
             notifyFailure(callbackHandler, listener, "Activity is no longer active");
             return;
         }
@@ -67,6 +75,10 @@ final class QuickSettingsBackdropCapture {
 
         try {
             PixelCopy.request(activity.getWindow(), crop, captured, result -> {
+                if (!active.get()) {
+                    recycle(captured);
+                    return;
+                }
                 if (result != PixelCopy.SUCCESS) {
                     recycle(captured);
                     listener.onFailure("PixelCopy returned " + result);
@@ -77,7 +89,7 @@ final class QuickSettingsBackdropCapture {
                     worker.execute(() -> {
                         Bitmap blurred = null;
                         try {
-                            if (!Thread.currentThread().isInterrupted()) {
+                            if (active.get() && !Thread.currentThread().isInterrupted()) {
                                 // The source crop is native-size; Backdrop.blur downsamples once
                                 // and applies its established two-pass box blur at half resolution.
                                 blurred = Backdrop.blur(captured, crop.width(), crop.height(), 0);
@@ -87,7 +99,15 @@ final class QuickSettingsBackdropCapture {
                         }
 
                         final Bitmap ready = blurred;
+                        if (!active.get()) {
+                            recycle(ready);
+                            return;
+                        }
                         boolean posted = callbackHandler.post(() -> {
+                            if (!active.get()) {
+                                recycle(ready);
+                                return;
+                            }
                             if (ready == null || ready.isRecycled()) {
                                 listener.onFailure("Unable to blur captured Activity window");
                             } else {
