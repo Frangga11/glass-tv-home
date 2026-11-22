@@ -308,6 +308,12 @@ scanState.setVisibility(View.VISIBLE);
                 || activity.isFinishing() || activity.isDestroyed()) return null;
         WifiSettingsDialog screen = new WifiSettingsDialog(activity, openSystemWifiSettings, returnToParent);
         active = new WeakReference<>(screen);
+        // Resolve runtime prerequisites before the window becomes visible. Dialog's onShow
+        // callback is dispatched through the main queue, so relying on it alone can expose
+        // the default SSID/rescan views for an initial frame when permission is missing.
+        screen.refreshStatus();
+        screen.updatePrerequisites();
+        screen.connectFocusOrder();
         screen.dialog.show();
         return screen.dialog;
     }
