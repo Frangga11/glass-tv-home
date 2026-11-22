@@ -140,11 +140,11 @@ public class QuickSettingsDialogTest {
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
         assertEquals(320, find(dialog, "quick_settings_root").getMeasuredHeight());
-        assertEquals(Math.round(240f * activity.getResources().getDisplayMetrics().density),
+        assertEquals(Math.round(245f * activity.getResources().getDisplayMetrics().density),
                 find(dialog, "quick_settings_root").getMeasuredWidth());
         float density = activity.getResources().getDisplayMetrics().density;
-        int halfWidth = Math.round(107.5f * density);
-        int wideWidth = Math.round(220f * density);
+        int halfWidth = Math.round(110f * density);
+        int wideWidth = Math.round(225f * density);
         int mainHeight = Math.round(36f * density);
         int manageHeight = Math.round(20f * density);
         assertEquals(mainHeight, find(dialog, "quick_settings_input").getMeasuredHeight());
