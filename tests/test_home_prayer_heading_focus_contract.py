@@ -7,7 +7,7 @@ MAIN = (ROOT / "launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java")
 
 class HomePrayerHeadingFocusContractTest(unittest.TestCase):
     def test_ayah_down_moves_to_prayer_heading(self):
-        block = MAIN[MAIN.index("ayahOpenHint.setOnKeyListener"):MAIN.index("ayahOpenHint.setBackground", MAIN.index("ayahOpenHint.setOnKeyListener"))]
+        block = MAIN[MAIN.index("ayahOpenHint.setOnKeyListener"):MAIN.index("ayahOpenHint.setForeground", MAIN.index("ayahOpenHint.setOnKeyListener"))]
         self.assertIn("R.id.prayerHeader", block)
         self.assertNotIn("R.id.prayerTable", block)
 
@@ -16,7 +16,7 @@ class HomePrayerHeadingFocusContractTest(unittest.TestCase):
         self.assertIn("prayerHeaderView.setFocusable(true)", block)
         self.assertIn("prayerHeaderView.setClickable(true)", block)
         self.assertIn("prayerHeaderView.setOnClickListener(v -> showPrayerPopup())", block)
-        self.assertIn("glider, 8f * density)", block)
+        self.assertIn("new SettingsFocusCursorDrawable(density, 8f)", block)
         self.assertIn("KEYCODE_DPAD_DOWN", block)
         self.assertIn("KEYCODE_DPAD_UP", block)
         self.assertIn("KEYCODE_DPAD_RIGHT", block)
