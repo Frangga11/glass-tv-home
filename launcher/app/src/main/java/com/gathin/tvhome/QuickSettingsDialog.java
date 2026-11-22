@@ -126,7 +126,7 @@ final class QuickSettingsDialog {
         Drawable headerIcon = activity.getDrawable(R.drawable.ic_settings);
         if (headerIcon != null) {
             headerIcon = headerIcon.mutate();
-            headerIcon.setTint(PANEL_TEXT_PRIMARY);
+            headerIcon.setTint(PopupGlassTokens.ICON);
             int iconSize = dp(density, 18);
             headerIcon.setBounds(0, 0, iconSize, iconSize);
             title.setCompoundDrawablesRelative(headerIcon, null, null, null);
@@ -498,7 +498,7 @@ final class QuickSettingsDialog {
             Drawable icon = activity.getDrawable(iconRes);
             if (icon != null) {
                 icon = icon.mutate();
-                icon.setTint(PANEL_TEXT_PRIMARY);
+                icon.setTint(PopupGlassTokens.ICON);
                 int size = dp(density, 16);
                 icon.setBounds(0, 0, size, size);
                 tile.setCompoundDrawablesRelative(icon, null, null, null);
