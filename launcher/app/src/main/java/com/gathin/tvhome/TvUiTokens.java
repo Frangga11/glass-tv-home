@@ -47,6 +47,8 @@ final class TvUiTokens {
     static final int POPUP_TEXT_SECONDARY = 0xFF52616B;
     static final int POPUP_TEXT_MUTED = 0xFF687680;
     static final int POPUP_ACCENT = 0xFF536A78;
+    static final int POPUP_DISABLED_SURFACE = 0x88DDE3E7;
+    static final int POPUP_DISABLED_BORDER = 0x889BA8B1;
 
     // Persistent selected/active state is silver, never the same treatment as DPAD focus.
     static final int NAV_PROFILE_SELECTED = 0xFF46535F;
