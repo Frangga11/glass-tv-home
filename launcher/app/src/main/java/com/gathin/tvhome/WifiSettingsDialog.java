@@ -118,7 +118,7 @@ final class WifiSettingsDialog {
         content.setPadding(dp(density, 14), 0, dp(density, 14), dp(density, 10));
         // Adopt Universal Home's glass material without changing the approved Wi-Fi geometry.
         content.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
-                TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER));
+                TvUiTokens.POPUP_PANEL_FALLBACK, TvUiTokens.POPUP_BORDER));
         pointer = new View(activity) {
             @Override protected void onDraw(Canvas canvas) {
                 super.onDraw(canvas);
@@ -142,7 +142,7 @@ final class WifiSettingsDialog {
                 RectF materialBounds = new RectF(density, density,
                         Math.max(density, w - density), Math.max(density, materialHeight - density));
                 UniversalGlassMaterial.drawPointer(activity, canvas, triangle, pointerEdges,
-                        materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.BORDER);
+                        materialBounds, density, TvUiTokens.POPUP_SURFACE, TvUiTokens.POPUP_BORDER);
             }
         };
         content.addView(pointer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(density, 12)));
@@ -162,7 +162,7 @@ final class WifiSettingsDialog {
         status = text(R.string.wifi_status_loading, TvUiTokens.BODY_SP, true, density);
         status.setPadding(dp(density, 10), dp(density, 5), dp(density, 10), dp(density, 5));
         status.setBackground(UniversalGlassMaterial.controlIdle(activity, density, TvUiTokens.CARD_RADIUS_DP,
-                TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
+                TvUiTokens.POPUP_CONTROL_IDLE, TvUiTokens.POPUP_BORDER));
         status.setVisibility(View.GONE);
 
         TextView networksHeading = text(R.string.wifi_available_networks, popupSectionSizeSp(), true, density);
@@ -754,9 +754,9 @@ final class WifiSettingsDialog {
         lp.topMargin = dp(density, 2);
         view.setLayoutParams(lp);
         TvFocusIndicator.applyRoundedTextFocus(view, density, TvUiTokens.ROW_RADIUS_DP,
-                TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
-                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
-                TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
+                TvUiTokens.SURFACE_IDLE, TvUiTokens.POPUP_CONTROL_FOCUSED,
+                TvUiTokens.BORDER, TvUiTokens.POPUP_FOCUS_BORDER,
+                TvUiTokens.POPUP_TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         // Keep TvFocusIndicator's focus routing/text states; use Universal GlassControls surfaces.
         view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
                 TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
