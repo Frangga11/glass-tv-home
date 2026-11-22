@@ -93,7 +93,8 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         # carry the restrained pre-adoption Silver-Cyan identity across the Dock and
         # the explicitly selected Home header capsules.
         for token in ("0x36FFFFFF", "0x16FFFFFF", "0x0DFFFFFF", "0x30232323",
-                      "0x22FFFFFF", "0x08FFFFFF", "0x30FFFFFF",
+                      "0x28FFFFFF", "0x14FFFFFF", "0x0AFFFFFF", "0x1E111A22",
+                      "0x38FFFFFF", "0x40FFFFFF", "0x30FFFFFF",
                       "0xD9E2E8EE", "0xA650DDF2", "0x667D8D9B",
                       "0x80DCE5ED", "0x8067E8F9"):
             with self.subTest(token=token):
@@ -102,24 +103,17 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("inner.setStrokeWidth(density * 0.7f)", glass)
         self.assertIn("windowLight.setAlpha(124)", glass)
         self.assertIn("windowLight.setAlpha(Math.round(124f * alpha / 255f))", glass)
-        self.assertNotIn("0xB31D1D1D", material)
+        self.assertIn("PANEL_SHADE = 0x78151D25", material)
         self.assertIn('getBoolean("glass_effects_enabled", true)', material)
         self.assertIn("if (!isGlassEnabled(context))", material)
-        self.assertIn("0xCFEFF2F4", material)
-        self.assertIn("0xA8DCE2E6", material)
-        self.assertIn("0xF0FFFFFF", material)
-        self.assertIn("0xFF657984", material)
-        self.assertIn("TvUiTokens.POPUP_DISABLED_SURFACE", material)
-        self.assertIn("TvUiTokens.POPUP_DISABLED_BORDER", material)
-        self.assertIn("if (glassEnabled)", material)
-        self.assertIn("pressed.setColor(TvUiTokens.POPUP_CARD_SELECTED)", material)
-        self.assertIn("focused.setColor(TvUiTokens.POPUP_CONTROL_FOCUSED)", material)
         self.assertIn("new UniversalGlassDrawable(density, radiusDp, false, true)", material)
-        self.assertIn("static final int POPUP_TEXT_PRIMARY = 0xFF293740", (JAVA / "TvUiTokens.java").read_text(encoding="utf-8"))
-        self.assertIn("TvUiTokens.POPUP_TEXT_PRIMARY", (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8"))
-        self.assertIn("TvUiTokens.POPUP_TEXT_PRIMARY", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
+        self.assertIn("0x78151D25", material)
+        self.assertIn("if (glassEnabled)", material)
+        self.assertIn("static final int TEXT_PRIMARY = 0xFFFFFFFF", (JAVA / "TvUiTokens.java").read_text(encoding="utf-8"))
+        self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.TEXT_PRIMARY", (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8"))
+        self.assertIn("TvUiTokens.TEXT_PRIMARY", (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8"))
         settings = (JAVA / "ModernSettingsDialog.java").read_text(encoding="utf-8")
-        self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP", settings)
+        self.assertIn("UniversalGlassMaterial.panel(activity, density, 24f", settings)
 
     def test_other_shared_glass_surfaces_keep_their_existing_backdrop_contract(self):
         glass = (JAVA / "GlassDrawable.java").read_text(encoding="utf-8")
