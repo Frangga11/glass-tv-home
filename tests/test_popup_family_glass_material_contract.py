@@ -30,9 +30,11 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("PANEL_SHADE = 0x78151D25", material)
         self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true)", material)
         self.assertIn("quickSettingsPanel(Context context", material)
+        self.assertIn("new int[]{0x70343E48, 0x60303A44}", material)
+        self.assertIn("0x889EABB8", material)
         self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true, true)", material)
-        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0x48343E48 : 0x68151D25)", drawable)
-        self.assertIn("new int[]{0x38FFFFFF, 0x24FFFFFF, 0x18FFFFFF, 0x10343E48}", drawable)
+        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0x70151D25 : 0x68151D25)", drawable)
+        self.assertIn("new int[]{0x28FFFFFF, 0x18FFFFFF, 0x0CFFFFFF, 0x28151D25}", drawable)
         for token in ("0x28FFFFFF", "0x14FFFFFF", "0x0AFFFFFF", "0x1E111A22",
                       "0xDFFFFFFF", "0x55FFFFFF", "0x38FFFFFF"):
             self.assertIn(token, drawable)
