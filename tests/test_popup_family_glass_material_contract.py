@@ -16,7 +16,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
     def test_wifi_pointer_keeps_the_underlying_glass_visible(self):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         pointer = wifi[wifi.index("pointer = new View(activity)"):wifi.index("content.addView(pointer")]
-        self.assertIn("TvUiTokens.GLASS_VEIL_COLOR", pointer)
+        self.assertIn("PopupGlassTokens.POINTER_VEIL", pointer)
         self.assertNotIn("paint.setColor(TvUiTokens.POPUP_SURFACE)", pointer)
 
     def test_dock_and_popup_share_the_backdrop_and_rim_primitives(self):
