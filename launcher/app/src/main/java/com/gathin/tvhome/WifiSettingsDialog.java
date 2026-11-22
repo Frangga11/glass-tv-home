@@ -303,6 +303,7 @@ final class WifiSettingsDialog {
         params.y = Math.max(0, popupTop);
         params.dimAmount = popupDimAmount();
         window.setAttributes(params);
+        window.setDimAmount(popupDimAmount());
     }
 
     static float popupWidthFraction() {
