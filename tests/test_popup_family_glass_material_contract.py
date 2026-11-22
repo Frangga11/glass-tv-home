@@ -7,6 +7,28 @@ JAVA = ROOT / "launcher/app/src/main/java/com/gathin/tvhome"
 
 
 class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
+    def test_navigation_surface_uses_a_restrained_underlay_without_replacing_universal_glass(self):
+        material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
+        main = (JAVA / "MainActivity.java").read_text(encoding="utf-8")
+        glider = (JAVA / "Glider.java").read_text(encoding="utf-8")
+        self.assertIn("static Drawable navigationSurface(", material)
+        self.assertIn("tint.setColor(0x24212A33)", material)
+        self.assertIn("new UniversalGlassDrawable(density, radiusDp)", material)
+        self.assertIn("UniversalGlassMaterial.navigationSurface(this, density, 20f,", main)
+        self.assertIn("setShadowLayer(1.0f * density", main)
+        self.assertIn("FOCUS_HALO = 0x35DCE5ED", (JAVA / "TvUiTokens.java").read_text(encoding="utf-8"))
+        self.assertIn("paint.setColor(TvUiTokens.FOCUS_HALO)", glider)
+        self.assertNotIn("NAVIGATION_DARK", glider)
+
+    def test_popup_uses_a_subtle_smoke_density_increase_and_quick_settings_scrim(self):
+        material = (JAVA / "UniversalGlassMaterial.java").read_text(encoding="utf-8")
+        quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
+        wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
+        self.assertIn("PANEL_SHADE = 0xC21D1D1D", material)
+        self.assertIn("window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)", quick)
+        self.assertIn("params.dimAmount = 0.08f", quick)
+        self.assertIn("return 0.08f;", wifi)
+
     def test_wifi_popup_uses_universal_panel_material_without_changing_window_contract(self):
         wifi = (JAVA / "WifiSettingsDialog.java").read_text(encoding="utf-8")
         self.assertIn("UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
