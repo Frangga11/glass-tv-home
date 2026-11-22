@@ -41,7 +41,7 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         quick = (JAVA / "QuickSettingsDialog.java").read_text(encoding="utf-8")
         self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", wifi)
         self.assertIn("UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,", quick)
-        self.assertIn("new GliderFocusDrawable(control, glider)", quick)
+        self.assertIn("new GliderFocusDrawable(control, glider, cornerRadiusDp * density)", quick)
         self.assertIn("QuickSettingsFocusGraph.connect(controls)", quick)
         self.assertIn("QuickSettingsFocusGraph", quick)
         self.assertIn("UniversalGlassMaterial.drawPointer(activity, pointer, canvas, triangle, pointerEdges", wifi)
