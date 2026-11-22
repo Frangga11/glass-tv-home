@@ -30,11 +30,15 @@ class PopupFamilyGlassMaterialContractTest(unittest.TestCase):
         self.assertIn("PANEL_SHADE = 0x78151D25", material)
         self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true)", material)
         self.assertIn("quickSettingsPanel(Context context", material)
-        self.assertIn("new int[]{0x70343E48, 0x60303A44}", material)
+        self.assertIn("new int[]{0x55343E48, 0x45303A44}", material)
+        self.assertIn("new int[]{0x30FFFFFF, 0x00FFFFFF}", material)
+        self.assertIn("new android.graphics.drawable.LayerDrawable(new Drawable[]{glass, specular})", material)
         self.assertIn("0x889EABB8", material)
         self.assertIn("new UniversalGlassDrawable(owner, density, radiusDp, false, true, true)", material)
-        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0x70151D25 : 0x68151D25)", drawable)
-        self.assertIn("new int[]{0x28FFFFFF, 0x18FFFFFF, 0x0CFFFFFF, 0x28151D25}", drawable)
+        self.assertIn("popupVeil.setColor(cleanQuickSettings ? 0x42151D25 : 0x68151D25)", drawable)
+        self.assertIn("new int[]{0x3CFFFFFF, 0x24FFFFFF, 0x12FFFFFF, 0x20343E48}", drawable)
+        self.assertIn("new int[]{0x4AFFFFFF, 0x1FFFFFFF, 0x00FFFFFF}", drawable)
+        self.assertIn("new int[]{0xE8FFFFFF, 0x70FFFFFF, 0x25FFFFFF, 0xA8FFFFFF}", drawable)
         for token in ("0x28FFFFFF", "0x14FFFFFF", "0x0AFFFFFF", "0x1E111A22",
                       "0xDFFFFFFF", "0x55FFFFFF", "0x38FFFFFF"):
             self.assertIn(token, drawable)
