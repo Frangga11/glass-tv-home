@@ -83,7 +83,7 @@ class QuickSettingsContractTest(unittest.TestCase):
         self.assertIn("Gravity.TOP | Gravity.LEFT", DIALOG)
         self.assertNotIn("addDivider", DIALOG)
         self.assertIn("PANEL_TEXT_PRIMARY = TvUiTokens.POPUP_TEXT_PRIMARY", DIALOG)
-        self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.TEXT_SECONDARY", DIALOG)
+        self.assertIn("PANEL_TEXT_SECONDARY = TvUiTokens.POPUP_TEXT_SECONDARY", DIALOG)
         self.assertIn("PANEL_FALLBACK_SURFACE = TvUiTokens.POPUP_SURFACE", DIALOG)
         self.assertIn("PANEL_FALLBACK_BORDER = TvUiTokens.BORDER", DIALOG)
         self.assertNotIn("0xB3FFFFFF", DIALOG)
