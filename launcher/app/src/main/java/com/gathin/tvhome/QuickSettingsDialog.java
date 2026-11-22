@@ -112,7 +112,7 @@ final class QuickSettingsDialog {
                 dp(density, PANEL_SIDE_INSET_DP), dp(density, PANEL_VERTICAL_INSET_DP));
         content.setClipChildren(true);
         content.setClipToPadding(true);
-        content.setBackground(UniversalGlassMaterial.panel(activity, density, TvUiTokens.POPUP_RADIUS_DP,
+        content.setBackground(UniversalGlassMaterial.panel(activity, content, density, TvUiTokens.POPUP_RADIUS_DP,
                 PANEL_FALLBACK_SURFACE, PANEL_FALLBACK_BORDER));
 
         LinearLayout header = new LinearLayout(activity);
