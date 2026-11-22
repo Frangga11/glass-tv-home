@@ -66,9 +66,9 @@ final class UniversalGlassDrawable extends Drawable {
         this.cleanQuickSettings = cleanQuickSettings;
         // Keep the popup recognizably silver-glass, not a white translucent wash.
         // A cool slate veil preserves contrast for the locked bright-white typography.
-        // Quick Settings uses a clear optical surface, not a blurred/fogged backdrop.
-        // The low-alpha slate tint preserves the existing hue without whitening the panel.
-        popupVeil.setColor(cleanQuickSettings ? 0x24343E48 : 0x68151D25);
+        // Quick Settings needs enough body to separate foreground labels from wallpaper.
+        // Use a cool slate-silver tint over the existing mild backdrop blur; no white fog wash.
+        popupVeil.setColor(cleanQuickSettings ? 0x78343E48 : 0x68151D25);
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         inner.setStyle(Paint.Style.STROKE);
@@ -93,11 +93,11 @@ final class UniversalGlassDrawable extends Drawable {
         }
         radius = Math.min(radiusDp * density, area.height() / 2f);
         if (cleanQuickSettings) {
-            // Clear optical glass: almost no milky fill. The slate tint is supplied by the
-            // dedicated veil; this gradient contributes only a restrained upper silver sheen.
+            // Defined silver glass face: a modest cool highlight over a substantial slate body.
+            // This keeps labels legible while preserving the existing silver/charcoal identity.
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
-                    new int[]{0x18FFFFFF, 0x0CFFFFFF, 0x04343E48, 0x18343E48},
-                    new float[]{0f, 0.12f, 0.62f, 1f}, Shader.TileMode.CLAMP));
+                    new int[]{0x30FFFFFF, 0x1CFFFFFF, 0x10343E48, 0x30343E48},
+                    new float[]{0f, 0.14f, 0.62f, 1f}, Shader.TileMode.CLAMP));
         } else if (brightSilverPopup) {
             surface.setShader(new LinearGradient(0f, area.top, 0f, area.bottom,
                     new int[]{0x28FFFFFF, 0x14FFFFFF, 0x0AFFFFFF, 0x1E111A22},
@@ -180,11 +180,9 @@ final class UniversalGlassDrawable extends Drawable {
         prepare(sourceBounds);
         if (area.isEmpty()) return;
         if (brightSilverPopup && owner != null) {
-            // Generic popups retain their established blurred backdrop. Quick Settings is
-            // intentionally clear: drawing Backdrop.Fill here creates the fog seen on TV.
-            if (!cleanQuickSettings) {
-                backdropFill.draw(canvas, owner, area, radius, 1f);
-            }
+            // Keep the original low-radius wallpaper blur underneath the slate tint.
+            // This suppresses text/image ghosting without the broad milky overlay removed earlier.
+            backdropFill.draw(canvas, owner, area, radius, cleanQuickSettings ? 0.72f : 1f);
             canvas.drawRoundRect(area, radius, radius, popupVeil);
         }
         canvas.drawRoundRect(area, radius, radius, surface);
@@ -193,7 +191,7 @@ final class UniversalGlassDrawable extends Drawable {
     void drawReflection(Canvas canvas, RectF sourceBounds) {
         prepare(sourceBounds);
         if (area.isEmpty()) return;
-        if (cleanQuickSettings) return; // No broad white wash across the clear glass face.
+        if (cleanQuickSettings) return; // Keep the polished face clear; edge highlights do the gloss.
         int saved = canvas.save();
         canvas.clipPath(clip);
         canvas.drawPath(sweep, reflection);
