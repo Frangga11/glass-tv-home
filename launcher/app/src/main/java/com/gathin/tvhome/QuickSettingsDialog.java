@@ -357,7 +357,7 @@ final class QuickSettingsDialog {
                 // wrapper remeasures the 330dp panel to its 319dp natural content height.
                 // Give the custom-panel wrapper the same exact measured height as the panel;
                 // this preserves the approved vertical insets and every capsule dimension.
-                content.setLayoutParams(new ViewGroup.LayoutParams(panelWidth, panelHeight));
+                content.setLayoutParams(new android.widget.FrameLayout.LayoutParams(panelWidth, panelHeight));
                 android.view.ViewParent contentParent = content.getParent();
                 if (contentParent instanceof View) {
                     View wrapper = (View) contentParent;
