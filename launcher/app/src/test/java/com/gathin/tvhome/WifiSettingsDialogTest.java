@@ -126,10 +126,18 @@ public class WifiSettingsDialogTest {
         assertNotNull(rescan);
         assertNotNull(settings);
         assertNotNull(close);
+        View networkList = dialog.getWindow().getDecorView().findViewWithTag("wifi_network_list");
+        assertNotNull(networkList);
+        // Initial visibility must already be correct before the queued onShow callback runs.
         assertEquals(View.VISIBLE, permission.getVisibility());
         assertEquals(View.GONE, rescan.getVisibility());
-        assertEquals(View.GONE, dialog.getWindow().getDecorView()
-                .findViewWithTag("wifi_network_list").getVisibility());
+        assertEquals(View.GONE, networkList.getVisibility());
+
+        // Drain Dialog's posted onShow callback and layout work; the state must remain gated.
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertEquals(View.VISIBLE, permission.getVisibility());
+        assertEquals(View.GONE, rescan.getVisibility());
+        assertEquals(View.GONE, networkList.getVisibility());
         assertTrue(rescan.isFocusable());
         assertTrue(settings.isClickable());
         assertNotEquals(View.NO_ID, rescan.getId());
