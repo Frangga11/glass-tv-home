@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.app.AlertDialog;
 import android.os.Looper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.TextView;
