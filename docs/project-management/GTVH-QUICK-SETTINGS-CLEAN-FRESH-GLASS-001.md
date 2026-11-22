@@ -10,20 +10,21 @@
 ## Owner design intent
 The Quick Settings popup should feel clean, clear and premium, like polished glass:
 - retain the existing cool slate-silver hue and bright-white typography;
-- show wallpaper detail through a restrained existing low-radius blur, so text and high-contrast shapes behind controls do not ghost through; Quick Settings must not consume the shared blurred-backdrop layer;
+- show a restrained blur of the actual Activity-window crop behind the panel (wallpaper plus Home foreground Views), so text and high-contrast shapes do not ghost through; do not substitute the wallpaper-only shared Backdrop cache;
 - use a precise upper specular highlight, fine silver rim and subtle inner reflection to create a clean glass sheen;
 - keep capsule colours in the existing slate family; improve translucency and add a narrow top reflection rather than recolouring controls;
 - clean typography with strong readability;
 - restrained silver/cyan focus cursor that is easy to identify without visual excess.
 
 ## Root-cause observations
-The first passes alternated between an overexposed white veil and an excessively dark smoked layer. The TV captures then showed a persistent fog effect caused by stacking the shared blurred wallpaper, a slate veil, broad white surface gradients and a wide reflection sweep. The corrective optical pass keeps a reduced-strength version of the existing low-radius wallpaper blur, restores sufficient slate-silver surface opacity to separate foreground content, removes the broad reflection sweep, and reserves shine for the rim and narrow edge highlights.
+The first passes alternated between an overexposed white veil and an excessively dark smoked layer. The TV captures showed foreground Home labels and prayer text remaining sharp through the translucent Dialog. The shared Backdrop cache stores only the wallpaper bitmap; it cannot blur Activity foreground Views. Removing that blur exposed the underlying Home text even more clearly. The root correction captures the exact Activity-window crop beneath Quick Settings using PixelCopy, blurs that composite off the UI thread, and draws it inside the panel before applying the slate-silver tint and polished edge highlights.
 
 ## Scoped implementation
 - Added UniversalGlassMaterial.quickSettingsPanel(...), a Quick Settings-only surface recipe. Existing generic popup material remains unchanged for Wi-Fi and other dialogs.
 - Added quickSettingsControlIdle(...) for a slightly brighter idle capsule with a quiet neutral edge.
-- Restored the existing low-radius wallpaper blur at 0.72 strength for Quick Settings only; the global blur pipeline and other popup surfaces remain unchanged.
-- Tuned the Quick Settings tint to defined slate-silver (0x78343E48) and a balanced face gradient (0x30FFFFFF, 0x1CFFFFFF, 0x10343E48, 0x30343E48).
+- Added QuickSettingsBackdropCapture: PixelCopy samples the panel's exact crop from the Activity Window before the Dialog is shown; the existing blur routine processes the crop on the managed background executor.
+- Quick Settings draws this local blurred composite (wallpaper and Home foreground content) before applying a slate-silver veil. The shared wallpaper-only Backdrop cache, its worker, and other popup surfaces are unchanged.
+- Before a successful capture, Quick Settings uses an opaque slate-silver fallback so foreground Home text cannot bleed through; after capture it switches to the translucent tint (0x78343E48) and balanced face gradient (0x30FFFFFF, 0x1CFFFFFF, 0x10343E48, 0x30343E48).
 - Removed the broad face reflection sweep that caused a fog-like wash; retained the fine polished silver rim, window-light edge and subtle inner edge reflection.
 - Preserved the capsule slate RGB values (0x343E48 / 0x303A44), restored sufficient opacity (0x88 / 0x78), and retained a soft upper specular overlay (0x30FFFFFF).
 - Quick Settings primary and secondary text use the established bright-white tokens (TvUiTokens.TEXT_PRIMARY / TEXT_SECONDARY); only a restrained shadow is retained for readability.
@@ -40,13 +41,13 @@ No changes intended to:
 - DPAD focus graph, action routing, popup lifecycle, dock geometry, Home UI, Wi-Fi popup, Modern Settings, or Prayer popup.
 
 ## Regression coverage
-- Quick Settings contract updated for locked bright-white typography, slate RGB preservation, translucent glass alpha, controlled gloss and isolated focus treatment.
+- Quick Settings contracts cover Activity-window crop capture, background blur, capture failure handling, bitmap recycling, white typography, slate RGB preservation, glass material, and isolated focus treatment.
 - Popup-family contract verifies generic Wi-Fi panel material remains unchanged.
 - Added a contract proving popup-only Glider shadow tuning does not change shared defaults.
 
 ## Validation status
 - Source edits are committed on the work branch.
-- Automated exact-head CI and release/QA artifact validation: pending.
+- Automated exact-head CI and release/QA artifact validation for the new Activity-window capture path: pending.
 - Physical Mi TV Stick visual acceptance: pending; no device acceptance is claimed.
 - Do not merge PR #177 or this follow-up as part of this workstream without explicit owner approval.
 
