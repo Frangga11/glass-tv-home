@@ -52,7 +52,7 @@ final class GliderFocusDrawable extends Drawable {
             // rectangular view bounds; rectangular clipping leaves dark corner wedges.
             canvas.clipPath(roundedClip);
         } else {
-            canvas.clipRect(bounds);
+            canvas.clipRect(getBounds());
         }
         glider.drawShape(canvas, gliderAt[0] - ownerAt[0], gliderAt[1] - ownerAt[1], owner);
         canvas.restore();
