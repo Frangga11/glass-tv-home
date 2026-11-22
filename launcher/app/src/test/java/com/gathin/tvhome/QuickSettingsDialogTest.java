@@ -53,6 +53,7 @@ public class QuickSettingsDialogTest {
     /** Derive the baseline Dock top from the same geometry functions used by MainActivity. */
     private int productionDockTopDp(Activity activity) {
         float density = activity.getResources().getDisplayMetrics().density;
+        int screenWidthPx = Math.round(960f * density);
         int screenHeightPx = Math.round(540f * density);
         // gridWrap is match-parent inside mainContent, whose horizontal padding is 30dp per side.
         int viewportWidthPx = screenWidthPx - 2 * DockGeometry.safeHorizontalInsetPx(density);
