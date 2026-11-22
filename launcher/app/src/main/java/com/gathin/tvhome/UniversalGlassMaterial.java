@@ -132,20 +132,22 @@ final class UniversalGlassMaterial {
             pressed = popupBright ? new GradientDrawable() : new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{0x48FFFFFF, 0x22FFFFFF});
             if (popupBright) pressed.setColor(PopupGlassTokens.CAPSULE_SELECTED);
-            pressed.setStroke(Math.max(1, Math.round(density),
+            pressed.setStroke(Math.max(1, Math.round(density)),
                     popupBright ? PopupGlassTokens.CAPSULE_FOCUS_BORDER : 0xBBFFFFFF);
             focused = popupBright ? new GradientDrawable() : new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{0x48FFFFFF, 0x22FFFFFF});
             if (popupBright) focused.setColor(PopupGlassTokens.CAPSULE_FOCUS);
-            focused.setStroke(Math.max(1, Math.round(density * (popupBright ? 2f : 1f)),
+            focused.setStroke(Math.max(1, Math.round(density * (popupBright ? 2f : 1f))),
                     popupBright ? PopupGlassTokens.CAPSULE_FOCUS_BORDER : 0xBBFFFFFF);
         } else {
             pressed = new GradientDrawable();
-            pressed.setColor(TvUiTokens.SURFACE_SELECTED);
-            pressed.setStroke(Math.max(1, Math.round(density)), TvUiTokens.FOCUS_BORDER);
+            pressed.setColor(popupBright ? PopupGlassTokens.CAPSULE_SELECTED : TvUiTokens.SURFACE_SELECTED);
+            pressed.setStroke(Math.max(1, Math.round(density)),
+                    popupBright ? PopupGlassTokens.CAPSULE_FOCUS_BORDER : TvUiTokens.FOCUS_BORDER);
             focused = new GradientDrawable();
-            focused.setColor(TvUiTokens.SURFACE_FOCUSED);
-            focused.setStroke(Math.max(1, Math.round(2f * density)), TvUiTokens.FOCUS_BORDER);
+            focused.setColor(popupBright ? PopupGlassTokens.CAPSULE_FOCUS : TvUiTokens.SURFACE_FOCUSED);
+            focused.setStroke(Math.max(1, Math.round(2f * density)),
+                    popupBright ? PopupGlassTokens.CAPSULE_FOCUS_BORDER : TvUiTokens.FOCUS_BORDER);
         }
         pressed.setCornerRadius(radiusDp * density);
         focused.setCornerRadius(radiusDp * density);
