@@ -49,8 +49,9 @@ final class UniversalGlassMaterial {
         if (!isGlassEnabled(context)) {
             return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
         }
-        // Quick Settings no longer consumes the blurred wallpaper cache; the transparent
-        // Dialog window reveals the real wallpaper directly beneath this optical surface.
+        // Reuse the existing low-radius wallpaper blur, then add a defined slate-silver face.
+        // The panel stays distinct from Home without changing the global backdrop pipeline.
+        if (owner != null) Backdrop.watch(owner);
         return new UniversalGlassDrawable(owner, density, radiusDp, false, true, true);
     }
 
@@ -94,7 +95,7 @@ final class UniversalGlassMaterial {
         // Keep the existing slate RGB values, reduce their opacity, then add one fine
         // top-edge reflection. The base remains visible through the shine: no colour swap.
         GradientDrawable glass = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0x55343E48, 0x45303A44});
+                new int[]{0x88343E48, 0x78303A44});
         glass.setCornerRadius(radiusDp * density);
         glass.setStroke(Math.max(1, Math.round(density)), 0x889EABB8);
 
