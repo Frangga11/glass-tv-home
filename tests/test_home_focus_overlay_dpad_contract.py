@@ -73,7 +73,7 @@ class HomeFocusOverlayDpadContractTest(unittest.TestCase):
         self.assertIn("prayerHeader.requestFocus()", ayah)
 
         prayer_start = MAIN.index("View prayerHeaderView = findViewById(R.id.prayerHeader);")
-        prayer_end = MAIN.index("updatePrayerTimes();", prayer_start)
+        prayer_end = MAIN.index("View prayerTableView = findViewById(R.id.prayerTable);", prayer_start)
         prayer = MAIN[prayer_start:prayer_end]
         self.assertIn("ayahOpenHint != null && ayahOpenHint.isShown() && ayahOpenHint.requestFocus()", prayer)
         self.assertIn("focusTile(0);", prayer)
