@@ -43,8 +43,11 @@ public class WifiSettingsDialogTest {
         View header = window.getDecorView().findViewWithTag("wifi_popup_header");
         View footer = window.getDecorView().findViewWithTag("wifi_popup_footer");
         assertNotNull(root);
-        assertEquals(Math.round(10 * activity.getResources().getDisplayMetrics().density), root.getPaddingLeft());
-        assertEquals(Math.round(10 * activity.getResources().getDisplayMetrics().density), root.getPaddingRight());
+        assertEquals(Math.round(14 * activity.getResources().getDisplayMetrics().density), root.getPaddingLeft());
+        assertEquals(Math.round(14 * activity.getResources().getDisplayMetrics().density), root.getPaddingRight());
+        assertEquals(Math.round(5 * activity.getResources().getDisplayMetrics().density), root.getPaddingTop());
+        assertEquals(Math.round(14 * activity.getResources().getDisplayMetrics().density), root.getPaddingBottom());
+        assertEquals(Math.round(30 * activity.getResources().getDisplayMetrics().density), header.getLayoutParams().height);
         assertNotNull(header);
         assertNotNull(footer);
         assertEquals(android.widget.LinearLayout.VERTICAL, ((android.widget.LinearLayout) footer).getOrientation());
@@ -60,7 +63,7 @@ public class WifiSettingsDialogTest {
     }
 
     @Test public void popupUsesConstrainedWidthAndVerticalFirstLayout() {
-        assertEquals(200, WifiSettingsDialog.popupWidthDp());
+        assertEquals(190, WifiSettingsDialog.popupWidthDp());
         assertEquals(12f, WifiSettingsDialog.networkTextSizeSp(), 0.001f);
         assertEquals(16, WifiSettingsDialog.networkStatusIconSizeDp());
         assertTrue(WifiSettingsDialog.networkStatusIconColor() != 0);
@@ -77,9 +80,9 @@ public class WifiSettingsDialogTest {
         AlertDialog dialog = WifiSettingsDialog.show(activity, () -> { }, () -> { });
         View toggle = dialog.getWindow().getDecorView().findViewWithTag("wifi_toggle");
         assertNotNull(toggle);
-        assertEquals(Math.round(45 * activity.getResources().getDisplayMetrics().density),
+        assertEquals(Math.round(44 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().width);
-        assertEquals(Math.round(25 * activity.getResources().getDisplayMetrics().density),
+        assertEquals(Math.round(23 * activity.getResources().getDisplayMetrics().density),
                 toggle.getLayoutParams().height);
         dialog.dismiss();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
