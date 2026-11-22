@@ -175,7 +175,7 @@ public class QuickSettingsDialogTest {
     @Test
     public void wallpaperHeadingPaintedLeftEdgeMatchesNextPhotoCapsuleLeftEdge() {
         Activity activity = newActivity();
-        FrameLayout[] views = host(activity, 420);
+        FrameLayout[] views = host(activity, 430);
         AlertDialog dialog = QuickSettingsDialog.show(activity, views[0], views[0].getChildAt(0),
                 views[0].getChildAt(1), new RecordingActions(), QuickSettingsFocusGraph.INPUT, null);
         assertNotNull(dialog);
