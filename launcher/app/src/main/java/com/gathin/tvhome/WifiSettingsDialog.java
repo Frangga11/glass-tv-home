@@ -759,7 +759,7 @@ final class WifiSettingsDialog {
                 TvUiTokens.POPUP_TEXT_PRIMARY, TvUiTokens.POPUP_TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
         // Keep TvFocusIndicator's focus routing/text states; use Universal GlassControls surfaces.
         view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
-                TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
+                TvUiTokens.ROW_RADIUS_DP, TvUiTokens.POPUP_CONTROL_IDLE, TvUiTokens.POPUP_BORDER));
         view.setOnClickListener(v -> {
             if (callback != null) callback.run();
         });
@@ -768,7 +768,7 @@ final class WifiSettingsDialog {
 
     private void styleText(TextView view, float size, boolean bold, float density) {
         view.setTextSize(size);
-        view.setTextColor(TvUiTokens.TEXT_PRIMARY);
+        view.setTextColor(TvUiTokens.POPUP_TEXT_PRIMARY);
         view.setTypeface(activity.getResources().getFont(R.font.inter),
                 bold ? Typeface.BOLD : Typeface.NORMAL);
         view.setPadding(0, dp(density, 3), 0, dp(density, 3));
