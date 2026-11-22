@@ -539,6 +539,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
                 if (homeShelfAnchorReady && heroShown) v.setY(heroBottom - v.getHeight());
             });
         }
+        // Initialize the shared Home/Dock Glider as soon as its host views exist.
+        // Focus targets register companions later in onCreate(), so this must precede them.
+        setUpGlider();
         heroName = findViewById(R.id.heroName);
         heroDesc = findViewById(R.id.heroDesc);
         heroWhere = findViewById(R.id.heroWhere);
@@ -953,7 +956,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, D
         gridWrap.addView(dockRecycler, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Backdrop.watch(dockRecycler);
-        setUpGlider();
         // Both Dock and Grid app cards now use the same DockBreathingBorderView focus animation.
         // Do not add a second static Grid outline or a Glider companion over the same focused tile.
         // Preserve one shared glass capsule for Home/Profile/Settings.
