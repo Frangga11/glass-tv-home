@@ -10,20 +10,21 @@
 ## Owner design intent
 The Quick Settings popup should feel clean, clear and premium, like polished glass:
 - retain the existing cool slate-silver hue and bright-white typography;
-- show the wallpaper naturally through a restrained backdrop blur and transparent silver tint;
+- show the actual wallpaper sharply through the transparent silver-tinted surface; Quick Settings must not consume the shared blurred-backdrop layer;
 - use a precise upper specular highlight, fine silver rim and subtle inner reflection to create a clean glass sheen;
 - keep capsule colours in the existing slate family; improve translucency and add a narrow top reflection rather than recolouring controls;
 - clean typography with strong readability;
 - restrained silver/cyan focus cursor that is easy to identify without visual excess.
 
 ## Root-cause observations
-The first passes alternated between an overexposed white veil and an excessively dark smoked layer. The TV captures showed that neither produced the requested clean polished-glass effect. The final material pass retains the established slate-silver RGB identity, reduces the dark veil, restores a layered silver highlight, and treats each capsule as translucent glass with a restrained top-edge reflection.
+The first passes alternated between an overexposed white veil and an excessively dark smoked layer. The TV captures then showed a persistent fog effect caused by stacking the shared blurred wallpaper, a slate veil, broad white surface gradients and a wide reflection sweep. The corrective optical pass removes the blurred wallpaper layer from Quick Settings only, lowers the slate tint, removes the broad reflection sweep, and reserves shine for the rim and narrow edge highlights.
 
 ## Scoped implementation
 - Added UniversalGlassMaterial.quickSettingsPanel(...), a Quick Settings-only surface recipe. Existing generic popup material remains unchanged for Wi-Fi and other dialogs.
 - Added quickSettingsControlIdle(...) for a slightly brighter idle capsule with a quiet neutral edge.
-- Tuned the dedicated Quick Settings surface mode to use a lower-opacity neutral-slate veil (0x42151D25) and a clean silver highlight gradient (0x3CFFFFFF, 0x24FFFFFF, 0x12FFFFFF, 0x20343E48).
-- Added a controlled reflective sweep (0x4AFFFFFF to transparent), a fine polished silver rim, and a subtle inner edge reflection.
+- Removed the shared blurred wallpaper layer from Quick Settings only; other popup surfaces retain their existing backdrop blur.
+- Tuned the Quick Settings tint to low-alpha slate (0x24343E48) and reduced the face gradient to a restrained highlight (0x18FFFFFF, 0x0CFFFFFF, 0x04343E48, 0x18343E48).
+- Removed the broad face reflection sweep that caused a fog-like wash; retained the fine polished silver rim, window-light edge and subtle inner edge reflection.
 - Preserved the capsule slate RGB values (0x343E48 / 0x303A44), reduced opacity to 0x55 / 0x45, and added a soft upper specular overlay (0x30FFFFFF).
 - Quick Settings primary and secondary text use the established bright-white tokens (TvUiTokens.TEXT_PRIMARY / TEXT_SECONDARY); only a restrained shadow is retained for readability.
 - The glass-disabled fallback retains the existing dark-silver structural surface and matching capsule fills so bright-white typography remains readable when glass effects are turned off.
