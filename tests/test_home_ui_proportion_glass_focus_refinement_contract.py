@@ -111,11 +111,13 @@ class HomeUiProportionGlassFocusContractTest(unittest.TestCase):
         self.assertNotIn("0x44000000", MAIN)
 
     def test_all_header_pills_share_one_glider_focus_and_glass_material(self):
-        self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, glider)", MAIN)
+        self.assertIn("new GlassDrawable(navCapsule, 20f * density, density, glider,", MAIN)
+        self.assertIn("TvUiTokens.NAV_GLASS_VEIL_ALPHA", MAIN)
         self.assertIn("new GlassDrawable(pill, 20f * density, density, glider)", MAIN)
         self.assertIn("glider.addCompanion(navCapsule)", MAIN)
         self.assertIn("glider.addCompanion(pill)", MAIN)
-        self.assertIn("glider.setStyle(Glider.DARK)", MAIN)
+        self.assertIn("glider.setStyle(Glider.NAVIGATION_DARK)", MAIN)
+        self.assertIn("setShadowLayer(1.2f * density", MAIN)
         self.assertIn("Math.min(20f * density, pill.getHeight() / 2f)", MAIN)
         nav_bg = ET.parse(NAV_BG).getroot()
         self.assertTrue(any("state_focused" in key for node in nav_bg.iter()
