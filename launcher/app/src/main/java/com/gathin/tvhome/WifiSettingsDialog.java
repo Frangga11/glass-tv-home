@@ -73,6 +73,9 @@ final class WifiSettingsDialog {
     private final View pointer;
     private final AlertDialog dialog;
     private final List<View> focusOrder = new ArrayList<>();
+    private Glider focusGlider;
+    private ViewGroup focusGliderLayer;
+    private final java.util.IdentityHashMap<View, Boolean> focusCursorTargets = new java.util.IdentityHashMap<>();
     private boolean receiverRegistered;
     private boolean scanPending;
     private Runnable pendingAfterDismiss;
@@ -333,6 +336,7 @@ final class WifiSettingsDialog {
         WifiSettingsDialog screen = new WifiSettingsDialog(activity, openSystemWifiSettings, returnToParent);
         active = new WeakReference<>(screen);
         screen.dialog.show();
+        screen.installFocusCursor();
         return screen.dialog;
     }
 
@@ -654,6 +658,67 @@ final class WifiSettingsDialog {
         }
     }
 
+    /** One dialog-owned Glider is shared by every Wi-Fi capsule; existing focus/marquee listeners stay intact. */
+    private void installFocusCursor() {
+        Window window = dialog.getWindow();
+        if (window == null || !(window.getDecorView() instanceof ViewGroup)) return;
+        focusGliderLayer = (ViewGroup) window.getDecorView();
+        float density = activity.getResources().getDisplayMetrics().density;
+        focusGlider = new Glider(activity, false);
+        focusGlider.setStyle(Glider.GLASS);
+        focusGlider.setCompanionOnly(true);
+        focusGlider.setSingleGlassRim(true);
+        focusGlider.setGlassRimStrokeWidth(2f * density);
+        focusGliderLayer.addView(focusGlider, 0, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        focusGliderLayer.getViewTreeObserver().addOnGlobalFocusChangeListener((oldFocus, newFocus) -> {
+            if (newFocus == null || !isWifiFocusTarget(newFocus)) {
+                if (focusGlider != null) focusGlider.hide();
+                return;
+            }
+            installFocusCursorTarget(newFocus, density);
+            int[] targetAt = new int[2], gliderAt = new int[2];
+            newFocus.getLocationInWindow(targetAt);
+            focusGlider.getLocationInWindow(gliderAt);
+            float left = targetAt[0] - gliderAt[0];
+            float top = targetAt[1] - gliderAt[1];
+            focusGlider.moveTo(left, top, left + newFocus.getWidth(),
+                    top + newFocus.getHeight(), 10f * density);
+        });
+        View focused = focusGliderLayer.findFocus();
+        if (focused != null && isWifiFocusTarget(focused)) {
+            installFocusCursorTarget(focused, density);
+            focused.post(() -> {
+                if (focusGlider == null || !focused.isShown()) return;
+                int[] targetAt = new int[2], gliderAt = new int[2];
+                focused.getLocationInWindow(targetAt);
+                focusGlider.getLocationInWindow(gliderAt);
+                float left = targetAt[0] - gliderAt[0], top = targetAt[1] - gliderAt[1];
+                focusGlider.moveTo(left, top, left + focused.getWidth(), top + focused.getHeight(), 10f * density);
+            });
+        }
+    }
+
+    private boolean isWifiFocusTarget(View view) {
+        if (view == null) return false;
+        for (View candidate : focusOrder) if (candidate == view) return true;
+        return view == wifiToggle || view == permissionAction || view == locationAction
+                || view == rescan || view == androidSettings;
+    }
+
+    private void installFocusCursorTarget(View view, float density) {
+        if (view == null || focusGlider == null || focusCursorTargets.containsKey(view)) return;
+        Drawable idle = view.getBackground();
+        Drawable glassIdle = UniversalGlassMaterial.controlIdle(activity, density,
+                TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER);
+        Drawable base = idle != null ? idle : glassIdle;
+        view.setBackground(new android.graphics.drawable.LayerDrawable(new Drawable[]{
+                base, new GliderFocusDrawable(view, focusGlider, 10f * density)
+        }));
+        focusGlider.addCompanion(view);
+        focusCursorTargets.put(view, Boolean.TRUE);
+    }
+
     private void configureNetworkMarquee(TextView row) {
         row.setSingleLine(true);
         row.setMaxLines(1);
@@ -756,12 +821,8 @@ final class WifiSettingsDialog {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin = dp(density, 2);
         view.setLayoutParams(lp);
-        TvFocusIndicator.applyRoundedTextFocus(view, density, TvUiTokens.ROW_RADIUS_DP,
-                TvUiTokens.SURFACE_IDLE, TvUiTokens.SURFACE_FOCUSED,
-                TvUiTokens.BORDER, TvUiTokens.FOCUS_BORDER,
-                TvUiTokens.TEXT_PRIMARY, TvUiTokens.TEXT_PRIMARY, TvUiTokens.CARD_FOCUS_SCALE);
-        // Keep TvFocusIndicator's focus routing/text states; use Universal GlassControls surfaces.
-        view.setBackground(UniversalGlassMaterial.controlStateBackground(activity, density,
+        // One idle glass surface; the dialog-owned Glider is the only focus cursor.
+        view.setBackground(UniversalGlassMaterial.controlIdle(activity, density,
                 TvUiTokens.ROW_RADIUS_DP, TvUiTokens.SURFACE_IDLE, TvUiTokens.BORDER));
         view.setOnClickListener(v -> {
             if (callback != null) callback.run();
