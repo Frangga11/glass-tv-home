@@ -17,7 +17,7 @@ import android.graphics.drawable.StateListDrawable;
  * The existing glass_effects_enabled preference and opaque fallbacks remain authoritative.
  */
 final class UniversalGlassMaterial {
-    private static final int PANEL_SHADE = 0xB31D1D1D;
+    private static final int PANEL_SHADE = 0xB31D1D1D; // Legacy neutral surface; not used by bright popup material.
 
     private UniversalGlassMaterial() { }
 
@@ -54,12 +54,8 @@ final class UniversalGlassMaterial {
         if (!isGlassEnabled(context)) {
             return solidSurface(density, radiusDp, fallbackSurfaceColor, fallbackBorderColor);
         }
-        GradientDrawable shade = new GradientDrawable();
-        shade.setCornerRadius(radiusDp * density);
-        shade.setColor(PANEL_SHADE);
-        return new LayerDrawable(new Drawable[]{
-                shade, new UniversalGlassDrawable(density, radiusDp)
-        });
+        // Popup shell uses the bright pearl-silver variant; no charcoal underlay.
+        return new UniversalGlassDrawable(density, radiusDp, false, true);
     }
 
     private static GradientDrawable solidSurface(float density, float radiusDp,
@@ -82,9 +78,9 @@ final class UniversalGlassMaterial {
             return solid;
         }
         GradientDrawable glass = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{0x16FFFFFF, 0x08FFFFFF});
+                new int[]{0xCFEFF2F4, 0xA8DCE2E6});
         glass.setCornerRadius(radiusDp * density);
-        glass.setStroke(Math.max(1, Math.round(density)), 0x28FFFFFF);
+        glass.setStroke(Math.max(1, Math.round(density)), 0x99FFFFFF);
         return glass;
     }
 
@@ -108,11 +104,11 @@ final class UniversalGlassMaterial {
         GradientDrawable focused;
         if (glassEnabled) {
             pressed = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{0x48FFFFFF, 0x22FFFFFF});
-            pressed.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
+                    new int[]{0xF0FFFFFF, 0xD2E0E6EA});
+            pressed.setStroke(Math.max(1, Math.round(density)), 0xFF71838D);
             focused = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{0x48FFFFFF, 0x22FFFFFF});
-            focused.setStroke(Math.max(1, Math.round(density)), 0xBBFFFFFF);
+                    new int[]{0xEAFBFCFC, 0xC9DDE4E9});
+            focused.setStroke(Math.max(1, Math.round(2f * density)), 0xFF657984);
         } else {
             pressed = new GradientDrawable();
             pressed.setColor(TvUiTokens.SURFACE_SELECTED);
@@ -147,7 +143,7 @@ final class UniversalGlassMaterial {
         }
 
         Paint shade = new Paint(Paint.ANTI_ALIAS_FLAG);
-        shade.setColor(PANEL_SHADE);
+        shade.setColor(0xB8E4E9EC);
         canvas.drawPath(triangle, shade);
 
         int saved = canvas.save();
@@ -155,13 +151,13 @@ final class UniversalGlassMaterial {
 
         Paint surface = new Paint(Paint.ANTI_ALIAS_FLAG);
         surface.setShader(new LinearGradient(0f, bounds.top, 0f, bounds.bottom,
-                new int[]{0x36FFFFFF, 0x16FFFFFF, 0x0DFFFFFF, 0x30232323},
-                new float[]{0f, 0.18f, 0.6f, 1f}, Shader.TileMode.CLAMP));
+                new int[]{0xE6F9FAFB, 0xDCEFF2F4, 0xC9E2E6E9, 0xB8D2D8DD},
+                new float[]{0f, 0.22f, 0.68f, 1f}, Shader.TileMode.CLAMP));
         canvas.drawRect(bounds, surface);
 
         Paint reflection = new Paint(Paint.ANTI_ALIAS_FLAG);
         reflection.setShader(new LinearGradient(bounds.left, bounds.top, bounds.right, bounds.bottom,
-                new int[]{0x22FFFFFF, 0x08FFFFFF, 0x00FFFFFF},
+                new int[]{0x66FFFFFF, 0x22FFFFFF, 0x00FFFFFF},
                 new float[]{0f, 0.35f, 1f}, Shader.TileMode.CLAMP));
         Path sweep = new Path();
         sweep.moveTo(bounds.left, bounds.top);
@@ -177,8 +173,8 @@ final class UniversalGlassMaterial {
         rim.setStyle(Paint.Style.STROKE);
         rim.setStrokeWidth(density);
         rim.setShader(new LinearGradient(bounds.left, bounds.top, bounds.right, bounds.bottom,
-                new int[]{0xA6FFFFFF, 0x38FFFFFF, 0x14FFFFFF, 0x66FFFFFF},
-                new float[]{0f, 0.3f, 0.65f, 1f}, Shader.TileMode.CLAMP));
+                new int[]{0xF0FFFFFF, 0xBBDDE3E8, 0x667F8D96, 0xD9F4F6F7},
+                new float[]{0f, 0.28f, 0.68f, 1f}, Shader.TileMode.CLAMP));
         canvas.drawPath(edges, rim);
     }
 }
