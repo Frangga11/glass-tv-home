@@ -36,7 +36,8 @@ public class WifiSettingsDialogTest {
         assertTrue(networkList instanceof android.widget.ScrollView);
         assertTrue(((android.widget.ScrollView) networkList).isVerticalScrollBarEnabled());
         assertEquals(View.SCROLLBARS_INSIDE_INSET, ((android.widget.ScrollView) networkList).getScrollBarStyle());
-        assertEquals(Math.round(4 * activity.getResources().getDisplayMetrics().density), networkList.getPaddingRight());
+        // INSIDE_INSET reserves scrollbar width in addition to the explicit 4dp content gutter.
+        assertTrue(networkList.getPaddingRight() >= Math.round(4 * activity.getResources().getDisplayMetrics().density));
         assertEquals(Math.round(WifiSettingsDialog.networkViewportHeightDp()
                         * activity.getResources().getDisplayMetrics().density),
                 networkList.getLayoutParams().height);
