@@ -24,8 +24,8 @@ The existing Quick Settings panel used the shared popup material with a dark 0x6
   - white veil 0x2EFFFFFF;
   - surface gradient 0x50FFFFFF, 0x3AFFFFFF, 0x2CFFFFFF, 0x20FFFFFF;
   - existing backdrop blur, rim and window-light path retained.
-- Quick Settings text uses charcoal 0xFF1B2933 and slate secondary 0xFF435663; heavy black text shadows are removed.
-- The glass-disabled fallback is also changed to an opaque light-silver surface with matching light capsule fills, so the new charcoal typography remains readable when glass effects are turned off.
+- Quick Settings text uses bright-white typography 0xFF1B2933 and slate secondary 0xFF435663; heavy black text shadows are removed.
+- The glass-disabled fallback is also changed to an opaque light-silver surface with matching light capsule fills, so the new bright-white typography typography remains readable when glass effects are turned off.
 - Quick Settings Glider keeps the same spring animation, target bounds, companion clipping, single-rim ownership, DPAD graph and focus transitions. Its popup-only rim is reduced to 1.25dp and its instance shadow is tuned to 14dp blur, 3dp drop and alpha 0x58.
 - Glider defaults remain 22dp blur, 8dp drop and alpha 0x9A for all other screens and modes.
 
