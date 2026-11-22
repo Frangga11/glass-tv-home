@@ -30,6 +30,8 @@ final class UniversalGlassDrawable extends Drawable {
     private final View owner;
     private final Backdrop.Fill backdropFill = new Backdrop.Fill();
     private final Paint popupVeil = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint capturedBackdropPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+    private Bitmap capturedWindowBackdrop;
     private final RectF area = new RectF();
     private final RectF lastSourceBounds = new RectF();
     private final RectF innerArea = new RectF();
@@ -176,13 +178,49 @@ final class UniversalGlassDrawable extends Drawable {
         sweep.close();
     }
 
+    /**
+     * Installs a one-shot blur of the actual Activity window pixels behind this popup.
+     * Ownership transfers to this drawable; the bitmap is released when the dialog is dismissed.
+     */
+    void setCapturedWindowBackdrop(Bitmap bitmap) {
+        if (!cleanQuickSettings || bitmap == null || bitmap.isRecycled()) {
+            if (bitmap != null && !bitmap.isRecycled()) bitmap.recycle();
+            return;
+        }
+        clearCapturedWindowBackdrop();
+        capturedWindowBackdrop = bitmap;
+        // The sample contains the complete Home composition (wallpaper plus foreground UI),
+        // so the glass tint can remain translucent without Home text bleeding through sharply.
+        popupVeil.setColor(0x78343E48);
+        invalidateSelf();
+    }
+
+    void clearCapturedWindowBackdrop() {
+        if (capturedWindowBackdrop != null && !capturedWindowBackdrop.isRecycled()) {
+            capturedWindowBackdrop.recycle();
+        }
+        capturedWindowBackdrop = null;
+        if (cleanQuickSettings) popupVeil.setColor(0xE8333E48);
+        invalidateSelf();
+    }
+
     void drawSurface(Canvas canvas, RectF sourceBounds) {
         prepare(sourceBounds);
         if (area.isEmpty()) return;
         if (brightSilverPopup && owner != null) {
-            // Keep the original low-radius wallpaper blur underneath the slate tint.
-            // This suppresses text/image ghosting without the broad milky overlay removed earlier.
-            backdropFill.draw(canvas, owner, area, radius, cleanQuickSettings ? 0.72f : 1f);
+            if (cleanQuickSettings) {
+                // Draw a blurred capture of the entire Activity window crop. The legacy
+                // Backdrop.Fill only contains wallpaper pixels and cannot blur Home text.
+                if (capturedWindowBackdrop != null && !capturedWindowBackdrop.isRecycled()) {
+                    int saved = canvas.save();
+                    canvas.clipPath(clip);
+                    canvas.drawBitmap(capturedWindowBackdrop, null, area, capturedBackdropPaint);
+                    canvas.restoreToCount(saved);
+                }
+            } else {
+                // All other popups keep the established wallpaper-only backdrop unchanged.
+                backdropFill.draw(canvas, owner, area, radius, 1f);
+            }
             canvas.drawRoundRect(area, radius, radius, popupVeil);
         }
         canvas.drawRoundRect(area, radius, radius, surface);
@@ -249,6 +287,7 @@ final class UniversalGlassDrawable extends Drawable {
         reflection.setAlpha(alpha);
         inner.setAlpha(alpha);
         windowLight.setAlpha(Math.round(124f * alpha / 255f));
+        capturedBackdropPaint.setAlpha(alpha);
         invalidateSelf();
     }
 
@@ -259,6 +298,7 @@ final class UniversalGlassDrawable extends Drawable {
         reflection.setColorFilter(filter);
         inner.setColorFilter(filter);
         windowLight.setColorFilter(filter);
+        capturedBackdropPaint.setColorFilter(filter);
         invalidateSelf();
     }
 
